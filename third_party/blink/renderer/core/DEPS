@@ -175,7 +175,7 @@ specific_include_rules = {
         "+components/viz/common/surfaces/frame_sink_id.h",
     ],
     "clipboard_utilities.cc" : [ "+base/strings/escape.h" ],
-    "css_parsing_utils.cc": [ "+ui/gfx/color_utils.h" ],
+    "css_parsing_utils.cc|html_permission_element.cc": [ "+ui/gfx/color_utils.h" ],
     "find_in_page.cc" : [
         "+third_party/blink/renderer/core/frame/web_local_frame_impl.h",
     ],

@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -360,6 +361,41 @@ class HTMLPemissionElementTest : public HTMLPemissionElementTestBase {
   ScopedTestingPlatformSupport<LocalePlatformSupport> support_;
 };
 
+// TODO(crbug.com/1315595): remove this class and use
+// `SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME)` once migration
+// to blink_unittests_v2 completes. We then can simply use
+// `time_environment()->FastForwardBy()`
+class ClickingEnabledChecker {
+ public:
+  explicit ClickingEnabledChecker(HTMLPermissionElement* element)
+      : element_(element) {}
+
+  ClickingEnabledChecker(const ClickingEnabledChecker&) = delete;
+  ClickingEnabledChecker& operator=(const ClickingEnabledChecker&) = delete;
+
+  void CheckClickingEnabledAfterDelay(base::TimeDelta time,
+                                      bool expected_enabled) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        WTF::BindOnce(&ClickingEnabledChecker::CheckClickingEnabled,
+                      base::Unretained(this), expected_enabled),
+        time);
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+  }
+
+  void CheckClickingEnabled(bool enabled) {
+    EXPECT_EQ(element_->IsClickingEnabled(), enabled);
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+ private:
+  Persistent<HTMLPermissionElement> element_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
 TEST_F(HTMLPemissionElementTest, InitializeInnerText) {
   const struct {
     const char* type;
@@ -659,6 +695,80 @@ TEST_F(HTMLPemissionElementSimTest, BlockedByPermissionsPolicy) {
   }
 }
 
+TEST_F(HTMLPemissionElementSimTest, EnableClickingAfterDelay) {
+  auto* permission_element =
+      MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
+  ClickingEnabledChecker checker(permission_element);
+
+  // Permission element doesn't allow clicking if there is no type set.
+  permission_element->setAttribute(html_names::kTypeAttr,
+                                   AtomicString("camera"));
+
+  permission_element->DisableClickingIndefinitely(
+      HTMLPermissionElement::DisableReason::kInvalidStyle);
+  checker.CheckClickingEnabled(/*enabled=*/false);
+
+  // Calling |EnableClickingAfterDelay| for a reason that is currently disabling
+  // clicking will result in clicking becoming enabled after the delay.
+  permission_element->EnableClickingAfterDelay(
+      HTMLPermissionElement::DisableReason::kInvalidStyle, kDefaultTimeout);
+  checker.CheckClickingEnabled(/*enabled=*/false);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled=*/true);
+
+  // Calling |EnableClickingAfterDelay| for a reason that is currently *not*
+  // disabling clicking does not do anything.
+  permission_element->EnableClickingAfterDelay(
+      HTMLPermissionElement::DisableReason::kInvalidStyle, kDefaultTimeout);
+  checker.CheckClickingEnabled(/*enabled=*/true);
+}
+
+TEST_F(HTMLPemissionElementSimTest, BadContrastDisablesElement) {
+  auto* permission_element =
+      MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
+  ClickingEnabledChecker checker(permission_element);
+
+  // Permission element doesn't allow clicking if there is no type set.
+  permission_element->setAttribute(html_names::kTypeAttr,
+                                   AtomicString("camera"));
+  GetDocument().body()->AppendChild(permission_element);
+
+  // Red on white is sufficient contrast.
+  permission_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("color: red; background-color: white;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled=*/true);
+
+  // Red on purple is not sufficient contrast.
+  permission_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("color: red; background-color: purple;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  checker.CheckClickingEnabled(/*enabled=*/false);
+
+  // Purple on yellow is sufficient contrast, the element will be re-enabled
+  // after a delay.
+  permission_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("color: yellow; background-color: purple;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  checker.CheckClickingEnabled(/*enabled=*/false);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled=*/true);
+
+  // Purple on yellow is sufficient contrast, however the alpha is not at 100%
+  // so the element should become disabled. rgba(255, 255, 0, 0.99) is "yellow"
+  // at 99% alpha.
+  permission_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString(
+          "color: rgba(255, 255, 0, 0.99); background-color: purple;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  checker.CheckClickingEnabled(/*enabled=*/false);
+}
+
 class HTMLPemissionElementFencedFrameTest : public HTMLPemissionElementSimTest {
  public:
   HTMLPemissionElementFencedFrameTest() {
@@ -694,41 +804,6 @@ TEST_F(HTMLPemissionElementFencedFrameTest, NotAllowedInFencedFrame) {
         base::BindOnce(&NotReachedForPEPCRegistered));
   }
 }
-
-// TODO(crbug.com/1315595): remove this class and use
-// `SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME)` once migration
-// to blink_unittests_v2 completes. We then can simply use
-// `time_environment()->FastForwardBy()`
-class ClickingEnabledChecker {
- public:
-  explicit ClickingEnabledChecker(HTMLPermissionElement* element)
-      : element_(element) {}
-
-  ClickingEnabledChecker(const ClickingEnabledChecker&) = delete;
-  ClickingEnabledChecker& operator=(const ClickingEnabledChecker&) = delete;
-
-  void CheckClickingEnabledAfterDelay(base::TimeDelta time,
-                                      bool expected_enabled) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        WTF::BindOnce(&ClickingEnabledChecker::CheckClickingEnabled,
-                      base::Unretained(this), expected_enabled),
-        time);
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-  }
-
-  void CheckClickingEnabled(bool enabled) {
-    EXPECT_EQ(element_->IsClickingEnabled(), enabled);
-    if (run_loop_) {
-      run_loop_->Quit();
-    }
-  }
-
- private:
-  Persistent<HTMLPermissionElement> element_;
-  std::unique_ptr<base::RunLoop> run_loop_;
-};
 
 class HTMLPemissionElementIntersectionTest
     : public HTMLPemissionElementSimTest {

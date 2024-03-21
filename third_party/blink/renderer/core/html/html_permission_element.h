@@ -76,6 +76,8 @@ class CORE_EXPORT HTMLPermissionElement final
                            IntersectionChanged);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementFencedFrameTest,
                            NotAllowedInFencedFrame);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementSimTest,
+                           EnableClickingAfterDelay);
 
   enum class DisableReason {
     // This element is temporarily disabled for a short period
@@ -86,6 +88,9 @@ class CORE_EXPORT HTMLPermissionElement final
     // (`kDefaultDisableTimeout`) after its intersection status changed from
     // invisible to visible.
     kIntersectionChanged,
+
+    // This element is disabled because of the element's style.
+    kInvalidStyle,
   };
 
   // Ensure there is a connection to the permission service and return it.
@@ -96,6 +101,7 @@ class CORE_EXPORT HTMLPermissionElement final
   void AttributeChanged(const AttributeModificationParams& params) override;
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   void AdjustStyle(ComputedStyleBuilder& builder) override;
+  void DidRecalcStyle(const StyleRecalcChange change) override;
 
   // blink::Node override.
   void DefaultEventHandler(Event&) override;
@@ -154,7 +160,8 @@ class CORE_EXPORT HTMLPermissionElement final
   void EnableClicking(DisableReason reason);
 
   // Similar to `EnableClicking`, calling this method can override any disabled
-  // duration for a given reason, but after a delay.
+  // duration for a given reason, but after a delay. Does nothing if clicking is
+  // not currently disabled for the specified reason.
   void EnableClickingAfterDelay(DisableReason reason,
                                 const base::TimeDelta& delay);
 

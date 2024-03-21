@@ -12,6 +12,9 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/properties/css_property_instances.h"
+#include "third_party/blink/renderer/core/css/properties/longhand.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -38,6 +41,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/gfx/color_utils.h"
 
 namespace blink {
 
@@ -54,7 +58,8 @@ namespace {
 
 const base::TimeDelta kDefaultDisableTimeout = base::Milliseconds(500);
 constexpr FontSelectionValue kMinimumFontWeight = FontSelectionValue(200);
-const float kMaximumWordSpacingToFontSizeRatio = 0.5;
+constexpr float kMaximumWordSpacingToFontSizeRatio = 0.5;
+constexpr float kMinimumAllowedContrast = 3.;
 
 PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
   auto descriptor = PermissionDescriptor::New();
@@ -196,6 +201,21 @@ Length AdjustedMargin(const Length& margin) {
         Length::ValueRange::kNonNegative));
   }
   return (margin.Value() < 0) ? Length::FixedZero() : margin;
+}
+
+float ContrastBetweenColorAndBackgroundColor(const ComputedStyle* style) {
+  return color_utils::GetContrastRatio(
+      style->VisitedDependentColor(GetCSSPropertyColor()).toSkColor4f(),
+      style->VisitedDependentColor(GetCSSPropertyBackgroundColor())
+          .toSkColor4f());
+}
+
+// Returns true if the 'color' or 'background-color' properties have the
+// alphas set to anything else except fully opaque.
+bool AreColorsNonOpaque(const ComputedStyle* style) {
+  return style->VisitedDependentColor(GetCSSPropertyColor()).Alpha() != 1. ||
+         style->VisitedDependentColor(GetCSSPropertyBackgroundColor())
+                 .Alpha() != 1;
 }
 
 }  // namespace
@@ -388,9 +408,6 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     builder.SetWordSpacing(0);
   }
 
-  // TODO(crbug.com/1462930): Validate here that the 'background-color' and
-  // 'color' properties pass accessibility checks (and are at 100% alpha).
-
   // TODO(crbug.com/1462930): Add here checks to force the min/max-width/height.
 
   // TODO(crbug.com/1462930): Validate here the `letter-spacing` property, and
@@ -403,6 +420,17 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
 
   // TODO(crbug.com/1462930): Ensure any value of display other than 'none' is
   // converted to 'inline-block'.
+}
+
+void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {
+  if (AreColorsNonOpaque(GetComputedStyle()) ||
+      ContrastBetweenColorAndBackgroundColor(GetComputedStyle()) <
+          kMinimumAllowedContrast) {
+    DisableClickingIndefinitely(DisableReason::kInvalidStyle);
+  } else {
+    EnableClickingAfterDelay(DisableReason::kInvalidStyle,
+                             kDefaultDisableTimeout);
+  }
 }
 
 void HTMLPermissionElement::DefaultEventHandler(Event& event) {
@@ -562,7 +590,9 @@ void HTMLPermissionElement::DisableClickingTemporarily(
 void HTMLPermissionElement::EnableClickingAfterDelay(
     DisableReason reason,
     const base::TimeDelta& delay) {
-  clicking_disabled_reasons_.Set(reason, base::TimeTicks::Now() + delay);
+  if (clicking_disabled_reasons_.Contains(reason)) {
+    clicking_disabled_reasons_.Set(reason, base::TimeTicks::Now() + delay);
+  }
 }
 
 void HTMLPermissionElement::EnableClicking(DisableReason reason) {
