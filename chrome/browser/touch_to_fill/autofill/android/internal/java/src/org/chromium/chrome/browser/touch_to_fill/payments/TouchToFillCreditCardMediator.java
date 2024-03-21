@@ -70,10 +70,7 @@ class TouchToFillCreditCardMediator {
     }
 
     @VisibleForTesting
-    static final String TOUCH_TO_FILL_OUTCOME_HISTOGRAM = "Autofill.TouchToFill.CreditCard.Outcome";
-
-    @VisibleForTesting
-    static final String TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED =
+    static final String TOUCH_TO_FILL_OUTCOME_HISTOGRAM =
             "Autofill.TouchToFill.CreditCard.Outcome2";
 
     @VisibleForTesting
@@ -148,17 +145,9 @@ class TouchToFillCreditCardMediator {
                         || reason == StateChangeReason.BACK_PRESS
                         || reason == StateChangeReason.TAP_SCRIM;
         mDelegate.onDismissed(dismissedByUser);
-        // TODO (crbug.com/1247698) Record the old histogram as before to not mix the old and the
-        // new metrics. Remove after M114 is launched.
-        if (reason == StateChangeReason.SWIPE || reason == StateChangeReason.BACK_PRESS) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
-                    TouchToFillCreditCardOutcome.DISMISS,
-                    TouchToFillCreditCardOutcome.MAX_VALUE + 1);
-        }
         if (dismissedByUser) {
             RecordHistogram.recordEnumeratedHistogram(
-                    TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED,
+                    TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
                     TouchToFillCreditCardOutcome.DISMISS,
                     TouchToFillCreditCardOutcome.MAX_VALUE + 1);
         }
@@ -264,10 +253,6 @@ class TouchToFillCreditCardMediator {
             @TouchToFillCreditCardOutcome int outcome) {
         RecordHistogram.recordEnumeratedHistogram(
                 TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
-                outcome,
-                TouchToFillCreditCardOutcome.MAX_VALUE + 1);
-        RecordHistogram.recordEnumeratedHistogram(
-                TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED,
                 outcome,
                 TouchToFillCreditCardOutcome.MAX_VALUE + 1);
     }

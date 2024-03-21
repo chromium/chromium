@@ -20,7 +20,6 @@ import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirt
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardMediator.TOUCH_TO_FILL_INDEX_SELECTED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardMediator.TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardMediator.TOUCH_TO_FILL_OUTCOME_HISTOGRAM;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardMediator.TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.NETWORK_NAME;
@@ -241,11 +240,6 @@ public class TouchToFillCreditCardControllerRobolectricTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
                         TouchToFillCreditCardOutcome.SCAN_NEW_CARD));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED,
-                        TouchToFillCreditCardOutcome.SCAN_NEW_CARD));
     }
 
     @Test
@@ -263,11 +257,6 @@ public class TouchToFillCreditCardControllerRobolectricTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
-                        TouchToFillCreditCardOutcome.MANAGE_PAYMENTS));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED,
                         TouchToFillCreditCardOutcome.MANAGE_PAYMENTS));
     }
 
@@ -309,11 +298,6 @@ public class TouchToFillCreditCardControllerRobolectricTest {
                         TOUCH_TO_FILL_OUTCOME_HISTOGRAM, TouchToFillCreditCardOutcome.CREDIT_CARD));
         assertEquals(
                 1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED,
-                        TouchToFillCreditCardOutcome.CREDIT_CARD));
-        assertEquals(
-                1,
                 RecordHistogram.getHistogramValueCountForTesting(TOUCH_TO_FILL_INDEX_SELECTED, 0));
     }
 
@@ -334,11 +318,6 @@ public class TouchToFillCreditCardControllerRobolectricTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
-                        TouchToFillCreditCardOutcome.VIRTUAL_CARD));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED,
                         TouchToFillCreditCardOutcome.VIRTUAL_CARD));
         assertEquals(
                 1,
@@ -370,19 +349,13 @@ public class TouchToFillCreditCardControllerRobolectricTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         TOUCH_TO_FILL_OUTCOME_HISTOGRAM, TouchToFillCreditCardOutcome.DISMISS));
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED,
-                        TouchToFillCreditCardOutcome.DISMISS));
     }
 
     @Test
     public void testDismissWithTap() {
         HistogramWatcher metricsWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED,
-                        TouchToFillCreditCardOutcome.DISMISS);
+                        TOUCH_TO_FILL_OUTCOME_HISTOGRAM, TouchToFillCreditCardOutcome.DISMISS);
         mCoordinator.showSheet(new CreditCard[] {VISA, MASTER_CARD}, true);
 
         mTouchToFillCreditCardModel.get(DISMISS_HANDLER).onResult(StateChangeReason.TAP_SCRIM);

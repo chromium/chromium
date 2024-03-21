@@ -5206,27 +5206,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.TouchToFill.CreditCard.Outcome"
-    enum="TouchToFill.CreditCard.Outcome" expires_after="2024-07-21">
-  <owner>mlerman@google.com</owner>
-  <owner>tchudakov@google.com</owner>
-  <owner>vykochko@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the outcome with which the bottom sheet was closed: credit card
-    selected, virtual card selected, go to payment settings, scan new credit
-    card or dismissed with no action. The metric is recorded right after user
-    has done the action: the credit card selection or some other option (which
-    always leads to the bottom sheet being closed) or swiped the sheet to close
-    it. See the TouchToFillCreditCardMediator.java for details. Note that
-    &quot;Go to payment settings&quot; click is also considered as the outcome,
-    although it doesn't close the Touch To Fill. So in this case there will be a
-    double count for one bottom sheet showing. This histogram contains a bug of
-    not accounting all users' manual bottom sheet dismissal. It should be
-    removed after M114 is rolled out.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.TouchToFill.CreditCard.Outcome2"
     enum="TouchToFill.CreditCard.Outcome" expires_after="2024-07-21">
   <owner>mlerman@google.com</owner>
@@ -5242,9 +5221,7 @@ chromium-metrics-reviews@google.com.
     it. See the TouchToFillCreditCardMediator.java for details. Note that
     &quot;Go to payment settings&quot; click is also considered as the outcome,
     although it doesn't close the Touch To Fill. So in this case there will be a
-    double count for one bottom sheet showing. This fixes the bug introduced in
-    Autofill.TouchToFill.CreditCard.Outcome and counts all user bottom sheet
-    dismissals. The old histogram should be removed after M114 is rolled out.
+    double count for one bottom sheet showing.
   </summary>
 </histogram>
 
