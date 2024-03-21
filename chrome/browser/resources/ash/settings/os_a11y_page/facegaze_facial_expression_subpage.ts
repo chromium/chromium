@@ -334,20 +334,19 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
         Object.assign(this.resetCursorMenuOptions_);
     const newToggleDictationMenuOptions =
         Object.assign(this.toggleDictationMenuOptions_);
+    const assignedGestures = {
+        ...this.get('prefs.settings.a11y.face_gaze.gestures_to_macros.value')};
 
-    // First clear out the previous macro for this gesture.
-    const assignedGestures =
-        this.get('prefs.settings.a11y.face_gaze.gestures_to_macros.value');
+    // First clear out the previous macro for this gesture, if it has changed.
     let alreadySet = false;
     for (const [currentGesture, assignedMacro] of Object.entries(
              assignedGestures)) {
       if (macro === assignedMacro) {
         if (currentGesture === value) {
           alreadySet = true;
+          break;
         }
-        this.setPrefDictEntry(
-            'settings.a11y.face_gaze.gestures_to_macros', currentGesture,
-            MacroName.UNSPECIFIED);
+        assignedGestures[currentGesture] = MacroName.UNSPECIFIED;
 
         // Make `currentGesture` visible in all the drop-downs.
         newLeftClickMenuOptions
@@ -373,14 +372,7 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
     if (value !== 'deselect') {
       // Update the gesture->macro mapping pref.
       if (!alreadySet) {
-        // TODO(b:322510392): Sometimes the prefs are updated (console.log the
-        // pref dict gives the appropriate value) but listening for pref changes
-        // in another Renderer context shows that the commit did not occur. This
-        // seems to happen when we perform multiple updates to the dict
-        // back-to-back. Is there some way to 'commit' this set to ensure it
-        // goes through?
-        this.setPrefDictEntry(
-            'settings.a11y.face_gaze.gestures_to_macros', value, macro);
+        assignedGestures[value] = macro;
       }
       // Make 'gesture' hidden in all the other drop-downs.
       if (macro !== MacroName.MOUSE_CLICK_LEFT) {
@@ -403,6 +395,9 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
             .find((item: {value: string}) => item.value === value)!.hidden =
             true;
       }
+      this.set(
+          'prefs.settings.a11y.face_gaze.gestures_to_macros.value',
+          {...assignedGestures});
     }
 
     // Force polymer to update the objects.
