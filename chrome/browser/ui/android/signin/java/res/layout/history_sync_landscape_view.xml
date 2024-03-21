@@ -47,6 +47,7 @@ found in the LICENSE file.
             android:id="@+id/sync_consent_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_above="@id/sync_consent_details_description"
             android:fadeScrollbars="false"
             android:fillViewport="true">
 
@@ -71,19 +72,12 @@ found in the LICENSE file.
                     android:paddingVertical="8dp"
                     android:gravity="start"
                     android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-                    app:leading="@dimen/text_size_medium_leading" />
+                    app:leading="@dimen/text_size_medium_leading"/>
 
-
-                <RelativeLayout
-                    android:id="@+id/button_bar"
+                <org.chromium.components.browser_ui.widget.DualControlLayout
+                    android:id="@+id/dual_control_button_bar"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp">
-                    <org.chromium.components.browser_ui.widget.DualControlLayout
-                        android:id="@+id/dual_control_button_bar"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-                </RelativeLayout>
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
         </ScrollView>
 
@@ -91,7 +85,7 @@ found in the LICENSE file.
             android:id="@+id/sync_consent_details_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="16dp"
+            android:layout_marginBottom="16dp"
             android:layout_alignParentBottom="true"
             android:gravity="start"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
