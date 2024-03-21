@@ -5,6 +5,8 @@
 #ifndef BASE_ALLOCATOR_DISPATCHER_TLS_H_
 #define BASE_ALLOCATOR_DISPATCHER_TLS_H_
 
+#include <string_view>
+
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_POSIX)  // the current allocation mechanism (mmap) and TLS
@@ -23,7 +25,6 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/strings/string_piece.h"
 #include "partition_alloc/partition_alloc_constants.h"
 
 #include <pthread.h>
@@ -110,7 +111,7 @@ class BASE_EXPORT PThreadTLSSystem {
   // @param thread_termination_function An optional function which will be
   // invoked upon termination of a thread.
   bool Setup(OnThreadTerminationFunction thread_termination_function,
-             const base::StringPiece instance_id);
+             const std::string_view instance_id);
   // Tear down the TLS system. After completing tear down, the thread
   // termination function passed to Setup will not be invoked anymore.
   bool TearDownForTesting();
@@ -198,7 +199,7 @@ template <typename PayloadType,
           size_t AllocationChunkSize,
           bool IsDestructibleForTesting>
 struct ThreadLocalStorage {
-  explicit ThreadLocalStorage(const base::StringPiece instance_id)
+  explicit ThreadLocalStorage(const std::string_view instance_id)
       : root_(AllocateAndInitializeChunk()) {
     Initialize(instance_id);
   }
@@ -206,7 +207,7 @@ struct ThreadLocalStorage {
   // Create a new instance of |ThreadLocalStorage| using the passed allocator
   // and TLS system. This initializes the underlying TLS system and creates the
   // first chunk of data.
-  ThreadLocalStorage(const base::StringPiece instance_id,
+  ThreadLocalStorage(const std::string_view instance_id,
                      AllocatorType allocator,
                      TLSSystemType tls_system)
       : allocator_(std::move(allocator)),
@@ -359,7 +360,7 @@ struct ThreadLocalStorage {
   }
 
   // Perform common initialization during construction of an instance.
-  void Initialize(const base::StringPiece instance_id) {
+  void Initialize(const std::string_view instance_id) {
     // The constructor must be called outside of the allocation path. Therefore,
     // it is secure to verify with CHECK.
 

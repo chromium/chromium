@@ -4,6 +4,8 @@
 
 #include "base/allocator/dispatcher/tls.h"
 
+#include <string_view>
+
 #if USE_LOCAL_TLS_EMULATION()
 #include <algorithm>
 #include <array>
@@ -17,7 +19,6 @@
 #include <vector>
 
 #include "base/debug/crash_logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,7 +69,7 @@ struct TLSSystemMockBase {
       bool,
       Setup,
       (internal::OnThreadTerminationFunction thread_termination_function,
-       const base::StringPiece instance_id),
+       const std::string_view instance_id),
       ());
   MOCK_METHOD(bool, TearDownForTesting, (), ());
   MOCK_METHOD(void*, GetThreadSpecificData, (), ());
@@ -83,8 +84,7 @@ struct CrashKeyImplementationMockBase
               (override));
   MOCK_METHOD(void,
               Set,
-              (base::debug::CrashKeyString * crash_key,
-               base::StringPiece value),
+              (base::debug::CrashKeyString * crash_key, std::string_view value),
               (override));
   MOCK_METHOD(void,
               Clear,
@@ -457,7 +457,7 @@ TEST_F(BasePThreadTLSSystemTest, VerifySetupNTeardownSequence) {
   };
 
   const auto handle_set = [&](base::debug::CrashKeyString* crash_key,
-                              base::StringPiece value) {
+                              std::string_view value) {
     const auto it_crash_key =
         std::find_if(std::begin(crash_keys), std::end(crash_keys),
                      [&](const base::debug::CrashKeyString& key) {
