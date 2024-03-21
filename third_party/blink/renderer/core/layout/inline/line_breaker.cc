@@ -391,6 +391,7 @@ LineBreaker::LineBreaker(InlineNode node,
       sticky_images_quirk_(mode != LineBreakerMode::kContent &&
                            node.IsStickyImagesQuirkForContentSize()),
       items_data_(node.ItemsData(use_first_line_style_)),
+      end_item_index_(items_data_.items.size()),
       text_content_(
           !sticky_images_quirk_
               ? items_data_.text_content
@@ -827,10 +828,9 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
   while (state_ != LineBreakState::kDone) {
     // If we reach at the end of the block, this is the last line.
     DCHECK_LE(current_.item_index, items.size());
-    if (current_.item_index == items.size()) {
+    if (IsAtEnd()) {
       // Still check overflow because the last item may have overflowed.
-      if (HandleOverflowIfNeeded(line_info) &&
-          current_.item_index != items.size()) {
+      if (HandleOverflowIfNeeded(line_info) && !IsAtEnd()) {
         continue;
       }
       if (UNLIKELY(HasHyphen()))
@@ -2525,7 +2525,7 @@ void LineBreaker::HandleForcedLineBreak(const InlineItem* item,
     // newlines and <br>s. Gecko does this only for preserved newlines (but
     // not for <br>s).
     const HeapVector<InlineItem>& items = Items();
-    while (current_.item_index < items.size()) {
+    while (!IsAtEnd()) {
       const InlineItem& next_item = items[current_.item_index];
       if (next_item.Type() == InlineItem::kCloseTag) {
         HandleCloseTag(next_item, line_info);
@@ -3457,7 +3457,6 @@ void LineBreaker::RetryAfterOverflow(LineInfo* line_info,
 // Rewind to |new_end| on overflow. If trailable items follow at |new_end|, they
 // are included (not rewound).
 void LineBreaker::RewindOverflow(unsigned new_end, LineInfo* line_info) {
-  const HeapVector<InlineItem>& items = Items();
   const InlineItemResults& item_results = line_info->Results();
   DCHECK_LT(new_end, item_results.size());
 
@@ -3550,7 +3549,7 @@ void LineBreaker::RewindOverflow(unsigned new_end, LineInfo* line_info) {
   position_ = line_info->ComputeWidth();
   state_ = LineBreakState::kDone;
   DCHECK(!line_info->IsLastLine());
-  if (current_.item_index == items.size()) {
+  if (IsAtEnd()) {
     line_info->SetIsLastLine(true);
   }
 }
@@ -3639,7 +3638,7 @@ void LineBreaker::Rewind(unsigned new_end, LineInfo* line_info) {
     // Note: We can have multiple empty |LayoutText| by ::first-letter, nested
     // <q>, Text.splitText(), etc.
     const HeapVector<InlineItem>& items = Items();
-    while (current_.item_index < items.size() &&
+    while (!IsAtEnd() &&
            items[current_.item_index].Type() == InlineItem::kText &&
            !items[current_.item_index].Length()) {
       HandleEmptyText(items[current_.item_index], line_info);
@@ -3829,6 +3828,13 @@ void LineBreaker::MoveToNextOf(const InlineItemResult& item_result) {
   }
 }
 
+void LineBreaker::SetInputRange(InlineItemTextIndex start,
+                                wtf_size_t end_item_index) {
+  DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
+  current_ = start;
+  end_item_index_ = end_item_index;
+}
+
 const InlineBreakToken* LineBreaker::CreateBreakToken(
     const LineInfo& line_info) {
 #if DCHECK_IS_ON()
@@ -3840,7 +3846,7 @@ const InlineBreakToken* LineBreaker::CreateBreakToken(
   const HeapVector<InlineItem>& items = Items();
   DCHECK_LE(current_.item_index, items.size());
   // If we have reached the end, create no break token.
-  if (current_.item_index >= items.size()) {
+  if (IsAtEnd()) {
     return nullptr;
   }
 

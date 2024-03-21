@@ -1213,6 +1213,28 @@ TEST_F(LineBreakerTest, BreakAtTrailingSpacesAfterAtomicInline) {
   EXPECT_EQ(line_info_list[1].Results().front().item_index, 4u);
 }
 
+TEST_F(LineBreakerTest, SetInputRange) {
+  ScopedRubyLineBreakableForTest enable_ruby_line_breakable(true);
+  InlineNode node = CreateInlineNode(R"HTML(
+      <div id=container>before<span>content</span>after</div>)HTML");
+  node.PrepareLayoutIfNeeded();
+  ExclusionSpace exclusion_space;
+  LeadingFloats leading_floats;
+  LineBreaker line_breaker(node, LineBreakerMode::kContent,
+                           ConstraintSpaceForAvailableSize(LayoutUnit::Max()),
+                           LineLayoutOpportunity(LayoutUnit::Max()),
+                           leading_floats, nullptr, nullptr, &exclusion_space);
+  // <span> to just after </span>.
+  line_breaker.SetInputRange({1, 6}, 4);
+  LineInfo line_info;
+  line_breaker.NextLine(&line_info);
+  // The result should contain only <span>...</span>.
+  EXPECT_EQ(3u, line_info.Results().size());
+  EXPECT_EQ(InlineItem::kOpenTag, line_info.Results()[0].item->Type());
+  EXPECT_EQ(InlineItem::kText, line_info.Results()[1].item->Type());
+  EXPECT_EQ(InlineItem::kCloseTag, line_info.Results()[2].item->Type());
+}
+
 struct CanBreakInsideTestData {
   bool can_break_insde;
   const char* html;

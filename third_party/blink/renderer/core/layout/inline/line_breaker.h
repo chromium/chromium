@@ -54,6 +54,9 @@ class CORE_EXPORT LineBreaker {
 
   const InlineItemsData& ItemsData() const { return items_data_; }
 
+  // This LineBreaker handles only [start, end_item_index) of `Items()`.
+  void SetInputRange(InlineItemTextIndex start, wtf_size_t end_item_index);
+
   // True if the last line has `box-decoration-break: clone`, which affected the
   // size.
   bool HasClonedBoxDecorations() const { return has_cloned_box_decorations_; }
@@ -247,6 +250,7 @@ class CORE_EXPORT LineBreaker {
   bool IsPreviousItemOfType(InlineItem::InlineItemType);
   void MoveToNextOf(const InlineItem&);
   void MoveToNextOf(const InlineItemResult&);
+  bool IsAtEnd() const { return current_.item_index >= end_item_index_; }
 
   void ComputeBaseDirection();
   void RecalcClonedBoxDecorations();
@@ -355,6 +359,10 @@ class CORE_EXPORT LineBreaker {
 #endif
 
   const InlineItemsData& items_data_;
+
+  // `end_item_index_` is usually `Items().size()`.
+  // SetInputRange() updates it.
+  wtf_size_t end_item_index_;
 
   // The text content of this node. This is same as |items_data_.text_content|
   // except when sticky images quirk is needed. See
