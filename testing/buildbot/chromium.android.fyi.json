@@ -11763,7 +11763,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
+          "shards": 4
         },
         "test": "chrome_public_wpt",
         "test_id_prefix": "ninja://chrome/android:chrome_public_wpt/"
@@ -11807,7 +11807,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
+          "shards": 4
         },
         "test": "system_webview_wpt",
         "test_id_prefix": "ninja://android_webview/test:system_webview_wpt/"

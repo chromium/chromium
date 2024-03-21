@@ -5266,12 +5266,12 @@ targets.legacy_basic_suite(
     tests = {
         "chrome_public_wpt": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 15,
+                shards = 4,
             ),
         ),
         "system_webview_wpt": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 15,
+                shards = 4,
             ),
         ),
     },

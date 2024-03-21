@@ -5635,7 +5635,7 @@
       'chrome_public_wpt': {
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 15,
+          'shards': 4,
         },
         'merge': {
           'script': '//third_party/blink/tools/merge_web_test_results.py',
@@ -5647,7 +5647,7 @@
       'system_webview_wpt': {
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 15,
+          'shards': 4,
         },
         'merge': {
           'script': '//third_party/blink/tools/merge_web_test_results.py',
