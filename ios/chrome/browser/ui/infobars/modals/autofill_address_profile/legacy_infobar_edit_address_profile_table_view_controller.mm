@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_edit_address_profile_table_view_controller.h"
+#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/legacy_infobar_edit_address_profile_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
@@ -16,7 +16,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface InfobarEditAddressProfileTableViewController () <UITextFieldDelegate>
+@interface LegacyInfobarEditAddressProfileTableViewController () <UITextFieldDelegate>
 
 // The delegate passed to this instance.
 @property(nonatomic, weak) id<InfobarModalDelegate> delegate;
@@ -32,7 +32,7 @@
 
 @end
 
-@implementation InfobarEditAddressProfileTableViewController
+@implementation LegacyInfobarEditAddressProfileTableViewController
 
 #pragma mark - Initialization
 

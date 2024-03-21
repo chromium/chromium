@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_edit_address_profile_table_view_controller.h"
+#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/legacy_infobar_edit_address_profile_table_view_controller.h"
 
 #import <memory>
 #import "base/apple/foundation_util.h"
@@ -34,7 +34,7 @@ namespace {
 
 const char16_t kTestSyncingEmail[] = u"test@email.com";
 
-class InfobarEditAddressProfileTableViewControllerTest
+class LegacyInfobarEditAddressProfileTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  protected:
   void SetUp() override {
@@ -51,8 +51,8 @@ class InfobarEditAddressProfileTableViewControllerTest
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
-    InfobarEditAddressProfileTableViewController* viewController =
-        [[InfobarEditAddressProfileTableViewController alloc]
+    LegacyInfobarEditAddressProfileTableViewController* viewController =
+        [[LegacyInfobarEditAddressProfileTableViewController alloc]
             initWithModalDelegate:delegate_modal_mock_];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
@@ -150,20 +150,20 @@ class InfobarEditAddressProfileTableViewControllerTest
 };
 
 // Tests that there are no requirement checks for the profiles saved to sync.
-TEST_F(InfobarEditAddressProfileTableViewControllerTest, TestNoRequirements) {
+TEST_F(LegacyInfobarEditAddressProfileTableViewControllerTest, TestNoRequirements) {
   TestRequirements(NO);
 }
 
 // TODO(crbug.com/1348294): Merge into main test fixture.
-class InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled
-    : public InfobarEditAddressProfileTableViewControllerTest {
+class LegacyInfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled
+    : public LegacyInfobarEditAddressProfileTableViewControllerTest {
  protected:
-  InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled() {}
+  LegacyInfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled() {}
 
-  InfobarEditAddressProfileTableViewController*
-  CreateInfobarEditAddressProfileTableViewController() {
-    InfobarEditAddressProfileTableViewController* viewController =
-        [[InfobarEditAddressProfileTableViewController alloc]
+  LegacyInfobarEditAddressProfileTableViewController*
+  CreateLegacyInfobarEditAddressProfileTableViewController() {
+    LegacyInfobarEditAddressProfileTableViewController* viewController =
+        [[LegacyInfobarEditAddressProfileTableViewController alloc]
             initWithModalDelegate:delegate_modal_mock_];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
@@ -176,7 +176,7 @@ class InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
-    return CreateInfobarEditAddressProfileTableViewController();
+    return CreateLegacyInfobarEditAddressProfileTableViewController();
   }
 
   void CreateAccountProfile() {
@@ -236,7 +236,7 @@ class InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled
 };
 
 // Tests the edit view initialisation for the save prompt of an account profile.
-TEST_F(InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled,
+TEST_F(LegacyInfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled,
        TestEditForAccountProfile) {
   CreateAccountProfile();
 
@@ -248,25 +248,25 @@ TEST_F(InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled,
 }
 
 // Tests that the save in account prompt runs requirement checks.
-TEST_F(InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled,
+TEST_F(LegacyInfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled,
        TestRequirements) {
   CreateAccountProfile();
   TestRequirements(YES);
 }
 
-class InfobarEditAddressProfileTableViewControllerMigrationPromptTest
-    : public InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled {
+class LegacyInfobarEditAddressProfileTableViewControllerMigrationPromptTest
+    : public LegacyInfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled {
  protected:
   LegacyChromeTableViewController* InstantiateController() override {
-    InfobarEditAddressProfileTableViewController* viewController =
-        CreateInfobarEditAddressProfileTableViewController();
+    LegacyInfobarEditAddressProfileTableViewController* viewController =
+        CreateLegacyInfobarEditAddressProfileTableViewController();
     [viewController setMigrationPrompt:YES];
     return viewController;
   }
 };
 
 // Tests the edit view initialisation for the migration prompt to account.
-TEST_F(InfobarEditAddressProfileTableViewControllerMigrationPromptTest,
+TEST_F(LegacyInfobarEditAddressProfileTableViewControllerMigrationPromptTest,
        TestMigrationPrompt) {
   NSString* expected_footer_text = l10n_util::GetNSStringF(
       IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER, kTestSyncingEmail);
@@ -277,7 +277,7 @@ TEST_F(InfobarEditAddressProfileTableViewControllerMigrationPromptTest,
 }
 
 // Tests that the migration prompt runs requirement checks.
-TEST_F(InfobarEditAddressProfileTableViewControllerMigrationPromptTest,
+TEST_F(LegacyInfobarEditAddressProfileTableViewControllerMigrationPromptTest,
        TestRequirements) {
   TestRequirements(YES);
 }
