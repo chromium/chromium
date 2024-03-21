@@ -553,7 +553,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_RESIZABLE_SIDE_SHEET, true);
     public static final CachedFlag sCctResizableSideSheetForThirdParties =
             newCachedFlag(CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES, true);
-    public static final CachedFlag sCctTabModalDialog = newCachedFlag(CCT_TAB_MODAL_DIALOG, true);
+    public static final CachedFlag sCctTabModalDialog = newCachedFlag(CCT_TAB_MODAL_DIALOG, false);
     public static final CachedFlag sCollectAndroidFrameTimelineMetrics =
             newCachedFlag(COLLECT_ANDROID_FRAME_TIMELINE_METRICS, false);
     public static final CachedFlag sCommandLineOnNonRooted =
