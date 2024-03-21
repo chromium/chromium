@@ -197,7 +197,7 @@
     -internal-forced-color: CanvasText;
   }
 
-  select:not(:-internal-list-box):not(:-internal-select-author-button) {
+  select:not(:-internal-list-box) {
     background-color: Canvas;
     -internal-forced-background-color: Canvas;
   }

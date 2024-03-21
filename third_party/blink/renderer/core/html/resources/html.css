@@ -793,9 +793,6 @@ base, basefont, datalist, head, link, meta, noembed,
 noframes, param, rp, script, style, template, title {
   display: none;
 }
-select:-internal-select-author-datalist > datalist:popover-open {
-  display: block;
-}
 input[type="hidden" i] {
   display: none !important;
 }
@@ -912,10 +909,7 @@ input[type="week" i], select {
     text-autospace: no-autospace !important;
 }
 
-/* TODO(crbug.com/1511354): These UA styles should be changed based on the
- * appearance property instead of child DOM content, but there isn't a good
- * way to do this yet without two style recalcs. */
-select:not(:-internal-select-author-button) {
+select {
     appearance: auto;
     box-sizing: border-box;
     align-items: center;
@@ -926,101 +920,6 @@ select:not(:-internal-select-author-button) {
     border: 1px solid light-dark(#767676, #858585);
     cursor: default;
     border-radius: 0;
-}
-
-select:-internal-select-author-datalist > datalist {
-  box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
-  box-sizing: border-box;
-  overflow: auto;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 0.25em;
-  padding: 0.25em 0;
-  background-color: Field;
-  margin: 0;
-  inset: auto;
-  min-inline-size: anchor-size(self-inline);
-  min-block-size: 1lh;
-  inset-block-start: anchor(self-end);
-  inset-inline-start: anchor(self-start);
-  position-try-options:
-    -internal-selectlist-datalist-reverse-block,
-    -internal-selectlist-datalist-reverse-inline,
-    -internal-selectlist-datalist-reverse-both,
-    -internal-selectlist-datalist-default-fill,
-    -internal-selectlist-datalist-reverse-block-fill,
-    -internal-selectlist-datalist-reverse-inline-fill,
-    -internal-selectlist-datalist-reverse-both-fill;
-}
-
-/* TODO(crbug.com/40279608): Use automatic fallbacks */
-
-/* Fallbacks without vertical scrolling */
-@position-try -internal-select-datalist-reverse-block {
-  inset: auto;
-  /* Reverse block axis */
-  inset-block-end: anchor(self-start);
-  inset-inline-start: anchor(self-start);
-}
-@position-try -internal-select-datalist-reverse-inline {
-  inset: auto;
-  /* Reverse inline axis */
-  inset-block-start: anchor(self-end);
-  inset-inline-end: anchor(self-end);
-}
-@position-try -internal-select-datalist-reverse-both {
-  inset: auto;
-  /* Reverse both axes */
-  inset-block-end: anchor(self-start);
-  inset-inline-end: anchor(self-end);
-}
-
-/* Fallbacks with vertical scrolling */
-@position-try -internal-select-datalist-default-fill {
-  inset: auto;
-  inset-block-start: anchor(self-end);
-  inset-inline-start: anchor(self-start);
-  block-size: -webkit-fill-available;
-}
-@position-try -internal-select-datalist-reverse-block-fill {
-  inset: auto;
-  /* Reverse block axis */
-  inset-block-end: anchor(self-start);
-  inset-inline-start: anchor(self-start);
-  block-size: -webkit-fill-available;
-}
-@position-try -internal-select-datalist-reverse-inline-fill {
-  inset: auto;
-  /* Reverse inline axis */
-  inset-block-start: anchor(self-end);
-  inset-inline-end: anchor(self-end);
-  block-size: -webkit-fill-available;
-}
-@position-try -internal-select-datalist-reverse-both-fill {
-  inset: auto;
-  /* Reverse both axes */
-  inset-block-end: anchor(self-start);
-  inset-inline-end: anchor(self-end);
-  block-size: -webkit-fill-available;
-}
-
-/* This is a copy of the [popover] styles. It may be combined after
- * removing the StylableSelect flag. */
-select:-internal-select-author-datalist > datalist {
-  position: fixed;
-  width: fit-content;
-  height: fit-content;
-  color: CanvasText;
-}
-select:-internal-select-author-datalist > datalist:popover-open {
-  overlay: auto !important;
-}
-select:-internal-select-author-datalist > datalist:-internal-popover-in-top-layer::backdrop {
-  /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
-  position: fixed;
-  inset: 0;
-  /* Specific to [popover]: */
-  pointer-events: none !important;
-  background-color: transparent;
 }
 
 select:disabled {

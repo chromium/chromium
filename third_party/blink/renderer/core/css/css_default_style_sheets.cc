@@ -128,6 +128,7 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   forced_colors_style_sheet_.Clear();
   fullscreen_style_sheet_.Clear();
   selectlist_style_sheet_.Clear();
+  stylable_select_style_sheet_.Clear();
   marker_style_sheet_.Clear();
   form_controls_not_vertical_style_sheet_.Clear();
   form_controls_not_vertical_style_text_sheet_.Clear();
@@ -346,6 +347,17 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     changed_default_style = true;
   }
 
+  if (!stylable_select_style_sheet_ && IsA<HTMLSelectElement>(element) &&
+      RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    // TODO(crbug.com/1511354): Merge stylable_select.css into html.css and
+    // remove this code.
+    stylable_select_style_sheet_ = ParseUASheet(
+        UncompressResourceAsASCIIString(IDR_UASTYLE_STYLABLE_SELECT_CSS));
+    AddRulesToDefaultStyleSheets(stylable_select_style_sheet_,
+                                 NamespaceType::kHTML);
+    changed_default_style = true;
+  }
+
   // TODO(crbug.com/681917, crbug.com/484651): We enable vertical writing mode
   // on form controls using features FormControlsVerticalWritingModeSupport
   // and FormControlsVerticalWritingModeTextSupport. When it is *disabled*,
@@ -517,6 +529,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(forced_colors_style_sheet_);
   visitor->Trace(fullscreen_style_sheet_);
   visitor->Trace(selectlist_style_sheet_);
+  visitor->Trace(stylable_select_style_sheet_);
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(form_controls_not_vertical_style_sheet_);
   visitor->Trace(form_controls_not_vertical_style_text_sheet_);

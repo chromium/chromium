@@ -5,27 +5,21 @@
 .blue {
   color: blue;
 }
-.option {
-  /* These are the UA styles for <option> in chromium.
-   * They will either have to be specced or also added to the main test file.
-   * TODO(crbug.com/1511354): Spec these UA styles. */
-  min-height: 1.2em;
-  padding: 0px 2px 1px;
-  white-space: nowrap;
-}
 </style>
 
-<button popovertarget=popover id=button>button</button>
-<div id=popover popover=auto anchor=button class=stylable-select-datalist>
-  <div tabindex=0 class=option>
-    <span class=blue>option</span> one
-  </div>
-  <div tabindex=0 class=option>
-    <span class=blue>option</span> two
+<div id=container class=stylable-select-container>
+  <button popovertarget=popover id=button>button</button>
+  <div id=popover popover=auto anchor=container class=stylable-select-datalist>
+    <div tabindex=0 class=stylable-select-option>
+      <span class=blue>option</span> one
+    </div>
+    <div tabindex=0 class=stylable-select-option>
+      <span class=blue>option</span> two
+    </div>
   </div>
 </div>
 
 <script>
 document.getElementById('popover').showPopover();
-document.querySelector('div.option').focus();
+document.querySelector('div.stylable-select-option').focus();
 </script>
