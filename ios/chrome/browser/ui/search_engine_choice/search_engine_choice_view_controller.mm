@@ -233,8 +233,7 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
     [_scrollView.widthAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.widthAnchor],
-    [_scrollView.bottomAnchor
-        constraintEqualToAnchor:_separatorView.bottomAnchor],
+    [_scrollView.bottomAnchor constraintEqualToAnchor:_separatorView.topAnchor],
 
     // Scroll content view constraints.
     [_scrollContentView.topAnchor
@@ -271,8 +270,8 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
     [_searchEngineStackView.topAnchor
         constraintEqualToAnchor:_subtitleTextView.bottomAnchor],
     [_searchEngineStackView.bottomAnchor
-        constraintEqualToAnchor:_scrollContentView.bottomAnchor
-                       constant:-kStackViewMargin],
+        constraintLessThanOrEqualToAnchor:_scrollContentView.bottomAnchor
+                                 constant:-kStackViewMargin],
     [_searchEngineStackView.leadingAnchor
         constraintEqualToAnchor:_scrollContentView.leadingAnchor
                        constant:kStackViewMargin],
