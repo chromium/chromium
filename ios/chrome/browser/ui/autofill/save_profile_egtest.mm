@@ -4,6 +4,8 @@
 
 #import <memory>
 
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
@@ -36,7 +38,11 @@ constexpr char kProfileForm[] = "/autofill_smoke_test.html";
 
 // Ids of fields in the form.
 constexpr char kFormElementName[] = "form_name";
+constexpr char kFormElementEmail[] = "form_email";
 constexpr char kFormElementSubmit[] = "submit_profile";
+
+// Email value used by the tests.
+constexpr char kEmail[] = "foo1@gmail.com";
 
 // Matcher for the banner button.
 id<GREYMatcher> BannerButtonMatcher() {
@@ -112,7 +118,11 @@ BOOL WaitForKeyboardToAppear() {
   return config;
 }
 
-- (void)fillFormAndSaveProfile {
+#pragma mark - Test helper methods
+
+// Fills the president profile in the form by clicking on the button, submits
+// the form and accepts the save address banner.
+- (void)fillPresidentProfileAndShowSaveModal {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
 
@@ -120,13 +130,19 @@ BOOL WaitForKeyboardToAppear() {
   GREYAssertEqual(0U, [AutofillAppInterface profilesCount],
                   @"There should be no saved profile.");
 
-  [self fillAndSubmitForm];
+  [ChromeEarlGrey tapWebStateElementWithID:@"fill_profile_president"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"submit_profile"];
   [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
 
   // Accept the banner.
   [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
       performAction:grey_tap()];
   [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
+}
+
+// Fills, submits the form and saves the address profile.
+- (void)fillFormAndSaveProfile {
+  [self fillPresidentProfileAndShowSaveModal];
 
   // Save the profile.
   [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]
@@ -137,20 +153,12 @@ BOOL WaitForKeyboardToAppear() {
                   @"Profile should have been saved.");
 }
 
-#pragma mark - Page interaction helper methods
-
-- (void)fillAndSubmitForm {
-  [ChromeEarlGrey tapWebStateElementWithID:@"fill_profile_president"];
-  [ChromeEarlGrey tapWebStateElementWithID:@"submit_profile"];
-}
-
-#pragma mark - Tests
-
-// Ensures that the profile is updated after submitting the form.
-- (void)testUserData_LocalUpdate {
-  [self fillFormAndSaveProfile];
-
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
+// Focuses on the name field and initiates autofill on the form with the saved
+// profile.
+- (void)focusOnNameAndAutofill {
+  // Ensure there is a saved local profile.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"There should a saved local profile.");
 
   // Tap on a field to trigger form activity.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -164,19 +172,38 @@ BOOL WaitForKeyboardToAppear() {
                                           AutofillSuggestionViewMatcher()]
       performAction:grey_tap()];
 
+  // Verify Web Content was filled.
+  NSString* javaScriptCondition = [NSString
+      stringWithFormat:@"document.getElementById('%s').value.length > 0",
+                       kFormElementName];
+  [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
+}
+
+#pragma mark - Tests
+
+// Ensures that the profile is updated after submitting the form.
+- (void)testUserData_LocalUpdate {
+  // Save a profile.
+  [self fillFormAndSaveProfile];
+
+  // Load the form.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
+
+  // Autofill the form.
+  [self focusOnNameAndAutofill];
+
   // Tap on email field.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId("form_email")];
+      performAction:chrome_test_util::TapWebElementWithId(kFormElementEmail)];
 
   // Wait for the keyboard to appear.
   WaitForKeyboardToAppear();
 
-  NSString* email = @"test@gmail.com";
   // Populate the email field.
   // TODO(crbug.com/1454516): This should use grey_typeText when fixed.
-  for (NSUInteger i = 0; i < email.length; i++) {
-    NSString* letter = [email substringWithRange:NSMakeRange(i, 1)];
-    if ([letter isEqualToString:@"@"]) {
+  for (int i = 0; kEmail[i] != '\0'; ++i) {
+    NSString* letter = base::SysUTF8ToNSString(std::string(1, kEmail[i]));
+    if (kEmail[i] == '@') {
       [ChromeEarlGrey simulatePhysicalKeyboardEvent:letter
                                               flags:UIKeyModifierShift];
       continue;
@@ -208,20 +235,8 @@ BOOL WaitForKeyboardToAppear() {
 // Ensures that the profile is saved to Chrome after submitting and editing the
 // form.
 - (void)testUserData_LocalEdit {
-  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
-
-  // Ensure there are no saved profiles.
-  GREYAssertEqual(0U, [AutofillAppInterface profilesCount],
-                  @"There should be no saved profile.");
-
-  [self fillAndSubmitForm];
-  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
-
-  // Accept the banner.
-  [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
-      performAction:grey_tap()];
-  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
+  // Fill and submit the form.
+  [self fillPresidentProfileAndShowSaveModal];
 
   // Edit the profile.
   [[EarlGrey selectElementWithMatcher:ModalEditButtonMatcher()]
@@ -245,23 +260,11 @@ BOOL WaitForKeyboardToAppear() {
 - (void)testUserData_AccountSave {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
-  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
+  [self fillPresidentProfileAndShowSaveModal];
 
-  // Ensure there are no saved profiles.
-  GREYAssertEqual(0U, [AutofillAppInterface profilesCount],
-                  @"There should be no saved profile.");
-
-  [self fillAndSubmitForm];
-  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
-
-  // Accept the banner.
-  [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
-      performAction:grey_tap()];
-  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
-
-  id<GREYMatcher> footerMatcher = grey_text(l10n_util::GetNSStringF(
-      IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER, u"foo1@gmail.com"));
+  id<GREYMatcher> footerMatcher = grey_text(
+      l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
+                              base::UTF8ToUTF16(std::string(kEmail))));
 
   [[EarlGrey selectElementWithMatcher:footerMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -282,20 +285,7 @@ BOOL WaitForKeyboardToAppear() {
 - (void)testUserData_AccountEdit {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
-  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
-
-  // Ensure there are no saved profiles.
-  GREYAssertEqual(0U, [AutofillAppInterface profilesCount],
-                  @"There should be no saved profile.");
-
-  [self fillAndSubmitForm];
-  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
-
-  // Accept the banner.
-  [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
-      performAction:grey_tap()];
-  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
+  [self fillPresidentProfileAndShowSaveModal];
 
   // Edit the profile.
   [[EarlGrey selectElementWithMatcher:ModalEditButtonMatcher()]
@@ -306,8 +296,9 @@ BOOL WaitForKeyboardToAppear() {
                                    IDS_IOS_AUTOFILL_CITY)]
       performAction:grey_replaceText(@"New York")];
 
-  id<GREYMatcher> footerMatcher = grey_text(l10n_util::GetNSStringF(
-      IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER, u"foo1@gmail.com"));
+  id<GREYMatcher> footerMatcher = grey_text(
+      l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
+                              base::UTF8ToUTF16(std::string(kEmail))));
 
   [[EarlGrey selectElementWithMatcher:footerMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -336,28 +327,7 @@ BOOL WaitForKeyboardToAppear() {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
 
-  // Ensure there is a saved local profile.
-  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
-                  @"There should a saved local profile.");
-
-  // Tap on a field to trigger form activity.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
-
-  // Wait for the keyboard to appear.
-  WaitForKeyboardToAppear();
-
-  // Tap on the suggestion.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          AutofillSuggestionViewMatcher()]
-      performAction:grey_tap()];
-
-  // Verify Web Content was filled.
-  NSString* name = [AutofillAppInterface exampleProfileName];
-  NSString* javaScriptCondition = [NSString
-      stringWithFormat:@"document.getElementById('%s').value === '%@'",
-                       kFormElementName, name];
-  [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
+  [self focusOnNameAndAutofill];
 
   // Submit the form.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -371,7 +341,8 @@ BOOL WaitForKeyboardToAppear() {
   [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
 
   id<GREYMatcher> footerMatcher = grey_text(l10n_util::GetNSStringF(
-      IDS_IOS_AUTOFILL_ADDRESS_MIGRATE_IN_ACCOUNT_FOOTER, u"foo1@gmail.com"));
+      IDS_IOS_AUTOFILL_ADDRESS_MIGRATE_IN_ACCOUNT_FOOTER,
+      base::UTF8ToUTF16(std::string(kEmail))));
   // Check if there is footer suggesting it's a migration prompt.
   [[EarlGrey selectElementWithMatcher:footerMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
