@@ -2024,6 +2024,17 @@ public class CustomTabsConnection {
     }
 
     /**
+     * Whether Google Bottom Bar is enabled by the launching Intent. False by default.
+     *
+     * @param intentData {@link BrowserServicesIntentDataProvider} built from the Intent that
+     *     launched this CCT.
+     */
+    public boolean shouldEnableGoogleBottomBarForIntent(
+            BrowserServicesIntentDataProvider intentData) {
+        return false;
+    }
+
+    /**
      * Called when text fragment lookups on the current page has completed.
      *
      * @param session session object.
