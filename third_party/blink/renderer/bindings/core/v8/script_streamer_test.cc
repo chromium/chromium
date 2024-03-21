@@ -1113,7 +1113,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, HasCodeCache) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
   mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheData();
-  std::vector<const uint8_t> code_cache_data_copy(
+  const std::vector<uint8_t> code_cache_data_copy(
       code_cache_data.data(), code_cache_data.data() + code_cache_data.size());
   RunInBackgroundThred(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
@@ -1143,7 +1143,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, HasTimeStampData) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
   mojo_base::BigBuffer time_stamp_data = CreateDummyTimeStampData();
-  std::vector<const uint8_t> time_stamp_data_copy(
+  const std::vector<uint8_t> time_stamp_data_copy(
       time_stamp_data.data(), time_stamp_data.data() + time_stamp_data.size());
   RunInBackgroundThred(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
