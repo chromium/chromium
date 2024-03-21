@@ -360,10 +360,6 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
 
 // Computes the amount of local passwords and passes that on to the consumer.
 - (void)updateShowBulkMovePasswordsToAccount {
-  if (!password_manager::features::IsBulkUploadLocalPasswordsEnabled()) {
-    return;
-  }
-
   [self.consumer setLocalPasswordsCount:[self computeLocalPasswordsCount]
                     withUserEligibility:password_manager::features_util::
                                             IsOptedInForAccountStorage(

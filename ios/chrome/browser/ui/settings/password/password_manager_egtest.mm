@@ -695,23 +695,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
         password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
 
-  if ([self isRunningTest:@selector
-            (testSavePasswordsInAccountHiddenWhenNotSignedIn)] ||
-      [self isRunningTest:@selector
-            (testSavePasswordsInAccountShownWhenEligible)] ||
-      [self isRunningTest:@selector
-            (testSavePasswordsInAccountOneDistinctDomain)] ||
-      [self isRunningTest:@selector
-            (testSavePasswordsInAccountTwoDistinctDomains)] ||
-      [self isRunningTest:@selector
-            (testSavePasswordsInAccountThreeDistinctDomains)] ||
-      [self isRunningTest:@selector
-            (testSavePasswordsInAccountFourDistinctDomains)]) {
-    config.features_enabled.push_back(
-        password_manager::features::
-            kIOSPasswordSettingsBulkUploadLocalPasswords);
-  }
-
   if ([self isRunningTest:@selector(testSavePasswordsInAccountFlowCompletes)] ||
       [self
           isRunningTest:@selector(testSavePasswordsInAccountFlowAuthFailed)] ||
@@ -719,28 +702,15 @@ void OpenPasswordManagerWidgetPromoInstructions() {
             (testSavePasswordsInAccountFlowNoAuthSetOnDevice)] ||
       [self isRunningTest:@selector
             (testSavePasswordsInAccountFlowCompletesMovingPasswords)]) {
-    config.features_enabled.push_back(
-        password_manager::features::
-            kIOSPasswordSettingsBulkUploadLocalPasswords);
     config.features_disabled.push_back(
         password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
 
   if ([self isRunningTest:@selector
             (testSavePasswordsInAccountHiddenWhenSyncing)]) {
-    config.features_enabled.push_back(
-        password_manager::features::
-            kIOSPasswordSettingsBulkUploadLocalPasswords);
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
-  if ([self isRunningTest:@selector
-            (testSavePasswordsInAccountHiddenWhenNotOptedInToAccountStorage)]) {
-    config.features_enabled.push_back(
-        password_manager::features::
-            kIOSPasswordSettingsBulkUploadLocalPasswords);
-  }
-
   if ([self isRunningTest:@selector(testClosingPasswordManagerWidgetPromo)] ||
       [self isRunningTest:@selector
             (testOpeningPasswordManagerWidgetPromoInstructions)] ||

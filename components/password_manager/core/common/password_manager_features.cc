@@ -44,12 +44,6 @@ BASE_FEATURE(kIOSPasswordBottomSheet,
 BASE_FEATURE(kIOSPasswordBottomSheetAutofocus,
              "kIOSPasswordBottomSheetAutofocus",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, eligible users will be given the possibility to bulk upload
-// local passwords in the iOS password settings.
-BASE_FEATURE(kIOSPasswordSettingsBulkUploadLocalPasswords,
-             "IOSPasswordSettingsBulkUploadLocalPasswords",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
 // Killswitch for changes regarding password issues in
@@ -154,12 +148,5 @@ const char kGenerationRequirementsPrefixLength[] = "prefix_length";
 // high values is not strong.
 // Default to 5000 ms.
 const char kGenerationRequirementsTimeout[] = "timeout";
-
-#if BUILDFLAG(IS_IOS)
-bool IsBulkUploadLocalPasswordsEnabled() {
-  return base::FeatureList::IsEnabled(
-      kIOSPasswordSettingsBulkUploadLocalPasswords);
-}
-#endif  // IS_IOS
 
 }  // namespace password_manager::features

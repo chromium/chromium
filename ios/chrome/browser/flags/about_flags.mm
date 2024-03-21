@@ -590,15 +590,11 @@ const FeatureEntry::FeatureVariation
 
 const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Default", "", ""},
-    {"Disabled", "disable-features",
-     "ReplaceSyncPromosWithSignInPromos,"
-     "IOSPasswordSettingsBulkUploadLocalPasswords"},
+    {"Disabled", "disable-features", "ReplaceSyncPromosWithSignInPromos"},
     {"Enabled without fast-follows", "enable-features",
-     "ReplaceSyncPromosWithSignInPromos,"
-     "IOSPasswordSettingsBulkUploadLocalPasswords"},
+     "ReplaceSyncPromosWithSignInPromos"},
     {"Enabled with fast-follows", "enable-features",
      "ReplaceSyncPromosWithSignInPromos,"
-     "IOSPasswordSettingsBulkUploadLocalPasswords,"
      "HistoryOptInForRestoreShortyAndReSignin,"
      "EnableBatchUploadFromBookmarksManager,"
      "EnableReviewAccountSettingsPromo,"

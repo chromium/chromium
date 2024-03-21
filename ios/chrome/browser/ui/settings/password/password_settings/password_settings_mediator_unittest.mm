@@ -157,12 +157,6 @@ TEST_F(PasswordSettingsMediatorTest,
 // passwords to account module.
 TEST_F(PasswordSettingsMediatorTest,
        SyncChangeTriggersBulkMovePasswordsToAccountChange) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {password_manager::features::
-           kIOSPasswordSettingsBulkUploadLocalPasswords},
-      /*disabled_features=*/{});
-
   ASSERT_TRUE(
       [mediator_ conformsToProtocol:@protocol(SyncObserverModelBridge)]);
 
