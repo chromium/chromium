@@ -45,7 +45,7 @@ class NavigationPredictorMetricsDocumentData
     bool is_bold_ : 1;
     bool is_in_iframe_ : 1;
     bool is_url_incremented_by_one_ : 1;
-    bool is_same_origin_ : 1;
+    bool is_same_host_ : 1;
     base::TimeDelta navigation_start_to_link_logged;
     uint8_t path_length_;
     uint8_t path_depth_;

@@ -404,7 +404,7 @@ void NavigationPredictor::OnMLModelExecutionTimerFired() {
   inputs.percent_vertical_distance =
       static_cast<int>(anchor.ratio_distance_root_top * 100);
 
-  inputs.is_same_origin = anchor.is_same_host;
+  inputs.is_same_host = anchor.is_same_host;
   auto to_timedelta = [this](std::optional<base::TimeTicks> ts) {
     return ts.has_value() ? NowTicks() - ts.value() : base::TimeDelta();
   };
@@ -708,7 +708,7 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     metrics.is_in_iframe_ = anchor.is_in_iframe;
     metrics.is_url_incremented_by_one_ = anchor.is_url_incremented_by_one;
     metrics.contains_image_ = anchor.contains_image;
-    metrics.is_same_origin_ = anchor.is_same_host;
+    metrics.is_same_host_ = anchor.is_same_host;
     metrics.has_text_sibling_ = anchor.has_text_sibling;
     metrics.is_bold_ = anchor.is_bold_font;
     metrics.navigation_start_to_link_logged =

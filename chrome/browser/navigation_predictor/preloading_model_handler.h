@@ -17,9 +17,6 @@ class PreloadingModelHandler
   ~PreloadingModelHandler() override;
   PreloadingModelHandler(const PreloadingModelHandler&) = delete;
   PreloadingModelHandler& operator=(const PreloadingModelHandler&) = delete;
-
- private:
-  base::WeakPtrFactory<PreloadingModelHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_NAVIGATION_PREDICTOR_PRELOADING_MODEL_HANDLER_H_

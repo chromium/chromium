@@ -154,7 +154,7 @@ void NavigationPredictorMetricsDocumentData::RecordAnchorElementMetricsData(
   builder.SetIsInIframe(metrics.is_in_iframe_);
   builder.SetIsURLIncrementedByOne(metrics.is_url_incremented_by_one_);
   builder.SetContainsImage(metrics.contains_image_);
-  builder.SetSameOrigin(metrics.is_same_origin_);
+  builder.SetSameOrigin(metrics.is_same_host_);
   builder.SetHasTextSibling(metrics.has_text_sibling_);
   builder.SetIsBold(metrics.is_bold_);
   builder.SetNavigationStartToLinkLoggedMs(ukm::GetExponentialBucketMin(

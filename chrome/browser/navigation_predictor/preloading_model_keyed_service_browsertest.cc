@@ -6,7 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(PreloadingModelKeyedServiceTest, Score) {
 
   {
     base::RunLoop run_loop;
-    model_service->AddOnModelUpdatedCallback(run_loop.QuitClosure());
+    model_service->AddOnModelUpdatedCallbackForTesting(run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -135,22 +135,16 @@ IN_PROC_BROWSER_TEST_F(PreloadingModelKeyedServiceTest, Score) {
   inputs.path_length = 0;
   inputs.percent_clickable_area = 0.0;
   inputs.percent_vertical_distance = 0.0;
-  inputs.is_same_origin = false;
+  inputs.is_same_host = false;
   inputs.is_in_viewport = false;
   inputs.is_pointer_hovering_over = false;
   inputs.entered_viewport_to_left_viewport = base::TimeDelta();
   inputs.hover_dwell_time = base::TimeDelta();
   inputs.pointer_hovering_over_count = 0;
-  {
-    base::RunLoop run_loop;
-    model_service->Score(&tracker, inputs,
-                         base::BindLambdaForTesting(
-                             [&](PreloadingModelKeyedService::Result result) {
-                               EXPECT_TRUE(result.has_value());
-                               run_loop.Quit();
-                             }));
-    run_loop.Run();
-  }
+
+  base::test::TestFuture<PreloadingModelKeyedService::Result> score_future;
+  model_service->Score(&tracker, inputs, score_future.GetCallback());
+  EXPECT_TRUE(score_future.Get().has_value());
 }
 
 }  // namespace

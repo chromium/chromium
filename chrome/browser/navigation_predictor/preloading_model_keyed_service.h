@@ -36,7 +36,7 @@ class PreloadingModelKeyedService : public KeyedService {
     uint8_t path_length;
     double percent_clickable_area;
     double percent_vertical_distance;
-    bool is_same_origin;
+    bool is_same_host;
     // These inputs are similar to the fields of
     // `NavigationPredictorUserInteractions` UKM metrics. For more details
     // please check https://crsrc.org/c/tools/metrics/ukm/ukm.xml
@@ -55,9 +55,10 @@ class PreloadingModelKeyedService : public KeyedService {
   void Score(base::CancelableTaskTracker* tracker,
              const Inputs& inputs,
              ResultCallback result_callback);
+
   // Runs |callback| now if |ModelAvailable()| or the next time |OnModelUpdated|
   // is called.
-  void AddOnModelUpdatedCallback(base::OnceClosure callback);
+  void AddOnModelUpdatedCallbackForTesting(base::OnceClosure callback);
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
  private:

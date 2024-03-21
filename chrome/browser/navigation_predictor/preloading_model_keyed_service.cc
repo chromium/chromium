@@ -11,6 +11,24 @@
 #include "chrome/browser/navigation_predictor/preloading_model_handler.h"
 #endif
 
+namespace {
+
+// The model takes all of its inputs as floats, so this is a convenience
+// function for turning various types into floats.
+template <typename T>
+constexpr float ToInput(T val) {
+  return static_cast<float>(val);
+}
+
+template <>
+constexpr float ToInput(base::TimeDelta val) {
+  return static_cast<float>(val.InMillisecondsF());
+}
+
+static_assert(1.0f == ToInput(true));
+
+}  // namespace
+
 PreloadingModelKeyedService::Inputs::Inputs() = default;
 
 PreloadingModelKeyedService::PreloadingModelKeyedService(
@@ -29,12 +47,10 @@ PreloadingModelKeyedService::PreloadingModelKeyedService(
 
 PreloadingModelKeyedService::~PreloadingModelKeyedService() = default;
 
-void PreloadingModelKeyedService::AddOnModelUpdatedCallback(
+void PreloadingModelKeyedService::AddOnModelUpdatedCallbackForTesting(
     base::OnceClosure callback) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (!preloading_model_handler_) {
-    return;
-  }
+  CHECK(preloading_model_handler_);
   preloading_model_handler_->AddOnModelUpdatedCallback(std::move(callback));
 #endif
 }
@@ -50,28 +66,26 @@ void PreloadingModelKeyedService::Score(base::CancelableTaskTracker* tracker,
   }
 
   std::vector<float> model_input{
-      /* input 0 */ inputs.contains_image ? 1.0f : 0.0f,
-      /* input 1 */ static_cast<float>(inputs.font_size),
-      /* input 2 */ inputs.has_text_sibling ? 1.0f : 0.0f,
-      /* input 3 */ inputs.is_bold ? 1.0f : 0.0f,
-      /* input 4 */ inputs.is_in_iframe ? 1.0f : 0.0f,
-      /* input 5 */ inputs.is_url_incremented_by_one ? 1.0f : 0.0f,
+      /* input 0 */ ToInput(inputs.contains_image),
+      /* input 1 */ ToInput(inputs.font_size),
+      /* input 2 */ ToInput(inputs.has_text_sibling),
+      /* input 3 */ ToInput(inputs.is_bold),
+      /* input 4 */ ToInput(inputs.is_in_iframe),
+      /* input 5 */ ToInput(inputs.is_url_incremented_by_one),
       /* input 6 */
-      static_cast<float>(
-          inputs.navigation_start_to_link_logged.InMillisecondsF()),
-      /* input 7 */ static_cast<float>(inputs.path_depth),
-      /* input 8 */ static_cast<float>(inputs.path_length),
-      /* input 9 */ static_cast<float>(inputs.percent_clickable_area),
-      /* input 10*/ static_cast<float>(inputs.percent_vertical_distance),
-      /* input 11*/ inputs.is_same_origin ? 1.0f : 0.0f,
-      /* input 12*/ inputs.is_in_viewport ? 1.0f : 0.0f,
-      /* input 13*/ inputs.is_pointer_hovering_over ? 1.0f : 0.0f,
+      ToInput(inputs.navigation_start_to_link_logged),
+      /* input 7 */ ToInput(inputs.path_depth),
+      /* input 8 */ ToInput(inputs.path_length),
+      /* input 9 */ ToInput(inputs.percent_clickable_area),
+      /* input 10*/ ToInput(inputs.percent_vertical_distance),
+      /* input 11*/ ToInput(inputs.is_same_host),
+      /* input 12*/ ToInput(inputs.is_in_viewport),
+      /* input 13*/ ToInput(inputs.is_pointer_hovering_over),
       /* input 14*/
-      static_cast<float>(
-          inputs.entered_viewport_to_left_viewport.InMillisecondsF()),
+      ToInput(inputs.entered_viewport_to_left_viewport),
       /* input 15*/
-      static_cast<float>(inputs.hover_dwell_time.InMillisecondsF()),
-      /* input 16*/ static_cast<float>(inputs.pointer_hovering_over_count)};
+      ToInput(inputs.hover_dwell_time),
+      /* input 16*/ ToInput(inputs.pointer_hovering_over_count)};
 
   preloading_model_handler_->ExecuteModelWithInput(
       tracker, std::move(result_callback), model_input);
