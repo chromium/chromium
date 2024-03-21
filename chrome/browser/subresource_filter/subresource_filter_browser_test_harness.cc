@@ -4,6 +4,7 @@
 
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -11,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -239,7 +239,7 @@ void SubresourceFilterBrowserTest::SetRulesetToDisallowURLsWithPathSuffix(
 }
 
 void SubresourceFilterBrowserTest::SetRulesetToDisallowURLsWithSubstrings(
-    std::vector<base::StringPiece> substrings) {
+    std::vector<std::string_view> substrings) {
   TestRulesetPair test_ruleset_pair;
   ruleset_creator_.CreateRulesetToDisallowURLWithSubstrings(
       std::move(substrings), &test_ruleset_pair);

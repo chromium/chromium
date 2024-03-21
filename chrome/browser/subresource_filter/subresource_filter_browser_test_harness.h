@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -182,7 +183,7 @@ class SubresourceFilterBrowserTest : public PlatformBrowserTest {
   void SetRulesetToDisallowURLsWithPathSuffix(const std::string& suffix);
 
   void SetRulesetToDisallowURLsWithSubstrings(
-      std::vector<base::StringPiece> substrings);
+      std::vector<std::string_view> substrings);
 
   void SetRulesetWithRules(const std::vector<proto::UrlRule>& rules);
 
