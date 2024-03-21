@@ -93,14 +93,14 @@ void RecordModelExecutionResultHistogram(proto::ModelExecutionFeature feature,
 void NoOpExecuteRemoteFn(
     proto::ModelExecutionFeature feature,
     const google::protobuf::MessageLite& request,
-    std::unique_ptr<proto::LogAiDataRequest> log_request,
-    OptimizationGuideModelExecutionResultStreamingCallback callback) {
-  OptimizationGuideModelStreamingExecutionResult streaming_result;
-  streaming_result.response = base::unexpected(
-      OptimizationGuideModelExecutionError::FromModelExecutionError(
-          OptimizationGuideModelExecutionError::ModelExecutionError::
-              kGenericFailure));
-  std::move(callback).Run(std::move(streaming_result));
+    std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
+    OptimizationGuideModelExecutionResultCallback callback) {
+  std::move(callback).Run(
+      base::unexpected(
+          OptimizationGuideModelExecutionError::FromModelExecutionError(
+              OptimizationGuideModelExecutionError::ModelExecutionError::
+                  kGenericFailure)),
+      nullptr);
 }
 
 }  // namespace
@@ -157,30 +157,6 @@ void ModelExecutionManager::Shutdown() {
   // all processing during destructor.
   weak_ptr_factory_.InvalidateWeakPtrs();
   active_model_execution_fetchers_.clear();
-}
-
-void ModelExecutionManager::ExecuteModelWithStreaming(
-    proto::ModelExecutionFeature feature,
-    const google::protobuf::MessageLite& request_metadata,
-    std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
-    OptimizationGuideModelExecutionResultStreamingCallback callback) {
-  ExecuteModel(
-      feature, request_metadata, std::move(log_ai_data_request),
-      base::BindOnce(
-          [](OptimizationGuideModelExecutionResultStreamingCallback callback,
-             OptimizationGuideModelExecutionResult result,
-             std::unique_ptr<ModelQualityLogEntry> log_entry) {
-            OptimizationGuideModelStreamingExecutionResult streaming_result;
-            streaming_result.log_entry = std::move(log_entry);
-            if (result.has_value()) {
-              streaming_result.response = base::ok(
-                  StreamingResponse{.response = *result, .is_complete = true});
-            } else {
-              streaming_result.response = base::unexpected(result.error());
-            }
-            callback.Run(std::move(streaming_result));
-          },
-          callback));
 }
 
 void ModelExecutionManager::ExecuteModel(
@@ -259,9 +235,8 @@ ModelExecutionManager::StartSession(
   ExecuteRemoteFn execute_fn =
       disable_server_fallback
           ? base::BindRepeating(&NoOpExecuteRemoteFn)
-          : base::BindRepeating(
-                &ModelExecutionManager::ExecuteModelWithStreaming,
-                base::Unretained(this));
+          : base::BindRepeating(&ModelExecutionManager::ExecuteModel,
+                                base::Unretained(this));
   if (on_device_model_service_controller_) {
     auto session = on_device_model_service_controller_->CreateSession(
         feature, execute_fn, optimization_guide_logger_.get(),

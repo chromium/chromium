@@ -41,6 +41,21 @@ std::string GenerateExecutionId() {
   return "on-device:" + base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
+void InvokeStreamingCallbackWithRemoteResult(
+    OptimizationGuideModelExecutionResultStreamingCallback callback,
+    OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<ModelQualityLogEntry> log_entry) {
+  OptimizationGuideModelStreamingExecutionResult streaming_result;
+  streaming_result.log_entry = std::move(log_entry);
+  if (result.has_value()) {
+    streaming_result.response =
+        base::ok(StreamingResponse{.response = *result, .is_complete = true});
+  } else {
+    streaming_result.response = base::unexpected(result.error());
+  }
+  callback.Run(std::move(streaming_result));
+}
+
 }  // namespace
 
 // Handles incrementally processing context. After the min context size has been
@@ -258,9 +273,11 @@ void SessionImpl::ExecuteModel(
 
   if (!ShouldUseOnDeviceModel()) {
     DestroyOnDeviceState();
-    execute_remote_fn_.Run(feature_, *last_message_,
-                           /*log_ai_data_request=*/nullptr,
-                           std::move(callback));
+    execute_remote_fn_.Run(
+        feature_, *last_message_,
+        /*log_ai_data_request=*/nullptr,
+        base::BindOnce(&InvokeStreamingCallbackWithRemoteResult,
+                       std::move(callback)));
     return;
   }
 
@@ -625,8 +642,10 @@ void SessionImpl::DestroyOnDeviceStateAndFallbackToRemote(
   auto log_ai_data_request = std::move(on_device_state_->log_ai_data_request);
   auto callback = std::move(on_device_state_->callback);
   DestroyOnDeviceState();
-  execute_remote_fn_.Run(feature_, *last_message_,
-                         std::move(log_ai_data_request), std::move(callback));
+  execute_remote_fn_.Run(
+      feature_, *last_message_, std::move(log_ai_data_request),
+      base::BindOnce(&InvokeStreamingCallbackWithRemoteResult,
+                     std::move(callback)));
 }
 
 void SessionImpl::DestroyOnDeviceState() {

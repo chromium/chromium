@@ -77,14 +77,6 @@ class ModelExecutionManager : public OptimizationTargetModelObserver {
   void Shutdown();
 
  private:
-  // Called from SessionImpl (via ExecuteRemoteFn) when model execution happens
-  // remotely.
-  void ExecuteModelWithStreaming(
-      proto::ModelExecutionFeature feature,
-      const google::protobuf::MessageLite& request_metadata,
-      std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
-      OptimizationGuideModelExecutionResultStreamingCallback callback);
-
   // Invoked when the model execution result is available.
   void OnModelExecuteResponse(
       proto::ModelExecutionFeature feature,

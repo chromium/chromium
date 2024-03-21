@@ -30,7 +30,7 @@ using ExecuteRemoteFn = base::RepeatingCallback<void(
     proto::ModelExecutionFeature feature,
     const google::protobuf::MessageLite&,
     std::unique_ptr<proto::LogAiDataRequest>,
-    OptimizationGuideModelExecutionResultStreamingCallback)>;
+    OptimizationGuideModelExecutionResultCallback)>;
 
 // Session implementation that uses either the on device model or the server
 // model.

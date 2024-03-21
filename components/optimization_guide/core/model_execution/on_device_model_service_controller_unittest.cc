@@ -350,7 +350,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
         [=](proto::ModelExecutionFeature feature,
             const google::protobuf::MessageLite& m,
             std::unique_ptr<proto::LogAiDataRequest> l,
-            OptimizationGuideModelExecutionResultStreamingCallback c) {
+            OptimizationGuideModelExecutionResultCallback c) {
           remote_execute_called_ = true;
           last_remote_message_ = base::WrapUnique(m.New());
           last_remote_message_->CheckTypeAndMergeFrom(m);
