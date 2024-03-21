@@ -125,6 +125,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   struct ClientMetadata {
     GURL privacy_policy_url;
     GURL terms_of_service_url;
+    GURL brand_icon_url;
   };
 
   struct CONTENT_EXPORT TokenResult {

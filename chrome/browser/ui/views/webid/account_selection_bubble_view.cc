@@ -771,7 +771,7 @@ AccountSelectionBubbleView::CreateIdpHeaderRowForMultiIdp(
                           gfx::Insets().set_right(kLeftRightPadding));
   BrandIconImageView* idp_icon_view =
       header->AddChildView(std::move(image_view));
-  ConfigureIdpBrandImageView(idp_icon_view, idp_metadata);
+  ConfigureBrandImageView(idp_icon_view, idp_metadata.brand_icon_url);
 
   header->AddChildView(std::make_unique<views::Label>(
       idp_for_display, views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -789,7 +789,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
   image_view->SetImageSize(gfx::Size(kDesiredIdpIconSize, kDesiredIdpIconSize));
   image_view->SetProperty(views::kMarginsKey,
                           gfx::Insets().set_right(kLeftRightPadding));
-  ConfigureIdpBrandImageView(image_view.get(), idp_metadata);
+  ConfigureBrandImageView(image_view.get(), idp_metadata.brand_icon_url);
 
   auto button = std::make_unique<HoverButton>(
       base::BindRepeating(&AccountSelectionViewBase::Observer::OnLoginToIdP,
@@ -829,7 +829,7 @@ void AccountSelectionBubbleView::UpdateHeader(
     if (show_back_button)
       header_icon_view_->SetVisible(false);
     else
-      ConfigureIdpBrandImageView(header_icon_view_, idp_metadata);
+      ConfigureBrandImageView(header_icon_view_, idp_metadata.brand_icon_url);
   }
   title_label_->SetText(subpage_title);
 

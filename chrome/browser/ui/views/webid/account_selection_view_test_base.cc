@@ -57,8 +57,9 @@ AccountSelectionViewTestBase::CreateTestIdentityRequestAccounts(
 
 content::ClientMetadata AccountSelectionViewTestBase::CreateTestClientMetadata(
     const std::string& terms_of_service_url) {
-  return content::ClientMetadata((GURL(terms_of_service_url)),
-                                 (GURL(kPrivacyPolicyUrl)));
+  return content::ClientMetadata(GURL(terms_of_service_url),
+                                 GURL(kPrivacyPolicyUrl),
+                                 GURL(kRpBrandIconUrl));
 }
 
 std::vector<std::string> AccountSelectionViewTestBase::GetChildClassNames(

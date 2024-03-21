@@ -93,6 +93,7 @@ constexpr char kIdpLoginUrl[] = "https://idp.example/login_url";
 constexpr char kIdpDisconnectUrl[] = "https://idp.example/disconnect";
 constexpr char kPrivacyPolicyUrl[] = "https://rp.example/pp";
 constexpr char kTermsOfServiceUrl[] = "https://rp.example/tos";
+constexpr char kRpBrandIconUrl[] = "https://rp.example/icon";
 constexpr char kClientId[] = "client_id_123";
 constexpr char kNonce[] = "nonce123";
 constexpr char kAccountEmailNicolas[] = "nicolas@email.com";
@@ -251,6 +252,7 @@ struct MockClientIdConfiguration {
   FetchStatus fetch_status;
   std::string privacy_policy_url;
   std::string terms_of_service_url;
+  std::string brand_icon_url;
 };
 
 struct MockWellKnown {
@@ -335,7 +337,8 @@ struct MockConfiguration {
 static const MockClientIdConfiguration kDefaultClientMetadata{
     {ParseStatus::kSuccess, net::HTTP_OK},
     kPrivacyPolicyUrl,
-    kTermsOfServiceUrl};
+    kTermsOfServiceUrl,
+    kRpBrandIconUrl};
 
 static const IdentityProviderParameters kDefaultIdentityProviderRequestOptions{
     kProviderUrlFull, kClientId, kNonce, /*login_hint=*/"",
@@ -504,7 +507,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         base::BindOnce(std::move(callback), info.client_metadata.fetch_status,
                        IdpNetworkRequestManager::ClientMetadata{
                            GURL(info.client_metadata.privacy_policy_url),
-                           GURL(info.client_metadata.terms_of_service_url)}));
+                           GURL(info.client_metadata.terms_of_service_url),
+                           GURL(info.client_metadata.brand_icon_url)}));
   }
 
   void SendAccountsRequest(const GURL& accounts_url,
@@ -1829,10 +1833,9 @@ TEST_F(FederatedAuthRequestImplTest, AccountsCannotBeParsed) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsSize.ReadyToShow", 0);
 }
 
-// Test that privacy policy URL or terms of service is not required in client
-// metadata.
-TEST_F(FederatedAuthRequestImplTest,
-       ClientMetadataNoPrivacyPolicyOrTermsOfServiceUrl) {
+// Test that privacy policy, terms of service or RP brand icon URLs are not
+// required in client metadata.
+TEST_F(FederatedAuthRequestImplTest, ClientMetadataNoUrls) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].client_metadata =
       kDefaultClientMetadata;
@@ -1840,6 +1843,7 @@ TEST_F(FederatedAuthRequestImplTest,
       "";
   configuration.idp_info[kProviderUrlFull]
       .client_metadata.terms_of_service_url = "";
+  configuration.idp_info[kProviderUrlFull].client_metadata.brand_icon_url = "";
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
 }
 
@@ -1860,6 +1864,15 @@ TEST_F(FederatedAuthRequestImplTest, ClientMetadataNoTermsOfServiceUrl) {
       kDefaultClientMetadata;
   configuration.idp_info[kProviderUrlFull]
       .client_metadata.terms_of_service_url = "";
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+}
+
+// Test that RP brand icon URL is not required in client metadata.
+TEST_F(FederatedAuthRequestImplTest, ClientMetadataNoRpBrandIconUrl) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].client_metadata =
+      kDefaultClientMetadata;
+  configuration.idp_info[kProviderUrlFull].client_metadata.brand_icon_url = "";
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
 }
 

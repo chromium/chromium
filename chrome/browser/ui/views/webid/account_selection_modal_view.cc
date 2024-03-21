@@ -296,7 +296,7 @@ AccountSelectionModalView::CreateAccountChooserHeader(
   image_view->SetProperty(views::kMarginsKey,
                           gfx::Insets().set_bottom(kVerticalPadding));
   if (idp_metadata.brand_icon_url.is_valid()) {
-    ConfigureIdpBrandImageView(image_view.get(), idp_metadata);
+    ConfigureBrandImageView(image_view.get(), idp_metadata.brand_icon_url);
   } else {
     image_view->SetImage(ui::ImageModel::FromVectorIcon(
         kGlobeIcon, gfx::kGoogleGrey700, kModalIconSize));
@@ -484,7 +484,7 @@ void AccountSelectionModalView::ShowLoadingDialog() {
 
 std::unique_ptr<views::View>
 AccountSelectionModalView::CreateRequestPermissionHeader(
-    const content::IdentityProviderMetadata& idp_metadata) {
+    const GURL& brand_icon_url) {
   std::unique_ptr<views::View> header = std::make_unique<views::View>();
   header->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -492,8 +492,7 @@ AccountSelectionModalView::CreateRequestPermissionHeader(
                         /*bottom=*/0,
                         /*right=*/kDialogMargin)));
 
-  // TODO(crbug.com/1518356): Show RP icon instead of IDP icon.
-  // Add IDP icon, if available. Otherwise, fallback to the default globe icon.
+  // Add RP icon, if available. Otherwise, fallback to the default globe icon.
   std::unique_ptr<BrandIconImageView> image_view =
       std::make_unique<BrandIconImageView>(
           base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
@@ -502,8 +501,8 @@ AccountSelectionModalView::CreateRequestPermissionHeader(
   image_view->SetImageSize(gfx::Size(kModalIconSize, kModalIconSize));
   image_view->SetProperty(views::kMarginsKey,
                           gfx::Insets().set_bottom(kVerticalPadding));
-  if (idp_metadata.brand_icon_url.is_valid()) {
-    ConfigureIdpBrandImageView(image_view.get(), idp_metadata);
+  if (brand_icon_url.is_valid()) {
+    ConfigureBrandImageView(image_view.get(), brand_icon_url);
   } else {
     image_view->SetImage(ui::ImageModel::FromVectorIcon(
         kGlobeIcon, gfx::kGoogleGrey700, kModalIconSize));
@@ -528,8 +527,8 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
                                       top_frame_for_display,
                                       idp_display_data.idp_etld_plus_one);
   SetAccessibleTitle(title_);
-  header_view_ = AddChildView(
-      CreateRequestPermissionHeader(idp_display_data.idp_metadata));
+  header_view_ = AddChildView(CreateRequestPermissionHeader(
+      idp_display_data.client_metadata.brand_icon_url));
   account_chooser_ =
       AddChildView(CreateSingleAccountChooser(idp_display_data, account,
                                               /*should_hover=*/false,

@@ -1351,7 +1351,8 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
   idp_info->data = IdentityProviderData(
       idp_for_display, accounts, idp_info->metadata,
       ClientMetadata{client_metadata.terms_of_service_url,
-                     client_metadata.privacy_policy_url},
+                     client_metadata.privacy_policy_url,
+                     client_metadata.brand_icon_url},
       idp_info->rp_context, /*request_permission=*/request_permission,
       /*has_login_status_mismatch=*/false);
   idp_infos_[idp_config_url] = std::move(idp_info);
@@ -1715,7 +1716,8 @@ void FederatedAuthRequestImpl::OnIdpMismatch(
       webid::FormatUrlWithDomain(idp_config_url, /*for_display=*/true);
   idp_info->data = IdentityProviderData(
       idp_for_display, std::vector<IdentityRequestAccount>(),
-      idp_info->metadata, ClientMetadata{GURL(), GURL()}, idp_info->rp_context,
+      idp_info->metadata, ClientMetadata{GURL(), GURL(), GURL()},
+      idp_info->rp_context,
       /*request_permission=*/ShouldMediateAuthz(idp_info->provider->scope),
       /*has_login_status_mismatch=*/true);
   idp_infos_[idp_config_url] = std::move(idp_info);

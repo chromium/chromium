@@ -22,12 +22,15 @@ namespace content {
 class WebContents;
 
 struct CONTENT_EXPORT ClientMetadata {
-  ClientMetadata(const GURL& tos_url, const GURL& privacy_policy_url);
+  ClientMetadata(const GURL& terms_of_service_url,
+                 const GURL& privacy_policy_url,
+                 const GURL& brand_icon_url);
   ClientMetadata(const ClientMetadata& other);
   ~ClientMetadata();
 
   GURL terms_of_service_url;
   GURL privacy_policy_url;
+  GURL brand_icon_url;
 };
 
 struct CONTENT_EXPORT IdentityCredentialTokenError {

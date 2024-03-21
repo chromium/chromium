@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -18,6 +19,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
@@ -38,6 +40,10 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
+    if (dialog_) {
+      return;
+    }
+
     dialog_ = new AccountSelectionModalView(
         kTopFrameETLDPlusOne, kIdpETLDPlusOne,
         blink::mojom::RpContext::kSignIn,
@@ -51,7 +57,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     ShowUi("");
   }
 
-  void CreateSingleAccountPicker(
+  void CreateAndShowSingleAccountPicker(
       bool show_back_button,
       const content::IdentityRequestAccount& account,
       const content::IdentityProviderMetadata& idp_metadata,
@@ -68,7 +74,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         idp_data, show_back_button);
   }
 
-  void CreateMultiAccountPicker(
+  void CreateAndShowMultiAccountPicker(
       const std::vector<std::string>& account_suffixes,
       bool supports_add_account = false) {
     std::vector<content::IdentityRequestAccount> account_list =
@@ -87,7 +93,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     dialog_->ShowMultiAccountPicker(idp_data);
   }
 
-  void CreateRequestPermissionDialog(
+  void CreateAndShowRequestPermissionDialog(
       const content::IdentityRequestAccount& account,
       const content::IdentityProviderMetadata& idp_metadata,
       const std::string& terms_of_service_url) {
@@ -100,7 +106,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                                          idp_data);
   }
 
-  void ShowVerifyingSheet() {
+  void CreateAndShowVerifyingSheet() {
+    CreateAccountSelectionModal();
     const std::string kAccountSuffix = "suffix";
     content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
         kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
@@ -111,14 +118,15 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     dialog_->ShowVerifyingSheet(account, idp_data, kTitleSignIn);
   }
 
-  void CreateLoadingDialog() {
+  void CreateAndShowLoadingDialog() {
     CreateAccountSelectionModal();
     dialog_->ShowLoadingDialog();
   }
 
   void PerformHeaderChecks(views::View* header,
                            const std::u16string& expected_title,
-                           const std::u16string& expected_body) {
+                           const std::u16string& expected_body,
+                           bool expect_brand_icon_update = false) {
     // Perform some basic dialog checks.
     EXPECT_FALSE(dialog()->ShouldShowCloseButton());
     EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
@@ -139,6 +147,16 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     std::vector<raw_ptr<views::View, VectorExperimental>> header_children =
         header->children();
     ASSERT_EQ(header_children.size(), expected_class_names.size());
+
+    // Check if IDP brand icon is updated to RP icon, otherwise store the IDP
+    // brand icon to do the check later.
+    BrandIconImageView* brand_icon =
+        static_cast<BrandIconImageView*>(header_children[0]);
+    if (!idp_brand_icon_.IsEmpty() && expect_brand_icon_update) {
+      EXPECT_NE(brand_icon->GetImageModel(), idp_brand_icon_);
+    } else {
+      idp_brand_icon_ = brand_icon->GetImageModel();
+    }
 
     // Check title text.
     views::Label* title_view = static_cast<views::Label*>(header_children[1]);
@@ -204,7 +222,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
     content::IdentityProviderMetadata idp_metadata;
     idp_metadata.supports_add_account = supports_add_account;
-    CreateSingleAccountPicker(
+    CreateAndShowSingleAccountPicker(
         /*show_back_button=*/false, account, idp_metadata, kTermsOfServiceUrl);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
@@ -226,7 +244,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                             const std::u16string& expected_body,
                             bool supports_add_account = false) {
     const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
-    CreateMultiAccountPicker(kAccountSuffixes, supports_add_account);
+    CreateAndShowMultiAccountPicker(kAccountSuffixes, supports_add_account);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
@@ -258,14 +276,15 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     const std::string kAccountSuffix = "suffix";
     content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
         kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
-    CreateRequestPermissionDialog(account, content::IdentityProviderMetadata(),
-                                  kTermsOfServiceUrl);
+    CreateAndShowRequestPermissionDialog(
+        account, content::IdentityProviderMetadata(), kTermsOfServiceUrl);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
     // Order: Header, single account chooser, button row
     ASSERT_EQ(children.size(), 3u);
-    PerformHeaderChecks(children[0], expected_title, expected_body);
+    PerformHeaderChecks(children[0], expected_title, expected_body,
+                        /*expect_brand_icon_update=*/true);
 
     views::View* single_account_chooser = children[1];
     // Order: Account row, disclosure text
@@ -284,6 +303,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   void TestVerifyingSheet(const std::u16string& expected_title,
                           const std::u16string& expected_body = u"",
                           bool has_multiple_accounts = false) {
+    CreateAndShowVerifyingSheet();
     // Order: Progress bar, header, account chooser, button row
     std::vector<std::string> expected_class_names = {
         "ProgressBar", "View", has_multiple_accounts ? "ScrollView" : "View",
@@ -314,7 +334,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void TestLoadingDialog(const std::u16string& expected_title,
                          const std::u16string& expected_body = u"") {
-    CreateLoadingDialog();
+    CreateAndShowLoadingDialog();
     // Order: Progress bar, header, placeholder account chooser, button row
     std::vector<std::string> expected_class_names = {"ProgressBar", "View",
                                                      "View", "View"};
@@ -351,6 +371,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   }
 
  private:
+  ui::ImageModel idp_brand_icon_;
   raw_ptr<AccountSelectionModalView, DanglingUntriaged> dialog_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
@@ -372,6 +393,22 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, RequestPermission) {
   TestRequestPermission(kTitleRequestPermission);
 }
 
+// Tests that the request permission dialog is rendered correctly, when it is
+// shown after the single account dialog.
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       RequestPermissionAfterSingleAccount) {
+  TestSingleAccount(kTitleSignIn, kBodySignIn);
+  TestRequestPermission(kTitleRequestPermission);
+}
+
+// Tests that the request permission dialog is rendered correctly, when it is
+// shown after the multiple accounts dialog.
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       RequestPermissionAfterMultipleAccounts) {
+  TestMultipleAccounts(kTitleSignIn, kBodySignIn);
+  TestRequestPermission(kTitleRequestPermission);
+}
+
 // Tests that the loading dialog is rendered correctly.
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, Loading) {
   TestLoadingDialog(kTitleSignIn, kBodySignIn);
@@ -382,7 +419,6 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, Loading) {
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
                        VerifyingAfterSingleAccount) {
   TestSingleAccount(kTitleSignIn, kBodySignIn);
-  ShowVerifyingSheet();
   TestVerifyingSheet(kTitleSignIn, kBodySignIn);
 }
 
@@ -391,7 +427,6 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
                        VerifyingAfterMultipleAccounts) {
   TestMultipleAccounts(kTitleSignIn, kBodySignIn);
-  ShowVerifyingSheet();
   TestVerifyingSheet(kTitleSignIn, kBodySignIn, /*has_multiple_accounts=*/true);
 }
 
@@ -400,7 +435,6 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
                        DISABLED_VerifyingAfterRequestPermission) {
   TestRequestPermission(kTitleRequestPermission);
-  ShowVerifyingSheet();
   TestVerifyingSheet(kTitleRequestPermission);
 }
 

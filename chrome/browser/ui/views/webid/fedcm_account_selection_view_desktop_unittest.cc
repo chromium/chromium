@@ -274,7 +274,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     }
     return IdentityProviderDisplayData(
         u"", content::IdentityProviderMetadata(),
-        content::ClientMetadata(GURL(), GURL()), std::move(accounts),
+        content::ClientMetadata(GURL(), GURL(), GURL()), std::move(accounts),
         /*request_permission=*/true, has_login_status_mismatch);
   }
 
@@ -298,7 +298,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
         kTopFrameEtldPlusOne,
         std::make_optional<std::string>(kIframeEtldPlusOne),
         {{kIdpEtldPlusOne, accounts, content::IdentityProviderMetadata(),
-          content::ClientMetadata(GURL(), GURL()),
+          content::ClientMetadata(GURL(), GURL(), GURL()),
           blink::mojom::RpContext::kSignIn, /*request_permission=*/true,
           /*has_login_status_mismatch=*/false}},
         sign_in_mode, rp_mode, new_account_idp);
@@ -1200,7 +1200,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       kIdpEtldPlusOne,
       new_accounts,
       content::IdentityProviderMetadata(),
-      content::ClientMetadata(GURL(), GURL()),
+      content::ClientMetadata(GURL(), GURL(), GURL()),
       blink::mojom::RpContext::kSignIn,
       /*request_permission=*/true,
       /*has_login_status_mismatch=*/false};
@@ -1258,7 +1258,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccount) {
       kIdpEtldPlusOne,
       new_accounts,
       content::IdentityProviderMetadata(),
-      content::ClientMetadata(GURL(), GURL()),
+      content::ClientMetadata(GURL(), GURL(), GURL()),
       blink::mojom::RpContext::kSignIn,
       /*request_permission=*/true,
       /*has_login_status_mismatch=*/false};
@@ -1320,7 +1320,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountModal) {
       kIdpEtldPlusOne,
       new_accounts,
       content::IdentityProviderMetadata(),
-      content::ClientMetadata(GURL(), GURL()),
+      content::ClientMetadata(GURL(), GURL(), GURL()),
       blink::mojom::RpContext::kSignIn,
       /*request_permission=*/true,
       /*has_login_status_mismatch=*/false};

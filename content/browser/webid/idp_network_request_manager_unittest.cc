@@ -1167,6 +1167,7 @@ TEST_F(IdpNetworkRequestManagerTest, ClientMetadata) {
   ASSERT_TRUE(called);
   ASSERT_EQ(GURL(), data.privacy_policy_url);
   ASSERT_EQ(GURL(), data.terms_of_service_url);
+  ASSERT_EQ(GURL(), data.brand_icon_url);
 }
 
 // Tests that we correctly records metrics regarding approved_clients.
@@ -1312,26 +1313,32 @@ TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataValidUrls) {
   // Both HTTPS and HTTP URLs are allowed.
   const std::string privacy_policy_url = "https://privacy.policy";
   const std::string terms_of_service_url = "http://terms.of.service";
+  const std::string brand_icon_url = "http://rp.brand.icon";
 
   IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
-      /*client_id=*/"123", R"({"privacy_policy_url": ")" + privacy_policy_url +
-                               R"(", "terms_of_service_url": ")" +
-                               terms_of_service_url + R"("})");
+      /*client_id=*/"123",
+      R"({"privacy_policy_url": ")" + privacy_policy_url +
+          R"(", "terms_of_service_url": ")" + terms_of_service_url +
+          R"(", "brand_icon_url": ")" + brand_icon_url + R"("})");
   ASSERT_EQ(GURL(privacy_policy_url), data.privacy_policy_url);
   ASSERT_EQ(GURL(terms_of_service_url), data.terms_of_service_url);
+  ASSERT_EQ(GURL(brand_icon_url), data.brand_icon_url);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataInvalidUrls) {
   // Non-HTTP(S) URLs should not be allowed.
   const std::string privacy_policy_url = "chrome://settings";
   const std::string terms_of_service_url = "file:///Users/you/file.html";
+  const std::string brand_icon_url = "about:blank";
 
   IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
-      /*client_id=*/"123", R"({"privacy_policy_url": ")" + privacy_policy_url +
-                               R"(", "terms_of_service_url": ")" +
-                               terms_of_service_url + R"("})");
+      /*client_id=*/"123",
+      R"({"privacy_policy_url": ")" + privacy_policy_url +
+          R"(", "terms_of_service_url": ")" + terms_of_service_url +
+          R"(", "brand_icon_url": ")" + brand_icon_url + R"("})");
   ASSERT_EQ(GURL(), data.privacy_policy_url);
   ASSERT_EQ(GURL(), data.terms_of_service_url);
+  ASSERT_EQ(GURL(), data.brand_icon_url);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, WellKnownWrongMimeType) {

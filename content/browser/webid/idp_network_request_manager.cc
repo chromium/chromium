@@ -91,6 +91,7 @@ constexpr char kIdpBrandingIcons[] = "icons";
 // Client metadata keys.
 constexpr char kPrivacyPolicyKey[] = "privacy_policy_url";
 constexpr char kTermsOfServiceKey[] = "terms_of_service_url";
+constexpr char kBrandIconUrlKey[] = "brand_icon_url";
 
 // Accounts endpoint response keys.
 constexpr char kAccountsKey[] = "accounts";
@@ -571,6 +572,7 @@ void OnClientMetadataParsed(
   const base::Value::Dict& response = result->GetDict();
   data.privacy_policy_url = ExtractUrl(response, kPrivacyPolicyKey);
   data.terms_of_service_url = ExtractUrl(response, kTermsOfServiceKey);
+  data.brand_icon_url = ExtractUrl(response, kBrandIconUrlKey);
 
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
                           data);

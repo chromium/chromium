@@ -32,6 +32,7 @@ inline constexpr char kGivenNameBase[] = "given_name";
 
 inline constexpr char kTermsOfServiceUrl[] = "https://terms-of-service.com";
 inline constexpr char kPrivacyPolicyUrl[] = "https://privacy-policy.com";
+inline constexpr char kRpBrandIconUrl[] = "https://rp-brand-icon.com";
 
 // A base class for FedCM account selection view unit tests.
 class AccountSelectionViewTestBase {

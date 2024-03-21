@@ -17,6 +17,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/widget/widget_observer.h"
+#include "url/gurl.h"
 
 namespace {
 // Selects string for disclosure text based on passed-in `privacy_policy_url`
@@ -97,9 +98,9 @@ void CircleCroppedImageSkiaSource::Draw(gfx::Canvas* canvas) {
 }
 
 BrandIconImageView::BrandIconImageView(
-    base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_idp_image,
+    base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image,
     int image_size)
-    : add_idp_image_(std::move(add_idp_image)), image_size_(image_size) {}
+    : add_image_(std::move(add_image)), image_size_(image_size) {}
 
 BrandIconImageView::~BrandIconImageView() = default;
 
@@ -128,8 +129,8 @@ void BrandIconImageView::OnImageFetched(
           image.AsImageSkia(), image.Width() * kMaskableWebIconSafeZoneRatio,
           image_size_);
   SetImage(ui::ImageModel::FromImageSkia(idp_image));
-  CHECK(add_idp_image_);
-  std::move(add_idp_image_).Run(image_url, idp_image);
+  CHECK(add_image_);
+  std::move(add_image_).Run(image_url, idp_image);
 }
 
 BEGIN_METADATA(BrandIconImageView)
@@ -317,27 +318,27 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
 
 void AccountSelectionViewBase::AddIdpImage(const GURL& image_url,
                                            const gfx::ImageSkia& image) {
-  idp_images_[image_url] = image;
+  brand_icon_images_[image_url] = image;
 }
 
-void AccountSelectionViewBase::ConfigureIdpBrandImageView(
+void AccountSelectionViewBase::ConfigureBrandImageView(
     BrandIconImageView* image_view,
-    const content::IdentityProviderMetadata& idp_metadata) {
+    const GURL& brand_icon_url) {
   // Show placeholder brand icon prior to brand icon being fetched so that
   // header text wrapping does not change when brand icon is fetched.
-  bool has_idp_icon = idp_metadata.brand_icon_url.is_valid();
-  image_view->SetVisible(has_idp_icon);
-  if (!has_idp_icon) {
+  bool has_icon = brand_icon_url.is_valid();
+  image_view->SetVisible(has_icon);
+  if (!has_icon) {
     return;
   }
 
-  auto it = idp_images_.find(idp_metadata.brand_icon_url);
-  if (it != idp_images_.end()) {
+  auto it = brand_icon_images_.find(brand_icon_url);
+  if (it != brand_icon_images_.end()) {
     image_view->SetImage(ui::ImageModel::FromImageSkia(it->second));
     return;
   }
 
-  image_view->FetchImage(idp_metadata.brand_icon_url, *image_fetcher_);
+  image_view->FetchImage(brand_icon_url, *image_fetcher_);
 }
 
 std::unique_ptr<views::View> AccountSelectionViewBase::CreateDisclosureLabel(

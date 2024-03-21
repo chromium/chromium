@@ -127,8 +127,7 @@ class BrandIconImageView : public views::ImageView {
 
  public:
   BrandIconImageView(
-      base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)>
-          add_idp_image,
+      base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image,
       int image_size);
   BrandIconImageView(const BrandIconImageView&) = delete;
   BrandIconImageView& operator=(const BrandIconImageView&) = delete;
@@ -143,7 +142,7 @@ class BrandIconImageView : public views::ImageView {
                       const gfx::Image& image,
                       const image_fetcher::RequestMetadata& metadata);
 
-  base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_idp_image_;
+  base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image_;
   int image_size_;
 
   base::WeakPtrFactory<BrandIconImageView> weak_ptr_factory_{this};
@@ -302,9 +301,8 @@ class AccountSelectionViewBase {
 
   // Sets the brand views::ImageView visibility and image. Initiates the
   // download of the brand icon if necessary.
-  void ConfigureIdpBrandImageView(
-      BrandIconImageView* image_view,
-      const content::IdentityProviderMetadata& idp_metadata);
+  void ConfigureBrandImageView(BrandIconImageView* image_view,
+                               const GURL& brand_icon_url);
 
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
@@ -312,10 +310,9 @@ class AccountSelectionViewBase {
   // Web contents which the dialog is rendered on.
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
-  // The images for the IDP icons. Stored so that they can be reused upon
-  // pressing the back button after choosing an account on the multi IDP
-  // chooser.
-  base::flat_map<GURL, gfx::ImageSkia> idp_images_;
+  // The images for the brand icons. Stored so that they can be reused upon
+  // pressing the back button after choosing an account.
+  base::flat_map<GURL, gfx::ImageSkia> brand_icon_images_;
 
   // Widget to control the dialog i.e. hide, show, add observer etc.
   base::WeakPtr<views::Widget> dialog_widget_;

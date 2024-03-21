@@ -91,7 +91,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // to prompt the user to confirm a sign in to an RP with an account from an
   // IDP.
   std::unique_ptr<views::View> CreateRequestPermissionHeader(
-      const content::IdentityProviderMetadata& idp_metadata);
+      const GURL& brand_icon_url);
 
   // Returns a View for single account chooser. It contains a row of account
   // information. `The size of the `idp_display_data.accounts` vector must be 1.

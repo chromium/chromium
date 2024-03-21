@@ -38,7 +38,7 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
         "top-frame-example.com",
         std::make_optional<std::string>("iframe-example.com"),
         {{"idp-example.com", accounts, content::IdentityProviderMetadata(),
-          content::ClientMetadata(GURL(), GURL()),
+          content::ClientMetadata(GURL(), GURL(), GURL()),
           blink::mojom::RpContext::kSignIn, /*request_permission=*/true,
           /*has_login_status_mismatch=*/false}},
         mode, blink::mojom::RpMode::kWidget,
