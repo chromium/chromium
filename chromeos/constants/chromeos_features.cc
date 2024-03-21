@@ -69,7 +69,6 @@ BASE_FEATURE(kBlinkExtensionKiosk,
              "BlinkExtensionKiosk",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Feature flag used to gate preinstallation of the container app. The container
 // app may only be preinstalled if the feature flag is enabled and the
 // associated `kContainerAppPreinstallKey` matches expectations.
@@ -77,6 +76,7 @@ BASE_FEATURE(kContainerAppPreinstall,
              "ContainerAppPreinstall",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Parameterized key used to gate preinstallation of the container app. The
 // container app may only be preinstalled if the associated
 // `kContainerAppPreinstall` flag is enabled and the key matches expectations.
