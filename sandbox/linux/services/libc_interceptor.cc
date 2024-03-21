@@ -25,6 +25,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/global_descriptors.h"
@@ -206,7 +207,8 @@ void ProxyLocaltimeCallToBrowser(time_t input,
   if (r == -1)
     return;
 
-  base::Pickle reply(reinterpret_cast<char*>(reply_buf), r);
+  base::Pickle reply = base::Pickle::WithData(
+      base::span(reply_buf, base::checked_cast<size_t>(r)));
   base::PickleIterator iter(reply);
   if (!ReadTimeStruct(&iter, output, timezone_out, timezone_out_len)) {
     memset(output, 0, sizeof(struct tm));
