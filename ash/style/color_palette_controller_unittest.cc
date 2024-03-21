@@ -613,6 +613,17 @@ TEST_F(ColorPaletteControllerTest, GetSampleColorSchemes_WithKMeans) {
                                   SkColorSetRGB(0xc8, 0xbf, 0xff))));
 }
 
+TEST_F(ColorPaletteControllerTest, OneNotificationOnActiveUserChange) {
+  TestObserver observer;
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver> observation(
+      &observer);
+  observation.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+
+  SimulateUserLogin(kAccountId);
+
+  EXPECT_EQ(1, observer.call_count());
+}
+
 class ColorPaletteControllerLocalPrefTest : public ColorPaletteControllerTest {
  public:
   void SetUp() override {

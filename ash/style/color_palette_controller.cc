@@ -25,6 +25,7 @@
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/bind_post_task.h"
@@ -177,6 +178,9 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
       // The local state should only be null in tests.
       CHECK_IS_TEST();
     }
+  }
+  ~ColorPaletteControllerImpl() override {
+    DCHECK_EQ(0, notification_pauser_count_);
   }
 
   void AddObserver(Observer* observer) override {
@@ -385,6 +389,8 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
 
   // SessionObserver overrides:
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override {
+    ScopedNotificationPauser scoped_notification_pauser(this);
+
     MaybeSetUseKMeansPref(prefs);
     NotifyObservers(BestEffortSeed(GetActiveUserSession()));
 
@@ -483,6 +489,22 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
   }
 
  private:
+  // Helper class to pause observer notifications when there is one instance
+  // is live. The last one of the skipped notifications is sent out when the
+  // last instances of this class is going away.
+  class ScopedNotificationPauser {
+   public:
+    explicit ScopedNotificationPauser(ColorPaletteControllerImpl* controller)
+        : controller_(controller) {
+      controller_->AddNotificationPauser();
+    }
+    ~ScopedNotificationPauser() { controller_->RemoveNotificationPauser(); }
+
+   private:
+    // `controller_` must out live this class.
+    const raw_ptr<ColorPaletteControllerImpl> controller_;
+  };
+
   // Gets the user's current wallpaper color.
   // TODO(b/289106519): Combine this function with |GetUserWallpaperColor|.
   std::optional<SkColor> CurrentWallpaperColor(bool dark) const {
@@ -594,6 +616,11 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
   }
 
   void NotifyObservers(const std::optional<ColorPaletteSeed>& seed) {
+    if (notification_pauser_count_) {
+      last_notification_seed_ = seed;
+      return;
+    }
+
     if (!seed) {
       // If the seed wasn't valid, skip notifications.
       return;
@@ -644,6 +671,17 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     NotifyObservers(BestEffortSeed(GetActiveUserSession()));
   }
 
+  void AddNotificationPauser() { ++notification_pauser_count_; }
+
+  void RemoveNotificationPauser() {
+    --notification_pauser_count_;
+
+    if (notification_pauser_count_ == 0 && last_notification_seed_) {
+      NotifyObservers(last_notification_seed_);
+      last_notification_seed_.reset();
+    }
+  }
+
   base::ScopedObservation<DarkLightModeController, ColorModeObserver>
       dark_light_observation_{this};
 
@@ -664,7 +702,12 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   OobeDialogState oobe_state_ = OobeDialogState::HIDDEN;
+
+  // Number of live ScopedNotificationPausers.
+  int notification_pauser_count_ = 0;
+  std::optional<ColorPaletteSeed> last_notification_seed_;
 };
+
 }  // namespace
 
 // static
