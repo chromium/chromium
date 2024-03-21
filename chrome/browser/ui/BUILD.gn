@@ -4239,6 +4239,8 @@ static_library("ui") {
       "startup/default_browser_prompt.h",
       "startup/default_browser_prompt_manager.cc",
       "startup/default_browser_prompt_manager.h",
+      "startup/default_browser_prompt_notification_service.cc",
+      "startup/default_browser_prompt_notification_service.h",
       "startup/first_run_service.cc",
       "startup/first_run_service.h",
       "views/profiles/badged_profile_photo.cc",

@@ -10316,7 +10316,10 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac || is_linux) {
-    sources += [ "../browser/ui/startup/default_browser_prompt_unittest.cc" ]
+    sources += [
+      "../browser/ui/startup/default_browser_prompt_notification_service_unittest.cc",
+      "../browser/ui/startup/default_browser_prompt_unittest.cc",
+    ]
   }
 }
 
