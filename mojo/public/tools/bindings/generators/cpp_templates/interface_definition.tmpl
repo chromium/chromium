@@ -246,12 +246,6 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
           "%s.%s request"|format(interface.name, method.name) %}
 {%-   set message_typename = "%s_%s_Message"|format(proxy_name, method.name) %}
 
-{%-   if method|method_supports_lazy_serialization %}
-{{interface_macros.define_message_type(
-    interface, message_typename, message_name, False, method, method.parameters,
-    params_struct, params_description)}}
-{%-   endif %}
-
 {%-   if method.sync %}
 bool {{proxy_name}}::{{method.name}}(
     {{interface_macros.declare_sync_method_params("param_", method)}}) {
@@ -278,21 +272,12 @@ bool {{proxy_name}}::{{method.name}}(
 {%    else %}
   const bool is_urgent = false;
 {%-   endif %}
-{%-   if method|method_supports_lazy_serialization %}
-  const bool kSerialize = receiver_->PrefersSerializedMessages();
-  auto message = {{message_typename}}::Build(
-      kSerialize, kExpectsResponse, kIsSync, kAllowInterrupt, is_urgent
-{%-     for param in method.parameters -%}
-      , std::move(param_{{param.name}})
-{%-     endfor %});
-{%-   else %}  {#- if method|method_supports_lazy_serialization #}
-  {{interface_macros.build_message_flags(False, "kIsSync", "kAllowInterrupt",
-                                          "is_urgent", "kExpectsResponse",
-                                          "kFlags")}}
-  {{interface_macros.build_serialized_message(
-      message_name, method, "param_%s", params_struct, params_description,
-      "kFlags", "message")}}
-{%-   endif %}  {#- if method|method_supports_lazy_serialization #}
+{{interface_macros.build_message_flags(False, "kIsSync", "kAllowInterrupt",
+                                        "is_urgent", "kExpectsResponse",
+                                        "kFlags")}}
+{{interface_macros.build_serialized_message(
+    message_name, method, "param_%s", params_struct, params_description,
+    "kFlags", "message")}}
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);
@@ -342,21 +327,12 @@ void {{proxy_name}}::{{method.name}}(
 {%    else %}
   const bool is_urgent = false;
 {%-   endif %}
-{%-   if method|method_supports_lazy_serialization %}
-  const bool kSerialize = receiver_->PrefersSerializedMessages();
-  auto message = {{message_typename}}::Build(
-      kSerialize, kExpectsResponse, kIsSync, kAllowInterrupt, is_urgent
-{%-     for param in method.parameters -%}
-      , std::move(in_{{param.name}})
-{%-     endfor %});
-{%-   else %}
-  {{interface_macros.build_message_flags(False, "kIsSync", "kAllowInterrupt",
-                                         "is_urgent", "kExpectsResponse",
-                                         "kFlags")}}
-  {{interface_macros.build_serialized_message(
-      message_name, method, "in_%s", params_struct, params_description,
-      "kFlags", "message", True)}}
-{%-   endif %}
+{{interface_macros.build_message_flags(False, "kIsSync", "kAllowInterrupt",
+                                       "is_urgent", "kExpectsResponse",
+                                       "kFlags")}}
+{{interface_macros.build_serialized_message(
+    message_name, method, "in_%s", params_struct, params_description,
+    "kFlags", "message", True)}}
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);
@@ -439,31 +415,8 @@ class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal:
       {{interface_macros.declare_params("in_", method.response_parameters)}});
 };
 
-{%-     if method|method_supports_lazy_serialization %}
-{{interface_macros.define_message_type(
-    interface, response_message_typename, message_name, True, method,
-    method.response_parameters, response_params_struct, params_description)}}
-{%-     endif %}
-
 bool {{class_name}}_{{method.name}}_ForwardToCallback::Accept(
     mojo::Message* message) {
-{%-     if method|method_supports_lazy_serialization %}
-  if (!message->is_serialized()) {
-    auto context =
-        message->TakeUnserializedContext<{{response_message_typename}}>();
-    if (!context) {
-      // The Message was not of the expected type. It may be a valid message
-      // which was build using a different variant of these bindings. Force
-      // serialization before dispatch in this case.
-      message->SerializeIfNecessary();
-    } else {
-      if (!callback_.is_null())
-        context->Dispatch(message, &callback_);
-      return true;
-    }
-  }
-{%-     endif %}
-
   DCHECK(message->is_serialized());
   internal::{{class_name}}_{{method.name}}_ResponseParams_Data* params =
       reinterpret_cast<
@@ -488,20 +441,11 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
                                  parameter_group="async_response_parameters",
                                  dereference_parameters=False)}}
 #endif
-{%-   if method|method_supports_lazy_serialization %}
-  const bool kSerialize = responder_->PrefersSerializedMessages();
-  auto message = {{response_message_typename}}::Build(kSerialize, is_sync_,
-      true, false
-{%-     for param in method.response_parameters -%}
-      , std::move(in_{{param.name}})
-{%-     endfor %});
-{%-   else %}
-  {{interface_macros.build_message_flags(True, "is_sync_", "true", "false",
-                                         "false", "kFlags")}}
-  {{interface_macros.build_serialized_message(
-      message_name, method, "in_%s", response_params_struct,
-      response_params_description, "kFlags", "message")}}
-{%-   endif %}
+{{interface_macros.build_message_flags(True, "is_sync_", "true", "false",
+                                       "false", "kFlags")}}
+{{interface_macros.build_serialized_message(
+    message_name, method, "in_%s", response_params_struct,
+    response_params_description, "kFlags", "message")}}
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);
@@ -524,27 +468,6 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
 {%-   if method.sync %}
 bool {{class_name}}_{{method.name}}_HandleSyncResponse::Accept(
     mojo::Message* message) {
-{%-     if method|method_supports_lazy_serialization %}
-  if (!message->is_serialized()) {
-    auto context =
-        message->TakeUnserializedContext<{{response_message_typename}}>();
-    if (!context) {
-      // The Message was not of the expected type. It may be a valid message
-      // which was built using a different variant of these bindings. Force
-      // serialization before dispatch in this case.
-      message->SerializeIfNecessary();
-    } else {
-      context->HandleSyncResponse(
-          message
-{%-       for param in method.response_parameters %},
-          out_{{param.name}}_
-{%-       endfor %});
-      *result_ = true;
-      return true;
-    }
-  }
-{%-     endif %}
-
   DCHECK(message->is_serialized());
   internal::{{class_name}}_{{method.name}}_ResponseParams_Data* params =
       reinterpret_cast<internal::{{class_name}}_{{method.name}}_ResponseParams_Data*>(
@@ -574,22 +497,6 @@ bool {{class_name}}StubDispatch::Accept(
 {%-   for method in interface.methods %}
     case internal::k{{class_name}}_{{method.name}}_Name: {
 {%-     if method.response_parameters == None %}
-{%-       if method|method_supports_lazy_serialization %}
-      if (!message->is_serialized()) {
-        auto context = message->TakeUnserializedContext<
-            {{proxy_name}}_{{method.name}}_Message>();
-        if (!context) {
-          // The Message was not of the expected type. It may be a valid message
-          // which was serialized using a different variant of these bindings.
-          // Force serialization before dispatch in this case.
-          message->SerializeIfNecessary();
-        } else {
-          context->Dispatch(message, impl);
-          return true;
-        }
-      }
-{%-       endif %}
-
       DCHECK(message->is_serialized());
       internal::{{class_name}}_{{method.name}}_Params_Data* params =
           reinterpret_cast<internal::{{class_name}}_{{method.name}}_Params_Data*>(
@@ -625,25 +532,6 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
 {%-   for method in interface.methods %}
     case internal::k{{class_name}}_{{method.name}}_Name: {
 {%-     if method.response_parameters != None %}
-{%-       if method|method_supports_lazy_serialization %}
-      if (!message->is_serialized()) {
-        auto context = message->TakeUnserializedContext<
-            {{proxy_name}}_{{method.name}}_Message>();
-        if (!context) {
-          // The Message was not of the expected type. It may be a valid message
-          // which was built using a different variant of these bindings. Force
-          // serialization before dispatch in this case.
-          message->SerializeIfNecessary();
-        } else {
-          {{class_name}}::{{method.name}}Callback callback =
-              {{class_name}}_{{method.name}}_ProxyToResponder::CreateCallback(
-                  *message, std::move(responder));
-          context->Dispatch(message, impl, std::move(callback));
-          return true;
-        }
-      }
-{%-       endif %}
-
       internal::{{class_name}}_{{method.name}}_Params_Data* params =
           reinterpret_cast<
               internal::{{class_name}}_{{method.name}}_Params_Data*>(

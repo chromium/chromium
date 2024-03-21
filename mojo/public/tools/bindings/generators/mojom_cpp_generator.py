@@ -359,7 +359,6 @@ class Generator(generator.Generator):
         "module_namespace": self.module.namespace,
         "namespaces_as_array": NamespaceToArray(self.module.namespace),
         "structs": self.module.structs,
-        "support_lazy_serialization": self.support_lazy_serialization,
         "unions": self.module.unions,
         "uses_interfaces": self._ReferencesAnyHandleOrInterfaceType(),
         "uses_native_types": self._ReferencesAnyNativeType(),
@@ -406,8 +405,6 @@ class Generator(generator.Generator):
         "get_sync_method_ordinals": mojom.GetSyncMethodOrdinals,
         "has_uninterruptable_methods": mojom.HasUninterruptableMethods,
         "has_estimate_size_methods": self._HasEstimateSizeMethods,
-        "method_supports_lazy_serialization":
-        self._MethodSupportsLazySerialization,
         "requires_context_for_data_view": RequiresContextForDataView,
         "should_inline": ShouldInlineStruct,
         "should_inline_union": ShouldInlineUnion,
@@ -950,18 +947,6 @@ class Generator(generator.Generator):
                  for field in kind.fields)
 
     return False
-
-  def _MethodSupportsLazySerialization(self, method):
-    if not self.support_lazy_serialization:
-      return False
-
-    # TODO(crbug.com/753433): Support lazy serialization for methods which pass
-    # associated handles.
-    if mojom.MethodPassesAssociatedKinds(method):
-      return False
-
-    return not any(self._KindMustBeSerialized(param.kind) for param in
-                   method.parameters + (method.response_parameters or []))
 
   def _TranslateConstants(self, token, kind):
     if isinstance(token, mojom.NamedValue):

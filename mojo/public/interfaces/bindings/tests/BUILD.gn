@@ -189,8 +189,6 @@ mojom("test_interfaces") {
     },
   ]
 
-  support_lazy_serialization = true
-
   # Validation tests require precise message content matching, so we avoid
   # scrambling message IDs for test interfaces.
   scramble_message_ids = false
@@ -353,8 +351,6 @@ mojom("test_struct_traits_interfaces") {
           [ "//mojo/public/cpp/bindings/tests:struct_with_traits_impl" ]
     },
   ]
-
-  support_lazy_serialization = true
 }
 
 mojom("test_associated_interfaces") {

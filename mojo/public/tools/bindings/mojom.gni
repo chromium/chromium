@@ -278,13 +278,6 @@ if (enable_scrambled_message_ids) {
 #       Enables generation of fuzzing sources for the target if the global build
 #       arg |enable_mojom_fuzzer| is also set to |true|. Defaults to |true|.
 #
-#   support_lazy_serialization (optional)
-#       If set to |true|, generated C++ bindings will effectively prefer to
-#       transmit messages in an unserialized form when going between endpoints
-#       in the same process. This avoids the runtime cost of serialization,
-#       deserialization, and validation logic at the expensive of increased
-#       code size. Defaults to |false|.
-#
 #   disable_variants (optional)
 #       If |true|, no variant sources will be generated for the target. Defaults
 #       to |false|.
@@ -1425,11 +1418,6 @@ template("mojom") {
         if (defined(bindings_configuration.for_blink) &&
             bindings_configuration.for_blink) {
           args += [ "--for_blink" ]
-        }
-
-        if (defined(invoker.support_lazy_serialization) &&
-            invoker.support_lazy_serialization) {
-          args += [ "--support_lazy_serialization" ]
         }
 
         if (enable_kythe_annotations) {

@@ -225,7 +225,6 @@ mojom("mojom_constants") {
 mojom("test_interfaces") {
   testonly = true
   sources = [ "ipc_test.mojom" ]
-  support_lazy_serialization = true
 }
 
 # This is provided as a separate target so other targets can provide param

@@ -310,7 +310,6 @@ class Generator(generator.Generator):
       "namespace": self.module.namespace,
       "namespaces_as_array": NamespaceToArray(self.module.namespace),
       "structs": self.module.structs,
-      "support_lazy_serialization": self.support_lazy_serialization,
       "unions": self.module.unions,
       "variant": self.variant,
     }
@@ -344,8 +343,6 @@ class Generator(generator.Generator):
       "get_qualified_name_for_kind": self._GetQualifiedNameForKind,
       "has_callbacks": mojom.HasCallbacks,
       "has_sync_methods": mojom.HasSyncMethods,
-      "method_supports_lazy_serialization":
-          self._MethodSupportsLazySerialization,
       "requires_context_for_data_view": RequiresContextForDataView,
       "should_inline": ShouldInlineStruct,
       "should_inline_union": ShouldInlineUnion,
@@ -705,13 +702,6 @@ class Generator(generator.Generator):
       return "%s&" % self._GetCppWrapperType(kind,
                                              add_same_module_namespaces=True)
     return self._GetCppWrapperType(kind, add_same_module_namespaces=True)
-
-  def _MethodSupportsLazySerialization(self, method):
-    # TODO(crbug.com/753431,crbug.com/753433): Support lazy serialization for
-    # methods which pass associated handles and InterfacePtrs.
-    return self.support_lazy_serialization and (
-        not mojom.MethodPassesAssociatedKinds(method) and
-        not mojom.MethodPassesInterfaces(method))
 
   def _TranslateConstants(self, token, kind):
     if isinstance(token, mojom.NamedValue):

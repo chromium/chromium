@@ -33,7 +33,6 @@ source_set("tests") {
     "hash_unittest.cc",
     "idle_tracking_unittest.cc",
     "interface_unittest.cc",
-    "lazy_serialization_unittest.cc",
     "map_unittest.cc",
     "message_queue.cc",
     "message_queue.h",
@@ -194,8 +193,6 @@ mojom("test_mojom") {
     ":generated_test_mojom",
     "//mojo/public/mojom/base",
   ]
-
-  support_lazy_serialization = true
 
   cpp_typemaps = [
     {
