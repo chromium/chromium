@@ -414,7 +414,7 @@ void StubResolverConfigReader::OnAndroidOwnedStateCheckComplete(
 std::optional<std::string>
 StubResolverConfigReader::GetDohWithIdentifiersDisplayServers() {
   ash::dns_over_https::TemplatesUriResolverImpl doh_template_uri_resolver;
-  doh_template_uri_resolver.UpdateFromPrefs(local_state_);
+  doh_template_uri_resolver.Update(local_state_);
 
   if (doh_template_uri_resolver.GetDohWithIdentifiersActive())
     return doh_template_uri_resolver.GetDisplayTemplates();

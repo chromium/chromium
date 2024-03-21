@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -19,9 +20,11 @@
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/secure_dns_util.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "components/country_codes/country_codes.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
@@ -115,11 +118,64 @@ base::Value::Dict SecureDnsManager::GetProviders(const std::string& mode,
   return doh_providers;
 }
 
+void SecureDnsManager::DefaultNetworkChanged(const NetworkState* network) {
+  const std::string& mode = pref_service_->GetString(prefs::kDnsOverHttpsMode);
+  if (mode == SecureDnsConfig::kModeOff) {
+    return;
+  }
+
+  // Network updates are only relevant for determining the effective DoH
+  // template URI if the admin has configured the
+  // DnsOverHttpsTemplatesWithIdentifiers policy to include the IP addresses.
+  std::string templates_with_identifiers =
+      pref_service_->GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  if (!dns_over_https::TemplatesUriResolverImpl::
+          IsDeviceIpAddressIncludedInUriTemplate(templates_with_identifiers)) {
+    return;
+  }
+  UpdateTemplateUri();
+}
+
 void SecureDnsManager::OnPrefChanged() {
-  doh_templates_uri_resolver_->UpdateFromPrefs(pref_service_);
+  UpdateTemplateUri();
+
+  if (!doh_templates_uri_resolver_->GetDohWithIdentifiersActive()) {
+    return;
+  }
+
+  // If DoH with identifiers are active, verify if network changes need to be
+  // observed for URI template placeholder replacement.
+  std::string templates_with_identifiers =
+      pref_service_->GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+
+  bool should_observe_default_network_changes =
+      dns_over_https::TemplatesUriResolverImpl::
+          IsDeviceIpAddressIncludedInUriTemplate(templates_with_identifiers);
+
+  if (!should_observe_default_network_changes) {
+    network_state_handler_observer_.Reset();
+    return;
+  }
+  // Already observing default network changes.
+  if (network_state_handler_observer_.IsObserving()) {
+    return;
+  }
+  network_state_handler_observer_.Observe(
+      NetworkHandler::Get()->network_state_handler());
+}
+
+void SecureDnsManager::UpdateTemplateUri() {
+  doh_templates_uri_resolver_->Update(pref_service_);
 
   const std::string effective_uri_templates =
       doh_templates_uri_resolver_->GetEffectiveTemplates();
+
+  const std::string current_templates_uri =
+      pref_service_->GetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS);
+
+  if (current_templates_uri == effective_uri_templates) {
+    return;
+  }
 
   // Set the DoH URI template pref which is synced with Lacros and the
   // NetworkService.

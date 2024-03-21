@@ -8,6 +8,9 @@ desc: |-
 
   Before version 122, device identifiers were not replaced for unaffiliated users. Starting version 122, the device placeholders are replaced with the value <ph name="DEVICE_NOT_MANAGED">DEVICE_NOT_MANAGED</ph>, which is hashed and hex encoded.
 
+  Starting version 125, the device ip addresses can be added as template URI using the placeholder <ph name="DEVICE_IP_ADDRESSES">DEVICE_IP_ADDRESSES</ph>. This placeholder will be replaced by a hex string representing the network byte order of the IPv4 address and/or IPv6 address associated with the current network, if the network is managed by policy.
+  The IPv4 address is prefixed with the value 0010; the IPv6 address is prefixed with 0020. For dual-stack networks, both the IPv4 and IPv6 addresses will be used for the placeholder replacement. Multiple addresses are added consecutively, without a delimiter. For unaffiliated users, the replacement only happens if the network is managed by user policy. If the IP addresses placeholder cannot be replaced by the device IP address, it is replaced with an empty string.
+
   If the <ph name="DOH_MODE_POLICY_NAME">DnsOverHttpsMode</ph> is set to <ph name="SECURE_DNS_MODE_SECURE">"secure"</ph> then either this policy or <ph name="DOH_TEMPLATES_POLICY_NAME">DnsOverHttpsTemplates</ph> must be set and not empty.
 
   If the <ph name="DOH_MODE_POLICY_NAME">DnsOverHttpsMode</ph> is set to <ph name="SECURE_DNS_MODE_AUTOMATIC">"automatic"</ph> and this policy is set then the URI templates specified will be used; if this policy is unset then hardcoded mappings will be used to attempt to upgrade the users current DNS resolver to a DoH resolver operated by the same provider.

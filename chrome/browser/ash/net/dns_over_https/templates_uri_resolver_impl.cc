@@ -16,6 +16,10 @@
 #include "chrome/browser/ash/policy/core/device_attributes_impl.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -34,6 +38,13 @@ constexpr char kDeviceSerialNumberPlaceholder[] = "${DEVICE_SERIAL_NUMBER}";
 constexpr char kDeviceAssetIdPlaceholder[] = "${DEVICE_ASSET_ID}";
 constexpr char kDeviceAnnotatedLocationPlaceholder[] =
     "${DEVICE_ANNOTATED_LOCATION}";
+constexpr char kDeviceIpPlaceholder[] = "${DEVICE_IP_ADDRESSES}";
+
+// Prefix values used to indicate the IP protocol of the IP addresses in the
+// effective DoH template URI.
+constexpr char kIPv4Prefix[] = "0010";
+constexpr char kIPv6Prefix[] = "0020";
+
 // Used as a replacement value for device identifiers when the user is
 // unaffiliated.
 constexpr char kDeviceNotManaged[] = "VALUE_NOT_AVAILABLE";
@@ -46,8 +57,9 @@ constexpr char kFixedSaltForExperiment[] = "salt for experiment";
 // Returns empty string if |email| does not contain an "@".
 std::string EmailName(const std::string& email) {
   size_t at_sign_pos = email.find("@");
-  if (at_sign_pos == std::string::npos)
+  if (at_sign_pos == std::string::npos) {
     return std::string();
+  }
   return email.substr(0, at_sign_pos);
 }
 
@@ -57,8 +69,9 @@ std::string EmailName(const std::string& email) {
 // Returns empty string if |email| does not contain an "@".
 std::string EmailDomain(const std::string& email) {
   size_t at_sign_pos = email.find("@");
-  if (at_sign_pos == std::string::npos)
+  if (at_sign_pos == std::string::npos) {
     return std::string();
+  }
   return email.substr(at_sign_pos + 1);
 }
 
@@ -72,6 +85,80 @@ std::string FormatVariable(const std::string& input,
     return "${" + input + "}";
   }
   return base::HexEncode(crypto::SHA256HashString(salt + input));
+}
+
+// Returns a hex string representing all IP addresses (IPv4 and/or IPv6)
+// associated with the default network. The addresses are hex encoded in network
+// byte order. The addresses are prefixed with a string that indicates the
+// protocol of the address (`kIPv4Prefix` and `kIPv6Prefix`). For privacy
+// reasons, IP replacement in the DoH URI template is only allowed if:
+// - The network is managed via user policy.
+// - The network is managed via device policy and the user is
+// affiliated.
+// - The default network is not a VPN.
+// If the conditions above are not met or there is no connected network, this
+// method returns an empty string.
+// There is no separator between addresses if multiple IP addresses are
+// returned.
+std::string GetIpReplacementValue(bool use_network_byte_order,
+                                  const user_manager::User& user) {
+  // NetworkHandler may be un-initialized in unit tests.
+  if (!ash::NetworkHandler::IsInitialized()) {
+    return std::string();
+  }
+  const ash::NetworkStateHandler* network_state_handler =
+      ash::NetworkHandler::Get()->network_state_handler();
+  if (!network_state_handler) {
+    return std::string();
+  }
+
+  const ash::NetworkState* network = network_state_handler->DefaultNetwork();
+  if (!network) {
+    return std::string();
+  }
+
+  if (network->type() == shill::kTypeVPN) {
+    return std::string();
+  }
+
+  if (network->onc_source() != ::onc::ONCSource::ONC_SOURCE_USER_POLICY &&
+      (!user.IsAffiliated() ||
+       network->onc_source() != ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY)) {
+    return std::string();
+  }
+
+  const ash::DeviceState* device =
+      network_state_handler->GetDeviceState(network->device_path());
+  if (!device) {
+    return std::string();
+  }
+
+  std::string replacement;
+  net::IPAddress ipv4_address;
+  if (ipv4_address.AssignFromIPLiteral(
+          device->GetIpAddressByType(shill::kTypeIPv4))) {
+    if (use_network_byte_order) {
+      replacement = kIPv4Prefix + base::HexEncode(ipv4_address.bytes());
+    } else {
+      replacement =
+          FormatVariable(ipv4_address.ToString(), /*salt=*/std::string(),
+                         /*hash_variable=*/false);
+    }
+  }
+  // The default network can have multiple IPv6 addresses. Only the RFC 4941
+  // privacy address is relevant, the following code fetches that address.
+  net::IPAddress ipv6_address;
+  if (ipv6_address.AssignFromIPLiteral(
+          device->GetIpAddressByType(shill::kTypeIPv6))) {
+    if (use_network_byte_order) {
+      replacement += kIPv6Prefix + base::HexEncode(ipv6_address.bytes());
+    } else {
+      replacement +=
+          FormatVariable(ipv6_address.ToString(), /*salt=*/std::string(),
+                         /*hash_variable=*/false);
+    }
+  }
+  return replacement;
 }
 
 // Returns a copy of `template` where the identifier placeholders are replaced
@@ -141,6 +228,14 @@ std::string ReplaceVariables(std::string templates,
       &templates, 0, kDeviceAnnotatedLocationPlaceholder,
       FormatVariable(device_annotated_location, salt, hash_variable));
 
+  // The device IP addresses are not hashed in the DNS URI template. In this
+  // case, `hash_variable` is used to indicate if the IP addresses should be
+  // replaced with a string that represents the network byte order (required by
+  // the DNS server) or as a human-readable string used for privacy disclosure.
+  base::ReplaceSubstringsAfterOffset(
+      &templates, 0, kDeviceIpPlaceholder,
+      GetIpReplacementValue(/*use_network_byte_order=*/hash_variable, *user));
+
   return templates;
 }
 
@@ -154,16 +249,18 @@ TemplatesUriResolverImpl::TemplatesUriResolverImpl() {
 
 TemplatesUriResolverImpl::~TemplatesUriResolverImpl() = default;
 
-void TemplatesUriResolverImpl::UpdateFromPrefs(PrefService* pref_service) {
+void TemplatesUriResolverImpl::Update(PrefService* pref_service) {
   doh_with_identifiers_active_ = false;
 
   const std::string& mode = pref_service->GetString(prefs::kDnsOverHttpsMode);
-  if (mode == SecureDnsConfig::kModeOff)
+  if (mode == SecureDnsConfig::kModeOff) {
     return;
+  }
 
   effective_templates_ = pref_service->GetString(prefs::kDnsOverHttpsTemplates);
-  if (!features::IsDnsOverHttpsWithIdentifiersEnabled())
+  if (!features::IsDnsOverHttpsWithIdentifiersEnabled()) {
     return;
+  }
   // In ChromeOS only, the DnsOverHttpsTemplatesWithIdentifiers policy will
   // overwrite the DnsOverHttpsTemplates policy. For privacy reasons, the
   // replacement only happens if the is a salt specified which will be used to
@@ -201,8 +298,9 @@ void TemplatesUriResolverImpl::UpdateFromPrefs(PrefService* pref_service) {
   std::string display_templates =
       ReplaceVariables(templates_with_identifiers, "", attributes_.get(),
                        /*hash_variable=*/false);
-  if (effective_templates.empty() || display_templates.empty())
+  if (effective_templates.empty() || display_templates.empty()) {
     return;
+  }
   // We only use this if the variable substitution was successful for both
   // effective and display templates. Otherwise something is wrong and this
   // should have been reported earlier.
@@ -227,6 +325,12 @@ void TemplatesUriResolverImpl::SetDeviceAttributesForTesting(
     std::unique_ptr<policy::FakeDeviceAttributes> attributes) {
   CHECK_IS_TEST();
   attributes_ = std::move(attributes);
+}
+
+// static
+bool TemplatesUriResolverImpl::IsDeviceIpAddressIncludedInUriTemplate(
+    std::string_view uri_templates) {
+  return uri_templates.find(kDeviceIpPlaceholder) != std::string::npos;
 }
 
 }  // namespace ash::dns_over_https

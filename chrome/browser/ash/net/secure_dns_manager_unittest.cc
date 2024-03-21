@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
+#include "chromeos/ash/components/network/network_ui_data.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -46,10 +47,10 @@ class MockDoHTemplatesUriResolver
     : public dns_over_https::TemplatesUriResolver {
  public:
   MockDoHTemplatesUriResolver() = default;
-  MOCK_METHOD1(UpdateFromPrefs, void(PrefService*));
-  MOCK_METHOD0(GetDohWithIdentifiersActive, bool());
-  MOCK_METHOD0(GetEffectiveTemplates, std::string());
-  MOCK_METHOD0(GetDisplayTemplates, std::string());
+  MOCK_METHOD(void, Update, (PrefService*), (override));
+  MOCK_METHOD(bool, GetDohWithIdentifiersActive, (), (override));
+  MOCK_METHOD(std::string, GetEffectiveTemplates, (), (override));
+  MOCK_METHOD(std::string, GetDisplayTemplates, (), (override));
 };
 
 void OnGetProperties(bool* success_out,
@@ -102,9 +103,18 @@ class SecureDnsManagerTest : public testing::Test {
     network_handler_test_helper_.RegisterPrefs(pref_service_.registry(),
                                                local_state_.registry());
     network_handler_test_helper_.InitializePrefs(&pref_service_, &local_state_);
+    network_handler_test_helper_.AddDefaultProfiles();
   }
 
   void TearDown() override { NetworkHandler::Get()->ShutdownPrefServices(); }
+
+  void ChangeNetworkOncSource(const std::string& path,
+                              ::onc::ONCSource onc_source) {
+    std::unique_ptr<ash::NetworkUIData> ui_data =
+        ash::NetworkUIData::CreateFromONC(onc_source);
+    network_handler_test_helper_.SetServiceProperty(
+        path, shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
+  }
 
   PrefService* pref_service() { return &pref_service_; }
 
@@ -203,17 +213,16 @@ TEST_F(SecureDnsManagerTest, DoHTemplatesUriResolverCalled) {
   // The test will update the four prefs that `SecureDnsManager` is observing.
   constexpr int prefUpdatesCallCount = 4;
 
-  MockDoHTemplatesUriResolver* templateUriResolver =
-      new MockDoHTemplatesUriResolver();
-  EXPECT_CALL(*templateUriResolver, UpdateFromPrefs(_))
-      .Times(prefUpdatesCallCount);
-  EXPECT_CALL(*templateUriResolver, GetEffectiveTemplates())
+  std::unique_ptr<MockDoHTemplatesUriResolver> template_uri_resolver =
+      std::make_unique<MockDoHTemplatesUriResolver>();
+  EXPECT_CALL(*template_uri_resolver, Update(_)).Times(prefUpdatesCallCount);
+  EXPECT_CALL(*template_uri_resolver, GetEffectiveTemplates())
       .Times(prefUpdatesCallCount)
       .WillRepeatedly(Return(effectiveTemplate));
 
   auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
   secure_dns_manager->SetDoHTemplatesUriResolverForTesting(
-      base::WrapUnique(templateUriResolver));
+      std::move(template_uri_resolver));
 
   pref_service()->Set(prefs::kDnsOverHttpsMode,
                       base::Value(SecureDnsConfig::kModeAutomatic));
@@ -313,6 +322,64 @@ TEST_F(SecureDnsManagerTest, kDnsOverHttpsEffectiveTemplatesChromeOS) {
   EXPECT_EQ(
       pref_service()->GetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
       kGoogleDns);
+}
+
+TEST_F(SecureDnsManagerTest, DefaultNetworkObservedForIpAddressPlaceholder) {
+  constexpr char kUriTemplateWithEmail[] =
+      "https://dns.google.alternativeuri/"
+      "${USER_EMAIL}/{?dns}";
+  constexpr char kUriTemplateWithIp[] =
+      "https://dns.google.alternativeuri/"
+      "${DEVICE_IP_ADDRESSES}/{?dns}";
+
+  int expected_uri_template_update_count = 0;
+  int actual_uri_template_update_count = 0;
+
+  std::unique_ptr<MockDoHTemplatesUriResolver> template_uri_resolver =
+      std::make_unique<MockDoHTemplatesUriResolver>();
+
+  ON_CALL(*template_uri_resolver, Update(_))
+      .WillByDefault(testing::Invoke([&actual_uri_template_update_count]() {
+        actual_uri_template_update_count++;
+      }));
+  EXPECT_CALL(*template_uri_resolver, GetDohWithIdentifiersActive())
+      .WillRepeatedly(testing::Return(true));
+
+  auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
+  secure_dns_manager->SetDoHTemplatesUriResolverForTesting(
+      std::move(template_uri_resolver));
+
+  EXPECT_EQ(actual_uri_template_update_count,
+            expected_uri_template_update_count);
+
+  pref_service()->Set(prefs::kDnsOverHttpsMode,
+                      base::Value(SecureDnsConfig::kModeAutomatic));
+  pref_service()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                      base::Value(kUriTemplateWithEmail));
+  // Each pref update above will trigger an update request for the URI
+  // templates.
+  expected_uri_template_update_count = 2;
+  EXPECT_EQ(actual_uri_template_update_count,
+            expected_uri_template_update_count);
+
+  const ash::NetworkState* network =
+      ash::NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
+  ChangeNetworkOncSource(network->path(),
+                         ::onc::ONCSource::ONC_SOURCE_USER_POLICY);
+  // Default network changes should not trigger a re-evaluation of the templates
+  // URI if the DoH policy is not configured to use the device IP addresses.
+  EXPECT_EQ(actual_uri_template_update_count,
+            expected_uri_template_update_count);
+
+  pref_service()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                      base::Value(kUriTemplateWithIp));
+  EXPECT_EQ(actual_uri_template_update_count,
+            ++expected_uri_template_update_count);
+
+  ChangeNetworkOncSource(network->path(),
+                         ::onc::ONCSource::ONC_SOURCE_USER_POLICY);
+  EXPECT_EQ(actual_uri_template_update_count,
+            ++expected_uri_template_update_count);
 }
 
 }  // namespace

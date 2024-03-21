@@ -11,6 +11,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "net/dns/public/dns_over_https_server_config.h"
@@ -20,18 +23,20 @@ namespace ash {
 // Responds to changes in the SecureDNS preferences and generates and updates
 // the corresponding shill property which can then be used by downstream
 // services.
-class SecureDnsManager {
+class SecureDnsManager : public NetworkStateHandlerObserver {
  public:
   explicit SecureDnsManager(PrefService* pref_service);
   SecureDnsManager(const SecureDnsManager&) = delete;
   SecureDnsManager& operator=(const SecureDnsManager&) = delete;
-  ~SecureDnsManager();
+  ~SecureDnsManager() override;
 
   void SetDoHTemplatesUriResolverForTesting(
       std::unique_ptr<dns_over_https::TemplatesUriResolver>
           doh_templates_uri_resolver);
 
  private:
+  void DefaultNetworkChanged(const NetworkState* network) override;
+
   // Retrieves the list of secure DNS providers, preprocesses and caches it for
   // later use. This is safe since the list is embedded in code and will not
   // change at runtime.
@@ -45,6 +50,11 @@ class SecureDnsManager {
   // Callback for the registrar. Evaluates the current settings and publishes
   // the result to shill.
   void OnPrefChanged();
+
+  void UpdateTemplateUri();
+
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   PrefChangeRegistrar registrar_;
   raw_ptr<PrefService> pref_service_;
