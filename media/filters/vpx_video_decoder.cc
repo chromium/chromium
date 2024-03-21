@@ -11,12 +11,14 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/sys_byteorder.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
@@ -430,9 +432,8 @@ VpxVideoDecoder::AlphaDecodeStatus VpxVideoDecoder::DecodeAlphaPlane(
   }
 
   // First 8 bytes of side data is |side_data_id| in big endian.
-  const uint64_t side_data_id =
-      base::NetToHost64(*(reinterpret_cast<const uint64_t*>(
-          buffer->side_data()->alpha_data.data())));
+  const uint64_t side_data_id = base::numerics::U64FromBigEndian(
+      base::span(buffer->side_data()->alpha_data).first<8u>());
   if (side_data_id != 1) {
     return kAlphaPlaneProcessed;
   }

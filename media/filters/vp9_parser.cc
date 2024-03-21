@@ -14,6 +14,7 @@
 #include <algorithm>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -155,19 +156,21 @@ std::string IncrementIV(const std::string& iv, uint32_t by) {
   // What we call the 'IV' value is actually somewhat of a misnomer:
   // "IV" = 0xFFFFFFFFFFFFFFFF0000000000000000
   //          └──actual IV───┘└─block counter┘
-  // When we want to 'increment' this structure, we treat them both
-  // as big-endian 64 bit unsigned integers, then increment _only_ the
-  // block counter, then combine them back into a big-endian bytestring.
-  // |by| is usually going to be the number of blocks (aka 16 byte chunks)
+  //
+  // We want to 'increment' this structure by incrementing just the block
+  // counter. We pull out the block counter, convert to native endian,
+  // increment, convert back to big endian and write it back into the byte
+  // array. Then we return the byte array as a string.
+  //
+  // `by` is usually going to be the number of blocks (aka 16 byte chunks)
   //      of cipher data.
   DCHECK_EQ(iv.size(), 16u);
-  uint64_t integral_data[2];
-  memcpy(integral_data, reinterpret_cast<const uint8_t*>(iv.data()), 16);
-  uint64_t block_counter = base::NetToHost64(integral_data[1]) + by;
-  integral_data[1] = base::HostToNet64(block_counter);
-  uint8_t new_iv[16];
-  memcpy(new_iv, integral_data, 16);
-  return std::string(reinterpret_cast<char*>(new_iv), 16);
+  std::array<uint8_t, 16u> bytes;
+  base::span(bytes).copy_from(base::as_byte_span(iv).first<16u>());
+  auto counter_bytes = base::span(bytes).last<8u>();
+  counter_bytes.copy_from(base::numerics::U64ToBigEndian(
+      base::numerics::U64FromBigEndian(counter_bytes) + by));
+  return std::string(bytes.begin(), bytes.end());
 }
 
 // |frame_size|: The size of the current frame; this controls how long we
@@ -834,8 +837,9 @@ base::circular_deque<Vp9Parser::FrameInfo> Vp9Parser::ParseSVCFrame() {
                                       curr_frame_header_.frame_height));
   }
 
-  for (auto& frame_info : frames)
+  for (auto& frame_info : frames) {
     frame_info.allocate_size = max_frame_size;
+  }
   return frames;
 }
 

@@ -10,7 +10,6 @@
 
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_debug_file_writer.h"
 #include "media/base/audio_bus.h"
@@ -183,10 +182,7 @@ class AudioDebugFileWriterTest
     // Allow mismatch by 1 due to rounding error in int->float->int
     // calculations.
     for (int i = 0; i < source_samples; ++i)
-      EXPECT_LE(std::abs(static_cast<int16_t>(
-                             base::ByteSwapToLE16(source_interleaved[i])) -
-                         result_interleaved[i]),
-                1)
+      EXPECT_LE(std::abs(source_interleaved[i] - result_interleaved[i]), 1)
           << "i = " << i << " source " << source_interleaved[i] << " result "
           << result_interleaved[i];
   }

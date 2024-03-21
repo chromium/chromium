@@ -8,7 +8,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -80,8 +82,7 @@ class MEDIA_EXPORT AudioDebugFileWriter {
   uint64_t samples_ = 0;
 
   // Intermediate buffer to be written to file. Interleaved 16 bit audio data.
-  std::unique_ptr<int16_t[]> interleaved_data_;
-  int interleaved_data_size_ = 0;
+  std::optional<base::HeapArray<int16_t>> interleaved_data_;
 
   // Stores AudioBuses to be reused.
   const std::unique_ptr<AudioBusPool> audio_bus_pool_;

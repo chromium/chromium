@@ -7,7 +7,9 @@
 #include <stdint.h>
 #include <cstring>
 
-#include "base/sys_byteorder.h"
+#include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace {
 const int kRegWidthInBits = sizeof(uint64_t) * 8;
@@ -149,18 +151,24 @@ bool BitReaderCore::Refill(int min_nbits) {
   int max_nbytes = sizeof(reg_next_);
 
   // Refill.
-  const uint8_t* byte_stream_window;
-  int window_size =
-      byte_stream_provider_->GetBytes(max_nbytes, &byte_stream_window);
-  DCHECK_GE(window_size, 0);
-  DCHECK_LE(window_size, max_nbytes);
-  if (window_size == 0)
+  const uint8_t* byte_stream_window_ptr;
+  const auto window_size = base::checked_cast<size_t>(
+      byte_stream_provider_->GetBytes(max_nbytes, &byte_stream_window_ptr));
+  auto byte_stream_window =
+      // TODO(crbug.com/40284755): GetBytes() should return a span.
+      UNSAFE_BUFFERS(base::span(byte_stream_window_ptr, window_size));
+  if (byte_stream_window.empty()) {
     return false;
+  }
 
-  reg_next_ = 0;
-  memcpy(&reg_next_, byte_stream_window, window_size);
-  reg_next_ = base::NetToHost64(reg_next_);
-  nbits_next_ = window_size * 8;
+  // Pad the window to 8 big-endian bytes to fill `reg_next_`. `reg_next_` is
+  // read from the MSB, so the new bytes are written to the front in big-endian.
+  std::array<uint8_t, 8u> bytes = {};
+  base::span(bytes)
+      .first(byte_stream_window.size())
+      .copy_from(byte_stream_window);
+  reg_next_ = base::numerics::U64FromBigEndian(bytes);
+  nbits_next_ = base::checked_cast<int>(byte_stream_window.size() * 8u);
 
   // Transfer from the next to the current register.
   RefillCurrentRegister();

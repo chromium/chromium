@@ -86,6 +86,13 @@ inline constexpr T SwapBytes(T value) {
 #endif
 }
 
+// Signed values are byte-swapped as unsigned values.
+template <class T>
+  requires(std::is_signed_v<T> && std::is_integral_v<T>)
+inline constexpr T SwapBytes(T value) {
+  return static_cast<T>(SwapBytes(static_cast<std::make_unsigned_t<T>>(value)));
+}
+
 // Converts from a byte array to an integer.
 template <class T>
   requires(std::is_unsigned_v<T> && std::is_integral_v<T>)

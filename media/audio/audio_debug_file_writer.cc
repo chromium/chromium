@@ -16,7 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
-#include "base/sys_byteorder.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_bus_pool.h"
@@ -160,24 +160,22 @@ void AudioDebugFileWriter::DoWrite(std::unique_ptr<AudioBus> data) {
     return;
 
   // Convert to 16 bit audio and write to file.
-  int data_size = data->frames() * data->channels();
-  if (!interleaved_data_ || interleaved_data_size_ < data_size) {
-    interleaved_data_.reset(new int16_t[data_size]);
-    interleaved_data_size_ = data_size;
+  auto data_size =
+      base::checked_cast<size_t>(data->frames() * data->channels());
+  if (!interleaved_data_ || interleaved_data_->size() < data_size) {
+    // This buffer will be initialized fully by the ToInterleaved() call below.
+    interleaved_data_.emplace(base::HeapArray<int16_t>::Uninit(data_size));
   }
-  samples_ += data_size;
   data->ToInterleaved<media::SignedInt16SampleTypeTraits>(
-      data->frames(), interleaved_data_.get());
+      data->frames(), interleaved_data_->data());
+  samples_ += data_size;
 
-#ifndef ARCH_CPU_LITTLE_ENDIAN
-  static_assert(sizeof(interleaved_data_[0]) == sizeof(uint16_t),
-                "Only 2 bytes per channel is supported.");
-  for (int i = 0; i < data_size; ++i)
-    interleaved_data_[i] = base::ByteSwapToLE16(interleaved_data_[i]);
-#endif
+  // `interleaved_data_` is in little endian format, which is what we want
+  // to write to the file.
+  static_assert(ARCH_CPU_LITTLE_ENDIAN);
 
-  file_.WriteAtCurrentPos(reinterpret_cast<char*>(interleaved_data_.get()),
-                          data_size * sizeof(interleaved_data_[0]));
+  auto span = base::as_chars(interleaved_data_->as_span());
+  file_.WriteAtCurrentPos(span.data(), span.size_bytes());
 
   // Cache the AudioBus for later use.
   audio_bus_pool_->InsertAudioBus(std::move(data));

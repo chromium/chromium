@@ -115,8 +115,7 @@ void SetDiscardPadding(AVPacket* packet,
   if (skip_samples_size < 4)
     return;
   buffer->set_discard_padding(
-      std::make_pair(base::Seconds(base::ByteSwapToLE32(*skip_samples_ptr) /
-                                   samples_per_second),
+      std::make_pair(base::Seconds(*skip_samples_ptr / samples_per_second),
                      base::TimeDelta()));
 }
 

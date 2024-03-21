@@ -20,7 +20,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/sys_byteorder.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -474,7 +473,10 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
       // Because FFmpeg rolls codec delay and skip samples into one we can only
       // allow front discard padding on the first buffer.  Otherwise the discard
       // helper can't figure out which data to discard.  See AudioDiscardHelper.
-      int discard_front_samples = base::ByteSwapToLE32(*skip_samples_ptr);
+      //
+      // NOTE: Large values may end up as negative here, but negatives are
+      // discarded below.
+      auto discard_front_samples = static_cast<int>(*skip_samples_ptr);
       if (last_packet_timestamp_ != kNoTimestamp && discard_front_samples) {
         DLOG(ERROR) << "Skip samples are only allowed for the first packet.";
         discard_front_samples = 0;
@@ -486,8 +488,10 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
         discard_front_samples = 0;
       }
 
-      const int discard_end_samples =
-          base::ByteSwapToLE32(*(skip_samples_ptr + kSkipEndSamplesOffset));
+      // NOTE: Large values may end up as negative here, which could lead to
+      // a negative timestamp. It's not clear if this is intentional.
+      const auto discard_end_samples =
+          static_cast<int>(*(skip_samples_ptr + kSkipEndSamplesOffset));
 
       if (discard_front_samples || discard_end_samples) {
         DCHECK(is_audio);

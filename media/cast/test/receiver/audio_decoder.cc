@@ -8,12 +8,15 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
 #include "media/cast/common/encoded_frame.h"
@@ -61,8 +64,7 @@ class AudioDecoder::ImplBase
     last_frame_id_ = encoded_frame->frame_id;
 
     std::unique_ptr<AudioBus> decoded_audio =
-        Decode(encoded_frame->mutable_bytes(),
-               static_cast<int>(encoded_frame->data.size()));
+        Decode(base::as_byte_span(encoded_frame->data));
     if (!decoded_audio) {
       VLOG(2) << "Decoding of frame " << encoded_frame->frame_id << " failed.";
       cast_environment_->PostTask(
@@ -92,7 +94,7 @@ class AudioDecoder::ImplBase
   virtual void RecoverBecauseFramesWereDropped() {}
 
   // Note: Implementation of Decode() is allowed to mutate |data|.
-  virtual std::unique_ptr<AudioBus> Decode(uint8_t* data, int len) = 0;
+  virtual std::unique_ptr<AudioBus> Decode(base::span<const uint8_t> data) = 0;
 
   const scoped_refptr<CastEnvironment> cast_environment_;
   const Codec codec_;
@@ -143,10 +145,11 @@ class AudioDecoder::OpusImpl final : public AudioDecoder::ImplBase {
     DCHECK_GE(result, 0);
   }
 
-  std::unique_ptr<AudioBus> Decode(uint8_t* data, int len) final {
+  std::unique_ptr<AudioBus> Decode(base::span<const uint8_t> data) final {
     std::unique_ptr<AudioBus> audio_bus;
     const opus_int32 num_samples_decoded = opus_decode_float(
-        opus_decoder_, data, len, buffer_.get(), max_samples_per_frame_, 0);
+        opus_decoder_, data.data(), base::checked_cast<int32_t>(data.size()),
+        buffer_.get(), max_samples_per_frame_, 0);
     if (num_samples_decoded <= 0)
       return audio_bus;  // Decode error.
 
@@ -194,21 +197,21 @@ class AudioDecoder::Pcm16Impl final : public AudioDecoder::ImplBase {
  private:
   ~Pcm16Impl() final = default;
 
-  std::unique_ptr<AudioBus> Decode(uint8_t* data, int len) final {
+  std::unique_ptr<AudioBus> Decode(base::span<const uint8_t> data) final {
     std::unique_ptr<AudioBus> audio_bus;
-    const int num_samples = len / sizeof(int16_t) / num_channels_;
-    if (num_samples <= 0)
+    const auto num_samples = data.size() / sizeof(int16_t) /
+                             base::checked_cast<size_t>(num_channels_);
+    if (num_samples <= 0u) {
       return audio_bus;
+    }
 
-    int16_t* const pcm_data = reinterpret_cast<int16_t*>(data);
-#if defined(ARCH_CPU_LITTLE_ENDIAN)
-    // Convert endianness.
-    const int num_elements = num_samples * num_channels_;
-    for (int i = 0; i < num_elements; ++i)
-      pcm_data[i] = static_cast<int16_t>(base::NetToHost16(pcm_data[i]));
-#endif
+    std::vector<int16_t> pcm_data(data.size() / sizeof(int16_t));
+    for (size_t i = 0u; i < pcm_data.size(); ++i) {
+      pcm_data[i] = static_cast<int16_t>(
+          base::numerics::U16FromBigEndian(data.subspan(i * 2u).first<2u>()));
+    }
     audio_bus = AudioBus::Create(num_channels_, num_samples);
-    audio_bus->FromInterleaved<SignedInt16SampleTypeTraits>(pcm_data,
+    audio_bus->FromInterleaved<SignedInt16SampleTypeTraits>(pcm_data.data(),
                                                             num_samples);
     return audio_bus;
   }

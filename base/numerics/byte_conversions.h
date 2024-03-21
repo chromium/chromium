@@ -22,7 +22,7 @@ namespace base::numerics {
 // Returns a value with all bytes in |x| swapped, i.e. reverses the endianness.
 // TODO(pkasting): Once C++23 is available, replace with std::byteswap.
 template <class T>
-  requires(std::is_unsigned_v<T> && std::is_integral_v<T>)
+  requires(std::is_integral_v<T>)
 inline constexpr T ByteSwap(T value) {
   return numerics::internal::SwapBytes(value);
 }
