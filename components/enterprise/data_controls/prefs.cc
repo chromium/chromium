@@ -10,6 +10,7 @@ namespace data_controls {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kDataControlsRulesPref);
+  registry->RegisterIntegerPref(kDataControlsRulesScopePref, 0);
 }
 
 }  // namespace data_controls

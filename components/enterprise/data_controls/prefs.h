@@ -12,6 +12,10 @@ namespace data_controls {
 // Pref that maps to the "DataControlsRules" policy.
 inline constexpr char kDataControlsRulesPref[] = "data_controls.rules";
 
+// Pref that stores the scope of the "DataControlsRules" policy.
+inline constexpr char kDataControlsRulesScopePref[] =
+    "data_controls.scope.rules";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace data_controls

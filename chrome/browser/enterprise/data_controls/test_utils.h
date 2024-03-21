@@ -13,7 +13,9 @@
 namespace data_controls {
 
 // Sets the Data Controls policy for testing.
-void SetDataControls(PrefService* prefs, std::vector<std::string> rules);
+void SetDataControls(PrefService* prefs,
+                     std::vector<std::string> rules,
+                     bool machine_scope = true);
 
 }  // namespace data_controls
 

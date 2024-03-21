@@ -5,6 +5,7 @@
 #include "components/enterprise/data_controls/data_controls_policy_handler.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "components/enterprise/data_controls/prefs.h"
 #include "components/enterprise/data_controls/rule.h"
 #include "components/prefs/pref_value_map.h"
 
@@ -27,10 +28,16 @@ void DataControlsPolicyHandler::ApplyPolicySettings(
     return;
   }
 
+  const policy::PolicyMap::Entry* policy = policies.Get(policy_name());
+  if (!policy) {
+    return;
+  }
+
   // It is safe to use `GetValueUnsafe()` as multiple policy types are handled.
-  const base::Value* value = policies.GetValueUnsafe(policy_name());
+  const base::Value* value = policy->value_unsafe();
   if (value) {
     prefs->SetValue(pref_path_, value->Clone());
+    prefs->SetInteger(kDataControlsRulesScopePref, policy->scope);
   }
 }
 

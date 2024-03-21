@@ -6,11 +6,14 @@
 
 #include "base/json/json_reader.h"
 #include "components/enterprise/data_controls/prefs.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace data_controls {
 
-void SetDataControls(PrefService* prefs, std::vector<std::string> rules) {
+void SetDataControls(PrefService* prefs,
+                     std::vector<std::string> rules,
+                     bool machine_scope) {
   ScopedListPrefUpdate list(prefs, kDataControlsRulesPref);
   if (!list->empty()) {
     list->clear();
@@ -19,6 +22,10 @@ void SetDataControls(PrefService* prefs, std::vector<std::string> rules) {
   for (const std::string& rule : rules) {
     list->Append(*base::JSONReader::Read(rule));
   }
+
+  prefs->SetInteger(
+      kDataControlsRulesScopePref,
+      machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
 }
 
 }  // namespace data_controls
