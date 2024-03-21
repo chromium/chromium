@@ -223,10 +223,19 @@ IN_PROC_BROWSER_TEST_F(LocalPasswordSetupScreenTest,
   test::OobeJS().ExpectEnabledPath(kNextButton);
 }
 
+// TODO(crbug.com/329339200): This test is flaky on linux-chromeos builders.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_MatchedThenUnamtchedEnablesThenDisablesNextButton \
+  DISABLED_MatchedThenUnamtchedEnablesThenDisablesNextButton
+#else
+#define MAYBE_MatchedThenUnamtchedEnablesThenDisablesNextButton \
+  MatchedThenUnamtchedEnablesThenDisablesNextButton
+#endif
 // Matching first input and confirm input fields should enable the next button,
 // Subsequent mismatched fields should disable to next button.
-IN_PROC_BROWSER_TEST_F(LocalPasswordSetupScreenTest,
-                       MatchedThenUnamtchedEnablesThenDisablesNextButton) {
+IN_PROC_BROWSER_TEST_F(
+    LocalPasswordSetupScreenTest,
+    MAYBE_MatchedThenUnamtchedEnablesThenDisablesNextButton) {
   ShowLocalPasswordSetupScreen();
   WaitForLocalPasswordSetupScreenShown();
 
