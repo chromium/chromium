@@ -107,6 +107,9 @@ BASE_FEATURE(kV8TurboshaftInstructionSelection,
 // Enables Maglev compiler. Note that this only sets the V8 flag when
 // manually overridden; otherwise it defers to whatever the V8 default is.
 BASE_FEATURE(kV8Maglev, "V8Maglev", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kV8ConcurrentMaglevHighPriorityThreads,
+             "V8ConcurrentMaglevHighPriorityThreads",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kV8MemoryReducer,
              "V8MemoryReducer",

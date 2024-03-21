@@ -276,6 +276,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kV8MegaDomIC, "--mega-dom-ic",
                          "--no-mega-dom-ic");
   SetV8FlagsIfOverridden(features::kV8Maglev, "--maglev", "--no-maglev");
+  SetV8FlagsIfOverridden(features::kV8ConcurrentMaglevHighPriorityThreads,
+                         "--concurrent-maglev-high-priority-threads",
+                         "--no-concurrent-maglev-high-priority-threads");
   if (base::FeatureList::IsEnabled(features::kV8MemoryReducer)) {
     SetV8FlagsFormatted("--memory-reducer-gc-count=%i",
                         features::kV8MemoryReducerGCCount.Get());
