@@ -850,6 +850,11 @@ const char kDisplayPopularityUserReportedDisplays[] =
 // A list of all displays used by the user and reported to popularity metrics.
 const char kDisplayPopularityRevNumber[] = "display_popularity.revision_number";
 
+// A double pref which stores the current screen brightness of the internal
+// display.
+const char kInternalDisplayScreenBrightnessPercent[] =
+    "settings.display.internal_screen_brightness_percent";
+
 // A boolean pref that enable fullscreen alert bubble.
 // TODO(zxdan): Change to an allowlist in M89.
 inline constexpr char kFullscreenAlertEnabled[] =

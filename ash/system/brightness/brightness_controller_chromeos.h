@@ -8,9 +8,15 @@
 #include <optional>
 
 #include "ash/ash_export.h"
+#include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/brightness_control_delegate.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+
+class AccountId;
+class PrefService;
 
 namespace ash {
 
@@ -28,10 +34,12 @@ enum class BrightnessAction {
 // brightness is pressed.
 class ASH_EXPORT BrightnessControllerChromeos
     : public BrightnessControlDelegate,
+      public chromeos::PowerManagerClient::Observer,
+      public LoginDataDispatcher::Observer,
       public SessionObserver {
  public:
-  explicit BrightnessControllerChromeos(
-      SessionControllerImpl* session_controller);
+  BrightnessControllerChromeos(PrefService* local_state,
+                               SessionControllerImpl* session_controller);
 
   BrightnessControllerChromeos(const BrightnessControllerChromeos&) = delete;
   BrightnessControllerChromeos& operator=(const BrightnessControllerChromeos&) =
@@ -47,12 +55,26 @@ class ASH_EXPORT BrightnessControllerChromeos
       base::OnceCallback<void(std::optional<double>)> callback) override;
 
   // SessionObserver:
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnSessionStateChanged(session_manager::SessionState state) override;
+
+  // PowerManagerClient::Observer:
+  void ScreenBrightnessChanged(
+      const power_manager::BacklightBrightnessChange& change) override;
+
+  // LoginDataDispatcher::Observer:
+  void OnFocusPod(const AccountId& account_id) override;
 
  private:
   void RecordHistogramForBrightnessAction(BrightnessAction brightness_action);
+  void OnGetBrightnessAfterLogin(std::optional<double> brightness_percent);
 
-  raw_ptr<SessionControllerImpl> session_controller_;  // unowned
+  raw_ptr<PrefService> local_state_;
+  raw_ptr<SessionControllerImpl> session_controller_;
+
+  // The current AccountId, used to set and retrieve prefs. Expected to be
+  // nullopt on the login screen, but will be set on login.
+  std::optional<AccountId> active_account_id_;
 
   // Timestamp of the last session change, e.g. when going from the login screen
   // to the desktop, or from startup to the login screen.
@@ -61,6 +83,8 @@ class ASH_EXPORT BrightnessControllerChromeos
   // Used for metrics recording. True if and only if a brightness adjustment has
   // occurred.
   bool has_brightness_been_adjusted_ = false;
+
+  base::WeakPtrFactory<BrightnessControllerChromeos> weak_ptr_factory_{this};
 };
 }  // namespace system
 }  // namespace ash

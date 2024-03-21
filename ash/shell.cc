@@ -1227,7 +1227,7 @@ void Shell::Init(
   // This needs to be initialized after SessionController.
   brightness_control_delegate_ =
       std::make_unique<system::BrightnessControllerChromeos>(
-          session_controller_.get());
+          local_state_, session_controller_.get());
 
   // These controllers call Shell::Get() in their constructors, so they cannot
   // be in the member initialization list.
