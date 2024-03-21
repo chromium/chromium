@@ -17,8 +17,11 @@ class Window;
 
 namespace ash {
 
-// Observes changes in the windows of the SnapGroup and manages the windows
-// accordingly.
+// Takes over snap group management after the creation in `SplitViewController`.
+// Observes window and window state changes. Implements the
+// `LayoutDividerController` interface to allow synchronized resizing of the
+// windows within the group. The creation will eventually be done in
+// `SnapGroupController` after the major window layout architecture is complete.
 class SnapGroup : public aura::WindowObserver,
                   public WindowStateObserver,
                   public LayoutDividerController {
@@ -30,7 +33,7 @@ class SnapGroup : public aura::WindowObserver,
 
   aura::Window* window1() const { return window1_; }
   aura::Window* window2() const { return window2_; }
-  SplitViewDivider* split_view_divider() { return &split_view_divider_; }
+  SplitViewDivider* snap_group_divider() { return &snap_group_divider_; }
 
   void ShowDivider();
   void HideDivider();
@@ -64,7 +67,8 @@ class SnapGroup : public aura::WindowObserver,
   gfx::Rect GetSnappedWindowBoundsInScreen(
       SnapPosition snap_position,
       aura::Window* window_for_minimum_size,
-      float snap_ratio) const override;
+      float snap_ratio,
+      bool account_for_divider_width) const override;
   aura::Window::Windows GetLayoutWindows() const override;
   SnapPosition GetPositionOfSnappedWindow(
       const aura::Window* window) const override;
@@ -78,24 +82,20 @@ class SnapGroup : public aura::WindowObserver,
   // Stops observing the windows when the `SnapGroup` gets destructed.
   void StopObservingWindows();
 
-  // Shrinks the bounds of both windows in snap group `on_snap_group_added` or
-  // expands the bounds of both windows in snap group when `on_snap_group_added`
-  // is false, i.e. on snap group removed.
-  void RefreshWindowBoundsInSnapGroup(bool on_snap_group_added);
+  // Updates the bounds for the snapped windows. UPDATE COMMENTS
+  void UpdateSnappedWindowsBounds(bool account_for_divider_width);
 
-  // Updates the bounds of both windows during divider resizing.
-  void UpdateSnappedBoundsDuringResize();
+  // Within a snap group, the divider appears as a widget positioned between the
+  // two snapped windows. It serves a dual purpose: signifying the group
+  // connection and enabling simultaneous resizing of both windows. In terms of
+  // stacking order, `snap_group_divider_` is the bottom-most transient child of
+  // the top-most window of the two windows.
+  SplitViewDivider snap_group_divider_;
 
-  // Split view divider which is a black bar stretching from one edge of the
-  // screen to the other, containing a small white drag bar in the middle. As
-  // the user presses on it and drags it horizontally or vertically, the windows
-  // will be resized either horizontally or vertically accordingly.
-  SplitViewDivider split_view_divider_;
-
-  // True while we are updating the windows during a swap.
-  bool is_swapping_ = false;
-
+  // The primary snapped window in the group.
   raw_ptr<aura::Window> window1_;
+
+  // The secondary snapped window in the group.
   raw_ptr<aura::Window> window2_;
 };
 

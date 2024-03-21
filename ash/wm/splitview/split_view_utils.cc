@@ -775,9 +775,9 @@ int GetEquivalentDividerPosition(aura::Window* window,
   const bool horizontal = IsLayoutHorizontal(root_window);
   const int window_length = GetWindowLength(window, horizontal);
   const int divider_delta =
-      account_for_divider_width ? kSplitviewDividerShortSideLength : 0;
+      account_for_divider_width ? kSplitviewDividerShortSideLength / 2.f : 0;
   return IsPhysicalLeftOrTop(window)
-             ? window_length
+             ? window_length - divider_delta
              : GetDividerPositionUpperLimit(root_window) - window_length -
                    divider_delta;
 }
@@ -966,7 +966,7 @@ bool ShouldConsiderDivider(aura::Window* window) {
   if (IsSnapGroupEnabledInClamshellMode()) {
     if (auto* snap_group =
             SnapGroupController::Get()->GetSnapGroupForGivenWindow(window)) {
-      return snap_group->split_view_divider()->divider_widget();
+      return snap_group->snap_group_divider()->divider_widget();
     }
   }
   SplitViewController* split_view_controller =

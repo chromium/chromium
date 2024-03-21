@@ -212,17 +212,21 @@ gfx::Rect GetGridBoundsInScreen(
     wm::ConvertRectToScreen(target_root, &target_bounds_in_screen);
     bounds.Subtract(target_bounds_in_screen);
   } else {
+    const bool account_for_divider_width =
+        display::Screen::GetScreen()->InTabletMode();
     switch (state) {
       case SplitViewController::State::kPrimarySnapped:
         bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
             SnapPosition::kSecondary,
-            /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio);
+            /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+            account_for_divider_width);
         opposite_position = SnapPosition::kSecondary;
         break;
       case SplitViewController::State::kSecondarySnapped:
         bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
             SnapPosition::kPrimary,
-            /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio);
+            /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+            account_for_divider_width);
         opposite_position = SnapPosition::kPrimary;
         break;
       case SplitViewController::State::kNoSnap:

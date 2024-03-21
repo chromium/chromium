@@ -151,18 +151,20 @@ void ActivateUnderneathWindowInSplitViewMode(
              chromeos::OrientationType::kLandscapeSecondary) {
     ActivateWindow(dragged_from_splitview_divider ? left_window : right_window);
   } else {
-    if (left_window && split_view_controller
-                           ->GetSnappedWindowBoundsInScreen(
-                               SnapPosition::kPrimary,
-                               /*window_for_minimum_size=*/nullptr,
-                               chromeos::kDefaultSnapRatio)
-                           .Contains(location)) {
+    if (left_window &&
+        split_view_controller
+            ->GetSnappedWindowBoundsInScreen(
+                SnapPosition::kPrimary,
+                /*window_for_minimum_size=*/nullptr,
+                chromeos::kDefaultSnapRatio, /*account_for_divider_width=*/true)
+            .Contains(location)) {
       ActivateWindow(left_window);
     } else if (right_window && split_view_controller
                                    ->GetSnappedWindowBoundsInScreen(
                                        SnapPosition::kSecondary,
                                        /*window_for_minimum_size=*/nullptr,
-                                       chromeos::kDefaultSnapRatio)
+                                       chromeos::kDefaultSnapRatio,
+                                       /*account_for_divider_width=*/true)
                                    .Contains(location)) {
       ActivateWindow(right_window);
     } else if (split_view_controller->split_view_divider()

@@ -915,8 +915,9 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInParent(
     SnapPosition snap_position,
     aura::Window* window_for_minimum_size,
     float snap_ratio) {
-  gfx::Rect bounds = GetSnappedWindowBoundsInScreen(
-      snap_position, window_for_minimum_size, snap_ratio);
+  gfx::Rect bounds =
+      GetSnappedWindowBoundsInScreen(snap_position, window_for_minimum_size,
+                                     snap_ratio, ShouldConsiderDivider());
   wm::ConvertRectFromScreen(root_window_, &bounds);
   return bounds;
 }
@@ -1637,7 +1638,7 @@ void SplitViewController::UpdateResizeWithDivider(
   UpdateTabletResizeMode(base::TimeTicks::Now(), location_in_screen);
 
   NotifyDividerPositionChanged();
-  UpdateSnappedWindowsAndDividerBounds();
+  UpdateSnappedWindowsBounds();
 
   // Update the resize backdrop, as well as the black scrim layer's bounds and
   // opacity.
@@ -1656,7 +1657,7 @@ bool SplitViewController::EndResizeWithDivider(
   // Need to update snapped windows bounds even if the split view mode may have
   // to exit. Otherwise it's possible for a snapped window stuck in the edge of
   // of the screen while overview mode is active.
-  UpdateSnappedWindowsAndDividerBounds();
+  UpdateSnappedWindowsBounds();
   NotifyWindowResized();
 
   presentation_time_recorder_.reset();
@@ -1747,7 +1748,8 @@ void SplitViewController::SwapWindows() {
 gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
     SnapPosition snap_position,
     aura::Window* window_for_minimum_size,
-    float snap_ratio) const {
+    float snap_ratio,
+    bool account_for_divider_width) const {
   if (snap_position == SnapPosition::kNone) {
     return screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
         root_window_);
@@ -1759,7 +1761,6 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
     return window_for_minimum_size->GetBoundsInScreen();
   }
 
-  const bool account_for_divider_width = ShouldConsiderDivider();
   const int divider_position =
       split_view_divider_.HasDividerWidget()
           ? GetDividerPosition()
@@ -1883,9 +1884,7 @@ bool SplitViewController::MaybeCreateSnapGroup() {
       IsSnapGroupEnabledInClamshellMode()) {
     SnapGroupController* snap_group_controller = SnapGroupController::Get();
     // TODO(b/286963080): Move this to SnapGroupController.
-    if (!snap_group_controller->AreWindowsInSnapGroup(primary_window_,
-                                                      secondary_window_) &&
-        snap_group_controller->AddSnapGroup(primary_window_,
+    if (snap_group_controller->AddSnapGroup(primary_window_,
                                             secondary_window_)) {
       // Ending split view will call `UpdateStateAndNotifyObservers()` that
       // state is now `kNoSnap` and end overview in
@@ -1921,7 +1920,7 @@ void SplitViewController::UpdateBlackScrim(
   }
   black_scrim_layer_->SetBounds(GetSnappedWindowBoundsInScreen(
       position, /*window_for_minimum_size=*/nullptr,
-      chromeos::kDefaultSnapRatio));
+      chromeos::kDefaultSnapRatio, ShouldConsiderDivider()));
 
   // Update its opacity. The opacity increases as it gets closer to the edge of
   // the screen.
@@ -1984,26 +1983,7 @@ void SplitViewController::UpdateResizeBackdrop() {
   }
 }
 
-void SplitViewController::UpdateSnappedWindowsAndDividerBounds() {
-  // Update the snapped windows' bounds. If the window is already snapped in the
-  // correct position, simply update the snap ratio.
-  if (IsSnapped(primary_window_)) {
-    UpdateSnappedBounds(primary_window_);
-  }
-  if (IsSnapped(secondary_window_)) {
-    UpdateSnappedBounds(secondary_window_);
-  }
-
-  // Update divider's bounds and make it adjustable.
-  if (split_view_divider_.divider_widget()) {
-    split_view_divider_.UpdateDividerBounds();
-
-    // Make the split view divider adjustable.
-    split_view_divider_.SetAdjustable(true);
-  }
-}
-
-void SplitViewController::UpdateSnappedBounds(aura::Window* window) {
+void SplitViewController::UpdateSnappedWindowBounds(aura::Window* window) {
   DCHECK(IsWindowInSplitView(window));
   WindowState* window_state = WindowState::Get(window);
   if (InTabletMode()) {
@@ -2023,9 +2003,32 @@ void SplitViewController::UpdateSnappedBounds(aura::Window* window) {
   } else {
     const gfx::Rect requested_bounds = GetSnappedWindowBoundsInScreen(
         GetPositionOfSnappedWindow(window), window,
-        window_util::GetSnapRatioForWindow(window));
+        window_util::GetSnapRatioForWindow(window), ShouldConsiderDivider());
     const SetBoundsWMEvent event(requested_bounds, /*animate=*/true);
     window_state->OnWMEvent(&event);
+  }
+}
+
+void SplitViewController::UpdateSnappedWindowsBounds() {
+  // Update the snapped windows' bounds. If the window is already snapped in the
+  // correct position, simply update the snap ratio.
+  if (IsSnapped(primary_window_)) {
+    UpdateSnappedWindowBounds(primary_window_);
+  }
+  if (IsSnapped(secondary_window_)) {
+    UpdateSnappedWindowBounds(secondary_window_);
+  }
+}
+
+void SplitViewController::UpdateSnappedWindowsAndDividerBounds() {
+  UpdateSnappedWindowsBounds();
+
+  // Update divider's bounds and make it adjustable.
+  if (split_view_divider_.divider_widget()) {
+    split_view_divider_.UpdateDividerBounds();
+
+    // Make the split view divider adjustable.
+    split_view_divider_.SetAdjustable(true);
   }
 }
 
@@ -2363,7 +2366,7 @@ void SplitViewController::RestoreTransformIfApplicable(aura::Window* window) {
     // bounds and its transformed bounds before to be snapped.
     const gfx::Rect snapped_bounds = GetSnappedWindowBoundsInScreen(
         GetPositionOfSnappedWindow(window), window,
-        window_util::GetSnapRatioForWindow(window));
+        window_util::GetSnapRatioForWindow(window), ShouldConsiderDivider());
     const gfx::Transform starting_transform = gfx::TransformBetweenRects(
         gfx::RectF(snapped_bounds), gfx::RectF(item_bounds));
     SetTransformWithAnimation(window, starting_transform, gfx::Transform());
@@ -2651,7 +2654,8 @@ void SplitViewController::DoSplitDividerSpawnAnimation(aura::Window* window) {
   DCHECK(window->layer()->GetAnimator()->GetTargetTransform().IsIdentity());
   SnapPosition snap_position = GetPositionOfSnappedWindow(window);
   const gfx::Rect bounds = GetSnappedWindowBoundsInScreen(
-      snap_position, window, window_util::GetSnapRatioForWindow(window));
+      snap_position, window, window_util::GetSnapRatioForWindow(window),
+      ShouldConsiderDivider());
   // Get one of the two corners of |window| that meet the divider.
   gfx::Point p = IsPhysicalLeftOrTop(snap_position, window)
                      ? bounds.bottom_right()

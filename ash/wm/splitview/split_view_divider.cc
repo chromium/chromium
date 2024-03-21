@@ -10,7 +10,6 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
-#include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -26,7 +25,6 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -165,6 +163,8 @@ void SplitViewDivider::UpdateDividerPosition(
     divider_position_ += location_in_screen.y() - previous_event_location_.y();
   }
   divider_position_ = std::max(0, divider_position_);
+
+  UpdateDividerBounds();
 }
 
 void SplitViewDivider::StartResizeWithDivider(
@@ -219,8 +219,8 @@ void SplitViewDivider::ResizeWithDivider(const gfx::Point& location_in_screen) {
       GetBoundedPosition(location_in_screen, work_area_bounds);
 
   // Order here matters: we first update `divider_position_`, then the
-  // LayoutDividerController will transform and update the window and divider
-  // bounds in `UpdateResizeWithDivider()`.
+  // `LayoutDividerController` will update the window
+  // `UpdateResizeWithDivider()`.
   UpdateDividerPosition(modified_location_in_screen);
   controller_->UpdateResizeWithDivider(modified_location_in_screen);
 
@@ -241,8 +241,8 @@ void SplitViewDivider::EndResizeWithDivider(
       GetBoundedPosition(location_in_screen, work_area_bounds);
 
   // Order here matters: we first update `divider_position_`, then the
-  // LayoutDividerController will transform and update the window and divider
-  // bounds in `EndResizeWithDivider()`.
+  // `LayoutDividerController` will transform and update the windows bounds in
+  // `EndResizeWithDivider()`.
   UpdateDividerPosition(modified_location_in_screen);
 
   // If the delegate is done with resizing, finish resizing and clean up.
@@ -578,7 +578,8 @@ gfx::Point SplitViewDivider::GetEndDragLocationInScreen(
   const SnapPosition snap_position =
       controller_->GetPositionOfSnappedWindow(window);
   const gfx::Rect bounds = controller_->GetSnappedWindowBoundsInScreen(
-      snap_position, window, window_util::GetSnapRatioForWindow(window));
+      snap_position, window, window_util::GetSnapRatioForWindow(window),
+      /*account_for_divider_width=*/true);
 
   const bool is_physical_left_or_top =
       IsPhysicalLeftOrTop(snap_position, window);

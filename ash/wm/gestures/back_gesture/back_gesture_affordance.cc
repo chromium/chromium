@@ -207,7 +207,8 @@ bool AboveBottomOfSplitViewDivider(const gfx::Point& location, int origin_y) {
       split_view_controller->GetSnappedWindowBoundsInScreen(
           IsCurrentScreenOrientationPrimary() ? SnapPosition::kSecondary
                                               : SnapPosition::kPrimary,
-          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio);
+          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+          /*account_for_divider_width=*/true);
   return bounds_of_bottom_snapped_window.Contains(location) &&
          origin_y < GetSplitViewDividerBoundsInScreen(location).bottom();
 }

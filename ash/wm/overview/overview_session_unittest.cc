@@ -7311,7 +7311,8 @@ TEST_F(SplitViewOverviewSessionTest, Clipping) {
     const gfx::Rect split_view_bounds_right =
         split_view_controller()->GetSnappedWindowBoundsInScreen(
             SnapPosition::kSecondary,
-            /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio);
+            /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+            /*account_for_divider_width=*/true);
 
     ToggleOverview();
 
@@ -8761,24 +8762,26 @@ TEST_F(SplitViewOverviewSessionTest, SwapWindowAndOverviewGrid) {
   EXPECT_EQ(split_view_controller()->default_snap_position(),
             SnapPosition::kPrimary);
   EXPECT_TRUE(GetOverviewController()->InOverviewSession());
-  EXPECT_EQ(GetGridBounds(),
-            ShrinkBoundsByHotseatInset(
-                split_view_controller()->GetSnappedWindowBoundsInScreen(
-                    SnapPosition::kSecondary,
-                    /*window_for_minimum_size=*/nullptr,
-                    chromeos::kDefaultSnapRatio)));
+  EXPECT_EQ(
+      GetGridBounds(),
+      ShrinkBoundsByHotseatInset(
+          split_view_controller()->GetSnappedWindowBoundsInScreen(
+              SnapPosition::kSecondary,
+              /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+              /*account_for_divider_width=*/true)));
 
   split_view_controller()->SwapWindows();
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kSecondarySnapped);
   EXPECT_EQ(split_view_controller()->default_snap_position(),
             SnapPosition::kSecondary);
-  EXPECT_EQ(GetGridBounds(),
-            ShrinkBoundsByHotseatInset(
-                split_view_controller()->GetSnappedWindowBoundsInScreen(
-                    SnapPosition::kPrimary,
-                    /*window_for_minimum_size=*/nullptr,
-                    chromeos::kDefaultSnapRatio)));
+  EXPECT_EQ(
+      GetGridBounds(),
+      ShrinkBoundsByHotseatInset(
+          split_view_controller()->GetSnappedWindowBoundsInScreen(
+              SnapPosition::kPrimary,
+              /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+              /*account_for_divider_width=*/true)));
 }
 
 // Test that in tablet mode, pressing tab key in overview should not crash.
@@ -9680,12 +9683,14 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
       top_snapped_bounds,
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SnapPosition::kPrimary,
-          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio));
+          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+          /*account_for_divider_width=*/false));
   EXPECT_EQ(
       bottom_snapped_bounds,
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SnapPosition::kSecondary,
-          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio));
+          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+          /*account_for_divider_width=*/false));
 
   // Switch from clamshell mode to tablet mode and then back to clamshell mode.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
@@ -9702,12 +9707,14 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
       top_snapped_bounds,
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SnapPosition::kPrimary,
-          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio));
+          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+          /*account_for_divider_width=*/false));
   EXPECT_EQ(
       bottom_snapped_bounds,
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SnapPosition::kSecondary,
-          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio));
+          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+          /*account_for_divider_width=*/false));
 }
 
 // Tests that the ratio between the divider position and the work area width is
@@ -9983,27 +9990,31 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   EXPECT_EQ(
       gfx::Rect(0, 0, 400, height),
       SplitViewController::Get(root_windows[0])
-          ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
-                                           /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio));
+          ->GetSnappedWindowBoundsInScreen(
+              SnapPosition::kPrimary,
+              /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+              /*account_for_divider_width=*/false));
   EXPECT_EQ(
       gfx::Rect(400, 0, 400, height),
       SplitViewController::Get(root_windows[0])
-          ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                           /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio));
+          ->GetSnappedWindowBoundsInScreen(
+              SnapPosition::kSecondary,
+              /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+              /*account_for_divider_width=*/false));
   EXPECT_EQ(
       gfx::Rect(800, 0, 400, height),
       SplitViewController::Get(root_windows[1])
-          ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
-                                           /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio));
+          ->GetSnappedWindowBoundsInScreen(
+              SnapPosition::kPrimary,
+              /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+              /*account_for_divider_width=*/false));
   EXPECT_EQ(
       gfx::Rect(1200, 0, 400, height),
       SplitViewController::Get(root_windows[1])
-          ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                           /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio));
+          ->GetSnappedWindowBoundsInScreen(
+              SnapPosition::kSecondary,
+              /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+              /*account_for_divider_width=*/false));
 }
 
 // Test that if clamshell split view is started by snapping a window that is the
@@ -10083,7 +10094,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
       SplitViewController::Get(root_windows[1])
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
                                            /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio),
+                                           chromeos::kDefaultSnapRatio,
+                                           /*account_for_divider_width=*/false),
       OverviewGridTestApi(grid_on_root2).bounds());
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
@@ -10161,7 +10173,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
       SplitViewController::Get(root_windows[0])
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
                                            /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio),
+                                           chromeos::kDefaultSnapRatio,
+                                           /*account_for_divider_width=*/false),
       OverviewGridTestApi(grid_on_root1).bounds());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root2->current_window_dragging_state());
@@ -10187,7 +10200,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
       SplitViewController::Get(root_windows[0])
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
                                            /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio),
+                                           chromeos::kDefaultSnapRatio,
+                                           /*account_for_divider_width=*/false),
       OverviewGridTestApi(grid_on_root1).bounds());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root2->current_window_dragging_state());
@@ -10206,7 +10220,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
       SplitViewController::Get(root_windows[1])
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
                                            /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio),
+                                           chromeos::kDefaultSnapRatio,
+                                           /*account_for_divider_width=*/false),
       OverviewGridTestApi(grid_on_root2).bounds());
 
   const gfx::Point root2_left_snap_point_away_from_edge(816, 300);
@@ -10221,7 +10236,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
       SplitViewController::Get(root_windows[1])
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
                                            /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio),
+                                           chromeos::kDefaultSnapRatio,
+                                           /*account_for_divider_width=*/false),
       OverviewGridTestApi(grid_on_root2).bounds());
 
   const gfx::Point root2_right_snap_point(1599, 300);
@@ -10236,7 +10252,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
       SplitViewController::Get(root_windows[1])
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
                                            /*window_for_minimum_size=*/nullptr,
-                                           chromeos::kDefaultSnapRatio),
+                                           chromeos::kDefaultSnapRatio,
+                                           /*account_for_divider_width=*/false),
       OverviewGridTestApi(grid_on_root2).bounds());
 
   const gfx::Point root2_middle_point(1200, 300);

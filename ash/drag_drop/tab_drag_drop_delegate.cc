@@ -322,7 +322,9 @@ void TabDragDropDelegate::UpdateSourceWindowBoundsIfNecessary(
         SplitViewController::Get(source_window_)
             ->GetSnappedWindowBoundsInScreen(
                 opposite_position, source_window_,
-                window_util::GetSnapRatioForWindow(source_window_));
+                window_util::GetSnapRatioForWindow(source_window_),
+                /*account_for_divider_width=*/
+                display::Screen::GetScreen()->InTabletMode());
   }
   wm::ConvertRectFromScreen(source_window_->parent(),
                             &new_source_window_bounds);

@@ -362,7 +362,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   gfx::Rect GetSnappedWindowBoundsInScreen(
       SnapPosition snap_position,
       aura::Window* window_for_minimum_size,
-      float snap_ratio) const override;
+      float snap_ratio,
+      bool account_for_divider_width) const override;
   aura::Window::Windows GetLayoutWindows() const override;
   SnapPosition GetPositionOfSnappedWindow(
       const aura::Window* window) const override;
@@ -421,13 +422,16 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // resized yet.
   void UpdateResizeBackdrop();
 
-  // Updates the bounds for the snapped windows and divider according to the
-  // current snap direction.
-  void UpdateSnappedWindowsAndDividerBounds();
+  // Updates the bounds of the given snapped `window` in splitview.
+  void UpdateSnappedWindowBounds(aura::Window* window);
 
-  // Updates the bounds of a window snapped in splitview. Note that the divider
-  // position will be updated prior to this.
-  void UpdateSnappedBounds(aura::Window* window);
+  // Updates the bounds for the two snapped windows
+  void UpdateSnappedWindowsBounds();
+
+  // Updates the bounds for the snapped windows and divider.
+  // TODO(http://b/330567348): Consolidate these three functions and make sure
+  // they work properly behind the scenes.
+  void UpdateSnappedWindowsAndDividerBounds();
 
   // Gets the position where the black scrim should show.
   SnapPosition GetBlackScrimPosition(const gfx::Point& location_in_screen);

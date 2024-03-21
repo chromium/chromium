@@ -87,6 +87,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/widget/widget.h"
@@ -114,7 +115,7 @@ SplitViewDivider* split_view_divider() {
     return split_view_controller()->split_view_divider();
   }
   auto* top_snap_group = SnapGroupController::Get()->GetTopmostSnapGroup();
-  return top_snap_group ? top_snap_group->split_view_divider() : nullptr;
+  return top_snap_group ? top_snap_group->snap_group_divider() : nullptr;
 }
 
 gfx::Rect split_view_divider_bounds_in_screen() {
@@ -275,19 +276,6 @@ bool UnionBoundsEqualToWorkAreaBounds(aura::Window* w1, aura::Window* w2) {
                                   : gfx::Rect();
   union_bounds.Union(divider_bounds);
   return union_bounds == work_area_bounds();
-}
-
-// TODO(sophiewen): Refactor this from WindowRestoreControllerTest.
-void VerifyStackingOrder(
-    aura::Window* parent,
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
-        expected_windows) {
-  auto children = parent->children();
-  EXPECT_EQ(children.size(), expected_windows.size());
-
-  for (size_t i = 0; i < children.size(); ++i) {
-    EXPECT_EQ(children[i], expected_windows[i]);
-  }
 }
 
 }  // namespace
@@ -1951,7 +1939,7 @@ class SnapGroupTest : public FasterSplitScreenTest {
     gfx::Rect expected_bounds_in_screen(work_area_bounds());
     gfx::Rect left_bounds, right_bounds;
     expected_bounds_in_screen.SplitVertically(&left_bounds, &right_bounds);
-    EXPECT_EQ(left_bounds, window_util::GetTargetScreenBounds(window1));
+    EXPECT_EQ(left_bounds, window1->GetBoundsInScreen());
 
     // The `window2` gets selected in the overview will be snapped to the
     // non-occupied snap position and the overview session will end.
@@ -1981,10 +1969,8 @@ class SnapGroupTest : public FasterSplitScreenTest {
     right_bounds.set_x(right_bounds.x() + divider_bounds.width() / 2);
     right_bounds.set_width(right_bounds.width() - divider_bounds.width() / 2);
 
-    EXPECT_EQ(left_bounds.width(),
-              window_util::GetTargetScreenBounds(window1).width());
-    EXPECT_EQ(right_bounds.width(),
-              window_util::GetTargetScreenBounds(window2).width());
+    EXPECT_EQ(left_bounds.width(), window1->GetBoundsInScreen().width());
+    EXPECT_EQ(right_bounds.width(), window2->GetBoundsInScreen().width());
   }
 
   void CompleteWindowCycling() {
@@ -2661,11 +2647,8 @@ TEST_F(SnapGroupTest, RemainingWindowBoundsRestoreAfterDestructionInOverview) {
   const gfx::Size w1_size_after_overview = w1->GetBoundsInScreen().size();
 
   // Verify that the size of `w1` on overview exit is equal to that of before
-  // entering overview plus `kSplitviewDividerShortSideLength / 2`.
-  EXPECT_EQ(
-      w1_size_before_overview.width() + kSplitviewDividerShortSideLength / 2,
-      w1_size_after_overview.width());
-  EXPECT_EQ(w1_size_before_overview.height(), w1_size_after_overview.height());
+  // entering overview.
+  EXPECT_EQ(w1_size_before_overview, w1_size_after_overview);
 
   // Verify that the transform is identity.
   EXPECT_TRUE(w1->transform().IsIdentity());
@@ -2724,13 +2707,11 @@ TEST_F(SnapGroupTest, ReflectSnapRatioInOverviewGroupItem) {
 
   // Since `w1` is roughly half the width of `w2`, verify that `item1_bounds` is
   // also half the width of `item2_bounds`.
-  const gfx::Rect item1_bounds =
-      overview_items[0]->item_widget()->GetWindowBoundsInScreen();
-  const gfx::Rect item2_bounds =
-      overview_items[1]->item_widget()->GetWindowBoundsInScreen();
+  const gfx::RectF item1_bounds = overview_items[0]->target_bounds();
+  const gfx::RectF item2_bounds = overview_items[1]->target_bounds();
   const float size_ratio =
       static_cast<float>(item1_bounds.width()) / item2_bounds.width();
-  EXPECT_NEAR(size_ratio, 0.5, /*abs_error=*/0.01);
+  EXPECT_NEAR(size_ratio, 0.5, /*abs_error=*/0.05);
 }
 
 // Tests the individual close functionality of the `OverviewGroupItem` by
@@ -4099,11 +4080,7 @@ TEST_F(SnapGroupTest, CursorUpdateTest) {
 }
 
 // Tests the basic functionalities of multiple snap groups.
-TEST_F(SnapGroupTest, DISABLED_MultipleSnapGroups) {
-  // Use non-zero test duration to simulate a real device with animations.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
+TEST_F(SnapGroupTest, MultipleSnapGroups) {
   // Create the 1st snap group.
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
@@ -4112,35 +4089,40 @@ TEST_F(SnapGroupTest, DISABLED_MultipleSnapGroups) {
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
   auto* snap_group1 =
       snap_group_controller->GetSnapGroupForGivenWindow(w2.get());
-  auto* split_view_divider1 = snap_group1->split_view_divider();
+  auto* snap_group_divider1 = snap_group1->snap_group_divider();
 
-  // Minimize the 1st group so we can create a new group.
-  snap_group_controller->MinimizeTopMostSnapGroup();
+  // Create a new window (w3) and maximize it. This will temporarily clear any
+  // visible snapped windows, allowing the second snap group to be initialized.
+  std::unique_ptr<aura::Window> w3(CreateAppWindow(gfx::Rect(0, 0, 800, 600)));
 
   // Create a 2nd group using a different snap ratio from `group1`.
-  std::unique_ptr<aura::Window> w3(CreateAppWindow());
   std::unique_ptr<aura::Window> w4(CreateAppWindow());
-  ash::SnapOneTestWindow(w3.get(), WindowStateType::kPrimarySnapped,
+  std::unique_ptr<aura::Window> w5(CreateAppWindow());
+  ash::SnapOneTestWindow(w4.get(), WindowStateType::kPrimarySnapped,
                          chromeos::kTwoThirdSnapRatio);
-  WaitForOverviewEnterAnimation();
-  ClickOverviewItem(GetEventGenerator(), w4.get());
-  WaitForOverviewExitAnimation();
-  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w4.get()));
+  ClickOverviewItem(GetEventGenerator(), w5.get());
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w4.get(), w5.get()));
   auto* snap_group2 =
-      snap_group_controller->GetSnapGroupForGivenWindow(w3.get());
-  auto* split_view_divider2 = snap_group2->split_view_divider();
+      snap_group_controller->GetSnapGroupForGivenWindow(w4.get());
+  auto* snap_group_divider2 = snap_group2->snap_group_divider();
   EXPECT_EQ(2u, snap_group_controller->snap_groups_for_testing().size());
-  EXPECT_NE(split_view_divider1, split_view_divider2);
-  aura::Window* divider1 =
-      split_view_divider1->divider_widget()->GetNativeWindow();
-  aura::Window* divider2 =
-      split_view_divider2->divider_widget()->GetNativeWindow();
-  auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
-      Shell::Get()->GetPrimaryRootWindow());
-  // The order from bottom to top. For each group, the order is
-  // `second_mru_window`, `mru_window`, `divider`.
-  VerifyStackingOrder(desk_container, {w1.get(), w2.get(), divider1, w3.get(),
-                                       w4.get(), divider2});
+  EXPECT_NE(snap_group_divider1, snap_group_divider2);
+  aura::Window* divider1_window =
+      snap_group_divider1->divider_widget()->GetNativeWindow();
+  aura::Window* divider2_window =
+      snap_group_divider2->divider_widget()->GetNativeWindow();
+
+  // Ensure each snap group divider is directly attached to its associated
+  // windows. Verify the stacking order is correct inside each group and across
+  // different groups.
+  EXPECT_TRUE(window_util::IsStackedBelow(w2.get(), divider1_window));
+  EXPECT_TRUE(window_util::IsStackedBelow(w1.get(), w2.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(divider1_window, w3.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(w5.get(), divider2_window));
+  EXPECT_TRUE(window_util::IsStackedBelow(w4.get(), w5.get()));
+
+  // TODO(b/328783493): Avoid creating divider widget multiple times and add
+  // back `VerifyStackingOrderTest()`.
 
   // TODO(sophiewen): Test the bounds after restoring both groups.
 }

@@ -4,17 +4,12 @@
 
 #include "ash/wm/snap_group/snap_group.h"
 
-#include "ash/shell.h"
-#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
-#include "base/check_op.h"
-#include "chromeos/ui/base/display_util.h"
 #include "ui/base/hit_test.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -27,7 +22,7 @@ using chromeos::WindowStateType;
 }  // namespace
 
 SnapGroup::SnapGroup(aura::Window* window1, aura::Window* window2)
-    : split_view_divider_(this) {
+    : snap_group_divider_(this) {
   auto* window_state1 = WindowState::Get(window1);
   auto* window_state2 = WindowState::Get(window2);
   CHECK(window_state1->IsSnapped() && window_state2->IsSnapped() &&
@@ -44,8 +39,8 @@ SnapGroup::SnapGroup(aura::Window* window1, aura::Window* window2)
     window2_ = window1;
   }
 
-  ShowDivider();
   StartObservingWindows();
+  ShowDivider();
 }
 
 SnapGroup::~SnapGroup() {
@@ -56,14 +51,12 @@ SnapGroup::~SnapGroup() {
 }
 
 void SnapGroup::ShowDivider() {
-  // TODO(b/329890139): Verify whether we should be using
-  // `GetEquivalentDividerPosition()` here.
-  split_view_divider_.ShowFor(
-      GetEquivalentDividerPosition(window1_, /*should_consider_divider=*/true));
+  snap_group_divider_.ShowFor(GetEquivalentDividerPosition(
+      window1_, /*account_for_divider_width=*/true));
 }
 
 void SnapGroup::HideDivider() {
-  split_view_divider_.CloseDividerWidget();
+  snap_group_divider_.CloseDividerWidget();
 }
 
 void SnapGroup::OnLocatedEvent(ui::LocatedEvent* event) {
@@ -109,11 +102,6 @@ void SnapGroup::OnWindowDestroying(aura::Window* window) {
 
 void SnapGroup::OnPreWindowStateTypeChange(WindowState* window_state,
                                            chromeos::WindowStateType old_type) {
-  if (is_swapping_) {
-    // The windows can be swapped without breaking the group.
-    return;
-  }
-
   CHECK(old_type == WindowStateType::kPrimarySnapped ||
         old_type == WindowStateType::kSecondarySnapped);
   if (window_state->GetStateType() != old_type) {
@@ -128,13 +116,13 @@ void SnapGroup::StartResizeWithDivider(const gfx::Point& location_in_screen) {
 }
 
 void SnapGroup::UpdateResizeWithDivider(const gfx::Point& location_in_screen) {
-  CHECK(split_view_divider_.is_resizing_with_divider());
-  UpdateSnappedBoundsDuringResize();
+  CHECK(snap_group_divider_.is_resizing_with_divider());
+  UpdateSnappedWindowsBounds(/*account_for_divider_width=*/true);
 }
 
 bool SnapGroup::EndResizeWithDivider(const gfx::Point& location_in_screen) {
-  CHECK(!split_view_divider_.is_resizing_with_divider());
-  UpdateSnappedBoundsDuringResize();
+  CHECK(!snap_group_divider_.is_resizing_with_divider());
+  UpdateSnappedWindowsBounds(/*account_for_divider_width=*/true);
   // We return true since we are done with resizing and can hand back work to
   // `SplitViewDivider`. See `SplitViewDivider::EndResizeWithDivider()`.
   return true;
@@ -152,12 +140,20 @@ void SnapGroup::SwapWindows() {
 gfx::Rect SnapGroup::GetSnappedWindowBoundsInScreen(
     SnapPosition snap_position,
     aura::Window* window_for_minimum_size,
-    float snap_ratio) const {
+    float snap_ratio,
+    bool account_for_divider_width) const {
+  // Adjust the `snap_group_divider_` position, since
+  // `CalculateSnappedWindowBoundsInScreen()` in split_view_utils.cc calculate
+  // window bounds based on the divider position.
+  const int original_divider_position = snap_group_divider_.divider_position();
+  const int divider_position =
+      account_for_divider_width
+          ? original_divider_position
+          : original_divider_position + kSplitviewDividerShortSideLength / 2.f;
   return CalculateSnappedWindowBoundsInScreen(
       snap_position, window_for_minimum_size->GetRootWindow(),
-      window_for_minimum_size, /*account_for_divider_width=*/true,
-      split_view_divider_.divider_position(),
-      split_view_divider_.is_resizing_with_divider());
+      window_for_minimum_size, account_for_divider_width, divider_position,
+      snap_group_divider_.is_resizing_with_divider());
 }
 
 SnapPosition SnapGroup::GetPositionOfSnappedWindow(
@@ -191,63 +187,14 @@ void SnapGroup::StopObservingWindows() {
   window2_ = nullptr;
 }
 
-void SnapGroup::RefreshWindowBoundsInSnapGroup(bool on_snap_group_added) {
-  const display::Display& display1 =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window1_);
-  const display::Display& display2 =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window2_);
-
-  // TODO(michelefan@): Add multi-display support for snap group.
-  DCHECK_EQ(display1, display2);
-
-  gfx::Rect primary_window_bounds =
-      window_util::GetTargetScreenBounds(window1_);
-  const int primary_x = primary_window_bounds.x();
-  const int primary_y = primary_window_bounds.y();
-  const int primary_width = primary_window_bounds.width();
-  const int primary_height = primary_window_bounds.height();
-
-  gfx::Rect secondary_window_bounds =
-      window_util::GetTargetScreenBounds(window2_);
-  const int secondary_x = secondary_window_bounds.x();
-  const int secondary_y = secondary_window_bounds.y();
-  const int secondary_width = secondary_window_bounds.width();
-  const int secondary_height = secondary_window_bounds.height();
-
-  const int delta = on_snap_group_added ? kSplitviewDividerShortSideLength / 2
-                                        : -kSplitviewDividerShortSideLength / 2;
-
-  if (chromeos::IsLandscapeOrientation(GetSnapDisplayOrientation(display1))) {
-    primary_window_bounds.SetRect(primary_x, primary_y, primary_width - delta,
-                                  primary_height);
-    secondary_window_bounds.SetRect(secondary_x + delta, secondary_y,
-                                    secondary_width - delta, secondary_height);
-  } else {
-    primary_window_bounds.SetRect(primary_x, primary_y, primary_width,
-                                  primary_height - delta);
-    secondary_window_bounds.SetRect(secondary_x, secondary_y + delta,
-                                    secondary_width, secondary_height - delta);
-  }
-
-  const SetBoundsWMEvent window1_event(primary_window_bounds, /*animate=*/true);
-  WindowState::Get(window1_)->OnWMEvent(&window1_event);
-  const SetBoundsWMEvent window2_event(secondary_window_bounds,
-                                       /*animate=*/true);
-  WindowState::Get(window2_)->OnWMEvent(&window2_event);
-}
-
-void SnapGroup::UpdateSnappedBoundsDuringResize() {
-  // TODO(sophiewen): Consolidate with
-  // `SplitViewController::UpdateSnappedBounds()`.
+void SnapGroup::UpdateSnappedWindowsBounds(bool account_for_divider_width) {
   for (aura::Window* window : {window1_, window2_}) {
-    const SnapPosition snap_position = GetPositionOfSnappedWindow(window);
     const gfx::Rect requested_bounds = GetSnappedWindowBoundsInScreen(
-        snap_position, window, window_util::GetSnapRatioForWindow(window));
+        GetPositionOfSnappedWindow(window), window,
+        window_util::GetSnapRatioForWindow(window), account_for_divider_width);
     const SetBoundsWMEvent event(requested_bounds, /*animate=*/true);
     WindowState::Get(window)->OnWMEvent(&event);
   }
-
-  split_view_divider_.UpdateDividerBounds();
 }
 
 }  // namespace ash

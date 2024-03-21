@@ -52,7 +52,8 @@ class LayoutDividerController {
   virtual gfx::Rect GetSnappedWindowBoundsInScreen(
       SnapPosition snap_position,
       aura::Window* window_for_minimum_size,
-      float snap_ratio) const = 0;
+      float snap_ratio,
+      bool account_for_divider_width) const = 0;
 
   // `window` should be `primary_window_` or `secondary_window_` of this
   // delegate, and this function returns `SnapPosition::kPrimary` or

@@ -379,7 +379,8 @@ TEST_F(SplitViewControllerTest, Basic) {
   EXPECT_EQ(
       window1->GetBoundsInScreen(),
       split_view_controller()->GetSnappedWindowBoundsInScreen(
-          SnapPosition::kPrimary, window1.get(), chromeos::kDefaultSnapRatio));
+          SnapPosition::kPrimary, window1.get(), chromeos::kDefaultSnapRatio,
+          /*account_for_divider_width=*/true));
 
   split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
   EXPECT_EQ(split_view_controller()->state(),
@@ -387,10 +388,11 @@ TEST_F(SplitViewControllerTest, Basic) {
   EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
   EXPECT_NE(split_view_controller()->secondary_window(), window1.get());
   EXPECT_EQ(split_view_controller()->InSplitViewMode(), true);
-  EXPECT_EQ(window2->GetBoundsInScreen(),
-            split_view_controller()->GetSnappedWindowBoundsInScreen(
-                SnapPosition::kSecondary, window2.get(),
-                chromeos::kDefaultSnapRatio));
+  EXPECT_EQ(
+      window2->GetBoundsInScreen(),
+      split_view_controller()->GetSnappedWindowBoundsInScreen(
+          SnapPosition::kSecondary, window2.get(), chromeos::kDefaultSnapRatio,
+          /*account_for_divider_width=*/true));
 
   EndSplitView();
   EXPECT_EQ(split_view_controller()->state(),
@@ -2088,7 +2090,8 @@ TEST_F(SplitViewControllerTest, ResizingSnappedWindowWithMinimumSizeTest) {
 
   gfx::Rect snapped_window_bounds =
       split_view_controller()->GetSnappedWindowBoundsInScreen(
-          SnapPosition::kPrimary, window1.get(), chromeos::kDefaultSnapRatio);
+          SnapPosition::kPrimary, window1.get(), chromeos::kDefaultSnapRatio,
+          /*account_for_divider_width=*/true);
   // The snapped window bounds can't be pushed outside of the display area.
   EXPECT_EQ(snapped_window_bounds.x(), display_bounds.x());
   EXPECT_EQ(snapped_window_bounds.width(),
@@ -2126,7 +2129,8 @@ TEST_F(SplitViewControllerTest, ResizingSnappedWindowWithMinimumSizeTest) {
 
   snapped_window_bounds =
       split_view_controller()->GetSnappedWindowBoundsInScreen(
-          SnapPosition::kPrimary, window1.get(), chromeos::kDefaultSnapRatio);
+          SnapPosition::kPrimary, window1.get(), chromeos::kDefaultSnapRatio,
+          /*account_for_divider_width=*/true);
   EXPECT_EQ(snapped_window_bounds.y(), display_bounds.y());
   EXPECT_EQ(snapped_window_bounds.height(),
             window1->delegate()->GetMinimumSize().height());
@@ -2158,7 +2162,8 @@ TEST_F(SplitViewControllerTest, ResizingSnappedWindowWithMinimumSizeTest) {
 
   snapped_window_bounds =
       split_view_controller()->GetSnappedWindowBoundsInScreen(
-          SnapPosition::kSecondary, window1.get(), chromeos::kDefaultSnapRatio);
+          SnapPosition::kSecondary, window1.get(), chromeos::kDefaultSnapRatio,
+          /*account_for_divider_width=*/true);
   EXPECT_EQ(snapped_window_bounds.x(), display_bounds.x());
   EXPECT_EQ(snapped_window_bounds.width(),
             window1->delegate()->GetMinimumSize().width());
@@ -2190,7 +2195,8 @@ TEST_F(SplitViewControllerTest, ResizingSnappedWindowWithMinimumSizeTest) {
 
   snapped_window_bounds =
       split_view_controller()->GetSnappedWindowBoundsInScreen(
-          SnapPosition::kSecondary, window1.get(), chromeos::kDefaultSnapRatio);
+          SnapPosition::kSecondary, window1.get(), chromeos::kDefaultSnapRatio,
+          /*account_for_divider_width=*/true);
   EXPECT_EQ(snapped_window_bounds.y(), display_bounds.y());
   EXPECT_EQ(snapped_window_bounds.height(),
             window1->delegate()->GetMinimumSize().height());
@@ -2692,7 +2698,8 @@ TEST_F(SplitViewControllerTest, AdjustTransientChildBounds) {
   // Now try to manually move the bubble out of the snapped window.
   bubble_window->SetBoundsInScreen(
       split_view_controller()->GetSnappedWindowBoundsInScreen(
-          SnapPosition::kSecondary, window, chromeos::kDefaultSnapRatio),
+          SnapPosition::kSecondary, window, chromeos::kDefaultSnapRatio,
+          /*account_for_divider_width=*/true),
       display::Screen::GetScreen()->GetDisplayNearestWindow(window));
   // Test that the bubble can't be moved outside of its anchor widget.
   EXPECT_TRUE(window_bounds.Contains(bubble_window->GetBoundsInScreen()));

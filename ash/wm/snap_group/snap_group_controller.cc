@@ -10,14 +10,11 @@
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group.h"
-#include "ash/wm/splitview/split_view_controller.h"
-#include "ash/wm/splitview/split_view_types.h"
+#include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
-#include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -34,13 +31,13 @@ SnapGroupController* g_instance = nullptr;
 }  // namespace
 
 SnapGroupController::SnapGroupController() {
-  Shell::Get()->overview_controller()->AddObserver(this);
+  OverviewController::Get()->AddObserver(this);
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 }
 
 SnapGroupController::~SnapGroupController() {
-  Shell::Get()->overview_controller()->RemoveObserver(this);
+  OverviewController::Get()->RemoveObserver(this);
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
@@ -64,8 +61,6 @@ bool SnapGroupController::AddSnapGroup(aura::Window* window1,
                                        aura::Window* window2) {
   // We should only allow snap group to be created for windows that have the
   // same parent.
-  // TODO(michelefan): Avoid showing the lock widget if given two windows are
-  // not allowed to create a snap group.
   if (window1->parent() != window2->parent()) {
     return false;
   }
@@ -87,7 +82,8 @@ bool SnapGroupController::AddSnapGroup(aura::Window* window1,
   // window_state.cc.
   auto* snap_group_ptr = snap_group.get();
   snap_groups_.push_back(std::move(snap_group));
-  snap_group_ptr->RefreshWindowBoundsInSnapGroup(/*on_snap_group_added=*/true);
+  snap_group_ptr->UpdateSnappedWindowsBounds(
+      /*account_for_divider_width=*/true);
 
   return true;
 }
@@ -100,7 +96,7 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
         base::Contains(window_to_snap_group_map_, window2));
 
   if (!Shell::Get()->IsInTabletMode()) {
-    snap_group->RefreshWindowBoundsInSnapGroup(/*on_snap_group_added=*/false);
+    snap_group->UpdateSnappedWindowsBounds(/*account_for_divider_width=*/false);
   }
 
   window_to_snap_group_map_.erase(window1);
@@ -182,6 +178,9 @@ void SnapGroupController::OnOverviewModeStarting() {
 
 void SnapGroupController::OnOverviewModeEnded() {
   for (const auto& snap_group : snap_groups_) {
+    // TODO(http://b/328783493):  The divider may have been created in the snap
+    // group creation session with partial overview, avoid additional call to
+    // `ShowDivider()` on overview mode ended.
     snap_group->ShowDivider();
   }
 }
