@@ -91,6 +91,9 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskRunner;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
@@ -233,6 +236,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private boolean mIsCurrentlyAutoDisabled;
     private int mAutoDisableUsageCounter;
     private boolean mIsAutoDisableAccessibilityCandidate;
+
+    // To avoid any potential synchronization issues we post all broadcast receiver registration
+    // actions to the same sequence to be run serially.
+    private static final TaskRunner sSequencedTaskRunner =
+            PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT_MAY_BLOCK);
 
     /** Create a WebContentsAccessibilityImpl object. */
     private static class Factory implements UserDataFactory<WebContentsAccessibilityImpl> {
@@ -470,7 +478,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 };
 
         // Register a broadcast receiver for locale change.
-        if (mView.isAttachedToWindow()) registerLocaleChangeReceiver();
+        if (mView.isAttachedToWindow()) {
+            sSequencedTaskRunner.postTask(() -> registerLocaleChangeReceiver());
+        }
 
         // Define a set of relevant AccessibilityEvents.
         Runnable serviceMaskRunnable =
@@ -647,11 +657,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // When the native code was initialized, also record performance metrics unregister
             // our broadcast receiver.
             if (isNativeInitialized()) {
-                ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);
+                sSequencedTaskRunner.postTask(
+                        () ->
+                                ContextUtils.getApplicationContext()
+                                        .unregisterReceiver(mBroadcastReceiver));
                 mHistogramRecorder.recordAccessibilityPerformanceHistograms();
-                // When we are in an initialized state, accessibility may be disabled. In that
-                // case, we should keep an on-going sum of the time spent disabled (without
-                // counting time while hidden/backgrounded).
+                // When we are in an initialized state, accessibility may be disabled.
+                // In that case, we should keep an on-going sum of the time spent disabled
+                // (without counting time while hidden/backgrounded).
                 if (mIsCurrentlyAutoDisabled) {
                     mHistogramRecorder.hideAutoDisabledInstance();
                 }
@@ -678,7 +691,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             mCaptioningController.startListening();
         }
 
-        registerLocaleChangeReceiver();
+        sSequencedTaskRunner.postTask(() -> registerLocaleChangeReceiver());
         TraceEvent.end("WebContentsAccessibilityImpl.onAttachedToWindow");
     }
 
