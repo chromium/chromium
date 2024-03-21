@@ -16,9 +16,13 @@
  */
 import child_process from 'child_process';
 import fs from 'fs';
+import path from 'path';
+import url from 'url';
 
 import {apply2023Filter} from './filter-2023.mjs';
 import {generateReport} from './formatter.mjs';
+
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 function getCurrentCommit() {
   if (process.env.GITHUB_SHA) {
@@ -26,6 +30,15 @@ function getCurrentCommit() {
     return process.env.GITHUB_SHA;
   }
   return child_process.execSync('git rev-parse HEAD').toString().trim();
+}
+
+function getChromeVersion() {
+  const version = fs.readFileSync(
+    path.join(__dirname, '../../.browser'),
+    'utf8'
+  );
+
+  return version.split('@')[1];
 }
 
 function readReport(filePath) {
@@ -39,9 +52,13 @@ const filteredOutputPath = process.argv[4];
 const reportData = readReport(jsonPath);
 const filteredReportData = apply2023Filter(reportData);
 const currentCommit = getCurrentCommit();
+const chromeVersion = getChromeVersion();
 
-fs.writeFileSync(outputPath, generateReport(reportData, currentCommit));
+fs.writeFileSync(
+  outputPath,
+  generateReport(reportData, currentCommit, chromeVersion)
+);
 fs.writeFileSync(
   filteredOutputPath,
-  generateReport(filteredReportData, currentCommit)
+  generateReport(filteredReportData, currentCommit, chromeVersion)
 );

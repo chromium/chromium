@@ -161,20 +161,23 @@ function compareToBaseLine(current, baseline) {
   `;
 }
 
-function generateHtml(map, commitHash, isFiltered, baseline) {
+function generateHtml(map, commitHash, chromeVersion, isFiltered, baseline) {
   const date = new Date().toISOString().slice(0, 'yyyy-mm-dd'.length);
   const shortCommitHash = commitHash.slice(0, 8);
 
   const header = `
     <div class="headings">
       <h1>
-        WPT test results
-          ${
-            isFiltered
-              ? ' matching <a href="https://wpt.fyi/results/webdriver/tests/bidi?q=label%3Achromium-bidi-2023"><code>label:chromium-bidi-2023</code></a>'
-              : ''
-          }
-        for <a href="${linkCommit(commitHash)}"><code>${shortCommitHash}</code></a>
+        <span>
+          WPT test results
+            ${
+              isFiltered
+                ? ' matching <a href="https://wpt.fyi/results/webdriver/tests/bidi?q=label%3Achromium-bidi-2023"><code>label:chromium-bidi-2023</code></a>'
+                : ''
+            }
+          for <a href="${linkCommit(commitHash)}"><code>${shortCommitHash}</code></a>
+        </span>
+        <span>Chrome ${chromeVersion}</span>
           @ <time>${date}</time>
         <h2>${map.stat.passing} / ${map.stat.total} (${
           map.stat.total - map.stat.passing
@@ -183,7 +186,7 @@ function generateHtml(map, commitHash, isFiltered, baseline) {
     </div>`;
 
   const tests = `
-        <div>
+      <div>
         ${Array.from(map.children.values())
           .map((t) => generateTestReport(t, map.path))
           .join('')}
@@ -265,10 +268,11 @@ function linkCommit(commitHash) {
   return `https://github.com/GoogleChromeLabs/chromium-bidi/commit/${commitHash}`;
 }
 
-export function generateReport(reportData, commitHash) {
+export function generateReport(reportData, commitHash, chromeVersion) {
   return generateHtml(
     groupTests(flattenTests(reportData)),
     commitHash,
+    chromeVersion,
     reportData.isFiltered,
     reportData.baseline
   );
