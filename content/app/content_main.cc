@@ -285,10 +285,7 @@ RunContentProcess(ContentMainParams params,
 #endif
 
 #if BUILDFLAG(IS_IOS)
-    // TODO(crbug.com/1412835): We support multiprocess launch of the content
-    // process, but for now networking and GPU are still in process.
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitch(switches::kInProcessGPU);
     command_line->AppendSwitch(switches::kEnableViewport);
     command_line->AppendSwitch(switches::kUseMobileUserAgent);
 #endif

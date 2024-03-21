@@ -6,7 +6,6 @@
 
 #import <Foundation/Foundation.h>
 #import <QuartzCore/QuartzCore.h>
-#import <UIKit/UIKit.h>
 
 #include "base/apple/mach_logging.h"
 #include "base/logging.h"
@@ -14,6 +13,9 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace {
+
+// ProMotion devices only support up to 120Hz.
+constexpr float kMaxRefreshRate = 120;
 
 constexpr float kMinimumRefreshRate =
     (viz::BeginFrameArgs::MinInterval() == base::TimeDelta()
@@ -88,7 +90,7 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
     _displayLink =
         [CADisplayLink displayLinkWithTarget:self
                                     selector:@selector(displayLinkDidFire:)];
-    _maximumRefreshRate = UIScreen.mainScreen.maximumFramesPerSecond;
+    _maximumRefreshRate = kMaxRefreshRate;
     [self setPreferredInterval:base::Hertz(_maximumRefreshRate)];
     [self setEnabled:false];
     [_displayLink addToRunLoop:NSRunLoop.currentRunLoop
