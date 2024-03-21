@@ -2469,11 +2469,11 @@
       name: "MouseDragFromIframeOnCancelledMouseDown",
       status: "stable",
     },
-    // crbug.com/346473: Allow mouse-drag text selection even when mousemove
+    // crbug.com/40078978: Allow mouse-drag text selection even when mousemove
     // event is cancelled.
     {
       name: "MouseDragOnCancelledMouseMove",
-      status: "experimental",
+      status: "stable",
     },
     // crbug.com/1446498: This feature is being used for the deprecation of
     // Mutation Events.
