@@ -30,12 +30,10 @@
 #include <touchpad-haptics-unstable-v1-server-protocol.h>
 #include <viewporter-server-protocol.h>
 #include <vsync-feedback-unstable-v1-server-protocol.h>
-#include <wayland-server-core.h>
 #include <xdg-decoration-unstable-v1-server-protocol.h>
 #include <xdg-shell-server-protocol.h>
 
 #include <memory>
-#include <sstream>
 #include <string>
 #include <utility>
 
@@ -47,7 +45,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
-#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "components/exo/display.h"
 #include "components/exo/security_delegate.h"
@@ -163,20 +160,6 @@ int GetTextInputExtensionV1Version() {
   return 9;
 }
 
-void LogToPerfetto(void* user_data,
-                   wl_protocol_logger_type type,
-                   const wl_protocol_logger_message* message) {
-  std::stringstream name;
-  name << (type == WL_PROTOCOL_LOGGER_EVENT ? "Sent event: "
-                                            : "Received request: ");
-  name << wl_resource_get_class(message->resource);
-  name << '@';
-  name << wl_resource_get_id(message->resource);
-  name << '.';
-  name << message->message->name;
-  TRACE_EVENT_INSTANT("exo", perfetto::DynamicString{name.str()});
-}
-
 }  // namespace
 
 bool Server::Open() {
@@ -271,8 +254,6 @@ Server::Server(Display* display,
   SetSecurityDelegate(wl_display_.get(), security_delegate_.get());
 
   client_tracker_ = std::make_unique<ClientTracker>(wl_display_.get());
-
-  wl_display_add_protocol_logger(wl_display_.get(), &LogToPerfetto, nullptr);
 }
 
 void Server::Initialize() {
