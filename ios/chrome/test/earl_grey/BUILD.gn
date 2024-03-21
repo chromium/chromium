@@ -120,7 +120,6 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/translate/model:eg_app_support+eg2",
     "//ios/chrome/browser/ui/authentication:eg_app_support+eg2",
     "//ios/chrome/browser/ui/authentication/cells",
-    "//ios/chrome/browser/ui/authentication/signin/advanced_settings_signin:constants",
     "//ios/chrome/browser/ui/autofill:autofill_ui",
     "//ios/chrome/browser/ui/autofill:eg_app_support+eg2",
     "//ios/chrome/browser/ui/autofill/form_input_accessory:eg_app_support+eg2",

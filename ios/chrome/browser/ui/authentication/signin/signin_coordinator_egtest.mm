@@ -61,7 +61,6 @@ using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsImportDataContinueButton;
 using chrome_test_util::SettingsImportDataImportButton;
 using chrome_test_util::SettingsImportDataKeepSeparateButton;
-using chrome_test_util::SettingsLink;
 using chrome_test_util::SettingsSignInRowMatcher;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
 using l10n_util::GetNSString;
@@ -76,13 +75,6 @@ typedef NS_ENUM(NSInteger, OpenSigninMethod) {
   OpenSigninMethodFromTabSwitcher,
 };
 
-// TODO(crbug.com/1277545): Flaky on iOS simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSwipeDownInAdvancedSettings \
-  DISABLED_testSwipeDownInAdvancedSettings
-#else
-#define MAYBE_testSwipeDownInAdvancedSettings testSwipeDownInAdvancedSettings
-#endif
 namespace {
 
 // Label used to find the 'Learn more' link.
@@ -196,19 +188,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
             (testSignInSwitchAccountsAndKeepDataSeparate)] ||
       [self isRunningTest:@selector(testSignInSwitchAccountsAndImportData)] ||
       [self isRunningTest:@selector(testSignInCancelAuthenticationFlow)] ||
-      [self isRunningTest:@selector
-            (testDismissAdvancedSigninSettingsFromAdvancedSigninSettings)] ||
-      [self isRunningTest:@selector
-            (testDismissSigninFromRecentTabsFromAdvancedSigninSettings)] ||
-      [self isRunningTest:@selector
-            (testDismissSigninFromTabSwitcherFromAdvancedSigninSettings)] ||
       [self isRunningTest:@selector(testSignInFromSyncOffLink)] ||
       [self isRunningTest:@selector
             (testSignInWithOneAccountStartSyncWithAnotherAccount)] ||
       [self isRunningTest:@selector(testSyncTypesDisabledPolicy)] ||
       [self
           isRunningTest:@selector(testSwipeDownSignInViewWithoutAnIdentity)] ||
-      [self isRunningTest:@selector(MAYBE_testSwipeDownInAdvancedSettings)] ||
       [self isRunningTest:@selector(testCancelFromSyncOffLink)] ||
       [self
           isRunningTest:@selector
@@ -432,7 +417,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [self openSigninFromView:OpenSigninMethodFromSettings];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kIdentityButtonControlIdentifier)]
       performAction:grey_tap()];
@@ -447,7 +432,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   // Re-open the sign-in screen. If it wasn't correctly dismissed previously,
   // this will fail.
-  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [self openSigninFromView:OpenSigninMethodFromSettings];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kIdentityButtonControlIdentifier)]
       performAction:grey_tap()];
@@ -495,7 +480,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGreyUI
       signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
   // Sign in with `fakeIdentity1`.
-  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [self openSigninFromView:OpenSigninMethodFromSettings];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kIdentityButtonControlIdentifier)]
       performAction:grey_tap()];
@@ -519,7 +504,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   // Re-open the sign-in screen. If it wasn't correctly dismissed previously,
   // this will fail.
-  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [self openSigninFromView:OpenSigninMethodFromSettings];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kIdentityButtonControlIdentifier)]
       performAction:grey_tap()];
@@ -549,54 +534,21 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Sign-in opened from: setting menu.
 // Interrupted at: user consent.
 - (void)testDismissSigninFromSettings {
-  [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromSettings
-                        tapSettingsLink:NO];
-}
-
-// Tests to dismiss sign-in by opening an URL from another app.
-// Sign-in opened from: setting menu.
-// Interrupted at: advanced sign-in.
-// kReplaceSyncPromosWithSignInPromos is disabled as there is no advanced
-// sign-in anymore.
-- (void)testDismissAdvancedSigninSettingsFromAdvancedSigninSettings {
-  [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromSettings
-                        tapSettingsLink:YES];
+  [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromSettings];
 }
 
 // Tests to dismiss sign-in by opening an URL from another app.
 // Sign-in opened from: recent tabs.
 // Interrupted at: user consent.
 - (void)testDismissSigninFromRecentTabs {
-  [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromRecentTabs
-                        tapSettingsLink:NO];
-}
-
-// Tests to dismiss sign-in by opening an URL from another app.
-// Sign-in opened from: recent tabs.
-// Interrupted at: advanced sign-in.
-// kReplaceSyncPromosWithSignInPromos is disabled as there is no advanced
-// sign-in anymore.
-- (void)testDismissSigninFromRecentTabsFromAdvancedSigninSettings {
-  [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromRecentTabs
-                        tapSettingsLink:YES];
+  [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromRecentTabs];
 }
 
 // Tests to dismiss sign-in by opening an URL from another app.
 // Sign-in opened from: tab switcher.
 // Interrupted at: user consent.
 - (void)testDismissSigninFromTabSwitcher {
-  [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromTabSwitcher
-                        tapSettingsLink:NO];
-}
-
-// Tests to dismiss sign-in by opening an URL from another app.
-// Sign-in opened from: tab switcher.
-// Interrupted at: advanced sign-in.
-// kReplaceSyncPromosWithSignInPromos is disabled as there is no advanced
-// sign-in anymore.
-- (void)testDismissSigninFromTabSwitcherFromAdvancedSigninSettings {
-  [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromTabSwitcher
-                        tapSettingsLink:YES];
+  [self assertOpenURLWhenSigninFromView:OpenSigninMethodFromTabSwitcher];
 }
 
 // Tests to dismiss sign-in by opening an URL from another app.
@@ -605,7 +557,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (void)testDismissSigninFromTabSwitcherFromIdentityPicker {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [self openSigninFromView:OpenSigninMethodFromTabSwitcher tapSettingsLink:NO];
+  [self openSigninFromView:OpenSigninMethodFromTabSwitcher];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kIdentityButtonControlIdentifier)]
       performAction:grey_tap()];
@@ -632,31 +584,11 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
 }
 
-// Verifies that the user is signed in when selecting "Yes I'm In", after the
-// advanced settings were swiped to dismiss.
-// kReplaceSyncPromosWithSignInPromos is disabled as there is no advanced
-// sign-in anymore.
-- (void)MAYBE_testSwipeDownInAdvancedSettings {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:YES];
-
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kManageSyncTableViewAccessibilityIdentifier)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
-
-  [SigninEarlGreyUI tapSigninConfirmationDialog];
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-}
-
 #pragma mark - Utils
 
 // Opens sign-in view.
 // `openSigninMethod` is the way to start the sign-in.
-// `tapSettingsLink` if YES, the setting link is tapped before opening the URL.
-- (void)openSigninFromView:(OpenSigninMethod)openSigninMethod
-           tapSettingsLink:(BOOL)tapSettingsLink {
+- (void)openSigninFromView:(OpenSigninMethod)openSigninMethod {
   switch (openSigninMethod) {
     case OpenSigninMethodFromSettings:
       [ChromeEarlGreyUI openSettingsMenu];
@@ -683,22 +615,15 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       [SigninEarlGreyUI tapPrimarySignInButtonInTabSwitcher];
       break;
   }
-  if (tapSettingsLink) {
-    [ChromeEarlGreyUI waitForAppToIdle];
-    [[EarlGrey selectElementWithMatcher:SettingsLink()]
-        performAction:grey_tap()];
-  }
   [ChromeEarlGreyUI waitForAppToIdle];
 }
 
 // Starts the sign-in workflow, and simulates opening an URL from another app.
 // `openSigninMethod` is the way to start the sign-in.
-// `tapSettingsLink` if YES, the setting link is tapped before opening the URL.
-- (void)assertOpenURLWhenSigninFromView:(OpenSigninMethod)openSigninMethod
-                        tapSettingsLink:(BOOL)tapSettingsLink {
+- (void)assertOpenURLWhenSigninFromView:(OpenSigninMethod)openSigninMethod {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
-  [self openSigninFromView:openSigninMethod tapSettingsLink:tapSettingsLink];
+  [self openSigninFromView:openSigninMethod];
   // Open the URL as if it was opened from another app.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL expectedURL = self.testServer->GetURL("/echo");
@@ -727,7 +652,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that the "add account" view can be opened from settings.
 - (void)testOpeningAddAccountView {
-  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [self openSigninFromView:OpenSigninMethodFromSettings];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [self assertFakeSSOScreenIsVisible];
@@ -749,7 +674,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Open the identity chooser.
-  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [self openSigninFromView:OpenSigninMethodFromSettings];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kIdentityButtonControlIdentifier)]
       performAction:grey_tap()];
@@ -773,7 +698,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [self openSigninFromView:OpenSigninMethodFromSettings];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kIdentityButtonControlIdentifier)]
       performAction:grey_tap()];
@@ -794,7 +719,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   // Re-open the sign-in screen. If it wasn't correctly dismissed previously,
   // this will fail.
-  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [self openSigninFromView:OpenSigninMethodFromSettings];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kIdentityButtonControlIdentifier)]
       performAction:grey_tap()];
@@ -828,7 +753,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [self openSigninFromView:OpenSigninMethodFromSettings];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kIdentityButtonControlIdentifier)]
       performAction:grey_tap()];
@@ -1274,7 +1199,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [self openSigninFromView:OpenSigninMethodFromSettings];
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier)]
@@ -1363,7 +1288,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   policy_test_utils::SetPolicy(base::Value(std::move(list)),
                                policy::key::kSyncTypesListDisabled);
 
-  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [self openSigninFromView:OpenSigninMethodFromSettings];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   NSString* policyText =
@@ -1436,7 +1361,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // kReplaceSyncPromosWithSignInPromos is disabled because, when enabled,
 // the add account view is directly opened, skipping the sign-in view.
 - (void)testSwipeDownSignInViewWithoutAnIdentity {
-  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [self openSigninFromView:OpenSigninMethodFromSettings];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kUnifiedConsentScrollViewIdentifier)]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
@@ -1461,7 +1386,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       grey_accessibilityLabel(
           l10n_util::GetNSString(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON)),
       grey_accessibilityID(kConfirmationAccessibilityIdentifier), nil);
-  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
+  [self openSigninFromView:OpenSigninMethodFromSettings];
   [ChromeEarlGreyUI waitForAppToIdle];
   // Verify that the "Add Account" button is visible and the "Yes, I'm In" is
   // not.

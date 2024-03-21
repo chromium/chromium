@@ -404,27 +404,4 @@ TEST_F(SigninUtilsTest,
       syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete);
 }
 
-// Regression test for crbug.com/1248042.
-// signin::GetPrimaryIdentitySigninState for a syncing user who has not
-// completed the sync setup (due to a crash while in advanced settings) should
-// return the signed-in, sync disabled state.
-TEST_F(SigninUtilsTest, TestGetPrimaryIdentitySigninStateSyncGranted) {
-  FakeSystemIdentity* identity =
-      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
-                                     gaiaID:@"foo1ID"
-                                       name:@"Fake Foo 1"];
-  fake_system_identity_manager()->AddIdentity(identity);
-  AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForBrowserState(
-          chrome_browser_state_.get());
-  authentication_service->SignIn(
-      identity, signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
-  authentication_service->GrantSyncConsent(
-      identity, signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
-
-  IdentitySigninState state =
-      signin::GetPrimaryIdentitySigninState(chrome_browser_state_.get());
-  EXPECT_EQ(IdentitySigninStateSignedInWithSyncDisabled, state);
-}
-
 }  // namespace

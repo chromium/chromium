@@ -51,7 +51,6 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::GoogleSyncSettingsButton;
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::SettingsAccountButton;
-using chrome_test_util::SettingsLink;
 using chrome_test_util::SettingsSignInRowMatcher;
 using chrome_test_util::SignOutAccountsButton;
 
@@ -278,8 +277,6 @@ void CompleteSigninFlow() {
   // become obsolete with feature syncer::kReplaceSyncPromosWithSignInPromos.
   // Meanwhile, force-disable the feature to keep the test around.
   if ([self isRunningTest:@selector
-            (testHandlingIntentWhenSigninAfterSyncSettingOnRegularPrompt)] ||
-      [self isRunningTest:@selector
             (testSignInWithOneAccountStartSyncWithAnotherAccount)] ||
       [self isRunningTest:@selector(testSignOutActionSheetUI)] ||
       [self isRunningTest:@selector
@@ -997,85 +994,6 @@ void CompleteSigninFlow() {
 
   // Make sure the forced sign-in screen isn't shown because the browser is
   // already signed in.
-  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
-      assertWithMatcher:grey_nil()];
-
-  // Verify that the intent was loaded.
-  WaitUntilPageLoadedWithURL(URLToOpen);
-}
-
-// Tests that chaining the regular sign-in prompt and the forced sign-in screen
-// is done correctly when the forced sign-in policy is enabled and an external
-// intent is triggered while the advanced settings are shown. This test makes
-// sure that having the browser signed in isn't sufficient to start loading the
-// intent where the sign-in prompt should be manually dismissed first before
-// doing that. The account will be signed in temporarily when showing advanced
-// settings.
-- (void)testHandlingIntentWhenSigninAfterSyncSettingOnRegularPrompt {
-  // Serve the test page locally using the internal embedded server.
-  self.testServer->RegisterRequestHandler(
-      base::BindRepeating(&PageHttpResponse));
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  NSURL* URLToOpen = net::NSURLWithGURL(self.testServer->GetURL(kPageURL));
-
-  // Restart the app to reset the policies.
-  [self restartAppWithoutEnterprisePolicy];
-
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  // Disable the forced sign-in policy.
-  SetSigninEnterprisePolicyValue(BrowserSigninMode::kEnabled);
-
-  // Dismiss the forced sign-in screen if presented. This may happen sometimes
-  // if the browser has the forced sign-in policy enabled at start time.
-  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
-
-  // Open the regular sign-in prompt from settings.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsSignInRowMatcher()];
-
-  // Open advanced sync settings.
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForMatcher:grey_accessibilityID(
-                         kManageSyncTableViewAccessibilityIdentifier)];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Enable the forced sign-in policy while the advanced settings are opened.
-  SetSigninEnterprisePolicyValue(BrowserSigninMode::kForced);
-
-  // Simulate an external intent while the advanced settings are opened.
-  SimulateExternalAppURLOpeningWithURL(URLToOpen);
-
-  // Verify that the advanced settings are still there. This verifies that the
-  // sign-in prompt isn't dismissed when the policy becomes active.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kManageSyncTableViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_notNil()];
-
-  // Dismiss advanced sync settings.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kManageSyncTableViewAccessibilityIdentifier)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
-
-  // Dismiss the regular sign-in prompt by skipping it.
-  [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabelId(
-                     IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON)]
-      performAction:grey_tap()];
-
-  // Wait and verify that the forced sign-in screen is shown when the policy is
-  // enabled and the browser is signed out.
-  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
-
-  // Sign in account without enabling sync.
-  WaitForForcedSigninScreenAndSignin(fakeIdentity);
-
-  // Make sure the forced sign-in screen isn't shown because it should have
-  // been dismissed.
   [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
       assertWithMatcher:grey_nil()];
 

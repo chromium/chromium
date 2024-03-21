@@ -78,25 +78,10 @@ typedef NS_ENUM(NSUInteger, FRESigninIntent) {
 
 NSString* const kSyncPassphrase = @"hello";
 
-// Returns matcher for the sync encryption action button.
-id<GREYMatcher> SyncEncryptionButtonMatcher() {
-  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
-                        IDS_IOS_MANAGE_SYNC_ENCRYPTION),
-                    grey_sufficientlyVisible(), nil);
-}
-
 // Returns matcher for UMA manage link.
 id<GREYMatcher> ManageUMALinkMatcher() {
   return grey_allOf(grey_accessibilityLabel(@"Manage"),
                     grey_sufficientlyVisible(), nil);
-}
-
-// Returns matcher for the button to open the Sync settings.
-id<GREYMatcher> GetSyncSettings() {
-  id<GREYMatcher> disclaimer =
-      grey_accessibilityID(kPromoStyleDisclaimerViewAccessibilityIdentifier);
-  return grey_allOf(grey_accessibilityLabel(@"settings"),
-                    grey_ancestor(disclaimer), grey_sufficientlyVisible(), nil);
 }
 
 // Dismisses the remaining screens in FRE after the default browser screen.
@@ -444,14 +429,6 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       [self isRunningTest:@selector(testHistorySyncLayout)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
-  } else if ([self isRunningTest:@selector
-                   (testAdvancedSettingsWithSyncPassphrase)] ||
-             [self isRunningTest:@selector
-                   (testAdvancedSettingsAndDisableTwoDataTypes)] ||
-             [self isRunningTest:@selector
-                   (testSigninWithOnlyBookmarkSyncDataTypeEnabled)]) {
-    config.features_disabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
   }
 
   if ([self isRunningTest:@selector
@@ -786,119 +763,6 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   [self verifySyncOrHistoryEnabled:NO];
 }
 
-// Tests accepting sync with 2 datatype disabled.
-- (void)testAdvancedSettingsAndDisableTwoDataTypes {
-  // Add identity.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Verify 2 steps FRE.
-  [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
-            FRESigninIntentRegular];
-  // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
-                      scrollViewIdentifier:
-                          kPromoStyleScrollViewAccessibilityIdentifier]
-      performAction:grey_tap()];
-  // Open advanced sync settings.
-  [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
-      performAction:grey_tap()];
-  // Turn off "Sync Everything".
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                   kSyncEverythingItemAccessibilityIdentifier,
-                                   /*is_toggled_on=*/YES,
-                                   /*enabled=*/YES)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
-  // Turn off "Address and more".
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                          kSyncAutofillIdentifier,
-                                          /*is_toggled_on=*/YES,
-                                          /*enabled=*/YES)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
-  // Turn off "Bookmarks".
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                          kSyncBookmarksIdentifier,
-                                          /*is_toggled_on=*/YES,
-                                          /*enabled=*/YES)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
-  // Close the advanced sync settings.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher()]
-      performAction:grey_tap()];
-  // Check sync did not start yet.
-  GREYAssertFalse([FirstRunAppInterface isInitialSyncFeatureSetupComplete],
-                  @"Sync shouldn't start when discarding advanced settings.");
-  // Accept sync.
-  [self acceptSyncOrHistory];
-  // Check that UMA is on.
-  GREYAssertTrue(
-      [FirstRunAppInterface isUMACollectionEnabled],
-      @"kMetricsReportingEnabled pref was unexpectedly false by default.");
-  // Check signed in.
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  // Check sync is on.
-  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:chrome_test_util::ManageSyncSettingsButton()];
-  // Check "Sync Everything" is off.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                   kSyncEverythingItemAccessibilityIdentifier,
-                                   /*is_toggled_on=*/NO,
-                                   /*enabled=*/YES)]
-      assertWithMatcher:grey_notNil()];
-  // Check "Address and more" is off.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                          kSyncAutofillIdentifier,
-                                          /*is_toggled_on=*/NO,
-                                          /*enabled=*/YES)]
-      assertWithMatcher:grey_notNil()];
-  // Check "Bookmarks" is off.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                          kSyncBookmarksIdentifier,
-                                          /*is_toggled_on=*/NO,
-                                          /*enabled=*/YES)]
-      assertWithMatcher:grey_notNil()];
-}
-
-// Tests sign-in in FRE with an identity that needs a sync passphrase.
-- (void)testAdvancedSettingsWithSyncPassphrase {
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kSyncPassphrase];
-  // Add identity.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Verify 2 steps FRE.
-  [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
-            FRESigninIntentRegular];
-  // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
-                      scrollViewIdentifier:
-                          kPromoStyleScrollViewAccessibilityIdentifier]
-      performAction:grey_tap()];
-  // Open advanced sync settings.
-  [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
-      performAction:grey_tap()];
-  // Select Encryption item.
-  [[self elementInteractionWithGreyMatcher:SyncEncryptionButtonMatcher()
-                      scrollViewIdentifier:
-                          kManageSyncTableViewAccessibilityIdentifier]
-      performAction:grey_tap()];
-  [SigninEarlGreyUI submitSyncPassphrase:kSyncPassphrase];
-  // Close the advanced sync settings.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher()]
-      performAction:grey_tap()];
-  // Accept sync.
-  [self acceptSyncOrHistory];
-  // Check sync is on.
-  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
-  [ChromeEarlGreyUI openSettingsMenu];
-  [SigninEarlGrey verifySyncUIEnabled:YES];
-}
-
 #pragma mark - Enterprise
 
 // Tests FRE with disabled sign-in policy.
@@ -1018,59 +882,6 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:NO];
-}
-
-// Tests sign-in and no sync with forced policy.
-- (void)testSigninWithOnlyBookmarkSyncDataTypeEnabled {
-  // Configure the policy to force sign-in.
-  [self relaunchAppWithPolicyKey:policy::key::kSyncTypesListDisabled
-                  xmlPolicyValue:"<array><string>bookmarks</string></array>"];
-  // Add identity.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Verify 2 steps FRE with forced sign-in policy.
-  [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
-            FRESigninIntentSigninWithPolicy];
-  // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
-                      scrollViewIdentifier:
-                          kPromoStyleScrollViewAccessibilityIdentifier]
-      performAction:grey_tap()];
-  // Open advanced sync settings.
-  [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
-      performAction:grey_tap()];
-  // Check "Sync Everything" is off
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_accessibilityID(
-                                kSyncEverythingItemAccessibilityIdentifier),
-                            grey_descendant(grey_text(
-                                l10n_util::GetNSString(IDS_IOS_SETTING_OFF))),
-                            nil)] assertWithMatcher:grey_notNil()];
-  // Check "Bookmarks" is off
-  [[EarlGrey selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                                     kSyncBookmarksIdentifier),
-                                                 grey_descendant(grey_text(
-                                                     l10n_util::GetNSString(
-                                                         IDS_IOS_SETTING_OFF))),
-                                                 nil)]
-      assertWithMatcher:grey_notNil()];
-  // Close the advanced sync settings.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher()]
-      performAction:grey_tap()];
-  // Accept sync.
-  [self acceptSyncOrHistory];
-  // Check that UMA is on.
-  GREYAssertTrue(
-      [FirstRunAppInterface isUMACollectionEnabled],
-      @"kMetricsReportingEnabled pref was unexpectedly false by default.");
-  // Check signed in.
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  // Check sync is on.
-  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
-  [ChromeEarlGreyUI openSettingsMenu];
-  [SigninEarlGrey verifySyncUIEnabled:YES];
 }
 
 // Tests enterprise policy wording on FRE when incognito policy is set.

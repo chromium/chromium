@@ -27,8 +27,6 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::MatchInWindowWithNumber;
 using chrome_test_util::NavigationBarCancelButton;
-using chrome_test_util::SettingsDoneButton;
-using chrome_test_util::SettingsLink;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsSignInRowMatcher;
 
