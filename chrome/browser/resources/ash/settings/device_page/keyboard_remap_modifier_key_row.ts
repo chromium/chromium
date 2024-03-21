@@ -93,6 +93,11 @@ export class KeyboardRemapModifierKeyRowElement extends
         type: Boolean,
         reflectToAttribute: true,
       },
+
+      hasFunctionKey: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -100,6 +105,7 @@ export class KeyboardRemapModifierKeyRowElement extends
   private metaKeyLabel: string;
   private keyMapTargets: DropdownMenuOptionList;
   private keyIcon: KeyIcon;
+  private hasFunctionKey: boolean;
   keyState: KeyState;
   pref: chrome.settingsPrivate.PrefObject;
   metaKey: MetaKey;
@@ -173,6 +179,9 @@ export class KeyboardRemapModifierKeyRowElement extends
       case ModifierKey.kRightAlt: {
         return this.i18n('perDeviceKeyboardKeyRightAlt');
       }
+      case ModifierKey.kFunction: {
+        return this.i18n('perDeviceKeyboardKeyFunction');
+      }
       default:
         assertNotReached('Invalid modifier key: ' + this.key);
     }
@@ -216,6 +225,13 @@ export class KeyboardRemapModifierKeyRowElement extends
         keyMapTargets.push({
           value: ModifierKey.kRightAlt,
           name: this.i18n('perDeviceKeyboardKeyRightAlt'),
+        });
+      }
+
+      if (this.hasFunctionKey) {
+        keyMapTargets.push({
+          value: ModifierKey.kFunction,
+          name: this.i18n('perDeviceKeyboardKeyFunction'),
         });
       }
 

@@ -182,6 +182,7 @@ export const fakeKeyboards: Keyboard[] = [
       ModifierKey.kEscape,
       ModifierKey.kMeta,
       ModifierKey.kRightAlt,
+      ModifierKey.kFunction,
     ],
     topRowActionKeys: [
       TopRowActionKey.kBack,

@@ -76,8 +76,38 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
     assertEquals(ctrlDefaultMapping, page.get('fakeCtrlPref.value'));
     assertEquals(ModifierKey.kEscape, page.get('fakeEscPref.value'));
     assertEquals(ModifierKey.kRightAlt, page.get('fakeRightAltPref.value'));
+    assertEquals(ModifierKey.kFunction, page.get('fakeFunctionPref.value'));
     assertEquals(metaDefaultMapping, page.get('fakeMetaPref.value'));
   }
+
+  /**
+   * Verify that the function key row is shown in the remap subpage when
+   * keyboard has function key as a modifier key.
+   */
+
+  test('show function key row if has function key', async () => {
+    await initializePerDeviceKeyboardRemapKeys(4);
+
+    assertEquals(ModifierKey.kFunction, page.get('fakeFunctionPref.value'));
+    const functionKeyRow =
+        page.shadowRoot!.querySelector<KeyboardRemapModifierKeyRowElement>(
+            '#functionKey');
+    assert(functionKeyRow);
+    assertEquals('function', functionKeyRow.get('keyLabel'));
+    const functionKeyDropdown =
+        functionKeyRow.shadowRoot!.querySelector('#keyDropdown');
+    assert(functionKeyDropdown);
+    assertEquals(
+        ModifierKey.kFunction.toString(),
+        functionKeyDropdown.shadowRoot!.querySelector('select')!.value);
+
+    await initializePerDeviceKeyboardRemapKeys(0);
+
+    const updatedFunctionRow =
+        page.shadowRoot!.querySelector<KeyboardRemapModifierKeyRowElement>(
+            '#functionKey');
+    assertFalse(isVisible(updatedFunctionRow));
+  });
 
   /**
    * Verify that the right alt row is shown in the remap subpage when modifier
@@ -336,13 +366,14 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
     page.set('fakeBackspacePref.value', ModifierKey.kControl);
     page.set('fakeEscPref.value', ModifierKey.kVoid);
     page.set('fakeRightAltPref.value', ModifierKey.kAlt);
+    page.set('fakeFunctionPref.value', ModifierKey.kRightAlt);
 
     // Verify that the keyboard settings in the provider are updated.
     const keyboards = await provider.getConnectedKeyboardSettings();
     assert(keyboards);
     const updatedRemapping = keyboards[4]!.settings.modifierRemappings;
     assert(updatedRemapping);
-    assertEquals(6, Object.keys(updatedRemapping).length);
+    assertEquals(7, Object.keys(updatedRemapping).length);
     assertEquals(ModifierKey.kAssistant, updatedRemapping[ModifierKey.kAlt]);
     assertEquals(
         ModifierKey.kControl, updatedRemapping[ModifierKey.kBackspace]);
@@ -350,6 +381,8 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
     assertEquals(ModifierKey.kControl, updatedRemapping[ModifierKey.kMeta]);
     assertEquals(ModifierKey.kMeta, updatedRemapping[ModifierKey.kControl]);
     assertEquals(ModifierKey.kAlt, updatedRemapping[ModifierKey.kRightAlt]);
+    assertEquals(
+        ModifierKey.kRightAlt, updatedRemapping[ModifierKey.kFunction]);
   });
 
   test('Keyboard description populated correctly', async () => {
