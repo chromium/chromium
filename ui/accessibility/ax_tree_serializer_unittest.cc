@@ -197,6 +197,67 @@ TEST_F(AXTreeSerializerTest, ReparentingUpdatesSubtree) {
   EXPECT_EQ(5, update.nodes[3].id);
 }
 
+// When a node is reparented, the subtree including both the old parent
+// and new parent of the reparented node must be deleted and recreated.
+TEST_F(AXTreeSerializerTest, ReparentingUpdatesSubtree2) {
+  // (1 (2 (3 (444) 5)) 6 7)
+  treedata0_.root_id = 1;
+  treedata0_.nodes.resize(7);
+  treedata0_.nodes[0].id = 1;
+  treedata0_.nodes[0].child_ids.push_back(2);
+  treedata0_.nodes[0].child_ids.push_back(6);
+  treedata0_.nodes[0].child_ids.push_back(7);
+  treedata0_.nodes[1].id = 2;
+  treedata0_.nodes[1].child_ids.push_back(3);
+  treedata0_.nodes[1].child_ids.push_back(5);
+  treedata0_.nodes[2].id = 3;
+  treedata0_.nodes[2].child_ids.push_back(444);
+  treedata0_.nodes[3].id = 444;
+  treedata0_.nodes[4].id = 5;
+  treedata0_.nodes[5].id = 6;
+  treedata0_.nodes[6].id = 7;
+
+  // Node 444 has been reparented from being a child of node 3,
+  // to a child of node 7.
+  // (1 (2 (3 (4))) 6 7 (444))
+  treedata1_.root_id = 1;
+  treedata1_.nodes.resize(7);
+  treedata1_.nodes[0].id = 1;
+  treedata1_.nodes[0].child_ids.push_back(2);
+  treedata1_.nodes[0].child_ids.push_back(6);
+  treedata1_.nodes[0].child_ids.push_back(7);
+  treedata1_.nodes[1].id = 2;
+  treedata1_.nodes[1].child_ids.push_back(3);
+  treedata1_.nodes[1].child_ids.push_back(5);
+  treedata1_.nodes[2].id = 3;
+  treedata1_.nodes[3].id = 5;
+  treedata1_.nodes[4].id = 6;
+  treedata1_.nodes[5].id = 7;
+  treedata1_.nodes[5].child_ids.push_back(444);
+  treedata1_.nodes[6].id = 444;
+
+  CreateTreeSerializer();
+  AXTreeUpdate update;
+  ASSERT_TRUE(serializer_->SerializeChanges(tree1_->GetFromId(7), &update));
+
+  // The update should unserialize without errors.
+  AXTree dst_tree(treedata0_);
+  EXPECT_TRUE(dst_tree.Unserialize(update)) << dst_tree.error();
+
+  // The update should delete the subtree rooted at node id=1 (because the LCA
+  // of node 3 and node 7 is node 1). Therefore, all descendants of root 1 will
+  // be serialized (which is all nodes).
+  EXPECT_EQ(1, update.node_id_to_clear);
+  ASSERT_EQ(7u, update.nodes.size());
+  EXPECT_EQ(1, update.nodes[0].id);
+  EXPECT_EQ(2, update.nodes[1].id);
+  EXPECT_EQ(3, update.nodes[2].id);
+  EXPECT_EQ(5, update.nodes[3].id);
+  EXPECT_EQ(6, update.nodes[4].id);
+  EXPECT_EQ(7, update.nodes[5].id);
+  EXPECT_EQ(444, update.nodes[6].id);
+}
+
 // Similar to ReparentingUpdatesSubtree, except that InvalidateSubtree is
 // called on id=1 - we need to make sure that the reparenting is still
 // detected.
