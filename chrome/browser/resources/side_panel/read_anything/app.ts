@@ -839,6 +839,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // paused from the play/pause button.
       if (chrome.readingMode.linksEnabled && pausedFromButton) {
         this.updateLinks();
+        // Now that links are toggled, ensure that the new nodes are also
+        // highlighted
+        this.highlightNodes(chrome.readingMode.getCurrentText());
       }
 
       // If the current read highlight has been cleared from a call to
