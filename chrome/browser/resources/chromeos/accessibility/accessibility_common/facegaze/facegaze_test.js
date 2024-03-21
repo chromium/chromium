@@ -468,14 +468,14 @@ AX_TEST_F('FaceGazeTest', 'DetectGesturesAndPerformActions', async function() {
                      .withGestureToConfidence(gestureToConfidence);
   await this.configureFaceGaze(config);
 
-  const result =
+  let result =
       new MockFaceLandmarkerResult()
           .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9)
           .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.3);
   this.processFaceLandmarkerResult(
       result, /*triggerMouseControllerInterval=*/ true);
 
-  assertEquals(2, this.mockAccessibilityPrivate.syntheticMouseEvents_.length);
+  assertEquals(1, this.mockAccessibilityPrivate.syntheticMouseEvents_.length);
   const pressEvent = this.mockAccessibilityPrivate.syntheticMouseEvents_[0];
   assertEquals(
       this.mockAccessibilityPrivate.SyntheticMouseEventType.PRESS,
@@ -485,6 +485,16 @@ AX_TEST_F('FaceGazeTest', 'DetectGesturesAndPerformActions', async function() {
       pressEvent.mouseButton);
   assertEquals(600, pressEvent.x);
   assertEquals(400, pressEvent.y);
+
+  // Reduce amount of jaw open to get the release event.
+  result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.4)
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.3);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ true);
+
+  assertEquals(2, this.mockAccessibilityPrivate.syntheticMouseEvents_.length);
   const releaseEvent = this.mockAccessibilityPrivate.syntheticMouseEvents_[1];
   assertEquals(
       this.mockAccessibilityPrivate.SyntheticMouseEventType.RELEASE,
@@ -579,8 +589,8 @@ AX_TEST_F('FaceGazeTest', 'DoesNotRepeatGesturesTooSoon', async function() {
     this.processFaceLandmarkerResult(
         result, /*triggerMouseControllerInterval=*/ true);
 
-    // 5 times in quick succession still only generates one press/release.
-    assertEquals(2, this.mockAccessibilityPrivate.syntheticMouseEvents_.length);
+    // 5 times in quick succession still only generates one press.
+    assertEquals(1, this.mockAccessibilityPrivate.syntheticMouseEvents_.length);
     const pressEvent = this.mockAccessibilityPrivate.syntheticMouseEvents_[0];
     assertEquals(
         this.mockAccessibilityPrivate.SyntheticMouseEventType.PRESS,
@@ -588,14 +598,23 @@ AX_TEST_F('FaceGazeTest', 'DoesNotRepeatGesturesTooSoon', async function() {
     assertEquals(
         this.mockAccessibilityPrivate.SyntheticMouseEventButton.LEFT,
         pressEvent.mouseButton);
-    const releaseEvent = this.mockAccessibilityPrivate.syntheticMouseEvents_[1];
-    assertEquals(
-        this.mockAccessibilityPrivate.SyntheticMouseEventType.RELEASE,
-        releaseEvent.type);
-    assertEquals(
-        this.mockAccessibilityPrivate.SyntheticMouseEventButton.LEFT,
-        pressEvent.mouseButton);
   }
+
+  // Release is generated when the JAW_OPEN ends.
+  let result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.5)
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.3);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ true);
+  assertEquals(2, this.mockAccessibilityPrivate.syntheticMouseEvents_.length);
+  let releaseEvent = this.mockAccessibilityPrivate.syntheticMouseEvents_[1];
+  assertEquals(
+      this.mockAccessibilityPrivate.SyntheticMouseEventType.RELEASE,
+      releaseEvent.type);
+  assertEquals(
+      this.mockAccessibilityPrivate.SyntheticMouseEventButton.LEFT,
+      releaseEvent.mouseButton);
 
   // Another gesture is let through once and then also throttled.
   for (let i = 0; i < 5; i++) {
@@ -607,7 +626,7 @@ AX_TEST_F('FaceGazeTest', 'DoesNotRepeatGesturesTooSoon', async function() {
     this.processFaceLandmarkerResult(
         result, /*triggerMouseControllerInterval=*/ true);
 
-    assertEquals(4, this.mockAccessibilityPrivate.syntheticMouseEvents_.length);
+    assertEquals(3, this.mockAccessibilityPrivate.syntheticMouseEvents_.length);
     const pressEvent = this.mockAccessibilityPrivate.syntheticMouseEvents_[2];
     assertEquals(
         this.mockAccessibilityPrivate.SyntheticMouseEventType.PRESS,
@@ -615,12 +634,22 @@ AX_TEST_F('FaceGazeTest', 'DoesNotRepeatGesturesTooSoon', async function() {
     assertEquals(
         this.mockAccessibilityPrivate.SyntheticMouseEventButton.RIGHT,
         pressEvent.mouseButton);
-    const releaseEvent = this.mockAccessibilityPrivate.syntheticMouseEvents_[3];
-    assertEquals(
-        this.mockAccessibilityPrivate.SyntheticMouseEventType.RELEASE,
-        releaseEvent.type);
-    assertEquals(
-        this.mockAccessibilityPrivate.SyntheticMouseEventButton.RIGHT,
-        pressEvent.mouseButton);
   }
+
+  // Release is processed when BROWS_DOWN ends.
+  result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_DOWN_LEFT, 0.4)
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.BROW_DOWN_RIGHT, 0.3);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ true);
+  assertEquals(4, this.mockAccessibilityPrivate.syntheticMouseEvents_.length);
+  releaseEvent = this.mockAccessibilityPrivate.syntheticMouseEvents_[3];
+  assertEquals(
+      this.mockAccessibilityPrivate.SyntheticMouseEventType.RELEASE,
+      releaseEvent.type);
+  assertEquals(
+      this.mockAccessibilityPrivate.SyntheticMouseEventButton.RIGHT,
+      releaseEvent.mouseButton);
 });

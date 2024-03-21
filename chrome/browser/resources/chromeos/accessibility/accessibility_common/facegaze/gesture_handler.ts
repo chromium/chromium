@@ -24,6 +24,10 @@ export class GestureHandler {
   private gestureLastRecognized_: Map<FacialGesture, number> = new Map();
   private mouseController_: MouseController;
   private prefsListener_: (prefs: any) => void;
+  // The most recently detected gestures. We track this to know when a gesture
+  // has ended.
+  private previousGestures_: FacialGesture[] = [];
+  private macrosToCompleteLater_: Map<FacialGesture, Macro> = new Map();
 
   constructor(mouseController: MouseController) {
     this.mouseController_ = mouseController;
@@ -81,36 +85,76 @@ export class GestureHandler {
 
   detectMacros(result: FaceLandmarkerResult): Macro[] {
     const gestures = GestureDetector.detect(result, this.gestureToConfidence_);
-    return this.gesturesToMacros_(gestures);
+    const macros = this.gesturesToMacros_(gestures);
+    macros.push(
+        ...this.popMacrosOnGestureEnd(gestures, this.previousGestures_));
+    this.previousGestures_ = gestures;
+    return macros;
   }
 
   private gesturesToMacros_(gestures: FacialGesture[]): Macro[] {
-    const macroNames: MacroName[] = [];
+    const macroNames: Map<MacroName, FacialGesture> = new Map();
     for (const gesture of gestures) {
       const currentTime = new Date().getTime();
       if (this.gestureLastRecognized_.has(gesture) &&
-          currentTime - this.gestureLastRecognized_.get(gesture)! <
-              GestureHandler.DEFAULT_REPEAT_DELAY_MS) {
-        // Avoid responding to the same macro repeatedly in too short a time.
+              currentTime - this.gestureLastRecognized_.get(gesture)! <
+                  GestureHandler.DEFAULT_REPEAT_DELAY_MS ||
+          this.macrosToCompleteLater_.has(gesture)) {
+        // Avoid responding to the same macro repeatedly in too short a time
+        // or if we are still waiting to complete them later (they shouldn't be
+        // repeated until completed).
         continue;
       }
       this.gestureLastRecognized_.set(gesture, currentTime);
       const name = this.gestureToMacroName_.get(gesture);
       if (name) {
-        macroNames.push(name);
+        macroNames.set(name, gesture);
       }
     }
 
     // Construct macros from all the macro names.
     const result: Macro[] = [];
-    for (const macroName of macroNames) {
+    for (const [macroName, gesture] of macroNames) {
       const macro = this.macroFromName_(macroName);
       if (macro) {
         result.push(macro);
+        if (macro.triggersAtActionStartAndEnd()) {
+          // Cache this macro to be run a second time later, for the key
+          // release.
+          this.macrosToCompleteLater_.set(gesture, macro);
+        }
       }
     }
 
     return result;
+  }
+
+  /**
+   * Gets the cached macros that are run again when a gesture ends. For example,
+   * for a left click macro, the left click starts when the gesture is first
+   * detected and the macro is run a second time when the gesture is no longer
+   * detected, thus the click will be held as long as the gesture is still
+   * detected.
+   */
+  private popMacrosOnGestureEnd(
+      gestures: FacialGesture[], previousGestures: FacialGesture[]): Macro[] {
+    const macrosForLater: Macro[] = [];
+    previousGestures.forEach(previousGesture => {
+      if (!gestures.includes(previousGesture)) {
+        // The gesture has stopped being recognized. Run the second half of this
+        // macro, and stop saving it.
+        const macro = this.macrosToCompleteLater_.get(previousGesture);
+        if (!macro) {
+          return;
+        }
+        if (macro instanceof MouseClickMacro) {
+          macro.updateLocation(this.mouseController_.mouseLocation());
+        }
+        macrosForLater.push(macro);
+        this.macrosToCompleteLater_.delete(previousGesture);
+      }
+    });
+    return macrosForLater;
   }
 
   private macroFromName_(name: MacroName): Macro|undefined {

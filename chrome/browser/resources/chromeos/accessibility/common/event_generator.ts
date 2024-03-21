@@ -6,6 +6,7 @@ import {Key} from './key_code.js';
 import {TestImportManager} from './testing/test_import_manager.js';
 
 export interface MouseClickParams {
+  // The amount of time to wait between press and release.
   delayMs?: number;
   mouseButton?: chrome.accessibilityPrivate.SyntheticMouseEventButton;
 }
@@ -18,7 +19,8 @@ interface MouseClick {
 
 /** Functions to send synthetic key and mouse events. */
 export class EventGenerator {
-  static currentlyMidMouseClick = false;
+  static midMouseClickButton:
+      chrome.accessibilityPrivate.SyntheticMouseEventButton|undefined;
   static mouseClickQueue: MouseClick[] = [];
 
   /**
@@ -43,59 +45,101 @@ export class EventGenerator {
   }
 
   /**
-   * Sends two synthetic mouse events (a mouse press and and a mouse release)
+   * Sends a synthetic mouse press (a mouse press and and a mouse release)
    *     to simulate a mouse click.
    */
   static sendMouseClick(x: number, y: number, params: MouseClickParams = {
     delayMs: 0,
     mouseButton: chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT,
   }): void {
-    // TODO(b/314203187): Set params.delayMs ??= 0; and params.mouseButton =
-    // chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT;. This fixes
-    // the case when a params object is passed in, but only one of the params is
-    // specified. In that case, the other default property isn't included in the
-    // object (since the whole default params object gets shadowed).
-    if (EventGenerator.currentlyMidMouseClick) {
+    const delayMs = params.delayMs ? params.delayMs : 0;
+    const mouseButton = params.mouseButton ?
+        params.mouseButton :
+        chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT;
+
+    if (EventGenerator.midMouseClickButton !== undefined) {
+      // Add it to the queue for later.
       EventGenerator.mouseClickQueue.push({x, y, params});
       return;
     }
-    EventGenerator.currentlyMidMouseClick = true;
+
+    EventGenerator.sendMousePress(x, y, mouseButton);
+
+    if (delayMs > 0) {
+      setTimeout(() => EventGenerator.sendMouseRelease(x, y), params.delayMs);
+    } else {
+      EventGenerator.sendMouseRelease(x, y);
+    }
+  }
+
+  /**
+   * Sends a synthetic mouse press event, if we are not in the middle of a
+   * mouse click event. If we are in the middle of a mouse click, returns
+   * false as no press event was sent.
+   */
+  static sendMousePress(
+      x: number, y: number,
+      mouseButton: chrome.accessibilityPrivate.SyntheticMouseEventButton):
+      boolean {
+    if (EventGenerator.midMouseClickButton !== undefined) {
+      return false;
+    }
+
+    EventGenerator.midMouseClickButton = mouseButton;
 
     // chrome.accessibilityPrivate.sendSyntheticMouseEvent only accepts
     // integers.
     x = Math.round(x);
     y = Math.round(y);
 
-    const {delayMs, mouseButton} = params;
-    let type = chrome.accessibilityPrivate.SyntheticMouseEventType.PRESS;
+    const type = chrome.accessibilityPrivate.SyntheticMouseEventType.PRESS;
     chrome.accessibilityPrivate.sendSyntheticMouseEvent(
         {type, x, y, mouseButton});
-
-    const callback = (): void => {
-      type = chrome.accessibilityPrivate.SyntheticMouseEventType.RELEASE;
-      chrome.accessibilityPrivate.sendSyntheticMouseEvent(
-          {type, x, y, mouseButton});
-
-      EventGenerator.currentlyMidMouseClick = false;
-      if (EventGenerator.mouseClickQueue.length > 0) {
-        const {x, y, params} = EventGenerator.mouseClickQueue.shift()!;
-        EventGenerator.sendMouseClick(x, y, params);
-      }
-    };
-    // TODO(b/314203187): Not null asserted, check these to make sure this
-    // is correct.
-    if (delayMs! > 0) {
-      setTimeout(callback, delayMs);
-    } else {
-      callback();
-    }
+    return true;
   }
 
-  /** Sends a synthetic mouse event to simulate a move event. */
-  static sendMouseMove(x: number, y: number, touchAccessibility = false): void {
-    const type = chrome.accessibilityPrivate.SyntheticMouseEventType.MOVE;
+  /**
+   * Sends a synthetic mouse release event, if we are mid mouse click.
+   * Will start the next click from the click queue if there is one.
+   * If we are not mid mouse click, returns false as no release event
+   * was sent.
+   */
+  static sendMouseRelease(x: number, y: number): boolean {
+    if (EventGenerator.midMouseClickButton === undefined) {
+      return false;
+    }
+
+    // chrome.accessibilityPrivate.sendSyntheticMouseEvent only accepts
+    // integers.
+    x = Math.round(x);
+    y = Math.round(y);
+
+    const type = chrome.accessibilityPrivate.SyntheticMouseEventType.RELEASE;
     chrome.accessibilityPrivate.sendSyntheticMouseEvent(
-        {type, x, y, touchAccessibility});
+        {type, x, y, mouseButton: EventGenerator.midMouseClickButton});
+
+    EventGenerator.midMouseClickButton = undefined;
+
+    if (EventGenerator.mouseClickQueue.length > 0) {
+      const {x, y, params} = EventGenerator.mouseClickQueue.shift()!;
+      EventGenerator.sendMouseClick(x, y, params);
+    }
+
+    return true;
+  }
+
+  /** Sends a synthetic mouse event to simulate a move or drag event. */
+  static sendMouseMove(x: number, y: number, touchAccessibility = false): void {
+    const type = EventGenerator.midMouseClickButton !== undefined ?
+        chrome.accessibilityPrivate.SyntheticMouseEventType.DRAG :
+        chrome.accessibilityPrivate.SyntheticMouseEventType.MOVE;
+    chrome.accessibilityPrivate.sendSyntheticMouseEvent({
+      type,
+      x,
+      y,
+      touchAccessibility,
+      mouseButton: EventGenerator.midMouseClickButton,
+    });
   }
 }
 

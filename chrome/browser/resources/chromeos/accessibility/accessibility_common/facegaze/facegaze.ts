@@ -76,8 +76,13 @@ export class FaceGaze {
     this.mouseController_.onFaceLandmarkerResult(result);
     const macros = this.gestureHandler_.detectMacros(result);
     for (const macro of macros) {
-      // TODO(b:322511275): Smooth macros by having some rate limit at which the
-      // same one can be executed.
+      const checkContextResult = macro.checkContext();
+      if (!checkContextResult.canTryAction) {
+        console.warn(
+            'Cannot execute macro in this context', macro.getName(),
+            checkContextResult.error, checkContextResult.failedContext);
+        continue;
+      }
       const runMacroResult = macro.run();
       if (!runMacroResult.isSuccess) {
         console.warn(
