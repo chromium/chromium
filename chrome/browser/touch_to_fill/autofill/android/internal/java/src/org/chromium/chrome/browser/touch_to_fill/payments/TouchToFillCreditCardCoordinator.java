@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.FILL_BUTTON;
@@ -13,9 +14,12 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -24,6 +28,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
+import java.util.function.Function;
+
 /**
  * Implements the TouchToFillCreditCardComponent. It uses a bottom sheet to let the user select a
  * credit card to be filled into the focused form.
@@ -31,14 +37,26 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardComponent {
     private final TouchToFillCreditCardMediator mMediator = new TouchToFillCreditCardMediator();
     private PropertyModel mTouchToFillCreditCardModel;
+    private Function<TouchToFillCreditCardProperties.CardImageMetaData, Drawable>
+            mCardImageFunction;
 
     @Override
     public void initialize(
             Context context,
+            PersonalDataManager personalDataManager,
             BottomSheetController sheetController,
-            TouchToFillCreditCardComponent.Delegate delegate,
+            Delegate delegate,
             BottomSheetFocusHelper bottomSheetFocusHelper) {
         mTouchToFillCreditCardModel = createModel(mMediator);
+        mCardImageFunction =
+                (metaData) ->
+                        getCardIcon(
+                                context,
+                                personalDataManager,
+                                metaData.artUrl,
+                                metaData.iconId,
+                                AutofillUiUtils.CardIconSize.LARGE,
+                                /* showCustomIcon= */ true);
         mMediator.initialize(
                 context, delegate, mTouchToFillCreditCardModel, bottomSheetFocusHelper);
         setUpModelChangeProcessors(
@@ -48,7 +66,8 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
 
     @Override
     public void showSheet(CreditCard[] cards, boolean shouldShowScanCreditCard) {
-        mMediator.showSheet(cards, shouldShowScanCreditCard);
+        assert mCardImageFunction != null : "Attempting to call showSheet before initialize.";
+        mMediator.showSheet(cards, shouldShowScanCreditCard, mCardImageFunction);
     }
 
     @Override

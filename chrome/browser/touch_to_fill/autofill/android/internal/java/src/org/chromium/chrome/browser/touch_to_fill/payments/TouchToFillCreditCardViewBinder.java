@@ -4,10 +4,8 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
-import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_ART_URL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_EXPIRATION;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_ICON_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_IMAGE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ITEM_COLLECTION_INFO;
@@ -33,8 +31,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -119,18 +115,8 @@ class TouchToFillCreditCardViewBinder {
     static void bindCardItemView(PropertyModel model, View view, PropertyKey propertyKey) {
         TextView cardName = view.findViewById(R.id.card_name);
         ImageView icon = view.findViewById(R.id.favicon);
-        if (propertyKey == CARD_ICON_ID) {
-            icon.setImageDrawable(
-                    getCardIcon(
-                            view.getContext(),
-                            PersonalDataManagerFactory.getForProfile(
-                                    ProfileManager.getLastUsedRegularProfile()),
-                            model.get(CARD_ART_URL),
-                            model.get(CARD_ICON_ID),
-                            AutofillUiUtils.CardIconSize.LARGE,
-                            /* showCustomIcon= */ true));
-        } else if (propertyKey == CARD_ART_URL) {
-            // Skip, because it is already handled in the `CARD_ICON_ID` case.
+        if (propertyKey == CARD_IMAGE) {
+            icon.setImageDrawable(model.get(CARD_IMAGE));
         } else if (propertyKey == NETWORK_NAME) {
             if (!model.get(NETWORK_NAME).isEmpty()) {
                 cardName.setContentDescription(
@@ -202,8 +188,7 @@ class TouchToFillCreditCardViewBinder {
             view.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
             buttonTitleText.setText(R.string.autofill_credit_card_continue_button);
-        } else if (propertyKey == CARD_ICON_ID
-                || propertyKey == CARD_ART_URL
+        } else if (propertyKey == CARD_IMAGE
                 || propertyKey == NETWORK_NAME
                 || propertyKey == CARD_NAME
                 || propertyKey == CARD_NUMBER

@@ -5,6 +5,8 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_credit_card_view_impl.h"
 
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/touch_to_fill/autofill/android/internal/jni/TouchToFillCreditCardViewBridge_jni.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_credit_card_view_controller.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -45,6 +47,9 @@ bool TouchToFillCreditCardViewImpl::Show(
   JNIEnv* env = base::android::AttachCurrentThread();
   java_object_.Reset(Java_TouchToFillCreditCardViewBridge_create(
       env, java_controller,
+      ProfileAndroid::FromProfile(
+          Profile::FromBrowserContext(web_contents_->GetBrowserContext()))
+          ->GetJavaObject(),
       web_contents_->GetTopLevelNativeWindow()->GetJavaObject()));
   if (!java_object_)
     return false;

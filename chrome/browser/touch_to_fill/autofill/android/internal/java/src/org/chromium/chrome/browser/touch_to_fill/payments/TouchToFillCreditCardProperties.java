@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
+import android.graphics.drawable.Drawable;
+
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -11,6 +15,8 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.url.GURL;
+
+import java.util.Objects;
 
 /** Properties defined here reflect the visible state of the TouchToFillCreditCard component. */
 class TouchToFillCreditCardProperties {
@@ -37,12 +43,30 @@ class TouchToFillCreditCardProperties {
         int FOOTER = 3;
     }
 
+    /** Metadata associated with a card's image. */
+    static class CardImageMetaData {
+        public final int iconId;
+        public final GURL artUrl;
+
+        public CardImageMetaData(int iconId, GURL artUrl) {
+            this.iconId = iconId;
+            this.artUrl = artUrl;
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            if (!(obj instanceof CardImageMetaData)) return false;
+            CardImageMetaData otherMetaData = ((CardImageMetaData) obj);
+            return iconId == otherMetaData.iconId && Objects.equals(artUrl, otherMetaData.artUrl);
+        }
+    }
+
     /** Properties for a credit card entry in the TouchToFill sheet for payments. */
     static class CreditCardProperties {
-        static final PropertyModel.ReadableIntPropertyKey CARD_ICON_ID =
-                new PropertyModel.ReadableIntPropertyKey("card_icon_id");
-        static final PropertyModel.ReadableObjectPropertyKey<GURL> CARD_ART_URL =
-                new PropertyModel.ReadableObjectPropertyKey<>("card_art_url");
+        static final PropertyModel.ReadableTransformingObjectPropertyKey<
+                        CardImageMetaData, Drawable>
+                CARD_IMAGE =
+                        new PropertyModel.ReadableTransformingObjectPropertyKey<>("card_image");
         static final PropertyModel.ReadableObjectPropertyKey<String> NETWORK_NAME =
                 new PropertyModel.ReadableObjectPropertyKey<>("network_name");
         static final PropertyModel.ReadableObjectPropertyKey<String> CARD_NAME =
@@ -59,9 +83,7 @@ class TouchToFillCreditCardProperties {
                 ITEM_COLLECTION_INFO =
                         new PropertyModel.ReadableObjectPropertyKey<>("item_collection_info");
 
-        static final PropertyKey[] ALL_KEYS = {
-            CARD_ICON_ID,
-            CARD_ART_URL,
+        static final PropertyKey[] NON_TRANSFORMING_KEYS = {
             NETWORK_NAME,
             CARD_NAME,
             CARD_NUMBER,

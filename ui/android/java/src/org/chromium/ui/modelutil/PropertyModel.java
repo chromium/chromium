@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Generic property model that aims to provide an extensible and efficient model for ease of use.
@@ -230,7 +231,53 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         }
     }
 
+    /**
+     * A key type that allows transforming the value type stored in the model to a different output
+     * format. Some examples where this key type is useful:
+     *
+     * <ul>
+     *   <li>In a RecyclerView where you want to defer expensive or memory intensive operations
+     *       until it is needed to display on screen.
+     *   <li>To avoid leaking implementation details about the conversion to View classes.
+     * </ul>
+     *
+     * @param <T> The type value stored in the model.
+     * @param <V> The type of transformed output.
+     */
+    public static class ReadableTransformingObjectPropertyKey<T, V> extends NamedPropertyKey {
+        /** Constructor for a named {@link ReadableTransformingObjectPropertyKey}. */
+        public ReadableTransformingObjectPropertyKey(String name) {
+            super(name);
+        }
+
+        /** Constructor for an unnamed {@link ReadableTransformingObjectPropertyKey}. */
+        public ReadableTransformingObjectPropertyKey() {
+            this((String) null);
+        }
+    }
+
+    /**
+     * A version of {@link ReadableTransformingObjectPropertyKey} that supports the value being
+     * mutated.
+     *
+     * @param <T> The type value stored in the model.
+     * @param <V> The type of transformed output.
+     */
+    public static final class WritableTransformingObjectPropertyKey<T, V>
+            extends ReadableTransformingObjectPropertyKey<T, V> {
+        /** Constructor for a named {@link WritableTransformingObjectPropertyKey}. */
+        public WritableTransformingObjectPropertyKey(String name) {
+            super(name);
+        }
+
+        /** Constructor for an unnamed {@link WritableTransformingObjectPropertyKey}. */
+        public WritableTransformingObjectPropertyKey() {
+            this((String) null);
+        }
+    }
+
     private final Map<PropertyKey, ValueContainer> mData;
+    private final Map<ReadableTransformingObjectPropertyKey<?, ?>, Function<?, ?>> mTransformers;
 
     /**
      * Constructs a model for the given list of keys.
@@ -251,7 +298,14 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     }
 
     private PropertyModel(Map<PropertyKey, ValueContainer> startingValues) {
+        this(startingValues, null);
+    }
+
+    private PropertyModel(
+            Map<PropertyKey, ValueContainer> startingValues,
+            Map<ReadableTransformingObjectPropertyKey<?, ?>, Function<?, ?>> transformers) {
         mData = startingValues;
+        mTransformers = transformers;
     }
 
     public boolean containsKey(PropertyKey key) {
@@ -377,6 +431,32 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         notifyPropertyChanged(key);
     }
 
+    /** Get the transformed value from the current value of an object based key. */
+    @SuppressWarnings("unchecked")
+    public <T, V> V get(ReadableTransformingObjectPropertyKey<T, V> key) {
+        validateKey(key);
+        ObjectContainer<T> container = (ObjectContainer<T>) mData.get(key);
+        Function<T, V> transformer = (Function<T, V>) mTransformers.get(key);
+        assert transformer != null : "No transformer associated with: " + key;
+        return container == null ? null : transformer.apply(container.value);
+    }
+
+    /** Set the value for the transforming Object based key. */
+    @SuppressWarnings("unchecked")
+    public <T, V> void set(WritableTransformingObjectPropertyKey<T, V> key, T value) {
+        validateKey(key);
+        ObjectContainer<T> container = (ObjectContainer<T>) mData.get(key);
+        if (container == null) {
+            container = new ObjectContainer<T>();
+            mData.put(key, container);
+        } else if (ObjectsCompat.equals(container.value, value)) {
+            return;
+        }
+
+        container.value = value;
+        notifyPropertyChanged(key);
+    }
+
     @Override
     public Collection<PropertyKey> getAllSetProperties() {
         List<PropertyKey> properties = new ArrayList<>();
@@ -461,6 +541,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
     /** Allows constructing a new {@link PropertyModel} with read-only properties. */
     public static class Builder {
         private final Map<PropertyKey, ValueContainer> mData;
+        private Map<ReadableTransformingObjectPropertyKey<?, ?>, Function<?, ?>> mTransformers;
 
         public Builder(PropertyKey... keys) {
             this(buildData(keys));
@@ -540,8 +621,54 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
             return this;
         }
 
+        /**
+         * Adds a transforming key. The passed in {@link ReadableTransformingObjectPropertyKey} must
+         * not already exist in the set of keys.
+         *
+         * @param key The key to be added to the {@link PropertyModel}.
+         * @param transformer The function that will transform the value stored in the {@link
+         *     PropertyModel} to the output format.
+         * @return This {@link Builder} instance.
+         * @param <T> The type value stored in the model.
+         * @param <V> The type of transformed output.
+         */
+        public <T, V> Builder withTransformingKey(
+                ReadableTransformingObjectPropertyKey<T, V> key, Function<T, V> transformer) {
+            if (BuildConfig.ENABLE_ASSERTS && mData.containsKey(key)) {
+                throw new IllegalArgumentException("Transforming key already exists.");
+            }
+            mData.put(key, null);
+            if (mTransformers == null) mTransformers = new HashMap<>();
+            assert transformer != null : "Requires non-null transformer";
+            mTransformers.put(key, transformer);
+            return this;
+        }
+
+        /**
+         * Adds a transforming key and initial value into the property model. The passed in {@link
+         * ReadableTransformingObjectPropertyKey} must not already exist in the set of keys.
+         *
+         * @param key The key to be added to the {@link PropertyModel}.
+         * @param transformer The function that will transform the value stored in the {@link
+         *     PropertyModel} to the output format.
+         * @param value The initial value to be stored in the {@link PropertyModel}.
+         * @return This {@link Builder} instance.
+         * @param <T> The type value stored in the model.
+         * @param <V> The type of transformed output.
+         */
+        public <T, V> Builder withTransformingKey(
+                ReadableTransformingObjectPropertyKey<T, V> key,
+                Function<T, V> transformer,
+                T value) {
+            withTransformingKey(key, transformer);
+            ObjectContainer<T> container = new ObjectContainer<>();
+            container.value = value;
+            mData.put(key, container);
+            return this;
+        }
+
         public PropertyModel build() {
-            return new PropertyModel(mData);
+            return new PropertyModel(mData, mTransformers);
         }
     }
 

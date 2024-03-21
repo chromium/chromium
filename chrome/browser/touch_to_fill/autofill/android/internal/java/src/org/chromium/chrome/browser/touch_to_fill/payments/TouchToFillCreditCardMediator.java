@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardComponent.Delegate;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.HeaderProperties;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -40,6 +42,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 
 /**
  * Contains the logic for the TouchToFillCreditCard component. It sets the state of the model and
@@ -92,7 +95,7 @@ class TouchToFillCreditCardMediator {
 
     void initialize(
             Context context,
-            TouchToFillCreditCardComponent.Delegate delegate,
+            Delegate delegate,
             PropertyModel model,
             BottomSheetFocusHelper bottomSheetFocusHelper) {
         assert delegate != null;
@@ -102,7 +105,11 @@ class TouchToFillCreditCardMediator {
         mBottomSheetFocusHelper = bottomSheetFocusHelper;
     }
 
-    void showSheet(CreditCard[] cards, boolean shouldShowScanCreditCard) {
+    void showSheet(
+            CreditCard[] cards,
+            boolean shouldShowScanCreditCard,
+            Function<TouchToFillCreditCardProperties.CardImageMetaData, Drawable>
+                    cardImageFunction) {
         mInputProtector.markShowTime();
 
         assert cards != null;
@@ -114,7 +121,10 @@ class TouchToFillCreditCardMediator {
         for (int i = 0; i < cards.length; ++i) {
             CreditCard card = cards[i];
             final PropertyModel model =
-                    createCardModel(card, new FillableItemCollectionInfo(i + 1, cards.length));
+                    createCardModel(
+                            card,
+                            new FillableItemCollectionInfo(i + 1, cards.length),
+                            cardImageFunction);
             sheetItems.add(new ListItem(CREDIT_CARD, model));
         }
 
@@ -174,19 +184,25 @@ class TouchToFillCreditCardMediator {
     }
 
     private PropertyModel createCardModel(
-            CreditCard card, FillableItemCollectionInfo itemCollectionInfo) {
+            CreditCard card,
+            FillableItemCollectionInfo itemCollectionInfo,
+            Function<TouchToFillCreditCardProperties.CardImageMetaData, Drawable>
+                    cardImageFunction) {
+        int drawableId = card.getIssuerIconDrawableId();
+        GURL artUrl =
+                AutofillUiUtils.shouldShowCustomIcon(card.getCardArtUrl(), card.getIsVirtual())
+                        ? card.getCardArtUrl()
+                        : new GURL("");
+        TouchToFillCreditCardProperties.CardImageMetaData cardImageMetaData =
+                new TouchToFillCreditCardProperties.CardImageMetaData(drawableId, artUrl);
         PropertyModel.Builder creditCardModelBuilder =
                 new PropertyModel.Builder(
-                                TouchToFillCreditCardProperties.CreditCardProperties.ALL_KEYS)
-                        .with(
-                                TouchToFillCreditCardProperties.CreditCardProperties.CARD_ICON_ID,
-                                card.getIssuerIconDrawableId())
-                        .with(
-                                TouchToFillCreditCardProperties.CreditCardProperties.CARD_ART_URL,
-                                AutofillUiUtils.shouldShowCustomIcon(
-                                                card.getCardArtUrl(), card.getIsVirtual())
-                                        ? card.getCardArtUrl()
-                                        : new GURL(""))
+                                TouchToFillCreditCardProperties.CreditCardProperties
+                                        .NON_TRANSFORMING_KEYS)
+                        .withTransformingKey(
+                                TouchToFillCreditCardProperties.CreditCardProperties.CARD_IMAGE,
+                                cardImageFunction,
+                                cardImageMetaData)
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.NETWORK_NAME, "")
                         .with(
                                 TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME,

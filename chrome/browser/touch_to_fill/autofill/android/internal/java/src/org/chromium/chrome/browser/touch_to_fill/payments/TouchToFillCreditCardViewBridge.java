@@ -12,6 +12,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -25,11 +27,13 @@ class TouchToFillCreditCardViewBridge {
     private TouchToFillCreditCardViewBridge(
             TouchToFillCreditCardComponent.Delegate delegate,
             Context context,
+            PersonalDataManager personalDataManager,
             BottomSheetController bottomSheetController,
             WindowAndroid windowAndroid) {
         mComponent = new TouchToFillCreditCardCoordinator();
         mComponent.initialize(
                 context,
+                personalDataManager,
                 bottomSheetController,
                 delegate,
                 new BottomSheetFocusHelper(bottomSheetController, windowAndroid));
@@ -37,7 +41,9 @@ class TouchToFillCreditCardViewBridge {
 
     @CalledByNative
     private static @Nullable TouchToFillCreditCardViewBridge create(
-            TouchToFillCreditCardComponent.Delegate delegate, WindowAndroid windowAndroid) {
+            TouchToFillCreditCardComponent.Delegate delegate,
+            Profile profile,
+            WindowAndroid windowAndroid) {
         if (windowAndroid == null) return null;
         Context context = windowAndroid.getContext().get();
         if (context == null) return null;
@@ -45,7 +51,11 @@ class TouchToFillCreditCardViewBridge {
                 BottomSheetControllerProvider.from(windowAndroid);
         if (bottomSheetController == null) return null;
         return new TouchToFillCreditCardViewBridge(
-                delegate, context, bottomSheetController, windowAndroid);
+                delegate,
+                context,
+                PersonalDataManagerFactory.getForProfile(profile),
+                bottomSheetController,
+                windowAndroid);
     }
 
     @CalledByNative

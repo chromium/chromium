@@ -36,14 +36,18 @@ interface TouchToFillCreditCardComponent {
 
     /**
      * Initializes the component.
+     *
      * @param context A {@link Context} to create views and retrieve resources.
+     * @param personalDataManager A {@link PersonalDataManager} associated with the credit card
+     *     data.
      * @param sheetController A {@link BottomSheetController} used to show/hide the sheet.
      * @param delegate A {@link Delegate} that handles interaction events.
      * @param bottomSheetFocusHelper that restores the focus to the element that was focused before
-     *         the bottom sheet.
+     *     the bottom sheet.
      */
     void initialize(
             Context context,
+            PersonalDataManager personalDataManager,
             BottomSheetController sheetController,
             Delegate delegate,
             BottomSheetFocusHelper bottomSheetFocusHelper);

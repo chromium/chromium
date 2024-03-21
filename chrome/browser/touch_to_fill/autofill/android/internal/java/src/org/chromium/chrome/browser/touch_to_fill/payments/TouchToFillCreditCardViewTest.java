@@ -510,7 +510,8 @@ public class TouchToFillCreditCardViewTest {
             CreditCard card, FillableItemCollectionInfo collectionInfo, Runnable actionCallback) {
         PropertyModel.Builder creditCardModelBuilder =
                 new PropertyModel.Builder(
-                                TouchToFillCreditCardProperties.CreditCardProperties.ALL_KEYS)
+                                TouchToFillCreditCardProperties.CreditCardProperties
+                                        .NON_TRANSFORMING_KEYS)
                         .with(
                                 TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME,
                                 card.getCardNameForAutofillDisplay())

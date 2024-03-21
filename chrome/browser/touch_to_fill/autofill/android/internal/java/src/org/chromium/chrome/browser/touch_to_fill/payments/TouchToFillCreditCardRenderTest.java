@@ -33,6 +33,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -170,6 +171,7 @@ public class TouchToFillCreditCardRenderTest {
                     mCoordinator = new TouchToFillCreditCardCoordinator();
                     mCoordinator.initialize(
                             mActivityTestRule.getActivity(),
+                            AutofillTestHelper.getPersonalDataManagerForLastUsedProfile(),
                             mBottomSheetController,
                             mDelegateMock,
                             mBottomSheetFocusHelper);
