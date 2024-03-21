@@ -4230,6 +4230,11 @@ public class AwContents implements SmartClipProvider {
         return AwContentsJni.get().getSafeBrowsingLocaleForTesting();
     }
 
+    /** Returns the AwContents instance associated with |webContents|, or NULL */
+    public static AwContents fromWebContents(WebContents webContents) {
+        return AwContentsJni.get().fromWebContents(webContents);
+    }
+
     // -------------------------------------------------------------------------------------------
     // Helper methods
     // -------------------------------------------------------------------------------------------
@@ -4878,6 +4883,8 @@ public class AwContents implements SmartClipProvider {
         void updateDefaultLocale(String locale, String localeList);
 
         String getSafeBrowsingLocaleForTesting();
+
+        AwContents fromWebContents(WebContents webContents);
 
         void setJavaPeers(
                 long nativeAwContents,

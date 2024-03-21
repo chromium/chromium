@@ -393,6 +393,11 @@ ScopedJavaLocalRef<jobject> AwContents::GetRenderProcess(JNIEnv* env) {
   return render_process->GetJavaObject();
 }
 
+base::android::ScopedJavaLocalRef<jobject> AwContents::GetJavaObject() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return java_ref_.get(env);
+}
+
 void AwContents::Destroy(JNIEnv* env) {
   java_ref_.reset();
   delete this;
@@ -462,6 +467,21 @@ ScopedJavaLocalRef<jstring> JNI_AwContents_GetSafeBrowsingLocaleForTesting(
   ScopedJavaLocalRef<jstring> locale =
       ConvertUTF8ToJavaString(env, base::i18n::GetConfiguredLocale());
   return locale;
+}
+
+static ScopedJavaLocalRef<jobject> JNI_AwContents_FromWebContents(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jweb_contents) {
+  base::android::ScopedJavaLocalRef<jobject> jaw_contents;
+
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  AwContents* aw_contents =
+      web_contents ? AwContents::FromWebContents(web_contents) : nullptr;
+  if (aw_contents) {
+    jaw_contents = aw_contents->GetJavaObject();
+  }
+  return jaw_contents;
 }
 
 namespace {

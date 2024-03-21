@@ -56,6 +56,18 @@ public interface RenderFrameHost {
     Origin getLastCommittedOrigin();
 
     /**
+     * Returns the eldest parent of this RenderFrameHost.
+     *
+     * <p>Will only be {@code null} if this {@code RenderFrameHost} is not associated with a native
+     * object.
+     *
+     * @see
+     *     https://crsrc.org/c/content/public/browser/render_frame_host.h?q=symbol:%5Cbcontent::RenderFrameHost::GetMainFrame%5Cb%20case:yes
+     */
+    @Nullable
+    RenderFrameHost getMainFrame();
+
+    /**
      * Fetch the canonical URL associated with the fame.
      *
      * @param callback The callback to be notified once the canonical URL has been fetched.

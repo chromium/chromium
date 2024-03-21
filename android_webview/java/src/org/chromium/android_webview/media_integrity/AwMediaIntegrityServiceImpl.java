@@ -5,10 +5,12 @@
 package org.chromium.android_webview.media_integrity;
 
 import android.net.Uri;
+import android.util.LruCache;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.MediaIntegrityApiStatus;
@@ -39,7 +41,86 @@ import java.util.Objects;
  */
 @Lifetime.WebView
 public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService {
-    @NonNull private final RenderFrameHost mRenderFrameHost;
+
+    /**
+     * Static cache of already-initialized Play providers, to speed up calls for new providers from
+     * a similar context.
+     *
+     * <p>Cached entries will remain cached across page loads. While the cache itself is application
+     * global, the {@link ProviderKey} includes the Profile to avoid sharing values between
+     * profiles.
+     *
+     * <p>The cache size is estimated from the {@code Android.WebView.OriginsVisited} histogram,
+     * looking at the 1-day aggregation of a representative app where users browse multiple domains.
+     * The P95 for the metric over 1 day is 15.
+     *
+     * @see ProviderKey
+     */
+    private static final LruCache<ProviderKey, WebViewMediaIntegrityProvider> sProviderCache =
+            new LruCache<>(20);
+
+    /**
+     * Cache key for MediaIntegrityProviders. Ensures that values are keyed by
+     *
+     * <ul>
+     *   <li>top frame origin
+     *   <li>source frame origin
+     *   <li>WebView Profile identifier
+     *   <li>Api status
+     *   <li>cloud project number
+     * </ul>
+     */
+    private static final class ProviderKey {
+
+        private final Uri mTopFrameOrigin;
+        private final Uri mSourceOrigin;
+        private final int mProfileIdentifier;
+        @MediaIntegrityApiStatus private final int mRequestMode;
+        private final long mCloudProjectNumber;
+
+        ProviderKey(
+                Uri topFrameOrigin,
+                Uri sourceOrigin,
+                int profileIdentifier,
+                @MediaIntegrityApiStatus int requestMode,
+                long cloudProjectNumber) {
+            mTopFrameOrigin = topFrameOrigin;
+            mSourceOrigin = sourceOrigin;
+            mProfileIdentifier = profileIdentifier;
+            mRequestMode = requestMode;
+            mCloudProjectNumber = cloudProjectNumber;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(
+                    mTopFrameOrigin,
+                    mSourceOrigin,
+                    mProfileIdentifier,
+                    mRequestMode,
+                    mCloudProjectNumber);
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            if (!(obj instanceof ProviderKey other)) {
+                return false;
+            }
+            return Objects.equals(this.mTopFrameOrigin, other.mTopFrameOrigin)
+                    && Objects.equals(this.mSourceOrigin, other.mSourceOrigin)
+                    && this.mProfileIdentifier == other.mProfileIdentifier
+                    && this.mRequestMode == other.mRequestMode
+                    && this.mCloudProjectNumber == other.mCloudProjectNumber;
+        }
+
+        public @MediaIntegrityApiStatus int getRequestMode() {
+            return mRequestMode;
+        }
+
+        public Uri getSourceOrigin() {
+            return mSourceOrigin;
+        }
+    }
 
     private static @WebViewMediaIntegrityErrorCode.EnumType int errorCodeToMojomErrorCode(
             @MediaIntegrityErrorCode int code) {
@@ -60,8 +141,12 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
         }
     }
 
+    @NonNull private final RenderFrameHost mRenderFrameHost;
+    private final WebContents mWebContents;
+
     public AwMediaIntegrityServiceImpl(RenderFrameHost renderFrameHost) {
         mRenderFrameHost = renderFrameHost;
+        mWebContents = WebContentsStatics.fromRenderFrameHost(renderFrameHost);
     }
 
     @Override
@@ -89,47 +174,51 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
             return;
         }
 
-        final WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
-        if (webContents == null) {
+        final AwSettings awSettings = AwSettings.fromWebContents(mWebContents);
+        final String sourceOrigin = getOriginFromRenderFrame(mRenderFrameHost);
+        if (awSettings == null || sourceOrigin == null) {
             callback.call(WebViewMediaIntegrityErrorCode.INTERNAL_ERROR);
             return;
         }
-        final AwSettings awSettings = AwSettings.fromWebContents(webContents);
-        if (awSettings == null) {
-            callback.call(WebViewMediaIntegrityErrorCode.INTERNAL_ERROR);
-            return;
-        }
-        final GURL gurl = mRenderFrameHost.getLastCommittedURL();
-        if (gurl == null) {
-            callback.call(WebViewMediaIntegrityErrorCode.INTERNAL_ERROR);
-            return;
-        }
-        final String origin = gurl.getOrigin().getValidSpecOrEmpty();
-        @MediaIntegrityApiStatus final int apiStatus;
-        if ("".equals(origin)) {
-            // An empty origin will be produced for non-http/https URLs.
-            apiStatus = awSettings.getWebViewIntegrityApiDefaultStatus();
-        } else {
-            apiStatus = awSettings.getWebViewIntegrityApiStatusForUri(Uri.parse(origin));
-        }
+        @MediaIntegrityApiStatus
+        final int apiStatus = getMediaIntegrityApiStatus(sourceOrigin, awSettings);
         if (apiStatus == MediaIntegrityApiStatus.DISABLED) {
             callback.call(WebViewMediaIntegrityErrorCode.API_DISABLED_BY_APPLICATION);
             return;
         }
 
+        ProviderKey key = getProviderKey(cloudProjectNumber, apiStatus, sourceOrigin);
+        if (key == null) {
+            callback.call(WebViewMediaIntegrityErrorCode.INTERNAL_ERROR);
+            return;
+        }
+        WebViewMediaIntegrityProvider cachedProvider = sProviderCache.get(key);
+
+        if (cachedProvider != null) {
+            ThreadUtils.assertOnUiThread();
+            WebViewMediaIntegrityProvider.MANAGER.bind(cachedProvider, providerRequest);
+            callback.call(/* error= */ null);
+            return;
+        }
         PlatformServiceBridge.getInstance()
                 .getMediaIntegrityProvider(
                         cloudProjectNumber,
-                        apiStatus,
+                        key.getRequestMode(),
                         new ValueOrErrorCallback<MediaIntegrityProvider, Integer>() {
                             @Override
                             public void onResult(MediaIntegrityProvider provider) {
                                 ThreadUtils.assertOnUiThread();
                                 Objects.requireNonNull(provider);
+                                WebViewMediaIntegrityProvider integrityProvider =
+                                        new AwMediaIntegrityProviderImpl(provider);
                                 WebViewMediaIntegrityProvider.MANAGER.bind(
-                                        new AwMediaIntegrityProviderImpl(provider),
-                                        providerRequest);
-                                callback.call(null);
+                                        integrityProvider, providerRequest);
+                                callback.call(/* error= */ null);
+                                if (!key.getSourceOrigin().toString().isEmpty()) {
+                                    // Cache the provider only if source origin is
+                                    // non-opaque
+                                    sProviderCache.put(key, integrityProvider);
+                                }
                             }
 
                             @Override
@@ -139,6 +228,45 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                                 callback.call(errorCodeToMojomErrorCode(error));
                             }
                         });
+    }
+
+    @Nullable
+    private ProviderKey getProviderKey(
+            long cloudProjectNumber,
+            @MediaIntegrityApiStatus int apiStatus,
+            @NonNull String sourceOrigin) {
+        final String topLevelOrigin = getOriginFromRenderFrame(mRenderFrameHost.getMainFrame());
+        if (topLevelOrigin == null) {
+            return null;
+        }
+        final AwContents awContents = AwContents.fromWebContents(mWebContents);
+        if (awContents == null) {
+            return null;
+        }
+        return new ProviderKey(
+                Uri.parse(sourceOrigin),
+                Uri.parse(topLevelOrigin),
+                awContents.getBrowserContext().hashCode(),
+                apiStatus,
+                cloudProjectNumber);
+    }
+
+    private @MediaIntegrityApiStatus int getMediaIntegrityApiStatus(
+            @NonNull String sourceOrigin, @NonNull AwSettings awSettings) {
+        if ("".equals(sourceOrigin)) {
+            // An empty origin will be produced for non-http/https URLs.
+            return awSettings.getWebViewIntegrityApiDefaultStatus();
+        }
+        return awSettings.getWebViewIntegrityApiStatusForUri(Uri.parse(sourceOrigin));
+    }
+
+    @Nullable
+    private String getOriginFromRenderFrame(RenderFrameHost host) {
+        final GURL sourceGurl = host.getLastCommittedURL();
+        if (sourceGurl == null) {
+            return null;
+        }
+        return sourceGurl.getOrigin().getValidSpecOrEmpty();
     }
 
     @Lifetime.WebView

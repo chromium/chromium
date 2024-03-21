@@ -103,7 +103,7 @@ class AwContents : public FindHelper::Listener,
   base::android::ScopedJavaLocalRef<jobject> GetBrowserContext(JNIEnv* env);
   void SetCompositorFrameConsumer(JNIEnv* env, jlong compositor_frame_consumer);
   base::android::ScopedJavaLocalRef<jobject> GetRenderProcess(JNIEnv* env);
-
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
   void Destroy(JNIEnv* env);
   void DocumentHasImages(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& message);
