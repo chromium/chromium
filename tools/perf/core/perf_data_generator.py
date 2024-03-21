@@ -670,7 +670,7 @@ BUILDERS = {
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',
         'dimension': {
-            'pool': 'chrome.tests.perf',
+            'pool': 'chrome.tests.perf-pgo',
             'os': 'Android',
             'device_type': 'oriole',
             'device_os': 'TP1A.220624.021',

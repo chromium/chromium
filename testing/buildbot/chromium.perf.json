@@ -722,7 +722,7 @@
             "device_os_flavor": "google",
             "device_type": "oriole",
             "os": "Android",
-            "pool": "chrome.tests.perf"
+            "pool": "chrome.tests.perf-pgo"
           },
           "expiration": 7200,
           "hard_timeout": 21600,
