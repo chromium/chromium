@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
@@ -89,6 +90,7 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 
@@ -358,7 +360,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
         switch (mIntentOrigin) {
             case IntentOrigin.CUSTOM_TAB:
-                // TODO(crbug/327023983): Recognize SRP.
+                // Note: this may be refined by refinePageClassWithProfile().
                 mSearchBoxDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
                 mLocationBarUiOverrides
                         .setLensEntrypointAllowed(false)
@@ -385,7 +387,30 @@ public class SearchActivity extends AsyncInitializationActivity
                 break;
         }
 
+        var profile = mProfileSupplier.get();
+        if (profile != null) refinePageClassWithProfile(profile);
+
         mSearchBoxDataProvider.setCurrentUrl(SearchActivityUtils.getIntentUrl(intent));
+    }
+
+    /** Translate current intent origin and extras to a PageClassification. */
+    @VisibleForTesting
+    /* package */ void refinePageClassWithProfile(@NonNull Profile profile) {
+        int pageClass = mSearchBoxDataProvider.getPageClassification(true, false);
+
+        // Verify if the PageClassification can be refined.
+        var url = SearchActivityUtils.getIntentUrl(getIntent());
+        if (pageClass != PageClassification.OTHER_VALUE || GURL.isEmptyOrInvalid(url)) {
+            return;
+        }
+
+        var templateSvc = TemplateUrlServiceFactory.getForProfile(profile);
+        if (templateSvc != null && templateSvc.isSearchResultsPageFromDefaultSearchProvider(url)) {
+            mSearchBoxDataProvider.setPageClassification(
+                    PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE);
+        } else {
+            mSearchBoxDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+        }
     }
 
     @Override
@@ -423,6 +448,7 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     private void finishNativeInitializationWithProfile(Profile profile) {
+        refinePageClassWithProfile(profile);
         TabDelegateFactory factory =
                 new TabDelegateFactory() {
                     @Override
@@ -788,5 +814,9 @@ public class SearchActivity extends AsyncInitializationActivity
 
     /* package */ LocationBarEmbedderUiOverrides getEmbedderUiOverridesForTesting() {
         return mLocationBarUiOverrides;
+    }
+
+    void setProfileSupplierForTesting(ObservableSupplierImpl<Profile> supplier) {
+        mProfileSupplier = supplier;
     }
 }

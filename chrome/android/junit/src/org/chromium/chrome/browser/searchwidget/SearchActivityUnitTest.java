@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
@@ -26,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -36,15 +38,21 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.SearchType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
@@ -91,12 +99,18 @@ public class SearchActivityUnitTest {
         }
     }
 
-    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public @Rule JniMocker mJniMocker = new JniMocker();
     private @Mock TestSearchActivityUtils mUtils;
+    private @Mock TemplateUrlService mTemplateUrlSvc;
+    private @Mock Profile mProfile;
+    private @Mock TemplateUrlServiceFactoryJni mTemplateUrlFactoryJni;
+    private @Spy ObservableSupplierImpl<Profile> mProfileSupplier;
 
     private ActivityController<SearchActivity> mController;
     private SearchActivity mActivity;
     private ShadowActivity mShadowActivity;
+    private SearchBoxDataProvider mDataProvider;
 
     @Before
     public void setUp() {
@@ -105,7 +119,15 @@ public class SearchActivityUnitTest {
         mActivity = mController.get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mShadowActivity = shadowOf(mActivity);
+        mDataProvider = mActivity.getSearchBoxDataProviderForTesting();
 
+        // Many of the scenarios could be tested by simply applying a test instance of the
+        // TemplateUrlService to TemplateUrlServiceFactory#setInstanceForTesting.
+        // Some scenarios however require Factory to return null, which isn't currently possible.
+        mJniMocker.mock(TemplateUrlServiceFactoryJni.TEST_HOOKS, mTemplateUrlFactoryJni);
+        doReturn(mTemplateUrlSvc).when(mTemplateUrlFactoryJni).getTemplateUrlService(any());
+
+        mActivity.setProfileSupplierForTesting(mProfileSupplier);
         mActivity.setActivityUsableForTesting(true);
         ShadowSearchActivityUtils.sMockUtils = mUtils;
     }
@@ -115,6 +137,8 @@ public class SearchActivityUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         FirstRunStatus.setFirstRunFlowComplete(false);
         IdentityServicesProvider.setInstanceForTests(null);
+        TemplateUrlServiceFactory.setInstanceForTesting(null);
+        mActivity.setProfileSupplierForTesting(null);
     }
 
     @Test
@@ -180,13 +204,12 @@ public class SearchActivityUnitTest {
         doReturn(IntentOrigin.SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
         mActivity.handleNewIntent(new Intent());
 
-        var data = mActivity.getSearchBoxDataProviderForTesting();
         assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
-                data.getPageClassification(true, true));
+                mDataProvider.getPageClassification(true, true));
         assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
-                data.getPageClassification(true, false));
+                mDataProvider.getPageClassification(true, false));
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertTrue(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
     }
@@ -196,25 +219,49 @@ public class SearchActivityUnitTest {
         doReturn(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
         mActivity.handleNewIntent(new Intent());
 
-        var data = mActivity.getSearchBoxDataProviderForTesting();
         assertEquals(
                 PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
-                data.getPageClassification(true, true));
+                mDataProvider.getPageClassification(true, true));
         assertEquals(
                 PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
-                data.getPageClassification(true, false));
+                mDataProvider.getPageClassification(true, false));
         assertTrue(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertTrue(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
     }
 
     @Test
-    public void handleNewIntent_forCustomTab() {
+    public void handleNewIntent_forCustomTabNoProfile() {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
+        doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
         mActivity.handleNewIntent(new Intent());
 
-        var data = mActivity.getSearchBoxDataProviderForTesting();
-        assertEquals(PageClassification.OTHER_VALUE, data.getPageClassification(true, true));
-        assertEquals(PageClassification.OTHER_VALUE, data.getPageClassification(true, false));
+        assertEquals(
+                PageClassification.OTHER_VALUE, mDataProvider.getPageClassification(true, true));
+        assertEquals(
+                PageClassification.OTHER_VALUE, mDataProvider.getPageClassification(true, false));
+        assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
+        assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
+
+        // Note that the profile is not available at this point, so we should not attempt to refine
+        // the page class.
+        verifyNoMoreInteractions(mTemplateUrlFactoryJni, mTemplateUrlSvc);
+    }
+
+    @Test
+    public void handleNewIntent_forCustomTabWithProfile() {
+        doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
+        doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
+        doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
+        mProfileSupplier.set(mProfile);
+
+        mActivity.handleNewIntent(new Intent());
+
+        assertEquals(
+                PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
+                mDataProvider.getPageClassification(true, true));
+        assertEquals(
+                PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
+                mDataProvider.getPageClassification(true, false));
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
     }
@@ -224,8 +271,7 @@ public class SearchActivityUnitTest {
         doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
         mActivity.handleNewIntent(new Intent());
 
-        var data = mActivity.getSearchBoxDataProviderForTesting();
-        assertEquals("https://abc.xyz/", data.getCurrentGurl().getSpec());
+        assertEquals("https://abc.xyz/", mDataProvider.getCurrentGurl().getSpec());
     }
 
     @Test
@@ -308,5 +354,117 @@ public class SearchActivityUnitTest {
                 tester.tearDown();
             }
         }
+    }
+
+    @Test
+    public void refinePageClassWithProfile_noRefinementForSearchWidget() {
+        mDataProvider.setPageClassification(PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
+
+        doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
+        doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
+
+        mActivity.refinePageClassWithProfile(mProfile);
+
+        assertEquals(
+                PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
+                mDataProvider.getPageClassification(true, false));
+        verifyNoMoreInteractions(mTemplateUrlSvc);
+    }
+
+    @Test
+    public void refinePageClassWithProfile_noRefinementForShortcutsWidget() {
+        mDataProvider.setPageClassification(PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE);
+
+        doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
+        doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
+
+        mActivity.refinePageClassWithProfile(mProfile);
+
+        assertEquals(
+                PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
+                mDataProvider.getPageClassification(true, false));
+        verifyNoMoreInteractions(mTemplateUrlSvc);
+    }
+
+    @Test
+    public void refinePageClassWithProfile_refinesBasicUrlForSearchResultsPage() {
+        mDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+
+        doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
+        doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
+
+        mActivity.refinePageClassWithProfile(mProfile);
+
+        assertEquals(
+                PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
+                mDataProvider.getPageClassification(true, false));
+    }
+
+    @Test
+    public void refinePageClassWithProfile_refinesBasicUrlForWebsite() {
+        mDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+
+        doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
+        doReturn(false).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
+
+        mActivity.refinePageClassWithProfile(mProfile);
+
+        assertEquals(
+                PageClassification.OTHER_VALUE, mDataProvider.getPageClassification(true, false));
+    }
+
+    @Test
+    public void refinePageClassWithProfile_ignoresNullUrl() {
+        mDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+
+        doReturn(null).when(mUtils).getIntentUrl(any());
+        doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
+
+        mActivity.refinePageClassWithProfile(mProfile);
+
+        assertEquals(
+                PageClassification.OTHER_VALUE, mDataProvider.getPageClassification(true, false));
+        verifyNoMoreInteractions(mTemplateUrlSvc);
+    }
+
+    @Test
+    public void refinePageClassWithProfile_ignoresEmptyUrl() {
+        mDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+
+        doReturn(GURL.emptyGURL()).when(mUtils).getIntentUrl(any());
+        doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
+
+        mActivity.refinePageClassWithProfile(mProfile);
+
+        assertEquals(
+                PageClassification.OTHER_VALUE, mDataProvider.getPageClassification(true, false));
+        verifyNoMoreInteractions(mTemplateUrlSvc);
+    }
+
+    @Test
+    public void refinePageClassWithProfile_ignoresInvalidUrl() {
+        mDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+
+        doReturn(new GURL("a b")).when(mUtils).getIntentUrl(any());
+        doReturn(true).when(mTemplateUrlSvc).isSearchResultsPageFromDefaultSearchProvider(any());
+
+        mActivity.refinePageClassWithProfile(mProfile);
+
+        assertEquals(
+                PageClassification.OTHER_VALUE, mDataProvider.getPageClassification(true, false));
+        verifyNoMoreInteractions(mTemplateUrlSvc);
+    }
+
+    @Test
+    public void refinePageClassWithProfile_noTemplateUrl() {
+        mDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+
+        doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
+        doReturn(null).when(mTemplateUrlFactoryJni).getTemplateUrlService(any());
+
+        mActivity.refinePageClassWithProfile(mProfile);
+
+        assertEquals(
+                PageClassification.OTHER_VALUE, mDataProvider.getPageClassification(true, false));
     }
 }
