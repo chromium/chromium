@@ -132,6 +132,7 @@ source_set("magic_stack") {
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
+    "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",

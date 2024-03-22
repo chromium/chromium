@@ -28,11 +28,6 @@ enum class SetUpListItemType;
 // Cleans up this class's saved properties before deallocation.
 - (void)disconnect;
 
-// Logs a metric for when a module of `type` is shown as the first module in the
-// Magic Stack.
-- (void)recordMagicStackTopModuleImpressionForType:
-    (ContentSuggestionsModuleType)type;
-
 // Logs a metric for when the user taps on a module of `type` in the Magic
 // Stack.
 - (void)recordMagicStackModuleEngagementForType:

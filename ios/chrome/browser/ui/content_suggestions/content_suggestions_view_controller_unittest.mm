@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"

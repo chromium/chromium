@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
@@ -570,8 +571,7 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
   ContentSuggestionsModuleType firstModuleType = (ContentSuggestionsModuleType)[
       [_magicStackModuleOrder objectAtIndex:0] intValue];
   if (firstModuleType == type) {
-    [self.contentSuggestionsMetricsRecorder
-        recordMagicStackTopModuleImpressionForType:type];
+    LogTopModuleImpressionForType(type);
   }
 }
 
