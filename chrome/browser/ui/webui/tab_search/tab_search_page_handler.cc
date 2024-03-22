@@ -492,7 +492,13 @@ void TabSearchPageHandler::RejectSession(int32_t session_id) {
 
   for (const std::unique_ptr<TabOrganization>& organization :
        session->tab_organizations()) {
-    organization->Reject();
+    // Organization may have already been rejected, but should not have been
+    // accepted.
+    CHECK(organization->choice() != TabOrganization::UserChoice::kAccepted);
+
+    if (organization->choice() == TabOrganization::UserChoice::kNoChoice) {
+      organization->Reject();
+    }
   }
 
   organization_service_->ResetSessionForBrowser(
