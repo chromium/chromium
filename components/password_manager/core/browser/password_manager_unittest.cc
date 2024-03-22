@@ -256,6 +256,13 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               GetWebAuthnCredentialsDelegateForDriver,
               (PasswordManagerDriver*),
               (override));
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void,
+              ShowPasswordManagerErrorMessage,
+              (password_manager::ErrorMessageFlowType,
+               password_manager::PasswordStoreBackendErrorType),
+              (override));
+#endif
 
   network::mojom::NetworkContext* GetNetworkContext() const override {
     return &network_context_;
@@ -418,6 +425,10 @@ class PasswordManagerTestBase : public testing::Test {
         .WillByDefault(Return(url::Origin::Create(test_form_url_)));
     ON_CALL(client_, IsCommittedMainFrameSecure()).WillByDefault(Return(true));
     ON_CALL(client_, GetMetricsRecorder()).WillByDefault(Return(nullptr));
+#if BUILDFLAG(IS_ANDROID)
+    ON_CALL(*client_.GetPasswordFeatureManager(), ShouldUpdateGmsCore)
+        .WillByDefault(Return(false));
+#endif
 
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
     prefs_->registry()->RegisterBooleanPref(
@@ -1281,6 +1292,85 @@ TEST_P(PasswordManagerTest, FormSubmitWhenPasswordsCannotBeSaved) {
   manager_.reset();
   store->ShutdownOnUIThread();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_P(PasswordManagerTest,
+       FormSubmitWhenPasswordSavingDisabledNudgesToUpdateGMSCore) {
+  // Test that the user is nudged to update GMSCore when password saving is not
+  // allowed because of outdated GMSCore without support for local passwords.
+  auto store = base::MakeRefCounted<PasswordStore>(
+      std::make_unique<FailingPasswordStoreBackend>());
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  ON_CALL(client_, GetProfilePasswordStore())
+      .WillByDefault(Return(store.get()));
+
+  FormData form_data(MakeSimpleFormData());
+  std::vector<FormData> observed = {form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*client_.GetPasswordFeatureManager(), ShouldUpdateGmsCore)
+      .WillOnce(Return(true));
+  OnPasswordFormSubmitted(form_data);
+
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
+  EXPECT_CALL(client_, ShowPasswordManagerErrorMessage(
+                           ErrorMessageFlowType::kSaveFlow,
+                           password_manager::PasswordStoreBackendErrorType::
+                               kGMSCoreOutdatedSavingDisabled));
+
+  observed.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+  // Objects owned by the manager may keep references to the store - therefore
+  // destroy the manager prior to store destruction.
+  manager_.reset();
+  store->ShutdownOnUIThread();
+}
+
+TEST_P(PasswordManagerTest,
+       FormSubmitWhenPasswordSavingDisabledDoesntNudgesToUpdateGMSCore) {
+  // Test that the user is not nudged to update GMSCore when password saving is
+  // not allowed for reasons different than GMSCore version.
+  auto store = base::MakeRefCounted<PasswordStore>(
+      std::make_unique<FailingPasswordStoreBackend>());
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  ON_CALL(client_, GetProfilePasswordStore())
+      .WillByDefault(Return(store.get()));
+
+  FormData form_data(MakeSimpleFormData());
+  std::vector<FormData> observed = {form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*client_.GetPasswordFeatureManager(), ShouldUpdateGmsCore)
+      .WillOnce(Return(false));
+  OnPasswordFormSubmitted(form_data);
+
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
+  EXPECT_CALL(client_, ShowPasswordManagerErrorMessage(
+                           ErrorMessageFlowType::kSaveFlow,
+                           password_manager::PasswordStoreBackendErrorType::
+                               kGMSCoreOutdatedSavingDisabled))
+      .Times(0);
+
+  observed.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+  // Objects owned by the manager may keep references to the store - therefore
+  // destroy the manager prior to store destruction.
+  manager_.reset();
+  store->ShutdownOnUIThread();
+}
+#endif
 
 // Checks that credentials on the submitted form are not checked for leak when
 // the password store is broken. Broken password store makes it unable to mute

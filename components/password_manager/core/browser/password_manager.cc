@@ -56,6 +56,12 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#include "components/password_manager/core/browser/password_feature_manager.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_WIN)
 #include "components/prefs/pref_registry_simple.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -232,6 +238,20 @@ base::CallbackListSubscription AddSyncEnabledOrDisabledCallback(
   }
   return {};
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Shows an error message that nudges the user to update GMSCore if necessary.
+void MaybeNudgeToUpdateGMSCoreWhenSavingDisabled(
+    PasswordManagerClient* client) {
+  CHECK(client);
+  if (client->GetPasswordFeatureManager()->ShouldUpdateGmsCore()) {
+    client->ShowPasswordManagerErrorMessage(
+        ErrorMessageFlowType::kSaveFlow,
+        password_manager::PasswordStoreBackendErrorType::
+            kGMSCoreOutdatedSavingDisabled);
+  }
+}
+#endif
 
 }  // namespace
 
@@ -1125,8 +1145,12 @@ void PasswordManager::OnLoginSuccessful() {
       password_manager_util::IsAbleToSavePasswords(client_);
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.AbleToSavePasswordsOnSuccessfulLogin",
                         able_to_save_passwords);
-  if (!able_to_save_passwords)
+  if (!able_to_save_passwords) {
+#if BUILDFLAG(IS_ANDROID)
+    MaybeNudgeToUpdateGMSCoreWhenSavingDisabled(client_);
+#endif
     return;
+  }
 
   // Check for leaks only if there are no muted credentials and it is not a
   // single username submission (a leak warning may offer an automated password
