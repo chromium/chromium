@@ -206,7 +206,10 @@ bool PermissionDashboardController::Update(
                        ->GetGlobalId();
   permission_dashboard_view_->SetVisible(true);
 
+  // Always update the icon and the message as they may change based on used
+  // permissions.
   indicator_chip->SetChipIcon(indicator_model->icon());
+  indicator_chip->SetMessage(GetIndicatorTitle(indicator_model));
 
   blocked_on_system_level_ = indicator_model->blocked_on_system_level();
   if (indicator_model->is_blocked()) {
@@ -230,9 +233,7 @@ bool PermissionDashboardController::Update(
   indicator_chip->SetVisible(true);
 
   if (ShouldExpandChipIndicator(content_settings)) {
-    indicator_chip->SetMessage(GetIndicatorTitle(indicator_model));
     is_verbose_ = false;
-
     if (SuppressVerboseState(request_chip_controller())) {
       // Permission request chip is visible it was drawn without a divider. Add
       // the divider between an indicator and the request chip.
