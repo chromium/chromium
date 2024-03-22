@@ -161,10 +161,6 @@ void ThreadController::RunLevelTracker::OnRunLoopStarted(State initial_state,
 
   const bool is_nested = !run_levels_.empty();
   run_levels_.emplace(initial_state, is_nested, time_keeper_, lazy_now
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-                      ,
-                      terminating_wakeup_lambda_
-#endif
   );
 
   // In unit tests, RunLoop::Run() acts as the initial wake-up.
@@ -201,12 +197,7 @@ void ThreadController::RunLevelTracker::OnWorkStarted(LazyNow& lazy_now) {
   // Already running a work item? => #work-in-work-implies-nested
   if (run_levels_.top().state() == kRunningWorkItem) {
     run_levels_.emplace(kRunningWorkItem, /*nested=*/true, time_keeper_,
-                        lazy_now
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-                        ,
-                        terminating_wakeup_lambda_
-#endif
-    );
+                        lazy_now);
   } else {
     if (run_levels_.top().state() == kIdle) {
       time_keeper_.RecordWakeUp(lazy_now);
@@ -288,25 +279,14 @@ void ThreadController::RunLevelTracker::SetTraceObserverForTesting(
 ThreadController::RunLevelTracker::TraceObserverForTesting*
     ThreadController::RunLevelTracker::trace_observer_for_testing_ = nullptr;
 
-ThreadController::RunLevelTracker::RunLevel::RunLevel(
-    State initial_state,
-    bool is_nested,
-    TimeKeeper& time_keeper,
-    LazyNow& lazy_now
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-    ,
-    TerminatingFlowLambda& terminating_wakeup_flow_lambda
-#endif
-    )
+ThreadController::RunLevelTracker::RunLevel::RunLevel(State initial_state,
+                                                      bool is_nested,
+                                                      TimeKeeper& time_keeper,
+                                                      LazyNow& lazy_now)
     : is_nested_(is_nested),
       time_keeper_(time_keeper),
       thread_controller_sample_metadata_("ThreadController active",
-                                         base::SampleMetadataScope::kThread)
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-      ,
-      terminating_wakeup_flow_lambda_(terminating_wakeup_flow_lambda)
-#endif
-{
+                                         base::SampleMetadataScope::kThread) {
   if (is_nested_) {
     // Stop the current kWorkItem phase now, it will resume after the kNested
     // phase ends.
@@ -449,7 +429,9 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(
     // Flow emission is found at
     // ThreadController::RunLevelTracker::RecordScheduleWork.
     TRACE_EVENT_BEGIN("base", "ThreadController active", lazy_now.Now(),
-                      *terminating_wakeup_flow_lambda_);
+                      [&](perfetto::EventContext& ctx) {
+                        time_keeper_->MaybeEmitIncomingWakeupFlow(ctx);
+                      });
 
     if (ShouldRecordSampleMetadata()) {
       // Overriding the annotation from the previous RunLevel is intentional.
@@ -587,6 +569,20 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordEndOfPhase(
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
   last_phase_end_ = phase_end;
+}
+
+void ThreadController::RunLevelTracker::TimeKeeper::MaybeEmitIncomingWakeupFlow(
+    perfetto::EventContext& ctx) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  static const uint8_t* flow_enabled =
+      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("wakeup.flow");
+  if (!*flow_enabled) {
+    return;
+  }
+
+  perfetto::Flow::ProcessScoped(reinterpret_cast<uint64_t>(&(outer_.get())))(
+      ctx);
+#endif
 }
 
 bool ThreadController::RunLevelTracker::TimeKeeper::ShouldRecordNow(
