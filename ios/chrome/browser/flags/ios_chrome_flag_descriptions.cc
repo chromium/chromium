@@ -844,13 +844,6 @@ const char kEnablePolicyTestPageDescription[] =
     "When enabled, allows the policy test page to be accessed at "
     "chrome://policy/test.";
 
-const char kPostRestoreDefaultBrowserPromoName[] =
-    "Post Restore Default Browser Promo";
-const char kPostRestoreDefaultBrowserPromoDescription[] =
-    "When enabled, the user will be presented a promo showing how to set "
-    "Chrome as default browser after losing their default browser status from "
-    "an iOS restore.";
-
 const char kPrivacyGuideIosName[] = "Privacy Guide on iOS";
 const char kPrivacyGuideIosDescription[] =
     "Shows a new subpage in Settings that helps the user to review various "

@@ -79,7 +79,6 @@ source_set("flags") {
     "//ios/chrome/browser/tabs/model/tab_pickup:features",
     "//ios/chrome/browser/text_selection/model:model_utils",
     "//ios/chrome/browser/ui/app_store_rating:features",
-    "//ios/chrome/browser/ui/default_promo/post_restore:features",
     "//ios/chrome/browser/ui/download:features",
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/ntp:feature_flags",

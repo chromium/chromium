@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/default_promo/post_default_abandonment/features.h"
-#import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 
 @interface DefaultBrowserPromoSceneAgent ()
 
@@ -35,13 +34,9 @@
 - (void)updatePostRestorePromoRegistration {
   if (!_postRestorePromoSeenInCurrentSession &&
       IsPostRestoreDefaultBrowserEligibleUser()) {
-    // TODO(crbug.com/1453786): register other variations.
-    if (GetPostRestoreDefaultBrowserPromoType() ==
-        PostRestoreDefaultBrowserPromoType::kAlert) {
       self.promosManager->RegisterPromoForSingleDisplay(
           promos_manager::Promo::PostRestoreDefaultBrowserAlert);
       _postRestorePromoSeenInCurrentSession = YES;
-    }
   } else {
     self.promosManager->DeregisterPromo(
         promos_manager::Promo::PostRestoreDefaultBrowserAlert);

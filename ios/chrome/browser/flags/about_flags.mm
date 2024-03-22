@@ -89,7 +89,6 @@
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/text_selection/model/text_selection_util.h"
-#import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
@@ -534,18 +533,6 @@ const FeatureEntry::FeatureVariation kIOSEditMenuSearchWithVariations[] = {
      std::size(kIOSEditMenuSearchWithTitleSearch), nullptr},
     {"Web Search", kIOSEditMenuSearchWithTitleWebSearch,
      std::size(kIOSEditMenuSearchWithTitleWebSearch), nullptr},
-};
-
-const FeatureEntry::FeatureParam kPostRestoreDefaultBrowserPromoHalfscreen[] = {
-    {kPostRestoreDefaultBrowserPromoHalfscreenParam, "true"}};
-const FeatureEntry::FeatureParam kPostRestoreDefaultBrowserPromoFullscreen[] = {
-    {kPostRestoreDefaultBrowserPromoFullscreenParam, "true"}};
-const FeatureEntry::FeatureVariation
-    kPostRestoreDefaultBrowserPromoVariations[] = {
-        {"with half screen ui", kPostRestoreDefaultBrowserPromoHalfscreen,
-         std::size(kPostRestoreDefaultBrowserPromoHalfscreen), nullptr},
-        {"with full screen ui", kPostRestoreDefaultBrowserPromoFullscreen,
-         std::size(kPostRestoreDefaultBrowserPromoFullscreen), nullptr},
 };
 
 const FeatureEntry::FeatureParam kBottomOmniboxDefaultSettingTop[] = {
@@ -1314,14 +1301,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableSupportForLandmarkDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableSupportForLandmark)},
-    {"post-restore-default-browser-promo",
-     flag_descriptions::kPostRestoreDefaultBrowserPromoName,
-     flag_descriptions::kPostRestoreDefaultBrowserPromoDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         kPostRestoreDefaultBrowserPromo,
-         kPostRestoreDefaultBrowserPromoVariations,
-         "PostRestoreDefaultBrowserPromoVariations")},
     {"spotlight-open-tabs-source",
      flag_descriptions::kSpotlightOpenTabsSourceName,
      flag_descriptions::kSpotlightOpenTabsSourceDescription, flags_ui::kOsIos,

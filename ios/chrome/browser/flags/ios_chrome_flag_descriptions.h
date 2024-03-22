@@ -754,11 +754,6 @@ extern const char kPasswordSharingDescription[];
 extern const char kEnablePolicyTestPageName[];
 extern const char kEnablePolicyTestPageDescription[];
 
-// Title and description for the flag to enable the post restore default browser
-// promo.
-extern const char kPostRestoreDefaultBrowserPromoName[];
-extern const char kPostRestoreDefaultBrowserPromoDescription[];
-
 // Title and description for the flag to enable the Privacy Guide.
 extern const char kPrivacyGuideIosName[];
 extern const char kPrivacyGuideIosDescription[];

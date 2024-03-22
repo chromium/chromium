@@ -42,7 +42,6 @@
 #import "ios/chrome/browser/ui/default_promo/made_for_ios_default_browser_promo_view_provider.h"
 #import "ios/chrome/browser/ui/default_promo/post_default_abandonment/features.h"
 #import "ios/chrome/browser/ui/default_promo/post_default_abandonment/post_default_abandonment_promo_provider.h"
-#import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/post_restore_default_browser_promo_provider.h"
 #import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_promo_display_handler.h"
 #import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_remind_me_later_promo_display_handler.h"
@@ -610,13 +609,9 @@
   _alertProviderPromos[promos_manager::Promo::PostRestoreSignInAlert] =
       [[PostRestoreSignInProvider alloc] initForBrowser:self.browser];
 
-  // Post-restore default browser promo handler.
-  if (GetPostRestoreDefaultBrowserPromoType() ==
-      PostRestoreDefaultBrowserPromoType::kAlert) {
     _alertProviderPromos
         [promos_manager::Promo::PostRestoreDefaultBrowserAlert] =
             [[PostRestoreDefaultBrowserPromoProvider alloc] init];
-  }
 
   // Post-default browser abandonment promo handler.
   if (IsPostDefaultAbandonmentPromoEnabled()) {

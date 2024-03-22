@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/ui/default_promo/post_default_abandonment/features.h"
-#import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -243,7 +242,6 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
 // user is not in a post restore state.
 TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestPromoRegistrationPostRestore_UserNotInPostRestoreState) {
-  scoped_feature_list_.InitAndEnableFeature(kPostRestoreDefaultBrowserPromo);
   LogOpenHTTPURLFromExternalURL();
 
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
@@ -258,7 +256,6 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
 // Chrome was not set as the user's default browser before the iOS restore.
 TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestPromoRegistrationPostRestore_ChromeNotSetDefaultBrowser) {
-  scoped_feature_list_.InitAndEnableFeature(kPostRestoreDefaultBrowserPromo);
   SimulatePostDeviceRestore();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
 
@@ -271,7 +268,6 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
 // Tests that the Post Restore Default Browser Promo is registered when the
 // conditions are met.
 TEST_F(DefaultBrowserPromoSceneAgentTest, TestPromoRegistrationPostRestore) {
-  scoped_feature_list_.InitAndEnableFeature(kPostRestoreDefaultBrowserPromo);
   SimulatePostDeviceRestore();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
   LogOpenHTTPURLFromExternalURL();

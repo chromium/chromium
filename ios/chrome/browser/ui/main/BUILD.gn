@@ -16,7 +16,6 @@ source_set("default_browser_scene_agent") {
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/default_promo/post_default_abandonment:features",
-    "//ios/chrome/browser/ui/default_promo/post_restore:features",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -179,7 +178,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/browser_view",
     "//ios/chrome/browser/ui/default_promo/post_default_abandonment:features",
-    "//ios/chrome/browser/ui/default_promo/post_restore:features",
     "//ios/chrome/test:block_cleanup_test",
     "//ios/chrome/test:test_support",
     "//ios/testing:block_swizzler",
