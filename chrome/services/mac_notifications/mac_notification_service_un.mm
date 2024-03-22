@@ -242,6 +242,12 @@ void MacNotificationServiceUN::DoDisplayNotification(
     [content setValue:@YES
                forKey:@"shouldPreventNotificationDismissalAfterDefaultAction"];
   }
+  // This uses another private API to prevent the default action from forcing
+  // the app shim into the foreground. We only want the app shim to get focus
+  // when we explicitly ask it to, rather than on any notification click.
+  if ([content respondsToSelector:@selector(shouldBackgroundDefaultAction)]) {
+    [content setValue:@YES forKey:@"shouldBackgroundDefaultAction"];
+  }
 
   auto completion_handler = ^(NSError* _Nullable error) {
   };
