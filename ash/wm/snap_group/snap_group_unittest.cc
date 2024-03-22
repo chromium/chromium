@@ -3922,6 +3922,10 @@ TEST_F(SnapGroupTest, ClamshellTabletTransitionWithOneSnapGroup) {
   std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
   std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
   SnapTwoTestWindows(window1.get(), window2.get(), /*horizontal=*/true);
+  const auto snap_group_observed_windows =
+      split_view_divider()->observed_windows();
+  EXPECT_EQ(window1.get(), snap_group_observed_windows.front());
+  EXPECT_EQ(window2.get(), snap_group_observed_windows.back());
   EXPECT_TRUE(split_view_divider()->divider_widget());
 
   SwitchToTabletMode();
@@ -3930,9 +3934,14 @@ TEST_F(SnapGroupTest, ClamshellTabletTransitionWithOneSnapGroup) {
   auto* snap_group_controller = SnapGroupController::Get();
   EXPECT_FALSE(
       snap_group_controller->GetSnapGroupForGivenWindow(window1.get()));
-  auto observed_windows = split_view_divider()->observed_windows();
-  EXPECT_EQ(window1.get(), observed_windows.front());
-  EXPECT_EQ(window2.get(), observed_windows.back());
+  const auto tablet_mode_observed_windows =
+      split_view_divider()->observed_windows();
+  // The order of `split_view_divider()->observed_windows()` does not matter,
+  // but `primary|secondary_window_` does matter.
+  EXPECT_TRUE(base::Contains(tablet_mode_observed_windows, window1.get()));
+  EXPECT_TRUE(base::Contains(tablet_mode_observed_windows, window2.get()));
+  EXPECT_EQ(window1.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(window2.get(), split_view_controller()->secondary_window());
 
   EXPECT_EQ(chromeos::kDefaultSnapRatio,
             *WindowState::Get(window1.get())->snap_ratio());

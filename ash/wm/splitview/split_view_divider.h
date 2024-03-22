@@ -59,6 +59,8 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   int divider_position() const { return divider_position_; }
 
   bool is_resizing_with_divider() const { return is_resizing_with_divider_; }
+  // Does not consider any order of `observed_windows_`. Clients of the divider
+  // are responsible for maintaining the order themselves.
   const aura::Window::Windows& observed_windows() const {
     return observed_windows_;
   }
@@ -110,9 +112,8 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // Returns true if the divider bar is adjustable.
   bool IsAdjustable() const;
 
-  // TODO(b/322890782): Hide these two APIs.
-  void AddObservedWindow(aura::Window* window);
-  void RemoveObservedWindow(aura::Window* window);
+  void MaybeAddObservedWindow(aura::Window* window);
+  void MaybeRemoveObservedWindow(aura::Window* window);
 
   // Called when a window tab(s) are being dragged around the workspace. The
   // divider should be placed beneath the dragged window during dragging and be
@@ -193,7 +194,8 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   raw_ptr<aura::Window> dragged_window_ = nullptr;
 
   // The window(s) observed by the divider which will be updated upon adding or
-  // removing window.
+  // removing window. Note this does not guarantee any order about which of the
+  // `observed_windows_` is primary or secondary snapped.
   aura::Window::Windows observed_windows_;
 
   // If true, skip the stacking order update. This is used to avoid recursive

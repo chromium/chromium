@@ -92,6 +92,9 @@ void MaybeEndSplitViewAndOverview() {
 }
 
 // Snap the carry over windows into splitview mode at |divider_position|.
+// TODO(b/327269057): Refactor split view transition. Also determine whether we
+// should snap the windows in mru order, since it can cause
+// `SplitViewDivider::observed_windows()` to get out of order.
 void DoSplitViewTransition(
     std::vector<std::pair<aura::Window*, WindowStateType>> windows,
     int divider_position,

@@ -1821,8 +1821,9 @@ void SplitViewController::StopObserving(SnapPosition snap_position) {
   if (window && window->HasObserver(this)) {
     window->RemoveObserver(this);
     WindowState::Get(window)->RemoveObserver(this);
+    // Must be called after we reset `primary_window_|secondary_window_`.
     if (split_view_divider_.divider_widget()) {
-      split_view_divider_.RemoveObservedWindow(window);
+      split_view_divider_.MaybeRemoveObservedWindow(window);
     }
     Shell::Get()->shadow_controller()->UpdateShadowForWindow(window);
 

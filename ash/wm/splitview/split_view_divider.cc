@@ -120,26 +120,28 @@ bool SplitViewDivider::HasDividerWidget() const {
 
 void SplitViewDivider::ShowFor(int divider_position) {
   divider_position_ = divider_position;
-  CloseDividerWidget();
-
   // Order here matters: we first refresh the observed windows, since the widget
-  // will be added to the topmost of `observed_windows_`. Then after the widget
-  // is created, we refresh the stacking order of all the windows.
+  // will be added to the topmost of `observed_windows_`. Then if the widget has
+  // not been created yet, we create it. Then after the widget is created, we
+  // refresh the stacking order of all the windows and update the bounds.
   for (aura::Window* window : controller_->GetLayoutWindows()) {
-    AddObservedWindow(window);
+    MaybeAddObservedWindow(window);
   }
-  CreateDividerWidget(divider_position);
+  if (!divider_widget_) {
+    CreateDividerWidget(divider_position);
+  }
   RefreshStackingOrder();
+  UpdateDividerBounds();
 }
 
 void SplitViewDivider::CloseDividerWidget() {
-  for (aura::Window* window : observed_windows_) {
-    window->RemoveObserver(this);
-    wm::TransientWindowManager::GetOrCreate(window)->RemoveObserver(this);
+  // If we're shutting down, no need to refresh the stacking order. This isn't
+  // needed but simply added for efficiency.
+  base::AutoReset<bool> lock(&pause_update_, true);
+  while (!observed_windows_.empty()) {
+    MaybeRemoveObservedWindow(observed_windows_.back());
   }
-
-  observed_windows_.clear();
-  transient_windows_observations_.RemoveAllObservations();
+  CHECK(!transient_windows_observations_.IsObservingAnySource());
 
   dragged_window_ = nullptr;
 
@@ -321,8 +323,7 @@ bool SplitViewDivider::IsAdjustable() const {
          aura::EventTargetingPolicy::kNone;
 }
 
-void SplitViewDivider::AddObservedWindow(aura::Window* window) {
-  // TODO(b/322890782): Change this back to a CHECK and add `window` directly.
+void SplitViewDivider::MaybeAddObservedWindow(aura::Window* window) {
   if (base::Contains(observed_windows_, window)) {
     return;
   }
@@ -338,7 +339,7 @@ void SplitViewDivider::AddObservedWindow(aura::Window* window) {
   // Don't refresh here, since we may not have created the divider widget yet.
 }
 
-void SplitViewDivider::RemoveObservedWindow(aura::Window* window) {
+void SplitViewDivider::MaybeRemoveObservedWindow(aura::Window* window) {
   auto iter = base::ranges::find(observed_windows_, window);
   if (iter != observed_windows_.end()) {
     window->RemoveObserver(this);
@@ -365,7 +366,7 @@ void SplitViewDivider::OnWindowDragEnded() {
 }
 
 void SplitViewDivider::OnWindowDestroying(aura::Window* window) {
-  RemoveObservedWindow(window);
+  MaybeRemoveObservedWindow(window);
 }
 
 void SplitViewDivider::OnWindowBoundsChanged(aura::Window* window,
@@ -421,7 +422,7 @@ void SplitViewDivider::OnWindowStackingChanged(aura::Window* window) {
 void SplitViewDivider::OnWindowAddedToRootWindow(aura::Window* window) {
   // Stop observing `window` if it no longer belongs to the same root window as
   // of the `controller_`.
-  RemoveObservedWindow(window);
+  MaybeRemoveObservedWindow(window);
 }
 
 void SplitViewDivider::OnWindowVisibilityChanged(aura::Window* window,
@@ -440,6 +441,7 @@ void SplitViewDivider::OnTransientChildRemoved(aura::Window* window,
 }
 
 void SplitViewDivider::CreateDividerWidget(int divider_position) {
+  DCHECK(!divider_widget_);
   CHECK_GE(observed_windows_.size(), 1u);
   // Native widget owns this widget.
   divider_widget_ = new views::Widget;
@@ -458,11 +460,6 @@ void SplitViewDivider::CreateDividerWidget(int divider_position) {
   divider_view_ =
       divider_widget_->SetContentsView(std::make_unique<SplitViewDividerView>(
           SplitViewController::Get(top_window->GetRootWindow()), this));
-  divider_widget_->SetBounds(GetDividerBoundsInScreen(
-      /*work_area_bounds_in_screen=*/GetWorkAreaBoundsInScreen(
-          observed_windows_.front()),
-      /*landscape=*/IsCurrentScreenOrientationLandscape(), divider_position,
-      /*is_dragging=*/false));
   auto* divider_widget_native_window = divider_widget_->GetNativeWindow();
   divider_widget_native_window->SetProperty(kLockedToRootKey, true);
 
