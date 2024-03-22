@@ -113,10 +113,7 @@ AslrMask(uintptr_t bits) {
         return AslrAddress(0);
       }
 
-    #elif defined(ARCH_CPU_ARM64)
-
-      #if BUILDFLAG(IS_ANDROID)
-
+    #elif BUILDFLAG(IS_ANDROID) && (defined(ARCH_CPU_ARM64) || defined(ARCH_CPU_RISCV64))
       // Restrict the address range on Android to avoid a large performance
       // regression in single-process WebViews. See https://crbug.com/837640.
       PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
@@ -127,8 +124,8 @@ AslrMask(uintptr_t bits) {
       ASLROffset() {
         return AslrAddress(0x20000000ULL);
       }
-
-      #elif BUILDFLAG(IS_LINUX)
+    #elif defined(ARCH_CPU_ARM64)
+      #if BUILDFLAG(IS_LINUX)
 
       // Linux on arm64 can use 39, 42, 48, or 52-bit user space, depending on
       // page size and number of levels of translation pages used. We use
