@@ -38,9 +38,6 @@ void LogQualityMetrics(
 
   FieldTypeSet autofilled_field_types;
   size_t num_detected_field_types = 0;
-  size_t num_edited_autofilled_fields = 0;
-  size_t num_of_accepted_autofilled_fields = 0;
-  size_t num_of_corrected_autofilled_fields = 0;
 
   // Tracks how many fields are filled, unfilled or corrected.
   autofill_metrics::FormGroupFillingStats address_field_stats;
@@ -50,13 +47,6 @@ void LogQualityMetrics(
   // Same as above, but keyed by `FillingMethod`.
   base::flat_map<FillingMethod, autofill_metrics::FormGroupFillingStats>
       address_field_stats_by_filling_method;
-
-  // Count the number of autofilled and corrected non-credit card fields with
-  // ac=unrecognized.
-  // Note that this can be misleading, since autocompleted fields count as
-  // autofilled.
-  size_t num_of_accepted_autofilled_fields_with_autocomplete_unrecognized = 0;
-  size_t num_of_corrected_autofilled_fields_with_autocomplete_unrecognized = 0;
 
   bool did_autofill_all_possible_fields = true;
   bool did_autofill_some_possible_fields = false;
@@ -103,11 +93,6 @@ void LogQualityMetrics(
     AutofillMetrics::LogEmailFieldPredictionMetrics(*field);
 
     autofill_metrics::LogShadowPredictionComparison(*field);
-    // We count fields that were autofilled but later modified, regardless of
-    // whether the data now in the field is recognized.
-    if (field->previously_autofilled()) {
-      num_edited_autofilled_fields++;
-    }
 
     if (type.html_type() == HtmlFieldType::kOneTimeCode) {
       has_observed_one_time_code_field = true;
@@ -221,23 +206,6 @@ void LogQualityMetrics(
 
     ++num_detected_field_types;
 
-    // Count the number of autofilled and corrected fields.
-    // TODO(crbug.com/1368096): This metric is defective because it is falsely
-    // conditioned on having a detected field type. The metric is replaced by a
-    // new one and the old one should be removed once the new one is fully
-    // launched.
-    if (field->is_autofilled) {
-      ++num_of_accepted_autofilled_fields;
-      if (field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-        ++num_of_accepted_autofilled_fields_with_autocomplete_unrecognized;
-      }
-    } else if (field->previously_autofilled()) {
-      ++num_of_corrected_autofilled_fields;
-      if (field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-        ++num_of_corrected_autofilled_fields_with_autocomplete_unrecognized;
-      }
-    }
-
     if (field->is_autofilled) {
       did_autofill_some_possible_fields = true;
     } else if (!field->only_fill_when_focused()) {
@@ -263,9 +231,6 @@ void LogQualityMetrics(
     }
   }
 
-  AutofillMetrics::LogNumberOfEditedAutofilledFields(
-      num_edited_autofilled_fields, observed_submission);
-
   // We log "submission" and duration metrics if we are here after observing a
   // submission event.
   if (observed_submission) {
@@ -285,20 +250,6 @@ void LogQualityMetrics(
         state =
             AutofillMetrics::FILLABLE_FORM_AUTOFILLED_NONE_DID_SHOW_SUGGESTIONS;
       }
-
-      // Log the number of autofilled fields at submission time.
-      AutofillMetrics::LogNumberOfAutofilledFieldsAtSubmission(
-          num_of_accepted_autofilled_fields,
-          num_of_corrected_autofilled_fields);
-
-      // Log the number of autofilled fields with an unrecognized autocomplete
-      // attribute at submission time.
-      // Note that credit card fields are not counted since they generally
-      // ignore an unrecognized autocomplete attribute.
-      AutofillMetrics::
-          LogNumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission(
-              num_of_accepted_autofilled_fields_with_autocomplete_unrecognized,
-              num_of_corrected_autofilled_fields_with_autocomplete_unrecognized);
 
       // Unlike the other times, the |submission_time| should always be
       // available.

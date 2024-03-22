@@ -1324,8 +1324,6 @@ chromium-metrics-reviews@google.com.
       name="Autofill.FieldPredictionQuality.ByFieldType.Overall"/>
   <affected-histogram
       name="Autofill.FieldPredictionQuality.ByFieldType.Server"/>
-  <affected-histogram
-      name="Autofill.NumberOfEditedAutofilledFieldsAtSubmission"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="FirstUserActionType" separator="">
@@ -2955,14 +2953,12 @@ chromium-metrics-reviews@google.com.
   <suffix name="Malloc.CommittedSize"
       label="Committed memory size for malloc(). Recorded only when
              PartitionAlloc is used as malloc()."/>
-  <suffix name="Malloc.Fragmentation"
-      label="Fragmentation of PartitionAlloc."/>
+  <suffix name="Malloc.Fragmentation" label="Fragmentation of PartitionAlloc."/>
   <suffix name="Malloc.Fragmentation.After1H"
-      label="Fragmentation of PartitionAlloc for processes that have
-             existed for &gt;=1H."/>
+      label="Fragmentation of PartitionAlloc for processes that have existed
+             for &gt;=1H."/>
   <suffix name="Malloc.Fragmentation.After24H"
-      label="Fragmentation of PartitionAlloc for processes older than 1
-             day."/>
+      label="Fragmentation of PartitionAlloc for processes older than 1 day."/>
   <suffix name="Malloc.MaxAllocatedSize"
       label="Highwatermark for allocated memory for malloc(). Recorded only
              when PartitionAlloc is used as malloc()."/>

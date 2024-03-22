@@ -1646,21 +1646,6 @@ void AutofillMetrics::LogAutofillFormCleared() {
   base::RecordAction(base::UserMetricsAction("Autofill_ClearedForm"));
 }
 
-// static
-void AutofillMetrics::LogNumberOfEditedAutofilledFields(
-    size_t num_edited_autofilled_fields,
-    bool observed_submission) {
-  if (observed_submission) {
-    UMA_HISTOGRAM_COUNTS_1000(
-        "Autofill.NumberOfEditedAutofilledFieldsAtSubmission",
-        num_edited_autofilled_fields);
-  } else {
-    UMA_HISTOGRAM_COUNTS_1000(
-        "Autofill.NumberOfEditedAutofilledFieldsAtSubmission.NoSubmission",
-        num_edited_autofilled_fields);
-  }
-}
-
 void AutofillMetrics::LogSectioningMetrics(
     const base::flat_map<Section, size_t>& fields_per_section) {
   constexpr std::string_view kBaseHistogramName = "Autofill.Sectioning.";
@@ -2902,42 +2887,6 @@ void AutofillMetrics::LogWebOTPPhoneCollectionMetricStateUkm(
   ukm::builders::WebOTPImpact builder(source_id);
   builder.SetPhoneCollection(phone_collection_metric_state);
   builder.Record(recorder);
-}
-
-// static
-void AutofillMetrics::LogNumberOfAutofilledFieldsAtSubmission(
-    size_t number_of_accepted_fields,
-    size_t number_of_corrected_fields) {
-  base::UmaHistogramExactLinear(
-      "Autofill.NumberOfAutofilledFieldsAtSubmission.Total",
-      number_of_accepted_fields + number_of_corrected_fields, 50);
-  base::UmaHistogramExactLinear(
-      "Autofill.NumberOfAutofilledFieldsAtSubmission.Accepted",
-      number_of_accepted_fields, 50);
-  base::UmaHistogramExactLinear(
-      "Autofill.NumberOfAutofilledFieldsAtSubmission.Corrected",
-      number_of_corrected_fields, 50);
-}
-
-// static
-void AutofillMetrics::
-    LogNumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission(
-        size_t number_of_accepted_fields,
-        size_t number_of_corrected_fields) {
-  base::UmaHistogramExactLinear(
-      "Autofill."
-      "NumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission.Total",
-      number_of_accepted_fields + number_of_corrected_fields, 50);
-  base::UmaHistogramExactLinear(
-      "Autofill."
-      "NumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission."
-      "Accepted",
-      number_of_accepted_fields, 50);
-  base::UmaHistogramExactLinear(
-      "Autofill."
-      "NumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission."
-      "Corrected",
-      number_of_corrected_fields, 50);
 }
 
 void AutofillMetrics::LogVerificationStatusOfNameTokensOnProfileUsage(

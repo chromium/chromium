@@ -1124,13 +1124,6 @@ class AutofillMetrics {
   static void OnAutocompleteSuggestionDeleted(
       SingleEntryRemovalMethod removal_method);
 
-  // Log how many autofilled fields in a given form were edited before the
-  // submission or when the user unfocused the form (depending on
-  // |observed_submission|).
-  static void LogNumberOfEditedAutofilledFields(
-      size_t num_edited_autofilled_fields,
-      bool observed_submission);
-
   // Logs the number of sections and the number of fields/section.
   static void LogSectioningMetrics(
       const base::flat_map<Section, size_t>& fields_per_section);
@@ -1244,18 +1237,6 @@ class AutofillMetrics {
       ukm::UkmRecorder* ukm_recorder,
       ukm::SourceId source_id,
       uint32_t phone_collection_metric_state);
-
-  // Logs the number of autofilled fields at submission time.
-  static void LogNumberOfAutofilledFieldsAtSubmission(
-      size_t number_of_accepted_fields,
-      size_t number_of_corrected_fields);
-
-  // Logs the number of autofilled fields with unrecognized autocomplete
-  // attribute at submission time.
-  static void
-  LogNumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission(
-      size_t number_of_accepted_fields,
-      size_t number_of_corrected_fields);
 
   // Logs when the virtual card metadata for one card have been updated.
   static void LogVirtualCardMetadataSynced(bool existing_card);
