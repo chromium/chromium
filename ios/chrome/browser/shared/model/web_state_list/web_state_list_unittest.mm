@@ -2428,6 +2428,37 @@ TEST_F(WebStateListTest, DetachWebStateAt_Groups) {
   }
 }
 
+// Checks that detaching the last WebState of a group leads to the deletion of
+// that group.
+TEST_F(WebStateListTest, DetachWebStateAt_DeleteEmptyGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "| a* [ 0 b ]"));
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  web_state_list_.DetachWebStateAt(1);
+
+  EXPECT_EQ("| a*", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(1, observer_.group_deleted_count());
+  EXPECT_EQ(group, observer_.group_deleted_group());
+}
+
+// Checks that detaching a non-last WebState of a group doesn't lead to the
+// deletion of that group.
+TEST_F(WebStateListTest, DetachWebStateAt_DontDeleteNonEmptyGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "| a* [ 0 b c ]"));
+
+  observer_.ResetStatistics();
+  web_state_list_.DetachWebStateAt(1);
+
+  EXPECT_EQ("| a* [ 0 c ]",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(0, observer_.group_deleted_count());
+}
+
 // Tests that moving when there are no groups doesn't create any group.
 TEST_F(WebStateListTest, MoveWebStateAt_NoGroup) {
   WebStateListBuilderFromDescription builder;
@@ -2701,10 +2732,20 @@ TEST_F(WebStateListTest, GetGroups) {
   TabGroupVisualData visual_data =
       TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kPink);
   const TabGroup* group_1 = web_state_list_.CreateGroup({2}, visual_data);
+  builder.SetTabGroupIdentifier(group_1, '1');
 
+  EXPECT_EQ("| [ 0 a b ] [ 1 c ] d* e",
+            builder.GetWebStateListDescription(web_state_list_));
   EXPECT_EQ(2u, web_state_list_.GetGroups().size());
   EXPECT_TRUE(web_state_list_.GetGroups().contains(group_0));
   EXPECT_TRUE(web_state_list_.GetGroups().contains(group_1));
+
+  web_state_list_.DetachWebStateAt(2);
+
+  EXPECT_EQ("| [ 0 a b ] d* e",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(1u, web_state_list_.GetGroups().size());
+  EXPECT_TRUE(web_state_list_.GetGroups().contains(group_0));
 }
 
 // Tests creating a group with one tab that doesn't move.
@@ -3534,7 +3575,7 @@ TEST_F(WebStateListTest, DeleteGroup) {
   EXPECT_EQ(group_0, observer_.group_deleted_group());
 }
 
-// Tests the check for group appartenance.
+// Tests the check for group membership.
 TEST_F(WebStateListTest, ContainsGroup) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
@@ -3547,5 +3588,9 @@ TEST_F(WebStateListTest, ContainsGroup) {
   EXPECT_TRUE(web_state_list_.ContainsGroup(group_1));
   EXPECT_FALSE(web_state_list_.ContainsGroup(&outside_group));
 
-  // TODO(crbug.com/1501837): Add test when deleting a group.
+  web_state_list_.DeleteGroup(group_1);
+
+  EXPECT_TRUE(web_state_list_.ContainsGroup(group_0));
+  EXPECT_FALSE(web_state_list_.ContainsGroup(group_1));
+  EXPECT_FALSE(web_state_list_.ContainsGroup(&outside_group));
 }

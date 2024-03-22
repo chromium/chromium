@@ -706,6 +706,9 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     observer.WebStateListDidChange(this, detach_change, status);
   }
 
+  // If the group is now empty, delete it.
+  DeleteGroupIfEmpty(group);
+
   return detached_web_state;
 }
 
@@ -1170,11 +1173,22 @@ void WebStateList::MoveWebStateWrapperAt(int from_index,
   }
 
   // If the old group is now empty, delete it.
-  const auto iter = groups_.find(old_group);
+  DeleteGroupIfEmpty(old_group);
+}
+
+void WebStateList::DeleteGroupIfEmpty(const TabGroup* group) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(locked_);
+
+  const auto iter = groups_.find(group);
   if (iter != groups_.end() && iter->second.count() == 0) {
     // Notify observers of the imminent deletion of the group.
-    // The creation didn't change the active WebState.
-    const WebStateListChangeGroupDelete group_delete_change(old_group);
+    // The deletion doesn't change the active WebState.
+    web::WebState* const active_web_state = GetActiveWebState();
+    const WebStateListStatus status = {
+        .old_active_web_state = active_web_state,
+        .new_active_web_state = active_web_state};
+    const WebStateListChangeGroupDelete group_delete_change(group);
     for (auto& observer : observers_) {
       observer.WebStateListDidChange(this, group_delete_change, status);
     }

@@ -594,6 +594,11 @@ class WebStateList {
                              bool pinned,
                              const TabGroup* group);
 
+  // Removes `group` from `groups_` if `group` is empty.
+  //
+  // Assumes that the WebStateList is locked.
+  void DeleteGroupIfEmpty(const TabGroup* group);
+
   // Updates the active index, updates the WebState opener for the old active
   // WebState if exists and brings the new active WebState to the "realized"
   // state.
