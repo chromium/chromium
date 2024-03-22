@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -106,16 +107,29 @@ gfx::Rect GetGestureEventScreenRect(const ui::Event& event) {
   return event.AsGestureEvent()->details().bounding_box();
 }
 
-void SetupBackgroundView(DeskBarViewBase* bar_view) {
+// Sets up background for the desk bar. There could be 3 cases:
+//   1) desk button bar
+//      A separate view will be used as background for animation purpose.
+//   2) overview bar with forest
+//      No background.
+//   3) overview bar without forest
+//      The bar itself serves as the background.
+void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
   const bool type_is_desk_button =
       bar_view->type() == DeskBarViewBase::Type::kDeskButton;
+
+  if (features::IsForestFeatureEnabled() && !type_is_desk_button) {
+    return;
+  }
+
   auto* view = type_is_desk_button ? bar_view->background_view() : bar_view;
   view->SetPaintToLayer();
-  view->layer()->SetFillsBoundsOpaquely(false);
+
+  auto* layer = view->layer();
+  layer->SetFillsBoundsOpaquely(false);
   if (features::IsBackgroundBlurEnabled()) {
-    view->layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    view->layer()->SetBackdropFilterQuality(
-        ColorProvider::kBackgroundBlurQuality);
+    layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
 
   const int corner_radius = type_is_desk_button
@@ -123,7 +137,7 @@ void SetupBackgroundView(DeskBarViewBase* bar_view) {
                                 : kDeskBarCornerRadiusOverview;
   view->SetBorder(std::make_unique<views::HighlightBorder>(
       corner_radius, views::HighlightBorder::Type::kHighlightBorderNoShadow));
-  view->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
+  layer->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
   view->SetBackground(
       views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
 }
@@ -482,7 +496,8 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
   if (type_ == Type::kDeskButton) {
     background_view_ = AddChildView(std::make_unique<views::View>());
   }
-  SetupBackgroundView(this);
+
+  MaybeSetupBackgroundView(this);
 
   // Use layer scrolling so that the contents will paint on top of the parent,
   // which uses `SetPaintToLayer()`.

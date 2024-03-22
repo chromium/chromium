@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/desks/legacy_desk_bar_view.h"
+
 #include "ash/ash_element_identifiers.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
