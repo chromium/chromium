@@ -993,6 +993,8 @@ if (enable_remoting_host) {
       defines = host_predefines +
                 [ "REMOTING_HOST_BINARY=BINARY_REMOTING_START_HOST" ]
 
+      sources += [ "$root_gen_dir/remoting/version.rc", ]
+
       deps += [
         "//remoting/host/win:elevated_exe_manifest",
         "//remoting/host/win:remoting_windows_resources",
