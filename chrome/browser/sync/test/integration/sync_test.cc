@@ -222,7 +222,9 @@ SyncTest::~SyncTest() = default;
 
 void SyncTest::SetUp() {
 #if BUILDFLAG(IS_ANDROID)
-  sync_test_utils_android::SetUpAuthForTesting();
+  if (server_type_ == IN_PROCESS_FAKE_SERVER) {
+    sync_test_utils_android::SetUpAuthForTesting();
+  }
 #endif
 
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
@@ -270,7 +272,9 @@ void SyncTest::PostRunTestOnMainThread() {
   PlatformBrowserTest::PostRunTestOnMainThread();
 
 #if BUILDFLAG(IS_ANDROID)
-  sync_test_utils_android::TearDownAuthForTesting();
+  if (server_type_ == IN_PROCESS_FAKE_SERVER) {
+    sync_test_utils_android::TearDownAuthForTesting();
+  }
 #endif
 }
 
@@ -361,24 +365,26 @@ bool SyncTest::CreateProfile(int index) {
 
   BeforeSetupClient(index, profile_path);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Use default profile no matter running against an EXTERNAL_LIVE_SERVER or
+  // IN_PROCESS_FAKE_SERVER
+  DCHECK_EQ(index, 0);
+  Profile* profile = ProfileManager::GetLastUsedProfile();
+  InitializeProfile(index, profile);
+#else   // BUILDFLAG(IS_ANDROID)
   if (server_type_ == EXTERNAL_LIVE_SERVER) {
     // If running against an EXTERNAL_LIVE_SERVER, we signin profiles using real
     // GAIA server. This requires creating profiles with no test hooks.
     InitializeProfile(index, MakeProfileForUISignin(profile_path));
   } else {
-// Use default profile for Android.
-#if BUILDFLAG(IS_ANDROID)
-    DCHECK(index == 0);
-    Profile* profile = ProfileManager::GetLastUsedProfile();
-#else
     // Without need of real GAIA authentication, we create new test profiles.
     Profile* profile =
         g_browser_process->profile_manager()->GetProfile(profile_path);
-#endif
 
     SetupMockGaiaResponsesForProfile(profile);
     InitializeProfile(index, profile);
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Once profile initialization has kicked off, wait for it to finish.
   WaitForDataModels(GetProfile(index));

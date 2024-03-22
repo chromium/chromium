@@ -27,7 +27,17 @@ bool SyncSigninDelegateAndroid::SigninUI(Profile* profile,
                                          const std::string& username,
                                          const std::string& password,
                                          signin::ConsentLevel consent_level) {
-  return false;
+  switch (consent_level) {
+    case signin::ConsentLevel::kSignin:
+      sync_test_utils_android::SetUpLiveAccountAndSignInForTesting(username,
+                                                                   password);
+      break;
+    case signin::ConsentLevel::kSync:
+      sync_test_utils_android::SetUpLiveAccountAndSignInAndEnableSyncForTesting(
+          username, password);
+      break;
+  }
+  return true;
 }
 
 bool SyncSigninDelegateAndroid::ConfirmSyncUI(Profile* profile) {

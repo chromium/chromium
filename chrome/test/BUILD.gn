@@ -11661,6 +11661,7 @@ if (is_android) {
       "//chrome/android:chrome_all_java",
       "//chrome/browser/profiles/android:java",
       "//chrome/test/android:chrome_java_integration_test_support",
+      "//chrome/test/android:live_signin_test_util_java",
       "//components/gcm_driver/instance_id/android:instance_id_driver_test_support_java",
       "//components/signin/public/android:java",
       "//components/sync/android:sync_java",
@@ -11668,6 +11669,9 @@ if (is_android) {
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit",
     ]
+
+    # TODO(crbug.com/40189294): Configurably add upstream or downstream impl
+    deps += [ "//chrome/test/android:live_signin_test_util_public_impl_java" ]
     sources = [ "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestSigninUtils.java" ]
   }
 

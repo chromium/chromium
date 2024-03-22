@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_TEST_UTILS_ANDROID_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_TEST_UTILS_ANDROID_H_
 
+#include <string>
+
 // Utilities that interface with Java to support Sync testing on Android.
 
 namespace sync_test_utils_android {
@@ -35,6 +37,17 @@ void SetUpAuthForTesting();
 // for an example:
 // chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc.
 void TearDownAuthForTesting();
+
+// Sets up an account with given username and password, signs in synchronously
+// on the live server.
+void SetUpLiveAccountAndSignInForTesting(const std::string& username,
+                                         const std::string& password);
+
+// Sets up an account with given username and password, signs in, and enable
+// Sync-the-feature synchronously on the live server.
+void SetUpLiveAccountAndSignInAndEnableSyncForTesting(
+    const std::string& username,
+    const std::string& password);
 
 }  // namespace sync_test_utils_android
 

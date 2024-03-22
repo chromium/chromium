@@ -5,6 +5,7 @@
 #include "chrome/browser/sync/test/integration/sync_test_utils_android.h"
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
@@ -59,6 +60,35 @@ void TearDownAuthForTesting() {
                                    base::android::AttachCurrentThread());
                                run_loop.Quit();
                              }));
+  run_loop.Run();
+}
+
+void SetUpLiveAccountAndSignInForTesting(const std::string& username,
+                                         const std::string& password) {
+  base::RunLoop run_loop;
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
+        JNIEnv* env = base::android::AttachCurrentThread();
+        Java_SyncTestSigninUtils_setUpLiveAccountAndSignInForTesting(
+            env, base::android::ConvertUTF8ToJavaString(env, username),
+            base::android::ConvertUTF8ToJavaString(env, password));
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+void SetUpLiveAccountAndSignInAndEnableSyncForTesting(
+    const std::string& username,
+    const std::string& password) {
+  base::RunLoop run_loop;
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
+        JNIEnv* env = base::android::AttachCurrentThread();
+        Java_SyncTestSigninUtils_setUpLiveAccountAndSignInAndEnableSyncForTesting(
+            env, base::android::ConvertUTF8ToJavaString(env, username),
+            base::android::ConvertUTF8ToJavaString(env, password));
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
