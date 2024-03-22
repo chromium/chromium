@@ -8,10 +8,11 @@
 namespace media_preview_metrics {
 
 enum class UiLocation { kPermissionPrompt, kPageInfo };
-enum class PreviewType { kUnknown, kCamera, kMic };
+enum class PreviewType { kUnknown, kCamera, kMic, kCameraAndMic };
 
 struct Context {
   explicit Context(UiLocation ui_location);
+  Context(UiLocation ui_location, PreviewType preview_type);
   ~Context();
 
   const UiLocation ui_location;

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
 #include "ui/color/color_id.h"
 #include "ui/views/background.h"
@@ -82,3 +81,19 @@ void MediaCoordinator::UpdateDevicePreferenceRanking() {
     mic_coordinator_->UpdateDevicePreferenceRanking();
   }
 }
+
+namespace media_coordinator {
+
+media_preview_metrics::PreviewType GetPreviewTypeFromMediaCoordinatorViewType(
+    MediaCoordinator::ViewType view_type) {
+  switch (view_type) {
+    case MediaCoordinator::ViewType::kBoth:
+      return media_preview_metrics::PreviewType::kCameraAndMic;
+    case MediaCoordinator::ViewType::kCameraOnly:
+      return media_preview_metrics::PreviewType::kCamera;
+    case MediaCoordinator::ViewType::kMicOnly:
+      return media_preview_metrics::PreviewType::kMic;
+  }
+}
+
+}  // namespace media_coordinator
