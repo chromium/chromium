@@ -838,7 +838,6 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "goma",
         ],
     ),
     builderless = True,
