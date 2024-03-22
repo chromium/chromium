@@ -107,10 +107,12 @@
         </cr-icon-button>
         </div>
       </template>
-      <cr-icon-button id="rejectButton"
-          class="icon-clear"
-          on-click="onRejectGroupClick_">
-      </cr-icon-button>
+      <template is="dom-if" if="[[showReject]]">
+        <cr-icon-button id="rejectButton"
+            class="icon-clear"
+            on-click="onRejectGroupClick_">
+        </cr-icon-button>
+      </template>
     </div>
     <div class="divider"></div>
   </template>

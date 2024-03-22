@@ -365,7 +365,8 @@ suite('TabOrganizationPageTest', () => {
     await tabOrganizationPageSetup();
 
     testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
-        createSession({state: TabOrganizationState.kSuccess}));
+        createMultiOrganizationSession(
+            3, {state: TabOrganizationState.kSuccess}));
     await flushTasks();
 
     assertEquals(0, testApiProxy.getCallCount('rejectTabOrganization'));

@@ -58,6 +58,11 @@ export class TabOrganizationGroupElement extends PolymerElement {
         value: -1,
       },
 
+      showReject: {
+        type: Boolean,
+        value: false,
+      },
+
       lastFocusedIndex_: {
         type: Number,
         value: 0,
@@ -80,6 +85,7 @@ export class TabOrganizationGroupElement extends PolymerElement {
   name: string;
   multiTabOrganization: boolean;
   organizationId: number;
+  showReject: boolean;
 
   private lastFocusedIndex_: number;
   private showInput_: boolean;
