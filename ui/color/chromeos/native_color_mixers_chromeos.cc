@@ -4,6 +4,7 @@
 
 #include "ui/color/color_mixers.h"
 
+#include "third_party/material_color_utilities/src/cpp/palettes/tones.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
@@ -60,6 +61,18 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
   // This matches cros.sys.system-highlight-border1
   mixer[kColorCrosSystemHighlightBorder1] =
       ui::SetAlpha(ui::kColorRefNeutral0, dark_mode ? 0x14 : 0x0F);
+
+  // Seed color for cros.ref.green @ hue angle 217 i.e. Google Blue.
+  material_color_utilities::TonalPalette green_palette(
+      SkColorSetRGB(0x4F, 0xA8, 0x34));
+  mixer[kColorCrosSysPositive] = {dark_mode ? green_palette.get(80)
+                                            : green_palette.get(50)};
+
+  // cros.ref.sparkle-complement @ 217.
+  material_color_utilities::TonalPalette complement(
+      SkColorSetRGB(0x40, 0x67, 0x43));
+  mixer[kColorCrosSysComplementVariant] = {dark_mode ? complement.get(30)
+                                                     : complement.get(95)};
 
   // TODO(b/291622042): Delete once Jelly is fully launched.
   mixer[kColorNativeColor2] = {dark_mode ? gfx::kGoogleGreen400

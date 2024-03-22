@@ -623,6 +623,9 @@
   E_CPONLY(kColorCrosSystemHighlightBorder) \
   E_CPONLY(kColorCrosSystemHighlightBorder1) \
   \
+  E_CPONLY(kColorCrosSysPositive) \
+  E_CPONLY(kColorCrosSysComplementVariant) \
+  \
   /* TODO(b/330381503): Move to Ash only once user is migrated. */ \
   E_CPONLY(kColorNativeColor2)
 #elif BUILDFLAG(IS_LINUX)
