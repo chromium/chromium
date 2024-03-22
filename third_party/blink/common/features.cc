@@ -1588,6 +1588,14 @@ const base::FeatureParam<int>
 BASE_FEATURE(kNavigationPredictor,
              "NavigationPredictor",
              base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<int> kPredictorTrafficClientEnabledPercent{
+    &kNavigationPredictor, "traffic_client_enabled_percent",
+#if BUILDFLAG(IS_ANDROID)
+    100
+#else
+    5
+#endif
+};
 
 BASE_FEATURE(kNewBaseUrlInheritanceBehavior,
              "NewBaseUrlInheritanceBehavior",

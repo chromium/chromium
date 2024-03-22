@@ -964,6 +964,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMixedContentAutoupgrade);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNavigationPredictor);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kPredictorTrafficClientEnabledPercent;
 
 // Flag to control whether about:blank and srcdoc iframes use newly proposed
 // base url inheritance behavior from https://crbug.com/1356658.
