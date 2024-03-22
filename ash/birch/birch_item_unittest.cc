@@ -123,7 +123,8 @@ TEST_F(BirchItemTest, Attachment_PerformAction_ValidUrl) {
                            /*file_url=*/GURL("http://file.com/"),
                            /*icon_url=*/GURL("http://attachment.icon"),
                            /*start_time=*/base::Time(),
-                           /*end_time=*/base::Time());
+                           /*end_time=*/base::Time(),
+                           /*file_id=*/"");
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL("http://file.com/"));
 }
@@ -146,7 +147,8 @@ TEST_F(BirchItemTest, Attachment_PerformAction_EmptyUrl) {
                            /*file_url=*/GURL(),
                            /*icon_url=*/GURL("http://attachment.icon"),
                            /*start_time=*/base::Time(),
-                           /*end_time=*/base::Time());
+                           /*end_time=*/base::Time(),
+                           /*file_id=*/"");
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
 }
@@ -259,7 +261,8 @@ TEST_F(BirchItemIconTest, Attachment_LoadIcon) {
                            /*file_url=*/GURL("http://file.com/"),
                            /*icon_url=*/GURL("http://attachment.icon"),
                            /*start_time=*/base::Time(),
-                           /*end_time=*/base::Time());
+                           /*end_time=*/base::Time(),
+                           /*file_id=*/"");
 
   item.LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
@@ -270,7 +273,8 @@ TEST_F(BirchItemIconTest, Attachment_LoadIcon_InvalidUrl) {
                            /*file_url=*/GURL("http://file.com/"),
                            /*icon_url=*/GURL("invalid-url"),
                            /*start_time=*/base::Time(),
-                           /*end_time=*/base::Time());
+                           /*end_time=*/base::Time(),
+                           /*file_id=*/"");
 
   item.LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_TRUE(icon.IsEmpty()); }));

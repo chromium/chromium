@@ -244,6 +244,8 @@ TEST(CalendarAPIResponseTypesTest, ParseAttachments) {
             "https://www.gstatic.com/images/branding/product/1x/"
             "docs_2020q4_48dp.png");
   EXPECT_EQ(attachments[0].title(), "Google Docs Attachment");
+  EXPECT_EQ(attachments[0].file_id(),
+            "1yeRZ9Je4i9XvbnnOygitkXgJQpLvR98_TrfWRec84Bw");
 
   EXPECT_EQ(attachments[1].file_url(),
             "https://docs.google.com/presentation/d/"
@@ -252,6 +254,8 @@ TEST(CalendarAPIResponseTypesTest, ParseAttachments) {
             "https://www.gstatic.com/images/branding/product/1x/"
             "slides_2020q4_48dp.png");
   EXPECT_EQ(attachments[1].title(), "Google Slides Attachment");
+  EXPECT_EQ(attachments[1].file_id(),
+            "17tkfUouD4CjwnW7cFWww4lk5__7parQy_eJBAwPIC-Q");
 }
 
 TEST(CalendarAPIResponseTypesTest, ParseInvalidAttachments) {

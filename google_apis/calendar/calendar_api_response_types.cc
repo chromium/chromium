@@ -65,6 +65,7 @@ constexpr char kAttachments[] = "attachments";
 constexpr char kAttachmentTitle[] = "title";
 constexpr char kAttachmentFileUrl[] = "fileUrl";
 constexpr char kAttachmentIconLink[] = "iconLink";
+constexpr char kAttachmentFileId[] = "fileId";
 
 constexpr auto kEventStatuses =
     base::MakeFixedFlatMap<std::string_view, CalendarEvent::EventStatus>(
@@ -243,6 +244,11 @@ std::vector<Attachment> GetAttachments(const base::Value::Dict& dict) {
     if (icon_link_string) {
       auto icon_link = GURL(*icon_link_string);
       attachment.set_icon_link(icon_link.is_valid() ? icon_link : GURL());
+    }
+
+    const std::string* file_id = attachment_dict->FindString(kAttachmentFileId);
+    if (title) {
+      attachment.set_file_id(*file_id);
     }
 
     result.push_back(std::move(attachment));
