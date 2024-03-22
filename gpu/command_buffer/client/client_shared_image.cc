@@ -259,6 +259,10 @@ uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage) {
              : GL_TEXTURE_2D;
 }
 
+scoped_refptr<ClientSharedImage> ClientSharedImage::MakeUnowned() {
+  return ClientSharedImage::ImportUnowned(Export());
+}
+
 ExportedSharedImage ClientSharedImage::Export() {
   if (creation_sync_token_.HasData() &&
       !creation_sync_token_.verified_flush()) {

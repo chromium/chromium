@@ -168,6 +168,13 @@ class GPU_EXPORT ClientSharedImage
   // backing this ClientSI must have been created with CPU_READ/CPU_WRITE usage.
   std::unique_ptr<ScopedMapping> Map();
 
+  // Returns an unowned copy of the current ClientSharedImage. This function
+  // is a temporary workaround for the situation where a ClientSharedImage may
+  // have more than one reference when being destroyed.
+  // TODO(crbug.com/1494911): Remove this function once ClientSharedImage
+  // can properly handle shared image destruction internally.
+  scoped_refptr<ClientSharedImage> MakeUnowned();
+
   ExportedSharedImage Export();
 
   // Returns an unowned reference. The caller should ensure that the original
