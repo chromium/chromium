@@ -206,7 +206,7 @@ VideoDecodeAcceleratorTestSuite* VideoDecodeAcceleratorTestSuite::Create(
       linear_output = true;
 #if defined(ARCH_CPU_ARM_FAMILY)
     } else if (it->first == "disable-libyuv") {
-      // TODO implement disabling libyuv here.
+      // TODO(bchoobineh): implement disabling libyuv here.
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
