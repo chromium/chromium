@@ -4,7 +4,7 @@
 
 import("//build/config/ui.gni")
 
-if (!is_android) {
+if (!is_android && !is_ios) {
   static_library("live_caption") {
     sources = [
       "caption_bubble_context.h",
