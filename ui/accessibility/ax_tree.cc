@@ -108,31 +108,54 @@ void CallIfAttributeValuesChanged(const std::vector<std::pair<K, V>>& old_pairs,
   }
 
   // Slower path - they don't have the same keys in the same order, so
-  // check all keys against each other, using maps to prevent this from
-  // becoming O(n^2) as the size grows.
-  auto old_map = MapFromKeyValuePairs(old_pairs);
-  auto new_map = MapFromKeyValuePairs(new_pairs);
-  for (size_t i = 0; i < old_pairs.size(); ++i) {
-    const auto& old_entry = old_pairs[i];
-    if (old_entry.second != empty_value) {
-      // If there is an old non-empty value...
-      if (new_map.find(old_entry.first) == new_map.end()) {
-        // But no new value, then this is a change to the empty value.
-        callback(old_entry.first, old_entry.second, empty_value);
+  // check all keys against each other.
+  using VectorOfPairs = std::vector<std::pair<K, V>>&;
+  auto comp = [](const auto& lhs, const auto& rhs) {
+    return lhs.first < rhs.first;
+  };
+  std::sort(const_cast<VectorOfPairs>(old_pairs).begin(),
+            const_cast<VectorOfPairs>(old_pairs).end(), comp);
+  std::sort(const_cast<VectorOfPairs>(new_pairs).begin(),
+            const_cast<VectorOfPairs>(new_pairs).end(), comp);
+  for (size_t old_i = 0, new_i = 0;
+       old_i < old_pairs.size() || new_i < new_pairs.size();) {
+    // If we reached the end of one of the vectors.
+    if (old_i >= old_pairs.size()) {
+      const auto& new_pair = new_pairs[new_i];
+      if (new_pair.second != empty_value) {
+        callback(new_pair.first, empty_value, new_pair.second);
       }
-    }
-  }
-
-  for (size_t i = 0; i < new_pairs.size(); ++i) {
-    const auto& new_entry = new_pairs[i];
-    const auto& iter = old_map.find(new_entry.first);
-    if (new_entry.second == empty_value && iter == old_map.end()) {
+      new_i++;
+      continue;
+    } else if (new_i >= new_pairs.size()) {
+      const auto& old_pair = old_pairs[old_i];
+      if (old_pair.second != empty_value) {
+        callback(old_pair.first, old_pair.second, empty_value);
+      }
+      old_i++;
       continue;
     }
-    if (iter == old_map.end()) {
-      callback(new_entry.first, empty_value, new_entry.second);
-    } else if (iter->second != new_pairs[i].second) {
-      callback(new_entry.first, iter->second, new_entry.second);
+
+    const auto& old_pair = old_pairs[old_i];
+    const auto& new_pair = new_pairs[new_i];
+    if (old_pair.first == new_pair.first) {
+      if (old_pair.second != new_pair.second) {
+        callback(old_pair.first, old_pair.second, new_pair.second);
+      }
+      old_i++;
+      new_i++;
+    } else if (old_pair.first < new_pair.first) {
+      // This means `new_pairs` has no key for `old_pair.first`.
+      if (old_pair.second != empty_value) {
+        callback(old_pair.first, old_pair.second, empty_value);
+      }
+      old_i++;
+    } else {
+      // This means `old_pairs` has no key for `new_pair.first`.
+      if (new_pair.second != empty_value) {
+        callback(new_pair.first, empty_value, new_pair.second);
+      }
+      new_i++;
     }
   }
 }

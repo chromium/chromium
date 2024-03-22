@@ -1407,16 +1407,16 @@ TEST(AXTreeTest, AttributeChangeCallbacks) {
   const std::vector<std::string>& change_log2 =
       test_observer2.attribute_change_log();
   ASSERT_EQ(11U, change_log2.size());
-  EXPECT_EQ("name changed from N2 to ", change_log2[0]);
-  EXPECT_EQ("description changed from D2 to D3", change_log2[1]);
+  EXPECT_EQ("description changed from D2 to D3", change_log2[0]);
+  EXPECT_EQ("name changed from N2 to ", change_log2[1]);
   EXPECT_EQ("value changed from  to V3", change_log2[2]);
   EXPECT_EQ("busy changed to false", change_log2[3]);
   EXPECT_EQ("modal changed to true", change_log2[4]);
-  EXPECT_EQ("minValueForRange changed from 2 to 0", change_log2[5]);
-  EXPECT_EQ("stepValueForRange changed from 3 to 0.5", change_log[6]);
-  EXPECT_EQ("valueForRange changed from 0 to 5", change_log2[7]);
-  EXPECT_EQ("scrollXMin changed from 2 to 0", change_log2[8]);
-  EXPECT_EQ("scrollX changed from 6 to 7", change_log2[9]);
+  EXPECT_EQ("valueForRange changed from 0 to 5", change_log2[5]);
+  EXPECT_EQ("minValueForRange changed from 2 to 0", change_log2[6]);
+  EXPECT_EQ("stepValueForRange changed from 0.5 to 0", change_log2[7]);
+  EXPECT_EQ("scrollX changed from 6 to 7", change_log2[8]);
+  EXPECT_EQ("scrollXMin changed from 2 to 0", change_log2[9]);
   EXPECT_EQ("scrollXMax changed from 0 to 10", change_log2[10]);
 }
 
@@ -1477,8 +1477,8 @@ TEST(AXTreeTest, IntListChangeCallbacks) {
       test_observer2.attribute_change_log();
   ASSERT_EQ(3U, change_log2.size());
   EXPECT_EQ("controlsIds changed from 2,2 to ", change_log2[0]);
-  EXPECT_EQ("radioGroupIds changed from 3 to 2,2", change_log2[1]);
-  EXPECT_EQ("flowtoIds changed from  to 3", change_log2[2]);
+  EXPECT_EQ("flowtoIds changed from  to 3", change_log2[1]);
+  EXPECT_EQ("radioGroupIds changed from 3 to 2,2", change_log2[2]);
 }
 
 // Create a very simple tree and make sure that we can get the bounds of
