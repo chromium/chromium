@@ -31,7 +31,7 @@ namespace extensions {
 
 // static
 void AppHooksDelegate::IsInstalledGetterCallback(
-    v8::Local<v8::String> property,
+    v8::Local<v8::Name> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::HandleScope handle_scope(info.GetIsolate());
   v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();

@@ -48,7 +48,7 @@ class AppHooksDelegate : public APIBindingHooksDelegate {
 
  private:
   static void IsInstalledGetterCallback(
-      v8::Local<v8::String> property,
+      v8::Local<v8::Name> property,
       const v8::PropertyCallbackInfo<v8::Value>& info);
 
   // Returns the manifest of the extension associated with the frame.
