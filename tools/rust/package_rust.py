@@ -100,6 +100,10 @@ def main():
             build_cmd.append('--build-mac-arm')
         TeeCmd(build_cmd, log)
 
+        # Build cargo-vet.
+        build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_vet.py')]
+        TeeCmd(build_cmd, log)
+
     # Strip everything in bin/ to reduce the package size.
     bin_dir_path = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin')
     if sys.platform != 'win32' and os.path.exists(bin_dir_path):

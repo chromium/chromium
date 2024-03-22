@@ -75,14 +75,16 @@ def FetchNcurseswLibrary():
     return ncursesw_dir
 
 
-def main():
-    parser = argparse.ArgumentParser(description='Build and package bindgen')
-    parser.add_argument(
-        '--skip-checkout',
-        action='store_true',
-        help='skip downloading the git repo. Useful for trying local changes')
-    args, rest = parser.parse_known_args()
+def RunCargo(cargo_args):
+    """Invokes `cargo` produced by an earlier `build_rust.py` step.  Note that
+    this is different from the `RunCargo` function in
+    `//tools/crates/run_cargo.py` which works from within a Chromium repo, but
+    wouldn't work on the toolchain bots.
 
+    Note that some environment variables populated below are not necessary for
+    all users of this function (e.g. `build_vet.py` doesn't need clang/llvm
+    parts).  That's a bit icky, but ultimately okay.
+    """
     ncursesw_dir = None
     if sys.platform.startswith('linux'):
         ncursesw_dir = FetchNcurseswLibrary()
@@ -90,34 +92,25 @@ def main():
     cargo_bin = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', f'cargo{EXE}')
     rustc_bin = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', f'rustc{EXE}')
     if not os.path.exists(cargo_bin):
-        print(f'Missing cargo at {cargo_bin}. The build_bindgen.py '
+        print(f'Missing cargo at {cargo_bin}. This '
               f'script expects to be run after build_rust.py is run as '
               f'the build_rust.py script builds cargo that is needed here.')
         sys.exit(1)
     if not os.path.exists(rustc_bin):
-        print(f'Missing rustc at {rustc_bin}. The build_bindgen.py '
+        print(f'Missing rustc at {rustc_bin}. This '
               f'script expects to be run after build_rust.py is run as '
               f'the build_rust.py script builds rustc that is needed here.')
         sys.exit(1)
 
     clang_bins_dir = os.path.join(RUST_HOST_LLVM_INSTALL_DIR, 'bin')
     llvm_dir = RUST_HOST_LLVM_INSTALL_DIR
-    build_dir = BINDGEN_HOST_BUILD_DIR
 
     if not os.path.exists(os.path.join(llvm_dir, 'bin', f'llvm-config{EXE}')):
-        print(f'Missing llvm-config in {llvm_dir}. The build_bindgen.py '
+        print(f'Missing llvm-config in {llvm_dir}. This '
               f'script expects to be run after build_rust.py is run as '
               f'the build_rust.py script produces the LLVM libraries that '
               f'are needed here.')
         sys.exit(1)
-
-    if not args.skip_checkout:
-        CheckoutGitRepo("bindgen", BINDGEN_GIT_REPO, BINDGEN_GIT_VERSION,
-                        BINDGEN_SRC_DIR)
-
-    print(f'Building bindgen in {build_dir} ...')
-    if os.path.exists(build_dir):
-        RmTree(build_dir)
 
     env = collections.defaultdict(str, os.environ)
     # Cargo normally stores files in $HOME. Override this.
@@ -133,8 +126,13 @@ def main():
     else:
         env['LIBCLANG_PATH'] = os.path.join(llvm_dir, 'lib')
     env['LIBCLANG_STATIC_PATH'] = os.path.join(llvm_dir, 'lib')
-    env['CC'] = os.path.join(clang_bins_dir, 'clang')
-    env['CXX'] = os.path.join(clang_bins_dir, 'clang++')
+
+    if sys.platform == 'win32':
+        env['CC'] = os.path.join(clang_bins_dir, 'clang-cl')
+        env['CXX'] = os.path.join(clang_bins_dir, 'clang-cl')
+    else:
+        env['CC'] = os.path.join(clang_bins_dir, 'clang')
+        env['CXX'] = os.path.join(clang_bins_dir, 'clang++')
 
     # Windows uses lld-link for MSVC compat. Otherwise, we use lld via clang.
     if sys.platform == 'win32':
@@ -172,6 +170,27 @@ def main():
         env['LDFLAGS'] += f' -isysroot {sdk_path}'
         env['RUSTFLAGS'] += f' -Clink-arg=-isysroot -Clink-arg={sdk_path}'
 
+    # This will `fail_hard` and not return if `cargo` reports problems.
+    RunCommand([cargo_bin] + cargo_args, setenv=True, env=env)
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Build and package bindgen')
+    parser.add_argument(
+        '--skip-checkout',
+        action='store_true',
+        help='skip downloading the git repo. Useful for trying local changes')
+    args, rest = parser.parse_known_args()
+
+    if not args.skip_checkout:
+        CheckoutGitRepo("bindgen", BINDGEN_GIT_REPO, BINDGEN_GIT_VERSION,
+                        BINDGEN_SRC_DIR)
+
+    build_dir = BINDGEN_HOST_BUILD_DIR
+    if os.path.exists(build_dir):
+        RmTree(build_dir)
+
+    print(f'Building bindgen in {build_dir} ...')
     cargo_args = [
         'build',
         f'--manifest-path={BINDGEN_SRC_DIR}/Cargo.toml',
@@ -183,11 +202,12 @@ def main():
         '--bin',
         'bindgen',
     ]
-    RunCommand([cargo_bin] + cargo_args, setenv=True, env=env)
+    RunCargo(cargo_args)
 
     install_dir = os.path.join(RUST_TOOLCHAIN_OUT_DIR)
     print(f'Installing bindgen to {install_dir} ...')
 
+    llvm_dir = RUST_HOST_LLVM_INSTALL_DIR
     shutil.copy(
         os.path.join(build_dir, RustTargetTriple(), 'release',
                      f'bindgen{EXE}'), os.path.join(install_dir, 'bin'))
