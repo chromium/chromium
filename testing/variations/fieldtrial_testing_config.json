@@ -5845,6 +5845,25 @@
             ]
         }
     ],
+    "DesktopOmniboxStarterPackExpansion": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "StarterPackExpansion"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmnibox_HistoryQuickProviderSpecificity": [
         {
             "platforms": [
