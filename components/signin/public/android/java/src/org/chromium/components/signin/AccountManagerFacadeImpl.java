@@ -80,8 +80,11 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private @Nullable AsyncTask<List<String>> mFetchGaiaIdsTask;
 
     private int mNumberOfRetries;
+    private boolean mDidAccountFetchSucceed;
 
-    /** @param delegate the AccountManagerDelegate to use as a backend */
+    /**
+     * @param delegate the AccountManagerDelegate to use as a backend
+     */
     public AccountManagerFacadeImpl(AccountManagerDelegate delegate) {
         ThreadUtils.assertOnUiThread();
         mDelegate = delegate;
@@ -262,6 +265,11 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         mDelegate.confirmCredentials(account, activity, callback);
     }
 
+    @Override
+    public boolean didAccountFetchSucceed() {
+        return mDidAccountFetchSucceed;
+    }
+
     /**
      * Fetches gaia ids, wraps them into {@link CoreAccountInfo} and updates {@link
      * #mCoreAccountInfosPromise}.
@@ -341,8 +349,9 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
             @Override
             protected void onPostExecute(@Nullable List<Account> allAccounts) {
-                boolean didBackoffSucceed = true;
+                mDidAccountFetchSucceed = true;
                 if (allAccounts == null) {
+                    mDidAccountFetchSucceed = false;
                     if (shouldRetry()) {
                         // Wait for a fixed amount of time then try to fetch the accounts again.
                         PostTask.postDelayedTask(
@@ -356,14 +365,13 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                         // We shouldn't wait indefinitely for the account fetching to succeed, at it
                         // might block certain features. Fall back to an empty list to allow the
                         // user to proceed.
-                        allAccounts = List.of();
-                        didBackoffSucceed = false;
+                        allAccounts = mAllAccounts.get() == null ? mAllAccounts.get() : List.of();
                     }
                 }
                 if (mNumberOfRetries != 0) {
                     RecordHistogram.recordBooleanHistogram(
-                            "Signin.GetAccountsBackoffSuccess", didBackoffSucceed);
-                    if (didBackoffSucceed) {
+                            "Signin.GetAccountsBackoffSuccess", mDidAccountFetchSucceed);
+                    if (mDidAccountFetchSucceed) {
                         RecordHistogram.recordExactLinearHistogram(
                                 "Signin.GetAccountsBackoffRetries",
                                 mNumberOfRetries,

@@ -4,9 +4,8 @@
 
 package org.chromium.components.signin;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -194,7 +193,8 @@ public class AccountManagerFacadeImplTest {
         delegate.addAccount(TEST_ACCOUNT);
         AccountManagerFacade facade = new AccountManagerFacadeImpl(delegate);
 
-        assertThat(facade.getCoreAccountInfos().getResult(), is(List.of(TEST_ACCOUNT)));
+        assertEquals(facade.getCoreAccountInfos().getResult(), List.of(TEST_ACCOUNT));
+        assertTrue(facade.didAccountFetchSucceed());
         retriesHistogram.assertExpected();
         successHistogram.assertExpected();
     }
@@ -228,7 +228,8 @@ public class AccountManagerFacadeImplTest {
         mPostTaskRunner.runAll();
         verify(mDelegateMock, times(2)).getAccountsSynchronous();
         assertTrue(facade.getCoreAccountInfos().isFulfilled());
-        assertThat(facade.getCoreAccountInfos().getResult(), is(List.of(TEST_ACCOUNT)));
+        assertTrue(facade.didAccountFetchSucceed());
+        assertEquals(facade.getCoreAccountInfos().getResult(), List.of(TEST_ACCOUNT));
         retriesHistogram.assertExpected();
         successHistogram.assertExpected();
     }
@@ -255,8 +256,34 @@ public class AccountManagerFacadeImplTest {
         mPostTaskRunner.runAll();
         verify(mDelegate, times(AccountManagerFacadeImpl.MAXIMUM_RETRIES + 2))
                 .getAccountsSynchronous();
+        assertFalse(mFacade.didAccountFetchSucceed());
+        assertEquals(mFacade.getCoreAccountInfos().getResult(), List.of());
         retriesHistogram.assertExpected();
         successHistogram.assertExpected();
+    }
+
+    @Test
+    public void testAccountFetchingFailsThenSucceeds() throws Exception {
+        // Initially, account fetching fails.
+        doThrow(AccountManagerDelegateException.class).when(mDelegate).getAccountsSynchronous();
+        mDelegate.callOnCoreAccountInfoChanged();
+        mPostTaskRunner.runAll();
+        assertFalse(mFacade.didAccountFetchSucceed());
+        assertEquals(mFacade.getCoreAccountInfos().getResult(), List.of());
+
+        // Accounts are updated again.
+        mDelegate.callOnCoreAccountInfoChanged();
+        // Account fetch is still marked as non-successful.
+        assertFalse(mFacade.didAccountFetchSucceed());
+        // This time account fetch will succeed.
+        doReturn(new Account[] {CoreAccountInfo.getAndroidAccountFrom(TEST_ACCOUNT)})
+                .when(mDelegate)
+                .getAccountsSynchronous();
+        doReturn(TEST_ACCOUNT.getGaiaId())
+                .when(mDelegate)
+                .getAccountGaiaId(TEST_ACCOUNT.getEmail());
+        mPostTaskRunner.runAll();
+        assertTrue(mFacade.didAccountFetchSucceed());
     }
 
     // If this test starts flaking, please re-open crbug.com/568636 and make sure there is some sort
