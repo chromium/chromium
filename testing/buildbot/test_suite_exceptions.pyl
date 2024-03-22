@@ -5530,6 +5530,11 @@
           'shards': 1,
         },
       },
+      'android-webview-13-x64-hostside-rel': {
+        'swarming': {
+          'shards': 1,
+        },
+      },
     },
   },
   'webview_ui_test_app_test_apk': {

@@ -60,6 +60,7 @@
     "android-oreo-x86-rel": "ci/android-oreo-x86-rel/gn-args.json",
     "android-pie-arm64-rel": "ci/android-pie-arm64-rel/gn-args.json",
     "android-pie-x86-rel": "ci/android-pie-x86-rel/gn-args.json",
+    "android-webview-13-x64-hostside-rel": "ci/android-webview-13-x64-hostside-rel/gn-args.json",
     "android-x86-rel": "ci/android-x86-rel/gn-args.json"
   },
   "chromium.android.fyi": {
@@ -604,6 +605,7 @@
     "android-webview-12-x64-dbg": "try/android-webview-12-x64-dbg/gn-args.json",
     "android-webview-13-x64-dbg": "try/android-webview-13-x64-dbg/gn-args.json",
     "android-webview-13-x64-dbg-hostside": "try/android-webview-13-x64-dbg-hostside/gn-args.json",
+    "android-webview-13-x64-hostside-rel": "try/android-webview-13-x64-hostside-rel/gn-args.json",
     "android-webview-oreo-arm64-dbg": "try/android-webview-oreo-arm64-dbg/gn-args.json",
     "android-webview-pie-arm64-dbg": "try/android-webview-pie-arm64-dbg/gn-args.json",
     "android-webview-pie-x86-wpt-fyi-rel": "try/android-webview-pie-x86-wpt-fyi-rel/gn-args.json",
