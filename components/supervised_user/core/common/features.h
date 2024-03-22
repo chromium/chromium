@@ -64,6 +64,10 @@ BASE_DECLARE_FEATURE(kMigrateAccountManagementSettingsToCapabilities);
 // on Family Link
 BASE_DECLARE_FEATURE(kRemoveForceAppliedYoutubeRestrictPolicy);
 
+// Uses PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable for
+// ClassifyUrl fetches.
+BASE_DECLARE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl);
+
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
 // Local web approvals are only available when refreshed version of web

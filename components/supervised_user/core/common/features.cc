@@ -110,6 +110,10 @@ BASE_FEATURE(kRemoveForceAppliedYoutubeRestrictPolicy,
              "RemoveForceAppliedYoutubeRestrictPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl,
+             "WaitUntilAccessTokenAvailableForClassifyUrl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsKidFriendlyContentFeedAvailable() {
   return base::FeatureList::IsEnabled(kKidFriendlyContentFeed);
 }
