@@ -505,8 +505,11 @@ void OfflinePageRequestHandler::OpenFile(
   if (!stream_)
     stream_ = std::make_unique<net::FileStream>(file_task_runner_);
 
-  int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
-              base::File::FLAG_ASYNC | base::File::FLAG_WIN_EXCLUSIVE_READ;
+  int flags =
+      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_ASYNC;
+#if BUILDFLAG(IS_WIN)
+  flags |= base::File::FLAG_WIN_EXCLUSIVE_READ;
+#endif  // BUILDFLAG(IS_WIN)
   int result = stream_->Open(file_path, flags, callback);
   if (result != net::ERR_IO_PENDING)
     callback.Run(result);
