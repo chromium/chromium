@@ -10,5 +10,9 @@ namespace switches {
 // Disables the dinosaur easter egg on the offline interstitial.
 const char kDisableDinosaurEasterEgg[] = "disable-dinosaur-easter-egg";
 
+// Enable the dinosaur easter egg alternative images.
+const char kEnableDinosaurEasterEggAltGameImages[] =
+    "enable-dinosaur-easter-egg-alt-images";
+
 }  // namespace switches
 }  // namespace error_page
