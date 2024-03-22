@@ -319,6 +319,19 @@ void AXEventGenerator::OnNodeDataChanged(AXTree* tree,
   if (!node)
     return;
 
+  // We can't rely on `AttributeChanged` methods since ARIA notifications may be
+  // posted more than once with the same announcement and properties.
+  // Each `AriaNotification` is discarded once it's serialized, so we can simply
+  // check if there's notification data; it won't persist across updates.
+  //
+  // TODO(crbug.com/330589205): Remove all of this when we develop a better way
+  // to send single-use data attached to events. DO NOT replicate this pattern,
+  // as this method is not intended to check for attribute changes.
+  if (new_node_data.HasStringListAttribute(
+          ax::mojom::StringListAttribute::kAriaNotificationAnnouncements)) {
+    AddEvent(node, Event::ARIA_NOTIFICATIONS_POSTED);
+  }
+
   // Internally we store inline text box nodes as children of a static text
   // node or a line break node, which enables us to determine character bounds
   // and line layout. We don't expose those to platform APIs, though, so
