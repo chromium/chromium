@@ -111,7 +111,7 @@ class BluetoothLocalGattServiceFloss
 
   // Client and Floss-assigned instance ids.
   int32_t client_instance_id_;
-  int32_t floss_instance_id_;
+  int32_t floss_instance_id_ = -1;
 
   // Manage callbacks.
   std::pair<base::OnceClosure, device::BluetoothGattService::ErrorCallback>

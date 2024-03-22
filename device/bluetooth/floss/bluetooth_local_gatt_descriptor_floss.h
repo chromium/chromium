@@ -108,7 +108,7 @@ class BluetoothLocalGattDescriptorFloss
 
   // Client and Floss-assigned instance id.
   int32_t client_instance_id_;
-  int32_t floss_instance_id_;
+  int32_t floss_instance_id_ = -1;
 
   // Index of this descriptor within the containing characteristic.
   int32_t index_;

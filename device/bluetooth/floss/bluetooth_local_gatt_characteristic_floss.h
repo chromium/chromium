@@ -128,7 +128,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
 
   // Client and Floss-assigned instance ids.
   int32_t client_instance_id_;
-  int32_t floss_instance_id_;
+  int32_t floss_instance_id_ = -1;
 
   // Index of this characteristic within the containing service.
   int32_t index_;
