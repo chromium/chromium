@@ -147,6 +147,8 @@ class VmPermissionServiceProvider
   void UpdatePluginVmPermissions(VmInfo* vm);
   void UpdateBorealisPermissions(VmInfo* vm);
 
+  void SetCameraPermission(base::UnguessableToken token, bool enabled);
+
   // Returns an iterator to a vm with given |owner_id| and |name|).
   VmMap::iterator FindVm(const std::string& owner_id, const std::string& name);
 
