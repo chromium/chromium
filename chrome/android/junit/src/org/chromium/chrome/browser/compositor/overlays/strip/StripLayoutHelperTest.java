@@ -27,14 +27,10 @@ import static org.mockito.Mockito.when;
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.Build;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.view.ContextThemeWrapper;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
@@ -51,7 +47,6 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
@@ -70,8 +65,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.StripLayoutTabDelegate;
-import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -109,8 +102,6 @@ public class StripLayoutHelperTest {
     @Mock private CompositorButton mModelSelectorBtn;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private View mToolbarContainerView;
-    @Mock private ActivityInfo mActivityInfo;
-    @Mock private PackageManager mPackageManager;
     @Mock private StripTabHoverCardView mTabHoverCardView;
     @Mock private Profile mProfile;
     @Mock private CompositorOnClickHandler mClickHandler;
@@ -140,7 +131,6 @@ public class StripLayoutHelperTest {
     private static final float TAB_WIDTH_SMALL = 108.f;
     private static final float TAB_OVERLAP_WIDTH = 28.f;
     private static final float TAB_WIDTH_MEDIUM = 156.f;
-    private static final float TAB_MARGIN_WIDTH = 54.f;
     private static final long TIMESTAMP = 5000;
     private static final float NEW_TAB_BTN_X_RTL = 100.f;
     private static final float NEW_TAB_BTN_X = 700.f;
@@ -149,13 +139,7 @@ public class StripLayoutHelperTest {
     private static final float NEW_TAB_BTN_HEIGHT = 100.f;
     private static final float PADDING_LEFT = 10.f;
     private static final float PADDING_RIGHT = 20.f;
-    private static final float BUTTON_END_PADDING_ = 8.f;
-    private static final float BUTTON_TOUCH_TARGET_OFFSET = 8.f;
-    private static final float MODEL_SELECTOR_BUTTON_BG_WIDTH_ = 32.f;
     private static final PointF DRAG_START_POINT = new PointF(70f, 20f);
-
-    private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_END = 72;
-
     private static final float EPSILON = 0.001f;
 
     /** Reset the environment before each test. */
@@ -281,12 +265,12 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID, false);
 
         // Close btn is visible on the selected tab.
-        Mockito.verify(tabs[3]).setCanShowCloseButton(true, false);
+        verify(tabs[3]).setCanShowCloseButton(true, false);
         // Close btn is hidden for the rest of tabs.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[4]).setCanShowCloseButton(false, false);
+        verify(tabs[0]).setCanShowCloseButton(false, false);
+        verify(tabs[1]).setCanShowCloseButton(false, false);
+        verify(tabs[2]).setCanShowCloseButton(false, false);
+        verify(tabs[4]).setCanShowCloseButton(false, false);
     }
 
     @Test
@@ -303,12 +287,12 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID, false);
 
         // Close btn is hidden on the selected tab.
-        Mockito.verify(tabs[3]).setCanShowCloseButton(false, false);
+        verify(tabs[3]).setCanShowCloseButton(false, false);
         // Close btn is hidden for the rest of tabs as well.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[4]).setCanShowCloseButton(false, false);
+        verify(tabs[0]).setCanShowCloseButton(false, false);
+        verify(tabs[1]).setCanShowCloseButton(false, false);
+        verify(tabs[2]).setCanShowCloseButton(false, false);
+        verify(tabs[4]).setCanShowCloseButton(false, false);
     }
 
     @Test
@@ -326,12 +310,12 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID, false);
 
         // Close btn is visible on the selected last tab.
-        Mockito.verify(tabs[4]).setCanShowCloseButton(true, false);
+        verify(tabs[4]).setCanShowCloseButton(true, false);
         // Close button is hidden for the rest of tabs.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[3]).setCanShowCloseButton(false, false);
+        verify(tabs[0]).setCanShowCloseButton(false, false);
+        verify(tabs[1]).setCanShowCloseButton(false, false);
+        verify(tabs[2]).setCanShowCloseButton(false, false);
+        verify(tabs[3]).setCanShowCloseButton(false, false);
     }
 
     @Test
@@ -349,12 +333,12 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID, false);
 
         // Close btn is hidden on the selected last tab.
-        Mockito.verify(tabs[4]).setCanShowCloseButton(false, false);
+        verify(tabs[4]).setCanShowCloseButton(false, false);
         // Close button is hidden for the rest of tabs.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[3]).setCanShowCloseButton(false, false);
+        verify(tabs[0]).setCanShowCloseButton(false, false);
+        verify(tabs[1]).setCanShowCloseButton(false, false);
+        verify(tabs[2]).setCanShowCloseButton(false, false);
+        verify(tabs[3]).setCanShowCloseButton(false, false);
     }
 
     @Test
@@ -372,12 +356,12 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID, false);
 
         // Close button is hidden for selected tab.
-        Mockito.verify(tabs[3]).setCanShowCloseButton(false, false);
+        verify(tabs[3]).setCanShowCloseButton(false, false);
         // Close button is hidden for the rest of tabs as well.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[4]).setCanShowCloseButton(false, false);
+        verify(tabs[0]).setCanShowCloseButton(false, false);
+        verify(tabs[1]).setCanShowCloseButton(false, false);
+        verify(tabs[2]).setCanShowCloseButton(false, false);
+        verify(tabs[4]).setCanShowCloseButton(false, false);
     }
 
     @Test
@@ -395,12 +379,12 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID, false);
 
         // Close button is visible for selected tab
-        Mockito.verify(tabs[3]).setCanShowCloseButton(true, false);
+        verify(tabs[3]).setCanShowCloseButton(true, false);
         // Close button is hidden for the rest of tabs.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[4]).setCanShowCloseButton(false, false);
+        verify(tabs[0]).setCanShowCloseButton(false, false);
+        verify(tabs[1]).setCanShowCloseButton(false, false);
+        verify(tabs[2]).setCanShowCloseButton(false, false);
+        verify(tabs[4]).setCanShowCloseButton(false, false);
     }
 
     @Test
@@ -418,12 +402,12 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID, false);
 
         // Close button is hidden for the selected last tab.
-        Mockito.verify(tabs[4]).setCanShowCloseButton(false, false);
+        verify(tabs[4]).setCanShowCloseButton(false, false);
         // Close button is hidden for the rest of tabs as well.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[3]).setCanShowCloseButton(false, false);
+        verify(tabs[0]).setCanShowCloseButton(false, false);
+        verify(tabs[1]).setCanShowCloseButton(false, false);
+        verify(tabs[2]).setCanShowCloseButton(false, false);
+        verify(tabs[3]).setCanShowCloseButton(false, false);
     }
 
     @Test
@@ -441,12 +425,12 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID, false);
 
         // Close button is visible for selected last tab.
-        Mockito.verify(tabs[4]).setCanShowCloseButton(true, false);
+        verify(tabs[4]).setCanShowCloseButton(true, false);
         // Close button is hidden for the rest of tabs.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[3]).setCanShowCloseButton(false, false);
+        verify(tabs[0]).setCanShowCloseButton(false, false);
+        verify(tabs[1]).setCanShowCloseButton(false, false);
+        verify(tabs[2]).setCanShowCloseButton(false, false);
+        verify(tabs[3]).setCanShowCloseButton(false, false);
     }
 
     @Test
@@ -463,12 +447,12 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID, false);
 
         // Close btn is hidden for selected tab.
-        Mockito.verify(tabs[3]).setCanShowCloseButton(false, false);
+        verify(tabs[3]).setCanShowCloseButton(false, false);
         // Close btn is hidden for all the rest of tabs as well.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[4]).setCanShowCloseButton(false, false);
+        verify(tabs[0]).setCanShowCloseButton(false, false);
+        verify(tabs[1]).setCanShowCloseButton(false, false);
+        verify(tabs[2]).setCanShowCloseButton(false, false);
+        verify(tabs[4]).setCanShowCloseButton(false, false);
     }
 
     @Test
@@ -486,12 +470,12 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID, false);
 
         // Close button is visible for the selected tab.
-        Mockito.verify(tabs[3]).setCanShowCloseButton(true, false);
+        verify(tabs[3]).setCanShowCloseButton(true, false);
         // Close button is hidden for the rest of tabs.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(false, false);
-        Mockito.verify(tabs[4]).setCanShowCloseButton(false, false);
+        verify(tabs[0]).setCanShowCloseButton(false, false);
+        verify(tabs[1]).setCanShowCloseButton(false, false);
+        verify(tabs[2]).setCanShowCloseButton(false, false);
+        verify(tabs[4]).setCanShowCloseButton(false, false);
     }
 
     @Test
@@ -1498,7 +1482,7 @@ public class StripLayoutHelperTest {
     public void testOnLongPress_WithDragDrop_OffTab() {
         // Extra setup for DragDrop
         setTabDragSourceMock();
-        Activity activity = Mockito.spy(mActivity);
+        Activity activity = spy(mActivity);
         when(mToolbarContainerView.getContext()).thenReturn(activity);
 
         onLongPress_OffTab();
@@ -2841,14 +2825,6 @@ public class StripLayoutHelperTest {
         return getMockedStripLayoutTabs(tabWidth, 0.f, 5);
     }
 
-    private StripLayoutTab[] getRealStripLayoutTabs(float tabWidth, int numTabs) {
-        StripLayoutTab[] tabs = new StripLayoutTab[mModel.getCount()];
-        for (int i = 0; i < numTabs; i++) {
-            tabs[i] = getRealStripTab(i, tabWidth, i * (tabWidth - TAB_OVERLAP_WIDTH));
-        }
-        return tabs;
-    }
-
     private StripLayoutTab mockStripTab(int id, float tabWidth, float mDrawX) {
         StripLayoutTab tab = mock(StripLayoutTab.class);
         when(tab.getWidth()).thenReturn(tabWidth);
@@ -2857,28 +2833,9 @@ public class StripLayoutHelperTest {
         return tab;
     }
 
-    private StripLayoutTab getRealStripTab(int id, float tabWidth, float mDrawX) {
-        Context context = spy(mContext);
-        Resources res = spy(mContext.getResources());
-        DisplayMetrics dm = new DisplayMetrics();
-        dm.widthPixels = Math.round(SCREEN_WIDTH);
-        dm.heightPixels = Math.round(SCREEN_HEIGHT);
-        when(res.getDisplayMetrics()).thenReturn(dm);
-        when(context.getResources()).thenReturn(res);
-
-        StripLayoutTabDelegate delegate = mock(StripLayoutTabDelegate.class);
-        TabLoadTracker.TabLoadTrackerCallback loadTrackerCallback =
-                mock(TabLoadTrackerCallback.class);
-
-        StripLayoutTab tab =
-                new StripLayoutTab(context, id, delegate, loadTrackerCallback, mUpdateHost, false);
-        tab.setWidth(tabWidth);
-        tab.setDrawX(mDrawX);
-        return tab;
-    }
-
     /**
      * Mock that the sequence of tabs from startIndex to endIndex are part of that same tab group.
+     *
      * @param startIndex The index where we start including tabs in the group (inclusive).
      * @param endIndex The index where we stop including tabs in the group (exclusive).
      */
