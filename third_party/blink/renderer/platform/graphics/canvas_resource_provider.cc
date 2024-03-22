@@ -1764,7 +1764,7 @@ void CanvasResourceProvider::ClearOldUnusedResources() {
   // canvas resources above) is a deferred message, we need to flush pending
   // work to ensure that it is not merely queued, but is executed on the service
   // side.
-  if (cleared_resources) {
+  if (cleared_resources && ContextProviderWrapper()) {
     if (gpu::ContextSupport* context_support =
             ContextProviderWrapper()->ContextProvider()->ContextSupport()) {
       context_support->FlushPendingWork();
