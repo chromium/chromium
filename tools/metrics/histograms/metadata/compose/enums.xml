@@ -159,6 +159,8 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Blocked for element appearing inside a fenced frame"/>
   <int value="12"
       label="Blocked for feature flag for Chrome Compose not enabled"/>
+  <int value="13"
+      label="Blocked for not being supported on this ChromeOS device"/>
 </enum>
 
 <enum name="OpenComposeDialogResult">

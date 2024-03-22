@@ -25,6 +25,9 @@
 #include "components/flags_ui/flags_storage.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -175,6 +178,14 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
     return base::unexpected(
         compose::ComposeShowStatus::kUserNotAllowedByOptimizationGuide);
   }
+
+// For ChromeOS only, check whether this device is supported.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::ShouldDisableChromeComposeOnChromeOS()) {
+    DVLOG(2) << "feature disabled on ChromeOS";
+    return base::unexpected(compose::ComposeShowStatus::kDisabledOnChromeOS);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   DVLOG(2) << "enabled";
   return base::ok();

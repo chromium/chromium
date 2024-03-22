@@ -30,19 +30,49 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-class ComposeEnablingBrowserTest : public InProcessBrowserTest {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void SetLacrosInitParams(bool disable_compose) {
+  crosapi::mojom::BrowserInitParamsPtr init_params =
+      chromeos::BrowserInitParams::GetForTests()->Clone();
+  init_params->should_disable_chrome_compose_on_chromeos = disable_compose;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+}
+#endif
+
+class ComposeEnablingBrowserTestBase : public InProcessBrowserTest {
  public:
-  ComposeEnablingBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            optimization_guide::features::kOptimizationGuideModelExecution,
-            optimization_guide::features::internal::kComposeSettingsVisibility,
-        },
-        {});
-  }
+  ComposeEnablingBrowserTestBase() = default;
 
   void SetUp() override { InProcessBrowserTest::SetUp(); }
+
+  void EnableComposePrefs() {
+    optimization_guide::EnableSigninAndModelExecutionCapability(
+        browser()->profile());
+
+    // Turn on MSBB.
+    PrefService* prefs = browser()->profile()->GetPrefs();
+    prefs->SetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+
+    // Confirm that the required feature flags are enabled by default.
+    EXPECT_TRUE(
+        base::FeatureList::IsEnabled(compose::features::kEnableCompose));
+
+    // Enable Compose via the Optimization Guide's pref.
+    browser()->profile()->GetPrefs()->SetInteger(
+        optimization_guide::prefs::GetSettingEnabledPrefName(
+            optimization_guide::proto::ModelExecutionFeature::
+                MODEL_EXECUTION_FEATURE_COMPOSE),
+        static_cast<int>(
+            optimization_guide::prefs::FeatureOptInState::kEnabled));
+  }
 
   ComposeEnabling& GetComposeEnabling() {
     content::WebContents* web_contents =
@@ -57,29 +87,40 @@ class ComposeEnablingBrowserTest : public InProcessBrowserTest {
         browser()->profile());
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class ComposeEnablingBrowserTest : public ComposeEnablingBrowserTestBase {
+ public:
+  ComposeEnablingBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            optimization_guide::features::kOptimizationGuideModelExecution,
+            optimization_guide::features::internal::kComposeSettingsVisibility,
+        },
+        /*disabled_features=*/
+        {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+            // All of these flags must be disabled for Compose to be enabled on
+            // ChromeOS Ash.
+            chromeos::features::kFeatureManagementDisableChromeCompose,
+            chromeos::features::kOrca,
+            chromeos::features::kOrcaDogfood,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+        });
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    SetLacrosInitParams(/*disable_compose=*/false);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
 };
 
 // PRE_ step simulates a browser restart.
 IN_PROC_BROWSER_TEST_F(ComposeEnablingBrowserTest,
                        PRE_EnableComposeViaSettings) {
-  optimization_guide::EnableSigninAndModelExecutionCapability(
-      browser()->profile());
-  // Turn on MSBB.
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  prefs->SetBoolean(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
-
-  // Confirm that the required feature flags are enabled by default.
-  EXPECT_TRUE(base::FeatureList::IsEnabled(compose::features::kEnableCompose));
-
-  // Enable Compose via the Optimization Guide's pref.
-  browser()->profile()->GetPrefs()->SetInteger(
-      optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_COMPOSE),
-      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+  EnableComposePrefs();
 
   // Checks that Compose is immediately enabled.
   EXPECT_EQ(base::ok(), GetComposeEnabling().IsEnabled());
@@ -95,6 +136,53 @@ IN_PROC_BROWSER_TEST_F(ComposeEnablingBrowserTest, EnableComposeViaSettings) {
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_COMPOSE));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+// For testing that the feature is disabled by the appropriate feature
+// management flag on CrOS.
+class ComposeOnChromeOS : public ComposeEnablingBrowserTestBase {
+ public:
+  ComposeOnChromeOS() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            optimization_guide::features::kOptimizationGuideModelExecution,
+            optimization_guide::features::internal::kComposeSettingsVisibility,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+            chromeos::features::kFeatureManagementDisableChromeCompose,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+        },
+        /*disabled_features=*/{
+            chromeos::features::kOrca,
+            chromeos::features::kOrcaDogfood,
+        });
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    SetLacrosInitParams(/*disable_compose=*/true);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
+};
+
+// Similar to above, PRE_ step for checking that Compose is disabled on
+// non-eligible CrOS devices.
+IN_PROC_BROWSER_TEST_F(ComposeOnChromeOS,
+                       PRE_ComposeDisabledOnNonEligibleCrOSDevices) {
+  EnableComposePrefs();
+
+  // Checks that Compose is still disabled.
+  EXPECT_EQ(base::unexpected(compose::ComposeShowStatus::kDisabledOnChromeOS),
+            GetComposeEnabling().IsEnabled());
+}
+
+// Checks that Compose is disabled on non-eligible CrOS devices.
+IN_PROC_BROWSER_TEST_F(ComposeOnChromeOS,
+                       ComposeDisabledOnNonEligibleCrOSDevices) {
+  EXPECT_EQ(base::unexpected(compose::ComposeShowStatus::kDisabledOnChromeOS),
+            GetComposeEnabling().IsEnabled());
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class ComposeEnablingWithFencedFramesBrowserTest
     : public ComposeEnablingBrowserTest {

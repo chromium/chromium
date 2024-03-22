@@ -144,7 +144,8 @@ enum class ComposeShowStatus {
   kIncorrectScheme = 10,
   kFormFieldNestedInFencedFrame = 11,
   kFeatureFlagDisabled = 12,
-  kMaxValue = kFeatureFlagDisabled,
+  kDisabledOnChromeOS = 13,
+  kMaxValue = kDisabledOnChromeOS,
 };
 
 enum class EvalLocation : int {
