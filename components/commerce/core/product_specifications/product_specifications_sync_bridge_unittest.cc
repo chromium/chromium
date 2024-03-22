@@ -7,8 +7,11 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/sync/model/data_batch.h"
 #include "components/sync/protocol/compare_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
@@ -18,15 +21,47 @@
 
 namespace {
 
-const std::vector<std::string> kInitUuid = {"asdf", "zdxc"};
-const std::vector<std::string> kInitName = {"my_name", "another name"};
-const std::vector<int64_t> kCreationTime = {1710953277, 1711035900};
+const std::vector<std::string> kInitUuid = {"asdf", "zdxc", "zetf"};
+const std::vector<std::string> kInitName = {"my_name", "another name",
+                                            "yet another name"};
+const std::vector<int64_t> kCreationTime = {1710953277, 1711035900, 1711118523};
 const std::vector<int64_t> kUpdateTime = {
     kCreationTime[0] + base::Time::kMillisecondsPerDay,
-    kCreationTime[1] + 2 * base::Time::kMillisecondsPerDay};
+    kCreationTime[1] + 2 * base::Time::kMillisecondsPerDay,
+    kCreationTime[2] + base::Time::kMillisecondsPerDay};
 const std::vector<std::vector<std::string>> kCompareUrls = {
     {"https://foo.com", "https://bar.com"},
-    {"https://foo-bar.com", "https://bar-foo.com"}};
+    {"https://foo-bar.com", "https://bar-foo.com"},
+    {"https://amazon.com/dp/12345",
+     "https://www.gap.com/browse/product.do?pid=39573"}};
+
+std::vector<syncer::KeyAndData> GetKeyAndData(syncer::DataBatch* data_batch) {
+  std::vector<syncer::KeyAndData> key_and_data;
+  while (data_batch->HasNext()) {
+    key_and_data.push_back(data_batch->Next());
+  }
+  return key_and_data;
+}
+
+void VerifySpecificsAgainstIndex(sync_pb::CompareSpecifics* compare_specifics,
+                                 uint64_t idx) {
+  EXPECT_EQ(kInitUuid[idx], compare_specifics->uuid());
+  EXPECT_EQ(kInitName[idx], compare_specifics->name());
+  EXPECT_EQ(kCreationTime[idx],
+            compare_specifics->creation_time_unix_epoch_micros());
+  EXPECT_EQ(kUpdateTime[idx],
+            compare_specifics->update_time_unix_epoch_micros());
+  int j = 0;
+  for (auto& data : compare_specifics->data()) {
+    EXPECT_EQ(kCompareUrls[idx][j], data.url());
+    j++;
+  }
+}
+
+std::string GetName(uint64_t idx) {
+  return base::StringPrintf("%s_%s", kInitName[idx].c_str(),
+                            kInitUuid[idx].c_str());
+}
 
 }  // namespace
 
@@ -103,23 +138,43 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestGetClientTag) {
 }
 
 TEST_F(ProductSpecificationsSyncBridgeTest, TestInitialization) {
-  EXPECT_EQ(2u, entries().size());
+  EXPECT_EQ(3u, entries().size());
 
   int i = 0;
   for (auto entry = entries().begin(); entry != entries().end(); entry++) {
     EXPECT_EQ(entry->first, entry->second.uuid());
-    EXPECT_EQ(kInitUuid[i], entry->second.uuid());
-    EXPECT_EQ(kInitName[i], entry->second.name());
-    EXPECT_EQ(kCreationTime[i],
-              entry->second.creation_time_unix_epoch_micros());
-    EXPECT_EQ(kUpdateTime[i], entry->second.update_time_unix_epoch_micros());
-    int j = 0;
-    for (auto& data : entry->second.data()) {
-      EXPECT_EQ(kCompareUrls[i][j], data.url());
-      j++;
-    }
+    VerifySpecificsAgainstIndex(&entry->second, i);
     i++;
   }
+}
+
+TEST_F(ProductSpecificationsSyncBridgeTest, TestGetData) {
+  ProductSpecificationsSyncBridge::StorageKeyList storage_keys;
+  // Leave out first entry. GetData takes in a set of keys
+  // so we want to ensure the entries with keys specified are
+  // returned, rather than all entries.
+  storage_keys.push_back(kInitUuid[1]);
+  storage_keys.push_back(kInitUuid[2]);
+  base::RunLoop run_loop;
+  bridge().GetData(
+      std::move(storage_keys),
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<syncer::DataBatch> data_batch) {
+            EXPECT_TRUE(data_batch);
+            std::vector<syncer::KeyAndData> key_and_data =
+                GetKeyAndData(data_batch.get());
+            EXPECT_EQ(2u, key_and_data.size());
+            EXPECT_EQ(kInitUuid[1], key_and_data[0].first);
+            EXPECT_EQ(GetName(1), key_and_data[0].second->name);
+            VerifySpecificsAgainstIndex(
+                key_and_data[0].second->specifics.mutable_compare(), 1);
+            EXPECT_EQ(kInitUuid[2], key_and_data[1].first);
+            EXPECT_EQ(GetName(2), key_and_data[1].second->name);
+            VerifySpecificsAgainstIndex(
+                key_and_data[1].second->specifics.mutable_compare(), 2);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 }
 
 }  // namespace commerce

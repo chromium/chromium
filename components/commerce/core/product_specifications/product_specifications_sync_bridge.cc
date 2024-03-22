@@ -6,11 +6,26 @@
 
 #include <set>
 
+#include "base/strings/stringprintf.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
+#include "components/sync/model/mutable_data_batch.h"
 #include "url/gurl.h"
+
+namespace {
+
+std::unique_ptr<syncer::EntityData> CreateEntityData(
+    const sync_pb::CompareSpecifics& specifics) {
+  auto entity_data = std::make_unique<syncer::EntityData>();
+  entity_data->name = base::StringPrintf("%s_%s", specifics.name().c_str(),
+                                         specifics.uuid().c_str());
+  entity_data->specifics.mutable_compare()->CopyFrom(specifics);
+  return entity_data;
+}
+
+}  // namespace
 
 namespace commerce {
 
@@ -62,8 +77,13 @@ std::string ProductSpecificationsSyncBridge::GetClientTag(
 
 void ProductSpecificationsSyncBridge::GetData(StorageKeyList storage_keys,
                                               DataCallback callback) {
-  // TODO(b/329520479) implement
-  NOTIMPLEMENTED();
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const std::string& storage_key : storage_keys) {
+    if (auto it = entries_.find(storage_key); it != entries_.end()) {
+      batch->Put(storage_key, CreateEntityData(it->second));
+    }
+  }
+  std::move(callback).Run(std::move(batch));
 }
 
 void ProductSpecificationsSyncBridge::GetAllDataForDebugging(
