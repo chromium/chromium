@@ -19,7 +19,6 @@
 #import "components/policy/test_support/signature_provider.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
@@ -165,16 +164,6 @@ NSString* const kDomain2 = @"domain2.com";
   } else {
     config.features_disabled.push_back(
         policy::kUserPolicyForSigninAndNoSyncConsentLevel);
-  }
-
-  if ([self isRunningTest:@selector
-            (testManagementPageManagedWithCBCMAndUserPolicyDifferentDomains)] ||
-      [self isRunningTest:@selector
-            (testManagementPageManagedWithCBCMAndUserPolicySameDomains)] ||
-      [self isRunningTest:@selector(testManagementPageManagedWithUserPolicy)] ||
-      [self isRunningTest:@selector(testPopupMenuItemWithUserPolicy)]) {
-    config.features_disabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
   }
 
   return config;
@@ -639,8 +628,6 @@ NSString* const kDomain2 = @"domain2.com";
                     _server->GetServiceURL().spec()}));
   config.features_enabled.push_back(
       policy::kUserPolicyForSigninOrSyncConsentLevel);
-  config.features_disabled.push_back(
-      syncer::kReplaceSyncPromosWithSignInPromos);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Set CBCM policies.
@@ -687,8 +674,6 @@ NSString* const kDomain2 = @"domain2.com";
                     _server->GetServiceURL().spec()}));
   config.features_enabled.push_back(
       policy::kUserPolicyForSigninOrSyncConsentLevel);
-  config.features_disabled.push_back(
-      syncer::kReplaceSyncPromosWithSignInPromos);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Set CBCM policies.
