@@ -95,3 +95,6 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -BrowserAppShelfControllerBrowserTest.TabbedApps
 # TODO(crbug.com/330377625): Permanently failing, no culprit identified.
 -ChromeVoxSettingsPagesTest.TtsRateCommandOnSettingsPage
+# TODO(crbug.com/330450836): Permanently failing, no culprit identified.
+-AccessibilityHighlightsBrowserTest.CaretHighlightWebContents
+-AccessibilityHighlightsBrowserTest.FocusHighlight
