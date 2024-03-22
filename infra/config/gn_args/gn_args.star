@@ -872,13 +872,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "no_goma",
-    args = {
-        "use_goma": False,
-    },
-)
-
-gn_args.config(
     name = "no_lld",
     args = {
         "use_lld": False,

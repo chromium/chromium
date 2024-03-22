@@ -437,7 +437,6 @@ ci.builder(
             "release_builder",
             "minimal_symbols",
             "no_clang",
-            "no_goma",
         ],
     ),
     # Focal is needed for better C++20 support. See crbug.com/1284275.
