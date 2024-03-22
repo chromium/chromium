@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/views/tabs/tab_organization_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -171,6 +172,12 @@ void TabSearchContainer::SetLockedExpansionMode(LockedExpansionMode mode) {
 }
 
 void TabSearchContainer::ExecuteShowTabOrganization() {
+  // browser_ may be null in tests
+  if (browser_ &&
+      !TabOrganizationUtils::GetInstance()->IsEnabled(browser_->profile())) {
+    return;
+  }
+
   expansion_animation_.SetSlideDuration(base::Milliseconds(500));
 
   flat_edge_animation_.SetSlideDuration(base::Milliseconds(400));
