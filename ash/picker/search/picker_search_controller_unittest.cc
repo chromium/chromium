@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/search/picker_search_request.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_web_view.h"
@@ -53,7 +54,7 @@ constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(400);
 
 // Before burn-in, after GIF debouncing.
 constexpr base::TimeDelta kBeforeBurnIn = base::Milliseconds(300);
-static_assert(PickerSearchController::kGifDebouncingDelay < kBeforeBurnIn);
+static_assert(PickerSearchRequest::kGifDebouncingDelay < kBeforeBurnIn);
 static_assert(kBeforeBurnIn < kBurnInPeriod);
 
 constexpr base::TimeDelta kAfterBurnIn = base::Milliseconds(700);
@@ -790,7 +791,7 @@ TEST_F(PickerSearchControllerTest, SendsQueryToGifSearchAfterDelay) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
-  task_environment().FastForwardBy(PickerSearchController::kGifDebouncingDelay);
+  task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
 }
 
 TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
@@ -821,7 +822,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
-  task_environment().FastForwardBy(PickerSearchController::kGifDebouncingDelay);
+  task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
 
   std::move(*client.gif_search_callback())
       .Run({ash::PickerSearchResult::Gif(
@@ -831,7 +832,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
           gfx::Size(480, 480), u"cat blink")});
   task_environment().FastForwardBy(kBurnInPeriod -
-                                   PickerSearchController::kGifDebouncingDelay);
+                                   PickerSearchRequest::kGifDebouncingDelay);
 }
 
 TEST_F(PickerSearchControllerTest, StopsOldGifSearches) {
@@ -866,7 +867,7 @@ TEST_F(PickerSearchControllerTest, StopsOldGifSearches) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
-  task_environment().FastForwardBy(PickerSearchController::kGifDebouncingDelay);
+  task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
   old_gif_callback = std::move(*client.gif_search_callback());
   EXPECT_FALSE(old_gif_callback.is_null());
   controller.StartSearch(
@@ -904,7 +905,7 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
-  task_environment().FastForwardBy(PickerSearchController::kGifDebouncingDelay);
+  task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
 
   client.cros_search_callback()->Run(
       ash::AppListSearchResultType::kOmnibox,
@@ -919,7 +920,7 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
           gfx::Size(480, 480), u"cat blink")});
   task_environment().FastForwardBy(kBurnInPeriod -
-                                   PickerSearchController::kGifDebouncingDelay);
+                                   PickerSearchRequest::kGifDebouncingDelay);
 }
 
 TEST_F(PickerSearchControllerTest, RecordsGifMetricsBeforeBurnIn) {
@@ -943,7 +944,7 @@ TEST_F(PickerSearchControllerTest, RecordsGifMetricsBeforeBurnIn) {
 
   histogram.ExpectUniqueTimeSample(
       "Ash.Picker.Search.GifProvider.QueryTime",
-      kBeforeBurnIn - PickerSearchController::kGifDebouncingDelay, 1);
+      kBeforeBurnIn - PickerSearchRequest::kGifDebouncingDelay, 1);
 }
 
 TEST_F(PickerSearchControllerTest, RecordsGifMetricsAfterBurnIn) {
@@ -967,7 +968,7 @@ TEST_F(PickerSearchControllerTest, RecordsGifMetricsAfterBurnIn) {
 
   histogram.ExpectUniqueTimeSample(
       "Ash.Picker.Search.GifProvider.QueryTime",
-      kAfterBurnIn - PickerSearchController::kGifDebouncingDelay, 1);
+      kAfterBurnIn - PickerSearchRequest::kGifDebouncingDelay, 1);
 }
 
 TEST_F(PickerSearchControllerTest, DoesNotRecordGifMetricsIfNoResponse) {
@@ -1037,7 +1038,7 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
-  task_environment().FastForwardBy(PickerSearchController::kGifDebouncingDelay);
+  task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
 
   client.cros_search_callback()->Run(
       ash::AppListSearchResultType::kOmnibox,
@@ -1052,7 +1053,7 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
           gfx::Size(480, 480), u"cat blink")});
   task_environment().FastForwardBy(kBurnInPeriod -
-                                   PickerSearchController::kGifDebouncingDelay);
+                                   PickerSearchRequest::kGifDebouncingDelay);
 }
 
 TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
@@ -1070,7 +1071,7 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)));
-  task_environment().FastForwardBy(PickerSearchController::kGifDebouncingDelay);
+  task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
 
   client.cros_search_callback()->Run(ash::AppListSearchResultType::kOmnibox,
                                      {});

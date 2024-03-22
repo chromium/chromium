@@ -10,8 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/picker/model/picker_search_results_section.h"
-#include "ash/picker/search/picker_search_debouncer.h"
+#include "ash/picker/search/picker_search_request.h"
 #include "ash/picker/search/picker_search_source.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/picker/picker_category.h"
@@ -21,7 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/ash/components/emoji/emoji_search.h"
 
 namespace ash {
 
@@ -37,9 +35,6 @@ class ASH_EXPORT PickerSearchController {
   PickerSearchController(const PickerSearchController&) = delete;
   PickerSearchController& operator=(const PickerSearchController&) = delete;
   ~PickerSearchController();
-
-  static constexpr base::TimeDelta kGifDebouncingDelay =
-      base::Milliseconds(200);
 
   void StartSearch(const std::u16string& query,
                    std::optional<PickerCategory> category,
@@ -59,22 +54,11 @@ class ASH_EXPORT PickerSearchController {
   // Whether the burn-in period has ended for the current search.
   bool IsPostBurnIn() const;
 
-  void StartGifSearch(const std::string& query);
-
   void ResetResults();
   void PublishBurnInResults();
 
   void HandleSearchSourceResults(PickerSearchSource source,
                                  std::vector<PickerSearchResult> results);
-
-  void HandleCategorySearchResults(std::vector<PickerSearchResult> results);
-  void HandleCrosSearchResults(ash::AppListSearchResultType type,
-                               std::vector<PickerSearchResult> results);
-  void HandleGifSearchResults(std::string query,
-                              std::vector<PickerSearchResult> results);
-  void HandleEmojiSearchResults(emoji::EmojiSearchResult results);
-  void HandleDateSearchResults(std::optional<PickerSearchResult> result);
-  void HandleMathSearchResults(std::optional<PickerSearchResult> result);
 
   const raw_ref<PickerClient> client_;
   std::vector<PickerCategory> available_categories_;
@@ -82,17 +66,9 @@ class ASH_EXPORT PickerSearchController {
   base::TimeDelta burn_in_period_;
   base::OneShotTimer burn_in_timer_;
 
-  emoji::EmojiSearch emoji_search_;
+  PickerSearchRequest search_request_;
 
-  std::string current_query_;
   PickerViewDelegate::SearchResultsCallback current_callback_;
-
-  std::optional<base::TimeTicks> date_search_start_;
-  std::optional<base::TimeTicks> cros_search_start_;
-  std::optional<base::TimeTicks> gif_search_start_;
-  std::optional<base::TimeTicks> emoji_search_start_;
-  std::optional<base::TimeTicks> category_search_start_;
-  std::optional<base::TimeTicks> math_search_start_;
 
   std::vector<PickerSearchResult> category_results_;
   std::vector<PickerSearchResult> suggested_results_;
@@ -101,8 +77,6 @@ class ASH_EXPORT PickerSearchController {
   std::vector<PickerSearchResult> emoji_results_;
   std::vector<PickerSearchResult> local_file_results_;
   std::vector<PickerSearchResult> drive_file_results_;
-
-  PickerSearchDebouncer gif_search_debouncer_;
 
   base::WeakPtrFactory<PickerSearchController> weak_ptr_factory_{this};
 };
