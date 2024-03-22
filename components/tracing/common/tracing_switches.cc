@@ -110,9 +110,9 @@ const char kPerfettoDisableInterning[] = "perfetto-disable-interning";
 // Sends a pretty-printed version of tracing info to the console.
 const char kTraceToConsole[] = "trace-to-console";
 
-// Sets a local file destination for tracing data. This is only used if
+// Sets a local folder destination for tracing data. This is only used if
 // kEnableBackgroundTracing is also specified.
-const char kBackgroundTracingOutputFile[] = "background-tracing-output-file";
+const char kBackgroundTracingOutputPath[] = "background-tracing-output-path";
 
 // Configures the size of the shared memory buffer used for tracing. Value is
 // provided in kB. Defaults to 4096. Should be a multiple of the SMB page size
