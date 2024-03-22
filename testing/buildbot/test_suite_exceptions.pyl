@@ -1945,6 +1945,11 @@
           'shards': 25,
         },
       },
+      'android-mte-arm64-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.content_browsertests.filter',
+        ],
+      },
       # If you change this, make similar changes in android-x86-code-coverage below
       'android-oreo-x86-rel': {
         'args': [
