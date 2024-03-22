@@ -31,10 +31,13 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.UrlUtils;
 import org.chromium.blink_public.common.BlinkFeatures;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.net.test.EmbeddedTestServer;
 
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -107,10 +110,8 @@ public class AwPrerenderTest extends AwParameterizedTest {
         mTestServer.stopAndDestroyServer();
     }
 
+    // Injects speculation rules for `url`.
     private void injectSpeculationRules(String url) throws Exception {
-        final OnLoadResourceHelper onLoadResourceHelper = mContentsClient.getOnLoadResourceHelper();
-        int currentOnLoadResourceCallCount = onLoadResourceHelper.getCallCount();
-
         final String speculationRulesTemplate =
                 """
                     {
@@ -127,10 +128,18 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 () -> {
                     mAwContents.evaluateJavaScript(speculationRules, null);
                 });
+    }
 
-        // Wait for prerendering navigation. Monitor onLoadResource instead of
-        // onPageFinished as onPageFinished is never called during prerendering
-        // (deferred until activation).
+    // Injects speculation rules for `url` and then waits until a prerendering navigation request is
+    // sent.
+    private void injectSpeculationRulesAndWait(String url) throws Exception {
+        final OnLoadResourceHelper onLoadResourceHelper = mContentsClient.getOnLoadResourceHelper();
+        int currentOnLoadResourceCallCount = onLoadResourceHelper.getCallCount();
+
+        injectSpeculationRules(url);
+
+        // Wait for prerendering navigation. Monitor onLoadResource instead of onPageFinished as
+        // onPageFinished is never called during prerendering (deferred until activation).
         onLoadResourceHelper.waitForCallback(
                 currentOnLoadResourceCallCount, 1, SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         Assert.assertEquals(onLoadResourceHelper.getLastLoadedResource(), url);
@@ -154,11 +163,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // Make sure the page was actually prerendered and then activated.
         Assert.assertEquals(
+                true, mActivationFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(
                 "true",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         mAwContents, mContentsClient, "wasPrerendered"));
-        Assert.assertEquals(
-                true, mActivationFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
     }
 
     // Tests basic end-to-end behavior of speculation rules prerendering on WebView.
@@ -168,7 +177,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testSpeculationRulesPrerendering() throws Throwable {
-        injectSpeculationRules(mPrerenderingUrl);
+        injectSpeculationRulesAndWait(mPrerenderingUrl);
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
         // onPageStarted should never be called for prerender initial navigation.
@@ -189,7 +198,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 mContentsClient.getShouldInterceptRequestHelper();
         int currentShouldInterceptRequestCallCount = shouldInterceptRequestHelper.getCallCount();
 
-        injectSpeculationRules(mPrerenderingUrl);
+        injectSpeculationRulesAndWait(mPrerenderingUrl);
 
         shouldInterceptRequestHelper.waitForCallback(currentShouldInterceptRequestCallCount);
         AwContentsClient.AwWebResourceRequest request =
@@ -207,6 +216,41 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 currentShouldInterceptRequestCallCount);
     }
 
+    // Tests prerendering can succeed with a custom response served by ShouldInterceptRequest.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testPrerenderingWithCustomResponse() throws Throwable {
+        final TestAwContentsClient.ShouldInterceptRequestHelper shouldInterceptRequestHelper =
+                mContentsClient.getShouldInterceptRequestHelper();
+
+        // This test will attempt to prerender a non-existent URL. Generally this should fail, but
+        // in this test shouldInterceptRequestHelper will serve a custom response instead.
+        final String nonExistentUrl = mTestServer.getURL("/non_existent.html");
+
+        // Construct a custom response.
+        FileInputStream body = new FileInputStream(UrlUtils.getIsolatedTestFilePath(PRERENDER_URL));
+        WebResourceResponseInfo response = new WebResourceResponseInfo("text/html", "utf-8", body);
+        shouldInterceptRequestHelper.setReturnValueForUrl(nonExistentUrl, response);
+
+        int currentShouldInterceptRequestCallCount = shouldInterceptRequestHelper.getCallCount();
+
+        // This doesn't wait for prerendering navigation as the waiting logic is implemented on top
+        // of onLoadResource that is never called when a custom response is served.
+        injectSpeculationRules(nonExistentUrl);
+
+        // Ensure that ShouldInterceptRequest is called.
+        shouldInterceptRequestHelper.waitForCallback(currentShouldInterceptRequestCallCount);
+        AwContentsClient.AwWebResourceRequest request =
+                shouldInterceptRequestHelper.getRequestsForUrl(nonExistentUrl);
+        Assert.assertNotNull(request);
+
+        // Activation with the non-existent URL should succeed.
+        activatePage(nonExistentUrl);
+    }
+
     // Tests ShouldOverrideUrlLoading interaction with prerendering.
     @Test
     @LargeTest
@@ -219,7 +263,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         int currentShouldOverrideUrlLoadingCallCount =
                 shouldOverrideUrlLoadingHelper.getCallCount();
 
-        injectSpeculationRules(mPrerenderingUrl);
+        injectSpeculationRulesAndWait(mPrerenderingUrl);
 
         shouldOverrideUrlLoadingHelper.waitForCallback(currentShouldOverrideUrlLoadingCallCount);
         Assert.assertEquals(
