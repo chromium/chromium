@@ -19,6 +19,7 @@
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -101,15 +102,15 @@ void PickerSearchRequest::StartSearch(const std::u16string& query,
 }
 
 void PickerSearchRequest::StopSearch() {
+  // Ensure that any bound callbacks to `Handle*SearchResults` will not get
+  // called after the current callback is reset.
+  weak_ptr_factory_.InvalidateWeakPtrs();
   current_callback_.Reset();
   date_search_start_.reset();
   cros_search_start_.reset();
   gif_search_start_.reset();
   emoji_search_start_.reset();
   category_search_start_.reset();
-  // The following "stop search" calls may cause an additional call to search
-  // result callbacks. Ensure that we reset metrics BEFORE stopping the search -
-  // so any further metrics will not be recorded.
   client_->StopCrosQuery();
   client_->StopGifSearch();
 }
@@ -130,11 +131,14 @@ void PickerSearchRequest::StartGifSearch(const std::string& query) {
 void PickerSearchRequest::HandleSearchSourceResults(
     PickerSearchSource source,
     std::vector<PickerSearchResult> results) {
-  if (current_callback_.is_null()) {
-    // Search has been stopped, but we got search results - probably from a
-    // "stop search" call.
-    return;
-  }
+  // This method is only called from `Handle*SearchResults` methods (one for
+  // each search source), and the only time `current_callback_` is null is when
+  // the search is stopped.
+  // As our `WeakPtrFactory` should have invalidated any bound callbacks to
+  // `Handle*SearchResults` before resetting the callback to null, this method
+  // should - in theory - never be called after `current_callback_` is reset.
+  CHECK(!current_callback_.is_null())
+      << "Current callback is null in HandleSearchSourceResults";
   current_callback_.Run(source, std::move(results));
 }
 
