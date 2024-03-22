@@ -11568,6 +11568,8 @@ if (!is_android && !is_chromeos_device) {
       sources += [
         "../browser/ui/views/profiles/first_run_lacros_interactive_uitest.cc",
       ]
+
+      deps += [ "//chromeos/ui/frame:interactive_ui_tests" ]
     }
 
     if (is_win || is_mac || is_linux) {

@@ -14,6 +14,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
@@ -218,6 +219,22 @@ bool NonClientFrameViewBase::DoesIntersectRect(const views::View* target,
 void NonClientFrameViewBase::PaintAsActiveChanged() {
   header_view_->GetFrameHeader()->SetPaintAsActive(ShouldPaintAsActive());
   frame_->non_client_view()->DeprecatedLayoutImmediately();
+}
+
+void NonClientFrameViewBase::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+    case display::TabletState::kInTabletMode:
+    case display::TabletState::kInClamshellMode:
+      // Without this, Layout is not guaranteed to be called when the tablet
+      // state changes. Layout must be called so that the header view can hide
+      // or unhide as appropriate.
+      InvalidateLayout();
+      break;
+  }
 }
 
 BEGIN_METADATA(NonClientFrameViewBase)
