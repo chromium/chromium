@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -229,7 +230,7 @@ bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer buffer) {
                       /* data_dst = */ nullptr, &data);
 
   if (!data.empty()) {
-    base::Pickle pickle(data.data(), static_cast<int>(data.size()));
+    base::Pickle pickle = base::Pickle::WithData(base::as_byte_span(data));
     if (ReadFromPickle(&pickle))
       return true;
   }
