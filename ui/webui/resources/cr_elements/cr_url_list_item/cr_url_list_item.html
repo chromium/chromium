@@ -11,6 +11,7 @@
     display: flex;
     height: 48px;
     padding: 4px 16px;
+    position: relative;
     width: 100%;
   }
 
@@ -43,6 +44,20 @@
   :host(.active),
   :host-context(.focus-outline-visible):host(:focus-within) {
     background: var(--cr-active-background-color);
+  }
+
+  #anchor,
+  #button {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    position: absolute;
+    inset: 0;
+  }
+
+  #anchor:focus,
+  #button:focus {
+    outline: 0;
   }
 
   ::slotted([slot=prefix]) {
@@ -250,16 +265,10 @@
   }
 
   .title {
-    appearance: none;
-    background: transparent;
-    border: 0;
     color: var(--cr-primary-text-color);
-    display: inline;
     font-family: inherit;
     font-size: 12px;
     font-weight: 500;
-    padding: 0;
-    text-align: start;
   }
 
   .title:focus {
@@ -382,6 +391,17 @@
   }
 </style>
 
+<a id="anchor" href="[[url]]" hidden$="[[!asAnchor]]"
+    aria-label="[[getItemAriaLabel_(title, itemAriaLabel)]]"
+    aria-description="[[
+        getItemAriaDescription_(description, itemAriaDescription)]]">
+</a>
+<button id="button" hidden$="[[asAnchor]]"
+  aria-label="[[getItemAriaLabel_(title, itemAriaLabel)]]"
+  aria-description="[[
+      getItemAriaDescription_(description, itemAriaDescription)]]">
+</button>
+
 <slot name="prefix"></slot>
 <div id="iconContainer">
   <div class="favicon" hidden$="[[!shouldShowFavicon_(url, size, imageUrls)]]"
@@ -413,12 +433,7 @@
 </div>
 <slot id="content" name="content" on-slotchange="onContentSlotChange_"></slot>
 <div id="metadata" class="metadata">
-  <button id="title" class="title"
-      aria-label="[[getButtonAriaLabel_(title, buttonAriaLabel)]]"
-      aria-description="[[
-          getButtonAriaDescription_(description, buttonAriaDescription)]]">
-    [[title]]
-  </button>
+  <span class="title">[[title]]</span>
   <div class="descriptions">
     <div class="description" hidden$="[[!description]]">
       <span class="description-text">[[description]]</span>

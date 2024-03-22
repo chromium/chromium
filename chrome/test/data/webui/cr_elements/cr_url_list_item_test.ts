@@ -8,8 +8,9 @@ import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_l
 import {CrUrlListItemSize} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 
@@ -153,12 +154,52 @@ suite('CrUrlListItemTest', () => {
     const focusOutlineManager = FocusOutlineManager.forDocument(document);
     focusOutlineManager.visible = true;
     assertFalse(isVisible(suffix));
-    element.$.title.focus();
+    element.focus();
     assertTrue(isVisible(suffix));
     focusOutlineManager.visible = false;
     assertFalse(isVisible(suffix));
 
     element.alwaysShowSuffix = true;
     assertTrue(isVisible(suffix));
+  });
+
+  test('SwitchesBetweenAnchorAndButton', () => {
+    assertFalse(isVisible(element.$.anchor));
+    assertTrue(isVisible(element.$.button));
+    assertDeepEquals(
+        element.getBoundingClientRect(),
+        element.$.button.getBoundingClientRect());
+    element.asAnchor = true;
+    assertTrue(isVisible(element.$.anchor));
+    assertFalse(isVisible(element.$.button));
+    assertDeepEquals(
+        element.getBoundingClientRect(),
+        element.$.anchor.getBoundingClientRect());
+  });
+
+  test('PassesAriaProperties', () => {
+    element.title = 'My title';
+    element.description = 'My description';
+    assertEquals('My title', element.$.anchor.ariaLabel);
+    assertEquals('My description', element.$.anchor.ariaDescription);
+    assertEquals('My title', element.$.button.ariaLabel);
+    assertEquals('My description', element.$.button.ariaDescription);
+
+    element.itemAriaLabel = 'My aria label';
+    element.itemAriaDescription = 'My aria description';
+    assertEquals('My aria label', element.$.anchor.ariaLabel);
+    assertEquals('My aria description', element.$.anchor.ariaDescription);
+    assertEquals('My aria label', element.$.button.ariaLabel);
+    assertEquals('My aria description', element.$.button.ariaDescription);
+  });
+
+  test('TransfersFocus', () => {
+    element.focus();
+    assertEquals(element.$.button, getDeepActiveElement());
+
+    element.asAnchor = true;
+    element.url = 'http://google.com';
+    element.focus();
+    assertEquals(element.$.anchor, getDeepActiveElement());
   });
 });

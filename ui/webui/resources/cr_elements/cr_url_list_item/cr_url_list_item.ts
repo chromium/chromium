@@ -24,10 +24,11 @@ export enum CrUrlListItemSize {
 
 export interface CrUrlListItemElement {
   $: {
+    anchor: HTMLElement,
     badges: HTMLSlotElement,
+    button: HTMLElement,
     content: HTMLSlotElement,
     description: HTMLSlotElement,
-    title: HTMLButtonElement,
   };
 }
 
@@ -48,8 +49,8 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
-      buttonAriaLabel: String,
-      buttonAriaDescription: String,
+      itemAriaLabel: String,
+      itemAriaDescription: String,
       count: Number,
       description: String,
       url: String,
@@ -116,12 +117,25 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
         type: String,
         value: '',
       },
+
+      /**
+       * Flag that determines if the element should use an anchor tag or a
+       * button element as its focusable item. An anchor provides the native
+       * context menu and browser interactions for links, while a button
+       * provides its own unique functionality, such as pressing space to
+       * activate.
+       */
+      asAnchor: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   alwaysShowSuffix: boolean;
-  buttonAriaLabel?: string;
-  buttonAriaDescription?: string;
+  asAnchor: boolean;
+  itemAriaLabel?: string;
+  itemAriaDescription?: string;
   count?: number;
   description?: string;
   reverseElideDescription: boolean;
@@ -152,7 +166,11 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   override focus() {
     // This component itself is not focusable, so override its focus method
     // to focus its main focusable child, the title button.
-    this.$.title.focus();
+    if (this.asAnchor) {
+      this.$.anchor.focus();
+    } else {
+      this.$.button.focus();
+    }
   }
 
   private resetFirstImageLoaded_() {
@@ -180,12 +198,12 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
     return this.count !== undefined;
   }
 
-  private getButtonAriaDescription_(): string|undefined {
-    return this.buttonAriaDescription || this.description;
+  private getItemAriaDescription_(): string|undefined {
+    return this.itemAriaDescription || this.description;
   }
 
-  private getButtonAriaLabel_(): string {
-    return this.buttonAriaLabel || this.title;
+  private getItemAriaLabel_(): string {
+    return this.itemAriaLabel || this.title;
   }
 
   private getDisplayedCount_() {
