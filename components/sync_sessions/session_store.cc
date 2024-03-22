@@ -10,6 +10,7 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -54,7 +55,7 @@ std::string EncodeStorageKey(const std::string& session_tag, int tab_node_id) {
 bool DecodeStorageKey(const std::string& storage_key,
                       std::string* session_tag,
                       int* tab_node_id) {
-  base::Pickle pickle(storage_key.c_str(), storage_key.size());
+  base::Pickle pickle = base::Pickle::WithData(base::as_byte_span(storage_key));
   base::PickleIterator iter(pickle);
   if (!iter.ReadString(session_tag)) {
     return false;
