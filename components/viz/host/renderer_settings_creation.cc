@@ -69,6 +69,16 @@ RendererSettings CreateRendererSettings() {
                         &renderer_settings.slow_down_compositing_scale_factor);
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  constexpr int kMinDrawQuadSplitLimit = 1;
+  constexpr int kMaxDrawQuadSplitLimit = 15;
+  if (command_line->HasSwitch(switches::kDrawQuadSplitLimit)) {
+    GetSwitchValueAsInt(command_line, switches::kDrawQuadSplitLimit,
+                        kMinDrawQuadSplitLimit, kMaxDrawQuadSplitLimit,
+                        &renderer_settings.quad_split_limit);
+  }
+#endif
+
 #if BUILDFLAG(IS_OZONE)
   if (command_line->HasSwitch(switches::kEnableHardwareOverlays)) {
     renderer_settings.overlay_strategies = ParseOverlayStrategies(

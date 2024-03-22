@@ -22,6 +22,7 @@ struct RendererSettings {
   int32 slow_down_compositing_scale_factor;
   bool auto_resize_output_surface;
   bool requires_alpha_channel;
+  uint16 quad_split_limit;
 
   [EnableIf=is_android]
   gfx.mojom.Size initial_screen_size;

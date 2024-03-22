@@ -42,6 +42,7 @@ bool StructTraits<viz::mojom::RendererSettingsDataView, viz::RendererSettings>::
       data.slow_down_compositing_scale_factor();
   out->auto_resize_output_surface = data.auto_resize_output_surface();
   out->requires_alpha_channel = data.requires_alpha_channel();
+  out->quad_split_limit = data.quad_split_limit();
 
 #if BUILDFLAG(IS_ANDROID)
   if (!data.ReadInitialScreenSize(&out->initial_screen_size))

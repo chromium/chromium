@@ -92,6 +92,10 @@ struct StructTraits<viz::mojom::RendererSettingsDataView,
     return input.requires_alpha_channel;
   }
 
+  static uint16_t quad_split_limit(const viz::RendererSettings& input) {
+    return input.quad_split_limit;
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   static gfx::Size initial_screen_size(const viz::RendererSettings& input) {
     return input.initial_screen_size;
