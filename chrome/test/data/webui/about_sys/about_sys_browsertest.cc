@@ -13,18 +13,18 @@ class SystemInfoBrowserTest : public WebUIMochaBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SystemInfoBrowserTest, SystemUITest) {
-  RunTest("about_sys/about_sys_test.js", "runMochaSuite('SystemUITest')");
+IN_PROC_BROWSER_TEST_F(SystemInfoBrowserTest, AboutSystem) {
+  RunTest("about_sys/about_sys_test.js", "runMochaSuite('AboutSystemTest')");
 }
 
-IN_PROC_BROWSER_TEST_F(SystemInfoBrowserTest, AboutSystemUrlTest) {
-  RunTest("about_sys/about_sys_test.js", "runMochaSuite('AboutSystemUrlTest')");
-}
-
-IN_PROC_BROWSER_TEST_F(SystemInfoBrowserTest, FeedbackSysInfoUrlTest) {
+IN_PROC_BROWSER_TEST_F(SystemInfoBrowserTest, FeedbackSysInfo) {
   // Test feedback system info page (chrome://system?showFeedbackInfo=true).
   set_test_loader_host(std::string(chrome::kChromeUISystemInfoHost) +
                        "?showFeedbackInfo=true");
   RunTestWithoutTestLoader("about_sys/about_sys_test.js",
-                           "runMochaSuite('FeedbackSysInfoUrlTest')");
+                           "runMochaSuite('FeedbackSysInfoTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(SystemInfoBrowserTest, KeyValuePairViewer) {
+  RunTest("about_sys/key_value_pair_viewer_test.js", "mocha.run()");
 }

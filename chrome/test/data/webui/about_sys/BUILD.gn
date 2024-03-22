@@ -7,6 +7,7 @@ import("../build_webui_tests.gni")
 build_webui_tests("build") {
   files = [
     "about_sys_test.ts",
+    "key_value_pair_viewer_test.ts",
     "test_about_sys_browser_proxy.ts",
   ]
 
