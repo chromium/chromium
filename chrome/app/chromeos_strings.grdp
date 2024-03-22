@@ -3450,6 +3450,9 @@
   <message name="IDS_NETWORK_UI_TAB_NETWORK_HOTSPOT" desc="Hotspot tab name">
     Hotspot
   </message>
+  <message name="IDS_NETWORK_UI_TAB_NETWORK_WIFI_DIRECT" desc="Wifi Direct tab name">
+    WiFi Direct
+  </message>
   <message name="IDS_NETWORK_UI_AUTO_REFRESH" desc="Instructions for how to auto-refresh the page">
     Add a query param in URL to auto-refresh the page: chrome://network/?refresh=&lt;sec&gt;
   </message>

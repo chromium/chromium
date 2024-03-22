@@ -760,6 +760,8 @@ base::Value::Dict NetworkUI::GetLocalizedStrings() {
            l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_HOTSPOT))
       .Set("networkMetricsTab",
            l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_METRICS))
+      .Set("networkWifiDirectTab",
+           l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_WIFI_DIRECT))
       .Set("autoRefreshText",
            l10n_util::GetStringUTF16(IDS_NETWORK_UI_AUTO_REFRESH))
       .Set("deviceLogLinkText",
@@ -942,6 +944,7 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
   html->AddLocalizedStrings(localized_strings);
   html->AddBoolean("isGuestModeActive", IsGuestModeActive());
   html->AddBoolean("isHotspotEnabled", features::IsHotspotEnabled());
+  html->AddBoolean("isWifiDirectEnabled", features::IsWifiDirectEnabled());
   html->AddString("tetheringStateStarting", shill::kTetheringStateStarting);
   html->AddString("tetheringStateActive", shill::kTetheringStateActive);
   network_health::AddResources(html);
