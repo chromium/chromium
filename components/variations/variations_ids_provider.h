@@ -15,7 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
-#include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/synthetic_trials.h"
@@ -313,8 +312,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
 
   // List of observers to notify on variation ids header update.
   // NOTE this should really check observers are unregistered but due to
-  // https://crbug.com/1051937 this isn't currently possible.
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  // https://crbug.com/1051937 this isn't currently possible. Note that
+  // ObserverList is sequence checked so we can't use that here.
+  std::vector<Observer*> observer_list_ GUARDED_BY(lock_);
 
   raw_ptr<const VariationsClient> variations_client_ = nullptr;
 };

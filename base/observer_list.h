@@ -253,6 +253,7 @@ class ObserverList {
   using value_type = ObserverType;
 
   const_iterator begin() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(iteration_sequence_checker_);
     // An optimization: do not involve weak pointers for empty list.
     return observers_.empty() ? const_iterator() : const_iterator(this);
   }

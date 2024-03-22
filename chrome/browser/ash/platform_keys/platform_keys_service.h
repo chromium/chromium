@@ -464,10 +464,12 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
                          chromeos::platform_keys::OperationType operation_type);
   void OnDelegateShutDown();
 
-  std::unique_ptr<PlatformKeysServiceImplDelegate> const delegate_;
+  std::unique_ptr<PlatformKeysServiceImplDelegate> delegate_;
+
   // List of observers that will be notified when the service is shut down.
   base::ObserverList<PlatformKeysServiceObserver> observers_;
   bool map_to_softoken_attrs_for_testing_ = false;
+
   base::WeakPtrFactory<PlatformKeysServiceImpl> weak_factory_{this};
 };
 
