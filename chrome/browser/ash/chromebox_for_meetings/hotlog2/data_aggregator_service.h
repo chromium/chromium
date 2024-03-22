@@ -59,8 +59,21 @@ class DataAggregatorService : public CfmObserver,
   DataAggregatorService();
   ~DataAggregatorService() override;
 
+  void StartFetchTimer();
+  void FetchFromAllSourcesAndEnqueue();
+  void EnqueueData(const std::string& source_name,
+                   const std::vector<std::string>& serialized_records);
+  void HandleEnqueueResponse(const std::string& source_name, bool success);
+
   ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<mojom::DataAggregator> receivers_;
+
+  base::RepeatingTimer fetch_timer_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Maps DataSource names to their remotes, for access convenience
+  std::map<std::string, mojo::Remote<mojom::DataSource>> data_source_map_;
 
   // Must be the last class member.
   base::WeakPtrFactory<DataAggregatorService> weak_ptr_factory_{this};
