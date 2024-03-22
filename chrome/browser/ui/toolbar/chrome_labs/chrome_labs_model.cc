@@ -49,14 +49,6 @@ const std::vector<LabInfo>& GetData() {
         l10n_util::GetStringUTF16(IDS_TAB_GROUPS_SAVE_DESCRIPTION),
         "tab-groups-save", version_info::Channel::BETA);
 
-    // CustomizeChromeSidePanel.
-    lab_info.emplace_back(
-        flag_descriptions::kCustomizeChromeSidePanelId,
-        l10n_util::GetStringUTF16(
-            IDS_CUSTOMIZE_CHROME_SIDE_PANEL_EXPERIMENT_NAME),
-        l10n_util::GetStringUTF16(IDS_CUSTOMIZE_CHROME_SIDE_PANEL_DESCRIPTION),
-        "chrome-labs-customize-chrome-side-panel", version_info::Channel::BETA);
-
     // ChromeRefresh2023.
     std::vector<std::u16string> chrome_refresh_variation_descriptions = {
         l10n_util::GetStringUTF16(IDS_CHROMEREFRESH2023_WITHOUT_OMNIBOX)};

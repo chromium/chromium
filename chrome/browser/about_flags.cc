@@ -9335,16 +9335,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // defined(TOOLKIT_VIEWS)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {flag_descriptions::kCustomizeChromeSidePanelId,
-     flag_descriptions::kCustomizeChromeSidePanelName,
-     flag_descriptions::KCustomizeChromeSidePanelDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kCustomizeChromeSidePanel)},
-
-    {"customize-chrome-color-extraction",
-     flag_descriptions::kCustomizeChromeColorExtractionName,
-     flag_descriptions::kCustomizeChromeColorExtractionDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kCustomizeChromeColorExtraction)},
-
     {"customize-chrome-side-panel-extensions-card",
      flag_descriptions::kCustomizeChromeSidePanelExtensionsCardName,
      flag_descriptions::kCustomizeChromeSidePanelExtensionsCardDescription,

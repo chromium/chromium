@@ -83,9 +83,6 @@ void EmitToHistogram(const std::u16string& selected_lab_state,
     if (internal_name == flag_descriptions::kTabGroupsSaveId) {
       return ChromeLabsSelectedLab::kTabGroupsSaveSelected;
     }
-    if (internal_name == flag_descriptions::kCustomizeChromeSidePanelId) {
-      return ChromeLabsSelectedLab::kCustomizeChromeSidePanelSelected;
-    }
     if (internal_name == flag_descriptions::kChromeRefresh2023Id) {
       return ChromeLabsSelectedLab::kChromeRefresh2023Selected;
     }

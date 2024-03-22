@@ -185,18 +185,6 @@ const char kCssGamutMappingName[] = "CSS Gamut Mapping";
 const char kCssGamutMappingDescription[] =
     "Enable experimental CSS gamut mapping implementation.";
 
-const char kCustomizeChromeColorExtractionName[] =
-    "Customize Chrome Color Extraction";
-const char kCustomizeChromeColorExtractionDescription[] =
-    "Enables setting theme color based on background image color when "
-    "background image is changed in New Tab Page Customize Chrome.";
-
-const char kCustomizeChromeSidePanelId[] = "customize-chrome-side-panel";
-const char kCustomizeChromeSidePanelName[] = "Customize Chrome Side Panel";
-const char KCustomizeChromeSidePanelDescription[] =
-    "Enables the ability to use Customize Chrome functionality from the "
-    "unified side panel on the New Tab Page.";
-
 const char kCustomizeChromeSidePanelExtensionsCardName[] =
     "Customize Chrome Side Panel Extension Card";
 const char kCustomizeChromeSidePanelExtensionsCardDescription[] =
