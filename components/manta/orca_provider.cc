@@ -28,9 +28,6 @@ namespace manta {
 namespace {
 
 constexpr char kOauthConsumerName[] = "manta_orca";
-constexpr char kAutopushEndpointUrl[] =
-    "https://autopush-aratea-pa.sandbox.googleapis.com/generate";
-constexpr char kProdEndpointUrl[] = "https://aratea-pa.googleapis.com/generate";
 
 using Tone = proto::RequestConfig::Tone;
 
@@ -51,11 +48,6 @@ std::optional<Tone> GetTone(const std::string& tone) {
 
   return iter != tone_map.end() ? std::optional<Tone>(iter->second)
                                 : std::nullopt;
-}
-
-std::string GetEndpointUrl() {
-  return features::IsOrcaUseProdServerEnabled() ? kProdEndpointUrl
-                                                : kAutopushEndpointUrl;
 }
 
 std::optional<proto::Request> ComposeRequest(
@@ -183,9 +175,9 @@ void OrcaProvider::Call(const std::map<std::string, std::string>& input,
             }
           }
         })");
-  std::unique_ptr<EndpointFetcher> fetcher =
-      CreateEndpointFetcher(GURL{GetEndpointUrl()}, kOauthConsumerName,
-                            traffic_annotation, serialized_request);
+  std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcher(
+      GURL{GetProviderEndpoint(features::IsOrcaUseProdServerEnabled())},
+      kOauthConsumerName, traffic_annotation, serialized_request);
 
   EndpointFetcher* const fetcher_ptr = fetcher.get();
   MantaProtoResponseCallback internal_callback = base::BindOnce(

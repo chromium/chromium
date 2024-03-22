@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/manta/base_provider.h"
+#include "components/manta/features.h"
 #include "components/manta/manta_service_callbacks.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
@@ -24,8 +25,6 @@ namespace manta {
 namespace {
 
 constexpr char kOauthConsumerName[] = "manta_snapper";
-constexpr char kEndpointUrl[] =
-    "https://autopush-aratea-pa.sandbox.googleapis.com/generate";
 
 }  // namespace
 
@@ -47,9 +46,9 @@ void SnapperProvider::Call(const manta::proto::Request& request,
   std::string serialized_request;
   request.SerializeToString(&serialized_request);
 
-  std::unique_ptr<EndpointFetcher> fetcher =
-      CreateEndpointFetcher(GURL{kEndpointUrl}, kOauthConsumerName,
-                            traffic_annotation, serialized_request);
+  std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcher(
+      GURL{GetProviderEndpoint(features::IsSeaPenUseProdServerEnabled())},
+      kOauthConsumerName, traffic_annotation, serialized_request);
 
   EndpointFetcher* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,

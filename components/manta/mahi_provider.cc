@@ -27,8 +27,6 @@ namespace manta {
 namespace {
 
 constexpr char kOauthConsumerName[] = "manta_mahi";
-constexpr char kAutopushEndpointUrl[] =
-    "https://autopush-aratea-pa.sandbox.googleapis.com/generate";
 
 void OnServerResponseOrErrorReceived(
     MantaGenericCallback callback,
@@ -127,9 +125,9 @@ void MahiProvider::RequestInternal(const proto::Request& request,
 
   // TODO(b:288019728): MISSING_TRAFFIC_ANNOTATION should be resolved before
   // launch.
-  std::unique_ptr<EndpointFetcher> fetcher =
-      CreateEndpointFetcher(GURL{kAutopushEndpointUrl}, kOauthConsumerName,
-                            MISSING_TRAFFIC_ANNOTATION, serialized_request);
+  std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcher(
+      GURL{GetProviderEndpoint(false)}, kOauthConsumerName,
+      MISSING_TRAFFIC_ANNOTATION, serialized_request);
 
   EndpointFetcher* const fetcher_ptr = fetcher.get();
   MantaProtoResponseCallback internal_callback = base::BindOnce(

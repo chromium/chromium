@@ -12,6 +12,9 @@
 
 namespace manta {
 
+// Base on `use_prod`, returns either the prod or autopush endpoint.
+std::string GetProviderEndpoint(bool use_prod);
+
 // BaseProvider abstracts common attributes and functions, mainly about endpoint
 // fetcher and authorization, to avoid duplication in particular providers.
 class COMPONENT_EXPORT(MANTA) BaseProvider

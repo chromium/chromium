@@ -10,9 +10,15 @@ constexpr char kHttpMethod[] = "POST";
 constexpr char kHttpContentType[] = "application/x-protobuf";
 constexpr char kOAuthScope[] = "https://www.googleapis.com/auth/mdi.aratea";
 constexpr base::TimeDelta kTimeout = base::Seconds(30);
+constexpr char kAutopushEndpointUrl[] =
+    "https://autopush-aratea-pa.sandbox.googleapis.com/generate";
+constexpr char kProdEndpointUrl[] = "https://aratea-pa.googleapis.com/generate";
 
 }  // namespace
 
+std::string GetProviderEndpoint(bool use_prod) {
+  return use_prod ? kProdEndpointUrl : kAutopushEndpointUrl;
+}
 BaseProvider::BaseProvider() = default;
 BaseProvider::BaseProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
