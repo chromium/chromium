@@ -3047,9 +3047,7 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
   if (is_new_auto) {
     CalculateAndAdjustAutoDirectionality();
   } else {
-    if (RuntimeEnabledFeatures::BdiElementDirInheritanceEnabled()) {
-      ClearDirAutoInheritsFromParent();
-    }
+    ClearDirAutoInheritsFromParent();
 
     std::optional<TextDirection> text_direction;
     if (EqualIgnoringASCIICase(params.new_value, "ltr")) {

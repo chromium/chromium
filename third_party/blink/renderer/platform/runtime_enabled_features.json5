@@ -445,12 +445,6 @@
       },
     },
     {
-      // Shipping in M122.  Flag should be removed after M122 has been
-      // shipping to stable for a few weeks.
-      name: "BdiElementDirInheritance",
-      status: "stable",
-    },
-    {
       // There are two different code changes guarded by this feature. Both
       // are about triggering a beforeunload cancel dialog and need adoption
       // from developers.
