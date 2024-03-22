@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/substitution.h"
 
 #include <optional>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -25,26 +26,6 @@ namespace optimization_guide {
 namespace {
 
 using google::protobuf::RepeatedPtrField;
-
-// The maximum number of args that can be substituted in the string template.
-static constexpr int kMaxArgs = 32;
-
-std::string StringPrintfVector(const std::string& string_template,
-                               std::vector<std::string> args) {
-  CHECK(args.size() <= kMaxArgs);
-
-  args.resize(kMaxArgs, "");
-  return base::StringPrintfNonConstexpr(
-      string_template.c_str(), args[0].c_str(), args[1].c_str(),
-      args[2].c_str(), args[3].c_str(), args[4].c_str(), args[5].c_str(),
-      args[6].c_str(), args[7].c_str(), args[8].c_str(), args[9].c_str(),
-      args[10].c_str(), args[11].c_str(), args[12].c_str(), args[13].c_str(),
-      args[14].c_str(), args[15].c_str(), args[16].c_str(), args[17].c_str(),
-      args[18].c_str(), args[19].c_str(), args[20].c_str(), args[21].c_str(),
-      args[22].c_str(), args[23].c_str(), args[24].c_str(), args[25].c_str(),
-      args[26].c_str(), args[27].c_str(), args[28].c_str(), args[29].c_str(),
-      args[30].c_str(), args[31].c_str());
-}
 
 // Returns whether `condition` applies based on `message`.
 bool EvaluateCondition(const google::protobuf::MessageLite& message,
@@ -104,53 +85,130 @@ bool DoConditionsApply(const google::protobuf::MessageLite& message,
   }
 }
 
+// Resolve various expression in proto::SubstitutedString by appending
+// appropriate text to an output string and updating state.
+// Methods return false on error.
+class StringBuilder {
+ public:
+  enum class Error {
+    OK = 0,
+    FAILED = 1,
+  };
+  StringBuilder() = default;
+  Error ResolveSubstitutedString(const google::protobuf::MessageLite& request,
+                                 const proto::SubstitutedString& substitution);
+
+  SubstitutionResult result() {
+    return SubstitutionResult{
+        .input_string = out_.str(),
+        .should_ignore_input_context = should_ignore_input_context_};
+  }
+
+ private:
+  Error ResolveSubstitution(const google::protobuf::MessageLite& request,
+                            const proto::StringSubstitution& arg);
+
+  // Resolve a StringArg, returns false on error.
+  Error ResolveArg(const google::protobuf::MessageLite& request,
+                   const proto::StringArg& candidate);
+
+  Error ResolveProtoField(const google::protobuf::MessageLite& request,
+                          const proto::ProtoField& field);
+
+  std::ostringstream out_;
+  bool should_ignore_input_context_ = false;
+};
+
+StringBuilder::Error StringBuilder::ResolveProtoField(
+    const google::protobuf::MessageLite& request,
+    const proto::ProtoField& field) {
+  std::optional<proto::Value> value = GetProtoValue(request, field);
+  if (!value) {
+    return Error::FAILED;
+  }
+  out_ << GetStringFromValue(*value);
+  return Error::OK;
+}
+
+StringBuilder::Error StringBuilder::ResolveArg(
+    const google::protobuf::MessageLite& request,
+    const proto::StringArg& candidate) {
+  if (candidate.has_raw_string()) {
+    out_ << candidate.raw_string();
+    return Error::OK;
+  }
+  if (candidate.has_proto_field()) {
+    return ResolveProtoField(request, candidate.proto_field());
+  }
+  return Error::FAILED;
+}
+
+StringBuilder::Error StringBuilder::ResolveSubstitution(
+    const google::protobuf::MessageLite& request,
+    const proto::StringSubstitution& arg) {
+  for (const auto& candidate : arg.candidates()) {
+    if (DoConditionsApply(request, candidate.conditions())) {
+      return ResolveArg(request, candidate);
+    }
+  }
+  return Error::OK;
+}
+
+StringBuilder::Error StringBuilder::ResolveSubstitutedString(
+    const google::protobuf::MessageLite& request,
+    const proto::SubstitutedString& substitution) {
+  if (!DoConditionsApply(request, substitution.conditions())) {
+    return Error::OK;
+  }
+  if (substitution.should_ignore_input_context()) {
+    should_ignore_input_context_ = true;
+  }
+  std::string_view templ = substitution.string_template();
+  int32_t substitution_idx = 0;
+  size_t template_idx = 0;
+  for (size_t pos = templ.find('%', template_idx);
+       pos != std::string_view::npos; pos = templ.find('%', template_idx)) {
+    out_ << templ.substr(template_idx, pos - template_idx);
+    std::string_view token = templ.substr(pos, 2);
+    template_idx = pos + 2;
+    if (token == "%%") {
+      out_ << "%";
+      continue;
+    }
+    if (token != "%s") {
+      return Error::FAILED;  // Invalid token
+    }
+    if (substitution_idx >= substitution.substitutions_size()) {
+      return Error::FAILED;
+    }
+    Error error = ResolveSubstitution(
+        request, substitution.substitutions(substitution_idx));
+    if (error != Error::OK) {
+      return error;
+    }
+    ++substitution_idx;
+  }
+  out_ << templ.substr(template_idx, std::string_view::npos);
+  if (substitution_idx != substitution.substitutions_size()) {
+    return Error::FAILED;
+  }
+  return Error::OK;
+}
+
 }  // namespace
 
 std::optional<SubstitutionResult> CreateSubstitutions(
     const google::protobuf::MessageLite& request,
     const google::protobuf::RepeatedPtrField<proto::SubstitutedString>&
         config_substitutions) {
-  // Construct string.
-  std::vector<std::string> substitutions;
-  bool should_ignore_input_context = false;
+  StringBuilder builder;
   for (const auto& substitution : config_substitutions) {
-    if (!DoConditionsApply(request, substitution.conditions())) {
-      continue;
+    auto error = builder.ResolveSubstitutedString(request, substitution);
+    if (error != StringBuilder::Error::OK) {
+      return std::nullopt;
     }
-
-    if (substitution.should_ignore_input_context()) {
-      should_ignore_input_context = true;
-    }
-
-    std::vector<std::string> args(substitution.substitutions_size());
-    for (int32_t i = 0; i < substitution.substitutions_size(); ++i) {
-      const auto& arg = substitution.substitutions(i);
-      for (const auto& candidate : arg.candidates()) {
-        if (!DoConditionsApply(request, candidate.conditions())) {
-          continue;
-        }
-
-        if (candidate.has_raw_string()) {
-          args[i] = candidate.raw_string();
-        } else if (candidate.has_proto_field()) {
-          std::optional<proto::Value> value =
-              GetProtoValue(request, candidate.proto_field());
-          if (!value) {
-            return std::nullopt;
-          }
-          args[i] = GetStringFromValue(*value);
-        }
-        break;
-      }
-    }
-
-    substitutions.push_back(
-        StringPrintfVector(substitution.string_template(), std::move(args)));
   }
-
-  return SubstitutionResult{
-      .input_string = base::StrCat(substitutions),
-      .should_ignore_input_context = should_ignore_input_context};
+  return builder.result();
 }
 
 }  // namespace optimization_guide

@@ -22,7 +22,7 @@ class SubstitutionTest : public testing::Test {
 TEST_F(SubstitutionTest, RawString) {
   google::protobuf::RepeatedPtrField<proto::SubstitutedString> subs;
   auto* substitution = subs.Add();
-  substitution->set_string_template("hello this is a %s");
+  substitution->set_string_template("hello this is a %%%s%%");
   substitution->add_substitutions()->add_candidates()->set_raw_string("test");
 
   base::test::TestMessage request;
@@ -30,8 +30,21 @@ TEST_F(SubstitutionTest, RawString) {
   auto result = CreateSubstitutions(request, subs);
 
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->input_string, "hello this is a test");
+  EXPECT_EQ(result->input_string, "hello this is a %test%");
   EXPECT_FALSE(result->should_ignore_input_context);
+}
+
+TEST_F(SubstitutionTest, BadTemplate) {
+  google::protobuf::RepeatedPtrField<proto::SubstitutedString> subs;
+  auto* substitution = subs.Add();
+  substitution->set_string_template("hello this is a %s%");
+  substitution->add_substitutions()->add_candidates()->set_raw_string("test");
+
+  base::test::TestMessage request;
+  request.set_test("some test");
+  auto result = CreateSubstitutions(request, subs);
+
+  ASSERT_FALSE(result.has_value());
 }
 
 TEST_F(SubstitutionTest, ProtoField) {
