@@ -214,8 +214,9 @@ std::u16string GetInstallPWALabel(const Browser* browser) {
       web_app::WebAppTabHelper::GetAppId(web_contents);
   web_app::WebAppProvider* const provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
-  if (app_id && provider->registrar_unsafe().GetAppUserDisplayMode(*app_id) !=
-                    web_app::mojom::UserDisplayMode::kBrowser) {
+  if (app_id && provider->registrar_unsafe().IsLocallyInstalled(*app_id) &&
+      provider->registrar_unsafe().GetAppUserDisplayMode(*app_id) !=
+          web_app::mojom::UserDisplayMode::kBrowser) {
     return std::u16string();
   }
 
