@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_controller_base.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
@@ -22,7 +23,7 @@ class PopunderPreventer;
 namespace content {
 class WebContents;
 class RenderFrameHost;
-}
+}  // namespace content
 
 // There are two different kinds of fullscreen mode - "tab fullscreen" and
 // "browser fullscreen". "Tab fullscreen" refers to a renderer-initiated
@@ -176,10 +177,7 @@ class FullscreenController : public ExclusiveAccessControllerBase {
  private:
   friend class ExclusiveAccessTest;
 
-  enum FullscreenInternalOption {
-    BROWSER,
-    TAB
-  };
+  enum FullscreenInternalOption { BROWSER, TAB };
 
   // Posts a task to notify observers of the fullscreen state change.
   void PostFullscreenChangeNotification();
@@ -208,6 +206,11 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   GURL GetRequestingOrigin() const;
   GURL GetEmbeddingOrigin() const;
 
+  // This is recorded when the web page requests to go fullscreen, even if the
+  // fullscreen state doesn't change.
+  void RecordMetricsOnFullscreenApiRequested(
+      content::RenderFrameHost* requesting_frame);
+  // This is recorded after entering fullscreen.
   void RecordMetricsOnEnteringFullscreen();
 
   // The origin of the specific frame requesting fullscreen, which may not match
@@ -261,6 +264,9 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   // Recorded when the controller switches to fullscreen or when the fullscreen
   // window state changes, which ever comes first.
   std::optional<base::TimeTicks> fullscreen_start_time_;
+
+  // This is used for accessing HistoryService.
+  base::CancelableTaskTracker task_tracker_;
 
   base::WeakPtrFactory<FullscreenController> ptr_factory_{this};
 };

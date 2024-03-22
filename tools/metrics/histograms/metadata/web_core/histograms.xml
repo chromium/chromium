@@ -142,6 +142,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebCore.Fullscreen.WebsiteStateAtFullscreenRequest"
+    enum="WebsiteStateAtFullscreenRequest" expires_after="2024-09-19">
+  <owner>takumif@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    This metric records the state of the website origin when it requests to
+    enter fullscreen via the Fullscreen API. &quot;Not visited&quot; means the
+    origin has not been visited more than a day ago.
+  </summary>
+</histogram>
+
 <histogram name="WebCore.IndexedDB.BackingStore.Action" enum="IDBAction"
     expires_after="never">
 <!-- expires-never: indexeddb heartbeat metric; used for chirp alerts (go/chrome-indexeddb-heartbeat) -->
