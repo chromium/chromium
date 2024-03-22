@@ -39,7 +39,7 @@ function validateBid(bid) {
 }
 
 function validateAuctionConfig(auctionConfig) {
-  if (Object.keys(auctionConfig).length !== 14) {
+  if (Object.keys(auctionConfig).length !== 15) {
     throw 'Wrong number of auctionConfig fields ' +
         JSON.stringify(auctionConfig);
   }
@@ -107,6 +107,9 @@ function validateAuctionConfig(auctionConfig) {
     throw 'Wrong perBuyerCumulativeTimeouts ' + perBuyerCumulativeTimeoutsJson;
   }
 
+  if (auctionConfig.reportingTimeout !== 3000)
+    throw 'Wrong reportingTimeout ' + auctionConfig.reportingTimeout;
+
   if (auctionConfig.perBuyerCurrencies[
           auctionConfig.componentAuctions[0].seller] !== 'CAD' ||
       auctionConfig.perBuyerCurrencies['*'] !== 'MXN') {
@@ -140,7 +143,8 @@ function validateAuctionConfig(auctionConfig) {
           '/interest_group/trusted_scoring_signals2.json' ||
       componentAuction.trustedScoringSignalsUrl !== componentAuction.seller +
           '/interest_group/trusted_scoring_signals2.json' ||
-      componentAuction.sellerTimeout !== 20000) {
+      componentAuction.sellerTimeout !== 20000 ||
+      componentAuction.reportingTimeout !== 2000) {
     throw 'Wrong componentAuction ' + JSON.stringify(componentAuction);
   }
 }

@@ -574,6 +574,10 @@ interface BidderWorklet {
   // `bidding_signals_data_version` The value of the Data-Version header served
   //  with the trusted bidding signals.
   //
+  //  `reporting_timeout`. The value restricts the runtime of reportWin()
+  //  script. Any timeout higher than 5s will be clamped to 5s before passing in
+  //  as `reporting_timeout`.
+  //
   // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
   //  to use with tracing calls.
   //
@@ -624,6 +628,7 @@ interface BidderWorklet {
       url.mojom.Origin browser_signal_seller_origin,
       url.mojom.Origin? browser_signal_top_level_seller_origin,
       uint32? bidding_signals_data_version,
+      mojo_base.mojom.TimeDelta? reporting_timeout,
       uint64 trace_id) => (
           url.mojom.Url? report_url,
           map<string, url.mojom.Url> ad_beacon_map,

@@ -452,6 +452,21 @@ void AuctionRunner::Abort() {
   FailAuction(/*aborted_by_script=*/true);
 }
 
+void AuctionRunner::NormalizeReportingTimeouts() {
+  if (owned_auction_config_->non_shared_params.reporting_timeout.has_value()) {
+    owned_auction_config_->non_shared_params.reporting_timeout =
+        std::min(*owned_auction_config_->non_shared_params.reporting_timeout,
+                 kMaxReportingTimeout);
+  }
+  for (auto& component :
+       owned_auction_config_->non_shared_params.component_auctions) {
+    if (component.non_shared_params.reporting_timeout.has_value()) {
+      component.non_shared_params.reporting_timeout = std::min(
+          *component.non_shared_params.reporting_timeout, kMaxReportingTimeout);
+    }
+  }
+}
+
 void AuctionRunner::FailAuction(
     bool aborted_by_script,
     blink::InterestGroupSet interest_groups_that_bid) {
@@ -558,6 +573,8 @@ AuctionRunner::AuctionRunner(
                std::move(log_private_aggregation_requests_callback)) {}
 
 void AuctionRunner::StartAuction() {
+  NormalizeReportingTimeouts();
+
   if (owned_auction_config_->server_response) {
     // Entire auction is running server-side, so skip interest group loading.
     state_ = State::kBiddingAndScoringPhase;

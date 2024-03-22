@@ -56,6 +56,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // auctions are likely still running.
   static constexpr base::TimeDelta kPostAuctionInterestGroupUpdateDelay =
       base::Seconds(3);
+  // Max reporting timeout for seller's reportResult() and buyer's reportWin().
+  static constexpr base::TimeDelta kMaxReportingTimeout = base::Seconds(5);
+
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
@@ -205,6 +208,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   void ResolvedAdditionalBids(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction) override;
   void Abort() override;
+
+  // Normalize reporting timeouts, including those in component auction configs.
+  void NormalizeReportingTimeouts();
 
   // Fails the auction, invoking `callback_` and prevents any future calls into
   // `this` by closing mojo pipes and disposing of weak pointers. The owner must

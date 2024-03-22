@@ -146,6 +146,7 @@ void MockBidderWorklet::ReportWin(
     const url::Origin& browser_signal_seller_origin,
     const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
     std::optional<uint32_t> bidding_signals_data_version,
+    const std::optional<base::TimeDelta> reporting_timeout,
     uint64_t trace_id,
     ReportWinCallback report_win_callback) {
   // While the real BidderWorklet implementation supports multiple pending

@@ -532,10 +532,10 @@ class BidderWorkletTest : public testing::Test {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                           javascript);
-    RunReportWinExpectingResult(expected_report_url, expected_ad_beacon_map,
-                                std::move(expected_ad_macro_map),
-                                std::move(expected_pa_requests),
-                                expected_errors);
+    RunReportWinExpectingResult(
+        expected_report_url, expected_ad_beacon_map,
+        std::move(expected_ad_macro_map), std::move(expected_pa_requests),
+        /*expected_reporting_latency_timeout=*/false, expected_errors);
   }
 
   // Runs reportWin() on an already loaded worklet,  verifies the return
@@ -567,6 +567,7 @@ class BidderWorkletTest : public testing::Test {
         browser_signal_modeling_signals_, browser_signal_join_count_,
         browser_signal_recency_report_win_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, data_version_,
+        reporting_timeout_,
         /*trace_id=*/1,
         base::BindOnce(
             [](const std::optional<GURL>& expected_report_url,
@@ -575,6 +576,7 @@ class BidderWorkletTest : public testing::Test {
                    expected_ad_macro_map,
                PrivateAggregationRequests expected_pa_requests,
                bool expected_reporting_latency_timeout,
+               std::optional<base::TimeDelta> reporting_timeout,
                const std::vector<std::string>& expected_errors,
                base::OnceClosure done_closure,
                const std::optional<GURL>& report_url,
@@ -592,14 +594,17 @@ class BidderWorkletTest : public testing::Test {
                 // We only know that about the time of the timeout should have
                 // elapsed, and there may also be some thread skew.
                 EXPECT_GE(reporting_latency,
-                          AuctionV8Helper::kScriptTimeout * 0.9);
+                          (reporting_timeout.has_value()
+                               ? reporting_timeout.value()
+                               : AuctionV8Helper::kScriptTimeout) *
+                              0.9);
               }
               std::move(done_closure).Run();
             },
             expected_report_url, expected_ad_beacon_map,
             std::move(expected_ad_macro_map), std::move(expected_pa_requests),
-            expected_reporting_latency_timeout, expected_errors,
-            std::move(done_closure)));
+            expected_reporting_latency_timeout, reporting_timeout_,
+            expected_errors, std::move(done_closure)));
   }
 
   // Loads and runs a reportWin() with the provided return line, expecting the
@@ -611,6 +616,7 @@ class BidderWorkletTest : public testing::Test {
       const base::flat_map<std::string, std::string>& expected_ad_macro_map =
           base::flat_map<std::string, std::string>(),
       PrivateAggregationRequests expected_pa_requests = {},
+      bool expected_reporting_latency_timeout = false,
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
     auto bidder_worklet = CreateWorklet();
@@ -620,7 +626,7 @@ class BidderWorkletTest : public testing::Test {
     RunReportWinExpectingResultAsync(
         bidder_worklet.get(), expected_report_url, expected_ad_beacon_map,
         std::move(expected_ad_macro_map), std::move(expected_pa_requests),
-        /*expected_reporting_latency_timeout=*/false, expected_errors,
+        expected_reporting_latency_timeout, expected_errors,
         run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -958,6 +964,7 @@ class BidderWorkletTest : public testing::Test {
   auction_worklet::mojom::ReportingIdField reporting_id_field_ =
       auction_worklet::mojom::ReportingIdField::kInterestGroupName;
   std::string reporting_id_;
+  std::optional<base::TimeDelta> reporting_timeout_ = std::nullopt;
 
   // Use a single constant start time. Only delta times are provided to scripts,
   // relative to the time of the auction, so no need to vary the auction time.
@@ -5567,6 +5574,7 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
       browser_signal_modeling_signals_, browser_signal_join_count_,
       browser_signal_recency_report_win_, browser_signal_seller_origin_,
       browser_signal_top_level_seller_origin_, data_version_,
+      reporting_timeout_,
       /*trace_id=*/1,
       base::BindLambdaForTesting(
           [&run_loop](
@@ -6438,7 +6446,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBid) {
 }
 
 // Test that per-buyer timeout of zero results in no bid produced.
-TEST_F(BidderWorkletTest, TimeoutZero) {
+TEST_F(BidderWorkletTest, PerBuyerTimeoutZero) {
   per_buyer_timeout_ = base::Seconds(0);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:1, render:"https://response.test/"})",
@@ -7004,6 +7012,7 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
       browser_signal_modeling_signals_, browser_signal_join_count_,
       browser_signal_recency_report_win_, browser_signal_seller_origin_,
       browser_signal_top_level_seller_origin_, data_version_,
+      reporting_timeout_,
       /*trace_id=*/1,
       base::BindOnce(
           [](const std::optional<GURL>& report_url,
@@ -7059,6 +7068,7 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
           browser_signal_join_count_, browser_signal_recency_report_win_,
           browser_signal_seller_origin_,
           browser_signal_top_level_seller_origin_, data_version_,
+          reporting_timeout_,
           /*trace_id=*/1,
           base::BindLambdaForTesting(
               [&run_loop, &num_report_win_calls, i](
@@ -7113,6 +7123,7 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
         browser_signal_modeling_signals_, browser_signal_join_count_,
         browser_signal_recency_report_win_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, data_version_,
+        reporting_timeout_,
         /*trace_id=*/1,
         base::BindOnce(
             [](const std::optional<GURL>& report_url,
@@ -7669,7 +7680,7 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
         browser_signal_modeling_signals_, browser_signal_join_count_,
         browser_signal_recency_report_win_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, data_version_,
-        /*trace_id=*/1,
+        reporting_timeout_, /*trace_id=*/1,
         base::BindLambdaForTesting(
             [&run_loop](
                 const std::optional<GURL>& report_url,
@@ -8436,7 +8447,7 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
       browser_signal_modeling_signals_, browser_signal_join_count_,
       browser_signal_recency_report_win_, browser_signal_seller_origin_,
       browser_signal_top_level_seller_origin_, data_version_,
-      /*trace_id=*/1,
+      reporting_timeout_, /*trace_id=*/1,
       base::BindOnce(
           [](const std::optional<GURL>& report_url,
              const base::flat_map<std::string, GURL>& ad_beacon_map,
@@ -10498,26 +10509,65 @@ TEST_F(BidderWorkletLatenciesTest, GenerateBidLatenciesAreReturned) {
       *generate_bid_dependency_latencies_->trusted_bidding_signals_latency);
 }
 
+// Tests both reporting latency, and default reporting timeout.
 TEST_F(BidderWorkletTest, ReportWinLatency) {
   // We use an infinite loop since we have some notion of how long a timeout
   // should take.
   AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
                         CreateReportWinScript("while (true) {}"));
 
-  mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
-
-  base::RunLoop run_loop;
-  RunReportWinExpectingResultAsync(
-      bidder_worklet.get(),
+  RunReportWinExpectingResult(
       /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       /*expected_reporting_latency_timeout=*/true,
       /*expected_errors=*/
-      {"https://url.test/ execution of `reportWin` timed out."},
-      run_loop.QuitClosure());
-  run_loop.Run();
+      {"https://url.test/ execution of `reportWin` timed out."});
+}
+
+TEST_F(BidderWorkletTest, ReportWinZeroTimeout) {
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        CreateReportWinScript("throw 'something'"));
+
+  reporting_timeout_ = base::TimeDelta();
+  RunReportWinExpectingResult(
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/true,
+      /*expected_errors=*/
+      {"reportWin() aborted due to zero timeout."});
+}
+
+TEST_F(BidderWorkletTest, ReportWinTimeoutFromAuctionConfig) {
+  // Use a very long default script timeout, and a short reporting timeout, so
+  // that if the reportWin() script with endless loop times out, we know that
+  // the reporting timeout overwrote the default script timeout and worked.
+  const base::TimeDelta kScriptTimeout = base::Days(360);
+  v8_helper_->v8_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<AuctionV8Helper> v8_helper,
+             const base::TimeDelta script_timeout) {
+            v8_helper->set_script_timeout_for_testing(script_timeout);
+          },
+          v8_helper_, kScriptTimeout));
+  // Make sure set_script_timeout_for_testing is called.
+  task_environment_.RunUntilIdle();
+
+  reporting_timeout_ = base::Milliseconds(50);
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        CreateReportWinScript("while (true) {}"));
+  RunReportWinExpectingResult(
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/true,
+      /*expected_errors=*/
+      {"https://url.test/ execution of `reportWin` timed out."});
 }
 
 // The sequence when GenerateBidClient gets destroyed w/o getting to
