@@ -214,20 +214,21 @@ TEST_P(SupervisedUserExtensionsManagerTest,
 
 // Tests that on Desktop (Win/Linux/Mac) platforms, when the feature
 // `kEnableSupervisedUserSkipParentApprovalToInstallExtensions` is first
-// enabled, present extensions will be marked as locally parent-approved.
+// enabled, present extensions will be marked as locally parent-approved
+// when the SupervisedUserExtensionsManager is created for a supervised user.
 TEST_P(SupervisedUserExtensionsManagerTest,
        MigrateExtensionsToLocallyApproved) {
   ASSERT_TRUE(profile_->IsChild());
 
-  // Register two extensions.
+  // Register the extensions.
   scoped_refptr<const Extension> approved_extn =
       MakeExtension("extension_test_1");
   scoped_refptr<const Extension> locally_approved_extn =
-      MakeExtension("extension_test_2");
+      MakeExtension("local_extension_test_1");
   service()->AddExtension(approved_extn.get());
   service()->AddExtension(locally_approved_extn.get());
 
-  // Mark one extensions as already parent-approved in the corresponding
+  // Mark one extension as already parent-approved in the corresponding
   // preference.
   auto* prefs = profile()->GetPrefs();
   CHECK(prefs);
@@ -262,8 +263,8 @@ TEST_P(SupervisedUserExtensionsManagerTest,
   EXPECT_FALSE(local_approved_extensions_pref.contains(approved_extn->id()));
   EXPECT_TRUE(manager_->IsExtensionAllowed(*approved_extn));
 
-  // The extensions approved in the migration should be allowed and part of the
-  // local-approved list.
+  // The extensions approved in the migration should be allowed and part
+  // of the local-approved list.
   EXPECT_EQ(
       has_local_approval_migration_run,
       local_approved_extensions_pref.contains(locally_approved_extn->id()));
@@ -271,11 +272,135 @@ TEST_P(SupervisedUserExtensionsManagerTest,
             manager_->IsExtensionAllowed(*locally_approved_extn));
 }
 
-// TODO(b/321240030): Add test case for local approval revoking on extension
-// uninstalling.
+// Tests the local approval is revoked on uninstalling the extension or
+// when the extension gains normal parental approval.
+TEST_P(SupervisedUserExtensionsManagerTest, RevokeLocalApproval) {
+  ASSERT_TRUE(profile_->IsChild());
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SupervisedUserExtensionsManagerTest,
-    testing::Values(ExtensionsManagingToggle::kPermissions,
-                    ExtensionsManagingToggle::kExtensions));
+  scoped_refptr<const Extension> locally_approved_extn1 =
+      MakeExtension("extension_test_1");
+  service()->AddExtension(locally_approved_extn1.get());
+  scoped_refptr<const Extension> locally_approved_extn2 =
+      MakeExtension("extension_test_2");
+  service()->AddExtension(locally_approved_extn2.get());
+
+  // Create the object under test.
+  MakeSupervisedUserExtensionsManager();
+
+  bool has_local_approval_migration_run = false;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  has_local_approval_migration_run =
+      GetParam() == ExtensionsManagingToggle::kExtensions;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  auto* prefs = profile()->GetPrefs();
+  CHECK(prefs);
+  const base::Value::Dict& local_approved_extensions_pref =
+      prefs->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions);
+  EXPECT_EQ(
+      has_local_approval_migration_run,
+      local_approved_extensions_pref.contains(locally_approved_extn1->id()));
+  EXPECT_EQ(
+      has_local_approval_migration_run,
+      registry()->enabled_extensions().Contains(locally_approved_extn1->id()));
+
+  // Uninstalling the extension also removes the local approval.
+  ASSERT_TRUE(service()->UninstallExtension(
+      locally_approved_extn1->id(), extensions::UNINSTALL_REASON_FOR_TESTING,
+      nullptr));
+  EXPECT_FALSE(
+      local_approved_extensions_pref.contains(locally_approved_extn1->id()));
+
+  // Granting parent approval (typically from another client) removes the local
+  // approval. The extension remains allowed.
+  manager_->AddExtensionApproval(*locally_approved_extn2.get());
+  EXPECT_FALSE(
+      local_approved_extensions_pref.contains(locally_approved_extn2->id()));
+  EXPECT_TRUE(manager_->IsExtensionAllowed(*locally_approved_extn2));
+}
+
+// Tests that on Desktop (Win/Linux/Mac) platforms, when the feature
+// `kEnableSupervisedUserSkipParentApprovalToInstallExtensions` is first
+// enabled, present extensions will be marked as locally parent-approved
+// when a user profile becomes supervised.
+// This covers the scenarios where:
+// 1) supervision is applied to a previously unsupervised user
+// 2) a supervised user signs-in on an existing profile that had installed
+// extensions.
+TEST_P(SupervisedUserExtensionsManagerTest,
+       MigrateExtensionsToLocallyApprovedOnUserBecomingSupervised) {
+  // Make the user non-supervised.
+  profile()->AsTestingProfile()->SetIsSupervisedProfile(false);
+  ASSERT_TRUE(!profile_->IsChild());
+
+  scoped_refptr<const Extension> locally_approved_extn =
+      MakeExtension("extension_test_2");
+  service()->AddExtension(locally_approved_extn.get());
+
+  // Create the object under test.
+  MakeSupervisedUserExtensionsManager();
+
+  auto* prefs = profile()->GetPrefs();
+  CHECK(prefs);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  auto expected_migration_state = supervised_user::
+      LocallyParentApprovedExtensionsMigrationState::kNeedToRun;
+  EXPECT_EQ(
+      static_cast<int>(expected_migration_state),
+      prefs->GetInteger(prefs::kLocallyParentApprovedExtensionsMigrationState));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  const base::Value::Dict& local_approved_extensions_pref =
+      prefs->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions);
+  EXPECT_FALSE(
+      local_approved_extensions_pref.contains(locally_approved_extn->id()));
+  EXPECT_TRUE(
+      registry()->enabled_extensions().Contains(locally_approved_extn->id()));
+
+  // Make the user supervised. This should trigger the migration of extensions
+  // to locally-approved.
+  profile()->AsTestingProfile()->SetIsSupervisedProfile(true);
+  ASSERT_TRUE(profile_->IsChild());
+
+  bool has_local_approval_migration_run = false;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  expected_migration_state =
+      GetParam() == ExtensionsManagingToggle::kExtensions
+          ? supervised_user::LocallyParentApprovedExtensionsMigrationState::
+                kComplete
+          : supervised_user::LocallyParentApprovedExtensionsMigrationState::
+                kNeedToRun;
+  has_local_approval_migration_run =
+      GetParam() == ExtensionsManagingToggle::kExtensions;
+
+  EXPECT_EQ(
+      static_cast<int>(expected_migration_state),
+      prefs->GetInteger(prefs::kLocallyParentApprovedExtensionsMigrationState));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  const base::Value::Dict& local_approved_extensions_pref_post_migr =
+      prefs->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions);
+  // The extensions approved in the migration should be allowed and part of the
+  // local-approved list.
+  EXPECT_EQ(has_local_approval_migration_run,
+            local_approved_extensions_pref_post_migr.contains(
+                locally_approved_extn->id()));
+  EXPECT_EQ(has_local_approval_migration_run,
+            manager_->IsExtensionAllowed(*locally_approved_extn));
+
+  EXPECT_EQ(
+      has_local_approval_migration_run,
+      registry()->enabled_extensions().Contains(locally_approved_extn->id()));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SupervisedUserExtensionsManagerTest,
+                         testing::Values(ExtensionsManagingToggle::kPermissions,
+                                         ExtensionsManagingToggle::kExtensions),
+                         [](const auto& info) {
+                           return std::string(
+                               info.param ==
+                                       ExtensionsManagingToggle::kExtensions
+                                   ? "ManagedByExtensions"
+                                   : "ManagedByPermissions");
+                         });

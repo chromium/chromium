@@ -258,7 +258,9 @@ SupervisedUserExtensionsManager::GetExtensionState(
   if (base::Contains(approved_extensions_set_, extension.id())) {
     return SupervisedUserExtensionsManager::ExtensionState::ALLOWED;
   }
-  if (IsLocallyParentApprovedExtension(extension.id())) {
+  if (IsLocallyParentApprovedExtension(extension.id()) &&
+      supervised_user::
+          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
     return SupervisedUserExtensionsManager::ExtensionState::ALLOWED;
   }
   return SupervisedUserExtensionsManager::ExtensionState::REQUIRE_APPROVAL;
@@ -444,7 +446,6 @@ void SupervisedUserExtensionsManager::
 void SupervisedUserExtensionsManager::DoExtensionsMigrationToParentApproved() {
   CHECK(supervised_user::
             IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled());
-
   const base::Value::Dict& user_extensions_dict =
       user_prefs_->GetDict(pref_names::kExtensions);
   const base::Value::Dict& approved_extensions_dict =
@@ -462,6 +463,12 @@ void SupervisedUserExtensionsManager::DoExtensionsMigrationToParentApproved() {
   }
   user_prefs_->SetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions,
                        std::move(locally_approved_extensions_dict));
+
+  for (auto extension_entry : user_extensions_dict) {
+    if (extension_registry_->GetInstalledExtension(extension_entry.first)) {
+      ChangeExtensionStateIfNecessary(extension_entry.first);
+    }
+  }
 
   // Mark the migration done.
   user_prefs_->SetInteger(
