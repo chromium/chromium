@@ -238,7 +238,7 @@ TEST_P(IsolatedWebAppInstallCommandHelperTrustAndSignaturesBundleTest,
   IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
   auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
       url_info, CreateDefaultDataRetriever(url_info.origin().GetURL()),
-      std::make_unique<FakeResponseReaderFactory>(base::ok()));
+      std::make_unique<FakeResponseReaderFactory>(*profile(), base::ok()));
 
   base::test::TestFuture<base::expected<void, std::string>> future;
   command_helper->CheckTrustAndSignatures(source_, &*profile(),
@@ -252,6 +252,7 @@ TEST_P(IsolatedWebAppInstallCommandHelperTrustAndSignaturesBundleTest,
   auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
       url_info, CreateDefaultDataRetriever(url_info.origin().GetURL()),
       std::make_unique<FakeResponseReaderFactory>(
+          *profile(),
           base::unexpected(UnusableSwbnFileError(
               UnusableSwbnFileError::Error::kMetadataParserVersionError,
               "test error"))));
@@ -270,7 +271,7 @@ TEST_P(IsolatedWebAppInstallCommandHelperTrustAndSignaturesBundleTest,
   IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
   auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
       url_info, CreateDefaultDataRetriever(url_info.origin().GetURL()),
-      std::make_unique<FakeResponseReaderFactory>(base::ok()));
+      std::make_unique<FakeResponseReaderFactory>(*profile(), base::ok()));
   base::test::TestFuture<base::expected<void, std::string>> future;
   command_helper->CheckTrustAndSignatures(source_, &*profile(),
                                           future.GetCallback());

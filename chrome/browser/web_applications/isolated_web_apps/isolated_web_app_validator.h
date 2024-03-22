@@ -26,9 +26,7 @@ class IsolatedWebAppTrustChecker;
 
 class IsolatedWebAppValidator {
  public:
-  explicit IsolatedWebAppValidator(
-      std::unique_ptr<const IsolatedWebAppTrustChecker>
-          isolated_web_app_trust_checker);
+  IsolatedWebAppValidator();
   virtual ~IsolatedWebAppValidator();
 
   using IntegrityBlockCallback =
@@ -47,6 +45,7 @@ class IsolatedWebAppValidator {
       const web_package::SignedWebBundleId& expected_web_bundle_id,
       const web_package::SignedWebBundleIntegrityBlock& integrity_block,
       bool dev_mode,
+      const IsolatedWebAppTrustChecker& trust_checker,
       IntegrityBlockCallback callback);
 
   // Validates that the metadata of the Isolated Web App is valid given the
@@ -55,10 +54,6 @@ class IsolatedWebAppValidator {
   ValidateMetadata(const web_package::SignedWebBundleId& web_bundle_id,
                    const std::optional<GURL>& primary_url,
                    const std::vector<GURL>& entries);
-
- private:
-  std::unique_ptr<const IsolatedWebAppTrustChecker>
-      isolated_web_app_trust_checker_;
 };
 
 }  // namespace web_app

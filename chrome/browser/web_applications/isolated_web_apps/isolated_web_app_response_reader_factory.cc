@@ -16,6 +16,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/common/url_constants.h"
@@ -27,11 +28,13 @@
 namespace web_app {
 
 IsolatedWebAppResponseReaderFactory::IsolatedWebAppResponseReaderFactory(
+    Profile& profile,
     std::unique_ptr<IsolatedWebAppValidator> validator,
     base::RepeatingCallback<
         std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>()>
         signature_verifier_factory)
-    : validator_(std::move(validator)),
+    : trust_checker_(profile),
+      validator_(std::move(validator)),
       signature_verifier_factory_(std::move(signature_verifier_factory)) {}
 
 IsolatedWebAppResponseReaderFactory::~IsolatedWebAppResponseReaderFactory() {
@@ -102,6 +105,7 @@ void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockRead(
 
   validator_->ValidateIntegrityBlock(
       web_bundle_id, integrity_block, flags.Has(Flag::kDevModeBundle),
+      trust_checker_,
       base::BindOnce(
           &IsolatedWebAppResponseReaderFactory::OnIntegrityBlockValidated,
           weak_ptr_factory_.GetWeakPtr(),

@@ -12,6 +12,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 
+class Profile;
+
 namespace web_app {
 
 class MockIsolatedWebAppResponseReader : public IsolatedWebAppResponseReader {
@@ -25,6 +27,7 @@ class MockIsolatedWebAppResponseReader : public IsolatedWebAppResponseReader {
 class FakeResponseReaderFactory : public IsolatedWebAppResponseReaderFactory {
  public:
   explicit FakeResponseReaderFactory(
+      Profile& profile,
       base::expected<void, UnusableSwbnFileError> bundle_status);
   ~FakeResponseReaderFactory() override;
 

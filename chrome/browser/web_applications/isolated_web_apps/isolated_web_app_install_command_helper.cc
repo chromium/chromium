@@ -225,12 +225,10 @@ IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
 std::unique_ptr<IsolatedWebAppResponseReaderFactory>
 IsolatedWebAppInstallCommandHelper::CreateDefaultResponseReaderFactory(
     Profile& profile) {
-  auto trust_checker = std::make_unique<IsolatedWebAppTrustChecker>(profile);
-  auto validator =
-      std::make_unique<IsolatedWebAppValidator>(std::move(trust_checker));
+  auto validator = std::make_unique<IsolatedWebAppValidator>();
 
   return std::make_unique<IsolatedWebAppResponseReaderFactory>(
-      std::move(validator));
+      profile, std::move(validator));
 }
 
 IsolatedWebAppInstallCommandHelper::IsolatedWebAppInstallCommandHelper(

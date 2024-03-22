@@ -23,11 +23,7 @@
 
 namespace web_app {
 
-IsolatedWebAppValidator::IsolatedWebAppValidator(
-    std::unique_ptr<const IsolatedWebAppTrustChecker>
-        isolated_web_app_trust_checker)
-    : isolated_web_app_trust_checker_(
-          std::move(isolated_web_app_trust_checker)) {}
+IsolatedWebAppValidator::IsolatedWebAppValidator() = default;
 
 IsolatedWebAppValidator::~IsolatedWebAppValidator() = default;
 
@@ -35,6 +31,7 @@ void IsolatedWebAppValidator::ValidateIntegrityBlock(
     const web_package::SignedWebBundleId& expected_web_bundle_id,
     const web_package::SignedWebBundleIntegrityBlock& integrity_block,
     bool dev_mode,
+    const IsolatedWebAppTrustChecker& trust_checker,
     IntegrityBlockCallback callback) {
   if (expected_web_bundle_id.type() !=
       web_package::SignedWebBundleId::Type::kEd25519PublicKey) {
@@ -67,8 +64,7 @@ void IsolatedWebAppValidator::ValidateIntegrityBlock(
   // Integrity Block versions).
 
   IsolatedWebAppTrustChecker::Result result =
-      isolated_web_app_trust_checker_->IsTrusted(expected_web_bundle_id,
-                                                 dev_mode);
+      trust_checker.IsTrusted(expected_web_bundle_id, dev_mode);
   if (result.status != IsolatedWebAppTrustChecker::Result::Status::kTrusted) {
     std::move(callback).Run(base::unexpected(result.message));
     return;

@@ -18,9 +18,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "services/network/public/cpp/resource_request.h"
 
 namespace web_package {
@@ -39,10 +37,7 @@ namespace web_app {
 class IsolatedWebAppReaderRegistry : public KeyedService {
  public:
   explicit IsolatedWebAppReaderRegistry(
-      std::unique_ptr<IsolatedWebAppValidator> validator,
-      base::RepeatingCallback<
-          std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>()>
-          signature_verifier_factory);
+      std::unique_ptr<IsolatedWebAppResponseReaderFactory> reader_factory);
   ~IsolatedWebAppReaderRegistry() override;
 
   IsolatedWebAppReaderRegistry(const IsolatedWebAppReaderRegistry&) = delete;
@@ -110,6 +105,8 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
  private:
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppReaderRegistryTest,
                            TestConcurrentRequests);
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppReaderRegistryTest,
+                           TestSignedWebBundleReaderLifetime);
 
   void ClearCacheForPath(const base::FilePath& web_bundle_path,
                          bool dev_mode,
@@ -222,6 +219,10 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       base::TimeTicks last_access_;
       base::OnceClosure pending_closed_callback_;
     };
+
+    bool IsCleanupTimerRunningForTesting() const {
+      return cleanup_timer_.IsRunning();
+    }
 
    private:
     void StartCleanupTimerIfNotRunning();
