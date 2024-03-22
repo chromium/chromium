@@ -60,6 +60,11 @@ bool MSAAIsSlow(const GpuDriverBugWorkarounds& workarounds);
 }  // namespace gles2
 
 #if BUILDFLAG(IS_MAC)
+// Gets the texture target to use with MacOS native GpuMemoryBuffers based on
+// the current GL implementation.
+GPU_GLES2_EXPORT uint32_t
+GetMacOSSpecificTextureTargetForCurrentGLImplementation();
+
 // Set the texture target to use with MacOS native GpuMemoryBuffers based on the
 // current GL implementation.
 GPU_GLES2_EXPORT void

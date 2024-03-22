@@ -12,6 +12,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
+#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -416,7 +417,8 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
   const bool is_cleared = !pixel_data.empty();
   const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && angle_texture_usage_;
-  const GLenum texture_target = gpu::GetPlatformSpecificTextureTarget();
+  const GLenum texture_target =
+      GetMacOSSpecificTextureTargetForCurrentGLImplementation();
 
   auto backing = std::make_unique<IOSurfaceImageBacking>(
       io_surface, io_surface_plane, io_surface_id, mailbox, format, size,
@@ -464,7 +466,9 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
     return nullptr;
   }
 
-  const GLenum target = gpu::GetPlatformSpecificTextureTarget();
+  const GLenum target =
+      GetMacOSSpecificTextureTargetForCurrentGLImplementation();
+
   auto io_surface = handle.io_surface;
   const auto io_surface_id = handle.id;
 
