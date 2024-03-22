@@ -69,6 +69,10 @@ class ASH_PUBLIC_EXPORT SavedDeskDelegate {
   // Returns whether `window` is persistable.  If true the window should be
   // tracked and saved as part of the desk.  If false, this window should
   // be ignored.
+  // TODO(sammiequon|minch) : Move and rename this or add a new function
+  // `IsNonRegularProfileWindow` inside shell delegate to check whether the
+  // `window` is an incognito ash browser window or a lacros window with the
+  // non-regular profile.
   virtual bool IsWindowPersistable(aura::Window* window) const = 0;
 
   // Returns the corresponding icon for `icon_identifier` if it's a special

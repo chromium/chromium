@@ -13,6 +13,7 @@
 #include "ash/cancel_mode.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/shutdown_controller.h"
 #include "ash/root_window_controller.h"
@@ -180,16 +181,25 @@ bool ShouldTakePineScreeshot() {
     return false;
   }
 
-  // Take the screenshot if there are non-minimized windows inside the active
-  // desk. Both the float window and the always on top window will be counted.
+  bool has_regular_unminimized_window = false;
   for (aura::Window* window :
        shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
-    if (!WindowState::Get(window)->IsMinimized()) {
-      return true;
+    const bool is_non_regular_profile_window =
+        !shell->saved_desk_delegate()->IsWindowPersistable(window);
+    const bool is_minimized = WindowState::Get(window)->IsMinimized();
+    // Do not take the screenshot if there is an incognito ash browser window or
+    // a lacros window with the non-regular profile.
+    if (!is_minimized && is_non_regular_profile_window) {
+      return false;
     }
+    has_regular_unminimized_window |=
+        !is_non_regular_profile_window && !is_minimized;
   }
 
-  return false;
+  // Take the screenshot if there are unminimized non-incognito windows inside
+  // the active desk. Both the float and the always on top window will be
+  // counted.
+  return has_regular_unminimized_window;
 }
 
 }  // namespace
