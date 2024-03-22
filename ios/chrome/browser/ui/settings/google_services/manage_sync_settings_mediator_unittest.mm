@@ -183,30 +183,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 
 // Tests for Advanced Settings items.
 
-// Tests that encryption is accessible even when Sync settings have not been
-// confirmed.
-TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSetupNotCommitted) {
-  CreateManageSyncSettingsMediator(
-      SyncSettingsAccountState::kAdvancedInitialSyncSetup);
-  SimulateFirstSetupSyncOff();
-
-  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
-
-  EXPECT_FALSE([mediator_.consumer.tableViewModel
-      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
-                                         SignOutSectionIdentifier]);
-
-  // Encryption item is enabled.
-  NSArray* advanced_settings_items = [mediator_.consumer.tableViewModel
-      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
-                                       AdvancedSettingsSectionIdentifier];
-  ASSERT_EQ(2UL, advanced_settings_items.count);
-
-  TableViewImageItem* encryption_item = advanced_settings_items[0];
-  EXPECT_EQ(encryption_item.type, SyncSettingsItemType::EncryptionItemType);
-  EXPECT_TRUE(encryption_item.enabled);
-}
-
 // Tests that encryption is accessible when there is a Sync error due to a
 // missing passphrase, but Sync has otherwise been enabled.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledNeedsPassphrase) {
@@ -268,20 +244,6 @@ TEST_F(ManageSyncSettingsMediatorTest,
   TableViewImageItem* encryption_item = advanced_settings_items[0];
   EXPECT_EQ(encryption_item.type, SyncSettingsItemType::EncryptionItemType);
   EXPECT_FALSE(encryption_item.enabled);
-}
-
-// Tests that "Turn off Sync" is hidden when Sync is disabled.
-TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledWithTurnOffSync) {
-  CreateManageSyncSettingsMediator(
-      SyncSettingsAccountState::kAdvancedInitialSyncSetup);
-  SimulateFirstSetupSyncOff();
-
-  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
-
-  // Sign out section not added.
-  EXPECT_FALSE([mediator_.consumer.tableViewModel
-      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
-                                         SignOutSectionIdentifier]);
 }
 
 // Tests that "Turn off Sync" is accessible when Sync is enabled.

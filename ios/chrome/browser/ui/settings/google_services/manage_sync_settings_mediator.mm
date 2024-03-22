@@ -67,8 +67,7 @@ using l10n_util::GetNSString;
 namespace {
 
 // Ordered list of all sync switches.
-// This is the list of available datatypes for account state kSyncing and
-// kAdvancedInitialSyncSetup.
+// This is the list of available datatypes for account state kSyncing.
 static const syncer::UserSelectableType kSyncSwitchItems[] = {
     syncer::UserSelectableType::kAutofill,
     syncer::UserSelectableType::kBookmarks,
@@ -205,7 +204,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case SyncSettingsAccountState::kSignedOut:
       return;
     case SyncSettingsAccountState::kSyncing:
-    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
       [model addSectionWithIdentifier:SyncDataTypeSectionIdentifier];
       if (self.allItemsAreSynceable) {
         SyncSwitchItem* button =
@@ -276,7 +274,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case SyncSettingsAccountState::kSignedOut:
     case SyncSettingsAccountState::kSignedIn:
       return;
-    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
     case SyncSettingsAccountState::kSyncing:
       if ([self.syncEverythingItem
               isKindOfClass:[TableViewInfoButtonItem class]]) {
@@ -314,7 +311,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   switch (self.syncAccountState) {
     case SyncSettingsAccountState::kSignedOut:
     case SyncSettingsAccountState::kSyncing:
-    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
       return;
     case SyncSettingsAccountState::kSignedIn:
       [self.consumer
@@ -490,8 +486,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       [model addItem:dataFromChromeSyncItem
           toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
       break;
-    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
-      break;
     case SyncSettingsAccountState::kSignedOut:
       NOTREACHED();
   }
@@ -550,9 +544,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       // out and the UI is in the process of being dismissed. In this case,
       // don't bother updating the section.
       return;
-    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
-      CHECK(!self.signOutAndTurnOffSyncItem);
-      return;
     case SyncSettingsAccountState::kSignedIn:
       // For kSignedIn, loadSignOutAndManageAccountsSection will load the
       // corresponding section.
@@ -609,18 +600,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
             [model sectionForSectionIdentifier:SignOutSectionIdentifier];
         [self.consumer
             insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-              rowAnimation:NO];
-      }
-      break;
-    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
-      // There shouldn't be a sign-out section. Remove it if it's there.
-      if (hasSignOutSection) {
-        NSUInteger sectionIndex =
-            [model sectionForSectionIdentifier:SignOutSectionIdentifier];
-        [model removeSectionWithIdentifier:SignOutSectionIdentifier];
-        self.signOutAndTurnOffSyncItem = nil;
-        [self.consumer
-            deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]
               rowAnimation:NO];
       }
       break;
@@ -822,7 +801,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   switch (self.syncAccountState) {
     case SyncSettingsAccountState::kSignedOut:
     case SyncSettingsAccountState::kSyncing:
-    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
       return;
     case SyncSettingsAccountState::kSignedIn:
       break;
@@ -991,7 +969,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case SyncSettingsAccountState::kSignedIn:
       return !self.disabledBecauseOfSyncError;
     case SyncSettingsAccountState::kSyncing:
-    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
       return (!_syncService->GetUserSettings()->IsSyncEverythingEnabled() ||
               !self.allItemsAreSynceable) &&
              !self.disabledBecauseOfSyncError;
@@ -1015,7 +992,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   switch (self.syncAccountState) {
     case SyncSettingsAccountState::kSignedIn:
       return l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TITLE);
-    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
     case SyncSettingsAccountState::kSyncing:
     case SyncSettingsAccountState::kSignedOut:
       return nil;

@@ -153,7 +153,6 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
   switch (_accountState) {
-    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
     case SyncSettingsAccountState::kSyncing:
       // Ensure that SyncService::IsSetupInProgress is true while the
       // manage-sync-settings UI is open.
