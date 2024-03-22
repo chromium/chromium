@@ -190,8 +190,7 @@ TEST(BirchRankerTest, RankAttachmentItems_Morning) {
       /*file_url=*/GURL(),
       /*icon_url=*/GURL(),
       /*start_time=*/TimeFromString("22 Feb 2024 08:00 UTC"),
-      /*end_time=*/TimeFromString("22 Feb 2024 10:00 UTC"),
-      /*file_id=*/"");
+      /*end_time=*/TimeFromString("22 Feb 2024 10:00 UTC"));
 
   // Create an attachment for an upcoming event (9:15 to 9:45).
   BirchAttachmentItem item1(
@@ -199,8 +198,7 @@ TEST(BirchRankerTest, RankAttachmentItems_Morning) {
       /*file_url=*/GURL(),
       /*icon_url=*/GURL(),
       /*start_time=*/TimeFromString("22 Feb 2024 09:15 UTC"),
-      /*end_time=*/TimeFromString("22 Feb 2024 09:45 UTC"),
-      /*file_id=*/"");
+      /*end_time=*/TimeFromString("22 Feb 2024 09:45 UTC"));
 
   // Create an attachment for another event later in the day (1 PM).
   BirchAttachmentItem item2(
@@ -208,8 +206,7 @@ TEST(BirchRankerTest, RankAttachmentItems_Morning) {
       /*file_url=*/GURL(),
       /*icon_url=*/GURL(),
       /*start_time=*/TimeFromString("22 Feb 2024 13:00 UTC"),
-      /*end_time=*/TimeFromString("22 Feb 2024 13:30 UTC"),
-      /*file_id=*/"");
+      /*end_time=*/TimeFromString("22 Feb 2024 13:30 UTC"));
 
   // Put the items in the vector in reverse order to validate that they are
   // still handled in the correct order (by time) inside the ranker.
@@ -243,8 +240,7 @@ TEST(BirchRankerTest, RankAttachmentItems_Evening) {
       /*file_url=*/GURL(),
       /*icon_url=*/GURL(),
       /*start_time=*/TimeFromString("22 Feb 2024 17:00 UTC"),
-      /*end_time=*/TimeFromString("22 Feb 2024 19:00 UTC"),
-      /*file_id=*/"");
+      /*end_time=*/TimeFromString("22 Feb 2024 19:00 UTC"));
 
   // Create an attachment for an upcoming event (6:15 PM).
   BirchAttachmentItem item1(
@@ -252,8 +248,7 @@ TEST(BirchRankerTest, RankAttachmentItems_Evening) {
       /*file_url=*/GURL(),
       /*icon_url=*/GURL(),
       /*start_time=*/TimeFromString("22 Feb 2024 18:15 UTC"),
-      /*end_time=*/TimeFromString("22 Feb 2024 18:45 UTC"),
-      /*file_id=*/"");
+      /*end_time=*/TimeFromString("22 Feb 2024 18:45 UTC"));
 
   // Create an attachment for another event later in the evening (8 PM).
   BirchAttachmentItem item2(
@@ -261,8 +256,7 @@ TEST(BirchRankerTest, RankAttachmentItems_Evening) {
       /*file_url=*/GURL(),
       /*icon_url=*/GURL(),
       /*start_time=*/TimeFromString("22 Feb 2024 20:00 UTC"),
-      /*end_time=*/TimeFromString("22 Feb 2024 20:30 UTC"),
-      /*file_id=*/"");
+      /*end_time=*/TimeFromString("22 Feb 2024 20:30 UTC"));
 
   // Put the items in the vector in reverse order to validate that they are
   // still handled in the correct order (by time) inside the ranker.

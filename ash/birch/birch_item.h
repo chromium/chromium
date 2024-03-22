@@ -139,8 +139,7 @@ class ASH_EXPORT BirchAttachmentItem : public BirchItem {
                                const GURL& file_url,
                                const GURL& icon_url,
                                const base::Time& start_time,
-                               const base::Time& end_time,
-                               const std::string& file_id);
+                               const base::Time& end_time);
   BirchAttachmentItem(BirchAttachmentItem&&);
   BirchAttachmentItem& operator=(BirchAttachmentItem&&);
   BirchAttachmentItem(const BirchAttachmentItem&);
@@ -158,7 +157,6 @@ class ASH_EXPORT BirchAttachmentItem : public BirchItem {
   const GURL& icon_url() const { return icon_url_; }
   const base::Time& start_time() const { return start_time_; }
   const base::Time& end_time() const { return end_time_; }
-  const std::string& file_id() const { return file_id_; }
 
  private:
   static std::u16string GetSubtitle();
@@ -167,7 +165,6 @@ class ASH_EXPORT BirchAttachmentItem : public BirchItem {
   GURL icon_url_;          // Link to the file's icon's art asset.
   base::Time start_time_;  // Start time of the event (used for ranking).
   base::Time end_time_;    // End time of the event (used for ranking).
-  std::string file_id_;    // ID of the file.
 };
 
 // A birch item which contains file path and time information.

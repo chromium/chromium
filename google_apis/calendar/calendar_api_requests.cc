@@ -69,8 +69,7 @@ std::string GetCalendarEventListFields(bool include_attachments) {
        "attendees(responseStatus,self),attendeesOmitted,"
        "conferenceData(conferenceId,entryPoints(entryPointType,uri)),"
        "creator(self)",
-       include_attachments ? ",attachments(title,fileUrl,iconLink,fileId)" : "",
-       ")"});
+       include_attachments ? ",attachments(title,fileUrl,iconLink)" : "", ")"});
 }
 
 }  // namespace
