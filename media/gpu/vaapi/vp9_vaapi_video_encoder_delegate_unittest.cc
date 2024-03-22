@@ -301,6 +301,7 @@ class VP9VaapiVideoEncoderDelegateTest
  private:
   std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob> CreateEncodeJob(
       bool keyframe,
+      uint8_t spatial_index,
       bool end_of_picture,
       base::TimeDelta timestamp,
       const scoped_refptr<VASurface>& va_surface,
@@ -329,6 +330,7 @@ void VP9VaapiVideoEncoderDelegateTest::SetUp() {
 std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob>
 VP9VaapiVideoEncoderDelegateTest::CreateEncodeJob(
     bool keyframe,
+    uint8_t spatial_index,
     bool end_of_picture,
     base::TimeDelta timestamp,
     const scoped_refptr<VASurface>& va_surface,
@@ -339,8 +341,8 @@ VP9VaapiVideoEncoderDelegateTest::CreateEncodeJob(
       DefaultVideoEncodeAcceleratorConfig().input_visible_size.GetArea());
 
   return std::make_unique<VaapiVideoEncoderDelegate::EncodeJob>(
-      keyframe, timestamp, end_of_picture, va_surface->id(), picture,
-      std::move(scoped_va_buffer));
+      keyframe, timestamp, spatial_index, end_of_picture, va_surface->id(),
+      picture, std::move(scoped_va_buffer));
 }
 
 void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
@@ -414,8 +416,9 @@ void VP9VaapiVideoEncoderDelegateTest::
       kDummyVASurfaceID, layer_size, VA_RT_FORMAT_YUV420, base::DoNothing());
   scoped_refptr<VP9Picture> picture = new VaapiVP9Picture(va_surface);
 
-  auto encode_job = CreateEncodeJob(force_key, end_of_picture, timestamp,
-                                    va_surface, picture);
+  auto encode_job =
+      CreateEncodeJob(force_key, expected_spatial_layer_id, end_of_picture,
+                      timestamp, va_surface, picture);
 
   // The first frame will be set to KeyFrame under the S-mode.
   libvpx::RcFrameType libvpx_frame_type =

@@ -414,6 +414,10 @@ VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
       dropped_superframe_timestamp_.reset();
     }
 
+    // For non dropped frame, the spatial layer index filled by |svc_layers|
+    // is the same as one in |encode_job|.
+    CHECK_EQ(svc_layers_->spatial_idx(), encode_job.spatial_index());
+
     // If keyframe is requested, then reset |svc_layers_|.
     // Note that a frame must not be dropped on key frame.
     if (encode_job.IsKeyframeRequested() ||

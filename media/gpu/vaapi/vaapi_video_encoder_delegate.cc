@@ -23,12 +23,14 @@ namespace media {
 VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
     bool keyframe,
     base::TimeDelta timestamp,
+    uint8_t spatial_index,
     bool end_of_picture,
     VASurfaceID input_surface_id,
     scoped_refptr<CodecPicture> picture,
     std::unique_ptr<ScopedVABuffer> coded_buffer)
     : keyframe_(keyframe),
       timestamp_(timestamp),
+      spatial_index_(spatial_index),
       end_of_picture_(end_of_picture),
       input_surface_id_(input_surface_id),
       picture_(std::move(picture)),
@@ -36,15 +38,6 @@ VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
   DCHECK(picture_);
   DCHECK(coded_buffer_);
 }
-
-VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(bool keyframe,
-                                                base::TimeDelta timestamp,
-                                                bool end_of_picture,
-                                                VASurfaceID input_surface_id)
-    : keyframe_(keyframe),
-      timestamp_(timestamp),
-      end_of_picture_(end_of_picture),
-      input_surface_id_(input_surface_id) {}
 
 VaapiVideoEncoderDelegate::EncodeJob::~EncodeJob() = default;
 
@@ -56,6 +49,10 @@ VaapiVideoEncoderDelegate::EncodeJob::CreateEncodeResult(
 
 base::TimeDelta VaapiVideoEncoderDelegate::EncodeJob::timestamp() const {
   return timestamp_;
+}
+
+uint8_t VaapiVideoEncoderDelegate::EncodeJob::spatial_index() const {
+  return spatial_index_;
 }
 
 bool VaapiVideoEncoderDelegate::EncodeJob::end_of_picture() const {

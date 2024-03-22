@@ -176,8 +176,8 @@ H264VaapiVideoEncoderDelegateTest::CreateEncodeJob(bool keyframe) {
   // metadata.
   constexpr base::TimeDelta timestamp;
   return std::make_unique<VaapiVideoEncoderDelegate::EncodeJob>(
-      keyframe, timestamp, /*end_of_picture=*/true, next_surface_id_++, picture,
-      std::move(scoped_va_buffer));
+      keyframe, timestamp, /*spatial_index=*/0u, /*end_of_picture=*/true,
+      next_surface_id_++, picture, std::move(scoped_va_buffer));
 }
 
 void H264VaapiVideoEncoderDelegateTest::SetUp() {
