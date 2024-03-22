@@ -419,8 +419,9 @@ DialogClientView::GetButtonRowViews() {
 }
 
 void DialogClientView::UpdateExtraViewFromDelegate() {
-  auto new_extra_view = GetDialogDelegate()->DisownExtraView();
-  if (!new_extra_view) {
+  // DisownExtraView() returns nullopt if the extra view was not updated.
+  auto maybe_new_extra_view = GetDialogDelegate()->DisownExtraView();
+  if (!maybe_new_extra_view.has_value()) {
     return;
   }
 
@@ -432,6 +433,10 @@ void DialogClientView::UpdateExtraViewFromDelegate() {
     button_row_container_->RemoveChildViewT(old_extra_view);
   }
 
+  auto new_extra_view = std::move(maybe_new_extra_view.value());
+  if (!new_extra_view) {
+    return;
+  }
   extra_view_ =
       button_row_container_->AddChildViewAt(std::move(new_extra_view), 0);
   if (IsViewClass<Button>(extra_view_)) {

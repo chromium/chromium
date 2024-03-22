@@ -6,6 +6,7 @@
 #define UI_VIEWS_WINDOW_DIALOG_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -173,7 +174,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   void set_fixed_width(int fixed_width) { fixed_width_ = fixed_width; }
   int fixed_width() const { return fixed_width_; }
 
-  template <typename T>
+  template <typename T = View>
   T* SetExtraView(std::unique_ptr<T> extra_view) {
     T* view = extra_view.get();
     extra_view_ = std::move(extra_view);
@@ -314,7 +315,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   //    bounds, by not trying to deliver mouse events to it somehow, or
   // 3) DCV::SetupLayout could always force an explicit Layout, ignoring the
   //    lazy layout system in View::InvalidateLayout
-  std::unique_ptr<View> DisownExtraView();
+  std::optional<std::unique_ptr<View>> DisownExtraView();
 
   // Accept or cancel the dialog, as though the user had pressed the
   // Accept/Cancel buttons. These methods:
@@ -381,7 +382,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   Params params_;
 
   // The extra view for this dialog, if there is one.
-  std::unique_ptr<View> extra_view_;
+  std::optional<std::unique_ptr<View>> extra_view_;
 
   // The footnote view for this dialog, if there is one.
   std::unique_ptr<View> footnote_view_;
