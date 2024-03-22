@@ -258,6 +258,9 @@ ComposeSession::~ComposeSession() {
   if (close_reason_ == compose::ComposeSessionCloseReason::kEndedImplicitly) {
     base::RecordAction(
         base::UserMetricsAction("Compose.EndedSession.EndedImplicitly"));
+
+    final_status_ =
+        optimization_guide::proto::FinalStatus::STATUS_FINISHED_WITHOUT_INSERT;
   }
 
   LogComposeSessionCloseMetrics(close_reason_, session_events_);

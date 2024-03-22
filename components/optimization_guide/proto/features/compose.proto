@@ -66,9 +66,10 @@ enum FinalStatus {
   STATUS_UNSPECIFIED = 0;
   // The user inserted this response into the page.
   STATUS_INSERTED = 1;
-  // User pressed 'X'.
+  // User pressed 'X' or started a new session with a selection.
   STATUS_ABANDONED = 2;
-  // This case includes: close tab, starting new session, navigation, etc.
+  // This case includes: close tab, navigation, etc.
+  // Used after M124.
   STATUS_FINISHED_WITHOUT_INSERT = 3;
 }
 
