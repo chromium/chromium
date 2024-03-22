@@ -90,7 +90,7 @@ def parse_args(args=None):
       'compile', help='Only compiles. WARNING: this mode is not yet supported.')
   add_compile_args(compile_subp)
 
-  test_subp = subparsers.add_parser(
+  subparsers.add_parser(
       'test',
       help='Only run/trigger tests. WARNING: this mode is not yet supported.')
 

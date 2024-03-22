@@ -31,11 +31,13 @@ def check_rdb_auth():
     logging.error("'rdb' binary not found. Is depot_tools not on PATH?")
     return False
   cmd = [rdb_path, 'auth-info']
-  p = subprocess.run(cmd,
-                     stdout=subprocess.PIPE,
-                     stderr=subprocess.STDOUT,
-                     text=True)
-  if p.returncode:
+  try:
+    p = subprocess.run(cmd,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.STDOUT,
+                       text=True,
+                       check=True)
+  except subprocess.CalledProcessError:
     logging.error('No rdb auth available:')
     logging.error(p.stdout.strip())
     logging.error("Please run 'rdb auth-login' to authenticate")
@@ -190,8 +192,8 @@ class LegacyRunner:
           try:
             line = await proc.stdout.readline()
             adapter.ProcessLine(line.decode('utf-8').strip('\n'))
-          except ValueError as e:
-            logging.exception(f'Failed to parse line from the recipe')
+          except ValueError:
+            logging.exception('Failed to parse line from the recipe')
         await proc.wait()
         return proc.returncode
 
@@ -255,18 +257,17 @@ class LegacyRunner:
           logging.info('For futher information, see the full test results at:')
           logging.info(results_link)
         return exit_code, 'Build/test failure' if exit_code else None
+      logging.warning('')
+      logging.warning(failure_md)
+      logging.warning('')
+      if not self._skip_prompts:
+        should_continue = get_yn_resp()
       else:
-        logging.warning('')
-        logging.warning(failure_md)
-        logging.warning('')
-        if not self._skip_prompts:
-          should_continue = get_yn_resp()
-        else:
-          logging.warning(
-              output_adapter.as_yellow(
-                  'Proceeding despite the recipe warning due to the presence of '
-                  '"--force".'))
-          should_continue = True
-        if not should_continue:
-          return exit_code, 'User-aborted due to warning'
+        logging.warning(
+            output_adapter.as_yellow(
+                'Proceeding despite the recipe warning due to the presence '
+                'of "--force".'))
+        should_continue = True
+      if not should_continue:
+        return exit_code, 'User-aborted due to warning'
     return 1, 'Exceeded too many recipe re-runs'

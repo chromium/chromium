@@ -153,7 +153,7 @@ class LegacyOutputAdapter:
     if matches:
       self._single_line_logger.log(self._current_log_level, '\33[2K\r' + line)
       return
-    elif self._last_line.startswith('['):
+    if self._last_line.startswith('['):
       logging.log(self._current_log_level, '')
     self._StdoutProcessLine(line)
 
@@ -169,7 +169,7 @@ class LegacyOutputAdapter:
           f'\33[2K\rStill waiting on: {len(task_ids)} shard(s)' +
           '.' * self._dot_count)
       return
-    elif line == self.STEP_CLOSED_TEXT:
+    if line == self.STEP_CLOSED_TEXT:
       self._single_line_logger.log(self._current_log_level,
                                    '\33[2K\rStill waiting on: 0 shard(s)...')
       logging.log(self._current_log_level, '')
@@ -177,10 +177,8 @@ class LegacyOutputAdapter:
   def _ProcessResult(self, line):
     matches = self._result_links_re.match(line)
     if matches:
-      logging.log(
-          self._current_log_level,
-          f'Test results for {self._current_step_name} shard {matches[1]}: '
-          f'{matches[2]}')
+      logging.log(self._current_log_level, 'Test results for %s shard %d: %s',
+                  self._current_step_name, matches[1], matches[2])
 
   def ProcessLine(self, line):
     # If we're in a new step see if it needs to be parsed differently
@@ -201,17 +199,15 @@ class LegacyOutputAdapter:
   def _get_processor(self, step_name):
     if step_name in self._step_to_processors:
       return self._step_to_processors[step_name]
-    else:
-      for match_name in self._step_to_processors:
-        if step_name.startswith(match_name):
-          return self._step_to_processors[match_name]
+    for match_name in self._step_to_processors:
+      if step_name.startswith(match_name):
+        return self._step_to_processors[match_name]
     return self._StepNameProcessLine
 
   def _get_log_level(self, step_name):
     if step_name in self._step_to_log_level:
       return self._step_to_log_level[step_name]
-    else:
-      for match_name in self._step_to_log_level:
-        if step_name.startswith(match_name):
-          return self._step_to_log_level[match_name]
+    for match_name in self._step_to_log_level:
+      if step_name.startswith(match_name):
+        return self._step_to_log_level[match_name]
     return logging.INFO

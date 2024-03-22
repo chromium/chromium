@@ -9,3 +9,12 @@ def CheckTests(input_api, output_api):
   return input_api.RunTests(
       input_api.canned_checks.GetUnitTestsInDirectory(input_api, output_api,
                                                       '.', [r'.+_test\.py$']))
+
+
+def CheckPylint(input_api, output_api):
+  return input_api.canned_checks.RunPylint(
+      input_api,
+      output_api,
+      version='2.7',
+      files_to_skip=[r'^.bundle*$'],
+  )

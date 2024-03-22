@@ -44,7 +44,7 @@ def find_builder_props(bucket_name, builder_name):
   if not possible_matches:
     logging.error('No prop file found for %s', builder_name)
     return None, None
-  elif len(possible_matches) > 1:
+  if len(possible_matches) > 1:
     logging.error('Found multiple prop files for builder %s:', builder_name)
     for m in possible_matches:
       logging.error(m)

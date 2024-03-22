@@ -35,7 +35,7 @@ class ParseArgsTest(unittest.TestCase):
         'wrong-mode',
     ]
     # Invalid run_mode choice should make the parser error out.
-    with self.assertRaises(SystemExit) as e:
+    with self.assertRaises(SystemExit):
       args = run.parse_args(argv)
 
   def testTests(self):
@@ -47,7 +47,7 @@ class ParseArgsTest(unittest.TestCase):
         'test',
     ]
     # No test should make the parser error out.
-    with self.assertRaises(SystemExit) as e:
+    with self.assertRaises(SystemExit):
       args = run.parse_args(argv)
 
     argv = [

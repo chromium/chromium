@@ -19,8 +19,12 @@ class LegacyRunnerTests(unittest.TestCase):
 
   class AsyncMock(mock.MagicMock):
 
-    async def __call__(self, *args, **kwargs):
-      return super(mock.MagicMock, self).__call__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+      super().__init__(*args, **kwargs)
+      self.returncode = 0
+
+    async def wait(self):
+      pass
 
   def setUp(self):
     self.tmp_dir = pathlib.Path(tempfile.mkdtemp())
@@ -28,7 +32,6 @@ class LegacyRunnerTests(unittest.TestCase):
     self.addCleanup(shutil.rmtree, self.tmp_dir)
 
     self.subp_mock = self.AsyncMock()
-    self.subp_mock.returncode = 0
 
     patch_tempdir = mock.patch('tempfile.TemporaryDirectory')
     self.mock_tempdir = patch_tempdir.start()

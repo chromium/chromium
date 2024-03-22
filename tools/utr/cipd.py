@@ -14,7 +14,8 @@ _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _CIPD_ROOT_DIR = _THIS_DIR.joinpath('.bundle')
 
 # TODO(crbug.com/41492688): Support internal bundles for internal builders.
-_RECIPE_BUNDLE = 'infra/recipe_bundles/chromium.googlesource.com/chromium/tools/build'
+_RECIPE_BUNDLE = (
+    'infra/recipe_bundles/chromium.googlesource.com/chromium/tools/build')
 _RECIPE_BUNDLE_VERSION = 'refs/heads/main'
 
 

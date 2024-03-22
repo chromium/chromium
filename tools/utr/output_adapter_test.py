@@ -84,14 +84,16 @@ fake std_out text
 @@@STEP_CLOSED@@@"""
       for line in fake_output.split('\n'):
         adapter.ProcessLine(line)
-      self.assertEqual(info_log.output, [
-          'INFO:root:Triggered fake_test (2): https://chromium-swarm.appspot.com/task?id=1234567890123456',
-          'INFO:root:fake std_out text'
-      ])
+      self.assertEqual(
+          info_log.output,
+          [('INFO:root:Triggered fake_test (2): '
+            'https://chromium-swarm.appspot.com/task?id=1234567890123456'),
+           'INFO:root:fake std_out text'])
       self.assertIn('fake_test', adapter._step_to_processors)
       self.assertIn('fake_test', adapter._step_to_log_level)
 
   def testCollectTasks(self):
+    # pylint: disable=line-too-long
     adapter = output_adapter.LegacyOutputAdapter()
     with self.assertLogs('', level=logging.INFO) as info_log:
       with self.assertLogs('single_line_logger') as collect_steps_log:
@@ -122,15 +124,16 @@ fake std_out text
             info_log.output,
             ['INFO:root:\nRunning: collect tasks.wait for tasks', 'INFO:root:'])
         # The ninja statuses are sent to another logger to remove new lines
+        log_prefix = 'INFO:single_line_logger:\x1b[2K\r'
         self.assertEqual(collect_steps_log.output, [
-            'INFO:single_line_logger:\x1b[2K\rStill waiting on: 2 shard(s).',
-            'INFO:single_line_logger:\x1b[2K\rStill waiting on: 2 shard(s)..',
-            'INFO:single_line_logger:\x1b[2K\rStill waiting on: 1 shard(s)...',
-            'INFO:single_line_logger:\x1b[2K\rStill waiting on: 1 shard(s)....',
-            'INFO:single_line_logger:\x1b[2K\rStill waiting on: 1 shard(s).....',
-            'INFO:single_line_logger:\x1b[2K\rStill waiting on: 1 shard(s).',
-            'INFO:single_line_logger:\x1b[2K\rStill waiting on: 1 shard(s)..',
-            'INFO:single_line_logger:\x1b[2K\rStill waiting on: 0 shard(s)...'
+            log_prefix + 'Still waiting on: 2 shard(s).',
+            log_prefix + 'Still waiting on: 2 shard(s)..',
+            log_prefix + 'Still waiting on: 1 shard(s)...',
+            log_prefix + 'Still waiting on: 1 shard(s)....',
+            log_prefix + 'Still waiting on: 1 shard(s).....',
+            log_prefix + 'Still waiting on: 1 shard(s).',
+            log_prefix + 'Still waiting on: 1 shard(s)..',
+            log_prefix + 'Still waiting on: 0 shard(s)...'
         ])
 
   def testResultOutput(self):
@@ -156,12 +159,9 @@ fake std_out text
 @@@STEP_CLOSED@@@"""
       for line in fake_output.split('\n'):
         adapter.ProcessLine(line)
-      self.assertEqual(
-          info_log.output,
-          [
-              'INFO:root:\nRunning: fake_step',
-              #'DEBUG:root:Test results for fake_test shard #0: https://fake-link.com'
-          ])
+      self.assertEqual(info_log.output, [
+          'INFO:root:\nRunning: fake_step',
+      ])
 
   def testInfoStepLevelOutput(self):
     adapter = output_adapter.LegacyOutputAdapter()

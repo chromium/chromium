@@ -21,7 +21,7 @@ class BuilderPropsTests(unittest.TestCase):
     self.tmp_dir = pathlib.Path(tempfile.mkdtemp())
 
     patch_props_dir = mock.patch('builders._BUILDER_PROP_DIRS', self.tmp_dir)
-    mock_props_dir = patch_props_dir.start()
+    patch_props_dir.start()
     self.addCleanup(patch_props_dir.stop)
 
   def tearDown(self):
