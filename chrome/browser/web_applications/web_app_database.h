@@ -99,9 +99,6 @@ class WebAppDatabase {
 
 DisplayMode ToMojomDisplayMode(WebAppProto::DisplayMode display_mode);
 
-DisplayMode ToMojomDisplayMode(
-    ::sync_pb::WebAppSpecifics::UserDisplayMode user_display_mode);
-
 WebAppProto::DisplayMode ToWebAppProtoDisplayMode(DisplayMode display_mode);
 
 }  // namespace web_app

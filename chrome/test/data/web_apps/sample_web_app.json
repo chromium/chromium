@@ -418,15 +418,21 @@
    "start_url": "https://example.com/scope1234/start1234",
    "supported_links_offer_dismiss_count": -1706110566,
    "supported_links_offer_ignore_count": -1701779570,
-   "sync_fallback_data": {
-      "manifest_icons": [ {
-         "purpose": "kAny",
-         "square_size_px": 256,
+   "sync_proto": {
+      "icon_infos": [ {
+         "purpose": "ANY",
+         "size_in_px": "256",
          "url": "https://example.com/icon322714900"
       } ],
       "name": "SyncName1234",
+      "relative_manifest_id": "manifest_id_1234?query=test",
       "scope": "https://example.com/scope1234/",
-      "theme_color": "rgba(77,188,194,0.9686274509803922)"
+      "start_url": "https://example.com/scope1234/start1234",
+      "theme_color": "4149066946",
+      "user_display_mode_cros": "STANDALONE",
+      "user_display_mode_default": "TABBED",
+      "user_launch_ordinal": "n",
+      "user_page_ordinal": "n"
    },
    "tab_strip": {
       "home_tab": {
@@ -482,10 +488,6 @@
       "origin": "https://app-17838994132.com",
       "paths": [  ]
    } ],
-   "user_display_mode_cros": "kStandalone",
-   "user_display_mode_default": "kTabbed",
-   "user_launch_ordinal": "INVALID[]",
    "user_link_capturing_preference": "1",
-   "user_page_ordinal": "INVALID[]",
    "window_controls_overlay_enabled": false
 }
