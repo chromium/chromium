@@ -303989,7 +303989,7 @@
        []
       ],
       "color-computed-relative-color-expected.txt": [
-       "5685549d8b67f11c7e1e2ff95ddefeb047d210e4",
+       "6d9b08f226797b55a3386607ed66b72be7983c54",
        []
       ],
       "color-valid-hsl-expected.txt": [
@@ -303997,7 +303997,7 @@
        []
       ],
       "color-valid-relative-color-expected.txt": [
-       "8fe7139f0a8127b094052454852628a914661312",
+       "6e34b9abbeeb4905e2c1d6c1131951fe5b82526f",
        []
       ],
       "opacity-valid-expected.txt": [
@@ -346138,7 +346138,7 @@
       []
      ],
      "indent-expected.txt": [
-      "c2669675504e04b12543163387a9ec9996daa98b",
+      "5bb8a1035c2eb0da8028684f916770edb7d85dc1",
       []
      ],
      "insert-list-items-in-table-cell-expected.txt": [
@@ -350397,7 +350397,7 @@
      ],
      "resources": {
       "fetch-later-helper.js": [
-       "1ea43c59cf6af8bd6a4e03c25a95af7cd88cfe8e",
+       "566b3e0a1a4d0d57f857f5972fc99f2bb57e742b",
        []
       ],
       "fetch-later.html": [
@@ -377887,12 +377887,6 @@
      []
     ]
    },
-   "pending-beacon": {
-    "META.yml": [
-     "04b88b5f72fccfe6b498c4fdd8c7b3e5212bce84",
-     []
-    ]
-   },
    "performance-timeline": {
     "DIR_METADATA": [
      "e1a0e70f54c6a2b32e056562aba8680ed9465d9b",
@@ -393820,27 +393814,27 @@
     ],
     "conformance_tests": {
      "arg_min_max.https.any-expected.txt": [
-      "4aff9eaedf2f7e9403866c4d47e0c3a3bceb8e9d",
+      "942c218a9914b2e2a506c79a544524c86aab85e7",
       []
      ],
      "arg_min_max.https.any.worker-expected.txt": [
-      "4aff9eaedf2f7e9403866c4d47e0c3a3bceb8e9d",
+      "942c218a9914b2e2a506c79a544524c86aab85e7",
       []
      ],
      "batch_normalization.https.any-expected.txt": [
-      "0070a9c43de29a2e0722afc3c0751df54e6b5296",
+      "1f71e18de58d809a6443b9d8b2550cd67dbacd5a",
       []
      ],
      "batch_normalization.https.any.worker-expected.txt": [
-      "0070a9c43de29a2e0722afc3c0751df54e6b5296",
+      "1f71e18de58d809a6443b9d8b2550cd67dbacd5a",
       []
      ],
      "cast.https.any-expected.txt": [
-      "9b4696afb657b1e3f51ba2eac4109b9341cae542",
+      "2cee678d06f276a22899d7ed64f617be4a584825",
       []
      ],
      "cast.https.any.worker-expected.txt": [
-      "9b4696afb657b1e3f51ba2eac4109b9341cae542",
+      "2cee678d06f276a22899d7ed64f617be4a584825",
       []
      ],
      "constant.https.any-expected.txt": [
@@ -393852,27 +393846,27 @@
       []
      ],
      "conv2d.https.any-expected.txt": [
-      "d31182677c49246e6a5e820b4a9a10be1640ffee",
+      "2bd05dcbba808b96784eb058d207b159cec17114",
       []
      ],
      "conv2d.https.any.worker-expected.txt": [
-      "d31182677c49246e6a5e820b4a9a10be1640ffee",
+      "2bd05dcbba808b96784eb058d207b159cec17114",
       []
      ],
      "conv_transpose2d.https.any-expected.txt": [
-      "d3dc54396cee862117d1d4711fbd27a2f780a033",
+      "bee30cb4902ac2c2e406ce9ad313794bd45de981",
       []
      ],
      "conv_transpose2d.https.any.worker-expected.txt": [
-      "d3dc54396cee862117d1d4711fbd27a2f780a033",
+      "bee30cb4902ac2c2e406ce9ad313794bd45de981",
       []
      ],
      "elementwise_binary.https.any-expected.txt": [
-      "8d8ca860775b4d5283204dc5b5bc8d851a147f26",
+      "e34adace00bce9b30ccfcfa98cdc2d0cc0795261",
       []
      ],
      "elementwise_binary.https.any.worker-expected.txt": [
-      "8d8ca860775b4d5283204dc5b5bc8d851a147f26",
+      "e34adace00bce9b30ccfcfa98cdc2d0cc0795261",
       []
      ],
      "elementwise_logical.https.any-expected.txt": [
@@ -393884,11 +393878,11 @@
       []
      ],
      "elementwise_unary.https.any-expected.txt": [
-      "65caf10349d8ed5289723fd375eaebf8c26c8e73",
+      "b3e688adc7b76745adeb4e79f62410d47adcb015",
       []
      ],
      "elementwise_unary.https.any.worker-expected.txt": [
-      "65caf10349d8ed5289723fd375eaebf8c26c8e73",
+      "b3e688adc7b76745adeb4e79f62410d47adcb015",
       []
      ],
      "elu.https.any-expected.txt": [
@@ -393900,148 +393894,148 @@
       []
      ],
      "expand.https.any-expected.txt": [
-      "8f2c06a76d63c9ff281d7e2fd01b5fd30811918a",
+      "0a1e8e0ede53b10cd3b94cf323a0de440abdf629",
       []
      ],
      "expand.https.any.worker-expected.txt": [
-      "8f2c06a76d63c9ff281d7e2fd01b5fd30811918a",
+      "0a1e8e0ede53b10cd3b94cf323a0de440abdf629",
       []
      ],
      "gather.https.any-expected.txt": [
-      "c2c963cb7b83e31d0e5767e0103713b2dafb87f3",
+      "d9d54f9b9a1f3f09148675a59466296ff35ff298",
       []
      ],
      "gather.https.any.worker-expected.txt": [
-      "c2c963cb7b83e31d0e5767e0103713b2dafb87f3",
+      "d9d54f9b9a1f3f09148675a59466296ff35ff298",
       []
      ],
      "gemm.https.any-expected.txt": [
-      "3bc8a4d835fa3cd726ebb51333b95c7ab878ae96",
+      "3d00a92798d056fef5422cf78a2adea09adf7f68",
       []
      ],
      "gemm.https.any.worker-expected.txt": [
-      "3bc8a4d835fa3cd726ebb51333b95c7ab878ae96",
+      "3d00a92798d056fef5422cf78a2adea09adf7f68",
       []
      ],
      "hard_sigmoid.https.any-expected.txt": [
-      "512251a4980693a848fdc96a2a91a1014017dff8",
+      "380a0e6ae1550fac9208a91cbd74e42f92cadad7",
       []
      ],
      "hard_sigmoid.https.any.worker-expected.txt": [
-      "512251a4980693a848fdc96a2a91a1014017dff8",
+      "380a0e6ae1550fac9208a91cbd74e42f92cadad7",
       []
      ],
      "instance_normalization.https.any-expected.txt": [
-      "a21bb3c22b15814c0fd81c093d5abadbf97caed7",
+      "224491bc548dc8113659a59b2e82a5682c2afe41",
       []
      ],
      "instance_normalization.https.any.worker-expected.txt": [
-      "a21bb3c22b15814c0fd81c093d5abadbf97caed7",
+      "224491bc548dc8113659a59b2e82a5682c2afe41",
       []
      ],
      "layer_normalization.https.any-expected.txt": [
-      "5ac33602acdc73862d9b9d2b9cf86066c81ef641",
+      "513e85cf1663178027cea63cd5d4802e1aad1e13",
       []
      ],
      "layer_normalization.https.any.worker-expected.txt": [
-      "5ac33602acdc73862d9b9d2b9cf86066c81ef641",
+      "513e85cf1663178027cea63cd5d4802e1aad1e13",
       []
      ],
      "linear.https.any-expected.txt": [
-      "95c04e19f5b365acde0bdb2119d2feff03b7f2c1",
+      "a5bbf085874bd04193c1bd708188282e774e8b8e",
       []
      ],
      "linear.https.any.worker-expected.txt": [
-      "95c04e19f5b365acde0bdb2119d2feff03b7f2c1",
+      "a5bbf085874bd04193c1bd708188282e774e8b8e",
       []
      ],
      "matmul.https.any-expected.txt": [
-      "37ab231f355b9966ed525721a6f5f76dee909398",
+      "6e91a8612b62d8d9d156ae23b3da724ca6a50a9e",
       []
      ],
      "matmul.https.any.worker-expected.txt": [
-      "37ab231f355b9966ed525721a6f5f76dee909398",
+      "6e91a8612b62d8d9d156ae23b3da724ca6a50a9e",
       []
      ],
      "pad.https.any-expected.txt": [
-      "3a61439d50dd7980dc465d81e04977e665e559ba",
+      "00286e3e2bcd3fcf8025768a550df8bb127ab5ab",
       []
      ],
      "pad.https.any.worker-expected.txt": [
-      "3a61439d50dd7980dc465d81e04977e665e559ba",
+      "00286e3e2bcd3fcf8025768a550df8bb127ab5ab",
       []
      ],
      "pooling.https.any-expected.txt": [
-      "c565fca9ee5f407148c1bff6730032fc46ef4723",
+      "7ca09ee1b7c270fe919d206d481f0c7f09408394",
       []
      ],
      "pooling.https.any.worker-expected.txt": [
-      "c565fca9ee5f407148c1bff6730032fc46ef4723",
+      "7ca09ee1b7c270fe919d206d481f0c7f09408394",
       []
      ],
      "prelu.https.any-expected.txt": [
-      "3c022185f74d7e6dcde8aa7074af95fb4a260af0",
+      "79119ad94bf46d75c61a7e9afab8d73ca112f2ce",
       []
      ],
      "prelu.https.any.worker-expected.txt": [
-      "3c022185f74d7e6dcde8aa7074af95fb4a260af0",
+      "79119ad94bf46d75c61a7e9afab8d73ca112f2ce",
       []
      ],
      "reduction.https.any-expected.txt": [
-      "b910943e96a179e3099dd12b8f7d4b7c785d88ed",
+      "42534bf33c0907c0f55a698c9831a6ded2c6506e",
       []
      ],
      "reduction.https.any.worker-expected.txt": [
-      "b910943e96a179e3099dd12b8f7d4b7c785d88ed",
+      "42534bf33c0907c0f55a698c9831a6ded2c6506e",
       []
      ],
      "resample2d.https.any-expected.txt": [
-      "edaf9df19f399faa9d5ef0d312be1bf57ce94eea",
+      "c11010153b2494b4ec8308a80761f7fc276c1ace",
       []
      ],
      "resample2d.https.any.worker-expected.txt": [
-      "edaf9df19f399faa9d5ef0d312be1bf57ce94eea",
+      "c11010153b2494b4ec8308a80761f7fc276c1ace",
       []
      ],
      "softplus.https.any-expected.txt": [
-      "4334c31880022c9b62c331dd959f3afc22a9c79e",
+      "23ca652f04dc2cd984bb3ec05c0486f0a6213020",
       []
      ],
      "softplus.https.any.worker-expected.txt": [
-      "4334c31880022c9b62c331dd959f3afc22a9c79e",
+      "23ca652f04dc2cd984bb3ec05c0486f0a6213020",
       []
      ],
      "softsign.https.any-expected.txt": [
-      "36f99abe023229e7485caf5b69ed7ec314110b91",
+      "ad844ec4c80a9367245f2066aa720a337a68f04d",
       []
      ],
      "softsign.https.any.worker-expected.txt": [
-      "36f99abe023229e7485caf5b69ed7ec314110b91",
+      "ad844ec4c80a9367245f2066aa720a337a68f04d",
       []
      ],
      "triangular.https.any-expected.txt": [
-      "1db94301d547c954adaf8678e9c3a200deb5e79b",
+      "78461c4776ba1e61d3d0e48ab2e981b8cdf410e9",
       []
      ],
      "triangular.https.any.worker-expected.txt": [
-      "1db94301d547c954adaf8678e9c3a200deb5e79b",
+      "78461c4776ba1e61d3d0e48ab2e981b8cdf410e9",
       []
      ],
      "where.https.any-expected.txt": [
-      "2d02412c0be6254be345bb9f292eff49adc42b99",
+      "367a47132547637d6059290073c26086cdc2c951",
       []
      ],
      "where.https.any.worker-expected.txt": [
-      "2d02412c0be6254be345bb9f292eff49adc42b99",
+      "367a47132547637d6059290073c26086cdc2c951",
       []
      ]
     },
     "idlharness.https.any-expected.txt": [
-     "9b1046653373b884f0d7de532bacad16bf72955a",
+     "45ce82baf8661f606ca7d1e0eeed4276cd0ce6af",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "b5977d7dc24581a2a063fac267fe470761594951",
+     "438704675c8253342dd4d8f102e69e3393e01aca",
      []
     ],
     "resources": {
@@ -442092,7 +442086,7 @@
        ]
       ],
       "color-computed-relative-color.html": [
-       "53d25e0a55d11d14a4c16441ffaab9edc0410123",
+       "fd998238079884928b5544891d066593f4d02ddf",
        [
         null,
         {}
@@ -442239,7 +442233,7 @@
        ]
       ],
       "color-valid-relative-color.html": [
-       "5c351bca33d10d030f495e2960967a4e45a1e16d",
+       "eb730b51c571661856603f578ecd879c3d97ffb0",
        [
         null,
         {}
@@ -602388,193 +602382,6 @@
      ]
     ]
    },
-   "pending-beacon": {
-    "pending_beacon-basic.tentative.https.window.js": [
-     "364db72ba5445f6b3ff3504d42d9c8c28727f274",
-     [
-      "pending-beacon/pending_beacon-basic.tentative.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/fetch/fetch-later/resources/fetch-later-helper.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "pending_beacon-basic.window.js": [
-     "d6afd9fb5e5e6880fdcc82cdd5c4c916b411486c",
-     [
-      "pending-beacon/pending_beacon-basic.window.html",
-      {}
-     ]
-    ],
-    "pending_beacon-deactivate.tentative.https.window.js": [
-     "14972158a5e9a69ace66a5550cda911bed437a57",
-     [
-      "pending-beacon/pending_beacon-deactivate.tentative.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/fetch/fetch-later/resources/fetch-later-helper.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "pending_beacon-sendnow.tentative.https.window.js": [
-     "bcf1ab720ff994aa1e296caadb2b346237022787",
-     [
-      "pending-beacon/pending_beacon-sendnow.tentative.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/common/utils.js"
-        ],
-        [
-         "script",
-         "/fetch/fetch-later/resources/fetch-later-helper.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "pending_beacon-sendondiscard.tentative.https.window.js": [
-     "c1fffdacb01e23e34f6521f6226852d200943758",
-     [
-      "pending-beacon/pending_beacon-sendondiscard.tentative.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/common/utils.js"
-        ],
-        [
-         "script",
-         "/fetch/fetch-later/resources/fetch-later-helper.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "pending_beacon-sendonhidden.tentative.https.window.js": [
-     "5e39344fbac3da31de2279c305106b5215e1cc20",
-     [
-      "pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/common/dispatcher/dispatcher.js"
-        ],
-        [
-         "script",
-         "/common/get-host-info.sub.js"
-        ],
-        [
-         "script",
-         "/common/utils.js"
-        ],
-        [
-         "script",
-         "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-        ],
-        [
-         "script",
-         "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
-        ],
-        [
-         "script",
-         "/fetch/fetch-later/resources/fetch-later-helper.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "pending_get_beacon-cors.tentative.https.window.js": [
-     "a709831bc153b3fe30f5979aae3bc14b08fbcc11",
-     [
-      "pending-beacon/pending_get_beacon-cors.tentative.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/common/get-host-info.sub.js"
-        ],
-        [
-         "script",
-         "/common/utils.js"
-        ],
-        [
-         "script",
-         "/fetch/fetch-later/resources/fetch-later-helper.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "pending_get_beacon-send.tentative.https.window.js": [
-     "d73afefb259b86cccc686d5b4b89cdd727dbf497",
-     [
-      "pending-beacon/pending_get_beacon-send.tentative.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/common/utils.js"
-        ],
-        [
-         "script",
-         "/fetch/fetch-later/resources/fetch-later-helper.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "pending_post_beacon-cors.tentative.https.window.js": [
-     "14dcfbbd3b7b9d98e0e549a282b0a4a8205104df",
-     [
-      "pending-beacon/pending_post_beacon-cors.tentative.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/common/get-host-info.sub.js"
-        ],
-        [
-         "script",
-         "/common/utils.js"
-        ],
-        [
-         "script",
-         "/fetch/fetch-later/resources/fetch-later-helper.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "pending_post_beacon-sendwithdata.tentative.https.window.js": [
-     "b052f4f3f07910413e203070adeef2087c1e26f8",
-     [
-      "pending-beacon/pending_post_beacon-sendwithdata.tentative.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/common/utils.js"
-        ],
-        [
-         "script",
-         "/fetch/fetch-later/resources/fetch-later-helper.js"
-        ]
-       ]
-      }
-     ]
-    ]
-   },
    "performance-timeline": {
     "back-forward-cache-restoration.tentative.html": [
      "c673e09cb461e094d5616b7a43154fe2cffb12bd",
@@ -672881,7 +672688,7 @@
      ]
     ],
     "RTCIceCandidate-constructor.html": [
-     "66d696207962f8669dd6d3c28800241e80f4ab4a",
+     "b760c7b05a565c97c9c75287d11ca8cc83258d1f",
      [
       null,
       {}
