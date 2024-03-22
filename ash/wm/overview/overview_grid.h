@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
 #include "ash/wm/overview/birch/birch_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -494,6 +495,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   }
 
   const views::Widget* pine_widget() const { return pine_widget_.get(); }
+
+  ScopedOverviewWallpaperClipper* scoped_overview_wallpaper_clipper() {
+    return scoped_overview_wallpaper_clipper_.get();
+  }
 
   int num_incognito_windows() const { return num_incognito_windows_; }
 

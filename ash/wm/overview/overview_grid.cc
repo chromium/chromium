@@ -711,9 +711,9 @@ void OverviewGrid::PositionWindowsContinuously(float y_offset) {
   const float scroll_ratio = y_offset / WmGestureHandler::kVerticalThresholdDp;
 
   // Move the desks bar up/down.
-  if (auto* desks_bar = desks_bar_view()) {
-    desks_bar->layer()->SetTransform(gfx::Transform::MakeTranslation(
-        0, desks_bar->height() * (scroll_ratio - 1)));
+  if (desks_bar_view_) {
+    desks_bar_view_->layer()->SetTransform(gfx::Transform::MakeTranslation(
+        0, desks_bar_view_->height() * (scroll_ratio - 1)));
   }
 
   // Compute and adjust the "No recent items" label.

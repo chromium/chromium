@@ -35,6 +35,7 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_focus_cycler.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
@@ -980,6 +981,8 @@ void DeskBarViewBase::UpdateDeskIconButtonState(
                         current_bounds.height() / target_bounds.height());
 
   PerformDeskIconButtonScaleAnimation(button, this, scale_transform, shift_x);
+
+  MaybeRefreshOverviewGridBounds();
 }
 
 void DeskBarViewBase::OnHoverStateMayHaveChanged() {
@@ -1464,6 +1467,8 @@ void DeskBarViewBase::SwitchToExpandedState() {
 
   UpdateDeskButtonsVisibility();
   PerformZeroStateToExpandedStateMiniViewAnimation(this);
+
+  MaybeRefreshOverviewGridBounds();
 }
 
 void DeskBarViewBase::OnUiUpdateDone() {
@@ -1729,6 +1734,14 @@ bool DeskBarViewBase::MaybeScrollByDraggedDesk() {
   }
 
   return false;
+}
+
+void DeskBarViewBase::MaybeRefreshOverviewGridBounds() {
+  if (type_ == DeskBarViewBase::Type::kOverview &&
+      overview_grid_->scoped_overview_wallpaper_clipper()) {
+    CHECK(overview_grid_);
+    overview_grid_->RefreshGridBounds(/*animate=*/true);
+  }
 }
 
 void DeskBarViewBase::RecordDeskProfileAdoption() {

@@ -45,8 +45,10 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_button.h"
 #include "ash/wm/desks/desk_action_view.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_icon_button.h"
 #include "ash/wm/desks/desks_constants.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
@@ -127,6 +129,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -11080,6 +11083,54 @@ TEST_F(OakTest, WallpaperClipAnimation) {
   ASSERT_EQ(display_bounds, wallpaper_view_layer->bounds());
   EXPECT_FALSE(wallpaper_underlay_layer->IsVisible());
   EXPECT_TRUE(wallpaper_view_layer->clip_rect().IsEmpty());
+}
+
+// Tests that wallpaper clip rect bounds update upon virtual desk bar state
+// changes, and that oak does not configure the desk bar background.
+TEST_F(OakTest, VirtualDesksBarStateChange) {
+  const gfx::Rect display_bounds(
+      GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
+  auto* wallpaper_widget_controller =
+      Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
+  auto* wallpaper_view_layer =
+      wallpaper_widget_controller->wallpaper_view()->layer();
+  auto* wallpaper_underlay_layer =
+      wallpaper_widget_controller->wallpaper_underlay_layer();
+  EXPECT_EQ(display_bounds, wallpaper_view_layer->bounds());
+  EXPECT_TRUE(wallpaper_view_layer->clip_rect().IsEmpty());
+  EXPECT_TRUE(wallpaper_view_layer->rounded_corner_radii().IsEmpty());
+  EXPECT_FALSE(wallpaper_underlay_layer->IsVisible());
+
+  ToggleOverview();
+  OverviewGrid* overview_grid = GetOverviewSession()->grid_list()[0].get();
+  auto* desks_bar_view = overview_grid->desks_bar_view();
+  // The virtual desks bar is at zero state initially.
+  EXPECT_EQ(DeskBarViewBase::State::kZero, desks_bar_view->state());
+  EXPECT_FALSE(desks_bar_view->background_view());
+  gfx::Rect wallpaper_clip_rect_for_zero_state(
+      wallpaper_view_layer->clip_rect());
+  EXPECT_EQ(overview_grid->GetGridEffectiveBounds(),
+            wallpaper_clip_rect_for_zero_state);
+  EXPECT_EQ(kWallpaperClipRoundedCornerRadii,
+            wallpaper_view_layer->rounded_corner_radii());
+  EXPECT_TRUE(wallpaper_underlay_layer->IsVisible());
+
+  // Upon expanding the virtual desks bar to state 'kExpanded' by creating a new
+  // desk, the wallpaper clip rect bounds will be refreshed.
+  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+  EXPECT_EQ(DeskBarViewBase::State::kExpanded, desks_bar_view->state());
+  gfx::Rect wallpaper_clip_rect_for_expanded_state(
+      wallpaper_view_layer->clip_rect());
+
+  // The updated `wallpaper_clip_rect_for_expanded_state` will be smaller than
+  // the previous `wallpaper_clip_rect_for_zero_state`.
+  EXPECT_TRUE(wallpaper_clip_rect_for_zero_state.Contains(
+      wallpaper_clip_rect_for_expanded_state));
+  EXPECT_EQ(overview_grid->GetGridEffectiveBounds(),
+            wallpaper_clip_rect_for_expanded_state);
+  EXPECT_EQ(kWallpaperClipRoundedCornerRadii,
+            wallpaper_view_layer->rounded_corner_radii());
+  EXPECT_TRUE(wallpaper_underlay_layer->IsVisible());
 }
 
 TEST_F(OakTest, CenterOverviewItems) {
