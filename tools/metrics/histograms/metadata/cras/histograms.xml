@@ -416,10 +416,26 @@ This collects each top-level device metric type. For example,
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
-    The longest additional time CRAS(Chrome OS audio server) ever waits for a
+    The longest additional time CRAS(ChromeOS audio server) ever waits for a
     stream exceeding the timeout threshold. This value is recorded per stream
     when it gets removed and used to investigate the audio glitch/skip problem
-    on Chrome OS.
+    on ChromeOS.
+  </summary>
+</histogram>
+
+<histogram name="Cras.FetchDelayNumber" units="count"
+    expires_after="2025-03-21">
+<!-- Name completed by histogram_suffixes
+     name="Cras.ClientType" and
+     name="Cras.StreamType" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The number of times that CRAS(ChromeOS audio server) ever waits for a stream
+    exceeding the timeout threshold. This value is recorded per stream when it
+    gets removed and used to investigate the audio glitch/skip problem on
+    ChromeOS.
   </summary>
 </histogram>
 

@@ -879,6 +879,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Test" label="A client created by cras_test_client."/>
   <suffix name="Unknown" label="Unknown client."/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds"/>
+  <affected-histogram name="Cras.FetchDelayNumber"/>
   <affected-histogram name="Cras.StreamCallbackThreshold.Input"/>
   <affected-histogram name="Cras.StreamCallbackThreshold.Output"/>
   <affected-histogram name="Cras.StreamChannelCount.Input"/>
@@ -917,6 +918,12 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Cras.FetchDelayMilliSeconds.Chrome"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.CrOSVM"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.LaCrOS"/>
+  <affected-histogram name="Cras.FetchDelayNumber.ARC"/>
+  <affected-histogram name="Cras.FetchDelayNumber.ARCVM"/>
+  <affected-histogram name="Cras.FetchDelayNumber.BOREALIS"/>
+  <affected-histogram name="Cras.FetchDelayNumber.Chrome"/>
+  <affected-histogram name="Cras.FetchDelayNumber.CrOSVM"/>
+  <affected-histogram name="Cras.FetchDelayNumber.LaCrOS"/>
   <affected-histogram name="Cras.StreamRuntime.Input.ARC"/>
   <affected-histogram name="Cras.StreamRuntime.Input.ARCVM"/>
   <affected-histogram name="Cras.StreamRuntime.Input.BOREALIS"/>
