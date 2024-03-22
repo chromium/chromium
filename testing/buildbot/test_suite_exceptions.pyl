@@ -325,9 +325,6 @@
         },
       },
       'Linux Tests (dbg)(1)': {
-        'args': [
-          '--debug',
-        ],
         'swarming': {
           'shards': 12,
         },
@@ -369,9 +366,6 @@
         },
       },
       'Mac13 Tests (dbg)': {
-        'args': [
-          '--debug',
-        ],
         'swarming': {
           'shards': 16,
         },
@@ -391,16 +385,6 @@
         'swarming': {
           'shards': 1,
         },
-      },
-      'V8 Blink Linux Debug': {
-        # This builder compiles Chromium in release mode, but V8 in debug.
-        # TODO(machenbach): Change name and out directory of this builder to
-        # something less confusing.
-        'args': [
-          '-t',
-          'Debug',
-          '--release',
-        ],
       },
       'V8 Blink Linux Future': {
         'args': [
@@ -447,10 +431,6 @@
         },
       },
       'Win10 Tests x64': {
-        'args': [
-          '--target',
-          'Release_x64',
-        ],
         'swarming': {
           # blink_web_tests has issues on non-broadwell machines.
           # see https://crbug.com/1458859
@@ -460,31 +440,10 @@
           "shards": 12,
         },
       },
-      'Win10 Tests x64 (dbg)': {
-        'args': [
-          '--debug',
-          '--target',
-          'Debug_x64',
-        ],
-      },
       'Win11 Tests x64': {
-        'args': [
-          '--target',
-          'Release_x64',
-        ],
         'swarming': {
           "shards": 12
         },
-      },
-      # tryserver.chromium.android
-      'android_blink_rel': {
-        'args': [
-          '--release',
-          '--android',
-          # TODO(crbug.com/875172): run on the real GPU since the
-          # software fallback, SwiftShader, isn't yet for 32-bit ARM.
-          '--additional-driver-flag=--use-gpu-in-tests',
-        ],
       },
       'devtools_frontend_linux_blink_light_rel': {
         'args': [
@@ -513,11 +472,6 @@
         'swarming': {
           'shards': 1,
         },
-      },
-      'linux-blink-animation-use-time-delta': {
-        'args': [
-          '--debug',
-        ],
       },
       'linux-blink-rel': {
         'swarming': {
@@ -620,8 +574,6 @@
       },
       'win-rel-cft': {
         'args': [
-          '--target',
-          'Release_x64',
           '--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter',
         ],
         'swarming': {
@@ -629,10 +581,6 @@
         },
       },
       'win10-rel-no-external-ip': {
-        'args': [
-          '--target',
-          'Release_x64',
-        ],
         'swarming': {
           "shards": 12
         },
@@ -647,19 +595,11 @@
         'swarming': {
           'hard_timeout': 2400,
         },
-        'args': [
-          '--target',
-          'Release_x64',
-        ],
       },
       'win11-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,
         },
-        'args': [
-          '--target',
-          'Release_x64',
-        ],
       },
     },
   },
@@ -683,9 +623,6 @@
         },
       },
       'Linux Tests (dbg)(1)': {
-        'args': [
-          '--debug',
-        ],
         'swarming': {
           'shards': 18,
         },
@@ -749,16 +686,6 @@
           'shards': 1,
         },
       },
-      'V8 Blink Linux Debug': {
-        # This builder compiles Chromium in release mode, but V8 in debug.
-        # TODO(machenbach): Change name and out directory of this builder to
-        # something less confusing.
-        'args': [
-          '-t',
-          'Debug',
-          '--release',
-        ],
-      },
       'V8 Blink Linux Future': {
         'args': [
           '--flag-specific=future-js',
@@ -812,31 +739,10 @@
           "shards": 18,
         },
       },
-      'Win10 Tests x64 (dbg)': {
-        'args': [
-          '--debug',
-          '--target',
-          'Debug_x64',
-        ],
-      },
       'Win11 Tests x64': {
-        'args': [
-          '--target',
-          'Release_x64',
-        ],
         'swarming': {
           "shards": 18
         },
-      },
-      # tryserver.chromium.android
-      'android_blink_rel': {
-        'args': [
-          '--release',
-          '--android',
-          # TODO(crbug.com/875172): run on the real GPU since the
-          # software fallback, SwiftShader, isn't yet for 32-bit ARM.
-          '--additional-driver-flag=--use-gpu-in-tests',
-        ],
       },
       # Save some overhead loads of starting up emulator.
       'fuchsia-x64-cast-receiver-dbg': {
@@ -854,11 +760,6 @@
         'args': [
           # TODO(crbug.com/1255537): Re-enable the test.
           '--ignore-tests=external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html',
-        ],
-      },
-      'linux-blink-animation-use-time-delta': {
-        'args': [
-          '--debug',
         ],
       },
       'linux-blink-rel': {
@@ -947,19 +848,11 @@
         },
       },
       'win-rel-cft': {
-        'args': [
-          '--target',
-          'Release_x64',
-        ],
         'swarming': {
           "shards": 18,
         },
       },
       'win10-rel-no-external-ip': {
-        'args': [
-          '--target',
-          'Release_x64',
-        ],
         'swarming': {
           "shards": 18
         },
@@ -974,10 +867,6 @@
         'swarming': {
           'hard_timeout': 2400,
         },
-        'args': [
-          '--target',
-          'Release_x64',
-        ],
       },
       'win11-arm64-rel-tests': {
         'experiment_percentage': 100, # https://crbug.com/325415943
@@ -989,10 +878,6 @@
         'swarming': {
           'hard_timeout': 2400,
         },
-        'args': [
-          '--target',
-          'Release_x64',
-        ],
       },
     },
   },
