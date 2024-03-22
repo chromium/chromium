@@ -270,12 +270,13 @@ SharedImageFactory::SharedImageFactory(
       gl::GetGLImplementation() != gl::kGLImplementationNone &&
       (!is_for_display_compositor_ || gr_context_type_ == GrContextType::kGL);
   if (use_gl) {
+    bool supports_cpu_upload = !BUILDFLAG(IS_ANDROID);
     auto gl_texture_backing_factory =
         std::make_unique<GLTextureImageBackingFactory>(
             gpu_preferences, workarounds, feature_info.get(),
             shared_context_state_ ? shared_context_state_->progress_reporter()
                                   : nullptr,
-            /*for_cpu_upload_usage=*/false);
+            supports_cpu_upload);
     factories_.push_back(std::move(gl_texture_backing_factory));
   }
 
@@ -293,18 +294,6 @@ SharedImageFactory::SharedImageFactory(
     factories_.push_back(std::move(d3d_factory));
   }
 #endif  // BUILDFLAG(IS_WIN)
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (use_gl) {
-    auto gl_texture_backing_factory =
-        std::make_unique<GLTextureImageBackingFactory>(
-            gpu_preferences, workarounds, feature_info.get(),
-            shared_context_state_ ? shared_context_state_->progress_reporter()
-                                  : nullptr,
-            /*for_cpu_upload_usage=*/true);
-    factories_.push_back(std::move(gl_texture_backing_factory));
-  }
-#endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
   // If Chrome and ANGLE are sharing the same vulkan device queue, AngleVulkan

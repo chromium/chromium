@@ -50,13 +50,13 @@ GLTextureImageBackingFactory::GLTextureImageBackingFactory(
     const GpuDriverBugWorkarounds& workarounds,
     const gles2::FeatureInfo* feature_info,
     gl::ProgressReporter* progress_reporter,
-    bool for_cpu_upload_usage)
+    bool supports_cpu_upload_usage)
     : GLCommonImageBackingFactory(kSupportedUsage,
                                   gpu_preferences,
                                   workarounds,
                                   feature_info,
                                   progress_reporter),
-      for_cpu_upload_usage_(for_cpu_upload_usage),
+      supports_cpu_upload_usage_(supports_cpu_upload_usage),
       support_all_metal_usages_(false) {}
 
 GLTextureImageBackingFactory::~GLTextureImageBackingFactory() = default;
@@ -148,13 +148,11 @@ bool GLTextureImageBackingFactory::IsSupported(
     return false;
   }
 
-  bool has_cpu_upload_usage = usage & SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  if (usage & SHARED_IMAGE_USAGE_CPU_UPLOAD) {
+    if (!supports_cpu_upload_usage_) {
+      return false;
+    }
 
-  if (for_cpu_upload_usage_ != has_cpu_upload_usage) {
-    return false;
-  }
-
-  if (has_cpu_upload_usage) {
     if (!GLTextureImageBacking::SupportsPixelUploadWithFormat(format)) {
       return false;
     }
