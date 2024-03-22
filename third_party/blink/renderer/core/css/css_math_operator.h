@@ -32,6 +32,7 @@ enum class CSSMathOperator {
   kSign,
   kProgress,
   kCalcSize,
+  kMediaProgress,
   kInvalid
 };
 

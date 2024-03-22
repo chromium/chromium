@@ -325,7 +325,8 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
         }
       }
     }
-    case CalculationOperator::kProgress: {
+    case CalculationOperator::kProgress:
+    case CalculationOperator::kMediaProgress: {
       DCHECK_EQ(children.size(), 3u);
       Vector<float, 3> operand_pixels;
       bool can_simplify = true;
@@ -474,13 +475,6 @@ float CalculationExpressionOperationNode::Evaluate(
         return value > 0 ? 1 : -1;
       }
     }
-    case CalculationOperator::kProgress: {
-      DCHECK_EQ(children_.size(), 3u);
-      float progress = children_[0]->Evaluate(max_value, input);
-      float from = children_[1]->Evaluate(max_value, input);
-      float to = children_[2]->Evaluate(max_value, input);
-      return (progress - from) / (to - from);
-    }
     case CalculationOperator::kCalcSize: {
       DCHECK_EQ(children_.size(), 2u);
       Length::EvaluationInput calculation_input(input);
@@ -494,6 +488,14 @@ float CalculationExpressionOperationNode::Evaluate(
         max_value = 0.0f;
       }
       return children_[1]->Evaluate(max_value, calculation_input);
+    }
+    case CalculationOperator::kProgress:
+    case CalculationOperator::kMediaProgress: {
+      DCHECK(!children_.empty());
+      float progress = children_[0]->Evaluate(max_value, input);
+      float from = children_[1]->Evaluate(max_value, input);
+      float to = children_[2]->Evaluate(max_value, input);
+      return (progress - from) / (to - from);
     }
     case CalculationOperator::kInvalid:
       break;
@@ -550,7 +552,8 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
     case CalculationOperator::kHypot:
     case CalculationOperator::kAbs:
     case CalculationOperator::kSign:
-    case CalculationOperator::kProgress: {
+    case CalculationOperator::kProgress:
+    case CalculationOperator::kMediaProgress: {
       DCHECK(children_.size());
       Vector<scoped_refptr<const CalculationExpressionNode>> cloned_operands;
       cloned_operands.reserve(children_.size());
@@ -629,6 +632,7 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
     }
     case CalculationOperator::kSign:
     case CalculationOperator::kProgress:
+    case CalculationOperator::kMediaProgress:
       return ResultType::kNumber;
     case CalculationOperator::kInvalid:
       NOTREACHED();

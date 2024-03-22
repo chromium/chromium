@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/try_tactic_transform.h"
@@ -263,6 +264,43 @@ std::optional<PixelsAndPercent> EvaluateValueIfNaNorInfinity(
     }
   }
   return std::nullopt;
+}
+
+bool IsAllowedMediaFeature(const CSSValueID& id) {
+  return id == CSSValueID::kWidth || id == CSSValueID::kHeight;
+}
+
+bool CheckProgressFunctionTypes(
+    CSSValueID function_id,
+    const CSSMathExpressionOperation::Operands& nodes) {
+  switch (function_id) {
+    case CSSValueID::kProgress: {
+      CalculationResultCategory first_category = nodes[0]->Category();
+      if (first_category != nodes[1]->Category() ||
+          first_category != nodes[2]->Category() ||
+          first_category == CalculationResultCategory::kCalcIntrinsicSize) {
+        return false;
+      }
+      break;
+    }
+    // TODO(crbug.com/40944203): For now we only support kCalcLength media
+    // features
+    case CSSValueID::kMediaProgress: {
+      if (!IsAllowedMediaFeature(
+              To<CSSMathExpressionKeywordLiteral>(*nodes[0]).GetValue())) {
+        return false;
+      }
+      if (nodes[1]->Category() != CalculationResultCategory::kCalcLength ||
+          nodes[2]->Category() != CalculationResultCategory::kCalcLength) {
+        return false;
+      }
+      break;
+    }
+    default:
+      NOTREACHED();
+      break;
+  }
+  return true;
 }
 
 bool CanEagerlySimplify(const CSSMathExpressionNode* operand) {
@@ -1080,6 +1118,8 @@ CSSValueID SizingKeywordToCSSValueID(
 CalculationResultCategory DetermineKeywordCategory(CSSValueID keyword,
                                                    CSSMathOperator op) {
   switch (op) {
+    case CSSMathOperator::kMediaProgress:
+      return kCalcNumber;
     case CSSMathOperator::kCalcSize:
       return kCalcLengthFunction;
     default:
@@ -1100,8 +1140,22 @@ CSSMathExpressionKeywordLiteral::CSSMathExpressionKeywordLiteral(
 
 scoped_refptr<const CalculationExpressionNode>
 CSSMathExpressionKeywordLiteral::ToCalculationExpression(
-    const CSSLengthResolver&) const {
+    const CSSLengthResolver& length_resolver) const {
   switch (operator_) {
+    case CSSMathOperator::kMediaProgress: {
+      switch (keyword_) {
+        case CSSValueID::kWidth:
+          return base::MakeRefCounted<
+              CalculationExpressionPixelsAndPercentNode>(
+              PixelsAndPercent(length_resolver.ViewportWidth()));
+        case CSSValueID::kHeight:
+          return base::MakeRefCounted<
+              CalculationExpressionPixelsAndPercentNode>(
+              PixelsAndPercent(length_resolver.ViewportHeight()));
+        default:
+          NOTREACHED_NORETURN();
+      }
+    }
     case CSSMathOperator::kCalcSize:
       return base::MakeRefCounted<CalculationExpressionSizingKeywordNode>(
           CSSValueIDToSizingKeyword(keyword_));
@@ -1113,11 +1167,39 @@ CSSMathExpressionKeywordLiteral::ToCalculationExpression(
 double CSSMathExpressionKeywordLiteral::ComputeDouble(
     const CSSLengthResolver& length_resolver) const {
   switch (operator_) {
+    case CSSMathOperator::kMediaProgress: {
+      switch (keyword_) {
+        case CSSValueID::kWidth:
+          return length_resolver.ViewportWidth();
+        case CSSValueID::kHeight:
+          return length_resolver.ViewportHeight();
+        default:
+          NOTREACHED_NORETURN();
+      }
+    }
     case CSSMathOperator::kCalcSize:
       NOTREACHED_NORETURN();
     default:
       NOTREACHED_NORETURN();
   };
+}
+
+std::optional<PixelsAndPercent>
+CSSMathExpressionKeywordLiteral::ToPixelsAndPercent(
+    const CSSLengthResolver& length_resolver) const {
+  switch (operator_) {
+    case CSSMathOperator::kMediaProgress:
+      switch (keyword_) {
+        case CSSValueID::kWidth:
+          return PixelsAndPercent(length_resolver.ViewportWidth());
+        case CSSValueID::kHeight:
+          return PixelsAndPercent(length_resolver.ViewportHeight());
+        default:
+          NOTREACHED_NORETURN();
+      }
+    default:
+      return std::nullopt;
+  }
 }
 
 // ------ End of CSSMathExpressionKeywordLiteral member functions ----
@@ -1848,8 +1930,9 @@ std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
     case CSSMathOperator::kRem:
     case CSSMathOperator::kHypot:
     case CSSMathOperator::kAbs:
-    case CSSMathOperator::kProgress:
     case CSSMathOperator::kSign:
+    case CSSMathOperator::kProgress:
+    case CSSMathOperator::kMediaProgress:
       return std::nullopt;
     case CSSMathOperator::kInvalid:
       NOTREACHED();
@@ -1922,6 +2005,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
     case CSSMathOperator::kAbs:
     case CSSMathOperator::kSign:
     case CSSMathOperator::kProgress:
+    case CSSMathOperator::kMediaProgress:
     case CSSMathOperator::kCalcSize: {
       Vector<scoped_refptr<const CalculationExpressionNode>> operands;
       operands.reserve(operands_.size());
@@ -1949,6 +2033,8 @@ CSSMathExpressionOperation::ToCalculationExpression(
         op = CalculationOperator::kSign;
       } else if (operator_ == CSSMathOperator::kProgress) {
         op = CalculationOperator::kProgress;
+      } else if (operator_ == CSSMathOperator::kMediaProgress) {
+        op = CalculationOperator::kMediaProgress;
       } else {
         CHECK(operator_ == CSSMathOperator::kCalcSize);
         op = CalculationOperator::kCalcSize;
@@ -2071,6 +2157,7 @@ bool CSSMathExpressionOperation::AccumulateLengthArray(
       // expression into a length array.
     case CSSMathOperator::kProgress:
     case CSSMathOperator::kCalcSize:
+    case CSSMathOperator::kMediaProgress:
       return false;
     case CSSMathOperator::kInvalid:
       NOTREACHED();
@@ -2191,7 +2278,8 @@ String CSSMathExpressionOperation::CustomCSSText() const {
 
       return result.ReleaseString();
     }
-    case CSSMathOperator::kProgress: {
+    case CSSMathOperator::kProgress:
+    case CSSMathOperator::kMediaProgress: {
       CHECK_EQ(operands_.size(), 3u);
       StringBuilder result;
       result.Append(ToString(operator_));
@@ -2285,6 +2373,7 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
         }
         case CSSMathOperator::kSign:
         case CSSMathOperator::kProgress:
+        case CSSMathOperator::kMediaProgress:
           return CSSPrimitiveValue::UnitType::kNumber;
         case CSSMathOperator::kCalcSize: {
           DCHECK_EQ(operands_.size(), 2u);
@@ -2417,7 +2506,8 @@ double CSSMathExpressionOperation::EvaluateOperator(
           (value == 0 || std::isnan(value)) ? value : ((value > 0) ? 1 : -1);
       return signum;
     }
-    case CSSMathOperator::kProgress: {
+    case CSSMathOperator::kProgress:
+    case CSSMathOperator::kMediaProgress: {
       CHECK_EQ(operands.size(), 3u);
       return (operands[0] - operands[1]) / (operands[2] - operands[1]);
     }
@@ -2888,6 +2978,7 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kAnchorSize:
         return RuntimeEnabledFeatures::CSSAnchorPositioningEnabled();
       case CSSValueID::kProgress:
+      case CSSValueID::kMediaProgress:
         return RuntimeEnabledFeatures::CSSProgressNotationEnabled();
       case CSSValueID::kCalcSize:
         return RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled();
@@ -2968,50 +3059,63 @@ class CSSMathExpressionNodeParser {
         anchor_query_type, anchor_specifier, *value, fallback);
   }
 
-  // https://drafts.csswg.org/css-values-5/#progress-func
-  CSSMathExpressionNode* ParseProgressNotation(CSSValueID function_id,
-                                               CSSParserTokenRange& tokens,
-                                               State state) {
-    if (function_id != CSSValueID::kProgress) {
-      return nullptr;
-    }
-    // <progress()> = progress(<calc-sum> from <calc-sum> to <calc-sum>)
-    //                         0          1    2          3  4
-    HeapVector<Member<const CSSMathExpressionNode>> nodes;
-    tokens.ConsumeWhitespace();
-    if (CSSMathExpressionNode* node = ParseValueExpression(tokens, state)) {
-      nodes.push_back(node);
-    }
+  bool ParseProgressNotationFromTo(
+      CSSParserTokenRange& tokens,
+      State state,
+      CSSMathExpressionOperation::Operands& nodes) {
     if (tokens.ConsumeIncludingWhitespace().Id() != CSSValueID::kFrom) {
-      return nullptr;
+      return false;
     }
     if (CSSMathExpressionNode* node = ParseValueExpression(tokens, state)) {
       nodes.push_back(node);
     }
     if (tokens.ConsumeIncludingWhitespace().Id() != CSSValueID::kTo) {
-      return nullptr;
+      return false;
     }
     if (CSSMathExpressionNode* node = ParseValueExpression(tokens, state)) {
       nodes.push_back(node);
     }
-    if (nodes.size() != 3u) {
+    return true;
+  }
+
+  // https://drafts.csswg.org/css-values-5/#progress-func
+  // https://drafts.csswg.org/css-values-5/#media-progress-func
+  CSSMathExpressionNode* ParseProgressNotation(CSSValueID function_id,
+                                               CSSParserTokenRange& tokens,
+                                               State state) {
+    if (function_id != CSSValueID::kProgress &&
+        function_id != CSSValueID::kMediaProgress) {
       return nullptr;
     }
-    if (!tokens.AtEnd()) {
+    // <media-progress()> = media-progress(<media-feature> from <calc-sum> to
+    // <calc-sum>)
+    CSSMathExpressionOperation::Operands nodes;
+    tokens.ConsumeWhitespace();
+    if (function_id == CSSValueID::kMediaProgress) {
+      if (CSSMathExpressionKeywordLiteral* node =
+              ParseKeywordLiteral(tokens, CSSMathOperator::kMediaProgress)) {
+        nodes.push_back(node);
+      }
+    } else if (CSSMathExpressionNode* node =
+                   ParseValueExpression(tokens, state)) {
+      // <progress()> = progress(<calc-sum> from <calc-sum> to <calc-sum>)
+      nodes.push_back(node);
+    }
+    if (!ParseProgressNotationFromTo(tokens, state, nodes)) {
       return nullptr;
     }
-    CalculationResultCategory first_category = nodes[0]->Category();
-    if (first_category != nodes[1]->Category() ||
-        first_category != nodes[2]->Category() ||
-        first_category == CalculationResultCategory::kCalcIntrinsicSize) {
+    if (nodes.size() != 3u || !tokens.AtEnd() ||
+        !CheckProgressFunctionTypes(function_id, nodes)) {
       return nullptr;
     }
     // Note: we don't need to resolve percents in such case,
     // as all the operands are numeric literals,
     // so p% / (t% - f%) will lose %.
+    // Note: we can not simplify media-progress.
     ProgressArgsSimplificationStatus status =
         CanEagerlySimplifyProgressArgs(nodes);
-    if (status != ProgressArgsSimplificationStatus::kCanNotSimplify) {
+    if (function_id == CSSValueID::kProgress &&
+        status != ProgressArgsSimplificationStatus::kCanNotSimplify) {
       Vector<double> double_values;
       double_values.reserve(nodes.size());
       for (const CSSMathExpressionNode* operand : nodes) {
@@ -3033,7 +3137,8 @@ class CSSMathExpressionNodeParser {
     }
     return MakeGarbageCollected<CSSMathExpressionOperation>(
         CalculationResultCategory::kCalcNumber, std::move(nodes),
-        CSSMathOperator::kProgress);
+        function_id == CSSValueID::kProgress ? CSSMathOperator::kProgress
+                                             : CSSMathOperator::kMediaProgress);
   }
 
   CSSMathExpressionNode* ParseCalcSize(CSSValueID function_id,
@@ -3498,6 +3603,16 @@ class CSSMathExpressionNodeParser {
     return result;
   }
 
+  CSSMathExpressionKeywordLiteral* ParseKeywordLiteral(
+      CSSParserTokenRange& tokens,
+      CSSMathOperator op) {
+    const CSSParserToken& token = tokens.ConsumeIncludingWhitespace();
+    if (token.GetType() == kIdentToken) {
+      return CSSMathExpressionKeywordLiteral::Create(token.Id(), op);
+    }
+    return nullptr;
+  }
+
   CSSMathExpressionNode* ParseValueExpression(CSSParserTokenRange& tokens,
                                               State state) {
     if (++state.depth > kMaxExpressionDepth) {
@@ -3697,15 +3812,18 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
       return CSSMathExpressionOperation::CreateSignRelatedFunction(
           std::move(operands), op);
     }
-    case CalculationOperator::kProgress: {
+    case CalculationOperator::kProgress:
+    case CalculationOperator::kMediaProgress: {
       CHECK_EQ(children.size(), 3u);
       CSSMathExpressionOperation::Operands operands;
       operands.push_back(Create(*children.front()));
       operands.push_back(Create(*children[1]));
       operands.push_back(Create(*children.back()));
+      CSSMathOperator op = calc_op == CalculationOperator::kProgress
+                               ? CSSMathOperator::kProgress
+                               : CSSMathOperator::kMediaProgress;
       return MakeGarbageCollected<CSSMathExpressionOperation>(
-          CalculationResultCategory::kCalcNumber, std::move(operands),
-          CSSMathOperator::kProgress);
+          CalculationResultCategory::kCalcNumber, std::move(operands), op);
     }
     case CalculationOperator::kCalcSize: {
       CHECK_EQ(children.size(), 2u);

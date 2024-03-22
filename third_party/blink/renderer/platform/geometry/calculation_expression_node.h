@@ -32,6 +32,7 @@ enum class CalculationOperator {
   kSign,
   kProgress,
   kCalcSize,
+  kMediaProgress,
   kInvalid
 };
 

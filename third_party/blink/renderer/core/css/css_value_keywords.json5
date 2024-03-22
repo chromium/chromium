@@ -1865,6 +1865,9 @@
 
     // fill / stroke
     "context-fill",
-    "context-stroke"
+    "context-stroke",
+
+    // media-progress()
+    "media-progress",
   ],
 }

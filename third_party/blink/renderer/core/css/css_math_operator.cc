@@ -65,6 +65,8 @@ String ToString(CSSMathOperator op) {
       return "progress";
     case CSSMathOperator::kCalcSize:
       return "calc-size";
+    case CSSMathOperator::kMediaProgress:
+      return "media-progress";
     default:
       NOTREACHED();
       return String();

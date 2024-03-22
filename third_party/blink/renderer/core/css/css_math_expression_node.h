@@ -315,8 +315,7 @@ struct DowncastTraits<CSSMathExpressionNumericLiteral> {
   }
 };
 
-// Used for media-feature name in media-progress(),
-// for container name in container-progress().
+// Used for container name in container-progress().
 // Will possibly be used in container name for container units function.
 class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
     : public CSSMathExpressionNode {
@@ -444,9 +443,7 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
-      const CSSLengthResolver&) const final {
-    return std::nullopt;
-  }
+      const CSSLengthResolver&) const final;
   double DoubleValue() const final {
     NOTREACHED();
     return 0;
@@ -601,11 +598,16 @@ class CORE_EXPORT CSSMathExpressionOperation final
            operator_ == CSSMathOperator::kSign;
   }
   bool IsCalcSize() const { return operator_ == CSSMathOperator::kCalcSize; }
+  bool IsProgressNotation() const {
+    return operator_ == CSSMathOperator::kProgress ||
+           operator_ == CSSMathOperator::kMediaProgress;
+  }
 
   // TODO(crbug.com/1284199): Check other math functions too.
   bool IsMathFunction() const final {
     return IsMinOrMax() || IsClamp() || IsSteppedValueFunction() ||
-           IsTrigonometricFunction() || IsSignRelatedFunction() || IsCalcSize();
+           IsTrigonometricFunction() || IsSignRelatedFunction() ||
+           IsCalcSize() || IsProgressNotation();
   }
 
   bool HasPercentage() const final;

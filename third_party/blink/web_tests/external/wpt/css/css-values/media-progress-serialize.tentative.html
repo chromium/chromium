@@ -5,6 +5,14 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="../support/serialize-testcommon.js"></script>
 <div id=target></div>
+<style>
+:root {
+  font-size: 10px;
+}
+#target {
+  font-size: 10px;
+}
+</style>
 <script>
 function test_serialization(t,s,c) {
     test_specified_serialization('opacity', t, s);
@@ -14,43 +22,23 @@ function test_serialization(t,s,c) {
 }
 
 test_serialization(
-    'progress(100px from 0px to 100px)',
-    'calc(1)',
-    '1',
+    'media-progress(width from 0px to 1000px)',
+    'media-progress(width from 0px to 1000px)',
+    '0.8',
 );
 test_serialization(
-    'progress(10em from 0px to 10em)',
-    'progress(10em from 0px to 10em)',
-    '1',
+    'calc(0.1 * media-progress(height from 0px to 10em))',
+    'calc(0.1 * media-progress(height from 0px to 10em))',
+    '0.6',
 );
 test_serialization(
-    'progress(10em from 0px to 10rem)',
-    'progress(10em from 0px to 10rem)',
-    '1',
-);
-test_serialization(
-    'progress(100px from (10px - 10px) to 100px)',
-    'calc(1)',
-    '1',
-);
-test_serialization(
-    'progress(1% from (10% - 10%) to 100%)',
-    'calc(0.01)',
-    '0.01',
-);
-test_serialization(
-    'calc(0.5 * progress(100px from 0px to 100px))',
-    'calc(0.5)',
-    '0.5'
-);
-test_specified_serialization(
-    'width',
-    'calc(50px * progress(100px from 0px to 100px))',
-    'calc(50px)'
+    'calc(media-progress(width from 0px to 100px) / 20)',
+    'calc(media-progress(width from 0px to 100px) / 20)',
+    '0.4'
 );
 test_computed_serialization(
     'width',
-    'calc(1px * progress(abs(10%) from (10% - 10%) to 100% / 10))',
-    '1px',
+    'calc(1px * media-progress(height from abs(11em - 10rem) to 110px / 10))',
+    '590px',
 );
 </script>
