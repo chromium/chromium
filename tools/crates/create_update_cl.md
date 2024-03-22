@@ -107,3 +107,78 @@ review and landing process.
 1. `git cl upload`
 1. Get a review from one of `//third_party/rust/OWNERS`
 1. Land the CL using CQ+2
+
+## Checking for new major versions
+
+Note that `create_update_cl.py` will only handle minor version changes (e.g.
+123.1 => 123.2, or 0.123.1 => 0.123.2).  Major version changes (e.g. 1.0 => 2.0,
+which may include breaking API changes and other breaking changes) need to be
+handled separately.
+
+As part of the rotation, one should attempt to check for new major versions of
+direct Chromium dependencies (i.e. dependencies directly listed in
+`third_party/rust/chromium_crates_io/Cargo.toml`).  To discover direct _and_
+transitive dependencies with a new major version, you can use the command below
+(running it in the final update CL branch - after all the minor version
+updates):
+
+```
+$ tools/crates/run_cargo.py -Zunstable-options -C third_party/rust/chromium_crates_io -Zbindeps update --dry-run --verbose
+...
+   Unchanged serde_json_lenient v0.1.8 (latest: v0.2.0)
+   Unchanged syn v1.0.109 (latest: v2.0.53)
+...
+```
+
+### Workflow A: Single update CL
+
+If the updating to a new major version doesn't require lots of Chromium changes,
+then it may be possible to land the update in a single CL.  This is typically
+possible when the APIs affected by the major version's breaking change either
+weren't used by Chromium, or were used only in a handful of places.
+
+**Warning**: Sometimes a new major version may be API compatible, but may
+introduce breaking changes in the _behavior_ of the existing APIs.
+
+To update:
+
+1. Edit `third_party/rust/chromium_crates_io/Cargo.toml` to change the version
+   being depended upon.
+1. Follow other steps described in
+   [`docs/rust.md`](../../docs/rust.md#importing-a-crate-from-crates_io) for
+   importing a new crate (e.g. `gnrt vendor`, `gnrt gen`, etc.)
+    - TODO(https://crbug.com/330729319): Try to automate some parts of this step
+1. Remove the old version's leftover files in `//third_party/rust/<crate>/<old
+   epoch>`
+
+### Workflow B: Incremental transition
+
+When lots of first-party code depends on the old major version, then the
+transition to the new major version may need to be done incrementally.  In this
+case the transition can be split into the following steps:
+
+1. Open a new bug to track the transition
+    - TODO: Figure out how to tag/format the bug to make it easy to discover
+      in future rotations
+1. Land the new major version, so that the old and the new versions coexist.
+   To do this follow the process for importing a new crate as described in
+   [`docs/rust.md`](../../docs/rust.md#importing-a-crate-from-crates_io)
+   (i.e. edit `Cargo.toml` to add the new version, run `gnrt vendor`, and so
+   forth).
+1. Incrementally transition first-party code to the new major version
+1. Remove the old major version.  To do this follow a similar process as above
+   (i.e. edit `Cargo.toml` to remove the old version, run `gnrt vendor`, and so
+   forth).  Any leftover files in `//third_party/rust/<crate>/<old epoch>`
+   should also be removed.
+
+Note that the following `Cargo.toml` syntax allows two versions of a crate to
+coexist:
+
+```
+[dependencies.serde_json_lenient_old_epoch]
+package = "serde_json_lenient"
+version = "0.1"
+
+[dependencies.serde_json_lenient]
+version = "0.2"
+```
