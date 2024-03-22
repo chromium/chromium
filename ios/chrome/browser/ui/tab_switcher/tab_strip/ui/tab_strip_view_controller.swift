@@ -584,6 +584,8 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
       case let tabCell as TabStripTabCell:
         tabCell.accessibilityIdentifier = tabTripTabCellAccessibilityIdentifier(
           index: indexPath.item)
+        tabCell.tabIndex = indexPath.item + 1
+        tabCell.numberOfTabs = numberOfTabs
       case let groupCell as TabStripGroupCell:
         groupCell.accessibilityIdentifier = tabTripGroupCellAccessibilityIdentifier(
           index: indexPath.item)
