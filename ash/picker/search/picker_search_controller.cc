@@ -221,18 +221,6 @@ void PickerSearchController::PublishBurnInResults() {
   current_callback_.Run(std::move(sections));
 }
 
-void PickerSearchController::AppendPostBurnInResults(
-    PickerSearchResultsSection section) {
-  if (IsSearchStopped()) {
-    return;
-  }
-
-  CHECK(IsPostBurnIn());
-  if (!section.results().empty()) {
-    current_callback_.Run({{std::move(section)}});
-  }
-}
-
 void PickerSearchController::HandleSearchSourceResults(
     PickerSearchSource source,
     std::vector<PickerSearchResult> results) {
@@ -249,9 +237,13 @@ void PickerSearchController::HandleSearchSourceResults(
   }
 
   if (IsPostBurnIn()) {
-    // Skip assignment and immediately publish.
-    AppendPostBurnInResults(PickerSearchResultsSection(
-        SectionTypeFromSearchSource(source), std::move(results)));
+    // Publish post-burn-in results and skip assignment.
+    if (!results.empty()) {
+      std::vector<PickerSearchResultsSection> sections;
+      sections.emplace_back(SectionTypeFromSearchSource(source),
+                            std::move(results));
+      current_callback_.Run(std::move(sections));
+    }
     return;
   }
 

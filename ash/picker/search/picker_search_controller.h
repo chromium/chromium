@@ -63,7 +63,6 @@ class ASH_EXPORT PickerSearchController {
 
   void ResetResults();
   void PublishBurnInResults();
-  void AppendPostBurnInResults(PickerSearchResultsSection section);
 
   void HandleSearchSourceResults(PickerSearchSource source,
                                  std::vector<PickerSearchResult> results);
