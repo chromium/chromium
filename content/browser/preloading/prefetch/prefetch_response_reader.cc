@@ -4,7 +4,6 @@
 
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -118,15 +117,6 @@ void PrefetchResponseReader::OnServingURLLoaderMojoDisconnect() {
 }
 
 PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
-  if (create_request_handler_called_) {
-    // Monitor cases where CreateRequestHandler() is called multiple times, for
-    // investigation of crbug.com/1483599. Anyway such cases should be handled
-    // (failing gracefully) below, e.g. by checking `body_`.
-    // TODO(crbug.com/1483599): Remove this.
-    base::debug::DumpWithoutCrashing();
-  }
-  create_request_handler_called_ = true;
-
   mojo::ScopedDataPipeConsumerHandle body;
 
   // Returns a null handler if some checks fail here.

@@ -220,8 +220,6 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // `ForwardResponse()`.
   mojo::ScopedDataPipeConsumerHandle forward_body_;
 
-  bool create_request_handler_called_{false};
-
   // The URL loader clients that will serve the prefetched data.
   mojo::ReceiverSet<network::mojom::URLLoader> serving_url_loader_receivers_;
   mojo::RemoteSet<network::mojom::URLLoaderClient> serving_url_loader_clients_;
