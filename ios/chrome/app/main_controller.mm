@@ -1168,6 +1168,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kMailtoHandlingInitialization
                   block:^{
+                    // TODO(crbug.com/330724241) Remove use of
+                    // appState.mainBrowserState. Force creation of
+                    // MailtoHandlerService for all loaded browserStates.
                     __strong __typeof(weakSelf) strongSelf = weakSelf;
                     if (!strongSelf || !strongSelf.appState.mainBrowserState) {
                       return;
