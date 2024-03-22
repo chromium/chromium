@@ -2070,5 +2070,5 @@ message ChromeDeviceSettingsProto {
   optional BooleanPolicyProto DeviceLoginScreenTouchVirtualKeyboardEnabled =
       1194;
   optional BooleanPolicyProto DeviceExtendedAutoUpdateEnabled = 1195;
-  optional StringPolicyProto DeviceWeeklyScheduledSuspend = 1196;
+  optional StringPolicyProto DeviceWeeklyScheduledSuspend = 1209;
 }
