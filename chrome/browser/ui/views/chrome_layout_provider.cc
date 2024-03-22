@@ -100,9 +100,6 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       // label button because it behaves like a menu control.
       return gfx::Insets::VH(insets.height(), horizontal_padding);
     }
-    case INSETS_INFOBAR_VIEW:
-      return features::IsChromeRefresh2023() ? gfx::Insets::VH(4, 0)
-                                             : gfx::Insets::VH(0, 0);
     default:
       return LayoutProvider::GetInsetsMetric(metric);
   }
@@ -180,6 +177,10 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return features::IsChromeRefresh2023() ? 20 : 0;
     case DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING:
       return features::IsChromeRefresh2023() ? 16 : 12;
+    case DISTANCE_INFOBAR_HEIGHT:
+      // Spec says height of button should be 36dp, vertical padding on both
+      // top and bottom should be 8dp.
+      return 36 + 2 * 8;
     case DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING:
       return features::IsChromeRefresh2023()
                  ? 8

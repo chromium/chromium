@@ -101,6 +101,25 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
+                       HeightStaysConstant) {
+  int height;
+  ShowPromptForTesting();
+  RunTestSequence(
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+      WithView(ConfirmInfoBar::kInfoBarElementId,
+               [&height](ConfirmInfoBar* info_bar) {
+                 height = info_bar->target_height_for_testing();
+               }),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      SelectTab(kTabStripElementId, 0), FlushEvents(),
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+      CheckView(ConfirmInfoBar::kInfoBarElementId,
+                [&height](ConfirmInfoBar* info_bar) {
+                  return height == info_bar->target_height_for_testing();
+                }));
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                        DoesNotShowDefaultBrowserPromptOnIncognitoTab) {
   ui::Accelerator incognito_accelerator;
   chrome::AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(

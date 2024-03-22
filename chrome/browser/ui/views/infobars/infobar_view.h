@@ -34,9 +34,6 @@ class InfoBarView : public infobars::InfoBar,
   InfoBarView& operator=(const InfoBarView&) = delete;
   ~InfoBarView() override;
 
-  // Requests that the infobar recompute its target height.
-  void RecalculateHeight();
-
   // views::View:
   void Layout(PassKey) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

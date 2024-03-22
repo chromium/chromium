@@ -21,8 +21,6 @@ enum ChromeInsetsMetric {
   INSETS_OMNIBOX_PILL_BUTTON,
   // Padding used in an page info hover button.
   INSETS_PAGE_INFO_HOVER_BUTTON,
-  // Padding used in Infobar view.
-  INSETS_INFOBAR_VIEW,
 };
 
 enum ChromeDistanceMetric {
@@ -100,6 +98,8 @@ enum ChromeDistanceMetric {
   DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW,
   // Horizontal padding applied between the icon and label in the infobar.
   DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING,
+  // Height of info bars.
+  DISTANCE_INFOBAR_HEIGHT,
   // Horizontal padding applied between the icon and label in the permission
   // prompt.
   DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING,

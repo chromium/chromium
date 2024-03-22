@@ -150,24 +150,5 @@ void InfoBarContainerView::PlatformSpecificRemoveInfoBar(
   RemoveChildView(static_cast<InfoBarView*>(infobar));
 }
 
-void InfoBarContainerView::PlatformSpecificInfoBarStateChanged(
-    bool is_animating) {
-  // If we just finished animating the removal of the previous top infobar, the
-  // new top infobar should now stop drawing a top separator.  In this case the
-  // previous top infobar is zero-sized but has not yet been removed from the
-  // container, so we'll have at least three children (two infobars and a
-  // shadow), and the new top infobar is child 1.  The conditional below
-  // won't exclude cases where we're adding rather than removing an infobar, but
-  // doing unnecessary work on the second infobar in those cases is harmless.
-  if (!is_animating && children().size() > 2) {
-    // Dropping the separator may change the height.
-    auto* infobar = static_cast<InfoBarView*>(children()[1]);
-    infobar->RecalculateHeight();
-
-    // We need to force a paint whether or not the height actually changed.
-    infobar->SchedulePaint();
-  }
-}
-
 BEGIN_METADATA(InfoBarContainerView)
 END_METADATA

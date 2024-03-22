@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/button/label_button.h"
@@ -160,3 +161,6 @@ int ConfirmInfoBar::NonLabelWidth() const {
   width += (width && !link_->GetText().empty()) ? label_spacing : 0;
   return width;
 }
+
+BEGIN_METADATA(ConfirmInfoBar)
+END_METADATA

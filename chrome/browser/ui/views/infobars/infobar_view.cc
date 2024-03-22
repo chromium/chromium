@@ -124,6 +124,9 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
       InstallCircleHighlightPathGenerator(close_button_);
     }
   }
+
+  SetTargetHeight(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(DISTANCE_INFOBAR_HEIGHT));
 }
 
 InfoBarView::~InfoBarView() {
@@ -131,19 +134,6 @@ InfoBarView::~InfoBarView() {
   // subclasses' RunMenu() functions should have prevented opening any new ones
   // once we became unowned.
   DCHECK(!menu_runner_.get());
-}
-
-void InfoBarView::RecalculateHeight() {
-  // Ensure the infobar is tall enough to display its contents.
-  int height = 0;
-  for (View* child : children()) {
-    const gfx::Insets* const margins = child->GetProperty(views::kMarginsKey);
-    const int margin_height = margins ? margins->height() : 0;
-    height = std::max(height, child->height() + margin_height);
-  }
-  const gfx::Insets infobar_margins =
-      ChromeLayoutProvider::Get()->GetInsetsMetric(INSETS_INFOBAR_VIEW);
-  SetTargetHeight(height + infobar_margins.height());
 }
 
 void InfoBarView::Layout(PassKey) {
@@ -201,10 +191,11 @@ void InfoBarView::ViewHierarchyChanged(
   View::ViewHierarchyChanged(details);
 
   // Anything that needs to happen once after all subclasses add their children.
-  if (details.is_add && (details.child == this)) {
-    if (close_button_)
-      ReorderChildView(close_button_, children().size());
-    RecalculateHeight();
+  // TODO(330923783): Create a container for info bar subclasses to add children
+  // to, so that we don't have to move the close button to the end every time a
+  // child is added.
+  if (details.is_add && (details.child == this) && close_button_) {
+    ReorderChildView(close_button_, children().size());
   }
 }
 
@@ -236,9 +227,6 @@ void InfoBarView::OnThemeChanged() {
       }
     }
   }
-
-  // Native theme changes can affect font sizes.
-  RecalculateHeight();
 }
 
 void InfoBarView::OnWillChangeFocus(View* focused_before, View* focused_now) {

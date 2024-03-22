@@ -36,7 +36,6 @@ class InfoBarContainerView : public views::AccessiblePaneView,
   void PlatformSpecificAddInfoBar(infobars::InfoBar* infobar,
                                   size_t position) override;
   void PlatformSpecificRemoveInfoBar(infobars::InfoBar* infobar) override;
-  void PlatformSpecificInfoBarStateChanged(bool is_animating) override;
 
  private:
   // This view draws the shadow over the web contents below the
