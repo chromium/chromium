@@ -86,7 +86,7 @@ class LegacyRunner:
       skip_compile: If True, the UTR will only run the tests.
       skip_test: If True, the UTR will only compile.
       skip_prompts: If True, skip Y/N prompts for warnings.
-      builder_dir: pathlib.Path to the build dir to build in. Will use the UTR's
+      build_dir: pathlib.Path to the build dir to build in. Will use the UTR's
           default otherwise if needed.
     """
     self._recipes_py = recipes_py
@@ -101,7 +101,7 @@ class LegacyRunner:
     input_props['$recipe_engine/path'] = {'cache_dir': str(_SRC_DIR.parent)}
     input_props['test_names'] = tests
     if build_dir:
-      input_props['build_dir'] = build_dir
+      input_props['build_dir'] = str(build_dir.absolute())
     # The recipe will overwrite this property so we have to put it preserve it
     # elsewhere
     if 'recipe' in input_props:

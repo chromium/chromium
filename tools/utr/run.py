@@ -51,6 +51,7 @@ def add_common_args(parser):
       '--build-dir',
       '--out-dir',
       '-o',
+      type=pathlib.Path,
       help='Path to the build dir to use for compilation and/or for invoking '
       'test binaries. Will use the output path used by the builder if not '
       'specified (likely //out/Release/).')
