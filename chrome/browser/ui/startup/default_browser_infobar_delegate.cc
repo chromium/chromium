@@ -122,10 +122,7 @@ bool DefaultBrowserInfoBarDelegate::Accept() {
   base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
       ->StartSetAsDefault(base::NullCallback());
 
-  ConfirmInfoBarDelegate::Accept();
-  // With the refresh, the DefaultBrowserPromptManager handles closing the info
-  // bar.
-  return !base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh);
+  return ConfirmInfoBarDelegate::Accept();
 }
 
 }  // namespace chrome

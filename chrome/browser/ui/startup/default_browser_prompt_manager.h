@@ -57,6 +57,8 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
 
   std::map<content::WebContents*, infobars::InfoBar*> infobars_;
+
+  bool user_initiated_close_pending_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_MANAGER_H_

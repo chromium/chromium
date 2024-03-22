@@ -96,6 +96,11 @@ void DefaultBrowserPromptManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
   infobars_.erase(infobars_entry);
   static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())
       ->RemoveObserver(this);
+
+  if (user_initiated_close_pending_) {
+    CloseAllInfoBars();
+    user_initiated_close_pending_ = false;
+  }
 }
 
 void DefaultBrowserPromptManager::OnAccept() {
@@ -103,9 +108,9 @@ void DefaultBrowserPromptManager::OnAccept() {
                               g_browser_process->local_state()->GetInteger(
                                   prefs::kDefaultBrowserDeclinedCount) +
                                   1);
-  CloseAllInfoBars();
+  user_initiated_close_pending_ = true;
 }
 
 void DefaultBrowserPromptManager::OnDismiss() {
-  CloseAllInfoBars();
+  user_initiated_close_pending_ = true;
 }
