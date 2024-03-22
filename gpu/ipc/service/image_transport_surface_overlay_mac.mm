@@ -23,11 +23,6 @@
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "ui/accelerated_widget_mac/io_surface_context.h"
-#include "ui/gl/gl_context.h"
-#endif
-
 // From ANGLE's EGL/eglext_angle.h. This should be included instead of being
 // redefined here.
 #ifndef EGL_ANGLE_device_metal
@@ -63,7 +58,7 @@ BASE_FEATURE(kNewPresentationFeedbackTimeStamps,
 }  // namespace
 
 ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL()
-    : scale_factor_(1), weak_ptr_factory_(this) {
+    : weak_ptr_factory_(this) {
   static bool av_disabled_at_command_line =
       !base::FeatureList::IsEnabled(kAVFoundationOverlays);
 
@@ -84,25 +79,6 @@ ImageTransportSurfaceOverlayMacEGL::~ImageTransportSurfaceOverlayMacEGL() {
   ca_layer_tree_coordinator_.reset();
 }
 
-void ImageTransportSurfaceOverlayMacEGL::ApplyBackpressure(
-    uint64_t frame_fence) {
-  TRACE_EVENT0("gpu", "ImageTransportSurfaceOverlayMac::ApplyBackpressure");
-  // Waiting on the previous frame's fence (to maximize CPU and GPU execution
-  // overlap).
-  gl::GLContext* current_context = gl::GLContext::GetCurrent();
-  if (current_context) {
-    current_context->BackpressureFenceWait(frame_fence);
-  }
-}
-
-uint64_t ImageTransportSurfaceOverlayMacEGL::CreateBackpressureFence() {
-  gl::GLContext* current_context = gl::GLContext::GetCurrent();
-  if (current_context) {
-    return current_context->BackpressureFenceCreate();
-  }
-  return 0;
-}
-
 void ImageTransportSurfaceOverlayMacEGL::BufferPresented(
     PresentationCallback callback,
     const gfx::PresentationFeedback& feedback) {
@@ -120,7 +96,7 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   // frame in Present.
   if (ca_layer_tree_coordinator_->NumPendingSwaps() >= cap_max_pending_swaps_) {
     DLOG(ERROR) << "num_pending_swaps >= cap_max_pending_swaps_";
-    PopulateCALayerParameters();
+    CommitPresentedFrameToCA();
   }
 
   // Query the underlying Metal device, if one exists. This is needed to ensure
@@ -143,9 +119,8 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
     }
   }
 
-  ca_layer_tree_coordinator_->Present(
-      std::move(completion_callback), std::move(presentation_callback),
-      CreateBackpressureFence(), ca_layer_error_code_);
+  ca_layer_tree_coordinator_->Present(std::move(completion_callback),
+                                      std::move(presentation_callback));
 
 #if BUILDFLAG(IS_MAC)
   if (display_link_mac_ && !vsync_callback_mac_) {
@@ -162,24 +137,20 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   if (vsync_callback_mac_) {
     vsync_callback_mac_keep_alive_counter_ = kMaxKeepAliveCounter;
     if (delay_presenetation_until_next_vsync) {
-      // Delay PopulateCALayerParameters() until OnVSyncPresentation().
+      // Delay CommitPresentedFrameToCA() until OnVSyncPresentation().
       return;
     }
   }
 #endif
 
-  PopulateCALayerParameters();
+  CommitPresentedFrameToCA();
 }
 
-void ImageTransportSurfaceOverlayMacEGL::PopulateCALayerParameters() {
+void ImageTransportSurfaceOverlayMacEGL::CommitPresentedFrameToCA() {
   //  Do a GL fence for flush to apply back-pressure before drawing.
   {
     base::TimeTicks start_time = base::TimeTicks::Now();
-    // Apply back pressure to the current frame.
-    uint64_t frame_fence =
-        ca_layer_tree_coordinator_->GetCurrentCommittedFrameFence();
-    ApplyBackpressure(frame_fence);
-
+    ca_layer_tree_coordinator_->ApplyBackpressure();
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Gpu.Mac.BackpressureUs", base::TimeTicks::Now() - start_time,
         kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
@@ -253,15 +224,13 @@ bool ImageTransportSurfaceOverlayMacEGL::Resize(
     float scale_factor,
     const gfx::ColorSpace& color_space,
     bool has_alpha) {
-  pixel_size_ = pixel_size;
-  scale_factor_ = scale_factor;
   ca_layer_tree_coordinator_->Resize(pixel_size, scale_factor);
   return true;
 }
 
 void ImageTransportSurfaceOverlayMacEGL::SetCALayerErrorCode(
     gfx::CALayerResult ca_layer_error_code) {
-  ca_layer_error_code_ = ca_layer_error_code;
+  ca_layer_tree_coordinator_->SetCALayerErrorCode(ca_layer_error_code);
 }
 
 void ImageTransportSurfaceOverlayMacEGL::SetMaxPendingSwaps(
@@ -343,7 +312,7 @@ void ImageTransportSurfaceOverlayMacEGL::OnVSyncPresentation(
   }
 
   if (ca_layer_tree_coordinator_->NumPendingSwaps()) {
-    PopulateCALayerParameters();
+    CommitPresentedFrameToCA();
   }
 
   vsync_callback_mac_keep_alive_counter_--;

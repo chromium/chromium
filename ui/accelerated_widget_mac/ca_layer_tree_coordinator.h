@@ -72,14 +72,18 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
   // Set the composited frame's size.
   void Resize(const gfx::Size& pixel_size, float scale_factor);
 
+  // Set the CALayer overlay error for the frame that is going to be presented.
+  void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code);
+
   // The CARendererLayerTree for the pending frame. This is used to construct
   // the CALayer tree for the CoreAnimation renderer.
   CARendererLayerTree* GetPendingCARendererLayerTree();
 
   void Present(gl::Presenter::SwapCompletionCallback completion_callback,
-               gl::Presenter::PresentationCallback presentation_callback,
-               uint64_t backpressure_fence,
-               gfx::CALayerResult ca_layer_error_code);
+               gl::Presenter::PresentationCallback presentation_callback);
+
+  //  Do a GL fence for flush to apply back-pressure on the committed frame.
+  void ApplyBackpressure();
 
   // Commit the presented frame's OpenGL backbuffer or CALayer tree to be
   // attached to the root CALayer.
@@ -88,16 +92,17 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
 
   void SetMaxCALayerTrees(int cap_max_ca_layer_trees);
 
-  uint64_t GetCurrentCommittedFrameFence() const;
-
   int NumPendingSwaps();
 
  private:
+  uint64_t CreateBackpressureFence();
+
   const bool allow_remote_layers_ = true;
   const bool allow_av_sample_buffer_display_layer_ = true;
   const bool new_presentation_feedback_timestamps_;
   gfx::Size pixel_size_;
   float scale_factor_ = 1;
+  gfx::CALayerResult ca_layer_error_code_ = gfx::kCALayerSuccess;
 
   // The max number of CARendererLayerTree allowed at the same time. It includes
   // both the current tree and the pending trees.

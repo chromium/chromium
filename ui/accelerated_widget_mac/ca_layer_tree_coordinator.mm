@@ -13,7 +13,13 @@
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/gfx/ca_layer_params.h"
+#include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/accelerated_widget_mac/io_surface_context.h"
+#include "ui/gl/gl_context.h"
+#endif
 
 namespace ui {
 
@@ -65,6 +71,11 @@ void CALayerTreeCoordinator::Resize(const gfx::Size& pixel_size,
   scale_factor_ = scale_factor;
 }
 
+void CALayerTreeCoordinator::SetCALayerErrorCode(
+    gfx::CALayerResult ca_layer_error_code) {
+  ca_layer_error_code_ = ca_layer_error_code;
+}
+
 CARendererLayerTree* CALayerTreeCoordinator::GetPendingCARendererLayerTree() {
   if (!unpresented_ca_renderer_layer_tree_) {
     CHECK_LT(presented_frames_.size(), presented_ca_layer_trees_max_length_);
@@ -75,22 +86,39 @@ CARendererLayerTree* CALayerTreeCoordinator::GetPendingCARendererLayerTree() {
   return unpresented_ca_renderer_layer_tree_.get();
 }
 
-uint64_t CALayerTreeCoordinator::GetCurrentCommittedFrameFence() const {
-  if (!presented_frames_.empty() && presented_frames_.front()->has_committed) {
-    return presented_frames_.front()->backpressure_fence;
-  } else {
-    return 0;
+uint64_t CALayerTreeCoordinator::CreateBackpressureFence() {
+  gl::GLContext* current_context = gl::GLContext::GetCurrent();
+  if (current_context) {
+    return current_context->BackpressureFenceCreate();
+  }
+  return 0;
+}
+
+void CALayerTreeCoordinator::ApplyBackpressure() {
+  // Nothing was just committed.
+  if (presented_frames_.empty() || presented_frames_.front()->has_committed) {
+    return;
+  }
+
+  TRACE_EVENT0("gpu", "CALayerTreeCoordinator::ApplyBackpressure");
+
+  // Apply back pressure to the previous frame.
+  uint64_t frame_fence = presented_frames_.front()->backpressure_fence;
+
+  // Waiting on the previous frame's fence (to maximize CPU and GPU execution
+  // overlap).
+  gl::GLContext* current_context = gl::GLContext::GetCurrent();
+  if (current_context) {
+    current_context->BackpressureFenceWait(frame_fence);
   }
 }
 
 void CALayerTreeCoordinator::Present(
     gl::Presenter::SwapCompletionCallback completion_callback,
-    gl::Presenter::PresentationCallback presentation_callback,
-    uint64_t backpressure_fence,
-    gfx::CALayerResult ca_layer_error_code) {
+    gl::Presenter::PresentationCallback presentation_callback) {
   presented_frames_.push(std::make_unique<PresentedFrame>(
       std::move(completion_callback), std::move(presentation_callback),
-      backpressure_fence, ca_layer_error_code,
+      CreateBackpressureFence(), ca_layer_error_code_,
       /*ready_timestamp=*/base::TimeTicks::Now(),
       std::move(unpresented_ca_renderer_layer_tree_)));
 }
@@ -101,12 +129,12 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
   // Update the CALayer hierarchy.
   ScopedCAActionDisabler disabler;
 
+  // Remove the committed frame which is displayed on the screen from the
+  // |presented_frames_| queue;
   std::unique_ptr<CARendererLayerTree> current_tree;
   if (!presented_frames_.empty() && presented_frames_.front()->has_committed) {
     current_tree.swap(presented_frames_.front()->layer_tree);
 
-    // Now we are done with the current committed frame. Remove it from the
-    // |presented_frames_| queue;
     presented_frames_.pop();
   }
 

@@ -42,6 +42,7 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
+
   void Present(SwapCompletionCallback completion_callback,
                PresentationCallback presentation_callback,
                gfx::FrameData data) override;
@@ -50,6 +51,7 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
       gl::OverlayImage image,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override;
+
   bool ScheduleCALayer(const ui::CARendererLayerParams& params) override;
 
   void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) override;
@@ -69,19 +71,17 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
   gfx::SwapResult SwapBuffersInternal(
       gl::GLSurface::SwapCompletionCallback completion_callback,
       gl::GLSurface::PresentationCallback presentation_callback);
-  void ApplyBackpressure(uint64_t frame_fence);
-  uint64_t CreateBackpressureFence();
+
   void BufferPresented(gl::GLSurface::PresentationCallback callback,
                        const gfx::PresentationFeedback& feedback);
-  void PopulateCALayerParameters();
+
+  void CommitPresentedFrameToCA();
 
   std::unique_ptr<ui::CALayerTreeCoordinator> ca_layer_tree_coordinator_;
 
-  gfx::Size pixel_size_;
-  float scale_factor_;
-  gfx::CALayerResult ca_layer_error_code_ = gfx::kCALayerSuccess;
-
 #if BUILDFLAG(IS_MAC)
+  // The expected display time from CVDisplayLinkCallback for the frame being
+  // committed.
   base::TimeTicks GetDisplaytime(base::TimeTicks latch_time);
 
   // CGDirectDisplayID of the current monitor used for Creating CVDisplayLink.
