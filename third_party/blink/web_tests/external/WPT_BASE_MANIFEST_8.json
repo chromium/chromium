@@ -303985,7 +303985,7 @@
      ],
      "parsing": {
       "color-computed-color-mix-function-expected.txt": [
-       "d47cba9d853e72afe7d3485cb4914032076f15c0",
+       "3461d845c504320d12e4aeb451db6976c225925c",
        []
       ],
       "color-computed-relative-color-expected.txt": [
@@ -534754,7 +534754,7 @@
        ]
       ],
       "window-open-blank-from-different-initiator.html": [
-       "91817c3db440d76a0793f8feae7bc877659b123d",
+       "3e227b456f6c14b32a3051c6a12ba5d1ccf9e8c3",
        [
         null,
         {
@@ -712499,7 +712499,7 @@
          ]
         ],
         "request.py": [
-         "de9492f0a52c3bc896ffde993de63cd0d29b9df5",
+         "f8cc3fb676e0cc9ec9b2ade4642101becd264d85",
          [
           null,
           {}
