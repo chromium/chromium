@@ -62,7 +62,7 @@ class LegacyRunner:
   UTR_RECIPE_NAME = 'chromium/universal_test_runner'
 
   def __init__(self,
-               bundle_root_path,
+               recipes_py,
                builder_props,
                bucket,
                builder,
@@ -75,7 +75,7 @@ class LegacyRunner:
     """Constructor for LegacyRunner
 
     Args:
-      bundle_root_path: pathlib.Path to the root of the recipe bundle
+      recipes_py: pathlib.Path to the root of the recipe bundle
       builder_props: Dict containing the props for the builder to run as.
       bucket: Bucket name of the builder to run as.
       builder: Builder name of the builder to run as.
@@ -87,7 +87,7 @@ class LegacyRunner:
       builder_dir: pathlib.Path to the build dir to build in. Will use the UTR's
           default otherwise if needed.
     """
-    self._recipes_py = bundle_root_path.joinpath('recipes')
+    self._recipes_py = recipes_py
     self._swarming_server = swarming_server
     self._skip_prompts = skip_prompts
     assert self._recipes_py.exists()

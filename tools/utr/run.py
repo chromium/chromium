@@ -10,6 +10,7 @@ same way it's done on the bots. See the README.md in //tools/utr/ for more info.
 
 import argparse
 import logging
+import pathlib
 import sys
 
 import builders
@@ -53,6 +54,11 @@ def add_common_args(parser):
       help='Path to the build dir to use for compilation and/or for invoking '
       'test binaries. Will use the output path used by the builder if not '
       'specified (likely //out/Release/).')
+  parser.add_argument(
+      '--recipe-path',
+      '-r',
+      type=pathlib.Path,
+      help='Path to override the recipe bundle with a local checkout.')
 
 
 def add_compile_args(parser):
@@ -105,7 +111,11 @@ def main():
   if not recipe.check_rdb_auth():
     return 1
 
-  bundle_root = cipd.fetch_recipe_bundle(args.verbosity)
+  if not args.recipe_path:
+    recipes_path = cipd.fetch_recipe_bundle(args.verbosity).joinpath('recipes')
+  else:
+    recipes_path = args.recipe_path.joinpath('recipes', 'recipes.py')
+
   builder_props, swarming_server = builders.find_builder_props(
       args.bucket, args.builder)
   if not builder_props:
@@ -114,7 +124,7 @@ def main():
   skip_compile = args.run_mode == 'test'
   skip_test = args.run_mode == 'compile'
   recipe_runner = recipe.LegacyRunner(
-      bundle_root,
+      recipes_path,
       builder_props,
       args.bucket,
       args.builder,
