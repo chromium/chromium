@@ -2957,7 +2957,7 @@
   {
     "name": "enable-force-dark",
     "owners": [ "beverloo@chromium.org", "pdr@chromium.org" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 136
   },
   {
     "name": "enable-friendlier-safe-browsing-settings-enhanced-protection",
