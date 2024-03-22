@@ -16,12 +16,15 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
+#include "chrome/browser/ash/login/test/wizard_controller_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enter_old_password_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_password_changed_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/osauth/local_data_loss_warning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
@@ -251,6 +254,51 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenNoRecoveryTest,
     OobeScreenWaiter(EnterOldPasswordScreenView::kScreenId).Wait();
   }
   EXPECT_FALSE(IsMounted());
+}
+
+// Verifies that right reset password screen is shows and we goto Useronboarding
+// flow.
+IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenNoRecoveryTest, ResetSuccess) {
+  if (IsOldFlow()) {
+    GTEST_SKIP();
+  }
+  SetupFakeGaia(test_user_);
+
+  OpenGaiaDialog(test_user_.account_id);
+  EXPECT_EQ(LoginDisplayHost::default_host()
+                ->GetWizardContext()
+                ->gaia_config.gaia_path,
+            WizardContext::GaiaPath::kReauth);
+
+  SetUpExitCallback();
+  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
+
+  OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
+
+  WaitForScreenExit();
+
+  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kFallbackOnline);
+  OobeScreenWaiter(EnterOldPasswordScreenView::kScreenId).Wait();
+  test::CreateOldPasswordEnterPageWaiter()->Wait();
+
+  // Click forgot password button.
+  test::PasswordChangedForgotPasswordAction();
+  test::LocalDataLossWarningPageWaiter()->Wait();
+
+  test::LocalDataLossWarningPageExpectGoBack();
+  test::LocalDataLossWarningPageExpectRemove();
+
+  // Click "Proceed anyway".
+  test::LocalDataLossWarningPageRemoveAction();
+
+  WizardControllerExitWaiter(LocalDataLossWarningScreenView::kScreenId).Wait();
+
+  EXPECT_EQ(LoginDisplayHost::default_host()
+                ->GetWizardContext()
+                ->knowledge_factor_setup.auth_setup_flow,
+            WizardContext::AuthChangeFlow::kInitialSetup);
+
+  // Following this we will wait for password entry.
 }
 
 // Verifies that we could fallback to the manual recovery when there is error
