@@ -10,6 +10,10 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+ - chrome.*
+ - chrome_os
+ - android
 items:
 - caption: Enable the Fingerprinting Protection feature.
   value: true
@@ -20,9 +24,5 @@ owners:
 - file://components/privacy_sandbox/OWNERS
 schema:
   type: boolean
-supported_on:
- - chrome.*:124-
- - chrome_os:124-
- - android:124-
 tags: []
 type: main
