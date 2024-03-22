@@ -228,6 +228,42 @@ TEST_F(PasswordManagerErrorMessageDelegateTest, SignInOnActionClick) {
                                       1);
 }
 
+// Tests that the Google Play page where GMSCore can be updated opens when the
+// user clicks the "Update" button on the error message that nudges to update
+// because account passwords can't be saved due to an outdated GMSCore version.
+TEST_F(PasswordManagerErrorMessageDelegateTest,
+       UpdateGMSCoreOnActionClickWhenSavingPossible) {
+  DisplayMessageAndExpectEnqueued(
+      password_manager::ErrorMessageFlowType::kSaveFlow,
+      password_manager::PasswordStoreBackendErrorType::
+          kGMSCoreOutdatedSavingPossible);
+
+  EXPECT_CALL(*helper_bridge(), LaunchGmsUpdate());
+  // Trigger the click action on the "Update" button and dismiss the message.
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
+  // The message needs to be dismissed manually in tests. In production code
+  // this happens automatically, but on the java side.
+  DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
+}
+
+// Tests that the Google Play page where GMSCore can be updated opens when the
+// user clicks the "Update" button on the error message that nudges to update
+// because passwords can't be saved due to an outdated GMSCore version.
+TEST_F(PasswordManagerErrorMessageDelegateTest,
+       UpdateGMSCoreOnActionClickWhenSavingDisabled) {
+  DisplayMessageAndExpectEnqueued(
+      password_manager::ErrorMessageFlowType::kSaveFlow,
+      password_manager::PasswordStoreBackendErrorType::
+          kGMSCoreOutdatedSavingDisabled);
+
+  EXPECT_CALL(*helper_bridge(), LaunchGmsUpdate());
+  // Trigger the click action on the "Update" button and dismiss the message.
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
+  // The message needs to be dismissed manually in tests. In production code
+  // this happens automatically, but on the java side.
+  DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
+}
+
 // Tests that the metrics are recorded correctly when the message is
 // autodismissed.
 TEST_F(PasswordManagerErrorMessageDelegateTest, MetricOnAutodismissTimer) {

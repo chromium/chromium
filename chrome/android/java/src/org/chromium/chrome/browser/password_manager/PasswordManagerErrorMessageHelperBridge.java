@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -18,12 +19,12 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -120,11 +121,19 @@ public class PasswordManagerErrorMessageHelperBridge {
                 .createKeyRetrievalIntent(primaryAccountInfo)
                 .then(
                         (intent) -> {
-                            var action = TrustedVaultUserActionTriggerForUMA.PASSWORD_MANAGER_ERROR_MESSAGE;
+                            var action =
+                                    TrustedVaultUserActionTriggerForUMA
+                                            .PASSWORD_MANAGER_ERROR_MESSAGE;
                             var proxyIntent =
                                     SyncTrustedVaultProxyActivity.createKeyRetrievalProxyIntent(
-                                                    intent, action);
+                                            intent, action);
                             IntentUtils.safeStartActivity(activity, proxyIntent);
                         });
+    }
+
+    /** Starts the Google Play services page where the user can choose to update GMSCore. */
+    @CalledByNative
+    static void launchGmsUpdate() {
+        PasswordManagerHelper.launchGmsUpdate(ContextUtils.getApplicationContext());
     }
 }

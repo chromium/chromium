@@ -59,3 +59,8 @@ void PasswordManagerErrorMessageHelperBridgeImpl::SaveErrorUIShownTimestamp(
       base::android::AttachCurrentThread(),
       ProfileAndroid::FromProfile(profile)->GetJavaObject());
 }
+
+void PasswordManagerErrorMessageHelperBridgeImpl::LaunchGmsUpdate() {
+  Java_PasswordManagerErrorMessageHelperBridge_launchGmsUpdate(
+      base::android::AttachCurrentThread());
+}

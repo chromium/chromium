@@ -179,7 +179,7 @@ void PasswordManagerErrorMessageDelegate::HandleActionButtonClicked(
       break;
     case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingPossible:
     case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingDisabled:
-      // TODO: b/328030773 - Open the screen that offers updating GMSCore.
+      helper_bridge_->LaunchGmsUpdate();
       break;
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:
