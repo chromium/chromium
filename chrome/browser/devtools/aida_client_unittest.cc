@@ -139,6 +139,7 @@ TEST_F(AidaClientTest, NotAvailableIfFeatureDisabled) {
 #endif
   EXPECT_FALSE(blocked_reason.blocked_by_age);
   EXPECT_FALSE(blocked_reason.blocked_by_enterprise_policy);
+  EXPECT_FALSE(blocked_reason.blocked_by_geo);
   feature_list_.Reset();
   feature_list_.InitAndDisableFeature(::features::kDevToolsConsoleInsights);
   blocked_reason = AidaClient::CanUseAida(profile_.get());
@@ -146,6 +147,7 @@ TEST_F(AidaClientTest, NotAvailableIfFeatureDisabled) {
   EXPECT_TRUE(blocked_reason.blocked_by_feature_flag);
   EXPECT_FALSE(blocked_reason.blocked_by_age);
   EXPECT_FALSE(blocked_reason.blocked_by_enterprise_policy);
+  EXPECT_FALSE(blocked_reason.blocked_by_geo);
 }
 
 TEST_F(AidaClientTest, NotAvailableIfCapabilityFalse) {
@@ -156,9 +158,10 @@ TEST_F(AidaClientTest, NotAvailableIfCapabilityFalse) {
 #else
   EXPECT_TRUE(blocked_reason.blocked);
   EXPECT_TRUE(blocked_reason.blocked_by_feature_flag);
+#endif
   EXPECT_FALSE(blocked_reason.blocked_by_age);
   EXPECT_FALSE(blocked_reason.blocked_by_enterprise_policy);
-#endif
+  EXPECT_FALSE(blocked_reason.blocked_by_geo);
   auto account_info = identity_test_env_->identity_manager()
                           ->FindExtendedAccountInfoByEmailAddress(kEmail);
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
@@ -168,6 +171,7 @@ TEST_F(AidaClientTest, NotAvailableIfCapabilityFalse) {
   blocked_reason = AidaClient::CanUseAida(profile_.get());
   EXPECT_TRUE(blocked_reason.blocked);
   EXPECT_FALSE(blocked_reason.blocked_by_enterprise_policy);
+  EXPECT_FALSE(blocked_reason.blocked_by_geo);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_FALSE(blocked_reason.blocked_by_feature_flag);
   EXPECT_TRUE(blocked_reason.blocked_by_age);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/aida_client.h"
 #include <string>
+#include "base/check_is_test.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/string_escape.h"
 #include "base/metrics/histogram_functions.h"
@@ -11,10 +12,12 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/variations/service/variations_service.h"
 #include "net/base/load_flags.h"
 
 AidaClient::AidaClient(Profile* profile)
@@ -57,6 +60,15 @@ bool IsAidaBlockedByEnterpriseOrEdu(std::optional<AccountInfo> account_info) {
              signin::Tribool::kFalse;
 }
 
+bool IsAidaBlockedByGeo() {
+  auto* variations_service = g_browser_process->variations_service();
+  if (!variations_service) {
+    CHECK_IS_TEST();
+    return false;
+  }
+  return variations_service->GetStoredPermanentCountry() != "us";
+}
+
 AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
   struct BlockedReason result;
   // Console insights is only available on branded builds
@@ -85,7 +97,9 @@ AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
       IsAidaBlockedByEnterpriseOrEdu(account_info) ||
       profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) !=
           static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kAllow);
-  result.blocked = result.blocked_by_age || result.blocked_by_enterprise_policy;
+  result.blocked_by_geo = IsAidaBlockedByGeo();
+  result.blocked = result.blocked_by_age ||
+                   result.blocked_by_enterprise_policy || result.blocked_by_geo;
   return result;
 #endif
 }

@@ -46,6 +46,7 @@ class AidaClient {
     bool blocked_by_age = false;
     bool blocked_by_enterprise_policy = false;
     bool blocked_by_feature_flag = false;
+    bool blocked_by_geo = false;
   };
 
   static BlockedReason CanUseAida(Profile* profile);

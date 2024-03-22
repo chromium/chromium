@@ -400,6 +400,10 @@ std::string SanitizeFrontendQueryParam(
     return value;
   }
 
+  if (key == "ci_blockedByGeo" && value == "true") {
+    return value;
+  }
+
   return std::string();
 }
 

@@ -98,6 +98,7 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
@@ -3925,6 +3926,7 @@ bool hasQueryParam(WebContents* wc, std::string query_param) {
 
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
                        EnterprisePolicyEnabledByDefault) {
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   SetupAccountCapabilities();
   OpenDevToolsWindow(kDebuggerTestPage, false);
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
@@ -3935,10 +3937,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
 #endif
   EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
   EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
   CloseDevToolsWindow();
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsNotEnabledForMinors) {
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   SetupAccountCapabilities(true, false, false);
   OpenDevToolsWindow(kDebuggerTestPage, false);
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
@@ -3950,10 +3954,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsNotEnabledForMinors) {
   EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
 #endif
   EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
   CloseDevToolsWindow();
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsNotEnabledForEduUsers) {
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   SetupAccountCapabilities(false, true, false);
   OpenDevToolsWindow(kDebuggerTestPage, false);
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
@@ -3965,11 +3971,30 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsNotEnabledForEduUsers) {
   EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
 #endif
   EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
+  CloseDevToolsWindow();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsDisabledForNonUSUsers) {
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry("at");
+  SetupAccountCapabilities();
+  OpenDevToolsWindow(kDebuggerTestPage, false);
+  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
+#else
+  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
+#endif
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
   CloseDevToolsWindow();
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
                        IsNotEnabledForEnterpriseUsers) {
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   SetupAccountCapabilities(true, false, true);
   OpenDevToolsWindow(kDebuggerTestPage, false);
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
@@ -3982,11 +4007,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
   EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
   EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
 #endif
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
   CloseDevToolsWindow();
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
                        CanBeDisabledByEnterprisePolicy) {
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   SetupAccountCapabilities();
   // Disable via enterprise policy.
   policy::PolicyMap policies;
@@ -4029,6 +4056,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
 
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
                        IsDisabledWhenPolicySetToOne) {
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   policy::PolicyMap policies;
   // Use value for a potential future "enable and don't store data for model
   // training" policy to disable via enterprise policy.

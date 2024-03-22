@@ -114,6 +114,7 @@ static_library("devtools") {
     "//components/autofill/content/browser:browser",
     "//components/autofill/core/browser:browser",
     "//components/paint_preview/buildflags:buildflags",
+    "//components/variations/service:service",
     "//content/public/browser",
     "//net",
     "//services/metrics/public/cpp:ukm_builders",
