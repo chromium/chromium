@@ -4127,6 +4127,22 @@ TEST_F(SnapGroupTest, MultipleSnapGroups) {
   // TODO(sophiewen): Test the bounds after restoring both groups.
 }
 
+// Tests that when dragging a window to 'snap replace' a visible window in a
+// snap group, the original window is replaced and a new snap group is created.
+TEST_F(SnapGroupTest, SnapToReplaceBasic) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapOneTestWindow(w3.get(), WindowStateType::kPrimarySnapped);
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupHistogramTest:
 

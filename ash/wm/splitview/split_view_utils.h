@@ -261,6 +261,11 @@ chromeos::WindowStateType GetOppositeSnapType(aura::Window* window);
 ASH_EXPORT bool CanSnapActionSourceStartFasterSplitView(
     WindowSnapActionSource snap_action_source);
 
+// Returns the window that is fully visible (without occlusion) and snapped to
+// the opposite side of the given `window`. Returns nullptr if no such window
+// exists.
+aura::Window* GetTheWindowSnappedOppositeOf(aura::Window* window);
+
 // Returns true if the given `window` can be considered as the candidate for
 // faster split screen set up. Returns false otherwise. `snap_action_source` is
 // used to filter out some unwanted snap sources.

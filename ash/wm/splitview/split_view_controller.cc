@@ -2216,6 +2216,17 @@ void SplitViewController::OnWindowSnapped(
     }
   }
 
+  // TODO(michelefan): Move the logics closer to `MaybeCreateSnapGroup()`.
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
+    if (SnapGroup* snap_group =
+            snap_group_controller->GetSnapGroupToReplaceFor(window)) {
+      if (snap_group_controller->MaybeReplaceWindowInSnapGroup(window,
+                                                               snap_group)) {
+        return;
+      }
+    }
+  }
+
   if (WillStartPartialOverview(window)) {
     RootWindowController::ForWindow(window)->StartSplitViewOverviewSession(
         window, overview_start_action_, enter_exit_overview_type_,

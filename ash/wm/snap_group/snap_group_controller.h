@@ -67,6 +67,17 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   // snap group or nullptr otherwise.
   SnapGroup* GetSnapGroupForGivenWindow(const aura::Window* window);
 
+  // Returns the snap group positioned directly below the given window. The
+  // windows within this group will be overwritten when the given `window` is
+  // snapped into place. Returns nullptr if no such snap group exists.
+  SnapGroup* GetSnapGroupToReplaceFor(aura::Window* window);
+
+  // Maybe perform in-place window replacement within the given `snap_group` by
+  // snapping another `window` into the same snap position. Returns true for
+  // successful replacement, false otherwise.
+  bool MaybeReplaceWindowInSnapGroup(aura::Window* window,
+                                     SnapGroup* snap_group);
+
   // Used to decide whether showing overview on window snapped is allowed in
   // clamshell.
   bool CanEnterOverview() const;

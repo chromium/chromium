@@ -12,13 +12,16 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 
@@ -122,6 +125,33 @@ SnapGroup* SnapGroupController::GetSnapGroupForGivenWindow(
     const aura::Window* window) {
   auto iter = window_to_snap_group_map_.find(window);
   return iter != window_to_snap_group_map_.end() ? iter->second : nullptr;
+}
+
+SnapGroup* SnapGroupController::GetSnapGroupToReplaceFor(aura::Window* window) {
+  return GetSnapGroupForGivenWindow(GetTheWindowSnappedOppositeOf(window));
+}
+
+bool SnapGroupController::MaybeReplaceWindowInSnapGroup(aura::Window* window,
+                                                        SnapGroup* snap_group) {
+  CHECK(snap_group);
+  CHECK_EQ(GetTopmostSnapGroup(), snap_group);
+
+  aura::Window* new_primary_window;
+  aura::Window* new_secondary_window;
+  if (WindowState::Get(window)->GetStateType() ==
+      chromeos::WindowStateType::kPrimarySnapped) {
+    new_primary_window = window;
+    new_secondary_window = snap_group->window2();
+  } else {
+    CHECK_EQ(WindowState::Get(window)->GetStateType(),
+             chromeos::WindowStateType::kSecondarySnapped);
+    new_primary_window = snap_group->window1();
+    new_secondary_window = window;
+  }
+
+  RemoveSnapGroup(snap_group);
+  AddSnapGroup(new_primary_window, new_secondary_window);
+  return true;
 }
 
 bool SnapGroupController::CanEnterOverview() const {
