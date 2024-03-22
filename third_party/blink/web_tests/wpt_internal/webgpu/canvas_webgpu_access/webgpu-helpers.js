@@ -95,3 +95,36 @@ function test_beginWebGPUAccess_texture_readback(device, canvas) {
     }
   });
 };
+
+/**
+ * beginWebGPUAccess() disallows repeated calls without a call to
+ * endWebGPUAccess().
+ */
+function test_beginWebGPUAccess_unbalanced_access(device, canvas) {
+  // Begin a WebGPU access session.
+  const ctx = canvas.getContext('2d');
+  const tex = ctx.beginWebGPUAccess({device: device});
+
+  try {
+    // Try to start a second WebGPU access session.
+    tex = ctx.beginWebGPUAccess({device: device});
+    assert_unreached('InvalidStateError should have been thrown');
+  } catch (ex) {
+    assert_true(ex instanceof DOMException);
+    assert_equals(ex.name, 'InvalidStateError');
+  }
+}
+
+/**
+ * beginWebGPUAccess() should allow repeated calls after a call to
+ * endWebGPUAccess().
+ */
+function test_beginWebGPUAccess_balanced_access(device, canvas) {
+  const ctx = canvas.getContext('2d');
+
+  // Begin and end a WebGPU access session several times.
+  for (let count = 0; count < 10; ++count) {
+    const tex = ctx.beginWebGPUAccess({device: device});
+    ctx.endWebGPUAccess();
+  }
+}

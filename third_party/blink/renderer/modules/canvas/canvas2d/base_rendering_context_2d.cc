@@ -3369,6 +3369,18 @@ GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
     return nullptr;
   }
 
+  // Prevent unbalanced calls to beginWebGPUAccess without a later call to
+  // endWebGPUAccess.
+  if (webgpu_access_device_) {
+    CHECK(webgpu_access_texture_);
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "This canvas is already in use by WebGPU.");
+    return nullptr;
+  }
+
+  CHECK(!webgpu_access_texture_);
+
   // We can't rely on the HTMLCanvasElement, because the canvas may not actually
   // exist in the HTML. (e.g. `new OffscreenCanvas` has no HTML element.)
   // We also can't use GetImage() here, because that will return null if the
@@ -3409,8 +3421,22 @@ GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
   return webgpu_access_texture_;
 }
 
-void BaseRenderingContext2D::endWebGPUAccess(ExceptionState&) {
-  // TODO(crbug.com/1517367): implement
+void BaseRenderingContext2D::endWebGPUAccess(ExceptionState& exception_state) {
+  // Prevent unbalanced calls to endWebGPUAccess without an earlier call to
+  // beginWebGPUAccess.
+  if (!webgpu_access_device_) {
+    CHECK(!webgpu_access_texture_);
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "This canvas is not currently in use by WebGPU.");
+    return;
+  }
+
+  CHECK(webgpu_access_texture_);
+
+  // TODO(crbug.com/41490345): move webgpu_access_texture_ back onto the canvas.
+  webgpu_access_device_ = nullptr;
+  webgpu_access_texture_ = nullptr;
 }
 
 }  // namespace blink
