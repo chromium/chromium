@@ -30,13 +30,22 @@ namespace {
 
 // https://crbug.com/873588. The stack may not be aligned when the ALooper calls
 // into our code due to the inconsistent ABI on older Android OS versions.
+//
+// https://crbug.com/330761384#comment3. Calls from libutils.so into
+// NonDelayedLooperCallback() and DelayedLooperCallback() confuse aarch64 builds
+// with orderfile instrumentation causing incorrect value in
+// __builtin_return_address(0). Disable instrumentation for them. TODO(pasko):
+// Add these symbols to the orderfile manually or fix the builtin.
 #if defined(ARCH_CPU_X86)
-#define STACK_ALIGN __attribute__((force_align_arg_pointer))
+#define NO_INSTRUMENT_STACK_ALIGN \
+  __attribute__((force_align_arg_pointer, no_instrument_function))
 #else
-#define STACK_ALIGN
+#define NO_INSTRUMENT_STACK_ALIGN __attribute__((no_instrument_function))
 #endif
 
-STACK_ALIGN int NonDelayedLooperCallback(int fd, int events, void* data) {
+NO_INSTRUMENT_STACK_ALIGN int NonDelayedLooperCallback(int fd,
+                                                       int events,
+                                                       void* data) {
   if (events & ALOOPER_EVENT_HANGUP)
     return 0;
 
@@ -46,7 +55,9 @@ STACK_ALIGN int NonDelayedLooperCallback(int fd, int events, void* data) {
   return 1;  // continue listening for events
 }
 
-STACK_ALIGN int DelayedLooperCallback(int fd, int events, void* data) {
+NO_INSTRUMENT_STACK_ALIGN int DelayedLooperCallback(int fd,
+                                                    int events,
+                                                    void* data) {
   if (events & ALOOPER_EVENT_HANGUP)
     return 0;
 
