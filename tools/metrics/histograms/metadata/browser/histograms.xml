@@ -150,6 +150,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.EventEnqueueResult.{Destination}"
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2025-03-20">
+  <owner>jrhilke@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when ReportQueue::Enqueue is called to post an event to ERP. It
+    counts occurrences of the call returning success or each possible error
+    status for the {Destination} destination.
+  </summary>
+  <token key="Destination">
+    <variant name="ADDED_REMOVED_EVENTS"/>
+    <variant name="ARC_INSTALL"/>
+    <variant name="CHROME_BROWSER_ENTERPRISE"/>
+    <variant name="CRASH_EVENTS"/>
+    <variant name="CRD_EVENTS"/>
+    <variant name="CROS_SECURITY_AGENT"/>
+    <variant name="CROS_SECURITY_NETWORK"/>
+    <variant name="CROS_SECURITY_PROCESS"/>
+    <variant name="CROS_SECURITY_USER"/>
+    <variant name="DLP_EVENTS"/>
+    <variant name="EVENT_METRIC"/>
+    <variant name="EXTENSION_INSTALL"/>
+    <variant name="EXTENSIONS_WORKFLOW"/>
+    <variant name="HEARTBEAT_EVENT"/>
+    <variant name="INFO_METRIC"/>
+    <variant name="KIOSK_HEARTBEAT_EVENTS"/>
+    <variant name="LEGACY_TECH"/>
+    <variant name="LOCK_UNLOCK_EVENTS"/>
+    <variant name="LOG_UPLOAD"/>
+    <variant name="LOGIN_LOGOUT_EVENTS"/>
+    <variant name="MEET_DEVICE_TELEMETRY"/>
+    <variant name="OS_EVENTS"/>
+    <variant name="PERIPHERAL_EVENTS"/>
+    <variant name="POLICY_VALIDATION"/>
+    <variant name="PRINT_JOBS"/>
+    <variant name="REPORTING_RECORD"/>
+    <variant name="SUSPICIOUS_EVENTS"/>
+    <variant name="TELEMETRY_METRIC"/>
+    <variant name="UNDEFINED_DESTINATION"/>
+    <variant name="UPLOAD_EVENTS"/>
+    <variant name="WEB_PROTECT"/>
+  </token>
+</histogram>
+
 <histogram name="Browser.ERP.EventUploadSizeAdjustment.{Param}" units="bytes"
     expires_after="2024-07-28">
   <owner>xuhong@chromium.org</owner>

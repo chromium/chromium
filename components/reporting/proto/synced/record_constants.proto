@@ -11,6 +11,9 @@ package reporting;
 // |Destination| indicates which handler a |Record| should be delivered to.
 // This must be kept in sync with EnterpriseCloudReportingDestination in
 // //tools/metrics/histograms/metadata/browser/enums.xml in the Chromium repo.
+// You must also add any new destinations to
+// `Browser.ERP.EventEnqueueResult.{Destination}` in
+// //tools/metrics/histograms/metadata/browser/histograms.xml
 enum Destination {
   UNDEFINED_DESTINATION = 0;
 
