@@ -105,15 +105,11 @@ void ClientTagBasedModelTypeProcessor::ModelReadyToSync(
     return;
   }
 
-  sync_pb::ModelTypeState model_type_state = batch->GetModelTypeState();
-  if (MigrateLegacyInitialSyncDone(model_type_state, type_)) {
-    batch->SetModelTypeState(model_type_state);
-  }
-
   if (ClearPersistedMetadataIfInvalid(*batch)) {
     DLOG(ERROR) << "The persisted metadata was invalid and was cleared for "
                 << ModelTypeToDebugString(type_) << ". Start over fresh.";
   } else {
+    sync_pb::ModelTypeState model_type_state = batch->GetModelTypeState();
     if (IsInitialSyncAtLeastPartiallyDone(
             model_type_state.initial_sync_state())) {
       entity_tracker_ = std::make_unique<ProcessorEntityTracker>(
