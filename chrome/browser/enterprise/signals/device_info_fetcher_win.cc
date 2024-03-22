@@ -69,17 +69,21 @@ std::string GetSerialNumber() {
   return base::WideToUTF8(sys_info.serial_number());
 }
 
-// Retrieves the FQDN of the comeputer and if this fails reverts to the hostname
+// Retrieves the FQDN of the computer and if this fails reverts to the hostname
 // as known to the net subsystem.
 std::string GetComputerName() {
   DWORD size = 1024;
-  std::string result(size, '\0');
+  std::wstring result_wstr(size, L'\0');
 
-  if (!::GetComputerNameExA(ComputerNameDnsFullyQualified, &result[0], &size))
-    return net::GetHostName();
-  result.resize(size);
+  if (::GetComputerNameExW(ComputerNameDnsFullyQualified, &result_wstr[0],
+                           &size)) {
+    std::string result;
+    if (base::WideToUTF8(result_wstr.data(), size, &result)) {
+      return result;
+    }
+  }
 
-  return result;
+  return net::GetHostName();
 }
 
 // Retrieves the state of the screen locking feature from the screen saver
