@@ -8,11 +8,15 @@
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+// TODO(crbug.com/41494843): Remove this include once the usage of
+// `kUseUniversalGetTextureTargetFunction` has been eliminated.
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_bindings.h"
@@ -109,10 +113,28 @@ std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
     LOG(FATAL) << "Failed to get GLOzone.";
   }
 
-  target = !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format,
-                                                           buffer_plane)
-               ? GL_TEXTURE_2D
-               : gpu::GetPlatformSpecificTextureTarget();
+  // NOTE: The change to simplify logic for computing the texture target here is
+  // under the `kUseUniversalGetTextureTargetFunction` killswitch as it is
+  // following the same logic that ClientSharedImage::GetTextureTarget() is
+  // using, and thus it makes sense to roll out the changes together.
+  if (base::FeatureList::IsEnabled(kUseUniversalGetTextureTargetFunction)) {
+    // The target should be GL_TEXTURE_2D unless external sampling is being
+    // used, which in this context is equivalent to the passed-in buffer format
+    // being multiplanar (if using per-plane sampling of a multiplanar texture,
+    // the buffer format passed in here must be the single-planar format of the
+    // plane).
+    if (gfx::BufferFormatIsMultiplanar(buffer_format)) {
+      CHECK_EQ(buffer_plane, gfx::BufferPlane::DEFAULT);
+      target = GL_TEXTURE_EXTERNAL_OES;
+    } else {
+      target = GL_TEXTURE_2D;
+    }
+  } else {
+    target = !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format,
+                                                             buffer_plane)
+                 ? GL_TEXTURE_2D
+                 : gpu::GetPlatformSpecificTextureTarget();
+  }
 
   gl::GLApi* api = gl::g_current_gl_context;
   DCHECK(api);

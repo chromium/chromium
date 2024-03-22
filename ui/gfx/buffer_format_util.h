@@ -29,6 +29,9 @@ GFX_EXPORT size_t AlphaBitsForBufferFormat(BufferFormat format);
 // Returns the number of planes for |format|.
 GFX_EXPORT size_t NumberOfPlanesForLinearBufferFormat(BufferFormat format);
 
+// Returns whether |format| is multiplanar.
+GFX_EXPORT bool BufferFormatIsMultiplanar(BufferFormat format);
+
 // Returns the subsampling factor applied to the given zero-indexed |plane| of
 // |format| both horizontally and vertically.
 GFX_EXPORT size_t SubsamplingFactorForBufferFormat(BufferFormat format,
