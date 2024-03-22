@@ -1,7 +1,7 @@
 Name: libvpx
 URL: https://chromium.googlesource.com/webm/libvpx
 Version: N/A
-Revision: b95d17572629c676bdcfd535fb3990b9f6f8fb11
+Revision: 893c9f6d070cc3bd8503152480089673f57fdf76
 CPEPrefix: cpe:/a:webmproject:libvpx:1.13.1
 License: BSD
 License File: source/libvpx/LICENSE
