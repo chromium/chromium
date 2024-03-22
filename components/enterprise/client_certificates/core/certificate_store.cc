@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -521,8 +522,8 @@ void CertificateStoreImpl::GetIdentityInner(
 
   scoped_refptr<net::X509Certificate> certificate = nullptr;
   if (local_proto_identity->has_certificate()) {
-    base::Pickle pickle(local_proto_identity->certificate().data(),
-                        local_proto_identity->certificate().length());
+    base::Pickle pickle = base::Pickle::WithData(
+        base::as_byte_span(local_proto_identity->certificate()));
     base::PickleIterator iter(pickle);
     certificate = net::X509Certificate::CreateFromPickle(&iter);
   }
