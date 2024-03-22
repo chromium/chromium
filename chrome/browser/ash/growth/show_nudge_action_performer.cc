@@ -10,6 +10,7 @@
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "ui/views/bubble/bubble_border.h"
 
 namespace {
 
@@ -22,6 +23,7 @@ constexpr char kPrimaryButtonPath[] = "primaryButton";
 constexpr char kSecondaryButtonPath[] = "secondaryButton";
 constexpr char kLabelPath[] = "label";
 constexpr char kActionPath[] = "action";
+constexpr char kArrowPath[] = "arrow";
 
 // Nudge ID.
 constexpr char kGrowthNudgeId[] = "growth_campaign_nudge";
@@ -38,6 +40,58 @@ ash::NudgeDuration ConvertDuration(NudgeDuration duration) {
       return ash::NudgeDuration::kMediumDuration;
     case NudgeDuration::kLongDuration:
       return ash::NudgeDuration::kLongDuration;
+  }
+}
+
+// These values are deserialized from Growth Campaign, so entries should not
+// be renumbered and numeric values should never be reused.
+enum class Arrow {
+  kTopLeft,
+  kTopRight,
+  kBottomLeft,
+  kBottomRight,
+  kLeftTop,
+  kRightTop,
+  kLeftBottom,
+  kRightBottom,
+  kTopCenter,
+  kBottomCenter,
+  kLeftCenter,
+  kRightCenter,
+  kNone,
+  kFloat
+};
+
+views::BubbleBorder::Arrow ConvertArrow(Arrow arrow) {
+  switch (arrow) {
+    case Arrow::kTopLeft:
+      return views::BubbleBorder::Arrow::TOP_LEFT;
+    case Arrow::kTopRight:
+      return views::BubbleBorder::Arrow::TOP_RIGHT;
+    case Arrow::kBottomLeft:
+      return views::BubbleBorder::Arrow::BOTTOM_LEFT;
+    case Arrow::kBottomRight:
+      return views::BubbleBorder::Arrow::BOTTOM_RIGHT;
+    case Arrow::kLeftTop:
+      return views::BubbleBorder::Arrow::LEFT_TOP;
+    case Arrow::kRightTop:
+      return views::BubbleBorder::Arrow::RIGHT_TOP;
+    case Arrow::kLeftBottom:
+      return views::BubbleBorder::Arrow::LEFT_BOTTOM;
+    case Arrow::kRightBottom:
+      return views::BubbleBorder::Arrow::RIGHT_BOTTOM;
+    case Arrow::kTopCenter:
+      return views::BubbleBorder::Arrow::TOP_CENTER;
+    case Arrow::kBottomCenter:
+      return views::BubbleBorder::Arrow::BOTTOM_CENTER;
+    case Arrow::kLeftCenter:
+      return views::BubbleBorder::Arrow::LEFT_CENTER;
+    case Arrow::kRightCenter:
+      return views::BubbleBorder::Arrow::RIGHT_CENTER;
+    case Arrow::kNone:
+      return views::BubbleBorder::Arrow::NONE;
+    case Arrow::kFloat:
+      return views::BubbleBorder::Arrow::FLOAT;
   }
 }
 
@@ -130,6 +184,11 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
 
   // Set image data if available.
   MaybeSetImageData(nudge_payload->FindDict(kImagePath), nudge_data);
+
+  // Set arrow.
+  auto arrow_value =
+      nudge_payload->FindInt(kArrowPath).value_or(int(Arrow::kBottomRight));
+  nudge_data.arrow = ConvertArrow(static_cast<Arrow>(arrow_value));
 
   ash::Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
 
