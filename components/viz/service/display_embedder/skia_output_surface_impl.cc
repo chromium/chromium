@@ -41,6 +41,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/graphite_cache_controller.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -1218,11 +1219,16 @@ SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationRenderPass(
 #if BUILDFLAG(IS_APPLE)
   if (is_overlay) {
     DCHECK_EQ(gr_context_type_, gpu::GrContextType::kGL);
-    // For overlay, IOSurface will be used, and we may need using
-    // GL_TEXTURE_RECTANGLE_ARB as texture target.
+    // For overlay, IOSurface will be used. Hence, we need to ensure that we are
+    // using the correct texture target for IOSurfaces, which depends on the GL
+    // implementation.
     backend_format = GrBackendFormats::MakeGL(
         GrBackendFormats::AsGLFormatEnum(backend_format),
-        gpu::GetPlatformSpecificTextureTarget());
+#if BUILDFLAG(IS_MAC)
+        gpu::GetMacOSSpecificTextureTargetForCurrentGLImplementation());
+#else
+        GL_TEXTURE_2D);
+#endif
   }
 #endif
   auto image_info =
@@ -1265,11 +1271,12 @@ SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationCurrentFrame(
       color_type, GrRenderable::kYes);
 #if BUILDFLAG(IS_MAC)
   DCHECK_EQ(gr_context_type_, gpu::GrContextType::kGL);
-  // For root rander pass, IOSurface will be used, and we may need using
-  // GL_TEXTURE_RECTANGLE_ARB as texture target.
-  backend_format =
-      GrBackendFormats::MakeGL(GrBackendFormats::AsGLFormatEnum(backend_format),
-                               gpu::GetPlatformSpecificTextureTarget());
+  // For root render pass, IOSurface will be used. Hence, we need to ensure that
+  // we are using the correct texture target for IOSurfaces, which depends on
+  // the GL implementation.
+  backend_format = GrBackendFormats::MakeGL(
+      GrBackendFormats::AsGLFormatEnum(backend_format),
+      gpu::GetMacOSSpecificTextureTargetForCurrentGLImplementation());
 #endif
   DCHECK(backend_format.isValid())
       << "GrBackendFormat is invalid for color_type: " << color_type;
