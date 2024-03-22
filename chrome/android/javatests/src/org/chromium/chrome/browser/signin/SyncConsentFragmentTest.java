@@ -1504,7 +1504,6 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-    @DisabledTest(message = "Broken and/or flake on different bots, see b/40944120.")
     public void testManagedAccount_confirmed() throws Exception {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo = mSigninTestRule.addAccountAndWaitForSeeding(NEW_ACCOUNT_NAME);
@@ -1534,7 +1533,7 @@ public class SyncConsentFragmentTest {
             onView(withId(R.id.more_button)).perform(click());
         }
         onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
-        onViewWaiting(withId(R.id.positive_button)).perform(click());
+        onViewWaiting(withId(R.id.positive_button), true).perform(click());
         // Wait for the sync consent to be set.
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -1551,7 +1550,6 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-    @DisabledTest(message = "Broken and/or flake on different bots, see b/40944120.")
     public void testManagedAccount_failedSignin() throws Exception {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo = mSigninTestRule.addAccountAndWaitForSeeding(NEW_ACCOUNT_NAME);
@@ -1589,7 +1587,7 @@ public class SyncConsentFragmentTest {
             onView(withId(R.id.more_button)).perform(click());
         }
         onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
-        onViewWaiting(withId(R.id.positive_button)).perform(click());
+        onViewWaiting(withId(R.id.positive_button), true).perform(click());
         assertFalse(
                 TestThreadUtils.runOnUiThreadBlocking(
                         signinManager::getUserAcceptedAccountManagement));
