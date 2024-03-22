@@ -7,15 +7,14 @@
 
 #include "base/strings/string_util.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
 namespace {
 
-class ModelTypeTest : public testing::Test {};
-
-TEST_F(ModelTypeTest, IsRealDataType) {
+TEST(ModelTypeTest, IsRealDataType) {
   EXPECT_FALSE(IsRealDataType(UNSPECIFIED));
   EXPECT_TRUE(IsRealDataType(FIRST_REAL_MODEL_TYPE));
   EXPECT_TRUE(IsRealDataType(LAST_REAL_MODEL_TYPE));
@@ -29,7 +28,7 @@ TEST_F(ModelTypeTest, IsRealDataType) {
 
 // Make sure we can convert ModelTypes to and from specifics field
 // numbers.
-TEST_F(ModelTypeTest, ModelTypeToFromSpecificsFieldNumber) {
+TEST(ModelTypeTest, ModelTypeToFromSpecificsFieldNumber) {
   ModelTypeSet protocol_types = ProtocolTypes();
   for (ModelType type : protocol_types) {
     int field_number = GetSpecificsFieldNumberFromModelType(type);
@@ -37,11 +36,11 @@ TEST_F(ModelTypeTest, ModelTypeToFromSpecificsFieldNumber) {
   }
 }
 
-TEST_F(ModelTypeTest, ModelTypeOfInvalidSpecificsFieldNumber) {
+TEST(ModelTypeTest, ModelTypeOfInvalidSpecificsFieldNumber) {
   EXPECT_EQ(UNSPECIFIED, GetModelTypeFromSpecificsFieldNumber(0));
 }
 
-TEST_F(ModelTypeTest, ModelTypeHistogramMapping) {
+TEST(ModelTypeTest, ModelTypeHistogramMapping) {
   std::set<ModelTypeForHistograms> histogram_values;
   ModelTypeSet all_types = ModelTypeSet::All();
   for (ModelType type : all_types) {
@@ -56,7 +55,7 @@ TEST_F(ModelTypeTest, ModelTypeHistogramMapping) {
   }
 }
 
-TEST_F(ModelTypeTest, ModelTypeToStableIdentifier) {
+TEST(ModelTypeTest, ModelTypeToStableIdentifier) {
   std::set<int> identifiers;
   ModelTypeSet all_types = ModelTypeSet::All();
   for (ModelType type : all_types) {
@@ -74,7 +73,7 @@ TEST_F(ModelTypeTest, ModelTypeToStableIdentifier) {
   EXPECT_EQ(52, ModelTypeToStableIdentifier(HISTORY));
 }
 
-TEST_F(ModelTypeTest, DefaultFieldValues) {
+TEST(ModelTypeTest, DefaultFieldValues) {
   ModelTypeSet types = ProtocolTypes();
   for (ModelType type : types) {
     SCOPED_TRACE(ModelTypeToDebugString(type));
@@ -94,7 +93,7 @@ TEST_F(ModelTypeTest, DefaultFieldValues) {
   }
 }
 
-TEST_F(ModelTypeTest, ModelTypeToProtocolRootTagValues) {
+TEST(ModelTypeTest, ModelTypeToProtocolRootTagValues) {
   for (ModelType model_type : ProtocolTypes()) {
     std::string root_tag = ModelTypeToProtocolRootTag(model_type);
     if (IsRealDataType(model_type)) {
@@ -106,13 +105,13 @@ TEST_F(ModelTypeTest, ModelTypeToProtocolRootTagValues) {
   }
 }
 
-TEST_F(ModelTypeTest, ModelTypeDebugStringIsNotEmpty) {
+TEST(ModelTypeTest, ModelTypeDebugStringIsNotEmpty) {
   for (ModelType model_type : ModelTypeSet::All()) {
     EXPECT_NE("", ModelTypeToDebugString(model_type));
   }
 }
 
-TEST_F(ModelTypeTest, ModelTypesSubsetsSanity) {
+TEST(ModelTypeTest, ModelTypesSubsetsSanity) {
   // UserTypes and ControlTypes shouldn't overlap.
   EXPECT_TRUE(Intersection(UserTypes(), ControlTypes()).Empty());
 
@@ -134,7 +133,7 @@ TEST_F(ModelTypeTest, ModelTypesSubsetsSanity) {
   EXPECT_TRUE(Intersection(CommitOnlyTypes(), EncryptableUserTypes()).Empty());
 }
 
-TEST_F(ModelTypeTest, ModelTypeSetFromSpecificsFieldNumberList) {
+TEST(ModelTypeTest, ModelTypeSetFromSpecificsFieldNumberList) {
   // Get field numbers corresponding to each model type in ProtocolTypes().
   ::google::protobuf::RepeatedField<int> field_numbers;
   for (auto model_type : ProtocolTypes()) {
@@ -142,6 +141,18 @@ TEST_F(ModelTypeTest, ModelTypeSetFromSpecificsFieldNumberList) {
   }
   EXPECT_EQ(GetModelTypeSetFromSpecificsFieldNumberList(field_numbers),
             ProtocolTypes());
+}
+
+TEST(ModelTypeTest, TypesRequiringUnsyncedDataCheckOnSignout) {
+  static_assert(
+      52 == GetNumModelTypes(),
+      "Add new types to `TypesRequiringUnsyncedDataCheckOnSignout()` if there "
+      "should be a warning when the user signs out and the types have unsynced "
+      "data. The warning offers the user to either save the data locally or "
+      "abort sign-out, depending on the platform");
+
+  EXPECT_TRUE(
+      TypesRequiringUnsyncedDataCheckOnSignout().Has(syncer::PASSWORDS));
 }
 
 }  // namespace

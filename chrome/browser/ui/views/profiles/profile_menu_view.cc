@@ -65,6 +65,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -399,20 +400,12 @@ void ProfileMenuView::OnSignoutButtonClicked() {
     return;
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Sign out from all accounts.
-  browser()->signin_view_controller()->ShowGaiaLogoutTab(
+  browser()->signin_view_controller()->SignoutOrReauthWithPrompt(
+      signin_metrics::AccessPoint::
+          ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT,
+      signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
       signin_metrics::SourceForRefreshTokenOperation::
           kUserMenu_SignOutAllAccounts);
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull)) {
-    // In Uno, Gaia logout tab invalidating the account will lead to a sign in
-    // paused state. Unset the primary account to ensure it is removed from
-    // chrome. The `AccountReconcilor` will revoke refresh tokens for accounts
-    // not in the Gaia cookie on next reconciliation.
-    identity_manager->GetPrimaryAccountMutator()
-        ->RemovePrimaryAccountButKeepTokens(
-            signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu);
-  }
 #else
   CHECK(!browser()->profile()->IsMainProfile());
   identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(

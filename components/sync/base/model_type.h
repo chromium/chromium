@@ -386,6 +386,14 @@ constexpr ModelTypeSet SharedTypes() {
   return {SHARED_TAB_GROUP_DATA};
 }
 
+// Types triggering a warning when the user signs out and the types have
+// unsynced data. The warning offers the user to either save the data locally or
+// abort sign-out, depending on the platform.
+constexpr ModelTypeSet TypesRequiringUnsyncedDataCheckOnSignout() {
+  return {syncer::BOOKMARKS, syncer::READING_LIST, syncer::PASSWORDS,
+          syncer::CONTACT_INFO};
+}
+
 // User types that can be encrypted, which is a subset of UserTypes() and a
 // superset of AlwaysEncryptedUserTypes();
 ModelTypeSet EncryptableUserTypes();

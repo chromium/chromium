@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,9 +23,10 @@
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -39,14 +41,19 @@
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/logout_tab_helper.h"
 #include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
 #include "chrome/browser/ui/signin/signin_reauth_view_controller.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/google_api_keys.h"
@@ -100,6 +107,46 @@ signin_metrics::PromoAction GetPromoActionForNewAccount(
                    PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT
              : signin_metrics::PromoAction::
                    PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT;
+}
+
+// Called from `SignoutOrReauthWithPrompt()` after the user made a choice on the
+// confirmation dialog.
+void HandleSignoutConfirmationChoice(
+    base::WeakPtr<Browser> browser,
+    signin_metrics::AccessPoint reauth_access_point,
+    signin_metrics::ProfileSignout profile_signout_source,
+    signin_metrics::SourceForRefreshTokenOperation token_signout_source,
+    ChromeSignoutConfirmationChoice user_choice) {
+  if (!browser) {
+    return;
+  }
+
+  Profile* profile = browser->profile();
+  switch (user_choice) {
+    case ChromeSignoutConfirmationChoice::kDismissed:
+      return;
+    case ChromeSignoutConfirmationChoice::kReauth:
+      signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
+          profile, reauth_access_point);
+      return;
+    case ChromeSignoutConfirmationChoice::kSignout: {
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile);
+      // Sign out from all accounts.
+      browser->signin_view_controller()->ShowGaiaLogoutTab(
+          token_signout_source);
+      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+              switches::ExplicitBrowserSigninPhase::kFull)) {
+        // In Uno, Gaia logout tab invalidating the account will lead to a sign
+        // in paused state. Unset the primary account to ensure it is removed
+        // from chrome. The `AccountReconcilor` will revoke refresh tokens for
+        // accounts not in the Gaia cookie on next reconciliation.
+        identity_manager->GetPrimaryAccountMutator()
+            ->RemovePrimaryAccountButKeepTokens(profile_signout_source);
+      }
+      return;
+    }
+  }
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -167,6 +214,34 @@ void SigninViewController::ShowModalInterceptFirstRunExperienceDialog(
   // Casts pointer to a base class.
   dialog_ = std::move(fre_dialog);
   raw_dialog->Show();
+}
+
+void SigninViewController::SignoutOrReauthWithPrompt(
+    signin_metrics::AccessPoint reauth_access_point,
+    signin_metrics::ProfileSignout profile_signout_source,
+    signin_metrics::SourceForRefreshTokenOperation token_signout_source) {
+  Profile* profile = browser_->profile();
+  CHECK(profile->IsRegularProfile());
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  base::OnceCallback<void(syncer::ModelTypeSet)> signout_prompt_with_datatypes =
+      base::BindOnce(
+          &SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes,
+          weak_ptr_factory_.GetWeakPtr(), reauth_access_point,
+          profile_signout_source, token_signout_source);
+  // Fetch the unsynced datatypes, as this is required to decide whether the
+  // confirmation prompt is needed.
+  if (sync_service &&
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kFull) &&
+      profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
+    sync_service->GetTypesWithUnsyncedData(
+        syncer::TypesRequiringUnsyncedDataCheckOnSignout(),
+        std::move(signout_prompt_with_datatypes));
+    return;
+  }
+  // Dice users don't see the prompt, pass empty datatypes.
+  std::move(signout_prompt_with_datatypes).Run(syncer::ModelTypeSet());
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -460,6 +535,27 @@ void SigninViewController::ShowGaiaLogoutTab(
       browser_->tab_strip_model()->GetActiveWebContents();
   DCHECK(logout_tab_contents);
   LogoutTabHelper::CreateForWebContents(logout_tab_contents);
+}
+
+void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
+    signin_metrics::AccessPoint reauth_access_point,
+    signin_metrics::ProfileSignout profile_signout_source,
+    signin_metrics::SourceForRefreshTokenOperation token_signout_source,
+    syncer::ModelTypeSet unsynced_datatypes) {
+  // Show the confirmation prompt if there is data pending upload.
+  bool should_show_confirmation_prompt = !unsynced_datatypes.Empty();
+  base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback =
+      base::BindOnce(&HandleSignoutConfirmationChoice, browser_->AsWeakPtr(),
+                     reauth_access_point, profile_signout_source,
+                     token_signout_source);
+
+  if (should_show_confirmation_prompt) {
+    // Show confirmation prompt where the user can reauth or sign out.
+    ShowChromeSignoutConfirmationPrompt(*browser_, std::move(callback));
+  } else {
+    // Sign out immediately.
+    std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout);
+  }
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

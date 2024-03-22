@@ -205,6 +205,11 @@ enum class AccessPoint : int {
   ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE = 59,
   // Access point for a web sign with an explicit signin choice remembered.
   ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED = 60,
+  // Confirmation prompt shown when the user tries to sign out from the profile
+  // menu or settings. The signout prompt may have a "Verify it's you" button
+  // allowing the user to reauth.
+  ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT = 61,
+  ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT = 62,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml

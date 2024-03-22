@@ -419,6 +419,8 @@ chromium-metrics-reviews@google.com.
   <int value="58" label="Tips Notification on iOS"/>
   <int value="59" label="Notifications Opt-In Screen Content Toggle"/>
   <int value="60" label="Sign-in choice remembered"/>
+  <int value="61" label="Signout confirmation prompt in profile menu"/>
+  <int value="62" label="Signout confirmation prompt in settings"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

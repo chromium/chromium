@@ -288,9 +288,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 - (void)checkForUnsyncedDataAndSignOut {
   [self preventUserInteraction];
 
-  constexpr syncer::ModelTypeSet kDataTypesToQuery = {
-      syncer::BOOKMARKS, syncer::READING_LIST, syncer::PASSWORDS,
-      syncer::CONTACT_INFO};
+  constexpr syncer::ModelTypeSet kDataTypesToQuery =
+      syncer::TypesRequiringUnsyncedDataCheckOnSignout();
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
   __weak __typeof(self) weakSelf = self;

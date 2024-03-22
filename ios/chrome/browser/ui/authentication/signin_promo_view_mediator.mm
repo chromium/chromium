@@ -120,6 +120,10 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::
         ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return false;
   }
@@ -206,6 +210,10 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -294,6 +302,10 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -382,6 +394,10 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -459,6 +475,10 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }
@@ -534,6 +554,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }

@@ -3535,6 +3535,7 @@ if (!is_android) {
         "../browser/signin/signin_ui_util_browsertest.cc",
         "../browser/ui/autofill/autofill_signin_promo_tab_helper_browsertest.cc",
         "../browser/ui/profiles/signin_intercept_first_run_experience_dialog_browsertest.cc",
+        "../browser/ui/signin/signin_view_controller_browsertest.cc",
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
         "../browser/unified_consent/unified_consent_browsertest.cc",
         "../browser/unified_consent/unified_consent_sync_to_signin_browsertest.cc",

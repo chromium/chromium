@@ -413,6 +413,8 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
     case AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
+    case AccessPoint::ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
+    case AccessPoint::ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
       break;
@@ -645,11 +647,13 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
     case AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
     case AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
+    case AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
+    case AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case AccessPoint::ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
     case AccessPoint::ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
+    case AccessPoint::ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
+    case AccessPoint::ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Signin_Impression_From* user actions"
                    << " are not recorded for access point "

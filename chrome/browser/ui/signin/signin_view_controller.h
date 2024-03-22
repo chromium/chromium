@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/sync/base/model_type.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -106,6 +108,13 @@ class SigninViewController {
   void ShowModalInterceptFirstRunExperienceDialog(
       const CoreAccountId& account_id,
       bool is_forced_intercept);
+
+  // Possibly show a confirmation prompt and then sign the user out, open a
+  // reauth tab, or do nothing depending on the user choice.
+  void SignoutOrReauthWithPrompt(
+      signin_metrics::AccessPoint reauth_access_point,
+      signin_metrics::ProfileSignout profile_signout_source,
+      signin_metrics::SourceForRefreshTokenOperation token_signout_source);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -200,6 +209,14 @@ class SigninViewController {
                          signin_metrics::PromoAction promo_action,
                          const std::string& email_hint,
                          const GURL& redirect_url);
+
+  // Called by `SignoutOrReauthWithPrompt()` once the unsynced datatypes are
+  // fetched.
+  void SignoutOrReauthWithPromptWithUnsyncedDataTypes(
+      signin_metrics::AccessPoint reauth_access_point,
+      signin_metrics::ProfileSignout profile_signout_source,
+      signin_metrics::SourceForRefreshTokenOperation token_signout_source,
+      syncer::ModelTypeSet unsynced_datatypes);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Returns the web contents of the modal dialog.
