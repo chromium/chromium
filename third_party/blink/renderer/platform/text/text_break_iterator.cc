@@ -321,27 +321,30 @@ struct LazyLineBreakIterator::Context {
   }
 
   bool ShouldBreakFast() const {
-    const UChar ch = last.ch;
-    const UChar next_ch = current.ch;
+    const UChar last_ch = last.ch;
+    const UChar ch = current.ch;
+    if (UNLIKELY(last_ch < kAsciiLineBreakTableFirstChar ||
+                 ch < kAsciiLineBreakTableFirstChar)) {
+      return false;
+    }
 
     // Don't allow line breaking between '-' and a digit if the '-' may mean a
     // minus sign in the context, while allow breaking in 'ABCD-1234' and
     // '1234-5678' which may be in long URLs.
-    if (ch == '-' && IsASCIIDigit(next_ch)) {
+    static_assert('-' >= kAsciiLineBreakTableFirstChar);
+    if (last_ch == '-' && IsASCIIDigit(ch)) {
       return IsASCIIAlphanumeric(last_last_ch);
     }
 
-    // If both ch and nextCh are ASCII characters, use a lookup table for
+    // If both `last_ch` and `ch` are ASCII characters, use a lookup table for
     // enhanced speed and for compatibility with other browsers (see comments
     // for asciiLineBreakTable for details).
-    if (ch >= kAsciiLineBreakTableFirstChar &&
-        ch <= kAsciiLineBreakTableLastChar &&
-        next_ch >= kAsciiLineBreakTableFirstChar &&
-        next_ch <= kAsciiLineBreakTableLastChar) {
+    if (last_ch <= kAsciiLineBreakTableLastChar &&
+        ch <= kAsciiLineBreakTableLastChar) {
       const unsigned char* table_row =
-          kAsciiLineBreakTable[ch - kAsciiLineBreakTableFirstChar];
-      int next_ch_index = next_ch - kAsciiLineBreakTableFirstChar;
-      return table_row[next_ch_index / 8] & (1 << (next_ch_index % 8));
+          kAsciiLineBreakTable[last_ch - kAsciiLineBreakTableFirstChar];
+      int ch_index = ch - kAsciiLineBreakTableFirstChar;
+      return table_row[ch_index / 8] & (1 << (ch_index % 8));
     }
 
     // Otherwise defer to the Unicode algorithm by returning false.
