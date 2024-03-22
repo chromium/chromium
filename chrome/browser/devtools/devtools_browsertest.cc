@@ -3895,15 +3895,17 @@ class DevToolsConsoleInsightsTest : public DevToolsTest {
         &policy_provider_);
   }
 
-  void SetupAccountCapabilities() {
+  void SetupAccountCapabilities(bool is_minor = false,
+                                bool is_edu = false,
+                                bool is_enterprise = false) {
     auto* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
     auto account_info = signin::MakePrimaryAccountAvailable(
         identity_manager, "test@example.com", signin::ConsentLevel::kSync);
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    mutator.set_can_use_devtools_generative_ai_features(true);
-    mutator.set_can_use_edu_features(false);
-    mutator.set_is_subject_to_enterprise_policies(false);
+    mutator.set_can_use_devtools_generative_ai_features(!is_minor);
+    mutator.set_can_use_edu_features(is_edu);
+    mutator.set_is_subject_to_enterprise_policies(is_enterprise);
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 
@@ -3916,17 +3918,69 @@ class DevToolsConsoleInsightsTest : public DevToolsTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
+bool hasQueryParam(WebContents* wc, std::string query_param) {
+  return std::string::npos !=
+         wc->GetLastCommittedURL().query().find(query_param);
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
                        EnterprisePolicyEnabledByDefault) {
   SetupAccountCapabilities();
   OpenDevToolsWindow(kDebuggerTestPage, false);
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_NE(std::string::npos,
-            wc->GetLastCommittedURL().query().find("&enableAida=true"));
+  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
 #else
-  EXPECT_EQ(std::string::npos,
-            wc->GetLastCommittedURL().query().find("&enableAida=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
+#endif
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
+  CloseDevToolsWindow();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsNotEnabledForMinors) {
+  SetupAccountCapabilities(true, false, false);
+  OpenDevToolsWindow(kDebuggerTestPage, false);
+  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByAge=true"));
+#else
+  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
+#endif
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+  CloseDevToolsWindow();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsNotEnabledForEduUsers) {
+  SetupAccountCapabilities(false, true, false);
+  OpenDevToolsWindow(kDebuggerTestPage, false);
+  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+#else
+  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+#endif
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
+  CloseDevToolsWindow();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
+                       IsNotEnabledForEnterpriseUsers) {
+  SetupAccountCapabilities(true, false, true);
+  OpenDevToolsWindow(kDebuggerTestPage, false);
+  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByAge=true"));
+  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+#else
+  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
 #endif
   CloseDevToolsWindow();
 }
@@ -3945,8 +3999,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
 
   OpenDevToolsWindow(kDebuggerTestPage, false);
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
-  EXPECT_EQ(std::string::npos,
-            wc->GetLastCommittedURL().query().find("&enableAida=true"));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+#else
+  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+#endif
   CloseDevToolsWindow();
 
   // Enable via enterprise policy.
@@ -3960,16 +4019,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
   OpenDevToolsWindow(kDebuggerTestPage, false);
   wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_NE(std::string::npos,
-            wc->GetLastCommittedURL().query().find("&enableAida=true"));
+  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
 #else
-  EXPECT_EQ(std::string::npos,
-            wc->GetLastCommittedURL().query().find("&enableAida=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
 #endif
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
   CloseDevToolsWindow();
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsDisabledWhenSetToOne) {
+IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
+                       IsDisabledWhenPolicySetToOne) {
   policy::PolicyMap policies;
   // Use value for a potential future "enable and don't store data for model
   // training" policy to disable via enterprise policy.
@@ -3981,7 +4040,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsDisabledWhenSetToOne) {
 
   OpenDevToolsWindow(kDebuggerTestPage, false);
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
-  EXPECT_EQ(std::string::npos,
-            wc->GetLastCommittedURL().query().find("&enableAida=true"));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+#else
+  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+#endif
   CloseDevToolsWindow();
 }

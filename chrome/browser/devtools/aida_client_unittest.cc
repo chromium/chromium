@@ -129,21 +129,35 @@ TEST_F(AidaClientTest, FailsIfNotAuthorized) {
 }
 
 TEST_F(AidaClientTest, NotAvailableIfFeatureDisabled) {
+  auto blocked_reason = AidaClient::CanUseAida(profile_.get());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(AidaClient::CanUseAida(profile_.get()));
+  EXPECT_FALSE(blocked_reason.blocked);
+  EXPECT_FALSE(blocked_reason.blocked_by_feature_flag);
 #else
-  EXPECT_FALSE(AidaClient::CanUseAida(profile_.get()));
+  EXPECT_TRUE(blocked_reason.blocked);
+  EXPECT_TRUE(blocked_reason.blocked_by_feature_flag);
 #endif
+  EXPECT_FALSE(blocked_reason.blocked_by_age);
+  EXPECT_FALSE(blocked_reason.blocked_by_enterprise_policy);
   feature_list_.Reset();
   feature_list_.InitAndDisableFeature(::features::kDevToolsConsoleInsights);
-  EXPECT_FALSE(AidaClient::CanUseAida(profile_.get()));
+  blocked_reason = AidaClient::CanUseAida(profile_.get());
+  EXPECT_TRUE(blocked_reason.blocked);
+  EXPECT_TRUE(blocked_reason.blocked_by_feature_flag);
+  EXPECT_FALSE(blocked_reason.blocked_by_age);
+  EXPECT_FALSE(blocked_reason.blocked_by_enterprise_policy);
 }
 
 TEST_F(AidaClientTest, NotAvailableIfCapabilityFalse) {
+  auto blocked_reason = AidaClient::CanUseAida(profile_.get());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(AidaClient::CanUseAida(profile_.get()));
+  EXPECT_FALSE(blocked_reason.blocked);
+  EXPECT_FALSE(blocked_reason.blocked_by_feature_flag);
 #else
-  EXPECT_FALSE(AidaClient::CanUseAida(profile_.get()));
+  EXPECT_TRUE(blocked_reason.blocked);
+  EXPECT_TRUE(blocked_reason.blocked_by_feature_flag);
+  EXPECT_FALSE(blocked_reason.blocked_by_age);
+  EXPECT_FALSE(blocked_reason.blocked_by_enterprise_policy);
 #endif
   auto account_info = identity_test_env_->identity_manager()
                           ->FindExtendedAccountInfoByEmailAddress(kEmail);
@@ -151,7 +165,16 @@ TEST_F(AidaClientTest, NotAvailableIfCapabilityFalse) {
   mutator.set_can_use_devtools_generative_ai_features(false);
   signin::UpdateAccountInfoForAccount(identity_test_env_->identity_manager(),
                                       account_info);
-  EXPECT_FALSE(AidaClient::CanUseAida(profile_.get()));
+  blocked_reason = AidaClient::CanUseAida(profile_.get());
+  EXPECT_TRUE(blocked_reason.blocked);
+  EXPECT_FALSE(blocked_reason.blocked_by_enterprise_policy);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_FALSE(blocked_reason.blocked_by_feature_flag);
+  EXPECT_TRUE(blocked_reason.blocked_by_age);
+#else
+  EXPECT_TRUE(blocked_reason.blocked_by_feature_flag);
+  EXPECT_FALSE(blocked_reason.blocked_by_age);
+#endif
 }
 
 TEST_F(AidaClientTest, Succeeds) {

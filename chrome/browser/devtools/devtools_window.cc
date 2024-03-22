@@ -1254,6 +1254,7 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
                                     bool has_other_clients,
                                     bool browser_connection) {
   std::string url;
+  AidaClient::BlockedReason blocked_reason;
 
   std::string remote_base =
       "?remoteBase=" + DevToolsUI::GetRemoteBaseURL().spec();
@@ -1279,12 +1280,19 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
       if (base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
         url += "&veLogging=true";
       }
-      if (AidaClient::CanUseAida(profile)) {
+      blocked_reason = AidaClient::CanUseAida(profile);
+      if (!blocked_reason.blocked_by_feature_flag) {
         url += "&enableAida=true&aidaModelId=" +
                features::kDevToolsConsoleInsightsModelId.Get() +
                "&aidaTemperature=" +
                base::NumberToString(
                    features::kDevToolsConsoleInsightsTemperature.Get());
+      }
+      if (blocked_reason.blocked_by_age) {
+        url += "&ci_blockedByAge=true";
+      }
+      if (blocked_reason.blocked_by_enterprise_policy) {
+        url += "&ci_blockedByEnterprisePolicy=true";
       }
       break;
     case kFrontendWorker:

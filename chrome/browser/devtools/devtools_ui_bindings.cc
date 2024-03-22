@@ -378,7 +378,9 @@ std::string SanitizeFrontendQueryParam(
     return value;
   }
 
-  if (base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
+  if (base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights) ||
+      base::FeatureList::IsEnabled(
+          ::features::kDevToolsConsoleInsightsDogfood)) {
     if (key == "enableAida" && value == "true") {
       return value;
     }
@@ -388,6 +390,14 @@ std::string SanitizeFrontendQueryParam(
     if (key == "aidaTemperature") {
       return value;
     }
+  }
+
+  if (key == "ci_blockedByAge" && value == "true") {
+    return value;
+  }
+
+  if (key == "ci_blockedByEnterprisePolicy" && value == "true") {
+    return value;
   }
 
   return std::string();
@@ -1967,7 +1977,7 @@ void DevToolsUIBindings::CanShowSurvey(DispatchCallback callback,
 void DevToolsUIBindings::DoAidaConversation(DispatchCallback callback,
                                             const std::string& request,
                                             int stream_id) {
-  if (!AidaClient::CanUseAida(profile_)) {
+  if (AidaClient::CanUseAida(profile_).blocked) {
     return;
   }
   if (!aida_client_) {
@@ -1979,7 +1989,7 @@ void DevToolsUIBindings::DoAidaConversation(DispatchCallback callback,
 }
 
 void DevToolsUIBindings::RegisterAidaClientEvent(const std::string& request) {
-  if (!AidaClient::CanUseAida(profile_)) {
+  if (AidaClient::CanUseAida(profile_).blocked) {
     return;
   }
   if (!aida_client_) {

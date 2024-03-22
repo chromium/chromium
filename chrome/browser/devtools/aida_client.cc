@@ -24,38 +24,69 @@ AidaClient::AidaClient(Profile* profile)
 
 AidaClient::~AidaClient() = default;
 
-bool IsAllowedByCapabilities(Profile* profile) {
+std::optional<AccountInfo> AccountInfoForProfile(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager) {
-    return false;
+    return std::nullopt;
   }
   const auto account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (account_id.empty()) {
-    return false;
+    return std::nullopt;
   }
-  const AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
-  return account_info.capabilities.can_use_devtools_generative_ai_features() ==
-             signin::Tribool::kTrue &&
-         account_info.capabilities.is_subject_to_enterprise_policies() ==
-             signin::Tribool::kFalse &&
-         account_info.capabilities.can_use_edu_features() ==
+  return identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+}
+
+bool IsAidaBlockedByAge(std::optional<AccountInfo> account_info) {
+  if (!account_info.has_value()) {
+    return true;
+  }
+  return account_info.value()
+             .capabilities.can_use_devtools_generative_ai_features() !=
+         signin::Tribool::kTrue;
+}
+
+bool IsAidaBlockedByEnterpriseOrEdu(std::optional<AccountInfo> account_info) {
+  if (!account_info.has_value()) {
+    return true;
+  }
+  return account_info.value()
+                 .capabilities.is_subject_to_enterprise_policies() !=
+             signin::Tribool::kFalse ||
+         account_info.value().capabilities.can_use_edu_features() !=
              signin::Tribool::kFalse;
 }
 
-bool AidaClient::CanUseAida(Profile* profile) {
+AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
+  struct BlockedReason result;
+  // Console insights is only available on branded builds
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return false;
+  result.blocked = true;
+  result.blocked_by_feature_flag = true;
+  return result;
 #else
+  // Console insights is always available for Google dogfooders
   if (base::FeatureList::IsEnabled(
           ::features::kDevToolsConsoleInsightsDogfood)) {
-    return true;
+    result.blocked = false;
+    return result;
   }
-  return base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights) &&
-         IsAllowedByCapabilities(profile) &&
-         profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) ==
-             static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kAllow);
+  // Console insights is not available if the feature flag is off
+  if (!base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
+    result.blocked = true;
+    result.blocked_by_feature_flag = true;
+    return result;
+  }
+  // If the feature flag is on, evaluate other restriction reasons
+  result.blocked_by_feature_flag = false;
+  auto account_info = AccountInfoForProfile(profile);
+  result.blocked_by_age = IsAidaBlockedByAge(account_info);
+  result.blocked_by_enterprise_policy =
+      IsAidaBlockedByEnterpriseOrEdu(account_info) ||
+      profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) !=
+          static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kAllow);
+  result.blocked = result.blocked_by_age || result.blocked_by_enterprise_policy;
+  return result;
 #endif
 }
 
