@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
@@ -15,7 +16,8 @@ class Profile;
 // Campaigns Manager session to store camapigns manager specific state, and to
 // observe related components changes to conditionally trigger proactive growth
 // slots.
-class CampaignsManagerSession : public session_manager::SessionManagerObserver {
+class CampaignsManagerSession : public session_manager::SessionManagerObserver,
+                                public apps::InstanceRegistry::Observer {
  public:
   CampaignsManagerSession();
   CampaignsManagerSession(const CampaignsManagerSession&) = delete;
@@ -25,11 +27,17 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver {
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
 
+  // apps::InstanceRegistry::Observer:
+  void OnInstanceUpdate(const apps::InstanceUpdate& update) override;
+  void OnInstanceRegistryWillBeDestroyed(
+      apps::InstanceRegistry* cache) override;
+
   void SetProfileForTesting(Profile* profile);
 
  private:
   Profile* GetProfile();
   bool IsEligible();
+  void SetupWindowObserver();
   void MaybeTriggerProactiveCampaigns();
 
   base::ScopedObservation<session_manager::SessionManager,
@@ -37,6 +45,10 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver {
       session_manager_observation_{this};
 
   raw_ptr<Profile, DanglingUntriaged> profile_for_testing_ = nullptr;
+
+  base::ScopedObservation<apps::InstanceRegistry,
+                          apps::InstanceRegistry::Observer>
+      scoped_observation_{this};
 
   base::WeakPtrFactory<CampaignsManagerSession> weak_ptr_factory_{this};
 };

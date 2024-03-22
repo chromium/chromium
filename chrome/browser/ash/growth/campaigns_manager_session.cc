@@ -4,12 +4,52 @@
 
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
+#include "chromeos/ash/components/growth/campaigns_model.h"
 #include "components/session_manager/session_manager_types.h"
+
+namespace {
+void MaybeTriggerNudgeCampaigns() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  auto* nudge_campaign =
+      campaigns_manager->GetCampaignBySlot(growth::Slot::kNudge);
+  // No nudge campaign in campaign file.
+  if (!nudge_campaign) {
+    return;
+  }
+
+  auto campaign_id = growth::GetCampaignId(nudge_campaign);
+  if (!campaign_id) {
+    LOG(ERROR) << "Invalid: Missing campaign id.";
+    return;
+  }
+
+  const auto* nudge_payload =
+      growth::GetPayloadBySlot(nudge_campaign, growth::Slot::kNudge);
+  if (!nudge_payload) {
+    LOG(ERROR) << "Invalid: Missing payload.";
+    return;
+  }
+
+  campaigns_manager->PerformAction(
+      campaign_id.value(), growth::ActionType::kShowNudge, nudge_payload);
+}
+
+void MaybeTriggerCampaignsWhenAppOpened() {
+  // App open triggering point.
+  MaybeTriggerNudgeCampaigns();
+}
+
+}  // namespace
 
 CampaignsManagerSession::CampaignsManagerSession() {
   // SessionManager may be unset in unit tests.
@@ -32,12 +72,34 @@ void CampaignsManagerSession::OnSessionStateChanged() {
   if (!IsEligible()) {
     return;
   }
+  SetupWindowObserver();
 
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
   campaigns_manager->LoadCampaigns(
       base::BindOnce(&CampaignsManagerSession::MaybeTriggerProactiveCampaigns,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CampaignsManagerSession::OnInstanceUpdate(
+    const apps::InstanceUpdate& update) {
+  // TODO: b/330409492 - Maybe handling other event like app closed.
+  if (!update.IsCreation()) {
+    return;
+  }
+
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  campaigns_manager->SetOpenedApp(update.AppId());
+  MaybeTriggerCampaignsWhenAppOpened();
+}
+
+void CampaignsManagerSession::OnInstanceRegistryWillBeDestroyed(
+    apps::InstanceRegistry* cache) {
+  if (scoped_observation_.GetSource() == cache) {
+    scoped_observation_.Reset();
+  }
 }
 
 void CampaignsManagerSession::SetProfileForTesting(Profile* profile) {
@@ -63,6 +125,17 @@ bool CampaignsManagerSession::IsEligible() {
   }
 
   return true;
+}
+
+void CampaignsManagerSession::SetupWindowObserver() {
+  auto* profile = GetProfile();
+  // Some test profiles will not have AppServiceProxy.
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return;
+  }
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  CHECK(proxy);
+  scoped_observation_.Observe(&proxy->InstanceRegistry());
 }
 
 void CampaignsManagerSession::MaybeTriggerProactiveCampaigns() {
