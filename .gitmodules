@@ -625,6 +625,9 @@
 	path = chrome/browser/spellchecker/internal
 	url = https://chrome-internal.googlesource.com/chrome/spellchecker/internal
 	gclient-condition = checkout_src_internal
+[submodule "chrome/elevation_service/internal"]
+	path = chrome/elevation_service/internal
+	url = https://chrome-internal.googlesource.com/chrome/elevation_service/internal
 [submodule "chrome/installer/mac/internal"]
 	path = chrome/installer/mac/internal
 	url = https://chrome-internal.googlesource.com/chrome/installer/mac/internal
