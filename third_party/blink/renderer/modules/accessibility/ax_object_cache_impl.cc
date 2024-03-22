@@ -3370,18 +3370,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     // RenderAccessibilityImpl, e.g. for the kEndOfTest event.
     bool did_serialize = false;
     if (HasDirtyObjects()) {
-      // Dirty objects are present, but we cannot serialize until there is an
-      // embedding token, which may not be present when the cache is first
-      // initialized.
-      if (GetDocument().GetFrame()) {
-        const std::optional<base::UnguessableToken>& embedding_token =
-            GetDocument().GetFrame()->GetEmbeddingToken();
-        if (embedding_token && !embedding_token->is_empty()) {
-          if (auto* client = GetWebLocalFrameClient()) {
-            did_serialize = client->AXReadyCallback();
-          }
-        }
-      }
+      did_serialize = SerializeUpdatesAndEvents();
     }
 
     // ***** Update Inspector Views *****
@@ -3403,6 +3392,99 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     DUMP_WILL_BE_CHECK(!HasDirtyObjects() || !did_serialize)
         << "A serialization occurred but dirty objects remained.";
   }
+}
+
+bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
+  CHECK(HasDirtyObjects());
+  CHECK(!IsSerializationInFlight());
+  DCHECK(!ax_mode_.is_mode_off());
+  // TODO(accessibility) This is not always true, but it should be.
+  // CHECK(ax_mode_.has_mode(ui::AXMode::kWebContents));
+
+  if (!GetDocument().GetFrame()) {
+    return false;
+  }
+
+  // Dirty objects are present, but we cannot serialize until there is an
+  // embedding token, which may not be present when the cache is first
+  // initialized.
+  const std::optional<base::UnguessableToken>& embedding_token =
+      GetDocument().GetFrame()->GetEmbeddingToken();
+  if (!embedding_token || embedding_token->is_empty()) {
+    return false;
+  }
+
+  auto* client = GetWebLocalFrameClient();
+  CHECK(client);
+
+  // TODO(accessibility): Review why this value is inconsistent with
+  //       ax_mode_.has_mode(ui::AXMode::kWebContents)
+  if (!client->IsAccessibilityEnabled()) {
+    return false;
+  }
+
+  OnSerializationStartSend();
+
+  bool had_end_of_test_event = false;
+
+  // If there's a layout complete or a scroll changed message, we need to send
+  // location changes.
+  bool need_to_send_location_changes = false;
+
+  // Keep track of load complete messages. When a load completes, it's a good
+  // time to inject a stylesheet for image annotation debugging.
+  bool had_load_complete_messages = false;
+
+  std::vector<ui::AXTreeUpdate> updates;
+  std::vector<ui::AXEvent> events;
+
+  // Serialize all dirty objects in the list at this point in time, stopping
+  // either when the queue is empty, or the number of remaining objects to
+  // serialize has been reached.
+  GetUpdatesAndEventsForSerialization(updates, events, had_end_of_test_event,
+                                      had_load_complete_messages,
+                                      need_to_send_location_changes);
+
+  /* Clear the pending updates and events as they're about to be serialized */
+  dirty_objects_.clear();
+  pending_events_.clear();
+
+  if (had_end_of_test_event) {
+    ui::AXEvent end_of_test(Root()->AXObjectID(),
+                            ax::mojom::blink::Event::kEndOfTest);
+    if (!IsDirty() && GetDocument().IsLoadCompleted()) {
+      events.emplace_back(end_of_test);
+    } else {
+      DLOG(ERROR) << "Had end of test event, but document is still dirty.";
+      // Document is still dirty, queue up another end of test and process
+      // immediately.
+      AddEventToSerializationQueue(end_of_test, /*serialize_immediately*/ true);
+    }
+  }
+
+  // updates.empty() -implies-> events.empty()
+  DCHECK(!updates.empty() || events.empty())
+      << "Every event must have at least one corresponding update because "
+         "events cause their related nodes to be marked dirty.";
+  DCHECK(!updates.empty());
+
+  // There should be no more dirty objects.
+  CHECK(!HasDirtyObjects());
+
+  /* ACTUAL SERIALIZE */
+  bool success = client->SendAccessibilitySerialization(
+      std::move(updates), std::move(events), had_load_complete_messages,
+      need_to_send_location_changes);
+
+  if (!success) {
+    // In some cases, like in web tests or if a11y is off, serialization doesn't
+    // really occur and thus the function will return false.
+    // Cancel serialization to avoid stalling pipeline.
+    OnSerializationCancelled();
+  }
+
+  CHECK(serialization_in_flight_ == success);
+  return success;
 }
 
 void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
@@ -5361,7 +5443,7 @@ void AXObjectCacheImpl::AddDirtyObjectToSerializationQueue(
   }
 }
 
-void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
+void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
     std::vector<ui::AXTreeUpdate>& updates,
     std::vector<ui::AXEvent>& events,
     bool& had_end_of_test_event,
@@ -5454,7 +5536,6 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
       update.AccumulateSize(node_data_size);
     }
   }
-  dirty_objects_.clear();
 
   UMA_HISTOGRAM_COUNTS_10000(
       "Accessibility.Performance.AXObjectCacheImpl.RedundantSerializations",
@@ -5511,8 +5592,6 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     VLOG(1) << "AXEvent: " << event.event_type << " on "
             << ObjectFromAXID(event.id);
   }
-
-  pending_events_.clear();
 
 #if DCHECK_IS_ON()
   CheckTreeConsistency(*this, *ax_tree_serializer_);

@@ -257,13 +257,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
       ax::mojom::blink::Action event_from_action,
       const std::vector<ui::AXEventIntent>& event_intents) = 0;
 
-  virtual void SerializeDirtyObjectsAndEvents(
-      std::vector<ui::AXTreeUpdate>& updates,
-      std::vector<ui::AXEvent>& events,
-      bool& had_end_of_test_event,
-      bool& had_load_complete_messages,
-      bool& need_to_send_location_changes) = 0;
-
   // Returns a vector of the images found in |updates|.
   virtual void GetImagesToAnnotate(ui::AXTreeUpdate& updates,
                                    std::vector<ui::AXNodeData*>&) = 0;
@@ -275,8 +268,9 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Ensure that a call to ProcessDeferredAccessibilityEvents() will occur soon.
   virtual void ScheduleAXUpdate() const = 0;
 
-  // Ensure that a call to RenderAccessibilityImpl::AXReadyCallback() will occur
-  // as soon as possible.
+  // Ensure that a call to
+  // RenderAccessibilityImpl::SendAccessibilitySerialization() will occur as
+  // soon as possible.
   virtual void ScheduleImmediateSerialization() = 0;
 
   // Add an event to the queue of events to be processed as well as mark as

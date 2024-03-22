@@ -120,9 +120,9 @@ TEST_F(AccessibilityTest, HistogramTest) {
     bool had_load_complete_messages = true;
     bool need_to_send_location_changes = false;
     ScopedFreezeAXCache freeze(cache);
-    cache.SerializeDirtyObjectsAndEvents(updates, events, had_end_of_test_event,
-                                         had_load_complete_messages,
-                                         need_to_send_location_changes);
+    cache.GetUpdatesAndEventsForSerialization(
+        updates, events, had_end_of_test_event, had_load_complete_messages,
+        need_to_send_location_changes);
     histogram_tester.ExpectTotalCount(
         "Accessibility.Performance.AXObjectCacheImpl.Snapshot", 1);
     histogram_tester.ExpectTotalCount(

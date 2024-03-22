@@ -471,61 +471,22 @@ std::string RenderAccessibilityImpl::GetLanguage() {
   return page_language_;
 }
 
-bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
-    WebDocument document,
-    WebAXObject root,
-    std::vector<ui::AXEvent>& events,
-    std::vector<ui::AXTreeUpdate>& updates) {
-  bool had_end_of_test_event = false;
-
-  // If there's a layout complete or a scroll changed message, we need to send
-  // location changes.
-  bool need_to_send_location_changes = false;
-
-  // Keep track of load complete messages. When a load completes, it's a good
-  // time to inject a stylesheet for image annotation debugging.
-  bool had_load_complete_messages = false;
-
-  // Serialize all dirty objects in the list at this point in time, stopping
-  // either when the queue is empty, or the number of remaining objects to
-  // serialize has been reached.
-  DCHECK(ax_context_);
-  DCHECK(!accessibility_mode_.is_mode_off());
-  ax_context_->SerializeDirtyObjectsAndEvents(
-      updates, events, had_end_of_test_event, had_load_complete_messages,
-      need_to_send_location_changes);
-
-  for (auto& update : updates) {
-    ax_annotators_manager_->Annotate(document, &update,
-                                     had_load_complete_messages);
-  }
-
-  if (had_end_of_test_event) {
-    ui::AXEvent end_of_test(root.AxID(), ax::mojom::Event::kEndOfTest);
-    if (!WebAXObject::IsDirty(document) && GetMainDocument().IsLoaded()) {
-      events.emplace_back(end_of_test);
-    } else {
-      DLOG(ERROR) << "Had end of test event, but document is still dirty.";
-      // Document is still dirty, queue up another end of test and process
-      // immediately.
-      HandleAXEvent(end_of_test);
-    }
-  }
-
-  return need_to_send_location_changes;
-}
-
-bool RenderAccessibilityImpl::AXReadyCallback() {
+bool RenderAccessibilityImpl::SendAccessibilitySerialization(
+    std::vector<ui::AXTreeUpdate> updates,
+    std::vector<ui::AXEvent> events,
+    bool had_load_complete_messages,
+    bool need_to_send_location_changes) {
   // TODO(accessibility) Do we want to get rid of this trace event now that it's
   // part of the same callstack as the ProcessDeferredAccessibilityEvents trace?
   TRACE_EVENT0("accessibility",
                "RenderAccessibilityImpl::SendPendingAccessibilityEvents");
   base::ElapsedTimer timer;
 
-  CHECK(ax_context_);
-  CHECK(ax_context_->HasDirtyObjects())
-      << "Should not call AXReadyCallback() unless there is something to "
-         "serialize.";
+  DCHECK(!accessibility_mode_.is_mode_off());
+  DCHECK(ax_context_);
+  DCHECK(ax_context_->IsSerializationInFlight());
+  DCHECK(ax_context_->HasActiveDocument());
+
   CHECK(render_frame_);
   CHECK(render_frame_->in_frame_tree());
 
@@ -539,14 +500,6 @@ bool RenderAccessibilityImpl::AXReadyCallback() {
   // fixed. See also other TODOs related to 1231184 in this file.
   DCHECK(render_frame_->GetWebFrame()->GetAXTreeID().token());
 
-  CHECK(ax_context_);
-
-  // This method should never be called if there's a previous serialization
-  // still in flight.
-  CHECK(!ax_context_->IsSerializationInFlight());
-
-  CHECK(ax_context_->HasActiveDocument());
-
   WebDocument document = GetMainDocument();
   CHECK(!document.IsNull());
 
@@ -556,8 +509,6 @@ bool RenderAccessibilityImpl::AXReadyCallback() {
   // platforms, where events are fired on objects not connected to the root. For
   // example, on Mac, this can lead to a lockup in AppKit.
   DCHECK(document.GetFrame()->GetEmbeddingToken());
-
-  ax_context_->OnSerializationStartSend();
 
   WebAXObject root = ComputeRoot();
 #if DCHECK_IS_ON()
@@ -584,26 +535,19 @@ bool RenderAccessibilityImpl::AXReadyCallback() {
   }
 #endif
 
-  // The serialized list of updates and events to send to the browser.
   blink::mojom::AXUpdatesAndEventsPtr updates_and_events =
       blink::mojom::AXUpdatesAndEvents::New();
+  updates_and_events->updates = std::move(updates);
+  updates_and_events->events = std::move(events);
 
-  bool need_to_send_location_changes = SerializeUpdatesAndEvents(
-      document, root, updates_and_events->events, updates_and_events->updates);
-  if (updates_and_events->updates.empty()) {
-    // Do not send a serialization if there are no updates.
-    // This can occur because the serializer will already toss unincluded nodes,
-    // which could have become unincluded after they were added to the dirty
-    // object queue.
-    DCHECK(updates_and_events->events.empty())
-        << "If there are no updates, there also shouldn't be any events, "
-           "because events always mark an object dirty.";
-    ax_context_->OnSerializationCancelled();
-    return false;
+  for (auto& update : updates_and_events->updates) {
+    ax_annotators_manager_->Annotate(document, &update,
+                                     had_load_complete_messages);
   }
 
   ax_annotators_manager_->AddDebuggingAttributes(updates_and_events->updates);
 
+  CHECK(!weak_factory_for_pending_events_.HasWeakPtrs());
   CHECK(reset_token_);
   render_accessibility_manager_->HandleAccessibilityEvents(
       std::move(updates_and_events), *reset_token_,

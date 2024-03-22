@@ -131,7 +131,10 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
     ax::mojom::Event event_type = ax::mojom::Event::kNone);
   // Called when it is safe to begin a serialization.
   // Returns true if a serialization occurs.
-  bool AXReadyCallback();
+  bool SendAccessibilitySerialization(std::vector<ui::AXTreeUpdate> updates,
+                                      std::vector<ui::AXEvent> events,
+                                      bool had_load_complete_messages,
+                                      bool need_to_send_location_changes);
 
   // Returns the main top-level document for this page, or NULL if there's
   // no view or frame.
@@ -191,8 +194,8 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   void MarkAllAXObjectsDirty(ax::mojom::Role role,
                              ax::mojom::Action event_from_action);
 
-  // Ensure that AXReadyCallback() will be called at the next available
-  // opportunity, so that any dirty objects will be serialized soon.
+  // Ensure that SendAccessibilitySerialization() will be called at the next
+  // available opportunity, so that any dirty objects will be serialized soon.
   void ScheduleImmediateAXUpdate();
 
   // Returns the document for the active popup if any.

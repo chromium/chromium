@@ -519,12 +519,12 @@ class MODULES_EXPORT AXObjectCacheImpl
           ax::mojom::blink::Action::kNone,
       const std::vector<ui::AXEventIntent>& event_intents = {}) override;
 
-  void SerializeDirtyObjectsAndEvents(
+  void GetUpdatesAndEventsForSerialization(
       std::vector<ui::AXTreeUpdate>& updates,
       std::vector<ui::AXEvent>& events,
       bool& had_end_of_test_event,
       bool& had_load_complete_messages,
-      bool& need_to_send_location_changes) override;
+      bool& need_to_send_location_changes);
 
   void GetImagesToAnnotate(ui::AXTreeUpdate& updates,
                            std::vector<ui::AXNodeData*>& nodes) override;
@@ -581,6 +581,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Assert that tree is completely up-to-date.
   void CheckTreeIsUpdated();
   void CheckStyleIsComplete(Document& document) const;
+
+  bool SerializeUpdatesAndEvents();
 
   // Returns the `TextChangedOperation` associated with the `id` from the
   // `text_operation_in_node_ids_` map, if `id` is in the map.

@@ -4780,13 +4780,18 @@ void RenderFrameImpl::PostAccessibilityEvent(const ui::AXEvent& event) {
       event);
 }
 
-bool RenderFrameImpl::AXReadyCallback() {
-  if (!IsAccessibilityEnabled()) {
-    return false;
-  }
+bool RenderFrameImpl::SendAccessibilitySerialization(
+    std::vector<ui::AXTreeUpdate> updates,
+    std::vector<ui::AXEvent> events,
+    bool had_load_complete_messages,
+    bool need_to_send_location_changes) {
+  // This function should never be called from a11y unless it's enabled.
+  CHECK(IsAccessibilityEnabled());
 
   return render_accessibility_manager_->GetRenderAccessibilityImpl()
-      ->AXReadyCallback();
+      ->SendAccessibilitySerialization(std::move(updates), std::move(events),
+                                       had_load_complete_messages,
+                                       need_to_send_location_changes);
 }
 
 void RenderFrameImpl::AddObserver(RenderFrameObserver* observer) {
