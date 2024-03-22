@@ -1058,6 +1058,17 @@ This collects each top-level device metric type. For example,
   </summary>
 </histogram>
 
+<histogram name="Cras.UnderrunsPerDeviceDuringAPNC{Device}" units="count"
+    expires_after="2025-03-21">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The number of underruns happening when AP NC is running. The metric will not
+    be sent if there is no NC enabled during the device runtime.
+  </summary>
+  <token key="Device" variants="CrasTopLevelDeviceBreakdown"/>
+</histogram>
+
 <histogram name="Cras.UnderrunsPerDevice{Device}" units="count"
     expires_after="2024-09-01">
   <owner>yuhsuan@chromium.org</owner>
