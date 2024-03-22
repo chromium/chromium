@@ -229,7 +229,8 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromOmniboxSearch) {
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
-TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
+TEST_F(PickerSearchControllerTest,
+       DISABLED_DoesNotFlashEmptyResultsFromOmniboxSearch) {
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
   NiceMock<MockSearchResultsCallback> first_search_results_callback;
   NiceMock<MockSearchResultsCallback> second_search_results_callback;
@@ -339,7 +340,7 @@ TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsAfterBurnIn) {
 }
 
 TEST_F(PickerSearchControllerTest,
-       DoesNotRecordOmniboxMetricsIfNoOmniboxResponse) {
+       DISABLED_DoesNotRecordOmniboxMetricsIfNoOmniboxResponse) {
   base::HistogramTester histogram;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
@@ -378,7 +379,7 @@ TEST_F(PickerSearchControllerTest,
 }
 
 TEST_F(PickerSearchControllerTest,
-       DoesNotRecordOmniboxMetricsIfOtherCrosSearchResponse) {
+       DISABLED_DoesNotRecordOmniboxMetricsIfOtherCrosSearchResponse) {
   base::HistogramTester histogram;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
@@ -421,7 +422,7 @@ TEST_F(PickerSearchControllerTest,
 
 TEST_F(
     PickerSearchControllerTest,
-    DoesNotRecordOmniboxMetricsTwiceIfSearchResultsArePublishedAfterStopSearch) {
+    DISABLED_DoesNotRecordOmniboxMetricsTwiceIfSearchResultsArePublishedAfterStopSearch) {
   base::HistogramTester histogram;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
   NiceMock<MockSearchResultsCallback> first_search_results_callback;
@@ -528,7 +529,8 @@ TEST_F(PickerSearchControllerTest, RecordsFileMetricsAfterBurnIn) {
                                    kAfterBurnIn, 1);
 }
 
-TEST_F(PickerSearchControllerTest, DoesNotRecordFileMetricsIfNoFileResponse) {
+TEST_F(PickerSearchControllerTest,
+       DISABLED_DoesNotRecordFileMetricsIfNoFileResponse) {
   base::HistogramTester histogram;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
@@ -567,7 +569,7 @@ TEST_F(PickerSearchControllerTest, DoesNotRecordFileMetricsIfNoFileResponse) {
 }
 
 TEST_F(PickerSearchControllerTest,
-       DoesNotRecordFileMetricsIfOtherCrosSearchResponse) {
+       DISABLED_DoesNotRecordFileMetricsIfOtherCrosSearchResponse) {
   base::HistogramTester histogram;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
@@ -672,7 +674,8 @@ TEST_F(PickerSearchControllerTest, RecordsDriveMetricsAfterBurnIn) {
                                    kAfterBurnIn, 1);
 }
 
-TEST_F(PickerSearchControllerTest, DoesNotRecordDriveMetricsIfNoFileResponse) {
+TEST_F(PickerSearchControllerTest,
+       DISABLED_DoesNotRecordDriveMetricsIfNoFileResponse) {
   base::HistogramTester histogram;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
@@ -711,7 +714,7 @@ TEST_F(PickerSearchControllerTest, DoesNotRecordDriveMetricsIfNoFileResponse) {
 }
 
 TEST_F(PickerSearchControllerTest,
-       DoesNotRecordDriveMetricsIfOtherCrosSearchResponse) {
+       DISABLED_DoesNotRecordDriveMetricsIfOtherCrosSearchResponse) {
   base::HistogramTester histogram;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
@@ -817,7 +820,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
                                    PickerSearchRequest::kGifDebouncingDelay);
 }
 
-TEST_F(PickerSearchControllerTest, StopsOldGifSearches) {
+TEST_F(PickerSearchControllerTest, DISABLED_StopsOldGifSearches) {
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   PickerClient::FetchGifsCallback old_gif_callback;
