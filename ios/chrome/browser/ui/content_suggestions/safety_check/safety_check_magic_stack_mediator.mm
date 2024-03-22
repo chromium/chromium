@@ -28,13 +28,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 
-namespace {
-
-// The Safety Check (Magic Stack) module runs (at minimum) once every 24 hours.
-constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
-
-}  // namespace
-
 @interface SafetyCheckMagicStackMediator () <AppStateObserver,
                                              PrefObserverDelegate,
                                              SafetyCheckAudience,
@@ -324,9 +317,11 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
   base::TimeDelta lastRunAge = base::Time::Now() - lastRunTime;
 
   // Only return the Last Run Time if the run happened within the last 24hr.
-  return lastRunAge <= kSafetyCheckRunThreshold
-             ? std::optional<base::Time>(lastRunTime)
-             : std::nullopt;
+  if (lastRunAge <= TimeDelayForSafetyCheckAutorun()) {
+    return lastRunTime;
+  }
+
+  return std::nullopt;
 }
 
 @end

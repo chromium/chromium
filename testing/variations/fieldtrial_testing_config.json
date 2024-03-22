@@ -15704,6 +15704,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "SafetyCheckMagicStackAutorunHoursThreshold": "24"
+                    },
                     "enable_features": [
                         "SafetyCheckMagicStack"
                     ]

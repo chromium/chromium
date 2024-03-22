@@ -32,6 +32,17 @@ BASE_FEATURE(kSafetyCheckMagicStack,
              "SafetyCheckMagicStack",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kSafetyCheckMagicStackAutorunHoursThreshold[] =
+    "SafetyCheckMagicStackAutorunHoursThreshold";
+
+// How many hours between each autorun of the Safety Check in the Magic Stack.
+const base::TimeDelta TimeDelayForSafetyCheckAutorun() {
+  int delay = base::GetFieldTrialParamByFeatureAsInt(
+      kSafetyCheckMagicStack, kSafetyCheckMagicStackAutorunHoursThreshold,
+      /*default_value=*/24);
+  return base::Hours(delay);
+}
+
 BASE_FEATURE(kSharedHighlightingIOS,
              "SharedHighlightingIOS",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -27,6 +27,13 @@ BASE_DECLARE_FEATURE(kTestFeature);
 // Feature to add the Safety Check module to the Magic Stack.
 BASE_DECLARE_FEATURE(kSafetyCheckMagicStack);
 
+// A parameter representing how many hours must elapse before the Safety Check
+// is automatically run in the Magic Stack.
+extern const char kSafetyCheckMagicStackAutorunHoursThreshold[];
+
+// How many hours between each autorun of the Safety Check in the Magic Stack.
+const base::TimeDelta TimeDelayForSafetyCheckAutorun();
+
 // Feature flag to enable Shared Highlighting (Link to Text).
 BASE_DECLARE_FEATURE(kSharedHighlightingIOS);
 
