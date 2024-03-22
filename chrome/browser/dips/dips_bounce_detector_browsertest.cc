@@ -3457,10 +3457,6 @@ IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DontDeleteOtherDomains) {
 
 IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest,
                        DontDeleteDomainWhenPartitioned) {
-  if (GetParam() == &kLocalStorage) {
-    GTEST_SKIP();
-  }
-
   content::WebContents* web_contents = GetActiveWebContents();
 
   // Set storage on b.test embedded in a.test.
@@ -3505,7 +3501,7 @@ IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteSubdomains) {
 }
 
 IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteEmbedded3Ps) {
-  if (GetParam()) {
+  if (GetParam() == &kCookieStorage) {
     GTEST_SKIP();
   }
 
@@ -3533,7 +3529,7 @@ IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteEmbedded3Ps) {
 
 IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest,
                        DeleteEmbedded3Ps_Subdomain) {
-  if (GetParam()) {
+  if (GetParam() == &kCookieStorage) {
     GTEST_SKIP();
   }
 

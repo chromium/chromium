@@ -279,6 +279,10 @@ class BLINK_COMMON_EXPORT StorageKey {
   // in contrast to that.
   bool MatchesOriginForTrustedStorageDeletion(const url::Origin& origin) const;
 
+  // Like MatchesOriginForTrustedStorageDeletion, but for registrable domains.
+  bool MatchesRegistrableDomainForTrustedStorageDeletion(
+      std::string_view domain) const;
+
  private:
   // [Block 7 - Private Methods] - Keep in sync with BlinkStorageKey.
 

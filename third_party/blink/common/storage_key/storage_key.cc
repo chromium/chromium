@@ -834,6 +834,13 @@ bool StorageKey::MatchesOriginForTrustedStorageDeletion(
              : (top_level_site_ == net::SchemefulSite(origin));
 }
 
+bool StorageKey::MatchesRegistrableDomainForTrustedStorageDeletion(
+    std::string_view domain) const {
+  // TODO(crbug.com/1410196): Test that StorageKeys corresponding to anonymous
+  // iframes are handled appropriately here.
+  return top_level_site_.registrable_domain_or_host() == domain;
+}
+
 bool StorageKey::ExactMatchForTesting(const StorageKey& other) const {
   return *this == other &&
          this->ancestor_chain_bit_if_third_party_enabled_ ==

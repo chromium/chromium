@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -59,16 +60,30 @@ bool MatchesStorageKey(const std::set<url::Origin>& origins,
     }
   }
 
-  bool found_domain = false;
-  if (!registerable_domains.empty()) {
-    std::string registerable_domain =
-        GetDomainAndRegistry(storage_key.origin(), INCLUDE_PRIVATE_REGISTRIES);
-    found_domain =
-        base::Contains(registerable_domains, registerable_domain == ""
-                                                 ? storage_key.origin().host()
-                                                 : registerable_domain);
+  switch (match_mode) {
+    case OriginMatchingMode::kThirdPartiesIncluded: {
+      return is_delete_list ==
+             base::ranges::any_of(
+                 registerable_domains, [&](const std::string& domain) {
+                   return storage_key
+                       .MatchesRegistrableDomainForTrustedStorageDeletion(
+                           domain);
+                 });
+    }
+
+    case OriginMatchingMode::kOriginInAllContexts: {
+      std::string registerable_domain = GetDomainAndRegistry(
+          storage_key.origin(), INCLUDE_PRIVATE_REGISTRIES);
+      if (registerable_domain.empty()) {
+        registerable_domain = storage_key.origin().host();
+      }
+
+      return is_delete_list ==
+             base::Contains(registerable_domains, registerable_domain);
+    }
   }
-  return found_domain == is_delete_list;
+
+  return !is_delete_list;
 }
 
 bool MatchesURL(const std::set<url::Origin>& origins,
