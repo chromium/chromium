@@ -150,7 +150,15 @@ void DragDrop(NSString* src_identifier, NSString* tab_strip_identifier) {
 }
 
 // Tests dragging URL into regular tab strip.
-- (void)testDragAndDropURLIntoRegularTabStrip {
+// TODO(crbug.com/330842850): Test is flaky.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testDragAndDropURLIntoRegularTabStrip \
+  FLAKY_testDragAndDropURLIntoRegularTabStrip
+#else
+#define MAYBE_testDragAndDropURLIntoRegularTabStrip \
+  testDragAndDropURLIntoRegularTabStrip
+#endif
+- (void)MAYBE_testDragAndDropURLIntoRegularTabStrip {
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
