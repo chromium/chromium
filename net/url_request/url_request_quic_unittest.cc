@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -129,7 +130,7 @@ class URLRequestQuicTest
 
  protected:
   // Returns a fully-qualified URL for |path| on the test server.
-  std::string UrlFromPath(base::StringPiece path) {
+  std::string UrlFromPath(std::string_view path) {
     return std::string("https://") + std::string(kTestServerHost) +
            std::string(path);
   }

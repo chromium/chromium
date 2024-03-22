@@ -10,12 +10,12 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -371,7 +371,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // case-sensitive, so standard HTTP methods like GET or POST should be
   // specified in uppercase.
   const std::string& method() const { return method_; }
-  void set_method(base::StringPiece method);
+  void set_method(std::string_view method);
 
 #if BUILDFLAG(ENABLE_REPORTING)
   // Reporting upload nesting depth of this request.
@@ -394,7 +394,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // the request is started. The referrer URL may be suppressed or changed
   // during the course of the request, for example because of a referrer policy
   // set with set_referrer_policy().
-  void SetReferrer(base::StringPiece referrer);
+  void SetReferrer(std::string_view referrer);
 
   // The referrer policy to apply when updating the referrer during redirects.
   // The referrer policy may only be changed before Start() is called. Any
@@ -425,10 +425,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Set or remove a extra request header.  These methods may only be called
   // before Start() is called, or between receiving a redirect and trying to
   // follow it.
-  void SetExtraRequestHeaderByName(base::StringPiece name,
-                                   base::StringPiece value,
+  void SetExtraRequestHeaderByName(std::string_view name,
+                                   std::string_view value,
                                    bool overwrite);
-  void RemoveRequestHeaderByName(base::StringPiece name);
+  void RemoveRequestHeaderByName(std::string_view name);
 
   // Sets all extra request headers.  Any extra request headers set by other
   // methods are overwritten by this method.  This method may only be called
@@ -470,12 +470,12 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // request.  LogUnblocked must be called before resuming the request.  This
   // can be called multiple times in a row either with or without calling
   // LogUnblocked between calls.  |blocked_by| must not be empty.
-  void LogBlockedBy(base::StringPiece blocked_by);
+  void LogBlockedBy(std::string_view blocked_by);
 
   // Just like LogBlockedBy, but also makes GetLoadState return source as the
   // |param| in the value returned by GetLoadState.  Calling LogUnblocked or
   // LogBlockedBy will clear the load param.  |blocked_by| must not be empty.
-  void LogAndReportBlockedBy(base::StringPiece blocked_by);
+  void LogAndReportBlockedBy(std::string_view blocked_by);
 
   // Logs that the request is no longer blocked by the last caller to
   // LogBlockedBy.
@@ -490,8 +490,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // that appear more than once in the response are coalesced, with values
   // separated by commas (per RFC 2616). This will not work with cookies since
   // comma can be used in cookie values.
-  void GetResponseHeaderByName(base::StringPiece name,
-                               std::string* value) const;
+  void GetResponseHeaderByName(std::string_view name, std::string* value) const;
 
   // The time when |this| was constructed.
   base::TimeTicks creation_time() const { return creation_time_; }

@@ -4,6 +4,8 @@
 
 #include "net/url_request/redirect_info.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -39,7 +41,7 @@ ReferrerPolicy ProcessReferrerPolicyHeaderOnRedirect(
     ReferrerPolicy original_referrer_policy,
     const std::optional<std::string>& referrer_policy_header) {
   ReferrerPolicy new_policy = original_referrer_policy;
-  std::vector<base::StringPiece> policy_tokens;
+  std::vector<std::string_view> policy_tokens;
   if (referrer_policy_header) {
     policy_tokens = base::SplitStringPiece(*referrer_policy_header, ",",
                                            base::TRIM_WHITESPACE,
