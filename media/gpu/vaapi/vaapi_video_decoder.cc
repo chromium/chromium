@@ -503,14 +503,8 @@ scoped_refptr<VASurface> VaapiVideoDecoder::CreateSurface() {
 
   scoped_refptr<VASurface> va_surface;
   if (!base::Contains(allocated_va_surfaces_, frame_id)) {
-    scoped_refptr<gfx::NativePixmap> pixmap = frame->CreateNativePixmapDmaBuf();
-    if (!pixmap) {
-      SetErrorState("failed to create NativePixmap from FrameResource");
-      return nullptr;
-    }
-
-    va_surface = vaapi_wrapper_->CreateVASurfaceForPixmap(
-        std::move(pixmap), cdm_context_ref_ || transcryption_);
+    va_surface = vaapi_wrapper_->CreateVASurfaceForFrameResource(
+        *frame, cdm_context_ref_ || transcryption_);
     if (!va_surface || va_surface->id() == VA_INVALID_ID) {
       SetErrorState("failed to create VASurface from FrameResource");
       return nullptr;
