@@ -3490,21 +3490,6 @@
             ]
         }
     ],
-    "ChromeOSHWVBREncoding": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230922",
-                    "enable_features": [
-                        "ChromeOSHWVBREncoding"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSHoldingSpaceWallpaperNudge": [
         {
             "platforms": [
