@@ -5,7 +5,9 @@
 
 """Rolls third_party/boringssl/src in DEPS and updates generated build files."""
 
-import importlib
+# TODO(crbug.com/boringssl/542): Once BoringSSL has gni files pregenerated, we
+# will no longer need this script.
+
 import os
 import os.path
 import shutil
@@ -23,14 +25,9 @@ BORINGSSL_DEP = 'src/third_party/boringssl/src'
 if not os.path.isfile(DEPS_PATH) or not os.path.isdir(BORINGSSL_SRC_PATH):
   raise Exception('Could not find Chromium checkout')
 
-# Pull OS_ARCH_COMBOS out of the BoringSSL script.
-sys.path.append(os.path.join(BORINGSSL_SRC_PATH, 'util'))
-import generate_build_files
-
 GENERATED_FILES = [
     'BUILD.generated.gni',
     'BUILD.generated_tests.gni',
-    'err_data.c',
 ]
 
 
@@ -160,9 +157,6 @@ def main():
   subprocess.check_call(['git', 'checkout', new_head], cwd=BORINGSSL_SRC_PATH)
 
   # Clear the old generated files.
-  for (osname, arch, _, _, _) in generate_build_files.OS_ARCH_COMBOS:
-    path = os.path.join(BORINGSSL_PATH, osname + '-' + arch)
-    shutil.rmtree(path)
   for f in GENERATED_FILES:
     path = os.path.join(BORINGSSL_PATH, f)
     os.unlink(path)
@@ -176,11 +170,7 @@ def main():
                         cwd=BORINGSSL_PATH)
 
   # Commit everything.
-  importlib.reload(generate_build_files)
   subprocess.check_call(['git', 'add', DEPS_PATH], cwd=SRC_PATH)
-  for (osname, arch, _, _, _) in generate_build_files.OS_ARCH_COMBOS:
-    path = os.path.join(BORINGSSL_PATH, osname + '-' + arch)
-    subprocess.check_call(['git', 'add', path], cwd=SRC_PATH)
   for f in GENERATED_FILES:
     path = os.path.join(BORINGSSL_PATH, f)
     subprocess.check_call(['git', 'add', path], cwd=SRC_PATH)
