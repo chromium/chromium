@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,6 +40,11 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(FacilitatedPaymentsApiClientBridgeJni.TEST_HOOKS, mBridgeNatives);
+    }
+
+    @After
+    public void tearDown() {
+        FacilitatedPaymentsApiClient.setFactory(null);
     }
 
     @Test
@@ -118,5 +124,26 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
         bridge.invokePurchaseAction(new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
 
         verifyNoInteractions(mBridgeNatives);
+    }
+
+    /**
+     * If there is a mismatch between the public interface and the private implementation then the
+     * JNI bridge continues to work, e.g., calling bridge.isAvailable() will not throw a
+     * NullPointerException.
+     */
+    @Test
+    public void mismatchedInterfaceAndImplementationCreatesNonNullApiClients() throws Exception {
+        // A factory that does not override any of the interface methods. This simulates a mismatch
+        // between the public interface and private implementation.
+        FacilitatedPaymentsApiClient.setFactory(new FacilitatedPaymentsApiClient.Factory() {});
+
+        FacilitatedPaymentsApiClientBridge bridge =
+                new FacilitatedPaymentsApiClientBridge(
+                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
+                        /* renderFrameHost= */ null);
+        bridge.isAvailable();
+
+        verify(mBridgeNatives)
+                .onIsAvailable(eq(NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID), eq(false));
     }
 }

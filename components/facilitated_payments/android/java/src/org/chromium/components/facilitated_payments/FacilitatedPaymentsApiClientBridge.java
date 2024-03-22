@@ -28,6 +28,7 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
             long nativeFacilitatedPaymentsApiClientAndroid, RenderFrameHost renderFrameHost) {
         mNativeFacilitatedPaymentsApiClientAndroid = nativeFacilitatedPaymentsApiClientAndroid;
         mApiClient = FacilitatedPaymentsApiClient.create(renderFrameHost, /* delegate= */ this);
+        assert mApiClient != null;
     }
 
     /**

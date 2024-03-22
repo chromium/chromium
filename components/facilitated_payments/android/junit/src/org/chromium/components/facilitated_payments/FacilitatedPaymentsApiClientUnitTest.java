@@ -163,4 +163,22 @@ public class FacilitatedPaymentsApiClientUnitTest {
         Assert.assertTrue(delegate.mIsPurchaseActionInvoked);
         Assert.assertTrue(delegate.mIsPurchaseActionSuccessful);
     }
+
+    /**
+     * If there is a mismatch between the public interface and the private implementation (e.g., one
+     * of the interface methods is not implemented), then the create() method still continues to
+     * return non-null instances of the API client.
+     */
+    @Test
+    public void mismatchedInterfaceAndImplementationCreatesNonNullInstances() throws Exception {
+        // A factory that does not override any of the interface methods. This simulates a mismatch
+        // between the public interface and private implementation.
+        FacilitatedPaymentsApiClient.setFactory(new FacilitatedPaymentsApiClient.Factory() {});
+
+        FacilitatedPaymentsApiClient apiClient =
+                FacilitatedPaymentsApiClient.create(
+                        /* renderFrameHost= */ null, new TestDelegate());
+
+        Assert.assertNotNull(apiClient);
+    }
 }

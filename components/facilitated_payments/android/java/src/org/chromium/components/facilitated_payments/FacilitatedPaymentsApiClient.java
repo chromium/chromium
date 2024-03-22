@@ -46,8 +46,9 @@ public class FacilitatedPaymentsApiClient {
          * @param delegate The delegate to notify of payment result.
          * @return An object that can invoke a facilitated payment API.
          */
+        @Deprecated
         default FacilitatedPaymentsApiClient factoryCreate(Delegate delegate) {
-            return null;
+            return new FacilitatedPaymentsApiClient(delegate);
         }
 
         /**
@@ -59,7 +60,7 @@ public class FacilitatedPaymentsApiClient {
          */
         default FacilitatedPaymentsApiClient factoryCreate(
                 RenderFrameHost renderFrameHost, Delegate delegate) {
-            return null;
+            return new FacilitatedPaymentsApiClient(delegate);
         }
     }
 
