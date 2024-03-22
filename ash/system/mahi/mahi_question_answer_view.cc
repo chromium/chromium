@@ -14,6 +14,7 @@
 #include "ash/style/system_textfield.h"
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -37,21 +38,6 @@ constexpr gfx::Insets kInteriorMargin = gfx::Insets(8);
 constexpr gfx::Insets kTextBubbleInteriorMargin = gfx::Insets::VH(8, 12);
 constexpr int kBetweenChildSpacing = 8;
 constexpr int kTextBubbleCornerRadius = 12;
-
-std::vector<std::u16string> sample_answer_list = {
-    u"Flippity floppity snazzlefrack! The wumpusplump zorgledorf wibbledorf "
-    u"into the flibberflabbersquish, causing a kerfuffle of zorpzorp "
-    u"proportions!",
-    u"I'd go with a sniggle! They say freshly picked sniggles have a "
-    u"satisfying squish and a surprisingly tangy floofle flavor.",
-    u"The flibberzorps often quibble with the zingledoodles over squanching "
-    u"flumjabbles.",
-    u"That depends entirely on the grumple's mood! A cheerful grumple would "
-    u"certainly flibberflab with a wizzleboop, as the colors are known to "
-    u"spark joy. However,  a grumpy grumple might prefer the calming tones of "
-    u"a snoozle for its flibberflabbing.",
-    u"Short answer.",
-};
 
 // Creates a text bubble that will be populated with `text` and styled
 // to be a question or answer based on `is_question`.
@@ -114,13 +100,20 @@ MahiQuestionAnswerView::MahiQuestionAnswerView() {
 
 void MahiQuestionAnswerView::CreateQuestion(
     const std::u16string& question_text) {
-  static size_t answer_index = 0;
-
   AddChildView(CreateTextBubble(question_text, /*is_question=*/true));
-  AddChildView(CreateTextBubble(sample_answer_list[answer_index],
-                                /*is_question=*/false));
 
-  ++answer_index %= sample_answer_list.size();
+  chromeos::MahiManager::Get()->AnswerQuestion(
+      question_text, /*current_panel_content=*/true,
+      base::BindOnce(&MahiQuestionAnswerView::OnAnswerLoaded,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void MahiQuestionAnswerView::OnAnswerLoaded(
+    std::optional<std::u16string> answer_text,
+    chromeos::MahiResponseStatus status) {
+  if (answer_text.has_value()) {
+    AddChildView(CreateTextBubble(answer_text.value(), /*is_question=*/false));
+  }
 }
 
 MahiQuestionAnswerView::~MahiQuestionAnswerView() = default;

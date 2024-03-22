@@ -31,7 +31,7 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
   void GoToOutlineContent(int outline_id) override {}
   void AnswerQuestion(const std::u16string& question,
                       bool current_panel_content,
-                      MahiAnswerQuestionCallback callback) override {}
+                      MahiAnswerQuestionCallback callback) override;
   void GetSuggestedQuestion(
       MahiGetSuggestedQuestionCallback callback) override {}
   void SetCurrentFocusedPageInfo(
@@ -52,6 +52,10 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
     summary_text_ = summary_text;
   }
 
+  void set_answer_text(const std::u16string& answer_text) {
+    answer_text_ = answer_text;
+  }
+
   int open_feedback_dialog_called_count() {
     return open_feedback_dialog_called_count_;
   }
@@ -61,7 +65,11 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
     enable_fake_delays_for_animations_ = enable_fake_delays_for_animations;
   }
 
+  const std::u16string& asked_question() { return asked_question_; }
+
  private:
+  std::optional<std::u16string> answer_text_;
+  std::u16string asked_question_;
   std::u16string content_title_;
   gfx::ImageSkia content_icon_;
   std::u16string summary_text_;

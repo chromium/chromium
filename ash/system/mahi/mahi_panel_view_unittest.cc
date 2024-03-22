@@ -425,15 +425,27 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_CreateQuestion) {
   auto* const question_textfield = views::AsViewClass<SystemTextfield>(
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
 
+  const std::u16string question_1 = u"question 1";
+  const std::u16string question_2 = u"question 2";
+  const std::u16string answer = u"test answer";
+
+  fake_mahi_manager()->set_answer_text(answer);
+
   // Set a valid text in the question textfield.
-  question_textfield->SetText(u"question 1");
+  question_textfield->SetText(question_1);
 
   // Pressing the send button should create a question and answer text bubble.
   LeftClickOn(send_button);
   ASSERT_EQ(2u, question_answer_view->children().size());
-  EXPECT_EQ(u"question 1",
+  EXPECT_EQ(question_1, fake_mahi_manager()->asked_question());
+  EXPECT_EQ(question_1,
             views::AsViewClass<views::Label>(
                 question_answer_view->children()[0]->GetViewByID(
+                    mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
+                ->GetText());
+  EXPECT_EQ(answer,
+            views::AsViewClass<views::Label>(
+                question_answer_view->children()[1]->GetViewByID(
                     mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
                 ->GetText());
 
@@ -441,16 +453,22 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_CreateQuestion) {
   EXPECT_TRUE(question_textfield->GetText().empty());
 
   // Set another valid text in the question textfield.
-  question_textfield->SetText(u"question 2");
+  question_textfield->SetText(question_2);
 
   // Pressing the "Enter" key while the textfield is focused should create a
   // question and answer text bubble.
   question_textfield->RequestFocus();
   PressEnter();
   ASSERT_EQ(4u, question_answer_view->children().size());
-  EXPECT_EQ(u"question 2",
+  EXPECT_EQ(question_2, fake_mahi_manager()->asked_question());
+  EXPECT_EQ(question_2,
             views::AsViewClass<views::Label>(
                 question_answer_view->children()[2]->GetViewByID(
+                    mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
+                ->GetText());
+  EXPECT_EQ(answer,
+            views::AsViewClass<views::Label>(
+                question_answer_view->children()[3]->GetViewByID(
                     mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
                 ->GetText());
 

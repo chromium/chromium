@@ -6,6 +6,8 @@
 #define ASH_SYSTEM_MAHI_MAHI_QUESTION_ANSWER_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/weak_ptr.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 
@@ -22,9 +24,16 @@ class ASH_EXPORT MahiQuestionAnswerView : public views::FlexLayoutView {
   ~MahiQuestionAnswerView() override;
 
   // Creates a question text bubble populated with the provided `question_text`
-  // and a sample answer for testing.
-  // TODO(b/329515258): Have backend respond to user input.
+  // and forwards the question to the manager so it can be answered.
   void CreateQuestion(const std::u16string& question_text);
+
+ private:
+  // Callback provided to `MahiManager` that runs when the answer is available,
+  // and creates an answer text bubble with the supplied contents.
+  void OnAnswerLoaded(std::optional<std::u16string> answer_text,
+                      chromeos::MahiResponseStatus status);
+
+  base::WeakPtrFactory<MahiQuestionAnswerView> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, MahiQuestionAnswerView, views::FlexLayoutView)

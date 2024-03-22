@@ -75,6 +75,14 @@ void FakeMahiManager::GetOutlines(MahiOutlinesCallback callback) {
       base::Seconds(mahi_constants::kFakeMahiManagerLoadOutlinesDelaySeconds));
 }
 
+void FakeMahiManager::AnswerQuestion(const std::u16string& question,
+                                     bool current_panel_content,
+                                     MahiAnswerQuestionCallback callback) {
+  asked_question_ = question;
+  std::move(callback).Run(answer_text_.value_or(u"Fake answer"),
+                          chromeos::MahiResponseStatus::kSuccess);
+}
+
 void FakeMahiManager::OnContextMenuClicked(
     crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) {
   OpenMahiPanel(display::Screen::GetScreen()->GetPrimaryDisplay().id());
