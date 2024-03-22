@@ -15,6 +15,7 @@
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_background_view.h"
+#import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
@@ -663,7 +664,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // Reset the title font and the learn more text to make sure that they are
   // properly scaled. Nothing will be done for the Read More text if the
   // bottom is reached.
-  [self setFontForTitle:self.titleLabel];
+  self.titleLabel.font = GetFRETitleFont(self);
   [self setReadMoreText];
 
   // Update the primary button once the layout changes take effect to have the
@@ -763,7 +764,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   if (!_titleLabel) {
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.numberOfLines = 0;
-    [self setFontForTitle:_titleLabel];
+    _titleLabel.font = GetFRETitleFont(self);
     _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _titleLabel.text = self.titleText;
     _titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -999,35 +1000,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
   _bannerStyle = currentStyle;
   return ResizeImage([self bannerImage], newSize, ProjectionMode::kAspectFit);
-}
-
-// Determines which font text style to use depending on the device size, the
-// size class and if dynamic type is enabled.
-- (UIFontTextStyle)titleLabelFontTextStyle {
-  UIViewController* presenter =
-      self.presentingViewController ? self.presentingViewController : self;
-  BOOL dynamicTypeEnabled = UIContentSizeCategoryIsAccessibilityCategory(
-      presenter.traitCollection.preferredContentSizeCategory);
-
-  if (!dynamicTypeEnabled) {
-    if ([self isRegularXRegularSizeClass:presenter.traitCollection]) {
-      return UIFontTextStyleTitle1;
-    } else if (!IsSmallDevice()) {
-      return UIFontTextStyleLargeTitle;
-    }
-  }
-  return UIFontTextStyleTitle2;
-}
-
-- (void)setFontForTitle:(UILabel*)titleLabel {
-  UIFontTextStyle textStyle = [self titleLabelFontTextStyle];
-
-  UIFontDescriptor* descriptor =
-      [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
-  UIFont* font = [UIFont systemFontOfSize:descriptor.pointSize
-                                   weight:UIFontWeightBold];
-  UIFontMetrics* fontMetrics = [UIFontMetrics metricsForTextStyle:textStyle];
-  titleLabel.font = [fontMetrics scaledFontForFont:font];
 }
 
 - (void)setPrimaryActionButtonFont:(UIButton*)button {
@@ -1311,14 +1283,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   if ([self.delegate respondsToSelector:@selector(didTapLearnMoreButton)]) {
     [self.delegate didTapLearnMoreButton];
   }
-}
-
-// Helper that returns whether the `traitCollection` has a regular vertical
-// and regular horizontal size class.
-// Copied from "ios/chrome/browser/shared/ui/util/uikit_ui_util.mm"
-- (bool)isRegularXRegularSizeClass:(UITraitCollection*)traitCollection {
-  return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
-         traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
 }
 
 - (UIFontTextStyle)disclaimerLabelFontTextStyle {

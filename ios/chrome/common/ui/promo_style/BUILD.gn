@@ -15,6 +15,7 @@ source_set("promo_style") {
   ]
   deps = [
     ":constants",
+    ":utils",
     "//base",
     "//base:i18n",
     "//ios/chrome/common:constants",
@@ -37,5 +38,14 @@ source_set("constants") {
     "constants.h",
     "constants.mm",
   ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("utils") {
+  sources = [
+    "utils.h",
+    "utils.mm",
+  ]
+  deps = [ "//ios/chrome/common/ui/util" ]
   frameworks = [ "Foundation.framework" ]
 }

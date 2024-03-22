@@ -11,9 +11,6 @@ class TemplateURL;
 
 // UI Util containing helper methods for the choice screen UI.
 
-// Gets the correct font for the title.
-UIFont* GetTitleFontWithTraitCollection(UITraitCollection* trait_collection);
-
 // Creates a grey and disabled "Set as Default" primary button.
 UIButton* CreateDisabledPrimaryButton();
 
