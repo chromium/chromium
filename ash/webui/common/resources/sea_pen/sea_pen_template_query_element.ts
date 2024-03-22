@@ -28,6 +28,23 @@ import {getTemplate} from './sea_pen_template_query_element.html.js';
 import {ChipToken, getDefaultOptions, getTemplateTokens, isNonEmptyArray, logGenerateSeaPenWallpaper, TemplateToken} from './sea_pen_utils.js';
 import {getTransitionEnabled} from './transition.js';
 
+// Two options are the same if they have the same key-value pairs.
+function isSameOption(
+    map1: Map<SeaPenTemplateChip, SeaPenOption>,
+    map2: Map<SeaPenTemplateChip, SeaPenOption>): boolean {
+  if (map1.size !== map2.size) {
+    return false;
+  }
+
+  for (const [key, value] of map1.entries()) {
+    if (!map2.has(key) || map2.get(key) !== value) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   static get is() {
     return 'sea-pen-template-query';
@@ -160,8 +177,18 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   }
 
   private onClickInspire_() {
-    this.selectedOptions_ =
-        getDefaultOptions(this.seaPenTemplate_, /*random=*/ true);
+    // Run getDefaultOptions (5 times at most) until we get an options that is
+    // different from current; which highly likely to happen the first time.
+    for (let i = 0; i < 5; i++) {
+      const newOptions =
+          getDefaultOptions(this.seaPenTemplate_, /*random=*/ true);
+
+      if (!isSameOption(newOptions, this.selectedOptions_)) {
+        this.selectedOptions_ = newOptions;
+        break;
+      }
+    }
+
     this.templateTokens_ =
         getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
     this.onClickSearchButton_();
