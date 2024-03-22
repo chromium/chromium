@@ -151,7 +151,14 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
 
   // Destroying this object destroys the URLRequest, which cancels the request
   // and so terminates the handshake if it is incomplete.
-  ~WebSocketStreamRequestImpl() override = default;
+  ~WebSocketStreamRequestImpl() override {
+    if (ws_upgrade_success_) {
+      CHECK(url_request_);
+      // "Cancel" the request with an error code indicating the upgrade
+      // succeeded.
+      url_request_->CancelWithError(ERR_WS_UPGRADE);
+    }
+  }
 
   void OnBasicHandshakeStreamCreated(
       WebSocketBasicHandshakeStream* handshake_stream) override {
@@ -217,19 +224,16 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
       return;
     }
 
-    std::unique_ptr<URLRequest> url_request = std::move(url_request_);
+    ws_upgrade_success_ = true;
     WebSocketHandshakeStreamBase* handshake_stream = handshake_stream_.get();
     handshake_stream_.reset();
     auto handshake_response_info =
         std::make_unique<WebSocketHandshakeResponseInfo>(
-            url_request->url(), url_request->response_headers(),
-            url_request->GetResponseRemoteEndpoint(),
-            url_request->response_time());
+            url_request_->url(), url_request_->response_headers(),
+            url_request_->GetResponseRemoteEndpoint(),
+            url_request_->response_time());
     connect_delegate_->OnSuccess(handshake_stream->Upgrade(),
                                  std::move(handshake_response_info));
-
-    // This is safe even if |this| has already been deleted.
-    url_request->CancelWithError(ERR_WS_UPGRADE);
   }
 
   std::string FailureMessageFromNetError(int net_error) {
@@ -293,12 +297,13 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
   }
 
   // |delegate_| needs to be declared before |url_request_| so that it gets
-  // initialised first.
+  // initialised first and destroyed second.
   Delegate delegate_;
 
   // Deleting the WebSocketStreamRequestImpl object deletes this URLRequest
-  // object, cancelling the whole connection.
-  std::unique_ptr<URLRequest> url_request_;
+  // object, cancelling the whole connection. Must be destroyed before
+  // `delegate_`, since `url_request_` has a pointer to it.
+  const std::unique_ptr<URLRequest> url_request_;
 
   std::unique_ptr<WebSocketStream::ConnectDelegate> connect_delegate_;
 
@@ -317,6 +322,9 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
 
   // A timer for handshake timeout.
   std::unique_ptr<base::OneShotTimer> timer_;
+
+  // Set to true if the websocket upgrade succeeded.
+  bool ws_upgrade_success_ = false;
 
   // A delegate for On*HandshakeCreated and OnFailure calls.
   std::unique_ptr<WebSocketStreamRequestAPI> api_delegate_;

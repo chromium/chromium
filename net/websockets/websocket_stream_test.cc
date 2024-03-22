@@ -630,6 +630,11 @@ TEST_P(WebSocketMultiProtocolStreamCreateTest, SimpleSuccess) {
   EXPECT_TRUE(stream_);
   EXPECT_TRUE(request_info_);
   EXPECT_TRUE(response_info_);
+
+  // Histograms are only updated on stream request destruction.
+  stream_request_.reset();
+  stream_.reset();
+
   EXPECT_EQ(ERR_WS_UPGRADE,
             url_request_context_host_.network_delegate().last_error());
 

@@ -1003,7 +1003,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // Never access methods of the |delegate_| directly. Always use the
   // Notify... methods for this.
-  raw_ptr<Delegate, DanglingUntriaged> delegate_;
+  raw_ptr<Delegate> delegate_;
 
   const bool is_for_websockets_;
 

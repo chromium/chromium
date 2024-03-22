@@ -277,9 +277,10 @@ TEST_F(ThroughputAnalyzerTest, TestMinRequestsForThroughputSample) {
     auto context_builder = CreateTestURLRequestContextBuilder();
     context_builder->set_host_resolver(CreateMockHostResolver());
     auto context = context_builder->Build();
-    std::vector<std::unique_ptr<URLRequest>> requests_not_local;
 
+    // TestDelegates must be before URLRequests that point to them.
     std::vector<TestDelegate> not_local_test_delegates(num_requests);
+    std::vector<std::unique_ptr<URLRequest>> requests_not_local;
     for (auto& delegate : not_local_test_delegates) {
       // We don't care about completion, except for the first one (see below).
       delegate.set_on_complete(base::DoNothing());
@@ -397,9 +398,10 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequests) {
     auto context_builder = CreateTestURLRequestContextBuilder();
     context_builder->set_host_resolver(CreateMockHostResolver());
     auto context = context_builder->Build();
-    std::vector<std::unique_ptr<URLRequest>> requests_not_local;
 
+    // TestDelegates must be before URLRequests that point to them.
     std::vector<TestDelegate> not_local_test_delegates(num_requests);
+    std::vector<std::unique_ptr<URLRequest>> requests_not_local;
     for (size_t i = 0; i < num_requests; ++i) {
       // We don't care about completion, except for the first one (see below).
       not_local_test_delegates[i].set_on_complete(base::DoNothing());
@@ -667,9 +669,10 @@ TEST_F(ThroughputAnalyzerTest,
     auto context = context_builder->Build();
     std::unique_ptr<URLRequest> request_local;
 
-    std::vector<std::unique_ptr<URLRequest>> requests_not_local;
+    // TestDelegates must be before URLRequests that point to them.
     std::vector<TestDelegate> not_local_test_delegates(
         params.throughput_min_requests_in_flight());
+    std::vector<std::unique_ptr<URLRequest>> requests_not_local;
     for (size_t i = 0; i < params.throughput_min_requests_in_flight(); ++i) {
       // We don't care about completion, except for the first one (see below).
       not_local_test_delegates[i].set_on_complete(base::DoNothing());
@@ -780,9 +783,10 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithNetworkRequestsOverlap) {
 
     EXPECT_EQ(0, throughput_analyzer.throughput_observations_received());
 
-    std::vector<std::unique_ptr<URLRequest>> requests_in_flight;
+    // TestDelegates must be before URLRequests that point to them.
     std::vector<TestDelegate> in_flight_test_delegates(
         test.number_requests_in_flight);
+    std::vector<std::unique_ptr<URLRequest>> requests_in_flight;
     for (size_t i = 0; i < test.number_requests_in_flight; ++i) {
       // We don't care about completion, except for the first one (see below).
       in_flight_test_delegates[i].set_on_complete(base::DoNothing());
