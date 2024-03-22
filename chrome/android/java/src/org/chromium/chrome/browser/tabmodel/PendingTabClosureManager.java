@@ -28,25 +28,28 @@ public class PendingTabClosureManager {
     public interface PendingTabClosureDelegate {
         /**
          * Return {@code tab} to the {@link TabList} at {@code index}.
+         *
          * @param tab The tab to insert.
          * @param index The location to insert the tab at.
          */
-        public void insertUndoneTabClosureAt(Tab tab, int index);
+        void insertUndoneTabClosureAt(Tab tab, int index);
 
         /**
          * Finalize the closure of a Tab.
+         *
          * @param tab The tab to finalize the closure of.
          */
-        public void finalizeClosure(Tab tab);
+        void finalizeClosure(Tab tab);
 
         /** Notify observers about completion of undo action to restore all tabs. */
-        public void notifyAllTabsClosureUndone();
+        void notifyAllTabsClosureUndone();
 
         /**
          * Request to notify observers that {@code tabs} will be closed.
+         *
          * @param tabs The list of tabs to close together.
          */
-        public void notifyOnFinishingMultipleTabClosure(List<Tab> tabs);
+        void notifyOnFinishingMultipleTabClosure(List<Tab> tabs);
     }
 
     /** Represents a set of tabs closed together. */
@@ -60,8 +63,8 @@ public class PendingTabClosureManager {
          * @param tabs The list of closing tabs.
          */
         public TabClosureEvent(List<Tab> tabs) {
-            mClosingTabs = new LinkedList<Tab>(tabs);
-            mUnhandledTabs = new HashSet<Tab>(mClosingTabs);
+            mClosingTabs = new LinkedList<>(tabs);
+            mUnhandledTabs = new HashSet<>(mClosingTabs);
         }
 
         /**
@@ -108,11 +111,11 @@ public class PendingTabClosureManager {
 
     private class RewoundList implements TabList {
         /**
-         * A list of {@link Tab}s that represents the completely rewound list (if all
-         * rewindable closes were undone). If there are no possible rewindable closes this list
-         * should match {@link #mTabs}.
+         * A list of {@link Tab}s that represents the completely rewound list (if all rewindable
+         * closes were undone). If there are no possible rewindable closes this list should match
+         * {@link #mTabs}.
          */
-        private final List<Tab> mRewoundTabs = new ArrayList<Tab>();
+        private final List<Tab> mRewoundTabs = new ArrayList<>();
 
         @Override
         public boolean isIncognito() {

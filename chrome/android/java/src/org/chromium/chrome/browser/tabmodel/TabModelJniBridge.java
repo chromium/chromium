@@ -46,7 +46,7 @@ public abstract class TabModelJniBridge implements TabModel {
                 TabModelJniBridgeJni.get().init(TabModelJniBridge.this, profile, mActivityType);
     }
 
-    /** @return Whether the native-side pointer has been initialized. */
+    /** Returns whether the native-side pointer has been initialized. */
     public boolean isNativeInitialized() {
         return mNativeTabModelJniBridge != 0;
     }
@@ -155,7 +155,7 @@ public abstract class TabModelJniBridge implements TabModel {
 
     /** Returns whether supplied Tab instance has been grouped together with other Tabs. */
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static boolean isTabInTabGroup(@NonNull Tab tab) {
         assert tab != null;
         final WindowAndroid windowAndroid = tab.getWindowAndroid();
@@ -186,7 +186,7 @@ public abstract class TabModelJniBridge implements TabModel {
     @CalledByNative
     public abstract int index();
 
-    /** @return Whether or not a sync session is currently being restored. */
+    /** Returns whether or not a sync session is currently being restored. */
     @CalledByNative
     protected abstract boolean isSessionRestoreInProgress();
 

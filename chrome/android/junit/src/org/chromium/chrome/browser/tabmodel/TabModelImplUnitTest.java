@@ -116,17 +116,6 @@ public class TabModelImplUnitTest {
         return tab;
     }
 
-    private Tab createBackgroundTab(final TabModel model) {
-        MockTab tab = MockTab.createAndInitialize(mNextTabId++, model.getProfile());
-        tab.setIsInitialized(true);
-        model.addTab(
-                tab,
-                TabList.INVALID_TAB_INDEX,
-                TabLaunchType.FROM_LONGPRESS_BACKGROUND,
-                TabCreationState.LIVE_IN_BACKGROUND);
-        return tab;
-    }
-
     private void selectTab(final TabModel model, final Tab tab) {
         model.setIndex(model.indexOf(tab), TabSelectionType.FROM_USER, false);
     }

@@ -303,7 +303,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
             if (!isActiveModel()) {
                 // When adding new tabs in the background, make sure we set a valid index when the
-                // first one is added.  When in the foreground, calls to setIndex will take care of
+                // first one is added. When in the foreground, calls to setIndex will take care of
                 // this.
                 mIndex = Math.max(mIndex, 0);
                 if (!selectTab) {

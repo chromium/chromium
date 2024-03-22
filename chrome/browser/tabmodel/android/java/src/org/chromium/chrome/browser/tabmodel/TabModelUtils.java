@@ -12,9 +12,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.WebContents;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * A set of convenience methods used for interacting with {@link TabList}s and {@link TabModel}s.
  */
@@ -36,17 +33,8 @@ public class TabModelUtils {
     /**
      * @param model The {@link TabModel} to act on.
      * @param tabId The id of the {@link Tab} to close.
-     * @return      {@code true} if the {@link Tab} was found.
-     */
-    public static boolean closeTabById(TabModel model, int tabId) {
-        return closeTabById(model, tabId, false);
-    }
-
-    /**
-     * @param model   The {@link TabModel} to act on.
-     * @param tabId   The id of the {@link Tab} to close.
      * @param canUndo Whether or not this closure can be undone.
-     * @return        {@code true} if the {@link Tab} was found.
+     * @return {@code true} if the {@link Tab} was found.
      */
     public static boolean closeTabById(TabModel model, int tabId, boolean canUndo) {
         Tab tab = TabModelUtils.getTabById(model, tabId);
@@ -201,36 +189,8 @@ public class TabModelUtils {
     }
 
     /**
-     * Returns all the Tabs in the specified TabList that were opened from the Tab with the
-     * specified ID. The returned Tabs are in the same order as in the TabList.
-     * @param model The {@link TabModel} to act on.
-     * @param tabId The ID of the Tab whose children should be returned.
-     */
-    public static List<Tab> getChildTabs(TabList model, int tabId) {
-        ArrayList<Tab> childTabs = new ArrayList<Tab>();
-        for (int i = 0; i < model.getCount(); i++) {
-            if (model.getTabAt(i).getParentId() == tabId) {
-                childTabs.add(model.getTabAt(i));
-            }
-        }
-
-        return childTabs;
-    }
-
-    /**
-     * @return all regular {@link Tab} ids from a {@link TabModelSelectoor}
-     */
-    public static List<Integer> getRegularTabIds(TabModelSelector tabModelSelector) {
-        List<Integer> tabIds = new ArrayList<>();
-        int numTabs = tabModelSelector.getModel(false).getCount();
-        for (int i = 0; i < numTabs; i++) {
-            tabIds.add(tabModelSelector.getModel(false).getTabAt(i).getId());
-        }
-        return tabIds;
-    }
-
-    /**
      * Returns the most recently visited Tab in the specified TabList that is not {@code tabId}.
+     *
      * @param model The {@link TabModel} to act on.
      * @param tabId The ID of the {@link Tab} to skip or {@link Tab.INVALID_TAB_ID}.
      * @return the most recently visited Tab or null if none can be found.
