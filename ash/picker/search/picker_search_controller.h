@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/emoji/emoji_search.h"
 
 namespace ash {
 
@@ -66,6 +67,7 @@ class ASH_EXPORT PickerSearchController {
   base::TimeDelta burn_in_period_;
   base::OneShotTimer burn_in_timer_;
 
+  emoji::EmojiSearch emoji_search_;
   PickerSearchRequest search_request_;
 
   PickerViewDelegate::SearchResultsCallback current_callback_;

@@ -47,10 +47,12 @@ base::span<const emoji::EmojiSearchEntry> FirstNOrLessElements(
 
 PickerSearchRequest::PickerSearchRequest(
     PickerClient* client,
+    emoji::EmojiSearch* emoji_search,
     base::span<const PickerCategory> available_categories)
     : client_(CHECK_DEREF(client)),
       available_categories_(available_categories.begin(),
                             available_categories.end()),
+      emoji_search_(CHECK_DEREF(emoji_search)),
       gif_search_debouncer_(kGifDebouncingDelay) {}
 
 PickerSearchRequest::~PickerSearchRequest() = default;
@@ -85,7 +87,7 @@ void PickerSearchRequest::StartSearch(const std::u16string& query,
 
     emoji_search_start_ = base::TimeTicks::Now();
     // Emoji search is currently synchronous.
-    HandleEmojiSearchResults(emoji_search_.SearchEmoji(utf8_query));
+    HandleEmojiSearchResults(emoji_search_->SearchEmoji(utf8_query));
 
     date_search_start_ = base::TimeTicks::Now();
     // Date results is currently synchronous.

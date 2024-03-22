@@ -22,6 +22,10 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/emoji/emoji_search.h"
 
+namespace emoji {
+class EmojiSearch;
+}
+
 namespace ash {
 
 class PickerClient;
@@ -34,6 +38,7 @@ class ASH_EXPORT PickerSearchRequest {
 
   explicit PickerSearchRequest(
       PickerClient* client,
+      emoji::EmojiSearch* emoji_search,
       base::span<const PickerCategory> available_categories);
   PickerSearchRequest(const PickerSearchRequest&) = delete;
   PickerSearchRequest& operator=(const PickerSearchRequest&) = delete;
@@ -70,8 +75,7 @@ class ASH_EXPORT PickerSearchRequest {
   const raw_ref<PickerClient> client_;
   std::vector<PickerCategory> available_categories_;
 
-  // TODO: b/329756078 - Move this to `picker_search_controller`.
-  emoji::EmojiSearch emoji_search_;
+  const raw_ref<emoji::EmojiSearch> emoji_search_;
 
   std::string current_query_;
   SearchResultsCallback current_callback_;

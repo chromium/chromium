@@ -61,7 +61,7 @@ PickerSearchController::PickerSearchController(
       available_categories_(available_categories.begin(),
                             available_categories.end()),
       burn_in_period_(burn_in_period),
-      search_request_(&client_.get(), available_categories_) {}
+      search_request_(&client_.get(), &emoji_search_, available_categories_) {}
 
 PickerSearchController::~PickerSearchController() = default;
 
