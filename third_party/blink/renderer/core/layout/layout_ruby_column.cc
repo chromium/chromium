@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_as_block.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_base.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_text.h"
 
@@ -114,8 +113,6 @@ void LayoutRubyColumn::RemoveChild(LayoutObject* child) {
     DCHECK(child->IsRubyBase() || child->IsRubyText());
     if (auto* inline_ruby = DynamicTo<LayoutRuby>(Parent())) {
       inline_ruby->DidRemoveChildFromColumn(*child);
-    } else {
-      To<LayoutRubyAsBlock>(Parent())->DidRemoveChildFromColumn(*child);
     }
     // Do nothing here! `this` might be destroyed by RubyContainer::Repair().
   }

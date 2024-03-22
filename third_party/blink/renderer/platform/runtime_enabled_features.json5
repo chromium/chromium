@@ -490,10 +490,6 @@
       name: "BlockingFocusWithoutUserActivation",
       status: "experimental",
     },
-    {
-      name: "BlockRubyWrappingInlineRuby",
-      status: "stable",
-    },
     // crbug.com/1147998: Mouse and Pointer boundary event dispatch (i.e. dispatch
     // of enter, leave, over, out events) tracks DOM node removal to fix event
     // pairing on ancestor nodes.
