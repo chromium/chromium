@@ -12,6 +12,7 @@ source_set("passwords") {
     "//base",
     "//components/password_manager/core/common:features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",

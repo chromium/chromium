@@ -31,7 +31,7 @@ void NotifyPasswordAutofillSuggestionUsed();
 
 // Records all necessary information when password is saved or updated through
 // infobar.
-void NotifyPasswordSavedOrUpdated();
+void NotifyPasswordSavedOrUpdated(feature_engagement::Tracker* tracker);
 
 // Records all necessary information when remote tabs grid is selected.
 void NotifyRemoteTabsGridViewed();

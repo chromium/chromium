@@ -53,10 +53,7 @@ source_set("public") {
     "infobar_metrics_recorder.mm",
     "infobar_type.h",
   ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
-  ]
+  deps = [ "//base" ]
   public_deps = [ ":badge_state_public" ]
 }
 

@@ -40,7 +40,7 @@ void NotifyPasswordAutofillSuggestionUsed() {
   LogAutofillUseForCriteriaExperiment();
 }
 
-void NotifyPasswordSavedOrUpdated() {
+void NotifyPasswordSavedOrUpdated(feature_engagement::Tracker* tracker) {
   // TODO(b/322358517): Migrate to FET.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
 

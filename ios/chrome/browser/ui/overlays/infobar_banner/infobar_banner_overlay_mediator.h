@@ -8,6 +8,10 @@
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator.h"
 
+namespace feature_engagement {
+class Tracker;
+}
+
 @protocol InfobarBannerConsumer;
 
 // Mediator superclass for configuring InfobarBannerConsumers.
@@ -17,6 +21,9 @@
 // The consumer to be updated by this mediator.  Setting to a new value updates
 // the new consumer.
 @property(nonatomic, weak) id<InfobarBannerConsumer> consumer;
+
+// Feature engagement tracker for notifying promo events.
+@property(nonatomic, assign) feature_engagement::Tracker* engagementTracker;
 
 // Indicates to the mediator to do any cleanup work in response to a banner
 // dismissal.

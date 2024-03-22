@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "build/build_config.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h"
@@ -57,6 +58,8 @@
 #pragma mark - InfobarBannerDelegate
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
+  default_browser::NotifyPasswordSavedOrUpdated(self.engagementTracker);
+
   // This can happen if the user quickly navigates to another website while the
   // banner is still appearing, where the infobar owning the delegate is deleted
   // before handling the button action.

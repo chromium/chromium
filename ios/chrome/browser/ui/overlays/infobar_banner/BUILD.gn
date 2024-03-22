@@ -13,12 +13,14 @@ source_set("coordinators") {
   deps = [
     ":mediators",
     "//base",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
@@ -49,6 +51,7 @@ source_set("mediators") {
 
   deps = [
     "//base",
+    "//components/feature_engagement/public",
     "//components/infobars/core",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
