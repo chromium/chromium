@@ -205,7 +205,7 @@ Found 126 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["indent",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><ol><li>bar</li></ol><li>baz</li></ol></ol>" but got "<ol><li>foo<ol><ol><li>bar</li></ol></ol></li><ol><li>baz</li></ol></ol>"
 [FAIL] [["indent",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><ol><li>foo</li><ol><li>bar</li></ol><li>baz</li></ol></blockquote><p>extra</p>" but got "<ol><ol><li>foo<ol><li>bar</li></ol></li></ol><li>baz</li></ol><p>extra</p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><ol><li>foo</li><ol><li>bar</li></ol><li>baz</li></ol></blockquote><p>extra</p>" but got "<ol><ol><li>foo<ol><li>bar</li></ol></li><li>baz</li></ol></ol><p>extra</p>"
 [FAIL] [["indent",""]] "<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote><ol><li>foo</li><ol><li>bar</li></ol><li>baz</li></ol></blockquote><p>extra</p>" but got "<ol><ol><li>foo</li><ol><li>bar</li></ol><li>baz</li></ol></ol><p>extra</p>"
 [FAIL] [["indent",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" compare innerHTML

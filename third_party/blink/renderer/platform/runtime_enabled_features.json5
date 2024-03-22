@@ -268,6 +268,13 @@
       implied_by: ["Fledge", "Parakeet"],
       public: true,
     },
+    // Adjust the end of the next paragraph if the end position for the
+    // paragraph is updated while moving the paragraph. See
+    // https://crbug.com/329121649
+    {
+      name: "AdjustEndOfNextParagraphIfMovedParagraphIsUpdated",
+      status: "stable",
+    },
     {
       name: "AdTagging",
       public: true,

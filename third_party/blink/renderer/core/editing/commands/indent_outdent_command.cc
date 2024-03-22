@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -66,9 +67,11 @@ IndentOutdentCommand::IndentOutdentCommand(Document& document,
           AtomicString("margin: 0 0 0 40px; border: none; padding: 0px;")),
       type_of_action_(type_of_action) {}
 
-bool IndentOutdentCommand::TryIndentingAsListItem(const Position& start,
-                                                  const Position& end,
-                                                  EditingState* editing_state) {
+bool IndentOutdentCommand::TryIndentingAsListItem(
+    const Position& start,
+    const Position& end,
+    VisiblePosition& out_end_of_next_of_paragraph_to_move,
+    EditingState* editing_state) {
   // If our selection is not inside a list, bail out.
   Node* last_node_in_selected_paragraph = start.AnchorNode();
   HTMLElement* list_element = EnclosingList(last_node_in_selected_paragraph);
@@ -122,6 +125,17 @@ bool IndentOutdentCommand::TryIndentingAsListItem(const Position& start,
       end_of_paragraph_to_move.IsNull()) {
     editing_state->Abort();
     return false;
+  }
+
+  if (RuntimeEnabledFeatures::
+          AdjustEndOfNextParagraphIfMovedParagraphIsUpdatedEnabled()) {
+    // If `end_of_paragraph_to_move` is adjusted above since
+    // `should_keep_selected_list` is false, before move the paragraphs below,
+    // update the end of the next of the paragraph to move.
+    if (!should_keep_selected_list) {
+      out_end_of_next_of_paragraph_to_move =
+          EndOfParagraph(NextPositionOf(end_of_paragraph_to_move));
+    }
   }
 
   MoveParagraphWithClones(start_of_paragraph_to_move, end_of_paragraph_to_move,
@@ -527,13 +541,15 @@ void IndentOutdentCommand::FormatSelection(
     OutdentRegion(start_of_selection, end_of_selection, editing_state);
 }
 
-void IndentOutdentCommand::FormatRange(const Position& start,
-                                       const Position& end,
-                                       const Position&,
-                                       HTMLElement*& blockquote_for_next_indent,
-                                       EditingState* editing_state) {
-  bool indenting_as_list_item_result =
-      TryIndentingAsListItem(start, end, editing_state);
+void IndentOutdentCommand::FormatRange(
+    const Position& start,
+    const Position& end,
+    const Position&,
+    HTMLElement*& blockquote_for_next_indent,
+    VisiblePosition& out_end_of_next_of_paragraph_to_move,
+    EditingState* editing_state) {
+  bool indenting_as_list_item_result = TryIndentingAsListItem(
+      start, end, out_end_of_next_of_paragraph_to_move, editing_state);
   if (editing_state->IsAborted())
     return;
   if (indenting_as_list_item_result)

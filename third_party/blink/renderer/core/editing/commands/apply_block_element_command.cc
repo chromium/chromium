@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -202,10 +203,22 @@ void ApplyBlockElementCommand::FormatSelection(
             .DeepEquivalent());
     RelocatablePosition relocatable_end(end);
 
+    VisiblePosition end_of_next_of_paragraph_to_move;
     FormatRange(start, end, end_of_last_paragraph, blockquote_for_next_indent,
-                editing_state);
+                end_of_next_of_paragraph_to_move, editing_state);
     if (editing_state->IsAborted())
       return;
+
+    // If `end_of_next_of_paragraph_to_move` is updated,
+    // `relocatable_end_of_next_paragraph` should be also updated along with
+    // it.
+    if (end_of_next_of_paragraph_to_move.IsNotNull() &&
+        end_of_next_of_paragraph_to_move.IsValidFor(GetDocument())) {
+      DCHECK(RuntimeEnabledFeatures::
+                 AdjustEndOfNextParagraphIfMovedParagraphIsUpdatedEnabled());
+      relocatable_end_of_next_paragraph.SetPosition(
+          end_of_next_of_paragraph_to_move.DeepEquivalent());
+    }
 
     const Position& end_of_next_paragraph =
         relocatable_end_of_next_paragraph.GetPosition();
