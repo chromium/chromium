@@ -9,11 +9,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 namespace {
 
@@ -45,7 +45,7 @@ void DestroyBubble(WebUIBubbleManager* bubble_manager, Profile* profile) {
 
 }  // namespace
 
-class TestWebUIController : public ui::MojoBubbleWebUIController {
+class TestWebUIController : public TopChromeWebUIController {
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 WEB_UI_CONTROLLER_TYPE_IMPL(TestWebUIController)

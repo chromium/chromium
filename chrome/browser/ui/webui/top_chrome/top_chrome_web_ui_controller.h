@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_WEBUI_MOJO_BUBBLE_WEB_UI_CONTROLLER_H_
-#define UI_WEBUI_MOJO_BUBBLE_WEB_UI_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_TOP_CHROME_TOP_CHROME_WEB_UI_CONTROLLER_H_
+#define CHROME_BROWSER_UI_WEBUI_TOP_CHROME_TOP_CHROME_WEB_UI_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -17,10 +17,10 @@ class WebUI;
 }  // namespace content
 
 namespace ui {
-
 class MenuModel;
+}  // namespace ui
 
-class MojoBubbleWebUIController : public MojoWebUIController {
+class TopChromeWebUIController : public ui::MojoWebUIController {
  public:
   class Embedder {
    public:
@@ -31,14 +31,14 @@ class MojoBubbleWebUIController : public MojoWebUIController {
     virtual void HideContextMenu() = 0;
   };
 
-  // By default MojoBubbleWebUIController do not have normal WebUI bindings.
+  // By default TopChromeWebUIController do not have normal WebUI bindings.
   // Pass |enable_chrome_send| as true if these are needed.
-  explicit MojoBubbleWebUIController(content::WebUI* contents,
+  explicit TopChromeWebUIController(content::WebUI* contents,
                                      bool enable_chrome_send = false);
-  MojoBubbleWebUIController(const MojoBubbleWebUIController&) = delete;
-  MojoBubbleWebUIController& operator=(const MojoBubbleWebUIController&) =
+  TopChromeWebUIController(const TopChromeWebUIController&) = delete;
+  TopChromeWebUIController& operator=(const TopChromeWebUIController&) =
       delete;
-  ~MojoBubbleWebUIController() override;
+  ~TopChromeWebUIController() override;
 
   void set_embedder(base::WeakPtr<Embedder> embedder) { embedder_ = embedder; }
   base::WeakPtr<Embedder> embedder() { return embedder_; }
@@ -47,6 +47,4 @@ class MojoBubbleWebUIController : public MojoWebUIController {
   base::WeakPtr<Embedder> embedder_;
 };
 
-}  // namespace ui
-
-#endif  // UI_WEBUI_MOJO_BUBBLE_WEB_UI_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_TOP_CHROME_TOP_CHROME_WEB_UI_CONTROLLER_H_

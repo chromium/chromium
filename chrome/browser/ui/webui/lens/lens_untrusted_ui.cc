@@ -27,7 +27,7 @@ bool ShouldLoadScreenshot(const std::string& path) {
 namespace lens {
 
 LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
-    : ui::UntrustedBubbleWebUIController(web_ui) {
+    : UntrustedTopChromeWebUIController(web_ui) {
   // This code path is invoked for both the overlay WebUI and the sidepanel
   // WebUI.
 

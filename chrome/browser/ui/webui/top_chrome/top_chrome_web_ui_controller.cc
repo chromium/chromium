@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 
 #include "content/public/browser/web_ui.h"
 
-namespace ui {
-
-MojoBubbleWebUIController::MojoBubbleWebUIController(content::WebUI* contents,
+TopChromeWebUIController::TopChromeWebUIController(content::WebUI* contents,
                                                      bool enable_chrome_send)
     : MojoWebUIController(contents, enable_chrome_send) {}
 
-MojoBubbleWebUIController::~MojoBubbleWebUIController() = default;
-
-}  // namespace ui
+TopChromeWebUIController::~TopChromeWebUIController() = default;

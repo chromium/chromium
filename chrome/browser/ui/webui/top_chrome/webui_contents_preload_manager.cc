@@ -11,13 +11,13 @@
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/navigation_controller.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 namespace {
 
@@ -82,12 +82,12 @@ const char* const WebUIContentsPreloadManager::kPreloadedWebUIURL =
 
 // A stub WebUI page embdeder that captures the ready-to-show signal.
 class WebUIContentsPreloadManager::WebUIControllerEmbedderStub final
-    : public ui::MojoBubbleWebUIController::Embedder {
+    : public TopChromeWebUIController::Embedder {
  public:
   WebUIControllerEmbedderStub() = default;
   ~WebUIControllerEmbedderStub() = default;
 
-  // ui::MojoBubbleWebUIController::Embedder:
+  // TopChromeWebUIController::Embedder:
   void CloseUI() override {}
   void ShowContextMenu(gfx::Point point,
                        std::unique_ptr<ui::MenuModel> menu_model) override {}
@@ -106,7 +106,7 @@ class WebUIContentsPreloadManager::WebUIControllerEmbedderStub final
     // TODO(40168622): Add type check. This is currently not possible because a
     // WebUIController subclass does not retain its parent class' type info.
     auto* bubble_controller =
-        static_cast<ui::MojoBubbleWebUIController*>(webui_controller);
+        static_cast<TopChromeWebUIController*>(webui_controller);
     bubble_controller->set_embedder(this->GetWeakPtr());
     web_contents_ = web_contents;
     is_ready_to_show_ = false;
@@ -121,7 +121,7 @@ class WebUIContentsPreloadManager::WebUIControllerEmbedderStub final
     }
 
     auto* bubble_controller =
-        static_cast<ui::MojoBubbleWebUIController*>(webui_controller);
+        static_cast<TopChromeWebUIController*>(webui_controller);
     bubble_controller->set_embedder(nullptr);
     web_contents_ = nullptr;
   }

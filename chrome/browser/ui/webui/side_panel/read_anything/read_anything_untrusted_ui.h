@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -14,7 +15,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
-#include "ui/webui/untrusted_bubble_web_ui_controller.h"
 
 class ReadAnythingUntrustedPageHandler;
 
@@ -37,7 +37,7 @@ class ReadAnythingUIUntrustedConfig : public content::WebUIConfig {
 //  This class has the same lifetime as the Side Panel view.
 //
 class ReadAnythingUntrustedUI
-    : public ui::UntrustedBubbleWebUIController,
+    : public UntrustedTopChromeWebUIController,
       public read_anything::mojom::UntrustedPageHandlerFactory {
  public:
   explicit ReadAnythingUntrustedUI(content::WebUI* web_ui);

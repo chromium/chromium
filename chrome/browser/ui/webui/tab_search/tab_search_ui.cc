@@ -33,8 +33,8 @@
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
 TabSearchUI::TabSearchUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui,
-                                    true /* Needed for webui browser tests */),
+    : TopChromeWebUIController(web_ui,
+                               true /* Needed for webui browser tests */),
       webui_load_timer_(web_ui->GetWebContents(),
                         "Tabs.TabSearch.WebUI.LoadDocumentTime",
                         "Tabs.TabSearch.WebUI.LoadCompletedTime") {

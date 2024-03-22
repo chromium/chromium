@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_MAKO_MAKO_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_MAKO_MAKO_UI_H_
 
+#include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "content/public/browser/webui_config.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
-#include "ui/webui/untrusted_bubble_web_ui_controller.h"
 
 namespace ash {
 
@@ -27,7 +27,7 @@ class MakoUntrustedUIConfig : public content::WebUIConfig {
 };
 
 // The WebUI for chrome://mako
-class MakoUntrustedUI : public ui::UntrustedBubbleWebUIController {
+class MakoUntrustedUI : public UntrustedTopChromeWebUIController {
  public:
   explicit MakoUntrustedUI(content::WebUI* web_ui);
   ~MakoUntrustedUI() override;

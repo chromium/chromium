@@ -64,7 +64,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeChromeUI,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeChromeUI, kChromeThemeElementId);
 
 CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui),
+    : TopChromeWebUIController(web_ui),
       image_decoder_(std::make_unique<ImageDecoderImpl>()),
       profile_(Profile::FromWebUI(web_ui)),
       web_contents_(web_ui->GetWebContents()),

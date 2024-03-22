@@ -26,7 +26,7 @@
 #include "ui/base/ui_base_features.h"
 
 UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui, true) {
+    : TopChromeWebUIController(web_ui, true) {
   if (!user_notes::IsUserNotesEnabled()) {
     return;
   }

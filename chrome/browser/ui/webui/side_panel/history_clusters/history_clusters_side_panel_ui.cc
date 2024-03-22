@@ -29,7 +29,7 @@
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
 HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui),
+    : TopChromeWebUIController(web_ui),
       content::WebContentsObserver(web_ui->GetWebContents()) {
   Profile* const profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(

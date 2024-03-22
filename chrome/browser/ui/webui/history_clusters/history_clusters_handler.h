@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/history/profile_based_browsing_history_driver.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_service.h"
@@ -20,7 +21,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 
 class Profile;
@@ -60,8 +60,7 @@ class HistoryClustersHandler : public mojom::PageHandler,
   const std::string& last_query_issued() const { return last_query_issued_; }
 
   void SetSidePanelUIEmbedder(
-      base::WeakPtr<ui::MojoBubbleWebUIController::Embedder>
-          side_panel_embedder);
+      base::WeakPtr<TopChromeWebUIController::Embedder> side_panel_embedder);
   // Used to set the in-page query from the browser.
   void SetQuery(const std::string& query);
 
@@ -112,7 +111,7 @@ class HistoryClustersHandler : public mojom::PageHandler,
 
   void OnHideVisitsComplete();
 
-  base::WeakPtr<ui::MojoBubbleWebUIController::Embedder>
+  base::WeakPtr<TopChromeWebUIController::Embedder>
       history_clusters_side_panel_embedder_;
 
   raw_ptr<Profile> profile_;

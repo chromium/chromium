@@ -20,7 +20,7 @@
 
 CompanionSidePanelUntrustedUI::CompanionSidePanelUntrustedUI(
     content::WebUI* web_ui)
-    : ui::UntrustedBubbleWebUIController(web_ui) {
+    : UntrustedTopChromeWebUIController(web_ui) {
   // Set up the chrome-untrusted://companion-side-panel source.
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(

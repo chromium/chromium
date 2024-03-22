@@ -8,13 +8,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/widget_test.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 namespace {
 
@@ -22,7 +22,7 @@ const char* kTestURL = "chrome://test";
 
 }  // namespace
 
-class TestWebUIController : public ui::MojoBubbleWebUIController {
+class TestWebUIController : public TopChromeWebUIController {
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 WEB_UI_CONTROLLER_TYPE_IMPL(TestWebUIController)

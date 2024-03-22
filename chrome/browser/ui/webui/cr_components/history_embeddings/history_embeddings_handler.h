@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_HANDLER_H_
 
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 
 class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {

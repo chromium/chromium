@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -25,7 +26,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "url/gurl.h"
 
 class Browser;
@@ -61,7 +61,7 @@ class TabSearchPageHandler
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
       mojo::PendingRemote<tab_search::mojom::Page> page,
       content::WebUI* web_ui,
-      ui::MojoBubbleWebUIController* webui_controller,
+      TopChromeWebUIController* webui_controller,
       MetricsReporter* metrics_reporter);
   TabSearchPageHandler(const TabSearchPageHandler&) = delete;
   TabSearchPageHandler& operator=(const TabSearchPageHandler&) = delete;
@@ -204,8 +204,7 @@ class TabSearchPageHandler
   mojo::Receiver<tab_search::mojom::PageHandler> receiver_;
   mojo::Remote<tab_search::mojom::Page> page_;
   const raw_ptr<content::WebUI> web_ui_;
-  const raw_ptr<ui::MojoBubbleWebUIController, DanglingUntriaged>
-      webui_controller_;
+  const raw_ptr<TopChromeWebUIController, DanglingUntriaged> webui_controller_;
   const raw_ptr<MetricsReporter> metrics_reporter_;
   BrowserTabStripTracker browser_tab_strip_tracker_{this, this};
   std::unique_ptr<base::RetainingOneShotTimer> debounce_timer_;

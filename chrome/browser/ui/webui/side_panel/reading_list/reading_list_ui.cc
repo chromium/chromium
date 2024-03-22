@@ -37,7 +37,7 @@
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
 ReadingListUI::ReadingListUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui),
+    : TopChromeWebUIController(web_ui),
       webui_load_timer_(web_ui->GetWebContents(),
                         "ReadingList.WebUI.LoadDocumentTime",
                         "ReadingList.WebUI.LoadCompletedTime") {

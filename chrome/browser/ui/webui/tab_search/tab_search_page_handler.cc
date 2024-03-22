@@ -177,7 +177,7 @@ TabSearchPageHandler::TabSearchPageHandler(
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
     mojo::PendingRemote<tab_search::mojom::Page> page,
     content::WebUI* web_ui,
-    ui::MojoBubbleWebUIController* webui_controller,
+    TopChromeWebUIController* webui_controller,
     MetricsReporter* metrics_reporter)
     : optimization_guide::SettingsEnabledObserver(
           optimization_guide::proto::ModelExecutionFeature::

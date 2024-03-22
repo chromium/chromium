@@ -49,7 +49,7 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
  public:
   explicit BookmarkContextMenu(
       Browser* browser,
-      base::WeakPtr<ui::MojoBubbleWebUIController::Embedder> embedder,
+      base::WeakPtr<TopChromeWebUIController::Embedder> embedder,
       std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
           bookmarks,
       const side_panel::mojom::ActionSource& source,
@@ -140,7 +140,7 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
                                          ->GetIndexOfCommandId(command_id)
                                          .value()));
   }
-  base::WeakPtr<ui::MojoBubbleWebUIController::Embedder> embedder_;
+  base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
   std::unique_ptr<BookmarkContextMenuController> controller_;
   raw_ptr<commerce::ShoppingListContextMenuController>
       shopping_list_controller_;
@@ -150,7 +150,7 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
 
 std::unique_ptr<BookmarkContextMenu> ContextMenuFromNodes(
     const std::vector<int64_t> node_ids,
-    base::WeakPtr<ui::MojoBubbleWebUIController::Embedder> embedder,
+    base::WeakPtr<TopChromeWebUIController::Embedder> embedder,
     side_panel::mojom::ActionSource source,
     commerce::ShoppingListContextMenuController* shopping_list_controller) {
   Browser* browser = chrome::FindLastActive();

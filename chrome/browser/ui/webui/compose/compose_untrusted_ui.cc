@@ -33,7 +33,7 @@ bool ComposeUIUntrustedConfig::IsWebUIEnabled(
 }
 
 ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
-    : ui::UntrustedBubbleWebUIController(web_ui) {
+    : UntrustedTopChromeWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIUntrustedComposeUrl);

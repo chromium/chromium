@@ -15,7 +15,7 @@
 
 namespace {
 
-class MockEmbedder : public ui::MojoBubbleWebUIController::Embedder {
+class MockEmbedder : public TopChromeWebUIController::Embedder {
  public:
   virtual ~MockEmbedder() = default;
 

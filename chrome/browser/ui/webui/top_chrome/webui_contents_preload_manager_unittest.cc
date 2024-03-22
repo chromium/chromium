@@ -6,13 +6,13 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 using MakeContentsResult = WebUIContentsPreloadManager::MakeContentsResult;
 
@@ -186,7 +186,7 @@ TEST_F(WebUIContentsPreloadManagerTest, MakeContentsNavigation) {
 
 // Test that MakeContentsResult::is_ready_to_show is initially false, and it
 // becomes true after the preloaded WebUI calls
-// MojoBubbleWebUIController::Embedder::ShowUI().
+// TopChromeWebUIController::Embedder::ShowUI().
 TEST_F(WebUIContentsPreloadManagerTest, IsReadyToShow) {
   std::unique_ptr<content::BrowserContext> browser_context =
       std::make_unique<TestingProfile>();
@@ -204,7 +204,7 @@ TEST_F(WebUIContentsPreloadManagerTest, IsReadyToShow) {
   ASSERT_NE(preloaded_web_contents, nullptr);
 
   // Simulate the WebUI calls into ShowUI().
-  auto* webui_controller = static_cast<ui::MojoBubbleWebUIController*>(
+  auto* webui_controller = static_cast<TopChromeWebUIController*>(
       preloaded_web_contents->GetWebUI()->GetController());
   ASSERT_NE(webui_controller, nullptr);
   webui_controller->embedder()->ShowUI();

@@ -8,14 +8,14 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_page_handler.h"
+#include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
-#include "ui/webui/untrusted_bubble_web_ui_controller.h"
 
 class CompanionSidePanelUntrustedUI
     : public content::WebContentsObserver,
-      public ui::UntrustedBubbleWebUIController,
+      public UntrustedTopChromeWebUIController,
       public side_panel::mojom::CompanionPageHandlerFactory {
  public:
   explicit CompanionSidePanelUntrustedUI(content::WebUI* web_ui);

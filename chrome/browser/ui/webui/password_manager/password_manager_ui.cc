@@ -637,7 +637,7 @@ DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(PasswordManagerUI,
                                        kAddShortcutCustomEventId);
 
 PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui, /*enable_chrome_send=*/true) {
+    : TopChromeWebUIController(web_ui, /*enable_chrome_send=*/true) {
   // Set up the chrome://password-manager/ source.
   Profile* profile = Profile::FromWebUI(web_ui);
   passwords_private_delegate_ =

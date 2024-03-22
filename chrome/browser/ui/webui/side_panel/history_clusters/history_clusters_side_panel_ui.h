@@ -9,10 +9,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-forward.h"
 
@@ -28,7 +28,7 @@ namespace page_image_service {
 class ImageServiceHandler;
 }
 
-class HistoryClustersSidePanelUI : public ui::MojoBubbleWebUIController,
+class HistoryClustersSidePanelUI : public TopChromeWebUIController,
                                    public content::WebContentsObserver {
  public:
   explicit HistoryClustersSidePanelUI(content::WebUI* web_ui);

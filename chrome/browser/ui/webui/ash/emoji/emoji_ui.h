@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/ash/emoji/new_window_proxy.mojom.h"
 #include "chrome/browser/ui/webui/ash/emoji/seal.h"
 #include "chrome/browser/ui/webui/ash/emoji/seal.mojom.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/emoji/emoji_search.h"
@@ -24,7 +25,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/ime/text_input_client.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace ui {
@@ -44,7 +44,7 @@ class EmojiUIConfig : public content::DefaultWebUIConfig<EmojiUI> {
                            chrome::kChromeUIEmojiPickerHost) {}
 };
 
-class EmojiUI : public ui::MojoBubbleWebUIController,
+class EmojiUI : public TopChromeWebUIController,
                 public emoji_picker::mojom::PageHandlerFactory {
  public:
   explicit EmojiUI(content::WebUI* web_ui);

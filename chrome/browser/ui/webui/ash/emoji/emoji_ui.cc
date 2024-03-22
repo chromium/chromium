@@ -77,8 +77,8 @@ emoji_picker::mojom::Category ConvertCategoryEnum(
 namespace ash {
 
 EmojiUI::EmojiUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui,
-                                    true /* Needed for webui browser tests */),
+    : TopChromeWebUIController(web_ui,
+                               true /* Needed for webui browser tests */),
       initial_category_(emoji_picker::mojom::Category::kEmojis) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),

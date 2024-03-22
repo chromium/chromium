@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "chrome/browser/ui/webui/side_panel/performance_controls/performance.mojom.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "url/gurl.h"
 
@@ -21,7 +21,7 @@ class BatterySaverCardHandler;
 class MemorySaverCardHandler;
 
 class PerformanceSidePanelUI
-    : public ui::MojoBubbleWebUIController,
+    : public TopChromeWebUIController,
       side_panel::mojom::PerformancePageHandlerFactory,
       side_panel::mojom::BatterySaverCardHandlerFactory,
       side_panel::mojom::MemorySaverCardHandlerFactory {

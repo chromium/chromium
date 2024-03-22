@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/browser/ui/webui_name_variants.h"
 #include "content/public/browser/browser_context.h"
@@ -19,7 +20,6 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/referrer.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 namespace content {
 class BrowserContext;
@@ -30,8 +30,8 @@ class BrowserContext;
 // and CloseUI() in addition to passing through resize events so the Host can
 // adjust bounds accordingly.
 class WebUIContentsWrapper : public content::WebContentsDelegate,
-                              public content::WebContentsObserver,
-                              public ui::MojoBubbleWebUIController::Embedder {
+                             public content::WebContentsObserver,
+                             public TopChromeWebUIController::Embedder {
  public:
   class Host {
    public:
@@ -99,7 +99,7 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
-  // MojoBubbleWebUIController::Embedder:
+  // TopChromeWebUIController::Embedder:
   void CloseUI() override;
   void ShowUI() override;
   void ShowContextMenu(gfx::Point point,
@@ -139,7 +139,7 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
 
 // WebUIContentsWrapperT is designed to be paired with the WebUIController
 // subclass used by the hosted WebUI. This type information allows compile time
-// checking that the WebUIController subclasses MojoBubbleWebUIController as
+// checking that the WebUIController subclasses TopChromeWebUIController as
 // expected.
 template <typename T>
 class WebUIContentsWrapperT : public WebUIContentsWrapper {

@@ -28,7 +28,7 @@
 
 PerformanceSidePanelUI::PerformanceSidePanelUI(content::WebUI* web_ui,
                                                const GURL& url)
-    : ui::MojoBubbleWebUIController(web_ui, true) {
+    : TopChromeWebUIController(web_ui, true) {
   Profile* const profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIPerformanceSidePanelHost);

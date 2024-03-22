@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/common/pref_names.h"
@@ -54,7 +55,6 @@
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 #include "url/gurl.h"
 
@@ -187,8 +187,7 @@ HistoryClustersHandler::HistoryClustersHandler(
 HistoryClustersHandler::~HistoryClustersHandler() = default;
 
 void HistoryClustersHandler::SetSidePanelUIEmbedder(
-    base::WeakPtr<ui::MojoBubbleWebUIController::Embedder>
-        side_panel_embedder) {
+    base::WeakPtr<TopChromeWebUIController::Embedder> side_panel_embedder) {
   history_clusters_side_panel_embedder_ = side_panel_embedder;
 }
 

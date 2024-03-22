@@ -7,15 +7,15 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
+#include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/webui/untrusted_bubble_web_ui_controller.h"
 
 namespace lens {
 class LensPageHandler;
 
 // WebUI controller for the chrome-untrusted://lens page.
-class LensUntrustedUI : public ui::UntrustedBubbleWebUIController,
+class LensUntrustedUI : public UntrustedTopChromeWebUIController,
                         public lens::mojom::LensPageHandlerFactory {
  public:
   explicit LensUntrustedUI(content::WebUI* web_ui);
