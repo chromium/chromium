@@ -14,6 +14,7 @@ _proto_files = [
   "chrome_searchbox_stats.proto",
   "entity_info.proto",
   "groups.proto",
+  "navigational_intent.proto",
   "types.proto",
 ]
 
