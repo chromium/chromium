@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
+import org.chromium.chrome.browser.searchwidget.SearchActivityUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
@@ -445,9 +446,19 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != Activity.RESULT_OK) return;
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_IN_CCT)
+                && SearchActivityUtils.isOmniboxResult(requestCode, data)) {
+            LoadUrlParams params =
+                    SearchActivityUtils.getOmniboxResult(requestCode, resultCode, data);
+            if (params == null) return;
+            mTabProvider.getTab().loadUrl(params);
+        }
+
         if (ChromeFeatureList.sAppSpecificHistory.isEnabled()
-                && requestCode == HistoryManagerUtils.HISTORY_REQUEST_CODE
-                && resultCode == RESULT_OK) {
+                && requestCode == HistoryManagerUtils.HISTORY_REQUEST_CODE) {
             LoadUrlParams params =
                     new LoadUrlParams(
                             data.getData().toString(),
