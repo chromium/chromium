@@ -128,7 +128,6 @@ build_webui("build") {
     "//chrome/browser/resources/settings_shared:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
-    "//ui/webui/resources/cr_components/settings_prefs:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

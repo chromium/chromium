@@ -7,8 +7,8 @@ import '../../controls/settings_checkbox_list_entry.js';
 import '../../settings_shared.css.js';
 import '../../site_favicon.js';
 
-import type {PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import type {PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrScrollableMixinInterface} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import type {ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';

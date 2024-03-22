@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {prefToString, stringToPrefValue} from 'chrome://resources/cr_components/settings_prefs/pref_util.js';
+import {prefToString, stringToPrefValue} from 'chrome://settings/settings.js';
 import {assertEquals, assertNotReached} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 

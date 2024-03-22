@@ -56,7 +56,6 @@ generate_grd("build_grd") {
       "cr_components/managed_dialog:build_grdp",
       "cr_components/managed_footnote:build_grdp",
       "cr_components/most_visited:build_grdp",
-      "cr_components/settings_prefs:build_grdp",
       "cr_components/theme_color_picker:build_grdp",
       "//third_party/d3:build_grdp",
       "//third_party/lit/v3_0:build_grdp",
@@ -75,7 +74,6 @@ generate_grd("build_grd") {
       "$target_gen_dir/cr_components/managed_dialog/resources.grdp",
       "$target_gen_dir/cr_components/managed_footnote/resources.grdp",
       "$target_gen_dir/cr_components/most_visited/resources.grdp",
-      "$target_gen_dir/cr_components/settings_prefs/resources.grdp",
     ]
 
     if (use_nss_certs) {

@@ -7,7 +7,7 @@
  * 'privacy-guide-history-sync-fragment' is the fragment in a privacy guide
  * card that contains the history sync setting and its description.
  */
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import './privacy_guide_description_item.js';
 import './privacy_guide_fragment_shared.css.js';
 import './privacy_guide_fragment_shared.css.js';

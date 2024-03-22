@@ -40,7 +40,7 @@ import { PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_b
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // </if>
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 import {routes} from '../route.js';

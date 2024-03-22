@@ -11,7 +11,7 @@
  *    <settings-ui prefs="{{prefs}}"></settings-ui>
  */
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_drawer/cr_drawer.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_page_host_style.css.js';
@@ -23,10 +23,10 @@ import '../toolbar/toolbar.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
+import {SettingsPrefsElement} from '/shared/settings/prefs/prefs.js';
 import {CrContainerShadowMixin} from 'chrome://resources/ash/common/cr_elements/cr_container_shadow_mixin.js';
 import {CrDrawerElement} from 'chrome://resources/ash/common/cr_elements/cr_drawer/cr_drawer.js';
 import {FindShortcutMixin} from 'chrome://resources/ash/common/cr_elements/find_shortcut_mixin.js';
-import {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {listenOnce} from 'chrome://resources/js/util.js';

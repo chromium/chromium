@@ -12,7 +12,7 @@ import './strings.m.js';
 import './os_settings_ui/os_settings_ui.js';
 // TODO(b/263414034) Determine if these imports are needed here at all,
 // or should be moved to lazy_load.ts
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import './device_page/audio.js';
 import './device_page/cros_audio_config.js';
 import './device_page/customize_mouse_buttons_subpage.js';
@@ -85,6 +85,8 @@ export {ExtensionControlBrowserProxy, ExtensionControlBrowserProxyImpl} from '/s
 export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 export {ProfileInfo, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+export {SettingsPrefsElement} from '/shared/settings/prefs/prefs.js';
+export {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 export {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 export {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 export {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
@@ -111,8 +113,6 @@ export {ApnDetailDialog} from 'chrome://resources/ash/common/network/apn_detail_
 export {ApnSelectionDialog} from 'chrome://resources/ash/common/network/apn_selection_dialog.js';
 export {ApnSelectionDialogListItem} from 'chrome://resources/ash/common/network/apn_selection_dialog_list_item.js';
 export {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
-export {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
-export {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 export {OpenWindowProxy, OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 export {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 export {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';

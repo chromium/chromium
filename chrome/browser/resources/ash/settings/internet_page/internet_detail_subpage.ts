@@ -17,7 +17,7 @@ import 'chrome://resources/ash/common/network/network_ip_config.js';
 import 'chrome://resources/ash/common/network/network_nameservers.js';
 import 'chrome://resources/ash/common/network/network_property_list_mojo.js';
 import 'chrome://resources/ash/common/network/network_siminfo.js';
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
@@ -37,6 +37,7 @@ import './passpoint_remove_dialog.js';
 import './settings_traffic_counters.js';
 import './tether_connection_dialog.js';
 
+import {PrefsMixin, PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
 import {PasspointServiceInterface, PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
 import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
@@ -48,7 +49,6 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/m
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {TrafficCountersAdapter} from 'chrome://resources/ash/common/traffic_counters/traffic_counters_adapter.js';
-import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ActivationStateType, ApnProperties, ConfigProperties, CrosNetworkConfigInterface, GlobalPolicy, HiddenSsidMode, IPConfigProperties, ManagedProperties, MatchType, NetworkStateProperties, ProxySettings, SecurityType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';

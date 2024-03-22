@@ -30,6 +30,10 @@ build_webui("build") {
     "controls/settings_boolean_control_mixin.ts",
     "people_page/profile_info_browser_proxy.ts",
     "people_page/sync_browser_proxy.ts",
+    "prefs/prefs_mixin.ts",
+    "prefs/prefs.ts",
+    "prefs/prefs_types.ts",
+    "prefs/pref_util.ts",
     "privacy_page/privacy_page_browser_proxy.ts",
   ]
 
@@ -49,7 +53,6 @@ build_webui("build") {
   }
   ts_deps = [
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources/cr_components/settings_prefs:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

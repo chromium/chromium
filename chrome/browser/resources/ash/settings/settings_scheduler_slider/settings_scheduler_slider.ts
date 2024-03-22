@@ -10,7 +10,7 @@
 
 import '../settings_shared.css.js';
 
-import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin, PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {IronResizableBehavior} from 'chrome://resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
 import {PaperRippleMixin, PaperRippleMixinInterface} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';

@@ -110,18 +110,6 @@ IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxLensTest) {
   RunTest("cr_components/searchbox/realbox_lens_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsTest, SettingsPrefs) {
-  // Preload a settings URL, so that the test can access settingsPrivate.
-  set_test_loader_host(chrome::kChromeUISettingsHost);
-  RunTest("cr_components/settings_prefs_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsTest, SettingsPrefUtils) {
-  // Preload a settings URL, so that the test can access settingsPrivate.
-  set_test_loader_host(chrome::kChromeUISettingsHost);
-  RunTest("cr_components/settings_pref_util_test.js", "mocha.run()");
-}
-
 class CrComponentsHistoryClustersTest : public WebUIMochaBrowserTest {
  protected:
   CrComponentsHistoryClustersTest() {

@@ -268,6 +268,14 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PeoplePageSyncControls) {
   RunTest("settings/people_page_sync_controls_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, Prefs) {
+  RunTest("settings/settings_prefs_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, PrefUtils) {
+  RunTest("settings/settings_pref_util_test.js", "mocha.run()");
+}
+
 class PeoplePageSyncPageTest : public SettingsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{

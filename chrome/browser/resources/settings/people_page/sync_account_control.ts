@@ -15,7 +15,7 @@ import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '/shared/settings/people_page/profile_info_browser_proxy.js';
 import '../icons.html.js';
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import '../settings_shared.css.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
@@ -25,7 +25,7 @@ import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bund
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {StoredAccount, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {Router} from '../router.js';

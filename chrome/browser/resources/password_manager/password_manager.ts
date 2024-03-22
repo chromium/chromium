@@ -4,8 +4,8 @@
 
 import './password_manager_app.js';
 
-export {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
-export {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
+export {SettingsPrefsElement} from '/shared/settings/prefs/prefs.js';
+export {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';

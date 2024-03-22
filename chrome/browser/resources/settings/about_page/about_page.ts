@@ -8,7 +8,7 @@
  */
 
 import '../icons.html.js';
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 // <if expr="not chromeos_ash">
 import '../relaunch_confirmation_dialog.js';
 // </if>

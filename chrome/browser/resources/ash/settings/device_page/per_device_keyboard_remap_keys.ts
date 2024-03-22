@@ -8,7 +8,7 @@
  * allow users to configure their keyboard remapped keys for each keyboard.
  */
 
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';
 import '../controls/settings_dropdown_menu.js';

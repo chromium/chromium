@@ -6,7 +6,7 @@
  * @fileoverview 'timezone-subpage' is the collapsible section containing
  * time zone settings.
  */
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import '../controls/controlled_radio_button.js';
 import '../controls/settings_dropdown_menu.js';
 import '../controls/settings_radio_group.js';
@@ -15,7 +15,7 @@ import './timezone_selector.js';
 import '../os_privacy_page/privacy_hub_geolocation_dialog.js';
 import '../os_privacy_page/privacy_hub_geolocation_warning_text.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
