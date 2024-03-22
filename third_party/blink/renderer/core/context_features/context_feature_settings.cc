@@ -17,8 +17,8 @@ ContextFeatureSettings::ContextFeatureSettings(ExecutionContext& context)
 // static
 const char ContextFeatureSettings::kSupplementName[] = "ContextFeatureSettings";
 
-PROTECTED_MEMORY_SECTION base::ProtectedMemory<bool>
-    ContextFeatureSettings::mojo_js_allowed_;
+DEFINE_PROTECTED_DATA base::ProtectedMemory<bool>
+    ContextFeatureSettings::mojo_js_allowed_(false);
 
 // static
 ContextFeatureSettings* ContextFeatureSettings::From(
@@ -39,7 +39,8 @@ void ContextFeatureSettings::AllowMojoJSForProcess() {
     // Already allowed. No need to make protected memory writable.
     return;
   }
-  base::AutoWritableMemory<bool> mojo_js_allowed_writer(mojo_js_allowed_);
+
+  base::AutoWritableMemory mojo_js_allowed_writer(mojo_js_allowed_);
   mojo_js_allowed_writer.GetProtectedData() = true;
 }
 

@@ -74,7 +74,7 @@ class CORE_EXPORT ContextFeatureSettings final
   // enabled for any given context of the process. Should be set to true by
   // legitimate code pathways that enable MojoJS bindings for a frame. This is
   // to reduce the ease of enabling MojoJS bindings with a data-only attack.
-  static base::ProtectedMemory<bool> mojo_js_allowed_;
+  static DECLARE_PROTECTED_DATA base::ProtectedMemory<bool> mojo_js_allowed_;
 };
 
 }  // namespace blink

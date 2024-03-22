@@ -8,22 +8,31 @@
 #include <stdint.h>
 
 #include <climits>
+#include <type_traits>
 
 #include "base/memory/protected_memory_buildflags.h"
 #include "base/synchronization/lock.h"
 #include "base/test/gtest_util.h"
-#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-
 namespace {
 
 struct Data {
   Data() = default;
-  int foo = 0;
+  constexpr Data(int16_t f, int32_t b) : foo(f), bar(b) {}
+  int16_t foo = 0;
+  int32_t bar = -1;
 };
+
+struct DataWithNonTrivialConstructor {
+  explicit DataWithNonTrivialConstructor(int f) : foo(f) {}
+  int foo;
+};
+
+static_assert(
+    !std::is_trivially_constructible_v<DataWithNonTrivialConstructor>);
 
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 void VerifyByteSequenceIsNotWriteable(unsigned char* const byte_pattern,
@@ -62,51 +71,86 @@ void VerifyInstanceIsNotWriteable(T& instance, const size_t bit_increment = 3) {
 }
 #endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 
-PROTECTED_MEMORY_SECTION ProtectedMemory<int> g_int_data;
-PROTECTED_MEMORY_SECTION ProtectedMemory<Data> g_structured_data;
+DEFINE_PROTECTED_DATA ProtectedMemory<int, false /*ConstructLazily*/>
+    g_default_initialization;
 
-}  // namespace
-
-TEST(ProtectedMemoryTest, Initializer) {
-  ProtectedMemory<int>::Initializer initializer(&g_int_data, 4);
-  EXPECT_EQ(*g_int_data, 4);
+TEST(ProtectedMemoryTest, DefaultInitialization) {
+  EXPECT_EQ(*g_default_initialization, int());
 }
 
-TEST(ProtectedMemoryTest, Basic) {
-  AutoWritableMemory writer(g_structured_data);
-  writer.GetProtectedDataPtr()->foo = 5;
-  EXPECT_EQ(g_structured_data->foo, 5);
+DEFINE_PROTECTED_DATA ProtectedMemory<Data, false /*ConstructLazily*/>
+    g_with_initialization_declaration(4, 3);
+
+TEST(ProtectedMemoryTest, InitializationDeclaration) {
+  EXPECT_EQ(g_with_initialization_declaration->foo, 4);
+  EXPECT_EQ(g_with_initialization_declaration->bar, 3);
 }
 
-PROTECTED_MEMORY_SECTION ProtectedMemory<double> g_double_data;
+DEFINE_PROTECTED_DATA ProtectedMemory<int, false /*ConstructLazily*/>
+    g_explicit_initialization;
 
-// Verify that we can successfully create AutoWritableMemory for independent
-// data.
-TEST(ProtectedMemoryTest, VerifySimultaneousLocksOnDifferentData) {
-  AutoWritableMemory writer_for_structured_data(g_structured_data);
-  AutoWritableMemory writer_for_int_data(g_int_data);
-  AutoWritableMemory writer_for_double_data(g_double_data);
+TEST(ProtectedMemoryTest, ExplicitInitializationWithExplicitValue) {
+  static ProtectedMemoryInitializer initializer_explicit_value(
+      g_explicit_initialization, 4);
 
-  writer_for_structured_data.GetProtectedData().foo += 1;
-  writer_for_int_data.GetProtectedData() += 1;
-  writer_for_double_data.GetProtectedData() += 1;
+  EXPECT_EQ(*g_explicit_initialization, 4);
+}
+
+DEFINE_PROTECTED_DATA ProtectedMemory<int, false /*ConstructLazily*/>
+    g_explicit_initialization_with_default_value;
+
+TEST(ProtectedMemoryTest, VerifyExplicitInitializationWithDefaultValue) {
+  static ProtectedMemoryInitializer initializer_explicit_value(
+      g_explicit_initialization_with_default_value);
+
+  EXPECT_EQ(*g_explicit_initialization_with_default_value, int());
+}
+
+DEFINE_PROTECTED_DATA
+ProtectedMemory<DataWithNonTrivialConstructor, true /*ConstructLazily*/>
+    g_lazily_initialized_with_explicit_initialization;
+
+TEST(ProtectedMemoryTest, ExplicitLazyInitializationWithExplicitValue) {
+  static ProtectedMemoryInitializer initializer_explicit_value(
+      g_lazily_initialized_with_explicit_initialization, 4);
+
+  EXPECT_EQ(g_lazily_initialized_with_explicit_initialization->foo, 4);
+}
+
+DEFINE_PROTECTED_DATA
+ProtectedMemory<DataWithNonTrivialConstructor, true /*ConstructLazily*/>
+    g_uninitialized;
+
+TEST(ProtectedMemoryDeathTest, AccessWithoutInitialization) {
+  EXPECT_CHECK_DEATH_WITH(g_uninitialized.operator*(), "");
+  EXPECT_CHECK_DEATH_WITH(g_uninitialized.operator->(), "");
 }
 
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
-TEST(ProtectedMemoryTest, AssertMemoryIsReadOnly) {
-  ASSERT_TRUE(internal::IsMemoryReadOnly(&g_structured_data->foo));
-  { AutoWritableMemory writer(g_structured_data); }
-  ASSERT_TRUE(internal::IsMemoryReadOnly(&g_structured_data->foo));
+DEFINE_PROTECTED_DATA ProtectedMemory<Data, false /*ConstructLazily*/>
+    g_eagerly_initialized;
+
+TEST(ProtectedMemoryTest, VerifySetValue) {
+  ASSERT_NE(g_eagerly_initialized->foo, 5);
+  EXPECT_EQ(g_eagerly_initialized->bar, -1);
+  {
+    base::AutoWritableMemory writer(g_eagerly_initialized);
+    writer.GetProtectedDataPtr()->foo = 5;
+  }
+  EXPECT_EQ(g_eagerly_initialized->foo, 5);
+  EXPECT_EQ(g_eagerly_initialized->bar, -1);
 }
 
-TEST(ProtectedMemoryDeathTest, VerifyTerminationOnAccess) {
-  VerifyInstanceIsNotWriteable(g_structured_data.data_);
+TEST(ProtectedMemoryDeathTest, AccessWithoutWriteAccessCrashes) {
+  VerifyInstanceIsNotWriteable(g_with_initialization_declaration);
 }
 
-TEST(ProtectedMemoryTest, FailsIfDefinedOutsideOfProtectMemoryRegion) {
+TEST(ProtectedMemoryDeathTest, FailsIfDefinedOutsideOfProtectMemoryRegion) {
   ProtectedMemory<Data> data;
   EXPECT_CHECK_DEATH({ AutoWritableMemory writer(data); });
 }
+
 #endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 
+}  // namespace
 }  // namespace base
