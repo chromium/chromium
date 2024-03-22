@@ -202,7 +202,7 @@ BASE_FEATURE(kExperimentalContentSecurityPolicyFeatures,
 // Enables CORS checks on the ID assertion endpoint of the FedCM API.
 BASE_FEATURE(kFedCmIdAssertionCORS,
              "FedCmIdAssertionCORS",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables metrics collection for signin status mismatches. Also enables
 // parsing the signin status HTTP headers.

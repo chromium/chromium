@@ -63,16 +63,12 @@ def accountsCheck(request):
     return (539, [], "Should not have Origin")
 
 def tokenCheck(request):
-  common_error = commonCheck(request, b"cors")
+  common_error = commonCheck(request)
   if (common_error):
     return common_error
   common_credentialed_error = commonCredentialedRequestCheck(request)
   if (common_credentialed_error):
     return common_credentialed_error
-  # The value of the Sec-Fetch-Site header can vary depending on the IdP origin
-  # but it should not be 'none'.
-  if request.headers.get(b"Sec-Fetch-Site") == b"none":
-    return (538, [], "Wrong Sec-Fetch-Site header")
 
   post_error = commonPostCheck(request)
   if (post_error):
@@ -90,9 +86,8 @@ def revokeCheck(request):
   if (common_error):
     return common_error
 
-  common_credentialed_error = commonCredentialedRequestCheck(request)
-  if (common_credentialed_error):
-    return common_credentialed_error
+  if request.cookies.get(b"cookie") != b"1":
+    return (537, [], "Missing cookie")
   # The value of the Sec-Fetch-Site header can vary depending on the IdP origin
   # but it should not be 'none'.
   if request.headers.get(b"Sec-Fetch-Site") == b"none":
