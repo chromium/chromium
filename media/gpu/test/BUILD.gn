@@ -11,7 +11,11 @@ import("//media/media_options.gni")
 if (enable_av1_decoder && (use_v4l2_codec || use_vaapi)) {
   test("video_decode_accelerator_tests") {
     testonly = true
-    sources = [ "video_decode_accelerator_tests.cc" ]
+    sources = [
+      "video_decode_accelerator_test_suite.cc",
+      "video_decode_accelerator_test_suite.h",
+      "video_decode_accelerator_tests.cc",
+    ]
     data = [ "//media/test/data/" ]
     deps = [
       ":frame_file_writer",
