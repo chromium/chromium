@@ -258,26 +258,6 @@ suite('ApnSubpageTest', () => {
     Router.getInstance().navigateToPreviousRoute = navigateToPreviousRoute;
   });
 
-  test('Device becomes inhibited while on subpage', async () => {
-    let counter = 0;
-    const navigateToPreviousRoute =
-        Router.getInstance().navigateToPreviousRoute;
-    Router.getInstance().navigateToPreviousRoute = () => {
-      counter++;
-    };
-
-    // Simulate the device becoming inhibited.
-    mojoApi_.setDeviceStateForTest({
-      ...getDefaultDeviceStateProps(),
-      deviceState: DeviceStateType.kEnabled,
-      inhibitReason: InhibitReason.kInstallingProfile,
-    });
-    await flushTasks();
-
-    assertEquals(1, counter);
-    Router.getInstance().navigateToPreviousRoute = navigateToPreviousRoute;
-  });
-
   test('Portal state is propagated to <apn-list>', async () => {
     let props: ManagedProperties = OncMojo.getDefaultManagedProperties(
         NetworkType.kCellular, 'cellular_guid', 'cellular');

@@ -11,12 +11,11 @@ import './internet_shared.css.js';
 import 'chrome://resources/ash/common/network/apn_list.js';
 
 import {ApnList} from 'chrome://resources/ash/common/network/apn_list.js';
-import {processDeviceState, shouldDisallowNetworkModifications} from 'chrome://resources/ash/common/network/cellular_utils.js';
+import {processDeviceState} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrosNetworkConfigInterface, ManagedProperties, MAX_NUM_CUSTOM_APNS, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -64,21 +63,11 @@ export class ApnSubpageElement extends ApnSubpageElementBase {
 
       managedProperties_: {
         type: Object,
-        observer: 'closePageIfNetworkModificationsDisallowed_',
       },
 
       deviceState_: {
         type: Object,
         value: null,
-        observer: 'closePageIfNetworkModificationsDisallowed_',
-      },
-
-      isCellularCarrierLockEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
-              loadTimeData.getBoolean('isCellularCarrierLockEnabled');
-        },
       },
     };
   }
@@ -88,7 +77,6 @@ export class ApnSubpageElement extends ApnSubpageElementBase {
   private guid_: string;
   private managedProperties_: ManagedProperties|undefined;
   private networkConfig_: CrosNetworkConfigInterface;
-  private isCellularCarrierLockEnabled_: boolean;
 
   constructor() {
     super();
@@ -170,9 +158,7 @@ export class ApnSubpageElement extends ApnSubpageElementBase {
   }
 
   private async getNetworkDetails_(): Promise<void> {
-    if (!this.guid_) {
-      return;
-    }
+    assert(this.guid_);
 
     const response = await this.networkConfig_.getManagedProperties(this.guid_);
     // Details page was closed while request was in progress, ignore the
@@ -226,14 +212,6 @@ export class ApnSubpageElement extends ApnSubpageElementBase {
   private isCellular_(managedProperties: ManagedProperties|undefined): boolean {
     return !!managedProperties &&
         managedProperties.type === NetworkType.kCellular;
-  }
-
-  private closePageIfNetworkModificationsDisallowed_(): void {
-    if (shouldDisallowNetworkModifications(
-            this.isCellularCarrierLockEnabled_, this.deviceState_,
-            this.managedProperties_)) {
-      this.close();
-    }
   }
 
   private computeIsNumCustomApnsLimitReached_(): boolean {
