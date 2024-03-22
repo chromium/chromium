@@ -87,11 +87,26 @@ suite('VcBackgroundUITest', () => {
     const seaPenTemplateQuery = getSeaPenTemplateQuery();
     assertTrue(!!seaPenTemplateQuery, 'sea-pen-template-query exists');
 
+    const templateTokens =
+        seaPenTemplateQuery.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.chip-text, .template-text');
+    assertTrue(
+        templateTokens.length > 0, 'template tokens should be available');
+
+    const templateText: string[] = [];
+    templateTokens.forEach((currentToken: HTMLElement) => {
+      if (currentToken.classList.contains('chip-text')) {
+        templateText.push(
+            currentToken.shadowRoot?.getElementById('chipText')?.innerText ??
+            '');
+      } else {
+        templateText.push(currentToken.innerText ?? '');
+      }
+    });
+
     assertEquals(
         'A painting of a field of flowers in the avant-garde style',
-        seaPenTemplateQuery?.shadowRoot?.getElementById('template')
-            ?.textContent?.trim()
-            .replace(/\s+/g, ' '),
+        templateText.join(' '),
         'Expected template text is shown for Classic art');
 
     assertEquals(

@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenOptionsElement, SeaPenPaths, SeaPenRouterElement, SeaPenTemplateQueryElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenOptionsElement, SeaPenPaths, SeaPenRouterElement, SeaPenTemplateQueryElement, setTransitionsEnabled} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {SeaPenQuery} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
@@ -39,6 +39,8 @@ suite('SeaPenTemplateQueryElementTest', function() {
     const mocks = baseSetup();
     personalizationStore = mocks.personalizationStore;
     seaPenProvider = mocks.seaPenProvider;
+    // Disables animation by default.
+    setTransitionsEnabled(false);
   });
 
   teardown(async () => {
@@ -186,8 +188,9 @@ suite('SeaPenTemplateQueryElementTest', function() {
     const selectedOption =
         seaPenOptionsElement.shadowRoot!.querySelector<CrButtonElement>(
             '#container cr-button[aria-selected]');
+    const chipText = chipToSelect.shadowRoot!.getElementById('chipText');
     assertEquals(
-        chipToSelect.innerText, selectedOption!.innerText,
+        chipText!.innerText, selectedOption!.innerText,
         'the selected chip should have an equivalent selected option');
     const selectedChip =
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll(
@@ -227,8 +230,9 @@ suite('SeaPenTemplateQueryElementTest', function() {
     assertTrue(
         !!selectedOption!.querySelector('img'),
         'the selected option should contain a preview image');
+    const chipText = chipToSelect.shadowRoot!.getElementById('chipText');
     assertEquals(
-        chipToSelect.innerText, selectedOption!.innerText,
+        chipText!.innerText, selectedOption!.innerText,
         'the selected chip should have an equivalent selected option');
     const selectedChip =
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll(
@@ -244,9 +248,11 @@ suite('SeaPenTemplateQueryElementTest', function() {
         SeaPenTemplateQueryElement,
         {templateId: SeaPenTemplateId.kFlower.toString()});
     await waitAfterNextRender(seaPenTemplateQueryElement);
+
     const chips =
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const chip = chips[0] as HTMLElement;
+
     chip!.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
@@ -260,8 +266,9 @@ suite('SeaPenTemplateQueryElementTest', function() {
         seaPenOptionsElement.shadowRoot!.querySelector<CrButtonElement>(
             '#container cr-button:not([aria-selected])');
     const optionText = optionToSelect!.innerText;
+    const chipText = chip.shadowRoot!.getElementById('chipText');
     assertTrue(
-        optionText !== chip.innerText,
+        optionText !== chipText!.innerText,
         'unselected option should not match text');
 
     optionToSelect!.click();
@@ -276,9 +283,13 @@ suite('SeaPenTemplateQueryElementTest', function() {
 
     const selectedChip =
         seaPenTemplateQueryElement.shadowRoot!.querySelector<CrButtonElement>(
-            '#template .selected');
+            '#template .selected .chip-text');
+    assertTrue(!!selectedChip, 'selected chip should be available');
+
+    const selectedChipText =
+        selectedChip.shadowRoot!.getElementById('chipText');
     assertEquals(
-        selectedChip!.innerText, optionText,
+        selectedChipText!.innerText, optionText,
         'the chip should update to match the new selected option');
 
     chip!.click();
@@ -288,6 +299,54 @@ suite('SeaPenTemplateQueryElementTest', function() {
         seaPenOptionsElement.shadowRoot!.querySelector<CrButtonElement>(
             '#container cr-button[aria-selected]');
     assertTrue(!selectedOption, 'Clicking the chip again will hide options.');
+  });
+
+  test('selecting option enables chip text animation', async () => {
+    // Enables animation for testing.
+    setTransitionsEnabled(true);
+    seaPenTemplateQueryElement = initElement(
+        SeaPenTemplateQueryElement,
+        {templateId: SeaPenTemplateId.kFlower.toString()});
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    const chips =
+        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
+    const chip = chips[0] as HTMLElement;
+
+    chip!.click();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    assertEquals(
+        true, chip.parentElement?.classList.contains('selected'),
+        'chip is selected');
+
+    const chipText = chip.shadowRoot!.getElementById('chipText');
+    let chipTextLetters =
+        chipText?.querySelectorAll<HTMLElement>('span.letter');
+    assertTrue(
+        chipTextLetters?.length === 0,
+        'no chip text letter elements available');
+
+    const seaPenOptionsElement =
+        seaPenTemplateQueryElement.shadowRoot!.querySelector(
+            SeaPenOptionsElement.is);
+    assertTrue(
+        !!seaPenOptionsElement,
+        'the options chips should show after clicking a chip');
+    const optionToSelect =
+        seaPenOptionsElement.shadowRoot!.querySelector(
+            '#container cr-button:not([aria-selected])') as HTMLElement;
+    assertTrue(!!optionToSelect, 'option should be available to select');
+
+    optionToSelect!.click();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    // verify the text animation happened, <span> elements with `letter` class
+    // should display.
+    chipTextLetters = chipText?.querySelectorAll<HTMLElement>('span.letter');
+    assertTrue(
+        chipTextLetters!.length > 0,
+        'chip text letter elements should display');
   });
 
   test('inspires me', async () => {
@@ -319,8 +378,9 @@ suite('SeaPenTemplateQueryElementTest', function() {
         seaPenOptionsElement.shadowRoot!.querySelector<CrButtonElement>(
             '#container cr-button[aria-selected]');
     let optionText = selectedOption!.innerText;
+    const chipText0 = chips[0]!.shadowRoot!.getElementById('chipText');
     assertTrue(
-        optionText === chips[0]!.innerText,
+        optionText === chipText0!.innerText,
         'selected option should match text');
 
     chips[1]!.click();
@@ -330,8 +390,9 @@ suite('SeaPenTemplateQueryElementTest', function() {
         seaPenOptionsElement.shadowRoot!.querySelector<CrButtonElement>(
             '#container cr-button[aria-selected]');
     optionText = selectedOption!.innerText;
+    const chipText1 = chips[1]!.shadowRoot!.getElementById('chipText');
     assertTrue(
-        optionText === chips[1]!.innerText,
+        optionText === chipText1!.innerText,
         'selected option should match text');
   });
 

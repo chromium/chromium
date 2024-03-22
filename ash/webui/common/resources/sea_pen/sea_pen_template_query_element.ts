@@ -12,6 +12,7 @@ import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_options_element.js';
+import 'chrome://resources/ash/common/sea_pen/sea_pen_chip_text_element.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -25,6 +26,7 @@ import {SeaPenPaths} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_template_query_element.html.js';
 import {ChipToken, getDefaultOptions, getTemplateTokens, isNonEmptyArray, logGenerateSeaPenWallpaper, TemplateToken} from './sea_pen_utils.js';
+import {getTransitionEnabled} from './transition.js';
 
 export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   static get is() {
@@ -267,6 +269,14 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
 
   private shouldShowOptions_(options: SeaPenOption[]|null): boolean {
     return isNonEmptyArray(options);
+  }
+
+  private shouldEnableTextAnimation(
+      selectedChip: ChipToken|null, token: ChipToken) {
+    // enables text animation if the animation is enabled and the chip is
+    // selected.
+    return getTransitionEnabled() && !!selectedChip &&
+        selectedChip.id === token.id;
   }
 }
 

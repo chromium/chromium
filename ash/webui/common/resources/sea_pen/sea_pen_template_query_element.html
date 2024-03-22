@@ -122,10 +122,14 @@
             disabled$="[[thumbnailsLoading_]]">
           <template is="dom-if" if="[[!thumbnailsLoading_]]" restamp>
             <div class="underline"></div>
-            <div class="chip-text" tabindex="0" on-click="onClickChip_"
+            <sea-pen-chip-text
+                text-animation-enabled="[[shouldEnableTextAnimation(selectedChip_, token)]]"
+                chip-text="[[token.translation]]"
+                class="chip-text"
+                tabindex="0"
+                on-click="onClickChip_"
                 on-keypress="onClickChip_">
-              [[token.translation]]
-            </div>
+            </sea-pen-chip-text>
           </template>
           <template is="dom-if" if="[[thumbnailsLoading_]]" restamp>
             <div class="chip-text">
