@@ -3535,7 +3535,7 @@ void NearbySharingServiceImpl::RunPairedKeyVerification(
       process_manager_, share_target_info->connection()));
 
   bool restrict_to_contacts =
-      share_target.is_incoming &&
+      features::IsRestrictToContactsEnabled() && share_target.is_incoming &&
       advertising_power_level_ != PowerLevel::kHighPower;
   share_target_info->set_key_verification_runner(
       std::make_unique<PairedKeyVerificationRunner>(

@@ -42,12 +42,21 @@ BASE_FEATURE(kNearbySharingWifiLan,
              "NearbySharingWifiLan",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables contact restriction when not in high-visibility mode.
+BASE_FEATURE(kNearbySharingRestrictToContacts,
+             "NearbySharingRestrictToContacts",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsNameEnabled() {
   return base::FeatureList::IsEnabled(kIsNameEnabled);
 }
 
 bool IsSelfShareEnabled() {
   return base::FeatureList::IsEnabled(kNearbySharingSelfShare);
+}
+
+bool IsRestrictToContactsEnabled() {
+  return base::FeatureList::IsEnabled(kNearbySharingRestrictToContacts);
 }
 
 }  // namespace features
