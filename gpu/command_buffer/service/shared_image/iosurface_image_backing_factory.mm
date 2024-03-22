@@ -417,8 +417,12 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
   const bool is_cleared = !pixel_data.empty();
   const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && angle_texture_usage_;
+#if BUILDFLAG(IS_MAC)
   const GLenum texture_target =
       GetMacOSSpecificTextureTargetForCurrentGLImplementation();
+#else
+  const GLenum texture_target = GL_TEXTURE_2D;
+#endif
 
   auto backing = std::make_unique<IOSurfaceImageBacking>(
       io_surface, io_surface_plane, io_surface_id, mailbox, format, size,
@@ -466,8 +470,12 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
     return nullptr;
   }
 
+#if BUILDFLAG(IS_MAC)
   const GLenum target =
       GetMacOSSpecificTextureTargetForCurrentGLImplementation();
+#else
+  const GLenum target = GL_TEXTURE_2D;
+#endif
 
   auto io_surface = handle.io_surface;
   const auto io_surface_id = handle.id;
