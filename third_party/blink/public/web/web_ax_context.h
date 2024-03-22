@@ -44,15 +44,12 @@ class BLINK_EXPORT WebAXContext {
   // structure and properties of each node.
   void MarkDocumentDirty();
 
+  void SetSerializationResetToken(uint32_t reset_token) const;
+
   // Compared with MarkDocumentDirty(), this does less work, because it assumes
   // the AXObjectCache's tree of objects and properties is correct, but needs to
   // be reserialized.
   void ResetSerializer();
-
-  // Retrieves a vector of all WebAXObjects in this document whose
-  // bounding boxes may have changed since the last query. Sends that vector
-  // via mojo to the browser process.
-  void SerializeLocationChanges(uint32_t reset_token) const;
 
   bool SerializeEntireTree(
       size_t max_node_count,

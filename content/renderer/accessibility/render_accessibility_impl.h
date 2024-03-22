@@ -133,8 +133,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Returns true if a serialization occurs.
   bool SendAccessibilitySerialization(std::vector<ui::AXTreeUpdate> updates,
                                       std::vector<ui::AXEvent> events,
-                                      bool had_load_complete_messages,
-                                      bool need_to_send_location_changes);
+                                      bool had_load_complete_messages);
 
   // Returns the main top-level document for this page, or NULL if there's
   // no view or frame.
@@ -165,12 +164,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   AXAnnotatorsManager* ax_annotators_manager_for_testing() {
     return ax_annotators_manager_.get();
   }
-
- protected:
-  // Check the entire accessibility tree to see if any nodes have
-  // changed location, by comparing their locations to the cached
-  // versions. If any have moved, send an IPC with the new locations.
-  void SendLocationChanges();
 
  private:
   // Called whenever the "ack" message is received for a serialization message

@@ -498,11 +498,18 @@ class MODULES_EXPORT AXObjectCacheImpl
   static bool IsRelevantSlotElement(const HTMLSlotElement& slot);
   static Node* GetClosestNodeForLayoutObject(const LayoutObject* layout_object);
 
+  // Token to return this token in the next IPC, so that RenderFrameHostImpl
+  // can discard stale data, when the token does not match the expected token.
+  std::optional<uint32_t> reset_token_;
+  void SetSerializationResetToken(uint32_t token) override {
+    reset_token_ = token;
+  }
+
   // Retrieves a vector of all AXObjects whose bounding boxes may have changed
   // since the last query. Sends the resulting vector over mojo to the browser
   // process. Clears the vector so that the next time it's
   // called, it will only retrieve objects that have changed since now.
-  void SerializeLocationChanges(uint32_t reset_token) override;
+  void SerializeLocationChanges();
 
   bool SerializeEntireTree(
       size_t max_node_count,

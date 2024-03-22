@@ -689,8 +689,7 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual bool SendAccessibilitySerialization(
       std::vector<ui::AXTreeUpdate> updates,
       std::vector<ui::AXEvent> events,
-      bool had_load_complete_messages,
-      bool need_to_send_location_changes) {
+      bool had_load_complete_messages) {
     return false;
   }
 

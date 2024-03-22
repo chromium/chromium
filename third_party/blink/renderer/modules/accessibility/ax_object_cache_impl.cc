@@ -3473,14 +3473,15 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
 
   /* ACTUAL SERIALIZE */
   bool success = client->SendAccessibilitySerialization(
-      std::move(updates), std::move(events), had_load_complete_messages,
-      need_to_send_location_changes);
+      std::move(updates), std::move(events), had_load_complete_messages);
 
   if (!success) {
     // In some cases, like in web tests or if a11y is off, serialization doesn't
     // really occur and thus the function will return false.
     // Cancel serialization to avoid stalling pipeline.
     OnSerializationCancelled();
+  } else if (need_to_send_location_changes) {
+    SerializeLocationChanges();
   }
 
   CHECK(serialization_in_flight_ == success);
@@ -5346,7 +5347,7 @@ Element* AXObjectCacheImpl::GetActiveAriaModalDialog() const {
   return active_aria_modal_dialog_;
 }
 
-void AXObjectCacheImpl::SerializeLocationChanges(uint32_t reset_token) {
+void AXObjectCacheImpl::SerializeLocationChanges() {
   CHECK(GetDocument().IsActive());
   if (changed_bounds_ids_.empty())
     return;
@@ -5373,8 +5374,9 @@ void AXObjectCacheImpl::SerializeLocationChanges(uint32_t reset_token) {
   }
   changed_bounds_ids_.clear();
   if (!changes.empty()) {
+    CHECK(reset_token_);
     GetOrCreateRemoteRenderAccessibilityHost()->HandleAXLocationChanges(
-        std::move(changes), reset_token);
+        std::move(changes), *reset_token_);
   }
 }
 

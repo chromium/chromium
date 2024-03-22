@@ -50,14 +50,6 @@ void WebAXContext::ResetSerializer() {
   private_->GetAXObjectCache().ResetSerializer();
 }
 
-void WebAXContext::SerializeLocationChanges(uint32_t reset_token) const {
-  if (!HasActiveDocument()) {
-    return;
-  }
-  ScopedFreezeAXCache freeze(private_->GetAXObjectCache());
-  private_->GetAXObjectCache().SerializeLocationChanges(reset_token);
-}
-
 bool WebAXContext::SerializeEntireTree(
     size_t max_node_count,
     base::TimeDelta timeout,
@@ -150,5 +142,9 @@ void WebAXContext::FireLoadCompleteIfLoaded() {
   if (!private_->HasActiveDocument())
     return;
   return private_->GetDocument()->DispatchHandleLoadComplete();
+}
+
+void WebAXContext::SetSerializationResetToken(uint32_t reset_token) const {
+  private_->GetAXObjectCache().SetSerializationResetToken(reset_token);
 }
 }  // namespace blink

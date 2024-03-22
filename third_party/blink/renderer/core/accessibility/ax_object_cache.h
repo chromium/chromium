@@ -82,6 +82,8 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void Thaw() = 0;
   virtual bool IsFrozen() const = 0;
 
+  virtual void SetSerializationResetToken(uint32_t token) = 0;
+
   // Ensure that accessibility is clean and up-to-date for both the main and
   // popup document. Ensures layout is clean as well.
   virtual void UpdateAXForAllDocuments() = 0;
@@ -218,8 +220,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   // Returns true if there are any pending updates that need processing.
   virtual bool IsDirty() = 0;
-
-  virtual void SerializeLocationChanges(uint32_t reset_token) = 0;
 
   // Serialize entire tree, returning true if successful.
   virtual bool SerializeEntireTree(

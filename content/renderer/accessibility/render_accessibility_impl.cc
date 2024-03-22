@@ -148,6 +148,12 @@ void RenderAccessibilityImpl::DidCreateNewDocument() {
   const WebDocument& document = GetMainDocument();
   DCHECK(!document.IsNull());
   ax_context_ = std::make_unique<WebAXContext>(document, accessibility_mode_);
+
+  // Set reset token which will be returned to browser in the next IPC, so that
+  // RenderFrameHostImpl can discard stale data, when the token does not match
+  // the expected token.
+  ax_context_->SetSerializationResetToken(*reset_token_);
+
   ScheduleImmediateAXUpdate();
 }
 
@@ -215,9 +221,14 @@ void RenderAccessibilityImpl::NotifyAccessibilityModeChange(
   FireLoadCompleteIfLoaded();
 }
 
+// Token to return this token in the next IPC, so that RenderFrameHostImpl
+// can discard stale data, when the token does not match the expected token.
 void RenderAccessibilityImpl::set_reset_token(uint32_t reset_token) {
   CHECK(reset_token);
   reset_token_ = reset_token;
+  if (ax_context_) {
+    ax_context_->SetSerializationResetToken(reset_token);
+  }
 }
 
 void RenderAccessibilityImpl::FireLoadCompleteIfLoaded() {
@@ -409,9 +420,8 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
 void RenderAccessibilityImpl::Reset(uint32_t reset_token) {
   DCHECK(ax_context_);
   DCHECK(!accessibility_mode_.is_mode_off());
-  CHECK(reset_token);
-  reset_token_ = reset_token;
   ax_context_->ResetSerializer();
+  set_reset_token(reset_token);
   FireLoadCompleteIfLoaded();
 }
 
@@ -474,8 +484,7 @@ std::string RenderAccessibilityImpl::GetLanguage() {
 bool RenderAccessibilityImpl::SendAccessibilitySerialization(
     std::vector<ui::AXTreeUpdate> updates,
     std::vector<ui::AXEvent> events,
-    bool had_load_complete_messages,
-    bool need_to_send_location_changes) {
+    bool had_load_complete_messages) {
   // TODO(accessibility) Do we want to get rid of this trace event now that it's
   // part of the same callstack as the ProcessDeferredAccessibilityEvents trace?
   TRACE_EVENT0("accessibility",
@@ -553,9 +562,6 @@ bool RenderAccessibilityImpl::SendAccessibilitySerialization(
       std::move(updates_and_events), *reset_token_,
       base::BindOnce(&RenderAccessibilityImpl::OnSerializationReceived,
                      weak_factory_for_pending_events_.GetWeakPtr()));
-  if (need_to_send_location_changes) {
-    SendLocationChanges();
-  }
 
   // Measure the amount of time spent in this function. Keep track of the
   // maximum within a time interval so we can upload UKM.
@@ -587,13 +593,6 @@ bool RenderAccessibilityImpl::SendAccessibilitySerialization(
   }
 
   return true;
-}
-
-void RenderAccessibilityImpl::SendLocationChanges() {
-  TRACE_EVENT0("accessibility", "RenderAccessibilityImpl::SendLocationChanges");
-  DCHECK(ax_context_);
-  CHECK(reset_token_);
-  ax_context_->SerializeLocationChanges(*reset_token_);
 }
 
 void RenderAccessibilityImpl::OnSerializationReceived() {
