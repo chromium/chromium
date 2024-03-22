@@ -177,4 +177,23 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestGetData) {
   run_loop.Run();
 }
 
+TEST_F(ProductSpecificationsSyncBridgeTest, TestGetDataForDebugging) {
+  base::RunLoop run_loop;
+  bridge().GetAllDataForDebugging(base::BindLambdaForTesting(
+      [&](std::unique_ptr<syncer::DataBatch> data_batch) {
+        EXPECT_TRUE(data_batch);
+        std::vector<syncer::KeyAndData> key_and_data =
+            GetKeyAndData(data_batch.get());
+        EXPECT_EQ(3u, key_and_data.size());
+        for (uint64_t i = 0; i < kInitUuid.size(); i++) {
+          EXPECT_EQ(kInitUuid[i], key_and_data[i].first);
+          EXPECT_EQ(GetName(i), key_and_data[i].second->name);
+          VerifySpecificsAgainstIndex(
+              key_and_data[i].second->specifics.mutable_compare(), i);
+        }
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 }  // namespace commerce

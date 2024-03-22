@@ -88,8 +88,11 @@ void ProductSpecificationsSyncBridge::GetData(StorageKeyList storage_keys,
 
 void ProductSpecificationsSyncBridge::GetAllDataForDebugging(
     DataCallback callback) {
-  // TODO(b/329520107) implement
-  NOTIMPLEMENTED();
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (auto& entry : entries_) {
+    batch->Put(entry.first, CreateEntityData(entry.second));
+  }
+  std::move(callback).Run(std::move(batch));
 }
 
 void ProductSpecificationsSyncBridge::OnStoreCreated(
