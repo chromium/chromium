@@ -137,9 +137,9 @@ ScriptPromiseTyped<MLComputeResult> MLContext::compute(
   auto promise = resolver->Promise();
 
   if (graph->Context() != this) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    resolver->RejectWithDOMException(
         DOMExceptionCode::kDataError,
-        "The graph isn't built within this context."));
+        "The graph isn't built within this context.");
   } else {
     graph->Compute(std::move(scoped_trace), inputs, outputs, resolver,
                    exception_state);
