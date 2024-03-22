@@ -83,6 +83,11 @@
       // button that triggers the Lens action.
       [self openLens];
       break;
+    case WhatsNewPrimaryAction::kSafeBrowsingSettings:
+      // Handles actions that open ESB in Chrome settings.
+      [self.applicationHandler
+          showSafeBrowsingSettingsFromViewController:self.baseViewController];
+      break;
     case WhatsNewPrimaryAction::kNoAction:
     case WhatsNewPrimaryAction::kError:
       NOTREACHED();

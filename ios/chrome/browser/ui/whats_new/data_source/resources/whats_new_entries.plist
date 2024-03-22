@@ -103,7 +103,7 @@
 				<string>IDS_IOS_WHATS_NEW_ESB_INSTRUCTIONS_STEP_3</string>
 			</array>
 			<key>PrimaryAction</key>
-			<integer>2</integer>
+			<integer>6</integer>
 			<key>LearnMoreUrlString</key>
 			<string></string>
 		</dict>

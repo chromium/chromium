@@ -2393,8 +2393,15 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
+// TODO(crbug.com/330562969): Remove the deprecated function and its
+// invocations.
 - (void)showSafeBrowsingSettings {
   UIViewController* baseViewController = self.currentInterface.viewController;
+  [self showSafeBrowsingSettingsFromViewController:baseViewController];
+}
+
+- (void)showSafeBrowsingSettingsFromViewController:
+    (UIViewController*)baseViewController {
   if (self.settingsNavigationController) {
     [self.settingsNavigationController showSafeBrowsingSettings];
     return;

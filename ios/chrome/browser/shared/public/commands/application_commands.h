@@ -79,6 +79,10 @@ enum class TrustedVaultUserActionTriggerForUMA;
                                                                    AccessPoint)
                                                                   accessPoint;
 
+// Shows the Safe Browsing settings page presenting from `baseViewController`.
+- (void)showSafeBrowsingSettingsFromViewController:
+    (UIViewController*)baseViewController;
+
 // Starts a voice search on the current BVC.
 - (void)startVoiceSearch;
 
