@@ -709,6 +709,10 @@ public class SyncSettingsUtils {
                 return ".TrustedVaultRecoverabilityDegradedForEverything";
             case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
                 return ".TrustedVaultRecoverabilityDegradedForPasswords";
+            case SyncError.UPM_BACKEND_OUTDATED:
+                return ".UpmBackendOutdated";
+            case SyncError.OTHER_ERRORS:
+                return ".OtherErrors";
             default:
                 assert false;
                 return "";

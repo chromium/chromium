@@ -25,6 +25,7 @@ chromium-metrics-reviews@google.com.
 <variants name="SyncErrorReason">
   <variant name=".AuthError" summary="Auth error."/>
   <variant name=".ClientOutOfDate" summary="Client out of date."/>
+  <variant name=".OtherErrors" summary="Other/unrecoverable sync errors."/>
   <variant name=".PassphraseRequired" summary="Passphrase required."/>
   <variant name=".SyncSetupIncomplete" summary="Sync setup incomplete."/>
   <variant name=".TrustedVaultKeyRequiredForEverything"
@@ -35,6 +36,8 @@ chromium-metrics-reviews@google.com.
       summary="Trusted vault recoverability degraded for everything."/>
   <variant name=".TrustedVaultRecoverabilityDegradedForPasswords"
       summary="Trusted vault recoverability degraded for passwords."/>
+  <variant name=".UpmBackendOutdated"
+      summary="UPM backend outdated error for passwords."/>
 </variants>
 
 <variants name="SyncModelType">
@@ -1548,6 +1551,24 @@ chromium-metrics-reviews@google.com.
     <variant name="SYNCED_TABS"
         summary="Request made by chrome://history/syncedTabs."/>
   </token>
+</histogram>
+
+<histogram name="Sync.SyncErrorCard{SyncErrorReason}" enum="SyncErrorUiAction"
+    expires_after="2024-09-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Android only.
+
+    Sync error card is shown to syncing users, whenever the user navigates to
+    the manage sync settings page and there exists a {SyncErrorReason} sync
+    error.
+
+    Recorded whenever an error card is shown to the user, and if the user
+    interacts with the card (i.e. presses the button to resolve the error).
+  </summary>
+  <token key="SyncErrorReason" variants="SyncErrorReason"/>
 </histogram>
 
 <histogram name="Sync.SyncErrorInfobarDisplayed" enum="SyncErrorInfobarTypes"

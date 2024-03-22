@@ -24,6 +24,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
@@ -123,7 +124,12 @@ public class SyncErrorCardPreferenceTest {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
         assertSyncError(SyncSettingsUtils.SyncError.AUTH_ERROR);
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.SyncErrorCard.AuthError", SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
+
         mRenderTestRule.render(
                 getPersonalizedSyncPromoView(),
                 "sync_error_card_auth_error_with_new_title_and_upm");
@@ -138,7 +144,13 @@ public class SyncErrorCardPreferenceTest {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
         assertSyncError(SyncSettingsUtils.SyncError.CLIENT_OUT_OF_DATE);
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.SyncErrorCard.ClientOutOfDate",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
+
         mRenderTestRule.render(
                 getPersonalizedSyncPromoView(),
                 "sync_error_card_client_out_of_date_with_new_title");
@@ -153,7 +165,12 @@ public class SyncErrorCardPreferenceTest {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
         assertSyncError(SyncSettingsUtils.SyncError.OTHER_ERRORS);
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.SyncErrorCard.OtherErrors", SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
+
         mRenderTestRule.render(
                 getPersonalizedSyncPromoView(), "sync_error_card_other_errors_with_new_title");
     }
@@ -168,7 +185,13 @@ public class SyncErrorCardPreferenceTest {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
         assertSyncError(SyncSettingsUtils.SyncError.PASSPHRASE_REQUIRED);
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.SyncErrorCard.PassphraseRequired",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
+
         mRenderTestRule.render(
                 getPersonalizedSyncPromoView(),
                 "sync_error_card_passphrase_required_with_new_title");
@@ -185,7 +208,13 @@ public class SyncErrorCardPreferenceTest {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
         assertSyncError(SyncSettingsUtils.SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING);
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.SyncErrorCard.TrustedVaultKeyRequiredForEverything",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
+
         mRenderTestRule.render(
                 getPersonalizedSyncPromoView(),
                 "sync_error_card_trusted_vault_key_required_with_new_title");
@@ -203,7 +232,13 @@ public class SyncErrorCardPreferenceTest {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
         assertSyncError(SyncSettingsUtils.SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS);
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.SyncErrorCard.TrustedVaultKeyRequiredForPasswords",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
+
         mRenderTestRule.render(
                 getPersonalizedSyncPromoView(),
                 "sync_error_card_trusted_vault_key_required_for_passwords_with_new_title");
@@ -222,7 +257,13 @@ public class SyncErrorCardPreferenceTest {
         assertSyncError(
                 SyncSettingsUtils.SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING);
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.SyncErrorCard.TrustedVaultRecoverabilityDegradedForEverything",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
+
         mRenderTestRule.render(
                 getPersonalizedSyncPromoView(),
                 "sync_error_card_trusted_vault_recoverability_degraded_for_everything_with_new_title");
@@ -241,7 +282,13 @@ public class SyncErrorCardPreferenceTest {
         assertSyncError(
                 SyncSettingsUtils.SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS);
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.SyncErrorCard.TrustedVaultRecoverabilityDegradedForPasswords",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
+
         mRenderTestRule.render(
                 getPersonalizedSyncPromoView(),
                 "sync_error_card_trusted_vault_recoverability_degraded_for_passwords_with_new_title");
@@ -257,7 +304,13 @@ public class SyncErrorCardPreferenceTest {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(/* syncService= */ null);
         assertSyncError(SyncSettingsUtils.SyncError.SYNC_SETUP_INCOMPLETE);
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.SyncErrorCard.SyncSetupIncomplete",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
+
         mRenderTestRule.render(
                 getPersonalizedSyncPromoView(),
                 "sync_error_card_sync_setup_incomplete_with_new_title");
@@ -277,7 +330,13 @@ public class SyncErrorCardPreferenceTest {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
         assertSyncError(SyncSettingsUtils.SyncError.UPM_BACKEND_OUTDATED);
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.SyncErrorCard.UpmBackendOutdated",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
+
         mRenderTestRule.render(
                 getPersonalizedSyncPromoView(), "sync_error_card_upm_backend_outdated");
     }
