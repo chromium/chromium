@@ -14,6 +14,7 @@
 #import "components/consent_auditor/fake_consent_auditor.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/test/mock_sync_service.h"
+#import "components/sync/test/sync_user_settings_mock.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
@@ -30,8 +31,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
@@ -60,9 +59,6 @@ class UserSigninMediatorTest : public PlatformTest {
                               base::BindRepeating(&BuildFakeConsentAuditor));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
-    builder.AddTestingFactory(
-        SyncSetupServiceFactory::GetInstance(),
-        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     browser_state_ = builder.Build();
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
@@ -78,15 +74,12 @@ class UserSigninMediatorTest : public PlatformTest {
                 accountManagerService:account_manager_service()
                        consentAuditor:consent_auditor()
                 unifiedConsentService:unified_consent_service()
-                     syncSetupService:sync_setup_service()
                           syncService:sync_service()];
 
     mediator_.delegate = mediator_delegate_mock_;
 
     fake_consent_auditor_ =
         static_cast<consent_auditor::FakeConsentAuditor*>(consent_auditor());
-    sync_setup_service_mock_ =
-        static_cast<SyncSetupServiceMock*>(sync_setup_service());
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(sync_service());
   }
 
@@ -260,10 +253,6 @@ class UserSigninMediatorTest : public PlatformTest {
         GetApplicationContext()->GetSystemIdentityManager());
   }
 
-  SyncSetupService* sync_setup_service() {
-    return SyncSetupServiceFactory::GetForBrowserState(browser_state_.get());
-  }
-
   syncer::SyncService* sync_service() {
     return SyncServiceFactory::GetForBrowserState(browser_state_.get());
   }
@@ -290,7 +279,6 @@ class UserSigninMediatorTest : public PlatformTest {
   id<UserSigninMediatorDelegate> mediator_delegate_mock_ = nil;
   AuthenticationFlowPerformer* performer_mock_ = nil;
   UIViewController* presenting_view_controller_mock_ = nil;
-  raw_ptr<SyncSetupServiceMock> sync_setup_service_mock_ = nullptr;
   raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
   ProceduralBlock interrupted_completion_block_ = nil;
 };
@@ -310,7 +298,7 @@ TEST_F(UserSigninMediatorTest, AuthenticateWithIdentitySuccess) {
   // Sign-in result successful.
   OCMExpect([mediator_delegate_mock_ userSigninMediatorSigninFinishedWithResult:
                                          SigninCoordinatorResultSuccess]);
-  EXPECT_CALL(*sync_setup_service_mock_,
+  EXPECT_CALL(*sync_service_mock_->GetMockUserSettings(),
               SetInitialSyncFeatureSetupComplete(
                   syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
 

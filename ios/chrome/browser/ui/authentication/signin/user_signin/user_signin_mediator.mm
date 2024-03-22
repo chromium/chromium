@@ -10,12 +10,12 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/consent_auditor/consent_auditor.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 
 @interface UserSigninMediator ()
@@ -33,8 +33,6 @@
 // Manager for user consent.
 @property(nonatomic, assign)
     unified_consent::UnifiedConsentService* unifiedConsentService;
-// Service that allows for configuring sync.
-@property(nonatomic, assign) SyncSetupService* syncSetupService;
 // Service that helps reseting the user state.
 @property(nonatomic, assign) syncer::SyncService* syncService;
 
@@ -53,7 +51,6 @@
                        (consent_auditor::ConsentAuditor*)consentAuditor
             unifiedConsentService:
                 (unified_consent::UnifiedConsentService*)unifiedConsentService
-                 syncSetupService:(SyncSetupService*)syncSetupService
                       syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
@@ -62,7 +59,6 @@
     _accountManagerService = accountManagerService;
     _consentAuditor = consentAuditor;
     _unifiedConsentService = unifiedConsentService;
-    _syncSetupService = syncSetupService;
     _syncService = syncService;
   }
   return self;
@@ -249,9 +245,10 @@
 
   // FirstSetupComplete flag should be turned on after the authentication
   // service has granted user consent to start Sync when tapping "Yes, I'm in."
-  self.syncSetupService->SetInitialSyncFeatureSetupComplete(
+  // TODO(crbug.com/40067025): Remove this code once
+  // kReplaceSyncPromosWithSignInPromos launches.
+  _syncService->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-  self.syncSetupService->CommitSyncChanges();
 
   [self.delegate userSigninMediatorSigninFinishedWithResult:
                      SigninCoordinatorResultSuccess];

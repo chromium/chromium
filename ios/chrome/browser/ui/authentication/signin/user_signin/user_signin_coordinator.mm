@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -136,8 +135,6 @@ using signin_metrics::PromoAction;
               unifiedConsentService:UnifiedConsentServiceFactory::
                                         GetForBrowserState(
                                             self.browser->GetBrowserState())
-                   syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
-                                        self.browser->GetBrowserState())
                         syncService:SyncServiceFactory::GetForBrowserState(
                                         self.browser->GetBrowserState())];
   self.mediator.delegate = self;

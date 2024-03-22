@@ -14,7 +14,6 @@
 @class AuthenticationFlow;
 class AuthenticationService;
 class ChromeAccountManagerService;
-class SyncSetupService;
 @protocol SystemIdentity;
 
 namespace consent_auditor {
@@ -66,7 +65,6 @@ class UnifiedConsentService;
                        (consent_auditor::ConsentAuditor*)consentAuditor
             unifiedConsentService:
                 (unified_consent::UnifiedConsentService*)unifiedConsentService
-                 syncSetupService:(SyncSetupService*)syncSetupService
                       syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 

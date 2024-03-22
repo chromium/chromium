@@ -204,8 +204,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
     sync_service_->SetSetupInProgress(!sync_enabled);
     sync_service_->SetHasSyncConsent(sync_completed);
 
-    // Needed by SyncService's initialization, triggered during initialization
-    // of SyncSetupServiceMock.
+    // Needed by SyncService's initialization.
     ON_CALL(*session_sync_service, GetControllerDelegate())
         .WillByDefault(Return(fake_controller_delegate_.GetWeakPtr()));
     ON_CALL(*session_sync_service, GetGlobalIdMapper())

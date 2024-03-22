@@ -11,7 +11,6 @@
 @class AuthenticationFlow;
 class AuthenticationService;
 class ChromeAccountManagerService;
-class SyncSetupService;
 @protocol TangibleSyncConsumer;
 @protocol TangibleSyncMediatorDelegate;
 
@@ -50,7 +49,6 @@ class UnifiedConsentService;
                        (consent_auditor::ConsentAuditor*)consentAuditor
                   identityManager:(signin::IdentityManager*)identityManager
                       syncService:(syncer::SyncService*)syncService
-                 syncSetupService:(SyncSetupService*)syncSetupService
             unifiedConsentService:
                 (unified_consent::UnifiedConsentService*)unifiedConsentService
                       accessPoint:(signin_metrics::AccessPoint)accessPoint

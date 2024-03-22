@@ -40,8 +40,6 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator_delegate.h"
@@ -116,6 +114,12 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   SettingsNavigationController* _navigationControllerInModalView;
   // The coordinator for the Personalize Google Services view.
   PersonalizeGoogleServicesCoordinator* _personalizeGoogleServicesCoordinator;
+  // Prevents any data from syncing while the UI is open.
+  // TODO(crbug.com/330772894): This is currently needed for syncing users,
+  // otherwise accidentally touching a toggle immediately uploads existing data.
+  // For non-syncing users that's not true. So remove this after the syncing
+  // state is gone on iOS.
+  std::unique_ptr<syncer::SyncSetupInProgressHandle> _syncSetupInProgressHandle;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -146,14 +150,14 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 - (void)start {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(browserState);
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
   switch (_accountState) {
     case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
     case SyncSettingsAccountState::kSyncing:
       // Ensure that SyncService::IsSetupInProgress is true while the
       // manage-sync-settings UI is open.
-      syncSetupService->PrepareForFirstSyncSetup();
+      _syncSetupInProgressHandle = syncService->GetSetupInProgressHandle();
       break;
     case SyncSettingsAccountState::kSignedIn:
       break;
@@ -230,13 +234,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   _accountsCoordinator = nil;
   self.mediator = nil;
   self.viewController = nil;
-  // This coordinator displays the main view and it is in charge to enable sync
-  // or not when being closed.
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  // Resets sync blocker if any gets set by PrepareForFirstSyncSetup.
-  syncSetupService->CommitSyncChanges();
+  // Unblock any sync data type changes.
+  _syncSetupInProgressHandle.reset();
 
   _syncObserver.reset();
   [self.signoutActionSheetCoordinator stop];

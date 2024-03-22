@@ -37,7 +37,6 @@
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 
 namespace {
@@ -67,18 +66,15 @@ CoreAccountId SystemIdentityToAccountID(
 
 AuthenticationService::AuthenticationService(
     PrefService* pref_service,
-    SyncSetupService* sync_setup_service,
     ChromeAccountManagerService* account_manager_service,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service)
     : pref_service_(pref_service),
-      sync_setup_service_(sync_setup_service),
       account_manager_service_(account_manager_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
       weak_pointer_factory_(this) {
   DCHECK(pref_service_);
-  DCHECK(sync_setup_service_);
   DCHECK(identity_manager_);
   DCHECK(sync_service_);
 }
@@ -378,12 +374,6 @@ void AuthenticationService::GrantSyncConsent(
   }
   CHECK_EQ(account_id,
            identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync));
-
-  // Sets the Sync setup handle to prepare for configuring the Sync data types
-  // before Sync-the-feature actually starts.
-  // TODO(crbug.com/1206680): Add EarlGrey tests to ensure that the Sync feature
-  // only starts after GrantSyncConsent is called.
-  sync_setup_service_->PrepareForFirstSyncSetup();
 
   // Kick-off sync: The authentication error UI (sign in infobar and warning
   // badge in settings screen) check the sync auth error state. Sync

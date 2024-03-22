@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_mediator.h"
@@ -87,8 +86,6 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
                     identityManager:IdentityManagerFactory::GetForBrowserState(
                                         browserState)
                         syncService:SyncServiceFactory::GetForBrowserState(
-                                        browserState)
-                   syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
                                         browserState)
               unifiedConsentService:UnifiedConsentServiceFactory::
                                         GetForBrowserState(browserState)

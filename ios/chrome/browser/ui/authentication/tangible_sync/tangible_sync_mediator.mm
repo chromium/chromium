@@ -12,11 +12,11 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/account_capabilities_latency_tracker.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_consumer.h"
@@ -43,8 +43,6 @@
   AuthenticationFlow* _authenticationFlow;
   // Sync service.
   raw_ptr<syncer::SyncService> _syncService;
-  // Service that allows for configuring sync.
-  raw_ptr<SyncSetupService> _syncSetupService;
   // Manager for user consent.
   raw_ptr<unified_consent::UnifiedConsentService> _unifiedConsentService;
   // Sync opt-in access point.
@@ -62,7 +60,6 @@
                        (consent_auditor::ConsentAuditor*)consentAuditor
                   identityManager:(signin::IdentityManager*)identityManager
                       syncService:(syncer::SyncService*)syncService
-                 syncSetupService:(SyncSetupService*)syncSetupService
             unifiedConsentService:
                 (unified_consent::UnifiedConsentService*)unifiedConsentService
                       accessPoint:(signin_metrics::AccessPoint)accessPoint {
@@ -73,7 +70,6 @@
     CHECK(consentAuditor);
     CHECK(identityManager);
     CHECK(syncService);
-    CHECK(syncSetupService);
     CHECK(unifiedConsentService);
     _authenticationService = authenticationService;
     _accountManagerService = chromeAccountManagerService;
@@ -86,7 +82,6 @@
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
     _syncService = syncService;
-    _syncSetupService = syncSetupService;
     _unifiedConsentService = unifiedConsentService;
     _accessPoint = accessPoint;
     _accountCapabilitiesLatencyTracker =
@@ -106,7 +101,6 @@
   _consentAuditor = nullptr;
   _identityManager = nullptr;
   _syncService = nullptr;
-  _syncSetupService = nullptr;
   _unifiedConsentService = nullptr;
 }
 
@@ -243,10 +237,10 @@
 
   // Turn on FirstSetupComplete flag after the authentication service has
   // granted user consent to start Sync.
-  _syncSetupService->SetInitialSyncFeatureSetupComplete(
+  // TODO(crbug.com/40067025): Remove this code once
+  // kReplaceSyncPromosWithSignInPromos launches.
+  _syncService->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-
-  _syncSetupService->CommitSyncChanges();
 
   [self.delegate tangibleSyncMediatorDidSuccessfulyFinishSignin:self];
 }

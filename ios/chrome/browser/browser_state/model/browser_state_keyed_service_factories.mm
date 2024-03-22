@@ -95,7 +95,6 @@
 #import "ios/chrome/browser/sync/model/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service_factory.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service_factory.h"
 #import "ios/chrome/browser/translate/model/translate_ranker_factory.h"
@@ -212,7 +211,6 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   SupervisedUserServiceFactory::GetInstance();
   SupervisedUserSettingsServiceFactory::GetInstance();
   SyncServiceFactory::GetInstance();
-  SyncSetupServiceFactory::GetInstance();
   TabsSearchServiceFactory::GetInstance();
   TextClassifierModelServiceFactory::GetInstance();
   TextToSpeechPlaybackControllerFactory::GetInstance();

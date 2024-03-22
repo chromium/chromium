@@ -27,7 +27,6 @@ class AuthenticationServiceDelegate;
 class AuthenticationServiceObserver;
 class FakeAuthenticationService;
 class PrefService;
-class SyncSetupService;
 @protocol RefreshAccessTokenError;
 @protocol SystemIdentity;
 
@@ -53,7 +52,6 @@ class AuthenticationService : public KeyedService,
 
   // Initializes the service.
   AuthenticationService(PrefService* pref_service,
-                        SyncSetupService* sync_setup_service,
                         ChromeAccountManagerService* account_manager_service,
                         signin::IdentityManager* identity_manager,
                         syncer::SyncService* sync_service);
@@ -228,7 +226,6 @@ class AuthenticationService : public KeyedService,
 
   // Pointer to the KeyedServices used by AuthenticationService.
   raw_ptr<PrefService> pref_service_ = nullptr;
-  raw_ptr<SyncSetupService> sync_setup_service_ = nullptr;
   raw_ptr<ChromeAccountManagerService> account_manager_service_ = nullptr;
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;

@@ -22,10 +22,6 @@ source_set("model") {
     "sync_observer_bridge.mm",
     "sync_service_factory.h",
     "sync_service_factory.mm",
-    "sync_setup_service.cc",
-    "sync_setup_service.h",
-    "sync_setup_service_factory.cc",
-    "sync_setup_service_factory.h",
   ]
   deps = [
     ":model_type_store_service_factory",
@@ -142,8 +138,6 @@ source_set("test_support") {
   sources = [
     "mock_sync_service_utils.cc",
     "mock_sync_service_utils.h",
-    "sync_setup_service_mock.cc",
-    "sync_setup_service_mock.h",
   ]
   deps = [
     ":model",
