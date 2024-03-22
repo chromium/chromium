@@ -2834,6 +2834,7 @@ component("ash") {
     "wm/splitview/auto_snap_controller.h",
     "wm/splitview/faster_split_view.cc",
     "wm/splitview/faster_split_view.h",
+    "wm/splitview/layout_divider_controller.cc",
     "wm/splitview/layout_divider_controller.h",
     "wm/splitview/split_view_constants.h",
     "wm/splitview/split_view_controller.cc",

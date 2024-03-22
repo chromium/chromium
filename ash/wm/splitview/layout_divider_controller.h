@@ -61,8 +61,12 @@ class LayoutDividerController {
   virtual SnapPosition GetPositionOfSnappedWindow(
       const aura::Window* window) const = 0;
 
-  // Returns the windows associated with this delegate.
+  // Returns the windows associated with this.
   virtual aura::Window::Windows GetLayoutWindows() const = 0;
+
+  // Returns the allowed divider position range by considering the windows'
+  // minimum length constraint.
+  gfx::Range GetDividerPositionAllowedRange() const;
 
  protected:
   virtual ~LayoutDividerController() = default;

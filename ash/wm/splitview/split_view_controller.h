@@ -364,9 +364,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
       aura::Window* window_for_minimum_size,
       float snap_ratio,
       bool account_for_divider_width) const override;
-  aura::Window::Windows GetLayoutWindows() const override;
   SnapPosition GetPositionOfSnappedWindow(
       const aura::Window* window) const override;
+  aura::Window::Windows GetLayoutWindows() const override;
 
  private:
   friend class SplitViewControllerTest;

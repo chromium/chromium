@@ -99,7 +99,7 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::WindowStateType;
+using chromeos::WindowStateType;
 
 using ui::mojom::CursorType;
 
@@ -2289,10 +2289,11 @@ TEST_F(SnapGroupTest, SnapRatioTest) {
 }
 
 // Tests that the windows in a snap group can be resized to an arbitrary
-// location with the split view divider.
+// location with the split view divider if neither of the windows has the
+// minimum size constraints.
 TEST_F(SnapGroupTest, ResizeWithSplitViewDividerToArbitraryLocations) {
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapTwoTestWindows(w1.get(), w2.get());
   for (const int distance_delta : {-10, 6, -15}) {
     const auto w1_cached_bounds = w1.get()->GetBoundsInScreen();
@@ -2318,6 +2319,38 @@ TEST_F(SnapGroupTest, ResizeWithSplitViewDividerToArbitraryLocations) {
                     kSplitviewDividerShortSideLength,
                 work_area_bounds().width(), abs_error);
   }
+}
+
+// Tests that the divider resizing respects the window's minimum size
+// constraints.
+TEST_F(SnapGroupTest, RespectWindowMinimumSizeWhileResizingWithDivider) {
+  UpdateDisplay("1200x900");
+
+  aura::test::TestWindowDelegate delegate1;
+  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithDelegate(
+      &delegate1, /*id=*/-1, gfx::Rect(600, 500)));
+  delegate1.set_minimum_size(gfx::Size(300, 600));
+
+  std::unique_ptr<aura::Window> window2(CreateAppWindow());
+  SnapTwoTestWindows(window1.get(), window2.get());
+
+  // The divider position updates while dragging, if it doesn't go below the
+  // window's minimum size.
+  split_view_divider()->StartResizeWithDivider(
+      split_view_divider_bounds_in_screen().CenterPoint());
+  split_view_divider()->ResizeWithDivider(gfx::Point(400, 200));
+  EXPECT_GT(split_view_divider()->divider_position(), 300);
+  split_view_divider()->EndResizeWithDivider(gfx::Point(400, 200));
+  EXPECT_GT(split_view_divider()->divider_position(), 300);
+
+  // Attempt to drag the divider below the window's minimum size. Verify it
+  // stops at the minimum.
+  split_view_divider()->StartResizeWithDivider(
+      split_view_divider_bounds_in_screen().CenterPoint());
+  split_view_divider()->ResizeWithDivider(gfx::Point(200, 200));
+  EXPECT_EQ(split_view_divider()->divider_position(), 300);
+  split_view_divider()->EndResizeWithDivider(gfx::Point(200, 200));
+  EXPECT_EQ(split_view_divider()->divider_position(), 300);
 }
 
 // Tests that there is no crash when work area changed after snapping two

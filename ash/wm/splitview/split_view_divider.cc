@@ -157,11 +157,36 @@ void SplitViewDivider::CloseDividerWidget() {
 
 void SplitViewDivider::UpdateDividerPosition(
     const gfx::Point& location_in_screen) {
+  int potential_divider_position = divider_position_;
   if (IsLayoutHorizontal(GetRootWindow())) {
-    divider_position_ += location_in_screen.x() - previous_event_location_.x();
+    potential_divider_position +=
+        location_in_screen.x() - previous_event_location_.x();
   } else {
-    divider_position_ += location_in_screen.y() - previous_event_location_.y();
+    potential_divider_position +=
+        location_in_screen.y() - previous_event_location_.y();
   }
+
+  // TODO(michelefan): Fix tablet mode regression: when the divider is dragged
+  // below the minimum window size, slide the window out to prevent errors.
+  if (!display::Screen::GetScreen()->InTabletMode()) {
+    const gfx::Range divider_allowed_range =
+        controller_->GetDividerPositionAllowedRange();
+
+    if (potential_divider_position < divider_position_) {
+      divider_position_ =
+          std::max(potential_divider_position,
+                   static_cast<int>(divider_allowed_range.start()));
+    }
+
+    if (potential_divider_position > divider_position_) {
+      divider_position_ =
+          std::min(potential_divider_position,
+                   static_cast<int>(divider_allowed_range.end()));
+    }
+  } else {
+    divider_position_ = potential_divider_position;
+  }
+
   divider_position_ = std::max(0, divider_position_);
 
   UpdateDividerBounds();
@@ -213,10 +238,9 @@ void SplitViewDivider::ResizeWithDivider(const gfx::Point& location_in_screen) {
 
   base::AutoReset<bool> auto_reset(&processing_resize_event_, true);
 
-  const gfx::Rect work_area_bounds =
-      GetWorkAreaBoundsInScreen(divider_widget_->GetNativeWindow());
-  gfx::Point modified_location_in_screen =
-      GetBoundedPosition(location_in_screen, work_area_bounds);
+  gfx::Point modified_location_in_screen = GetBoundedPosition(
+      location_in_screen,
+      GetWorkAreaBoundsInScreen(divider_widget_->GetNativeWindow()));
 
   // Order here matters: we first update `divider_position_`, then the
   // `LayoutDividerController` will update the window
@@ -235,10 +259,9 @@ void SplitViewDivider::EndResizeWithDivider(
 
   is_resizing_with_divider_ = false;
 
-  const gfx::Rect work_area_bounds =
-      GetWorkAreaBoundsInScreen(divider_widget_->GetNativeWindow());
-  gfx::Point modified_location_in_screen =
-      GetBoundedPosition(location_in_screen, work_area_bounds);
+  gfx::Point modified_location_in_screen = GetBoundedPosition(
+      location_in_screen,
+      GetWorkAreaBoundsInScreen(divider_widget_->GetNativeWindow()));
 
   // Order here matters: we first update `divider_position_`, then the
   // `LayoutDividerController` will transform and update the windows bounds in

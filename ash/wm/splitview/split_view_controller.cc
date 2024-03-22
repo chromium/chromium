@@ -1771,6 +1771,13 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
       account_for_divider_width, divider_position, IsResizingWithDivider());
 }
 
+SnapPosition SplitViewController::GetPositionOfSnappedWindow(
+    const aura::Window* window) const {
+  DCHECK(IsWindowInSplitView(window));
+  return window == primary_window_ ? SnapPosition::kPrimary
+                                   : SnapPosition::kSecondary;
+}
+
 aura::Window::Windows SplitViewController::GetLayoutWindows() const {
   aura::Window::Windows window_list;
   for (aura::Window* window : {primary_window_, secondary_window_}) {
@@ -1779,13 +1786,6 @@ aura::Window::Windows SplitViewController::GetLayoutWindows() const {
     }
   }
   return window_list;
-}
-
-SnapPosition SplitViewController::GetPositionOfSnappedWindow(
-    const aura::Window* window) const {
-  DCHECK(IsWindowInSplitView(window));
-  return window == primary_window_ ? SnapPosition::kPrimary
-                                   : SnapPosition::kSecondary;
 }
 
 aura::Window* SplitViewController::GetPhysicalLeftOrTopWindow() {
