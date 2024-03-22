@@ -29,7 +29,6 @@ import org.hamcrest.Matcher;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.TransitStation;
 import org.chromium.base.test.transit.Trip;
-import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
@@ -40,8 +39,6 @@ import org.chromium.chrome.browser.tasks.tab_management.ClosableTabGridView;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ToolbarTestUtils;
-
-import java.util.List;
 
 /**
  * The tab switcher screen, with the tab grid and the tab management toolbar.
@@ -131,11 +128,7 @@ public abstract class TabSwitcherStation extends TransitStation {
                         .withIsOpeningTab(true)
                         .withIsSelectingTab(true)
                         .build();
-        return Trip.travelSync(
-                this,
-                page,
-                List.of(new TabSwitcherLayoutNotShowing()),
-                () -> TOOLBAR_NEW_TAB_BUTTON.perform(click()));
+        return Trip.travelSync(this, page, () -> TOOLBAR_NEW_TAB_BUTTON.perform(click()));
     }
 
     public <T extends TabSwitcherStation> T closeTabAtIndex(
@@ -198,20 +191,5 @@ public abstract class TabSwitcherStation extends TransitStation {
                 mChromeTabbedActivityTestRule.getActivity().getLayoutManager();
         // TODO: Use #isLayoutFinishedShowing(LayoutType.TAB_SWITCHER) once available.
         return layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER);
-    }
-
-    protected class TabSwitcherLayoutNotShowing extends UiThreadCondition {
-        @Override
-        public boolean check() {
-            LayoutManager layoutManager =
-                    mChromeTabbedActivityTestRule.getActivity().getLayoutManager();
-            // TODO: Use #isLayoutHidden(LayoutType.TAB_SWITCHER) once available.
-            return !layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER);
-        }
-
-        @Override
-        public String buildDescription() {
-            return "LayoutManager is not showing TAB_SWITCHER";
-        }
     }
 }
