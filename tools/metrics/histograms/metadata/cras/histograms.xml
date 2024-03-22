@@ -719,6 +719,21 @@ This collects each top-level device metric type. For example,
   <summary>Records the source of muting/unmuting the output volume.</summary>
 </histogram>
 
+<histogram name="Cras.PeerSupportedA2dpCodecs" units="units"
+    expires_after="2024-11-25">
+  <owner>jrwu@google.com</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Records the supported A2DP codecs claimed by the connected BT headset.
+
+    The emitted value is a bitmask whose bits have the following meaning:
+
+    Bit #1 is true iff peer supports SBC.
+
+    Bit #2 is true iff peer supports AAC.
+  </summary>
+</histogram>
+
 <histogram name="Cras.RtcDevicePair" enum="CrasDevicePair"
     expires_after="2024-09-01">
   <owner>yuhsuan@chromium.org</owner>
