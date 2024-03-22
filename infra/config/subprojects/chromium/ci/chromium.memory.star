@@ -89,6 +89,7 @@ linux_memory_builder(
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
+    siso_enabled = True,
 )
 
 linux_memory_builder(
