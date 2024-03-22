@@ -1845,10 +1845,6 @@
       origin_trial_feature_name: "Focusgroup",
     },
     {
-      name: "FocusStyleInvalidationOnPageActivation",
-      status: "stable",
-    },
-    {
       name: "FontAccess",
       status: {"Android": "", "default": "stable"},
     },
