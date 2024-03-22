@@ -119,15 +119,20 @@ class PineTest : public PineTestBase {
   }
 
   static base::Time FakeTimeNow() { return fake_time_; }
-  static void SetFakeNow(base::Time fake_now) { fake_time_ = fake_now; }
+  static void SetFakeTimeNow(base::Time fake_now) { fake_time_ = fake_now; }
+
+  static base::TimeTicks FakeTimeTicksNow() { return fake_time_ticks_; }
+  static void SetFakeTimeTicksNow(base::TimeTicks fake_now) {
+    fake_time_ticks_ = fake_now;
+  }
 
  private:
   InProcessDataDecoder decoder_;
   base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
-  static base::Time fake_time_;
-};
 
-base::Time PineTest::fake_time_;
+  static inline base::Time fake_time_;
+  static inline base::TimeTicks fake_time_ticks_;
+};
 
 TEST_F(PineTest, StartOverviewPineSession) {
   Shell::Get()
@@ -295,7 +300,7 @@ TEST_F(PineTest, ScreenshotIconRowExceedMaxElements) {
 // Tests that based on preferences (shown count, and last shown time), the nudge
 // may or may not be shown.
 TEST_F(PineTest, NudgePreferences) {
-  SetFakeNow(base::Time::Now());
+  SetFakeTimeNow(base::Time::Now());
   base::subtle::ScopedTimeClockOverrides time_override(
       &PineTest::FakeTimeNow,
       /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
@@ -323,18 +328,18 @@ TEST_F(PineTest, NudgePreferences) {
 
   // Start and end overview after waiting 25 hours. The nudge should now show
   // for the second time.
-  SetFakeNow(FakeTimeNow() + base::Hours(25));
+  SetFakeTimeNow(FakeTimeNow() + base::Hours(25));
   test_start_and_end_overview();
   EXPECT_TRUE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
 
   // Show the nudge for a third time. This will be the last time it is shown.
-  SetFakeNow(FakeTimeNow() + base::Hours(25));
+  SetFakeTimeNow(FakeTimeNow() + base::Hours(25));
   test_start_and_end_overview();
   EXPECT_TRUE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
 
   // Advance the clock and attempt to show the nudge for a fourth time. Verify
   // that it will not show.
-  SetFakeNow(FakeTimeNow() + base::Hours(25));
+  SetFakeTimeNow(FakeTimeNow() + base::Hours(25));
   test_start_and_end_overview();
   EXPECT_FALSE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
 }
@@ -405,6 +410,47 @@ TEST_F(PineTest, OnboardingMetrics) {
   views::test::WidgetDestroyedWaiter(dialog->GetWidget()).Wait();
   WaitForOverviewEntered();
   histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 2);
+}
+
+// Tests that the metric which records the time between when the user clicks
+// restore or cancel from when the dialog is created is logged properly.
+TEST_F(PineTest, TimeToActionMetrics) {
+  SetFakeTimeTicksNow(base::TimeTicks::Now());
+  base::subtle::ScopedTimeClockOverrides time_override(
+      /*time_override=*/nullptr, &PineTest::FakeTimeTicksNow,
+      /*thread_ticks_override=*/nullptr);
+
+  base::HistogramTester histogram_tester;
+  Shell::Get()
+      ->pine_controller()
+      ->MaybeStartPineOverviewSessionDevAccelerator();
+  WaitForOverviewEntered();
+
+  // Click the restore button after one second.
+  SetFakeTimeTicksNow(base::TimeTicks::Now() + base::Seconds(1));
+  const PillButton* restore_button =
+      PineContentsViewTestApi(GetContentsView()).restore_button();
+  LeftClickOn(restore_button);
+
+  // The buckets are split into bucket by time deltas, so we check the size of
+  // all samples.
+  EXPECT_EQ(
+      1u,
+      histogram_tester.GetAllSamples("Ash.Pine.TimeToAction.Listview").size());
+
+  Shell::Get()
+      ->pine_controller()
+      ->MaybeStartPineOverviewSessionDevAccelerator();
+  WaitForOverviewEntered();
+
+  // Click the cancel button after 2 seconds.
+  SetFakeTimeTicksNow(base::TimeTicks::Now() + base::Seconds(2));
+  const PillButton* cancel_button =
+      PineContentsViewTestApi(GetContentsView()).cancel_button();
+  LeftClickOn(cancel_button);
+  EXPECT_EQ(
+      2u,
+      histogram_tester.GetAllSamples("Ash.Pine.TimeToAction.Listview").size());
 }
 
 // Tests that if we exit overview without clicking the restore or cancel

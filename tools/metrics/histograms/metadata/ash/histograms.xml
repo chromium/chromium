@@ -6024,6 +6024,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Pine.TimeToAction.{PineContentsType}" units="ms"
+    expires_after="2025-04-05">
+  <owner>minch@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    The amount of time in ms that user takes from when they see the pine
+    contents view begin to fade in, to when they click the restore or cancel
+    buttons.
+  </summary>
+  <token key="PineContentsType">
+    <variant name="Listview"/>
+    <variant name="Screenshot"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Pip.AndroidPipUseTime" units="ms"
     expires_after="2024-07-21">
   <owner>takise@chromium.org</owner>

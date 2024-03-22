@@ -52,13 +52,18 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   // `menu_model_adapter_`.
   void OnMenuClosed();
 
-  raw_ptr<views::ImageButton> settings_button_ = nullptr;
-
   // The context menu model and its adapter for `settings_button_view_`.
   std::unique_ptr<PineContextMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
   // The menu runner that is responsible for the context menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
+
+  // Time `this` was created. Used for metrics.
+  const base::TimeTicks creation_time_;
+
+  bool showing_list_view_ = true;
+
+  raw_ptr<views::ImageButton> settings_button_ = nullptr;
 
   raw_ptr<BoxLayoutView> preview_container_view_ = nullptr;
   raw_ptr<PineScreenshotIconRowView> screenshot_icon_row_view_ = nullptr;

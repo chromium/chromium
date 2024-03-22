@@ -20,6 +20,7 @@
 #include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/pine_items_container_view.h"
 #include "ash/wm/window_restore/pine_screenshot_icon_row_view.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -69,9 +70,22 @@ constexpr int kScreenshotContainerMinHeight = 214;
 // Minimum height of the screenshot itself.
 constexpr int kScreenshotMinHeight = 88;
 
+constexpr char kHistogramTimeToAction[] = "Ash.Pine.TimeToAction";
+constexpr char kHistogramSuffixListview[] = ".Listview";
+constexpr char kHistogramSuffixScreenshot[] = ".Screenshot";
+
+void RecordTimeToAction(base::TimeTicks create_time, bool showing_listview) {
+  const std::string histogram_name =
+      std::string(kHistogramTimeToAction) + (showing_listview
+                                                 ? kHistogramSuffixListview
+                                                 : kHistogramSuffixScreenshot);
+  base::UmaHistogramMediumTimes(histogram_name,
+                                base::TimeTicks::Now() - create_time);
+}
+
 }  // namespace
 
-PineContentsView::PineContentsView() {
+PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kContentsRounding));
   SetBetweenChildSpacing(kContentsChildSpacing);
@@ -152,8 +166,8 @@ PineContentsView::PineContentsView() {
   const PineContentsData* pine_contents_data =
       Shell::Get()->pine_controller()->pine_contents_data();
   CHECK(pine_contents_data);
-  const bool should_show_items_view = pine_contents_data->image.isNull();
-  if (should_show_items_view) {
+  showing_list_view_ = pine_contents_data->image.isNull();
+  if (showing_list_view_) {
     preview_container_view_ =
         AddChildView(std::make_unique<PineItemsContainerView>(
             pine_contents_data->apps_infos));
@@ -209,15 +223,15 @@ PineContentsView::PineContentsView() {
   // display's aspect ratio.
   const int screenshot_height = screenshot_size.height();
   const int pine_contents_height =
-      should_show_items_view
+      showing_list_view_
           ? kItemsViewContainerHeight
           : std::max(kScreenshotContainerMinHeight, screenshot_height);
   actions_container_view->SetPreferredSize(
       gfx::Size(kActionsContainerWidth, pine_contents_height));
 
-  // Set the screenshto preview container vertical margin based on the height of
+  // Set the screenshot preview container vertical margin based on the height of
   // the screenshot.
-  if (!should_show_items_view &&
+  if (!showing_list_view_ &&
       screenshot_height < kScreenshotContainerMinHeight) {
     const int vertical_gap = kScreenshotContainerMinHeight - screenshot_height;
     const int bottom_inset = vertical_gap / 2;
@@ -279,6 +293,7 @@ void PineContentsView::OnRestoreButtonPressed() {
   if (PineContentsData* pine_contents_data =
           Shell::Get()->pine_controller()->pine_contents_data()) {
     if (pine_contents_data->restore_callback) {
+      RecordTimeToAction(creation_time_, showing_list_view_);
       // Destroys `this`.
       std::move(pine_contents_data->restore_callback).Run();
     }
@@ -289,6 +304,7 @@ void PineContentsView::OnCancelButtonPressed() {
   if (PineContentsData* pine_contents_data =
           Shell::Get()->pine_controller()->pine_contents_data()) {
     if (pine_contents_data->cancel_callback) {
+      RecordTimeToAction(creation_time_, showing_list_view_);
       // Destroys `this`.
       std::move(pine_contents_data->cancel_callback).Run();
     }
