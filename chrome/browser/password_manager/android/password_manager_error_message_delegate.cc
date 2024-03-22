@@ -62,18 +62,20 @@ void SetUpdateGmsCoreMessageContent(messages::MessageWrapper* message,
 
   message->SetPrimaryButtonText(
       l10n_util::GetStringUTF16(IDS_UPDATE_GMS_BUTTON_TITLE));
-  message->SetIconResourceId(
-      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_IC_ERROR));
 
   if (error_type ==
       PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingPossible) {
     message->SetTitle(l10n_util::GetStringUTF16(IDS_UPDATE_GMS));
     message->SetDescription(
         l10n_util::GetStringUTF16(IDS_UPDATE_GMS_TO_SAVE_PASSWORDS_TO_ACCOUNT));
+    message->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
+        IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP));
   } else {
     message->SetTitle(l10n_util::GetStringUTF16(IDS_UPDATE_TO_SAVE_PASSWORDS));
     message->SetDescription(
         l10n_util::GetStringUTF16(IDS_UPDATE_GMS_TO_SAVE_PASSWORDS));
+    message->SetIconResourceId(
+        ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_IC_ERROR));
   }
   message->DisableIconTint();
 }

@@ -8,6 +8,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/android/android_theme_resources.h"
+#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/password_manager/android/mock_password_manager_error_message_helper_bridge.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -181,6 +183,9 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_UPDATE_GMS_TO_SAVE_PASSWORDS_TO_ACCOUNT),
       GetMessageWrapper()->GetDescription());
+  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(
+                IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP),
+            GetMessageWrapper()->GetIconResourceId());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_GMS_BUTTON_TITLE),
             GetMessageWrapper()->GetPrimaryButtonText());
 
@@ -200,6 +205,8 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
             GetMessageWrapper()->GetTitle());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_GMS_TO_SAVE_PASSWORDS),
             GetMessageWrapper()->GetDescription());
+  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_IC_ERROR),
+            GetMessageWrapper()->GetIconResourceId());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_GMS_BUTTON_TITLE),
             GetMessageWrapper()->GetPrimaryButtonText());
 
