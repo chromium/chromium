@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_GROWTH_SHOW_NUDGE_ACTION_PERFORMER_H_
 #define CHROME_BROWSER_ASH_GROWTH_SHOW_NUDGE_ACTION_PERFORMER_H_
 
+#include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/components/growth/action_performer.h"
 
@@ -29,7 +31,15 @@ class ShowNudgeActionPerformer : public growth::ActionPerformer {
   growth::ActionType ActionType() const override;
 
  private:
-  bool ShowNudge(const NudgePayload* nudge_payload);
+  bool ShowNudge(int campaign_id, const NudgePayload* nudge_payload);
+  void MaybeSetButtonData(int campaign_id,
+                          const base::Value::Dict* button_dict,
+                          ash::AnchoredNudgeData& nudge_data,
+                          bool is_primary);
+  void OnNudgeButtonClicked(int campaign_id,
+                            const base::Value::Dict* action_dict);
+
+  base::WeakPtrFactory<ShowNudgeActionPerformer> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ASH_GROWTH_SHOW_NUDGE_ACTION_PERFORMER_H_

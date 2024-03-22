@@ -74,7 +74,7 @@ inline constexpr char kActiveAppWindowAnchorType[] =
 inline constexpr char kShelfAppButtonId[] = "shelfAppButtonId";
 
 // Image Model.
-inline constexpr char kBuiltInImage[] = "builtInImage";
+inline constexpr char kBuiltInIcon[] = "builtInIcon";
 inline constexpr int kIconSize = 60;
 
 }  // namespace
@@ -352,6 +352,7 @@ const std::string* Anchor::GetShelfAppButtonId() const {
 
 // Image Model.
 Image::Image(const base::Value::Dict* image_dict) : image_dict_(image_dict) {}
+Image::~Image() = default;
 
 const std::optional<ui::ImageModel> Image::GetImage() const {
   if (!image_dict_) {
@@ -363,14 +364,15 @@ const std::optional<ui::ImageModel> Image::GetImage() const {
 }
 
 const std::optional<ui::ImageModel> Image::GetBuiltInIcon() const {
-  auto built_in_icon_value = image_dict_->FindInt(kBuiltInImage);
+  auto built_in_icon_value = image_dict_->FindInt(kBuiltInIcon);
   if (!built_in_icon_value) {
-    // TODO(b/329666969)): Record invalid image model error.
     return std::nullopt;
   }
 
   auto icon = static_cast<BuiltInIcon>(built_in_icon_value.value());
   if (icon != BuiltInIcon::kRedeem) {
+    // TODO(b/329666969)): Record unrecognized built in icon.
+    LOG(ERROR) << "Unrecognized built in icon: " << int(icon);
     return std::nullopt;
   }
 
