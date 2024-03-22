@@ -447,6 +447,7 @@ linux_memory_builder(
         category = "lacros|asan",
         short_name = "asan",
     ),
+    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(

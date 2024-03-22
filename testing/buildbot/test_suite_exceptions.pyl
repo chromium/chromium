@@ -3214,7 +3214,7 @@
       },
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
-          'shards': 5,
+          'shards': 10,
         },
       },
       'linux-lacros-tester-rel': {
@@ -3295,7 +3295,7 @@
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
-          'shards': 5,
+          'shards': 10,
         },
       },
     },
@@ -3304,7 +3304,7 @@
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
-          'shards': 5,
+          'shards': 10,
         },
       },
     },
@@ -3313,7 +3313,7 @@
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
-          'shards': 5,
+          'shards': 10,
         },
       },
     },
@@ -3322,7 +3322,7 @@
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
-          'shards': 5,
+          'shards': 10,
         },
       },
     },
@@ -3355,7 +3355,7 @@
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
-          'shards': 5,
+          'shards': 10,
         },
       },
     },
@@ -3364,7 +3364,7 @@
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
-          'shards': 5,
+          'shards': 10,
         },
       },
     },
@@ -3373,7 +3373,7 @@
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
-          'shards': 5,
+          'shards': 10,
         },
       },
     },
@@ -3382,7 +3382,7 @@
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
-          'shards': 5,
+          'shards': 10,
         },
       },
     },
@@ -3391,7 +3391,7 @@
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
-          'shards': 5,
+          'shards': 10,
         },
       },
     },
