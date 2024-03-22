@@ -958,8 +958,8 @@ struct Conv2dTester {
 
 // Test building and computing a graph with single operator conv2d.
 TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
-  // Test conv2d with NCHW layout, padding = {1, 1, 1, 1}, float 32 data type,
-  // fusing with bias.
+  // Test conv2d with NCHW input layout, OIHW filter layout, padding = {1, 1, 1,
+  // 1}, float 32 data type, fusing with bias.
   {
     Conv2dTester<float>{
         .type = mojom::Conv2d::Kind::kDirect,
@@ -983,8 +983,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                               163, 112, 73,  112, 118, 124, 85}}}
         .Test();
   }
-  // Test conv2d with NCHW layout, padding = {1, 1, 1, 1}, float 16 data type,
-  // fusing with bias.
+  // Test conv2d with NCHW input layout, OIHW filter layout, padding = {1, 1, 1,
+  // 1}, float 16 data type, fusing with bias.
   {
     Conv2dTester<float16>{
         .type = mojom::Conv2d::Kind::kDirect,
@@ -1009,8 +1009,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                               163, 112, 73,  112, 118, 124, 85}}}
         .Test();
   }
-  // Test conv2d with NCHW layout, padding = {1, 1, 1, 1}, float 32 data type,
-  // without bias.
+  // Test conv2d with NCHW input layout, OIHW filter layout, padding = {1, 1, 1,
+  // 1}, float 32 data type, without bias.
   {
     Conv2dTester<float>{
         .type = mojom::Conv2d::Kind::kDirect,
@@ -1029,8 +1029,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                               162, 111, 72, 111, 117, 123, 84}}}
         .Test();
   }
-  // Test conv2d with NHWC layout, padding = {1, 1, 1, 1}, float 32 data type,
-  // without bias.
+  // Test conv2d with NHWC input layout, OHWI filter layout, padding = {1, 1, 1,
+  // 1}, float 32 data type, without bias.
   {
     Conv2dTester<float>{
         .type = mojom::Conv2d::Kind::kDirect,
@@ -1039,7 +1039,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                   .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
                              13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
         .filter = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 3, 3},
+                   .dimensions = {1, 3, 3, 1},
                    .values = std::vector<float>(9, 1)},
         .attributes = {.padding = {1, 1, 1, 1},
                        .input_layout =
@@ -1051,8 +1051,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                               162, 111, 72, 111, 117, 123, 84}}}
         .Test();
   }
-  // Test conv2d with NHWC layout, float 16 data type, padding = {1, 1, 1, 1},
-  // without bias.
+  // Test conv2d with NHWC input layout, OHWI filter layout, float 16 data type,
+  // padding = {1, 1, 1, 1}, without bias.
   {
     Conv2dTester<float16>{
         .type = mojom::Conv2d::Kind::kDirect,
@@ -1062,7 +1062,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                       {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
                        13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24})},
         .filter = {.type = mojom::Operand::DataType::kFloat16,
-                   .dimensions = {1, 1, 3, 3},
+                   .dimensions = {1, 3, 3, 1},
                    .values = Float16FromFloat32(std::vector<float>(9, 1))},
         .attributes = {.padding = {1, 1, 1, 1},
                        .input_layout =
@@ -1074,8 +1074,27 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                               162, 111, 72, 111, 117, 123, 84}}}
         .Test();
   }
-  // Test conv2d with NCHW layout, float 32 data type, bias and fusing with elu
-  // activation.
+  // Test depthwise conv2d with NHWC input layout, IHWO filter layout, float 32
+  // data type, groups = 2.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d::Kind::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 2, 2},
+                  .values = {0, 1, 2, 3, 4, 5, 6, 7}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 2, 2},
+                   .values = std::vector<float>(8, 1)},
+        .attributes = {.groups = 2,
+                       .input_layout =
+                           mojom::InputOperandLayout::kChannelsLast},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 1, 2},
+                   .values = {12, 16}}}
+        .Test();
+  }
+  // Test conv2d with NCHW input layout, OIHW filter layout, float 32 data type,
+  // bias and fusing with elu activation.
   {
     Conv2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -1099,8 +1118,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                               -0.5056964470628461, 0, 1, 2, 3}}}
         .Test();
   }
-  // Test conv2d with NCHW layout, float 32 data type, bias and fusing with
-  // leakyRelu activation.
+  // Test conv2d with NCHW input layout, OIHW filter layout, float 32 data type,
+  // bias and fusing with leakyRelu activation.
   {
     Conv2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -1124,8 +1143,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                    .values = {-0.3, -0.12, 21, 30}}}
         .Test();
   }
-  // Test conv2d with NCHW layout, float 32 data type, fusing with bias and
-  // linear activation.
+  // Test conv2d with NCHW input layout, OIHW filter layout, float 32 data type,
+  // fusing with bias and linear activation.
   {
     Conv2dTester<float>{
         .type = mojom::Conv2d::Kind::kDirect,
@@ -1154,8 +1173,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                               2.12, 2.18, 2.24, 1.85}}}
         .Test();
   }
-  // Test conv2d with NHWC layout, float 32 data type, fusing with bias and relu
-  // activation.
+  // Test conv2d with NHWC input layout, OHWI filter layout, float 32 data type,
+  // fusing with bias and relu activation.
   {
     Conv2dTester<float>{
         .type = mojom::Conv2d::Kind::kDirect,
@@ -1164,7 +1183,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                   .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
                              13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
         .filter = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 3, 3},
+                   .dimensions = {1, 3, 3, 1},
                    .values = std::vector<float>(9, 1)},
         .attributes = {.padding = {1, 1, 1, 1},
                        .input_layout = mojom::InputOperandLayout::kChannelsLast,
@@ -1181,8 +1200,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                               17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0}}}
         .Test();
   }
-  // Test conv2d with NHWC layout, float 16 data type, fusing with bias and relu
-  // activation.
+  // Test conv2d with NHWC input layout, OHWI filter layout, float 16 data type,
+  // fusing with bias and relu activation.
   {
     Conv2dTester<float16>{
         .type = mojom::Conv2d::Kind::kDirect,
@@ -1192,7 +1211,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                       {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
                        13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24})},
         .filter = {.type = mojom::Operand::DataType::kFloat16,
-                   .dimensions = {1, 1, 3, 3},
+                   .dimensions = {1, 3, 3, 1},
                    .values = Float16FromFloat32(std::vector<float>(9, 1))},
         .attributes = {.padding = {1, 1, 1, 1},
                        .input_layout = mojom::InputOperandLayout::kChannelsLast,
@@ -1209,7 +1228,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                               17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0}}}
         .Test();
   }
-  // Test conv2d with NCHW layout, fusing with hardSigmoid activation.
+  // Test conv2d with NCHW input layout, OIHW filter layout, fusing with
+  // hardSigmoid activation.
   {
     Conv2dTester<float>{
         .type = mojom::Conv2d::Kind::kDirect,
@@ -1238,7 +1258,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                               0.63, 0.12, 0, 0.12, 0.18, 0.24, 0}}}
         .Test();
   }
-  // Test conv2d with NCHW layout, fusing with sigmoid activation.
+  // Test conv2d with NCHW input layout, OIHW filter layout, fusing with sigmoid
+  // activation.
   {
     Conv2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -1281,8 +1302,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                               0.7747598886489868, 0.7273134589195251}}}
         .Test();
   }
-  // Test conv2d with NCHW layout, float 32 data type, bias and fusing with
-  // softplus activation.
+  // Test conv2d with NCHW input layout, OIHW filter layout, float 32 data type,
+  // bias and fusing with softplus activation.
   {
     Conv2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -1299,8 +1320,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                    .values = {5, 6, 7, 8}}}
         .Test();
   }
-  // Test conv2d with NCHW layout, float 32 data type, fusing with softsign
-  // activation.
+  // Test conv2d with NCHW input layout, OIHW filter layout, float 32 data type,
+  // fusing with softsign activation.
   {
     Conv2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -1317,7 +1338,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
                    .values = {-0.9, -0.5, 0, 0.9}}}
         .Test();
   }
-  // Test conv2d with NCHW layout, fusing with tanh activation.
+  // Test conv2d with NCHW input layout, OIHW filter layout, fusing with tanh
+  // activation.
   {
     Conv2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
