@@ -272,6 +272,7 @@ build_webui("build") {
         rebase_path("//chrome/browser/resources/gaia_auth_host/*",
                     target_gen_dir) ]
 
+  webui_context_type = "trusted"
   extra_grdp_deps = [ "../supervision:build_oobe_grdp" ]
   extra_grdp_files = [ "$root_gen_dir/chrome/browser/resources/chromeos/supervision/supervision_oobe_resources.grdp" ]
 }

@@ -4,15 +4,15 @@
 
 import './theme_hue_slider_dialog.js';
 import './theme_color.js';
-import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
-import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
+import '//resources/cr_elements/cr_grid/cr_grid.js';
+import '//resources/cr_components/managed_dialog/managed_dialog.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
-import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
-import {BrowserColorVariant} from 'chrome://resources/mojo/ui/base/mojom/themes.mojom-webui.js';
-import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {hexColorToSkColor, skColorToRgba} from '//resources/js/color_utils.js';
+import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import {BrowserColorVariant} from '//resources/mojo/ui/base/mojom/themes.mojom-webui.js';
+import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ThemeColorPickerBrowserProxy} from './browser_proxy.js';
 import type {Color, SelectedColor} from './color_utils.js';

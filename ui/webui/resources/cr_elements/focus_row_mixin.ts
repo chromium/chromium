@@ -5,10 +5,10 @@
 // clang-format off
 import type { PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {afterNextRender, dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import type { FocusRowDelegate} from 'chrome://resources/js/focus_row.js';
-import {FocusRow} from 'chrome://resources/js/focus_row.js';
+import {assert} from '//resources/js/assert.js';
+import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
+import type { FocusRowDelegate} from '//resources/js/focus_row.js';
+import {FocusRow} from '//resources/js/focus_row.js';
 // clang-format on
 
 interface ListItem {

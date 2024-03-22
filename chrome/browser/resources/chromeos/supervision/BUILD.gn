@@ -25,4 +25,5 @@ build_webui("build") {
   ]
 
   ts_deps = [ "//third_party/polymer/v3_0:library" ]
+  webui_context_type = "trusted"
 }

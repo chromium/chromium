@@ -8,14 +8,14 @@ import './horizontal_carousel.js';
 import './search_query.js';
 import './shared_vars.css.js';
 import './url_visit.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import '//resources/cr_elements/cr_icons.css.js';
+import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './cluster.html.js';

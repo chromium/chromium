@@ -26,4 +26,5 @@ build_webui("build") {
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
   ]
+  webui_context_type = "trusted"
 }

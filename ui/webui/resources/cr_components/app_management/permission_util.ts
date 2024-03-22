@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
 
 import type {Permission, PermissionType, PermissionValue} from './app_management.mojom-webui.js';
 import {TriState} from './app_management.mojom-webui.js';

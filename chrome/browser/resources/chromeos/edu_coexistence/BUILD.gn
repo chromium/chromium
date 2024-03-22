@@ -52,4 +52,5 @@ build_webui("build") {
               "//chrome/browser/resources/chromeos/arc_account_picker/*",
               target_gen_dir) ]
   }
+  webui_context_type = "trusted"
 }

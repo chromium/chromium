@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {highlight} from 'chrome://resources/js/search_highlight_utils.js';
+import {highlight} from '//resources/js/search_highlight_utils.js';
 
 import type {MatchPosition} from './history_cluster_types.mojom-webui.js';
 

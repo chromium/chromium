@@ -42,6 +42,7 @@ build_webui("build") {
   ]
 
   grd_prefix = "network_ui"
+  webui_context_type = "trusted"
 
   extra_grdp_deps = [ ":build_uplot_grdp" ]
   extra_grdp_files = [ "$target_gen_dir/uplot_resources.grdp" ]

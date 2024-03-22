@@ -4,8 +4,9 @@
 
 /* #css_wrapper_metadata_start
  * #type=style
- * #import=chrome://resources/cr_elements/cr_shared_style.css.js
- * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_shared_style.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #import=./shared_vars.css.js
  * #include=cr-shared-style cr-hidden-style
  * #css_wrapper_metadata_end */

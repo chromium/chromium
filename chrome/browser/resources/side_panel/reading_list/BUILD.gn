@@ -37,4 +37,6 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+
+  webui_context_type = "trusted"
 }

@@ -16,6 +16,7 @@ build_webui("build") {
   ]
 
   html_to_wrapper_template = "native"
+  webui_context_type = "trusted"
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [

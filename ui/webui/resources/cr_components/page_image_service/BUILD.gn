@@ -19,6 +19,7 @@ build_webui("build") {
       "$root_gen_dir/ui/webui/resources/tsc/cr_components/page_image_service"
   ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
   ts_composite = true
+  webui_context_type = "relative"
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
 }
