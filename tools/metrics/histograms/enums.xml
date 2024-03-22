@@ -16800,6 +16800,8 @@ from previous Chrome versions.
       label="enable-experimental-accessibility-switch-access-text"/>
   <int value="-1846358874" label="ForgotPasswordFormSupport:enabled"/>
   <int value="-1844754731" label="Mash:disabled"/>
+  <int value="-1844445413"
+      label="NotificationsIgnoreRequireInteraction:disabled"/>
   <int value="-1843677118" label="TwoPanesStartSurfaceAndroid:disabled"/>
   <int value="-1842511843" label="DiceWebSigninInterception:enabled"/>
   <int value="-1841624903" label="FilesMaterializedViews:disabled"/>
@@ -22659,6 +22661,7 @@ from previous Chrome versions.
   <int value="783443490" label="ArcInputOverlayBeta:enabled"/>
   <int value="784664314" label="CompanyEntityIconAdjustment:disabled"/>
   <int value="784856302" label="EnableBorderlessPrinting:disabled"/>
+  <int value="785159660" label="NotificationsIgnoreRequireInteraction:enabled"/>
   <int value="785273919" label="CompositingBasedThrottling:disabled"/>
   <int value="785795587" label="AndroidAppIntegrationSafeSearch:enabled"/>
   <int value="786070201"

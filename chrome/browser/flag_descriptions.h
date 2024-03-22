@@ -3994,6 +3994,9 @@ extern const char kNearbySharingSelfShareDescription[];
 extern const char kNearbyPresenceName[];
 extern const char kNearbyPresenceDescription[];
 
+extern const char kNotificationsIgnoreRequireInteractionName[];
+extern const char kNotificationsIgnoreRequireInteractionDescription[];
+
 extern const char kOobeHidDetectionRevampName[];
 extern const char kOobeHidDetectionRevampDescription[];
 

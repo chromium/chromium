@@ -4862,6 +4862,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCrostiniVirtualKeyboardSupportName,
      flag_descriptions::kCrostiniVirtualKeyboardSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kCrostiniVirtualKeyboardSupport)},
+    {"notifications-ignore-require-interaction",
+     flag_descriptions::kNotificationsIgnoreRequireInteractionName,
+     flag_descriptions::kNotificationsIgnoreRequireInteractionDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kNotificationsIgnoreRequireInteraction)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
      BUILDFLAG(IS_ANDROID)) &&                        \

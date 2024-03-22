@@ -5666,6 +5666,11 @@
       "expiry_milestone": 116
   },
   {
+      "name": "notifications-ignore-require-interaction",
+      "owners": ["amehfooz@chromium.org", "joelhockey@chromium.org" ],
+      "expiry_milestone": 140
+  },
+  {
     "name": "ntp-alpha-background-collections",
     "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 126

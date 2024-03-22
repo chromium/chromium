@@ -6914,6 +6914,12 @@ const char kNearbyPresenceName[] = "Nearby Presence";
 const char kNearbyPresenceDescription[] =
     "Enables Nearby Presence for scanning and discovery of nearby devices.";
 
+const char kNotificationsIgnoreRequireInteractionName[] =
+    "Notifications always timeout";
+const char kNotificationsIgnoreRequireInteractionDescription[] =
+    "Always timeout notifications, even if they are set with "
+    "requireInteraction.";
+
 const char kOobeHidDetectionRevampName[] = "OOBE HID Detection Revamp";
 const char kOobeHidDetectionRevampDescription[] =
     "Enables the ChromeOS HID Detection Revamp, which updates OOBE HID "
