@@ -1000,6 +1000,7 @@ component("ash") {
     "picker/search/picker_search_controller.h",
     "picker/search/picker_search_debouncer.cc",
     "picker/search/picker_search_debouncer.h",
+    "picker/search/picker_search_source.h",
     "picker/views/picker_caps_nudge_view.cc",
     "picker/views/picker_caps_nudge_view.h",
     "picker/views/picker_category_type.cc",

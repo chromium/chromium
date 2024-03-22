@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <iterator>
 #include <optional>
 #include <string>
 #include <utility>
@@ -16,6 +17,7 @@
 #include "ash/picker/search/picker_date_search.h"
 #include "ash/picker/search/picker_math_search.h"
 #include "ash/picker/search/picker_search_debouncer.h"
+#include "ash/picker/search/picker_search_source.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_client.h"
@@ -27,6 +29,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/emoji/emoji_search.h"
@@ -45,6 +49,26 @@ base::span<const emoji::EmojiSearchEntry> FirstNOrLessElements(
     base::span<const emoji::EmojiSearchEntry> container,
     size_t n) {
   return container.subspan(0, std::min(container.size(), n));
+}
+
+PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
+  switch (source) {
+    case PickerSearchSource::kOmnibox:
+      return PickerSectionType::kLinks;
+    case PickerSearchSource::kTenor:
+      return PickerSectionType::kGifs;
+    case PickerSearchSource::kEmoji:
+      return PickerSectionType::kExpressions;
+    case PickerSearchSource::kDate:
+    case PickerSearchSource::kMath:
+      return PickerSectionType::kSuggestions;
+    case PickerSearchSource::kCategory:
+      return PickerSectionType::kCategories;
+    case PickerSearchSource::kLocalFile:
+      return PickerSectionType::kFiles;
+    case PickerSearchSource::kDrive:
+      return PickerSectionType::kDriveFiles;
+  }
 }
 
 }  // namespace
@@ -209,6 +233,52 @@ void PickerSearchController::AppendPostBurnInResults(
   }
 }
 
+void PickerSearchController::HandleSearchSourceResults(
+    PickerSearchSource source,
+    std::vector<PickerSearchResult> results) {
+  // Suggested results have multiple sources, which we store in any order and
+  // explicitly do not append if post-burn-in.
+  if (source == PickerSearchSource::kDate ||
+      source == PickerSearchSource::kMath) {
+    base::ranges::move(results, std::back_inserter(suggested_results_));
+    return;
+  }
+
+  if (IsPostBurnIn()) {
+    // Skip assignment and immediately publish.
+    AppendPostBurnInResults(PickerSearchResultsSection(
+        SectionTypeFromSearchSource(source), std::move(results)));
+    return;
+  }
+
+  switch (source) {
+    case PickerSearchSource::kDate:
+    case PickerSearchSource::kMath:
+      // These should be caught by the above "move into suggested results"
+      // if block.
+      NOTREACHED() << "Tried assigning suggested results";
+      break;
+    case PickerSearchSource::kOmnibox:
+      omnibox_results_ = std::move(results);
+      break;
+    case PickerSearchSource::kTenor:
+      gif_results_ = std::move(results);
+      break;
+    case PickerSearchSource::kEmoji:
+      emoji_results_ = std::move(results);
+      break;
+    case PickerSearchSource::kCategory:
+      category_results_ = std::move(results);
+      break;
+    case PickerSearchSource::kLocalFile:
+      local_file_results_ = std::move(results);
+      break;
+    case PickerSearchSource::kDrive:
+      drive_file_results_ = std::move(results);
+      break;
+  }
+}
+
 void PickerSearchController::HandleCategorySearchResults(
     std::vector<PickerSearchResult> results) {
   if (category_search_start_.has_value()) {
@@ -217,7 +287,7 @@ void PickerSearchController::HandleCategorySearchResults(
                             elapsed);
   }
 
-  category_results_ = std::move(results);
+  HandleSearchSourceResults(PickerSearchSource::kCategory, std::move(results));
 }
 
 void PickerSearchController::HandleCrosSearchResults(
@@ -231,12 +301,8 @@ void PickerSearchController::HandleCrosSearchResults(
                                 elapsed);
       }
 
-      omnibox_results_ = std::move(results);
-
-      if (IsPostBurnIn()) {
-        AppendPostBurnInResults(PickerSearchResultsSection(
-            PickerSectionType::kLinks, std::move(omnibox_results_)));
-      }
+      HandleSearchSourceResults(PickerSearchSource::kOmnibox,
+                                std::move(results));
       break;
     case AppListSearchResultType::kDriveSearch: {
       if (cros_search_start_.has_value()) {
@@ -246,12 +312,8 @@ void PickerSearchController::HandleCrosSearchResults(
       }
       size_t files_to_remove = std::max<size_t>(results.size(), 3) - 3;
       results.erase(results.end() - files_to_remove, results.end());
-      drive_file_results_ = std::move(results);
 
-      if (IsPostBurnIn()) {
-        AppendPostBurnInResults(PickerSearchResultsSection(
-            PickerSectionType::kDriveFiles, std::move(drive_file_results_)));
-      }
+      HandleSearchSourceResults(PickerSearchSource::kDrive, std::move(results));
       break;
     }
     case AppListSearchResultType::kFileSearch: {
@@ -262,12 +324,9 @@ void PickerSearchController::HandleCrosSearchResults(
       }
       size_t files_to_remove = std::max<size_t>(results.size(), 3) - 3;
       results.erase(results.end() - files_to_remove, results.end());
-      local_file_results_ = std::move(results);
 
-      if (IsPostBurnIn()) {
-        AppendPostBurnInResults(PickerSearchResultsSection(
-            PickerSectionType::kFiles, std::move(local_file_results_)));
-      }
+      HandleSearchSourceResults(PickerSearchSource::kLocalFile,
+                                std::move(results));
       break;
     }
     default:
@@ -291,12 +350,7 @@ void PickerSearchController::HandleGifSearchResults(
     base::UmaHistogramTimes("Ash.Picker.Search.GifProvider.QueryTime", elapsed);
   }
 
-  gif_results_ = std::move(results);
-
-  if (IsPostBurnIn()) {
-    AppendPostBurnInResults(PickerSearchResultsSection(
-        PickerSectionType::kGifs, std::move(gif_results_)));
-  }
+  HandleSearchSourceResults(PickerSearchSource::kTenor, std::move(results));
 }
 
 void PickerSearchController::HandleEmojiSearchResults(
@@ -307,25 +361,28 @@ void PickerSearchController::HandleEmojiSearchResults(
                             elapsed);
   }
 
-  emoji_results_.clear();
-  emoji_results_.reserve(kMaxEmojiResults + kMaxSymbolResults +
-                         kMaxEmoticonResults);
+  std::vector<PickerSearchResult> emoji_results;
+  emoji_results.reserve(kMaxEmojiResults + kMaxSymbolResults +
+                        kMaxEmoticonResults);
 
   for (const emoji::EmojiSearchEntry& result :
        FirstNOrLessElements(results.emojis, kMaxEmojiResults)) {
-    emoji_results_.push_back(
+    emoji_results.push_back(
         PickerSearchResult::Emoji(base::UTF8ToUTF16(result.emoji_string)));
   }
   for (const emoji::EmojiSearchEntry& result :
        FirstNOrLessElements(results.symbols, kMaxSymbolResults)) {
-    emoji_results_.push_back(
+    emoji_results.push_back(
         PickerSearchResult::Symbol(base::UTF8ToUTF16(result.emoji_string)));
   }
   for (const emoji::EmojiSearchEntry& result :
        FirstNOrLessElements(results.emoticons, kMaxEmoticonResults)) {
-    emoji_results_.push_back(
+    emoji_results.push_back(
         PickerSearchResult::Emoticon(base::UTF8ToUTF16(result.emoji_string)));
   }
+
+  HandleSearchSourceResults(PickerSearchSource::kEmoji,
+                            std::move(emoji_results));
 }
 
 void PickerSearchController::HandleDateSearchResults(
@@ -336,9 +393,11 @@ void PickerSearchController::HandleDateSearchResults(
                             elapsed);
   }
 
+  std::vector<PickerSearchResult> results;
   if (result.has_value()) {
-    suggested_results_.push_back(*std::move(result));
+    results.push_back(*std::move(result));
   }
+  HandleSearchSourceResults(PickerSearchSource::kDate, std::move(results));
 }
 
 void PickerSearchController::HandleMathSearchResults(
@@ -349,9 +408,11 @@ void PickerSearchController::HandleMathSearchResults(
                             elapsed);
   }
 
+  std::vector<PickerSearchResult> results;
   if (result.has_value()) {
-    suggested_results_.push_back(*std::move(result));
+    results.push_back(*std::move(result));
   }
+  HandleSearchSourceResults(PickerSearchSource::kMath, std::move(results));
 }
 
 }  // namespace ash
