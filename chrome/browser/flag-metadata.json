@@ -5073,7 +5073,7 @@
   {
     "name": "ios-tips-notifications",
     "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 125
+    "expiry_milestone": 128
   },
   {
       "name": "ip-protection-proxy-opt-out",
