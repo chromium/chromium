@@ -28,7 +28,6 @@ static_js_files = [
 ts_files = [
   # Common:
   "file_manager/common/js/api.ts",
-  "file_manager/common/js/app_util.ts",
   "file_manager/common/js/array_data_model.ts",
   "file_manager/common/js/async_util.ts",
   "file_manager/common/js/cr_ui.ts",

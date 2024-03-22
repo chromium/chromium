@@ -27,12 +27,6 @@ interface FileManager {
   onUnloadForTest(): void;
 }
 
-interface AppState {
-  currentDirectoryURL?: string;
-  selectionURL?: string;
-  viewOptions?: any;
-}
-
 /**
  * The singleton instance for FileManager is available in the Window object.
  */
@@ -46,8 +40,6 @@ declare global {
 
     /** Namespace used for test utils. */
     test: any;
-
-    appState?: AppState;
 
     // Only used for grid.ts
     cvox?: {

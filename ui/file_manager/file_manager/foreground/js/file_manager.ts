@@ -807,29 +807,17 @@ export class FileManager {
    * initializing methods.
    */
   private initGeneral_() {
-    // Initialize the application state.
-    // TODO(mtomasz): Unify window.appState with location.search format.
-    if (window.appState) {
-      const params: Record<string, any> = {};
-
-      for (const [name, value] of Object.entries(window.appState)) {
-        params[name] = value;
+    // Initialize the application state, from the GET params.
+    let json = {};
+    if (location.search) {
+      const query = location.search.substr(1);
+      try {
+        json = JSON.parse(decodeURIComponent(query));
+      } catch (e) {
+        console.debug(`Error parsing location.search "${query}" due to ${e}`);
       }
-
-      this.launchParams_ = new LaunchParam(params);
-    } else {
-      // Used by the select dialog and SWA.
-      let json = {};
-      if (location.search) {
-        const query = location.search.substr(1);
-        try {
-          json = JSON.parse(decodeURIComponent(query));
-        } catch (e) {
-          console.debug(`Error parsing location.search "${query}" due to ${e}`);
-        }
-      }
-      this.launchParams_ = new LaunchParam(json);
     }
+    this.launchParams_ = new LaunchParam(json);
     this.store_.dispatch(
         setLaunchParameters({dialogType: this.launchParams_.type}));
 

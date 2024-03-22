@@ -4,7 +4,6 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {saveAppState, updateAppState} from '../../common/js/app_util.js';
 import {isRecentRoot} from '../../common/js/entry_utils.js';
 import {storage} from '../../common/js/storage.js';
 import type {DialogType} from '../../state/state.js';
@@ -53,14 +52,6 @@ export class AppStateController {
       try {
         this.viewOptions_ = JSON.parse(value);
       } catch (ignore) {
-      }
-
-      // Override with window-specific options.
-      if (window?.appState?.viewOptions) {
-        for (const [key, value] of Object.entries(
-                 window.appState.viewOptions)) {
-          this.viewOptions_[key] = value;
-        }
       }
     } catch (error) {
       this.viewOptions_ = {};
@@ -126,12 +117,6 @@ export class AppStateController {
     const items: Record<string, string> = {};
     items[this.viewOptionStorageKey_] = JSON.stringify(prefs);
     storage.local.setAsync(items);
-
-    // Save the window-specific preference.
-    if (window.appState) {
-      window.appState.viewOptions = prefs;
-      saveAppState();
-    }
   }
 
   private async onFileListSorted_() {
@@ -191,12 +176,6 @@ export class AppStateController {
             this.fileListSortField_!, this.fileListSortDirection_!);
       }
     }
-
-    updateAppState(
-        this.directoryModel_.getCurrentDirEntry() ?
-            this.directoryModel_.getCurrentDirEntry()!.toURL() :
-            '',
-        /*selectionURL=*/ '');
   }
 }
 
