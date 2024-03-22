@@ -4291,6 +4291,12 @@ enum WebFeature {
   kFedCmButtonMode = 4920,
   kHTMLPermissionElement = 4921,
 
+  // Model Execution API:
+  kV8ModelGenericSession_Execute_Method = 4922,
+  kV8ModelGenericSession_ExecuteStreaming_Method = 4923,
+  kV8ModelManager_CanCreateGenericSession_Method = 4924,
+  kV8ModelManager_CreateGenericSession_Method = 4925,
+
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in

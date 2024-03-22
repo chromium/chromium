@@ -7,6 +7,6 @@
   Exposed=Window
 ]
 interface ModelGenericSession {
-  [CallWith=ScriptState, RaisesException] Promise<DOMString> execute(DOMString input);
-  [CallWith=ScriptState, RaisesException] ReadableStream executeStreaming(DOMString input);
+  [Measure, CallWith=ScriptState, RaisesException] Promise<DOMString> execute(DOMString input);
+  [Measure, CallWith=ScriptState, RaisesException] ReadableStream executeStreaming(DOMString input);
 };
