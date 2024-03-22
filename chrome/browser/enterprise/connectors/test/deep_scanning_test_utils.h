@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace policy {
@@ -178,6 +179,13 @@ class EventReportValidator {
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier);
 
+  void ExpectURLFilteringInterstitialEvent(
+      const std::string& expected_url,
+      const std::string& expected_event_result,
+      const std::string& expected_profile_username,
+      const std::string& expected_profile_identifier,
+      safe_browsing::RTLookupResponse expected_rt_lookup_response);
+
   void ExpectNoReport();
 
   // Closure to run once all expected events are validated.
@@ -193,6 +201,10 @@ class EventReportValidator {
   void ValidateDlpRule(
       const base::Value::Dict* value,
       const ContentAnalysisResponse::Result::TriggeredRule& expected_rule);
+  void ValidateRTLookupResponse(const base::Value::Dict* value);
+  void ValidateThreatInfo(
+      const base::Value::Dict* value,
+      const safe_browsing::RTLookupResponse::ThreatInfo& expected_threat_info);
   void ValidateFilenameMappedAttributes(const base::Value::Dict* value);
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
@@ -227,6 +239,9 @@ class EventReportValidator {
   std::optional<std::u16string> login_user_name_ = std::nullopt;
   std::optional<std::vector<std::pair<std::string, std::u16string>>>
       password_breach_identities_ = std::nullopt;
+  std::optional<std::string> url_filtering_event_result_ = std::nullopt;
+  std::optional<safe_browsing::RTLookupResponse> rt_lookup_response_ =
+      std::nullopt;
 
   // When multiple files generate events, we don't necessarily know in which
   // order they will be reported. As such, we use maps to ensure all of them

@@ -450,6 +450,32 @@ void EventReportValidator::ExpectPasswordBreachEvent(
           });
 }
 
+void EventReportValidator::ExpectURLFilteringInterstitialEvent(
+    const std::string& expected_url,
+    const std::string& expected_event_result,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier,
+    safe_browsing::RTLookupResponse expected_rt_lookup_response) {
+  event_key_ =
+      SafeBrowsingPrivateEventRouter::kKeyUrlFilteringInterstitialEvent;
+  url_ = expected_url;
+  url_filtering_event_result_ = expected_event_result;
+  username_ = expected_profile_username;
+  profile_identifier_ = expected_profile_identifier;
+  rt_lookup_response_ = expected_rt_lookup_response;
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce(
+          [this](content::BrowserContext* context, bool include_device_info,
+                 base::Value::Dict report,
+                 base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                     callback) {
+            ValidateReport(&report);
+            if (!done_closure_.is_null()) {
+              done_closure_.Run();
+            }
+          });
+}
+
 void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
   DCHECK(report);
 
@@ -496,6 +522,17 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
   ValidateFederatedOrigin(event);
   ValidateIdentities(event);
   ValidateMimeType(event);
+  ValidateRTLookupResponse(event);
+
+  // This field is checked using other members for non URLF events, so
+  // `url_filtering_event_result_` is always expected to be empty in other
+  // cases and shouldn't be used to validate `kKeyEventResult`.
+  if (rt_lookup_response_) {
+    ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyEventResult,
+                  url_filtering_event_result_);
+  } else {
+    EXPECT_FALSE(url_filtering_event_result_);
+  }
 }
 
 void EventReportValidator::ValidateFederatedOrigin(
@@ -577,6 +614,42 @@ void EventReportValidator::ValidateDlpRule(
                 expected_rule.rule_name());
   ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
                 expected_rule.rule_id());
+}
+
+void EventReportValidator::ValidateRTLookupResponse(
+    const base::Value::Dict* value) {
+  if (rt_lookup_response_) {
+    const base::Value::List* triggered_rules =
+        value->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
+    ASSERT_TRUE(triggered_rules);
+    ASSERT_EQ(
+        base::checked_cast<size_t>(rt_lookup_response_->threat_info_size()),
+        triggered_rules->size());
+    for (size_t i = 0; i < triggered_rules->size(); ++i) {
+      const base::Value::Dict& rule = (*triggered_rules)[i].GetDict();
+      ValidateThreatInfo(&rule, rt_lookup_response_->threat_info(i));
+    }
+  }
+}
+
+void EventReportValidator::ValidateThreatInfo(
+    const base::Value::Dict* value,
+    const safe_browsing::RTLookupResponse::ThreatInfo& expected_threat_info) {
+  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
+                expected_threat_info.matched_url_navigation_rule().rule_name());
+  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
+                expected_threat_info.matched_url_navigation_rule().rule_id());
+  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyUrlCategory,
+                expected_threat_info.matched_url_navigation_rule()
+                    .matched_url_category());
+
+  std::optional<bool> expect_watermarking;
+  if (expected_threat_info.matched_url_navigation_rule()
+          .has_watermark_message()) {
+    expect_watermarking = true;
+  }
+  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyHasWatermarking,
+                expect_watermarking);
 }
 
 void EventReportValidator::ValidateFilenameMappedAttributes(

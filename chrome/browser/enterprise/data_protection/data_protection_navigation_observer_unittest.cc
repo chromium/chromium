@@ -5,9 +5,20 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
 
 #include "base/test/test_future.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "components/policy/core/common/cloud/dm_token.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
+#include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -25,10 +36,20 @@ safe_browsing::RTLookupResponse::ThreatInfo GetTestThreatInfo(
   wm.mutable_timestamp()->set_seconds(timestamp_seconds);
 
   safe_browsing::RTLookupResponse::ThreatInfo threat_info;
+  threat_info.set_verdict_type(
+      safe_browsing::RTLookupResponse::ThreatInfo::SAFE);
   safe_browsing::MatchedUrlNavigationRule* matched_url_navigation_rule =
       threat_info.mutable_matched_url_navigation_rule();
   *matched_url_navigation_rule->mutable_watermark_message() = wm;
   return threat_info;
+}
+
+safe_browsing::RTLookupResponse CreateWatermarkResponse() {
+  safe_browsing::RTLookupResponse response;
+  safe_browsing::RTLookupResponse::ThreatInfo* new_threat_info =
+      response.add_threat_info();
+  *new_threat_info = GetTestThreatInfo("custom_message", 1709181364);
+  return response;
 }
 
 class FakeRealTimeUrlLookupService
@@ -45,10 +66,8 @@ class FakeRealTimeUrlLookupService
     // Create custom threat info instance. The DataProtectionNavigationObserver
     // does not care whether the verdict came from the verdict cache or from an
     // actual lookup request, as long as it gets a verdict back.
-    auto response = std::make_unique<safe_browsing::RTLookupResponse>();
-    safe_browsing::RTLookupResponse::ThreatInfo* new_threat_info =
-        response->add_threat_info();
-    *new_threat_info = GetTestThreatInfo("custom_message", 1709181364);
+    auto response = std::make_unique<safe_browsing::RTLookupResponse>(
+        CreateWatermarkResponse());
 
     callback_task_runner->PostTask(
         FROM_HERE,
@@ -61,12 +80,53 @@ class FakeRealTimeUrlLookupService
 class DataProtectionNavigationObserverTest
     : public content::RenderViewHostTestHarness {
  public:
+  Profile* profile() { return Profile::FromBrowserContext(browser_context()); }
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     web_contents_ = CreateTestWebContents();
+
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    EXPECT_TRUE(profile_manager_->SetUp());
+
+    policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm-token"));
+    client_ = std::make_unique<policy::MockCloudPolicyClient>();
+
+    extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance()
+        ->SetTestingFactory(
+            profile(),
+            base::BindRepeating([](content::BrowserContext* context) {
+              return std::unique_ptr<KeyedService>(
+                  new extensions::SafeBrowsingPrivateEventRouter(context));
+            }));
+    enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
+        ->SetTestingFactory(
+            profile(),
+            base::BindRepeating([](content::BrowserContext* context) {
+              return std::unique_ptr<KeyedService>(
+                  new enterprise_connectors::RealtimeReportingClient(context));
+            }));
+    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+        profile())
+        ->SetBrowserCloudPolicyClientForTesting(client_.get());
+    identity_test_environment_.MakePrimaryAccountAvailable(
+        "test-user@chromium.org", signin::ConsentLevel::kSync);
+    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+        profile())
+        ->SetIdentityManagerForTesting(
+            identity_test_environment_.identity_manager());
+
+    enterprise_connectors::test::SetOnSecurityEventReporting(
+        profile()->GetPrefs(), true);
   }
 
   void TearDown() override {
+    SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
+    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+        profile())
+        ->SetBrowserCloudPolicyClientForTesting(nullptr);
+
     web_contents_.reset();
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -79,11 +139,22 @@ class DataProtectionNavigationObserverTest
   FakeRealTimeUrlLookupService lookup_service_;
   std::unique_ptr<content::WebContents> web_contents_;
   const GURL kTestURL = GURL("https://test");
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<policy::MockCloudPolicyClient> client_;
+  signin::IdentityTestEnvironment identity_test_environment_;
 };
 
 }  // namespace
 
 TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectURLFilteringInterstitialEvent(
+      /*url*/ "https://test/",
+      /*event_result*/ "EVENT_RESULT_ALLOWED",
+      /*profile_user_name*/ "test-user@chromium.org",
+      /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
+      /*rt_lookup_response*/ CreateWatermarkResponse());
+
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       kTestURL, web_contents()->GetPrimaryMainFrame());
 
