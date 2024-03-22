@@ -1823,14 +1823,8 @@ class MaximizedBrowserWindowWaiter {
 }  // namespace
 
 // Drags from browser to separate window and releases mouse.
-// TODO(crbug.com/40934892): Flaky on LaCros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DetachToOwnWindow DISABLED_DetachToOwnWindow
-#else
-#define MAYBE_DetachToOwnWindow DetachToOwnWindow
-#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       MAYBE_DetachToOwnWindow) {
+                       DetachToOwnWindow) {
   const gfx::Rect initial_bounds(browser()->window()->GetBounds());
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
