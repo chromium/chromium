@@ -39,15 +39,16 @@
   _selectedItemID = selectedItemIdentifier.tabSwitcherItem.identifier;
 }
 
-- (void)removeItemWithID:(web::WebStateID)removedItemID
-          selectedItemID:(web::WebStateID)selectedItemID {
-  auto it = std::remove(_items.begin(), _items.end(), removedItemID);
+- (void)removeItemWithIdentifier:(GridItemIdentifier*)removedItem
+          selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
+  auto it = std::remove(_items.begin(), _items.end(),
+                        removedItem.tabSwitcherItem.identifier);
   _items.erase(it, _items.end());
-  _selectedItemID = selectedItemID;
+  _selectedItemID = selectedItemIdentifier.tabSwitcherItem.identifier;
 }
 
-- (void)selectItemWithID:(web::WebStateID)selectedItemID {
-  _selectedItemID = selectedItemID;
+- (void)selectItemWithIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
+  _selectedItemID = selectedItemIdentifier.tabSwitcherItem.identifier;
 }
 
 - (void)replaceItem:(GridItemIdentifier*)item

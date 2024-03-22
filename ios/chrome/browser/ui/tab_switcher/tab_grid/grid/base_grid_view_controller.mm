@@ -1164,26 +1164,28 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       }];
 }
 
-- (void)removeItemWithID:(web::WebStateID)removedItemID
-          selectedItemID:(web::WebStateID)selectedItemID {
-  NSIndexPath* removedItemIndexPath = [self indexPathForID:removedItemID];
+- (void)removeItemWithIdentifier:(GridItemIdentifier*)removedItem
+          selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
+  NSIndexPath* removedItemIndexPath =
+      [self.diffableDataSource indexPathForItemIdentifier:removedItem];
 
   // Do not remove if not showing the item (i.e. showing search results).
   if (!removedItemIndexPath) {
-    [self selectItemWithID:selectedItemID];
+    [self selectItemWithIdentifier:selectedItemIdentifier];
     return;
   }
 
   __weak __typeof(self) weakSelf = self;
   [self
       performModelAndViewUpdates:^(GridSnapshot* snapshot) {
-        [weakSelf applyModelAndViewUpdatesForRemovalOfItemWithID:removedItemID
-                                                  selectedItemID:selectedItemID
+        [weakSelf applyModelAndViewUpdatesForRemovalOfItemWithID:removedItem
+                                          selectedItemIdentifier:
+                                              selectedItemIdentifier
                                                         snapshot:snapshot];
       }
       completion:^{
         [weakSelf modelAndViewUpdatesForRemovalDidCompleteForItemWithID:
-                      removedItemID];
+                      removedItem.tabSwitcherItem.identifier];
       }];
 
   if (_searchText.length) {
@@ -1191,21 +1193,12 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }
 }
 
-- (void)selectItemWithID:(web::WebStateID)selectedItemID {
-  if (self.selectedItemIdentifier.tabSwitcherItem.identifier ==
-      selectedItemID) {
+- (void)selectItemWithIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
+  if ([self.selectedItemIdentifier isEqual:selectedItemIdentifier]) {
     return;
   }
 
-  if (selectedItemID.valid()) {
-    TabSwitcherItem* selectedItem =
-        [[TabSwitcherItem alloc] initWithIdentifier:selectedItemID];
-    self.selectedItemIdentifier =
-        [GridItemIdentifier tabIdentifier:selectedItem];
-  } else {
-    self.selectedItemIdentifier = nil;
-  }
-
+  self.selectedItemIdentifier = selectedItemIdentifier;
   [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 }
 
@@ -1453,24 +1446,14 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 // Makes the required changes to the data source when an existing item is
 // removed.
 - (void)applyModelAndViewUpdatesForRemovalOfItemWithID:
-            (web::WebStateID)removedItemID
-                                        selectedItemID:
-                                            (web::WebStateID)selectedItemID
+            (GridItemIdentifier*)removedItemIdentifier
+                                selectedItemIdentifier:
+                                    (GridItemIdentifier*)selectedItemIdentifier
                                               snapshot:(GridSnapshot*)snapshot {
-  // The items are using the underlying web::WebStateID to do the equality, so
-  // it is possible to create a new one here to remove the existing one.
-  GridItemIdentifier* lookupItemIdentifier = [GridItemIdentifier
-      tabIdentifier:[[TabSwitcherItem alloc] initWithIdentifier:removedItemID]];
-  if (selectedItemID.valid()) {
-    self.selectedItemIdentifier = [GridItemIdentifier
-        tabIdentifier:[[TabSwitcherItem alloc]
-                          initWithIdentifier:selectedItemID]];
-  } else {
-    self.selectedItemIdentifier = nil;
-  }
-  [self.mutator removeFromSelectionItemID:lookupItemIdentifier];
+  self.selectedItemIdentifier = selectedItemIdentifier;
+  [self.mutator removeFromSelectionItemID:removedItemIdentifier];
 
-  [snapshot deleteItemsWithIdentifiers:@[ lookupItemIdentifier ]];
+  [snapshot deleteItemsWithIdentifiers:@[ removedItemIdentifier ]];
 }
 
 // Makes the required changes when a new item has been removed.

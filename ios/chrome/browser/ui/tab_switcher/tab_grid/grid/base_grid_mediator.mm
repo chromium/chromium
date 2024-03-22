@@ -288,14 +288,23 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   }
 
   web::WebState* detachedWebState = detachChange.detached_web_state();
-  // If the WebState is pinned and it is not in the consumer's items list,
-  // consumer will filter it out in the method's implementation.
-  [self.consumer removeItemWithID:detachedWebState->GetUniqueIdentifier()
-                   selectedItemID:GetActiveNonPinnedTabID(webStateList)];
+
   TabSwitcherItem* itemToRemove = [[TabSwitcherItem alloc]
       initWithIdentifier:detachedWebState->GetUniqueIdentifier()];
   GridItemIdentifier* identifierToRemove =
       [GridItemIdentifier tabIdentifier:itemToRemove];
+  GridItemIdentifier* selectedIdentifier = nil;
+  web::WebStateID selectedItemID = GetActiveNonPinnedTabID(webStateList);
+  if (selectedItemID.valid()) {
+    TabSwitcherItem* selectedItem =
+        [[TabSwitcherItem alloc] initWithIdentifier:selectedItemID];
+    selectedIdentifier = [GridItemIdentifier tabIdentifier:selectedItem];
+  }
+
+  // If the WebState is pinned and it is not in the consumer's items list,
+  // consumer will filter it out in the method's implementation.
+  [self.consumer removeItemWithIdentifier:identifierToRemove
+                   selectedItemIdentifier:selectedIdentifier];
   [self removeFromSelectionItemID:identifierToRemove];
 
   // The pinned WebState could be detached only in case it was displayed in
@@ -373,7 +382,15 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
       const WebStateListChangeInsert& insertChange =
           change.As<WebStateListChangeInsert>();
       if ([self isPinnedWebState:insertChange.index()]) {
-        [self.consumer selectItemWithID:GetActiveNonPinnedTabID(webStateList)];
+        web::WebStateID selectedItemId = GetActiveNonPinnedTabID(webStateList);
+        GridItemIdentifier* selectItemWithIdentifier = nil;
+        if (selectedItemId.valid()) {
+          TabSwitcherItem* item =
+              [[TabSwitcherItem alloc] initWithIdentifier:selectedItemId];
+          selectItemWithIdentifier = [GridItemIdentifier tabIdentifier:item];
+        }
+
+        [self.consumer selectItemWithIdentifier:selectItemWithIdentifier];
         break;
       }
       web::WebState* insertedWebState = insertChange.inserted_web_state();
@@ -415,12 +432,13 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     // If the selected index changes as a result of the last webstate being
     // detached, the active index will be kInvalidIndex.
     if (webStateList->active_index() == WebStateList::kInvalidIndex) {
-      [self.consumer selectItemWithID:web::WebStateID()];
+      [self.consumer selectItemWithIdentifier:nil];
       return;
     }
-
+    TabSwitcherItem* item = [[TabSwitcherItem alloc]
+        initWithIdentifier:status.new_active_web_state->GetUniqueIdentifier()];
     [self.consumer
-        selectItemWithID:status.new_active_web_state->GetUniqueIdentifier()];
+        selectItemWithIdentifier:[GridItemIdentifier tabIdentifier:item]];
   }
 }
 
@@ -605,7 +623,9 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     // In search mode the consumer doesn't have any information about the
     // selected item. So even if the active webstate is the same as the one that
     // is being selected, make sure that the consumer update its selected item.
-    [self.consumer selectItemWithID:itemID];
+    TabSwitcherItem* item = [[TabSwitcherItem alloc] initWithIdentifier:itemID];
+    [self.consumer
+        selectItemWithIdentifier:[GridItemIdentifier tabIdentifier:item]];
     return;
   } else {
     base::RecordAction(
@@ -646,11 +666,18 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     return;
   }
 
+  TabSwitcherItem* itemToRemove =
+      [[TabSwitcherItem alloc] initWithIdentifier:itemID];
+
+  GridItemIdentifier* identifierToRemove =
+      [GridItemIdentifier tabIdentifier:itemToRemove];
+
   // `index` is `WebStateList::kInvalidIndex`, so `itemID` should be a search
   // result from a different window. Since this item is not from the current
   // browser, no UI updates will be sent to the current grid. Notify the current
   // grid consumer about the change.
-  [self.consumer removeItemWithID:itemID selectedItemID:web::WebStateID()];
+  [self.consumer removeItemWithIdentifier:identifierToRemove
+                   selectedItemIdentifier:nil];
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridSearchCloseTabFromAnotherWindow"));
 
@@ -1140,9 +1167,20 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 - (void)changePinnedStateForWebState:(web::WebState*)webState
                              atIndex:(int)index {
   if ([self isPinnedWebState:index]) {
-    [self.consumer removeItemWithID:webState->GetUniqueIdentifier()
-                     selectedItemID:GetActiveNonPinnedTabID(self.webStateList)];
+    TabSwitcherItem* itemToRemove = [[TabSwitcherItem alloc]
+        initWithIdentifier:webState->GetUniqueIdentifier()];
+    GridItemIdentifier* identifierToRemove =
+        [GridItemIdentifier tabIdentifier:itemToRemove];
+    GridItemIdentifier* selectedIdentifier = nil;
+    web::WebStateID selectedItemID = GetActiveNonPinnedTabID(self.webStateList);
+    if (selectedItemID.valid()) {
+      TabSwitcherItem* selectedItem =
+          [[TabSwitcherItem alloc] initWithIdentifier:selectedItemID];
+      selectedIdentifier = [GridItemIdentifier tabIdentifier:selectedItem];
+    }
 
+    [self.consumer removeItemWithIdentifier:identifierToRemove
+                     selectedItemIdentifier:selectedIdentifier];
     _scopedWebStateObservation->RemoveObservation(webState);
   } else {
     web::WebStateID selectedItemID = GetActiveNonPinnedTabID(self.webStateList);

@@ -36,13 +36,14 @@ class WebStateID;
                    atIndex:(NSUInteger)index
     selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier;
 
-// Tells the consumer to remove the item with ID `removedItemID` and update the
-// selected item ID to be `selectedItemID`.
-- (void)removeItemWithID:(web::WebStateID)removedItemID
-          selectedItemID:(web::WebStateID)selectedItemID;
+// Tells the consumer to remove the item with identifier `removedItem` and
+// update the selected item identifier to be `selectedItemIdentifier`.
+- (void)removeItemWithIdentifier:(GridItemIdentifier*)removedItem
+          selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier;
 
-// Tells the consumer to update the selected item ID to be `selectedItemID`.
-- (void)selectItemWithID:(web::WebStateID)selectedItemID;
+// Tells the consumer to update the selected item identifier to be
+// `selectedItemIdentifier`.
+- (void)selectItemWithIdentifier:(GridItemIdentifier*)selectedItemIdentifier;
 
 // Tells the consumer to replace the GridItemIdentifier `item` with
 // `replacementItem`. The consumer should ignore this call if `item`'s ID has

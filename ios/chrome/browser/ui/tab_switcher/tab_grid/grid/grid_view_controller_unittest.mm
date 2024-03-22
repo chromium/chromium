@@ -181,8 +181,14 @@ TEST_P(BaseGridViewControllerTest, InsertItem) {
 TEST_P(BaseGridViewControllerTest, RemoveItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  [view_controller_ removeItemWithID:identifier_a_
-                      selectedItemID:identifier_b_];
+  TabSwitcherItem* item_a =
+      [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_];
+  TabSwitcherItem* item_b =
+      [[TabSwitcherItem alloc] initWithIdentifier:identifier_b_];
+
+  [view_controller_
+      removeItemWithIdentifier:[GridItemIdentifier tabIdentifier:item_a]
+        selectedItemIdentifier:[GridItemIdentifier tabIdentifier:item_b]];
   EXPECT_EQ(1U, [[view_controller_.diffableDataSource snapshot] numberOfItems]);
   EXPECT_EQ(0U, view_controller_.selectedIndex);
   EXPECT_EQ(1U, delegate_.itemCount);
@@ -190,9 +196,12 @@ TEST_P(BaseGridViewControllerTest, RemoveItem) {
 
 // Tests that an item is selected.
 TEST_P(BaseGridViewControllerTest, SelectItem) {
+  TabSwitcherItem* item_b =
+      [[TabSwitcherItem alloc] initWithIdentifier:identifier_b_];
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  [view_controller_ selectItemWithID:identifier_b_];
+  [view_controller_
+      selectItemWithIdentifier:[GridItemIdentifier tabIdentifier:item_b]];
   EXPECT_EQ(1U, view_controller_.selectedIndex);
   EXPECT_EQ(2U, delegate_.itemCount);
 }
@@ -200,9 +209,13 @@ TEST_P(BaseGridViewControllerTest, SelectItem) {
 // Tests that when a nonexistent item is selected, the selected item index is
 // NSNotFound
 TEST_P(BaseGridViewControllerTest, SelectNonexistentItem) {
+  TabSwitcherItem* item =
+      [[TabSwitcherItem alloc] initWithIdentifier:web::WebStateID::NewUnique()];
+
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  [view_controller_ selectItemWithID:web::WebStateID::NewUnique()];
+  [view_controller_
+      selectItemWithIdentifier:[GridItemIdentifier tabIdentifier:item]];
   EXPECT_EQ(base::checked_cast<NSUInteger>(NSNotFound),
             view_controller_.selectedIndex);
   EXPECT_EQ(2U, delegate_.itemCount);
