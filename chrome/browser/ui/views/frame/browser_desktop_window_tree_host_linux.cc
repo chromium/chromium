@@ -193,7 +193,7 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
       static_cast<BrowserNonClientFrameView*>(browser_frame_->GetFrameView());
   bool showing_frame =
       browser_frame_->native_browser_frame()->UseCustomFrame() &&
-      !view->IsFrameCondensed();
+      !view->IsFrameCondensed() && !view->frame()->IsMinimized();
   const gfx::Size widget_size =
       view->GetWidget()->GetWindowBoundsInScreen().size();
 
