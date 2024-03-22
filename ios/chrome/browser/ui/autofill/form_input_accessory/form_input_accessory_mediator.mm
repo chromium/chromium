@@ -165,6 +165,9 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
   // Pref tracking if bottom omnibox is enabled.
   PrefBackedBoolean* _bottomOmniboxEnabled;
+
+  // Whether the keyboard height change notifications are enabled.
+  BOOL _keyboardHeightChangeNotificationsEnabled;
 }
 
 - (instancetype)
@@ -220,6 +223,14 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
     [defaultCenter addObserver:self
                       selector:@selector(keyboardWillShow:)
                           name:UIKeyboardWillShowNotification
+                        object:nil];
+    [defaultCenter addObserver:self
+                      selector:@selector(keyboardWillChangeFrame:)
+                          name:UIKeyboardWillChangeFrameNotification
+                        object:nil];
+    [defaultCenter addObserver:self
+                      selector:@selector(textInputModeDidChange:)
+                          name:UITextInputCurrentInputModeDidChangeNotification
                         object:nil];
 
     // In BVC unit tests the password store doesn't exist. Skip creating the
@@ -314,6 +325,36 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
 - (void)keyboardWillShow:(NSNotification*)notification {
   [self updateSuggestionsIfNeeded];
+  _keyboardHeightChangeNotificationsEnabled = YES;
+}
+
+- (void)keyboardWillChangeFrame:(NSNotification*)notification {
+  if (!_keyboardHeightChangeNotificationsEnabled) {
+    return;
+  }
+
+  if (@available(iOS 16.1, *)) {
+    CGRect oldKeyboardRect =
+        [notification.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    CGRect newKeyboardRect =
+        [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+
+    // We're only interested in quick height only changes.
+    if (oldKeyboardRect.origin.x != newKeyboardRect.origin.x ||
+        oldKeyboardRect.size.width != newKeyboardRect.size.width) {
+      return;
+    }
+
+    [self.consumer keyboardHeightChanged:newKeyboardRect.size.height
+                               oldHeight:oldKeyboardRect.size.height];
+  }
+}
+
+- (void)textInputModeDidChange:(NSNotification*)notification {
+  // Disable height change notifications when they are caused by the keyboard
+  // language or layout changing. They will get re-enabled in the next
+  // "keyboardWillShow:" call above.
+  _keyboardHeightChangeNotificationsEnabled = NO;
 }
 
 #pragma mark - AutofillBottomSheetObserving

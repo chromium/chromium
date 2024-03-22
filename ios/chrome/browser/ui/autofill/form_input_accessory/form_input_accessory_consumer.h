@@ -60,6 +60,9 @@
 // position is bottom omnibox.
 - (void)newOmniboxPositionIsBottom:(BOOL)isBottomOmnibox;
 
+// Invoked after a height-only change happened to the keyboard's frame.
+- (void)keyboardHeightChanged:(CGFloat)newHeight oldHeight:(CGFloat)oldHeight;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_FORM_INPUT_ACCESSORY_CONSUMER_H_
