@@ -4,7 +4,6 @@
 
 import {AsyncUtil} from '/common/async_util.js';
 import {AutomationUtil} from '/common/automation_util.js';
-import {EventGenerator} from '/common/event_generator.js';
 import {EventHandler} from '/common/event_handler.js';
 import {RectUtil} from '/common/rect_util.js';
 import {RepeatedEventHandler} from '/common/repeated_event_handler.js';
@@ -21,32 +20,38 @@ import {ItemNavigatorInterface} from './navigator_interfaces.js';
 import {BackButtonNode} from './nodes/back_button_node.js';
 import {BasicNode, BasicRootNode} from './nodes/basic_node.js';
 import {DesktopNode} from './nodes/desktop_node.js';
-import {EditableTextNode} from './nodes/editable_text_node.js';
+import './nodes/editable_text_node.js';
 import {KeyboardRootNode} from './nodes/keyboard_node.js';
 import {ModalDialogRootNode} from './nodes/modal_dialog_node.js';
-import {SliderNode} from './nodes/slider_node.js';
-import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
-import {TabNode} from './nodes/tab_node.js';
+import './nodes/slider_node.js';
+import {SAChildNode, SANode, SARootNode} from './nodes/switch_access_node.js';
+import './nodes/tab_node.js';
 import {SwitchAccess} from './switch_access.js';
 import {Mode} from './switch_access_constants.js';
 import {SwitchAccessPredicate} from './switch_access_predicate.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
+type AutomationEvent = chrome.automation.AutomationEvent;
+type AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
+const RoleType = chrome.automation.RoleType;
+type TreeChange = chrome.automation.TreeChange;
+const TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
+const TreeChangeType = chrome.automation.TreeChangeType;
 
 /** This class handles navigation amongst the elements onscreen. */
 export class ItemScanManager extends ItemNavigatorInterface {
-  /** @param {!AutomationNode} desktop */
-  constructor(desktop) {
+  private desktop_: AutomationNode;
+  private group_: SARootNode;
+  private node_: SAChildNode;
+  private history_: FocusHistory;
+  private suspendedGroup_: FocusData | null = null;
+  private ignoreFocusInKeyboard_ = false;
+
+  constructor(desktop: AutomationNode) {
     super();
 
-    /** @private {!AutomationNode} */
     this.desktop_ = desktop;
-
-    /** @private {!SARootNode} */
     this.group_ = DesktopNode.build(this.desktop_);
-
-    /** @private {!SAChildNode} */
     // TODO(crbug.com/1106080): It is possible for the firstChild to be a
     // window which is occluded, for example if Switch Access is turned on
     // when the user has several browser windows opened. We should either
@@ -54,28 +59,18 @@ export class ItemScanManager extends ItemNavigatorInterface {
     // or ensure that we move away from occluded children as quickly as soon
     // as they are detected using an interval set in DesktopNode.
     this.node_ = this.group_.firstChild;
-
-    /** @private {!FocusHistory} */
     this.history_ = new FocusHistory();
-
-    /** @private {?FocusData} */
-    this.suspendedGroup_ = null;
-
-    /** @private {boolean} */
-    this.ignoreFocusInKeyboard_ = false;
 
     this.init_();
   }
 
   // =============== ItemNavigatorInterface implementation ==============
 
-  /** @override */
-  currentGroupHasChild(node) {
+  override currentGroupHasChild(node: SAChildNode): boolean {
     return this.group_.children.includes(node);
   }
 
-  /** @override */
-  enterGroup() {
+  override enterGroup(): void {
     if (!this.node_.isGroup()) {
       return;
     }
@@ -87,30 +82,27 @@ export class ItemScanManager extends ItemNavigatorInterface {
     }
   }
 
-  /** @override */
-  enterKeyboard() {
+  override enterKeyboard(): void {
     this.ignoreFocusInKeyboard_ = true;
     this.node_.automationNode.focus();
     const keyboard = KeyboardRootNode.buildTree();
     this.jumpTo_(keyboard);
   }
 
-  /** @override */
-  exitGroupUnconditionally() {
+  override exitGroupUnconditionally(): void {
     this.exitGroup_();
   }
 
-  /** @override */
-  exitIfInGroup(node) {
+  override exitIfInGroup(node: SANode | AutomationNode | null): void {
     if (this.group_.isEquivalentTo(node)) {
       this.exitGroup_();
     }
   }
 
-  /** @override */
-  async exitKeyboard() {
+  override async exitKeyboard(): Promise<void> {
     this.ignoreFocusInKeyboard_ = false;
-    const isKeyboard = data => data.group instanceof KeyboardRootNode;
+    const isKeyboard =
+        (data: FocusData): boolean => data.group instanceof KeyboardRootNode;
     // If we are not in the keyboard, do nothing.
     if (!(this.group_ instanceof KeyboardRootNode) &&
         !this.history_.containsDataMatchingPredicate(isKeyboard)) {
@@ -135,8 +127,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
     }
   }
 
-  /** @override */
-  forceFocusedNode(node) {
+  override forceFocusedNode(node: SAChildNode): void {
     // Check if they are exactly the same instance. Checking contents
     // equality is not sufficient in case the node has been repopulated
     // after a refresh.
@@ -145,8 +136,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
     }
   }
 
-  /** @override */
-  getTreeForDebugging(wholeTree = true) {
+  override getTreeForDebugging(wholeTree = true): SARootNode {
     if (!wholeTree) {
       console.log(this.group_.debugString(wholeTree));
       return this.group_;
@@ -157,8 +147,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
     return desktopRoot;
   }
 
-  /** @override */
-  jumpTo(automationNode) {
+  override jumpTo(automationNode: AutomationNode): void {
     if (!automationNode) {
       return;
     }
@@ -166,8 +155,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
     this.jumpTo_(node, false /* shouldExitMenu */);
   }
 
-  /** @override */
-  moveBackward() {
+  override moveBackward(): void {
     if (this.node_.isValidAndVisible()) {
       this.tryMoving(this.node_.previous, node => node.previous, this.node_);
     } else {
@@ -175,8 +163,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
     }
   }
 
-  /** @override */
-  moveForward() {
+  override moveForward(): void {
     if (this.node_.isValidAndVisible()) {
       this.tryMoving(this.node_.next, node => node.next, this.node_);
     } else {
@@ -184,8 +171,10 @@ export class ItemScanManager extends ItemNavigatorInterface {
     }
   }
 
-  /** @override */
-  async tryMoving(node, getNext, startingNode) {
+  override async tryMoving(
+      node: SAChildNode,
+      getNext: (node: SAChildNode) => SAChildNode,
+      startingNode: SAChildNode): Promise<void> {
     if (node === startingNode) {
       // This should only happen if the desktop contains exactly one interesting
       // child and all other children are windows which are occluded.
@@ -213,7 +202,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
     // Check if the top center is visible as a proxy for occlusion. It's
     // possible that other parts of the window are occluded, but in Chrome we
     // can't drag windows off the top of the screen.
-    const hitNode = await new Promise(
+    const hitNode: AutomationNode = await new Promise(
         resolve =>
             this.desktop_.hitTestWithReply(center.x, location.top, resolve));
     if (AutomationUtil.isDescendantOf(hitNode, node.automationNode)) {
@@ -225,8 +214,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
     }
   }
 
-  /** @override */
-  moveToValidNode() {
+  override moveToValidNode(): void {
     const nodeIsValid = this.node_.isValidAndVisible();
     const groupIsValid = this.group_.isValidGroup();
 
@@ -250,21 +238,20 @@ export class ItemScanManager extends ItemNavigatorInterface {
     this.restoreFromHistory_();
 
     // Make sure the menu isn't open unless we're still in the menu.
-    if (!this.group_.isEquivalentTo(MenuManager.menuAutomationNode)) {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (!this.group_.isEquivalentTo(MenuManager.menuAutomationNode!)) {
       ActionManager.exitAllMenus();
     }
   }
 
-  /** @override */
-  restart() {
+  override restart(): void {
     const point = Navigator.byPoint.currentPoint;
     SwitchAccess.mode = Mode.ITEM_SCAN;
     this.desktop_.hitTestWithReply(
         point.x, point.y, node => this.moveTo_(node));
   }
 
-  /** @override */
-  restoreSuspendedGroup() {
+  override restoreSuspendedGroup(): void {
     if (this.suspendedGroup_) {
       // Clearing the focus rings avoids having them re-animate to the same
       // position.
@@ -274,21 +261,18 @@ export class ItemScanManager extends ItemNavigatorInterface {
     }
   }
 
-  /** @override */
-  suspendCurrentGroup() {
+  override suspendCurrentGroup(): void {
     const data = new FocusData(this.group_, this.node_);
     this.exitGroup_();
     this.suspendedGroup_ = data;
   }
 
-  /** @override */
-  get currentNode() {
+  override get currentNode(): SAChildNode {
     this.moveToValidNode();
     return this.node_;
   }
 
-  /** @override */
-  get desktopNode() {
+  override get desktopNode(): AutomationNode {
     return this.desktop_;
   }
 
@@ -297,10 +281,8 @@ export class ItemScanManager extends ItemNavigatorInterface {
   /**
    * When focus shifts, move to the element. Find the closest interesting
    *     element to engage with.
-   * @param {!chrome.automation.AutomationEvent} event
-   * @private
    */
-  onFocusChange_(event) {
+  private onFocusChange_(event: AutomationEvent): void {
     if (SwitchAccess.mode === Mode.POINT_SCAN) {
       return;
     }
@@ -326,9 +308,8 @@ export class ItemScanManager extends ItemNavigatorInterface {
   /**
    * When scroll position changes, ensure that the focus ring is in the
    * correct place and that the focused node / node group are valid.
-   * @private
    */
-  onScrollChange_() {
+  private onScrollChange_(): void {
     if (SwitchAccess.mode === Mode.POINT_SCAN) {
       return;
     }
@@ -341,12 +322,8 @@ export class ItemScanManager extends ItemNavigatorInterface {
     ActionManager.refreshMenuUnconditionally();
   }
 
-  /**
-   * When a menu is opened, jump focus to the menu.
-   * @param {!chrome.automation.AutomationEvent} event
-   * @private
-   */
-  onModalDialog_(event) {
+  /** When a menu is opened, jump focus to the menu. */
+  private onModalDialog_(event: AutomationEvent): void {
     if (SwitchAccess.mode === Mode.POINT_SCAN) {
       return;
     }
@@ -361,35 +338,30 @@ export class ItemScanManager extends ItemNavigatorInterface {
    * When the automation tree changes, ensure the group and node we are
    * currently listening to are fresh. This is only called when the tree change
    * occurred on the node or group which are currently active.
-   * @param {!chrome.automation.TreeChange} treeChange
-   * @private
    */
-  onTreeChange_(treeChange) {
+  private onTreeChange_(treeChange: TreeChange): void {
     if (SwitchAccess.mode === Mode.POINT_SCAN) {
       return;
     }
 
-    if (treeChange.type === chrome.automation.TreeChangeType.NODE_REMOVED) {
+    if (treeChange.type === TreeChangeType.NODE_REMOVED) {
       this.group_.refresh();
       this.moveToValidNode();
     } else if (
-        treeChange.type ===
-        chrome.automation.TreeChangeType.SUBTREE_UPDATE_END) {
+        treeChange.type === TreeChangeType.SUBTREE_UPDATE_END) {
       this.group_.refresh();
     }
   }
 
   // =============== Private Methods ==============
 
-  /** @private */
-  exitGroup_() {
+  private exitGroup_(): void {
     this.group_.onExit();
     this.restoreFromHistory_();
   }
 
-  /** @private */
-  init_() {
-    chrome.automation.getFocus(focus => {
+  private init_(): void {
+    chrome.automation.getFocus((focus: AutomationNode) => {
       if (focus && this.history_.buildFromAutomationNode(focus)) {
         this.restoreFromHistory_();
       } else {
@@ -416,7 +388,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
         () => this.onScrollChange_());
 
     new RepeatedTreeChangeHandler(
-        chrome.automation.TreeChangeObserverFilter.ALL_TREE_CHANGES,
+        TreeChangeObserverFilter.ALL_TREE_CHANGES,
         treeChange => this.onTreeChange_(treeChange), {
           predicate: treeChange =>
               this.group_.findChild(treeChange.target) != null ||
@@ -433,11 +405,8 @@ export class ItemScanManager extends ItemNavigatorInterface {
   /**
    * Jumps Switch Access focus to a specified node, such as when opening a menu
    * or the keyboard. Does not modify the groups already in the group stack.
-   * @param {!SARootNode} group
-   * @param {boolean} shouldExitMenu
-   * @private
    */
-  jumpTo_(group, shouldExitMenu = true) {
+  private jumpTo_(group: SARootNode, shouldExitMenu = true): void {
     if (shouldExitMenu) {
       ActionManager.exitAllMenus();
     }
@@ -451,32 +420,22 @@ export class ItemScanManager extends ItemNavigatorInterface {
    *     tree change event. Reconstructs the group stack to center on that node.
    *
    * This is a "permanent" move, while |jumpTo_| is a "temporary" move.
-   *
-   * @param {!AutomationNode} automationNode
-   * @private
    */
-  moveTo_(automationNode) {
+  private moveTo_(automationNode: AutomationNode): void {
     ActionManager.exitAllMenus();
     if (this.history_.buildFromAutomationNode(automationNode)) {
       this.restoreFromHistory_();
     }
   }
 
-  /**
-   * Restores the most proximal state that is still valid from the history.
-   * @private
-   */
-  restoreFromHistory_() {
+  /** Restores the most proximal state that is still valid from the history. */
+  private restoreFromHistory_(): void {
     // retrieve() guarantees that the data's group is valid.
     this.loadFromData_(this.history_.retrieve());
   }
 
-  /**
-   * Extracts the focus and group from save data.
-   * @param {!FocusData} data
-   * @private
-   */
-  loadFromData_(data) {
+  /** Extracts the focus and group from save data. */
+  private loadFromData_(data: FocusData): void {
     if (!data.group.isValidGroup()) {
       return;
     }
@@ -485,7 +444,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
     // |data.group| updates when retrieving the history record. So |data.focus|
     // should not be used as the preferred focus node. Instead, we should find
     // the equivalent node in the group's children.
-    let focusTarget = null;
+    let focusTarget: SAChildNode | null = null;
     for (const child of data.group.children) {
       if (child.isEquivalentTo(data.focus)) {
         focusTarget = child;
@@ -503,11 +462,8 @@ export class ItemScanManager extends ItemNavigatorInterface {
   /**
    * Set |this.group_| to |group|, and sets |this.node_| to either |opt_focus|
    * or |group.firstChild|.
-   * @param {!SARootNode} group
-   * @param {SAChildNode=} opt_focus
-   * @private
    */
-  setGroup_(group, opt_focus) {
+  private setGroup_(group: SARootNode, focus?: SAChildNode): void {
     // Clear the suspended group, as it's only valid in its original context.
     this.suspendedGroup_ = null;
 
@@ -515,14 +471,14 @@ export class ItemScanManager extends ItemNavigatorInterface {
     this.group_ = group;
     this.group_.onFocus();
 
-    const node = opt_focus || this.group_.firstValidChild();
+    const node = focus || this.group_.firstValidChild();
     if (!node) {
       this.moveToValidNode();
       return;
     }
 
     // Check to see if the new node requires we try and focus a new window.
-    chrome.automation.getFocus(currentAutomationFocus => {
+    chrome.automation.getFocus((currentAutomationFocus: AutomationNode) => {
       const newAutomationNode = node.automationNode;
       if (!newAutomationNode || !currentAutomationFocus) {
         return;
@@ -540,9 +496,8 @@ export class ItemScanManager extends ItemNavigatorInterface {
       // The current focus and new node do not have one another in their
       // ancestry; try to focus an ancestor window of the new node. In
       // particular, the parenting aura::Window of the views::Widget.
-      let widget = newAutomationNode;
-      while (widget &&
-             (widget.role !== chrome.automation.RoleType.WINDOW ||
+      let widget: AutomationNode | undefined = newAutomationNode;
+      while (widget && (widget.role !== RoleType.WINDOW ||
               widget.className !== 'Widget')) {
         widget = widget.parent;
       }
@@ -555,12 +510,8 @@ export class ItemScanManager extends ItemNavigatorInterface {
     this.setNode_(node);
   }
 
-  /**
-   * Set |this.node_| to |node|, and update what is displayed onscreen.
-   * @param {!SAChildNode} node
-   * @private
-   */
-  setNode_(node) {
+  /** Set |this.node_| to |node|, and update what is displayed onscreen. */
+  private setNode_(node: SAChildNode): void {
     if (!node.isValidAndVisible()) {
       this.moveToValidNode();
       return;

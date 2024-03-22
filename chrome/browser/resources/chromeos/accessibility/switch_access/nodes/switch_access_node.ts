@@ -284,7 +284,7 @@ export class SARootNode {
     return null;
   }
 
-  isEquivalentTo(node: AutomationNode | SARootNode | SAChildNode): boolean {
+  isEquivalentTo(node: AutomationNode|SARootNode|SAChildNode|null): boolean {
     if (node instanceof SARootNode) {
       return this.equals(node);
     }
