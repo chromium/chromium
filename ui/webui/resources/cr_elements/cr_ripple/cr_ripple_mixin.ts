@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './cr_ripple/cr_ripple.js';
+import './cr_ripple.js';
 
 import {assert} from '//resources/js/assert.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {CrRippleElement} from './cr_ripple/cr_ripple.js';
+import type {CrRippleElement} from './cr_ripple.js';
 
 /**
- * `CrPaperRippleMixin` exposes methods to dynamically create a cr-ripple
+ * `CrRippleMixin` exposes methods to dynamically create a cr-ripple
  * when needed.
  */
 
 type Constructor<T> = new (...args: any[]) => T;
 
-export const CrPaperRippleMixin =
+export const CrRippleMixin =
     <T extends Constructor<CrLitElement>>(superClass: T): T&
-    Constructor<CrPaperRippleMixinInterface> => {
-      class CrPaperRippleMixin extends superClass implements
-          CrPaperRippleMixinInterface {
+    Constructor<CrRippleMixinInterface> => {
+      class CrRippleMixin extends superClass implements
+          CrRippleMixinInterface {
         static get properties() {
           return {
             /**
@@ -100,10 +100,10 @@ export const CrPaperRippleMixin =
         }
       }
 
-      return CrPaperRippleMixin;
+      return CrRippleMixin;
     };
 
-export interface CrPaperRippleMixinInterface {
+export interface CrRippleMixinInterface {
   noink: boolean;
   rippleContainer: HTMLElement|null;
 

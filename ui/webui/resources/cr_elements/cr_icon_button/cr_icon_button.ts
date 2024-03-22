@@ -49,7 +49,7 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {CrPaperRippleMixin} from '../cr_paper_ripple_mixin.js';
+import {CrRippleMixin} from '../cr_ripple/cr_ripple_mixin.js';
 
 import {getCss} from './cr_icon_button.css.js';
 import {getHtml} from './cr_icon_button.html.js';
@@ -60,7 +60,7 @@ export interface CrIconButtonElement {
   };
 }
 
-const CrIconbuttonElementBase = CrPaperRippleMixin(CrLitElement);
+const CrIconbuttonElementBase = CrRippleMixin(CrLitElement);
 
 export class CrIconButtonElement extends CrIconbuttonElementBase {
   static get is() {

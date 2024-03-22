@@ -28,12 +28,12 @@
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {CrPaperRippleMixin} from '../cr_paper_ripple_mixin.js';
+import {CrRippleMixin} from '../cr_ripple/cr_ripple_mixin.js';
 
 import {getCss} from './cr_checkbox.css.js';
 import {getHtml} from './cr_checkbox.html.js';
 
-const CrCheckboxElementBase = CrPaperRippleMixin(CrLitElement);
+const CrCheckboxElementBase = CrRippleMixin(CrLitElement);
 
 export interface CrCheckboxElement {
   $: {
@@ -186,7 +186,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     }
   }
 
-  // Overridden from CrPaperRippleMixin
+  // Overridden from CrRippleMixin
   override createRipple() {
     this.rippleContainer = this.$.checkbox;
     const ripple = super.createRipple();

@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {CrPaperRippleMixin} from 'chrome://resources/cr_elements/cr_paper_ripple_mixin.js';
+import {CrRippleMixin} from 'chrome://resources/cr_elements/cr_ripple/cr_ripple_mixin.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertNotEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
-suite('CrPaperRippleMixin', function() {
-  const TestElementBase = CrPaperRippleMixin(CrLitElement);
+suite('CrRippleMixin', function() {
+  const TestElementBase = CrRippleMixin(CrLitElement);
 
   class TestElement extends TestElementBase {
     static get is() {

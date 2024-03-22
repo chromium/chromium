@@ -12,7 +12,7 @@ import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {CrPaperRippleMixin} from '../cr_paper_ripple_mixin.js';
+import {CrRippleMixin} from '../cr_ripple/cr_ripple_mixin.js';
 
 import {getCss} from './cr_button.css.js';
 import {getHtml} from './cr_button.html.js';
@@ -24,7 +24,7 @@ export interface CrButtonElement {
   };
 }
 
-const CrButtonElementBase = CrPaperRippleMixin(CrLitElement);
+const CrButtonElementBase = CrRippleMixin(CrLitElement);
 
 export class CrButtonElement extends CrButtonElementBase {
   static get is() {

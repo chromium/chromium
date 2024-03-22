@@ -35,9 +35,9 @@ build_webui("build") {
     non_web_component_files += [
       "cr_container_shadow_mixin.ts",
       "cr_container_shadow_mixin_lit.ts",
-      "cr_paper_ripple_mixin.ts",
       "cr_radio_button/cr_radio_button_mixin.ts",
       "cr_radio_button/cr_radio_button_mixin_lit.ts",
+      "cr_ripple/cr_ripple_mixin.ts",
       "cr_scrollable_mixin.ts",
       "cr_search_field/cr_search_field_mixin.ts",
       "cr_search_field/cr_search_field_mixin_lit.ts",

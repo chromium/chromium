@@ -11,7 +11,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {CrPaperRippleMixin} from '../cr_paper_ripple_mixin.js';
+import {CrRippleMixin} from '../cr_ripple/cr_ripple_mixin.js';
 
 import {getCss} from './cr_slider.css.js';
 import {getHtml} from './cr_slider.html.js';
@@ -43,7 +43,7 @@ function getAriaValue(tick: SliderTick|number): number {
                                               sliderTick.value;
 }
 
-const CrSliderElementBase = CrPaperRippleMixin(CrLitElement);
+const CrSliderElementBase = CrRippleMixin(CrLitElement);
 
 /**
  * The following are the events emitted from cr-slider.
@@ -473,7 +473,7 @@ export class CrSliderElement extends CrSliderElementBase {
     ]);
   }
 
-  // Overridden from CrPaperRippleMixin
+  // Overridden from CrRippleMixin
   override createRipple() {
     this.rippleContainer = this.$.knob;
     const ripple = super.createRipple();
