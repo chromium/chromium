@@ -22,6 +22,7 @@
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/video/h264_level_limits.h"
+#include "media/video/video_encode_accelerator.h"
 
 namespace media {
 namespace {
@@ -341,9 +342,12 @@ BitstreamBufferMetadata H264VaapiVideoEncoderDelegate::GetMetadata(
     const EncodeJob& encode_job,
     size_t payload_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto metadata =
-      VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
+  CHECK(!encode_job.IsFrameDropped());
+  CHECK_NE(payload_size, 0u);
+  BitstreamBufferMetadata metadata(
+      payload_size, encode_job.IsKeyframeRequested(), encode_job.timestamp());
+  // TODO(b/329745253): Remove end_of_picture assignment.
+  metadata.end_of_picture = encode_job.end_of_picture();
   CHECK(metadata.end_of_picture);
   auto picture = GetH264Picture(encode_job);
   DCHECK(picture);

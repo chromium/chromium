@@ -407,15 +407,13 @@ BitstreamBufferMetadata VP8VaapiVideoEncoderDelegate::GetMetadata(
     const EncodeJob& encode_job,
     size_t payload_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto metadata =
-      VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
+  CHECK(!encode_job.IsFrameDropped());
+  CHECK_NE(payload_size, 0u);
+  BitstreamBufferMetadata metadata(
+      payload_size, encode_job.IsKeyframeRequested(), encode_job.timestamp());
+  // TODO(b/329745253): Remove end_of_picture assignment.
+  metadata.end_of_picture = encode_job.end_of_picture();
   CHECK(metadata.end_of_picture);
-  if (metadata.dropped_frame()) {
-    // BitstreamBufferMetadata should not have a codec specific metadata,
-    // when a frame is dropped.
-    return metadata;
-  }
-
   auto picture = GetVP8Picture(encode_job);
   DCHECK(picture);
   metadata.vp8 = picture->metadata_for_encoding;

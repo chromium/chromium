@@ -481,8 +481,12 @@ std::vector<gfx::Size> AV1VaapiVideoEncoderDelegate::GetSVCLayerResolutions() {
 BitstreamBufferMetadata AV1VaapiVideoEncoderDelegate::GetMetadata(
     const EncodeJob& encode_job,
     size_t payload_size) {
-  auto metadata =
-      VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
+  CHECK(!encode_job.IsFrameDropped());
+  CHECK_NE(payload_size, 0u);
+  BitstreamBufferMetadata metadata(
+      payload_size, encode_job.IsKeyframeRequested(), encode_job.timestamp());
+  // TODO(b/329745253): Remove end_of_picture assignment.
+  metadata.end_of_picture = encode_job.end_of_picture();
   CHECK(metadata.end_of_picture);
   auto picture = GetAV1Picture(encode_job);
   // Revisit populating metadata.av1 if we need SVC.

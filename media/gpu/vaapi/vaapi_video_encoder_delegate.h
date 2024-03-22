@@ -193,9 +193,6 @@ class VaapiVideoEncoderDelegate {
     kDrop,     // Encode job is dropped. An returned encoded chunk is empty.
   };
 
-  virtual BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
-                                              size_t payload_size);
-
   const scoped_refptr<VaapiWrapper> vaapi_wrapper_;
 
   base::RepeatingClosure error_cb_;
@@ -203,6 +200,9 @@ class VaapiVideoEncoderDelegate {
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
+  virtual BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
+                                              size_t payload_size) = 0;
+
   // Prepares a new |encode_job| to be executed in Accelerator. Returns
   // kSuccess on success, and kFail on failure.
   virtual PrepareEncodeJobResult PrepareEncodeJob(EncodeJob& encode_job) = 0;

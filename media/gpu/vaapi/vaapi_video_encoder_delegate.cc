@@ -118,17 +118,6 @@ void VaapiVideoEncoderDelegate::BitrateControlUpdate(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-BitstreamBufferMetadata VaapiVideoEncoderDelegate::GetMetadata(
-    const EncodeJob& encode_job,
-    size_t payload_size) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  BitstreamBufferMetadata md(payload_size, encode_job.IsKeyframeRequested(),
-                             encode_job.timestamp());
-  md.end_of_picture = encode_job.end_of_picture();
-  return md;
-}
-
 bool VaapiVideoEncoderDelegate::Encode(EncodeJob& encode_job) {
   TRACE_EVENT0("media,gpu", "VAVEDelegate::Encode");
   PrepareEncodeJobResult result = PrepareEncodeJob(encode_job);
@@ -159,8 +148,10 @@ VaapiVideoEncoderDelegate::GetEncodeResult(
     std::unique_ptr<EncodeJob> encode_job) {
   TRACE_EVENT0("media,gpu", "VAVEDelegate::GetEncodeResult");
   if (encode_job->IsFrameDropped()) {
-    return std::make_optional<EncodeResult>(nullptr,
-                                            GetMetadata(*encode_job, 0u));
+    // TODO(b/329745253): Create factory function for the dropped frame.
+    BitstreamBufferMetadata metadata(0, false, encode_job->timestamp());
+    metadata.end_of_picture = encode_job->end_of_picture();
+    return std::make_optional<EncodeResult>(nullptr, metadata);
   }
 
   const VASurfaceID va_surface_id = encode_job->input_surface_id();
