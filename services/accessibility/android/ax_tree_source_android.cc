@@ -296,9 +296,13 @@ void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
 
   std::vector<ui::AXTreeUpdate> updates;
   for (const int32_t update_id : update_ids) {
+    AccessibilityInfoDataWrapper* update_root = GetFromId(update_id);
+    if (!update_root) {
+      LOG(ERROR) << "Update root node doesn't exist, id=" << update_id;
+      continue;
+    }
     ui::AXTreeUpdate update;
-    if (!current_tree_serializer_->SerializeChanges(GetFromId(update_id),
-                                                    &update)) {
+    if (!current_tree_serializer_->SerializeChanges(update_root, &update)) {
       std::string error_string;
       ui::AXTreeSourceChecker<AccessibilityInfoDataWrapper*> checker(this);
       checker.CheckAndGetErrorString(&error_string);

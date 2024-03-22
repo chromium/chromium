@@ -194,7 +194,7 @@ TEST_F(AXTreeSourceAndroidTest, ReorderChildrenByLayout) {
   set_full_focus_mode(true);
 
   auto event = AXEventData::New();
-  event->source_id = 0;
+  event->source_id = 100;
   event->task_id = 1;
   event->event_type = AXEventType::VIEW_FOCUSED;
 
@@ -1279,6 +1279,7 @@ TEST_F(AXTreeSourceAndroidTest, SyncFocus) {
   event->node_data.resize(1);
 
   event->event_type = AXEventType::WINDOW_CONTENT_CHANGED;
+  event->source_id = root->id;
   CallNotifyAccessibilityEvent(event.get());
 
   data = ui::AXTreeData();
