@@ -1,5 +1,5 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  var {page, session, dp} = await testRunner.startHTML(`
+  const {session, dp} = await testRunner.startHTML(`
   <main>
     <article>
       <h1>Article</h1>
@@ -13,6 +13,18 @@
   function logNode(axnode) {
     testRunner.log(axnode, null, ['nodeId', 'backendDOMNodeId', 'childIds', 'frameId', 'parentId', 'properties']);
   }
+
+  await session.evaluateAsync(() => {
+    const iframe = document.querySelector('iframe');
+    if (iframe.contentWindow.document.readyState == 'complete') {
+      return;
+    }
+    return new Promise(resolve => {
+      iframe.contentWindow.onload = () => {
+        resolve();
+      }
+    });
+  });
 
   let {result} = await dp.Accessibility.getFullAXTree({depth: 2});
   let iframeNode;
