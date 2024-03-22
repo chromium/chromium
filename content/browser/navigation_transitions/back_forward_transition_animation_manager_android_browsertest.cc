@@ -28,6 +28,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/navigation_transition_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/update_user_activation_state_interceptor.h"
 #include "content/shell/browser/shell.h"
@@ -210,45 +211,6 @@ void ExpectedLayerTransforms(WebContentsImpl* web_contents,
         << " expected " << transforms.active_page.ToString();
   }
 }
-
-// TODO(liuwilliam): Switch to `ScreenshotCallback` after crrev.com/c/4880321 is
-// merged.
-class ScreenshotCacheObserver {
- public:
-  explicit ScreenshotCacheObserver(NavigationEntryScreenshotCache* cache) {
-    cache->SetNewScreenshotCachedCallbackForTesting(base::BindOnce(
-        &ScreenshotCacheObserver::OnScreenshotCached, base::Unretained(this)));
-  }
-  ScreenshotCacheObserver(const ScreenshotCacheObserver&) = delete;
-  ScreenshotCacheObserver& operator=(const ScreenshotCacheObserver&) = delete;
-  ~ScreenshotCacheObserver() = default;
-
-  void OnScreenshotCached(int entry_id) {
-    // This observer is one-time use only.
-    CHECK_EQ(actual_cached_entry_id_, -1);
-    actual_cached_entry_id_ = entry_id;
-    if (run_loop_) {
-      run_loop_->Quit();
-    }
-  }
-
-  [[nodiscard]] bool WaitForScreenshotCachedForEntry(int expected_entry_id) {
-    // If `OnScreenshotCached` is called before
-    // `WaitForScreenshotCachedForEntry`.
-    if (actual_cached_entry_id_ != -1) {
-      return expected_entry_id == actual_cached_entry_id_;
-    }
-
-    CHECK(!run_loop_);
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-    return expected_entry_id == actual_cached_entry_id_;
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  int actual_cached_entry_id_ = -1;
-};
 
 class AnimatorForTesting : public BackForwardTransitionAnimator {
  public:
@@ -502,14 +464,11 @@ class BackForwardTransitionAnimationManagerBrowserTest
     // 10 Screenshots, with 4 bytes per screenshot.
     manager->SetMemoryBudgetForTesting(4 * GetViewportSize().Area64() * 10);
 
-    auto& controller = web_contents()->GetController();
-    auto* cache = controller.GetNavigationEntryScreenshotCache();
-
     // Set up for a backward navigation: [red&, green*].
-    ScreenshotCacheObserver cache_obs(cache);
-    const int expected_id = controller.GetVisibleEntry()->GetUniqueID();
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
     ASSERT_TRUE(NavigateToURL(web_contents(), GreenURL()));
-    ASSERT_TRUE(cache_obs.WaitForScreenshotCachedForEntry(expected_id));
+    observer.Wait();
     WaitForCopyableViewInWebContents(web_contents());
 
     auto* animation_manager = GetAnimationManager(web_contents());
@@ -1396,11 +1355,10 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
 
   // [red&, green&, blue*]
   {
-    ScreenshotCacheObserver cache_obs(
-        nav_controller.GetNavigationEntryScreenshotCache());
-    const int expected_id = nav_controller.GetVisibleEntry()->GetUniqueID();
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
     ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
-    ASSERT_TRUE(cache_obs.WaitForScreenshotCachedForEntry(expected_id));
+    observer.Wait();
     WaitForCopyableViewInWebContents(web_contents());
     ASSERT_EQ(nav_controller.GetEntryCount(), 3);
     ASSERT_EQ(nav_controller.GetCurrentEntryIndex(), 2);

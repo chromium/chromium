@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_TEST_NAVIGATION_TRANSITION_TEST_UTILS_H_
 
 #include "base/functional/callback.h"
+#include "base/run_loop.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace content {
@@ -28,6 +29,27 @@ struct NavigationTransitionTestUtils {
   // CaptureNavigationEntryScreenshot function.
   static void SetNavScreenshotCallbackForTesting(
       ScreenshotCallback screenshot_callback);
+};
+
+// Wraps `SetNavScreenshotCallbackForTesting()`, so that the test doesn't have
+// to update the `ScreenshotCallback` on every follow up navigations. Useful
+// when the follow up navigations no longer care about the screenshot capture.
+class ScopedScreenshotCapturedObserverForTesting {
+ public:
+  explicit ScopedScreenshotCapturedObserverForTesting(
+      int expected_nav_entry_index);
+  ScopedScreenshotCapturedObserverForTesting(
+      const ScopedScreenshotCapturedObserverForTesting&) = delete;
+  ScopedScreenshotCapturedObserverForTesting& operator=(
+      const ScopedScreenshotCapturedObserverForTesting&) = delete;
+  ~ScopedScreenshotCapturedObserverForTesting();
+
+  // Blocks the execution until a screenshot is deposited into the navigation
+  // entry at `expected_nav_entry_index`.
+  void Wait();
+
+ private:
+  base::RunLoop run_loop_;
 };
 
 }  // namespace content

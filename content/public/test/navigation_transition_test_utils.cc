@@ -13,4 +13,29 @@ void NavigationTransitionTestUtils::SetNavScreenshotCallbackForTesting(
       std::move(screenshot_callback));
 }
 
+ScopedScreenshotCapturedObserverForTesting::
+    ScopedScreenshotCapturedObserverForTesting(int expected_nav_entry_index) {
+  NavigationTransitionTestUtils::SetNavScreenshotCallbackForTesting(
+      base::BindRepeating(
+          [](base::RepeatingClosure callback, int expected_nav_entry_index,
+             int nav_entry_index, const SkBitmap& bitmap, bool requested) {
+            CHECK_EQ(nav_entry_index, expected_nav_entry_index);
+            CHECK(requested);
+            std::move(callback).Run();
+          },
+          run_loop_.QuitClosure(), expected_nav_entry_index));
+}
+
+ScopedScreenshotCapturedObserverForTesting::
+    ~ScopedScreenshotCapturedObserverForTesting() {
+  // Reset the RepeatingCallback to a no-op.
+  NavigationTransitionUtils::SetNavScreenshotCallbackForTesting(
+      base::BindRepeating(
+          [](int nav_entry_dex, const SkBitmap& bitmap, bool requested) {}));
+}
+
+void ScopedScreenshotCapturedObserverForTesting::Wait() {
+  run_loop_.Run();
+}
+
 }  // namespace content

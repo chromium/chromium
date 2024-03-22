@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/navigation_transition_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -53,44 +54,6 @@ NavigationEntryScreenshot* PreviewScreenshotForEntry(NavigationEntry* entry) {
   return static_cast<NavigationEntryScreenshot*>(data);
 }
 
-// One-time use only.
-class ScreenshotCacheObserver {
- public:
-  explicit ScreenshotCacheObserver(NavigationEntryScreenshotCache* cache) {
-    cache->SetNewScreenshotCachedCallbackForTesting(base::BindOnce(
-        &ScreenshotCacheObserver::OnScreenshotCached, base::Unretained(this)));
-  }
-  ScreenshotCacheObserver(const ScreenshotCacheObserver&) = delete;
-  ScreenshotCacheObserver& operator=(const ScreenshotCacheObserver&) = delete;
-  ~ScreenshotCacheObserver() = default;
-
-  void OnScreenshotCached(int entry_id) {
-    // This observer is one-time use only.
-    CHECK_EQ(actual_cached_entry_id_, -1);
-    actual_cached_entry_id_ = entry_id;
-    if (run_loop_) {
-      run_loop_->Quit();
-    }
-  }
-
-  [[nodiscard]] bool WaitForScreenshotCachedForEntry(int expected_entry_id) {
-    // If `OnScreenshotCached` is called before
-    // `WaitForScreenshotCachedForEntry`.
-    if (actual_cached_entry_id_ != -1) {
-      return expected_entry_id == actual_cached_entry_id_;
-    }
-
-    CHECK(!run_loop_);
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-    return expected_entry_id == actual_cached_entry_id_;
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  int actual_cached_entry_id_ = -1;
-};
-
 // Navigates the current tab to `destination`, and:
 // - Makes sure the current tab is screenshotted, and the screenshot is stored
 //   inside the correct `NavigationEntry`.
@@ -102,12 +65,11 @@ void NavigateTabAndWaitForScreenshotCached(WebContents* tab,
   const int num_request_before_nav =
       NavigationTransitionUtils::GetNumCopyOutputRequestIssuedForTesting();
   const int entries_count_before_nav = controller.GetEntryCount();
-  ScreenshotCacheObserver cache_obs(
-      controller.GetNavigationEntryScreenshotCache());
-  const int expected_id = controller.GetVisibleEntry()->GetUniqueID();
+  ScopedScreenshotCapturedObserverForTesting observer(
+      controller.GetLastCommittedEntryIndex());
   ASSERT_TRUE(NavigateToURL(tab, destination));
   WaitForCopyableViewInWebContents(tab);
-  ASSERT_TRUE(cache_obs.WaitForScreenshotCachedForEntry(expected_id));
+  observer.Wait();
   ASSERT_EQ(controller.GetEntryCount(), entries_count_before_nav + 1);
   ASSERT_EQ(
       NavigationTransitionUtils::GetNumCopyOutputRequestIssuedForTesting(),
@@ -123,12 +85,11 @@ void HistoryNavigateTabAndWaitForScreenshotCached(
   const int num_request_before_nav =
       NavigationTransitionUtils::GetNumCopyOutputRequestIssuedForTesting();
   const int entries_count_before_nav = controller.GetEntryCount();
-  ScreenshotCacheObserver cache_obs(
-      controller.GetNavigationEntryScreenshotCache());
-  const int expected_id = controller.GetVisibleEntry()->GetUniqueID();
+  ScopedScreenshotCapturedObserverForTesting observer(
+      controller.GetLastCommittedEntryIndex());
   ASSERT_TRUE(HistoryGoToOffset(tab, offset));
   WaitForCopyableViewInWebContents(tab);
-  ASSERT_TRUE(cache_obs.WaitForScreenshotCachedForEntry(expected_id));
+  observer.Wait();
   ASSERT_EQ(controller.GetEntryCount(), entries_count_before_nav);
   ASSERT_EQ(
       NavigationTransitionUtils::GetNumCopyOutputRequestIssuedForTesting(),
@@ -811,13 +772,12 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
   auto& controller = web_contents()->GetController();
 
   SCOPED_TRACE("[red*] -> [red&, green*]");
-  ScreenshotCacheObserver cache_obs(
-      controller.GetNavigationEntryScreenshotCache());
-  const int expected_id = controller.GetVisibleEntry()->GetUniqueID();
+  ScopedScreenshotCapturedObserverForTesting observer(
+      web_contents()->GetController().GetLastCommittedEntryIndex());
   ASSERT_TRUE(
       NavigateToURLFromRenderer(web_contents(), GetNextUrl("/green.html")));
   WaitForCopyableViewInWebContents(web_contents());
-  ASSERT_TRUE(cache_obs.WaitForScreenshotCachedForEntry(expected_id));
+  observer.Wait();
 
   AssertOrderedScreenshotsAre(controller, {SK_ColorRED, std::nullopt});
   ASSERT_EQ(manager->GetCurrentCacheSize(), 1 * page_size);
@@ -833,27 +793,25 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, HistoryDotBack) {
 
   {
     SCOPED_TRACE("[red*] -> [red&, green*]");
-    ScreenshotCacheObserver cache_obs(
-        controller.GetNavigationEntryScreenshotCache());
-    const int expected_id = controller.GetVisibleEntry()->GetUniqueID();
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
     ASSERT_TRUE(
         NavigateToURLFromRenderer(web_contents(), GetNextUrl("/green.html")));
     WaitForCopyableViewInWebContents(web_contents());
-    ASSERT_TRUE(cache_obs.WaitForScreenshotCachedForEntry(expected_id));
+    observer.Wait();
 
     AssertOrderedScreenshotsAre(controller, {SK_ColorRED, std::nullopt});
     ASSERT_EQ(manager->GetCurrentCacheSize(), 1 * page_size);
   }
   {
     SCOPED_TRACE("[red&, green*] -> [red*, green&]");
-    ScreenshotCacheObserver cache_obs(
-        controller.GetNavigationEntryScreenshotCache());
-    const int expected_id = controller.GetVisibleEntry()->GetUniqueID();
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
     auto* rfh = web_contents()->GetPrimaryMainFrame();
     TestFrameNavigationObserver nav_observer(rfh);
     ASSERT_TRUE(ExecJs(rfh, "window.history.back();"));
     nav_observer.Wait();
-    ASSERT_TRUE(cache_obs.WaitForScreenshotCachedForEntry(expected_id));
+    observer.Wait();
 
     AssertOrderedScreenshotsAre(controller, {std::nullopt, SK_ColorGREEN});
     ASSERT_EQ(manager->GetCurrentCacheSize(), 1 * page_size);
@@ -915,12 +873,11 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, Redirect) {
       embedded_test_server()->GetURL(next_host, "/green.html");
   {
     SCOPED_TRACE("[red*] -> [red&, green*]");
-    ScreenshotCacheObserver cache_obs(
-        controller.GetNavigationEntryScreenshotCache());
-    const int expected_id = controller.GetVisibleEntry()->GetUniqueID();
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
     ASSERT_TRUE(NavigateToURL(web_contents(), redirect_gurl, expected_gurl));
     WaitForCopyableViewInWebContents(web_contents());
-    ASSERT_TRUE(cache_obs.WaitForScreenshotCachedForEntry(expected_id));
+    observer.Wait();
     AssertOrderedScreenshotsAre(controller, {SK_ColorRED, std::nullopt});
     ASSERT_EQ(manager->GetCurrentCacheSize(), 1 * page_size);
   }
@@ -1082,12 +1039,11 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
   {
     // Main frame navigation. Capture.
     SCOPED_TRACE("[red(green)*, red(title1)] -> [red(green)&, title2*]");
-    ScreenshotCacheObserver cache_obs(
-        controller.GetNavigationEntryScreenshotCache());
-    const int expected_id = controller.GetVisibleEntry()->GetUniqueID();
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
     ASSERT_TRUE(NavigateToURL(web_contents(), GetNextUrl("/title2.html")));
     WaitForCopyableViewInWebContents(web_contents());
-    ASSERT_TRUE(cache_obs.WaitForScreenshotCachedForEntry(expected_id));
+    observer.Wait();
     ASSERT_EQ(controller.GetEntryCount(), 2);
     AssertScreenshotForPageWithIFrameIs(controller.GetEntryAtIndex(0),
                                         SK_ColorRED, SK_ColorGREEN);
@@ -1153,11 +1109,10 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithPrerender,
   {
     SCOPED_TRACE("[red&, green*] -> [red&, green&, title1*]");
     test::PrerenderHostObserver activation_obs(*web_contents(), prerender_gurl);
-    ScreenshotCacheObserver cache_obs(
-        controller.GetNavigationEntryScreenshotCache());
-    const int expected_id = controller.GetVisibleEntry()->GetUniqueID();
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
     prerender_helper()->NavigatePrimaryPage(prerender_gurl);
-    ASSERT_TRUE(cache_obs.WaitForScreenshotCachedForEntry(expected_id));
+    observer.Wait();
     activation_obs.WaitForActivation();
     ASSERT_TRUE(activation_obs.was_activated());
     AssertOrderedScreenshotsAre(controller,
