@@ -40,6 +40,9 @@
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace user_manager {
 namespace {
@@ -70,6 +73,12 @@ UserType GetStoredUserType(const base::Value::Dict& prefs_user_types,
     return UserType::kRegular;
   }
   return static_cast<UserType>(int_user_type);
+}
+
+std::unique_ptr<UserImage> CreateStubImage() {
+  return std::make_unique<user_manager::UserImage>(
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_LOGIN_DEFAULT_USER));
 }
 
 }  // namespace
@@ -1053,6 +1062,8 @@ User* UserManagerBase::FindUserInListAndModify(const AccountId& account_id) {
 void UserManagerBase::GuestUserLoggedIn() {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   auto* user = User::CreateGuestUser(GuestAccountId());
+  user->SetStubImage(CreateStubImage(), User::USER_IMAGE_INVALID,
+                     /*is_loading=*/false);
   user_storage_.emplace_back(user);
   active_user_ = user;
 }
@@ -1113,6 +1124,20 @@ void UserManagerBase::RegularUserLoggedInAsEphemeral(
   active_user_ = user;
   KnownUser(local_state_.get())
       .SetIsEphemeralUser(active_user_->GetAccountId(), true);
+}
+
+void UserManagerBase::PublicAccountUserLoggedIn(user_manager::User* user) {
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  SetIsCurrentUserNew(true);
+  active_user_ = user;
+}
+
+void UserManagerBase::KioskAppLoggedIn(user_manager::User* user) {
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+
+  user->SetStubImage(CreateStubImage(), User::USER_IMAGE_INVALID,
+                     /*is_loading=*/false);
+  active_user_ = user;
 }
 
 bool UserManagerBase::OnUserProfileCreated(const AccountId& account_id,

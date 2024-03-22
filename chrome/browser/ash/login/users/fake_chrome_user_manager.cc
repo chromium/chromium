@@ -589,13 +589,6 @@ bool FakeChromeUserManager::IsDeviceLocalAccountMarkedForRemoval(
   return false;
 }
 
-void FakeChromeUserManager::KioskAppLoggedIn(user_manager::User* user) {}
-
-void FakeChromeUserManager::PublicAccountUserLoggedIn(
-    user_manager::User* user) {
-  NOTREACHED();
-}
-
 void FakeChromeUserManager::SetUserAffiliation(
     const AccountId& account_id,
     const base::flat_set<std::string>& user_affiliation_ids) {}

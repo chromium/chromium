@@ -194,10 +194,9 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
             .SetManifestKey("kiosk_enabled", true)
             .SetManifestKey("kiosk_only", true)
             .Build());
-    user_manager_->AddKioskAppUser(
+    auto* auto_user = user_manager_->AddKioskAppUser(
         AccountId::FromUserEmail(auto_launch_kiosk_app->id()));
-    user_manager_->LoginUser(
-        AccountId::FromUserEmail(auto_launch_kiosk_app->id()));
+    user_manager_->LoginUser(auto_user->GetAccountId());
 
     TestDelegateState state;
     state.is_auto_launched = true;
@@ -223,10 +222,9 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
           .SetManifestKey("kiosk_enabled", true)
           .SetManifestKey("kiosk_only", true)
           .Build());
-  user_manager::User* const manual_kiosk_app_user =
-      user_manager_->AddKioskAppUser(
-          AccountId::FromUserEmail(manual_launch_kiosk_app->id()));
-  user_manager_->KioskAppLoggedIn(manual_kiosk_app_user);
+  auto* manual_user = user_manager_->AddKioskAppUser(
+      AccountId::FromUserEmail(manual_launch_kiosk_app->id()));
+  user_manager_->LoginUser(manual_user->GetAccountId());
   {
     TestDelegateState state;
     state.dialog_button = ui::DIALOG_BUTTON_OK;

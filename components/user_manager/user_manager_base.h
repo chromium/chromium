@@ -273,23 +273,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   // These methods are called when corresponding user type has signed in.
 
-  // Indicates that a user just logged in as guest.
-  virtual void GuestUserLoggedIn();
-
-  // Indicates that a kiosk app robot just logged in.
-  virtual void KioskAppLoggedIn(User* user) = 0;
-
-  // Indicates that a user just logged into a public session.
-  virtual void PublicAccountUserLoggedIn(User* user) = 0;
-
-  // Indicates that a regular user just logged in.
-  virtual void RegularUserLoggedIn(const AccountId& account_id,
-                                   const UserType user_type);
-
-  // Indicates that a regular user just logged in as ephemeral.
-  virtual void RegularUserLoggedInAsEphemeral(const AccountId& account_id,
-                                              const UserType user_type);
-
   virtual bool IsEphemeralAccountIdByPolicy(
       const AccountId& account_id) const = 0;
 
@@ -304,6 +287,11 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   virtual const AccountId& GetPendingUserSwitchID() const;
   virtual void SetPendingUserSwitchId(const AccountId& account_id);
+
+  // TODO(b/278643115): Move to private, once we migrate fake implementation
+  // closer enough to the production behavior.
+  void RegularUserLoggedInAsEphemeral(const AccountId& account_id,
+                                      const UserType user_type);
 
   base::ObserverList<UserManager::Observer>::Unchecked observer_list_;
 
@@ -369,6 +357,13 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   // Notifies observers that merge session state had changed.
   void NotifyMergeSessionStateChanged();
+
+  // Processes log-in for each type of users.
+  void RegularUserLoggedIn(const AccountId& account_id,
+                           const UserType user_type);
+  void GuestUserLoggedIn();
+  void PublicAccountUserLoggedIn(User* user);
+  void KioskAppLoggedIn(User* user);
 
   // Insert |user| at the front of the LRU user list.
   void SetLRUUser(User* user);

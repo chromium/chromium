@@ -107,9 +107,6 @@
 #include "content/public/common/content_switches.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/wm/core/wm_core_switches.h"
 
 namespace ash {
@@ -688,37 +685,6 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   }
 }
 
-void ChromeUserManagerImpl::GuestUserLoggedIn() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  UserManagerBase::GuestUserLoggedIn();
-
-  // TODO(nkostylev): Add support for passing guest session cryptohome
-  // mount point. Legacy (--login-profile) value will be used for now.
-  // http://crosbug.com/230859
-  active_user_->SetStubImage(
-      std::make_unique<user_manager::UserImage>(
-          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-              IDR_LOGIN_DEFAULT_USER)),
-      user_manager::User::USER_IMAGE_INVALID, false);
-}
-
-void ChromeUserManagerImpl::RegularUserLoggedIn(
-    const AccountId& account_id,
-    const user_manager::UserType user_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  UserManagerBase::RegularUserLoggedIn(account_id, user_type);
-
-  // Make sure that new data is persisted to Local State.
-  GetLocalState()->CommitPendingWrite();
-}
-
-void ChromeUserManagerImpl::RegularUserLoggedInAsEphemeral(
-    const AccountId& account_id,
-    const user_manager::UserType user_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  UserManagerBase::RegularUserLoggedInAsEphemeral(account_id, user_type);
-}
-
 bool ChromeUserManagerImpl::IsEphemeralAccountIdByPolicy(
     const AccountId& account_id) const {
   policy::BrowserPolicyConnectorAsh* connector =
@@ -728,23 +694,6 @@ bool ChromeUserManagerImpl::IsEphemeralAccountIdByPolicy(
 
   return device_is_owned &&
          GetEphemeralModeConfig().IsAccountIdIncluded(account_id);
-}
-
-void ChromeUserManagerImpl::PublicAccountUserLoggedIn(
-    user_manager::User* user) {
-  SetIsCurrentUserNew(true);
-  active_user_ = user;
-}
-
-void ChromeUserManagerImpl::KioskAppLoggedIn(user_manager::User* user) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  active_user_ = user;
-  active_user_->SetStubImage(
-      std::make_unique<user_manager::UserImage>(
-          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-              IDR_LOGIN_DEFAULT_USER)),
-      user_manager::User::USER_IMAGE_INVALID, false);
 }
 
 void ChromeUserManagerImpl::NotifyOnLogin() {

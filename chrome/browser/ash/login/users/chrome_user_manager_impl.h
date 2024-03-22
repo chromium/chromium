@@ -127,14 +127,6 @@ class ChromeUserManagerImpl
                           user_manager::UserRemovalReason reason) override;
   bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const override;
-  void GuestUserLoggedIn() override;
-  void KioskAppLoggedIn(user_manager::User* user) override;
-  void PublicAccountUserLoggedIn(user_manager::User* user) override;
-  void RegularUserLoggedIn(const AccountId& account_id,
-                           const user_manager::UserType user_type) override;
-  void RegularUserLoggedInAsEphemeral(
-      const AccountId& account_id,
-      const user_manager::UserType user_type) override;
   bool IsEphemeralAccountIdByPolicy(const AccountId& account_id) const override;
 
  private:

@@ -58,6 +58,8 @@ component("user_manager") {
       "//ash/constants",
       "//components/prefs",
       "//skia",
+      "//ui/base",
+      "//ui/chromeos/resources",
       "//url",
     ]
   }
