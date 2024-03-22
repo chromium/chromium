@@ -46,6 +46,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
@@ -122,6 +123,7 @@
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/tuna_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_allowlist_check_screen_handler.h"
@@ -323,7 +325,7 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeFlow", is_oobe_flow);
   source->AddBoolean("isOobeLazyLoadingEnabled",
                      features::IsOobeLazyLoadingEnabled());
-  source->AddBoolean("isOobeAiIntro", features::IsOobeAiIntroEnabled());
+  source->AddBoolean("isOobeAiIntroEnabled", features::IsOobeAiIntroEnabled());
   // TODO (b/268463435) Cleanup OobeJelly
   source->AddBoolean("isJellyEnabled", features::IsOobeJellyEnabled());
   source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
@@ -335,7 +337,7 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
                      !features::IsOobeSkipAssistantEnabled());
   source->AddBoolean("isOobeGaiaInfoScreenEnabled",
                      features::IsOobeGaiaInfoScreenEnabled());
-  source->AddBoolean("isOobeTuna", features::IsOobeTunaEnabled());
+  source->AddBoolean("isOobeTunaEnabled", features::IsOobeTunaEnabled());
   source->AddBoolean("isChoobeEnabled", features::IsOobeChoobeEnabled());
   source->AddBoolean("isSoftwareUpdateEnabled",
                      features::IsOobeSoftwareUpdateEnabled());
@@ -497,6 +499,14 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<RecommendAppsScreenHandler>());
 
   AddScreenHandler(std::make_unique<AppDownloadingScreenHandler>());
+
+  if (features::IsOobeAiIntroEnabled()) {
+    AddScreenHandler(std::make_unique<AiIntroScreenHandler>());
+  }
+
+  if (features::IsOobeTunaEnabled()) {
+    AddScreenHandler(std::make_unique<TunaScreenHandler>());
+  }
 
   AddScreenHandler(std::make_unique<DemoSetupScreenHandler>());
 

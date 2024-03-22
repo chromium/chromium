@@ -1565,6 +1565,14 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       kind: ScreenKind.NORMAL,
     },
     {
+      id: 'ai-intro',
+      kind: ScreenKind.NORMAL,
+    },
+    {
+      id: 'tuna',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       id: 'assistant-optin-flow',
       kind: ScreenKind.NORMAL,
       states: [

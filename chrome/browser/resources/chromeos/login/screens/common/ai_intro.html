@@ -4,28 +4,19 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <style include="oobe-dialog-host-styles cros-color-overrides">
-
-/* Add styles here */
-
 </style>
-<oobe-adaptive-dialog role="dialog">
-  <!-- Add HTML content here -->
-  <h1 slot="title">
+<oobe-adaptive-dialog id="aiIntroDialog" role="dialog">
+  <h1 slot="title" aria-live="polite">
     Your title
   </h1>
   <div slot="subtitle">
     Your subtitle
   </div>
-  <div slot="content" class="layout vertical">
+  <div slot="content" class="flex layout vertical center center-justified">
     Your content
   </div>
-  <div slot="back-navigation">
-    <oobe-back-button id="backButton"
-        on-click="onBackClicked">
-    </oobe-back-button>
-  </div>
   <div slot="bottom-buttons">
-    <oobe-next-button id="nextButton"
+    <oobe-next-button id="nextButton" class="focus-on-show"
         on-click="onNextClicked">
     </oobe-next-button>
   </div>

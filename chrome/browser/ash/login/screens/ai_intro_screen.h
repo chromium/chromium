@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_PLACEHOLDER_SCREEN_H_
-#define CHROME_BROWSER_ASH_LOGIN_SCREENS_PLACEHOLDER_SCREEN_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_AI_INTRO_SCREEN_H_
+#define CHROME_BROWSER_ASH_LOGIN_SCREENS_AI_INTRO_SCREEN_H_
 
 #include <memory>
 #include <string>
@@ -16,27 +16,26 @@
 
 namespace ash {
 
-class PlaceholderScreenView;
+class AiIntroScreenView;
 
-class PlaceholderScreen : public BaseScreen {
+class AiIntroScreen : public BaseScreen {
  public:
-  using TView = PlaceholderScreenView;
+  using TView = AiIntroScreenView;
 
   enum class Result {
     kNext = 0,
-    kBack,
     kNotApplicable
   };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  PlaceholderScreen(base::WeakPtr<PlaceholderScreenView> view,
-                    const ScreenExitCallback& exit_callback);
+  AiIntroScreen(base::WeakPtr<AiIntroScreenView> view,
+                const ScreenExitCallback& exit_callback);
 
-  PlaceholderScreen(const PlaceholderScreen&) = delete;
-  PlaceholderScreen& operator=(const PlaceholderScreen&) = delete;
+  AiIntroScreen(const AiIntroScreen&) = delete;
+  AiIntroScreen& operator=(const AiIntroScreen&) = delete;
 
-  ~PlaceholderScreen() override;
+  ~AiIntroScreen() override;
 
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
     exit_callback_ = exit_callback;
@@ -55,10 +54,10 @@ class PlaceholderScreen : public BaseScreen {
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
 
-  base::WeakPtr<PlaceholderScreenView> view_;
+  base::WeakPtr<AiIntroScreenView> view_;
   ScreenExitCallback exit_callback_;
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_PLACEHOLDER_SCREEN_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_AI_INTRO_SCREEN_H_

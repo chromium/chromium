@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/screens/placeholder_screen.h"
+#include "chrome/browser/ash/login/screens/tuna_screen.h"
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/ui/webui/ash/login/placeholder_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/tuna_screen_handler.h"
 
 namespace ash {
 namespace {
@@ -20,10 +20,10 @@ constexpr char kUserActionNextButtonClicked[] = "next";
 }  // namespace
 
 // static
-std::string PlaceholderScreen::GetResultString(Result result) {
+std::string TunaScreen::GetResultString(Result result) {
   switch (result) {
     case Result::kNext:
-      return "Next";
+      return "Manual";
     case Result::kBack:
       return "Back";
     case Result::kNotApplicable:
@@ -31,19 +31,19 @@ std::string PlaceholderScreen::GetResultString(Result result) {
   }
 }
 
-PlaceholderScreen::PlaceholderScreen(base::WeakPtr<PlaceholderScreenView> view,
-                                     const ScreenExitCallback& exit_callback)
-    : BaseScreen(PlaceholderScreenView::kScreenId, OobeScreenPriority::DEFAULT),
+TunaScreen::TunaScreen(base::WeakPtr<TunaScreenView> view,
+                               const ScreenExitCallback& exit_callback)
+    : BaseScreen(TunaScreenView::kScreenId, OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
-PlaceholderScreen::~PlaceholderScreen() = default;
+TunaScreen::~TunaScreen() = default;
 
-bool PlaceholderScreen::MaybeSkip(WizardContext& context) {
-  return false;
+bool TunaScreen::MaybeSkip(WizardContext& context) {
+  return true;
 }
 
-void PlaceholderScreen::ShowImpl() {
+void TunaScreen::ShowImpl() {
   if (!view_) {
     return;
   }
@@ -51,9 +51,9 @@ void PlaceholderScreen::ShowImpl() {
   view_->Show();
 }
 
-void PlaceholderScreen::HideImpl() {}
+void TunaScreen::HideImpl() {}
 
-void PlaceholderScreen::OnUserAction(const base::Value::List& args) {
+void TunaScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionNextButtonClicked) {
     exit_callback_.Run(Result::kNext);

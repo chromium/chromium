@@ -1883,6 +1883,8 @@ source_set("ash") {
     "login/screen_manager.h",
     "login/screens/add_child_screen.cc",
     "login/screens/add_child_screen.h",
+    "login/screens/ai_intro_screen.cc",
+    "login/screens/ai_intro_screen.h",
     "login/screens/app_downloading_screen.cc",
     "login/screens/app_downloading_screen.h",
     "login/screens/arc_vm_data_migration_screen.cc",
@@ -2031,9 +2033,10 @@ source_set("ash") {
     "policy/handlers/multi_screen_capture_policy_handler.cc",
     "policy/handlers/multi_screen_capture_policy_handler.h",
 
-    # Template used by the `tools/oobe/generate_screen_template.py` script.
     "login/screens/install_attributes_error_screen.cc",
     "login/screens/install_attributes_error_screen.h",
+
+    # Template used by the `tools/oobe/generate_screen_template.py` script.
     "login/screens/placeholder_screen.cc",
     "login/screens/placeholder_screen.h",
     "login/screens/quick_start_screen.cc",
@@ -2058,6 +2061,8 @@ source_set("ash") {
     "login/screens/touchpad_scroll_screen.h",
     "login/screens/tpm_error_screen.cc",
     "login/screens/tpm_error_screen.h",
+    "login/screens/tuna_screen.cc",
+    "login/screens/tuna_screen.h",
     "login/screens/update_required_screen.cc",
     "login/screens/update_required_screen.h",
     "login/screens/update_screen.cc",

@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/login/quickstart_controller.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/add_child_screen.h"
+#include "chrome/browser/ash/login/screens/ai_intro_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/ash/login/screens/choobe_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
@@ -80,6 +81,7 @@
 #include "chrome/browser/ash/login/screens/terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/theme_selection_screen.h"
 #include "chrome/browser/ash/login/screens/touchpad_scroll_screen.h"
+#include "chrome/browser/ash/login/screens/tuna_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ash/login/screens/user_allowlist_check_screen.h"
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
@@ -307,6 +309,8 @@ class WizardController : public OobeUI::Observer {
   void ShowRecommendAppsScreen();
   void ShowRemoteActivityNotificationScreen();
   void ShowAppDownloadingScreen();
+  void ShowAiIntroScreen();
+  void ShowTunaScreen();
   void ShowWrongHWIDScreen();
   void ShowAutoEnrollmentCheckScreen();
   void ShowHIDDetectionScreen();
@@ -419,6 +423,8 @@ class WizardController : public OobeUI::Observer {
   void OnRecommendAppsScreenExit(RecommendAppsScreen::Result result);
   void OnRemoteActivityNotificationScreenExit();
   void OnAppDownloadingScreenExit();
+  void OnAiIntroScreenExit(AiIntroScreen::Result result);
+  void OnTunaScreenExit(TunaScreen::Result result);
   void OnAssistantOptInFlowScreenExit(AssistantOptInFlowScreen::Result result);
   void OnMultiDeviceSetupScreenExit(MultiDeviceSetupScreen::Result result);
   void OnGestureNavigationScreenExit(GestureNavigationScreen::Result result);

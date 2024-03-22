@@ -7,8 +7,9 @@ import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
-import '../../components/dialogs/oobe_adaptive_dialog.js';
+import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 
+import {assertInstanceof} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -16,11 +17,12 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 
-import {getTemplate} from './placeholder.html.js';
+import {getTemplate} from './tuna.html.js';
 
-const PlaceholderScreenElementBase = mixinBehaviors(
-    [OobeDialogHostBehavior, LoginScreenBehavior],
-    OobeI18nMixin(PolymerElement)) as {
+export const TunaScreenElementBase =
+    mixinBehaviors(
+        [OobeDialogHostBehavior, LoginScreenBehavior],
+        OobeI18nMixin(PolymerElement)) as {
       new (): PolymerElement & OobeI18nMixinInterface &
         OobeDialogHostBehaviorInterface & LoginScreenBehaviorInterface,
     };
@@ -30,9 +32,16 @@ enum UserAction {
   NEXT = 'next',
 }
 
-class PlaceholderScreen extends PlaceholderScreenElementBase {
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ */
+interface TunaScreenData {
+  backButtonVisible: boolean;
+}
+
+export class TunaScreen extends TunaScreenElementBase {
   static get is() {
-    return 'placeholder-element' as const;
+    return 'tuna-element' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -40,24 +49,35 @@ class PlaceholderScreen extends PlaceholderScreenElementBase {
   }
 
   static get properties(): PolymerElementProperties {
-    return {};
+    return {
+      backButtonVisible: {
+        type: Boolean,
+        value: false,
+      },
+    };
   }
+
+  private backButtonVisible: boolean;
 
   override ready(): void {
     super.ready();
-    this.initializeLoginScreen('PlaceholderScreen');
+    this.initializeLoginScreen('TunaScreen');
   }
 
-  /**
-   * Back button click handler.
-   */
+  override get defaultControl(): HTMLElement {
+    const dialog =  this.shadowRoot?.querySelector('#tunaDialog');
+    assertInstanceof(dialog, OobeAdaptiveDialog);
+    return dialog;
+  }
+
+  override onBeforeShow(data: TunaScreenData): void {
+    this.backButtonVisible = data['backButtonVisible'];
+  }
+
   private onBackClicked(): void {
     this.userActed(UserAction.BACK);
   }
 
-  /**
-   * Next button click handler.
-   */
   private onNextClicked(): void {
     this.userActed(UserAction.NEXT);
   }
@@ -65,8 +85,8 @@ class PlaceholderScreen extends PlaceholderScreenElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [PlaceholderScreen.is]: PlaceholderScreen;
+    [TunaScreen.is]: TunaScreen;
   }
 }
 
-customElements.define(PlaceholderScreen.is, PlaceholderScreen);
+customElements.define(TunaScreen.is, TunaScreen);

@@ -54,6 +54,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/quickstart_controller.h"
 #include "chrome/browser/ash/login/screens/add_child_screen.h"
+#include "chrome/browser/ash/login/screens/ai_intro_screen.h"
 #include "chrome/browser/ash/login/screens/app_downloading_screen.h"
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
@@ -117,6 +118,7 @@
 #include "chrome/browser/ash/login/screens/theme_selection_screen.h"
 #include "chrome/browser/ash/login/screens/touchpad_scroll_screen.h"
 #include "chrome/browser/ash/login/screens/tpm_error_screen.h"
+#include "chrome/browser/ash/login/screens/tuna_screen.h"
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ash/login/screens/user_allowlist_check_screen.h"
@@ -146,6 +148,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
@@ -214,6 +217,7 @@
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/tuna_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_allowlist_check_screen_handler.h"
@@ -293,6 +297,8 @@ const StaticOobeScreenId kResumablePostLoginScreens[] = {
     FingerprintSetupScreenView::kScreenId,
     GestureNavigationScreenView::kScreenId,
     RecommendAppsScreenView::kScreenId,
+    AiIntroScreenView::kScreenId,
+    TunaScreenView::kScreenId,
     PinSetupScreenView::kScreenId,
     MarketingOptInScreenView::kScreenId,
     MultiDeviceSetupScreenView::kScreenId,
@@ -695,6 +701,21 @@ WizardController::CreateScreens() {
       oobe_ui->GetView<AppDownloadingScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnAppDownloadingScreenExit,
                           weak_factory_.GetWeakPtr())));
+
+  if (features::IsOobeAiIntroEnabled()) {
+    append(std::make_unique<AiIntroScreen>(
+        oobe_ui->GetView<AiIntroScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnAiIntroScreenExit,
+                            weak_factory_.GetWeakPtr())));
+  }
+
+  if (features::IsOobeTunaEnabled()) {
+    append(std::make_unique<TunaScreen>(
+        oobe_ui->GetView<TunaScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnTunaScreenExit,
+                            weak_factory_.GetWeakPtr())));
+  }
+
   append(std::make_unique<WrongHWIDScreen>(
       oobe_ui->GetView<WrongHWIDScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnWrongHWIDScreenExit,
@@ -1167,6 +1188,14 @@ void WizardController::ShowRemoteActivityNotificationScreen() {
 
 void WizardController::ShowAppDownloadingScreen() {
   SetCurrentScreen(GetScreen(AppDownloadingScreenView::kScreenId));
+}
+
+void WizardController::ShowAiIntroScreen() {
+  SetCurrentScreen(GetScreen(AiIntroScreenView::kScreenId));
+}
+
+void WizardController::ShowTunaScreen() {
+  SetCurrentScreen(GetScreen(TunaScreenView::kScreenId));
 }
 
 void WizardController::ShowWrongHWIDScreen() {
@@ -2580,6 +2609,14 @@ void WizardController::OnAppDownloadingScreenExit() {
   ShowAssistantOptInFlowScreen();
 }
 
+void WizardController::OnAiIntroScreenExit(AiIntroScreen::Result result) {
+
+}
+
+void WizardController::OnTunaScreenExit(TunaScreen::Result result) {
+
+}
+
 void WizardController::OnAssistantOptInFlowScreenExit(
     AssistantOptInFlowScreen::Result result) {
   OnScreenExit(AssistantOptInFlowScreenView::kScreenId,
@@ -3005,6 +3042,10 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowRemoteActivityNotificationScreen();
   } else if (screen_id == AppDownloadingScreenView::kScreenId) {
     ShowAppDownloadingScreen();
+  } else if (screen_id == AiIntroScreenView::kScreenId) {
+    ShowAiIntroScreen();
+  } else if (screen_id == TunaScreenView::kScreenId) {
+    ShowTunaScreen();
   } else if (screen_id == WrongHWIDScreenView::kScreenId) {
     ShowWrongHWIDScreen();
   } else if (screen_id == AutoEnrollmentCheckScreenView::kScreenId) {

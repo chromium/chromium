@@ -3175,6 +3175,8 @@ static_library("ui") {
       "webui/ash/lock_screen_reauth/lock_screen_start_reauth_ui.h",
       "webui/ash/login/add_child_screen_handler.cc",
       "webui/ash/login/add_child_screen_handler.h",
+      "webui/ash/login/ai_intro_screen_handler.cc",
+      "webui/ash/login/ai_intro_screen_handler.h",
       "webui/ash/login/app_downloading_screen_handler.cc",
       "webui/ash/login/app_downloading_screen_handler.h",
       "webui/ash/login/app_launch_splash_screen_handler.cc",
@@ -3313,10 +3315,10 @@ static_library("ui") {
       "webui/ash/login/remote_activity_notification_screen_handler.h",
       "webui/ash/os_feedback_dialog.cc",
       "webui/ash/os_feedback_dialog.h",
-
-      # Template used by the `tools/oobe/generate_screen_template.py` script.
       "webui/ash/login/install_attributes_error_screen_handler.cc",
       "webui/ash/login/install_attributes_error_screen_handler.h",
+
+      # Template used by the `tools/oobe/generate_screen_template.py` script.
       "webui/ash/login/placeholder_screen_handler.cc",
       "webui/ash/login/placeholder_screen_handler.h",
       "webui/ash/login/quick_start_screen_handler.cc",
@@ -3348,6 +3350,8 @@ static_library("ui") {
       "webui/ash/login/touchpad_scroll_screen_handler.h",
       "webui/ash/login/tpm_error_screen_handler.cc",
       "webui/ash/login/tpm_error_screen_handler.h",
+      "webui/ash/login/tuna_screen_handler.cc",
+      "webui/ash/login/tuna_screen_handler.h",
       "webui/ash/login/update_required_screen_handler.cc",
       "webui/ash/login/update_required_screen_handler.h",
       "webui/ash/login/update_screen_handler.cc",

@@ -82,6 +82,7 @@ build_webui("build") {
     # Common screens
     "screens/common/adb_sideloading.ts",
     "screens/common/add_child.ts",
+    "screens/common/ai_intro.ts",
     "screens/common/app_downloading.ts",
     "screens/common/app_launch_splash.ts",
     "screens/common/assistant_optin.ts",
@@ -123,6 +124,7 @@ build_webui("build") {
     "screens/common/theme_selection.ts",
     "screens/common/touchpad_scroll.ts",
     "screens/common/tpm_error.ts",
+    "screens/common/tuna.ts",
     "screens/common/user_allowlist_check_screen.ts",
     "screens/common/user_creation.ts",
     "screens/common/wrong_hwid.ts",
