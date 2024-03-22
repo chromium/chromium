@@ -77,10 +77,6 @@ closest to `origin/main`):
       that the automated script has listed in the CL description (e.g. if some
       of the criteria are already covered by `audits.toml` imported from other
       projects).
-    - Install `cargo vet` if it's not yet installed:
-        * `tools/crates/run_cargo.py install cargo-vet --locked --version=0.9.1`
-        * TODO: Pre-package `cargo-vet` into `rust-toolchain`:
-          https://crrev.com/c/5366668
 1. Follow the cargo vet instructions to inspect diffs and certify the results
 1. `git add third_party/rust/chromium_crates_io/supply-chain`.
    `git commit -m 'cargo vet'`

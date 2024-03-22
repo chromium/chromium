@@ -54,11 +54,6 @@ Additional notes:
   (e.g. Android, Fuchsia, etc.).  This means that adding a new crate does not
   necessarily require a new audit if the crate has already been audited by
   other projects.
-* Before using `tools/crates/run_cargo_vet.py` you may need to install the tool
-  by running:
-  `tools/crates/run_cargo.py install cargo-vet --locked --version=0.9.1`
-    - TODO(https://crbug.com/326234536): Prebuild `cargo-vet` and distribute
-      via/into `third_party/rust-toolchain` (i.e. together with `rustc`).
 * For now we kindly ask you that audit updates in `audits.toml`
   should be part of the submitted CL so that `run_cargo_vet.py check` will
   continue to pass after the CL lands.

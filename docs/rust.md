@@ -80,10 +80,6 @@ To use a third-party crate "bar" version 3 from first party code:
 1. Verify if all new dependencies are already audited by running `cargo vet`
    See [`rust-unsafe.md#cargo-vet-policy`](rust-unsafe.md#cargo-vet-policy) for
    more details.  This boils down to:
-   * Install `cargo vet` if it's not yet installed:
-      * `tools/crates/run_cargo.py install cargo-vet --locked --version=0.9.1`
-      * TODO: Pre-package `cargo-vet` into `rust-toolchain`:
-        https://crrev.com/c/5366668
    * `./tools/crates/run_cargo_vet.py check`
    * If `check` fails, then there are missing audits, which need to be added to
      `//third_party/rust/chromium_crates_io/supply-chain/audits.toml`.
