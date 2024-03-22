@@ -59,7 +59,6 @@ PickerSearchRequest::PickerSearchRequest(
       current_callback_(std::move(callback)),
       gif_search_debouncer_(kGifDebouncingDelay) {
   std::string utf8_query = base::UTF16ToUTF8(query);
-  current_query_ = utf8_query;
 
   // TODO: b/326166751 - Use `available_categories_` to decide what searches to
   // do.
@@ -108,12 +107,6 @@ PickerSearchRequest::~PickerSearchRequest() {
 }
 
 void PickerSearchRequest::StartGifSearch(const std::string& query) {
-  if (current_query_ != query) {
-    LOG(DFATAL) << "Current query " << current_query_
-                << " does not match debounced query " << query;
-    return;
-  }
-
   gif_search_start_ = base::TimeTicks::Now();
   client_->FetchGifSearch(
       query, base::BindOnce(&PickerSearchRequest::HandleGifSearchResults,
@@ -194,12 +187,6 @@ void PickerSearchRequest::HandleCrosSearchResults(
 void PickerSearchRequest::HandleGifSearchResults(
     std::string query,
     std::vector<PickerSearchResult> results) {
-  if (current_query_ != query) {
-    LOG(DFATAL) << "Current query " << current_query_
-                << " does not match query of returned responses " << query;
-    return;
-  }
-
   if (gif_search_start_.has_value()) {
     base::TimeDelta elapsed = base::TimeTicks::Now() - *gif_search_start_;
     base::UmaHistogramTimes("Ash.Picker.Search.GifProvider.QueryTime", elapsed);

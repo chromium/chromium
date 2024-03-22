@@ -72,7 +72,6 @@ class ASH_EXPORT PickerSearchRequest {
 
   const raw_ref<emoji::EmojiSearch> emoji_search_;
 
-  std::string current_query_;
   SearchResultsCallback current_callback_;
 
   std::optional<base::TimeTicks> date_search_start_;
