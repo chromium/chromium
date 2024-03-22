@@ -27,7 +27,6 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -142,24 +141,22 @@ class WebAppDatabaseTest : public WebAppTest,
 
   void EnsureHasUserDisplayModeForCurrentPlatform(WebApp& app) {
     if (!base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
-      ASSERT_TRUE(app.sync_proto().has_user_display_mode_default());
+      DCHECK(app.user_display_mode_default());
       return;
     }
     // Avoid using `WebApp::user_display_mode` because it DCHECKs for a valid
     // UDM.
 #if BUILDFLAG(IS_CHROMEOS)
-    if (app.sync_proto().has_user_display_mode_cros()) {
+    if (app.user_display_mode_cros()) {
       return;
     }
 #else
-    if (app.sync_proto().has_user_display_mode_default()) {
+    if (app.user_display_mode_default()) {
       return;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    app.SetUserDisplayMode(ToMojomUserDisplayMode(
-        app.sync_proto().has_user_display_mode_default()
-            ? app.sync_proto().user_display_mode_default()
-            : sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE));
+    app.SetUserDisplayMode(app.user_display_mode_default().value_or(
+        mojom::UserDisplayMode::kStandalone));
   }
 
  protected:
@@ -406,20 +403,23 @@ TEST_P(WebAppDatabaseTest, UserDisplayModeCrosOnly_MigratesToCurrentPlatform) {
   if (!base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
     // Default to standalone if we don't have a platform-specific value and the
     // flag is turned off. Safer than trying to migrate back.
-    EXPECT_EQ(app->user_display_mode(), mojom::UserDisplayMode::kStandalone);
-    // Proto values are preserved.
-    EXPECT_EQ(new_proto->sync_data().user_display_mode_cros(),
-              sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
-    EXPECT_FALSE(new_proto->sync_data().has_user_display_mode_default());
+    EXPECT_EQ(app->user_display_mode().value(),
+              mojom::UserDisplayMode::kStandalone);
+    EXPECT_EQ(new_proto->sync_data().user_display_mode_default(),
+              sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE);
+    EXPECT_FALSE(new_proto->sync_data().has_user_display_mode_cros());
     return;
   }
 
+  // Regardless of platform, the current platform's UDM should be set.
+  EXPECT_TRUE(app->user_display_mode().has_value());
+
 #if BUILDFLAG(IS_CHROMEOS)
-  // On CrOS, the default field should remain absent.
+  // On CrOS, the non-CrOS field should remain absent.
   EXPECT_EQ(new_proto->sync_data().user_display_mode_cros(),
             sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
   EXPECT_FALSE(new_proto->sync_data().has_user_display_mode_default());
-  EXPECT_EQ(app->user_display_mode(), mojom::UserDisplayMode::kBrowser);
+  EXPECT_EQ(app->user_display_mode().value(), mojom::UserDisplayMode::kBrowser);
 #else
   // On non-CrOS, both platform's fields should now be populated.
   EXPECT_EQ(new_proto->sync_data().user_display_mode_cros(),
@@ -428,7 +428,8 @@ TEST_P(WebAppDatabaseTest, UserDisplayModeCrosOnly_MigratesToCurrentPlatform) {
   // standalone.
   EXPECT_EQ(new_proto->sync_data().user_display_mode_default(),
             sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE);
-  EXPECT_EQ(app->user_display_mode(), mojom::UserDisplayMode::kStandalone);
+  EXPECT_EQ(app->user_display_mode().value(),
+            mojom::UserDisplayMode::kStandalone);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -452,7 +453,7 @@ TEST_P(WebAppDatabaseTest,
 
   // Regardless of platform, the current platform's UDM should be set: the
   // default value should have been migrated in CrOS.
-  EXPECT_EQ(app->user_display_mode(), mojom::UserDisplayMode::kBrowser);
+  EXPECT_EQ(app->user_display_mode().value(), mojom::UserDisplayMode::kBrowser);
 
   std::unique_ptr<WebAppProto> new_proto =
       WebAppDatabase::CreateWebAppProto(*app);
@@ -519,10 +520,10 @@ TEST_P(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app->downloaded_icon_sizes(IconPurpose::MONOCHROME).empty());
   EXPECT_FALSE(app->is_generated_icon());
   EXPECT_FALSE(app->is_from_sync_and_pending_installation());
-  EXPECT_FALSE(app->sync_proto().has_name());
-  EXPECT_FALSE(app->sync_proto().has_theme_color());
-  EXPECT_FALSE(app->sync_proto().has_scope());
-  EXPECT_EQ(app->sync_proto().icon_infos_size(), 0);
+  EXPECT_TRUE(app->sync_fallback_data().name.empty());
+  EXPECT_FALSE(app->sync_fallback_data().theme_color.has_value());
+  EXPECT_FALSE(app->sync_fallback_data().scope.is_valid());
+  EXPECT_TRUE(app->sync_fallback_data().icon_infos.empty());
   EXPECT_TRUE(app->file_handlers().empty());
   EXPECT_FALSE(app->share_target().has_value());
   EXPECT_TRUE(app->additional_search_terms().empty());
@@ -594,10 +595,10 @@ TEST_P(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->downloaded_icon_sizes(IconPurpose::MONOCHROME).empty());
   EXPECT_FALSE(app_copy->is_generated_icon());
   EXPECT_FALSE(app_copy->is_from_sync_and_pending_installation());
-  EXPECT_FALSE(app_copy->sync_proto().has_name());
-  EXPECT_FALSE(app_copy->sync_proto().has_theme_color());
-  EXPECT_FALSE(app_copy->sync_proto().has_scope());
-  EXPECT_EQ(app_copy->sync_proto().icon_infos_size(), 0);
+  EXPECT_TRUE(app_copy->sync_fallback_data().name.empty());
+  EXPECT_FALSE(app_copy->sync_fallback_data().theme_color.has_value());
+  EXPECT_FALSE(app_copy->sync_fallback_data().scope.is_valid());
+  EXPECT_TRUE(app_copy->sync_fallback_data().icon_infos.empty());
   EXPECT_TRUE(app_copy->file_handlers().empty());
   EXPECT_FALSE(app_copy->share_target().has_value());
   EXPECT_TRUE(app_copy->additional_search_terms().empty());
