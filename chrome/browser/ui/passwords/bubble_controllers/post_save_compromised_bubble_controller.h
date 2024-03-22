@@ -47,7 +47,6 @@ class PostSaveCompromisedBubbleController
   void ReportInteractions() override;
 
   BubbleType type_;
-  bool checked_clicked_ = false;
   // Link to the settings range in the body text.
   gfx::Range link_range_;
 };

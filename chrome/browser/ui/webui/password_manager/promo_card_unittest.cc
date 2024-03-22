@@ -315,8 +315,6 @@ TEST_F(PromoCardCheckupTest, PromoShownIn7DaysAfterDismiss) {
   EXPECT_TRUE(promo->ShouldShowPromo());
 
   histogram_tester.ExpectUniqueSample("PasswordManager.PromoCard.Shown", 0, 1);
-  histogram_tester.ExpectUniqueSample("PasswordManager.PromoCard.Dismissed", 0,
-                                      1);
 }
 
 class PromoCardInWebTest : public PromoCardBaseTest {
@@ -402,8 +400,6 @@ TEST_F(PromoCardInWebTest, PromoNotShownAfterDismiss) {
 
   promo->OnPromoCardDismissed();
   EXPECT_FALSE(promo->ShouldShowPromo());
-  histogram_tester.ExpectUniqueSample("PasswordManager.PromoCard.Dismissed", 1,
-                                      1);
 }
 
 class PromoCardShortcutTest : public WebAppTest {
@@ -461,8 +457,6 @@ TEST_F(PromoCardShortcutTest, PromoNotShownAfterDismiss) {
 
   promo->OnPromoCardDismissed();
   EXPECT_FALSE(promo->ShouldShowPromo());
-  histogram_tester.ExpectUniqueSample("PasswordManager.PromoCard.Dismissed", 2,
-                                      1);
 }
 
 using PromoCardAccessAnyDeviceTest = PromoCardBaseTest;
@@ -492,8 +486,6 @@ TEST_F(PromoCardAccessAnyDeviceTest, PromoNotShownAfterDismiss) {
 
   promo->OnPromoCardDismissed();
   EXPECT_FALSE(promo->ShouldShowPromo());
-  histogram_tester.ExpectUniqueSample("PasswordManager.PromoCard.Dismissed", 3,
-                                      1);
 }
 
 }  // namespace password_manager

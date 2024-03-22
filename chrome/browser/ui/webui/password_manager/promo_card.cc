@@ -86,8 +86,6 @@ void PasswordPromoCardBase::OnPromoCardDismissed() {
       break;
     }
   }
-  base::UmaHistogramEnumeration("PasswordManager.PromoCard.Dismissed",
-                                GetPromoCardType());
 }
 
 void PasswordPromoCardBase::OnPromoCardShown() {

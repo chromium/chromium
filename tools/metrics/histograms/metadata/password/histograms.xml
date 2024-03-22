@@ -279,16 +279,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordBubble.CompromisedBubble.CheckClicked"
-    enum="BooleanClicked" expires_after="2024-04-28">
-  <owner>vasilii@chromium.org</owner>
-  <owner>kazinova@google.com</owner>
-  <summary>
-    Whether the user proceeded to the list of the left compromised passwords
-    from the bubble following save/update password.
-  </summary>
-</histogram>
-
 <histogram name="PasswordBubble.CompromisedBubble.Type"
     enum="PasswordBubbleFollowupType" expires_after="2024-08-31">
   <owner>vasilii@chromium.org</owner>
@@ -840,7 +830,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AutoSigninFirstRunDialog"
-    enum="AutoSigninFirstRun" expires_after="2024-04-28">
+    enum="AutoSigninFirstRun" expires_after="2024-07-28">
   <owner>vasilii@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <summary>
@@ -903,15 +893,6 @@ chromium-metrics-reviews@google.com.
     count is recorded once per browser start-up for regular profiles. (In case
     of multiple profiles, the counts are for the profile that first has a
     WebContents created.)
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.BulkCheck.CanceledTime" units="ms"
-    expires_after="2024-04-28">
-  <owner>vasilii@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>
-    The time the password bulk check was running until canceled by the user.
   </summary>
 </histogram>
 
@@ -3119,16 +3100,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the type of a promo card for which user clicked action button in the
     Password Manager UI. Recorded when a promo card action button is clicked.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.PromoCard.Dismissed"
-    enum="PasswordManagerPromoCard" expires_after="2024-04-28">
-  <owner>vasilii@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>
-    Records the type of a promo card dismissed in the Password Manager UI.
-    Recorded when a promo card is dismissed.
   </summary>
 </histogram>
 

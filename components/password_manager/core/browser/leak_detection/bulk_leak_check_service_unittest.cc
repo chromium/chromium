@@ -290,8 +290,6 @@ TEST_F(BulkLeakCheckServiceTest, CancelSomething) {
 
   EXPECT_EQ(BulkLeakCheckService::State::kCanceled, service().GetState());
   EXPECT_EQ(0u, service().GetPendingChecksCount());
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.BulkCheck.CanceledTime", kMockElapsedTime, 1);
 
   service().RemoveObserver(&observer);
 }

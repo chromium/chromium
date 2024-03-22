@@ -182,7 +182,4 @@ TEST_F(PromoCardMovePasswordsTest, PromoShownIn7DaysAfterDismiss) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PromoCard.Shown",
       password_manager::PromoCardType::kMovePasswords, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PromoCard.Dismissed",
-      password_manager::PromoCardType::kMovePasswords, 1);
 }
