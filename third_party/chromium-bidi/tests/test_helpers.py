@@ -72,7 +72,7 @@ async def read_JSON_message(websocket) -> dict:
     return json.loads(await websocket.recv())
 
 
-async def execute_command(websocket, command: dict) -> dict:
+async def execute_command(websocket, command: dict, timeout: int = 5) -> dict:
     if "id" not in command:
         command["id"] = get_next_command_id()
 
@@ -81,20 +81,24 @@ async def execute_command(websocket, command: dict) -> dict:
     logger.info(
         f"Executing command with method '{command['method']}' and params '{command['params']}'..."
     )
-    return await wait_for_command(websocket, command["id"])
+    return await wait_for_command(websocket, command["id"], timeout)
 
 
-async def wait_for_command(websocket, command_id: int) -> dict:
+async def wait_for_command(websocket,
+                           command_id: int,
+                           timeout: int = 5) -> dict:
     def _filter(resp):
         return "id" in resp and resp["id"] == command_id
 
-    resp = await wait_for_message(websocket, _filter)
+    resp = await wait_for_message(websocket, _filter, timeout)
     if "result" in resp:
         return resp["result"]
     raise Exception({"error": resp["error"], "message": resp["message"]})
 
 
-async def wait_for_message(websocket, filter_lambda: Callable[[dict], bool]):
+async def wait_for_message(websocket,
+                           filter_lambda: Callable[[dict], bool],
+                           timeout: int = 5):
     async def future():
         while True:
             # Wait for the command to be finished.
@@ -106,7 +110,7 @@ async def wait_for_message(websocket, filter_lambda: Callable[[dict], bool]):
     # within the given timeout.
     return await asyncio.wait_for(
         future(),
-        timeout=5,
+        timeout,
     )
 
 

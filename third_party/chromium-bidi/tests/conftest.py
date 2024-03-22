@@ -81,14 +81,18 @@ async def websocket(request, _websocket_connection):
     capabilities.update(request.param['capabilities'])
 
     await execute_command(
-        _websocket_connection, {
+        _websocket_connection,
+        {
             "method": "session.new",
             "params": {
                 "capabilities": {
                     "alwaysMatch": capabilities
                 }
             }
-        })
+        },
+        # The session.new command can take a long time to complete, so we need
+        # to increase the timeout.
+        20)
     yield _websocket_connection
 
     try:
