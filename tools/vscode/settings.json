@@ -74,6 +74,12 @@
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "modifications",
 
+  // Don't format HTML files automatically on save, as VSCode's default
+  // formatter doesn't deal well with Chromium Polymer files.
+  "[html]": {
+    "editor.formatOnSave": false,
+  },
+
   // Disable automatic task detection to speed up opening the task menu.
   "task.autoDetect": "off",
 
