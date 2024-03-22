@@ -91,12 +91,28 @@ source_set("start_host_main_headers") {
   deps = [ "//remoting/host:host_main_headers" ]
 }
 
+source_set("start_host_common") {
+  sources = [
+    "host_starter.cc",
+    "host_starter.h",
+    "host_starter_oauth_helper.cc",
+    "host_starter_oauth_helper.h",
+  ]
+
+  deps = [
+    ":common",
+    "//google_apis",
+    "//net",
+    "//remoting/base:base",
+    "//services/network:network_service",
+    "//services/network/public/cpp:cpp",
+  ]
+}
+
 source_set("start_host_main") {
   sources = [
     "corp_host_starter.cc",
     "corp_host_starter.h",
-    "host_starter.cc",
-    "host_starter.h",
     "host_stopper.cc",
     "host_stopper.h",
     "oauth_host_starter.cc",
@@ -113,6 +129,7 @@ source_set("start_host_main") {
 
   deps = [
     ":buildflags",
+    ":start_host_common",
     "//google_apis",
     "//mojo/core/embedder",
     "//net",
