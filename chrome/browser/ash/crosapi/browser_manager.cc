@@ -242,6 +242,41 @@ bool ShouldPrelaunchLacrosAtLoginScreen() {
   return true;
 }
 
+// TODO(b/330659545): Investigate why we cannot run this inside
+// OnUserProfileCreated.
+void PrepareLacrosPolicies(BrowserManager* manager) {
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!user) {
+    LOG(ERROR) << "No primary user.";
+    return;
+  }
+
+  // The lifetime of `BrowserManager` is longer than lifetime of various
+  // classes, for which we register as an observer below. The RemoveObserver
+  // function is therefore called in various handlers invoked by those classes
+  // and not in the destructor.
+  policy::CloudPolicyCore* core =
+      browser_util::GetCloudPolicyCoreForUser(*user);
+  if (core) {
+    core->AddObserver(manager);
+    if (core->refresh_scheduler()) {
+      core->refresh_scheduler()->AddObserver(manager);
+    }
+
+    policy::CloudPolicyStore* store = core->store();
+    if (store && store->policy_fetch_response()) {
+      store->AddObserver(manager);
+    }
+  }
+
+  policy::ComponentCloudPolicyService* component_policy_service =
+      browser_util::GetComponentCloudPolicyServiceForUser(*user);
+  if (component_policy_service) {
+    component_policy_service->AddObserver(manager);
+  }
+}
+
 // The delegate keeps track of the most recent lacros-chrome binary version
 // loaded by the BrowserLoader.
 // It is the single source of truth for what is the most up-to-date launchable
@@ -565,6 +600,8 @@ void BrowserManager::InitializeAndStartIfNeeded() {
 
   // Ensure this isn't run multiple times.
   session_manager::SessionManager::Get()->RemoveObserver(this);
+
+  PrepareLacrosPolicies(this);
 
   // Perform the UMA recording for the current Lacros launch mode and migration
   // status.
@@ -1087,29 +1124,6 @@ void BrowserManager::OnUserProfileCreated(const user_manager::User& user) {
     return;
   }
 
-  // The lifetime of `BrowserManager` is longer than lifetime of various
-  // classes, for which we register as an observer below. The RemoveObserver
-  // function is therefore called in various handlers invoked by those classes
-  // and not in the destructor.
-  policy::CloudPolicyCore* core = browser_util::GetCloudPolicyCoreForUser(user);
-  if (core) {
-    core->AddObserver(this);
-    if (core->refresh_scheduler()) {
-      core->refresh_scheduler()->AddObserver(this);
-    }
-
-    policy::CloudPolicyStore* store = core->store();
-    if (store && store->policy_fetch_response()) {
-      store->AddObserver(this);
-    }
-  }
-
-  policy::ComponentCloudPolicyService* component_policy_service =
-      browser_util::GetComponentCloudPolicyServiceForUser(user);
-  if (component_policy_service) {
-    component_policy_service->AddObserver(this);
-  }
-
   // Record data version for primary user profile.
   crosapi::browser_util::RecordDataVer(g_browser_process->local_state(),
                                        user.username_hash(),
@@ -1233,6 +1247,8 @@ void BrowserManager::OnResumeLaunchComplete(
 
   // Lacros launch is unblocked now.
   SetState(State::STARTING);
+
+  PrepareLacrosPolicies(this);
 
   // Perform the UMA recording for the current Lacros launch mode and migration
   // status.
