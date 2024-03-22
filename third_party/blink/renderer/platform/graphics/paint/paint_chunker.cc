@@ -280,7 +280,7 @@ void PaintChunker::CreateScrollHitTestChunk(
     cc::HitTestOpaqueness hit_test_opaqueness) {
 #if DCHECK_IS_ON()
   if (id.type == DisplayItem::Type::kResizerScrollHitTest ||
-      id.type == DisplayItem::Type::kPluginScrollHitTest ||
+      id.type == DisplayItem::Type::kWebPluginHitTest ||
       id.type == DisplayItem::Type::kScrollbarHitTest) {
     // Resizer, plugin, and scrollbar hit tests are only used to prevent
     // composited scrolling and should not have a scroll offset node.

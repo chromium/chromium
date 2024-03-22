@@ -142,8 +142,6 @@ class PLATFORM_EXPORT DisplayItem {
     kScrollHitTest,
     // Used to prevent composited scrolling on the resize handle.
     kResizerScrollHitTest,
-    // Used to prevent composited scrolling on plugins with wheel handlers.
-    kPluginScrollHitTest,
     // Used to prevent composited scrolling and set touch action region, on
     // custom scrollbars and non-composited native scrollbars.
     kScrollbarHitTest,
