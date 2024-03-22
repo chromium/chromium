@@ -636,26 +636,41 @@ void PeopleHandler::HandleStartSignin(const base::Value::List& args) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
 void PeopleHandler::HandleSignout(const base::Value::List& args) {
   bool delete_profile = false;
-  if (args[0].is_bool())
+  if (args[0].is_bool()) {
     delete_profile = args[0].GetBool();
-  base::FilePath profile_path = profile_->GetPath();
-
-  // TODO(crbug.com/1315163): consider splitting `HandleSignout()` in two
-  // different functions: one for "Signout" and one for "Turn off".
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+  }
   bool is_syncing =
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
-  bool delete_profile_allowed = signin_util::IsProfileDeletionAllowed(profile_);
-
-  DCHECK(!delete_profile || delete_profile_allowed)
-      << "Profile deletion is not allowed!";
+      IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+          signin::ConsentLevel::kSync);
   DCHECK(is_syncing || !delete_profile)
       << "Deleting the profile should only be offered if the user is "
          "syncing.";
+
+  bool is_clear_primary_account_allowed =
+      ChromeSigninClientFactory::GetForProfile(profile_)
+          ->IsClearPrimaryAccountAllowed(is_syncing);
+
+  if (is_syncing) {
+    HandleTurnOffSync(delete_profile, is_clear_primary_account_allowed);
+  } else {
+    HandleSignoutNonSyncing(is_clear_primary_account_allowed);
+  }
+}
+
+void PeopleHandler::HandleTurnOffSync(bool delete_profile,
+                                      bool is_clear_primary_account_allowed) {
+  base::FilePath profile_path = profile_->GetPath();
+  bool delete_profile_allowed = signin_util::IsProfileDeletionAllowed(profile_);
+  DCHECK(!delete_profile || delete_profile_allowed)
+      << "Profile deletion is not allowed!";
+
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   auto* signin_client = ChromeSigninClientFactory::GetForProfile(profile_);
-  if (is_syncing && !signin_client->IsRevokeSyncConsentAllowed()) {
+
+  if (!signin_client->IsRevokeSyncConsentAllowed()) {
     // If the user can't revoke sync the profile must be destroyed.
     if (delete_profile && delete_profile_allowed) {
       webui::DeleteProfileAtPath(profile_path,
@@ -666,20 +681,7 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
     return;
   }
 
-  bool is_clear_primary_account_allowed =
-      signin_client->IsClearPrimaryAccountAllowed(is_syncing);
-  if (!is_syncing && !is_clear_primary_account_allowed &&
-      !switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kExperimental)) {
-    // 'Signout' should not be offered in the UI if clear primary account is not
-    // allowed.
-    NOTREACHED()
-        << "Signout should not be offered if clear primary account is not "
-           "allowed.";
-    return;
-  }
-
-  if (is_syncing && !is_clear_primary_account_allowed) {
+  if (!is_clear_primary_account_allowed) {
     DCHECK(signin_client->IsRevokeSyncConsentAllowed());
     identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
         signin_metrics::ProfileSignout::kRevokeSyncFromSettings);
@@ -697,8 +699,7 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
     }
 
     if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-            switches::ExplicitBrowserSigninPhase::kFull) &&
-        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+            switches::ExplicitBrowserSigninPhase::kFull)) {
       // In Uno, Gaia logout tab invalidating the account will lead to a sign in
       // paused state. Unset the primary account to ensure it is removed from
       // chrome. The `AccountReconcilor` will revoke refresh tokens for accounts
@@ -706,8 +707,7 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
       identity_manager->GetPrimaryAccountMutator()
           ->RemovePrimaryAccountButKeepTokens(
               signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
-    } else if (identity_manager->HasPrimaryAccount(
-                   signin::ConsentLevel::kSync)) {
+    } else {
       // Only revoke the sync consent.
       // * If the primary account is still valid, then it will be removed by
       // the Gaia logout tab (see http://crbug.com/1068978).
@@ -729,6 +729,45 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
                                ProfileMetrics::DELETE_PROFILE_SETTINGS);
   }
 }
+
+void PeopleHandler::HandleSignoutNonSyncing(
+    bool is_clear_primary_account_allowed) {
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+
+  if (!is_clear_primary_account_allowed) {
+    // 'Signout' should not be offered in the UI if clear primary account is
+    // not allowed.
+    NOTREACHED()
+        << "Signout should not be offered if clear primary account is not "
+           "allowed.";
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
+#else
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+  if (browser) {
+    // Clearing the primary account isn't sufficient to signout SAML accounts,
+    // see http://crbug.com/1114646.
+    browser->signin_view_controller()->ShowGaiaLogoutTab(
+        signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
+  }
+
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kFull)) {
+    // In Uno, Gaia logout tab invalidating the account will lead to a sign in
+    // paused state. Unset the primary account to ensure it is removed from
+    // chrome. The `AccountReconcilor` will revoke refresh tokens for accounts
+    // not in the Gaia cookie on next reconciliation.
+    identity_manager->GetPrimaryAccountMutator()
+        ->RemovePrimaryAccountButKeepTokens(
+            signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
