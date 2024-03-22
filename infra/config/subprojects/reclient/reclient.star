@@ -285,6 +285,7 @@ fyi_reclient_test_builder(
     builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_category = "mac",
     priority = 35,
     reclient_bootstrap_env = {
