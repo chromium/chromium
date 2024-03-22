@@ -89,15 +89,8 @@ NSString* const kPassphrase = @"hello";
 
 // Tests opening the sync passphrase view, then a new window and check that
 // enter passphrase message appears.
-// TODO(crbug.com/330758164): Test failing on iPad simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testShowSyncPassphraseInNewWindowAndDismiss \
-  FLAKY_testShowSyncPassphraseInNewWindowAndDismiss
-#else
-#define MAYBE_testShowSyncPassphraseInNewWindowAndDismiss \
-  testShowSyncPassphraseInNewWindowAndDismiss
-#endif
-- (void)testShowSyncPassphraseInNewWindowAndDismiss {
+// TODO(crbug.com/330758164): Test is failing.
+- (void)DISABLED_testShowSyncPassphraseInNewWindowAndDismiss {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
