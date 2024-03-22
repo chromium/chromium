@@ -165,12 +165,12 @@
 
   // Testing valid permutation (types match).
   fuzzy_test_computed_color(`hsl(from rebeccapurple h l s)`, `color(srgb 0.5 0.3 0.7)`);
-  fuzzy_test_computed_color(`hsl(from rebeccapurple h alpha l / s)`, `color(srgb 0.4 0.396 0.404 / 1)`);
-  fuzzy_test_computed_color(`hsl(from rebeccapurple h l l / l)`, `color(srgb 0.4 0.24 0.56 / 1)`);
+  fuzzy_test_computed_color(`hsl(from rebeccapurple h alpha l / s)`, `color(srgb 0.4 0.396 0.404)`);
+  fuzzy_test_computed_color(`hsl(from rebeccapurple h l l / l)`, `color(srgb 0.4 0.24 0.56)`);
   fuzzy_test_computed_color(`hsl(from rebeccapurple h alpha alpha / alpha)`, `color(srgb 0.01 0.01 0.01)`);
   fuzzy_test_computed_color(`hsl(from rgb(20%, 40%, 60%, 80%) h l s)`, `color(srgb 0.3 0.5 0.7 / 0.8)`);
-  fuzzy_test_computed_color(`hsl(from rgb(20%, 40%, 60%, 80%) h alpha l / s)`, `color(srgb 0.397 0.4 0.403 / 1)`);
-  fuzzy_test_computed_color(`hsl(from rgb(20%, 40%, 60%, 80%) h l l / l)`, `color(srgb 0.24 0.4 0.56 / 1)`);
+  fuzzy_test_computed_color(`hsl(from rgb(20%, 40%, 60%, 80%) h alpha l / s)`, `color(srgb 0.397 0.4 0.403)`);
+  fuzzy_test_computed_color(`hsl(from rgb(20%, 40%, 60%, 80%) h l l / l)`, `color(srgb 0.24 0.4 0.56)`);
   fuzzy_test_computed_color(`hsl(from rgb(20%, 40%, 60%, 80%) h alpha alpha / alpha)`, `color(srgb 0.01 0.01 0.01 / 0.8)`);
 
   // Testing with calc().

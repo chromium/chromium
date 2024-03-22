@@ -1,37 +1,9 @@
 This is a testharness.js-based test.
-Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property color value 'rgb(from color-mix(in srgb, red, red) r g b / alpha)'
   assert_true: 'rgb(from color-mix(in srgb, red, red) r g b / alpha)' is a supported value for color. expected true got false
-[FAIL] Property color value 'hsl(from rebeccapurple h alpha l / s)'
-  Colors do not match.\nActual:   color(srgb 0.4 0 0.8 / 0.5)\nExpected: color(srgb 0.4 0.396 0.404 / 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.396 +/- 0.01, expected 0.396 but got 0
-[FAIL] Property color value 'hsl(from rebeccapurple h l l / l)'
-  Colors do not match.\nActual:   color(srgb 0.4 0.24 0.56 / 0.4)\nExpected: color(srgb 0.4 0.24 0.56 / 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 3, expected 1 +/- 0.01, expected 1 but got 0.4
-[FAIL] Property color value 'hsl(from rebeccapurple h alpha alpha / alpha)'
-  Colors do not match.\nActual:   color(srgb 1 1 1)\nExpected: color(srgb 0.01 0.01 0.01).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.01 +/- 0.01, expected 0.01 but got 1
-[FAIL] Property color value 'hsl(from rgb(20%, 40%, 60%, 80%) h alpha l / s)'
-  Colors do not match.\nActual:   color(srgb 0.08 0.4 0.72 / 0.5)\nExpected: color(srgb 0.397 0.4 0.403 / 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.397 +/- 0.01, expected 0.397 but got 0.08
-[FAIL] Property color value 'hsl(from rgb(20%, 40%, 60%, 80%) h l l / l)'
-  Colors do not match.\nActual:   color(srgb 0.24 0.4 0.56 / 0.4)\nExpected: color(srgb 0.24 0.4 0.56 / 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 3, expected 1 +/- 0.01, expected 1 but got 0.4
-[FAIL] Property color value 'hsl(from rgb(20%, 40%, 60%, 80%) h alpha alpha / alpha)'
-  Colors do not match.\nActual:   color(srgb 0.64 0.8 0.96 / 0.8)\nExpected: color(srgb 0.01 0.01 0.01 / 0.8).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.01 +/- 0.01, expected 0.01 but got 0.64
-[FAIL] Property color value 'hsl(from hsl(20 30 40 / 0.8) calc(h + 1) calc(s + 1) calc(l + 1) / calc(alpha + 0.01))'
-  Colors do not match.\nActual:   color(srgb 0.88 1.556 1.92 / 0.81)\nExpected: color(srgb 0.537 0.372 0.283 / 0.81).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.537 +/- 0.01, expected 0.537 but got 0.88
 [FAIL] Property color value 'hsl(from color-mix(in srgb, red, red) h s l / alpha)'
   assert_true: 'hsl(from color-mix(in srgb, red, red) h s l / alpha)' is a supported value for color. expected true got false
-[FAIL] Property color value 'hwb(from rebeccapurple h alpha w / b)'
-  Colors do not match.\nActual:   color(srgb 0.833333 0.833333 0.833333 / 0.4)\nExpected: color(srgb 0.405 0.01 0.8).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
-[FAIL] Property color value 'hwb(from rebeccapurple h w w / w)'
-  Colors do not match.\nActual:   color(srgb 0.5 0.2 0.8 / 0.2)\nExpected: color(srgb 0.5 0.2 0.8).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
-[FAIL] Property color value 'hwb(from rebeccapurple h alpha alpha / alpha)'
-  Colors do not match.\nActual:   color(srgb 0.5 0.5 0.5)\nExpected: color(srgb 0.5 0.01 0.99).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.01 +/- 0.01, expected 0.01 but got 0.5
-[FAIL] Property color value 'hwb(from rgb(20%, 40%, 60%, 80%) h alpha w / b)'
-  Colors do not match.\nActual:   color(srgb 0.8 0.8 0.8 / 0.4)\nExpected: color(srgb 0.01 0.404 0.8).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
-[FAIL] Property color value 'hwb(from rgb(20%, 40%, 60%, 80%) h w w / w)'
-  Colors do not match.\nActual:   color(srgb 0.2 0.5 0.8 / 0.2)\nExpected: color(srgb 0.2 0.5 0.8).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
-[FAIL] Property color value 'hwb(from rgb(20%, 40%, 60%, 80%) h alpha alpha / alpha)'
-  Colors do not match.\nActual:   color(srgb 0.5 0.5 0.5 / 0.8)\nExpected: color(srgb 0.01 0.5 0.992 / 0.8).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.01 +/- 0.01, expected 0.01 but got 0.5
-[FAIL] Property color value 'hwb(from hwb(20 30 40 / 0.8) calc(h + 1) calc(w + 1) calc(b + 1) / calc(alpha + 0.01))'
-  Colors do not match.\nActual:   color(srgb 0.481481 0.481481 0.481481 / 0.81)\nExpected: color(srgb 0.59 0.41 0.31 / 0.81).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.59 +/- 0.01, expected 0.59 but got 0.481481
 [FAIL] Property color value 'hwb(from color-mix(in srgb, red, red) h w b / alpha)'
   assert_true: 'hwb(from color-mix(in srgb, red, red) h w b / alpha)' is a supported value for color. expected true got false
 [FAIL] Property color value 'lab(from color-mix(in lab, lab(25 20 50), lab(25 20 50)) l a b / alpha)'

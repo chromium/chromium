@@ -340,10 +340,22 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     // r g b) will need to generate srgb keyword values for the origin color
     // "magenta". This will produce a map like: {CSSValueID::kR: 1,
     // CSSValueID::kG: 0, CSSValueID::kB: 1, CSSValueID::kAlpha: 1}.
+    std::array<double, 3> channel_values = {
+        origin_color_.Param0(), origin_color_.Param1(), origin_color_.Param2()};
+
+    // Convert from the [0 1] range to the [0 100] range for hsl() and
+    // hwb(). This is the inverse of the transform in
+    // MakePerColorSpaceAdjustments().
+    if (color_space_ == Color::ColorSpace::kHSL ||
+        color_space_ == Color::ColorSpace::kHWB) {
+      channel_values[1] *= 100;
+      channel_values[2] *= 100;
+    }
+
     channel_keyword_values_ = {
-        {function_metadata_->channel_name[0], origin_color_.Param0()},
-        {function_metadata_->channel_name[1], origin_color_.Param1()},
-        {function_metadata_->channel_name[2], origin_color_.Param2()},
+        {function_metadata_->channel_name[0], channel_values[0]},
+        {function_metadata_->channel_name[1], channel_values[1]},
+        {function_metadata_->channel_name[2], channel_values[2]},
         {CSSValueID::kAlpha, origin_color_.Alpha()},
     };
   }
@@ -516,7 +528,7 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
     }
   }
 
-    // Legacy syntax is not allowed for hwb().
+  // Legacy syntax is not allowed for hwb().
   if (color_space_ == Color::ColorSpace::kHWB && is_legacy_syntax_) {
     return false;
   }
@@ -529,13 +541,14 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
         if (is_legacy_syntax_) {
           return false;
         }
-        // Raw numbers are interpreted as percentages in these color spaces.
-        channels_[i] = channels_[i].value() / 100.0;
-      } else if (channel_types_[i] == ChannelType::kPercentage) {
-        channels_[i] = channels_[i].value() / 100.0;
       }
-      if (channels_[i].has_value() && is_legacy_syntax_) {
-        channels_[i] = ClampTo<double>(channels_[i].value(), 0.0, 1.0);
+      // Raw numbers are interpreted as percentages in these color spaces.
+      if (channels_[i].has_value()) {
+        channels_[i] = channels_[i].value() / 100.0;
+
+        if (is_legacy_syntax_) {
+          channels_[i] = ClampTo<double>(channels_[i].value(), 0.0, 1.0);
+        }
       }
     }
   }
