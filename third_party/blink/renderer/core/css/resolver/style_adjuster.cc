@@ -616,8 +616,7 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
 
   // We need to avoid to inlinify children of a <fieldset>, which creates a
   // dedicated LayoutObject and it assumes only block children.
-  if (RuntimeEnabledFeatures::RubyInlinifyEnabled() &&
-      layout_parent_style.InlinifiesChildren() &&
+  if (layout_parent_style.InlinifiesChildren() &&
       !builder.HasOutOfFlowPosition() && !builder.IsFloating() &&
       !(element && IsA<HTMLFieldSetElement>(element->parentNode()))) {
     builder.SetIsInInlinifyingDisplay();

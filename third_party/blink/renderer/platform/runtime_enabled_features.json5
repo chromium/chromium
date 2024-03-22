@@ -3292,11 +3292,6 @@
       status: "stable",
     },
     {
-      // crbug.com/1493273
-      name: "RubyInlinify",
-      status: "stable",
-    },
-    {
       // crbug.com/324111880
       name: "RubyLineBreakable",
     },

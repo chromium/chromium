@@ -50,10 +50,7 @@ void LayoutTable::Trace(Visitor* visitor) const {
 // would perform inlinification of its children), then an inline-table box must
 // be generated; otherwise it must be a table box.
 bool LayoutTable::ShouldCreateInlineAnonymous(const LayoutObject& parent) {
-  return RuntimeEnabledFeatures::RubyInlinifyEnabled()
-             ? (parent.IsLayoutInline() || parent.IsRubyBase() ||
-                parent.IsRubyText())
-             : parent.IsLayoutInline();
+  return parent.IsLayoutInline() || parent.IsRubyBase() || parent.IsRubyText();
 }
 
 LayoutTable* LayoutTable::CreateAnonymousWithParent(
