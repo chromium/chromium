@@ -75,6 +75,9 @@ config("compiler") {
     "-Xclang",
     "-fno-cxx-modules",
   ]
+  if (ios_chrome_generate_order_file) {
+    cflags_objcc += [ "-fsanitize-coverage=func,trace-pc-guard" ]
+  }
 
   ldflags = common_flags
 

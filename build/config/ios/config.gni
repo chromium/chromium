@@ -9,6 +9,12 @@ declare_args() {
   # default is only there for compatibility reasons and will be removed (see
   # crbug.com/1138425 for more details).
   target_environment = ""
+
+  # Generate orderfile at application startup.
+  # NOTE: This flag adds runtime tooling to capture function call details and
+  # then writes out an orderfile to the documents directory. It should generally
+  # NOT be enabled.
+  ios_chrome_generate_order_file = false
 }
 
 if (target_environment == "") {

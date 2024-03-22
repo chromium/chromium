@@ -108,6 +108,23 @@ if (target_environment == "catalyst") {
   ios_enable_screen_time = false
 }
 
+if (ios_chrome_generate_order_file) {
+  assert(
+      !enable_stripping && is_debug,
+      "An orderfile should only be generated if enable_stripping is false and is_debug is true to ensure all function calls are included.")
+
+  # Disable all extensions as the order file is only generated based on running
+  # the primary application.
+  ios_enable_content_widget_extension = false
+  ios_enable_search_widget_extension = false
+  ios_enable_credential_provider_extension = false
+  ios_enable_widget_kit_extension = false
+  ios_enable_prebuilt_widget_kit_extension = false
+  ios_enable_share_extension = false
+  ios_enable_open_extension = false
+  ios_enable_intents_extension = false
+}
+
 # Configure is_official_release.
 if (is_official_build && is_chrome_branded) {
   is_official_release = enable_dsyms && target_environment == "device" &&

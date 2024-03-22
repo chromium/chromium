@@ -1,0 +1,14 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("order_file") {
+  sources = [
+    "order_file.c",
+    "order_file_common.h",
+    "save_order_file.h",
+    "save_order_file.mm",
+    "startup_order_file.mm",
+  ]
+  deps = [ "//base" ]
+}

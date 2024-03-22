@@ -678,7 +678,9 @@ source_set("main") {
   if (ios_enable_sandbox_dump) {
     deps += [ "//ios/chrome/app/startup:sandbox_dump" ]
   }
-
+  if (ios_chrome_generate_order_file) {
+    deps += [ "//ios/components/order_file" ]
+  }
   assert_no_deps = []
 
   if (ios_chrome_links_with_material_components_framework) {
@@ -842,7 +844,7 @@ chrome_app("chrome") {
   }
 }
 
-if (current_toolchain == default_toolchain) {
+if (current_toolchain == default_toolchain && !ios_chrome_generate_order_file) {
   _extension_toolchain = "${current_toolchain}_app_ext"
   if (ios_enable_search_widget_extension) {
     extension_bundle_data("search_widget_extension_bundle") {
