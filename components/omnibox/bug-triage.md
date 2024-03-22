@@ -31,7 +31,10 @@ assigned bugs.)
 
 Chromium has migrated to Buganizer. Googlers familiar with Monorail
 should read the Quick Start Guide ([go/cob-quick-start](https://goto.google.com/cob-quick-start))
-and save the two Chrome-wide bookmark groups.
+and save the Chrome-wide [Chromium Critical Hotlists](https://issues.chromium.org/bookmark-groups/860925) and
+[Chromium Migrated Hotlists](https://issues.chromium.org/bookmark-groups/835579) bookmark groups.
+
+The definition of [Bug Statuses](https://g3doc.corp.google.com/cloud/looker/g3doc/buganizer/bug_statuses.md?cl=head).
 
 TODO: Delete this section after 02/2025, after the migration is old news.
 
@@ -53,8 +56,8 @@ Hotlist IDs:
 
 * Every Monday, Wednesday and Friday, the triage engineer looks over all
   untriaged bugs is both the
-  [Omnibox](https://issues.chromium.org/issues?q=componentid:1457180%2b%20-componentid:1456767%20status:new%20-hotlistid:(5438642%20%7C%205432513%20%7C%205433459%20%7C%205432926)) and
-  [Search](https://issues.chromium.org/issues?q=componentid:1457335%2b%20status:new%20-hotlistid:(5438642%20%7C%205432513%20%7C%205433459%20%7C%205432926))
+  [Omnibox](https://issues.chromium.org/savedsearches/6741224) and
+  [Search](https://issues.chromium.org/savedsearches/6740777)
   components (and their sub-components - that's what the "+" after the component
   ID in the URL does) and triages them. Untriaged bugs are defined as having
   *status:new* and are NOT Hotlisted as *Available* or
@@ -71,14 +74,14 @@ Hotlist IDs:
       triage a couple of older issues as well so we can eventually catch up.
       TODO: Remove this note once we've caught up.
 * Every week on Tuesday, the triage engineer looks over
-[all untriaged bugs that aren’t categorized as omnibox yet have relevant terms](https://issues.chromium.org/issues?q=-componentid:1457180%20status:new%20-hotlistid:(5438642%20%7C%205432513%20%7C%205433459%20%7C%205432926)%20(omnibox%20%7C%20omnibar%20%7C%20%22omni%20bar%22%20%7C%20locationbar%20%7C%20%22location%20bar%22%20%7C%20addressbar%20%7C%20%22address%20bar%22)%20created:8d)
+[all untriaged bugs that aren’t categorized as omnibox yet have relevant terms](https://issues.chromium.org/savedsearches/6740778)
 to see if any should be moved to the omnibox component and triaged. This search
 is limited to issues created in the past 8 days (the time since the previous
 triage engineer's check plus a small margin of error).
-* Every week on Tuesday, the triage engineer should also look over all bugs
+* Every week on Tuesday, the triage engineer should also look over all open bugs
 with Hotlist *Needs-Feedback* in the
-[Omnibox](https://issues.chromium.org/issues?q=componentid:1457180%2b%20-componentid:1456767%20status:open%20hotlistid:5433459) and
-[Search](https://issues.chromium.org/issues?q=componentid:1457335%2b%20status:open%20hotlistid:5433459)
+[Omnibox](https://issues.chromium.org/savedsearches/6740752) and
+[Search](https://issues.chromium.org/savedsearches/6741202)
   components and take action on those that have been sitting for too long.
     * If there's been no feedback over a week since the Hotlist was added, ping
       the reporter (or whoever's being asked for feedback) and politely ask them
