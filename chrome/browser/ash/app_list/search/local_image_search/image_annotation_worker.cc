@@ -36,7 +36,7 @@ using TokenizedString = ::ash::string_matching::TokenizedString;
 using Mode = ::ash::string_matching::TokenizedString::Mode;
 
 constexpr int kMaxFileSizeBytes = 2e+7;    // ~ 20MiB
-constexpr int kConfidenceThreshold = 128;  // 50% of 255 (max of ICA)
+constexpr int kConfidenceThreshold = 79;   // 30% of 255 (max of ICA)
 constexpr int kOcrMinWordLength = 3;
 constexpr int kRetryDelay = 2;  // For exponential delays.
 constexpr int kMaxNumRetries = 10;
