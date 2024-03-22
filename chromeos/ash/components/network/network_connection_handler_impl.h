@@ -42,6 +42,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
       const std::string& service_path,
       base::OnceClosure success_callback,
       network_handler::ErrorCallback error_callback) override;
+  void OnAutoConnectedInitiated(int auto_connect_reasons) override;
 
   // NetworkStateHandlerObserver
   void NetworkListChanged() override;
@@ -200,6 +201,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
 
   // Track certificate loading state.
   bool certificates_loaded_ = false;
+  // Track if there's a connection triggered by policy auto-connect.
+  bool has_policy_auto_connect_ = false;
 
   base::WeakPtrFactory<NetworkConnectionHandlerImpl> weak_ptr_factory_{this};
 };

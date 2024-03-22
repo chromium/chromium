@@ -81,6 +81,8 @@ class TestNetworkConnectionHandler : public NetworkConnectionHandler {
       ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
       CellularConnectionHandler* cellular_connection_handler) override {}
 
+  void OnAutoConnectedInitiated(int reason) override {}
+
  private:
   base::OnceClosure disconnect_callback_;
 

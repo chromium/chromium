@@ -83,6 +83,8 @@ class TestNetworkConnectionHandler : public NetworkConnectionHandler {
       NetworkConfigurationHandler* network_configuration_handler,
       ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
       CellularConnectionHandler* cellular_connection_handler) override {}
+
+  void OnAutoConnectedInitiated(int auto_connect_reasons) override {}
 };
 
 }  // namespace

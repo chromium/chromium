@@ -15,9 +15,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/network/auto_connect_handler.h"
 #include "chromeos/ash/components/network/cellular_connection_handler.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
+#include "chromeos/ash/components/network/client_cert_resolver.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
@@ -235,6 +237,15 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     network_connection_handler_->AddObserver(
         network_connection_observer_.get());
 
+    client_cert_resolver_ = std::make_unique<ClientCertResolver>();
+    client_cert_resolver_->Init(helper_.network_state_handler(),
+                                managed_config_handler_.get());
+
+    auto_connect_handler_ = std::make_unique<AutoConnectHandler>();
+    auto_connect_handler_->Init(
+        client_cert_resolver_.get(), network_connection_handler_.get(),
+        helper_.network_state_handler(), managed_config_handler_.get());
+
     task_environment_.RunUntilIdle();
 
     fake_tether_delegate_ = std::make_unique<FakeTetherDelegate>();
@@ -243,6 +254,8 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   void TearDown() override {
     helper_.hermes_euicc_test()->SetInteractiveDelay(base::Seconds(0));
     helper_.manager_test()->SetInteractiveDelay(base::Seconds(0));
+    auto_connect_handler_.reset();
+    client_cert_resolver_.reset();
     managed_config_handler_.reset();
     network_profile_handler_.reset();
     network_connection_handler_->RemoveObserver(
@@ -542,6 +555,18 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     helper_.service_test()->SetErrorForNextConnectionAttempt(error_name);
   }
 
+  void TriggerPolicyAutoConnectOverrideRequest(
+      const std::string& service_path_to_override) {
+    auto_connect_handler_->NotifyAutoConnectInitiatedForTest(
+        AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);
+    // Simulate the policy autoconnection override the manual connection
+    // request.
+    helper_.service_test()->SetServiceProperty(service_path_to_override,
+                                               shill::kStateProperty,
+                                               base::Value(shill::kStateIdle));
+    base::RunLoop().RunUntilIdle();
+  }
+
   NetworkStateHandler* network_state_handler() {
     return helper_.network_state_handler();
   }
@@ -578,6 +603,8 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
       cellular_esim_profile_handler_;
   std::unique_ptr<StubCellularNetworksProvider>
       stub_cellular_networks_provider_;
+  std::unique_ptr<AutoConnectHandler> auto_connect_handler_;
+  std::unique_ptr<ClientCertResolver> client_cert_resolver_;
   std::unique_ptr<CellularConnectionHandler> cellular_connection_handler_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
   crypto::ScopedTestNSSDB test_nssdb_;
@@ -1375,6 +1402,21 @@ TEST_F(NetworkConnectionHandlerImplTest,
   // transitioned.
   AdvanceClock(kCellularConnectTimeout);
   EXPECT_EQ(NetworkConnectionHandler::kErrorConnectTimeout,
+            GetResultAndReset());
+}
+
+TEST_F(NetworkConnectionHandlerImplTest, PolicyConnectOverride) {
+  const base::TimeDelta kConectDelay = base::Seconds(1);
+  Init();
+  std::string wifi0_service_path = ConfigureService(kConfigWifi0Connectable);
+
+  ShillManagerClient::Get()->GetTestInterface()->SetInteractiveDelay(
+      kConectDelay);
+  Connect(wifi0_service_path);
+  TriggerPolicyAutoConnectOverrideRequest(wifi0_service_path);
+
+  AdvanceClock(kConectDelay);
+  EXPECT_EQ(NetworkConnectionHandler::kErrorConnectCanceled,
             GetResultAndReset());
 }
 
