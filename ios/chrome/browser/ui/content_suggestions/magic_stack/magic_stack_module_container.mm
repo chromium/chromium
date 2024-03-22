@@ -6,6 +6,8 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
@@ -402,7 +404,8 @@ const CGFloat kSeparatorHeight = 0.5;
 - (NSArray<UIAction*>*)contextMenuActions {
   NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
 
-  if (IsSetUpListModuleType(self.type) && IsIOSTipsNotificationsEnabled()) {
+  if (IsSetUpListModuleType(self.type) && IsIOSTipsNotificationsEnabled() &&
+      ![self optedInToTipsNotifications]) {
     [actions addObject:[self turnOnTipsNotificationsAction]];
   }
   [actions addObject:[self hideAction]];
@@ -564,4 +567,10 @@ const CGFloat kSeparatorHeight = 0.5;
   }
 }
 
+// Returns YES if the user has already opted-in to Tips Notifications.
+- (BOOL)optedInToTipsNotifications {
+  return push_notification_settings::
+      GetMobileNotificationPermissionStatusForClient(
+          PushNotificationClientId::kTips, "");
+}
 @end
