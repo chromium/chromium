@@ -13,9 +13,13 @@ source_set("core") {
     "saved_tab_group_sync_bridge.h",
     "saved_tab_group_tab.cc",
     "saved_tab_group_tab.h",
+    "tab_group_sync_service.h",
+    "tab_group_sync_service_impl.cc",
+    "tab_group_sync_service_impl.h",
   ]
   deps = [
     "//base",
+    "//components/keyed_service/core",
     "//components/sync",
     "//components/tab_groups",
     "//ui/gfx",
@@ -31,6 +35,7 @@ source_set("unit_tests") {
     "saved_tab_group_proto_conversion_unittest.cc",
     "saved_tab_group_sync_bridge_unittest.cc",
     "saved_tab_group_unittest.cc",
+    "tab_group_sync_service_unittest.cc",
   ]
   deps = [
     ":core",
