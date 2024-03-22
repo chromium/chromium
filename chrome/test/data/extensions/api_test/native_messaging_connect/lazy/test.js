@@ -21,7 +21,7 @@ chrome.test.getConfig(function(config) {
           [{'text': 'foo'}, {'text': 'bar', 'funCount': 9001}, {}];
       var currentMessage = 0;
 
-      port = chrome.extension.connectNative(appName);
+      port = chrome.runtime.connectNative(appName);
       port.postMessage(messagesToSend[currentMessage]);
 
       port.onMessage.addListener(function(message) {
@@ -40,7 +40,7 @@ chrome.test.getConfig(function(config) {
 
     // Verify that the case when host stops itself is handled properly.
     function stopHost() {
-      port = chrome.extension.connectNative(appName);
+      port = chrome.runtime.connectNative(appName);
 
       port.onDisconnect.addListener(
           chrome.test.callback(function() {}, 'Native host has exited.'));
