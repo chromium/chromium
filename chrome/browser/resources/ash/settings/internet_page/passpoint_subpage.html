@@ -14,38 +14,33 @@
   </cr-button>
 </div>
 <template is="dom-if" if="[[hasExpirationDate_(subscription_)]]">
-  <div class="settings-box first two-line single-column"
-      aria-labelledby="passpointExpirationLabel passpointExpirationDate">
-    <div id="passpointExpirationLabel" aria-hidden="true">
+  <div class="settings-box first two-line single-column">
+    <div id="passpointExpirationLabel">
       $i18n{passpointSubscriptionExpirationLabel}
     </div>
-    <div id="passpointExpirationDate" class="secondary" aria-hidden="true">
+    <div id="passpointExpirationDate" class="secondary">
       [[getExpirationDate_(subscription_)]]
     </div>
   </div>
 </template>
-<div class="settings-box two-line single-column"
-    aria-labelledby="passpointSourceLabel passpointSourceText">
-  <div id="passpointSourceLabel" aria-hidden="true">
+<div class="settings-box two-line single-column">
+  <div id="passpointSourceLabel">
     $i18n{passpointSourceLabel}
   </div>
-  <div id="passpointSourceText" class="secondary" aria-hidden="true">
+  <div id="passpointSourceText" class="secondary">
     [[providerName_]]
   </div>
 </div>
-<div class="settings-box two-line single-column"
-    aria-labelledby="passpointTrustedCALabel passpointCertificateName">
-  <div id="passpointTrustedCALabel" aria-hidden="true">
+<div class="settings-box two-line single-column">
+  <div id="passpointTrustedCALabel">
     $i18n{passpointTrustedCALabel}
   </div>
-  <div id="passpointCertificateName" class="secondary" aria-hidden="true">
+  <div id="passpointCertificateName" class="secondary">
     [[certificateAuthorityName_]]
   </div>
 </div>
 <template is="dom-if" if="[[hasNetworks_(networks_)]]">
-  <div class="settings-box settings-box-text">
-    $i18n{passpointAssociatedWifiNetworks}
-  </div>
+  <h2 class="settings-box">$i18n{passpointAssociatedWifiNetworks}</h2>
   <div id="passpointNetworksList" class="list-frame vertical-list">
     <template is="dom-repeat" items="[[networks_]]">
       <div class="list-item">

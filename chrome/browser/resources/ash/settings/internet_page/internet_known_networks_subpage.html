@@ -8,9 +8,7 @@
   <div class="settings-box-text">$i18n{knownNetworksMessage}</div>
 </div>
 
-<div class="settings-box settings-box-text">
-  <div class="secondary">$i18n{knownNetworksPreferred}</div>
-</div>
+<h2 class="settings-box">$i18n{knownNetworksPreferred}</h2>
 <div class="list-frame vertical-list"
     hidden$="[[havePreferred_(networkStateList_)]]">
   <div class="list-item settings-box-text">
@@ -41,9 +39,7 @@
   </template>
 </div>
 
-<div class="settings-box settings-box-text">
-  <div class="secondary">$i18n{knownNetworksAll}</div>
-</div>
+<h2 class="settings-box">$i18n{knownNetworksAll}</h2>
 <div id="notPreferredNetworkList" class="list-frame vertical-list"
     hidden$="[[!haveNotPreferred_(networkStateList_)]]">
   <template is="dom-repeat" items="[[networkStateList_]]"
@@ -71,9 +67,7 @@
 
 <template is="dom-if"
     if="[[shouldShowPasspointSection_(passpointSubscriptionsList_)]]">
-  <div class="settings-box settings-box-text">
-    <div class="secondary">$i18n{passpointSectionLabel}</div>
-  </div>
+  <h2 class="settings-box">$i18n{passpointSectionLabel}</h2>
   <div id="passpointSubscriptionList" class="list-frame vertical-list">
     <template is="dom-repeat" items="[[passpointSubscriptionsList_]]">
       <div class="list-item">
