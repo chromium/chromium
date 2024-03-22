@@ -24,7 +24,7 @@ import {
   ErrorType,
 } from './type.js';
 
-enum SupportedWifiSecurityType {
+export enum SupportedWifiSecurityType {
   EAP = 'WPA2-EAP',
   NONE = 'nopass',
   WEP = 'WEP',

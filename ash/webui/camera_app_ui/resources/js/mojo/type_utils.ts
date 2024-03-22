@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from '../assert.js';
+import {SupportedWifiSecurityType} from '../barcode_chip.js';
 import {SessionBehavior} from '../memory_usage.js';
 import {
   BarcodeContentType,
@@ -333,14 +334,12 @@ export function convertBarcodeContentTypeToMojo(
  */
 export function convertWifiSecurityTypeToMojo(securityType: string):
     mojoType.WifiSecurityType {
-  // TODO(b/326365002): Use an enum to define Wi-Fi security strings instead of
-  // using the raw strings.
   switch (securityType) {
-    case 'WEP':
+    case SupportedWifiSecurityType.WEP:
       return mojoType.WifiSecurityType.kWep;
-    case 'WPA':
+    case SupportedWifiSecurityType.WPA:
       return mojoType.WifiSecurityType.kWpa;
-    case 'WPA2-EAP':
+    case SupportedWifiSecurityType.EAP:
       return mojoType.WifiSecurityType.kEap;
     default:
       return mojoType.WifiSecurityType.kNone;
