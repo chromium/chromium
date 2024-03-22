@@ -36,6 +36,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -750,6 +751,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 mSyncService.setSyncRequested();
                 mSyncService.setInitialSyncFeatureSetupComplete(
                         SyncFirstSetupCompleteSource.ADVANCED_FLOW_INTERRUPTED_TURN_SYNC_ON);
+                return;
+            case SyncError.UPM_BACKEND_OUTDATED:
+                PasswordManagerHelper.launchGmsUpdate(getContext());
                 return;
             case SyncError.NO_ERROR:
             default:

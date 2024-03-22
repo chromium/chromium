@@ -141,6 +141,9 @@ public class SyncSettingsUtils {
         }
 
         if (PasswordManagerHelper.getForProfile(profile).canUseUpm()
+                // TODO(crbug.com/327623232): Use
+                // PasswordManagerUtilBridge.isGmsCoreUpdateRequired()
+                // instead.
                 && PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
             return SyncError.UPM_BACKEND_OUTDATED;
         }

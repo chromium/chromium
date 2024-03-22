@@ -7,16 +7,26 @@ package org.chromium.chrome.browser.sync;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
+import android.app.Activity;
 import android.app.Dialog;
+import android.app.Instrumentation.ActivityResult;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -29,6 +39,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -54,6 +66,8 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.AppHooksImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -62,6 +76,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
+import org.chromium.chrome.browser.sync.settings.SyncErrorCardPreference;
 import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
@@ -1098,6 +1113,69 @@ public class ManageSyncSettingsTest {
         closeFragment(fragment);
 
         verifyUrlKeyedAnonymizedDataCollectionNotSet();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    public void testSyncErrorCardActionForUpmBackendOutdatedError() {
+        FakePasswordManagerBackendSupportHelper helper =
+                new FakePasswordManagerBackendSupportHelper();
+        helper.setBackendPresent(true);
+        helper.setUpdateNeeded(true);
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(helper);
+
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+
+        // The error card exists.
+        onView(withId(R.id.signin_promo_view_wrapper)).check(matches(isDisplayed()));
+
+        Intents.init();
+        // Stub all external intents.
+        intending(not(IntentMatchers.isInternal()))
+                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+
+        onView(withId(R.id.sync_promo_signin_button)).perform(click());
+        // Expect intent to open the play store.
+        // TODO(crbug.com/327623232): Have this as a constant in PasswordManagerHelper.
+        intended(IntentMatchers.hasPackage("com.android.vending"));
+
+        Intents.release();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    public void testSyncErrorCardForUpmBackendOutdatedUpdatedDynamically() {
+        FakePasswordManagerBackendSupportHelper helper =
+                new FakePasswordManagerBackendSupportHelper();
+        helper.setBackendPresent(true);
+        helper.setUpdateNeeded(true);
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(helper);
+
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+        SyncErrorCardPreference preference =
+                (SyncErrorCardPreference)
+                        fragment.findPreference(ManageSyncSettings.PREF_SYNC_ERROR_CARD_PREFERENCE);
+
+        // The error card exists.
+        Assert.assertTrue(preference.isShown());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Simulate the user updating the upm backend.
+                    helper.setUpdateNeeded(false);
+                    // TODO(crbug.com/327623232): Observe such changes instead.
+                    preference.syncStateChanged();
+                });
+        // The error card is now hidden.
+        Assert.assertFalse(preference.isShown());
     }
 
     private ManageSyncSettings startManageSyncPreferences() {
