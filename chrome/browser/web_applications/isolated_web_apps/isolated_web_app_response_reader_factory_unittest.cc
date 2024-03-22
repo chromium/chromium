@@ -64,20 +64,20 @@ constexpr uint8_t kEd25519Signature[64] = {
 class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
  public:
   explicit FakeIsolatedWebAppValidator(
-      std::optional<std::string> integrity_block_error)
+      base::expected<void, std::string> integrity_block_validation_result)
       : IsolatedWebAppValidator(/*isolated_web_app_trust_checker=*/nullptr),
-        integrity_block_error_(integrity_block_error) {}
+        integrity_block_validation_result_(integrity_block_validation_result) {}
 
   void ValidateIntegrityBlock(
       const web_package::SignedWebBundleId& web_bundle_id,
       const web_package::SignedWebBundleIntegrityBlock& integrity_block,
       bool dev_mode,
-      base::OnceCallback<void(std::optional<std::string>)> callback) override {
-    std::move(callback).Run(integrity_block_error_);
+      IntegrityBlockCallback callback) override {
+    std::move(callback).Run(integrity_block_validation_result_);
   }
 
  private:
-  std::optional<std::string> integrity_block_error_;
+  base::expected<void, std::string> integrity_block_validation_result_;
 };
 
 class FakeSignatureVerifier
@@ -141,7 +141,7 @@ class IsolatedWebAppResponseReaderFactoryTest : public ::testing::Test {
     integrity_block_->signature_stack = std::move(signature_stack);
 
     factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(
-        std::make_unique<FakeIsolatedWebAppValidator>(std::nullopt),
+        std::make_unique<FakeIsolatedWebAppValidator>(base::ok()),
         base::BindRepeating(
             []() -> std::unique_ptr<
                      web_package::SignedWebBundleSignatureVerifier> {
@@ -249,7 +249,8 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
   base::HistogramTester histogram_tester;
 
   factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(
-      std::make_unique<FakeIsolatedWebAppValidator>("test error"),
+      std::make_unique<FakeIsolatedWebAppValidator>(
+          base::unexpected("test error")),
       base::BindRepeating(
           []() -> std::unique_ptr<
                    web_package::SignedWebBundleSignatureVerifier> {
@@ -290,7 +291,7 @@ TEST_P(IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest,
   base::HistogramTester histogram_tester;
 
   factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(
-      std::make_unique<FakeIsolatedWebAppValidator>(std::nullopt),
+      std::make_unique<FakeIsolatedWebAppValidator>(base::ok()),
       base::BindRepeating(
           [](VerifierError error)
               -> std::unique_ptr<

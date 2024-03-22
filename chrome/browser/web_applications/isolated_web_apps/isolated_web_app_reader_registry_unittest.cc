@@ -64,25 +64,26 @@ constexpr uint8_t kEd25519Signature[64] = {
 class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
  public:
   explicit FakeIsolatedWebAppValidator(
-      std::optional<std::string> integrity_block_error)
+      base::expected<void, std::string> integrity_block_validation_result)
       : IsolatedWebAppValidator(/*isolated_web_app_trust_checker=*/nullptr),
-        integrity_block_error_(integrity_block_error) {}
+        integrity_block_validation_result_(integrity_block_validation_result) {}
 
   void ValidateIntegrityBlock(
       const web_package::SignedWebBundleId& web_bundle_id,
       const web_package::SignedWebBundleIntegrityBlock& integrity_block,
       bool dev_mode,
-      base::OnceCallback<void(std::optional<std::string>)> callback) override {
-    std::move(callback).Run(integrity_block_error_);
+      IntegrityBlockCallback callback) override {
+    std::move(callback).Run(integrity_block_validation_result_);
   }
 
-  void set_integrity_block_error(
-      std::optional<std::string> integrity_block_error) {
-    integrity_block_error_ = std::move(integrity_block_error);
+  void set_integrity_block_validation_result(
+      base::expected<void, std::string> integrity_block_validation_result) {
+    integrity_block_validation_result_ =
+        std::move(integrity_block_validation_result);
   }
 
  private:
-  std::optional<std::string> integrity_block_error_;
+  base::expected<void, std::string> integrity_block_validation_result_;
 };
 
 class FakeSignatureVerifier
@@ -148,7 +149,7 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
     integrity_block_->signature_stack = std::move(signature_stack);
 
     registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-        std::make_unique<FakeIsolatedWebAppValidator>(std::nullopt),
+        std::make_unique<FakeIsolatedWebAppValidator>(base::ok()),
         base::BindRepeating(
             []() -> std::unique_ptr<
                      web_package::SignedWebBundleSignatureVerifier> {
@@ -270,7 +271,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
-  auto validator = std::make_unique<FakeIsolatedWebAppValidator>(std::nullopt);
+  auto validator = std::make_unique<FakeIsolatedWebAppValidator>(base::ok());
   auto* validator_ref = validator.get();
 
   registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
@@ -286,7 +287,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
 
   // First, simulate a successful parsing of the integrity block, and read a
   // response.
-  validator_ref->set_integrity_block_error(std::nullopt);
+  validator_ref->set_integrity_block_validation_result(base::ok());
   {
     base::test::TestFuture<ReadResult> read_response_future;
     registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
@@ -302,7 +303,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
 
   // Now, make all further attempts to parse an integrity block return with an
   // error.
-  validator_ref->set_integrity_block_error("some error");
+  validator_ref->set_integrity_block_validation_result(
+      base::unexpected("some error"));
   {
     // A request to the already opened bundle should still succeed.
     base::test::TestFuture<ReadResult> read_response_future;
@@ -408,7 +410,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
 
   size_t num_signature_verifications = 0;
   registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-      std::make_unique<FakeIsolatedWebAppValidator>(std::nullopt),
+      std::make_unique<FakeIsolatedWebAppValidator>(base::ok()),
       base::BindLambdaForTesting(
           [&]() -> std::unique_ptr<
                     web_package::SignedWebBundleSignatureVerifier> {
@@ -577,7 +579,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlockContents) {
   resource_request.url = kUrl;
 
   registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-      std::make_unique<FakeIsolatedWebAppValidator>("test error"),
+      std::make_unique<FakeIsolatedWebAppValidator>(
+          base::unexpected("test error")),
       base::BindRepeating(
           []() -> std::unique_ptr<
                    web_package::SignedWebBundleSignatureVerifier> {
@@ -613,7 +616,7 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
   resource_request.url = kUrl;
 
   registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-      std::make_unique<FakeIsolatedWebAppValidator>(std::nullopt),
+      std::make_unique<FakeIsolatedWebAppValidator>(base::ok()),
       base::BindRepeating(
           []() -> std::unique_ptr<
                    web_package::SignedWebBundleSignatureVerifier> {

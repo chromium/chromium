@@ -10,11 +10,9 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 
 namespace web_package {
 class SignedWebBundleId;
-class SignedWebBundleIntegrityBlock;
 }  // namespace web_package
 
 class Profile;
@@ -54,29 +52,18 @@ class IsolatedWebAppTrustChecker {
   struct Result;
 
   // Checks whether the user agent trusts the Isolated Web App identified by the
-  // `expected_web_bundle_id` and the given `public_key_stack`. Returns with
-  // `Result::Type::kTrusted` if the Isolated Web App is trusted.
-  //
-  // This function also makes sure that the `expected_web_bundle_id` is actually
-  // derived from the `public_key_stack`.
+  // `web_bundle_id`. Returns with `Result::Type::kTrusted` if the Isolated Web
+  // App is trusted.
   //
   // Whether or not Isolated Web App developer mode is enabled in the browser is
   // only taken into account when `is_dev_mode_bundle` is set to `true`.
-  //
-  // Important: This method does not verify the signatures themselves - it only
-  // checks whether the public keys associated with these signatures correspond
-  // to trusted parties.
-  virtual Result IsTrusted(
-      const web_package::SignedWebBundleId& expected_web_bundle_id,
-      const web_package::SignedWebBundleIntegrityBlock& integrity_block,
-      bool is_dev_mode_bundle) const;
+  virtual Result IsTrusted(const web_package::SignedWebBundleId& web_bundle_id,
+                           bool is_dev_mode_bundle) const;
 
   struct Result {
     enum class Status {
       kTrusted,
       kErrorUnsupportedWebBundleIdType,
-      kErrorInvalidSignatureStackLength,
-      kErrorWebBundleIdNotDerivedFromFirstPublicKey,
       kErrorPublicKeysNotTrusted,
     };
 
@@ -93,8 +80,6 @@ class IsolatedWebAppTrustChecker {
 #endif
 
   raw_ref<Profile> profile_;
-
-  base::WeakPtrFactory<IsolatedWebAppTrustChecker> weak_ptr_factory_{this};
 };
 
 // Used in tests to pretend that the given Web Bundle IDs are trusted.

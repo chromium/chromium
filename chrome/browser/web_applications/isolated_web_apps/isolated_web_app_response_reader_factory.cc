@@ -113,15 +113,15 @@ void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockValidated(
     bool skip_signature_verification,
     base::OnceCallback<void(SignedWebBundleReader::SignatureVerificationAction)>
         integrity_callback,
-    std::optional<std::string> integrity_block_error) {
+    base::expected<void, std::string> validation_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (integrity_block_error.has_value()) {
+  if (!validation_result.has_value()) {
     // Aborting parsing will trigger a call to `OnIntegrityBlockAndMetadataRead`
     // with a `SignedWebBundleReader::AbortedByCaller` error.
     std::move(integrity_callback)
         .Run(SignedWebBundleReader::SignatureVerificationAction::Abort(
-            *integrity_block_error));
+            validation_result.error()));
     return;
   }
 

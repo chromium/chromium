@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -33,20 +35,46 @@ void IsolatedWebAppValidator::ValidateIntegrityBlock(
     const web_package::SignedWebBundleId& expected_web_bundle_id,
     const web_package::SignedWebBundleIntegrityBlock& integrity_block,
     bool dev_mode,
-    base::OnceCallback<void(std::optional<std::string>)> callback) {
-  // In here, we would also validate other properties of the Integrity Block,
-  // such as whether its version is supported (once we support multiple
+    IntegrityBlockCallback callback) {
+  if (expected_web_bundle_id.type() !=
+      web_package::SignedWebBundleId::Type::kEd25519PublicKey) {
+    std::move(callback).Run(base::unexpected(
+        "Only Web Bundle IDs of type Ed25519PublicKey are supported."));
+    return;
+  }
+
+  if (integrity_block.signature_stack().size() != 1) {
+    // TODO: crbug.com/40239682 - Support more than one signature.
+    std::move(callback).Run(base::unexpected(
+        base::StringPrintf("Expected exactly 1 signature, but got %zu.",
+                           integrity_block.signature_stack().size())));
+    return;
+  }
+
+  auto derived_web_bundle_id =
+      integrity_block.signature_stack().derived_web_bundle_id();
+  if (derived_web_bundle_id != expected_web_bundle_id) {
+    std::move(callback).Run(base::unexpected(base::StringPrintf(
+        "The Web Bundle ID (%s) derived from the public key does not "
+        "match the expected Web Bundle ID (%s).",
+        derived_web_bundle_id.id().c_str(),
+        expected_web_bundle_id.id().c_str())));
+    return;
+  }
+
+  // In the future, we'd also validate other properties of the Integrity Block
+  // in here, such as whether its version is supported (once we support multiple
   // Integrity Block versions).
 
   IsolatedWebAppTrustChecker::Result result =
       isolated_web_app_trust_checker_->IsTrusted(expected_web_bundle_id,
-                                                 integrity_block, dev_mode);
+                                                 dev_mode);
   if (result.status != IsolatedWebAppTrustChecker::Result::Status::kTrusted) {
-    std::move(callback).Run(result.message);
+    std::move(callback).Run(base::unexpected(result.message));
     return;
   }
 
-  std::move(callback).Run(std::nullopt);
+  std::move(callback).Run(base::ok());
 }
 
 base::expected<void, UnusableSwbnFileError>
