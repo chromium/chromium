@@ -547,7 +547,7 @@ target(link_target_type, "gles2_sources") {
     ]
     deps += [ "//third_party/dawn/src/dawn:cpp" ]
 
-    if (use_ozone) {
+    if (is_chromeos) {
       sources += [
         "drm_modifiers_filter_dawn.cc",
         "drm_modifiers_filter_dawn.h",

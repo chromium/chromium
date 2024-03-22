@@ -106,9 +106,9 @@
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif  // BUILDFLAG(USE_DAWN)
 
-#if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS_ASH)
 #include "gpu/command_buffer/service/drm_modifiers_filter_dawn.h"
-#endif  // BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_OZONE)
+#endif  // BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "gpu/command_buffer/service/abstract_texture.h"

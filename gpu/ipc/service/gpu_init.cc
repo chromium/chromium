@@ -92,7 +92,7 @@
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS)
 #include "gpu/command_buffer/service/drm_modifiers_filter_dawn.h"
 #endif
 
@@ -904,14 +904,14 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     filter_set = true;
   }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
-#if BUILDFLAG(SKIA_USE_DAWN)
+#if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS)
   if (dawn_context_provider_ && factory->SupportsDrmModifiersFilter()) {
     CHECK(!filter_set);
     factory->SetDrmModifiersFilter(std::make_unique<DrmModifiersFilterDawn>(
         dawn_context_provider_->GetDevice().GetAdapter()));
     filter_set = true;
   }
-#endif  // BUILDFLAG(SKIA_USE_DAWN)
+#endif  // BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(IS_OZONE)
 
   if (!watchdog_thread_) {
