@@ -25,6 +25,8 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 
 /** Class facilitating interactions with the SearchActivity and the Omnibox. */
@@ -250,14 +252,24 @@ public class SearchActivityUtils implements SearchActivityClient {
      * @param requestCode the request code received in {@link Activity#onActivityResult}
      * @param resultCode the result code received in {@link Activity#onActivityResult}
      * @param intent the intent data received in {@link Activity#onActivityResult}
-     * @return null, if result is not a valid Omnibox result, otherwise a GURL object; empty GURL
-     *     indicates no navigation
+     * @return null, if result is not a valid Omnibox result, otherwise valid LoadUrlParams object
      */
-    public static @Nullable GURL getOmniboxResult(
+    public static @Nullable LoadUrlParams getOmniboxResult(
             int requestCode, int resultCode, @NonNull Intent intent) {
         if (!isOmniboxResult(requestCode, intent)) return null;
-        if (resultCode != Activity.RESULT_OK) return GURL.emptyGURL();
-        return new GURL(intent.getDataString());
+        if (resultCode != Activity.RESULT_OK) return null;
+        var url = new GURL(intent.getDataString());
+        if (GURL.isEmptyOrInvalid(url)) return null;
+
+        var params = new LoadUrlParams(url);
+        byte[] postData = IntentUtils.safeGetByteArrayExtra(intent, IntentHandler.EXTRA_POST_DATA);
+        String postDataType =
+                IntentUtils.safeGetStringExtra(intent, IntentHandler.EXTRA_POST_DATA_TYPE);
+        if (!TextUtils.isEmpty(postDataType) && postData != null && postData.length > 0) {
+            params.setVerbatimHeaders("Content-Type: " + postDataType);
+            params.setPostData(ResourceRequestBody.createFromBytes(postData));
+        }
+        return params;
     }
 
     /**
