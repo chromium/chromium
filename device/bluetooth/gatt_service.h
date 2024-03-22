@@ -86,6 +86,10 @@ class GattService : public mojom::GattService,
       const device::BluetoothDevice* device,
       const device::BluetoothLocalGattCharacteristic* characteristic) override;
 
+  void OnLocalCharacteristicReadResponse(
+      ValueCallback callback,
+      mojom::LocalCharacteristicReadResultPtr read_result);
+
   const device::BluetoothUUID service_id_;
   std::set<device::BluetoothUUID> characteristic_uuids_;
   mojo::Remote<mojom::GattServiceObserver> observer_remote_;

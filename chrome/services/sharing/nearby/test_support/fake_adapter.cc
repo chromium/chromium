@@ -228,6 +228,7 @@ void FakeAdapter::CreateLocalGattService(
     mojo::PendingRemote<mojom::GattServiceObserver> observer,
     CreateLocalGattServiceCallback callback) {
   mojo::PendingRemote<mojom::GattService> pending_gatt_service;
+  fake_gatt_service_->SetObserver(std::move(observer));
   mojo::MakeSelfOwnedReceiver(
       std::move(fake_gatt_service_),
       pending_gatt_service.InitWithNewPipeAndPassReceiver());

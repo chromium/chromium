@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
+#include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace {
@@ -152,11 +153,38 @@ BleV2GattServer::CreateCharacteristic(
 bool BleV2GattServer::UpdateCharacteristic(
     const api::ble_v2::GattCharacteristic& characteristic,
     const nearby::ByteArray& value) {
-  // TODO(b/311430390):Implement to call on the Mojo remote to update the value
-  // of the GATT Characteristic, and returns the success/failure of the
-  // operation.
-  NOTIMPLEMENTED();
-  return false;
+  VLOG(1) << "BleV2GattServer::" << __func__;
+
+  auto service_it = uuid_to_gatt_service_map_.find(characteristic.service_uuid);
+  if (service_it == uuid_to_gatt_service_map_.end()) {
+    LOG(WARNING) << __func__
+                 << ": trying to update a characteristic in a service that "
+                    "doesn't exist";
+    return false;
+  }
+
+  auto* gatt_service = service_it->second.get();
+  const auto& char_map =
+      gatt_service->characteristic_uuid_to_characteristic_map;
+  auto char_it = char_map.find(characteristic.uuid);
+  if (char_it == char_map.end()) {
+    LOG(WARNING) << __func__
+                 << ": trying to update a characteristic that doesn't exist in "
+                    "the GATT service";
+    return false;
+  }
+
+  // //device/bluetooth is not responsible for storing the value of a GATT
+  // characteristic -- it is the responsibility of the `GattService`'s Delegate.
+  // The `GattService` will relay corresponding messages on its Delegate
+  // to `BleV2GattServer`, so the `BleV2GattServer` is responsible for storing
+  // the value of the GATT characteristic and providing it when a read
+  // is requested by a GATT client in `OnLocalCharacteristicRead()`.
+  VLOG(1) << __func__ << ": storing value for a characteristic at UUID = "
+          << characteristic.uuid.Get16BitAsString();
+  gatt_service->characteristic_uuid_to_value_map.emplace(characteristic.uuid,
+                                                         value);
+  return true;
 }
 
 absl::Status BleV2GattServer::NotifyCharacteristicChanged(
@@ -165,7 +193,10 @@ absl::Status BleV2GattServer::NotifyCharacteristicChanged(
     const nearby::ByteArray& new_value) {
   // TODO(b/311430390): Implement to call on the Mojo remote to update the value
   // of the GATT Characteristic, and notify remote devices, and returns the
-  // resulting Status of the operation.
+  // resulting Status of the operation. When implementing, consider if
+  // `UpdateCharacteristic()` needs to be called before calling
+  // `NotifyCharacteristicChanged()` in the library, or in this class, so
+  // `BleV2GattServer` holds onto the updated value for any READ requests.
   NOTIMPLEMENTED();
   return absl::Status();
 }
@@ -178,5 +209,69 @@ void BleV2GattServer::Stop() {
 
 BleV2GattServer::GattService::GattService() = default;
 BleV2GattServer::GattService::~GattService() = default;
+
+void BleV2GattServer::OnLocalCharacteristicRead(
+    bluetooth::mojom::DeviceInfoPtr remote_device,
+    const device::BluetoothUUID& characteristic_uuid,
+    const device::BluetoothUUID& service_uuid,
+    uint32_t offset,
+    OnLocalCharacteristicReadCallback callback) {
+  VLOG(1) << "BleV2GattServer::" << __func__;
+
+  Uuid nearby_service_uuid = Uuid(service_uuid.value());
+  Uuid nearby_characteristic_uuid = Uuid(characteristic_uuid.value());
+
+  // Expect that `OnLocalCharacteristicRead()` is called for a
+  // characteristic that already exists in the `uuid_to_gatt_service_map_` of
+  // the corresponding `GattService`. If this isn't true, it means the
+  // corresponding GATT service in the browser process and this
+  // `BleV2GattServer` have gotten out of sync.
+  auto service_it = uuid_to_gatt_service_map_.find(nearby_service_uuid);
+  CHECK(service_it != uuid_to_gatt_service_map_.end());
+  auto* gatt_service = service_it->second.get();
+  const auto& char_map =
+      gatt_service->characteristic_uuid_to_characteristic_map;
+  auto char_it = char_map.find(nearby_characteristic_uuid);
+  CHECK(char_it != char_map.end());
+
+  // Return an error if the property and permission of the characteristic does
+  // not support read requests. `nearby::api::ble_v2::GattCharacteristic` only
+  // support a single property and permission.
+  if ((char_it->second.property !=
+       nearby::api::ble_v2::GattCharacteristic::Property::kRead) ||
+      (char_it->second.permission !=
+       nearby::api::ble_v2::GattCharacteristic::Permission::kRead)) {
+    LOG(WARNING) << __func__
+                 << ": trying to read a characteristic that does not support "
+                    "read requests";
+    std::move(callback).Run(
+        bluetooth::mojom::LocalCharacteristicReadResult::NewErrorCode(
+            device::BluetoothGattService::GattErrorCode::kNotPermitted));
+    return;
+  }
+
+  // When a characteristic has a value set with
+  // `BleV2GattServer::UpdateCharacteristic()`, then reading from the
+  // characteristic yields that value. If there isn't a value in the
+  // map for this characteristic, it means that it wasn't set correctly by
+  // callers of `BleV2GattServer`.
+  const auto& new_value_map = gatt_service->characteristic_uuid_to_value_map;
+  auto new_value_it = new_value_map.find(nearby_characteristic_uuid);
+  if (new_value_it == new_value_map.end()) {
+    LOG(WARNING) << __func__
+                 << ": value for the characteristic read request not found";
+    std::move(callback).Run(
+        bluetooth::mojom::LocalCharacteristicReadResult::NewErrorCode(
+            device::BluetoothGattService::GattErrorCode::kNotSupported));
+    return;
+  }
+
+  const ByteArray& data = new_value_it->second;
+  const uint8_t* bytes = reinterpret_cast<const uint8_t*>(data.data());
+  std::vector<uint8_t> read_value(bytes, bytes + data.size());
+  std::move(callback).Run(
+      bluetooth::mojom::LocalCharacteristicReadResult::NewData(
+          std::move(read_value)));
+}
 
 }  // namespace nearby::chrome

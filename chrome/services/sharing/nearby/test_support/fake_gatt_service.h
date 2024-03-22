@@ -7,11 +7,14 @@
 
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace bluetooth {
 
 class FakeGattService : public mojom::GattService {
  public:
+  using ValueCallback = base::OnceCallback<void(
+      bluetooth::mojom::LocalCharacteristicReadResultPtr)>;
   FakeGattService();
   FakeGattService(const FakeGattService&) = delete;
   FakeGattService& operator=(const FakeGattService&) = delete;
@@ -24,11 +27,23 @@ class FakeGattService : public mojom::GattService {
       const device::BluetoothGattCharacteristic::Properties& property,
       CreateCharacteristicCallback callback) override;
 
+  void SetObserver(mojo::PendingRemote<mojom::GattServiceObserver> observer);
+
+  void TriggerReadCharacteristicRequest(
+      const device::BluetoothUUID& service_uuid,
+      const device::BluetoothUUID& characteristic_uuid,
+      ValueCallback callback);
+
   void SetCreateCharacteristicResult(bool success);
   int GetNumCharacteristicUuids() { return characteristic_uuids_.size(); }
 
  private:
+  void OnLocalCharacteristicReadResponse(
+      ValueCallback callback,
+      mojom::LocalCharacteristicReadResultPtr read_result);
+
   std::vector<device::BluetoothUUID> characteristic_uuids_;
+  mojo::Remote<mojom::GattServiceObserver> observer_remote_;
   bool set_create_characteristic_result_ = false;
   mojo::Receiver<mojom::GattService> gatt_server_{this};
 };

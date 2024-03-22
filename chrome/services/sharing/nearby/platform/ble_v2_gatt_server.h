@@ -50,7 +50,21 @@ class BleV2GattServer : public ::nearby::api::ble_v2::GattServer,
     mojo::Remote<bluetooth::mojom::GattService> gatt_service_remote;
     base::flat_map<Uuid, api::ble_v2::GattCharacteristic>
         characteristic_uuid_to_characteristic_map;
+
+    // Characteristic UUID to value map. The value is set
+    // in `UpdateCharacteristic()`, and this class is responsible for storing
+    // the value of a GATT characteristic. See documentation in
+    // `UpdateCharacteristic()`.
+    base::flat_map<Uuid, nearby::ByteArray> characteristic_uuid_to_value_map;
   };
+
+  // bluetooth::mojom::GattServiceObserver:
+  void OnLocalCharacteristicRead(
+      bluetooth::mojom::DeviceInfoPtr remote_device,
+      const device::BluetoothUUID& characteristic_uuid,
+      const device::BluetoothUUID& service_uuid,
+      uint32_t offset,
+      OnLocalCharacteristicReadCallback callback) override;
 
   std::unique_ptr<BluetoothAdapter> bluetooth_adapter_;
 

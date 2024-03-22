@@ -9,6 +9,7 @@ mojom("mojom") {
   sources = [
     "gatt_characteristic_permissions.mojom",
     "gatt_characteristic_properties.mojom",
+    "gatt_service_error_code.mojom",
     "uuid.mojom",
   ]
   webui_module_path = "/"
@@ -32,13 +33,19 @@ mojom("mojom") {
           mojom = "bluetooth.mojom.GattCharacteristicPermissions"
           cpp = "::device::BluetoothGattCharacteristic::Permissions"
         },
+        {
+          mojom = "bluetooth.mojom.GattServiceErrorCode"
+          cpp = "::device::BluetoothGattService::GattErrorCode"
+        },
       ]
       traits_headers = [
         "//device/bluetooth/public/mojom/uuid_mojom_traits.h",
         "//device/bluetooth/public/mojom/gatt_characteristic_mojom_traits.h",
+        "//device/bluetooth/public/mojom/gatt_service_mojom_traits.h",
       ]
       traits_sources = [
         "//device/bluetooth/public/mojom/gatt_characteristic_mojom_traits.cc",
+        "//device/bluetooth/public/mojom/gatt_service_mojom_traits.cc",
       ]
       traits_public_deps = [ "//device/bluetooth/public/cpp" ]
     },

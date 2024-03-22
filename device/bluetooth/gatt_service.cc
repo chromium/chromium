@@ -8,7 +8,34 @@
 #include "base/logging.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
+#include "device/bluetooth/device.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+
+namespace {
+
+std::string_view GattErrorCodeToString(
+    device::BluetoothGattService::GattErrorCode error_code) {
+  switch (error_code) {
+    case device::BluetoothGattService::GattErrorCode::kUnknown:
+      return "Unknown";
+    case device::BluetoothGattService::GattErrorCode::kFailed:
+      return "Failed";
+    case device::BluetoothGattService::GattErrorCode::kInProgress:
+      return "In Progress";
+    case device::BluetoothGattService::GattErrorCode::kInvalidLength:
+      return "Invalid Length";
+    case device::BluetoothGattService::GattErrorCode::kNotPermitted:
+      return "Not Permitted";
+    case device::BluetoothGattService::GattErrorCode::kNotAuthorized:
+      return "Not Authorized";
+    case device::BluetoothGattService::GattErrorCode::kNotPaired:
+      return "Not Paired";
+    case device::BluetoothGattService::GattErrorCode::kNotSupported:
+      return "Not Supported";
+  };
+}
+
+}  // namespace
 
 namespace bluetooth {
 
@@ -83,11 +110,17 @@ void GattService::OnCharacteristicReadRequest(
     const device::BluetoothLocalGattCharacteristic* characteristic,
     int offset,
     ValueCallback callback) {
-  // TODO(b/311430390): Implement `OnCharacteristicReadRequest()` to notify
-  // observers (which will be added as part of this TODO) to provide a
-  // value for this read request. Only READ characteristics are supported for
-  // the BLE V2 MVP use in Nearby Connections.
-  NOTIMPLEMENTED();
+  CHECK(characteristic);
+  CHECK(base::Contains(characteristic_uuids_, characteristic->GetUUID()));
+
+  observer_remote_->OnLocalCharacteristicRead(
+      /*remote_device=*/Device::ConstructDeviceInfoStruct(device),
+      /*characteristic_uuid=*/characteristic->GetUUID(),
+      /*service_uuid=*/service_id_,
+      /*offset=*/offset,
+      /*callback=*/
+      base::BindOnce(&GattService::OnLocalCharacteristicReadResponse,
+                     base::Unretained(this), std::move(callback)));
 }
 
 void GattService::OnCharacteristicWriteRequest(
@@ -140,6 +173,24 @@ void GattService::OnNotificationsStop(
     const device::BluetoothDevice* device,
     const device::BluetoothLocalGattCharacteristic* characteristic) {
   NOTIMPLEMENTED();
+}
+
+void GattService::OnLocalCharacteristicReadResponse(
+    ValueCallback callback,
+    mojom::LocalCharacteristicReadResultPtr read_result) {
+  if (read_result->is_error_code()) {
+    LOG(WARNING) << __func__ << ": failed due to error: "
+                 << GattErrorCodeToString(read_result->get_error_code());
+    std::move(callback).Run(
+        /*error_code=*/read_result->get_error_code(),
+        /*data=*/std::vector<uint8_t>());
+    return;
+  }
+
+  CHECK(read_result->is_data());
+  std::move(callback).Run(
+      /*error_code=*/std::nullopt,
+      /*data=*/read_result->get_data());
 }
 
 }  // namespace bluetooth

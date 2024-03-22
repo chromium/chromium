@@ -12,20 +12,47 @@
 #include "device/bluetooth/test/fake_local_gatt_characteristic.h"
 #include "device/bluetooth/test/fake_local_gatt_service.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
+#include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-const char kServiceId[] = "TestServiceId";
-const char kCharacteristicUuid[] = "1234";
+const char kServiceId[] = "12345678-1234-5678-9abc-def123456789";
+const char kCharacteristicUuid[] = "00001101-0000-1000-8000-00805f9b34fb";
+const char kTestDeviceName[] = "TestDeviceName";
+const char kTestDeviceAddress[] = "TestDeviceAddress";
+const std::vector<uint8_t> kReadCharacteristicValue = {0x01, 0x02, 0x03};
+const int kReadCharacteristicOffset = 0;
+
+std::unique_ptr<bluetooth::FakeLocalGattCharacteristic>
+CreateFakeCharacteristic(device::BluetoothLocalGattService* service) {
+  return std::make_unique<bluetooth::FakeLocalGattCharacteristic>(
+      /*characteristic_id=*/kCharacteristicUuid,
+      /*characteristic_uuid=*/device::BluetoothUUID(kCharacteristicUuid),
+      /*service=*/service,
+      /*properties=*/
+      device::BluetoothGattCharacteristic::Permission::PERMISSION_READ,
+      /*property=*/
+      device::BluetoothGattCharacteristic::Property::PROPERTY_READ);
+}
+
+std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>
+CreateMockBluetoothDevice() {
+  return std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+      /*adapter=*/nullptr,
+      /*class=*/0, kTestDeviceName, kTestDeviceAddress,
+      /*paired=*/false,
+      /*connected=*/false);
+}
 
 }  // namespace
 
 namespace bluetooth {
 
-class GattServiceTest : public testing::Test {
+class GattServiceTest : public testing::Test,
+                        public mojom::GattServiceObserver {
  public:
   GattServiceTest() = default;
   ~GattServiceTest() override = default;
@@ -46,7 +73,8 @@ class GattServiceTest : public testing::Test {
 
     mojo::PendingReceiver<mojom::GattService> pending_gatt_service_receiver =
         remote_.BindNewPipeAndPassReceiver();
-    mojo::PendingRemote<mojom::GattServiceObserver> pending_observer_remote;
+    mojo::PendingRemote<mojom::GattServiceObserver> pending_observer_remote =
+        observer_.BindNewPipeAndPassRemote();
     gatt_service_ = std::make_unique<GattService>(
         std::move(pending_gatt_service_receiver),
         std::move(pending_observer_remote), device::BluetoothUUID(kServiceId),
@@ -64,10 +92,76 @@ class GattServiceTest : public testing::Test {
     // test with the CHECK below.
     CHECK_EQ(0, create_local_gatt_service_calls_);
     create_local_gatt_service_calls_++;
+    delegate_ = delegate;
     return fake_local_gatt_service_->GetWeakPtr();
   }
 
+  // mojo::GattServiceObserver:
+  void OnLocalCharacteristicRead(
+      bluetooth::mojom::DeviceInfoPtr remote_device,
+      const device::BluetoothUUID& characteristic_uuid,
+      const device::BluetoothUUID& service_uuid,
+      uint32_t offset,
+      OnLocalCharacteristicReadCallback callback) override {
+    mojom::LocalCharacteristicReadResultPtr read_result;
+    if (local_characteristic_read_error_code_.has_value()) {
+      read_result = mojom::LocalCharacteristicReadResult::NewErrorCode(
+          local_characteristic_read_error_code_.value());
+    } else {
+      CHECK(local_characteristic_read_value_.has_value());
+      read_result = mojom::LocalCharacteristicReadResult::NewData(
+          local_characteristic_read_value_.value());
+    }
+
+    std::move(callback).Run(std::move(read_result));
+    std::move(on_local_characteristic_read_callback_).Run();
+  }
+
+  void CallCreateCharacteristic(
+      bool gatt_service_exists,
+      bool expected_success,
+      device::BluetoothGattCharacteristic::Permissions permissions =
+          device::BluetoothGattCharacteristic::Permission::PERMISSION_READ,
+      device::BluetoothGattCharacteristic::Properties properties =
+          device::BluetoothGattCharacteristic::Property::PROPERTY_READ) {
+    if (gatt_service_exists) {
+      // Simulate that the GATT service is created successfully, and is never
+      // destroyed during the lifetime of this test.
+      ON_CALL(*mock_bluetooth_adapter_, GetGattService)
+          .WillByDefault(testing::Return(fake_local_gatt_service_.get()));
+    } else {
+      // Simulate the underlying platform GattService destruction.
+      EXPECT_CALL(*mock_bluetooth_adapter_, GetGattService)
+          .WillOnce(testing::Return(nullptr));
+    }
+
+    base::test::TestFuture<bool> future;
+    remote_->CreateCharacteristic(
+        /*characteristic_uuid=*/device::BluetoothUUID(kCharacteristicUuid),
+        /*permissions=*/permissions,
+        /*properties=*/properties, future.GetCallback());
+    EXPECT_EQ(expected_success, future.Take());
+    EXPECT_EQ(expected_success,
+              (nullptr != fake_local_gatt_service_->GetCharacteristic(
+                              kCharacteristicUuid)));
+  }
+
+  void SetOnLocalCharacteristicReadCallback(base::OnceClosure callback) {
+    on_local_characteristic_read_callback_ = std::move(callback);
+  }
+
+  void SetOnLocalCharacteristicReadResult(
+      std::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      std::optional<std::vector<uint8_t>> value) {
+    local_characteristic_read_error_code_ = error_code;
+    local_characteristic_read_value_ = value;
+  }
+
  protected:
+  std::optional<device::BluetoothGattService::GattErrorCode>
+      local_characteristic_read_error_code_;
+  std::optional<std::vector<uint8_t>> local_characteristic_read_value_;
+  base::OnceClosure on_local_characteristic_read_callback_;
   int create_local_gatt_service_calls_ = 0;
   base::test::SingleThreadTaskEnvironment task_environment_;
   mojo::Remote<mojom::GattService> remote_;
@@ -75,6 +169,8 @@ class GattServiceTest : public testing::Test {
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>>
       mock_bluetooth_adapter_;
   std::unique_ptr<GattService> gatt_service_;
+  raw_ptr<device::BluetoothLocalGattService::Delegate> delegate_;
+  mojo::Receiver<mojom::GattServiceObserver> observer_{this};
 };
 
 TEST_F(GattServiceTest, CreateGattServiceOnConstruction) {
@@ -100,10 +196,21 @@ TEST_F(GattServiceTest, CreateCharacteristic_FailureIfGattServiceIsDestroyed) {
 
 TEST_F(GattServiceTest,
        CreateCharacteristic_FailureIfCreateGattCharacteristicFails) {
-  EXPECT_CALL(*mock_bluetooth_adapter_, GetGattService)
-      .WillOnce(testing::Return(fake_local_gatt_service_.get()));
-  fake_local_gatt_service_->set_should_create_local_gatt_characteristic_succeed(
-      false);
+  CallCreateCharacteristic(/*gatt_service_exists=*/false,
+                           /*expected_success=*/false);
+}
+
+TEST_F(GattServiceTest, CreateCharacteristic_SuccessIfCreated) {
+  CallCreateCharacteristic(/*gatt_service_exists=*/true,
+                           /*expected_success=*/true);
+}
+
+TEST_F(GattServiceTest, CreateCharacteristic_FailureIfAlreadyExists) {
+  // Create the characteristic the first time.
+  CallCreateCharacteristic(/*gatt_service_exists=*/true,
+                           /*expected_success=*/true);
+
+  // Expect failure on another call because it already exists.
   base::test::TestFuture<bool> future;
   remote_->CreateCharacteristic(
       /*characteristic_uuid=*/device::BluetoothUUID(kCharacteristicUuid),
@@ -113,70 +220,10 @@ TEST_F(GattServiceTest,
       device::BluetoothGattCharacteristic::Property::PROPERTY_READ,
       future.GetCallback());
   EXPECT_FALSE(future.Take());
-  EXPECT_FALSE(
-      fake_local_gatt_service_->GetCharacteristic(kCharacteristicUuid));
-}
-
-TEST_F(GattServiceTest, CreateCharacteristic_SuccessIfCreated) {
-  // Simulate that the GATT service is created successfully, and is never
-  // destroyed during the lifetime of this test.
-  ON_CALL(*mock_bluetooth_adapter_, GetGattService)
-      .WillByDefault(testing::Return(fake_local_gatt_service_.get()));
-  base::test::TestFuture<bool> future;
-  remote_->CreateCharacteristic(
-      /*characteristic_uuid=*/device::BluetoothUUID(kCharacteristicUuid),
-      /*permissions=*/
-      device::BluetoothGattCharacteristic::Permission::PERMISSION_READ,
-      /*properties=*/
-      device::BluetoothGattCharacteristic::Property::PROPERTY_READ,
-      future.GetCallback());
-  EXPECT_TRUE(future.Take());
-  EXPECT_TRUE(fake_local_gatt_service_->GetCharacteristic(kCharacteristicUuid));
-}
-
-TEST_F(GattServiceTest, CreateCharacteristic_FailureIfAlreadyExists) {
-  // Simulate that the GATT service is created successfully, and is never
-  // destroyed during the lifetime of this test.
-  ON_CALL(*mock_bluetooth_adapter_, GetGattService)
-      .WillByDefault(testing::Return(fake_local_gatt_service_.get()));
-
-  // Create the characteristic the first time.
-  {
-    base::test::TestFuture<bool> future;
-    remote_->CreateCharacteristic(
-        /*characteristic_uuid=*/device::BluetoothUUID(kCharacteristicUuid),
-        /*permissions=*/
-        device::BluetoothGattCharacteristic::Permission::PERMISSION_READ,
-        /*properties=*/
-        device::BluetoothGattCharacteristic::Property::PROPERTY_READ,
-        future.GetCallback());
-    EXPECT_TRUE(future.Take());
-    EXPECT_TRUE(
-        fake_local_gatt_service_->GetCharacteristic(kCharacteristicUuid));
-  }
-
-  // Expect success on another call because it already exists.
-  {
-    base::test::TestFuture<bool> future;
-    remote_->CreateCharacteristic(
-        /*characteristic_uuid=*/device::BluetoothUUID(kCharacteristicUuid),
-        /*permissions=*/
-        device::BluetoothGattCharacteristic::Permission::PERMISSION_READ,
-        /*properties=*/
-        device::BluetoothGattCharacteristic::Property::PROPERTY_READ,
-        future.GetCallback());
-    EXPECT_FALSE(future.Take());
-  }
 }
 
 TEST_F(GattServiceTest,
        CreateCharacteristic_Success_MultiplePermissionsAndProperties) {
-  // Simulate that the GATT service is created successfully, and is never
-  // destroyed during the lifetime of this test.
-  ON_CALL(*mock_bluetooth_adapter_, GetGattService)
-      .WillByDefault(testing::Return(fake_local_gatt_service_.get()));
-  base::test::TestFuture<bool> future;
-
   device::BluetoothGattCharacteristic::Permissions permissions =
       device::BluetoothGattCharacteristic::Permission::PERMISSION_READ |
       device::BluetoothGattCharacteristic::Permission::PERMISSION_WRITE;
@@ -184,17 +231,85 @@ TEST_F(GattServiceTest,
       device::BluetoothGattCharacteristic::Property::PROPERTY_READ |
       device::BluetoothGattCharacteristic::Property::PROPERTY_WRITE;
 
-  remote_->CreateCharacteristic(
-      /*characteristic_uuid=*/device::BluetoothUUID(kCharacteristicUuid),
-      /*permissions=*/permissions,
-      /*properties=*/properties, future.GetCallback());
-  EXPECT_TRUE(future.Take());
+  CallCreateCharacteristic(/*gatt_service_exists=*/true,
+                           /*expected_success=*/true, permissions, properties);
 
   auto* fake_characteristic =
       fake_local_gatt_service_->GetCharacteristic(kCharacteristicUuid);
   EXPECT_TRUE(fake_characteristic);
   EXPECT_EQ(properties, fake_characteristic->GetProperties());
   EXPECT_EQ(permissions, fake_characteristic->GetPermissions());
+}
+
+TEST_F(GattServiceTest, OnReadCharacteristic_Success) {
+  // Simulate that the GATT service is created successfully, and is never
+  // destroyed during the lifetime of this test. Simulate a successful
+  // characteristic being added to the GATT service.
+  CallCreateCharacteristic(/*gatt_service_exists=*/true,
+                           /*expected_success=*/true);
+
+  base::MockCallback<base::OnceClosure> mock_observer_callback;
+  EXPECT_CALL(mock_observer_callback, Run).Times(1);
+  SetOnLocalCharacteristicReadCallback(mock_observer_callback.Get());
+  SetOnLocalCharacteristicReadResult(
+      /*error_code=*/std::nullopt,
+      /*value=*/kReadCharacteristicValue);
+
+  base::RunLoop run_loop;
+  auto mock_device = CreateMockBluetoothDevice();
+  auto fake_characteristic =
+      CreateFakeCharacteristic(fake_local_gatt_service_.get());
+
+  delegate_->OnCharacteristicReadRequest(
+      /*device=*/mock_device.get(),
+      /*characteristic=*/fake_characteristic.get(),
+      /*offset=*/kReadCharacteristicOffset,
+      /*callback=*/
+      base::BindLambdaForTesting(
+          [&](std::optional<::device::BluetoothGattService::GattErrorCode>
+                  error_code,
+              const std::vector<uint8_t>& value) {
+            EXPECT_FALSE(error_code.has_value());
+            EXPECT_FALSE(value.empty());
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
+TEST_F(GattServiceTest, OnReadCharacteristic_Failure) {
+  // Simulate that the GATT service is created successfully, and is never
+  // destroyed during the lifetime of this test. Simulate a successful
+  // characteristic being added to the GATT service.
+  CallCreateCharacteristic(/*gatt_service_exists=*/true,
+                           /*expected_success=*/true);
+
+  base::MockCallback<base::OnceClosure> mock_observer_callback;
+  EXPECT_CALL(mock_observer_callback, Run).Times(1);
+  SetOnLocalCharacteristicReadCallback(mock_observer_callback.Get());
+  SetOnLocalCharacteristicReadResult(
+      /*error_code=*/device::BluetoothGattService::GattErrorCode::kFailed,
+      /*value=*/std::nullopt);
+
+  base::RunLoop run_loop;
+  auto mock_device = CreateMockBluetoothDevice();
+  auto fake_characteristic =
+      CreateFakeCharacteristic(fake_local_gatt_service_.get());
+  delegate_->OnCharacteristicReadRequest(
+      /*device=*/mock_device.get(),
+      /*characteristic=*/fake_characteristic.get(),
+      /*offset=*/kReadCharacteristicOffset,
+      /*callback=*/
+      base::BindLambdaForTesting(
+          [&](std::optional<::device::BluetoothGattService::GattErrorCode>
+                  error_code,
+              const std::vector<uint8_t>& value) {
+            EXPECT_TRUE(error_code.has_value());
+            EXPECT_TRUE(value.empty());
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
 }
 
 }  // namespace bluetooth

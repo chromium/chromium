@@ -8,6 +8,7 @@ import "device/bluetooth/public/mojom/device.mojom";
 import "device/bluetooth/public/mojom/uuid.mojom";
 import "device/bluetooth/public/mojom/gatt_characteristic_permissions.mojom";
 import "device/bluetooth/public/mojom/gatt_characteristic_properties.mojom";
+import "device/bluetooth/public/mojom/gatt_service_error_code.mojom";
 
 // Possible errors sent as a response by Adapter.ConnectToDevice on a Device
 // connection request.
@@ -28,6 +29,11 @@ enum ConnectResult {
   NOT_CONNECTED,
   DOES_NOT_EXIST,
   INVALID_ARGS,
+};
+
+union LocalCharacteristicReadResult {
+  GattServiceErrorCode error_code;
+  array<uint8> data;
 };
 
 // The results of a successful connection via ConnectToServiceInsecurely().
@@ -158,6 +164,12 @@ interface GattService {
 // TODO(b/311430390): Implement additional methods that communicate read/write
 // requests on GATT characteristics.
 interface GattServiceObserver {
+  // Called when a remote peripheral is reading from the characteristic.
+  // On failures, |read_result| will be the error code. On success,
+  // |read_result| will be the read result value.
+  OnLocalCharacteristicRead(DeviceInfo remote_device,
+    UUID characteristic_uuid, UUID service_uuid, uint32 offset) =>
+    (LocalCharacteristicReadResult read_result);
 };
 
 // Handles requests to either query Bluetooth adapter capabilities or state, or
