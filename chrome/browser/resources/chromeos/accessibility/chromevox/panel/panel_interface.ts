@@ -7,33 +7,28 @@
  */
 import {PanelMode} from './panel_mode.js';
 
-export class PanelInterface {
+// TODO(a11y): Convert to an interface once TypeScript migration is done.
+export abstract class PanelInterface {
+  static instance?: PanelInterface;
+
   /**
    * Close the menus and restore focus to the page. If a menu item's callback
    * was queued, execute it once focus is restored.
    */
-  async closeMenusAndRestoreFocus() {}
+  abstract closeMenusAndRestoreFocus(): Promise<void>;
 
-  /** @return {!PanelMode} */
-  get mode() {}
+  abstract get mode(): PanelMode;
 
-  /** @param {!PanelMode} mode */
-  setMode(mode) {}
+  abstract setMode(mode: PanelMode): void;
 
-  /** @return {string} */
-  get sessionState() {}
+  abstract get sessionState(): string;
 
-  /** Exit ChromeVox. */
-  onClose() {}
+  abstract onClose(): void;
 
   /**
    * A callback function to be executed to perform the action from selecting
    * a menu item after the menu has been closed and focus has been restored
    * to the page or wherever it was previously.
-   * @param {?function() : !Promise} callback
    */
-  setPendingCallback(callback) {}
+  abstract setPendingCallback(callback: (() => Promise<void>) | null): void;
 }
-
-/** @type {PanelInterface} */
-PanelInterface.instance;
