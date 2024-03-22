@@ -688,6 +688,10 @@ class WaylandWindow : public PlatformWindow,
   bool disable_null_target_dcheck_for_test_ = false;
 #endif
 
+  // Set to true when the state is in the process of request. This is used to
+  // check there is no re-enterancy.
+  bool requesting_state_ = false;
+
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
   base::WeakPtrFactory<WaylandWindow> weak_ptr_factory_{this};

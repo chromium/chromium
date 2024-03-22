@@ -13,6 +13,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -1262,6 +1263,10 @@ void WaylandWindow::RequestStateFromClient(
 void WaylandWindow::RequestState(PlatformWindowDelegate::State state,
                                  int64_t serial,
                                  bool force) {
+  // State should NOT be requested during the ongoing request handling.
+  CHECK(!requesting_state_) << "Detected re-enterancy of state request.";
+  base::AutoReset<bool> setter(&requesting_state_, true);
+
   LOG_IF(WARNING, in_flight_requests_.size() > 100u)
       << "The queue of configures is longer than 100!";
 
