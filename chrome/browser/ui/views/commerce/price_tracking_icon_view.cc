@@ -25,6 +25,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
@@ -250,6 +251,10 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
         }
       }
     }
+
+    commerce::metrics::RecordShoppingActionUKM(
+        GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+        commerce::metrics::ShoppingAction::kPriceTracked);
   }
 
   auto* tab_helper =
