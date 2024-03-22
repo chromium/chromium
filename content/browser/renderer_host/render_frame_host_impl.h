@@ -1584,15 +1584,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // intercept outgoing local main frame messages.
   virtual blink::mojom::LocalMainFrame* GetAssociatedLocalMainFrame();
 
-  // Returns remote to blink::mojom::HighPriorityLocalFrame Mojo interface. Note
-  // this interface is highly experimental and is being tested to address
-  // crbug.com/1042118. It is not an associated interface and may be actively
-  // reordered. GetAssociatedLocalFrame() should be used in most cases and any
-  // additional use cases of this interface should probably consider discussing
-  // with navigation-dev@chromium.org first.
-  const mojo::Remote<blink::mojom::HighPriorityLocalFrame>&
-  GetHighPriorityLocalFrame();
-
   // Returns associated remote for the blink::mojom::FrameBindingsControl Mojo
   // interface.
   const mojo::AssociatedRemote<mojom::FrameBindingsControl>&
@@ -4521,9 +4512,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Holder of Mojo connection with the LocalMainFrame in Blink. This
   // remote will be valid when the frame is the active main frame.
   mojo::AssociatedRemote<blink::mojom::LocalMainFrame> local_main_frame_;
-
-  // Holder of Mojo connection with the HighPriorityLocalFrame in blink.
-  mojo::Remote<blink::mojom::HighPriorityLocalFrame> high_priority_local_frame_;
 
   // Holds the cross-document NavigationRequests that are waiting to commit.
   // These are navigations that have passed ReadyToCommit stage and are waiting

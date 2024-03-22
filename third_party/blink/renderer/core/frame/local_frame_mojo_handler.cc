@@ -349,10 +349,6 @@ LocalFrameMojoHandler::LocalFrameMojoHandler(blink::LocalFrame& frame)
   registry->AddAssociatedInterface(
       WTF::BindRepeating(&LocalFrameMojoHandler::BindToLocalFrameReceiver,
                          WrapWeakPersistent(this)));
-  registry->AddInterface(
-      WTF::BindRepeating(&LocalFrameMojoHandler::BindToHighPriorityReceiver,
-                         WrapWeakPersistent(this)),
-      frame.GetTaskRunner(TaskType::kInternalHighPriorityLocalFrame));
   registry->AddAssociatedInterface(WTF::BindRepeating(
       &LocalFrameMojoHandler::BindFullscreenVideoElementReceiver,
       WrapWeakPersistent(this)));
@@ -370,7 +366,6 @@ void LocalFrameMojoHandler::Trace(Visitor* visitor) const {
   visitor->Trace(non_associated_local_frame_host_remote_);
   visitor->Trace(local_frame_receiver_);
   visitor->Trace(main_frame_receiver_);
-  visitor->Trace(high_priority_frame_receiver_);
   visitor->Trace(fullscreen_video_receiver_);
   visitor->Trace(device_posture_receiver_);
 }
@@ -386,7 +381,6 @@ void LocalFrameMojoHandler::DidDetachFrame() {
   // automatically reset on context destruction.
   local_frame_receiver_.reset();
   main_frame_receiver_.reset();
-  high_priority_frame_receiver_.reset();
   // TODO(tkent): Should we reset other receivers?
 }
 
@@ -500,18 +494,6 @@ void LocalFrameMojoHandler::BindToMainFrameReceiver(
   main_frame_receiver_.Bind(std::move(receiver),
                             frame_->GetTaskRunner(TaskType::kInternalDefault));
   main_frame_receiver_.SetFilter(
-      std::make_unique<ActiveURLMessageFilter>(frame_));
-}
-
-void LocalFrameMojoHandler::BindToHighPriorityReceiver(
-    mojo::PendingReceiver<mojom::blink::HighPriorityLocalFrame> receiver) {
-  if (frame_->IsDetached())
-    return;
-
-  high_priority_frame_receiver_.Bind(
-      std::move(receiver),
-      frame_->GetTaskRunner(TaskType::kInternalHighPriorityLocalFrame));
-  high_priority_frame_receiver_.SetFilter(
       std::make_unique<ActiveURLMessageFilter>(frame_));
 }
 
@@ -1362,12 +1344,6 @@ void LocalFrameMojoHandler::DispatchPageSwap(
   auto* page_swap_event = MakeGarbageCollected<PageSwapEvent>(
       *frame_->GetDocument(), std::move(params), nullptr);
   frame_->GetDocument()->domWindow()->DispatchEvent(*page_swap_event);
-}
-
-void LocalFrameMojoHandler::DispatchBeforeUnload(
-    bool is_reload,
-    mojom::blink::LocalFrame::BeforeUnloadCallback callback) {
-  BeforeUnload(is_reload, std::move(callback));
 }
 
 void LocalFrameMojoHandler::AddResourceTimingEntryForFailedSubframeNavigation(

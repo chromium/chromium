@@ -271,12 +271,6 @@ BASE_FEATURE(kHandleChildThreadTypeChangesInBrowser,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Tells the RenderFrameHost to send beforeunload messages on a different
-// local frame interface which will handle the messages at a higher priority.
-BASE_FEATURE(kHighPriorityBeforeUnload,
-             "HighPriorityBeforeUnload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // A feature flag for the memory-backed code cache.
 BASE_FEATURE(kInMemoryCodeCache,
              "InMemoryCodeCache",

@@ -1142,26 +1142,6 @@ interface LocalFrame {
   RequestFullscreenDocumentElement();
 };
 
-// Also implemented in Blink, this interface defines frame-specific methods
-// that will be invoked from the browser process but processed at a higher
-// priority than methods invoked on the LocalFrame interface.
-//
-// Note this interface does not use legacy IPC channels and as such there are
-// no ordering guarantees for messages sent on this interface. This interface is
-// for experimental purposes.
-interface HighPriorityLocalFrame {
-
-  // Instructs the frame to invoke the beforeunload event handler.
-  //
-  // The closure callback is invoked to acknowledge the browser that
-  // the beforeunload event is handled. |proceed| matches the return value
-  // of the frame's beforeunload handler: true if the user decided to proceed
-  // with leaving the page.
-  DispatchBeforeUnload(bool is_reload)
-      => (bool proceed, mojo_base.mojom.TimeTicks before_unload_start_time,
-          mojo_base.mojom.TimeTicks before_unload_end_time);
-};
-
 // Implemented in Blink, this interface defines main-frame-specific methods that
 // will be invoked from the browser process (e.g. content::WebContentsImpl).
 //

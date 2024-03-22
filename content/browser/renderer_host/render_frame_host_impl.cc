@@ -11213,15 +11213,6 @@ RenderFrameHostImpl::GetAssociatedLocalMainFrame() {
   return local_main_frame_.get();
 }
 
-const mojo::Remote<blink::mojom::HighPriorityLocalFrame>&
-RenderFrameHostImpl::GetHighPriorityLocalFrame() {
-  if (!high_priority_local_frame_.is_bound()) {
-    GetRemoteInterfaces()->GetInterface(
-        high_priority_local_frame_.BindNewPipeAndPassReceiver());
-  }
-  return high_priority_local_frame_;
-}
-
 const mojo::AssociatedRemote<mojom::FrameBindingsControl>&
 RenderFrameHostImpl::GetFrameBindingsControl() {
   if (!frame_bindings_control_)
@@ -14408,17 +14399,9 @@ void RenderFrameHostImpl::SendBeforeUnload(
                 send_before_unload_start_time_, base::TimeTicks::Now()));
     return;
   }
-  // Experiment to run beforeunload handlers at a higher priority in the
-  // renderer.
-  // TODO(crubug.com/1042118): Remove this.
-  if (base::FeatureList::IsEnabled(features::kHighPriorityBeforeUnload)) {
-    rfh->GetHighPriorityLocalFrame()->DispatchBeforeUnload(
-        is_reload, std::move(before_unload_closure));
-  } else {
-    auto scope = MakeUrgentMessageScopeIfNeeded();
-    rfh->GetAssociatedLocalFrame()->BeforeUnload(
-        is_reload, std::move(before_unload_closure));
-  }
+  auto scope = MakeUrgentMessageScopeIfNeeded();
+  rfh->GetAssociatedLocalFrame()->BeforeUnload(
+      is_reload, std::move(before_unload_closure));
 }
 
 void RenderFrameHostImpl::AddServiceWorkerContainerHost(

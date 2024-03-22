@@ -359,11 +359,6 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
   remote_interfaces_ = std::make_unique<service_manager::InterfaceProvider>(
       base::SingleThreadTaskRunner::GetCurrentDefault());
   remote_interfaces_->Bind(std::move(remote_interfaces));
-
-  // Called to bind the receiver for this interface to the local frame. We need
-  // to eagarly bind here because binding happens at normal priority on the main
-  // thread and future calls to this interface need to be high priority.
-  GetHighPriorityLocalFrame();
 }
 
 void RenderFrameHostImpl::TearDownMojoConnection() {
@@ -377,7 +372,6 @@ void RenderFrameHostImpl::TearDownMojoConnection() {
   find_in_page_.reset();
   local_frame_.reset();
   local_main_frame_.reset();
-  high_priority_local_frame_.reset();
 
   frame_host_associated_receiver_.reset();
   associated_interface_provider_receiver_.reset();
