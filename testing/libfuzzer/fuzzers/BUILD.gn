@@ -19,6 +19,11 @@ fuzzer_test("empty_fuzzer") {
   additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
 }
 
+fuzzer_test("string_compare_fuzzer") {
+  sources = [ "string_compare_fuzzer.cc" ]
+  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+}
+
 fuzzer_test("courgette_fuzzer") {
   sources = [ "courgette_fuzzer.cc" ]
   deps = [
