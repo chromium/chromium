@@ -376,11 +376,6 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
   }
 }
 
-bool FlexLayoutAlgorithm::IsColumnContainerMainSizeDefinite() const {
-  DCHECK(is_column_);
-  return ChildAvailableSize().block_size != kIndefiniteSize;
-}
-
 bool FlexLayoutAlgorithm::IsContainerCrossSizeDefinite() const {
   // A column flexbox's cross axis is an inline size, so is definite.
   if (is_column_)
@@ -553,6 +548,7 @@ Length FlexLayoutAlgorithm::GetUsedFlexBasis(const BlockNode& child) const {
 ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
     const BlockNode& flex_item_node,
     LayoutUnit item_main_axis_final_size,
+    bool is_initial_block_size_indefinite,
     std::optional<LayoutUnit> override_inline_size,
     std::optional<LayoutUnit> line_cross_size_for_stretch,
     std::optional<LayoutUnit> block_offset_for_fragmentation,
@@ -584,15 +580,6 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
     if (line_cross_size_for_stretch ||
         WillChildCrossSizeBeContainerCrossSize(flex_item_node))
       space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
-    // https://drafts.csswg.org/css-flexbox/#definite-sizes
-    // If the flex container has a definite main size, a flex item's
-    // post-flexing main size is treated as definite, even though it can
-    // rely on the indefinite sizes of any flex items in the same line.
-    if (!IsColumnContainerMainSizeDefinite() &&
-        !IsUsedFlexBasisDefinite(flex_item_node) &&
-        !AspectRatioProvidesMainSize(flex_item_node)) {
-      space_builder.SetIsInitialBlockSizeIndefinite(true);
-    }
   } else {
     DCHECK(!override_inline_size.has_value());
     available_size.inline_size = item_main_axis_final_size;
@@ -603,6 +590,9 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
     if (line_cross_size_for_stretch ||
         WillChildCrossSizeBeContainerCrossSize(flex_item_node))
       space_builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+  }
+  if (is_initial_block_size_indefinite) {
+    space_builder.SetIsInitialBlockSizeIndefinite(true);
   }
   if (!line_cross_size_for_stretch && DoesItemStretch(flex_item_node)) {
     // For the first layout pass of stretched items, the goal is to determine
@@ -804,11 +794,15 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       return IntrinsicBlockSizeFunc();
     };
 
-    Length flex_basis_length;
-    LayoutUnit flex_base_border_box;
     if (is_column_ && child_style.FlexBasis().IsPercentOrCalc())
       has_column_percent_flex_basis_ = true;
-    if (!IsUsedFlexBasisDefinite(child, &flex_basis_length)) {
+
+    LayoutUnit flex_base_border_box;
+    Length flex_basis_length;
+    const bool is_used_flex_basis_indefinite =
+        !IsUsedFlexBasisDefinite(child, &flex_basis_length);
+
+    if (is_used_flex_basis_indefinite) {
       // This block means that the used flex-basis is 'content'. In here we
       // implement parts B,C,D,E of 9.2.3
       // https://drafts.csswg.org/css-flexbox/#algo-main-item
@@ -937,6 +931,14 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
     const BoxStrut scrollbars = ComputeScrollbarsForNonAnonymous(child);
 
+    // https://drafts.csswg.org/css-flexbox/#definite-sizes
+    // If the flex container has a definite main size, a flex item's
+    // post-flexing main size is treated as definite, even though it can rely
+    // on the indefinite sizes of any flex items in the same line.
+    const bool is_initial_block_size_indefinite =
+        is_column_ && ChildAvailableSize().block_size == kIndefiniteSize &&
+        is_used_flex_basis_indefinite && !AspectRatioProvidesMainSize(child);
+
     const auto container_writing_direction =
         GetConstraintSpace().GetWritingDirection();
     bool is_last_baseline =
@@ -955,7 +957,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
                       min_max_sizes_in_cross_axis_direction,
                       main_axis_border_padding, cross_axis_border_padding,
                       physical_child_margins, scrollbars, baseline_writing_mode,
-                      baseline_group, min_max_sizes.has_value())
+                      baseline_group, is_initial_block_size_indefinite,
+                      is_used_flex_basis_indefinite, min_max_sizes.has_value())
         .ng_input_node_ = child;
     // Save the layout result so that we can maybe reuse it later.
     if (layout_result) {
@@ -1224,9 +1227,14 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       flex_item.offset_ = &flex_item_output.offset;
       flex_item_output.ng_input_node = flex_item.ng_input_node_;
       flex_item_output.main_axis_final_size = flex_item.FlexedBorderBoxSize();
+      flex_item_output.is_initial_block_size_indefinite =
+          flex_item.is_initial_block_size_indefinite_;
+      flex_item_output.is_used_flex_basis_indefinite =
+          flex_item.is_used_flex_basis_indefinite_;
 
       ConstraintSpace child_space = BuildSpaceForLayout(
           flex_item.ng_input_node_, flex_item.FlexedBorderBoxSize(),
+          flex_item.is_initial_block_size_indefinite_,
           flex_item.max_content_contribution_);
 
       // We need to get the item's cross axis size given its new main size. If
@@ -1396,6 +1404,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       if (DoesItemStretch(flex_item.ng_input_node)) {
         ConstraintSpace child_space = BuildSpaceForLayout(
             flex_item.ng_input_node, flex_item.main_axis_final_size,
+            flex_item.is_initial_block_size_indefinite,
             /* override_inline_size */ std::nullopt,
             line_output.line_cross_size);
         layout_result =
@@ -1726,6 +1735,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         MinBlockSizeShouldEncompassIntrinsicSize(*flex_item);
     ConstraintSpace child_space = BuildSpaceForLayout(
         flex_item->ng_input_node, flex_item->main_axis_final_size,
+        flex_item->is_initial_block_size_indefinite,
         /* override_inline_size */ std::nullopt, line_cross_size_for_stretch,
         offset.block_offset, min_block_size_should_encompass_intrinsic_size);
     const LayoutResult* layout_result = flex_item->ng_input_node.Layout(
@@ -2152,8 +2162,6 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
         item.flex_base_content_size_ + item.main_axis_border_padding_;
     const LayoutUnit hypothetical_main_size_border_box =
         item.hypothetical_main_content_size_ + item.main_axis_border_padding_;
-    const bool is_used_flex_basis_definite =
-        IsUsedFlexBasisDefinite(item.ng_input_node_);
 
     if (algorithm_.IsMultiline()) {
       const LayoutUnit main_axis_margins =
@@ -2169,7 +2177,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
                               child_style.ResolvedFlexGrow(Style()) == 0.f) ||
                              (min_contribution < flex_base_size_border_box &&
                               child_style.ResolvedFlexShrink(Style()) == 0.f);
-      if (cant_move && is_used_flex_basis_definite) {
+      if (cant_move && !item.is_used_flex_basis_indefinite_) {
         item_final_contribution.min_size = hypothetical_main_size_border_box;
       } else {
         item_final_contribution.min_size = min_contribution;
@@ -2182,7 +2190,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
                             child_style.ResolvedFlexGrow(Style()) == 0.f) ||
                            (max_contribution < flex_base_size_border_box &&
                             child_style.ResolvedFlexShrink(Style()) == 0.f);
-    if (cant_move && is_used_flex_basis_definite) {
+    if (cant_move && !item.is_used_flex_basis_indefinite_) {
       item_final_contribution.max_size = hypothetical_main_size_border_box;
     } else {
       item_final_contribution.max_size = max_contribution;
@@ -2493,12 +2501,13 @@ bool FlexLayoutAlgorithm::MinBlockSizeShouldEncompassIntrinsicSize(
 
   if (is_column_) {
     bool can_shrink = item_style.ResolvedFlexShrink(Style()) != 0.f &&
-                      IsColumnContainerMainSizeDefinite();
+                      ChildAvailableSize().block_size != kIndefiniteSize;
 
     // Only allow growth if the item can't shrink and the flex-basis is
     // content-based.
-    if (!IsUsedFlexBasisDefinite(item.ng_input_node) && !can_shrink)
+    if (item.is_used_flex_basis_indefinite && !can_shrink) {
       return true;
+    }
 
     // Only allow growth if the item's block-size is auto and either the item
     // can't shrink or its min-height is auto.

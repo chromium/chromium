@@ -56,7 +56,6 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // See https://drafts.csswg.org/css-flexbox/#definite-sizes
   bool WillChildCrossSizeBeContainerCrossSize(const BlockNode& child) const;
 
-  bool IsColumnContainerMainSizeDefinite() const;
   bool IsContainerCrossSizeDefinite() const;
 
   enum class Phase { kLayout, kRowIntrinsicSize, kColumnWrapIntrinsicSize };
@@ -73,6 +72,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   ConstraintSpace BuildSpaceForLayout(
       const BlockNode& flex_item_node,
       LayoutUnit item_main_axis_final_size,
+      bool is_initial_block_size_indefinite,
       std::optional<LayoutUnit> override_inline_size = std::nullopt,
       std::optional<LayoutUnit> line_cross_size_for_stretch = std::nullopt,
       std::optional<LayoutUnit> block_offset_for_fragmentation = std::nullopt,

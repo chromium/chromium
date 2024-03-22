@@ -87,8 +87,10 @@ class FlexItem {
            PhysicalBoxStrut physical_margins,
            BoxStrut scrollbars,
            WritingMode baseline_writing_mode,
-           BaselineGroup baseline_group = BaselineGroup::kMajor,
-           bool depends_on_min_max_sizes = false);
+           BaselineGroup baseline_group,
+           bool is_initial_block_size_indefinite,
+           bool is_used_flex_basis_indefinite,
+           bool depends_on_min_max_sizes);
 
   LayoutUnit HypotheticalMainAxisMarginBoxSize() const {
     return hypothetical_main_content_size_ + main_axis_border_padding_ +
@@ -169,6 +171,8 @@ class FlexItem {
   LayoutUnit cross_axis_size_;
   FlexOffset* offset_ = nullptr;
 
+  const bool is_initial_block_size_indefinite_;
+  const bool is_used_flex_basis_indefinite_;
   const bool depends_on_min_max_sizes_;
   bool frozen_;
 
