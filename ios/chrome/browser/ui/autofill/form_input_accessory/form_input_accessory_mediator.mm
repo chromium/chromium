@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/containers/contains.h"
+#import "base/containers/fixed_flat_set.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
@@ -49,6 +51,31 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using base::UmaHistogramEnumeration;
+
+namespace {
+
+// Returns whether the input field type triggers the keyboard to open. If the
+// field type isn't recognized, it returns the provided default value.
+bool InputTriggersKeyboard(std::string field_type, bool default_value) {
+  static const auto triggers_keyboard = base::MakeFixedFlatSet<std::string>(
+      {"email", "number", "password", "search", "tel", "text", "url", "week"});
+  static const auto no_keyboard = base::MakeFixedFlatSet<std::string>(
+      {"button", "checkbox", "color", "date", "datetime-local", "file",
+       "hidden", "image", "month", "radio", "range", "reset", "submit",
+       "time"});
+
+  if (base::Contains(triggers_keyboard, field_type)) {
+    return true;
+  }
+
+  if (base::Contains(no_keyboard, field_type)) {
+    return false;
+  }
+
+  return default_value;
+}
+
+}  // namespace
 
 @interface FormInputAccessoryMediator () <AutofillBottomSheetObserving,
                                           BooleanObserver,
@@ -357,7 +384,12 @@ using base::UmaHistogramEnumeration;
     return;
   }
 
-  if (_lastSeenParams.field_type != params.field_type) {
+  // Check if we need to reload input views after using an input which did not
+  // require the keyboard accessory to show up. Err on the side of calling
+  // "reloadInputViews" if the input field types are unrecognized.
+  if (!InputTriggersKeyboard(_lastSeenParams.field_type,
+                             /*default_value=*/false) &&
+      InputTriggersKeyboard(params.field_type, /*default_value=*/true)) {
     [GetFirstResponder() reloadInputViews];
   }
   _lastSeenParams = params;
