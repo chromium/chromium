@@ -1983,11 +1983,6 @@
                   '|chrome/browser/ui/webui/settings/ash/languages_'\
                   '|chrome/test/data/webui/settings/chromeos/os_languages_page/'
     },
-    'share_sheet': {
-      'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/share/'\
-                  '|chrome/android/java/res/layout/share_sheet_'\
-                  '|chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/',
-    },
     'sharing': {
       'filepath': 'chrome/browser/sharing/|'\
                   'chrome/browser/ui/views/sharing/',
@@ -3196,7 +3191,6 @@
                              'cros-settings+reviews@google.com'],
     'settings_os_settings_languages':
         ['mlcui+watch-os-settings-languages@google.com'],
-    'share_sheet': ['chrome-sharing-eng+watch@google.com'],
     'sharing': ['knollr+watch-sharing@chromium.org',
                 'mvanouwerkerk+watch-sharing@chromium.org'],
     'shimless_rma': ['zentaro+watch-shimless@chromium.org',
