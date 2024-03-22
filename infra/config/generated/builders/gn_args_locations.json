@@ -333,12 +333,9 @@
     "win32-arm64-rel": "ci/win32-arm64-rel/gn-args.json"
   },
   "chromium.goma": {
-    "Chromium Win Goma RBE Staging": "goma/Chromium Win Goma RBE Staging/gn-args.json",
     "chromeos-amd64-generic-rel-goma-rbe-staging": "goma/chromeos-amd64-generic-rel-goma-rbe-staging/gn-args.json"
   },
   "chromium.goma.fyi": {
-    "Win Builder (dbg) Goma RBE Canary": "goma/Win Builder (dbg) Goma RBE Canary/gn-args.json",
-    "Win Builder Goma RBE Canary": "goma/Win Builder Goma RBE Canary/gn-args.json",
     "chromeos-amd64-generic-rel-goma-rbe-canary": "goma/chromeos-amd64-generic-rel-goma-rbe-canary/gn-args.json"
   },
   "chromium.gpu": {

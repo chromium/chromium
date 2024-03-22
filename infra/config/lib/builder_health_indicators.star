@@ -941,10 +941,7 @@ _exempted_from_contact_builders = {
     "goma": [
         "Chromium Linux Goma RBE Staging (dbg)",
         "Chromium Linux Goma RBE Staging",
-        "Chromium Win Goma RBE Staging",
         "Linux Builder Goma RBE Canary",
-        "Win Builder (dbg) Goma RBE Canary",
-        "Win Builder Goma RBE Canary",
         "chromeos-amd64-generic-rel-goma-rbe-canary",
         "chromeos-amd64-generic-rel-goma-rbe-staging",
         "linux-archive-rel-goma-rbe-ats-canary",

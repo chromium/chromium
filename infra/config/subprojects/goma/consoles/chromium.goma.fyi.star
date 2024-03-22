@@ -13,14 +13,6 @@ luci.console_view(
             builder = "goma/chromeos-amd64-generic-rel-goma-rbe-canary",
             category = "rbe|cros|rel",
         ),
-        luci.console_view_entry(
-            builder = "goma/Win Builder Goma RBE Canary",
-            category = "rbe|win|rel",
-        ),
-        luci.console_view_entry(
-            builder = "goma/Win Builder (dbg) Goma RBE Canary",
-            category = "rbe|win|dbg",
-        ),
     ],
     include_experimental_builds = True,
 )

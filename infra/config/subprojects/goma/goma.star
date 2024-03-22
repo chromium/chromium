@@ -92,65 +92,6 @@ fyi_goma_rbe_canary_builder(
     goma_enable_ats = True,
 )
 
-fyi_goma_rbe_canary_builder(
-    name = "Win Builder (dbg) Goma RBE Canary",
-    builder_spec = builder_config.copy_from(
-        "ci/Win Builder (dbg)",
-        lambda spec: structs.evolve(
-            spec,
-            chromium_config = structs.extend(
-                spec.chromium_config,
-                apply_configs = [
-                    "goma_canary",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "gpu_tests",
-            "debug_builder",
-            "goma",
-            "x86",
-            "no_symbols",
-        ],
-    ),
-    builderless = False,
-    os = os.WINDOWS_DEFAULT,
-    goma_enable_ats = False,
-)
-
-fyi_goma_rbe_canary_builder(
-    name = "Win Builder Goma RBE Canary",
-    builder_spec = builder_config.copy_from(
-        "ci/Win Builder",
-        lambda spec: structs.evolve(
-            spec,
-            chromium_config = structs.extend(
-                spec.chromium_config,
-                apply_configs = [
-                    "goma_canary",
-                    "goma_use_local",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "gpu_tests",
-            "release_builder",
-            "goma",
-            "x86",
-            "minimal_symbols",
-        ],
-    ),
-    builderless = False,
-    os = os.WINDOWS_DEFAULT,
-    goma_enable_ats = False,
-)
-
 def goma_builder(
         *,
         name,
@@ -182,44 +123,4 @@ goma_builder(
     ),
     goma_backend = goma.backend.RBE_STAGING,
     goma_enable_ats = True,
-)
-
-def goma_windows_builder(
-        *,
-        name,
-        goma_enable_ats = True,
-        **kwargs):
-    kwargs["execution_timeout"] = 4 * time.hour
-    return goma_builder(
-        name = name,
-        goma_enable_ats = goma_enable_ats,
-        os = os.WINDOWS_DEFAULT,
-        cores = 16,
-        **kwargs
-    )
-
-goma_windows_builder(
-    name = "Chromium Win Goma RBE Staging",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-            ],
-            target_bits = 64,
-            target_platform = builder_config.target_platform.WIN,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "goma",
-            "x86",
-            "minimal_symbols",
-        ],
-    ),
-    goma_backend = goma.backend.RBE_STAGING,
-    goma_enable_ats = False,
 )
