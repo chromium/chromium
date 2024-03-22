@@ -360,6 +360,16 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
     return;
   }
 
+  // Check parameters from `switches::kSearchEngineChoiceTriggerRepromptParams`.
+  std::optional<base::Value::Dict> reprompt_params = base::JSONReader::ReadDict(
+      switches::kSearchEngineChoiceTriggerRepromptParams.Get());
+  if (!reprompt_params) {
+    // No valid reprompt parameters.
+    base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptHistogram,
+                                  RepromptResult::kInvalidDictionary);
+    return;
+  }
+
   // If existing prefs are missing or have a wrong format, force a reprompt.
   if (!profile_prefs_->HasPrefPath(
           prefs::kDefaultSearchProviderChoiceScreenCompletionVersion)) {
@@ -375,16 +385,6 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
     WipeSearchEngineChoicePrefs(
         profile_prefs_.get(),
         WipeSearchEngineChoiceReason::kInvalidChoiceVersion);
-    return;
-  }
-
-  // Check parameters from `switches::kSearchEngineChoiceTriggerRepromptParams`.
-  std::optional<base::Value::Dict> reprompt_params = base::JSONReader::ReadDict(
-      switches::kSearchEngineChoiceTriggerRepromptParams.Get());
-  if (!reprompt_params) {
-    // No valid reprompt parameters.
-    base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptHistogram,
-                                  RepromptResult::kInvalidDictionary);
     return;
   }
 
