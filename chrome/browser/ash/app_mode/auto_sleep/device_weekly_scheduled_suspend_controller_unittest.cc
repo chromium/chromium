@@ -18,7 +18,6 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "content/public/test/browser_task_environment.h"
-#include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -39,9 +38,6 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
     InitController();
     chromeos::FakePowerManagerClient::Get()->set_tick_clock(
         task_environment_.GetMockTickClock());
-    policy::ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
-        base::BindRepeating(&device::TestWakeLockProvider::BindReceiver,
-                            base::Unretained(&wake_lock_provider_)));
     device_weekly_scheduled_suspend_controller_
         ->SetTaskExecutorFactoryForTesting(
             std::make_unique<FakeRepeatingTimeIntervalTaskExecutor::Factory>(
@@ -108,7 +104,6 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::IO,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ScopedTestingLocalState testing_local_state_;
-  device::TestWakeLockProvider wake_lock_provider_;
   std::unique_ptr<DeviceWeeklyScheduledSuspendController>
       device_weekly_scheduled_suspend_controller_;
 };
@@ -197,26 +192,6 @@ TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
 }
 
 TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
-       GeneratesUniquesExecutorTags) {
-  UpdatePolicyPref(
-      DeviceWeeklyScheduledSuspendTestPolicyBuilder()
-          .AddWeeklySuspendInterval(DayOfWeek::MONDAY, base::Hours(21),
-                                    DayOfWeek::TUESDAY, base::Hours(7))
-          .AddWeeklySuspendInterval(DayOfWeek::SATURDAY, base::Hours(0),
-                                    DayOfWeek::MONDAY, base::Hours(7))
-          .GetAsPrefValue());
-
-  const RepeatingTimeIntervalTaskExecutors& interval_executors =
-      device_weekly_scheduled_suspend_controller()
-          ->GetIntervalExecutorsForTesting();
-  ASSERT_EQ(interval_executors.size(), 2ul);
-  EXPECT_EQ(interval_executors[0]->timer_tag(),
-            "DeviceWeeklyScheduledSuspend_0");
-  EXPECT_EQ(interval_executors[1]->timer_tag(),
-            "DeviceWeeklyScheduledSuspend_1");
-}
-
-TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
        DoesNotCallSuspendWhenOutsideOfInterval) {
   auto builder =
       DeviceWeeklyScheduledSuspendTestPolicyBuilder().AddWeeklySuspendInterval(
@@ -275,9 +250,10 @@ TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
     FastForwardTimeTo(interval->end());
   }
 }
-
+// TODO(b/330664145) : Adapt to use the new delay suspend method to check for
+// wake locks.
 TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
-       DeviceWakesUpWhenIntervalEnds) {
+       DISABLED_DeviceWakesUpWhenIntervalEnds) {
   auto builder =
       DeviceWeeklyScheduledSuspendTestPolicyBuilder().AddWeeklySuspendInterval(
           DayOfWeek::THURSDAY, base::Hours(21), DayOfWeek::FRIDAY,

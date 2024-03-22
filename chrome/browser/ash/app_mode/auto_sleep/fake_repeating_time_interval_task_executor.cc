@@ -15,9 +15,11 @@
 namespace ash {
 
 FakeRepeatingTimeIntervalTaskExecutor::Factory::Factory(
-    const base::Clock* clock)
-    : clock_(clock) {
+    const base::Clock* clock,
+    const base::TickClock* tick_clock)
+    : clock_(clock), tick_clock_(tick_clock) {
   CHECK(clock);
+  CHECK(tick_clock);
 }
 
 FakeRepeatingTimeIntervalTaskExecutor::Factory::~Factory() = default;
@@ -25,36 +27,27 @@ FakeRepeatingTimeIntervalTaskExecutor::Factory::~Factory() = default;
 std::unique_ptr<RepeatingTimeIntervalTaskExecutor>
 FakeRepeatingTimeIntervalTaskExecutor::Factory::Create(
     const policy::WeeklyTimeInterval& time_interval,
-    base::RepeatingClosure on_interval_start_callback,
-    base::RepeatingClosure on_interval_end_callback,
-    const std::string& tag) {
+    base::RepeatingCallback<void(base::TimeDelta)> on_interval_start_callback,
+    base::RepeatingClosure on_interval_end_callback) {
   return std::make_unique<FakeRepeatingTimeIntervalTaskExecutor>(
-      time_interval, on_interval_start_callback, on_interval_end_callback, tag,
-      clock_);
+      time_interval, on_interval_start_callback, on_interval_end_callback,
+      clock_, tick_clock_);
 }
 
 FakeRepeatingTimeIntervalTaskExecutor::FakeRepeatingTimeIntervalTaskExecutor(
     const policy::WeeklyTimeInterval& time_interval,
-    base::RepeatingClosure on_interval_start_callback,
+    base::RepeatingCallback<void(base::TimeDelta)> on_interval_start_callback,
     base::RepeatingClosure on_interval_end_callback,
-    const std::string& tag,
-    const base::Clock* clock)
+    const base::Clock* clock,
+    const base::TickClock* tick_clock)
     : RepeatingTimeIntervalTaskExecutor(time_interval,
                                         on_interval_start_callback,
-                                        on_interval_end_callback,
-                                        tag) {
+                                        on_interval_end_callback) {
   clock_ = clock;
+  timer_ = std::make_unique<base::WallClockTimer>(clock, tick_clock);
 }
 
 FakeRepeatingTimeIntervalTaskExecutor::
     ~FakeRepeatingTimeIntervalTaskExecutor() = default;
-
-base::TimeTicks FakeRepeatingTimeIntervalTaskExecutor::GetTimeTicksSinceBoot() {
-  // Only use `base::TimeTicks::Now` for testing as it is overridden by mock
-  // time and can be safely used in tests, the reason we do not use this in
-  // non-test code is due to b/40296804, `base::TimeTicks::Now` does not handle
-  // suspend properly.
-  return base::TimeTicks::Now();
-}
 
 }  // namespace ash

@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/clock.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 
@@ -21,7 +22,9 @@ class FakeRepeatingTimeIntervalTaskExecutor
  public:
   class Factory : public RepeatingTimeIntervalTaskExecutor::Factory {
    public:
-    explicit Factory(const base::Clock* clock);
+    Factory(const base::Clock* clock,
+            const base::TickClock* tick_clock =
+                base::DefaultTickClock::GetInstance());
     Factory() = delete;
     Factory(const Factory&) = delete;
     const Factory& operator=(const Factory&) = delete;
@@ -29,22 +32,23 @@ class FakeRepeatingTimeIntervalTaskExecutor
 
     std::unique_ptr<RepeatingTimeIntervalTaskExecutor> Create(
         const policy::WeeklyTimeInterval& time_interval,
-        base::RepeatingClosure on_interval_start_callback,
-        base::RepeatingClosure on_interval_end_callback,
-        const std::string& tag) override;
+        base::RepeatingCallback<void(base::TimeDelta)>
+            on_interval_start_callback,
+        base::RepeatingClosure on_interval_end_callback) override;
 
    private:
     raw_ptr<const base::Clock> clock_ = nullptr;
+    raw_ptr<const base::TickClock> tick_clock_ = nullptr;
   };
 
   FakeRepeatingTimeIntervalTaskExecutor() = delete;
 
   FakeRepeatingTimeIntervalTaskExecutor(
       const policy::WeeklyTimeInterval& time_interval,
-      base::RepeatingClosure on_interval_start_callback,
+      base::RepeatingCallback<void(base::TimeDelta)> on_interval_start_callback,
       base::RepeatingClosure on_interval_end_callback,
-      const std::string& tag,
-      const base::Clock* clock);
+      const base::Clock* clock,
+      const base::TickClock* tick_clock);
 
   FakeRepeatingTimeIntervalTaskExecutor(
       const FakeRepeatingTimeIntervalTaskExecutor&) = delete;
@@ -52,9 +56,6 @@ class FakeRepeatingTimeIntervalTaskExecutor
       const FakeRepeatingTimeIntervalTaskExecutor&) = delete;
 
   ~FakeRepeatingTimeIntervalTaskExecutor() override;
-
- private:
-  base::TimeTicks GetTimeTicksSinceBoot() override;
 };
 
 }  // namespace ash

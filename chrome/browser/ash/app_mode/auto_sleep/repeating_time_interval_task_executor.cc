@@ -21,8 +21,6 @@ namespace ash {
 
 namespace {
 
-constexpr char kWakeLockReason[] = "RepeatingTimeIntervalTaskExecutor";
-
 base::TimeDelta GetDuration(const base::Time& start,
                             const policy::WeeklyTime& end) {
   policy::WeeklyTime start_weekly_time =
@@ -48,24 +46,21 @@ RepeatingTimeIntervalTaskExecutor::Factory::~Factory() = default;
 std::unique_ptr<RepeatingTimeIntervalTaskExecutor>
 RepeatingTimeIntervalTaskExecutor::Factory::Create(
     const policy::WeeklyTimeInterval& time_interval,
-    base::RepeatingClosure on_interval_start_callback,
-    base::RepeatingClosure on_interval_end_callback,
-    const std::string& tag) {
+    base::RepeatingCallback<void(base::TimeDelta)> on_interval_start_callback,
+    base::RepeatingClosure on_interval_end_callback) {
   return std::make_unique<RepeatingTimeIntervalTaskExecutor>(
-      time_interval, on_interval_start_callback, on_interval_end_callback, tag);
+      time_interval, on_interval_start_callback, on_interval_end_callback);
 }
 
 RepeatingTimeIntervalTaskExecutor::RepeatingTimeIntervalTaskExecutor(
     const policy::WeeklyTimeInterval& time_interval,
-    base::RepeatingClosure on_interval_start_callback,
-    base::RepeatingClosure on_interval_end_callback,
-    const std::string& tag)
+    base::RepeatingCallback<void(base::TimeDelta)> on_interval_start_callback,
+    base::RepeatingClosure on_interval_end_callback)
     : clock_(base::DefaultClock::GetInstance()),
+      timer_(std::make_unique<base::WallClockTimer>()),
       time_interval_(time_interval),
       on_interval_start_callback_(on_interval_start_callback),
-      on_interval_end_callback_(on_interval_end_callback),
-      timer_tag_(tag),
-      timer_(std::make_unique<chromeos::NativeTimer>(tag)) {
+      on_interval_end_callback_(on_interval_end_callback) {
   CHECK(on_interval_start_callback_);
   CHECK(on_interval_end_callback_);
   CHECK(system::TimezoneSettings::GetInstance());
@@ -92,107 +87,54 @@ void RepeatingTimeIntervalTaskExecutor::TimezoneChanged(
     return;
   }
 
-  // Explicitly reset the timer to make sure that in-flight timers are stopped
-  // and destroyed.
-  timer_.reset();
   // Notify the power manager of user activity to make sure any
   // requests to suspend the device are cancelled so that the invariant of the
   // timer waking up the device when the timer ends is maintained.
   chromeos::PowerManagerClient::Get()->NotifyUserActivity(
       power_manager::USER_ACTIVITY_OTHER);
 
+  timer_->Stop();
   if (has_interval_end_timer_started_) {
     this->on_interval_end_callback_.Run();
     has_interval_end_timer_started_ = false;
   }
-  timer_ = std::make_unique<chromeos::NativeTimer>(timer_tag_);
+
   ScheduleTimer();
 }
 
 void RepeatingTimeIntervalTaskExecutor::IntervalStartsNow() {
-  TimerResultCallback timer_start_result_callback = base::BindOnce(
-      &RepeatingTimeIntervalTaskExecutor::HandleIntervalEndTimerStartResult,
-      weak_ptr_factory_.GetWeakPtr());
+  has_interval_end_timer_started_ = true;
+  on_interval_start_callback_.Run(
+      GetDuration(clock_->Now(), time_interval_.end()));
 
-  base::OnceClosure timer_end_callback = base::BindOnce(
-      &RepeatingTimeIntervalTaskExecutor::HandleIntervalEndTimerFinish,
-      weak_ptr_factory_.GetWeakPtr());
-  StartTimer(time_interval_.end(), std::move(timer_start_result_callback),
-             std::move(timer_end_callback));
+  // Also start a wall clock timer to the end of the interval so that we can
+  // also schedule the timer for next week.
+  StartTimer(
+      time_interval_.end(),
+      base::BindOnce(
+          &RepeatingTimeIntervalTaskExecutor::HandleIntervalEndTimerFinish,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void RepeatingTimeIntervalTaskExecutor::IntervalStartsLater() {
-  TimerResultCallback timer_start_result_callback = base::BindOnce(
-      &RepeatingTimeIntervalTaskExecutor::HandleIntervalStartTimerStartResult,
-      weak_ptr_factory_.GetWeakPtr());
-  // Call `Start` when the timer to the start of the interval finishes,
-  // as that would retrigger the logic to the run the timer to the end of the
-  // interval and call the callbacks respectively.
-  base::OnceClosure timer_end_callback =
-      base::BindOnce(&RepeatingTimeIntervalTaskExecutor::ScheduleTimer,
-                     weak_ptr_factory_.GetWeakPtr());
-  StartTimer(time_interval_.start(), std::move(timer_start_result_callback),
-             std::move(timer_end_callback));
+  StartTimer(time_interval_.start(),
+             base::BindOnce(&RepeatingTimeIntervalTaskExecutor::ScheduleTimer,
+                            weak_ptr_factory_.GetWeakPtr()));
 }
 
 void RepeatingTimeIntervalTaskExecutor::StartTimer(
     policy::WeeklyTime expiration_time,
-    TimerResultCallback timer_result_callback,
     base::OnceClosure timer_expiration_callback) {
-  // Acquire a wake lock so that the device doesn't suspend during time tick
-  // calculation, otherwise the time tick calculation will be incorrect.
-  base::OnceCallback<void(bool)> timer_start_result_callback = base::BindOnce(
-      [](policy::ScopedWakeLock wakelock, TimerResultCallback callback,
-         bool result) -> void {
-        std::move(callback).Run(std::move(wakelock), result);
-      },
-      policy::ScopedWakeLock(device::mojom::WakeLockType::kPreventAppSuspension,
-                             kWakeLockReason),
-      std::move(timer_result_callback));
-
-  timer_->Start(
-      GetTimeTicksSinceBoot() + GetDuration(clock_->Now(), expiration_time),
-      std::move(timer_expiration_callback),
-      std::move(timer_start_result_callback));
-}
-
-void RepeatingTimeIntervalTaskExecutor::HandleIntervalEndTimerStartResult(
-    policy::ScopedWakeLock wakelock,
-    bool result) {
-  // TODO(b/324878921) Consider retrying or scheduling the timer for the next
-  // week when `NativeTimer` fails to start.
-  if (!result) {
-    LOG(ERROR) << "Failed to start RepeatingTimeIntervalTaskExecutor timer";
-    return;
-  }
-  has_interval_end_timer_started_ = true;
-  on_interval_start_callback_.Run();
+  auto next_scheduled_time =
+      clock_->Now() + GetDuration(clock_->Now(), expiration_time);
+  timer_->Start(FROM_HERE, next_scheduled_time,
+                std::move(timer_expiration_callback));
 }
 
 void RepeatingTimeIntervalTaskExecutor::HandleIntervalEndTimerFinish() {
-  on_interval_end_callback_.Run();
   has_interval_end_timer_started_ = false;
+  on_interval_end_callback_.Run();
   ScheduleTimer();
-}
-
-void RepeatingTimeIntervalTaskExecutor::HandleIntervalStartTimerStartResult(
-    policy::ScopedWakeLock wakelock,
-    bool result) {
-  // TODO(b/324878921) Consider retrying or scheduling the timer for the next
-  // week when `NativeTimer` fails to start.
-  if (!result) {
-    LOG(ERROR) << "Failed to start RepeatingTimeIntervalTaskExecutor timer to "
-                  "the start of the interval";
-    return;
-  }
-}
-
-base::TimeTicks RepeatingTimeIntervalTaskExecutor::GetTimeTicksSinceBoot() {
-  struct timespec spec;
-  int result = clock_gettime(CLOCK_BOOTTIME, &spec);
-  CHECK_EQ(result, 0);
-
-  return base::TimeTicks() + base::TimeDelta::FromTimeSpec(spec);
 }
 
 }  // namespace ash
