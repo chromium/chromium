@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.tab_ui;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,7 +11,6 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 
 import androidx.annotation.ColorInt;
@@ -20,15 +19,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
 
@@ -40,21 +35,17 @@ import java.util.Objects;
 
 /** Provider for processed favicons in Tab list. */
 public class TabListFaviconProvider {
-    static final int FAVICON_BACKGROUND_DEFAULT_ALPHA = 255;
-    static final int FAVICON_BACKGROUND_SELECTED_ALPHA = 0;
-    static final int TAB_GROUP_FAVICON_COLOR_LEVEL = 1;
-
     /**
      * Wrapper class that holds a favicon drawable and whether recolor is allowed. Subclasses should
      * make a best effort to implement an {@link Object#equals(Object)} that will allow efficient
      * comparisons of favicon objects.
      */
-    abstract static class TabFavicon {
+    public abstract static class TabFavicon {
         private final @NonNull Drawable mDefaultDrawable;
         private final @NonNull Drawable mSelectedDrawable;
         private final boolean mIsRecolorAllowed;
 
-        private TabFavicon(
+        protected TabFavicon(
                 @NonNull Drawable defaultDrawable,
                 @NonNull Drawable selectedDrawable,
                 boolean allowRecolor) {
@@ -89,7 +80,7 @@ public class TabListFaviconProvider {
 
     /** A favicon that is sourced from and equality checked on a single URL. */
     @VisibleForTesting
-    static class UrlTabFavicon extends TabFavicon {
+    public static class UrlTabFavicon extends TabFavicon {
         private final @NonNull GURL mGurl;
 
         private UrlTabFavicon(
@@ -102,7 +93,7 @@ public class TabListFaviconProvider {
         }
 
         @VisibleForTesting
-        UrlTabFavicon(@NonNull Drawable drawable, @NonNull GURL gurl) {
+        public UrlTabFavicon(@NonNull Drawable drawable, @NonNull GURL gurl) {
             this(drawable, drawable, false, gurl);
         }
 
@@ -122,11 +113,11 @@ public class TabListFaviconProvider {
 
     /** Tracks the GURLS that were used for the composed favicon for the equality check.  */
     @VisibleForTesting
-    static class ComposedTabFavicon extends TabFavicon {
+    public static class ComposedTabFavicon extends TabFavicon {
         private final @NonNull GURL[] mGurls;
 
         @VisibleForTesting
-        ComposedTabFavicon(@NonNull Drawable drawable, @NonNull GURL[] gurls) {
+        public ComposedTabFavicon(@NonNull Drawable drawable, @NonNull GURL[] gurls) {
             super(drawable, drawable, false);
             mGurls = gurls;
         }
@@ -158,7 +149,7 @@ public class TabListFaviconProvider {
     })
     @Retention(RetentionPolicy.SOURCE)
     @VisibleForTesting
-    @interface StaticTabFaviconType {
+    public @interface StaticTabFaviconType {
         int UNKNOWN = 0;
         int ROUNDED_GLOBE = 1;
         int ROUNDED_CHROME = 2;
@@ -172,7 +163,7 @@ public class TabListFaviconProvider {
 
     /** A favicon that is one of a fixed number of static icons. */
     @VisibleForTesting
-    static class ResourceTabFavicon extends TabFavicon {
+    public static class ResourceTabFavicon extends TabFavicon {
         private final @StaticTabFaviconType int mType;
 
         private ResourceTabFavicon(
@@ -185,7 +176,7 @@ public class TabListFaviconProvider {
         }
 
         @VisibleForTesting
-        ResourceTabFavicon(@NonNull Drawable defaultDrawable, @StaticTabFaviconType int type) {
+        public ResourceTabFavicon(@NonNull Drawable defaultDrawable, @StaticTabFaviconType int type) {
             this(defaultDrawable, defaultDrawable, false, type);
         }
 
@@ -200,39 +191,6 @@ public class TabListFaviconProvider {
                 return false;
             }
             return this.mType == ((ResourceTabFavicon) other).mType;
-        }
-    }
-
-    /** A favicon represented by a full color circle when displaying tab group colors. */
-    @VisibleForTesting
-    static class TabGroupColorFavicon extends TabFavicon {
-        private final @TabGroupColorId int mColorId;
-
-        private TabGroupColorFavicon(
-                @NonNull Drawable defaultDrawable,
-                @NonNull Drawable selectedDrawable,
-                boolean allowRecolor,
-                @TabGroupColorId int colorId) {
-            super(defaultDrawable, selectedDrawable, allowRecolor);
-            mColorId = colorId;
-        }
-
-        @VisibleForTesting
-        TabGroupColorFavicon(@NonNull Drawable defaultDrawable, @TabGroupColorId int colorId) {
-            this(defaultDrawable, defaultDrawable, false, colorId);
-        }
-
-        @Override
-        public int hashCode() {
-            return Integer.hashCode(mColorId);
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (!(other instanceof TabGroupColorFavicon)) {
-                return false;
-            }
-            return this.mColorId == ((TabGroupColorFavicon) other).mColorId;
         }
     }
 
@@ -490,7 +448,7 @@ public class TabListFaviconProvider {
      * @return The scaled rounded Globe {@link TabFavicon} as default favicon.
      * @param isIncognito Whether the {@link TabFavicon} is used for incognito mode.
      */
-    TabFavicon getDefaultFavicon(boolean isIncognito) {
+    public TabFavicon getDefaultFavicon(boolean isIncognito) {
         return getRoundedGlobeFavicon(isIncognito);
     }
 
@@ -522,7 +480,7 @@ public class TabListFaviconProvider {
      * @param isIncognito Whether the tab is incognito or not.
      * @param faviconCallback The callback that requests for favicon.
      */
-    void getFaviconForUrlAsync(
+    public void getFaviconForUrlAsync(
             GURL url, boolean isIncognito, Callback<TabFavicon> faviconCallback) {
         if (mFaviconHelper == null || UrlUtilities.isNtpUrl(url)) {
             faviconCallback.onResult(getRoundedChromeFavicon(isIncognito));
@@ -578,36 +536,8 @@ public class TabListFaviconProvider {
      * @param iconUrl The url the favicon came from.
      * @return The processed {@link TabFavicon}.
      */
-    TabFavicon getFaviconFromBitmap(@NonNull Bitmap icon, @NonNull GURL iconUrl) {
+    public TabFavicon getFaviconFromBitmap(@NonNull Bitmap icon, @NonNull GURL iconUrl) {
         return new UrlTabFavicon(processBitmap(icon, mIsTabStrip), iconUrl);
-    }
-
-    /**
-     * Asynchronously get a full color favicon for tab group color icon display.
-     *
-     * @param colorId The color id associated with the chosen color to be displayed.
-     */
-    public TabFaviconFetcher getFaviconFromTabGroupColorFetcher(
-            @NonNull @TabGroupColorId int colorId, boolean isIncognito) {
-        return new TabFaviconFetcher() {
-            @Override
-            public void fetch(Callback<TabFavicon> faviconCallback) {
-                final @ColorInt int color =
-                        ColorPickerUtils.getTabGroupColorPickerItemColor(
-                                mContext, colorId, isIncognito);
-
-                LayerDrawable tabGroupColorIcon =
-                        (LayerDrawable)
-                                ResourcesCompat.getDrawable(
-                                        mContext.getResources(),
-                                        R.drawable.tab_group_color_icon,
-                                        mContext.getTheme());
-                ((GradientDrawable) tabGroupColorIcon.getDrawable(TAB_GROUP_FAVICON_COLOR_LEVEL))
-                        .setColor(color);
-
-                faviconCallback.onResult(new TabGroupColorFavicon(tabGroupColorIcon, colorId));
-            }
-        };
     }
 
     public TabFaviconFetcher getComposedFaviconImageFetcher(List<GURL> urls, boolean isIncognito) {

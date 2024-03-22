@@ -5,7 +5,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <dimen name="tab_grid_favicon_size">18dp</dimen>
     <dimen name="tab_list_selected_inset">7dp</dimen>
     <dimen name="tab_list_selected_inset_low_end">6dp</dimen>
     <dimen name="tab_list_selected_margin">7dp</dimen>
@@ -35,8 +34,6 @@ found in the LICENSE file.
     <dimen name="tab_group_toolbar_topic_margin">8dp</dimen>
     <dimen name="tab_strip_fading_edge_width">8dp</dimen>
     <dimen name="tab_strip_button_width">48dp</dimen>
-    <dimen name="tab_strip_favicon_inset">3dp</dimen>
-    <dimen name="tab_strip_favicon_size">14dp</dimen>
     <dimen name="swipe_to_dismiss_threshold">144dp</dimen>
     <dimen name="selection_tab_grid_toggle_button_inset">14dp</dimen>
     <dimen name="selection_tab_list_toggle_button_lateral_inset">18dp</dimen>

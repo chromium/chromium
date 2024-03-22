@@ -121,6 +121,8 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -130,7 +132,6 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
-import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ThumbnailFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -256,6 +257,7 @@ public class TabListMediatorUnitTest {
     @Mock TabModel mTabModel;
     @Mock TabModel mIncognitoTabModel;
     @Mock TabListFaviconProvider mTabListFaviconProvider;
+    @Mock TabGroupColorFaviconProvider mTabGroupColorFaviconProvider;
     @Mock TabListFaviconProvider.TabFaviconFetcher mTabFaviconFetcher;
     @Mock RecyclerView mRecyclerView;
     @Mock TabListRecyclerView mTabListRecyclerView;
@@ -385,7 +387,7 @@ public class TabListMediatorUnitTest {
                 .when(mTabListFaviconProvider)
                 .getComposedFaviconImageFetcher(any(), anyBoolean());
         doReturn(mTabFaviconFetcher)
-                .when(mTabListFaviconProvider)
+                .when(mTabGroupColorFaviconProvider)
                 .getFaviconFromTabGroupColorFetcher(anyInt(), anyBoolean());
         doReturn(2).when(mTabGroupModelFilter).getCount();
         doReturn(tabs1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
@@ -1152,6 +1154,7 @@ public class TabListMediatorUnitTest {
                         getTabThumbnailCallback(),
                         mTitleProvider,
                         mTabListFaviconProvider,
+                        mTabGroupColorFaviconProvider,
                         true,
                         null,
                         mGridCardOnClickListenerProvider,
@@ -2770,6 +2773,7 @@ public class TabListMediatorUnitTest {
                         getTabThumbnailCallback(),
                         mTitleProvider,
                         mTabListFaviconProvider,
+                        mTabGroupColorFaviconProvider,
                         true,
                         null,
                         null,
@@ -2802,6 +2806,7 @@ public class TabListMediatorUnitTest {
                         getTabThumbnailCallback(),
                         mTitleProvider,
                         mTabListFaviconProvider,
+                        mTabGroupColorFaviconProvider,
                         true,
                         null,
                         null,
@@ -2896,7 +2901,7 @@ public class TabListMediatorUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, tab3));
         createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
         mTabObserver.onFaviconUpdated(mTab1, mFaviconBitmap, mFaviconUrl);
-        verify(mTabListFaviconProvider).getFaviconFromTabGroupColorFetcher(COLOR_2, false);
+        verify(mTabGroupColorFaviconProvider).getFaviconFromTabGroupColorFetcher(COLOR_2, false);
         assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
     }
 
@@ -3167,6 +3172,7 @@ public class TabListMediatorUnitTest {
                         getTabThumbnailCallback(),
                         mTitleProvider,
                         mTabListFaviconProvider,
+                        mTabGroupColorFaviconProvider,
                         true,
                         () -> {
                             return mSelectionDelegate;
@@ -3210,6 +3216,7 @@ public class TabListMediatorUnitTest {
                         getTabThumbnailCallback(),
                         mTitleProvider,
                         mTabListFaviconProvider,
+                        mTabGroupColorFaviconProvider,
                         true,
                         () -> {
                             return mSelectionDelegate;
@@ -3253,6 +3260,7 @@ public class TabListMediatorUnitTest {
                         getTabThumbnailCallback(),
                         mTitleProvider,
                         mTabListFaviconProvider,
+                        mTabGroupColorFaviconProvider,
                         true,
                         () -> {
                             return mSelectionDelegate;
@@ -3639,6 +3647,7 @@ public class TabListMediatorUnitTest {
                         getTabThumbnailCallback(),
                         mTitleProvider,
                         mTabListFaviconProvider,
+                        mTabGroupColorFaviconProvider,
                         actionOnRelatedTabs,
                         null,
                         mGridCardOnClickListenerProvider,

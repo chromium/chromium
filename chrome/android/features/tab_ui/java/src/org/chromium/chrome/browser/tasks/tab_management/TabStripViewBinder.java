@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.FAVICON_BACKGROUND_DEFAULT_ALPHA;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.FAVICON_BACKGROUND_SELECTED_ALPHA;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupColorFaviconProvider.FAVICON_BACKGROUND_DEFAULT_ALPHA;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupColorFaviconProvider.FAVICON_BACKGROUND_SELECTED_ALPHA;
 
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
@@ -16,6 +16,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -101,7 +102,8 @@ class TabStripViewBinder {
     private static void setFavicon(
             ViewLookupCachingFrameLayout view, PropertyModel model, Drawable faviconDrawable) {
         ImageButton button = (ImageButton) view.fastFindViewById(R.id.tab_strip_item_button);
-        button.setBackgroundResource(R.drawable.tabstrip_favicon_background);
+        button.setBackgroundResource(
+                org.chromium.chrome.browser.tab_ui.R.drawable.tabstrip_favicon_background);
         ViewCompat.setBackgroundTintList(
                 button,
                 AppCompatResources.getColorStateList(

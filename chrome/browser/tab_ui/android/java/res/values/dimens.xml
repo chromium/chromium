@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <dimen name="tab_grid_favicon_size">18dp</dimen>
+  <dimen name="tab_strip_favicon_inset">3dp</dimen>
+  <dimen name="tab_strip_favicon_size">14dp</dimen>
+</resources>
