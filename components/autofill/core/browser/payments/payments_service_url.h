@@ -10,6 +10,10 @@
 
 class GURL;
 
+namespace url {
+class Origin;
+}
+
 namespace autofill::payments {
 
 // Returns true if production Payments URLs should be used or false if sandbox
@@ -18,6 +22,9 @@ bool IsPaymentsProductionEnabled();
 
 // Returns the base URL to use for calls to Google Payments endpoints.
 GURL GetBaseSecureUrl();
+
+// Returns the Origin used by Google Pay's pay.js script
+url::Origin GetGooglePayScriptOrigin();
 
 // Returns the URL to navigate to in order to allow the user to edit or delete
 // payment instruments (credit cards) or addresses, respectively.

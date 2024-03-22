@@ -57,7 +57,7 @@ void ContentAutofillSharedStorageHandler::OnServerCardDataRefreshed(
     ClearAutofillSharedStorageData();
   } else {
     shared_storage_manager_->Set(
-        url::Origin::Create(payments::GetBaseSecureUrl()),
+        payments::GetGooglePayScriptOrigin(),
         kAutofillServerCardDataSharedStorageKey,
         EncodeServerCardDataForSharedStorage(server_card_data),
         base::BindOnce(&ContentAutofillSharedStorageHandler::
@@ -68,9 +68,9 @@ void ContentAutofillSharedStorageHandler::OnServerCardDataRefreshed(
 }
 
 void ContentAutofillSharedStorageHandler::ClearAutofillSharedStorageData() {
-  shared_storage_manager_->Delete(
-      url::Origin::Create(payments::GetBaseSecureUrl()),
-      kAutofillServerCardDataSharedStorageKey, base::DoNothing());
+  shared_storage_manager_->Delete(payments::GetGooglePayScriptOrigin(),
+                                  kAutofillServerCardDataSharedStorageKey,
+                                  base::DoNothing());
 }
 
 void ContentAutofillSharedStorageHandler::
