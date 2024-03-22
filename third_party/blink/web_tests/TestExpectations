@@ -2610,6 +2610,7 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac14 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/626703 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/no-white-flash-before-activation.html [ Timeout ]
 crbug.com/626703 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/no-white-flash-before-activation.html [ Timeout ]
 crbug.com/626703 virtual/view-transition/external/wpt/css/css-view-transitions/no-white-flash-before-activation.html [ Timeout ]
@@ -6911,7 +6912,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure Timeout ]
 [ Mac14 ] external/wpt/html/semantics/embedded-content/the-img-element/invisible-image.html [ Failure ]
 [ Mac14 ] external/wpt/service-workers/cache-storage/crashtests/cache-response-clone.https.html [ Timeout ]
-[ Mac14 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure ]
 [ Mac14 ] external/wpt/webstorage/event_case_sensitive.html [ Failure ]
 [ Mac14 ] external/wpt/webtransport/streams-close.https.any.html [ Failure ]
 [ Mac14 ] external/wpt/webtransport/streams-close.https.any.serviceworker.html [ Failure ]

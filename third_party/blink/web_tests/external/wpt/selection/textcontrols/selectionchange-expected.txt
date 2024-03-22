@@ -19,9 +19,9 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Calling select() twice on the input element
   assert_equals: expected 1 but got 0
 [FAIL] Calling setRangeText() after select() on the input element
-  assert_equals: expected 2 but got 0
+  assert_equals: expected 1 but got 0
 [FAIL] Calling setRangeText() repeatedly on the input element
-  assert_equals: expected 4 but got 0
+  assert_equals: expected 1 but got 0
 [FAIL] Modifying selectionStart value of the disconnected input element
   assert_equals: expected 1 but got 0
 [FAIL] Modifying selectionEnd value of the disconnected input element
@@ -41,9 +41,9 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Calling select() twice on the disconnected input element
   assert_equals: expected 1 but got 0
 [FAIL] Calling setRangeText() after select() on the disconnected input element
-  assert_equals: expected 2 but got 0
+  assert_equals: expected 1 but got 0
 [FAIL] Calling setRangeText() repeatedly on the disconnected input element
-  assert_equals: expected 4 but got 0
+  assert_equals: expected 1 but got 0
 [FAIL] Modifying selectionStart value of the textarea element
   assert_equals: expected 1 but got 0
 [FAIL] Modifying selectionEnd value of the textarea element
@@ -63,9 +63,9 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Calling select() twice on the textarea element
   assert_equals: expected 1 but got 0
 [FAIL] Calling setRangeText() after select() on the textarea element
-  assert_equals: expected 2 but got 0
+  assert_equals: expected 1 but got 0
 [FAIL] Calling setRangeText() repeatedly on the textarea element
-  assert_equals: expected 4 but got 0
+  assert_equals: expected 1 but got 0
 [FAIL] Modifying selectionStart value of the disconnected textarea element
   assert_equals: expected 1 but got 0
 [FAIL] Modifying selectionEnd value of the disconnected textarea element
@@ -85,8 +85,8 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Calling select() twice on the disconnected textarea element
   assert_equals: expected 1 but got 0
 [FAIL] Calling setRangeText() after select() on the disconnected textarea element
-  assert_equals: expected 2 but got 0
+  assert_equals: expected 1 but got 0
 [FAIL] Calling setRangeText() repeatedly on the disconnected textarea element
-  assert_equals: expected 4 but got 0
+  assert_equals: expected 1 but got 0
 Harness: the test ran to completion.
 

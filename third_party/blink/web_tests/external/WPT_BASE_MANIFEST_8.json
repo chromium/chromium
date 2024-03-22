@@ -382534,6 +382534,14 @@
      "23ac4054d051b51309327a6c985dc67c458a93d5",
      []
     ],
+    "onselectionchange-on-distinct-text-controls-expected.txt": [
+     "0ed464df8fa3dbe74dc4367791ce15a13cb3bed8",
+     []
+    ],
+    "onselectionchange-on-document-expected.txt": [
+     "5c06c49dd999afbf8408ebec0181a15ee49f0076",
+     []
+    ],
     "removeRange-expected.txt": [
      "11286780a4d8f64e53cac91431e2e3698507cde2",
      []
@@ -382560,7 +382568,7 @@
     ],
     "textcontrols": {
      "selectionchange-expected.txt": [
-      "ebbe1660a39b99d64dab276c0373a83baf20e667",
+      "3cc62548674b8d2553804b101f3c813d1a98de9f",
       []
      ]
     }
@@ -575335,56 +575343,62 @@
        ]
       ],
       "invoketarget-button-event-dispatch.tentative.html": [
-       "d8d9c04022c2a0e551296af12f3552e94553084c",
+       "f63b1e3517ceb250d87b6dce7bcc99c36857f2fb",
        [
         null,
         {
-         "testdriver": true
+         "testdriver": true,
+         "timeout": "long"
         }
        ]
       ],
       "invoketarget-fullscreen-behavior.tentative.html": [
-       "b72020283e16de71ac573e7a1a9c9dd4962064c3",
+       "2e2c5f683f0e841ac13cf985462a93bf97cb7abb",
        [
         null,
         {
-         "testdriver": true
+         "testdriver": true,
+         "timeout": "long"
         }
        ]
       ],
       "invoketarget-on-audio-behavior.tentative.html": [
-       "f3abeae165aa267114e1acb523ddc5bb0a2bd1a1",
+       "491a9aa46c5e55e5fc20a2f526f67c907df2ea8b",
        [
         null,
         {
-         "testdriver": true
+         "testdriver": true,
+         "timeout": "long"
         }
        ]
       ],
       "invoketarget-on-details-behavior.tentative.html": [
-       "c6735e261124452a7d623fc9b2cdf697cdee0780",
+       "53b6578dc2780ad9a85b80651b2e0243d5949caf",
        [
         null,
         {
-         "testdriver": true
+         "testdriver": true,
+         "timeout": "long"
         }
        ]
       ],
       "invoketarget-on-popover-behavior.tentative.html": [
-       "03eba222855307009c4691a27002c6d2d13414cf",
+       "ae9dd302df98814d2f16b0bb86d87e3c6d6bf997",
        [
         null,
         {
-         "testdriver": true
+         "testdriver": true,
+         "timeout": "long"
         }
        ]
       ],
       "invoketarget-on-video-behavior.tentative.html": [
-       "5bbcd83e72ef31a967f43833715906ef07c948c8",
+       "587ac4a50bb89d0a1555d5e29b77d728ca834ee2",
        [
         null,
         {
-         "testdriver": true
+         "testdriver": true,
+         "timeout": "long"
         }
        ]
       ]
@@ -625139,6 +625153,20 @@
       {}
      ]
     ],
+    "onselectionchange-on-distinct-text-controls.html": [
+     "ee26928699c78e2f822e39a9ff6601bc8c92163c",
+     [
+      null,
+      {}
+     ]
+    ],
+    "onselectionchange-on-document.html": [
+     "4e0616537771ef3763f9c1b4950964d81cb1b9f5",
+     [
+      null,
+      {}
+     ]
+    ],
     "removeAllRanges.html": [
      "026280d6b8c252c8c9486977d31a32d6d211f701",
      [
@@ -625254,7 +625282,7 @@
       ]
      ],
      "selectionchange.html": [
-      "2b43cfe44b9d845251acdf1dec3e8f83060bf644",
+      "1c4ddf2b9baad5a907bd5c186c3c892a6608644c",
       [
        null,
        {}

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] task to fire selectionchange event gets queued each time selection is mutated
+  assert_equals: expected 2 but got 3
+[FAIL] has scheduled selectionchange event is set to false at the beginning of a task to fire selectionchange event
+  assert_equals: expected 1 but got 0
+Harness: the test ran to completion.
+
