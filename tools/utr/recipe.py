@@ -100,6 +100,10 @@ class LegacyRunner:
     input_props['test_names'] = tests
     if build_dir:
       input_props['build_dir'] = build_dir
+    # The recipe will overwrite this property so we have to put it preserve it
+    # elsewhere
+    if 'recipe' in input_props:
+      input_props['builder_recipe'] = input_props['recipe']
 
     mode = 'RUN_TYPE_COMPILE_AND_RUN'
     assert not (skip_compile and skip_test)
