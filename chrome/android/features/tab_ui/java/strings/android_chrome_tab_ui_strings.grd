@@ -612,7 +612,7 @@
         Title required
       </message>
       <message name="IDS_TAB_GROUP_CREATION_POSITIVE_BUTTON_TEXT" desc="Text for creating a new tab group from the merged tabs after confirming the editable details">
-        Done
+        Create group
       </message>
 
       <!-- Tab Group Parity Strings -->

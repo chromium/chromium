@@ -154,8 +154,7 @@ import java.util.concurrent.ExecutionException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@EnableFeatures({DEFER_TAB_SWITCHER_LAYOUT_CREATION})
-@DisableFeatures({TAB_GROUP_PARITY_ANDROID})
+@EnableFeatures({DEFER_TAB_SWITCHER_LAYOUT_CREATION, TAB_GROUP_PARITY_ANDROID})
 @Batch(Batch.PER_CLASS)
 public class TabGridDialogTest {
     private static final String CUSTOMIZED_TITLE1 = "wfh tips";
@@ -180,7 +179,7 @@ public class TabGridDialogTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(5)
+                    .setRevision(4)
                     .build();
 
     // Must force tab re-creation to ensure tab group names make sense.
@@ -357,7 +356,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     public void testTabGroupDialogUi() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -366,8 +364,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        // Dismiss the tab group creation dialog.
-        Espresso.pressBack();
         verifyTabSwitcherCardCount(cta, 1);
 
         // Open dialog and verify dialog is showing correct content.
@@ -458,7 +454,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     public void testColorPickerOnIconClick() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
@@ -476,8 +471,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        // Dismiss the tab group creation dialog.
-        Espresso.pressBack();
         verifyTabSwitcherCardCount(cta, 1);
 
         // Open dialog and click the color icon to show the color picker.
@@ -513,7 +506,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     public void testColorPickerOnToolbarMenuItemClick() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
@@ -531,8 +523,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        // Dismiss the tab group creation dialog.
-        Espresso.pressBack();
         verifyTabSwitcherCardCount(cta, 1);
 
         // Open dialog and click the toolbar menu item to show the color picker.
@@ -598,7 +588,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     public void testDialogToolbarSelectionEditor() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -607,8 +596,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        // Dismiss the tab group creation dialog.
-        Espresso.pressBack();
         verifyTabSwitcherCardCount(cta, 1);
 
         // Open dialog and open selection editor and confirm the share action isn't visible.
@@ -1133,7 +1120,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     public void testTabGroupNaming_KeyboardVisibility() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1142,8 +1128,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        // Dismiss the tab group creation dialog.
-        Espresso.pressBack();
         verifyTabSwitcherCardCount(cta, 1);
         openDialogFromTabSwitcherAndVerify(
                 cta,
@@ -1310,7 +1294,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({TAB_GROUP_PARITY_ANDROID})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderDialog_3Tabs_Portrait(boolean nightModeEnabled) throws Exception {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
@@ -1322,8 +1305,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        // Dismiss the tab group creation dialog.
-        Espresso.pressBack();
         verifyTabSwitcherCardCount(cta, 1);
         openDialogFromTabSwitcherAndVerify(cta, 3, null);
 
@@ -1336,7 +1317,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({TAB_GROUP_PARITY_ANDROID})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderDialog_3Tabs_Landscape_NewAspectRatio(boolean nightModeEnabled)
             throws Exception {
@@ -1350,8 +1330,6 @@ public class TabGridDialogTest {
         // Rotate to landscape mode and create a tab group.
         ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
         mergeAllNormalTabsToAGroup(cta);
-        // Dismiss the tab group creation dialog.
-        Espresso.pressBack();
         verifyTabSwitcherCardCount(cta, 1);
         openDialogFromTabSwitcherAndVerify(cta, 3, null);
 
@@ -1364,7 +1342,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({TAB_GROUP_PARITY_ANDROID})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderDialog_5Tabs_InitialScroll(boolean nightModeEnabled) throws Exception {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
@@ -1376,8 +1353,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        // Dismiss the tab group creation dialog.
-        Espresso.pressBack();
         verifyTabSwitcherCardCount(cta, 1);
         openDialogFromTabSwitcherAndVerify(cta, 5, null);
 
@@ -1396,7 +1371,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderDialog_TabGroupColorChange(boolean nightModeEnabled) throws Exception {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
@@ -1423,8 +1397,6 @@ public class TabGridDialogTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        // Dismiss the tab group creation dialog.
-        Espresso.pressBack();
         verifyTabSwitcherCardCount(cta, 1);
 
         // Open dialog and click the color icon to show the color picker.
