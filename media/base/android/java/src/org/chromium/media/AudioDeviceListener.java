@@ -6,6 +6,7 @@ package org.chromium.media;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothStatusCodes;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.os.Build;
 
 import androidx.annotation.IntDef;
 
@@ -55,6 +57,9 @@ class AudioDeviceListener {
     // Enabled during initialization if BLUETOOTH permission is granted.
     private boolean mHasBluetoothPermission;
 
+    // True if the current device supports Bluetooth LE Audio.
+    private boolean mIsBluetoothLeAudioSupported;
+
     // Broadcast receiver for wired headset intent broadcasts.
     private BroadcastReceiver mWiredHeadsetReceiver;
 
@@ -85,10 +90,12 @@ class AudioDeviceListener {
         mDeviceStates.setDeviceExistence(AudioDeviceSelector.Devices.ID_SPEAKERPHONE, true);
 
         mHasBluetoothPermission = hasBluetoothPermission;
+        BluetoothAdapter adapter = getBluetoothAdapter();
+        mIsBluetoothLeAudioSupported = isLeAudioSupported(adapter);
 
         // Register receivers for broadcasting intents related to Bluetooth device
         // and Bluetooth SCO notifications. Requires BLUETOOTH permission.
-        registerBluetoothIntentsIfNeeded();
+        registerBluetoothIntentsIfNeeded(adapter);
 
         // Register receiver for broadcasting intents related to adding/
         // removing a wired headset (Intent.ACTION_HEADSET_PLUG).
@@ -106,10 +113,10 @@ class AudioDeviceListener {
     }
 
     /**
-     * Register for BT intents if we have the BLUETOOTH permission.
-     * Also extends the list of available devices with a BT device if one exists.
+     * Register for BT intents if we have the BLUETOOTH permission. Also extends the list of
+     * available devices with a BT device if one exists.
      */
-    private void registerBluetoothIntentsIfNeeded() {
+    private void registerBluetoothIntentsIfNeeded(BluetoothAdapter adapter) {
         // Add a Bluetooth headset to the list of available devices if a BT
         // headset is detected and if we have the BLUETOOTH permission.
         // We must do this initial check using a dedicated method since the
@@ -121,7 +128,7 @@ class AudioDeviceListener {
             return;
         }
         mDeviceStates.setDeviceExistence(
-                AudioDeviceSelector.Devices.ID_BLUETOOTH_HEADSET, hasBluetoothHeadset());
+                AudioDeviceSelector.Devices.ID_BLUETOOTH_HEADSET, hasBluetoothHeadset(adapter));
 
         // Register receivers for broadcast intents related to changes in
         // Bluetooth headset availability.
@@ -137,37 +144,68 @@ class AudioDeviceListener {
         mBluetoothHeadsetReceiver = null;
     }
 
-    /**
-     * Gets the current Bluetooth headset state.
-     * android.bluetooth.BluetoothAdapter.getProfileConnectionState() requires
-     * the BLUETOOTH permission.
-     */
-    private boolean hasBluetoothHeadset() {
+    private BluetoothAdapter getBluetoothAdapter() {
         if (!mHasBluetoothPermission) {
-            Log.w(TAG, "hasBluetoothHeadset() requires BLUETOOTH permission");
-            return false;
+            Log.w(TAG, "getBluetoothAdapter() requires BLUETOOTH permission");
+            return null;
         }
 
         BluetoothManager btManager =
                 (BluetoothManager)
                         ContextUtils.getApplicationContext()
                                 .getSystemService(Context.BLUETOOTH_SERVICE);
-        BluetoothAdapter btAdapter = btManager.getAdapter();
 
+        BluetoothAdapter adapter = btManager.getAdapter();
+
+        if (adapter == null) {
+            Log.w(TAG, "Couldn't get BluetoothAdapter. Bluetooth not supported on this device");
+        }
+
+        return adapter;
+    }
+
+    /** Returns whether the current device supports Bluetooth LE Audio. */
+    public boolean isLeAudioSupported(BluetoothAdapter adapter) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            // isLeAudioSupported() requires API Level 33.
+            return false;
+        }
+
+        if (adapter == null) {
+            // Bluetooth not supported on this platform.
+            return false;
+        }
+
+        return adapter.isLeAudioSupported() == BluetoothStatusCodes.FEATURE_SUPPORTED;
+    }
+
+    /**
+     * Gets the current Bluetooth headset state.
+     * android.bluetooth.BluetoothAdapter.getProfileConnectionState() requires the BLUETOOTH
+     * permission.
+     */
+    private boolean hasBluetoothHeadset(BluetoothAdapter btAdapter) {
         if (btAdapter == null) {
             // Bluetooth not supported on this platform.
             return false;
         }
 
-        int profileConnectionState =
-                btAdapter.getProfileConnectionState(android.bluetooth.BluetoothProfile.HEADSET);
+        boolean btClassicHeadsetConnected =
+                btAdapter.getProfileConnectionState(android.bluetooth.BluetoothProfile.HEADSET)
+                        == android.bluetooth.BluetoothAdapter.STATE_CONNECTED;
+
+        boolean btLeHeadsetConnected = false;
+        if (mIsBluetoothLeAudioSupported) {
+            btLeHeadsetConnected =
+                    btAdapter.getProfileConnectionState(android.bluetooth.BluetoothProfile.LE_AUDIO)
+                            == android.bluetooth.BluetoothAdapter.STATE_CONNECTED;
+        }
 
         // Ensure that Bluetooth is enabled and that a device which supports the
         // headset and handsfree profile is connected.
         // TODO(henrika): it is possible that btAdapter.isEnabled() is
         // redundant. It might be sufficient to only check the profile state.
-        return btAdapter.isEnabled()
-                && profileConnectionState == android.bluetooth.BluetoothProfile.STATE_CONNECTED;
+        return btAdapter.isEnabled() && (btClassicHeadsetConnected || btLeHeadsetConnected);
     }
 
     /**
@@ -268,16 +306,11 @@ class AudioDeviceListener {
     }
 
     /**
-     * Registers receiver for the broadcasted intent related to BT headset
-     * availability or a change in connection state of the local Bluetooth
-     * adapter. Example: triggers when the BT device is turned on or off.
-     * BLUETOOTH permission is required to receive this one.
+     * Registers receiver for the broadcasted intent related to BT headset availability or a change
+     * in connection state of the local Bluetooth adapter. Example: triggers when the BT device is
+     * turned on or off. BLUETOOTH permission is required to receive this one.
      */
     private void registerForBluetoothHeadsetIntentBroadcast() {
-        IntentFilter filter =
-                new IntentFilter(
-                        android.bluetooth.BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
-
         /** Receiver which handles changes in BT headset availability. */
         mBluetoothHeadsetReceiver =
                 new BroadcastReceiver() {
@@ -288,8 +321,8 @@ class AudioDeviceListener {
                         // disconnected. This broadcast is *not* sticky.
                         int profileState =
                                 intent.getIntExtra(
-                                        android.bluetooth.BluetoothHeadset.EXTRA_STATE,
-                                        android.bluetooth.BluetoothHeadset.STATE_DISCONNECTED);
+                                        android.bluetooth.BluetoothProfile.EXTRA_STATE,
+                                        android.bluetooth.BluetoothProfile.STATE_DISCONNECTED);
                         if (DEBUG) {
                             logd(
                                     "BroadcastReceiver.onReceive: a="
@@ -306,9 +339,17 @@ class AudioDeviceListener {
                                 // We do not have to explicitly call stopBluetoothSco()
                                 // since BT SCO will be disconnected automatically when
                                 // the BT headset is disabled.
+
+                                // Android supports connecting to 2 BT devices. We might get a
+                                // STATE_DISCONNECTED here when either device disconnects. This
+                                // could be a potential issue with our Pre-S code, which relies on
+                                // the accuracy of `setDeviceExistence()`. In the Post-S path, we
+                                // always re-query for existing communication devices, so this
+                                // should not be an issue.
                                 mDeviceStates.setDeviceExistence(
                                         AudioDeviceSelector.Devices.ID_BLUETOOTH_HEADSET, false);
                                 mDeviceStates.onPotentialDeviceStatusChange();
+
                                 histogramValue = ConnectionStatus.DISCONNECTED;
                                 break;
                             case android.bluetooth.BluetoothProfile.STATE_CONNECTED:
@@ -333,6 +374,18 @@ class AudioDeviceListener {
                         recordConnectionHistogram("Bluetooth", histogramValue);
                     }
                 };
+
+        IntentFilter filter =
+                new IntentFilter(
+                        android.bluetooth.BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
+
+        if (mIsBluetoothLeAudioSupported) {
+            // Re-use the same broadcast listener for both "classic" and "LE Audio" BT state
+            // changes. Android allows for 2 BT devices to be connected at once, so we could
+            // track both profiles separately if needed one day.
+            filter.addAction(
+                    android.bluetooth.BluetoothLeAudio.ACTION_LE_AUDIO_CONNECTION_STATE_CHANGED);
+        }
 
         ContextUtils.registerProtectedBroadcastReceiver(
                 ContextUtils.getApplicationContext(), mBluetoothHeadsetReceiver, filter);

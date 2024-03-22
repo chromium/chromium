@@ -8,6 +8,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 
 import android.bluetooth.BluetoothHeadset;
+import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.media.AudioManager;
+import android.os.Build;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,8 +26,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 
 /** Tests for AudioDeviceListener. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -71,7 +75,34 @@ public class AudioDeviceListenerTest {
                         AudioDeviceListener.ConnectionStatus.CONNECTED);
 
         Intent intent = new Intent(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
-        intent.putExtra(BluetoothHeadset.EXTRA_STATE, BluetoothProfile.STATE_CONNECTED);
+        intent.putExtra(BluetoothProfile.EXTRA_STATE, BluetoothProfile.STATE_CONNECTED);
+        mListener.getBluetoothHeadsetReceiverForTesting().onReceive(mContext, intent);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @MinAndroidSdkLevel(Build.VERSION_CODES.S)
+    public void testBluetoothLeAudioConnectionChange() {
+        BluetoothManager btManager =
+                (BluetoothManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.BLUETOOTH_SERVICE);
+
+        if (!mListener.isLeAudioSupported(btManager.getAdapter())) {
+            return;
+        }
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Media.AudioDeviceConnectionStatus.Bluetooth",
+                        AudioDeviceListener.ConnectionStatus.CONNECTED);
+
+        Intent intent =
+                new Intent(
+                        android.bluetooth.BluetoothLeAudio
+                                .ACTION_LE_AUDIO_CONNECTION_STATE_CHANGED);
+        intent.putExtra(BluetoothProfile.EXTRA_STATE, BluetoothProfile.STATE_CONNECTED);
         mListener.getBluetoothHeadsetReceiverForTesting().onReceive(mContext, intent);
 
         watcher.assertExpected();

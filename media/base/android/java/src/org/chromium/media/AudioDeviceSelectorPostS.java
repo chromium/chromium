@@ -41,6 +41,11 @@ class AudioDeviceSelectorPostS extends AudioDeviceSelector {
                 types.add(AudioDeviceInfo.TYPE_BUILTIN_EARPIECE);
                 break;
             case Devices.ID_BLUETOOTH_HEADSET:
+                // Add Bluteooth LE Audio devices.
+                types.add(AudioDeviceInfo.TYPE_BLE_HEADSET);
+                types.add(AudioDeviceInfo.TYPE_BLE_SPEAKER);
+
+                // Add "classic" bluetooth devices.
                 types.add(AudioDeviceInfo.TYPE_BLUETOOTH_SCO);
                 types.add(AudioDeviceInfo.TYPE_BLUETOOTH_A2DP);
                 break;
@@ -125,6 +130,8 @@ class AudioDeviceSelectorPostS extends AudioDeviceSelector {
                     availableDevices[Devices.ID_USB_AUDIO] = true;
                     break;
 
+                case AudioDeviceInfo.TYPE_BLE_HEADSET:
+                case AudioDeviceInfo.TYPE_BLE_SPEAKER:
                 case AudioDeviceInfo.TYPE_BLUETOOTH_SCO:
                 case AudioDeviceInfo.TYPE_BLUETOOTH_A2DP:
                     availableDevices[Devices.ID_BLUETOOTH_HEADSET] = true;
@@ -140,6 +147,9 @@ class AudioDeviceSelectorPostS extends AudioDeviceSelector {
     }
 
     public AudioDeviceInfo getMatchingCommunicationDevice(List<Integer> targetTypes) {
+        // Despite supporting 2 BT devices being connected at once,
+        // `getAvailableCommunicationDevices()` only seems to return the last connected BT device.
+        // There should therefore never be a conflict between choosing between BT headsets.
         List<AudioDeviceInfo> availableDevices = mAudioManager.getAvailableCommunicationDevices();
 
         for (AudioDeviceInfo device : availableDevices) {
