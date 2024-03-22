@@ -677,7 +677,7 @@ suite('sea pen', () => {
 
       const expectedWallpaperTitle =
           seaPenTemplateQuery.shadowRoot?.getElementById('template')
-              ?.innerText?.replace(/\n/gmi, ' ')
+              ?.textContent?.replace(/\s+/gmi, ' ')
               .trim();
 
       // Goes back to sea pen root page.
