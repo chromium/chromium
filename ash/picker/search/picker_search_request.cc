@@ -53,8 +53,6 @@ PickerSearchRequest::PickerSearchRequest(
     emoji::EmojiSearch* emoji_search,
     base::span<const PickerCategory> available_categories)
     : client_(CHECK_DEREF(client)),
-      available_categories_(available_categories.begin(),
-                            available_categories.end()),
       emoji_search_(CHECK_DEREF(emoji_search)),
       current_callback_(std::move(callback)),
       gif_search_debouncer_(kGifDebouncingDelay) {
@@ -94,7 +92,7 @@ PickerSearchRequest::PickerSearchRequest(
     category_search_start_ = base::TimeTicks::Now();
     // Category results are currently synchronous.
     HandleCategorySearchResults(
-        PickerCategorySearch(available_categories_, query));
+        PickerCategorySearch(available_categories, query));
   }
 }
 

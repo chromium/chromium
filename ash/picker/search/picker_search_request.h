@@ -68,7 +68,6 @@ class ASH_EXPORT PickerSearchRequest {
   void HandleMathSearchResults(std::optional<PickerSearchResult> result);
 
   const raw_ref<PickerClient> client_;
-  std::vector<PickerCategory> available_categories_;
 
   const raw_ref<emoji::EmojiSearch> emoji_search_;
 
