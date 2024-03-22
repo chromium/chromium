@@ -114,9 +114,8 @@ TEST_F(FileTransferTest, SuccessfulTransfers) {
 
 TEST_F(FileTransferTest, FailedTransfer) {
   constexpr int64_t kFilePayloadId = 1;
-  nearby_process_manager_.fake_nearby_connections()
-      .set_final_file_payload_status(
-          ::nearby::connections::mojom::PayloadStatus::kFailure);
+  nearby_process_manager_.fake_nearby_connections().SetFinalFilePayloadStatus(
+      ::nearby::connections::mojom::PayloadStatus::kFailure, /*payload_id=*/1);
   InitializeFileTransfer();
   pending_file_transfer_queue_.Push(kFilePayloadId);
   nearby_process_manager_.fake_nearby_connections()

@@ -10,6 +10,21 @@ source_set("constants") {
   sources = [ "constants.h" ]
 }
 
+source_set("device") {
+  sources = [
+    "device.cc",
+    "device.h",
+  ]
+
+  deps = [
+    ":file_transfer",
+    ":pending_file_transfer_queue",
+    ":rts_receiver",
+    "//base",
+    "//chrome/browser/nearby_sharing/public/cpp",
+  ]
+}
+
 source_set("file_receiver") {
   sources = [
     "file_receiver.cc",
@@ -86,6 +101,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "device_unittest.cc",
     "file_receiver_unittest.cc",
     "file_transfer_unittest.cc",
     "pending_file_transfer_queue_unittest.cc",
@@ -94,6 +110,7 @@ source_set("unit_tests") {
 
   deps = [
     ":constants",
+    ":device",
     ":file_receiver",
     ":file_transfer",
     ":pending_file_transfer_queue",

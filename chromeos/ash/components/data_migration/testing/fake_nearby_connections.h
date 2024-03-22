@@ -23,7 +23,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
     FakeNearbyConnections
     : public ::nearby::connections::mojom::NearbyConnections {
  public:
+  using PayloadStatus = ::nearby::connections::mojom::PayloadStatus;
   using Status = ::nearby::connections::mojom::Status;
+
+  // Size of all test files transmitted via `SendFile()`.
+  static constexpr int kTestFileSizeInBytes = 1000;
 
   // `remote_endpoint_id` is the id of the simulated remote device from whom
   // data will be transferred.
@@ -42,14 +46,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
   bool SendFile(int64_t payload_id,
                 std::vector<uint8_t>* transferred_bytes = nullptr);
 
-  // Sets the final payload status for all future `SendFile()` calls. Can be
-  // used to simulate file transfer failures.
+  // Sets the final payload status for all future `SendFile()` calls with
+  // matching `payload_id`. Can be used to simulate file transfer failures.
   //
-  // By default, this is `kSuccess`.
-  void set_final_file_payload_status(
-      ::nearby::connections::mojom::PayloadStatus final_file_payload_status) {
-    final_file_payload_status_ = final_file_payload_status;
-  }
+  // All file payloads with id not matching `payload_id` will return `kSuccess`.
+  void SetFinalFilePayloadStatus(PayloadStatus status, int64_t payload_id);
 
   // The `register_payload_file_result_generator` is invoked for each call to
   // `RegisterPayloadFile()` and returns the `Status` of the operation.
@@ -196,8 +197,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
 
   base::flat_map</*payload_id*/ int64_t, RegisteredFilePayload>
       registered_files_;
-  ::nearby::connections::mojom::PayloadStatus final_file_payload_status_ =
-      ::nearby::connections::mojom::PayloadStatus::kSuccess;
+  base::flat_map</*payload_id*/ int64_t, PayloadStatus>
+      final_file_payload_status_;
   base::RepeatingCallback<Status()> register_payload_file_result_generator_;
   base::RepeatingCallback<void(::nearby::connections::mojom::PayloadPtr)>
       local_to_remote_payload_listener_;

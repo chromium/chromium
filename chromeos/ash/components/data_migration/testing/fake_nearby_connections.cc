@@ -49,7 +49,6 @@ FakeNearbyConnections::~FakeNearbyConnections() = default;
 
 bool FakeNearbyConnections::SendFile(int64_t payload_id,
                                      std::vector<uint8_t>* transferred_bytes) {
-  constexpr int kTestFileSizeInBytes = 1000;
   // To be more realistic, divide file transmission into a few chunks rather
   // than delivering it all at once.
   constexpr int kTestFileNumChunks = 4;
@@ -79,11 +78,11 @@ bool FakeNearbyConnections::SendFile(int64_t payload_id,
 
   // For a successful case, break the file into 4 equal size chunks. For any
   // failure case, transfer 1/4 of the file and then fail.
+  PayloadStatus final_status = final_file_payload_status_.contains(payload_id)
+                                   ? final_file_payload_status_.at(payload_id)
+                                   : PayloadStatus::kSuccess;
   size_t num_chunks_to_transfer =
-      final_file_payload_status_ ==
-              ::nearby::connections::mojom::PayloadStatus::kSuccess
-          ? kTestFileNumChunks
-          : 1;
+      final_status == PayloadStatus::kSuccess ? kTestFileNumChunks : 1;
   size_t total_bytes_transferred = 0;
   for (size_t chunk_idx = 0; chunk_idx < num_chunks_to_transfer; ++chunk_idx) {
     const std::vector<uint8_t> new_chunk =
@@ -102,16 +101,20 @@ bool FakeNearbyConnections::SendFile(int64_t payload_id,
     remote_to_local_payload_listener_->OnPayloadTransferUpdate(
         remote_endpoint_id_,
         ::nearby::connections::mojom::PayloadTransferUpdate::New(
-            payload_id,
-            ::nearby::connections::mojom::PayloadStatus::kInProgress,
-            kTestFileSizeInBytes, total_bytes_transferred));
+            payload_id, PayloadStatus::kInProgress, kTestFileSizeInBytes,
+            total_bytes_transferred));
   }
   remote_to_local_payload_listener_->OnPayloadTransferUpdate(
       remote_endpoint_id_,
       ::nearby::connections::mojom::PayloadTransferUpdate::New(
-          payload_id, final_file_payload_status_, kTestFileSizeInBytes,
+          payload_id, final_status, kTestFileSizeInBytes,
           total_bytes_transferred));
   return true;
+}
+
+void FakeNearbyConnections::SetFinalFilePayloadStatus(PayloadStatus status,
+                                                      int64_t payload_id) {
+  final_file_payload_status_[payload_id] = status;
 }
 
 bool FakeNearbyConnections::SendBytesPayload(int64_t payload_id,
@@ -131,8 +134,7 @@ bool FakeNearbyConnections::SendBytesPayload(int64_t payload_id,
   remote_to_local_payload_listener_->OnPayloadTransferUpdate(
       remote_endpoint_id_,
       ::nearby::connections::mojom::PayloadTransferUpdate::New(
-          payload_id, ::nearby::connections::mojom::PayloadStatus::kSuccess,
-          bytes.size(), bytes.size()));
+          payload_id, PayloadStatus::kSuccess, bytes.size(), bytes.size()));
   return true;
 }
 

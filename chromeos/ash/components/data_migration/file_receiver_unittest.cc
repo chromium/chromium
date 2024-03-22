@@ -133,9 +133,9 @@ TEST_F(FileReceiverTest, MultipleFiles) {
 }
 
 TEST_F(FileReceiverTest, FailedTransfer) {
-  nearby_process_manager_.fake_nearby_connections()
-      .set_final_file_payload_status(
-          ::nearby::connections::mojom::PayloadStatus::kFailure);
+  nearby_process_manager_.fake_nearby_connections().SetFinalFilePayloadStatus(
+      ::nearby::connections::mojom::PayloadStatus::kFailure,
+      /*payload_id=*/1);
   base::test::TestFuture<void> completion_signal;
   observer_.ExpectCompleteFileTransfer(
       /*success=*/false, /*payload_id=*/1, /*expected_file_content=*/nullptr,
@@ -147,9 +147,8 @@ TEST_F(FileReceiverTest, FailedTransfer) {
 }
 
 TEST_F(FileReceiverTest, CancelledTransfer) {
-  nearby_process_manager_.fake_nearby_connections()
-      .set_final_file_payload_status(
-          ::nearby::connections::mojom::PayloadStatus::kCanceled);
+  nearby_process_manager_.fake_nearby_connections().SetFinalFilePayloadStatus(
+      ::nearby::connections::mojom::PayloadStatus::kCanceled, /*payload_id=*/1);
   base::test::TestFuture<void> completion_signal;
   observer_.ExpectCompleteFileTransfer(
       /*success=*/false, /*payload_id=*/1, /*expected_file_content=*/nullptr,
@@ -161,9 +160,9 @@ TEST_F(FileReceiverTest, CancelledTransfer) {
 }
 
 TEST_F(FileReceiverTest, FileReceiverDestroyedWhileInProgress) {
-  nearby_process_manager_.fake_nearby_connections()
-      .set_final_file_payload_status(
-          ::nearby::connections::mojom::PayloadStatus::kInProgress);
+  nearby_process_manager_.fake_nearby_connections().SetFinalFilePayloadStatus(
+      ::nearby::connections::mojom::PayloadStatus::kInProgress,
+      /*payload_id=*/1);
   base::test::TestFuture<void> completion_signal;
   EXPECT_CALL(observer_, OnFileRegistered())
       .WillOnce(Invoke([this, &completion_signal]() {
@@ -245,9 +244,9 @@ TEST_F(FileReceiverTest, FileRegistrationPermanentError) {
 
 TEST_F(FileReceiverTest, OneFileTransferOverridesAnother) {
   // First file transfer is still in progress when it gets canceled.
-  nearby_process_manager_.fake_nearby_connections()
-      .set_final_file_payload_status(
-          ::nearby::connections::mojom::PayloadStatus::kInProgress);
+  nearby_process_manager_.fake_nearby_connections().SetFinalFilePayloadStatus(
+      ::nearby::connections::mojom::PayloadStatus::kInProgress,
+      /*payload_id=*/1);
   base::test::TestFuture<void> transfer_started_signal;
   EXPECT_CALL(observer_, OnFileRegistered())
       .WillOnce(Invoke([this, &transfer_started_signal]() {
@@ -264,9 +263,6 @@ TEST_F(FileReceiverTest, OneFileTransferOverridesAnother) {
   // Start second file transfer immediately after. This one should succeed.
   // Note it intentionally uses a different payload id, but writes to the same
   // path.
-  nearby_process_manager_.fake_nearby_connections()
-      .set_final_file_payload_status(
-          ::nearby::connections::mojom::PayloadStatus::kSuccess);
   transfer_started_signal.Clear();
   receiver.reset();
   Mock::VerifyAndClearExpectations(&observer_);
