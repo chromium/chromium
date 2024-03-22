@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/animation/underlying_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_math_operator.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
@@ -476,9 +477,10 @@ const CSSMathExpressionNode& InterpolableLength::AsExpression() const {
     return *expression_;
 
   if (IsKeyword()) {
-    const auto* basis = CSSMathExpressionSizingKeywordLiteral::Create(keyword_);
-    const auto* calculation =
-        CSSMathExpressionSizingKeywordLiteral::Create(CSSValueID::kSize);
+    const auto* basis = CSSMathExpressionKeywordLiteral::Create(
+        keyword_, CSSMathOperator::kCalcSize);
+    const auto* calculation = CSSMathExpressionKeywordLiteral::Create(
+        CSSValueID::kSize, CSSMathOperator::kCalcSize);
     return *CSSMathExpressionOperation::CreateCalcSizeOperation(basis,
                                                                 calculation);
   }

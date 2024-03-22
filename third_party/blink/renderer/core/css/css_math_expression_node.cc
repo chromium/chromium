@@ -1077,20 +1077,47 @@ CSSValueID SizingKeywordToCSSValueID(
   NOTREACHED_NORETURN();
 }
 
+CalculationResultCategory DetermineKeywordCategory(CSSValueID keyword,
+                                                   CSSMathOperator op) {
+  switch (op) {
+    case CSSMathOperator::kCalcSize:
+      return kCalcLengthFunction;
+    default:
+      NOTREACHED_NORETURN();
+  };
+}
+
 }  // namespace
 
-CSSMathExpressionSizingKeywordLiteral::CSSMathExpressionSizingKeywordLiteral(
-    CSSValueID keyword)
-    : CSSMathExpressionNode(kCalcLengthFunction,
+CSSMathExpressionKeywordLiteral::CSSMathExpressionKeywordLiteral(
+    CSSValueID keyword,
+    CSSMathOperator op)
+    : CSSMathExpressionNode(DetermineKeywordCategory(keyword, op),
                             false /* has_comparisons*/,
                             false /* needs_tree_scope_population*/),
-      keyword_(keyword) {}
+      keyword_(keyword),
+      operator_(op) {}
 
 scoped_refptr<const CalculationExpressionNode>
-CSSMathExpressionSizingKeywordLiteral::ToCalculationExpression(
+CSSMathExpressionKeywordLiteral::ToCalculationExpression(
     const CSSLengthResolver&) const {
-  return base::MakeRefCounted<CalculationExpressionSizingKeywordNode>(
-      CSSValueIDToSizingKeyword(keyword_));
+  switch (operator_) {
+    case CSSMathOperator::kCalcSize:
+      return base::MakeRefCounted<CalculationExpressionSizingKeywordNode>(
+          CSSValueIDToSizingKeyword(keyword_));
+    default:
+      NOTREACHED_NORETURN();
+  };
+}
+
+double CSSMathExpressionKeywordLiteral::ComputeDouble(
+    const CSSLengthResolver& length_resolver) const {
+  switch (operator_) {
+    case CSSMathOperator::kCalcSize:
+      NOTREACHED_NORETURN();
+    default:
+      NOTREACHED_NORETURN();
+  };
 }
 
 // ------ End of CSSMathExpressionSizingKeywordLiteral member functions ----
@@ -1619,7 +1646,7 @@ CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
       if (*left_basis != *right_basis) {
         auto is_any_keyword = [](const CSSMathExpressionNode* node) -> bool {
           const auto* literal =
-              DynamicTo<CSSMathExpressionSizingKeywordLiteral>(node);
+              DynamicTo<CSSMathExpressionKeywordLiteral>(node);
           return literal && literal->GetValue() == CSSValueID::kAny;
         };
         if (is_any_keyword(left_basis)) {
@@ -3039,7 +3066,8 @@ class CSSMathExpressionNodeParser {
       // Note: We don't want to accept 'none' (for 'max-*' properties) since
       // it's not meaningful for animation, since it's equivalent to infinity.
       tokens.ConsumeIncludingWhitespace();
-      basis = CSSMathExpressionSizingKeywordLiteral::Create(id);
+      basis = CSSMathExpressionKeywordLiteral::Create(
+          id, CSSMathOperator::kCalcSize);
     } else {
       basis = ParseValueExpression(tokens, state);
       if (!basis) {
@@ -3303,7 +3331,8 @@ class CSSMathExpressionNodeParser {
           M_E, CSSPrimitiveValue::UnitType::kNumber);
     }
     if (state.allow_size_keyword && token.Id() == CSSValueID::kSize) {
-      return CSSMathExpressionSizingKeywordLiteral::Create(CSSValueID::kSize);
+      return CSSMathExpressionKeywordLiteral::Create(
+          CSSValueID::kSize, CSSMathOperator::kCalcSize);
     }
     if (!(token.GetType() == kNumberToken ||
           (token.GetType() == kPercentageToken &&
@@ -3564,9 +3593,10 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
   }
 
   if (node.IsSizingKeyword()) {
-    return CSSMathExpressionSizingKeywordLiteral::Create(
+    return CSSMathExpressionKeywordLiteral::Create(
         SizingKeywordToCSSValueID(
-            To<CalculationExpressionSizingKeywordNode>(node).Value()));
+            To<CalculationExpressionSizingKeywordNode>(node).Value()),
+        CSSMathOperator::kCalcSize);
   }
 
   if (node.IsNumber()) {
