@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/animation/underlying_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_math_operator.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
@@ -219,7 +220,7 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
     // TODO(https://crbug.com/313072): Should we also allow animation to/from
     // a non-keyword basis (that is, a <length-percentage> basis)?
     if (const auto* basis_literal =
-            DynamicTo<CSSMathExpressionSizingKeywordLiteral>(basis)) {
+            DynamicTo<CSSMathExpressionKeywordLiteral>(basis)) {
       return basis_literal->GetValue() == keyword ||
              basis_literal->GetValue() == CSSValueID::kAny;
     }
@@ -238,8 +239,7 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
     const CSSMathExpressionNode& end_basis =
         ExtractCalcSizeBasis(end_length.expression_);
     auto is_any_keyword = [](const CSSMathExpressionNode& node) -> bool {
-      const auto* literal =
-          DynamicTo<CSSMathExpressionSizingKeywordLiteral>(node);
+      const auto* literal = DynamicTo<CSSMathExpressionKeywordLiteral>(node);
       return literal && literal->GetValue() == CSSValueID::kAny;
     };
     return start_basis == end_basis || is_any_keyword(start_basis) ||
@@ -476,9 +476,10 @@ const CSSMathExpressionNode& InterpolableLength::AsExpression() const {
     return *expression_;
 
   if (IsKeyword()) {
-    const auto* basis = CSSMathExpressionSizingKeywordLiteral::Create(keyword_);
-    const auto* calculation =
-        CSSMathExpressionSizingKeywordLiteral::Create(CSSValueID::kSize);
+    const auto* basis = CSSMathExpressionKeywordLiteral::Create(
+        keyword_, CSSMathOperator::kCalcSize);
+    const auto* calculation = CSSMathExpressionKeywordLiteral::Create(
+        CSSValueID::kSize, CSSMathOperator::kCalcSize);
     return *CSSMathExpressionOperation::CreateCalcSizeOperation(basis,
                                                                 calculation);
   }

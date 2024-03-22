@@ -117,7 +117,7 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual bool IsOperation() const { return false; }
   virtual bool IsAnchorQuery() const { return false; }
   virtual bool IsIdentifierLiteral() const { return false; }
-  virtual bool IsSizingKeywordLiteral() const { return false; }
+  virtual bool IsKeywordLiteral() const { return false; }
 
   virtual bool IsMathFunction() const { return false; }
 
@@ -405,21 +405,27 @@ struct DowncastTraits<CSSMathExpressionIdentifierLiteral> {
   }
 };
 
-// Used for size keyword and intrinsic size keywords in calc-size().
-class CORE_EXPORT CSSMathExpressionSizingKeywordLiteral final
+// Used for representation of the keywords, e.g. `size` keyword
+// and intrinsic size keywords in calc-size(). Some of the keywords can
+// be resolved to double with CSSLengthResolver.
+class CORE_EXPORT CSSMathExpressionKeywordLiteral final
     : public CSSMathExpressionNode {
  public:
-  static CSSMathExpressionSizingKeywordLiteral* Create(CSSValueID keyword) {
-    return MakeGarbageCollected<CSSMathExpressionSizingKeywordLiteral>(keyword);
+  static CSSMathExpressionKeywordLiteral* Create(CSSValueID keyword,
+                                                 CSSMathOperator op) {
+    return MakeGarbageCollected<CSSMathExpressionKeywordLiteral>(keyword, op);
   }
 
-  explicit CSSMathExpressionSizingKeywordLiteral(CSSValueID keyword);
+  CSSMathExpressionKeywordLiteral(CSSValueID keyword, CSSMathOperator op);
 
-  CSSMathExpressionNode* Copy() const final { return Create(keyword_); }
+  CSSMathExpressionNode* Copy() const final {
+    return Create(keyword_, operator_);
+  }
 
   CSSValueID GetValue() const { return keyword_; }
+  CSSMathOperator GetOperator() const { return operator_; }
 
-  bool IsSizingKeywordLiteral() const final { return true; }
+  bool IsKeywordLiteral() const final { return true; }
 
   const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope* tree_scope) const final {
@@ -460,9 +466,9 @@ class CORE_EXPORT CSSMathExpressionSizingKeywordLiteral final
       CSSPrimitiveValue::LengthTypeFlags& types) const final {}
   bool IsComputationallyIndependent() const final { return true; }
   bool operator==(const CSSMathExpressionNode& other) const final {
-    return other.IsSizingKeywordLiteral() &&
-           DynamicTo<CSSMathExpressionSizingKeywordLiteral>(other)
-                   ->GetValue() == GetValue();
+    auto* other_keyword = DynamicTo<CSSMathExpressionKeywordLiteral>(other);
+    return other_keyword && other_keyword->GetValue() == GetValue() &&
+           other_keyword->GetOperator() == GetOperator();
   }
   CSSPrimitiveValue::UnitType ResolvedUnitType() const final {
     return CSSPrimitiveValue::UnitType::kIdent;
@@ -476,19 +482,17 @@ class CORE_EXPORT CSSMathExpressionSizingKeywordLiteral final
 #endif
 
  protected:
-  double ComputeDouble(const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED();
-    return 0;
-  }
+  double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
 
  private:
   CSSValueID keyword_;
+  CSSMathOperator operator_;
 };
 
 template <>
-struct DowncastTraits<CSSMathExpressionSizingKeywordLiteral> {
+struct DowncastTraits<CSSMathExpressionKeywordLiteral> {
   static bool AllowFrom(const CSSMathExpressionNode& node) {
-    return node.IsSizingKeywordLiteral();
+    return node.IsKeywordLiteral();
   }
 };
 
