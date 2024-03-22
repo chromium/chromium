@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -220,11 +221,11 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
     // Obtains an environment variable's value. Parses a proxy chain
     // specification from it and puts it in result. Returns true if the
     // requested variable is defined and the value valid.
-    bool GetProxyFromEnvVarForScheme(base::StringPiece variable,
+    bool GetProxyFromEnvVarForScheme(std::string_view variable,
                                      ProxyServer::Scheme scheme,
                                      ProxyChain* result_chain);
     // As above but with scheme set to HTTP, for convenience.
-    bool GetProxyFromEnvVar(base::StringPiece variable,
+    bool GetProxyFromEnvVar(std::string_view variable,
                             ProxyChain* result_chain);
     // Returns a proxy config based on the environment variables, or empty value
     // on failure.

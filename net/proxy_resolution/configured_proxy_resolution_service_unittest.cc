@@ -7,6 +7,7 @@
 #include <cstdarg>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -193,7 +194,7 @@ class MockProxyConfigService : public ProxyConfigService {
       observer.OnProxyConfigChanged(config_, availability_);
   }
 
-  void SetPacUrlConfig(base::StringPiece pac_url) {
+  void SetPacUrlConfig(std::string_view pac_url) {
     SetConfig(ProxyConfigWithAnnotation(
         ProxyConfig::CreateFromCustomPacURL(GURL(pac_url)),
         TRAFFIC_ANNOTATION_FOR_TESTS));

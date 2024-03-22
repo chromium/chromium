@@ -6,6 +6,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -137,7 +138,7 @@ class MockEnvironment : public base::Environment {
   }
 
   // Begin base::Environment implementation.
-  bool GetVar(base::StringPiece variable_name, std::string* result) override {
+  bool GetVar(std::string_view variable_name, std::string* result) override {
     auto it = table_.find(variable_name);
     if (it == table_.end() || !*it->second)
       return false;
@@ -147,13 +148,13 @@ class MockEnvironment : public base::Environment {
     return true;
   }
 
-  bool SetVar(base::StringPiece variable_name,
+  bool SetVar(std::string_view variable_name,
               const std::string& new_value) override {
     ADD_FAILURE();
     return false;
   }
 
-  bool UnSetVar(base::StringPiece variable_name) override {
+  bool UnSetVar(std::string_view variable_name) override {
     ADD_FAILURE();
     return false;
   }
@@ -163,7 +164,7 @@ class MockEnvironment : public base::Environment {
   EnvVarValues values;
 
  private:
-  std::map<base::StringPiece, const char**> table_;
+  std::map<std::string_view, const char**> table_;
 };
 
 class MockSettingGetter : public ProxyConfigServiceLinux::SettingGetter {
