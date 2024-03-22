@@ -7102,37 +7102,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mac.AppFileSystemType" enum="MacFileSystemType"
-    expires_after="2025-03-06">
-  <owner>bur@google.com</owner>
-  <owner>src/ui/base/cocoa/OWNERS</owner>
-  <summary>
-    The file system type where the running instance of Chrome is installed. This
-    histogram is emitted once at browser startup.
-  </summary>
-</histogram>
-
-<histogram name="Mac.FileMenuNativeShare" enum="BooleanSuccess"
-    expires_after="2023-07-16">
-  <owner>nasims@google.com</owner>
-  <owner>dimich@chromium.org</owner>
-  <summary>
-    Whether the user successfully shared via a native sharing extension after
-    selecting it from the File &gt; Share menu. False can indicate failure or
-    user-initiated cancellation.
-  </summary>
-</histogram>
-
-<histogram name="Mac.LaunchApplicationResult" enum="MacLaunchApplicationResult"
-    expires_after="2024-09-15">
-  <owner>mek@chromium.org</owner>
-  <owner>src/base/mac/OWNERS</owner>
-  <summary>
-    The result of calls to base::mac::LaunchApplication, logged once for every
-    invocation of that method.
-  </summary>
-</histogram>
-
 <histogram name="Manifest.HasProperty" enum="Boolean"
     expires_after="2024-09-01">
   <owner>mgiuca@chromium.org</owner>

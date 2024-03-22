@@ -33,12 +33,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Wayland"/>
 </enum>
 
-<enum name="MacFileSystemType">
-  <int value="0" label="HFS+"/>
-  <int value="1" label="APFS"/>
-  <int value="2" label="OTHER"/>
-</enum>
-
 <enum name="SilentPushEvent">
   <int value="0" label="New Silent Push request"/>
   <int value="1" label="Notification enforcement skipped"/>
