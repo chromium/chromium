@@ -20,6 +20,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
@@ -743,6 +744,41 @@ TEST_F(BirchModelTest, GetAllItems) {
   EXPECT_EQ(all_items[3]->GetType(), BirchItemType::kAttachment);
   EXPECT_EQ(all_items[4]->GetType(), BirchItemType::kTab);
   EXPECT_EQ(all_items[5]->GetType(), BirchItemType::kFile);
+}
+
+TEST_F(BirchModelTest, SetItemListRecordsHistogram) {
+  base::HistogramTester histograms;
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Insert one item of each type.
+  model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
+  std::vector<BirchAttachmentItem> attachment_item_list;
+  attachment_item_list.emplace_back(u"Attachment 1", /*file_url=*/GURL(),
+                                    /*icon_url=*/GURL(),
+                                    /*start_time=*/base::Time(),
+                                    /*end_time=*/base::Time());
+  model->SetAttachmentItems(std::move(attachment_item_list));
+  std::vector<BirchTabItem> tab_item_list;
+  tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
+                             GURL("favicon"), "session",
+                             BirchTabItem::DeviceFormFactor::kDesktop);
+  model->SetRecentTabItems(std::move(tab_item_list));
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
+  std::vector<BirchWeatherItem> weather_item_list;
+  weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
+  model->SetWeatherItems(std::move(weather_item_list));
+  std::vector<BirchReleaseNotesItem> release_notes_item_list;
+  release_notes_item_list.emplace_back(u"note", u"explore", GURL("foo.bar"),
+                                       base::Time());
+  model->SetReleaseNotesItems(std::move(release_notes_item_list));
+
+  // Histograms were recorded for each type.
+  histograms.ExpectBucketCount("Ash.Birch.ResultsReturned.Calendar", 1, 1);
+  histograms.ExpectBucketCount("Ash.Birch.ResultsReturned.Attachment", 1, 1);
+  histograms.ExpectBucketCount("Ash.Birch.ResultsReturned.File", 1, 1);
+  histograms.ExpectBucketCount("Ash.Birch.ResultsReturned.Tab", 1, 1);
+  histograms.ExpectBucketCount("Ash.Birch.ResultsReturned.Weather", 1, 1);
+  histograms.ExpectBucketCount("Ash.Birch.ResultsReturned.ReleaseNotes", 1, 1);
 }
 
 TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {

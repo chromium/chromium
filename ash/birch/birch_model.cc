@@ -17,6 +17,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -63,6 +64,8 @@ void BirchModel::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void BirchModel::SetCalendarItems(
     const std::vector<BirchCalendarItem>& calendar_items) {
+  base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Calendar",
+                              calendar_items.size());
   if (calendar_items != calendar_items_) {
     calendar_items_ = std::move(calendar_items);
   }
@@ -72,6 +75,8 @@ void BirchModel::SetCalendarItems(
 
 void BirchModel::SetAttachmentItems(
     const std::vector<BirchAttachmentItem>& attachment_items) {
+  base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Attachment",
+                              attachment_items.size());
   if (attachment_items != attachment_items_) {
     attachment_items_ = std::move(attachment_items);
   }
@@ -81,6 +86,8 @@ void BirchModel::SetAttachmentItems(
 
 void BirchModel::SetFileSuggestItems(
     const std::vector<BirchFileItem>& file_suggest_items) {
+  base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.File",
+                              file_suggest_items.size());
   if (file_suggest_items_ != file_suggest_items) {
     file_suggest_items_ = std::move(file_suggest_items);
   }
@@ -90,6 +97,8 @@ void BirchModel::SetFileSuggestItems(
 
 void BirchModel::SetRecentTabItems(
     const std::vector<BirchTabItem>& recent_tab_items) {
+  base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Tab",
+                              recent_tab_items.size());
   if (recent_tab_items_ != recent_tab_items) {
     recent_tab_items_ = std::move(recent_tab_items);
   }
@@ -99,6 +108,8 @@ void BirchModel::SetRecentTabItems(
 
 void BirchModel::SetWeatherItems(
     const std::vector<BirchWeatherItem>& weather_items) {
+  base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Weather",
+                              weather_items.size());
   if (weather_items_ != weather_items) {
     weather_items_ = std::move(weather_items);
   }
@@ -108,6 +119,8 @@ void BirchModel::SetWeatherItems(
 
 void BirchModel::SetReleaseNotesItems(
     const std::vector<BirchReleaseNotesItem>& release_notes_items) {
+  base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.ReleaseNotes",
+                              release_notes_items.size());
   if (release_notes_items != release_notes_items_) {
     release_notes_items_ = std::move(release_notes_items);
   }

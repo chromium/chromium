@@ -824,6 +824,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Birch.ResultsReturned{Type}" units="count"
+    expires_after="2024-09-19">
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The number of results of {Type} type returned by the data provider. The
+    results were not necessarily shown to the user (based on ranking).
+  </summary>
+  <token key="Type">
+    <variant name=".Attachment" summary="calendar event file attachment"/>
+    <variant name=".Calendar" summary="calendar"/>
+    <variant name=".File" summary="file"/>
+    <variant name=".ReleaseNotes" summary="release notes"/>
+    <variant name=".Tab" summary="recent tab"/>
+    <variant name=".Weather" summary="weather"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.BrowserContext.UnexpectedGetPrimaryUserProfile"
     enum="Boolean" expires_after="2024-09-01">
   <owner>hidehiko@chromium.org</owner>
