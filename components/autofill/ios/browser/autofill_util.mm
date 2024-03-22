@@ -454,28 +454,6 @@ void ExecuteJavaScriptFunction(const std::string& name,
   }
 }
 
-bool ExtractIDs(NSString* json_string, std::vector<FieldRendererId>* ids) {
-  DCHECK(ids);
-  std::unique_ptr<base::Value> ids_value = ParseJson(json_string);
-  if (!ids_value) {
-    return false;
-  }
-
-  if (!ids_value->is_list()) {
-    return false;
-  }
-
-  for (const auto& unique_id : ids_value->GetList()) {
-    if (!unique_id.is_string()) {
-      return false;
-    }
-    uint32_t id_num = 0;
-    StringToUint(unique_id.GetString(), &id_num);
-    ids->push_back(FieldRendererId(id_num));
-  }
-  return true;
-}
-
 bool ExtractFillingResults(
     NSString* json_string,
     std::map<uint32_t, std::u16string>* filling_results) {

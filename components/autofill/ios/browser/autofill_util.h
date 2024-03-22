@@ -20,7 +20,6 @@ class WebState;
 
 namespace autofill {
 
-class FieldRendererId;
 struct FormData;
 struct FormFieldData;
 class FieldDataManager;
@@ -99,8 +98,32 @@ void ExecuteJavaScriptFunction(const std::string& name,
                                web::WebFrame* frame,
                                JavaScriptResultCallback callback);
 
-// Extracts a vector of numeric renderer IDs from the JS returned json string.
-bool ExtractIDs(NSString* json_string, std::vector<FieldRendererId>* ids);
+// Extracts a vector of 32 bits numeric renderer IDs from the JS returned json
+// string.
+// - IDType: Identifier type must be constructable from uint32_t.
+template <typename IDType>
+std::optional<std::vector<IDType>> ExtractIDs(NSString* json_string) {
+  std::unique_ptr<base::Value> ids_value = ParseJson(json_string);
+
+  if (!ids_value || !ids_value->is_list()) {
+    return std::nullopt;
+  }
+
+  std::vector<IDType> ids;
+
+  for (const auto& unique_id : ids_value->GetList()) {
+    if (!unique_id.is_string()) {
+      return std::nullopt;
+    }
+    uint32_t id_num = 0;
+    if (!base::StringToUint(unique_id.GetString(), &id_num)) {
+      return std::nullopt;
+    }
+    ids.push_back(IDType(id_num));
+  }
+
+  return ids;
+}
 
 // Extracts a map of filled renderer IDs and values from the JS returned json
 // string.

@@ -21,22 +21,25 @@ using autofill::FieldRendererId;
 using base::ASCIIToUTF16;
 
 TEST_F(AutofillUtilTest, ExtractIDs) {
-  std::vector<FieldRendererId> extracted_ids;
   NSString* valid_ids = @"[\"1\",\"2\"]";
   std::vector<FieldRendererId> expected_result = {FieldRendererId(1),
                                                   FieldRendererId(2)};
-  EXPECT_TRUE(ExtractIDs(valid_ids, &extracted_ids));
-  EXPECT_EQ(expected_result, extracted_ids);
+  std::optional<std::vector<FieldRendererId>> extracted_ids =
+      ExtractIDs<FieldRendererId>(valid_ids);
+  EXPECT_TRUE(extracted_ids);
+  EXPECT_EQ(expected_result, *extracted_ids);
 
-  extracted_ids.clear();
   NSString* empty_ids = @"[]";
-  EXPECT_TRUE(ExtractIDs(empty_ids, &extracted_ids));
-  EXPECT_TRUE(extracted_ids.empty());
+  extracted_ids = ExtractIDs<FieldRendererId>(empty_ids);
+  EXPECT_TRUE(extracted_ids);
+  EXPECT_TRUE(extracted_ids.value().empty());
 
   NSString* invalid_ids1 = @"[\"1\"\"2\"]";
-  EXPECT_FALSE(ExtractIDs(invalid_ids1, &extracted_ids));
+  EXPECT_FALSE(ExtractIDs<FieldRendererId>(invalid_ids1));
   NSString* invalid_ids2 = @"[1,2]";
-  EXPECT_FALSE(ExtractIDs(invalid_ids2, &extracted_ids));
+  EXPECT_FALSE(ExtractIDs<FieldRendererId>(invalid_ids2));
+  NSString* too_big_id = @"[\"111222333444\"]";
+  EXPECT_FALSE(ExtractIDs<FieldRendererId>(too_big_id));
 }
 
 TEST_F(AutofillUtilTest, ExtractFillingResults) {

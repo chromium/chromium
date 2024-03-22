@@ -12,6 +12,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/form_util/form_activity_observer.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -145,8 +146,16 @@ void FormActivityTabHelper::HandleFormRemoval(
   if (!params.unique_form_id) {
     const std::string* unique_field_ids =
         message_body->FindString("uniqueFieldID");
-    if (!unique_field_ids || !ExtractIDs(SysUTF8ToNSString(*unique_field_ids),
-                                         &params.removed_unowned_fields)) {
+    if (!unique_field_ids) {
+      params.input_missing = true;
+    }
+
+    std::optional<std::vector<autofill::FieldRendererId>>
+        removed_unowned_fields =
+            ExtractIDs<FieldRendererId>(SysUTF8ToNSString(*unique_field_ids));
+    if (removed_unowned_fields) {
+      params.removed_unowned_fields = *removed_unowned_fields;
+    } else {
       params.input_missing = true;
     }
   }

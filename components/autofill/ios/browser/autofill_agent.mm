@@ -404,9 +404,11 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 }
 
 - (void)updateFieldManagerForClearedIDs:(NSString*)jsonString {
-  std::vector<FieldRendererId> clearingResults;
-  if (autofill::ExtractIDs(jsonString, &clearingResults)) {
-    for (auto uniqueID : clearingResults) {
+  std::optional<std::vector<FieldRendererId>> clearingResults =
+      autofill::ExtractIDs<FieldRendererId>(jsonString);
+
+  if (clearingResults) {
+    for (auto uniqueID : *clearingResults) {
       _fieldDataManager->UpdateFieldDataMap(uniqueID, std::u16string(),
                                             kAutofilledOnUserTrigger);
     }
