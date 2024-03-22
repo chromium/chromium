@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "components/pdf/browser/pdf_document_helper_client.h"
+#include "components/pdf/browser/pdf_frame_util.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -317,14 +318,13 @@ void PDFDocumentHelper::SaveUrlAs(const GURL& url,
                                   network::mojom::ReferrerPolicy policy) {
   client_->OnSaveURL(&GetWebContents());
 
-  content::RenderFrameHost* rfh;
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
-    rfh = &render_frame_host();
-  } else {
-    rfh = GetWebContents().GetOuterWebContentsFrame();
-    if (!rfh) {
-      return;
-    }
+  // Save using the PDF embedder host.
+  content::RenderFrameHost* rfh =
+      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)
+          ? pdf_frame_util::GetEmbedderHost(&render_frame_host())
+          : GetWebContents().GetOuterWebContentsFrame();
+  if (!rfh) {
+    return;
   }
 
   content::Referrer referrer(url, policy);

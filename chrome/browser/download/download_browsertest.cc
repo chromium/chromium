@@ -2345,11 +2345,9 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
     ASSERT_TRUE(
         GetTestPdfViewerStreamManager()->WaitUntilPdfLoadedInFirstChild());
 
-    content::RenderFrameHost* extension_host =
-        pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
-    ASSERT_TRUE(extension_host);
-
-    document_frame = extension_host->GetParent();
+    document_frame =
+        pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+    ASSERT_TRUE(document_frame);
   } else {
     InnerWebContentsAttachedWaiter waiter(web_contents);
 
