@@ -78,6 +78,27 @@ android_library("content_java_test_support") {
   ]
 }
 
+android_library("content_transit_java") {
+  testonly = true
+
+  deps = [
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_java_test_support_uncommon",
+    "//base/test:public_transit_java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/hamcrest:hamcrest_java",
+  ]
+  sources = [
+    "javatests/src/org/chromium/content_public/browser/test/transit/HtmlConditions.java",
+    "javatests/src/org/chromium/content_public/browser/test/transit/HtmlElement.java",
+    "javatests/src/org/chromium/content_public/browser/test/transit/HtmlElementInState.java",
+    "javatests/src/org/chromium/content_public/browser/test/transit/WebContentsElementInState.java",
+  ]
+}
+
 generate_jni("content_test_jni") {
   testonly = true
   sources = [

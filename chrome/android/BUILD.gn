@@ -1921,6 +1921,7 @@ if (current_toolchain == default_toolchain) {
       "//content/public/android:content_java",
       "//content/public/common:common_java",
       "//content/public/test/android:content_java_test_support",
+      "//content/public/test/android:content_transit_java",
       "//media/base/android:java_switches",
       "//media/base/android:media_java",
       "//mojo/public/java:bindings_java",

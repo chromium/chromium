@@ -331,7 +331,12 @@ public class PageStation extends TransitStation {
     /** Loads a |url| in the same tab and waits to transition to the given |destination|. */
     public <T extends PageStation> T loadPageProgramatically(
             String url, Builder<T> destinationBuilder) {
-        T destination = destinationBuilder.initFrom(this).build();
+        T destination =
+                destinationBuilder
+                        .initFrom(this)
+                        .withIsOpeningTab(false)
+                        .withIsSelectingTab(false)
+                        .build();
         return Trip.travelSync(this, destination, () -> getTestRule().loadUrl(url));
     }
 }

@@ -40,7 +40,12 @@ import org.chromium.net.test.EmbeddedTestServer;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Tests whether popup windows appear. */
+/**
+ * Tests whether popup windows appear.
+ *
+ * <p>TODO(crbug.com/328478374): Delete this after the rewritten PopupPTTest has run in CI and shown
+ * to be stable.
+ */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures("MessagesForAndroidPopupBlocked")

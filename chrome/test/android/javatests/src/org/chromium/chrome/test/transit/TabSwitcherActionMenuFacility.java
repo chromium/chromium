@@ -78,7 +78,7 @@ public class TabSwitcherActionMenuFacility extends StationFacility<PageStation> 
                     destination =
                             expectedDestination.cast(
                                     PageStation.newPageStationBuilder()
-                                            .initFrom(mStation)
+                                            .withActivityTestRule(mStation.getTestRule())
                                             .withIncognito(false)
                                             .withIsOpeningTab(false)
                                             .withIsSelectingTab(true)
@@ -101,7 +101,7 @@ public class TabSwitcherActionMenuFacility extends StationFacility<PageStation> 
             destination =
                     expectedDestination.cast(
                             PageStation.newPageStationBuilder()
-                                    .initFrom(mStation)
+                                    .withActivityTestRule(mStation.getTestRule())
                                     .withIncognito(tabModelSelector.isIncognitoSelected())
                                     .withIsOpeningTab(false)
                                     .withIsSelectingTab(true)
