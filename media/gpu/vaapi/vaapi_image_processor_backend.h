@@ -53,8 +53,11 @@ class VaapiImageProcessorBackend : public ImageProcessorBackend {
                              ErrorCB error_cb);
   ~VaapiImageProcessorBackend() override;
 
-  const VASurface* GetSurfaceForVideoFrame(scoped_refptr<FrameResource> frame,
-                                           bool use_protected);
+  // GetSurfaceForFrame() caches generated VASurface's, so the same VASurface
+  // is returned for subsequent calls with the same frame. Ownership is
+  // of the VASurface is retained by the caching structure.
+  const VASurface* GetSurfaceForFrame(const FrameResource& frame,
+                                      bool use_protected);
 
   scoped_refptr<VaapiWrapper> vaapi_wrapper_;
   bool needs_context_ = false;
@@ -64,7 +67,8 @@ class VaapiImageProcessorBackend : public ImageProcessorBackend {
   // VASurfaces for reuse according to the expectations of libva
   // vaDestroySurfaces(): "Surfaces can only be destroyed after all contexts
   // using these surfaces have been destroyed."
-  base::small_map<std::map<gfx::GpuMemoryBufferId, scoped_refptr<VASurface>>>
+  base::small_map<
+      std::map<gfx::GenericSharedMemoryId, scoped_refptr<VASurface>>>
       allocated_va_surfaces_;
 };
 

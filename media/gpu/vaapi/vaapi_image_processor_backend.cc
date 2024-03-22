@@ -20,6 +20,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "media/base/format_utils.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
@@ -72,15 +73,19 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
     return nullptr;
 
   if (!base::Contains(input_config.preferred_storage_types,
-                      VideoFrame::STORAGE_GPU_MEMORY_BUFFER)) {
-    VLOGF(2) << "VaapiImageProcessorBackend supports GpuMemoryBuffer based"
-                "FrameResource only for input";
+                      VideoFrame::STORAGE_GPU_MEMORY_BUFFER) &&
+      !base::Contains(input_config.preferred_storage_types,
+                      VideoFrame::STORAGE_DMABUFS)) {
+    VLOGF(2) << "VaapiImageProcessorBackend supports GpuMemoryBuffer or DMABuf "
+                "based FrameResource only for input";
     return nullptr;
   }
   if (!base::Contains(output_config.preferred_storage_types,
-                      VideoFrame::STORAGE_GPU_MEMORY_BUFFER)) {
-    VLOGF(2) << "VaapiImageProcessorBackend supports GpuMemoryBuffer based"
-                "FrameResource only for output";
+                      VideoFrame::STORAGE_GPU_MEMORY_BUFFER) &&
+      !base::Contains(output_config.preferred_storage_types,
+                      VideoFrame::STORAGE_DMABUFS)) {
+    VLOGF(2) << "VaapiImageProcessorBackend supports GpuMemoryBuffer or DMABuf "
+                "based FrameResource only for output";
     return nullptr;
   }
 
@@ -123,40 +128,33 @@ std::string VaapiImageProcessorBackend::type() const {
   return "VaapiImageProcessor";
 }
 
-const VASurface* VaapiImageProcessorBackend::GetSurfaceForVideoFrame(
-    scoped_refptr<FrameResource> frame,
+const VASurface* VaapiImageProcessorBackend::GetSurfaceForFrame(
+    const FrameResource& frame,
     bool use_protected) {
-  if (!frame->HasGpuMemoryBuffer())
-    return nullptr;
-  DCHECK_EQ(frame->storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-
-  const gfx::GpuMemoryBufferId gmb_id = frame->GetGpuMemoryBuffer()->GetId();
-  if (base::Contains(allocated_va_surfaces_, gmb_id)) {
-    const VASurface* surface = allocated_va_surfaces_[gmb_id].get();
-    CHECK_EQ(frame->GetGpuMemoryBuffer()->GetSize(), surface->size());
-    const unsigned int format = VaapiWrapper::BufferFormatToVARTFormat(
-        frame->GetGpuMemoryBuffer()->GetFormat());
+  const gfx::GenericSharedMemoryId shared_memory_id = frame.GetSharedMemoryId();
+  if (base::Contains(allocated_va_surfaces_, shared_memory_id)) {
+    const VASurface* surface = allocated_va_surfaces_[shared_memory_id].get();
+    CHECK_EQ(frame.coded_size(), surface->size());
+    const auto buffer_format =
+        VideoPixelFormatToGfxBufferFormat(frame.format());
+    CHECK(buffer_format.has_value());
+    const unsigned int format =
+        VaapiWrapper::BufferFormatToVARTFormat(*buffer_format);
     CHECK_NE(format, 0u);
     CHECK_EQ(format, surface->format());
     return surface;
   }
 
-  scoped_refptr<gfx::NativePixmap> pixmap = frame->CreateNativePixmapDmaBuf();
-  if (!pixmap) {
-    VLOGF(1) << "Failed to create NativePixmap from FrameResource";
-    return nullptr;
-  }
-
   DCHECK(vaapi_wrapper_);
-  auto va_surface = vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(pixmap),
-                                                             use_protected);
+  auto va_surface =
+      vaapi_wrapper_->CreateVASurfaceForFrameResource(frame, use_protected);
   if (!va_surface) {
-    VLOGF(1) << "Failed to create VASurface from NativePixmap";
+    VLOGF(1) << "Failed to create VASurface from frame";
     return nullptr;
   }
 
-  allocated_va_surfaces_[gmb_id] = std::move(va_surface);
-  return allocated_va_surfaces_[gmb_id].get();
+  allocated_va_surfaces_[shared_memory_id] = std::move(va_surface);
+  return allocated_va_surfaces_[shared_memory_id].get();
 }
 
 void VaapiImageProcessorBackend::ProcessFrame(
@@ -224,13 +222,13 @@ void VaapiImageProcessorBackend::ProcessFrame(
   DCHECK(input_frame);
   DCHECK(output_frame);
   const VASurface* src_va_surface =
-      GetSurfaceForVideoFrame(input_frame, use_protected);
+      GetSurfaceForFrame(*input_frame, use_protected);
   if (!src_va_surface) {
     error_cb_.Run();
     return;
   }
   const VASurface* dst_va_surface =
-      GetSurfaceForVideoFrame(output_frame, use_protected);
+      GetSurfaceForFrame(*output_frame, use_protected);
   if (!dst_va_surface) {
     error_cb_.Run();
     return;
