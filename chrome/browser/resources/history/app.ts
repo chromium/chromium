@@ -200,6 +200,11 @@ export class HistoryAppElement extends HistoryAppElementBase {
         value: () => loadTimeData.getBoolean('isHistoryClustersVisible'),
       },
 
+      lastSelectedTab_: {
+        type: Number,
+        value: () => loadTimeData.getInteger('lastSelectedTab'),
+      },
+
       showHistoryClusters_: {
         type: Boolean,
         computed:
@@ -245,6 +250,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private historyClustersEnabled_: boolean;
   private historyClustersVisible_: boolean;
   private isUserSignedIn_: boolean = loadTimeData.getBoolean('isUserSignedIn');
+  private lastSelectedTab_: number;
   private pendingDelete_: boolean;
   private queryResult_: QueryResult;
   private queryState_: QueryState;
@@ -300,14 +306,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.addEventListener('history-close-drawer', this.closeDrawer_);
     this.addEventListener('history-view-changed', this.historyViewChanged_);
     this.addEventListener('unselect-all', this.unselectAll);
-
-    // If there are url params, the router updates the selectedTab/Page and
-    // sets queryState params. Setting the tab manually overrides this.
-    if (!window.location.search) {
-      if (window.location.pathname !== '/' + Page.SYNCED_TABS) {
-        this.selectedTab_ = this.getDefaultSelectedTab_();
-      }
-    }
   }
 
   private getShowResultsByGroup_() {
@@ -331,17 +329,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
-  }
-
-  /**
-   * Returns the tab that should be opened based on url params and then
-   * preferences
-   */
-  private getDefaultSelectedTab_(): number {
-    if (window.location.pathname === '/' + Page.HISTORY_CLUSTERS) {
-      return TABBED_PAGES.indexOf(Page.HISTORY_CLUSTERS);
-    }
-    return loadTimeData.getInteger('lastSelectedTab');
   }
 
   private computeShowHistoryClusters_(): boolean {
@@ -555,6 +542,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   private selectedTabChanged_() {
+    this.lastSelectedTab_ = this.selectedTab_;
     // Change in the currently selected tab requires change in the currently
     // selected page.
     this.selectedPage_ = TABBED_PAGES[this.selectedTab_];

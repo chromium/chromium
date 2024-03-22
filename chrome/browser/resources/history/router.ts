@@ -33,6 +33,9 @@ export class HistoryRouterElement extends PolymerElement {
 
   static get properties() {
     return {
+      lastSelectedTab: {
+        type: Number,
+      },
       selectedPage: {
         type: String,
         notify: true,
@@ -61,6 +64,7 @@ export class HistoryRouterElement extends PolymerElement {
     return ['onUrlChanged_(path_, queryParams_)'];
   }
 
+  lastSelectedTab: number;
   selectedPage: string;
   queryState: QueryState;
   private parsing_: boolean = false;
@@ -122,7 +126,9 @@ export class HistoryRouterElement extends PolymerElement {
     this.parsing_ = true;
     const changes: {search: string} = {search: ''};
     const sections = this.path_.substr(1).split('/');
-    const page = sections[0] || Page.HISTORY;
+    const page = sections[0] ||
+        (window.location.search ? 'history' :
+                                  TABBED_PAGES[this.lastSelectedTab]);
 
     changes.search = this.queryParams_.q || '';
 
