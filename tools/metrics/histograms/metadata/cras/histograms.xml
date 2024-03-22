@@ -1027,7 +1027,7 @@ This collects each top-level device metric type. For example,
   </summary>
 </histogram>
 
-<histogram name="Cras.UnderrunsPerDevice" units="count"
+<histogram name="Cras.UnderrunsPerDevice{Device}" units="count"
     expires_after="2024-09-01">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
@@ -1036,6 +1036,7 @@ This collects each top-level device metric type. For example,
     there are no samples in device buffer while device is playing. It is
     recorded when device is closed by CRAS(Chrome OS audio server).
   </summary>
+  <token key="Device" variants="CrasTopLevelDeviceBreakdown"/>
 </histogram>
 
 <histogram name="Cras.WakeDelay" units="ms" expires_after="2025-03-21">
