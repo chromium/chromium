@@ -116,8 +116,7 @@ CGFloat GetChipVerticalPadding() {
 - (void)setEnabled:(BOOL)enabled {
   [super setEnabled:enabled];
   self.backgroundView.hidden = !enabled;
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
+  UIButtonConfiguration* buttonConfiguration = self.configuration;
   buttonConfiguration.contentInsets = enabled
                                           ? [self chipNSDirectionalEdgeInsets]
                                           : NSDirectionalEdgeInsetsZero;
@@ -197,6 +196,7 @@ CGFloat GetChipVerticalPadding() {
   self.titleLabel.adjustsFontForContentSizeCategory = YES;
 
   [self updateTitleLabelFont];
+
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
   buttonConfiguration.contentInsets = [self chipNSDirectionalEdgeInsets];

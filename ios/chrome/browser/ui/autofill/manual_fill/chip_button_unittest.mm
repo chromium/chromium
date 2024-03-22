@@ -65,4 +65,17 @@ TEST_F(ChipButtonTest, SetTitle) {
   }
 }
 
+// Tests that the font color of the chip button's title is not changed after a
+// call to `setEnabled`.
+TEST_F(ChipButtonTest, SetEnabledDoesntChangeFontColor) {
+  ChipButton* button = [[ChipButton alloc] initWithFrame:CGRectZero];
+  EXPECT_TRUE([button.configuration.baseForegroundColor
+      isEqual:[UIColor colorNamed:kTextPrimaryColor]]);
+
+  [button setEnabled:NO];
+
+  EXPECT_TRUE([button.configuration.baseForegroundColor
+      isEqual:[UIColor colorNamed:kTextPrimaryColor]]);
+}
+
 }  // namespace
