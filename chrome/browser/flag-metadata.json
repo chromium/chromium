@@ -647,7 +647,7 @@
   {
     "name": "autofill-enable-cvc-storage-and-filling",
     "owners": [ "koulvipul@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "autofill-enable-dynamically-loading-fields-on-input",
@@ -7699,7 +7699,7 @@
   {
     "name": "sync-autofill-wallet-credential-data",
     "owners": [ "koulvipul@google.com", "treib@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "sync-autofill-wallet-usage-data",
