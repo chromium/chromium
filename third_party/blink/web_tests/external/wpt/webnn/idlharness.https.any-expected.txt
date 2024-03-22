@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] idl_test setup
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The input layout nchw is not supported."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 [FAIL] NavigatorML must be primary interface of navigator
   assert_own_property: self does not have own property "NavigatorML" expected property "NavigatorML" missing
 [FAIL] Stringification of navigator

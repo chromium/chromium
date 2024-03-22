@@ -2137,8 +2137,8 @@ ScriptPromiseTyped<MLGraph> MLGraphBuilder::build(
     return promise;
   }
 
-  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
-                                   "Not implemented");
+  resolver->Reject(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError, "Not implemented"));
   return promise;
 }
 

@@ -148,9 +148,9 @@ void MLGraphMojo::BuildImpl(ScopedMLTrace scoped_trace,
                             ScriptPromiseResolverTyped<MLGraph>* resolver) {
   auto graph_info = BuildWebNNGraphInfo(outputs);
   if (!graph_info.has_value()) {
-    resolver->RejectWithDOMException(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kDataError,
-        "Failed to build graph: " + graph_info.error());
+        "Failed to build graph: " + graph_info.error()));
     return;
   }
   ml_context_->CreateWebNNGraph(
@@ -170,17 +170,17 @@ void MLGraphMojo::ComputeImpl(
   auto inputs_info = TransferNamedArrayBufferViews(
       resolver->GetScriptState()->GetIsolate(), inputs, exception_state);
   if (!inputs_info) {
-    resolver->RejectWithDOMException(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kDataError,
-        "Invalid inputs: " + exception_state.Message());
+        "Invalid inputs: " + exception_state.Message()));
     return;
   }
   auto outputs_info = TransferNamedArrayBufferViews(
       resolver->GetScriptState()->GetIsolate(), outputs, exception_state);
   if (!outputs_info) {
-    resolver->RejectWithDOMException(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kDataError,
-        "Invalid outputs: " + exception_state.Message());
+        "Invalid outputs: " + exception_state.Message()));
     return;
   }
 
@@ -209,9 +209,9 @@ void MLGraphMojo::OnDidCompute(
     blink_mojom::ComputeResultPtr mojo_result) {
   if (mojo_result->is_error()) {
     const auto& compute_error = mojo_result->get_error();
-    resolver->RejectWithDOMException(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         ConvertWebNNErrorCodeToDOMExceptionCode(compute_error->code),
-        compute_error->message);
+        compute_error->message));
     return;
   }
 
@@ -222,18 +222,18 @@ void MLGraphMojo::OnDidCompute(
     // WebNN Service here.
     auto output_buffer_iter = mojo_outputs.find(output_name);
     if (output_buffer_iter == mojo_outputs.end()) {
-      resolver->RejectWithDOMException(
+      resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kOperationError,
           "There is an unknown output tensor in the computation result: " +
-              output_name);
+              output_name));
       return;
     }
     const auto output_byte_length = output_view_info.contents.DataLength();
     if (output_buffer_iter->value.size() != output_byte_length) {
-      resolver->RejectWithDOMException(
+      resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kUnknownError,
           "The output tensor size does not match graph's expectation: " +
-              output_name);
+              output_name));
       return;
     }
     memcpy(output_view_info.contents.Data(), output_buffer_iter->value.data(),
@@ -259,9 +259,9 @@ void MLGraphMojo::OnCreateWebNNGraph(
   // Handle error message and throw exception.
   if (result->is_error()) {
     const auto& create_graph_error = result->get_error();
-    resolver->RejectWithDOMException(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         ConvertWebNNErrorCodeToDOMExceptionCode(create_graph_error->code),
-        create_graph_error->message);
+        create_graph_error->message));
     return;
   }
 

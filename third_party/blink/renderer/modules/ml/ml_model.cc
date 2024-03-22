@@ -110,22 +110,22 @@ ScriptPromiseTyped<IDLRecord<IDLString, MLTensor>> MLModel::compute(
 
   // First verifies the sizes of inputs.
   if (input_tensor_name_to_info_.size() != inputs.size()) {
-    resolver->RejectWithDOMException(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kDataError,
-        "The number of inputs doesn't match model's expectation.");
+        "The number of inputs doesn't match model's expectation."));
     return promise;
   }
   for (const auto& name_tensor : inputs) {
     auto iter = input_tensor_name_to_info_.find(name_tensor.first);
     if (iter == input_tensor_name_to_info_.end()) {
-      resolver->RejectWithDOMException(
+      resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kDataError,
-          "There is unknown input: " + name_tensor.first);
+          "There is unknown input: " + name_tensor.first));
       return promise;
     }
     if (iter->value->byte_size != name_tensor.second->data()->byteLength()) {
-      resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
-                                       "Wrong input size.");
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kUnknownError, "Wrong input size."));
       return promise;
     }
   }
@@ -161,34 +161,34 @@ void MLModel::OnComputeResult(
     ComputeResult result,
     const std::optional<HashMap<String, Vector<uint8_t>>>& outputs) {
   if (result != ComputeResult::kOk || !outputs.has_value()) {
-    resolver->RejectWithDOMException(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kOperationError,
-        "Failed to obtain the computation result.");
+        "Failed to obtain the computation result."));
     return;
   }
 
   if (outputs.value().size() != output_tensor_name_to_info_.size()) {
-    resolver->RejectWithDOMException(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
         "The number of output tensors of computation does't match the model's "
-        "expectation.");
+        "expectation."));
     return;
   }
 
   for (const auto& name_tensor : outputs.value()) {
     auto iter = output_tensor_name_to_info_.find(name_tensor.key);
     if (iter == output_tensor_name_to_info_.end()) {
-      resolver->RejectWithDOMException(
+      resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kUnknownError,
           "There is an unknown output tensor in the computation result: " +
-              name_tensor.key);
+              name_tensor.key));
       return;
     }
     if (name_tensor.value.size() != iter->value->byte_size) {
-      resolver->RejectWithDOMException(
+      resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kUnknownError,
           "The output tensor size does not match model's expectation: " +
-              name_tensor.key);
+              name_tensor.key));
       return;
     }
   }
