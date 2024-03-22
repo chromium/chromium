@@ -226,6 +226,16 @@ bool IsValidEncryptedTypesTransition(bool old_encrypt_everything,
   return specifics.encrypt_everything() || !old_encrypt_everything;
 }
 
+bool IsValidLocalData(const sync_pb::NigoriLocalData& local_data) {
+  if (local_data.model_type_state().initial_sync_state() !=
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE) {
+    // |local_data| should not be stored before initial sync is done.
+    return false;
+  }
+  // More validations is to be added here (e.g. for crbug.com/40681149).
+  return true;
+}
+
 std::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
     const sync_pb::CrossUserSharingPublicKey& public_key) {
   std::vector<uint8_t> key(public_key.x25519_public_key().begin(),
@@ -317,7 +327,7 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
       broadcasting_observer_(std::make_unique<BroadcastingObserver>()) {
   std::optional<sync_pb::NigoriLocalData> deserialized_data =
       storage_->RestoreData();
-  if (!deserialized_data) {
+  if (!deserialized_data || !IsValidLocalData(*deserialized_data)) {
     // We either have no Nigori node stored locally or it was corrupted.
     processor_->ModelReadyToSync(this, NigoriMetadataBatch());
     return;
@@ -1026,9 +1036,7 @@ void NigoriSyncBridgeImpl::MaybeTriggerKeystoreReencryption() {
 
 void NigoriSyncBridgeImpl::QueuePendingLocalCommit(
     std::unique_ptr<PendingLocalNigoriCommit> local_commit) {
-  // TODO(crbug.com/1445056): Consider adding more validations in ctor to get
-  // stronger guarantee around DCHECK() below.
-  DCHECK(processor_->IsTrackingMetadata());
+  CHECK(processor_->IsTrackingMetadata());
 
   pending_local_commit_queue_.push_back(std::move(local_commit));
 

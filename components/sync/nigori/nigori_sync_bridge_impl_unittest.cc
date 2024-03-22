@@ -31,6 +31,7 @@ namespace {
 
 using testing::_;
 using testing::Eq;
+using testing::IsNull;
 using testing::Ne;
 using testing::Not;
 using testing::NotNull;
@@ -169,6 +170,8 @@ NigoriMetadataBatch CreateDummyNigoriMetadataBatch(
   NigoriMetadataBatch metadata_batch;
   metadata_batch.model_type_state.mutable_progress_marker()->set_token(
       progress_marker_token);
+  metadata_batch.model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   metadata_batch.entity_metadata = sync_pb::EntityMetadata::default_instance();
   metadata_batch.entity_metadata->set_sequence_number(
       entity_metadata_sequence_number);
@@ -281,6 +284,10 @@ class NigoriSyncBridgeImplTest : public testing::Test {
  protected:
   NigoriSyncBridgeImplTest() {
     ON_CALL(processor_, IsTrackingMetadata).WillByDefault(Return(true));
+    ON_CALL(processor_, GetMetadata()).WillByDefault([&] {
+      return CreateDummyNigoriMetadataBatch(
+          "dummy_token", /*entity_metadata_sequence_number=*/100);
+    });
     InitializeBridge();
   }
 
@@ -1341,6 +1348,8 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest,
           {kKeystoreKeyParams.password});
 
   sync_pb::NigoriLocalData nigori_local_data;
+  nigori_local_data.mutable_model_type_state()->set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   *nigori_local_data.mutable_nigori_model() =
       unitialized_state_with_keystore_keys.ToLocalProto();
 
@@ -1737,9 +1746,15 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest,
   ON_CALL(*storage1, StoreData)
       .WillByDefault(testing::SaveArg<0>(&nigori_local_data));
 
-  auto bridge1 = std::make_unique<NigoriSyncBridgeImpl>(
-      std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>(),
-      std::move(storage1));
+  auto processor1 =
+      std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>();
+  ON_CALL(*processor1, GetMetadata()).WillByDefault([&] {
+    return CreateDummyNigoriMetadataBatch(
+        "dummy_token", /*entity_metadata_sequence_number=*/100);
+  });
+
+  auto bridge1 = std::make_unique<NigoriSyncBridgeImpl>(std::move(processor1),
+                                                        std::move(storage1));
 
   // Perform initial sync with trusted vault passphrase.
   const std::vector<uint8_t> kTrustedVaultKey = {2, 3, 4, 5, 6};
@@ -1832,9 +1847,15 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest, ShouldCompleteKeystoreMigration) {
   ON_CALL(*storage1, StoreData)
       .WillByDefault(testing::SaveArg<0>(&nigori_local_data));
 
-  auto bridge1 = std::make_unique<NigoriSyncBridgeImpl>(
-      std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>(),
-      std::move(storage1));
+  auto processor1 =
+      std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>();
+  ON_CALL(*processor1, GetMetadata()).WillByDefault([&] {
+    return CreateDummyNigoriMetadataBatch(
+        "dummy_token", /*entity_metadata_sequence_number=*/100);
+  });
+
+  auto bridge1 = std::make_unique<NigoriSyncBridgeImpl>(std::move(processor1),
+                                                        std::move(storage1));
 
   // Perform initial sync with backward compatible keystore Nigori.
   const std::vector<uint8_t> kRawKeystoreKey = {0, 1, 2, 3, 4};
@@ -1889,9 +1910,15 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest,
   ON_CALL(*storage1, StoreData)
       .WillByDefault(testing::SaveArg<0>(&nigori_local_data));
 
-  auto bridge1 = std::make_unique<NigoriSyncBridgeImpl>(
-      std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>(),
-      std::move(storage1));
+  auto processor1 =
+      std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>();
+  ON_CALL(*processor1, GetMetadata()).WillByDefault([&] {
+    return CreateDummyNigoriMetadataBatch(
+        "dummy_token", /*entity_metadata_sequence_number=*/100);
+  });
+
+  auto bridge1 = std::make_unique<NigoriSyncBridgeImpl>(std::move(processor1),
+                                                        std::move(storage1));
 
   // Perform initial sync with custom passphrase Nigori without keystore keys.
   const std::vector<uint8_t> kRawKeystoreKey = {0, 1, 2, 3, 4};
@@ -1932,9 +1959,15 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest, ShouldRestoreTrustedVaultNigori) {
   ON_CALL(*storage1, StoreData)
       .WillByDefault(testing::SaveArg<0>(&nigori_local_data));
 
-  auto bridge1 = std::make_unique<NigoriSyncBridgeImpl>(
-      std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>(),
-      std::move(storage1));
+  auto processor1 =
+      std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>();
+  ON_CALL(*processor1, GetMetadata()).WillByDefault([&] {
+    return CreateDummyNigoriMetadataBatch(
+        "dummy_token", /*entity_metadata_sequence_number=*/100);
+  });
+
+  auto bridge1 = std::make_unique<NigoriSyncBridgeImpl>(std::move(processor1),
+                                                        std::move(storage1));
 
   // Perform initial sync with TrustedVault Nigori.
   EntityData entity_data;
@@ -1987,9 +2020,15 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest,
   ON_CALL(*storage1, StoreData)
       .WillByDefault(testing::SaveArg<0>(&nigori_local_data));
 
-  auto bridge1 = std::make_unique<NigoriSyncBridgeImpl>(
-      std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>(),
-      std::move(storage1));
+  auto processor1 =
+      std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>();
+  ON_CALL(*processor1, GetMetadata()).WillByDefault([&] {
+    return CreateDummyNigoriMetadataBatch(
+        "dummy_token", /*entity_metadata_sequence_number=*/100);
+  });
+
+  auto bridge1 = std::make_unique<NigoriSyncBridgeImpl>(std::move(processor1),
+                                                        std::move(storage1));
 
   // Perform initial sync with TrustedVault Nigori.
   EntityData entity_data;
@@ -2305,6 +2344,24 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldRegenerateKeyPairIfCorrupted) {
               HasPublicKeyVersionAndValue(0, new_public_key));
   EXPECT_NE(new_public_key,
             std::string(raw_public_key.begin(), raw_public_key.end()));
+}
+
+// Regression test for crbug.com/329164040: stored local data suggests that
+// initial sync was not done (due to data corruption or missing migration),
+// the bridge should drop local data and perform initial sync once again.
+// Main expectation is absence of crash.
+TEST_F(NigoriSyncBridgeImplTest, ShouldIgnoreLocalDataWithoutInitialSyncDone) {
+  ASSERT_TRUE(PerformInitialSyncWithSimpleKeystoreNigori());
+
+  sync_pb::NigoriLocalData local_data = nigori_local_data();
+  // Mimic corrupted (empty) |initial_sync_state| field.
+  local_data.mutable_model_type_state()->clear_initial_sync_state();
+
+  // Ensure that bridge ignores local state.
+  EXPECT_CALL(*processor(),
+              ModelReadyToSync(NotNull(), IsEmptyMetadataBatch()));
+  MimicRestartWithLocalData(local_data);
+  EXPECT_TRUE(PerformInitialSyncWithSimpleKeystoreNigori());
 }
 
 }  // namespace
