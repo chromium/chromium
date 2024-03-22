@@ -280,8 +280,6 @@ BuiltInBackendToAndroidBackendMigrator::GetWeakPtr() {
 
 void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration(
     MigrationType migration_type) {
-  prefs_->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt,
-                    base::Time::Now().InSecondsFSinceUnixEpoch());
   migration_in_progress_type_ = migration_type;
 
   metrics_reporter_ =
@@ -289,43 +287,51 @@ void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("passwords",
                                     "UnifiedPasswordManagerMigration", this);
 
-  if (migration_type == MigrationType::kInitialForSyncUsers ||
-      migration_type == MigrationType::kNonSyncableToAndroidBackend ||
-      migration_type == MigrationType::kReenrollmentAttempt) {
-    // Sync is enabled. The synced passwords in the two backend should be
-    // identical. Non-syncable data is not synced and needs to be migrated to
-    // the android backend after enrolling into the experiment or after a sync
-    // status change.
-    // Update calls won't fail because they would add a password in the rare
-    // case that it doesn't exist in the target backend.
-    // During the migration username and password values are also cleaned up
-    // from the blacklisted entries stored in the built in backend.
-    auto callback_chain = base::BindOnce(
-        &BuiltInBackendToAndroidBackendMigrator::MigrateNonSyncableData,
-        weak_ptr_factory_.GetWeakPtr(), android_backend_);
-    callback_chain = base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
-                                        RemoveBlocklistedFormsWithValues,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    base::Unretained(built_in_backend_),
-                                    std::move(callback_chain));
-    built_in_backend_->GetAllLoginsAsync(std::move(callback_chain));
-    return;
+  switch (migration_type) {
+    case MigrationType::kInitialForSyncUsers:
+    case MigrationType::kReenrollmentAttempt:
+      prefs_->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt,
+                        base::Time::Now().InSecondsFSinceUnixEpoch());
+      ABSL_FALLTHROUGH_INTENDED;
+    case MigrationType::kNonSyncableToAndroidBackend: {
+      // Sync is enabled. The synced passwords in the two backend should be
+      // identical. Non-syncable data is not synced and needs to be migrated to
+      // the android backend after enrolling into the experiment or after a sync
+      // status change.
+      // Update calls won't fail because they would add a password in the rare
+      // case that it doesn't exist in the target backend.
+      // During the migration username and password values are also cleaned up
+      // from the blacklisted entries stored in the built in backend.
+      auto callback_chain = base::BindOnce(
+          &BuiltInBackendToAndroidBackendMigrator::MigrateNonSyncableData,
+          weak_ptr_factory_.GetWeakPtr(), android_backend_);
+      callback_chain = base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
+                                          RemoveBlocklistedFormsWithValues,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      base::Unretained(built_in_backend_),
+                                      std::move(callback_chain));
+      built_in_backend_->GetAllLoginsAsync(std::move(callback_chain));
+      break;
+    }
+    case MigrationType::kNonSyncableToBuiltInBackend: {
+      // Sync was disabled, while the local GMS storage is not supported.
+      // Migrate non-syncable data that is associated with a previously
+      // synced account from the android backend to the built-in backend.
+      android_backend_->GetAllLoginsForAccountAsync(
+          prefs_->GetString(::prefs::kGoogleServicesLastSyncingUsername),
+          base::BindOnce(
+              &BuiltInBackendToAndroidBackendMigrator::MigrateNonSyncableData,
+              weak_ptr_factory_.GetWeakPtr(), built_in_backend_));
+      break;
+    }
+    case MigrationType::kForLocalUsers:
+      prefs_->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt,
+                        base::Time::Now().InSecondsFSinceUnixEpoch());
+      RunMigrationForLocalUsers();
+      break;
+    case MigrationType::kNone:
+      NOTREACHED_NORETURN();
   }
-
-  if (migration_type == MigrationType::kNonSyncableToBuiltInBackend) {
-    // Sync was disabled, while the local GMS storage is not supported.
-    // Migrate non-syncable data that is associated with a previously
-    // synced account from the android backend to the built-in backend.
-    android_backend_->GetAllLoginsForAccountAsync(
-        prefs_->GetString(::prefs::kGoogleServicesLastSyncingUsername),
-        base::BindOnce(
-            &BuiltInBackendToAndroidBackendMigrator::MigrateNonSyncableData,
-            weak_ptr_factory_.GetWeakPtr(), built_in_backend_));
-    return;
-  }
-
-  if (migration_type == MigrationType::kForLocalUsers)
-    RunMigrationForLocalUsers();
 }
 
 void BuiltInBackendToAndroidBackendMigrator::MigrateNonSyncableData(

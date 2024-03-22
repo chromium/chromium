@@ -206,6 +206,85 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 }
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       AttemptPrefIsUpdatedAfterInitialMigrationStarted) {
+  Init();
+  ASSERT_EQ(
+      base::Time().InSecondsFSinceUnixEpoch(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+
+  migrator()->StartAccountMigrationIfNecessary(
+      MigrationType::kInitialForSyncUsers);
+  RunUntilIdle();
+
+  EXPECT_EQ(
+      base::Time::Now().InSecondsFSinceUnixEpoch(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       AttemptPrefIsUpdatedAfterReenrollmentMigrationStarted) {
+  Init();
+  ASSERT_EQ(
+      base::Time().InSecondsFSinceUnixEpoch(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+
+  migrator()->StartAccountMigrationIfNecessary(
+      MigrationType::kReenrollmentAttempt);
+  RunUntilIdle();
+
+  EXPECT_EQ(
+      base::Time::Now().InSecondsFSinceUnixEpoch(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       AttemptPrefIsUpdatedAfterLocalMigrationStarted) {
+  Init();
+  ASSERT_EQ(
+      base::Time().InSecondsFSinceUnixEpoch(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+
+  migrator()->StartMigrationOfLocalPasswords();
+  RunUntilIdle();
+
+  EXPECT_EQ(
+      base::Time::Now().InSecondsFSinceUnixEpoch(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       AttemptPrefIsNotUpdatedAfterNonSyncDataMigrationToAndroidStarted) {
+  Init();
+  ASSERT_EQ(
+      base::Time().InSecondsFSinceUnixEpoch(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+
+  migrator()->StartAccountMigrationIfNecessary(
+      MigrationType::kNonSyncableToAndroidBackend);
+  RunUntilIdle();
+
+  EXPECT_EQ(
+      base::Time().InSecondsFSinceUnixEpoch(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       AttemptPrefIsNotUpdatedAfterNonSyncDataMigrationToBuiltInStarted) {
+  Init();
+  ASSERT_EQ(
+      base::Time().InSecondsFSinceUnixEpoch(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+
+  migrator()->StartAccountMigrationIfNecessary(
+      MigrationType::kNonSyncableToBuiltInBackend);
+  RunUntilIdle();
+
+  EXPECT_EQ(
+      base::Time().InSecondsFSinceUnixEpoch(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
        PrefsUnchangedWhenAttemptedMigrationEarlierToday) {
   Init();
 
