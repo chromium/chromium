@@ -290,9 +290,13 @@ class FakePpdProvider : public PpdProvider {
     license_name_ = license_name;
   }
 
+  void SetPpdContent(const std::string& ppd_content) {
+    ppd_content_ = ppd_content;
+  }
+
   void ResolvePpd(const Printer::PpdReference& reference,
                   ResolvePpdCallback cb) override {
-    std::move(cb).Run(PpdProvider::CallbackResultCode::SUCCESS, "ppd content");
+    std::move(cb).Run(PpdProvider::CallbackResultCode::SUCCESS, ppd_content_);
   }
 
   void ResolvePpdLicense(std::string_view effective_make_and_model,
@@ -311,6 +315,7 @@ class FakePpdProvider : public PpdProvider {
   ~FakePpdProvider() override {}
   std::string usb_manufacturer_;
   std::string license_name_;
+  std::string ppd_content_ = "ppd content";
 };
 
 class FakeLocalPrintersObserver
@@ -1604,6 +1609,7 @@ TEST_F(CupsPrintersManagerTest, PrinterWithHplipPluginLicenseDlcSucceeds) {
   printer.SetUri("ipp://manual.uri");
   printer.mutable_ppd_reference()->effective_make_and_model = "Make and model";
   ppd_provider_->SetLicenseName("hplip-plugin");
+  ppd_provider_->SetPpdContent("*hpPrinterLanguage: lang\nsomething else\n");
   dlc_service_client_.set_install_error(dlcservice::kErrorNone);
   dlc_service_client_.set_install_root_path("/root/path");
 
@@ -1615,6 +1621,28 @@ TEST_F(CupsPrintersManagerTest, PrinterWithHplipPluginLicenseDlcSucceeds) {
 
   EXPECT_EQ(result, PrinterSetupResult::kSuccess);
   EXPECT_TRUE(manager_->IsPrinterInstalled(printer));
+
+  // Check if the PPD content was updated.
+  base::RunLoop run_loop_2;
+  std::string ppd_content;
+  printscanmgr::CupsRetrievePpdRequest request;
+  request.set_name(kPrinterId);
+  PrintscanmgrClient::Get()->CupsRetrievePrinterPpd(
+      request,
+      base::BindLambdaForTesting(
+          [&run_loop_2, &ppd_content](
+              std::optional<printscanmgr::CupsRetrievePpdResponse> response) {
+            if (response) {
+              ppd_content = response->ppd();
+            }
+            run_loop_2.Quit();
+          }),
+      base::BindLambdaForTesting([&run_loop_2]() { run_loop_2.Quit(); }));
+  run_loop_2.Run();
+
+  EXPECT_EQ(ppd_content,
+            "*hpPrinterLanguage: lang\n*chromeOSHplipPluginPath: "
+            "\"/root/path\"\nsomething else\n");
 }
 
 // Same as PrinterWithHplipPluginLicenseDlcSucceeds, using debugd.

@@ -6,6 +6,8 @@
 
 #include <map>
 #include <set>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
@@ -170,6 +173,23 @@ PrinterSetupResult PrinterSetupResultFromAddPrinterResult(
   }
 }
 
+// Searches in `ppd` for a command setting HP printer language. If the keyword
+// is found, the function inserts after the command a line containing a path to
+// Hplip plugin provided in `path` and returns true.
+bool AddHplipPluginPathToPpdContent(std::string_view path, std::string& ppd) {
+  constexpr char kHpPrinterLanguageKeyword[] = "*hpPrinterLanguage:";
+  size_t pos = ppd.find(kHpPrinterLanguageKeyword);
+  if (pos != std::string::npos) {
+    pos = ppd.find('\n', pos + sizeof(kHpPrinterLanguageKeyword));
+  }
+  if (pos == std::string::npos) {
+    return false;
+  }
+  ppd.insert(++pos,
+             base::StrCat({"*chromeOSHplipPluginPath: \"", path, "\"\n"}));
+  return true;
+}
+
 // Configures printers by downloading PPDs then adding them to CUPS through
 // debugd.  This class must be used on the UI thread.
 class PrinterConfigurerImpl : public PrinterConfigurer {
@@ -197,7 +217,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     if (!printer.IsIppEverywhere()) {
       if (!printer.ppd_reference().user_supplied_ppd_url.empty()) {
         // The PPD was provided by the user.
-        ResolvePpd(printer, std::move(callback));
+        ResolvePpd(printer, /*hplip_plugin_path=*/"", std::move(callback));
       } else {
         // The PPD was selected from our PPD Index. We have to check its license
         // to make sure it doesn't need any additional plugins before setup.
@@ -303,6 +323,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
   }
 
   void ResolvePpdDone(const Printer& printer,
+                      const std::string& hplip_plugin_path,
                       PrinterSetupCallback cb,
                       PpdProvider::CallbackResultCode result,
                       const std::string& ppd_contents) {
@@ -312,7 +333,16 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     switch (result) {
       case PpdProvider::SUCCESS:
         DCHECK(!ppd_contents.empty());
-        AddPrinter(printer, ppd_contents, std::move(cb));
+        {
+          std::string ppd = ppd_contents;
+          if (!hplip_plugin_path.empty()) {
+            if (!AddHplipPluginPathToPpdContent(hplip_plugin_path, ppd)) {
+              PRINTER_LOG(ERROR) << printer.make_and_model()
+                                 << " Missing HP printer language in PPD file";
+            }
+          }
+          AddPrinter(printer, ppd, std::move(cb));
+        }
         break;
       case PpdProvider::CallbackResultCode::NOT_FOUND:
         std::move(cb).Run(PrinterSetupResult::kPpdNotFound);
@@ -329,12 +359,15 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     }
   }
 
-  void ResolvePpd(const Printer& printer, PrinterSetupCallback cb) {
+  void ResolvePpd(const Printer& printer,
+                  const std::string& hplip_plugin_path,
+                  PrinterSetupCallback cb) {
     PRINTER_LOG(DEBUG) << printer.make_and_model() << " Lookup PPD";
     ppd_provider_->ResolvePpd(
         printer.ppd_reference(),
         base::BindOnce(&PrinterConfigurerImpl::ResolvePpdDone,
-                       weak_factory_.GetWeakPtr(), printer, std::move(cb)));
+                       weak_factory_.GetWeakPtr(), printer, hplip_plugin_path,
+                       std::move(cb)));
   }
 
   void ResolveLicenseDone(const Printer& printer,
@@ -375,7 +408,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
           base::DoNothing());
     } else {
       // Proceed with PPD resolution.
-      ResolvePpd(printer, std::move(cb));
+      ResolvePpd(printer, /*hplip_plugin_path=*/"", std::move(cb));
     }
   }
 
@@ -392,7 +425,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
       std::move(cb).Run(PrinterSetupResult::kComponentUnavailable);
     } else {
       // Plugin installed. We can proceed with PPD resolution.
-      ResolvePpd(printer, std::move(cb));
+      ResolvePpd(printer, result.root_path, std::move(cb));
     }
   }
 
