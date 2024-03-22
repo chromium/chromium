@@ -1155,11 +1155,19 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheUnloadBrowserTest,
   // trigger unload handlers and be destroyed directly.
 }
 
+// TODO(crbug.com/330798156): Flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation \
+  DISABLED_DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation
+#else
+#define MAYBE_DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation \
+  DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation
+#endif
 // Do a same document navigation and make sure we do not fire the
 // DidFirstVisuallyNonEmptyPaint again
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTest,
-    DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation) {
+    MAYBE_DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a_1(embedded_test_server()->GetURL(
       "a.com", "/accessibility/html/a-name.html"));
@@ -1213,9 +1221,16 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(web_contents()->CompletedFirstVisuallyNonEmptyPaint());
   EXPECT_TRUE(observer.did_fire());
 }
-
+// TODO(crbug.com/330798156): Flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_SetsThemeColorWhenRestoredFromCache \
+  DISABLED_SetsThemeColorWhenRestoredFromCache
+#else
+#define MAYBE_SetsThemeColorWhenRestoredFromCache \
+  SetsThemeColorWhenRestoredFromCache
+#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       SetsThemeColorWhenRestoredFromCache) {
+                       MAYBE_SetsThemeColorWhenRestoredFromCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/theme_color.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
