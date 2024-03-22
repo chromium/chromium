@@ -185,8 +185,8 @@ message NetworkTrafficAnnotation {
         // website they're visiting/have visited before.
         SENSITIVE_URL = 22;
 
-        // Any data entered by a user and collected
-        // incidentally, such as a search query.
+        // Any data originating from user input, regardless of the specific form
+        // (e.g. text fields, search queries, etc.).
         USER_CONTENT = 26;
 
         USERNAME = 27;
