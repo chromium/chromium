@@ -25,7 +25,8 @@ TEST_F(RecentTabsMediatorTest, disabledConfiguration) {
                                                  syncService:nullptr
                                                  browserList:nullptr
                                                   sceneState:nil
-                                            disabledByPolicy:YES];
+                                            disabledByPolicy:YES
+                                           engagementTracker:nullptr];
   mediator.toolbarsMutator = fake_toolbars_mediator;
 
   [mediator currentlySelectedGrid:YES];

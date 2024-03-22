@@ -22,6 +22,10 @@ class FaviconLoader;
 @class SceneState;
 @protocol TabGridToolbarsMainTabGridDelegate;
 
+namespace feature_engagement {
+class Tracker;
+}
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -69,7 +73,9 @@ class TabRestoreService;
                    syncService:(syncer::SyncService*)syncService
                    browserList:(BrowserList*)browserList
                     sceneState:(SceneState*)sceneState
-              disabledByPolicy:(BOOL)disabled NS_DESIGNATED_INITIALIZER;
+              disabledByPolicy:(BOOL)disabled
+             engagementTracker:(feature_engagement::Tracker*)engagementTracker
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

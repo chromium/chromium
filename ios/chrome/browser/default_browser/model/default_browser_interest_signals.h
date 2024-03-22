@@ -34,7 +34,7 @@ void NotifyPasswordAutofillSuggestionUsed();
 void NotifyPasswordSavedOrUpdated(feature_engagement::Tracker* tracker);
 
 // Records all necessary information when remote tabs grid is selected.
-void NotifyRemoteTabsGridViewed();
+void NotifyRemoteTabsGridViewed(feature_engagement::Tracker* tracker);
 
 // Records all necessary information when user added or edited a bookmark.
 void NotifyBookmarkAddOrEdit();

@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
@@ -117,6 +118,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   BOOL _selectedGrid;
   // The mode of the TabGrid.
   TabGridMode _currentMode;
+  // Feature engagement tracker for notifying promo events.
+  feature_engagement::Tracker* _engagementTracker;
 }
 
 // Return the user's current sign-in and chrome-sync state.
@@ -130,7 +133,6 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 @property(nonatomic, assign) FaviconLoader* faviconLoader;
 @property(nonatomic, assign) syncer::SyncService* syncService;
 @property(nonatomic, assign) BrowserList* browserList;
-
 @end
 
 @implementation RecentTabsMediator
@@ -144,7 +146,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
                    syncService:(syncer::SyncService*)syncService
                    browserList:(BrowserList*)browserList
                     sceneState:(SceneState*)sceneState
-              disabledByPolicy:(BOOL)disabled {
+              disabledByPolicy:(BOOL)disabled
+             engagementTracker:(feature_engagement::Tracker*)engagementTracker {
   self = [super init];
   if (self) {
     _sessionSyncService = sessionSyncService;
@@ -155,6 +158,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
     _browserList = browserList;
     _sceneState = sceneState;
     _isDisabled = disabled;
+    _engagementTracker = engagementTracker;
   }
   return self;
 }
@@ -394,7 +398,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   if (selected) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridSelectRemotePanel"));
-    default_browser::NotifyRemoteTabsGridViewed();
+    default_browser::NotifyRemoteTabsGridViewed(_engagementTracker);
 
     [self configureToolbarsButtons];
   }

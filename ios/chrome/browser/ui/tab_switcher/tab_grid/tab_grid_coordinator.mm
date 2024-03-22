@@ -860,7 +860,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                      browserList:browserList
                       sceneState:currentSceneState
                 disabledByPolicy:_pageConfiguration ==
-                                 TabGridPageConfiguration::kIncognitoPageOnly];
+                                 TabGridPageConfiguration::kIncognitoPageOnly
+               engagementTracker:feature_engagement::TrackerFactory::
+                                     GetForBrowserState(regularBrowserState)];
   self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
   self.remoteTabsMediator.toolbarTabGridDelegate = self.baseViewController;
   baseViewController.remoteTabsViewController.imageDataSource =

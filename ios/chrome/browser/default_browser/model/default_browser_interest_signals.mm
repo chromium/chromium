@@ -47,7 +47,7 @@ void NotifyPasswordSavedOrUpdated(feature_engagement::Tracker* tracker) {
   LogAutofillUseForCriteriaExperiment();
 }
 
-void NotifyRemoteTabsGridViewed() {
+void NotifyRemoteTabsGridViewed(feature_engagement::Tracker* tracker) {
   // TODO(b/322358517): Migrate to FET.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 

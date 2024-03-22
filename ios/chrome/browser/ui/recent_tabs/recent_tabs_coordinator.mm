@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -121,15 +122,17 @@
   SceneState* currentSceneState = self.browser->GetSceneState();
   BOOL isDisabled =
       IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs());
-  self.mediator =
-      [[RecentTabsMediator alloc] initWithSessionSyncService:syncService
-                                             identityManager:identityManager
-                                              restoreService:restoreService
-                                               faviconLoader:faviconLoader
-                                                 syncService:service
-                                                 browserList:browserList
-                                                  sceneState:currentSceneState
-                                            disabledByPolicy:isDisabled];
+  self.mediator = [[RecentTabsMediator alloc]
+      initWithSessionSyncService:syncService
+                 identityManager:identityManager
+                  restoreService:restoreService
+                   faviconLoader:faviconLoader
+                     syncService:service
+                     browserList:browserList
+                      sceneState:currentSceneState
+                disabledByPolicy:isDisabled
+               engagementTracker:feature_engagement::TrackerFactory::
+                                     GetForBrowserState(browserState)];
 
   // Set the consumer first before calling [self.mediator initObservers] and
   // then [self.mediator configureConsumer].
