@@ -81,22 +81,21 @@ void OnRemoteModelLoad(ExecutionContext* execution_context,
                        ModelInfoPtr model_info) {
   switch (result) {
     case LoadModelResult::kUnknownError:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kUnknownError, "Unknown error."));
+      resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
+                                       "Unknown error.");
       return;
     case LoadModelResult::kInvalidModel:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kDataError, "Invalid input model."));
+      resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
+                                       "Invalid input model.");
       return;
     case LoadModelResult::kNotSupported:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError, "Model can not be supported."));
+      resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                       "Model can not be supported.");
       return;
     case LoadModelResult::kOk:
       if (!CheckIOTensorByteSize(model_info)) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kDataError,
-            "Invalid IO tensor buffer byte size."));
+        resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
+                                         "Invalid IO tensor buffer byte size.");
         pending_remote.reset();
         return;
       }

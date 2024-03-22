@@ -2066,8 +2066,8 @@ void MLGraphXnnpack::OnDidGetSharedXnnpackContext(
     ScriptPromiseResolverTyped<MLGraph>* resolver,
     String error_message) {
   if (!xnn_context) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        XnnStatusToDOMExceptionCode(xnn_status_uninitialized), error_message));
+    resolver->RejectWithDOMException(
+        XnnStatusToDOMExceptionCode(xnn_status_uninitialized), error_message);
     return;
   }
 
@@ -2076,8 +2076,8 @@ void MLGraphXnnpack::OnDidGetSharedXnnpackContext(
   xnn_status status = CreateXnnSubgraph(*named_outputs, subgraph,
                                         static_data_buffers, error_message);
   if (status != xnn_status_success) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        XnnStatusToDOMExceptionCode(status), error_message));
+    resolver->RejectWithDOMException(XnnStatusToDOMExceptionCode(status),
+                                     error_message);
     return;
   }
   // Pass `xnn_context` and `static_data_buffers` forward for XNNPACK Runtime
@@ -2124,8 +2124,8 @@ void MLGraphXnnpack::OnDidCreateXnnRuntime(
     ScriptPromiseResolverTyped<MLGraph>* resolver,
     String error_message) {
   if (!xnn_runtime_wrapper) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kDataError, error_message));
+    resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
+                                     error_message);
     return;
   }
   xnn_runtime_wrapper_ = std::move(xnn_runtime_wrapper);
@@ -2147,8 +2147,8 @@ void MLGraphXnnpack::ComputeImpl(
   auto external_values_and_input_buffers =
       CreateExternalValues(inputs, outputs);
   if (!external_values_and_input_buffers) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kDataError, "Failed to create input buffers."));
+    resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
+                                     "Failed to create input buffers.");
     return;
   }
   auto [external_values, input_buffers] =
@@ -2159,18 +2159,18 @@ void MLGraphXnnpack::ComputeImpl(
   auto inputs_info = TransferNamedArrayBufferViews(
       resolver->GetScriptState()->GetIsolate(), inputs, exception_state);
   if (!inputs_info) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    resolver->RejectWithDOMException(
         DOMExceptionCode::kDataError,
-        "Invalid inputs: " + exception_state.Message()));
+        "Invalid inputs: " + exception_state.Message());
     return;
   }
 
   auto outputs_info = TransferNamedArrayBufferViews(
       resolver->GetScriptState()->GetIsolate(), outputs, exception_state);
   if (!outputs_info) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    resolver->RejectWithDOMException(
         DOMExceptionCode::kDataError,
-        "Invalid outputs: " + exception_state.Message()));
+        "Invalid outputs: " + exception_state.Message());
     return;
   }
 
@@ -2221,8 +2221,8 @@ void MLGraphXnnpack::OnDidCompute(
     ScriptPromiseResolverTyped<MLComputeResult>* resolver,
     String error_message) {
   if (status != xnn_status_success) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        XnnStatusToDOMExceptionCode(status), error_message));
+    resolver->RejectWithDOMException(XnnStatusToDOMExceptionCode(status),
+                                     error_message);
     return;
   }
 
