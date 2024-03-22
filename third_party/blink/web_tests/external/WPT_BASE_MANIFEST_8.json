@@ -7977,6 +7977,13 @@
        {}
       ]
      ],
+     "selection-details-editor-ui.html": [
+      "444306207a4617468447327b4a3e292cec0154d8",
+      [
+       null,
+       {}
+      ]
+     ],
      "selection-modify-around-input.html": [
       "24b9ae7d35bea3510bb21ca03787436db64cbc47",
       [
@@ -64219,6 +64226,19 @@
         {}
        ]
       ],
+      "text-align-justify-with-overflow.html": [
+       "927e9afd5add40e0509fb1ceb357abd5f8be43db",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-align-justify-with-overflow-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-align-white-space-001.xht": [
        "85d62902f4070db368403973dad91ca04c498118",
        [
@@ -65669,6 +65689,19 @@
         [
          [
           "/css/CSS2/text/text-indent-wrap-001-ref-inline-margin.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-indent-wrap-002.html": [
+       "128cba3f1221d8349265eb169112a399fde8e143",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/text/text-indent-wrap-002-ref.html",
           "=="
          ]
         ],
@@ -270710,7 +270743,7 @@
        ],
        "stylable-select": {
         "select-child-button-and-datalist-invalidation.tentative.html": [
-         "996229010da303ef648908205e04aeaedd82c2b4",
+         "6d3419808bd02bb9010a92d268275f092b93a36f",
          [
           null,
           [
@@ -270723,7 +270756,7 @@
          ]
         ],
         "select-child-button-and-datalist.tentative.html": [
-         "b434eb35f911c785e1cac26a25395c5a091a8b5e",
+         "aeb4cd75ac43bda478500b3c4524f82fc9376b1d",
          [
           null,
           [
@@ -298597,7 +298630,7 @@
       ],
       "reference": {
        "no_red_3x3_monospace_table-ref.xht": [
-        "821ddc77b00912897200e27392583fed6d07173d",
+        "5425f5b17501d561212af815fc05957976492905",
         []
        ],
        "no_red_antialiasing_a_bc_d-ref.xht": [
@@ -299095,6 +299128,10 @@
        "0e8b86f98b128d6994b1d815e281c29700aae66b",
        []
       ],
+      "text-align-justify-with-overflow-ref.html": [
+       "be2ac9dae173062a8a473fdeeda4afa97d418319",
+       []
+      ],
       "text-align-white-space-001-ref.xht": [
        "44dc0aabc9a8588311acd8e64d10e0facd4a69b7",
        []
@@ -299217,6 +299254,10 @@
       ],
       "text-indent-rtl-002-ref.xht": [
        "8b9aeacf34436c545d0d087db04fef0170825962",
+       []
+      ],
+      "text-indent-wrap-002-ref.html": [
+       "9750ce4c8994bb807cfbdd5cba0f789892bda07c",
        []
       ],
       "text-transform-001-ref.xht": [
@@ -303956,7 +303997,7 @@
        []
       ],
       "color-valid-relative-color-expected.txt": [
-       "2f72d60fb5cac2e2ba153c065cbf1f7b3ecbc75c",
+       "8fe7139f0a8127b094052454852628a914661312",
        []
       ],
       "opacity-valid-expected.txt": [
@@ -336823,11 +336864,11 @@
      "calc-size": {
       "animation": {
        "calc-size-height-interpolation.tentative-expected.txt": [
-        "044c1382fb8f11440df2f6998e7010bba7c8a120",
+        "c63b808fad5a4bdca2e0d8bb5aabb4f41adfae9c",
         []
        ],
        "calc-size-width-interpolation.tentative-expected.txt": [
-        "538a8f744aff3492c831b701e2a9aa4b86a585ac",
+        "ca5d87478bf636dbd3c80126ed4578d6aa6b4dc2",
         []
        ]
       },
@@ -348431,15 +348472,11 @@
       []
      ],
      "automatic-beacon-helper.js": [
-      "d0a4133e84c93344058a94527a35a6fb42a62eb8",
-      []
-     ],
-     "automatic-beacon-store.py": [
-      "ba1b73201bcce6287c0a7d5489ff5968ca12ad99",
+      "8286c94fec1f03bba8a4616b04541a1015d2144f",
       []
      ],
      "automatic-beacon-unfenced-page.html": [
-      "4ce7e0d78a5b2252ba58eeb8d20fd1eb1917b0ae",
+      "7f17c1a9042442f8a24156718922887af4df5be2",
       []
      ],
      "background-fetch-inner.https.html": [
@@ -348488,6 +348525,10 @@
      ],
      "badging-sw.js": [
       "5bc3c9a1907a6d2bbfb8efe80008269132739e4d",
+      []
+     ],
+     "beacon-store.py": [
+      "4c89687f4a806f492423234039f1a0f33d7f2ce1",
       []
      ],
      "before-unload-inner.html": [
@@ -348739,7 +348780,7 @@
       []
      ],
      "fledge-bidding-logic.py": [
-      "c91b31fd02fb36976b6c9c71c0bbb1bf91394a92",
+      "9acab472031d7f4161135ea6a93d01734c40520c",
       []
      ],
      "fledge-decision-logic.py": [
@@ -349147,7 +349188,7 @@
       []
      ],
      "utils.js": [
-      "d6cca9143752c15ee6470d25058a6535b55a1466",
+      "75c323166935b1683c9c485c34e43a62d48f8f36",
       []
      ],
      "web-bluetooth-inner.html": [
@@ -354492,14 +354533,6 @@
        ],
        "history_pushstate_url_rewriting-expected.txt": [
         "282f94e01c96b83357a94a7f7382bf0bf0360456",
-        []
-       ],
-       "history_reload_referrer-1.html": [
-        "d083a2a1d3c3f144dfc4771358968129828ce93f",
-        []
-       ],
-       "history_reload_referrer-2.html": [
-        "d85517a15f8649417533c03f0d157ef63245710b",
         []
        ],
        "history_reload_referrer-expected.txt": [
@@ -366710,13 +366743,17 @@
        ],
        "stylable-select": {
         "resources": {
+         "select-reset-non-interoperable-styles.css": [
+          "d2b9d9df267e9184123643314ecb72535a63e193",
+          []
+         ],
          "stylable-select-styles.css": [
-          "a7e9a87cdfa96a56cd82da56e78717efb4b0c966",
+          "042de838d14493acaa0f57f93934faeb4d114539",
           []
          ]
         },
         "select-child-button-and-datalist-ref.html": [
-         "bf6399b57845335bfdabc878cf95ca7c0820a7d8",
+         "e99ca4d57a8b2e3ea5f7e208e90a2a710710faf8",
          []
         ]
        }
@@ -394303,7 +394340,13 @@
       []
      ],
      "utils_validation.js": [
-      "7f1d4a4a9457e6a782063a17c10ea601f765adee",
+      "636dba4e3764f7fd02d0a4306141c05537cdc18f",
+      []
+     ]
+    },
+    "validation_tests": {
+     "elementwise-logical.https.any copy.js": [
+      "86183b074ae0fe832a9f9837791a8f28799e3212",
       []
      ]
     }
@@ -402472,25 +402515,83 @@
       {}
      ]
     ],
-    "idbdatabase_deleteObjectStore.htm": [
-     "e3f6a775c56d9de04da6261d7b6e189cb1b2139d",
+    "idbdatabase_deleteObjectStore.any.js": [
+     "5288891bd75fdb1d4e593910c55a234df9190db0",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_deleteObjectStore3.htm": [
-     "3ddbe8ec62b42f24f54445ae3b3cec25793ee3a4",
+      "IndexedDB/idbdatabase_deleteObjectStore.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBDatabase.deleteObjectStore()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_deleteObjectStore4-not_reused.htm": [
-     "0a5e1b83cf1676149a1c547332264f682edf2572",
+      "IndexedDB/idbdatabase_deleteObjectStore.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBDatabase.deleteObjectStore()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
+      "IndexedDB/idbdatabase_deleteObjectStore.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBDatabase.deleteObjectStore()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbdatabase_deleteObjectStore.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBDatabase.deleteObjectStore()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbdatabase_transaction.htm": [
@@ -403729,67 +403830,162 @@
       {}
      ]
     ],
-    "idbobjectstore_delete.htm": [
-     "880309d01a09b0802f1a12c71e29eb9c9221a30e",
+    "idbobjectstore_delete.any.js": [
+     "0b731f391d0302079e304b10f67a762693f37d95",
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_delete.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.delete()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_delete.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.delete()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_delete.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.delete()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_delete.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.delete()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbobjectstore_delete2.htm": [
-     "eb71169905791318549aca77de7806bde40d0cce",
+    "idbobjectstore_deleteIndex.any.js": [
+     "ed0246e0e79f5270981463b8e0c5fabe257a7dad",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbobjectstore_delete3.htm": [
-     "1ea9dd9958202ececbf7bd95cce15d999b65f9d1",
+      "IndexedDB/idbobjectstore_deleteIndex.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.deleteIndex()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbobjectstore_delete4.htm": [
-     "9d074bff85cdc7770a6cd4ec6ad75ca5b50a7ded",
+      "IndexedDB/idbobjectstore_deleteIndex.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.deleteIndex()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbobjectstore_delete5.htm": [
-     "f7696e6efa151c73197a4a319c753df107a8ab77",
+      "IndexedDB/idbobjectstore_deleteIndex.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.deleteIndex()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbobjectstore_delete6.htm": [
-     "70d8af32fe852b2887a431cc598906aad5e07424",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbobjectstore_delete7.htm": [
-     "a65885cc2b43bdb4e17e82bea06d9d439716ec07",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbobjectstore_deleteIndex.htm": [
-     "f12af6fc53760bcca605926de3223bebf90faf17",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbobjectstore_deleted.htm": [
-     "5ccc8fdb1b683896dd855aff38b60cbfa4b6f952",
-     [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_deleteIndex.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.deleteIndex()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbobjectstore_get.any.js": [
@@ -438406,6 +438602,13 @@
        {}
       ]
      ],
+     "try-tactic-inset-area.html": [
+      "32af18a1494e10de65231e28eac5d8efa694fbe1",
+      [
+       null,
+       {}
+      ]
+     ],
      "try-tactic-margin.html": [
       "ab627315b8bed968a74fb637e2d99352a9c9ebb5",
       [
@@ -439190,6 +439393,19 @@
        {}
       ]
      ],
+     "stability": {
+      "animation-event-destroy-renderer.html": [
+       "0a1e1d508530a23ee80dc27efbb66413adc0570e",
+       [
+        "css/css-animations/stability/animation-event-destroy-renderer.html?animationiteration",
+        {}
+       ],
+       [
+        "css/css-animations/stability/animation-event-destroy-renderer.html?animationstart",
+        {}
+       ]
+      ]
+     },
      "style-animation-parsing.html": [
       "792fda33ed8b0bacf355e62066ec05d54cc5c729",
       [
@@ -468545,14 +468761,14 @@
      "calc-size": {
       "animation": {
        "calc-size-height-interpolation.tentative.html": [
-        "60424f2d438e4293b1a641a5180a5227fef8c29c",
+        "c789ae670d41a7bc07eee629b1c073f74f96f23b",
         [
          null,
          {}
         ]
        ],
        "calc-size-width-interpolation.tentative.html": [
-        "dbcaf36c0db53c63fbe98444ad7ceed9e2bdc835",
+        "6703ddecb3607f5f0cc3ea37212229b007ab5ab4",
         [
          null,
          {}
@@ -468567,7 +468783,7 @@
        ]
       ],
       "calc-size-parsing.tentative.html": [
-       "e51247c872672653f6ae29c69d8d1d4c2765899f",
+       "afcb200424fb13a75b71ad60dac835d245add719",
        [
         null,
         {}
@@ -500225,7 +500441,7 @@
      ]
     ],
     "automatic-beacon-anchor-click-handler.https.html": [
-     "8ee1cb517fc51ab1869d1c1c6a967d38f5de6010",
+     "a451c48f73d8599a72e537497537589fbe311ea9",
      [
       null,
       {
@@ -500234,7 +500450,7 @@
      ]
     ],
     "automatic-beacon-click-handler.https.html": [
-     "31392fdb99dfa9c317f308784f4de34fa0d30c0d",
+     "55f18fd42b6bff1d927eafbf3cc7bdd5ae154a78",
      [
       null,
       {
@@ -500243,7 +500459,7 @@
      ]
     ],
     "automatic-beacon-component-ad.https.html": [
-     "1b1ef2798ad3042b6954dc4377db25ce08e5fd5a",
+     "fffff548b46948048f66f61b276886cf4a54adea",
      [
       null,
       {
@@ -500252,7 +500468,7 @@
      ]
     ],
     "automatic-beacon-cross-origin-false.https.html": [
-     "24440e4b675848ae73589546fef6e756690accd2",
+     "a3627036fc53f2dd56d487bbb8683381e1f4f303",
      [
       null,
       {
@@ -500261,7 +500477,7 @@
      ]
     ],
     "automatic-beacon-cross-origin-navigation.https.html": [
-     "c476e80443deabfc67c5a068724985e3125263c0",
+     "7e974ad63e4423ba9195df631f0430cfa7f6bcc0",
      [
       null,
       {
@@ -500270,7 +500486,7 @@
      ]
     ],
     "automatic-beacon-cross-origin-no-data.https.html": [
-     "dd00721dd8ca17b7fe04995872d1fe715aa34c47",
+     "887a06847f4e11d96596497e01d6dacc00a3540e",
      [
       null,
       {
@@ -500279,7 +500495,7 @@
      ]
     ],
     "automatic-beacon-cross-origin-no-opt-in.https.html": [
-     "fa19d17f890b3182460bac6dfbc7dfcfce147b91",
+     "f1817b76dd242a02071a59088ea487daa9ab547c",
      [
       null,
       {
@@ -500288,7 +500504,7 @@
      ]
     ],
     "automatic-beacon-no-destination.https.html": [
-     "696c17f765ee9143c016e247be843de3fbf4efe7",
+     "1779ba657318c0b76fcc91572b17a20a7b709855",
      [
       null,
       {
@@ -500297,7 +500513,7 @@
      ]
     ],
     "automatic-beacon-no-opt-in.https.html": [
-     "177a7c6a512080e669cc22aa245025e14053335f",
+     "b6dac31dbdcb5f84f4eb3e6b1ab432433b246f6d",
      [
       null,
       {
@@ -500315,7 +500531,7 @@
      ]
     ],
     "automatic-beacon-two-events-clear.https.html": [
-     "f759c0620b8945a3aa783233d65abc2a84bb95e3",
+     "ff353981051f7d429d048f1a096a7c57934c5faf",
      [
       null,
       {
@@ -500324,7 +500540,7 @@
      ]
     ],
     "automatic-beacon-two-events-persist.https.html": [
-     "906a7a0d9f5a35e4351c4a63362a891fe17ecd98",
+     "b9e582e43ecd235582499c08eb7366b47c768a40",
      [
       null,
       {
@@ -500333,7 +500549,7 @@
      ]
     ],
     "automatic-beacon-unfenced-top.https.html": [
-     "342e13321fee27fbe3e4a6cde4c75db51d472294",
+     "0a595c52607214b5e7e06dcd82221ccabde2b335",
      [
       null,
       {
@@ -500342,7 +500558,7 @@
      ]
     ],
     "automatic-beacon-use-ancestor-data.https.html": [
-     "39df6f5c73f405d0e927fc9e24450cea806560d2",
+     "c5169d4a47ad6cd53fcdb3a96f35d8f30b19e4a3",
      [
       null,
       {
@@ -501243,7 +501459,7 @@
      ]
     ],
     "report-event-reserved-event.https.html": [
-     "0a541bb0c5c8f3e19c609b7e2411c89fea103764",
+     "6baa3cedeab9a39ffc2f29176df104e52f36e66a",
      [
       null,
       {}
@@ -501251,6 +501467,13 @@
     ],
     "report-event-sandboxed-iframe.https.html": [
      "7298f39e6945255de783362396fc89f9754b6ef0",
+     [
+      null,
+      {}
+     ]
+    ],
+    "report-event.https.html": [
+     "c06765b8f9a1a2de4fca68b07b03fa5d6d233ebd",
      [
       null,
       {}
@@ -532425,13 +532648,6 @@
        ],
        "history_pushstate_url_rewriting.html": [
         "03c2afe8eae0d89801243dd0c688910f0df52a01",
-        [
-         null,
-         {}
-        ]
-       ],
-       "history_reload_referrer.html": [
-        "d11ee8970289059ab318da0327c875152459a384",
         [
          null,
          {}
@@ -573988,6 +574204,15 @@
         ],
         "select-keyboard-behavior.tentative.html": [
          "89f284745bb3bcf32cc01fcdb5379651fc53c1fe",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-mouse-behavior.tentative.html": [
+         "b9161874b787bc849cbe64f94dd17e4998fc86d7",
          [
           null,
           {
@@ -645607,7 +645832,7 @@
        }
       ]
      ],
-     "mousemove_prevent_default_action.tentative.html": [
+     "mousemove_prevent_default_action.html": [
       "4caf98087fbf4372dc5ad28afdb48cd0bae6cea2",
       [
        null,
@@ -670682,10 +670907,10 @@
      ]
     ],
     "validation_tests": {
-     "arg_min_max.https.any.js": [
-      "700be83b04a7ac0af0eae6903741ccfcb89b3ba7",
+     "argMinMax.https.any.js": [
+      "6e8d5583064715797b7da6db6b6e0c65390a4883",
       [
-       "webnn/validation_tests/arg_min_max.https.any.html",
+       "webnn/validation_tests/argMinMax.https.any.html",
        {
         "script_metadata": [
          [
@@ -670699,17 +670924,12 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ],
       [
-       "webnn/validation_tests/arg_min_max.https.any.worker.html",
+       "webnn/validation_tests/argMinMax.https.any.worker.html",
        {
         "script_metadata": [
          [
@@ -670723,20 +670943,15 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ]
      ],
-     "batch_normalization.https.any.js": [
-      "25b542d34ea66128f2eea496d98124a7efcee209",
+     "batchNormalization.https.any.js": [
+      "37d2a441d068b2a2ca19de464226d86d091a006e",
       [
-       "webnn/validation_tests/batch_normalization.https.any.html",
+       "webnn/validation_tests/batchNormalization.https.any.html",
        {
         "script_metadata": [
          [
@@ -670750,17 +670965,12 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ],
       [
-       "webnn/validation_tests/batch_normalization.https.any.worker.html",
+       "webnn/validation_tests/batchNormalization.https.any.worker.html",
        {
         "script_metadata": [
          [
@@ -670774,18 +670984,95 @@
          [
           "script",
           "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "cast.https.any.js": [
+      "f616203a88b5f716e4c2e646049c641db3aef3dc",
+      [
+       "webnn/validation_tests/cast.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API cast operation"
          ],
          [
-          "timeout",
-          "long"
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
          ]
-        ],
-        "timeout": "long"
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/cast.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API cast operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "clamp.https.any.js": [
+      "85cd19a566add513e528adc8e5c2d51014ffa71b",
+      [
+       "webnn/validation_tests/clamp.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API clamp operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/clamp.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API clamp operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
        }
       ]
      ],
      "concat.https.any.js": [
-      "0d69b2710fb4d7ab47a4d86f9691fb4e418361b1",
+      "b61f2d2bc779bf622e26da9658a65030795ae667",
       [
        "webnn/validation_tests/concat.https.any.html",
        {
@@ -670801,13 +671088,8 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ],
       [
@@ -670825,18 +671107,13 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ]
      ],
      "constant.https.any.js": [
-      "bf84454b8ac338bc3fae07dd9134603734937e51",
+      "86a60ee209c1a6c9f5c03f7a0d45bb25c9930f92",
       [
        "webnn/validation_tests/constant.https.any.html",
        {
@@ -670852,13 +671129,8 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ],
       [
@@ -670876,25 +671148,20 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ]
      ],
-     "elementwise_binary.https.any.js": [
-      "97a1a2b93c9821116df58a38f50e3e5b4fa49c03",
+     "conv2d.https.any.js": [
+      "a5da6c4717ac8a8817756c5f38f9d64b4bed363e",
       [
-       "webnn/validation_tests/elementwise_binary.https.any.html",
+       "webnn/validation_tests/conv2d.https.any.html",
        {
         "script_metadata": [
          [
           "title",
-          "validation tests for WebNN API element-wise binary operations"
+          "validation tests for WebNN API conv2d operation"
          ],
          [
           "global",
@@ -670903,17 +671170,75 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ],
       [
-       "webnn/validation_tests/elementwise_binary.https.any.worker.html",
+       "webnn/validation_tests/conv2d.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API conv2d operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "convTranspose2d.https.any.js": [
+      "c9863dcae65da471821016371a6dbab9cc70efa9",
+      [
+       "webnn/validation_tests/convTranspose2d.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API convTranspose2d operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/convTranspose2d.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API convTranspose2d operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "elementwise-binary.https.any.js": [
+      "f54626b50dbb56f4b0a280f1414683a8c73055e1",
+      [
+       "webnn/validation_tests/elementwise-binary.https.any.html",
        {
         "script_metadata": [
          [
@@ -670927,18 +671252,155 @@
          [
           "script",
           "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/elementwise-binary.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API element-wise binary operations"
          ],
          [
-          "timeout",
-          "long"
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
          ]
-        ],
-        "timeout": "long"
+        ]
+       }
+      ]
+     ],
+     "elementwise-unary.https.any.js": [
+      "8f3d544d83ab4dcc414c19d5869b37635a584ff4",
+      [
+       "webnn/validation_tests/elementwise-unary.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API element-wise unary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/elementwise-unary.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API element-wise unary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "elu.https.any.js": [
+      "6e842cb691a3f62b0d0b5b0a85d351fdd495ead6",
+      [
+       "webnn/validation_tests/elu.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API elu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/elu.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API elu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "expand.https.any.js": [
+      "d90ab8946891e564b5c20a13fe526531d320d413",
+      [
+       "webnn/validation_tests/expand.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API expand operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/expand.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API expand operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
        }
       ]
      ],
      "gather.https.any.js": [
-      "67ac7d7be39a0b42d7f6e19afe1a825703292110",
+      "184e8033e6624cfd433494d7c01f917195c5b65d",
       [
        "webnn/validation_tests/gather.https.any.html",
        {
@@ -670954,13 +671416,8 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ],
       [
@@ -670978,18 +671435,54 @@
          [
           "script",
           "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "gemm.https.any.js": [
+      "77ce6383ccf6a7eabee082d201e525f20ca5ce93",
+      [
+       "webnn/validation_tests/gemm.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gemm operation"
          ],
          [
-          "timeout",
-          "long"
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
          ]
-        ],
-        "timeout": "long"
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/gemm.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gemm operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
        }
       ]
      ],
      "gru.https.any.js": [
-      "295baab9c286610ca8fcbb0ca7c6d0bd12b898c2",
+      "ef92cd0b523b3fc02c72f015e8b2a8c1889193f7",
       [
        "webnn/validation_tests/gru.https.any.html",
        {
@@ -671005,13 +671498,8 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ],
       [
@@ -671029,18 +671517,136 @@
          [
           "script",
           "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "gruCell.https.any.js": [
+      "ca89b9a21b93562df0765a7171f318d96e7c3a64",
+      [
+       "webnn/validation_tests/gruCell.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gruCell operation"
          ],
          [
-          "timeout",
-          "long"
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
          ]
-        ],
-        "timeout": "long"
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/gruCell.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gruCell operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "hardSigmoid.https.any.js": [
+      "01b24dbc7c60b51ae6f614c2b2a1246af3051074",
+      [
+       "webnn/validation_tests/hardSigmoid.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API hardSigmoid operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/hardSigmoid.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API hardSigmoid operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "hardSwish.https.any.js": [
+      "dd85165cf56e759d350ea410f86607c04be7a5e6",
+      [
+       "webnn/validation_tests/hardSwish.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API hardSwish operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/hardSwish.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API hardSwish operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
        }
       ]
      ],
      "input.https.any.js": [
-      "cbdb7aeb7c3866dd942c2048a8d180b84ad41bca",
+      "48ee89a1215140198a50a932b41a2a44f8889480",
       [
        "webnn/validation_tests/input.https.any.html",
        {
@@ -671056,13 +671662,8 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ],
       [
@@ -671080,25 +671681,20 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ]
      ],
-     "layer_normalization.https.any.js": [
-      "7dbcf5c74a71bc63e8b0b12907386f69e0ffa05f",
+     "instanceNormalization.https.any.js": [
+      "bdd338588fb7d4c4c660f4a7e0e6346868d35b4f",
       [
-       "webnn/validation_tests/layer_normalization.https.any.html",
+       "webnn/validation_tests/instanceNormalization.https.any.html",
        {
         "script_metadata": [
          [
           "title",
-          "validation tests for WebNN API"
+          "validation tests for WebNN API instanceNormalization operation"
          ],
          [
           "global",
@@ -671107,22 +671703,17 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ],
       [
-       "webnn/validation_tests/layer_normalization.https.any.worker.html",
+       "webnn/validation_tests/instanceNormalization.https.any.worker.html",
        {
         "script_metadata": [
          [
           "title",
-          "validation tests for WebNN API"
+          "validation tests for WebNN API instanceNormalization operation"
          ],
          [
           "global",
@@ -671131,18 +671722,136 @@
          [
           "script",
           "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "layerNormalization.https.any.js": [
+      "e9e9141aa6c2fcf482f28ebb4ec4c5dda1f9ee30",
+      [
+       "webnn/validation_tests/layerNormalization.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API layerNormalization operation"
          ],
          [
-          "timeout",
-          "long"
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
          ]
-        ],
-        "timeout": "long"
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/layerNormalization.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API layerNormalization operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "leakyRelu.https.any.js": [
+      "6fc19b1f0d727eea0b1da11986e840527e8bed93",
+      [
+       "webnn/validation_tests/leakyRelu.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API leakyRelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/leakyRelu.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API leakyRelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "linear.https.any.js": [
+      "99c1daad3f1369dceffbd0879c43c6933033596f",
+      [
+       "webnn/validation_tests/linear.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API linear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/linear.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API linear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
        }
       ]
      ],
      "lstm.https.any.js": [
-      "efa05090ca261fb601ca3563b2b55f5f85915869",
+      "c0f15791b9709f4f383ab62a368956c65e3efd2f",
       [
        "webnn/validation_tests/lstm.https.any.html",
        {
@@ -671158,13 +671867,8 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ],
       [
@@ -671182,25 +671886,20 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ]
      ],
-     "reduction.https.any.js": [
-      "65b71239b96f503fc1dca4cb6cd59e588f183038",
+     "lstmCell.https.any.js": [
+      "7abb91daf23063913691f605de068541f598bffb",
       [
-       "webnn/validation_tests/reduction.https.any.html",
+       "webnn/validation_tests/lstmCell.https.any.html",
        {
         "script_metadata": [
          [
           "title",
-          "validation tests for WebNN API reduction  operation"
+          "validation tests for WebNN API lstmCell operation"
          ],
          [
           "global",
@@ -671209,13 +671908,213 @@
          [
           "script",
           "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/lstmCell.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API lstmCell operation"
          ],
          [
-          "timeout",
-          "long"
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
          ]
-        ],
-        "timeout": "long"
+        ]
+       }
+      ]
+     ],
+     "matmul.https.any.js": [
+      "03616ddb019ae07363122bcba788b7e0ccb60533",
+      [
+       "webnn/validation_tests/matmul.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API matmul operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/matmul.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API matmul operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "pad.https.any.js": [
+      "11c6a8f7ef21a7db38b3c5e3fb93f916a9719711",
+      [
+       "webnn/validation_tests/pad.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API pad operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/pad.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API pad operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "pooling.https.any.js": [
+      "02d6c4c7bacccbbc696ca3063f260b3852e86e44",
+      [
+       "webnn/validation_tests/pooling.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API pooling operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/pooling.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API pooling operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "prelu.https.any.js": [
+      "865f9f684c144bfc78933889f7f0dbdbc481312f",
+      [
+       "webnn/validation_tests/prelu.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API prelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/prelu.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API prelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "reduction.https.any.js": [
+      "60f0978678870e8e78fc68b8dc6120041015556d",
+      [
+       "webnn/validation_tests/reduction.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API reduction operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
        }
       ],
       [
@@ -671224,7 +672123,7 @@
         "script_metadata": [
          [
           "title",
-          "validation tests for WebNN API reduction  operation"
+          "validation tests for WebNN API reduction operation"
          ],
          [
           "global",
@@ -671233,18 +672132,54 @@
          [
           "script",
           "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "relu.https.any.js": [
+      "4c44d3c0dc17328eac9b8a9aa104bd00fb13510b",
+      [
+       "webnn/validation_tests/relu.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API relu operation"
          ],
          [
-          "timeout",
-          "long"
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
          ]
-        ],
-        "timeout": "long"
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/relu.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API relu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
        }
       ]
      ],
      "resample2d.https.any.js": [
-      "2e00cf297cb0720748e24c0b25e0aa9377f6fa6e",
+      "defb09931841d1971b677429eebfff5ffe2d862f",
       [
        "webnn/validation_tests/resample2d.https.any.html",
        {
@@ -671260,13 +672195,8 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ],
       [
@@ -671284,18 +672214,382 @@
          [
           "script",
           "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "reshape.https.any.js": [
+      "435551b716ab378088b657a4006296eb00c55775",
+      [
+       "webnn/validation_tests/reshape.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API reshape operation"
          ],
          [
-          "timeout",
-          "long"
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
          ]
-        ],
-        "timeout": "long"
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/reshape.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API reshape operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "sigmoid.https.any.js": [
+      "206b6eda26b91054edc15ef351ad44ec07cda00d",
+      [
+       "webnn/validation_tests/sigmoid.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API sigmoid operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/sigmoid.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API sigmoid operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "slice.https.any.js": [
+      "a45ecd3fcb538f94c6e845f5e21a54f7e62e9b33",
+      [
+       "webnn/validation_tests/slice.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API slice operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/slice.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API slice operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "softmax.https.any.js": [
+      "68891b27d88074ea80b13a9ff93c47030f30766c",
+      [
+       "webnn/validation_tests/softmax.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API softmax operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/softmax.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API softmax operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "softplus.https.any.js": [
+      "347dfcd9385b2376c851a4f60271b3848b274e09",
+      [
+       "webnn/validation_tests/softplus.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API softplus operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/softplus.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API softplus operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "softsign.https.any.js": [
+      "a4a3847c2a3d54fa52a5fa4d59482e807aa6b9a7",
+      [
+       "webnn/validation_tests/softsign.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API softsign operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/softsign.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API softsign operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "split.https.any.js": [
+      "38f31266037fb93cf1823dcaad05771b27971f31",
+      [
+       "webnn/validation_tests/split.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API split operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/split.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API split operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "tanh.https.any.js": [
+      "4be36b9dbf2f6005b3b321ea8b52ca29d88a9871",
+      [
+       "webnn/validation_tests/tanh.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API tanh operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/tanh.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API tanh operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "transpose.https.any.js": [
+      "9ea5a5dcf845f7468c075111412fbf1860b2d519",
+      [
+       "webnn/validation_tests/transpose.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API transpose operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/transpose.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API transpose operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
        }
       ]
      ],
      "triangular.https.any.js": [
-      "4e4c368f82bdf2692a8870f147abd1d559a5d923",
+      "ee8958659c7452987352931db289812679f89759",
       [
        "webnn/validation_tests/triangular.https.any.html",
        {
@@ -671311,13 +672605,8 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ],
       [
@@ -671335,18 +672624,13 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ]
      ],
      "where.https.any.js": [
-      "f34fb2042393836e8a199b68936b9fd12eedf545",
+      "a26fa249315d3bdda9dbdc7e1c5e623135aa9c0b",
       [
        "webnn/validation_tests/where.https.any.html",
        {
@@ -671362,13 +672646,8 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ],
       [
@@ -671386,13 +672665,8 @@
          [
           "script",
           "../resources/utils_validation.js"
-         ],
-         [
-          "timeout",
-          "long"
          ]
-        ],
-        "timeout": "long"
+        ]
        }
       ]
      ]
