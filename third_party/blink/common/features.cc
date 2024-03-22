@@ -2118,11 +2118,6 @@ const char kSkipTouchEventFilterFilteringProcessParamValueBrowser[] = "browser";
 const char kSkipTouchEventFilterFilteringProcessParamValueBrowserAndRenderer[] =
     "browser_and_renderer";
 
-// Allow streaming small (<30kB) scripts.
-BASE_FEATURE(kSmallScriptStreaming,
-             "SmallScriptStreaming",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSpeculationRulesPrefetchFuture,
              "SpeculationRulesPrefetchFuture",
              base::FEATURE_ENABLED_BY_DEFAULT);

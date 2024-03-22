@@ -195,10 +195,8 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
     }
   }
 
-  // Scripts whose first data chunk is smaller than this constant won't be
-  // streamed, unless small script streaming is enabled.
-  static constexpr size_t kSmallScriptThreshold = 30 * 1024;
-  // Maximum size of the BOM marker.
+  // Maximum size of the BOM marker. Scripts whose first data chunk is smaller
+  // than this constant won't be streamed.
   static constexpr size_t kMaximumLengthOfBOM = 4;
 
   static void RunScriptStreamingTask(
@@ -239,8 +237,6 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
   // completed in the given state. Streaming is guaranteed to either have
   // completed or be suppressed.
   void SendClientLoadFinishedCallback();
-
-  bool HasEnoughDataForStreaming(size_t resource_buffer_size);
 
   // Has the script streamer been detached from its client. If true, then we can
   // safely abort loading and not output any more data.

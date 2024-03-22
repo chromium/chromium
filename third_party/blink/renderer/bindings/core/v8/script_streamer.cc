@@ -574,16 +574,6 @@ void ResourceScriptStreamer::RunScriptStreamingTask(
       "v8.parseOnBackground2");
 }
 
-bool ResourceScriptStreamer::HasEnoughDataForStreaming(
-    size_t resource_buffer_size) {
-  if (base::FeatureList::IsEnabled(features::kSmallScriptStreaming)) {
-    return resource_buffer_size >= kMaximumLengthOfBOM;
-  } else {
-    // Only stream larger scripts.
-    return resource_buffer_size >= kSmallScriptThreshold;
-  }
-}
-
 // Try to start a task streaming the script from the datapipe, with the task
 // taking ownership of the datapipe and weak ownership of the client. Returns
 // true if streaming succeeded and false otherwise.
@@ -591,7 +581,7 @@ bool ResourceScriptStreamer::HasEnoughDataForStreaming(
 // Streaming may fail to start because:
 //
 //   * The encoding is invalid (not UTF-8 or one-byte data)
-//   * The script is too small (see HasEnoughDataForStreaming)
+//   * The script is too small to check for a byte-order marker
 //   * There is a code cache for this script already
 //   * V8 failed to create a script streamer
 //
@@ -617,7 +607,7 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   // wait until the next data chunk comes before deciding whether to start the
   // streaming.
   if (!script_resource_->ResourceBuffer() ||
-      !HasEnoughDataForStreaming(script_resource_->ResourceBuffer()->size())) {
+      script_resource_->ResourceBuffer()->size() < kMaximumLengthOfBOM) {
     CHECK(!IsLoaded());
     return false;
   }
@@ -641,9 +631,6 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
     // The encoding may change when we see the BOM. Check for BOM now
     // and update the encoding from the decoder when necessary. Suppress
     // streaming if the encoding is unsupported.
-    //
-    // Also note that have at least s_smallScriptThreshold worth of
-    // data, which is more than enough for detecting a BOM.
     if (!ConvertEncoding(decoder->Encoding().GetName(), &encoding_)) {
       SuppressStreaming(NotStreamingReason::kEncodingNotSupported);
       return false;
@@ -818,8 +805,7 @@ void ResourceScriptStreamer::OnDataPipeReadable(
       // must be because we suppressed streaming earlier, or never got enough
       // data to start streaming.
       CHECK(IsStreamingSuppressed() || !script_resource_->ResourceBuffer() ||
-            !HasEnoughDataForStreaming(
-                script_resource_->ResourceBuffer()->size()));
+            script_resource_->ResourceBuffer()->size() < kMaximumLengthOfBOM);
       watcher_.reset();
       // Pass kScriptTooSmall for the !IsStreamingSuppressed() case, it won't
       // override an existing streaming reason.

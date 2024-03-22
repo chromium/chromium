@@ -228,16 +228,6 @@ class ScriptStreamingTest : public testing::Test {
     AppendDataToDataPipe(data, producer_handle_);
   }
 
-  void AppendPadding() {
-    for (int i = 0; i < 10; ++i) {
-      AppendDataToDataPipe(
-          " /* this is padding to make the script long enough, so "
-          "that V8's buffer gets filled and it starts processing "
-          "the data */ ",
-          producer_handle_);
-    }
-  }
-
   void Finish() {
     resource_->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
     producer_handle_.reset();
@@ -268,9 +258,7 @@ TEST_F(ScriptStreamingTest, CompilingStreamedScript) {
   Init(scope.GetIsolate());
 
   AppendData("function foo() {");
-  AppendPadding();
   AppendData("return 5; }");
-  AppendPadding();
   AppendData("foo();");
   EXPECT_FALSE(resource_client_->Finished());
   Finish();
@@ -305,10 +293,6 @@ TEST_F(ScriptStreamingTest, CompilingStreamedScriptWithParseError) {
 
   AppendData("function foo() {");
   AppendData("this is the part which will be a parse error");
-  // V8 won't realize the parse error until it actually starts parsing the
-  // script, and this happens only when its buffer is filled.
-  AppendPadding();
-
   EXPECT_FALSE(resource_client_->Finished());
   Finish();
 
@@ -378,7 +362,6 @@ TEST_F(ScriptStreamingTest, DataAfterCancelling) {
 
   // Append data to the streamer's data pipe.
   AppendData("function foo() {");
-  AppendPadding();
 
   // The V8 side will complete too. This should not crash. We don't receive
   // any results from the streaming and the resource client should finish with
@@ -407,7 +390,6 @@ TEST_F(ScriptStreamingTest, SuppressingStreaming) {
                                    reinterpret_cast<const uint8_t*>("X"), 1);
 
   AppendData("function foo() {");
-  AppendPadding();
   Finish();
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
@@ -525,10 +507,8 @@ TEST_F(ScriptStreamingTest, ScriptsWithSmallFirstChunk) {
   EXPECT_TRUE(resource_->HasStreamer());
   EXPECT_FALSE(resource_->HasRunningStreamer());
 
-  // Now add more padding so that streaming does start.
-  AppendPadding();
-  AppendPadding();
-  AppendPadding();
+  // Now add more data so that streaming does start.
+  AppendData("/*------*/");
   EXPECT_TRUE(resource_->HasRunningStreamer());
 
   Finish();
@@ -642,7 +622,6 @@ TEST_F(ScriptStreamingTest, ResourceSetRevalidatingRequest) {
 
   // Kick the streaming off.
   AppendData("function foo() {");
-  AppendPadding();
   AppendData("}");
   Finish();
   RunUntilResourceLoaded();

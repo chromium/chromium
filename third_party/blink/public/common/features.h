@@ -1411,8 +1411,6 @@ BLINK_COMMON_EXPORT
 extern const char
     kSkipTouchEventFilterFilteringProcessParamValueBrowserAndRenderer[];
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSmallScriptStreaming);
-
 // Allows certain origin trials to be enabled using third-party tokens
 // associated with the origin of external speculation rules.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
