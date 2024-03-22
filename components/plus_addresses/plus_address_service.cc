@@ -138,6 +138,9 @@ void PlusAddressService::SavePlusAddress(url::Origin origin,
   std::string etld_plus_one = GetEtldPlusOne(origin);
   plus_address_by_site_[etld_plus_one] = plus_address;
   plus_addresses_.insert(plus_address);
+  for (Observer& o : observers_) {
+    o.OnPlusAddressesChanged();
+  }
 }
 
 bool PlusAddressService::IsPlusAddress(
@@ -409,6 +412,9 @@ void PlusAddressService::HandleSignout() {
   plus_address_http_client_->Reset();
   if (webdata_service_) {
     webdata_service_->ClearPlusProfiles();
+  }
+  for (Observer& o : observers_) {
+    o.OnPlusAddressesChanged();
   }
 }
 
