@@ -1511,9 +1511,8 @@ void AttributionManagerImpl::PrepareNextOsEvent() {
 
     bool can_bypass_cookie_check = false;
     if (IsOperationAllowed(*storage_partition_, operation,
-                           RenderFrameHost::FromID(event.render_frame_id),
-                           source_origin, destination_origin, &reporting_origin,
-                           &can_bypass_cookie_check)) {
+                           /*rfh=*/nullptr, source_origin, destination_origin,
+                           &reporting_origin, &can_bypass_cookie_check)) {
       need_to_check_cookie.emplace_back(std::move(reporting_origin), i);
     } else {
       allowed.at(i) = can_bypass_cookie_check;
