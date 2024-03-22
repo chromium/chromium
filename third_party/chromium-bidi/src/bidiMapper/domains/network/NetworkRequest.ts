@@ -457,12 +457,11 @@ export class NetworkRequest {
   }
 
   /** Returns the HTTP status code associated with this request if any. */
-  get statusCode(): number {
+  get statusCode(): number | undefined {
     return (
       this.#response.paused?.responseStatusCode ??
       this.#response.extraInfo?.statusCode ??
-      this.#response.info?.status ??
-      -1 // TODO: Throw an exception or use some other status code?
+      this.#response.info?.status
     );
   }
 
@@ -544,7 +543,7 @@ export class NetworkRequest {
     return {
       url: this.url,
       protocol: this.#response.info?.protocol ?? '',
-      status: this.statusCode,
+      status: this.statusCode ?? -1, // TODO: Throw an exception or use some other status code?
       statusText:
         this.#response.info?.statusText ||
         this.#response.paused?.responseStatusText ||

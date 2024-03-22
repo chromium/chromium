@@ -197,7 +197,7 @@ export class NetworkProcessor {
   ): Promise<EmptyResult> {
     const {
       statusCode,
-      reasonPhrase,
+      reasonPhrase: responsePhrase,
       headers,
       body,
       request: networkId,
@@ -218,11 +218,38 @@ export class NetworkProcessor {
       Network.InterceptPhase.AuthRequired,
     ]);
 
+    // We need to pass through if the request is already in
+    // AuthRequired phase
+    if (request.interceptPhase === Network.InterceptPhase.AuthRequired) {
+      // We need to use `ProvideCredentials`
+      // As `Default` may cancel the request
+      await request.continueWithAuth({
+        response: 'ProvideCredentials',
+      });
+      return {};
+    }
+
+    // If we con't modify the response
+    // Just continue the request
+    if (!body && !headers) {
+      await request.continueRequest();
+      return {};
+    }
+
+    const responseCode = statusCode ?? request.statusCode ?? 200;
+
+    let parsedBody: string | undefined;
+    if (body?.type === 'string') {
+      parsedBody = btoa(body.value);
+    } else if (body?.type === 'base64') {
+      parsedBody = body.value;
+    }
+
     await request.provideResponse({
-      responseCode: statusCode ?? request.statusCode,
-      responsePhrase: reasonPhrase,
+      responseCode,
+      responsePhrase,
       responseHeaders,
-      body: body?.value, // TODO: Differ base64 / string
+      body: parsedBody,
     });
 
     return {};
