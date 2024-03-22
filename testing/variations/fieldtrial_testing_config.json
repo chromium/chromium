@@ -4528,6 +4528,35 @@
             ]
         }
     ],
+    "CpssStringChange": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "NewStringWithHats_20240221",
+                    "params": {
+                        "probability": "1.0",
+                        "probability_vector": "0.3,0.7",
+                        "prompt_disposition_filter": "LocationBarLeftQuietChip",
+                        "prompt_disposition_reason_filter": "OnDevicePredictionModel,PredictionService",
+                        "request_type_filter": "Notifications,Geolocation",
+                        "survey_display_time": "OnPromptAppearing",
+                        "trigger_id": "TfmwCkztT0ugnJ3q1cK0URBBSdir,FohGLzZdE0ugnJ3q1cK0QyypEaVo"
+                    },
+                    "enable_features": [
+                        "CpssQuietChipTextUpdate",
+                        "PermissionsPromptSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSBluetoothCoredump": [
         {
             "platforms": [
@@ -12370,8 +12399,7 @@
                     },
                     "enable_features": [
                         "ActiveContentSettingExpiry",
-                        "OneTimePermission",
-                        "PermissionsPromptSurvey"
+                        "OneTimePermission"
                     ]
                 },
                 {
@@ -12387,8 +12415,7 @@
                     },
                     "enable_features": [
                         "ActiveContentSettingExpiry",
-                        "OneTimePermission",
-                        "PermissionsPromptSurvey"
+                        "OneTimePermission"
                     ]
                 },
                 {
@@ -12401,9 +12428,6 @@
                         "survey_display_time": "OnPromptResolved",
                         "trigger_id": "q1b37Zevt0ugnJ3q1cK0THbqyNJ4,zZBrVcebz0ugnJ3q1cK0Q9Uo6NFQ,m42rnDDGV0ugnJ3q1cK0RDuG9CQ4"
                     },
-                    "enable_features": [
-                        "PermissionsPromptSurvey"
-                    ],
                     "disable_features": [
                         "ActiveContentSettingExpiry",
                         "OneTimePermission"
@@ -12413,8 +12437,7 @@
                     "name": "Control",
                     "disable_features": [
                         "ActiveContentSettingExpiry",
-                        "OneTimePermission",
-                        "PermissionsPromptSurvey"
+                        "OneTimePermission"
                     ]
                 }
             ]
