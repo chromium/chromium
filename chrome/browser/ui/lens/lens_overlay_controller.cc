@@ -172,6 +172,11 @@ void LensOverlayController::BindOverlay(
   receiver_.Bind(std::move(receiver));
   page_.Bind(std::move(page));
   state_ = State::kOverlay;
+
+  lens_overlay_query_controller_->StartQueryFlow(
+      current_screenshot_,
+      base::BindOnce(&LensOverlayController::HandleStartQueryResponse,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void LensOverlayController::BindSidePanel(
@@ -386,8 +391,24 @@ void LensOverlayController::CloseUIAsync() {
 }
 
 void LensOverlayController::IssueLensRequest(const ::gfx::RectF& region) {
-  // TODO(b/328255310): Use region to build an actual request. For now, just
-  // open side panel.
+  lens::proto::LensOverlayRequest request;
+  request.set_type(lens::proto::LensOverlayRequest::REGION_SEARCH);
+  auto* request_region = request.mutable_region();
+  request_region->set_x(region.x());
+  request_region->set_y(region.y());
+  request_region->set_width(region.width());
+  request_region->set_height(region.height());
+
+  lens_overlay_query_controller_->SendInteraction(
+      request, base::BindOnce(&LensOverlayController::HandleInteractionResponse,
+                              weak_factory_.GetWeakPtr()));
+
   results_side_panel_coordinator_->RegisterEntryAndShow();
   state_ = State::kOverlayAndResults;
 }
+
+void LensOverlayController::HandleStartQueryResponse(
+    lens::proto::LensOverlayResponse response) {}
+
+void LensOverlayController::HandleInteractionResponse(const GURL& url,
+                                                      std::string signals) {}

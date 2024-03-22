@@ -2,10 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+syntax = 'proto3';
 
 option optimize_for = LITE_RUNTIME;
 
 package lens.proto;
 
-message LensOverlayRequest {}
+message LensOverlayRequest {
+  // Type of interaction request.
+  enum Type {
+    UNKNOWN = 0;
+    // User selected a bounding box to region search.
+    REGION_SEARCH = 1;
+    // User's text selection on the screenshot.
+    TEXT_SELECTION = 2;
+    // Requests selection and fulfillment of a specific object.
+    OBJECT_FULFILLMENT = 3;
+    // User performed a multimodal query.
+    MULTIMODAL_QUERY = 4;
+  }
+  Type type = 1;
+
+  // Bounding box selected to region search.
+  message Region {
+    float x = 1;
+    float y = 2;
+    float width = 3;
+    float height = 4;
+  }
+  Region region = 2;
+
+  // Unstructured text query to add to an image query.
+  string text_query = 3;
+}

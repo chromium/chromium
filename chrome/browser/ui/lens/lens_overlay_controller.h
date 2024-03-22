@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "chrome/browser/resources/lens/server/proto/lens_overlay_response.pb.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -168,6 +169,12 @@ class LensOverlayController : public TabStripModelObserver,
 
   // Calls CloseUI() asynchronously.
   void CloseUIAsync();
+
+  // Handles the response to the Lens start query request.
+  void HandleStartQueryResponse(lens::proto::LensOverlayResponse response);
+
+  // Handles the response to the Lens interaction request.
+  void HandleInteractionResponse(const GURL& url, std::string signals);
 
   // Owns this class.
   raw_ptr<tabs::TabModel> tab_model_;
