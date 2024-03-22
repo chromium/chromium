@@ -23,8 +23,6 @@ component("memory") {
   ]
   sources = [
     "aligned_memory.h",
-    "memory.cc",
-    "memory.h",
     "mglru.cc",
     "mglru.h",
     "pagemap.cc",
@@ -51,7 +49,6 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   sources = [
-    "memory_unittest.cc",
     "pagemap_unittest.cc",
     "pressure/system_memory_pressure_evaluator_unittest.cc",
     "swap_configuration_unittest.cc",

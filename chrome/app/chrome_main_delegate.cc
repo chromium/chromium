@@ -163,7 +163,6 @@
 #include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/ash/startup_settings_cache.h"
-#include "chromeos/ash/components/memory/memory.h"
 #include "chromeos/ash/components/memory/mglru.h"
 #include "ui/lottie/resource.h"  // nogncheck
 #endif

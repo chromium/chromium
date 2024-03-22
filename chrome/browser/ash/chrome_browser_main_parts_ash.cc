@@ -116,7 +116,6 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/memory_metrics.h"
 #include "chrome/browser/ash/mojo_service_manager/connection_helper.h"
 #include "chrome/browser/ash/net/apn_migrator.h"
 #include "chrome/browser/ash/net/bluetooth_pref_state_observer.h"
@@ -1437,11 +1436,6 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   diagnostics::DiagnosticsLogController::Initialize(
       std::make_unique<diagnostics::DiagnosticsBrowserDelegateImpl>());
 
-  // Start background collection of memory pressure data for Chrome OS.
-  memory_pressure_detail_ = base::MakeRefCounted<MemoryMetrics>(
-      MemoryMetrics::kDefaultPeriodInSeconds);
-  memory_pressure_detail_->Start();
-
   // ARCVM defers to Android's LMK to kill apps in low memory situations because
   // memory can't be reclaimed directly to ChromeOS.
   if (!arc::IsArcVmEnabled() &&
@@ -1479,11 +1473,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   video_conference_manager_client_.reset();
 
   arc_container_app_killer_.reset();
-
-  // Do this early to keep logging from taking time during shutdown.
-  if (memory_pressure_detail_ != nullptr) {
-    memory_pressure_detail_->Stop();
-  }
 
   apn_migrator_.reset();
   SystemProxyManager::Shutdown();
