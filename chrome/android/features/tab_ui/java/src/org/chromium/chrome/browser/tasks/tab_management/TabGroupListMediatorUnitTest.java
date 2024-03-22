@@ -121,6 +121,8 @@ public class TabGroupListMediatorUnitTest {
         when(mTabModel.getCount()).thenReturn(2);
         when(mTabModel.getTabAt(0)).thenReturn(tab1);
         when(mTabModel.getTabAt(1)).thenReturn(tab2);
+        when(mTabModel.getTabById(1)).thenReturn(tab1);
+        when(mTabModel.getTabById(2)).thenReturn(tab2);
 
         new TabGroupListMediator(mModelList, mTabGroupModelFilter);
         assertEquals(1, mModelList.size());

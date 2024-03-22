@@ -156,6 +156,8 @@ public class TabGridDialogMediatorUnitTest {
         doReturn(2).when(mTabModel).getCount();
         doReturn(mTab1).when(mTabModel).getTabAt(POSITION1);
         doReturn(mTab2).when(mTabModel).getTabAt(POSITION2);
+        doReturn(mTab1).when(mTabModel).getTabById(TAB1_ID);
+        doReturn(mTab2).when(mTabModel).getTabById(TAB2_ID);
         doReturn(POSITION1).when(mTabModel).indexOf(mTab1);
         doReturn(POSITION2).when(mTabModel).indexOf(mTab2);
         doNothing().when(mTabGroupModelFilter).addObserver(mTabModelObserverCaptor.capture());

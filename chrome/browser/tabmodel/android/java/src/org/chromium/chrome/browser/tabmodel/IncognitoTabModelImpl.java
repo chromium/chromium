@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
@@ -194,6 +195,11 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     @Override
     public Tab getTabAt(int index) {
         return mDelegateModel.getTabAt(index);
+    }
+
+    @Override
+    public @Nullable Tab getTabById(int tabId) {
+        return mDelegateModel.getTabById(tabId);
     }
 
     @Override

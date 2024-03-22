@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -84,6 +85,11 @@ public class EmptyTabModel implements IncognitoTabModel {
 
     @Override
     public Tab getTabAt(int position) {
+        return null;
+    }
+
+    @Override
+    public @Nullable Tab getTabById(int tabId) {
         return null;
     }
 

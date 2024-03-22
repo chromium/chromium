@@ -149,7 +149,7 @@ public class TabModelImplUnitTest {
                         () -> NextTabPolicy.HIERARCHICAL,
                         realAsyncTabParamsManager,
                         mTabModelDelegate,
-                        /* supportsUndo= */ false);
+                        /* supportsUndo= */ true);
         when(mTabModelSelector.getModel(isIncognito)).thenReturn(tabModel);
         tabModel.setActive(isActive);
         if (isActive) {
@@ -369,5 +369,24 @@ public class TabModelImplUnitTest {
         assertEquals(tab1, inactiveNormal.getCurrentTabSupplier().get());
         assertEquals(1, inactiveNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab1));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetTabById() {
+        TabModel tabModel = createTabModel(/* isActive= */ true, /* isIncognito= */ false);
+        createTabModel(/* isActive= */ false, /* isIncognito= */ true);
+
+        Tab tab1 = createTab(tabModel);
+        assertEquals(tab1, tabModel.getTabById(tab1.getId()));
+
+        tabModel.closeTab(tab1, /* animate= */ false, /* uponExit= */ false, /* canUndo= */ true);
+        assertEquals(null, tabModel.getTabById(tab1.getId()));
+
+        tabModel.cancelTabClosure(tab1.getId());
+        assertEquals(tab1, tabModel.getTabById(tab1.getId()));
+
+        tabModel.destroy();
+        assertEquals(null, tabModel.getTabById(tab1.getId()));
     }
 }

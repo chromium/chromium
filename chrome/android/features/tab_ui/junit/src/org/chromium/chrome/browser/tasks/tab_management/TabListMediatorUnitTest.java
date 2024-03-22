@@ -3274,7 +3274,7 @@ public class TabListMediatorUnitTest {
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        Tab tab4 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        Tab tab4 = prepareTab(TAB4_ID, TAB4_TITLE, TAB4_URL);
         when(mTabGroupModelFilter.getRelatedTabList(TAB1_ID)).thenReturn(Arrays.asList(mTab1));
         when(mTabGroupModelFilter.getRelatedTabList(TAB2_ID))
                 .thenReturn(Arrays.asList(mTab2, tab4));
@@ -3589,6 +3589,7 @@ public class TabListMediatorUnitTest {
         int count = mTabModel.getCount();
         doReturn(tab).when(mTabModel).getTabAt(count);
         doReturn(count).when(mTabModel).getCount();
+        when(mTabModel.getTabById(id)).thenReturn(tab);
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(id)).thenReturn(1);
         return tab;
     }

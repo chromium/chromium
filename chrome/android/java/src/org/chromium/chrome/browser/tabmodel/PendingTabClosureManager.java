@@ -165,13 +165,13 @@ public class PendingTabClosureManager {
         }
 
         /**
-         * Finds the {@link Tab} specified by {@code tabId} and only returns it if it is
-         * actually a {@link Tab} that is in the middle of being closed (which means that it
-         * is present in this model but not in {@code mTabList}.
+         * Finds the {@link Tab} specified by {@code tabId} and only returns it if it is actually a
+         * {@link Tab} that is in the middle of being closed (which means that it is present in this
+         * model but not in {@code mTabList}.
          *
          * @param tabId The id of the {@link Tab} to search for.
-         * @return The {@link Tab} specified by {@code tabId} as long as that tab only exists
-         *         in this model and not in {@code mTabList}. {@code null} otherwise.
+         * @return The {@link Tab} specified by {@code tabId} as long as that tab only exists in
+         *     this model and not in {@code mTabList}. {@code null} otherwise.
          */
         public Tab getPendingRewindTab(int tabId) {
             if (TabModelUtils.getTabById(mTabList, tabId) != null) return null;

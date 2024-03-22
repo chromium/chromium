@@ -26,8 +26,13 @@ public interface TabModel extends TabList {
      */
     public Profile getProfile();
 
+    /** Returns the matching tab that has the given id, or null if there is none. */
+    @Nullable
+    Tab getTabById(int tabId);
+
     /**
      * Unregisters and destroys the specified tab, and then switches to the previous tab.
+     *
      * @param tab The non-null tab to close
      * @return true if the tab was found
      */

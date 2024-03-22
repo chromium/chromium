@@ -452,6 +452,7 @@ public abstract class ChromeFeatureList {
     public static final String TAB_LINK_DRAG_DROP_ANDROID = "TabAndLinkDragDropAndroid";
     public static final String TAB_ENGAGEMENT_REPORTING_ANDROID = "TabEngagementReportingAndroid";
     public static final String TAB_RESUMPTION_MODULE_ANDROID = "TabResumptionModuleAndroid";
+    public static final String TAB_ID_MAP = "TabIdMapAndroid";
     public static final String TAB_STRIP_GROUP_INDICATORS = "TabStripGroupIndicatorsAndroid";
     public static final String TAB_STRIP_LAYOUT_OPTIMIZATION = "TabStripLayoutOptimization";
     public static final String TAB_STRIP_STARTUP_REFACTORING = "TabStripStartupRefactoring";
@@ -802,6 +803,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT, false);
     public static final MutableFlagWithSafeDefault sSuppressionToolbarCaptures =
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES, false);
+    public static final MutableFlagWithSafeDefault sTabIdMap =
+            newMutableFlagWithSafeDefault(TAB_ID_MAP, true);
     public static final MutableFlagWithSafeDefault sTouchDownTriggerForPrefetch =
             newMutableFlagWithSafeDefault(OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
     public static final MutableFlagWithSafeDefault sVisibleUrlTruncationV2 =

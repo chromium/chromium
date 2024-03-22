@@ -175,6 +175,7 @@ public class TabListEditorMenuTest extends BlankUiTestActivityTestCase {
             mTabs.add(tab);
             when(tab.getId()).thenReturn(TAB_IDS[id]);
             when(mTabModel.getTabAt(id)).thenReturn(tab);
+            when(mTabModel.getTabById(id)).thenReturn(tab);
         }
 
         TestThreadUtils.runOnUiThreadBlocking(

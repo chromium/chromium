@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.WebContents;
@@ -86,21 +87,27 @@ public class TabModelUtils {
 
     /**
      * Find the {@link Tab} with the specified id.
+     *
      * @param model The {@link TabModel} to act on.
      * @param tabId The id of the {@link Tab} to find.
-     * @return      Specified {@link Tab} or {@code null} if the {@link Tab} is not found
+     * @return Specified {@link Tab} or {@code null} if the {@link Tab} is not found
      */
     public static Tab getTabById(TabList model, int tabId) {
-        int index = getTabIndexById(model, tabId);
-        if (index == TabModel.INVALID_TAB_INDEX) return null;
-        return model.getTabAt(index);
+        if (ChromeFeatureList.sTabIdMap.isEnabled() && model instanceof TabModel tabModel) {
+            return tabModel.getTabById(tabId);
+        } else {
+            int index = getTabIndexById(model, tabId);
+            if (index == TabModel.INVALID_TAB_INDEX) return null;
+            return model.getTabAt(index);
+        }
     }
 
     /**
      * Find the {@link Tab} index whose URL matches the specified URL.
+     *
      * @param model The {@link TabModel} to act on.
-     * @param url   The URL to search for.
-     * @return      Specified {@link Tab} or {@code null} if the {@link Tab} is not found
+     * @param url The URL to search for.
+     * @return Specified {@link Tab} or {@code null} if the {@link Tab} is not found
      */
     public static int getTabIndexByUrl(TabList model, String url) {
         int count = model.getCount();

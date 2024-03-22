@@ -216,7 +216,16 @@ public class TabGroupModelFilterUnitTest {
                         })
                 .when(mTabModel)
                 .getTabAt(anyInt());
-
+        doAnswer(
+                        invocation -> {
+                            int tabId = invocation.getArgument(0);
+                            return mTabs.stream()
+                                    .filter(t -> t.getId() == tabId)
+                                    .findAny()
+                                    .orElse(null);
+                        })
+                .when(mTabModel)
+                .getTabById(anyInt());
         doAnswer(
                         invocation -> {
                             Tab tab = invocation.getArgument(0);
