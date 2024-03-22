@@ -676,6 +676,8 @@ public final class StatusMediatorUnitTest {
         mMediator.setCookieControlsBridge(mCookieControlsBridge);
         doReturn(2).when(mPrefs).getInteger(Pref.TRACKING_PROTECTION_ONBOARDING_ACK_ACTION);
         doReturn(true).when(mTracker).wouldTriggerHelpUI(any());
+        doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
     }
 
     @Test
@@ -779,6 +781,29 @@ public final class StatusMediatorUnitTest {
                 /* protections_on= */ true,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.NOT_IN3PCD,
+                /* expiration= */ 0);
+        Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
+
+        mMediator.onPageLoadStopped();
+
+        // Cookie controls icon should NOT be shown.
+        Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
+        // IPH should NOT be shown.
+        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void cookieControlsIcon_doesNotAnimateIfWebContentsNull() {
+        setupCookieControlsTest();
+
+        doReturn(null).when(mTab).getWebContents();
+
+        mMediator.onStatusChanged(
+                /* controls_visible= */ true,
+                /* protections_on= */ true,
+                /* enforcement= */ 0,
+                CookieBlocking3pcdStatus.LIMITED,
                 /* expiration= */ 0);
         Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
 

@@ -676,6 +676,10 @@ public class StatusMediator
     }
 
     private void animateCookieControlsIcon(Runnable onAnimationFinished) {
+        // Check if the web content is valid before attempting to animate.
+        if (mLocationBarDataProvider.getTab().getWebContents() == null) {
+            return;
+        }
         resetCustomIconsStatus();
 
         boolean isIncognito = mLocationBarDataProvider.isIncognito();
