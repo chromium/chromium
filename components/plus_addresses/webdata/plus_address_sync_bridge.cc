@@ -17,11 +17,13 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/entity_change.h"
+#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_backend.h"
+#include "sql/transaction.h"
 
 namespace plus_addresses {
 
@@ -54,13 +56,7 @@ PlusAddressSyncBridge::~PlusAddressSyncBridge() = default;
 
 std::unique_ptr<syncer::MetadataChangeList>
 PlusAddressSyncBridge::CreateMetadataChangeList() {
-  // `PlusAddressTable` implements `syncer::SyncMetadataStore`. Before any
-  // changes written to the metadata change list are persisted on disk, the
-  // pending database transaction needs to be committed.
-  return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetPlusAddressTable(), syncer::PLUS_ADDRESS,
-      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
-                          change_processor()->GetWeakPtr()));
+  return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
 std::optional<syncer::ModelError> PlusAddressSyncBridge::MergeFullSyncData(
@@ -76,6 +72,11 @@ std::optional<syncer::ModelError>
 PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
+  sql::Transaction transaction(db_backend_->database()->GetSQLConnection());
+  if (!transaction.Begin()) {
+    return syncer::ModelError(FROM_HERE, "Failed to begin transaction.");
+  }
+
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     switch (change->type()) {
       case syncer::EntityChange::ACTION_ADD:
@@ -98,24 +99,39 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
       }
     }
   }
-  // Commit any changes made to `PlusAddressTable`. This includes the model data
-  // changes made above, as well as the metadata changes indirectly made through
-  // the `metadata_change_list`. Indirectly, since `CreateMetadataChangeList()`
-  // implements the change list via `PlusAddressTable`.
-  CommitChanges();
+
+  if (auto error = TransferMetadataChanges(std::move(metadata_change_list))) {
+    return error;
+  }
+
+  if (!transaction.Commit()) {
+    return syncer::ModelError(FROM_HERE, "Failed to commit transaction.");
+  }
   return std::nullopt;
 }
 
 void PlusAddressSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  sql::Transaction transaction(db_backend_->database()->GetSQLConnection());
+  if (!transaction.Begin()) {
+    change_processor()->ReportError(
+        {FROM_HERE, "Failed to begin transaction."});
+  }
+
   if (!GetPlusAddressTable()->ClearPlusProfiles()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to remove profiles from database."});
     return;
   }
-  // As in `ApplyIncrementalSyncChanges()`, this commits model and metadata
-  // changes.
-  CommitChanges();
+  if (!TransferMetadataChanges(std::move(delete_metadata_change_list))) {
+    // `TransferMetadataChanges()` already reported an error to the processor.
+    return;
+  }
+
+  if (!transaction.Commit()) {
+    change_processor()->ReportError(
+        {FROM_HERE, "Failed to commit transaction."});
+  }
 }
 
 void PlusAddressSyncBridge::GetData(StorageKeyList storage_keys,
@@ -156,12 +172,16 @@ PlusAddressTable* PlusAddressSyncBridge::GetPlusAddressTable() {
   return PlusAddressTable::FromWebDatabase(db_backend_->database());
 }
 
-void PlusAddressSyncBridge::CommitChanges() {
-  // All operations on the `WebDatabase` happen inside a transaction and are
-  // only persisted on disk once this transaction is committed. Committing will
-  // then start the next transaction.
-  db_backend_->ExecuteWriteTask(
-      base::BindOnce([](WebDatabase*) { return WebDatabase::COMMIT_NEEDED; }));
+std::optional<syncer::ModelError>
+PlusAddressSyncBridge::TransferMetadataChanges(
+    std::unique_ptr<syncer::MetadataChangeList> metadata_change_list) {
+  syncer::SyncMetadataStoreChangeList sync_metadata_store_change_list(
+      GetPlusAddressTable(), syncer::PLUS_ADDRESS,
+      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
+  static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
+      ->TransferChangesTo(&sync_metadata_store_change_list);
+  return change_processor()->GetError();
 }
 
 }  // namespace plus_addresses

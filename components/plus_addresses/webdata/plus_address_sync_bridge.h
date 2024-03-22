@@ -45,10 +45,20 @@ class PlusAddressSyncBridge : public syncer::ModelTypeSyncBridge {
  private:
   PlusAddressTable* GetPlusAddressTable();
 
-  // Commits the WebDatabase's pending transaction, persisting any changes made.
-  void CommitChanges();
+  // `PlusAddressTable` implements `syncer::SyncMetadataStore` and stores
+  // metadata for PLUS_ADDRESS. To ensures that metadata and model data is
+  // committed in a single transaction, `CreateMetadataChangeList()` is
+  // implemented using an `InMemoryMetadataChangeList`. This function transfers
+  // the changes from the `metadata_change_list` to `GetPlusAddressTable()`. It
+  // assumes that `metadata_change_list` was created using the bridge's
+  // `CreateMetadataChangeList()`.
+  std::optional<syncer::ModelError> TransferMetadataChanges(
+      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list);
 
-  // Used to access `PlusAddressTable` and commit changes.
+  // Used to access the `WebDatabase` and its `PlusAddressTable`.
+  // Depending on the entire `WebDatabaseBackend` is unnecessary, given that
+  // only `WebDatabase` is used. However, since only the backend is ref-counted,
+  // arguing about the lifetime is easier this way.
   const scoped_refptr<WebDatabaseBackend> db_backend_;
 };
 
