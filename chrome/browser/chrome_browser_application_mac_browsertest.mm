@@ -8,9 +8,9 @@
 #import "base/mac/mac_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -85,11 +85,15 @@ class ChromeBrowserAppMacBrowserTest : public InProcessBrowserTest {
     return BrowserIsInAccessibilityMode(ui::kAXModeBasic);
   }
 
+  bool BrowserIsInNativeAPIAccessibilityMode() {
+    return BrowserIsInAccessibilityMode(ui::AXMode::kNativeAPIs);
+  }
+
   bool BrowserAccessibilityDisabled() {
     return BrowserIsInAccessibilityMode(ui::AXMode());
   }
 
-  void RequestAccessibilityRole() { [br_cr_app_ accessibilityRole]; }
+  void RequestAppAccessibilityRole() { [br_cr_app_ accessibilityRole]; }
 
   void EnableEnhancedUserInterface(BOOL enable) {
     // We need to call -accessibilitySetValue:forAttribute: on br_cr_app_, but
@@ -217,6 +221,8 @@ IN_PROC_BROWSER_TEST_F(ChromeBrowserAppMacBrowserTest,
   EXPECT_FALSE(BrowserAccessibilityDisabled());
 }
 
+// Tests that accessibility role requests to the application enable native
+// accessibility support.
 IN_PROC_BROWSER_TEST_F(ChromeBrowserAppMacBrowserTest,
                        RespondToAccessibilityRoleRequests) {
   if (base::mac::MacOSVersion() < 14'00'00) {
@@ -225,15 +231,15 @@ IN_PROC_BROWSER_TEST_F(ChromeBrowserAppMacBrowserTest,
 
   EXPECT_TRUE(BrowserAccessibilityDisabled());
 
-  RequestAccessibilityRole();
-  EXPECT_TRUE(BrowserIsInBasicAccessibilityMode());
+  RequestAppAccessibilityRole();
+  EXPECT_TRUE(BrowserIsInNativeAPIAccessibilityMode());
 
   // The user activates VoiceOver.
   SetVoiceOverEnabled(YES);
 
   // Requests for AccessibilityRole when VoiceOver is active should not
   // downgrade the AX level.
-  RequestAccessibilityRole();
+  RequestAppAccessibilityRole();
   EXPECT_TRUE(BrowserIsInCompleteAccessibilityMode());
 
   SetVoiceOverEnabled(NO);
@@ -245,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBrowserAppMacBrowserTest,
 
   // Requests for AccessibilityRole when the AX mode is complete should not
   // downgrade the AX level.
-  RequestAccessibilityRole();
+  RequestAppAccessibilityRole();
   EXPECT_TRUE(BrowserIsInCompleteAccessibilityMode());
 }
 

@@ -7,12 +7,16 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#import "base/mac/mac_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -109,7 +113,16 @@ class TextSelectionWaiter : public TextInputManager::Observer {
 
 }  // namespace
 
-class RenderWidgetHostViewMacTest : public ContentBrowserTest {};
+class RenderWidgetHostViewMacTest : public ContentBrowserTest {
+ public:
+  RenderWidgetHostViewMacTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kSonomaAccessibilityActivationRefinements);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest, GetPageTextForSpeech) {
   GURL url(
@@ -220,6 +233,39 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
 
   // The synced selection updates the selected position back to 0.
   EXPECT_EQ(0lu, [rwhv_cocoa selectedRange].location);
+}
+
+// Tests that accessibility role requests sent to the web contents enable
+// basic (native + web contents) accessibility support.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
+                       RespondToAccessibilityRoleRequestsOnWebContent) {
+  if (base::mac::MacOSVersion() < 14'00'00) {
+    GTEST_SKIP();
+  }
+
+  // Load some content.
+  GURL url("data:text/html,<!doctype html><textarea id=ta></textarea>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  content::BrowserAccessibilityState* accessibility_state =
+      content::BrowserAccessibilityState::GetInstance();
+
+  // No accessibility support enabled at this time.
+  EXPECT_EQ(accessibility_state->GetAccessibilityMode(), ui::AXMode());
+
+  // An AT descending the AX tree calls -accessibilityRole on the nodes as it
+  // goes. Simulate an AT calling -accessibilityRole on the web contents.
+  RenderWidgetHostView* rwhv =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rwhv);
+  RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+
+  [rwhv_cocoa accessibilityRole];
+
+  // Calling -accessibilityRole on the RenderWidgetHostViewCocoa should have
+  // activated basic accessibility support.
+  EXPECT_EQ(accessibility_state->GetAccessibilityMode(), ui::kAXModeBasic);
 }
 
 }  // namespace content

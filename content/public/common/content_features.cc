@@ -1319,6 +1319,12 @@ BASE_FEATURE(kMacSyscallSandbox,
              "MacSyscallSandbox",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Changes how Chrome responds to accessibility activation signals on macOS
+// Sonoma, to avoid unnecessary changes to the screen reader state.
+BASE_FEATURE(kSonomaAccessibilityActivationRefinements,
+             "SonomaAccessibilityActivationRefinements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_MAC)
 
 #if defined(WEBRTC_USE_PIPEWIRE)

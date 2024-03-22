@@ -17,13 +17,13 @@
 #import "chrome/browser/app_controller_mac.h"
 #import "chrome/browser/mac/exception_processor.h"
 #include "chrome/browser/ui/cocoa/l10n_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/crash/core/common/crash_key.h"
 #import "components/crash/core/common/objc_zombie.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/native_event_processor_mac.h"
 #include "content/public/browser/native_event_processor_observer_mac.h"
+#include "content/public/common/content_features.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
 
 namespace chrome_browser_application_mac {
@@ -540,7 +540,7 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   if (_sonomaAccessibilityRefinementsAreActive) {
     if (!_voiceOverEnabled) {
       chrome_browser_application_mac::AddAccessibilityModeFlagsIfAbsent(
-          accessibility_state, ui::kAXModeBasic);
+          accessibility_state, ui::AXMode::kNativeAPIs);
     }
   } else {
     if (!accessibility_state->GetAccessibilityMode().has_mode(
