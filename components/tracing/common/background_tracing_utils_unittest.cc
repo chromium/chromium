@@ -124,16 +124,16 @@ TEST_F(BackgroundTracingUtilTest,
       tracing::SetupBackgroundTracingFromJsonConfigFile(config_file_path));
 }
 
-TEST_F(BackgroundTracingUtilTest, SetupBackgroundTracingWithOutputPathFailed) {
+TEST_F(BackgroundTracingUtilTest, SetupBackgroundTracingWithOutputFileFailed) {
   auto background_tracing_manager =
       content::BackgroundTracingManager::CreateInstance();
 
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->AppendSwitchASCII(switches::kBackgroundTracingOutputPath, "");
+  command_line->AppendSwitchASCII(switches::kBackgroundTracingOutputFile, "");
 
-  EXPECT_TRUE(tracing::HasBackgroundTracingOutputPath());
-  EXPECT_FALSE(tracing::SetBackgroundTracingOutputPath());
+  EXPECT_TRUE(tracing::HasBackgroundTracingOutputFile());
+  EXPECT_FALSE(tracing::SetBackgroundTracingOutputFile());
 }
 
 TEST_F(BackgroundTracingUtilTest,
@@ -166,11 +166,11 @@ TEST_F(BackgroundTracingUtilTest, SetupBackgroundTracingFromCommandLineConfig) {
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   command_line->AppendSwitchASCII(switches::kEnableLegacyBackgroundTracing,
                                   "config.json");
-  command_line->AppendSwitchASCII(switches::kBackgroundTracingOutputPath,
+  command_line->AppendSwitchASCII(switches::kBackgroundTracingOutputFile,
                                   "test_trace.perfetto.gz");
 
-  EXPECT_TRUE(tracing::HasBackgroundTracingOutputPath());
-  EXPECT_TRUE(tracing::SetBackgroundTracingOutputPath());
+  EXPECT_TRUE(tracing::HasBackgroundTracingOutputFile());
+  EXPECT_TRUE(tracing::SetBackgroundTracingOutputFile());
   ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
             BackgroundTracingSetupMode::kFromJsonConfigFile);
   EXPECT_FALSE(tracing::SetupBackgroundTracingFromCommandLine());

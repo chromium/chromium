@@ -40,9 +40,9 @@ bool MaybeSetupSystemTracingFromFieldTrial() {
 
   BackgroundTracingManager::DataFiltering data_filtering =
       BackgroundTracingManager::ANONYMIZE_DATA;
-  if (tracing::HasBackgroundTracingOutputPath()) {
+  if (tracing::HasBackgroundTracingOutputFile()) {
     data_filtering = BackgroundTracingManager::NO_DATA_FILTERING;
-    if (!tracing::SetBackgroundTracingOutputPath()) {
+    if (!tracing::SetBackgroundTracingOutputFile()) {
       return false;
     }
   }
@@ -61,9 +61,9 @@ bool MaybeSetupWebViewOnlyTracingFromFieldTrial() {
   // go/public-webview-trace-collection).
   BackgroundTracingManager::DataFiltering data_filtering =
       BackgroundTracingManager::ANONYMIZE_DATA_AND_FILTER_PACKAGE_NAME;
-  if (tracing::HasBackgroundTracingOutputPath()) {
+  if (tracing::HasBackgroundTracingOutputFile()) {
     data_filtering = BackgroundTracingManager::NO_DATA_FILTERING;
-    if (!tracing::SetBackgroundTracingOutputPath()) {
+    if (!tracing::SetBackgroundTracingOutputFile()) {
       return false;
     }
   }

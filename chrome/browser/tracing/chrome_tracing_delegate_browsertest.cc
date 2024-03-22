@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
@@ -312,19 +311,15 @@ class ChromeTracingDelegateBrowserTestFromCommandLine
     command_line->AppendSwitchPath("enable-legacy-background-tracing",
                                    config_path);
 
-    output_path_ = temp_dir_.GetPath();
-    command_line->AppendSwitchPath("background-tracing-output-path",
+    output_path_ = base::FilePath(
+        temp_dir_.GetPath().Append(FILE_PATH_LITERAL("output.perfetto.gz")));
+    command_line->AppendSwitchPath("background-tracing-output-file",
                                    output_path_);
   }
 
-  bool OutputFileExists() const {
+  bool OutputPathExists() const {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    base::FileEnumerator e(output_path_, false, base::FileEnumerator::FILES,
-                           FILE_PATH_LITERAL("*.perfetto.gz"));
-    for (base::FilePath name = e.Next(); !name.empty();) {
-      return true;
-    }
-    return false;
+    return base::PathExists(output_path_);
   }
 
   void TriggerScenarioAndWaitForOutput() {
@@ -335,7 +330,7 @@ class ChromeTracingDelegateBrowserTestFromCommandLine
     base::FilePathWatcher output_watcher;
     base::RunLoop run_loop;
     output_watcher.Watch(
-        output_path_, base::FilePathWatcher::Type::kRecursive,
+        output_path_, base::FilePathWatcher::Type::kNonRecursive,
         base::BindLambdaForTesting(
             [&run_loop](const base::FilePath&, bool) { run_loop.Quit(); }));
     TriggerPreemptiveScenario();
@@ -349,7 +344,7 @@ class ChromeTracingDelegateBrowserTestFromCommandLine
 
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
                        ScenarioFromCommandLine) {
-  ASSERT_FALSE(OutputFileExists());
+  ASSERT_FALSE(OutputPathExists());
 
   EXPECT_TRUE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
@@ -359,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
   // The scenario should also be "uploaded" (actually written to the output
   // file).
   TriggerScenarioAndWaitForOutput();
-  EXPECT_TRUE(OutputFileExists());
+  EXPECT_TRUE(OutputPathExists());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
@@ -371,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
   // This updates the upload time for the test scenario to the current time,
   // even though the output is actually written to a file.
   TriggerScenarioAndWaitForOutput();
-  EXPECT_TRUE(OutputFileExists());
+  EXPECT_TRUE(OutputPathExists());
 
   std::string state = GetSessionStateJson();
   EXPECT_TRUE(base::MatchPattern(state, R"({"state":3})"))
@@ -382,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
                        IgnoreThrottle) {
   // The scenario from the command-line should be started even though not
   // enough time has elapsed since the last upload (set in the PRE_ above).
-  ASSERT_FALSE(OutputFileExists());
+  ASSERT_FALSE(OutputPathExists());
 
   EXPECT_TRUE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
@@ -394,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
   // The scenario should also be "uploaded" (actually written to the output
   // file).
   TriggerScenarioAndWaitForOutput();
-  EXPECT_TRUE(OutputFileExists());
+  EXPECT_TRUE(OutputPathExists());
 }
 
 }  // namespace tracing

@@ -61,10 +61,10 @@ COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 bool SetupBackgroundTracingFromCommandLine();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
-bool SetBackgroundTracingOutputPath();
+bool SetBackgroundTracingOutputFile();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
-bool HasBackgroundTracingOutputPath();
+bool HasBackgroundTracingOutputFile();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 BackgroundTracingSetupMode GetBackgroundTracingSetupMode();

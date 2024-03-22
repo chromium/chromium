@@ -72,8 +72,8 @@ class BackgroundTracingManager {
   // }
   //
   using FinishedProcessingCallback = base::OnceCallback<void(bool success)>;
-  using ReceiveCallback = base::RepeatingCallback<
-      void(const std::string&, std::string, FinishedProcessingCallback)>;
+  using ReceiveCallback =
+      base::RepeatingCallback<void(std::string, FinishedProcessingCallback)>;
 
   virtual void SetReceiveCallback(ReceiveCallback receive_callback) = 0;
 
