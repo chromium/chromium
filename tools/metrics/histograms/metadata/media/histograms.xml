@@ -4250,6 +4250,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.MediaVideoVisibilityTracker.ComputeOcclusion.TotalDuration"
+    units="ms" expires_after="2024-12-01">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Total duration in milliseconds taken by the MediaVideoVisibilityTracker to
+    compute occlusion. The histogram is recorded every time the
+    MediaVideoVisibilityTracker needs to compute if a tracked HTMLVideoElement
+    meets its specified visibility threshold.
+  </summary>
+</histogram>
+
 <histogram name="Media.MicrophoneMuted" enum="MicrophoneMuteResult"
     expires_after="2024-06-30">
   <owner>henrika@chromium.org</owner>
