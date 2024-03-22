@@ -38,10 +38,7 @@ PasskeyModelFactory::PasskeyModelFactory()
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .Build()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasskeysPrefetchAffiliations)) {
-    DependsOn(AffiliationsPrefetcherFactory::GetInstance());
-  }
+  DependsOn(AffiliationsPrefetcherFactory::GetInstance());
 }
 
 PasskeyModelFactory::~PasskeyModelFactory() = default;
@@ -55,9 +52,7 @@ PasskeyModelFactory::BuildServiceInstanceForBrowserContext(
       ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
   // Do not instantiate the affiliation service for guest profiles, since the
   // password manager does not run for them.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasskeysPrefetchAffiliations) &&
-      !profile->IsGuestSession()) {
+  if (!profile->IsGuestSession()) {
     AffiliationsPrefetcherFactory::GetForProfile(profile)->RegisterPasskeyModel(
         sync_bridge.get());
   }
