@@ -176,10 +176,6 @@ Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
     bubble_params.shadow_type = Widget::InitParams::ShadowType::kDefault;
   else
     bubble_params.shadow_type = Widget::InitParams::ShadowType::kNone;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  bubble_params.background_elevation =
-      ui::ColorProviderKey::ElevationMode::kHigh;
-#endif
   gfx::NativeView parent = gfx::NativeView();
   if (bubble->has_parent()) {
     if (bubble->parent_window()) {

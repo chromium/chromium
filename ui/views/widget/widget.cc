@@ -433,10 +433,6 @@ void Widget::Init(InitParams params) {
 
   ownership_ = params.ownership;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  background_elevation_ = params.background_elevation;
-#endif
-
   sublevel_manager_ = std::make_unique<SublevelManager>(this, params.sublevel);
 
   if (params.native_theme) {
@@ -2042,9 +2038,6 @@ ui::ColorProviderKey Widget::GetColorProviderKey() const {
 
   // Widgets may have specific overrides set on the Widget itself that should
   // apply specifically to themselves and their children, apply these here.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  key.elevation_mode = background_elevation_;
-#endif
   if (color_mode_override_.has_value()) {
     key.color_mode = color_mode_override_.value();
   }

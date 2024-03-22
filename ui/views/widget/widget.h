@@ -316,11 +316,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // be ignored on some platforms. No value indicates no preference.
     std::optional<int> shadow_elevation;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ui::ColorProviderKey::ElevationMode background_elevation =
-        ui::ColorProviderKey::ElevationMode::kLow;
-#endif
-
     // The window corner radius. May be ignored on some platforms.
     std::optional<int> corner_radius;
 
@@ -1359,11 +1354,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // See set_is_secondary_widget().
   bool is_secondary_widget_ = true;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ui::ColorProviderKey::ElevationMode background_elevation_ =
-      ui::ColorProviderKey::ElevationMode::kLow;
-#endif
 
   // If set, overrides this value is used instead of the one from NativeTheme
   // when constructing a ColorProvider.
