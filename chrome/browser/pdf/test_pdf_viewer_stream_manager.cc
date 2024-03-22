@@ -56,16 +56,21 @@ void TestPdfViewerStreamManager::DidFinishNavigation(
 
 testing::AssertionResult TestPdfViewerStreamManager::WaitUntilPdfLoaded(
     content::RenderFrameHost* embedder_host) {
-  // If all of the PDF frames haven't navigated, wait.
-  auto* claimed_stream_info = GetClaimedStreamInfo(embedder_host);
-  if (!claimed_stream_info || !claimed_stream_info->DidPdfContentNavigate()) {
-    base::RunLoop run_loop;
-    on_pdf_loaded_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
+  WaitUntilPdfNavigationFinished(embedder_host);
 
   // Wait until the PDF extension and content are loaded.
   return pdf_extension_test_util::EnsurePDFHasLoaded(embedder_host);
+}
+
+testing::AssertionResult
+TestPdfViewerStreamManager::WaitUntilPdfLoadedAllowMultipleFrames(
+    content::RenderFrameHost* embedder_host) {
+  WaitUntilPdfNavigationFinished(embedder_host);
+
+  // Wait until the PDF extension and content are loaded.
+  return pdf_extension_test_util::EnsurePDFHasLoaded(
+      embedder_host, /*wait_for_hit_test_data=*/true, /*pdf_element=*/"embed",
+      /*allow_multiple_frames=*/true);
 }
 
 testing::AssertionResult
@@ -74,6 +79,17 @@ TestPdfViewerStreamManager::WaitUntilPdfLoadedInFirstChild() {
       ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   CHECK(embedder_host);
   return WaitUntilPdfLoaded(embedder_host);
+}
+
+void TestPdfViewerStreamManager::WaitUntilPdfNavigationFinished(
+    content::RenderFrameHost* embedder_host) {
+  // If all of the PDF frames haven't navigated, wait.
+  auto* claimed_stream_info = GetClaimedStreamInfo(embedder_host);
+  if (!claimed_stream_info || !claimed_stream_info->DidPdfContentNavigate()) {
+    base::RunLoop run_loop;
+    on_pdf_loaded_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
 }
 
 TestPdfViewerStreamManagerFactory::TestPdfViewerStreamManagerFactory() {

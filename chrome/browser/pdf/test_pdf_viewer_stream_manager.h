@@ -43,12 +43,21 @@ class TestPdfViewerStreamManager : public PdfViewerStreamManager {
   [[nodiscard]] testing::AssertionResult WaitUntilPdfLoaded(
       content::RenderFrameHost* embedder_host);
 
+  // Same as `WaitUntilPdfLoaded()`, but allows additional subframes under the
+  // PDF embedder host. There are some special cases where the PDF embedder may
+  // have additional subframes. See crbug.com/40671023.
+  [[nodiscard]] testing::AssertionResult WaitUntilPdfLoadedAllowMultipleFrames(
+      content::RenderFrameHost* embedder_host);
+
   // Same as `WaitUntilPdfLoaded()`, but the first child of the primary main
   // frame should be the embedder. This is a common case where an HTML page only
   // embeds a single PDF.
   [[nodiscard]] testing::AssertionResult WaitUntilPdfLoadedInFirstChild();
 
  private:
+  // Waits for all PDF frames in a single PDF load to finish navigating.
+  void WaitUntilPdfNavigationFinished(content::RenderFrameHost* embedder_host);
+
   base::OnceClosure on_pdf_loaded_;
 };
 

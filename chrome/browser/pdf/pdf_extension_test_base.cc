@@ -103,7 +103,9 @@ bool PDFExtensionTestBase::PdfIsExpectedToLoad(const std::string& pdf_file) {
 // there, since the PdfScriptingApi relies on doing this as well.
 testing::AssertionResult PDFExtensionTestBase::LoadPdf(const GURL& url) {
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  return EnsureFullPagePDFHasLoadedWithValidFrameTree(GetActiveWebContents());
+  return EnsureFullPagePDFHasLoadedWithValidFrameTree(
+      GetActiveWebContents(),
+      /*allow_multiple_frames=*/false);
 }
 
 // Same as LoadPDF(), but loads into a new tab.
@@ -120,6 +122,14 @@ testing::AssertionResult PDFExtensionTestBase::LoadPdfInFirstChild(
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   return EnsurePDFHasLoadedInFirstChildWithValidFrameTree(
       GetActiveWebContents());
+}
+
+testing::AssertionResult PDFExtensionTestBase::LoadPdfAllowMultipleFrames(
+    const GURL& url) {
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  return EnsureFullPagePDFHasLoadedWithValidFrameTree(
+      GetActiveWebContents(),
+      /*allow_multiple_frames=*/true);
 }
 
 // Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
@@ -274,11 +284,18 @@ int PDFExtensionTestBase::CountPDFProcesses() {
 
 testing::AssertionResult
 PDFExtensionTestBase::EnsureFullPagePDFHasLoadedWithValidFrameTree(
-    content::WebContents* contents) {
-  testing::AssertionResult result =
-      UseOopif() ? GetTestPdfViewerStreamManager(contents)->WaitUntilPdfLoaded(
-                       contents->GetPrimaryMainFrame())
-                 : pdf_extension_test_util::EnsurePDFHasLoaded(contents);
+    content::WebContents* contents,
+    bool allow_multiple_frames) {
+  testing::AssertionResult result = testing::AssertionFailure();
+  if (UseOopif()) {
+    auto* manager = GetTestPdfViewerStreamManager(contents);
+    content::RenderFrameHost* embedder_host = contents->GetPrimaryMainFrame();
+    result = allow_multiple_frames
+                 ? manager->WaitUntilPdfLoadedAllowMultipleFrames(embedder_host)
+                 : manager->WaitUntilPdfLoaded(embedder_host);
+  } else {
+    result = pdf_extension_test_util::EnsurePDFHasLoaded(contents);
+  }
 
   ValidateFrameTree(contents);
 

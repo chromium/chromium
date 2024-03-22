@@ -43,12 +43,15 @@ bool IsPluginFrame(content::RenderFrameHost& frame) {
 }  // namespace
 
 content::RenderFrameHost* GetPdfExtensionHostFromEmbedder(
-    content::RenderFrameHost* embedder_host) {
-  // PDF embedder hosts should have one child, which is the extension host.
-  if (content::ChildFrameAt(embedder_host, 1)) {
+    content::RenderFrameHost* embedder_host,
+    bool allow_multiple_frames) {
+  // Return nullptr if multiple frames aren't allowed and there's more than one
+  // child.
+  if (!allow_multiple_frames && content::ChildFrameAt(embedder_host, 1)) {
     return nullptr;
   }
 
+  // The extension host be the first child of the embedder host.
   content::RenderFrameHost* child_host =
       content::ChildFrameAt(embedder_host, 0);
   return child_host &&
@@ -111,7 +114,8 @@ size_t CountPdfPluginProcesses(Browser* browser) {
 testing::AssertionResult EnsurePDFHasLoaded(
     const content::ToRenderFrameHost& frame,
     bool wait_for_hit_test_data,
-    const std::string& pdf_element) {
+    const std::string& pdf_element,
+    bool allow_multiple_frames) {
   // OOPIF PDF intentionally doesn't support postMessage() API for embedders.
   // postMessage() can still be used if the script is injected into the
   // extension frame.
@@ -144,7 +148,9 @@ testing::AssertionResult EnsurePDFHasLoaded(
   // Otherwise, it should be whatever frame was given.
   content::RenderFrameHost* frame_rfh = frame.render_frame_host();
   content::RenderFrameHost* target_frame =
-      use_oopif ? GetPdfExtensionHostFromEmbedder(frame_rfh) : frame_rfh;
+      use_oopif
+          ? GetPdfExtensionHostFromEmbedder(frame_rfh, allow_multiple_frames)
+          : frame_rfh;
 
   if (use_oopif && !target_frame) {
     return testing::AssertionFailure() << "Failed to get PDF extension frame.";

@@ -63,6 +63,11 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   // embed element.
   testing::AssertionResult LoadPdfInFirstChild(const GURL& url);
 
+  // Same as `LoadPdf()` but allows the PDF embedder host to have multiple
+  // subframes. There are special cases where this can occur, such as
+  // crbug.com/40671023.
+  testing::AssertionResult LoadPdfAllowMultipleFrames(const GURL& url);
+
   // Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
   // for the loaded PDF. Returns nullptr if the load fails.
   extensions::MimeHandlerViewGuest* LoadPdfGetMimeHandlerView(const GURL& url);
@@ -116,7 +121,8 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   // Checks if the full page PDF loaded. The test will fail if it does not meet
   // the requirements of `ValidateFrameTree()`.
   testing::AssertionResult EnsureFullPagePDFHasLoadedWithValidFrameTree(
-      content::WebContents* contents);
+      content::WebContents* contents,
+      bool allow_multiple_frames = false);
 
   // Check if the PDF loaded in the first child frame of `contents`. The test
   // will fail if it does not meet the requirements of `ValidateFrameTree()`.

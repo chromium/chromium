@@ -2806,19 +2806,15 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, LoadPdfFromExtension) {
 
 // Tests that the PDF extension loads in the presence of an extension that, on
 // the completion of document loading, adds an <iframe> to the body element.
-// https://bugs.chromium.org/p/chromium/issues/detail?id=1046795
+// See crbug.com/40671023.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
                        PdfLoadsWithExtensionThatInjectsFrame) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   const extensions::Extension* test_extension = LoadExtension(
       GetTestResourcesParentDir().AppendASCII("pdf/extension_injects_iframe"));
   ASSERT_TRUE(test_extension);
 
-  EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+  EXPECT_TRUE(LoadPdfAllowMultipleFrames(
+      embedded_test_server()->GetURL("/pdf/test.pdf")));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, Metrics) {

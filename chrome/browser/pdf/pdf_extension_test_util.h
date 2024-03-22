@@ -29,10 +29,12 @@ class Point;
 
 namespace pdf_extension_test_util {
 
-// Gets the PDF extension host that is the child of `embedder_host`. The
-// embedder host should only have one child, otherwise returns nullptr.
+// Gets the PDF extension host that is the first child of `embedder_host`.
+// If multiple frames aren't allowed and there is more than one child frame,
+// returns nullptr.
 content::RenderFrameHost* GetPdfExtensionHostFromEmbedder(
-    content::RenderFrameHost* embedder_host);
+    content::RenderFrameHost* embedder_host,
+    bool allow_multiple_frames);
 
 // Gets the PDF extension host for a given `WebContents`. There should only be
 // one extension host in `contents`, otherwise returns nullptr.
@@ -57,7 +59,8 @@ size_t CountPdfPluginProcesses(Browser* browser);
 // Ensures, inside the given `frame`, that a PDF has either finished
 // loading or prompted a password. The result indicates success if the PDF loads
 // successfully, otherwise it indicates failure. If it doesn't finish loading,
-// the test will hang.
+// the test will hang. The test will fail if the PDF embedder host has multiple
+// subframes and `allow_multiple_frames` is false.
 //
 // In order to ensure an OOPIF PDF has loaded, `frame` must be an embedder host,
 // and the extension host must have already been created.
@@ -69,7 +72,8 @@ size_t CountPdfPluginProcesses(Browser* browser);
 [[nodiscard]] testing::AssertionResult EnsurePDFHasLoaded(
     const content::ToRenderFrameHost& frame,
     bool wait_for_hit_test_data = true,
-    const std::string& pdf_element = "embed");
+    const std::string& pdf_element = "embed",
+    bool allow_multiple_frames = false);
 
 gfx::Point ConvertPageCoordToScreenCoord(
     content::ToRenderFrameHost guest_main_frame,
