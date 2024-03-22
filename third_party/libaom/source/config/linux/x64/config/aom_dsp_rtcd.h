@@ -17,6 +17,7 @@
 #include "av1/common/blockd.h"
 #include "av1/common/enums.h"
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -407,163 +408,67 @@ void aom_dist_wtd_comp_avg_pred_ssse3(uint8_t *comp_pred, const uint8_t *pred, i
 RTCD_EXTERN void (*aom_dist_wtd_comp_avg_pred)(uint8_t *comp_pred, const uint8_t *pred, int width, int height, const uint8_t *ref, int ref_stride, const DIST_WTD_COMP_PARAMS *jcp_param);
 
 unsigned int aom_dist_wtd_sad128x128_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad128x128_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad128x128_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad128x128_avg aom_dist_wtd_sad128x128_avg_sse2
 
 unsigned int aom_dist_wtd_sad128x64_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad128x64_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad128x64_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad128x64_avg aom_dist_wtd_sad128x64_avg_sse2
 
 unsigned int aom_dist_wtd_sad16x16_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad16x16_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad16x16_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad16x16_avg aom_dist_wtd_sad16x16_avg_sse2
 
 unsigned int aom_dist_wtd_sad16x32_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad16x32_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad16x32_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad16x32_avg aom_dist_wtd_sad16x32_avg_sse2
 
 unsigned int aom_dist_wtd_sad16x8_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad16x8_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad16x8_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad16x8_avg aom_dist_wtd_sad16x8_avg_sse2
 
 unsigned int aom_dist_wtd_sad32x16_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad32x16_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad32x16_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad32x16_avg aom_dist_wtd_sad32x16_avg_sse2
 
 unsigned int aom_dist_wtd_sad32x32_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad32x32_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad32x32_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad32x32_avg aom_dist_wtd_sad32x32_avg_sse2
 
 unsigned int aom_dist_wtd_sad32x64_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad32x64_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad32x64_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad32x64_avg aom_dist_wtd_sad32x64_avg_sse2
 
 unsigned int aom_dist_wtd_sad4x4_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad4x4_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad4x4_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad4x4_avg aom_dist_wtd_sad4x4_avg_sse2
 
 unsigned int aom_dist_wtd_sad4x8_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad4x8_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad4x8_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad4x8_avg aom_dist_wtd_sad4x8_avg_sse2
 
 unsigned int aom_dist_wtd_sad64x128_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad64x128_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad64x128_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad64x128_avg aom_dist_wtd_sad64x128_avg_sse2
 
 unsigned int aom_dist_wtd_sad64x32_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad64x32_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad64x32_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad64x32_avg aom_dist_wtd_sad64x32_avg_sse2
 
 unsigned int aom_dist_wtd_sad64x64_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad64x64_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad64x64_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad64x64_avg aom_dist_wtd_sad64x64_avg_sse2
 
 unsigned int aom_dist_wtd_sad8x16_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad8x16_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad8x16_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad8x16_avg aom_dist_wtd_sad8x16_avg_sse2
 
 unsigned int aom_dist_wtd_sad8x4_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad8x4_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad8x4_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad8x4_avg aom_dist_wtd_sad8x4_avg_sse2
 
 unsigned int aom_dist_wtd_sad8x8_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
-unsigned int aom_dist_wtd_sad8x8_avg_sse2(
-    const uint8_t* src_ptr,
-    int src_stride,
-    const uint8_t* ref_ptr,
-    int ref_stride,
-    const uint8_t* second_pred,
-    const DIST_WTD_COMP_PARAMS* jcp_param);
+unsigned int aom_dist_wtd_sad8x8_avg_sse2(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
 #define aom_dist_wtd_sad8x8_avg aom_dist_wtd_sad8x8_avg_sse2
 
 uint32_t aom_dist_wtd_sub_pixel_avg_variance128x128_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS *jcp_param);
@@ -2359,9 +2264,7 @@ static void setup_rtcd_internal(void)
     aom_dc_top_predictor_64x64 = aom_dc_top_predictor_64x64_sse2;
     if (flags & HAS_AVX2) aom_dc_top_predictor_64x64 = aom_dc_top_predictor_64x64_avx2;
     aom_dist_wtd_comp_avg_pred = aom_dist_wtd_comp_avg_pred_c;
-    if (flags & HAS_SSSE3) {
-      aom_dist_wtd_comp_avg_pred = aom_dist_wtd_comp_avg_pred_ssse3;
-    }
+    if (flags & HAS_SSSE3) aom_dist_wtd_comp_avg_pred = aom_dist_wtd_comp_avg_pred_ssse3;
     aom_dist_wtd_sub_pixel_avg_variance128x128 = aom_dist_wtd_sub_pixel_avg_variance128x128_c;
     if (flags & HAS_SSSE3) aom_dist_wtd_sub_pixel_avg_variance128x128 = aom_dist_wtd_sub_pixel_avg_variance128x128_ssse3;
     aom_dist_wtd_sub_pixel_avg_variance128x64 = aom_dist_wtd_sub_pixel_avg_variance128x64_c;

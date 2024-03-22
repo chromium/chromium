@@ -36,7 +36,7 @@
 #define CONFIG_ENTROPY_STATS 0
 #define CONFIG_EXCLUDE_SIMD_MISMATCH 0
 #define CONFIG_FPMT_TEST 0
-#define CONFIG_GCC 0
+#define CONFIG_GCC  0
 #define CONFIG_GCOV 0
 #define CONFIG_GPROF 0
 #define CONFIG_INSPECTION 0
@@ -82,7 +82,7 @@
 #define HAVE_NEON 1
 #define HAVE_NEON_DOTPROD 1
 #define HAVE_NEON_I8MM 1
-#define HAVE_PTHREAD_H 0
+#define HAVE_PTHREAD_H  0
 #define HAVE_SSE 0
 #define HAVE_SSE2 0
 #define HAVE_SSE3 0
@@ -91,9 +91,9 @@
 #define HAVE_SSSE3 0
 #define HAVE_SVE 0
 #define HAVE_SVE2 0
-#define HAVE_UNISTD_H 0
+#define HAVE_UNISTD_H  0
 #define HAVE_VSX 0
 #define HAVE_WXWIDGETS 0
-#define INLINE __inline
+#define INLINE  __inline
 #define STATIC_LINK_JXL 0
 #endif  // AOM_CONFIG_H_
