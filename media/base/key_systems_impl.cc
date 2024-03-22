@@ -30,19 +30,6 @@ namespace media {
 
 namespace {
 
-// These names are used by UMA. Do not change them!
-const char kClearKeyKeySystemNameForUMA[] = "ClearKey";
-const char kUnknownKeySystemNameForUMA[] = "Unknown";
-const char kHardwareSecureForUMA[] = "HardwareSecure";
-const char kSoftwareSecureForUMA[] = "SoftwareSecure";
-
-enum KeySystemForUkm {
-  // These values reported to UKM. Do not change their ordinal values.
-  kUnknownKeySystemForUkm = 0,
-  kClearKeyKeySystemForUkm,
-  kWidevineKeySystemForUkm,
-};
-
 struct MimeTypeToCodecs {
   const char* mime_type;
   SupportedCodecs codecs;
@@ -279,11 +266,6 @@ static bool CanBlock(const KeySystemInfo& key_system_info) {
 }
 
 }  // namespace
-
-KeySystemsImpl* KeySystemsImpl::GetInstance() {
-  static base::NoDestructor<KeySystemsImpl> key_systems;
-  return key_systems.get();
-}
 
 KeySystemsImpl::KeySystemsImpl() {
   Initialize();
@@ -715,81 +697,6 @@ EmeFeatureSupport KeySystemsImpl::GetDistinctiveIdentifierSupport(
   CHECK(key_system_info);
 
   return key_system_info->GetDistinctiveIdentifierSupport();
-}
-
-
-KeySystems* KeySystems::GetInstance() {
-  return KeySystemsImpl::GetInstance();
-}
-
-bool IsSupportedKeySystemWithInitDataType(const std::string& key_system,
-                                          EmeInitDataType init_data_type) {
-  return KeySystemsImpl::GetInstance()->IsSupportedInitDataType(key_system,
-                                                                init_data_type);
-}
-
-std::string GetKeySystemNameForUMA(const std::string& key_system,
-                                   std::optional<bool> use_hw_secure_codecs) {
-  // Here we maintain a short list of known key systems to facilitate UMA
-  // reporting. Mentioned key systems are not necessarily supported by
-  // the current platform.
-
-  if (key_system == kWidevineKeySystem) {
-    std::string key_system_name = kWidevineKeySystemNameForUMA;
-    if (use_hw_secure_codecs.has_value()) {
-      key_system_name += ".";
-      key_system_name += (use_hw_secure_codecs.value() ? kHardwareSecureForUMA
-                                                       : kSoftwareSecureForUMA);
-    }
-    return key_system_name;
-  }
-
-  // For Clear Key and unknown key systems we don't to differentiate between
-  // software and hardware security.
-
-  if (key_system == kClearKeyKeySystem) {
-    return kClearKeyKeySystemNameForUMA;
-  }
-
-  return kUnknownKeySystemNameForUMA;
-}
-
-int GetKeySystemIntForUKM(const std::string& key_system) {
-  if (key_system == kWidevineKeySystem)
-    return KeySystemForUkm::kWidevineKeySystemForUkm;
-
-  if (key_system == kClearKeyKeySystem) {
-    return KeySystemForUkm::kClearKeyKeySystemForUkm;
-  }
-
-  return KeySystemForUkm::kUnknownKeySystemForUkm;
-}
-
-bool CanUseAesDecryptor(const std::string& key_system) {
-  return KeySystemsImpl::GetInstance()->CanUseAesDecryptor(key_system);
-}
-
-// These three functions are for testing purpose only. The declaration in the
-// header file is guarded by "#if defined(UNIT_TEST)" so that they can be used
-// by tests but not non-test code. However, this .cc file is compiled as part of
-// "media" where "UNIT_TEST" is not defined. So we need to specify
-// "MEDIA_EXPORT" here again so that they are visible to tests.
-
-MEDIA_EXPORT void AddCodecMaskForTesting(EmeMediaType media_type,
-                                         const std::string& codec,
-                                         uint32_t mask) {
-  KeySystemsImpl::GetInstance()->AddCodecMaskForTesting(media_type, codec,
-                                                        mask);
-}
-
-MEDIA_EXPORT void AddMimeTypeCodecMaskForTesting(const std::string& mime_type,
-                                                 uint32_t mask) {
-  KeySystemsImpl::GetInstance()->AddMimeTypeCodecMaskForTesting(mime_type,
-                                                                mask);
-}
-
-MEDIA_EXPORT void ResetKeySystemsForTesting() {
-  KeySystemsImpl::GetInstance()->ResetForTesting();
 }
 
 }  // namespace media

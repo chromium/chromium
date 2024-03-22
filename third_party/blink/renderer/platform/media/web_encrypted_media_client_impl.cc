@@ -176,12 +176,13 @@ class WebEncryptedMediaClientImpl::Reporter {
 };
 
 WebEncryptedMediaClientImpl::WebEncryptedMediaClientImpl(
+    media::KeySystems* key_systems,
     media::CdmFactory* cdm_factory,
     media::MediaPermission* media_permission,
     std::unique_ptr<KeySystemConfigSelector::WebLocalFrameDelegate>
         web_frame_delegate)
-    : cdm_factory_(cdm_factory),
-      key_systems_(media::KeySystems::GetInstance()),
+    : key_systems_(key_systems),
+      cdm_factory_(cdm_factory),
       key_system_config_selector_(key_systems_,
                                   media_permission,
                                   std::move(web_frame_delegate)) {
@@ -207,7 +208,7 @@ void WebEncryptedMediaClientImpl::CreateCdm(
     const media::CdmConfig& cdm_config,
     std::unique_ptr<WebContentDecryptionModuleResult> result) {
   WebContentDecryptionModuleImpl::Create(
-      cdm_factory_, security_origin, cdm_config,
+      cdm_factory_, key_systems_, security_origin, cdm_config,
       base::BindOnce(&CompleteWebContentDecryptionModuleResult,
                      std::move(result)));
 }

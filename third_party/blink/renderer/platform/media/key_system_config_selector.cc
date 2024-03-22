@@ -1115,8 +1115,9 @@ void KeySystemConfigSelector::SelectConfigInternal(
         return;
       case CONFIGURATION_SUPPORTED:
         std::string key_system = request->key_system;
-        if (key_systems_->ShouldUseBaseKeySystemName(key_system))
+        if (key_systems_->ShouldUseBaseKeySystemName(key_system)) {
           key_system = key_systems_->GetBaseKeySystemName(key_system);
+        }
         cdm_config.key_system = key_system;
 
         cdm_config.allow_distinctive_identifier =

@@ -53,9 +53,11 @@ void OnCdmCreated(
 }  // namespace
 
 MojoCdmFactory::MojoCdmFactory(
-    media::mojom::InterfaceFactory* interface_factory)
-    : interface_factory_(interface_factory) {
+    media::mojom::InterfaceFactory* interface_factory,
+    KeySystems* key_systems)
+    : interface_factory_(interface_factory), key_systems_(key_systems) {
   DCHECK(interface_factory_);
+  DCHECK(key_systems_);
 }
 
 MojoCdmFactory::~MojoCdmFactory() = default;
@@ -74,7 +76,7 @@ void MojoCdmFactory::Create(
   // testing. See http://crbug.com/441957.
   // Note: Previously MojoRenderer doesn't work with local CDMs, this has
   // been solved by using DecryptingRenderer. See http://crbug.com/913775.
-  if (CanUseAesDecryptor(cdm_config.key_system)) {
+  if (key_systems_->CanUseAesDecryptor(cdm_config.key_system)) {
     scoped_refptr<ContentDecryptionModule> cdm(
         new AesDecryptor(session_message_cb, session_closed_cb,
                          session_keys_change_cb, session_expiration_update_cb));

@@ -6,6 +6,7 @@
 #define MEDIA_CDM_FUCHSIA_FUCHSIA_CDM_FACTORY_H_
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/containers/flat_map.h"
@@ -13,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/content_decryption_module.h"
+#include "media/base/key_systems.h"
 #include "media/base/media_export.h"
 #include "media/cdm/fuchsia/fuchsia_cdm_provider.h"
 
@@ -20,8 +22,9 @@ namespace media {
 
 class MEDIA_EXPORT FuchsiaCdmFactory final : public CdmFactory {
  public:
-  // |interface_provider| must outlive this class.
-  explicit FuchsiaCdmFactory(std::unique_ptr<FuchsiaCdmProvider> provider);
+  // |interface_provider| and |key_systems| must outlive this class.
+  FuchsiaCdmFactory(std::unique_ptr<FuchsiaCdmProvider> provider,
+                    KeySystems* key_systems);
 
   FuchsiaCdmFactory(const FuchsiaCdmFactory&) = delete;
   FuchsiaCdmFactory& operator=(const FuchsiaCdmFactory&) = delete;
@@ -48,6 +51,9 @@ class MEDIA_EXPORT FuchsiaCdmFactory final : public CdmFactory {
   // Map between creation id and pending cdms
   base::flat_map<uint32_t, scoped_refptr<ContentDecryptionModule>>
       pending_cdms_;
+
+  // Non-owned
+  raw_ptr<KeySystems> key_systems_;
 
   base::WeakPtrFactory<FuchsiaCdmFactory> weak_factory_{this};
 };

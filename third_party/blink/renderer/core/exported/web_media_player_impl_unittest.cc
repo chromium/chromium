@@ -32,6 +32,7 @@
 #include "cc/layers/layer.h"
 #include "components/viz/test/test_context_provider.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/key_systems_impl.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_log.h"
 #include "media/base/media_observer.h"
@@ -849,9 +850,12 @@ class WebMediaPlayerImplTest
     auto test_origin = WebSecurityOrigin::CreateFromString(
         WebString::FromUTF8("https://test.origin"));
 
+    if (!key_systems_) {
+      key_systems_ = std::make_unique<media::KeySystemsImpl>();
+    }
     base::RunLoop run_loop;
     WebContentDecryptionModuleImpl::Create(
-        &mock_cdm_factory_, test_origin, cdm_config,
+        &mock_cdm_factory_, key_systems_.get(), test_origin, cdm_config,
         WTF::BindOnce(&WebMediaPlayerImplTest::OnCdmCreated,
                       WTF::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -897,6 +901,8 @@ class WebMediaPlayerImplTest
   // The client interface used by |wmpi_|.
   NiceMock<MockWebMediaPlayerClient> client_;
   MockWebMediaPlayerEncryptedMediaClient encrypted_client_;
+
+  std::unique_ptr<media::KeySystemsImpl> key_systems_;
 
   // Used to create the media::MockCdm to test encrypted playback.
   scoped_refptr<media::MockCdm> mock_cdm_ =

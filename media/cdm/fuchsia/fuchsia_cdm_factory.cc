@@ -15,9 +15,11 @@
 namespace media {
 
 FuchsiaCdmFactory::FuchsiaCdmFactory(
-    std::unique_ptr<FuchsiaCdmProvider> cdm_provider)
-    : cdm_provider_(std::move(cdm_provider)) {
+    std::unique_ptr<FuchsiaCdmProvider> cdm_provider,
+    KeySystems* key_systems)
+    : cdm_provider_(std::move(cdm_provider)), key_systems_(key_systems) {
   DCHECK(cdm_provider_);
+  DCHECK(key_systems_);
 }
 
 FuchsiaCdmFactory::~FuchsiaCdmFactory() = default;
@@ -32,7 +34,7 @@ void FuchsiaCdmFactory::Create(
   CdmCreatedCB bound_cdm_created_cb =
       base::BindPostTaskToCurrentDefault(std::move(cdm_created_cb));
 
-  if (CanUseAesDecryptor(cdm_config.key_system)) {
+  if (key_systems_->CanUseAesDecryptor(cdm_config.key_system)) {
     auto cdm = base::MakeRefCounted<AesDecryptor>(
         session_message_cb, session_closed_cb, session_keys_change_cb,
         session_expiration_update_cb);

@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "media/base/cdm_factory.h"
+#include "media/base/key_systems.h"
 
 namespace media {
 
@@ -16,7 +17,8 @@ class InterfaceFactory;
 
 class MojoCdmFactory final : public CdmFactory {
  public:
-  explicit MojoCdmFactory(media::mojom::InterfaceFactory* interface_factory);
+  explicit MojoCdmFactory(media::mojom::InterfaceFactory* interface_factory,
+                          KeySystems* key_systems);
 
   MojoCdmFactory(const MojoCdmFactory&) = delete;
   MojoCdmFactory& operator=(const MojoCdmFactory&) = delete;
@@ -33,6 +35,8 @@ class MojoCdmFactory final : public CdmFactory {
 
  private:
   raw_ptr<media::mojom::InterfaceFactory> interface_factory_;
+  // Non-owned
+  raw_ptr<KeySystems> key_systems_;
 };
 
 }  // namespace media

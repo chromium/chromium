@@ -25,14 +25,12 @@
 
 namespace media {
 
-// TODO(b/267698934): Migrate KeySystemsImpl to be a per-frame instance.
 // An implementation of KeySystems that provides functionality to query
 // registered key systems.
-class KeySystemsImpl : public KeySystems {
+class MEDIA_EXPORT KeySystemsImpl : public KeySystems {
  public:
-  // TODO(b/267698934): Remove this API when migrating KeySystems to be a
-  // per-frame instance.
-  static KeySystemsImpl* GetInstance();
+  KeySystemsImpl();
+  ~KeySystemsImpl() override;
 
   KeySystemsImpl(const KeySystemsImpl&) = delete;
   KeySystemsImpl& operator=(const KeySystemsImpl&) = delete;
@@ -75,14 +73,9 @@ class KeySystemsImpl : public KeySystems {
   void ResetForTesting();
 
  private:
-  friend class base::NoDestructor<KeySystemsImpl>;
-
   using MimeTypeToCodecsMap = std::unordered_map<std::string, SupportedCodecs>;
   using CodecMap = std::unordered_map<std::string, EmeCodec>;
   using InitDataTypesMap = std::unordered_map<std::string, EmeInitDataType>;
-
-  KeySystemsImpl();
-  ~KeySystemsImpl() override;
 
   void Initialize();
 

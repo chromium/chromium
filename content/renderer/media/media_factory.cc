@@ -39,6 +39,7 @@
 #include "media/base/cdm_factory.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/demuxer.h"
+#include "media/base/key_systems_impl.h"
 #include "media/base/media_switches.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/media_buildflags.h"
@@ -557,7 +558,7 @@ blink::WebEncryptedMediaClient* MediaFactory::EncryptedMediaClient() {
   if (!web_encrypted_media_client_) {
     web_encrypted_media_client_ = std::make_unique<
         blink::WebEncryptedMediaClientImpl>(
-        GetCdmFactory(), render_frame_->GetMediaPermission(),
+        GetKeySystems(), GetCdmFactory(), render_frame_->GetMediaPermission(),
         std::make_unique<blink::KeySystemConfigSelector::WebLocalFrameDelegate>(
             render_frame_->GetWebFrame()));
   }
@@ -883,6 +884,13 @@ media::mojom::RemoterFactory* MediaFactory::GetRemoterFactory() {
 }
 #endif
 
+media::KeySystems* MediaFactory::GetKeySystems() {
+  if (!key_systems_) {
+    key_systems_ = std::make_unique<media::KeySystemsImpl>();
+  }
+  return key_systems_.get();
+}
+
 media::CdmFactory* MediaFactory::GetCdmFactory() {
   if (cdm_factory_)
     return cdm_factory_.get();
@@ -890,10 +898,11 @@ media::CdmFactory* MediaFactory::GetCdmFactory() {
 #if BUILDFLAG(IS_FUCHSIA)
   DCHECK(interface_broker_);
   cdm_factory_ = std::make_unique<media::FuchsiaCdmFactory>(
-      std::make_unique<media::MojoFuchsiaCdmProvider>(interface_broker_));
+      std::make_unique<media::MojoFuchsiaCdmProvider>(interface_broker_),
+      GetKeySystems());
 #elif BUILDFLAG(ENABLE_MOJO_CDM)
-  cdm_factory_ =
-      std::make_unique<media::MojoCdmFactory>(GetMediaInterfaceFactory());
+  cdm_factory_ = std::make_unique<media::MojoCdmFactory>(
+      GetMediaInterfaceFactory(), GetKeySystems());
 #else
   cdm_factory_ = std::make_unique<media::DefaultCdmFactory>();
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)

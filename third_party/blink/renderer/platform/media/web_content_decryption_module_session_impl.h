@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/content_decryption_module.h"
+#include "media/base/key_systems.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_session.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/media/new_session_cdm_result_promise.h"
@@ -30,7 +31,8 @@ class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
  public:
   WebContentDecryptionModuleSessionImpl(
       const scoped_refptr<CdmSessionAdapter>& adapter,
-      WebEncryptedMediaSessionType session_type);
+      WebEncryptedMediaSessionType session_type,
+      media::KeySystems* key_systems);
   WebContentDecryptionModuleSessionImpl(
       const WebContentDecryptionModuleSessionImpl&) = delete;
   WebContentDecryptionModuleSessionImpl& operator=(
@@ -72,6 +74,9 @@ class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
   // Keep track of the session type to be passed into InitializeNewSession() and
   // LoadSession().
   const media::CdmSessionType session_type_;
+
+  // Non-owned.
+  raw_ptr<media::KeySystems> key_systems_;
 
   // Non-owned pointer.
   raw_ptr<Client> client_;

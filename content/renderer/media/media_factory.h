@@ -14,6 +14,7 @@
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "components/viz/common/surfaces/surface_id.h"
+#include "media/base/key_systems.h"
 #include "media/base/media_player_logging_id.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/routing_token_callback.h"
@@ -153,6 +154,8 @@ class MediaFactory {
   media::mojom::RemoterFactory* GetRemoterFactory();
 #endif
 
+  media::KeySystems* GetKeySystems();
+
   media::CdmFactory* GetCdmFactory();
 
   media::mojom::InterfaceFactory* GetMediaInterfaceFactory();
@@ -179,6 +182,11 @@ class MediaFactory {
   // lifetime is tied to the RenderFrame via the RenderFrameObserver interface.
   raw_ptr<media::RendererWebMediaPlayerDelegate, DanglingUntriaged>
       media_player_delegate_ = nullptr;
+
+  // The `KeySystems` to be used by `web_encrypted_media_client_`. This object
+  // must outlive `web_encrypted_media_client_` and `cdm_factory_` since they
+  // reference it.
+  std::unique_ptr<media::KeySystems> key_systems_;
 
   // The CDM and decoder factory attached to this frame, lazily initialized.
   std::unique_ptr<media::DefaultDecoderFactory> decoder_factory_;

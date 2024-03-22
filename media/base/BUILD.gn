@@ -195,6 +195,7 @@ source_set("base") {
     "key_system_info.h",
     "key_system_names.cc",
     "key_system_names.h",
+    "key_systems.cc",
     "key_systems.h",
     "key_systems_impl.cc",
     "key_systems_impl.h",

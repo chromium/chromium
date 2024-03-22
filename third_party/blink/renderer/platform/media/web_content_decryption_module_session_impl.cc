@@ -242,11 +242,15 @@ KeyStatusMixForUma GetKeyStatusMixForUma(const media::CdmKeysInfo& keys_info) {
 
 WebContentDecryptionModuleSessionImpl::WebContentDecryptionModuleSessionImpl(
     const scoped_refptr<CdmSessionAdapter>& adapter,
-    WebEncryptedMediaSessionType session_type)
+    WebEncryptedMediaSessionType session_type,
+    media::KeySystems* key_systems)
     : adapter_(adapter),
       session_type_(ConvertSessionType(session_type)),
+      key_systems_(key_systems),
       has_close_been_called_(false),
-      is_closed_(false) {}
+      is_closed_(false) {
+  DCHECK(key_systems_);
+}
 
 WebContentDecryptionModuleSessionImpl::
     ~WebContentDecryptionModuleSessionImpl() {
@@ -295,8 +299,8 @@ void WebContentDecryptionModuleSessionImpl::InitializeNewSession(
   //    implementation value does not support initDataType as an Initialization
   //    Data Type, return a promise rejected with a NotSupportedError.
   //    String comparison is case-sensitive.
-  if (!IsSupportedKeySystemWithInitDataType(adapter_->GetKeySystem(),
-                                            eme_init_data_type)) {
+  if (!key_systems_->IsSupportedInitDataType(adapter_->GetKeySystem(),
+                                             eme_init_data_type)) {
     std::string message =
         "The initialization data type is not supported by the key system.";
     result.CompleteWithError(
