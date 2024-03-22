@@ -577,7 +577,8 @@ AX_TEST_F('FaceGazeTest', 'DoesNotRepeatGesturesTooSoon', async function() {
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
                      .withGestureToMacroName(gestureToMacroName)
-                     .withGestureToConfidence(gestureToConfidence);
+                     .withGestureToConfidence(gestureToConfidence)
+                     .withRepeatDelayMs(1000);
   await this.configureFaceGaze(config);
 
   for (let i = 0; i < 5; i++) {

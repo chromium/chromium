@@ -20,6 +20,8 @@ class Config {
     this.useMouseAcceleration = false;
     /** @type {?Map<string, number>} */
     this.speeds = null;
+    /** @type {number} */
+    this.repeatDelayMs = -1;
   }
 
   /**
@@ -75,6 +77,14 @@ class Config {
    */
   withSpeeds(up, down, left, right) {
     this.speeds = {up, down, left, right};
+    return this;
+  }
+
+  /**
+   * @param {number} repeatDelayMs
+   */
+  withRepeatDelayMs(repeatDelayMs) {
+    this.repeatDelayMs = repeatDelayMs;
     return this;
   }
 }
@@ -228,6 +238,10 @@ FaceGazeTestBase = class extends E2ETestBase {
       await this.setPref(MouseController.PREF_SPD_DOWN, config.speeds.down);
       await this.setPref(MouseController.PREF_SPD_LEFT, config.speeds.left);
       await this.setPref(MouseController.PREF_SPD_RIGHT, config.speeds.right);
+    }
+
+    if (config.repeatDelayMs > 0) {
+      faceGaze.gestureHandler_.repeatDelayMs_ = config.repeatDelayMs;
     }
 
     await this.setPref(

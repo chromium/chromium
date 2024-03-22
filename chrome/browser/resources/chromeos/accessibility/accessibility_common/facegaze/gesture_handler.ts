@@ -23,6 +23,7 @@ export class GestureHandler {
   private gestureToConfidence_: Map<FacialGesture, number> = new Map();
   private gestureLastRecognized_: Map<FacialGesture, number> = new Map();
   private mouseController_: MouseController;
+  private repeatDelayMs_ = GestureHandler.DEFAULT_REPEAT_DELAY_MS;
   private prefsListener_: (prefs: any) => void;
   // The most recently detected gestures. We track this to know when a gesture
   // has ended.
@@ -98,7 +99,7 @@ export class GestureHandler {
       const currentTime = new Date().getTime();
       if (this.gestureLastRecognized_.has(gesture) &&
               currentTime - this.gestureLastRecognized_.get(gesture)! <
-                  GestureHandler.DEFAULT_REPEAT_DELAY_MS ||
+                  this.repeatDelayMs_ ||
           this.macrosToCompleteLater_.has(gesture)) {
         // Avoid responding to the same macro repeatedly in too short a time
         // or if we are still waiting to complete them later (they shouldn't be
