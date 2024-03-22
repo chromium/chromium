@@ -81,6 +81,7 @@ source_set("unit_tests") {
     "proto",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash:test_support",
     "//chrome/browser/nearby_sharing/public/cpp",
     "//chrome/test:test_support",
     "//chromeos/ash/components/quick_start",
