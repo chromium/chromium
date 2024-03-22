@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
-#include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/modules/scheduler/script_wrappable_task_state.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -15,18 +14,9 @@
 
 namespace blink {
 
-ScriptWrappableTaskState::ScriptWrappableTaskState(
-    scheduler::TaskAttributionInfo* task,
-    AbortSignal* abort_source,
-    DOMTaskSignal* priority_source)
-    : task_(task),
-      abort_source_(abort_source),
-      priority_source_(priority_source) {}
+ScriptWrappableTaskState::ScriptWrappableTaskState() = default;
 
 void ScriptWrappableTaskState::Trace(Visitor* visitor) const {
-  visitor->Trace(abort_source_);
-  visitor->Trace(priority_source_);
-  visitor->Trace(task_);
   ScriptWrappable::Trace(visitor);
 }
 

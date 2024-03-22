@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/scheduler/dom_scheduler.h"
 
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/modules/scheduler/dom_task_continuation.h"
 #include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/modules/scheduler/script_wrappable_task_state.h"
+#include "third_party/blink/renderer/modules/scheduler/task_attribution_info_impl.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -188,11 +190,9 @@ void DOMScheduler::setTaskId(ScriptState* script_state,
     // Can happen when a feature flag disables TaskAttribution.
     return;
   }
-  auto* task_info = MakeGarbageCollected<scheduler::TaskAttributionInfo>(
+  auto* task_info = MakeGarbageCollected<TaskAttributionInfoImpl>(
       scheduler::TaskAttributionId(task_id));
-  auto* state = MakeGarbageCollected<ScriptWrappableTaskState>(
-      task_info, /*abort_source=*/nullptr, /*priority_source=*/nullptr);
-  ScriptWrappableTaskState::SetCurrent(script_state, state);
+  ScriptWrappableTaskState::SetCurrent(script_state, task_info);
 }
 
 void DOMScheduler::CreateFixedPriorityTaskQueues(
@@ -245,8 +245,8 @@ DOMScheduler::SchedulingState DOMScheduler::GetSchedulingStateFromOptions(
         ExecutionContext::From(script_state)));
     if (auto* inherited_state =
             ScriptWrappableTaskState::GetCurrent(script_state->GetIsolate())) {
-      inherited_abort_source = inherited_state->GetAbortSource();
-      inherited_priority_source = inherited_state->GetPrioritySource();
+      inherited_abort_source = inherited_state->AbortSource();
+      inherited_priority_source = inherited_state->PrioritySource();
     }
   }
 

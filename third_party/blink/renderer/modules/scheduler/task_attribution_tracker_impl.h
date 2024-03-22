@@ -25,6 +25,7 @@ class Isolate;
 }  // namespace v8
 
 namespace blink::scheduler {
+class TaskAttributionInfo;
 
 // This class is used to keep track of tasks posted on the main thread and their
 // ancestry. It assigns an incerementing ID per task, and gets notified when a
@@ -40,11 +41,11 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   TaskAttributionInfo* RunningTask() const override;
 
   TaskScope CreateTaskScope(ScriptState* script_state,
-                            TaskAttributionInfo* parent_task,
+                            TaskAttributionInfo* task_state,
                             TaskScopeType type) override;
 
   TaskScope CreateTaskScope(ScriptState* script_state,
-                            TaskAttributionInfo* parent_task,
+                            TaskAttributionInfo* task_state,
                             TaskScopeType type,
                             AbortSignal* abort_source,
                             DOMTaskSignal* priority_source) override;
@@ -53,6 +54,9 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   void AddSameDocumentNavigationTask(TaskAttributionInfo* task) override;
   void ResetSameDocumentNavigationTasks() override;
   TaskAttributionInfo* CommitSameDocumentNavigation(TaskAttributionId) override;
+
+  TaskAttributionInfo* CreateTaskAttributionInfoForTest(
+      TaskAttributionId id) override;
 
  private:
   explicit TaskAttributionTrackerImpl(v8::Isolate*);

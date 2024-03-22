@@ -141,13 +141,17 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
   virtual ~TaskAttributionTracker() = default;
 
-  // Create a new task scope.
+  // Creates a new `TaskScope` to propagate `task_state` to descendant tasks and
+  // continuations.
   virtual TaskScope CreateTaskScope(ScriptState*,
-                                    TaskAttributionInfo* parent_task,
+                                    TaskAttributionInfo* task_state,
                                     TaskScopeType type) = 0;
-  // Create a new task scope with web scheduling context.
+
+  // Creates a new `TaskScope` with web scheduling context. `task_state` will be
+  // propagated to descendant tasks and continuations; `abort_source` and
+  // `priority_source` will only be propagated to continuations.
   virtual TaskScope CreateTaskScope(ScriptState*,
-                                    TaskAttributionInfo* parent_task,
+                                    TaskAttributionInfo* task_state,
                                     TaskScopeType type,
                                     AbortSignal* abort_source,
                                     DOMTaskSignal* priority_source) = 0;
@@ -166,6 +170,9 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   virtual void ResetSameDocumentNavigationTasks() = 0;
   virtual TaskAttributionInfo* CommitSameDocumentNavigation(
       TaskAttributionId) = 0;
+
+  virtual TaskAttributionInfo* CreateTaskAttributionInfoForTest(
+      TaskAttributionId id) = 0;
 
  protected:
   virtual void OnTaskScopeDestroyed(const TaskScope&) = 0;

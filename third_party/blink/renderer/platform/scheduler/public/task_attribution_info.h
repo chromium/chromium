@@ -7,23 +7,16 @@
 
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink::scheduler {
 
-class TaskAttributionInfo final : public GarbageCollected<TaskAttributionInfo> {
+// Interface for task state that can be propagated to descendant tasks and
+// continuations.
+class PLATFORM_EXPORT TaskAttributionInfo : public GarbageCollectedMixin {
  public:
-  explicit TaskAttributionInfo(TaskAttributionId task_id) : task_id_(task_id) {}
-
-  ~TaskAttributionInfo() = default;
-
-  TaskAttributionId Id() const { return task_id_; }
-
-  void Trace(Visitor* visitor) const {}
-
- private:
-  const TaskAttributionId task_id_;
+  // Returns an id for this object, which is unique for the associated tracker.
+  virtual TaskAttributionId Id() const = 0;
 };
 
 }  // namespace blink::scheduler

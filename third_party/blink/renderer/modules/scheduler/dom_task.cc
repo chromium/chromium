@@ -24,8 +24,10 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/modules/scheduler/script_wrappable_task_state.h"
+#include "third_party/blink/renderer/modules/scheduler/web_scheduling_task_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
@@ -200,7 +202,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
                  ExecutionContext::From(script_state))) {
     ScriptWrappableTaskState::SetCurrent(
         script_state,
-        MakeGarbageCollected<ScriptWrappableTaskState>(
+        MakeGarbageCollected<WebSchedulingTaskState>(
             /*TaskAttributionInfo=*/nullptr, abort_source_, priority_source_));
   }
 

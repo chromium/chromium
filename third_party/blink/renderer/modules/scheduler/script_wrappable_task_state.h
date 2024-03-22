@@ -7,21 +7,49 @@
 
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 
 namespace v8 {
 class Isolate;
 }  // namespace v8
+
+namespace blink::scheduler {
+class TaskAttributionInfo;
+}  // namespace blink::scheduler
 
 namespace blink {
 class AbortSignal;
 class DOMTaskSignal;
 class ScriptState;
 
-// The scheduler uses `ScriptWrappableTaskState` objects to store continuation
-// preserved embedder data, which is data stored on V8 promise reactions at
-// creation time and restored at run time.
-class MODULES_EXPORT ScriptWrappableTaskState final : public ScriptWrappable {
+// `ScriptWrappableTaskState` objects are stored in V8 as continuation preserved
+// embedder data (CPED). They aren't exposed directly to JS, but are
+// `ScriptWrappable` so they can be stored in CPED.
+//
+// V8 propagates these objects to continuations by binding the current CPED and
+// restoring it in microtasks:
+//   1. For promises, the current CPED is bound to the promise reaction at
+//      creation time (e.g. when .then() is called or a promise is awaited)
+//
+//   2. For promises resolved with a custom thennable, there's an extra hop
+//      through a microtask to run the custom .then() function. For the promise
+//      being resolved, (1) above applies. For the custom .then() function, the
+//      resolve-time CPED is bound to the microtask, i.e. the CPED inside the
+//      custom .then() function is the same as when the resolve happens, keeping
+//      it consistent across the async hop.
+//
+//   3. For non-promise microtasks, which are used throughout Blink, the current
+//      CPED is bound when EnqueueMicrotask() is called.
+//
+// Similarly, in Blink these objects are propagated to descendant tasks by
+// capturing the current CPED during various API calls and restoring it prior to
+// running a callback. For example, the current CPED is captured when setTimeout
+// is called and restored before running the associated callback.
+//
+// Instances of this class will either be WebSchedulingTaskState, if propagating
+// abort and priority sources (web scheduling APIs), or TaskAttributionInfoImpl,
+// which is exposed as TaskAttributionInfo via TaskAttributionTracker public
+// APIs.
+class MODULES_EXPORT ScriptWrappableTaskState : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -33,21 +61,15 @@ class MODULES_EXPORT ScriptWrappableTaskState final : public ScriptWrappable {
   // preserved embedder data.
   static void SetCurrent(ScriptState*, ScriptWrappableTaskState*);
 
-  ScriptWrappableTaskState(scheduler::TaskAttributionInfo* task,
-                           AbortSignal* abort_source,
-                           DOMTaskSignal* priority_source);
+  virtual scheduler::TaskAttributionInfo* GetTaskAttributionInfo() = 0;
 
-  scheduler::TaskAttributionInfo* GetTask() const { return task_.Get(); }
-
-  AbortSignal* GetAbortSource() { return abort_source_.Get(); }
-  DOMTaskSignal* GetPrioritySource() { return priority_source_.Get(); }
+  virtual AbortSignal* AbortSource() = 0;
+  virtual DOMTaskSignal* PrioritySource() = 0;
 
   void Trace(Visitor*) const override;
 
- private:
-  const Member<scheduler::TaskAttributionInfo> task_;
-  const Member<AbortSignal> abort_source_;
-  const Member<DOMTaskSignal> priority_source_;
+ protected:
+  ScriptWrappableTaskState();
 };
 
 }  // namespace blink
