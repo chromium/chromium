@@ -1130,7 +1130,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   // UseOutputBitstreamBuffer() is not called until next frame if no frame but
   // the current frame is in VideoEncodeAccelerator.
   if (metadata.spatial_idx().value_or(0) == 0) {
-    DCHECK_NE(0u, frames_in_encoder_count_);
+    CHECK_NE(0u, frames_in_encoder_count_);
     frames_in_encoder_count_--;
   }
 
