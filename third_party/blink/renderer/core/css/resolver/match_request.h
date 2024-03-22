@@ -75,6 +75,15 @@ class CORE_EXPORT MatchRequest {
   void AddRuleset(RuleSet* rule_set) {
     DCHECK(!IsFull());
 
+    if (num_rule_sets_ > 0 && rule_set == rule_sets_[num_rule_sets_ - 1]) {
+      // Some frameworks generate a ton of identical <style> tags;
+      // we have already deduplicated them earlier to have the same
+      // pointer, so we can just discard them here. Of course,
+      // this assumes they come immediately after each other,
+      // but this is a cheap win for something that is rather pathological.
+      return;
+    }
+
     // Now that we're about to read from the RuleSet, we're done adding more
     // rules to the set and we should make sure it's compacted.
     rule_set->CompactRulesIfNeeded();
