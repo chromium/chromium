@@ -2028,6 +2028,8 @@ source_set("ash") {
     "mahi/mahi_manager_impl.h",
     "nonclosable_app_ui_utils.cc",
     "nonclosable_app_ui_utils.h",
+    "policy/handlers/multi_screen_capture_policy_handler.cc",
+    "policy/handlers/multi_screen_capture_policy_handler.h",
 
     # Template used by the `tools/oobe/generate_screen_template.py` script.
     "login/screens/install_attributes_error_screen.cc",
@@ -5897,6 +5899,7 @@ source_set("unit_tests") {
     "policy/handlers/extension_cache_unittest.cc",
     "policy/handlers/lock_to_single_user_manager_unittest.cc",
     "policy/handlers/minimum_version_policy_handler_unittest.cc",
+    "policy/handlers/multi_screen_capture_policy_handler_unittest.cc",
     "policy/handlers/screen_capture_location_policy_handler_unittest.cc",
     "policy/handlers/system_proxy_handler_unittest.cc",
     "policy/handlers/tpm_auto_update_mode_policy_handler_unittest.cc",

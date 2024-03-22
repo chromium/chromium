@@ -38,7 +38,15 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
+#include "base/path_service.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -108,10 +116,29 @@ bool CheckScreenDetailedExists(content::WebContents* tab,
              .ExtractString() == "success-screen-detailed";
 }
 
+void SetScreens(size_t screen_count) {
+  // This part of the test only works on ChromeOS.
+  std::stringstream screens;
+  for (size_t screen_index = 0; screen_index + 1 < screen_count;
+       screen_index++) {
+    // Each entry in this comma separated list corresponds to a screen
+    // specification following the format defined in
+    // |ManagedDisplayInfo::CreateFromSpec|.
+    // The used specification simulates screens with resolution 640x480
+    // at the host coordinates ((screen_index - 1) * 640, 0).
+    screens << screen_index * 640 << "+0-640x480,";
+  }
+  if (screen_count != 0) {
+    screens << (screen_count - 1) * 640 << "+0-640x480";
+  }
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .UpdateDisplay(screens.str());
+}
+
 class ContentBrowserClientMock : public ChromeContentBrowserClient {
  public:
-  bool IsGetAllScreensMediaAllowed(content::BrowserContext* context,
-                                   const url::Origin& origin) override {
+  bool IsGetAllScreensMediaAllowed(
+      content::RenderFrameHost* render_frame_host) override {
     return is_get_display_media_set_select_all_screens_allowed_;
   }
 
@@ -142,25 +169,6 @@ class GetAllScreensMediaBrowserTestBase : public WebRtcTestBase {
     ASSERT_TRUE(embedded_test_server()->Start());
     contents_ = OpenTestPageInNewTab(base_page_);
     DCHECK(contents_);
-  }
-
-  void SetScreens(size_t screen_count) {
-    // This part of the test only works on ChromeOS.
-    std::stringstream screens;
-    for (size_t screen_index = 0; screen_index + 1 < screen_count;
-         screen_index++) {
-      // Each entry in this comma separated list corresponds to a screen
-      // specification following the format defined in
-      // |ManagedDisplayInfo::CreateFromSpec|.
-      // The used specification simulates screens with resolution 800x800
-      // at the host coordinates (screen_index * 800, 0).
-      screens << screen_index * 640 << "+0-640x480,";
-    }
-    if (screen_count != 0) {
-      screens << (screen_count - 1) * 640 << "+0-640x480";
-    }
-    display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-        .UpdateDisplay(screens.str());
   }
 
  protected:
@@ -637,3 +645,134 @@ IN_PROC_BROWSER_TEST_F(MultiCaptureNotificationTest,
       content::ContentBrowserClient::MultiCaptureChanged::kStopped);
   WaitUntilDisplayNotificationCount(/*display_count=*/0u);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class MultiScreenCaptureInIsolatedWebAppBrowserTest
+    : public web_app::IsolatedWebAppBrowserTestHarness {
+ public:
+  MultiScreenCaptureInIsolatedWebAppBrowserTest() {
+    scoped_feature_list_.InitFromCommandLine(
+        /*enable_features=*/
+        "GetAllScreensMedia",
+        /*disable_features=*/"");
+    app_ = CreateIsolatedWebApp(/*html_text=*/"GetAllScreensMedia allowed");
+  }
+
+  MultiScreenCaptureInIsolatedWebAppBrowserTest(
+      const MultiScreenCaptureInIsolatedWebAppBrowserTest&) = delete;
+  MultiScreenCaptureInIsolatedWebAppBrowserTest& operator=(
+      const MultiScreenCaptureInIsolatedWebAppBrowserTest&) = delete;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    web_app::IsolatedWebAppBrowserTestHarness::
+        SetUpInProcessBrowserTestFixture();
+    provider_.SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
+    SetAllowedOriginsPolicy(/*allow_listed_origins=*/{
+        "isolated-app://" + app_->web_bundle_id().id()});
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+  }
+
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> CreateIsolatedWebApp(
+      const std::string html_text) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    auto builder = web_app::IsolatedWebAppBuilder(
+        web_app::ManifestBuilder().SetName("app-3.0.4").SetVersion("3.0.4"));
+    builder.AddHtml("/", R"(
+        <head>
+          <meta http-equiv="Content-Security-Policy"
+            content="object-src 'none'; base-uri 'none';
+            script-src 'strict-dynamic'
+            'sha256-9kZur2gwMdyfcGTQxLkOGeJuiPDxPqd1z9n1YSaCirY='
+            'sha256-qm/4Jb2mtycc7MTgVEj+rdFrTTJkCOTsMl1tSRaAkLc=';
+            require-trusted-types-for 'script';">
+          <script type="text/javascript" src="/test_functions.js"
+            integrity="sha256-9kZur2gwMdyfcGTQxLkOGeJuiPDxPqd1z9n1YSaCirY=">
+          </script>
+          <script type="text/javascript"
+            src="/get_all_screens_media_functions.js"
+            integrity="sha256-qm/4Jb2mtycc7MTgVEj+rdFrTTJkCOTsMl1tSRaAkLc=">
+          </script>
+          <title>3.0.4</title>
+        </head>
+        <body>
+          <h1>)" + html_text +
+                             "</h1></body>)");
+    builder.AddFileFromDisk("test_functions.js",
+                            GetSourceDir().Append(FILE_PATH_LITERAL(
+                                "chrome/test/data/webrtc/test_functions.js")));
+    builder.AddFileFromDisk(
+        "get_all_screens_media_functions.js",
+        GetSourceDir().Append(FILE_PATH_LITERAL(
+            "chrome/test/data/webrtc/get_all_screens_media_functions.js")));
+    auto app = builder.BuildBundle();
+    app->TrustSigningKey();
+    return app;
+  }
+
+  base::FilePath GetSourceDir() {
+    base::FilePath source_dir;
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_dir);
+    return source_dir;
+  }
+
+  void SetAllowedOriginsPolicy(
+      const std::vector<std::string>& allow_listed_origins) {
+    policy::PolicyMap policies;
+    base::Value::List allowed_origins;
+    for (const auto& allowed_origin : allow_listed_origins) {
+      allowed_origins.Append(base::Value(allowed_origin));
+    }
+    policies.Set(policy::key::kMultiScreenCaptureAllowedForUrls,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD,
+                 base::Value(std::move(allowed_origins)), nullptr);
+    provider_.UpdateChromePolicy(policies);
+  }
+
+ protected:
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(MultiScreenCaptureInIsolatedWebAppBrowserTest,
+                       GetAllScreensMediaSuccessful) {
+  SetScreens(/*screen_count=*/1u);
+
+  web_app::IsolatedWebAppUrlInfo url_info = app_->Install(profile()).value();
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  std::set<std::string> stream_ids;
+  std::set<std::string> track_ids;
+  std::string error_name;
+  const bool result = RunGetAllScreensMediaAndGetIds(
+      content::WebContents::FromRenderFrameHost(app_frame), stream_ids,
+      track_ids, &error_name);
+  EXPECT_TRUE(result);
+  EXPECT_EQ(1u, track_ids.size());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiScreenCaptureInIsolatedWebAppBrowserTest,
+                       GetAllScreensMediaDenied) {
+  SetScreens(/*screen_count=*/1u);
+
+  auto denied_app =
+      CreateIsolatedWebApp(/*html_text=*/"GetAllScreensMedia denied");
+
+  web_app::IsolatedWebAppUrlInfo url_info =
+      denied_app->Install(profile()).value();
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  std::set<std::string> stream_ids;
+  std::set<std::string> track_ids;
+  std::string error_name;
+  const bool result = RunGetAllScreensMediaAndGetIds(
+      content::WebContents::FromRenderFrameHost(app_frame), stream_ids,
+      track_ids, &error_name);
+  EXPECT_FALSE(result);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

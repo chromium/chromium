@@ -1,0 +1,38 @@
+[
+    {
+      "os": [
+        "chromeos_ash"
+      ],
+      "policy_pref_mapping_tests": [
+        {
+          "note": "Invalid values (e.g. wildcards) are filtered out",
+          "policies": {
+            "MultiScreenCaptureAllowedForUrls": [
+              "isolated-app://pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic",
+              "isolated-app://*",
+              "*",
+              "https://chromium.org",
+              "[*.]google.com"
+            ]
+          },
+          "prefs": {
+            "profile.managed_multi_screen_capture_allowed_for_urls": {
+              "location": "user_profile",
+              "value": [
+                "isolated-app://pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic"
+              ]
+            }
+          }
+        },
+        {
+          "policies": {},
+          "prefs": {
+            "profile.managed_multi_screen_capture_allowed_for_urls": {
+              "location": "user_profile",
+              "default_value": []
+            }
+          }
+        }
+      ]
+    }
+  ]

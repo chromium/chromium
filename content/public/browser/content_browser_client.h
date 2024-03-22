@@ -682,11 +682,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsIsolatedContextAllowedForUrl(BrowserContext* browser_context,
                                               const GURL& lock_url);
 
-  // Check if applications whose origin is |origin| are allowed to perform
-  // all-screens-auto-selection, which allows automatic capturing of all
-  // screens with the getAllScreensMedia API.
-  virtual bool IsGetAllScreensMediaAllowed(content::BrowserContext* context,
-                                           const url::Origin& origin);
+  // Check if the application running in the |render_frame_host| is allowed to
+  // automatically capture all screens by using the getAllScreensMedia API.
+  virtual bool IsGetAllScreensMediaAllowed(
+      content::RenderFrameHost* render_frame_host);
 
   // Allow the embedder to control the maximum renderer process count. Only
   // applies if it is set to a non-zero value.  Once this limit is exceeded,

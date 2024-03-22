@@ -381,10 +381,8 @@ bool MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(
   if (!render_frame_host) {
     return false;
   }
-  ContentBrowserClient* browser_client = GetContentClient()->browser();
-  return browser_client->IsGetAllScreensMediaAllowed(
-      render_frame_host->GetBrowserContext(),
-      render_frame_host->GetMainFrame()->GetLastCommittedOrigin());
+  return GetContentClient()->browser()->IsGetAllScreensMediaAllowed(
+      render_frame_host);
 }
 
 void MediaStreamDispatcherHost::GenerateStreamsChecksOnUIThread(

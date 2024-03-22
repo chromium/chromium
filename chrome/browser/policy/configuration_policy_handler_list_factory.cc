@@ -186,6 +186,7 @@
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/ash/policy/handlers/lacros_availability_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/lacros_selection_policy_handler.h"
+#include "chrome/browser/ash/policy/handlers/multi_screen_capture_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/screen_capture_location_policy_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
@@ -1956,13 +1957,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1454054): replace the
-  // kGetDisplayMediaSetSelectAllScreensAllowedForUrls policy by a policy that
-  // matches the name of the new `getAllScreensMedia` API.
+  // TODO(b/329064666): Remove this pref once the pivot to IWAs is complete.
   { key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
     capture_policy::kManagedAccessToGetAllScreensMediaAllowedForUrls,
     base::Value::Type::LIST },
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   { key::kAuthNegotiateDelegateByKdcPolicy,
@@ -3020,6 +3019,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(
       std::make_unique<DeviceWeeklyScheduledSuspendPolicyHandler>(
           chrome_schema));
+  handlers->AddHandler(std::make_unique<MultiScreenCapturePolicyHandler>());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return handlers;

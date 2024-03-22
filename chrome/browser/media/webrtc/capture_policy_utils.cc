@@ -36,6 +36,11 @@
 #include "ui/base/ui_base_types.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/chromeos/policy/multi_screen_capture/multi_screen_capture_policy_service.h"
+#include "chrome/browser/chromeos/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace capture_policy {
 
 // This pref connects to the GetDisplayMediaSetSelectAllScreensAllowedForUrls
@@ -44,8 +49,19 @@ namespace capture_policy {
 // kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls pref, which is then
 // consumed by content settings to check if access to `getAllScreensMedia` shall
 // be permitted for a given origin.
+// TODO(b/329064666): Remove this pref once the pivot to IWAs is complete.
 const char kManagedAccessToGetAllScreensMediaAllowedForUrls[] =
     "profile.managed_access_to_get_all_screens_media_allowed_for_urls";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// This pref connects to the MultiScreenCaptureAllowedForUrls policy and will
+// replace the deprecated GetDisplayMediaSetSelectAllScreensAllowedForUrls
+// policy once the pivot to IWAs is complete.
+const char kManagedMultiScreenCaptureAllowedForUrls[] =
+    "profile.managed_multi_screen_capture_allowed_for_urls";
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -138,9 +154,28 @@ AllowedScreenCaptureLevel GetAllowedCaptureLevel(const GURL& request_origin,
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kManagedAccessToGetAllScreensMediaAllowedForUrls);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterListPref(kManagedMultiScreenCaptureAllowedForUrls);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool IsGetAllScreensMediaAllowedForAnySite(content::BrowserContext* context) {
+// TODO(b/40272166): Implement for Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos::multi_screen_capture::MultiScreenCapturePolicyService*
+      multi_capture_policy_service = chromeos::multi_screen_capture::
+          MultiScreenCapturePolicyServiceFactory::GetForBrowserContext(context);
+  if (!multi_capture_policy_service) {
+    return false;
+  }
+
+  if (multi_capture_policy_service->GetAllowListSize() > 0u) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// TODO(b/329064666): Remove the checks below once the pivot to IWAs is
+// complete.
 #if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile) {
@@ -176,6 +211,22 @@ bool IsGetAllScreensMediaAllowedForAnySite(content::BrowserContext* context) {
 
 bool IsGetAllScreensMediaAllowed(content::BrowserContext* context,
                                  const GURL& url) {
+// TODO(b/40272166): Implement for Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos::multi_screen_capture::MultiScreenCapturePolicyService*
+      multi_capture_policy_service = chromeos::multi_screen_capture::
+          MultiScreenCapturePolicyServiceFactory::GetForBrowserContext(context);
+  if (!multi_capture_policy_service) {
+    return false;
+  }
+
+  if (multi_capture_policy_service->IsMultiScreenCaptureAllowed(url)) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // TODO(b/329064666): Remove the checks below once the pivot to IWAs is
+  // complete.
 #if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile) {

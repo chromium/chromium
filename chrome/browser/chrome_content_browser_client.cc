@@ -2435,9 +2435,14 @@ bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
 }
 
 bool ChromeContentBrowserClient::IsGetAllScreensMediaAllowed(
-    content::BrowserContext* context,
-    const url::Origin& origin) {
-  return capture_policy::IsGetAllScreensMediaAllowed(context, origin.GetURL());
+    content::RenderFrameHost* render_frame_host) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return capture_policy::IsGetAllScreensMediaAllowed(
+      render_frame_host->GetBrowserContext(),
+      render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL());
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool ChromeContentBrowserClient::IsFileAccessAllowed(

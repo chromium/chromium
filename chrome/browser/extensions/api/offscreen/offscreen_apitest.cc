@@ -118,7 +118,7 @@ class ContentBrowserClientMock : public ChromeContentBrowserClient {
  public:
   MOCK_METHOD(bool,
               IsGetAllScreensMediaAllowed,
-              (content::BrowserContext * context, const url::Origin& origin),
+              (content::RenderFrameHost * render_frame_host),
               (override));
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -550,8 +550,7 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaOffscreenApiTest,
   // journey is fully functional.
   base::AddTagToTestResult("feature_id",
                            "screenplay-f3601ae4-bff7-495a-a51f-3c0997a46445");
-  EXPECT_CALL(content_browser_client(),
-              IsGetAllScreensMediaAllowed(testing::_, testing::_))
+  EXPECT_CALL(content_browser_client(), IsGetAllScreensMediaAllowed(testing::_))
       .WillOnce(testing::Return(true));
   static constexpr char kManifest[] =
       R"({

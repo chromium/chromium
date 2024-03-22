@@ -347,8 +347,7 @@ bool ContentBrowserClient::IsIsolatedContextAllowedForUrl(
 }
 
 bool ContentBrowserClient::IsGetAllScreensMediaAllowed(
-    content::BrowserContext* context,
-    const url::Origin& origin) {
+    content::RenderFrameHost* render_frame_host) {
   return false;
 }
 

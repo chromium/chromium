@@ -28,13 +28,21 @@
 #include "url/origin.h"
 
 namespace {
+
+constexpr char kValidIsolatedAppId1[] =
+    "isolated-app://pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic";
+constexpr char kValidIsolatedAppId2[] =
+    "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+
 struct TestParam {
+  std::string allow_list_policy_name;
   std::vector<std::string> allow_listed_origins;
   std::string testing_url;
   bool expected_is_get_all_screens_media_allowed;
 };
 
 struct NoRefreshTestParam {
+  std::string allow_list_policy_name;
   std::vector<std::string> original_allowlisted_origins;
   std::vector<std::string> updated_allowlisted_origins;
   std::vector<std::string> expected_allowed_origins;
@@ -45,7 +53,8 @@ struct NoRefreshTestParam {
 
 class SelectAllScreensTestBase : public policy::PolicyTest {
  public:
-  SelectAllScreensTestBase() = default;
+  explicit SelectAllScreensTestBase(const std::string& allow_list_policy_name)
+      : allow_list_policy_name_(allow_list_policy_name) {}
   ~SelectAllScreensTestBase() override = default;
 
   SelectAllScreensTestBase(const SelectAllScreensTestBase&) = delete;
@@ -58,10 +67,8 @@ class SelectAllScreensTestBase : public policy::PolicyTest {
     for (const auto& allowed_origin : allow_listed_origins) {
       allowed_origins.Append(base::Value(allowed_origin));
     }
-    PolicyTest::SetPolicy(
-        &policies,
-        policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-        base::Value(std::move(allowed_origins)));
+    PolicyTest::SetPolicy(&policies, allow_list_policy_name_.c_str(),
+                          base::Value(std::move(allowed_origins)));
     provider_.UpdateChromePolicy(policies);
   }
 
@@ -74,12 +81,16 @@ class SelectAllScreensTestBase : public policy::PolicyTest {
   }
 
   virtual std::vector<std::string> GetAllowedOrigins() const = 0;
+
+ private:
+  std::string allow_list_policy_name_;
 };
 
 class SelectAllScreensTest : public SelectAllScreensTestBase,
                              public testing::WithParamInterface<TestParam> {
  public:
-  SelectAllScreensTest() = default;
+  SelectAllScreensTest()
+      : SelectAllScreensTestBase(GetParam().allow_list_policy_name) {}
   ~SelectAllScreensTest() override = default;
 
   SelectAllScreensTest(const SelectAllScreensTest&) = delete;
@@ -102,50 +113,111 @@ IN_PROC_BROWSER_TEST_P(SelectAllScreensTest, SelectAllScreensTestOrigins) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    SelectAllScreensTestWithParams,
+    DeprecatedPolicySelectAllScreensTestWithParams,
     SelectAllScreensTest,
     testing::Values(
         TestParam({
+            .allow_list_policy_name =
+                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
             .allow_listed_origins = {""},
             .testing_url = "",
             .expected_is_get_all_screens_media_allowed = false,
         }),
         TestParam({
+            .allow_list_policy_name =
+                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
             .allow_listed_origins = {},
             .testing_url = "https://www.chromium.org",
             .expected_is_get_all_screens_media_allowed = false,
         }),
         TestParam({
+            .allow_list_policy_name =
+                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
             .allow_listed_origins = {},
             .testing_url = "",
             .expected_is_get_all_screens_media_allowed = false,
         }),
         TestParam({
+            .allow_list_policy_name =
+                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
             .allow_listed_origins = {"https://www.chromium.org"},
             .testing_url = "https://www.chromium.org",
             .expected_is_get_all_screens_media_allowed = true,
         }),
         TestParam({
+            .allow_list_policy_name =
+                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
             .allow_listed_origins = {"[*.]chromium.org"},
             .testing_url = "https://sub.chromium.org",
             .expected_is_get_all_screens_media_allowed = true,
         }),
         TestParam({
+            .allow_list_policy_name =
+                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
             .allow_listed_origins = {"[*.]chrome.org", "[*.]chromium.com"},
             .testing_url = "https://www.chromium.org",
             .expected_is_get_all_screens_media_allowed = false,
         }),
         TestParam({
+            .allow_list_policy_name =
+                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
             .allow_listed_origins = {"[*.]chrome.org", "[*.]chromium.org"},
             .testing_url = "https://www.chromium.org",
             .expected_is_get_all_screens_media_allowed = true,
         })));
 
+INSTANTIATE_TEST_SUITE_P(
+    SelectAllScreensTestWithParams,
+    SelectAllScreensTest,
+    testing::Values(TestParam({
+                        .allow_list_policy_name =
+                            policy::key::kMultiScreenCaptureAllowedForUrls,
+                        .allow_listed_origins = {""},
+                        .testing_url = "",
+                        .expected_is_get_all_screens_media_allowed = false,
+                    }),
+                    TestParam({
+                        .allow_list_policy_name =
+                            policy::key::kMultiScreenCaptureAllowedForUrls,
+                        .allow_listed_origins = {},
+                        .testing_url = kValidIsolatedAppId1,
+                        .expected_is_get_all_screens_media_allowed = false,
+                    }),
+                    TestParam({
+                        .allow_list_policy_name =
+                            policy::key::kMultiScreenCaptureAllowedForUrls,
+                        .allow_listed_origins = {},
+                        .testing_url = "",
+                        .expected_is_get_all_screens_media_allowed = false,
+                    }),
+                    TestParam({
+                        .allow_list_policy_name =
+                            policy::key::kMultiScreenCaptureAllowedForUrls,
+                        .allow_listed_origins = {"isolated-app://*"},
+                        .testing_url = kValidIsolatedAppId1,
+                        .expected_is_get_all_screens_media_allowed = false,
+                    }),
+                    TestParam({
+                        .allow_list_policy_name =
+                            policy::key::kMultiScreenCaptureAllowedForUrls,
+                        .allow_listed_origins = {"*"},
+                        .testing_url = kValidIsolatedAppId1,
+                        .expected_is_get_all_screens_media_allowed = false,
+                    }),
+                    TestParam({
+                        .allow_list_policy_name =
+                            policy::key::kMultiScreenCaptureAllowedForUrls,
+                        .allow_listed_origins = {kValidIsolatedAppId1},
+                        .testing_url = kValidIsolatedAppId1,
+                        .expected_is_get_all_screens_media_allowed = true,
+                    })));
+
 class SelectAllScreensDynamicRefreshTest
     : public SelectAllScreensTestBase,
       public testing::WithParamInterface<NoRefreshTestParam> {
  public:
-  SelectAllScreensDynamicRefreshTest() = default;
+  SelectAllScreensDynamicRefreshTest()
+      : SelectAllScreensTestBase(GetParam().allow_list_policy_name) {}
   ~SelectAllScreensDynamicRefreshTest() override = default;
 
   explicit SelectAllScreensDynamicRefreshTest(const SelectAllScreensTest&) =
@@ -190,18 +262,45 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    SelectAllScreensDynamicRefreshTestWithParams,
+    DeprecatedPolicySelectAllScreensDynamicRefreshTestWithParams,
     SelectAllScreensDynamicRefreshTest,
     testing::Values(
         NoRefreshTestParam({
+            .allow_list_policy_name =
+                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
             .original_allowlisted_origins = {"https://www.chromium.org"},
             .updated_allowlisted_origins = {},
             .expected_allowed_origins = {"https://www.chromium.org"},
             .expected_forbidden_origins = {"https://www.chromium.com"},
         }),
         NoRefreshTestParam({
+            .allow_list_policy_name =
+                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
             .original_allowlisted_origins = {},
             .updated_allowlisted_origins = {"https://www.chromium.org"},
             .expected_allowed_origins = {},
             .expected_forbidden_origins = {},
         })));
+
+INSTANTIATE_TEST_SUITE_P(
+    SelectAllScreensDynamicRefreshTestWithParams,
+    SelectAllScreensDynamicRefreshTest,
+    testing::Values(NoRefreshTestParam({
+                        .allow_list_policy_name =
+                            policy::key::kMultiScreenCaptureAllowedForUrls,
+                        .original_allowlisted_origins = {kValidIsolatedAppId1},
+                        .updated_allowlisted_origins = {kValidIsolatedAppId1,
+                                                        kValidIsolatedAppId2},
+                        .expected_allowed_origins = {kValidIsolatedAppId1},
+                        .expected_forbidden_origins = {kValidIsolatedAppId2},
+                    }),
+                    NoRefreshTestParam({
+                        .allow_list_policy_name =
+                            policy::key::kMultiScreenCaptureAllowedForUrls,
+                        .original_allowlisted_origins = {},
+                        .updated_allowlisted_origins = {kValidIsolatedAppId1,
+                                                        kValidIsolatedAppId2},
+                        .expected_allowed_origins = {},
+                        .expected_forbidden_origins = {kValidIsolatedAppId1,
+                                                       kValidIsolatedAppId2},
+                    })));

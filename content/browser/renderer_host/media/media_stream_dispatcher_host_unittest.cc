@@ -38,6 +38,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_device_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -1421,7 +1422,7 @@ class MockContentBrowserClient : public ContentBrowserClient {
  public:
   MOCK_METHOD(bool,
               IsGetAllScreensMediaAllowed,
-              (content::BrowserContext * context, const url::Origin& origin),
+              (content::RenderFrameHost * render_frame_host),
               (override));
 };
 
@@ -1471,7 +1472,7 @@ TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
   GlobalRenderFrameHostId main_rfh_global_id = global_rfh_id();
   int main_render_process_id = main_rfh_global_id.child_id;
   int render_frame_id = main_rfh_global_id.frame_routing_id;
-  EXPECT_CALL(content_browser_client_, IsGetAllScreensMediaAllowed(_, _))
+  EXPECT_CALL(content_browser_client_, IsGetAllScreensMediaAllowed(_))
       .WillOnce(Return(true));
 
   EXPECT_TRUE(MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(

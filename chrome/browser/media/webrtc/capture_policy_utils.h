@@ -35,6 +35,10 @@ namespace capture_policy {
 
 extern const char kManagedAccessToGetAllScreensMediaAllowedForUrls[];
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kManagedMultiScreenCaptureAllowedForUrls[];
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Gets the highest capture level that the requesting origin is allowed to
 // request based on any configured enterprise policies. This is a convenience
 // overload which extracts the PrefService from the WebContents.
