@@ -189,6 +189,7 @@ interface Animation : EventTarget
     getter pending
     getter playState
     getter playbackRate
+    getter progress
     getter rangeEnd
     getter rangeStart
     getter ready

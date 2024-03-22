@@ -308,6 +308,10 @@
       public: true,
     },
     {
+      name: "AnimationProgressAPI",
+      status: "test",
+    },
+    {
       name: "AnimationWorklet",
     },
     {

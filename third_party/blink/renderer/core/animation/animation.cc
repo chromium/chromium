@@ -577,6 +577,27 @@ std::optional<AnimationTimeDelta> Animation::UnlimitedCurrentTime() const {
              : CalculateCurrentTime();
 }
 
+std::optional<double> Animation::progress() const {
+  std::optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
+  if (!effect() || !current_time) {
+    return std::nullopt;
+  }
+
+  const AnimationTimeDelta effect_end = EffectEnd();
+  if (effect_end.is_zero()) {
+    if (current_time < AnimationTimeDelta()) {
+      return 0;
+    }
+    return 1;
+  }
+
+  if (effect_end.is_inf()) {
+    return 0;
+  }
+
+  return std::clamp<double>(*current_time / effect_end, 0, 1);
+}
+
 String Animation::playState() const {
   return PlayStateString();
 }

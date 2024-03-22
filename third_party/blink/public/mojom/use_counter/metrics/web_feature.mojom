@@ -4296,6 +4296,7 @@ enum WebFeature {
   kV8ModelGenericSession_ExecuteStreaming_Method = 4923,
   kV8ModelManager_CanCreateGenericSession_Method = 4924,
   kV8ModelManager_CreateGenericSession_Method = 4925,
+  kV8Animation_Progress_AttributeGetter = 4926,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
