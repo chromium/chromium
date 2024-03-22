@@ -4373,8 +4373,14 @@ IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest, OrientationCached) {
 // resets the reading back to have alpha=0 and navigates back to the a-page and
 // captures 3 more events and verifies that all events on the a-page have
 // alpha=0.
+// TODO(crbug.com/330801676): Flaky on macOS.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SensorPausedWhileCached DISABLED_SensorPausedWhileCached
+#else
+#define MAYBE_SensorPausedWhileCached SensorPausedWhileCached
+#endif
 IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
-                       SensorPausedWhileCached) {
+                       MAYBE_SensorPausedWhileCached) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
   GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
   GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
