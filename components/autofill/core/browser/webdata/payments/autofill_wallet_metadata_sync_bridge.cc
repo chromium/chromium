@@ -12,6 +12,7 @@
 
 #include "base/base64.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
@@ -93,7 +94,7 @@ struct TypeAndMetadataId {
 
 TypeAndMetadataId ParseWalletMetadataStorageKey(
     const std::string& storage_key) {
-  base::Pickle pickle(storage_key.data(), storage_key.size());
+  base::Pickle pickle = base::Pickle::WithData(base::as_byte_span(storage_key));
   base::PickleIterator iterator(pickle);
   int type_int;
   std::string specifics_id;
