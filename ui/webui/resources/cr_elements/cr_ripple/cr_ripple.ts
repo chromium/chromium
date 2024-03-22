@@ -4,9 +4,10 @@
 
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_ripple.html.js';
+import {getCss} from './cr_ripple.css.js';
 
 const MAX_RADIUS_PX: number = 300;
 const MIN_DURATION_MS: number = 800;
@@ -18,44 +19,28 @@ function distance(x1: number, y1: number, x2: number, y2: number): number {
   return Math.sqrt(xDelta * xDelta + yDelta * yDelta);
 }
 
-export class CrRippleElement extends PolymerElement {
+export class CrRippleElement extends CrLitElement {
   static get is() {
     return 'cr-ripple';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      center: {
-        type: Boolean,
-        value: false,
-      },
-
-      holdDown: {
-        type: Boolean,
-        value: false,
-        observer: 'holdDownChanged_',
-      },
-
-      recenters: {
-        type: Boolean,
-        value: false,
-      },
-
-      noink: {
-        type: Boolean,
-        value: false,
-      },
+      center: {type: Boolean},
+      holdDown: {type: Boolean},
+      recenters: {type: Boolean},
+      noink: {type: Boolean},
     };
   }
 
-  center: boolean;
-  holdDown: boolean;
-  recenters: boolean;
-  noink: boolean;
+  center: boolean = false;
+  holdDown: boolean = false;
+  recenters: boolean = false;
+  noink: boolean = false;
 
   private ripples_: Element[] = [];
   private eventTracker_: EventTracker = new EventTracker();
@@ -104,6 +89,14 @@ export class CrRippleElement extends PolymerElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('holdDown')) {
+      this.holdDownChanged_(this.holdDown, changedProperties.get('holdDown'));
+    }
   }
 
   uiDownAction(e?: PointerEvent) {
