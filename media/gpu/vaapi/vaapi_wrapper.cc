@@ -1766,9 +1766,10 @@ std::vector<SVCScalabilityMode> VaapiWrapper::GetSupportedScalabilityModes(
   if (media_profile == VP9PROFILE_PROFILE0) {
     scalability_modes.push_back(SVCScalabilityMode::kL1T2);
     scalability_modes.push_back(SVCScalabilityMode::kL1T3);
-    if (GetDefaultVaEntryPoint(
-            VaapiWrapper::kEncodeConstantQuantizationParameter, va_profile) ==
-        VAEntrypointEncSliceLP) {
+    const VAEntrypoint va_entry_point = GetDefaultVaEntryPoint(
+        VaapiWrapper::kEncodeConstantQuantizationParameter, va_profile);
+    if (va_entry_point == VAEntrypointEncSliceLP ||
+        va_entry_point == VAEntrypointEncSlice) {
       scalability_modes.push_back(SVCScalabilityMode::kL2T2Key);
       scalability_modes.push_back(SVCScalabilityMode::kL2T3Key);
       scalability_modes.push_back(SVCScalabilityMode::kL3T2Key);

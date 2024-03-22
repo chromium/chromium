@@ -632,9 +632,12 @@ TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
       VaapiWrapper::GetSupportedScalabilityModes(VP9PROFILE_PROFILE0,
                                                  VAProfileVP9Profile0);
 #if BUILDFLAG(IS_CHROMEOS)
-  if (VaapiWrapper::GetDefaultVaEntryPoint(
+  const VAEntrypoint vp9_cqp_enc_va_entry_point =
+      VaapiWrapper::GetDefaultVaEntryPoint(
           VaapiWrapper::kEncodeConstantQuantizationParameter,
-          VAProfileVP9Profile0) == VAEntrypointEncSliceLP) {
+          VAProfileVP9Profile0);
+  if (vp9_cqp_enc_va_entry_point == VAEntrypointEncSliceLP ||
+      vp9_cqp_enc_va_entry_point == VAEntrypointEncSlice) {
     EXPECT_EQ(scalability_modes_vp9_profile0, kSupportedTemporalAndKeySVC);
   } else {
     EXPECT_EQ(scalability_modes_vp9_profile0, kSupportedTemporalSVC);
