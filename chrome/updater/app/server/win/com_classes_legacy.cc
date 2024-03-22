@@ -35,6 +35,7 @@
 #include "base/types/expected_macros.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/scoped_variant.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/app/app_server_win.h"
 #include "chrome/updater/constants.h"
@@ -994,10 +995,6 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
     const WCHAR* command_id,
     DWORD caller_proc_id,
     ULONG_PTR* proc_handle) {
-  ASSIGN_OR_RETURN(auto app_command_runner,
-                   AppCommandRunner::LoadAppCommand(UpdaterScope::kSystem,
-                                                    app_id, command_id));
-
   base::win::ScopedHandle caller_proc_handle;
   if (HRESULT hr = OpenCallerProcessHandle(caller_proc_id, caller_proc_handle);
       FAILED(hr)) {
@@ -1005,14 +1002,31 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
     return hr;
   }
 
-  base::Process process;
-  if (HRESULT hr = app_command_runner.Run({}, process); FAILED(hr)) {
+  Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
+  if (HRESULT hr = MakeAndInitializeComObject<LegacyAppCommandWebImpl>(
+          app_command_web, UpdaterScope::kSystem, app_id, command_id);
+      FAILED(hr)) {
+    return hr;
+  }
+
+  if (HRESULT hr =
+          app_command_web->execute(base::win::ScopedVariant::kEmptyVariant,
+                                   base::win::ScopedVariant::kEmptyVariant,
+                                   base::win::ScopedVariant::kEmptyVariant,
+                                   base::win::ScopedVariant::kEmptyVariant,
+                                   base::win::ScopedVariant::kEmptyVariant,
+                                   base::win::ScopedVariant::kEmptyVariant,
+                                   base::win::ScopedVariant::kEmptyVariant,
+                                   base::win::ScopedVariant::kEmptyVariant,
+                                   base::win::ScopedVariant::kEmptyVariant);
+      FAILED(hr)) {
     return hr;
   }
 
   ScopedKernelHANDLE duplicate_proc_handle;
   if (!::DuplicateHandle(
-          ::GetCurrentProcess(), process.Handle(), caller_proc_handle.Get(),
+          ::GetCurrentProcess(), app_command_web->process().Handle(),
+          caller_proc_handle.Get(),
           ScopedKernelHANDLE::Receiver(duplicate_proc_handle).get(),
           PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, 0)) {
     HRESULT hr = HRESULTFromLastError();

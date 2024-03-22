@@ -303,6 +303,8 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
                          VARIANT substitution8,
                          VARIANT substitution9) override;
 
+  const base::Process& process() const { return process_; }
+
  private:
   friend class LegacyAppCommandWebImplTest;
 
