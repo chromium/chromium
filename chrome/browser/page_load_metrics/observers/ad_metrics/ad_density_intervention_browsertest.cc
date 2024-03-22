@@ -85,11 +85,19 @@ class AdDensityViolationBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/40916871): Fix this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DesktopPageAdDensityByHeightAbove30_AdInterventionNotTriggered \
+  DISABLED_DesktopPageAdDensityByHeightAbove30_AdInterventionNotTriggered
+#else
+#define MAYBE_DesktopPageAdDensityByHeightAbove30_AdInterventionNotTriggered \
+  DesktopPageAdDensityByHeightAbove30_AdInterventionNotTriggered
+#endif
 // TODO(https://crbug.com/1142592): Replace this heavy-weight browsertest with
 // a unit test.
 IN_PROC_BROWSER_TEST_F(
     AdDensityViolationBrowserTest,
-    DesktopPageAdDensityByHeightAbove30_AdInterventionNotTriggered) {
+    MAYBE_DesktopPageAdDensityByHeightAbove30_AdInterventionNotTriggered) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 

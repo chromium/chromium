@@ -712,8 +712,15 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   main_frame_viewport_rect_expectation_waiter->Wait();
 }
 
+// TODO(crbug.com/40916877): Fix this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MainFrameIntersection_RTLPage \
+  DISABLED_MainFrameIntersection_RTLPage
+#else
+#define MAYBE_MainFrameIntersection_RTLPage MainFrameIntersection_RTLPage
+#endif
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       MainFrameIntersection_RTLPage) {
+                       MAYBE_MainFrameIntersection_RTLPage) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/scroll/scrollable_page_with_content_rtl.html");
@@ -867,9 +874,17 @@ IN_PROC_BROWSER_TEST_F(
   main_frame_intersection_expectation_waiter->Wait();
 }
 
+// TODO(crbug.com/40916877): Fix this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NonZeroMainFrameScrollOffset_SameOriginFrameAppended_MainFrameIntersection \
+  DISABLED_NonZeroMainFrameScrollOffset_SameOriginFrameAppended_MainFrameIntersection
+#else
+#define MAYBE_NonZeroMainFrameScrollOffset_SameOriginFrameAppended_MainFrameIntersection \
+  NonZeroMainFrameScrollOffset_SameOriginFrameAppended_MainFrameIntersection
+#endif
 IN_PROC_BROWSER_TEST_F(
     PageLoadMetricsBrowserTest,
-    NonZeroMainFrameScrollOffset_SameOriginFrameAppended_MainFrameIntersection) {
+    MAYBE_NonZeroMainFrameScrollOffset_SameOriginFrameAppended_MainFrameIntersection) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/scroll/scrollable_page_with_content.html");
@@ -898,9 +913,17 @@ IN_PROC_BROWSER_TEST_F(
   main_frame_intersection_expectation_waiter->Wait();
 }
 
+// TODO(crbug.com/40916877): Fix this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NonZeroMainFrameScrollOffset_CrossOriginFrameAppended_MainFrameIntersection \
+  DISABLED_NonZeroMainFrameScrollOffset_CrossOriginFrameAppended_MainFrameIntersection
+#else
+#define MAYBE_NonZeroMainFrameScrollOffset_CrossOriginFrameAppended_MainFrameIntersection \
+  NonZeroMainFrameScrollOffset_CrossOriginFrameAppended_MainFrameIntersection
+#endif
 IN_PROC_BROWSER_TEST_F(
     PageLoadMetricsBrowserTest,
-    NonZeroMainFrameScrollOffset_CrossOriginFrameAppended_MainFrameIntersection) {
+    MAYBE_NonZeroMainFrameScrollOffset_CrossOriginFrameAppended_MainFrameIntersection) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/scroll/scrollable_page_with_content.html");
@@ -3039,8 +3062,15 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PreCommitWebFeature) {
       static_cast<int32_t>(WebFeature::kSecureContextCheckFailed), 0);
 }
 
+// TODO(crbug.com/40916877): Fix this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MainFrameIntersectionsMainFrame \
+  DISABLED_MainFrameIntersectionsMainFrame
+#else
+#define MAYBE_MainFrameIntersectionsMainFrame MainFrameIntersectionsMainFrame
+#endif
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       MainFrameIntersectionsMainFrame) {
+                       MAYBE_MainFrameIntersectionsMainFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
@@ -3077,10 +3107,17 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   waiter->Wait();
 }
 
+// TODO(crbug.com/40916877): Fix this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MainFrameIntersectionSingleFrame \
+  DISABLED_MainFrameIntersectionSingleFrame
+#else
+#define MAYBE_MainFrameIntersectionSingleFrame MainFrameIntersectionSingleFrame
+#endif
 // Creates a single frame within the main frame and verifies the intersection
 // with the main frame.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       MainFrameIntersectionSingleFrame) {
+                       MAYBE_MainFrameIntersectionSingleFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
@@ -3100,10 +3137,17 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   waiter->Wait();
 }
 
+// TODO(crbug.com/40916877): Fix this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MainFrameIntersectionSameOrigin \
+  DISABLED_MainFrameIntersectionSameOrigin
+#else
+#define MAYBE_MainFrameIntersectionSameOrigin MainFrameIntersectionSameOrigin
+#endif
 // Creates a set of nested frames within the main frame and verifies
 // their intersections with the main frame.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       MainFrameIntersectionSameOrigin) {
+                       MAYBE_MainFrameIntersectionSameOrigin) {
   EXPECT_TRUE(embedded_test_server()->Start());
 
   auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
@@ -3139,10 +3183,17 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   waiter->Wait();
 }
 
+// TODO(crbug.com/40916877): Fix this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MainFrameIntersectionCrossOrigin \
+  DISABLED_MainFrameIntersectionCrossOrigin
+#else
+#define MAYBE_MainFrameIntersectionCrossOrigin MainFrameIntersectionCrossOrigin
+#endif
 // Creates a set of nested frames, with a cross origin subframe, within the
 // main frame and verifies their intersections with the main frame.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       MainFrameIntersectionCrossOrigin) {
+                       MAYBE_MainFrameIntersectionCrossOrigin) {
   EXPECT_TRUE(embedded_test_server()->Start());
   auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -3192,11 +3243,19 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   waiter->Wait();
 }
 
+// TODO(crbug.com/40916877): Fix this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MainFrameIntersectionCrossOriginOutOfView \
+  DISABLED_MainFrameIntersectionCrossOriginOutOfView
+#else
+#define MAYBE_MainFrameIntersectionCrossOriginOutOfView \
+  MainFrameIntersectionCrossOriginOutOfView
+#endif
 // Creates a set of nested frames, with a cross origin subframe that is out of
 // view within the main frame and verifies their intersections with the main
 // frame.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       MainFrameIntersectionCrossOriginOutOfView) {
+                       MAYBE_MainFrameIntersectionCrossOriginOutOfView) {
   EXPECT_TRUE(embedded_test_server()->Start());
   auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -3233,12 +3292,20 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   waiter->Wait();
 }
 
+// TODO(crbug.com/40916877): Fix this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MainFrameIntersectionCrossOriginScrolled \
+  DISABLED_MainFrameIntersectionCrossOriginScrolled
+#else
+#define MAYBE_MainFrameIntersectionCrossOriginScrolled \
+  MainFrameIntersectionCrossOriginScrolled
+#endif
 // Creates a set of nested frames, with a cross origin subframe that is out of
 // view within the main frame and verifies their intersections with the main
 // frame. The out of view frame is then scrolled back into view and the
 // intersection is verified.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       MainFrameIntersectionCrossOriginScrolled) {
+                       MAYBE_MainFrameIntersectionCrossOriginScrolled) {
   EXPECT_TRUE(embedded_test_server()->Start());
   auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
