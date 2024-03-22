@@ -18,5 +18,6 @@
 
 base/containers/buffer_iterator_nocompile.nc
 base/containers/span.h
+base/strings/cstring_view
 base/unsafe_buffers_unittest.cc
 base/unsafe_buffers_nocompile.nc
