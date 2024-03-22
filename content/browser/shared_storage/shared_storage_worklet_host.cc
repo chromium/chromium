@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
@@ -1181,7 +1182,7 @@ mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
 SharedStorageWorkletHost::MaybeBindPrivateAggregationHost(
     const std::optional<std::string>& context_id,
     const std::optional<url::Origin>& aggregation_coordinator_origin) {
-  DCHECK(browser_context_);
+  CHECK(browser_context_, base::NotFatalUntil::M128);
 
   if (!blink::ShouldDefinePrivateAggregationInSharedStorage()) {
     return mojo::PendingRemote<blink::mojom::PrivateAggregationHost>();
@@ -1189,7 +1190,7 @@ SharedStorageWorkletHost::MaybeBindPrivateAggregationHost(
 
   PrivateAggregationManager* private_aggregation_manager =
       PrivateAggregationManager::GetManager(*browser_context_);
-  DCHECK(private_aggregation_manager);
+  CHECK(private_aggregation_manager, base::NotFatalUntil::M128);
 
   mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
       pending_pa_host_remote;

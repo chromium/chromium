@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
@@ -70,7 +71,7 @@ std::optional<double> GetBaseValue(
       }
       return std::nullopt;
   }
-  NOTREACHED();
+  NOTREACHED(base::NotFatalUntil::M128);
   return std::nullopt;
 }
 
@@ -255,7 +256,7 @@ FillInPrivateAggregationRequest(
     const std::optional<auction_worklet::mojom::RejectReason> reject_reason,
     const PrivateAggregationTimings& timings,
     bool is_winner) {
-  DCHECK(request);
+  CHECK(request, base::NotFatalUntil::M128);
   if (request->contribution->is_histogram_contribution()) {
     // TODO(crbug.com/1410534): Report a bad mojom message when contribution's
     // value is negative. The worklet code should prevent that, but the worklet
@@ -270,7 +271,7 @@ FillInPrivateAggregationRequest(
 
   // The mojom API declaration should ensure `contribution` being a
   // for-event contribution if not a histogram contribution.
-  DCHECK(contribution->is_for_event_contribution());
+  CHECK(contribution->is_for_event_contribution(), base::NotFatalUntil::M128);
   const std::string event_type =
       contribution->get_for_event_contribution()->event_type;
   std::optional<std::string> final_event_type = std::nullopt;

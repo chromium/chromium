@@ -19,7 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
+#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
@@ -228,7 +228,8 @@ void PrivateAggregationHost::ContributeToHistogram(
         contribution_ptrs) {
   const url::Origin& reporting_origin =
       receiver_set_.current_context()->worklet_origin;
-  DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin));
+  CHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin),
+        base::NotFatalUntil::M128);
 
   if (!GetContentClient()->browser()->IsPrivateAggregationAllowed(
           &*browser_context_, receiver_set_.current_context()->top_frame_origin,
@@ -238,10 +239,11 @@ void PrivateAggregationHost::ContributeToHistogram(
   }
 
   // Null pointers should fail mojo validation.
-  DCHECK(base::ranges::none_of(
-      contribution_ptrs,
-      [](const blink::mojom::AggregatableReportHistogramContributionPtr&
-             contribution_ptr) { return contribution_ptr.is_null(); }));
+  CHECK(base::ranges::none_of(
+            contribution_ptrs,
+            [](const blink::mojom::AggregatableReportHistogramContributionPtr&
+                   contribution_ptr) { return contribution_ptr.is_null(); }),
+        base::NotFatalUntil::M128);
 
   if (base::ranges::any_of(
           contribution_ptrs,
@@ -405,7 +407,8 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
     ReceiverContext& receiver_context,
     base::TimeDelta remaining_timeout) {
   const url::Origin& reporting_origin = receiver_context.worklet_origin;
-  DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin));
+  CHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin),
+        base::NotFatalUntil::M128);
 
   if (!GetContentClient()->browser()->IsPrivateAggregationAllowed(
           &*browser_context_, receiver_context.top_frame_origin,
@@ -472,7 +475,7 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
           /*api=*/receiver_context.api_for_budgeting);
 
   // The origin should be potentially trustworthy.
-  DCHECK(budget_key.has_value());
+  CHECK(budget_key.has_value(), base::NotFatalUntil::M128);
 
   on_report_request_details_received_.Run(
       std::move(report_request_generator),
