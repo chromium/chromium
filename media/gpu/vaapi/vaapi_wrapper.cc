@@ -49,6 +49,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
+#include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/macros.h"
 // Auto-generated for dlopen libva libraries
 #include "media/gpu/vaapi/va_stubs.h"
@@ -2404,8 +2405,27 @@ bool VaapiWrapper::CreateContext(const gfx::Size& size) {
   return MaybeAttachProtectedSession_Locked();
 }
 
+scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForFrameResource(
+    const FrameResource& frame,
+    bool protected_content) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  scoped_refptr<const gfx::NativePixmap> pixmap;
+  if (frame.HasNativePixmap()) {
+    pixmap = frame.GetNativePixmapDmaBuf();
+  } else {
+    pixmap = frame.CreateNativePixmapDmaBuf();
+  }
+
+  if (!pixmap) {
+    LOG(ERROR) << "Failed to create NativePixmap from FrameResource";
+    return nullptr;
+  }
+  return CreateVASurfaceForPixmap(std::move(pixmap), protected_content);
+}
+
 scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
-    scoped_refptr<gfx::NativePixmap> pixmap,
+    scoped_refptr<const gfx::NativePixmap> pixmap,
     bool protected_content) {
   CHECK(!enforce_sequence_affinity_ ||
         sequence_checker_.CalledOnValidSequence());

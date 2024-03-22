@@ -54,6 +54,7 @@ constexpr unsigned int kInvalidVaRtFormat = 0u;
 
 class VADisplayStateSingleton;
 class VideoFrame;
+class FrameResource;
 
 // Enum, function and callback type to allow VaapiWrapper to log errors in VA
 // function calls executed on behalf of its owner. |histogram_name| is prebound
@@ -404,6 +405,18 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       const std::optional<gfx::Size>& visible_size,
       const std::optional<uint32_t>& va_fourcc);
 
+  // Creates a self-releasing VASurface from |frame|. The created VASurface
+  // shares the ownership of the underlying buffer represented by |frame|.
+  // |frame|->StorageType() must either be STORAGE_GPU_MEMORY_BUFFER or
+  // STORAGE_DMABUFS. The ownership of the surface is transferred to the caller.
+  // A caller can destroy |frame| after this method returns and the underlying
+  // buffer will be kept alive by the VASurface. |protected_content| should only
+  // be true if the format needs VA_RT_FORMAT_PROTECTED (currently only true for
+  // AMD).
+  scoped_refptr<VASurface> CreateVASurfaceForFrameResource(
+      const FrameResource& frame,
+      bool protected_content);
+
   // Creates a self-releasing VASurface from |pixmap|. The created VASurface
   // shares the ownership of the underlying buffer represented by |pixmap|. The
   // ownership of the surface is transferred to the caller. A caller can destroy
@@ -411,7 +424,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // alive by the VASurface. |protected_content| should only be true if the
   // format needs VA_RT_FORMAT_PROTECTED (currently only true for AMD).
   virtual scoped_refptr<VASurface> CreateVASurfaceForPixmap(
-      scoped_refptr<gfx::NativePixmap> pixmap,
+      scoped_refptr<const gfx::NativePixmap> pixmap,
       bool protected_content = false);
 
   // Creates a self-releasing VASurface from |buffers|. The ownership of the

@@ -80,9 +80,7 @@ source_set("vaapi") {
     ]
   }
 
-  configs += [
-    "//build/config/linux/libva",
-  ]
+  configs += [ "//build/config/linux/libva" ]
 
   deps = [
     ":common",
@@ -163,6 +161,7 @@ source_set("common") {
   deps = [
     ":libva_stubs",
     "//build:chromeos_buildflags",
+    "//media/gpu/chromeos:video_frame_resource",
     "//third_party/libyuv",
     "//ui/base:features",
     "//ui/gfx:memory_buffer",
