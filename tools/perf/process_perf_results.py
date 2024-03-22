@@ -134,7 +134,8 @@ def _upload_perf_results(json_to_upload, name, configuration_name,
   logging.info('upload_results_to_perf_dashboard: %s.' % args)
 
   # Duplicate part of the results upload to staging.
-  if configuration_name == 'linux-perf-fyi' and name == 'system_health.common_desktop':
+  if (configuration_name == 'linux-perf-fyi'
+      and name == 'system_health.common_desktop'):
     try:
       RESULTS_URL_STAGE = 'https://chromeperf-stage.uc.r.appspot.com'
       staging_args = [(s if s != RESULTS_URL else RESULTS_URL_STAGE)
@@ -190,8 +191,10 @@ def _merge_json_output(output_json,
                                                      test_cross_device)
 
   # Only append the perf results links if present
+  # b/5382232 - changed from links to additional_links so that the links are
+  # retained, but not propagated to the presentation layers in recipe.
   if extra_links:
-    merged_results['links'] = extra_links
+    merged_results['additional_links'] = extra_links
 
   with open(output_json, 'w') as f:
     json.dump(merged_results, f)
