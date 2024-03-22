@@ -713,11 +713,11 @@ base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
 }
 
 crypto::UserVerifyingKeyProvider::Config MakeUserVerifyingKeyConfig() {
-  return {
+  crypto::UserVerifyingKeyProvider::Config config;
 #if BUILDFLAG(IS_MAC)
-      .keychain_access_group = kUserVerifyingKeyKeychainAccessGroup,
+  config.keychain_access_group = kUserVerifyingKeyKeychainAccessGroup;
 #endif  // BUILDFLAG(IS_MAC)
-  };
+  return config;
 }
 
 }  // namespace

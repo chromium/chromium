@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
+#include "crypto/scoped_lacontext.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 
@@ -74,7 +75,14 @@ class CRYPTO_EXPORT RefCountedUserVerifyingSigningKey
 // UserVerifyingKeyProvider creates |UserVerifyingSigningKey|s.
 class CRYPTO_EXPORT UserVerifyingKeyProvider {
  public:
-  struct Config {
+  struct CRYPTO_EXPORT Config {
+    Config();
+    Config(const Config& config) = delete;
+    Config& operator=(const Config& config) = delete;
+    Config(Config&& config);
+    Config& operator=(Config&& config);
+    ~Config();
+
 #if BUILDFLAG(IS_MAC)
     // The keychain access group the key is shared with. The binary must be
     // codesigned with the corresponding entitlement.
@@ -82,6 +90,11 @@ class CRYPTO_EXPORT UserVerifyingKeyProvider {
     // This must be set to a non empty value when using user verifying keys on
     // macOS.
     std::string keychain_access_group;
+
+    // Optional LAContext to be used when retrieving and storing keys. Passing
+    // an authenticated LAContext lets you call UserVerifyingSigningKey::Sign()
+    // without triggering a macOS local authentication prompt.
+    std::optional<ScopedLAContext> lacontext;
 #endif  // BUILDFLAG(IS_MAC)
   };
 

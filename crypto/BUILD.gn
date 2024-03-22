@@ -83,6 +83,12 @@ component("crypto") {
     if (is_mac) {
       sources += [
         "apple_keychain_mac.cc",
+        "mac_security_services_lock.cc",
+        "mac_security_services_lock.h",
+        "scoped_lacontext.h",
+        "scoped_lacontext.mm",
+        "unexportable_key_mac.h",
+        "unexportable_key_mac.mm",
         "user_verifying_key_mac.mm",
       ]
     } else if (is_ios) {
@@ -98,13 +104,6 @@ component("crypto") {
     ]
   }
 
-  if (is_mac) {
-    sources += [
-      "mac_security_services_lock.cc",
-      "mac_security_services_lock.h",
-      "unexportable_key_mac.mm",
-    ]
-  }
   if (is_win) {
     sources += [
       "scoped_capi_types.h",
@@ -252,6 +251,7 @@ static_library("test_support") {
     frameworks = [
       "CoreFoundation.framework",
       "Foundation.framework",
+      "LocalAuthentication.framework",
       "Security.framework",
     ]
   }

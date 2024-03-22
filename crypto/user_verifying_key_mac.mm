@@ -20,7 +20,9 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "crypto/apple_keychain_v2.h"
+#include "crypto/scoped_lacontext.h"
 #include "crypto/unexportable_key.h"
+#include "crypto/unexportable_key_mac.h"
 #include "crypto/user_verifying_key.h"
 
 namespace crypto {
@@ -102,7 +104,8 @@ class UserVerifyingSigningKeyMac : public UserVerifyingSigningKey {
 class UserVerifyingKeyProviderMac : public UserVerifyingKeyProvider {
  public:
   explicit UserVerifyingKeyProviderMac(UserVerifyingKeyProvider::Config config)
-      : config_(std::move(config)) {}
+      : lacontext_(config.lacontext ? config.lacontext->release() : nil),
+        config_(std::move(config)) {}
   ~UserVerifyingKeyProviderMac() override = default;
 
   void GenerateUserVerifyingSigningKey(
@@ -110,14 +113,15 @@ class UserVerifyingKeyProviderMac : public UserVerifyingKeyProvider {
           acceptable_algorithms,
       base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
           callback) override {
-    std::unique_ptr<UnexportableKeyProvider> key_provider =
-        GetUnexportableKeyProvider(MakeUnexportableKeyConfig());
+    std::unique_ptr<UnexportableKeyProviderMac> key_provider =
+        GetUnexportableKeyProviderMac(MakeUnexportableKeyConfig());
     if (!key_provider) {
       std::move(callback).Run(nullptr);
       return;
     }
     std::unique_ptr<UnexportableSigningKey> key =
-        key_provider->GenerateSigningKeySlowly(acceptable_algorithms);
+        key_provider->GenerateSigningKeySlowly(acceptable_algorithms,
+                                               lacontext_);
     if (!key) {
       std::move(callback).Run(nullptr);
       return;
@@ -131,14 +135,14 @@ class UserVerifyingKeyProviderMac : public UserVerifyingKeyProvider {
       base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
           callback) override {
     std::vector<uint8_t> wrapped_key(key_label.begin(), key_label.end());
-    std::unique_ptr<UnexportableKeyProvider> key_provider =
-        GetUnexportableKeyProvider(MakeUnexportableKeyConfig());
+    std::unique_ptr<UnexportableKeyProviderMac> key_provider =
+        GetUnexportableKeyProviderMac(MakeUnexportableKeyConfig());
     if (!key_provider) {
       std::move(callback).Run(nullptr);
       return;
     }
     std::unique_ptr<UnexportableSigningKey> key =
-        key_provider->FromWrappedSigningKeySlowly(wrapped_key);
+        key_provider->FromWrappedSigningKeySlowly(wrapped_key, lacontext_);
     if (!key) {
       std::move(callback).Run(nullptr);
       return;
@@ -168,6 +172,7 @@ class UserVerifyingKeyProviderMac : public UserVerifyingKeyProvider {
             UnexportableKeyProvider::Config::AccessControl::kUserPresence,
     };
   }
+  LAContext* __strong lacontext_;
   const UserVerifyingKeyProvider::Config config_;
 };
 

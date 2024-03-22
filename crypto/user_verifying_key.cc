@@ -14,6 +14,12 @@ std::unique_ptr<UserVerifyingKeyProvider> (*g_mock_provider)() = nullptr;
 
 }  // namespace
 
+UserVerifyingKeyProvider::Config::Config() = default;
+UserVerifyingKeyProvider::Config::Config(Config&& config) = default;
+UserVerifyingKeyProvider::Config& UserVerifyingKeyProvider::Config::operator=(
+    Config&& config) = default;
+UserVerifyingKeyProvider::Config::~Config() = default;
+
 UserVerifyingSigningKey::~UserVerifyingSigningKey() = default;
 UserVerifyingKeyProvider::~UserVerifyingKeyProvider() = default;
 

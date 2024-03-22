@@ -76,8 +76,6 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
       // Note that if you set this and choose not to pass an authenticated
       // LAContext when signing, macOS will prompt the user for biometrics and
       // the thread will block until that resolves.
-      // TODO(nsatragno): allow some way to pass an authenticated LAContext when
-      // signing.
       kUserPresence,
     };
 
