@@ -36,6 +36,10 @@ specific_include_rules = {
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/view",
   ],
 
+  'TabDelegateFactory\.java': [
+    "+chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf/PdfInfo.java",
+  ],
+
   'CurrentTabObserverTest.java': [
     "+base/test/android/junit",
   ]

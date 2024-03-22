@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
+import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -51,9 +52,9 @@ public interface TabDelegateFactory {
      * @param url The URL to be handled.
      * @param candidatePage A NativePage to be reused if it matches the url, or null.
      * @param tab The Tab that will show the page.
-     * @param isPdf Whether the content of the URL is pdf.
+     * @param pdfInfo Information of the pdf, or null if not pdf.
      * @return A NativePage showing the specified url or null.
      */
     @Nullable
-    NativePage createNativePage(String url, NativePage candidatePage, Tab tab, boolean isPdf);
+    NativePage createNativePage(String url, NativePage candidatePage, Tab tab, PdfInfo pdfInfo);
 }

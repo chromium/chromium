@@ -5,13 +5,11 @@
 package org.chromium.chrome.browser.pdf;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
-import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** The class responsible for setting up PdfPage. */
 public class PdfCoordinator {
@@ -48,7 +46,7 @@ public class PdfCoordinator {
         mFragmentContainerViewId = View.generateViewId();
         fragmentContainerView.setId(mFragmentContainerViewId);
         setPdfFilePath(filepath);
-        setPdfIsDownloaded(isPdfDownloaded(url));
+        setPdfIsDownloaded(isPdfDownloaded());
     }
 
     /** Returns the intended view for PdfPage tab. */
@@ -68,6 +66,10 @@ public class PdfCoordinator {
     void onDownloadComplete(String pdfFilePath) {
         setPdfFilePath(pdfFilePath);
         setPdfIsDownloaded(true);
+    }
+
+    String getFilepath() {
+        return mPdfFilePath;
     }
 
     private void setPdfFilePath(String pdfFilePath) {
@@ -93,16 +95,8 @@ public class PdfCoordinator {
         mIsPdfLoaded = true;
     }
 
-    private boolean isPdfDownloaded(String url) {
-        Uri uri = Uri.parse(url);
-        String scheme = uri.getScheme();
-        assert scheme != null;
-        assert scheme.equals(UrlConstants.HTTP_SCHEME)
-                || scheme.equals(UrlConstants.HTTPS_SCHEME)
-                || scheme.equals(UrlConstants.CONTENT_SCHEME)
-                || scheme.equals(UrlConstants.FILE_SCHEME);
-        return scheme.equals(UrlConstants.CONTENT_SCHEME)
-                || scheme.equals(UrlConstants.FILE_SCHEME);
+    private boolean isPdfDownloaded() {
+        return mPdfFilePath != null;
     }
 
     boolean getIsPdfLoadedForTesting() {

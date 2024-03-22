@@ -13,7 +13,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -208,7 +207,7 @@ public class TabUnitTest {
                 .createWebContentsDelegate(any(Tab.class));
         doReturn(mNativePage)
                 .when(mDelegateFactory)
-                .createNativePage(any(String.class), any(), any(Tab.class), anyBoolean());
+                .createNativePage(any(String.class), any(), any(Tab.class), any());
         doReturn(false).when(mNativePage).isFrozen();
         doReturn(mNativePageView).when(mNativePage).getView();
         doReturn(mWindowAndroid).when(mWebContents).getTopLevelNativeWindow();
@@ -252,8 +251,8 @@ public class TabUnitTest {
         mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
         assertFalse(
                 mTab.maybeShowNativePage(
-                        (String) null, /* forceReload= */ false, /* isPdf= */ false));
-        assertFalse(mTab.maybeShowNativePage("", /* forceReload= */ false, /* isPdf= */ false));
+                        (String) null, /* forceReload= */ false, /* pdfInfo= */ null));
+        assertFalse(mTab.maybeShowNativePage("", /* forceReload= */ false, /* pdfInfo= */ null));
     }
 
     @Test

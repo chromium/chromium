@@ -12,6 +12,7 @@ import android.webkit.MimeTypeMap;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContentUriUtils;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -65,6 +66,13 @@ public class PdfUtils {
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     }
 
+    public static PdfInfo getPdfInfo(NativePage nativePage) {
+        if (nativePage == null || !nativePage.isPdf()) {
+            return null;
+        }
+        return new PdfInfo(nativePage.getTitle(), nativePage.getCanonicalFilepath());
+    }
+
     static String getFileNameFromUrl(String url) {
         Uri uri = Uri.parse(url);
         String scheme = uri.getScheme();
@@ -101,7 +109,7 @@ public class PdfUtils {
         if (scheme.equals(UrlConstants.CONTENT_SCHEME) || scheme.equals(UrlConstants.FILE_SCHEME)) {
             return url;
         }
-        return "";
+        return null;
     }
 
     static void setUseAndroidPdfViewerForTesting(boolean useAndroidPdfViewerForTesting) {

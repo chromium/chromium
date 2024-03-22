@@ -84,6 +84,13 @@ public interface NativePage {
         return false;
     }
 
+    /**
+     * @return the filepath or null if not available. Only pdf native page supports filepath now.
+     */
+    default String getCanonicalFilepath() {
+        return null;
+    }
+
     /** Notify the native page that it is about to be navigated back or hidden by a back press. */
     default void notifyHidingWithBack() {}
 

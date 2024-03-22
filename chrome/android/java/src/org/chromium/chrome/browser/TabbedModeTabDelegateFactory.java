@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
+import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
@@ -179,7 +180,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
 
     @Override
     public NativePage createNativePage(
-            String url, NativePage candidatePage, Tab tab, boolean isPdf) {
+            String url, NativePage candidatePage, Tab tab, PdfInfo pdfInfo) {
         if (mNativePageFactory == null) {
             mNativePageFactory =
                     new NativePageFactory(
@@ -199,7 +200,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                             mTabStripHeightSupplier,
                             mModuleRegistrySupplier);
         }
-        return mNativePageFactory.createNativePage(url, candidatePage, tab, isPdf);
+        return mNativePageFactory.createNativePage(url, candidatePage, tab, pdfInfo);
     }
 
     /** Destroy and unhook objects at destruction. */

@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.RecentTabsManager;
 import org.chromium.chrome.browser.ntp.RecentTabsPage;
+import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -277,12 +278,13 @@ public class NativePageFactory {
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector), tab.getProfile());
         }
 
-        protected NativePage buildPdfPage(Tab tab, String url) {
+        protected NativePage buildPdfPage(Tab tab, String url, PdfInfo pdfInfo) {
             return new PdfPage(
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
                     tab.getProfile(),
                     mActivity,
-                    url);
+                    url,
+                    pdfInfo);
         }
     }
 
@@ -294,20 +296,20 @@ public class NativePageFactory {
      * @param url The URL to be handled.
      * @param candidatePage A NativePage to be reused if it matches the url, or null.
      * @param tab The Tab that will show the page.
-     * @param isPdf Whether the content of the URL is pdf.
+     * @param pdfInfo Information of the pdf, or null if not pdf.
      * @return A NativePage showing the specified url or null.
      */
     public NativePage createNativePage(
-            String url, NativePage candidatePage, Tab tab, boolean isPdf) {
-        return createNativePageForURL(url, candidatePage, tab, tab.isIncognito(), isPdf);
+            String url, NativePage candidatePage, Tab tab, PdfInfo pdfInfo) {
+        return createNativePageForURL(url, candidatePage, tab, tab.isIncognito(), pdfInfo);
     }
 
     @VisibleForTesting
     NativePage createNativePageForURL(
-            String url, NativePage candidatePage, Tab tab, boolean isIncognito, boolean isPdf) {
+            String url, NativePage candidatePage, Tab tab, boolean isIncognito, PdfInfo pdfInfo) {
         NativePage page;
 
-        switch (NativePage.nativePageType(url, candidatePage, isIncognito, isPdf)) {
+        switch (NativePage.nativePageType(url, candidatePage, isIncognito, pdfInfo != null)) {
             case NativePageType.NONE:
                 return null;
             case NativePageType.CANDIDATE:
@@ -332,7 +334,7 @@ public class NativePageFactory {
                 page = getBuilder().buildManagementPage(tab);
                 break;
             case NativePageType.PDF:
-                page = getBuilder().buildPdfPage(tab, url);
+                page = getBuilder().buildPdfPage(tab, url, pdfInfo);
                 break;
             default:
                 assert false;

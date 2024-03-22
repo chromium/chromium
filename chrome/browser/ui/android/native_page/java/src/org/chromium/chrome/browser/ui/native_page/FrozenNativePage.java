@@ -21,6 +21,7 @@ public class FrozenNativePage implements NativePage {
     private final String mTitle;
     private final int mBackgroundColor;
     private final boolean mIsPdf;
+    private final String mCanonicalFilepath;
 
     /** Creates a FrozenNativePage to replace the given NativePage and destroys the NativePage. */
     public static FrozenNativePage freeze(NativePage nativePage) {
@@ -35,6 +36,7 @@ public class FrozenNativePage implements NativePage {
         mTitle = nativePage.getTitle();
         mBackgroundColor = nativePage.getBackgroundColor();
         mIsPdf = nativePage.isPdf();
+        mCanonicalFilepath = nativePage.getCanonicalFilepath();
     }
 
     @Override
@@ -84,6 +86,11 @@ public class FrozenNativePage implements NativePage {
     @Override
     public boolean isPdf() {
         return mIsPdf;
+    }
+
+    @Override
+    public String getCanonicalFilepath() {
+        return mCanonicalFilepath;
     }
 
     @Override

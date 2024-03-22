@@ -151,7 +151,7 @@ public class NativePageFactoryTest {
                     MockNativePage page =
                             (MockNativePage)
                                     mNativePageFactory.createNativePageForURL(
-                                            urlCombo.url, candidate, null, isIncognito, false);
+                                            urlCombo.url, candidate, null, isIncognito, null);
                     String debugMessage =
                             String.format(
                                     "Failed test case: isIncognito=%s, urlCombo={%s,%s},"
@@ -184,7 +184,7 @@ public class NativePageFactoryTest {
                 Assert.assertNull(
                         urlCombo.url,
                         mNativePageFactory.createNativePageForURL(
-                                urlCombo.url, null, null, true, false));
+                                urlCombo.url, null, null, true, null));
             }
         }
         for (boolean isIncognito : new boolean[] {true, false}) {
@@ -192,7 +192,7 @@ public class NativePageFactoryTest {
                 Assert.assertNull(
                         invalidUrl,
                         mNativePageFactory.createNativePageForURL(
-                                invalidUrl, null, null, isIncognito, false));
+                                invalidUrl, null, null, isIncognito, null));
             }
         }
     }

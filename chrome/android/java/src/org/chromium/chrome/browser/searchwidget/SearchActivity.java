@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDeleg
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
+import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -502,7 +503,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
                     @Override
                     public NativePage createNativePage(
-                            String url, NativePage candidatePage, Tab tab, boolean isPdf) {
+                            String url, NativePage candidatePage, Tab tab, PdfInfo pdfInfo) {
                         // SearchActivity does not create native pages.
                         return null;
                     }

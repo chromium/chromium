@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
@@ -483,7 +484,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
     @Override
     public NativePage createNativePage(
-            String url, NativePage candidatePage, Tab tab, boolean isPdf) {
+            String url, NativePage candidatePage, Tab tab, PdfInfo pdfInfo) {
         // Navigation comes from user pressing "Back to safety" on an interstitial so close the tab.
         // See crbug.com/1270695
         if (UrlConstants.NTP_URL.equals(url) && tab.isShowingErrorPage()) {
