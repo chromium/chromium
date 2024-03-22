@@ -259,14 +259,14 @@ void PickerSearchResultsView::AddResultToSection(
           [&](const PickerSearchResult::LocalFileData& data) {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
-            item_view->SetPreview(&preview_bubble_controller_);
+            // TODO: b/330794217 - Add preview once it's available.
             item_view->SetPrimaryText(data.title);
             section_view->AddListItem(std::move(item_view));
           },
           [&](const PickerSearchResult::DriveFileData& data) {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
-            item_view->SetPreview(&preview_bubble_controller_);
+            // TODO: b/330794217 - Add preview once it's available.
             item_view->SetPrimaryText(data.title);
             section_view->AddListItem(std::move(item_view));
           },
