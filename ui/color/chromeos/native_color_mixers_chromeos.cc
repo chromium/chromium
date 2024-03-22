@@ -62,40 +62,8 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
       ui::SetAlpha(ui::kColorRefNeutral0, dark_mode ? 0x14 : 0x0F);
 
   // TODO(b/291622042): Delete once Jelly is fully launched.
-  if (dark_mode) {
-    const bool high_elevation =
-        key.elevation_mode == ColorProviderKey::ElevationMode::kHigh;
-    const SkColor base_color =
-        high_elevation
-            ? color_utils::AlphaBlend(SK_ColorWHITE, gfx::kGoogleGrey900, 0.08f)
-            : gfx::kGoogleGrey900;
-    mixer[kColorNativeColor1] = {gfx::kGoogleBlue400};
-    mixer[kColorNativeColor1Shade1] = {color_utils::AlphaBlend(
-        gfx::kGoogleBlue600, base_color, high_elevation ? 0.4f : 0.3f)};
-    mixer[kColorNativeColor1Shade2] = {
-        color_utils::AlphaBlend(gfx::kGoogleBlue300, base_color, 0.3f)};
-    mixer[kColorNativeColor2] = {gfx::kGoogleGreen400};
-    mixer[kColorNativeColor3] = {gfx::kGoogleYellow400};
-    mixer[kColorNativeColor4] = {gfx::kGoogleRed500};
-    mixer[kColorNativeColor5] = {gfx::kGoogleMagenta300};
-    mixer[kColorNativeColor6] = {gfx::kGoogleElectric300};
-    mixer[kColorNativeBaseColor] = {base_color};
-    mixer[kColorNativeSecondaryColor] = {
-        high_elevation
-            ? gfx::kGoogleGrey700
-            : color_utils::AlphaBlend(gfx::kGoogleGrey200, base_color, 0.3f)};
-  } else {
-    mixer[kColorNativeColor1] = {gfx::kGoogleBlue500};
-    mixer[kColorNativeColor1Shade1] = {gfx::kGoogleBlue300};
-    mixer[kColorNativeColor1Shade2] = {gfx::kGoogleBlue100};
-    mixer[kColorNativeColor2] = {gfx::kGoogleGreen500};
-    mixer[kColorNativeColor3] = {gfx::kGoogleYellow500};
-    mixer[kColorNativeColor4] = {gfx::kGoogleRed500};
-    mixer[kColorNativeColor5] = {gfx::kGoogleMagenta400};
-    mixer[kColorNativeColor6] = {gfx::kGoogleElectric400};
-    mixer[kColorNativeBaseColor] = {SK_ColorWHITE};
-    mixer[kColorNativeSecondaryColor] = {gfx::kGoogleGrey100};
-  }
+  mixer[kColorNativeColor2] = {dark_mode ? gfx::kGoogleGreen400
+                                         : gfx::kGoogleGreen500};
 }
 
 }  // namespace ui

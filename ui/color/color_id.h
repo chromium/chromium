@@ -8,6 +8,7 @@
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 
 // clang-format off
 #define CROSS_PLATFORM_COLOR_IDS \
@@ -557,8 +558,29 @@
   E_CPONLY(kColorWebNativeControlSliderPressed) \
   E_CPONLY(kColorWindowBackground)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define CHROMEOS_ASH_COLOR_IDS \
+  /* Colors for illustrations */ \
+  E_CPONLY(kColorNativeColor1) \
+  E_CPONLY(kColorNativeColor1Shade1) \
+  E_CPONLY(kColorNativeColor1Shade2) \
+  E_CPONLY(kColorNativeColor3) \
+  E_CPONLY(kColorNativeColor4) \
+  E_CPONLY(kColorNativeColor5) \
+  E_CPONLY(kColorNativeColor6) \
+  E_CPONLY(kColorNativeBaseColor) \
+  E_CPONLY(kColorNativeSecondaryColor) \
+  E_CPONLY(kColorNativeOnPrimaryContainerColor) \
+  E_CPONLY(kColorNativeAnalogColor) \
+  E_CPONLY(kColorNativeMutedColor) \
+  E_CPONLY(kColorNativeComplementColor) \
+  E_CPONLY(kColorNativeOnGradientColor)
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#define CHROMEOS_ASH_COLOR_IDS
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
+  CHROMEOS_ASH_COLOR_IDS \
   /* NOTE: Nearly all of the following CrOS color ids will need to be re- */ \
   /* evaluated once CrOS fully supports the color pipeline. */ \
   E_CPONLY(kColorAshActionLabelFocusRingEdit) \
@@ -601,16 +623,8 @@
   E_CPONLY(kColorCrosSystemHighlightBorder) \
   E_CPONLY(kColorCrosSystemHighlightBorder1) \
   \
-  E_CPONLY(kColorNativeColor1) \
-  E_CPONLY(kColorNativeColor1Shade1) \
-  E_CPONLY(kColorNativeColor1Shade2) \
-  E_CPONLY(kColorNativeColor2) \
-  E_CPONLY(kColorNativeColor3) \
-  E_CPONLY(kColorNativeColor4) \
-  E_CPONLY(kColorNativeColor5) \
-  E_CPONLY(kColorNativeColor6) \
-  E_CPONLY(kColorNativeBaseColor) \
-  E_CPONLY(kColorNativeSecondaryColor)
+  /* TODO(b/330381503): Move to Ash only once user is migrated. */ \
+  E_CPONLY(kColorNativeColor2)
 #elif BUILDFLAG(IS_LINUX)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
   E_CPONLY(kColorNativeButtonBorder)\

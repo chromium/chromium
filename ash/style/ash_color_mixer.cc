@@ -595,6 +595,14 @@ void RemapIllustrationColors(ui::ColorMixer& mixer) {
   mixer[ui::kColorNativeColor6] = {cros_tokens::kCrosSysIlloColor6};
   mixer[ui::kColorNativeBaseColor] = {cros_tokens::kCrosSysIlloBase};
   mixer[ui::kColorNativeSecondaryColor] = {cros_tokens::kCrosSysIlloSecondary};
+  mixer[ui::kColorNativeOnPrimaryContainerColor] = {
+      cros_tokens::kCrosSysIlloOnPrimaryContainer};
+  mixer[ui::kColorNativeAnalogColor] = {cros_tokens::kCrosSysIlloAnalog};
+  mixer[ui::kColorNativeMutedColor] = {cros_tokens::kCrosSysIlloMuted};
+  mixer[ui::kColorNativeComplementColor] = {
+      cros_tokens::kCrosSysIlloComplement};
+  mixer[ui::kColorNativeOnGradientColor] = {
+      cros_tokens::kCrosSysIlloOnGradient};
 }
 
 // Maps colors specific to gaming features. Colors are specified in

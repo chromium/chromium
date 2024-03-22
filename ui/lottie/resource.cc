@@ -71,6 +71,46 @@ gfx::ImageSkia CreateImageSkia(Animation* content) {
 // Creates a |cc::SkottieColorMap| with theme colors from a |ui::ColorProvider|.
 cc::SkottieColorMap CreateColorMap(const ui::ColorProvider* color_provider) {
   return {
+      cc::SkottieMapColor("cros.sys.illo.color1",
+                          color_provider->GetColor(ui::kColorNativeColor1)),
+      cc::SkottieMapColor(
+          "cros.sys.illo.color1.1",
+          color_provider->GetColor(ui::kColorNativeColor1Shade1)),
+      cc::SkottieMapColor(
+          "cros.sys.illo.color1.2",
+          color_provider->GetColor(ui::kColorNativeColor1Shade2)),
+      cc::SkottieMapColor("cros.sys.illo.color2",
+                          color_provider->GetColor(ui::kColorNativeColor2)),
+      cc::SkottieMapColor("cros.sys.illo.color3",
+                          color_provider->GetColor(ui::kColorNativeColor3)),
+      cc::SkottieMapColor("cros.sys.illo.color4",
+                          color_provider->GetColor(ui::kColorNativeColor4)),
+      cc::SkottieMapColor("cros.sys.illo.color5",
+                          color_provider->GetColor(ui::kColorNativeColor5)),
+      cc::SkottieMapColor("cros.sys.illo.color6",
+                          color_provider->GetColor(ui::kColorNativeColor6)),
+      cc::SkottieMapColor("cros.sys.illo.base",
+                          color_provider->GetColor(ui::kColorNativeBaseColor)),
+      cc::SkottieMapColor(
+          "cros.sys.illo.secondary",
+          color_provider->GetColor(ui::kColorNativeSecondaryColor)),
+      cc::SkottieMapColor(
+          "cros.sys.illo.on-primary-container",
+          color_provider->GetColor(ui::kColorNativeOnPrimaryContainerColor)),
+      cc::SkottieMapColor(
+          "cros.sys.illo.analog",
+          color_provider->GetColor(ui::kColorNativeAnalogColor)),
+      cc::SkottieMapColor("cros.sys.illo.muted",
+                          color_provider->GetColor(ui::kColorNativeMutedColor)),
+      cc::SkottieMapColor(
+          "cros.sys.illo.complement",
+          color_provider->GetColor(ui::kColorNativeComplementColor)),
+      cc::SkottieMapColor(
+          "cros.sys.illo.on-gradient",
+          color_provider->GetColor(ui::kColorNativeOnGradientColor)),
+
+      // TODO(b/329334699): Colors below are deprecated and will be removed when
+      // the users are cleaned up.
       cc::SkottieMapColor("_CrOS_Color1",
                           color_provider->GetColor(ui::kColorNativeColor1)),
       cc::SkottieMapColor(
