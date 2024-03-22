@@ -1658,7 +1658,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'e705975ae3b5f68eaad7868595cd8b4b5104a75e',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'fee912c854d70b4c44462305f18e19cc16ee0540',
 
   'src/third_party/perl': {
       'url': Var('chromium_git') + '/chromium/deps/perl.git' + '@' + '8ef97ff3b7332e38e61b347a2fbed425a4617151',
