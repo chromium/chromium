@@ -47,6 +47,10 @@ class TabStripLayout: UICollectionViewFlowLayout {
       left: TabStripConstants.CollectionView.horizontalInset,
       bottom: 0,
       right: TabStripConstants.CollectionView.horizontalInset)
+
+    NotificationCenter.default.addObserver(
+      self, selector: #selector(voiceOverChanged),
+      name: UIAccessibility.voiceOverStatusDidChangeNotification, object: nil)
   }
 
   required init?(coder: NSCoder) {
@@ -564,6 +568,11 @@ class TabStripLayout: UICollectionViewFlowLayout {
     }
 
     return alpha
+  }
+
+  // Called when voice over is activated.
+  @objc func voiceOverChanged() {
+    self.invalidateLayout()
   }
 
   // MARK: - Public
