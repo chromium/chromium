@@ -11,6 +11,7 @@
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/video/video_encode_accelerator.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
 
@@ -183,24 +184,27 @@ bool StructTraits<media::mojom::VideoEncodeOptionsDataView,
 }
 
 // static
-bool UnionTraits<media::mojom::CodecMetadataDataView,
+bool UnionTraits<media::mojom::OptionalMetadataDataView,
                  media::BitstreamBufferMetadata>::
-    Read(media::mojom::CodecMetadataDataView data,
+    Read(media::mojom::OptionalMetadataDataView data,
          media::BitstreamBufferMetadata* out) {
   switch (data.tag()) {
-    case media::mojom::CodecMetadataDataView::Tag::kH264: {
+    case media::mojom::OptionalMetadataDataView::Tag::kDrop: {
+      return data.ReadDrop(&out->drop);
+    }
+    case media::mojom::OptionalMetadataDataView::Tag::kH264: {
       return data.ReadH264(&out->h264);
     }
-    case media::mojom::CodecMetadataDataView::Tag::kVp8: {
+    case media::mojom::OptionalMetadataDataView::Tag::kVp8: {
       return data.ReadVp8(&out->vp8);
     }
-    case media::mojom::CodecMetadataDataView::Tag::kVp9: {
+    case media::mojom::OptionalMetadataDataView::Tag::kVp9: {
       return data.ReadVp9(&out->vp9);
     }
-    case media::mojom::CodecMetadataDataView::Tag::kAv1: {
+    case media::mojom::OptionalMetadataDataView::Tag::kAv1: {
       return data.ReadAv1(&out->av1);
     }
-    case media::mojom::CodecMetadataDataView::Tag::kH265: {
+    case media::mojom::OptionalMetadataDataView::Tag::kH265: {
       return data.ReadH265(&out->h265);
     }
   }
@@ -226,7 +230,16 @@ bool StructTraits<media::mojom::BitstreamBufferMetadataDataView,
     return false;
   }
 
-  return data.ReadCodecMetadata(metadata);
+  return data.ReadOptionalMetadata(metadata);
+}
+
+// static
+bool StructTraits<media::mojom::DropFrameMetadataDataView,
+                  media::DropFrameMetadata>::
+    Read(media::mojom::DropFrameMetadataDataView data,
+         media::DropFrameMetadata* out_metadata) {
+  out_metadata->spatial_idx = data.spatial_idx();
+  return true;
 }
 
 // static

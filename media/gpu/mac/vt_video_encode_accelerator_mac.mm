@@ -672,9 +672,9 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
 
   if (encode_output->info & kVTEncodeInfo_FrameDropped) {
     DVLOG(2) << " frame dropped";
-    client_->BitstreamBufferReady(
-        buffer_ref->id,
-        BitstreamBufferMetadata(0, false, encode_output->capture_timestamp));
+    client_->BitstreamBufferReady(buffer_ref->id,
+                                  BitstreamBufferMetadata::CreateForDropFrame(
+                                      encode_output->capture_timestamp));
     MaybeRunFlushCallback();
     return;
   }

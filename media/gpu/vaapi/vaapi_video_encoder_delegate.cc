@@ -145,10 +145,10 @@ VaapiVideoEncoderDelegate::GetEncodeResult(
     std::unique_ptr<EncodeJob> encode_job) {
   TRACE_EVENT0("media,gpu", "VAVEDelegate::GetEncodeResult");
   if (encode_job->IsFrameDropped()) {
-    // TODO(b/329745253): Create factory function for the dropped frame.
-    BitstreamBufferMetadata metadata(0, false, encode_job->timestamp());
-    metadata.end_of_picture = encode_job->end_of_picture();
-    return std::make_optional<EncodeResult>(nullptr, metadata);
+    return std::make_optional<EncodeResult>(
+        nullptr, BitstreamBufferMetadata::CreateForDropFrame(
+                     encode_job->timestamp(), encode_job->spatial_index(),
+                     encode_job->end_of_picture()));
   }
 
   const VASurfaceID va_surface_id = encode_job->input_surface_id();

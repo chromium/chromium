@@ -288,5 +288,15 @@ TEST(BitstreamBufferMetadataTraitTest, RoundTrip) {
       mojo::test::SerializeAndDeserialize<mojom::BitstreamBufferMetadata>(
           input_metadata, output_metadata));
   EXPECT_EQ(input_metadata, output_metadata);
+
+  input_metadata =
+      BitstreamBufferMetadata::CreateForDropFrame(base::Milliseconds(123456),
+                                                  /*spatial_idx=*/1u, false);
+  CHECK(input_metadata.drop);
+  output_metadata = ::media::BitstreamBufferMetadata();
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::BitstreamBufferMetadata>(
+          input_metadata, output_metadata));
+  EXPECT_EQ(input_metadata, output_metadata);
 }
 }  // namespace media

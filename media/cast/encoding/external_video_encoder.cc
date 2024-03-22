@@ -343,7 +343,7 @@ class ExternalVideoEncoder::VEAClientImpl final
       return;
     }
 
-    if (metadata.payload_size_bytes == 0) {
+    if (metadata.dropped_frame()) {
       CHECK(key_frame_encountered_);
       // The encoder drops a frame.
       InProgressExternalVideoFrameEncode& request =
@@ -362,6 +362,7 @@ class ExternalVideoEncoder::VEAClientImpl final
       return;
     }
 
+    CHECK_NE(metadata.payload_size_bytes, 0u);
     const char* output_buffer_memory =
         output_buffers_[bitstream_buffer_id]
             .second.GetMemoryAsSpan<char>(metadata.payload_size_bytes)

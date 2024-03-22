@@ -552,6 +552,7 @@ AV1VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
 void AV1VaapiVideoEncoderDelegate::BitrateControlUpdate(
     const BitstreamBufferMetadata& metadata) {
   DVLOGF(4) << "encoded chunk size=" << metadata.payload_size_bytes;
+  CHECK_NE(metadata.payload_size_bytes, 0u);
   rate_ctrl_->PostEncodeUpdate(metadata.payload_size_bytes);
 }
 

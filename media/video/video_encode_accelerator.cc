@@ -38,16 +38,32 @@ BitstreamBufferMetadata::BitstreamBufferMetadata(size_t payload_size_bytes,
     : payload_size_bytes(payload_size_bytes),
       key_frame(key_frame),
       timestamp(timestamp) {}
+BitstreamBufferMetadata::~BitstreamBufferMetadata() = default;
 
-bool BitstreamBufferMetadata::dropped_frame() const {
-  return payload_size_bytes == 0;
+// static
+BitstreamBufferMetadata BitstreamBufferMetadata::CreateForDropFrame(
+    base::TimeDelta ts,
+    uint8_t sid,
+    bool end_of_pic) {
+  BitstreamBufferMetadata metadata(0, false, ts);
+  metadata.drop = DropFrameMetadata{
+      .spatial_idx = sid,
+  };
+
+  metadata.end_of_picture = end_of_pic;
+  return metadata;
 }
 
-BitstreamBufferMetadata::~BitstreamBufferMetadata() = default;
+bool BitstreamBufferMetadata::dropped_frame() const {
+  return drop.has_value();
+}
 
 std::optional<uint8_t> BitstreamBufferMetadata::spatial_idx() const {
   if (vp9) {
     return vp9->spatial_idx;
+  }
+  if (drop) {
+    return drop->spatial_idx;
   }
   return std::nullopt;
 }

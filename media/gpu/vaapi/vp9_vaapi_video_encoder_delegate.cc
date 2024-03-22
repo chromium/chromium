@@ -522,6 +522,7 @@ void VP9VaapiVideoEncoderDelegate::BitrateControlUpdate(
             << ", temporal_idx="
             << (metadata.vp9 ? metadata.vp9->temporal_idx : 0)
             << ", encoded chunk size=" << metadata.payload_size_bytes;
+  CHECK_NE(metadata.payload_size_bytes, 0u);
   rate_ctrl_->PostEncodeUpdate(metadata.payload_size_bytes, frame_params);
 }
 

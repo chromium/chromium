@@ -32,6 +32,14 @@ class BitstreamBuffer;
 class MediaLog;
 class VideoFrame;
 
+// Metadata for a dropped frame.
+// BitstreamBufferMetadata has this data if and only if the frame is
+// dropped.
+// |spatial_idx| indicates the spatial index for this frame.
+struct MEDIA_EXPORT DropFrameMetadata final {
+  uint8_t spatial_idx = 0;
+};
+
 //  Metadata for a H264 bitstream buffer.
 //  |temporal_idx|  indicates the temporal index for this frame.
 //  |layer_sync|    is true iff this frame has |temporal_idx| > 0 and does NOT
@@ -129,6 +137,9 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   BitstreamBufferMetadata(size_t payload_size_bytes,
                           bool key_frame,
                           base::TimeDelta timestamp);
+  static BitstreamBufferMetadata CreateForDropFrame(base::TimeDelta timestamp,
+                                                    uint8_t spatial_idx = 0,
+                                                    bool end_of_picture = true);
   ~BitstreamBufferMetadata();
 
   // If |payload_size_bytes| is zero, it indicates the frame corresponded to
@@ -140,13 +151,17 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   // This is true if a frame is the last spatial layer frame in SVC encoding.
   // This is useful, in SVC encoding, to represent it when a frame is dropped
   // and thus the vp9 metadata is not filled.
+  // TODO(b/329745253): Move to Vp9Metadata and DropFrameMetadata, and add
+  // end_of_picture().
   bool end_of_picture = true;
 
   bool dropped_frame() const;
   std::optional<uint8_t> spatial_idx() const;
 
-  // |h264|, |vp8| or |vp9| may be set, but not multiple of them. Presumably,
-  // it's also possible for none of them to be set.
+  // |drop|, |h264|, |vp8|, |vp9|, |av1| and |h265| may be set, but not multiple
+  // of them. Presumably, it's also possible for none of them to be set.
+  // |drop| is set if and only if the frame is dropped.
+  std::optional<DropFrameMetadata> drop;
   std::optional<H264Metadata> h264;
   std::optional<Vp8Metadata> vp8;
   std::optional<Vp9Metadata> vp9;

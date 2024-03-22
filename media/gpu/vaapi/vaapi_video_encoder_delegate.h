@@ -117,6 +117,7 @@ class VaapiVideoEncoderDelegate {
     uint8_t spatial_index() const;
     // This is a frame in the top spatial layer.
     bool end_of_picture() const;
+    uint8_t spatial_idx() const;
 
     // VA-API specific methods.
     VABufferID coded_buffer_id() const;

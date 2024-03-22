@@ -473,7 +473,7 @@ class RTCVideoEncoderTest {
     CHECK(!force_keyframe);
     client_->BitstreamBufferReady(
         0,
-        media::BitstreamBufferMetadata(0, force_keyframe, frame->timestamp()));
+        media::BitstreamBufferMetadata::CreateForDropFrame(frame->timestamp()));
   }
   void ReturnSvcFramesThatShouldBeDropped(
       scoped_refptr<media::VideoFrame> frame,
@@ -481,11 +481,9 @@ class RTCVideoEncoderTest {
     CHECK(!force_keyframe);
     for (size_t sid = 0; sid < num_spatial_layers_; ++sid) {
       const bool end_of_picture = sid + 1 == num_spatial_layers_;
-      media::BitstreamBufferMetadata metadata(0, force_keyframe,
-                                              frame->timestamp());
-      metadata.end_of_picture = end_of_picture;
-      metadata.vp9.emplace().spatial_idx = sid;
-      client_->BitstreamBufferReady(sid, metadata);
+      client_->BitstreamBufferReady(
+          sid, media::BitstreamBufferMetadata::CreateForDropFrame(
+                   frame->timestamp(), sid, end_of_picture));
     }
   }
   void ReturnFrameWithTimeStamp(scoped_refptr<media::VideoFrame> frame,

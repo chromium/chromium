@@ -488,6 +488,7 @@ void VaapiVideoEncodeAccelerator::ReturnBitstreamBuffer(
               << (metadata.key_frame ? "(keyframe)" : "")
               << " id: " << buffer.id() << " size: " << data_size;
   } else {
+    CHECK(metadata.dropped_frame());
     CHECK_EQ(metadata.payload_size_bytes, 0u);
     DVLOGF(4) << "Drop frame bitstream_buffer_id=" << buffer.id();
   }
