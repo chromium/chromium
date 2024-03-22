@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/no_destructor.h"
 #include "cc/paint/paint_canvas.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -27,8 +28,8 @@ constexpr double kRotationAngle = 45;
 constexpr SkColor kFillColor = SkColorSetARGB(0x12, 0x00, 0x00, 0x00);
 constexpr SkColor kOutlineColor = SkColorSetARGB(0x27, 0xff, 0xff, 0xff);
 
-const gfx::Font& WatermarkFont() {
-  static gfx::Font font(
+gfx::Font WatermarkFont() {
+  return gfx::Font(
 #if BUILDFLAG(IS_WIN)
       "Segoe UI",
 #elif BUILDFLAG(IS_MAC)
@@ -41,7 +42,6 @@ const gfx::Font& WatermarkFont() {
       "sans-serif",
 #endif
       kTextSize);
-  return font;
 }
 
 gfx::Font::Weight WatermarkFontWeight() {
@@ -53,8 +53,8 @@ gfx::Font::Weight WatermarkFontWeight() {
 }
 
 const gfx::FontList& WatermarkFontList() {
-  static gfx::FontList font_list(WatermarkFont());
-  return font_list;
+  static base::NoDestructor<gfx::FontList> font_list(WatermarkFont());
+  return *font_list;
 }
 
 std::unique_ptr<gfx::RenderText> CreateRenderText(const gfx::Rect& display_rect,
