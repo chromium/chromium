@@ -28,9 +28,13 @@ NSString* const kMaskedPasswordTitle = @"••••••••";
 
 // The cell won't show a title (site name) label if it is connected to the
 // previous password item.
+// TODO(crbug.com/326398845): Remove once the Keyboard Accessory Upgrade feature
+// has launched both on iPhone and iPad.
 @property(nonatomic, assign) BOOL isConnectedToPreviousItem;
 
 // The separator line won't show if it is connected to the next password item.
+// TODO(crbug.com/326398845): Remove once the Keyboard Accessory Upgrade feature
+// has launched both on iPhone and iPad.
 @property(nonatomic, assign) BOOL isConnectedToNextItem;
 
 // The delegate for this item.

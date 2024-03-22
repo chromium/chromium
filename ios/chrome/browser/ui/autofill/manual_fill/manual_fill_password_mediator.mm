@@ -62,6 +62,7 @@ BOOL AreCredentialsAtIndexesConnected(
     NSArray<ManualFillCredential*>* credentials,
     int firstIndex,
     int secondIndex) {
+  CHECK(!IsKeyboardAccessoryUpgradeEnabled());
   if (firstIndex < 0 || firstIndex >= (int)credentials.count ||
       secondIndex < 0 || secondIndex >= (int)credentials.count)
     return NO;
@@ -258,10 +259,16 @@ BOOL AreCredentialsAtIndexesConnected(
   NSMutableArray* items =
       [[NSMutableArray alloc] initWithCapacity:credentials.count];
   for (int i = 0; i < (int)credentials.count; i++) {
+    // Credentials from the same affiliated group are never connected when the
+    // Keyboard Accessory Upgrade feature is enabled.
     BOOL isConnectedToPreviousItem =
-        AreCredentialsAtIndexesConnected(credentials, i, i - 1);
+        IsKeyboardAccessoryUpgradeEnabled()
+            ? NO
+            : AreCredentialsAtIndexesConnected(credentials, i, i - 1);
     BOOL isConnectedToNextItem =
-        AreCredentialsAtIndexesConnected(credentials, i, i + 1);
+        IsKeyboardAccessoryUpgradeEnabled()
+            ? NO
+            : AreCredentialsAtIndexesConnected(credentials, i, i + 1);
     ManualFillCredential* credential = credentials[i];
     ManualFillCredentialItem* item = [[ManualFillCredentialItem alloc]
                initWithCredential:credential

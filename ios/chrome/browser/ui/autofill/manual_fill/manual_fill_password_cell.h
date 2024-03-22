@@ -30,6 +30,9 @@ extern NSString* const kMaskedPasswordTitle;
 // previous password item.
 @property(nonatomic, readonly) BOOL isConnectedToPreviousItem;
 
+// TODO(crbug.com/326398845): Remove the `isConnectedToPreviousItem` and
+// `isConnectedToNextItem` params once the Keyboard Accessory Upgrade feature
+// has launched both on iPhone and iPad.
 - (instancetype)initWithCredential:(ManualFillCredential*)credential
          isConnectedToPreviousItem:(BOOL)isConnectedToPreviousItem
              isConnectedToNextItem:(BOOL)isConnectedToNextItem
