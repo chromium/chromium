@@ -4425,7 +4425,7 @@
   },
   {
     "name": "files-single-partition-format",
-    "owners": [ "austinct@chromium.org", "petermarshall@chromium.org" ],
+    "owners": [ "austinct@chromium.org" ],
     "expiry_milestone": 104
   },
   {
@@ -4492,7 +4492,7 @@
   },
   {
     "name": "force-resync-drive",
-    "owners": [ "cassycc@google.com", "petermarshall@chromium.org", "simmonsjosh@google.com" ],
+    "owners": [ "cassycc@google.com", "alexbn@chromium.org", "simmonsjosh@google.com" ],
     "expiry_milestone": 126
   },
   {
@@ -4558,7 +4558,7 @@
   },
   {
     "name": "fsps-in-recents",
-    "owners": [ "simmonsjosh@google.com", "benhartney@google.com", "petermarshall@chromium.org", "majewski@chromium.org" ],
+    "owners": [ "simmonsjosh@google.com", "benhartney@google.com", "majewski@chromium.org" ],
     "expiry_milestone": 130
   },
   {
@@ -8105,7 +8105,7 @@
   },
   {
     "name": "upload-office-to-cloud",
-    "owners": [ "jboulic@chromium.org", "petermarshall@chromium.org", "simmonsjosh@google.com" ],
+    "owners": [ "jboulic@chromium.org", "alexbn@chromium.org", "simmonsjosh@google.com" ],
     "expiry_milestone": 126
   },
   {
