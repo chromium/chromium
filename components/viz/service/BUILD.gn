@@ -407,6 +407,8 @@ viz_component("service") {
     sources += [
       "display/overlay_processor_delegated.cc",
       "display/overlay_processor_delegated.h",
+      "display/overlay_processor_delegated_support.cc",
+      "display/overlay_processor_delegated_support.h",
       "display/overlay_processor_ozone.cc",
       "display/overlay_processor_ozone.h",
       "display_embedder/software_output_device_ozone.cc",
