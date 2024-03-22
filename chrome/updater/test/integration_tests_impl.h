@@ -312,7 +312,10 @@ int CountDirectoryFiles(const base::FilePath& dir);
 
 void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server);
 
-void ExpectPing(UpdaterScope scope, ScopedServer* test_server, int event_type);
+void ExpectPing(UpdaterScope scope,
+                ScopedServer* test_server,
+                int event_type,
+                std::optional<GURL> target_url);
 
 void ExpectAppCommandPing(UpdaterScope scope,
                           ScopedServer* test_server,
@@ -429,7 +432,10 @@ void ExpectDeviceManagementPolicyFetchRequest(
     ScopedServer* test_server,
     const std::string& dm_token,
     const ::wireless_android_enterprise_devicemanagement::
-        OmahaSettingsClientProto& omaha_settings);
+        OmahaSettingsClientProto& omaha_settings,
+    bool first_request = true,
+    bool rotate_public_key = false,
+    std::optional<GURL> target_url = std::nullopt);
 void ExpectDeviceManagementPolicyFetchWithNewPublicKeyRequest(
     ScopedServer* test_server,
     const std::string& dm_token,

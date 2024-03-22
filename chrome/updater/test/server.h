@@ -78,6 +78,16 @@ class ScopedServer {
     return test_server_->GetURL(device_management_path());
   }
 
+  std::string proxy_url_no_path() const {
+    std::string proxy = test_server_->base_url().spec();
+    // A valid proxy string should not have any path component. Strip the root
+    // path ('/') if it is present.
+    if (proxy.back() == '/') {
+      proxy.pop_back();
+    }
+    return proxy;
+  }
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);

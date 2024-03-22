@@ -104,8 +104,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::SetMachineManaged(is_managed_device);
   }
 
-  void ExpectPing(ScopedServer* test_server, int event_type) const override {
-    updater::test::ExpectPing(updater_scope_, test_server, event_type);
+  void ExpectPing(ScopedServer* test_server,
+                  int event_type,
+                  std::optional<GURL> target_url) const override {
+    updater::test::ExpectPing(updater_scope_, test_server, event_type,
+                              target_url);
   }
 
   void ExpectAppCommandPing(ScopedServer* test_server,

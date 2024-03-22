@@ -482,12 +482,11 @@ class IntegrationTest : public ::testing::Test {
                                               from_version, to_version);
   }
 
-  void ExpectPing(ScopedServer* test_server, int event_type) {
-    test_commands_->ExpectPing(test_server, event_type);
-  }
-
-  void ExpectUninstallPing(ScopedServer* test_server) {
-    ExpectPing(test_server, update_client::protocol_request::kEventUninstall);
+  void ExpectUninstallPing(ScopedServer* test_server,
+                           std::optional<GURL> target_url = {}) {
+    test_commands_->ExpectPing(test_server,
+                               update_client::protocol_request::kEventUninstall,
+                               target_url);
   }
 
   void ExpectAppCommandPing(ScopedServer* test_server,
@@ -2011,7 +2010,7 @@ TEST_F(IntegrationTest, CrashUsageStatsEnabled) {
               base::StringPrintf(R"(%s\?product=%s&version=%s&guid=.*)",
                                  test_server.crash_report_path().c_str(),
                                  CRASH_PRODUCT_NAME, kUpdaterVersion)),
-          request::GetHeaderMatcher("User-Agent", R"(Crashpad/.*)"),
+          request::GetHeaderMatcher({{"User-Agent", R"(Crashpad/.*)"}}),
           request::GetMultipartContentMatcher({
               {"guid", std::vector<std::string>({})},  // Crash guid.
               {"process_type", std::vector<std::string>({R"(updater)"})},
@@ -2670,6 +2669,47 @@ TEST_F(IntegrationTestDeviceManagement, PublicKeyRotation) {
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(IntegrationTestDeviceManagement, NamedProxy) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/false));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kApp1.appid, kApp1.v2));
+
+  // Fetch proxy settings policy.
+  DMPushEnrollmentToken(kEnrollmentToken);
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  OmahaSettingsClientProto omaha_settings;
+  omaha_settings.set_proxy_mode("fixed_servers");
+  omaha_settings.set_proxy_server(test_server_->proxy_url_no_path());
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings);
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectNoUpdateSequence(test_server_.get(), kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  // Redirect network traffics to remote hosts to engage the proxy.
+  const GURL update_check_url = GURL("http://update.server.not_exist/update");
+  const GURL dm_server_url = GURL("http://dm.server.not_exist/dmapi");
+  EnterTestMode(update_check_url, test_server_->crash_upload_url(),
+                dm_server_url, base::Minutes(5));
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings, false, false,
+                                           dm_server_url);
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectUninstallPing(test_server_.get(), update_check_url));
+  ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 #endif  // !defined(COMPONENT_BUILD)
 
 #if BUILDFLAG(IS_WIN)

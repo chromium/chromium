@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_TEST_INTEGRATION_TEST_COMMANDS_H_
 #define CHROME_UPDATER_TEST_INTEGRATION_TEST_COMMANDS_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/ref_counted.h"
@@ -52,7 +53,9 @@ class IntegrationTestCommands
   virtual void ExpectActive(const std::string& app_id) const = 0;
   virtual void ExpectNotActive(const std::string& app_id) const = 0;
   virtual void ExpectSelfUpdateSequence(ScopedServer* test_server) const = 0;
-  virtual void ExpectPing(ScopedServer* test_server, int event_type) const = 0;
+  virtual void ExpectPing(ScopedServer* test_server,
+                          int event_type,
+                          std::optional<GURL> target_url) const = 0;
   virtual void ExpectAppCommandPing(ScopedServer* test_server,
                                     const std::string& appid,
                                     const std::string& appcommandid,

@@ -10,8 +10,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -23,6 +25,7 @@
 #include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "url/gurl.h"
 
 namespace updater::test::request {
 
@@ -48,31 +51,48 @@ Matcher GetPathMatcher(const std::string& expected_path_regex) {
       });
 }
 
-Matcher GetHeaderMatcher(const std::string& header_name,
-                         const std::string& expected_header_regex) {
-  return base::BindLambdaForTesting([header_name, expected_header_regex](
+Matcher GetHeaderMatcher(
+    const base::flat_map<std::string, std::string> expected_headers) {
+  return base::BindLambdaForTesting([expected_headers](
                                         const HttpRequest& request) {
-    re2::RE2::Options opt;
-    opt.set_case_sensitive(false);
-    HttpRequest::HeaderMap::const_iterator it =
-        request.headers.find(header_name);
-    if (it == request.headers.end()) {
-      ADD_FAILURE() << "Request header '" << header_name
-                    << "' not found, expected regex " << expected_header_regex;
-      return false;
-    } else if (!re2::RE2::FullMatch(it->second,
-                                    re2::RE2(expected_header_regex, opt))) {
-      ADD_FAILURE() << "Request header [" << it->first << " = '" << it->second
-                    << "], did not match expected regex ["
-                    << expected_header_regex << "]";
-      return false;
+    for (const auto& [header_name, expected_header_regex] : expected_headers) {
+      re2::RE2::Options opt;
+      opt.set_case_sensitive(false);
+      HttpRequest::HeaderMap::const_iterator it =
+          request.headers.find(header_name);
+      if (it == request.headers.end()) {
+        ADD_FAILURE() << "Request header '" << header_name
+                      << "' not found, expected regex "
+                      << expected_header_regex;
+        return false;
+      } else if (!re2::RE2::FullMatch(it->second,
+                                      re2::RE2(expected_header_regex, opt))) {
+        ADD_FAILURE() << "Request header [" << it->first << " = '" << it->second
+                      << "], did not match expected regex ["
+                      << expected_header_regex << "]";
+        return false;
+      }
     }
     return true;
   });
 }
 
 Matcher GetUpdaterUserAgentMatcher() {
-  return GetHeaderMatcher("User-Agent", GetUpdaterUserAgent());
+  return GetHeaderMatcher({{"User-Agent", GetUpdaterUserAgent()}});
+}
+
+Matcher GetTargetURLMatcher(GURL target_url) {
+  return base::BindLambdaForTesting([target_url](const HttpRequest& request) {
+    const std::string post_target = base::StrCat({"POST ", target_url.spec()});
+    if (!base::StartsWith(request.all_headers, post_target,
+                          base::CompareCase::INSENSITIVE_ASCII)) {
+      ADD_FAILURE() << "Request all_headers [" << request.all_headers
+                    << "] does not starts with the expected [" << post_target
+                    << "]";
+      return false;
+    }
+    return GetHeaderMatcher({{"Host", target_url.host()}}).Run(request);
+  });
 }
 
 Matcher GetContentMatcher(

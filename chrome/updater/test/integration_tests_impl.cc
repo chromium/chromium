@@ -73,6 +73,7 @@
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
@@ -309,21 +310,25 @@ void ExpectDeviceManagementRequest(ScopedServer* test_server,
                                    const std::string& authorization_type,
                                    const std::string& authorization_token,
                                    net::HttpStatusCode response_status,
-                                   const std::string& response) {
-  test_server->ExpectOnce(
-      {request::GetPathMatcher(base::StringPrintf(
-           R"(%s\?request=%s&apptype=Chrome&)"
-           R"(agent=%s\+%s&platform=.*&deviceid=%s)",
-           test_server->device_management_path().c_str(), request_type.c_str(),
-           PRODUCT_FULLNAME_STRING, kUpdaterVersion,
-           GetDefaultDMStorage()->GetDeviceID().c_str())),
-       request::GetUpdaterUserAgentMatcher(),
-       request::GetHeaderMatcher(
-           "Authorization",
-           base::StringPrintf("%s token=%s", authorization_type.c_str(),
-                              authorization_token.c_str())),
-       request::GetHeaderMatcher("Content-Type", "application/x-protobuf")},
-      response, response_status);
+                                   const std::string& response,
+                                   std::optional<GURL> target_url = {}) {
+  request::MatcherGroup request_matchers = {
+      request::GetPathMatcher(base::StringPrintf(
+          R"(%s\?request=%s&apptype=Chrome&)"
+          R"(agent=%s\+%s&platform=.*&deviceid=%s)",
+          test_server->device_management_path().c_str(), request_type.c_str(),
+          PRODUCT_FULLNAME_STRING, kUpdaterVersion,
+          GetDefaultDMStorage()->GetDeviceID().c_str())),
+      request::GetUpdaterUserAgentMatcher(),
+      request::GetHeaderMatcher(
+          {{"Authorization",
+            base::StringPrintf("%s token=%s", authorization_type.c_str(),
+                               authorization_token.c_str())},
+           {"Content-Type", "application/x-protobuf"}})};
+  if (target_url) {
+    request_matchers.push_back(request::GetTargetURLMatcher(*target_url));
+  }
+  test_server->ExpectOnce(request_matchers, response, response_status);
 }
 
 }  // namespace
@@ -976,13 +981,21 @@ void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
   ASSERT_TRUE(succeeded);
 }
 
-void ExpectPing(UpdaterScope scope, ScopedServer* test_server, int event_type) {
-  test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
-                           request::GetUpdaterUserAgentMatcher(),
-                           request::GetContentMatcher({base::StringPrintf(
-                               R"(.*"eventtype":%d,.*)", event_type)}),
-                           request::GetScopeMatcher(scope)},
-                          ")]}'\n");
+void ExpectPing(UpdaterScope scope,
+                ScopedServer* test_server,
+                int event_type,
+                std::optional<GURL> target_url) {
+  request::MatcherGroup request_matchers = {
+      request::GetPathMatcher(test_server->update_path()),
+      request::GetUpdaterUserAgentMatcher(),
+      request::GetContentMatcher(
+          {base::StringPrintf(R"(.*"eventtype":%d,.*)", event_type)}),
+      request::GetScopeMatcher(scope)};
+
+  if (target_url) {
+    request_matchers.push_back(request::GetTargetURLMatcher(*target_url));
+  }
+  test_server->ExpectOnce(request_matchers, ")]}'\n");
 }
 
 void ExpectAppCommandPing(UpdaterScope scope,
@@ -1368,17 +1381,21 @@ void ExpectDeviceManagementPolicyFetchRequest(
     ScopedServer* test_server,
     const std::string& dm_token,
     const ::wireless_android_enterprise_devicemanagement::
-        OmahaSettingsClientProto& omaha_settings) {
+        OmahaSettingsClientProto& omaha_settings,
+    bool first_request,
+    bool rotate_public_key,
+    std::optional<GURL> target_url) {
   ExpectDeviceManagementRequest(
       test_server, "policy", "GoogleDMToken", dm_token, net::HTTP_OK,
-      [&dm_token, &omaha_settings] {
+      [&dm_token, &omaha_settings, first_request, rotate_public_key] {
         std::unique_ptr<::enterprise_management::DeviceManagementResponse>
             dm_response = GetDMResponseForOmahaPolicy(
-                /*first_request=*/true, /*rotate_to_new_key=*/false,
+                first_request, rotate_public_key,
                 DMPolicyBuilderForTesting::SigningOption::kSignNormally,
                 dm_token, GetDefaultDMStorage()->GetDeviceID(), omaha_settings);
         return dm_response->SerializeAsString();
-      }());
+      }(),
+      target_url);
 }
 
 void ExpectDeviceManagementPolicyFetchWithNewPublicKeyRequest(
