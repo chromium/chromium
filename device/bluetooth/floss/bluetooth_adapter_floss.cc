@@ -1423,7 +1423,6 @@ void BluetoothAdapterFloss::RemoveLocalGattService(
     return;
   }
 
-  // TODO(@sarveshkalwit): Unregister registered service.
   owned_gatt_services_.erase(service_iter);
 }
 
