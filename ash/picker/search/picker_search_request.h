@@ -30,6 +30,8 @@ namespace ash {
 
 class PickerClient;
 
+// Represents a single Picker search query. Constructing this class starts a
+// search, and destructing it stops the search.
 class ASH_EXPORT PickerSearchRequest {
  public:
   using SearchResultsCallback =
@@ -37,6 +39,9 @@ class ASH_EXPORT PickerSearchRequest {
                                    std::vector<PickerSearchResult> results)>;
 
   explicit PickerSearchRequest(
+      const std::u16string& query,
+      std::optional<PickerCategory> category,
+      SearchResultsCallback callback,
       PickerClient* client,
       emoji::EmojiSearch* emoji_search,
       base::span<const PickerCategory> available_categories);
@@ -46,16 +51,6 @@ class ASH_EXPORT PickerSearchRequest {
 
   static constexpr base::TimeDelta kGifDebouncingDelay =
       base::Milliseconds(200);
-
-  void StartSearch(const std::u16string& query,
-                   std::optional<PickerCategory> category,
-                   SearchResultsCallback callback);
-
-  // Stops the current search, and resets the state to begin a new search.
-  // This is called in `StartSearch` before every new search query.
-  // This guarantees that the last callback passed into `StartSearch` is never
-  // called again.
-  void StopSearch();
 
  private:
   void StartGifSearch(const std::string& query);
