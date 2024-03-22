@@ -43,8 +43,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
-#include "chrome/browser/ash/crosapi/device_ownership_waiter.h"
-#include "chrome/browser/ash/crosapi/device_ownership_waiter_impl.h"
 #include "chrome/browser/ash/crosapi/primary_profile_creation_waiter.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/channel_info.h"
@@ -61,6 +59,8 @@
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/values_util.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/device_ownership_waiter.h"
+#include "components/user_manager/device_ownership_waiter_impl.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/config/gpu_switches.h"
@@ -611,7 +611,8 @@ class LacrosThreadTypeDelegate : public base::LaunchOptions::PreExecDelegate {
 };
 
 BrowserLauncher::BrowserLauncher()
-    : device_ownership_waiter_(std::make_unique<DeviceOwnershipWaiterImpl>()) {}
+    : device_ownership_waiter_(
+          std::make_unique<user_manager::DeviceOwnershipWaiterImpl>()) {}
 
 BrowserLauncher::~BrowserLauncher() = default;
 
@@ -804,7 +805,8 @@ void BrowserLauncher::WaitForBackgroundWorkPreLaunchForTesting(
 }
 
 void BrowserLauncher::set_device_ownership_waiter_for_testing(
-    std::unique_ptr<DeviceOwnershipWaiter> device_ownership_waiter) {
+    std::unique_ptr<user_manager::DeviceOwnershipWaiter>
+        device_ownership_waiter) {
   CHECK(!device_ownership_waiter_called_);
   device_ownership_waiter_ = std::move(device_ownership_waiter);
 }

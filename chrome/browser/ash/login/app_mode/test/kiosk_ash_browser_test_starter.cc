@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/fake_device_ownership_waiter.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"

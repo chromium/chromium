@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crosapi/device_ownership_waiter_impl.h"
+#include "components/user_manager/device_ownership_waiter_impl.h"
 
 #include <memory>
 
@@ -10,13 +10,13 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace crosapi {
+namespace user_manager {
 
 class DeviceOwnershipWaiterTest : public testing::Test {
  public:
@@ -31,8 +31,8 @@ class DeviceOwnershipWaiterTest : public testing::Test {
   std::unique_ptr<ash::ScopedStubInstallAttributes> stub_install_attributes_{
       std::make_unique<ash::ScopedStubInstallAttributes>(
           ash::StubInstallAttributes::CreateUnset())};
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+  user_manager::TypedScopedUserManager<FakeUserManager>
+      fake_user_manager_{std::make_unique<FakeUserManager>()};
 };
 
 TEST_F(DeviceOwnershipWaiterTest, DelaysCorrectly) {
@@ -67,4 +67,4 @@ TEST_F(DeviceOwnershipWaiterTest, DoesNotDelayForChromeOsOnLinux) {
   EXPECT_TRUE(future.Wait());
 }
 
-}  // namespace crosapi
+}  // namespace user_manager

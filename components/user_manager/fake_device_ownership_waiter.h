@@ -2,30 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CROSAPI_FAKE_DEVICE_OWNERSHIP_WAITER_H_
-#define CHROME_BROWSER_ASH_CROSAPI_FAKE_DEVICE_OWNERSHIP_WAITER_H_
+#ifndef COMPONENTS_USER_MANAGER_FAKE_DEVICE_OWNERSHIP_WAITER_H_
+#define COMPONENTS_USER_MANAGER_FAKE_DEVICE_OWNERSHIP_WAITER_H_
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ash/crosapi/device_ownership_waiter.h"
+#include "components/user_manager/device_ownership_waiter.h"
+#include "components/user_manager/user_manager_export.h"
 
-namespace crosapi {
+namespace user_manager {
 
 // A `DeviceOwnershipWaiter` for tests that immediately executes the
 // callback without actually waiting for the owner.
-class FakeDeviceOwnershipWaiter : public DeviceOwnershipWaiter {
+class USER_MANAGER_EXPORT FakeDeviceOwnershipWaiter : public DeviceOwnershipWaiter {
  public:
-  FakeDeviceOwnershipWaiter() = default;
+  FakeDeviceOwnershipWaiter();
 
   FakeDeviceOwnershipWaiter(const FakeDeviceOwnershipWaiter&) = delete;
   FakeDeviceOwnershipWaiter& operator=(const FakeDeviceOwnershipWaiter&) =
       delete;
 
-  ~FakeDeviceOwnershipWaiter() override = default;
+  ~FakeDeviceOwnershipWaiter() override;
 
-  // `DeviceOwnershipWaiter`:
+  // DeviceOwnershipWaiter:
   void WaitForOwnershipFetched(base::OnceClosure callback) override;
 };
 
-}  // namespace crosapi
+}  // namespace user_manager
 
-#endif  // CHROME_BROWSER_ASH_CROSAPI_FAKE_DEVICE_OWNERSHIP_WAITER_H_
+#endif  // COMPONENTS_USER_MANAGER_FAKE_DEVICE_OWNERSHIP_WAITER_H_

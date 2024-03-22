@@ -74,6 +74,10 @@ namespace policy {
 class CloudPolicyCore;
 }
 
+namespace user_manager {
+class DeviceOwnershipWaiter;
+}  // namespace user_manager
+
 namespace crosapi {
 
 namespace mojom {
@@ -83,7 +87,6 @@ class Crosapi;
 
 class BrowserAction;
 class BrowserLoader;
-class DeviceOwnershipWaiter;
 class FilesAppLauncher;
 class PersistentForcedExtensionKeepAlive;
 class TestMojoConnectionManager;
@@ -330,7 +333,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // TODO(crbug.com/1463883): Remove this once we refactored to use the
   // constructor.
   void set_device_ownership_waiter_for_testing(
-      std::unique_ptr<DeviceOwnershipWaiter> device_ownership_waiter);
+      std::unique_ptr<user_manager::DeviceOwnershipWaiter>
+          device_ownership_waiter);
 
   void set_relaunch_requested_for_testing(bool relaunch_requested);
 

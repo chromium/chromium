@@ -29,8 +29,11 @@ namespace base {
 struct LaunchOptions;
 }  // namespace base
 
-namespace crosapi {
+namespace user_manager {
 class DeviceOwnershipWaiter;
+}  // namespace user_manager
+
+namespace crosapi {
 class PrimaryProfileCreationWaiter;
 
 // Manages launching and terminating Lacros process.
@@ -203,7 +206,8 @@ class BrowserLauncher {
   // TODO(crbug.com/1463883): Remove this once we refactored to use the
   // constructor.
   void set_device_ownership_waiter_for_testing(
-      std::unique_ptr<DeviceOwnershipWaiter> device_ownership_waiter);
+      std::unique_ptr<user_manager::DeviceOwnershipWaiter>
+          device_ownership_waiter);
 
   // Skips device ownership fetch. Use set_device_ownership_waiter_for_testing()
   // above if possible. Use this method only if your test must set up the
@@ -264,7 +268,7 @@ class BrowserLauncher {
   base::ScopedFD postlogin_pipe_fd_;
 
   // Used to delay an action until the definitive device owner is fetched.
-  std::unique_ptr<DeviceOwnershipWaiter> device_ownership_waiter_;
+  std::unique_ptr<user_manager::DeviceOwnershipWaiter> device_ownership_waiter_;
 
   // Used to wait for the primary user profile to be fully created.
   std::unique_ptr<PrimaryProfileCreationWaiter>

@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CROSAPI_DEVICE_OWNERSHIP_WAITER_H_
-#define CHROME_BROWSER_ASH_CROSAPI_DEVICE_OWNERSHIP_WAITER_H_
+#ifndef COMPONENTS_USER_MANAGER_DEVICE_OWNERSHIP_WAITER_H_
+#define COMPONENTS_USER_MANAGER_DEVICE_OWNERSHIP_WAITER_H_
 
 #include "base/functional/callback_forward.h"
+#include "components/user_manager/user_manager_export.h"
 
-namespace crosapi {
+namespace user_manager {
 
-class DeviceOwnershipWaiter {
+class USER_MANAGER_EXPORT DeviceOwnershipWaiter {
  public:
-  DeviceOwnershipWaiter();
-  DeviceOwnershipWaiter(const DeviceOwnershipWaiter&) = delete;
-  DeviceOwnershipWaiter& operator=(const DeviceOwnershipWaiter&) = delete;
-  virtual ~DeviceOwnershipWaiter();
+  virtual ~DeviceOwnershipWaiter() = default;
 
   // Delays execution of `callback` until the device owner is initialized in
   // `UserManager`. The delay is skipped (and the callback invoked immediately)
@@ -39,6 +37,6 @@ class DeviceOwnershipWaiter {
   virtual void WaitForOwnershipFetched(base::OnceClosure callback) = 0;
 };
 
-}  // namespace crosapi
+}  // namespace user_manager
 
-#endif  // CHROME_BROWSER_ASH_CROSAPI_DEVICE_OWNERSHIP_WAITER_H_
+#endif  // COMPONENTS_USER_MANAGER_DEVICE_OWNERSHIP_WAITER_H_

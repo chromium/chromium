@@ -15,7 +15,6 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
-#include "chrome/browser/ash/crosapi/fake_device_ownership_waiter.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
@@ -32,6 +31,7 @@
 #include "components/account_id/account_id.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_device_ownership_waiter.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -251,7 +251,7 @@ class BrowserManagerTest : public testing::Test {
     fake_browser_manager_->set_version_service_delegate_for_testing(
         std::move(version_service_delegate));
     fake_browser_manager_->set_device_ownership_waiter_for_testing(
-        std::make_unique<FakeDeviceOwnershipWaiter>());
+        std::make_unique<user_manager::FakeDeviceOwnershipWaiter>());
   }
 
   enum class UserType {

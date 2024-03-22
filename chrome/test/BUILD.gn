@@ -856,7 +856,6 @@ static_library("test_support") {
       "//ash/webui/print_preview_cros:url_constants",
       "//ash/webui/scanning:url_constants",
       "//chrome/browser/ash",
-      "//chrome/browser/ash/crosapi:fake_device_ownership_waiter",
       "//chrome/browser/ash/system_web_apps",
       "//chromeos/ash/components/account_manager",
       "//chromeos/ash/components/dbus/session_manager",
@@ -3121,7 +3120,6 @@ if (!is_android) {
       ]
       deps += [
         "//ash/webui/system_apps/public:system_web_app_type",
-        "//chrome/browser/ash/crosapi:fake_device_ownership_waiter",
         "//chrome/browser/ash/system_web_apps:browser_tests",
         "//chrome/browser/ash/system_web_apps/test_support",
         "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
@@ -3130,6 +3128,7 @@ if (!is_android) {
         "//chrome/test/data/webui/chromeos:web_ui_test_bindings",
         "//chromeos/ash/components/standalone_browser",
         "//chromeos/components/kiosk:test_support",
+        "//components/user_manager:test_support",
       ]
     }
 

@@ -67,7 +67,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/desk_template_ash.h"
-#include "chrome/browser/ash/crosapi/device_ownership_waiter.h"
 #include "chrome/browser/ash/crosapi/files_app_launcher.h"
 #include "chrome/browser/ash/crosapi/test_mojo_connection_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -101,6 +100,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/device_ownership_waiter.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -743,7 +743,8 @@ void BrowserManager::Shutdown() {
 }
 
 void BrowserManager::set_device_ownership_waiter_for_testing(
-    std::unique_ptr<DeviceOwnershipWaiter> device_ownership_waiter) {
+    std::unique_ptr<user_manager::DeviceOwnershipWaiter>
+        device_ownership_waiter) {
   browser_launcher_.set_device_ownership_waiter_for_testing(  // IN-TEST
       std::move(device_ownership_waiter));
 }

@@ -24,7 +24,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/fake_device_ownership_waiter.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -38,6 +37,7 @@
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/startup/startup_switches.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/fake_device_ownership_waiter.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -65,7 +65,7 @@ class BrowserLauncherTest : public testing::Test {
         &fake_statistics_provider_);
 
     browser_launcher_.set_device_ownership_waiter_for_testing(
-        std::make_unique<FakeDeviceOwnershipWaiter>());
+        std::make_unique<user_manager::FakeDeviceOwnershipWaiter>());
   }
 
   void TearDown() override {

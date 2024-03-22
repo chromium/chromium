@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crosapi/fake_device_ownership_waiter.h"
+#include "components/user_manager/fake_device_ownership_waiter.h"
 
 #include <utility>
 
@@ -12,11 +12,15 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/user_manager/user_manager.h"
 
-namespace crosapi {
+namespace user_manager {
+
+FakeDeviceOwnershipWaiter::FakeDeviceOwnershipWaiter() = default;
+
+FakeDeviceOwnershipWaiter::~FakeDeviceOwnershipWaiter() = default;
 
 void FakeDeviceOwnershipWaiter::WaitForOwnershipFetched(
     base::OnceClosure callback) {
-  if (user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
+  if (UserManager::Get()->IsLoggedInAsGuest() ||
       (ash::InstallAttributes::IsInitialized() &&
        ash::InstallAttributes::Get()->IsDeviceInDemoMode())) {
     std::move(callback).Run();
@@ -27,4 +31,4 @@ void FakeDeviceOwnershipWaiter::WaitForOwnershipFetched(
                                                            std::move(callback));
 }
 
-}  // namespace crosapi
+}  // namespace user_manager
