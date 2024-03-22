@@ -145,9 +145,9 @@ void PickerSearchController::StopSearch() {
   category_search_start_.reset();
   // The following "stop search" calls may cause an additional call to search
   // result callbacks. Ensure that we reset metrics BEFORE stopping the search -
-  // so any further metrics will not be recorded - and reset results AFTER
-  // stopping the search - so any results obtained from the additional search
-  // results callbacks are discarded afterwards.
+  // so any further metrics will not be recorded.
+  // As `HandleSearchSourceResults` is a no-op when the search is stopped, the
+  // ordering of stopping the search and resetting results is not important.
   client_->StopCrosQuery();
   client_->StopGifSearch();
   ResetResults();
@@ -236,6 +236,10 @@ void PickerSearchController::AppendPostBurnInResults(
 void PickerSearchController::HandleSearchSourceResults(
     PickerSearchSource source,
     std::vector<PickerSearchResult> results) {
+  if (IsSearchStopped()) {
+    return;
+  }
+
   // Suggested results have multiple sources, which we store in any order and
   // explicitly do not append if post-burn-in.
   if (source == PickerSearchSource::kDate ||
