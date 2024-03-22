@@ -1448,6 +1448,9 @@ crbug.com/1335893 external/wpt/css/css-content/content-none-span.html [ Failure 
 crbug.com/995106 external/wpt/css/css-lists/inline-list.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-lists/inline-list-marker.html [ Failure ]
 
+# css-contain
+crbug.com/40275672 external/wpt/css/css-contain/contain-style-counters-002.html [ Failure ]
+
 # css-pseudo
 crbug.com/1500288 external/wpt/css/css-pseudo/grammar-spelling-errors-001.html [ Failure ]
 crbug.com/1500288 external/wpt/css/css-pseudo/grammar-spelling-errors-002.html [ Failure ]
@@ -2615,7 +2618,6 @@ crbug.com/626703 virtual/view-transition-mpa-serialization/external/wpt/css/css-
 crbug.com/626703 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/no-white-flash-before-activation.html [ Timeout ]
 crbug.com/626703 virtual/view-transition/external/wpt/css/css-view-transitions/no-white-flash-before-activation.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-targeted-element-main-frame.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-contain/contain-style-counters-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/oklab-l-almost-0.html [ Failure ]
 crbug.com/626703 [ Mac14-arm64 ] external/wpt/css/css-color/oklab-l-almost-1.html [ Failure ]
 crbug.com/626703 [ Mac14 ] external/wpt/css/css-color/oklab-l-almost-1.html [ Failure ]
