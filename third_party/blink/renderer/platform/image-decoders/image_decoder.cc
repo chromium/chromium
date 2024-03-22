@@ -1002,13 +1002,11 @@ ColorProfile::ColorProfile(const skcms_ICCProfile& profile,
 
 ColorProfile::~ColorProfile() = default;
 
-std::unique_ptr<ColorProfile> ColorProfile::Create(const void* buffer,
-                                                   size_t size) {
+std::unique_ptr<ColorProfile> ColorProfile::Create(
+    base::span<const uint8_t> buffer) {
   // After skcms_Parse, profile will have pointers into the passed buffer,
   // so we need to copy first, then parse.
-  auto owned_buffer = base::HeapArray<uint8_t>::Uninit(size);
-  owned_buffer.copy_from(
-      base::span<const uint8_t>(static_cast<const uint8_t*>(buffer), size));
+  auto owned_buffer = base::HeapArray<uint8_t>::CopiedFrom(buffer);
   skcms_ICCProfile profile;
   if (skcms_Parse(owned_buffer.data(), owned_buffer.size(), &profile)) {
     return std::make_unique<ColorProfile>(profile, std::move(owned_buffer));

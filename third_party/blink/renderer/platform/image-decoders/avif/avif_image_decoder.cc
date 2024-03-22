@@ -254,8 +254,8 @@ sk_sp<SkColorSpace> GetAltImageColorSpace(const avifImage& image) {
       // Same ICC as the base image, no need to specify it.
       return nullptr;
     }
-    std::unique_ptr<ColorProfile> profile =
-        ColorProfile::Create(gain_map->altICC.data, gain_map->altICC.size);
+    std::unique_ptr<ColorProfile> profile = ColorProfile::Create(
+        base::span(gain_map->altICC.data, gain_map->altICC.size));
     if (!profile) {
       DVLOG(1) << "Failed to parse gain map ICC profile";
       return nullptr;
@@ -933,8 +933,8 @@ bool AVIFImageDecoder::UpdateDemuxer() {
     // from the AV1 sequence header for the frames. If an ICC profile is
     // present, use it instead of the CICP color description.
     if (container->icc.size) {
-      std::unique_ptr<ColorProfile> profile =
-          ColorProfile::Create(container->icc.data, container->icc.size);
+      std::unique_ptr<ColorProfile> profile = ColorProfile::Create(
+          base::span(container->icc.data, container->icc.size));
       if (!profile) {
         DVLOG(1) << "Failed to parse image ICC profile";
         return false;

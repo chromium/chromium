@@ -112,7 +112,7 @@ class PLATFORM_EXPORT ColorProfile final {
                base::HeapArray<uint8_t> = base::HeapArray<uint8_t>());
   ColorProfile(const ColorProfile&) = delete;
   ColorProfile& operator=(const ColorProfile&) = delete;
-  static std::unique_ptr<ColorProfile> Create(const void* buffer, size_t size);
+  static std::unique_ptr<ColorProfile> Create(base::span<const uint8_t> buffer);
   ~ColorProfile();
 
   const skcms_ICCProfile* GetProfile() const { return &profile_; }

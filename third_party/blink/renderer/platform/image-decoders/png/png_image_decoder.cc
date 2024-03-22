@@ -263,7 +263,7 @@ static inline std::unique_ptr<ColorProfile> ReadColorProfile(png_structp png,
   png_bytep buffer;
   png_uint_32 length;
   if (png_get_iCCP(png, info, &name, &compression, &buffer, &length)) {
-    return ColorProfile::Create(buffer, length);
+    return ColorProfile::Create(base::as_bytes(base::span(buffer, length)));
   }
 
   png_fixed_point chrm[8];

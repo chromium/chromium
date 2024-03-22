@@ -478,7 +478,7 @@ class JPEGImageReader final {
               metadata_decoder_->getICCProfileData(/*copyData=*/false);
           if (profile_data) {
             std::unique_ptr<ColorProfile> profile = ColorProfile::Create(
-                profile_data->bytes(), profile_data->size());
+                base::span(profile_data->bytes(), profile_data->size()));
             if (profile) {
               uint32_t data_color_space =
                   profile->GetProfile()->data_color_space;
