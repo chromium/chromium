@@ -182,18 +182,20 @@ bool FileSystemUsageCache::Read(const base::FilePath& usage_file_path,
   DCHECK(is_valid);
   DCHECK(dirty_out);
   DCHECK(usage_out);
+
   uint8_t buffer[kUsageFileSize];
-  const char* header;
-  if (usage_file_path.empty() ||
-      !ReadBytes(usage_file_path, base::make_span<kUsageFileSize>(buffer))) {
+  base::span<uint8_t> buffer_span = base::make_span<kUsageFileSize>(buffer);
+  if (usage_file_path.empty() || !ReadBytes(usage_file_path, buffer_span)) {
     return false;
   }
-  base::Pickle read_pickle(buffer);
+  base::Pickle read_pickle = base::Pickle::WithData(buffer_span);
   base::PickleIterator iter(read_pickle);
   uint32_t dirty = 0;
   int64_t usage = 0;
 
-  // TODO(crbug.com/1490484): Use base::span here once base::Pickle supports it.
+  // TODO(https://crbug.com/40284755): Use base::span here once base::Pickle
+  // supports it.
+  const char* header;
   if (!iter.ReadBytes(&header, kUsageFileHeaderSize) ||
       !iter.ReadBool(is_valid) || !iter.ReadUInt32(&dirty) ||
       !iter.ReadInt64(&usage)) {
