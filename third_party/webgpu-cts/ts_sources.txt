@@ -198,6 +198,7 @@ src/webgpu/api/operation/render_pipeline/pipeline_output_targets.spec.ts
 src/webgpu/api/operation/render_pipeline/primitive_topology.spec.ts
 src/webgpu/api/operation/render_pipeline/sample_mask.spec.ts
 src/webgpu/api/operation/render_pipeline/vertex_only_render_pipeline.spec.ts
+src/webgpu/api/operation/rendering/3d_texture_slices.spec.ts
 src/webgpu/api/operation/rendering/basic.spec.ts
 src/webgpu/api/operation/rendering/color_target_state.spec.ts
 src/webgpu/api/operation/rendering/depth.spec.ts
