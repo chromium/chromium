@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/dom_distiller/core/url_constants.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/navigation_entry.h"
@@ -167,9 +168,10 @@ PermissionDashboardController::~PermissionDashboardController() = default;
 
 bool PermissionDashboardController::Update(
     ContentSettingImageModel* indicator_model,
-    bool force_hide) {
-  indicator_model->Update(force_hide ? nullptr
-                                     : location_bar_view_->GetWebContents());
+    ContentSettingImageView::Delegate* delegate) {
+  indicator_model->Update(delegate->ShouldHideContentSettingImage()
+                              ? nullptr
+                              : location_bar_view_->GetWebContents());
 
   PermissionChipView* indicator_chip =
       permission_dashboard_view_->GetIndicatorChip();
@@ -195,7 +197,8 @@ bool PermissionDashboardController::Update(
     return true;
   }
 
-  indicator_model_ = indicator_model;
+  content_setting_image_model_ = indicator_model;
+  delegate_ = delegate;
   // Save the currently displayed frame id to avoid unnecessary animation if the
   // main frame gets changed.
   main_frame_id_ = location_bar_view_->GetWebContents()
@@ -324,7 +327,8 @@ void PermissionDashboardController::HideIndicators() {
       ->GetViewAccessibility()
       .SetIsIgnored(true);
   permission_dashboard_view_->GetIndicatorChip()->SetVisible(false);
-  indicator_model_ = nullptr;
+  content_setting_image_model_ = nullptr;
+  delegate_ = nullptr;
   permission_dashboard_view_->GetDividerView()->SetVisible(false);
   if (permission_dashboard_view_->GetRequestChip()->GetVisible()) {
     // After the indicator view is gone, remove the divider padding if the
@@ -365,6 +369,26 @@ void PermissionDashboardController::HideIndicators() {
   UpdateIndicatorsVisibilityFlags(location_bar_view_);
 }
 
+void PermissionDashboardController::ShowBubble() {
+  content::WebContents* web_contents = location_bar_view_->GetWebContents();
+  if (web_contents && !page_info_bubble_tracker_) {
+    views::View* const anchor = permission_dashboard_view_->GetIndicatorChip();
+    ContentSettingBubbleContents* bubble_view_ =
+        new ContentSettingBubbleContents(
+            content_setting_image_model_->CreateBubbleModel(
+                delegate_->GetContentSettingBubbleModelDelegate(),
+                web_contents),
+            web_contents, anchor, views::BubbleBorder::TOP_LEFT);
+    bubble_view_->SetHighlightedButton(
+        permission_dashboard_view_->GetIndicatorChip());
+    views::Widget* bubble_widget =
+        views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
+    bubble_widget->Show();
+    delegate_->OnContentSettingImageBubbleShown(
+        content_setting_image_model_->image_type());
+  }
+}
+
 void PermissionDashboardController::ShowPageInfoDialog() {
   content::WebContents* contents = location_bar_view_->GetWebContents();
   if (!contents) {
@@ -394,9 +418,27 @@ void PermissionDashboardController::OnPageInfoBubbleClosed(
     bool reload_prompt) {}
 
 void PermissionDashboardController::OnIndicatorsChipButtonPressed() {
-  ShowPageInfoDialog();
+  content::WebContents* contents = location_bar_view_->GetWebContents();
+  if (!contents) {
+    return;
+  }
 
-  if (indicator_model_) {
+  content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
+  if (entry->IsInitialEntry()) {
+    return;
+  }
+
+  GURL url = entry->GetVirtualURL();
+
+  if (PageInfo::IsFileOrInternalPage(url) ||
+      url.SchemeIs(content_settings::kExtensionScheme) ||
+      url.SchemeIs(dom_distiller::kDomDistillerScheme)) {
+    ShowBubble();
+  } else {
+    ShowPageInfoDialog();
+  }
+
+  if (content_setting_image_model_) {
     content_settings::PageSpecificContentSettings* pscs =
         content_settings::PageSpecificContentSettings::GetForFrame(
             location_bar_view_->GetWebContents()->GetPrimaryMainFrame());
@@ -404,7 +446,7 @@ void PermissionDashboardController::OnIndicatorsChipButtonPressed() {
       return;
     }
 
-    RecordIndicators(indicator_model_, pscs, /*clicked=*/true);
+    RecordIndicators(content_setting_image_model_, pscs, /*clicked=*/true);
   }
 }
 
