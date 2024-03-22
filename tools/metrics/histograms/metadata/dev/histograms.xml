@@ -87,17 +87,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.BreakpointWithConditionAdded"
-    enum="DevToolsBreakpointWithConditionAdded" expires_after="2024-04-28">
-  <owner>yangguo@chromium.org</owner>
-  <owner>bmeurer@chromium.org</owner>
-  <owner>kimanh@chromium.org</owner>
-  <summary>
-    Records when a breakpoint with a condition was added (logpoint or
-    conditional breakpoint).
-  </summary>
-</histogram>
-
 <histogram name="DevTools.CDPCommandFrom{ClientType}" enum="CDPCommands"
     expires_after="2024-09-01">
   <owner>wolfi@chromium.org</owner>
@@ -252,14 +241,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Fires for each experiment that is enabled at the time of Devtools Launch.
   </summary>
-</histogram>
-
-<histogram name="DevTools.InlineScriptParsed" enum="DevToolsVMInlineScriptType"
-    expires_after="2024-04-28">
-  <owner>yangguo@chromium.org</owner>
-  <owner>bmeurer@chromium.org</owner>
-  <owner>kimanh@chromium.org</owner>
-  <summary>Records the inline script types that are parsed.</summary>
 </histogram>
 
 <histogram name="DevTools.InspectElement" units="ms" expires_after="2024-09-01">
@@ -682,17 +663,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Clock time elapsed to process changes in DOM and log Visual Elements
     impressions.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.VMInlineScriptShown"
-    enum="DevToolsVMInlineScriptType" expires_after="2024-04-28">
-  <owner>yangguo@chromium.org</owner>
-  <owner>bmeurer@chromium.org</owner>
-  <owner>kimanh@chromium.org</owner>
-  <summary>
-    Records the inline script types for which we show the VM script instead of
-    the HTML resource.
   </summary>
 </histogram>
 

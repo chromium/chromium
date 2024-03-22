@@ -842,11 +842,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="9" label="Above 1000000"/>
 </enum>
 
-<enum name="DevToolsBreakpointWithConditionAdded">
-  <int value="0" label="Logpoint"/>
-  <int value="1" label="Conditional Breakpoint"/>
-</enum>
-
 <enum name="DevToolsColorConvertedFrom">
   <int value="0" label="Color Swatch (Shift + Click menu)"/>
   <int value="1" label="Color Picker"/>
@@ -1840,11 +1835,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="2" label="Chrome Sync 'Settings' ModelType disabled"/>
   <int value="3" label="DevTools settings sync disabled"/>
   <int value="4" label="DevTools settings sync enabled"/>
-</enum>
-
-<enum name="DevToolsVMInlineScriptType">
-  <int value="0" label="Module Script"/>
-  <int value="1" label="Classic Script"/>
 </enum>
 
 </enums>
