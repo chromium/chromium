@@ -223,9 +223,10 @@ class TabStripLayout: UICollectionViewFlowLayout {
     cell.trailingSeparatorHidden = isNextCellSelected
 
     /// Hide the `leadingSeparator` if the previous cell is selected or the
-    /// collection view is not scrollable.
-    let isPreviousCellSelected = (indexPath.item - 1) == selectedIndexPath?.item
-    cell.leadingSeparatorHidden = isPreviousCellSelected || !isScrollable
+    /// collection view is not scrollable, or the previous cell is a group.
+    let indexPathOfPreviousItem = IndexPath(item: indexPath.item - 1, section: indexPath.section)
+    let isPreviousCellSelected = indexPathOfPreviousItem == selectedIndexPath
+    cell.leadingSeparatorHidden = isPreviousCellSelected || !isScrollable || cell.isFirstTabInGroup
 
     if UIAccessibility.isVoiceOverRunning {
       // Prevent frame resizing while VoiceOver is active.

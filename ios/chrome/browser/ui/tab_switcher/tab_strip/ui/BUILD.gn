@@ -9,6 +9,7 @@ swift_source_set("swift") {
   sources = [
     "tab_strip_consumer.swift",
     "tab_strip_decoration_view.swift",
+    "tab_strip_item_data.swift",
     "tab_strip_item_identifier.swift",
     "tab_strip_layout.swift",
     "tab_strip_new_tab_button.swift",
@@ -42,6 +43,8 @@ source_set("ui") {
     "tab_strip_cell.mm",
     "tab_strip_group_cell.h",
     "tab_strip_group_cell.mm",
+    "tab_strip_group_stroke_view.h",
+    "tab_strip_group_stroke_view.mm",
     "tab_strip_mutator.h",
     "tab_strip_tab_cell.h",
     "tab_strip_tab_cell.mm",

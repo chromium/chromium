@@ -28,6 +28,9 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
   private var groupCellRegistration:
     UICollectionView.CellRegistration<TabStripGroupCell, TabStripItemIdentifier>?
 
+  // Associates data to `diffableDataSource` items, to reconfigure cells.
+  private var itemData = NSMutableDictionary()
+
   // The New tab button.
   private let newTabButton: TabStripNewTabButton = TabStripNewTabButton()
 
@@ -212,7 +215,10 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
 
   // MARK: - TabStripConsumer
 
-  func populate(items: [TabStripItemIdentifier]?, selectedItem: TabSwitcherItem?) {
+  func populate(
+    items: [TabStripItemIdentifier]?, selectedItem: TabSwitcherItem?,
+    itemData: [TabStripItemIdentifier: TabStripItemData]
+  ) {
     guard let items = items else {
       return
     }
@@ -226,6 +232,7 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     var snapshot = NSDiffableDataSourceSnapshot<Section, TabStripItemIdentifier>()
     snapshot.appendSections([.tabs])
     snapshot.appendItems(items, toSection: .tabs)
+    self.itemData.setDictionary(itemData)
 
     // TODO(crbug.com/325415449): Update this when #unavailable is rocognized by
     // the formatter.
@@ -248,13 +255,12 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     self.selectedItem = item
   }
 
-  func reloadItem(_ item: TabStripItemIdentifier?) {
-    guard let item = item, let diffableDataSource = diffableDataSource else {
+  func reconfigureItems(_ items: [TabStripItemIdentifier]) {
+    guard let diffableDataSource = diffableDataSource else {
       return
     }
-
     var snapshot = diffableDataSource.snapshot()
-    snapshot.reconfigureItems([item])
+    snapshot.reconfigureItems(items)
     applySnapshot(diffableDataSource: diffableDataSource, snapshot: snapshot)
   }
 
@@ -348,6 +354,7 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
 
     var snapshot = diffableDataSource.snapshot()
     snapshot.deleteItems(items)
+    itemData.removeObjects(forKeys: items)
     applySnapshot(
       diffableDataSource: diffableDataSource, snapshot: snapshot,
       animatingDifferences: !UIAccessibility.isReduceMotionEnabled,
@@ -365,7 +372,17 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     var snapshot = diffableDataSource.snapshot()
     snapshot.insertItems([newItem], beforeItem: oldItem)
     snapshot.deleteItems([oldItem])
+    itemData.removeObject(forKey: oldItem)
     applySnapshot(diffableDataSource: diffableDataSource, snapshot: snapshot)
+  }
+
+  func updateItemData(
+    _ updatedItemData: [TabStripItemIdentifier: TabStripItemData], reconfigureItems: Bool = false
+  ) {
+    itemData.addEntries(from: updatedItemData)
+    if reconfigureItems {
+      self.reconfigureItems(Array(updatedItemData.keys))
+    }
   }
 
   // MARK: - TabStripCommands
@@ -426,9 +443,13 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
   private func createRegistrations() {
     tabCellRegistration = UICollectionView.CellRegistration<TabStripTabCell, TabStripItemIdentifier>
     {
-      (cell, indexPath, item) in
-      guard let item = item.tabSwitcherItem else { return }
+      (cell, indexPath, itemIdentifier) in
+      guard let item = itemIdentifier.tabSwitcherItem else { return }
+      let itemData = self.itemData[itemIdentifier] as? TabStripItemData
       cell.title = item.title
+      cell.setGroupStrokeColor(itemData?.groupStrokeColor)
+      cell.isFirstTabInGroup = itemData?.isFirstTabInGroup == true
+      cell.isLastTabInGroup = itemData?.isLastTabInGroup == true
       cell.loading = item.showsActivity
       cell.delegate = self
       cell.accessibilityIdentifier = self.tabTripTabCellAccessibilityIdentifier(
@@ -447,10 +468,12 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     groupCellRegistration = UICollectionView.CellRegistration<
       TabStripGroupCell, TabStripItemIdentifier
     > {
-      (cell, indexPath, item) in
-      guard let item = item.tabGroupItem else { return }
+      (cell, indexPath, itemIdentifier) in
+      guard let item = itemIdentifier.tabGroupItem else { return }
+      let itemData = self.itemData[itemIdentifier] as? TabStripItemData
       cell.title = item.title
-      cell.groupColor = item.groupColor
+      cell.titleContainerBackgroundColor = item.groupColor
+      cell.setGroupStrokeColor(itemData?.groupStrokeColor)
       cell.accessibilityIdentifier = self.tabTripGroupCellAccessibilityIdentifier(
         index: indexPath.item)
     }
@@ -650,13 +673,31 @@ extension TabStripViewController: UICollectionViewDelegateFlowLayout {
     }
   }
 
+  func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath)
+    -> Bool
+  {
+    switch diffableDataSource?.itemIdentifier(for: indexPath)?.item {
+    case .tab(_):
+      // Only tabs are selectable since being selected is equivalent to having
+      // the associated WebState being active.
+      return true
+    default:
+      return false
+    }
+  }
+
   func collectionView(
     _ collectionView: UICollectionView, performPrimaryActionForItemAt indexPath: IndexPath
   ) {
-    guard let item = diffableDataSource?.itemIdentifier(for: indexPath) else {
+    switch diffableDataSource?.itemIdentifier(for: indexPath)?.item {
+    case .tab(let tabSwitcherItem):
+      mutator?.activate(tabSwitcherItem)
+    case .group(_):
+      // TODO(crbug.com/329091020): Make tab groups collapsible.
+      break
+    case nil:
       return
     }
-    mutator?.activate(item.tabSwitcherItem)
   }
 
   func collectionView(

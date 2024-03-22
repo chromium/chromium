@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_group_stroke_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -28,7 +29,7 @@ const CGFloat kCloseButtonSize = 16;
 // The alpha of the close button background color.
 const CGFloat kCloseButtonBackgroundAlpha = 0.2;
 
-// Size of the decoration corner when the cell is selected.
+// Size of the decoration corner and corner radius when the cell is selected.
 const CGFloat kCornerSize = 16;
 
 // Threshold width for collapsing the cell and hiding the close button.
@@ -63,6 +64,7 @@ UIImage* DefaultFavicon() {
   UILabel* _titleLabel;
   GradientView* _titleGradientView;
   UIImageView* _faviconView;
+  TabStripGroupStrokeView* _groupStrokeView;
 
   // Decoration views, visible when the cell is selected.
   UIView* _leftTailView;
@@ -92,6 +94,10 @@ UIImage* DefaultFavicon() {
   // Gradient view's constraints.
   NSLayoutConstraint* _titleGradientViewLeadingConstraint;
   NSLayoutConstraint* _titleGradientViewTrailingConstraint;
+
+  // Stroke view's constraints.
+  NSLayoutConstraint* _groupStrokeViewBottomConstraint;
+  NSLayoutConstraint* _groupStrokeViewBottomSelectedConstraint;
 
   // Separator height constraints.
   NSArray<NSLayoutConstraint*>* _separatorHeightConstraints;
@@ -167,8 +173,12 @@ UIImage* DefaultFavicon() {
     _trailingSeparatorGradientView = [self createGradientView];
     [self addSubview:_trailingSeparatorGradientView];
 
+    _groupStrokeView = [[TabStripGroupStrokeView alloc] init];
+    [self addSubview:_groupStrokeView];
+
     [self setupConstraints];
     [self setupDecorationLayers];
+    [self updateGroupStroke];
 
     self.selected = NO;
   }
@@ -201,6 +211,22 @@ UIImage* DefaultFavicon() {
   _titleLabel.text = [title copy];
   _titleLabel.textAlignment = titleTextAligment;
   [self updateTitleGradientViewConstraints];
+}
+
+- (void)setGroupStrokeColor:(UIColor*)color {
+  if (_groupStrokeView.backgroundColor == color) {
+    return;
+  }
+  _groupStrokeView.backgroundColor = color;
+  [self updateGroupStroke];
+}
+
+- (void)setIsLastTabInGroup:(BOOL)isLastTabInGroup {
+  if (_isLastTabInGroup == isLastTabInGroup) {
+    return;
+  }
+  _isLastTabInGroup = isLastTabInGroup;
+  [self updateGroupStroke];
 }
 
 - (void)setLoading:(BOOL)loading {
@@ -259,6 +285,7 @@ UIImage* DefaultFavicon() {
 }
 
 - (void)setSelected:(BOOL)selected {
+  BOOL oldSelected = self.selected;
   [super setSelected:selected];
 
   if (selected) {
@@ -289,6 +316,9 @@ UIImage* DefaultFavicon() {
   [self setRightSelectedBorderBackgroundViewHidden:YES];
 
   [self updateCollapsedState];
+  if (oldSelected != self.selected) {
+    [self updateGroupStroke];
+  }
 }
 
 - (void)setSeparatorsHeight:(CGFloat)height {
@@ -511,6 +541,66 @@ UIImage* DefaultFavicon() {
   }
 }
 
+// Updates the `_groupStrokeView` horizontal constraints.
+- (void)updateGroupStroke {
+  if (!_groupStrokeView.backgroundColor) {
+    _groupStrokeView.hidden = YES;
+    return;
+  }
+  _groupStrokeView.hidden = NO;
+
+  if (self.selected) {
+    _groupStrokeViewBottomConstraint.active = NO;
+    _groupStrokeViewBottomSelectedConstraint.active = YES;
+  } else {
+    _groupStrokeViewBottomSelectedConstraint.active = NO;
+    _groupStrokeViewBottomConstraint.active = YES;
+  }
+
+  const CGFloat lineWidth =
+      TabStripCollectionViewConstants.groupStrokeLineWidth;
+  UIBezierPath* path = [UIBezierPath bezierPath];
+  CGPoint leftPoint = CGPointZero;
+  [path moveToPoint:leftPoint];
+  if (self.selected) {
+    leftPoint.y += kCornerSize + lineWidth / 2;
+    [path addArcWithCenter:leftPoint
+                    radius:kCornerSize + lineWidth / 2
+                startAngle:M_PI + M_PI_2
+                  endAngle:M_PI
+                 clockwise:NO];
+    leftPoint.x -= kCornerSize + lineWidth / 2;
+    leftPoint.y += self.frame.size.height - kCornerSize * 2;
+    [path addLineToPoint:leftPoint];
+    leftPoint.x -= kCornerSize - lineWidth / 2;
+    [path addArcWithCenter:leftPoint
+                    radius:kCornerSize - lineWidth / 2
+                startAngle:0
+                  endAngle:M_PI_2
+                 clockwise:YES];
+  } else {
+    leftPoint.x -= kCornerSize;
+    [path addLineToPoint:leftPoint];
+  }
+  [_groupStrokeView setLeftPath:path.CGPath];
+
+  // The right path starts like the left path, but flipped horizontally.
+  [path applyTransform:CGAffineTransformMakeScale(-1, 1)];
+  CGPoint rightPoint = path.currentPoint;
+  if (self.isLastTabInGroup) {
+    rightPoint.y += lineWidth / 2;
+    [path addArcWithCenter:rightPoint
+                    radius:lineWidth / 2
+                startAngle:M_PI + M_PI_2
+                  endAngle:0
+                 clockwise:YES];
+  } else {
+    rightPoint.x += TabStripTabItemConstants.horizontalSpacing;
+    [path addLineToPoint:rightPoint];
+  }
+  [_groupStrokeView setRightPath:path.CGPath];
+}
+
 // Sets the cell constraints.
 - (void)setupConstraints {
   UILayoutGuide* leadingImageGuide = [[UILayoutGuide alloc] init];
@@ -686,6 +776,16 @@ UIImage* DefaultFavicon() {
     [_trailingSeparatorGradientView.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];
+
+  /// `_groupStrokeView` constraints.
+  _groupStrokeViewBottomConstraint =
+      [_groupStrokeView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor];
+  _groupStrokeViewBottomConstraint.active = YES;
+  _groupStrokeViewBottomSelectedConstraint =
+      [_groupStrokeView.bottomAnchor constraintEqualToAnchor:self.topAnchor];
+  AddSameConstraintsToSidesWithInsets(
+      _groupStrokeView, self, LayoutSides::kLeading | LayoutSides::kTrailing,
+      NSDirectionalEdgeInsetsMake(0, kCornerSize, 0, kCornerSize));
 }
 
 // Selector registered to the close button.

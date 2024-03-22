@@ -9,6 +9,10 @@
 
 // TabStripCell that contains a group title.
 @interface TabStripGroupCell : TabStripCell
+
+// Background color of the title container.
+@property(nonatomic, strong) UIColor* titleContainerBackgroundColor;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_GROUP_CELL_H_

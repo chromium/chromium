@@ -9,12 +9,14 @@ import ios_chrome_browser_ui_tab_switcher_tab_strip_ui_swift_constants
 @objcMembers public class TabStripCollectionViewConstants: NSObject {
   public static let tabStripTabCellPrefixIdentifier = TabStripConstants.CollectionView
     .tabStripTabCellPrefixIdentifier
+  public static let groupStrokeLineWidth = TabStripConstants.CollectionView.groupStrokeLineWidth
 }
 
 /// Bridge to access `TabStripConstants.TabItem` from Objective-C code.
 @objcMembers public class TabStripTabItemConstants: NSObject {
   public static let fontSize = TabStripConstants.TabItem.fontSize
   public static let selectedZIndex = TabStripConstants.TabItem.selectedZIndex
+  public static let horizontalSpacing = TabStripConstants.TabItem.horizontalSpacing
 }
 
 /// Bridge to access `TabStripConstants.GroupItem` from Objective-C code.

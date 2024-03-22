@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_group_cell.h"
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_group_stroke_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -19,6 +20,7 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
 @implementation TabStripGroupCell {
   UILabel* _titleLabel;
   UIView* _titleContainer;
+  TabStripGroupStrokeView* _groupStrokeView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -26,7 +28,10 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
   if (self) {
     _titleContainer = [self createTitleContainer];
     [self.contentView addSubview:_titleContainer];
+    _groupStrokeView = [[TabStripGroupStrokeView alloc] init];
+    [self addSubview:_groupStrokeView];
     [self setupConstraints];
+    [self updateGroupStroke];
   }
   return self;
 }
@@ -39,9 +44,17 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
   _titleLabel.text = [title copy];
 }
 
-- (void)setGroupColor:(UIColor*)color {
-  [super setGroupColor:color];
+- (void)setTitleContainerBackgroundColor:(UIColor*)color {
+  _titleContainerBackgroundColor = color;
   _titleContainer.backgroundColor = color;
+}
+
+- (void)setGroupStrokeColor:(UIColor*)color {
+  if (_groupStrokeView.backgroundColor == color) {
+    return;
+  }
+  _groupStrokeView.backgroundColor = color;
+  [self updateGroupStroke];
 }
 
 #pragma mark - View creation helpers
@@ -88,6 +101,44 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
           TabStripGroupItemConstants.titleContainerHorizontalPadding,
           kTitleContainerVerticalPadding,
           TabStripGroupItemConstants.titleContainerHorizontalPadding));
+  AddSameConstraintsToSides(_groupStrokeView, _titleLabel,
+                            LayoutSides::kLeading | LayoutSides::kTrailing);
+  [_groupStrokeView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor]
+      .active = YES;
+}
+
+- (void)updateGroupStroke {
+  if (!_groupStrokeView.backgroundColor) {
+    _groupStrokeView.hidden = YES;
+    return;
+  }
+  _groupStrokeView.hidden = NO;
+
+  const CGFloat lineWidth =
+      TabStripCollectionViewConstants.groupStrokeLineWidth;
+
+  UIBezierPath* leftPath = [UIBezierPath bezierPath];
+  CGPoint leftPoint = CGPointZero;
+  [leftPath moveToPoint:leftPoint];
+  leftPoint.y += lineWidth / 2;
+  [leftPath addArcWithCenter:leftPoint
+                      radius:lineWidth / 2
+                  startAngle:M_PI + M_PI_2
+                    endAngle:M_PI
+                   clockwise:NO];
+  leftPoint.x -= lineWidth / 2;
+  [_groupStrokeView setLeftPath:leftPath.CGPath];
+
+  UIBezierPath* rightPath = [UIBezierPath bezierPath];
+  CGPoint rightPoint = CGPointZero;
+  [rightPath moveToPoint:rightPoint];
+  // TODO(crbug.com/329091020): If the group is collapsed, the path should
+  // update accordingly.
+  rightPoint.x += TabStripGroupItemConstants.titleContainerHorizontalPadding;
+  rightPoint.x += TabStripGroupItemConstants.titleContainerHorizontalMargin;
+  rightPoint.x += TabStripTabItemConstants.horizontalSpacing;
+  [rightPath addLineToPoint:rightPoint];
+  [_groupStrokeView setRightPath:rightPath.CGPath];
 }
 
 @end

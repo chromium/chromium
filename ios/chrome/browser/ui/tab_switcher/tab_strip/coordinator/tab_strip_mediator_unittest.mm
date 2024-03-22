@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/core/favicon_url.h"
 #import "components/favicon/ios/web_favicon_driver.h"
@@ -14,15 +15,20 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/group_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -31,24 +37,31 @@
 
 @property(nonatomic, strong) NSMutableArray<TabStripItemIdentifier*>* items;
 @property(nonatomic, strong) TabSwitcherItem* selectedItem;
-@property(nonatomic, strong) TabStripItemIdentifier* reloadedItem;
+@property(nonatomic, strong)
+    NSArray<TabStripItemIdentifier*>* reconfiguredItems;
+@property(nonatomic, strong)
+    NSMutableDictionary<TabStripItemIdentifier*, TabStripItemData*>* itemData;
 
 @end
 
 @implementation FakeTabStripConsumer
 
 - (void)populateWithItems:(NSArray<TabStripItemIdentifier*>*)items
-             selectedItem:(TabSwitcherItem*)selectedItem {
+             selectedItem:(TabSwitcherItem*)selectedItem
+                 itemData:
+                     (NSDictionary<TabStripItemIdentifier*, TabStripItemData*>*)
+                         itemData {
   self.items = [items mutableCopy];
   self.selectedItem = selectedItem;
+  self.itemData = [NSMutableDictionary dictionaryWithDictionary:itemData];
 }
 
 - (void)selectItem:(TabSwitcherItem*)item {
   self.selectedItem = item;
 }
 
-- (void)reloadItem:(TabStripItemIdentifier*)item {
-  self.reloadedItem = item;
+- (void)reconfigureItems:(NSArray<TabStripItemIdentifier*>*)items {
+  self.reconfiguredItems = items;
 }
 
 - (void)moveItem:(TabSwitcherItem*)item
@@ -78,9 +91,8 @@
 }
 
 - (void)removeItems:(NSArray<TabStripItemIdentifier*>*)items {
-  for (TabStripItemIdentifier* item in items) {
-    [self.items removeObject:item];
-  }
+  [self.items removeObjectsInArray:items];
+  [self.itemData removeObjectsForKeys:items];
 }
 
 - (void)replaceItem:(TabSwitcherItem*)oldTab withItem:(TabSwitcherItem*)newTab {
@@ -98,6 +110,17 @@
     }
   }
   self.items = replacedItems;
+  [self.itemData removeObjectForKey:oldItem];
+}
+
+- (void)updateItemData:
+            (NSDictionary<TabStripItemIdentifier*, TabStripItemData*>*)
+                updatedItemData
+      reconfigureItems:(BOOL)reconfigureItems {
+  [self.itemData addEntriesFromDictionary:updatedItemData];
+  if (reconfigureItems) {
+    [self reconfigureItems:updatedItemData.allKeys];
+  }
 }
 
 @end
@@ -106,6 +129,7 @@
 class TabStripMediatorTest : public PlatformTest {
  public:
   TabStripMediatorTest() {
+    feature_list_.InitWithFeatures({kTabGroupsInGrid}, {});
     TestChromeBrowserState::Builder browser_state_builder;
     browser_state_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
@@ -146,6 +170,7 @@ class TabStripMediatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<WebStateList> web_state_list_;
@@ -207,8 +232,207 @@ TEST_F(TabStripMediatorTest, ConsumerPopulated) {
   EXPECT_EQ(group_0, consumer_.items[0].tabGroupItem.tabGroup);
   EXPECT_EQ(web_state_list_->GetWebStateAt(0)->GetUniqueIdentifier(),
             consumer_.items[1].tabSwitcherItem.identifier);
+  EXPECT_NSEQ(ColorForTabGroupColorId(group_0->visual_data().color()),
+              consumer_.itemData[consumer_.items[1]].groupStrokeColor);
   EXPECT_EQ(web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier(),
             consumer_.items[2].tabSwitcherItem.identifier);
+  EXPECT_NSEQ(nil, consumer_.itemData[consumer_.items[2]].groupStrokeColor);
+
+  // Check that the closed tab and its group are removed from the consumer.
+  web_state_list_->CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
+
+  ASSERT_NE(nil, consumer_.selectedItem);
+  EXPECT_EQ(web_state_list_->GetActiveWebState()->GetUniqueIdentifier(),
+            consumer_.selectedItem.identifier);
+  ASSERT_EQ(1ul, consumer_.items.count);
+  EXPECT_EQ(web_state_list_->GetWebStateAt(0)->GetUniqueIdentifier(),
+            consumer_.items[0].tabSwitcherItem.identifier);
+}
+
+// Test that `TabStripItemData` elements are updated accordingly.
+TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      *web_state_list_, "a b | c* [ 0 d e ] f [ 1 g h ]"));
+  for (int i = 0; i < web_state_list_->count(); ++i) {
+    web::FakeWebState* web_state =
+        static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(i));
+    web_state->SetBrowserState(browser_state_.get());
+    favicon::WebFaviconDriver::CreateForWebState(
+        web_state,
+        ios::FaviconServiceFactory::GetForBrowserState(
+            browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+  }
+
+  InitializeMediator();
+
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+  const auto group_0_color =
+      ColorForTabGroupColorId(group_0->visual_data().color());
+  const auto group_1_color =
+      ColorForTabGroupColorId(group_1->visual_data().color());
+
+  ASSERT_EQ(10ul, consumer_.items.count);
+  TabStripItemIdentifier* item_a = consumer_.items[0];
+  TabStripItemIdentifier* item_b = consumer_.items[1];
+  TabStripItemIdentifier* item_c = consumer_.items[2];
+  TabStripItemIdentifier* item_0 = consumer_.items[3];
+  TabStripItemIdentifier* item_d = consumer_.items[4];
+  TabStripItemIdentifier* item_e = consumer_.items[5];
+  TabStripItemIdentifier* item_f = consumer_.items[6];
+  TabStripItemIdentifier* item_1 = consumer_.items[7];
+  TabStripItemIdentifier* item_g = consumer_.items[8];
+  TabStripItemIdentifier* item_h = consumer_.items[9];
+
+  // 0. Testing data up-to-date after initialization.
+
+  // Test group stroke color.
+  EXPECT_NSEQ(consumer_.itemData[item_a].groupStrokeColor, nil);
+  EXPECT_NSEQ(consumer_.itemData[item_b].groupStrokeColor, nil);
+  EXPECT_NSEQ(consumer_.itemData[item_c].groupStrokeColor, nil);
+  EXPECT_NSEQ(consumer_.itemData[item_0].groupStrokeColor, group_0_color);
+  EXPECT_NSEQ(consumer_.itemData[item_d].groupStrokeColor, group_0_color);
+  EXPECT_NSEQ(consumer_.itemData[item_e].groupStrokeColor, group_0_color);
+  EXPECT_NSEQ(consumer_.itemData[item_f].groupStrokeColor, nil);
+  EXPECT_NSEQ(consumer_.itemData[item_1].groupStrokeColor, group_1_color);
+  EXPECT_NSEQ(consumer_.itemData[item_g].groupStrokeColor, group_1_color);
+  EXPECT_NSEQ(consumer_.itemData[item_h].groupStrokeColor, group_1_color);
+
+  // Test is first tab in group.
+  EXPECT_EQ(consumer_.itemData[item_a].isFirstTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_b].isFirstTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_c].isFirstTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_0].isFirstTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_d].isFirstTabInGroup, YES);
+  EXPECT_EQ(consumer_.itemData[item_e].isFirstTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_f].isFirstTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_1].isFirstTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_g].isFirstTabInGroup, YES);
+  EXPECT_EQ(consumer_.itemData[item_h].isFirstTabInGroup, NO);
+
+  // Test is last tab in group.
+  EXPECT_EQ(consumer_.itemData[item_a].isLastTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_b].isLastTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_c].isLastTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_0].isLastTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_d].isLastTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_e].isLastTabInGroup, YES);
+  EXPECT_EQ(consumer_.itemData[item_f].isLastTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_1].isLastTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_g].isLastTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_h].isLastTabInGroup, YES);
+
+  // 1. Testing data up-to-date after WebStateListChange::Type::kStatusOnly.
+
+  const web::WebState* web_state_e = builder.GetWebStateForIdentifier('e');
+  web_state_list_->RemoveFromGroups(
+      {web_state_list_->GetIndexOfWebState(web_state_e)});
+  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+            "a b | c* [ 0 d ] e f [ 1 g h ]");
+  // Group stroke color of 'e' should now be nil, and 'd' is now the last tab of
+  // its group.
+  EXPECT_NSEQ(consumer_.itemData[item_e].groupStrokeColor, nil);
+  EXPECT_EQ(consumer_.itemData[item_d].isLastTabInGroup, YES);
+  EXPECT_EQ(consumer_.itemData[item_e].isLastTabInGroup, NO);
+
+  web_state_list_->MoveToGroup(
+      {web_state_list_->GetIndexOfWebState(web_state_e)}, group_0);
+  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+            "a b | c* [ 0 d e ] f [ 1 g h ]");
+  // Group stroke color of 'e' should be back to its previous value, and be the
+  // last tab of its group.
+  EXPECT_NSEQ(consumer_.itemData[item_e].groupStrokeColor, group_0_color);
+  EXPECT_EQ(consumer_.itemData[item_d].isLastTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_e].isLastTabInGroup, YES);
+
+  web_state_list_->DeleteGroup(group_1);
+  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+            "a b | c* [ 0 d e ] f g h");
+  EXPECT_NSEQ(consumer_.itemData[item_g].groupStrokeColor, nil);
+  EXPECT_NSEQ(consumer_.itemData[item_h].groupStrokeColor, nil);
+  EXPECT_EQ(consumer_.itemData[item_g].isFirstTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_h].isFirstTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_g].isLastTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_h].isLastTabInGroup, NO);
+
+  // 2. Testing data up-to-date after WebStateListChange::Type::kDetach.
+
+  const web::WebState* web_state_d = builder.GetWebStateForIdentifier('d');
+  std::unique_ptr<web::WebState> web_state_d_detached =
+      web_state_list_->DetachWebStateAt(
+          web_state_list_->GetIndexOfWebState(web_state_d));
+  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+            "a b | c* [ 0 e ] f g h");
+  EXPECT_EQ(consumer_.itemData[item_e].isFirstTabInGroup, YES);
+
+  // 3. Testing data up-to-date after WebStateListChange::Type::kInsert.
+
+  web_state_list_->InsertWebState(
+      std::move(web_state_d_detached),
+      WebStateList::InsertionParams::AtIndex(
+          web_state_list_->GetIndexOfWebState(web_state_e))
+          .InGroup(group_0));
+  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+            "a b | c* [ 0 d e ] f g h");
+  EXPECT_NSEQ(consumer_.itemData[item_d].groupStrokeColor, group_0_color);
+  EXPECT_EQ(consumer_.itemData[item_d].isFirstTabInGroup, YES);
+  EXPECT_EQ(consumer_.itemData[item_e].isFirstTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_d].isLastTabInGroup, NO);
+
+  // 4. Testing data up-to-date after WebStateListChange::Type::kMove.
+
+  web_state_list_->MoveWebStateAt(3, 4);
+  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+            "a b | c* [ 0 e d ] f g h");
+  EXPECT_EQ(consumer_.itemData[item_d].isFirstTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_e].isFirstTabInGroup, YES);
+  EXPECT_EQ(consumer_.itemData[item_d].isLastTabInGroup, YES);
+  EXPECT_EQ(consumer_.itemData[item_e].isLastTabInGroup, NO);
+
+  // 5. Testing data up-to-date after WebStateListChange::Type::kGroupCreate.
+
+  const TabGroup* group_2 =
+      web_state_list_->CreateGroup({web_state_list_->GetIndexOfWebState(
+                                        builder.GetWebStateForIdentifier('c')),
+                                    web_state_list_->GetIndexOfWebState(
+                                        builder.GetWebStateForIdentifier('d')),
+                                    web_state_list_->GetIndexOfWebState(
+                                        builder.GetWebStateForIdentifier('f')),
+                                    web_state_list_->GetIndexOfWebState(
+                                        builder.GetWebStateForIdentifier('g')),
+                                    web_state_list_->GetIndexOfWebState(
+                                        builder.GetWebStateForIdentifier('h'))},
+                                   {});
+  builder.SetTabGroupIdentifier(group_2, '2');
+  UIColor* group_2_color =
+      ColorForTabGroupColorId(group_2->visual_data().color());
+  ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
+            "a b | [ 2 c* d f g h ] [ 0 e ]");
+  EXPECT_NSEQ(consumer_.itemData[item_c].groupStrokeColor, group_2_color);
+  EXPECT_NSEQ(consumer_.itemData[item_d].groupStrokeColor, group_2_color);
+  EXPECT_NSEQ(consumer_.itemData[item_f].groupStrokeColor, group_2_color);
+  EXPECT_NSEQ(consumer_.itemData[item_g].groupStrokeColor, group_2_color);
+  EXPECT_NSEQ(consumer_.itemData[item_h].groupStrokeColor, group_2_color);
+  EXPECT_NSEQ(consumer_.itemData[item_e].groupStrokeColor, group_0_color);
+  EXPECT_EQ(consumer_.itemData[item_c].isFirstTabInGroup, YES);
+  EXPECT_EQ(consumer_.itemData[item_d].isFirstTabInGroup, NO);
+  EXPECT_EQ(consumer_.itemData[item_e].isFirstTabInGroup, YES);
+  EXPECT_EQ(consumer_.itemData[item_h].isLastTabInGroup, YES);
+
+  // 6. Testing data up-to-date after
+  // WebStateListChange::Type::kGroupVisualDataUpdate.
+
+  TabStripItemIdentifier* item_2 = consumer_.items[2];
+  web_state_list_->UpdateGroupVisualData(
+      group_2, {u"Updated Group Name", tab_groups::TabGroupColorId::kRed});
+  group_2_color = ColorForTabGroupColorId(group_2->visual_data().color());
+  EXPECT_NSEQ(consumer_.itemData[item_2].groupStrokeColor, group_2_color);
+  EXPECT_NSEQ(consumer_.itemData[item_c].groupStrokeColor, group_2_color);
+  EXPECT_NSEQ(consumer_.itemData[item_d].groupStrokeColor, group_2_color);
+  EXPECT_NSEQ(consumer_.itemData[item_f].groupStrokeColor, group_2_color);
+  EXPECT_NSEQ(consumer_.itemData[item_g].groupStrokeColor, group_2_color);
+  EXPECT_NSEQ(consumer_.itemData[item_h].groupStrokeColor, group_2_color);
 }
 
 // Tests that changing the selected tab is correctly reflected in the consumer.
@@ -261,25 +485,25 @@ TEST_F(TabStripMediatorTest, WebStateChange) {
   static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(0))
       ->SetTitle(u"test test");
   EXPECT_EQ(web_state_list_->GetWebStateAt(0)->GetUniqueIdentifier(),
-            consumer_.reloadedItem.tabSwitcherItem.identifier);
+            consumer_.reconfiguredItems.firstObject.tabSwitcherItem.identifier);
 
-  consumer_.reloadedItem = nil;
+  consumer_.reconfiguredItems = nil;
 
   // Check loading state update.
   static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(1))
       ->SetLoading(true);
   EXPECT_EQ(web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier(),
-            consumer_.reloadedItem.tabSwitcherItem.identifier);
+            consumer_.reconfiguredItems.firstObject.tabSwitcherItem.identifier);
 
-  consumer_.reloadedItem = nil;
+  consumer_.reconfiguredItems = nil;
 
   // Check loading state update.
   static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(1))
       ->SetLoading(false);
   EXPECT_EQ(web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier(),
-            consumer_.reloadedItem.tabSwitcherItem.identifier);
+            consumer_.reconfiguredItems.firstObject.tabSwitcherItem.identifier);
 
-  consumer_.reloadedItem = nil;
+  consumer_.reconfiguredItems = nil;
 
   // Check favicon update.
   favicon::WebFaviconDriver* driver = favicon::WebFaviconDriver::FromWebState(
@@ -289,7 +513,7 @@ TEST_F(TabStripMediatorTest, WebStateChange) {
                            GURL(), false, gfx::Image());
 
   EXPECT_EQ(web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier(),
-            consumer_.reloadedItem.tabSwitcherItem.identifier);
+            consumer_.reconfiguredItems.firstObject.tabSwitcherItem.identifier);
 }
 
 // Tests that adding a new tab works.

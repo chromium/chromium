@@ -5,15 +5,17 @@
 /// Consumer protocol for the TabStrip.
 @objc protocol TabStripConsumer {
 
-  /// Tells the consumer to replace its current set of items with `items` and updates the selected
-  /// item to be `selectedItem`. The selected item must be in the `items`.
-  func populate(items: [TabStripItemIdentifier]?, selectedItem: TabSwitcherItem?)
+  /// Tells the consumer to replace its current set of items with `items`, item data with `itemData`
+  /// and updates the selected item to be `selectedItem`. The selected item must be in the `items`.
+  func populate(
+    items: [TabStripItemIdentifier]?, selectedItem: TabSwitcherItem?,
+    itemData: [TabStripItemIdentifier: TabStripItemData])
 
   /// Tells the consumer to select `item`.
   func selectItem(_ item: TabSwitcherItem?)
 
-  /// Reloads `item`'s content.
-  func reloadItem(_ item: TabStripItemIdentifier?)
+  /// Reconfigure the content of cells associated with `items`.
+  func reconfigureItems(_ items: [TabStripItemIdentifier])
 
   /// Moves `item`  after `destinationItem`. Pass nil to insert at the beginning.
   func moveItem(
@@ -30,5 +32,9 @@
   /// Replaces `oldItem` by `newItem`.
   /// The nullability is here for Objective-C compatibility. If one of them is nil, the consumer will do nothing.
   func replaceItem(_ oldItem: TabSwitcherItem?, withItem newItem: TabSwitcherItem?)
+
+  /// Updates the `TabStripItemData` associated with tab strip items.
+  func updateItemData(
+    _ updatedItemData: [TabStripItemIdentifier: TabStripItemData], reconfigureItems: Bool)
 
 }

@@ -6,19 +6,28 @@
 
 @implementation TabStripCell
 
-#pragma mark - UICollectionViewCell
+#pragma mark - Initialization
 
 - (instancetype)initWithFrame:(CGRect)frame {
-  if ((self = [super initWithFrame:frame])) {
+  self = [super initWithFrame:frame];
+  if (self) {
     self.isAccessibilityElement = YES;
   }
   return self;
 }
 
+#pragma mark - Public
+
+- (void)setGroupStrokeColor:(UIColor*)color {
+  // Subclasses should override.
+}
+
+#pragma mark - UICollectionViewCell
+
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.title = nil;
-  self.groupColor = nil;
+  [self setGroupStrokeColor:nil];
 }
 
 @end
