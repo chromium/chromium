@@ -90,10 +90,19 @@ SummaryOutlinesSection::SummaryOutlinesSection() {
                    }))
                    .Build());
 
-  AddChildView(CreateSectionHeader(chromeos::kMahiOutlinesIcon,
-                                   IDS_MAHI_PANEL_OUTLINES_SECTION_NAME));
+  // TODO(b/330643995): Show the outlines section once it is ready.
+  auto* outlines_section_container = AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
+          .SetID(mahi_constants::ViewId::kOutlinesSectionContainer)
+          .SetVisible(false)
+          .Build());
 
-  AddChildView(
+  outlines_section_container->AddChildView(CreateSectionHeader(
+      chromeos::kMahiOutlinesIcon, IDS_MAHI_PANEL_OUTLINES_SECTION_NAME));
+
+  outlines_section_container->AddChildView(
       views::Builder<views::AnimatedImageView>()
           .CopyAddressTo(&outlines_loading_animated_image_)
           .SetID(mahi_constants::ViewId::kOutlinesLoadingAnimatedImage)
@@ -101,11 +110,12 @@ SummaryOutlinesSection::SummaryOutlinesSection() {
               IDR_MAHI_LOADING_OUTLINES_ANIMATION))
           .Build());
 
-  AddChildView(views::Builder<views::FlexLayoutView>()
-                   .SetID(mahi_constants::ViewId::kOutlinesContainer)
-                   .SetOrientation(views::LayoutOrientation::kVertical)
-                   .SetVisible(false)
-                   .Build());
+  outlines_section_container->AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetID(mahi_constants::ViewId::kOutlinesContainer)
+          .SetOrientation(views::LayoutOrientation::kVertical)
+          .SetVisible(false)
+          .Build());
 
   LoadSummaryAndOutlines();
 }

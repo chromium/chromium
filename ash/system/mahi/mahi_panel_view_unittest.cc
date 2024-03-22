@@ -206,6 +206,14 @@ TEST_F(MahiPanelViewTest, LearnMoreLink) {
       panel_view()->GetViewByID(mahi_constants::ViewId::kLearnMoreLink));
 }
 
+// TODO(b/330643995): Remove this test after outlines can be shown by default.
+TEST_F(MahiPanelViewTest, OutlinesHiddenByDefault) {
+  EXPECT_FALSE(
+      panel_view()
+          ->GetViewByID(mahi_constants::ViewId::kOutlinesSectionContainer)
+          ->GetVisible());
+}
+
 // Make sure the `PanelContentsContainer` is larger than its contents when the
 // contents are short.
 TEST_F(MahiPanelViewTest, PanelContentsViewBoundsWithShortSummary) {
@@ -214,6 +222,10 @@ TEST_F(MahiPanelViewTest, PanelContentsViewBoundsWithShortSummary) {
   // Create a panel with a short summary.
   fake_mahi_manager()->set_summary_text(u"Short summary");
   auto mahi_view = std::make_unique<MahiPanelView>();
+  // TODO(b/330643995): After outlines are shown by default, remove this since
+  // we won't need to explicitly show the outlines section anymore.
+  mahi_view->GetViewByID(mahi_constants::ViewId::kOutlinesSectionContainer)
+      ->SetVisible(true);
   mahi_view->SetPreferredSize(panel_bounds);
   mahi_view->SizeToPreferredSize();
 
@@ -242,6 +254,10 @@ TEST_F(MahiPanelViewTest, PanelContentsViewBoundsWithLongSummary) {
   }
   fake_mahi_manager()->set_summary_text(long_summary);
   auto mahi_view = std::make_unique<MahiPanelView>();
+  // TODO(b/330643995): After outlines are shown by default, remove this since
+  // we won't need to explicitly show the outlines section anymore.
+  mahi_view->GetViewByID(mahi_constants::ViewId::kOutlinesSectionContainer)
+      ->SetVisible(true);
   mahi_view->SetPreferredSize(panel_bounds);
   mahi_view->SizeToPreferredSize();
 
@@ -311,6 +327,10 @@ class MahiPanelViewMockTimeTest : public MahiPanelViewTest {
 
 TEST_F(MahiPanelViewMockTimeTest, LoadingAnimations) {
   auto mahi_view = std::make_unique<MahiPanelView>();
+  // TODO(b/330643995): After outlines are shown by default, remove this since
+  // we won't need to explicitly show the outlines section anymore.
+  mahi_view->GetViewByID(mahi_constants::ViewId::kOutlinesSectionContainer)
+      ->SetVisible(true);
 
   auto* summary_loading_animated_image = mahi_view->GetViewByID(
       mahi_constants::ViewId::kSummaryLoadingAnimatedImage);

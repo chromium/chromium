@@ -207,7 +207,10 @@ MahiMenuView::MahiMenuView() {
                                           weak_ptr_factory_.GetWeakPtr(),
                                           ::mahi::ButtonType::kOutline))
                   .SetText(l10n_util::GetStringUTF16(
-                      IDS_MAHI_OUTLINE_BUTTON_LABEL_TEXT)))
+                      IDS_MAHI_OUTLINE_BUTTON_LABEL_TEXT))
+                  // TODO(b/330643995): Unhide the outline button once outlines
+                  // are ready to be shown by default.
+                  .SetVisible(false))
           .Build());
 
   StyleMenuButton(summary_button_, chromeos::kMahiSummarizeIcon);

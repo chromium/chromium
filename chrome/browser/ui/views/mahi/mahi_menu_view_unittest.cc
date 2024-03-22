@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -116,6 +117,15 @@ TEST_F(MahiMenuViewTest, SummaryButtonClicked) {
   run_loop.Run();
 }
 
+// TODO(b/330643995): Remove this test after outlines are shown by default.
+TEST_F(MahiMenuViewTest, OutlineButtonHiddenByDefault) {
+  auto menu_widget = CreateTestWidget();
+  auto* menu_view =
+      menu_widget->SetContentsView(std::make_unique<MahiMenuView>());
+
+  EXPECT_FALSE(menu_view->GetViewByID(ViewID::kOutlineButton)->GetVisible());
+}
+
 TEST_F(MahiMenuViewTest, OutlineButtonClicked) {
   MockMahiWebContentsManager mock_mahi_web_contents_manager;
   auto scoped_mahi_web_contents_manager =
@@ -125,6 +135,10 @@ TEST_F(MahiMenuViewTest, OutlineButtonClicked) {
   auto menu_widget = CreateTestWidget();
   auto* menu_view =
       menu_widget->SetContentsView(std::make_unique<MahiMenuView>());
+  // TODO(b/330643995): After outlines are shown by default, remove this since
+  // we won't need to explicitly show the outline button.
+  menu_view->GetViewByID(ViewID::kOutlineButton)->SetVisible(true);
+  views::test::RunScheduledLayout(menu_view);
 
   auto event_generator = std::make_unique<ui::test::EventGenerator>(
       views::GetRootWindow(menu_widget.get()));

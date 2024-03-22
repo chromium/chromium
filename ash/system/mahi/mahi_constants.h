@@ -32,6 +32,8 @@ enum ViewId {
   // Since every text bubble label has this ID, the view lookup will
   // only be performed from one parent above.
   kQuestionAnswerTextBubbleLabel,
+  // TODO(b/330643995): Remove this when outlines are shown by default.
+  kOutlinesSectionContainer,
 };
 
 // The size of the icon that appears in the panel's source row.
