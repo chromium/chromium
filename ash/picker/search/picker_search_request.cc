@@ -46,16 +46,20 @@ base::span<const emoji::EmojiSearchEntry> FirstNOrLessElements(
 }  // namespace
 
 PickerSearchRequest::PickerSearchRequest(
-    const std::u16string& query,
-    std::optional<PickerCategory> category,
-    SearchResultsCallback callback,
     PickerClient* client,
     emoji::EmojiSearch* emoji_search,
     base::span<const PickerCategory> available_categories)
     : client_(CHECK_DEREF(client)),
       emoji_search_(CHECK_DEREF(emoji_search)),
-      current_callback_(std::move(callback)),
-      gif_search_debouncer_(kGifDebouncingDelay) {
+      gif_search_debouncer_(kGifDebouncingDelay) {}
+
+PickerSearchRequest::~PickerSearchRequest() = default;
+
+void PickerSearchRequest::StartSearch(const std::u16string& query,
+                                      std::optional<PickerCategory> category,
+                                      SearchResultsCallback callback) {
+  StopSearch();
+  current_callback_ = std::move(callback);
   std::string utf8_query = base::UTF16ToUTF8(query);
 
   // TODO: b/326166751 - Use `available_categories_` to decide what searches to
@@ -96,10 +100,16 @@ PickerSearchRequest::PickerSearchRequest(
   }
 }
 
-PickerSearchRequest::~PickerSearchRequest() {
+void PickerSearchRequest::StopSearch() {
   // Ensure that any bound callbacks to `Handle*SearchResults` will not get
-  // called by stopping searches.
+  // called after the current callback is reset.
   weak_ptr_factory_.InvalidateWeakPtrs();
+  current_callback_.Reset();
+  date_search_start_.reset();
+  cros_search_start_.reset();
+  gif_search_start_.reset();
+  emoji_search_start_.reset();
+  category_search_start_.reset();
   client_->StopCrosQuery();
   client_->StopGifSearch();
 }

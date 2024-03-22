@@ -5,7 +5,6 @@
 #ifndef ASH_PICKER_SEARCH_PICKER_SEARCH_CONTROLLER_H_
 #define ASH_PICKER_SEARCH_PICKER_SEARCH_CONTROLLER_H_
 
-#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -69,7 +68,7 @@ class ASH_EXPORT PickerSearchController {
   base::OneShotTimer burn_in_timer_;
 
   emoji::EmojiSearch emoji_search_;
-  std::unique_ptr<PickerSearchRequest> search_request_;
+  PickerSearchRequest search_request_;
 
   PickerViewDelegate::SearchResultsCallback current_callback_;
 

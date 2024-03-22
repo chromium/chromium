@@ -6,7 +6,6 @@
 
 #include <cstddef>
 #include <iterator>
-#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -14,7 +13,6 @@
 
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/search/picker_category_search.h"
-#include "ash/picker/search/picker_search_request.h"
 #include "ash/picker/search/picker_search_source.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/picker/picker_category.h"
@@ -62,7 +60,8 @@ PickerSearchController::PickerSearchController(
     : client_(CHECK_DEREF(client)),
       available_categories_(available_categories.begin(),
                             available_categories.end()),
-      burn_in_period_(burn_in_period) {}
+      burn_in_period_(burn_in_period),
+      search_request_(&client_.get(), &emoji_search_, available_categories_) {}
 
 PickerSearchController::~PickerSearchController() = default;
 
@@ -76,16 +75,16 @@ void PickerSearchController::StartSearch(
   // TODO: b/324154537 - Show a loading animation while waiting for results.
   burn_in_timer_.Start(FROM_HERE, burn_in_period_, this,
                        &PickerSearchController::PublishBurnInResults);
-  search_request_ = std::make_unique<PickerSearchRequest>(
+
+  search_request_.StartSearch(
       query, std::move(category),
       base::BindRepeating(&PickerSearchController::HandleSearchSourceResults,
-                          weak_ptr_factory_.GetWeakPtr()),
-      &client_.get(), &emoji_search_, available_categories_);
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PickerSearchController::StopSearch() {
   current_callback_.Reset();
-  search_request_.reset();
+  search_request_.StopSearch();
   ResetResults();
 }
 
