@@ -50,7 +50,11 @@ namespace web_app {
 
 namespace {
 
+using base::test::ErrorIs;
+using base::test::HasValue;
 using testing::ElementsAre;
+using testing::Field;
+using testing::HasSubstr;
 
 using ReadResponseError = IsolatedWebAppReaderRegistry::ReadResponseError;
 using VerifierError = web_package::SignedWebBundleSignatureVerifier::Error;
@@ -117,6 +121,7 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
  protected:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+    SetTrustedWebBundleIdsForTesting({kWebBundleId});
 
     profile_ = std::make_unique<TestingProfile>();
 
@@ -255,6 +260,37 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
       base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
                      base::Unretained(&response)));
   EXPECT_EQ(kResponseBody, response_body);
+}
+
+TEST_F(IsolatedWebAppReaderRegistryTest,
+       ReadResponseWhenBundleIsNoLongerTrusted) {
+  network::ResourceRequest resource_request;
+  resource_request.url = kUrl;
+
+  {
+    base::test::TestFuture<ReadResult> read_response_future;
+    registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
+                            resource_request,
+                            read_response_future.GetCallback());
+
+    FulfillIntegrityBlock();
+    FulfillMetadata();
+    FulfillResponse(resource_request);
+
+    EXPECT_THAT(read_response_future.Take(), HasValue());
+  }
+
+  SetTrustedWebBundleIdsForTesting({});
+  {
+    base::test::TestFuture<ReadResult> read_response_future;
+    registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
+                            resource_request,
+                            read_response_future.GetCallback());
+
+    EXPECT_THAT(read_response_future.Take(),
+                ErrorIs(Field(&ReadResponseError::message,
+                              HasSubstr("public key(s) are not trusted"))));
+  }
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest,

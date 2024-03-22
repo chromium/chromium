@@ -10,8 +10,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 
@@ -30,8 +33,9 @@ network::ResourceRequest RemoveQuery(
 }  // namespace
 
 IsolatedWebAppResponseReaderImpl::IsolatedWebAppResponseReaderImpl(
-    std::unique_ptr<SignedWebBundleReader> reader)
-    : reader_(std::move(reader)) {
+    std::unique_ptr<SignedWebBundleReader> reader,
+    TrustChecker trust_checker)
+    : reader_(std::move(reader)), trust_checker_(std::move(trust_checker)) {
   CHECK_EQ(reader_->GetState(), SignedWebBundleReader::State::kInitialized);
 }
 
@@ -40,6 +44,11 @@ IsolatedWebAppResponseReaderImpl::~IsolatedWebAppResponseReaderImpl() = default;
 void IsolatedWebAppResponseReaderImpl::ReadResponse(
     const network::ResourceRequest& resource_request,
     ReadResponseCallback callback) {
+  RETURN_IF_ERROR(Error::FromTrustCheckerResult(trust_checker_.Run()),
+                  [&callback](Error error) {
+                    std::move(callback).Run(base::unexpected(std::move(error)));
+                  });
+
   // Remove query parameters from the request URL, if it has any. Resources
   // within Signed Web Bundles used for Isolated Web Apps never have username,
   // password, or fragment, just like resources within Signed Web Bundles and
@@ -63,16 +72,18 @@ void IsolatedWebAppResponseReaderImpl::ReadResponse(
 
 void IsolatedWebAppResponseReaderImpl::OnResponseRead(
     ReadResponseCallback callback,
-    base::expected<web_package::mojom::BundleResponsePtr, Error>
-        response_head) {
-  std::move(callback).Run(response_head.transform(
-      [this](web_package::mojom::BundleResponsePtr& ptr) {
-        // Since `this` owns `reader_`, we only pass a weak pointer to it to the
-        // `Response` object. If `this` is deleted, it makes sense that the
-        // pointer to the `reader_` contained in `Response` also becomes
-        // invalid.
-        return Response(std::move(ptr), reader_->AsWeakPtr());
-      }));
+    base::expected<web_package::mojom::BundleResponsePtr,
+                   SignedWebBundleReader::ReadResponseError> response_head) {
+  std::move(callback).Run(
+      std::move(response_head)
+          .transform([this](web_package::mojom::BundleResponsePtr ptr) {
+            // Since `this` owns `reader_`, we only pass a weak pointer to it to
+            // the `Response` object. If `this` is deleted, it makes sense that
+            // the pointer to the `reader_` contained in `Response` also becomes
+            // invalid.
+            return Response(std::move(ptr), reader_->AsWeakPtr());
+          })
+          .transform_error(&Error::FromSignedWebBundleReaderError));
 }
 
 void IsolatedWebAppResponseReaderImpl::Close(base::OnceClosure callback) {
@@ -108,6 +119,35 @@ void IsolatedWebAppResponseReader::Response::ReadBody(
   }
   reader_->ReadResponseBody(head_->Clone(), std::move(producer_handle),
                             std::move(callback));
+}
+
+// static
+IsolatedWebAppResponseReader::Error
+IsolatedWebAppResponseReader::Error::FromSignedWebBundleReaderError(
+    const SignedWebBundleReader::ReadResponseError& error) {
+  using Type = SignedWebBundleReader::ReadResponseError::Type;
+  switch (error.type) {
+    case Type::kFormatError:
+      return Error(Error::Type::kFormatError, error.message);
+    case Type::kParserInternalError:
+      return Error(Error::Type::kParserInternalError, error.message);
+    case Type::kResponseNotFound:
+      return Error(Error::Type::kResponseNotFound, error.message);
+  }
+}
+
+// static
+base::expected<void, IsolatedWebAppResponseReader::Error>
+IsolatedWebAppResponseReader::Error::FromTrustCheckerResult(
+    const IsolatedWebAppTrustChecker::Result& result) {
+  using Status = IsolatedWebAppTrustChecker::Result::Status;
+  switch (result.status) {
+    case Status::kTrusted:
+      return base::ok();
+    case Status::kErrorPublicKeysNotTrusted:
+    case Status::kErrorUnsupportedWebBundleIdType:
+      return base::unexpected(Error(Error::Type::kNotTrusted, result.message));
+  }
 }
 
 }  // namespace web_app

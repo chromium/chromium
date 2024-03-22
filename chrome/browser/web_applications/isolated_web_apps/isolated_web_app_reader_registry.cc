@@ -64,6 +64,9 @@ ToReadResponseHeadError(
       return base::unexpected(
           IsolatedWebAppReaderRegistry::ReadResponseHeadError::
               kResponseNotFoundError);
+    case IsolatedWebAppResponseReader::Error::Type::kNotTrusted:
+      return base::unexpected(
+          IsolatedWebAppReaderRegistry::ReadResponseHeadError::kAppNotTrusted);
   }
 }
 
@@ -305,9 +308,8 @@ IsolatedWebAppReaderRegistry::ReadResponseError::ForError(
     const IsolatedWebAppResponseReader::Error& error) {
   switch (error.type) {
     case IsolatedWebAppResponseReader::Error::Type::kParserInternalError:
-      return ForOtherError(base::StringPrintf(
-          "Failed to parse response head: %s", error.message.c_str()));
     case IsolatedWebAppResponseReader::Error::Type::kFormatError:
+    case IsolatedWebAppResponseReader::Error::Type::kNotTrusted:
       return ForOtherError(base::StringPrintf(
           "Failed to parse response head: %s", error.message.c_str()));
     case IsolatedWebAppResponseReader::Error::Type::kResponseNotFound:

@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -33,7 +35,8 @@ IsolatedWebAppResponseReaderFactory::IsolatedWebAppResponseReaderFactory(
     base::RepeatingCallback<
         std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>()>
         signature_verifier_factory)
-    : trust_checker_(profile),
+    : profile_(profile),
+      trust_checker_(profile),
       validator_(std::move(validator)),
       signature_verifier_factory_(std::move(signature_verifier_factory)) {}
 
@@ -66,7 +69,7 @@ void IsolatedWebAppResponseReaderFactory::CreateResponseReader(
       base::BindOnce(
           &IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead,
           weak_ptr_factory_.GetWeakPtr(), std::move(reader), web_bundle_path,
-          web_bundle_id, std::move(callback)));
+          web_bundle_id, flags, std::move(callback)));
 }
 
 // static
@@ -144,6 +147,7 @@ void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead(
     std::unique_ptr<SignedWebBundleReader> reader,
     const base::FilePath& web_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
+    Flags flags,
     Callback callback,
     base::expected<void, UnusableSwbnFileError> status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -160,8 +164,15 @@ void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead(
     return;
   }
 
-  std::move(callback).Run(
-      std::make_unique<IsolatedWebAppResponseReaderImpl>(std::move(reader)));
+  std::move(callback).Run(std::make_unique<IsolatedWebAppResponseReaderImpl>(
+      std::move(reader),
+      base::BindRepeating(
+          &IsolatedWebAppTrustChecker::IsTrusted,
+          // Do not re-use `trust_checker_` here, because
+          // `IsolatedWebAppResponseReaderImpl` might outlive `this`.
+          std::make_unique<IsolatedWebAppTrustChecker>(*profile_),
+          web_bundle_id,
+          /*is_dev_mode_bundle=*/flags.Has(Flag::kDevModeBundle))));
 }
 
 }  // namespace web_app

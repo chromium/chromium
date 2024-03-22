@@ -95,9 +95,11 @@ class IsolatedWebAppResponseReaderFactory {
       std::unique_ptr<SignedWebBundleReader> reader,
       const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
+      Flags flags,
       Callback callback,
       base::expected<void, UnusableSwbnFileError> status);
 
+  const raw_ref<Profile> profile_;
   IsolatedWebAppTrustChecker trust_checker_;
   std::unique_ptr<IsolatedWebAppValidator> validator_;
   base::RepeatingCallback<

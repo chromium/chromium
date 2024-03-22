@@ -99,7 +99,8 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
     kResponseHeadParserInternalError = 1,
     kResponseHeadParserFormatError = 2,
     kResponseNotFoundError = 3,
-    kMaxValue = kResponseNotFoundError
+    kAppNotTrusted = 4,
+    kMaxValue = kAppNotTrusted
   };
 
  private:
