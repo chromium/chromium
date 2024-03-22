@@ -517,7 +517,8 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // See description above |notify_depth_| for details.
   class BeginEndNotifier {
    public:
-    explicit BeginEndNotifier(DisplayManager* display_manager);
+    explicit BeginEndNotifier(DisplayManager* display_manager,
+                              bool notify_on_pending_change_only = false);
 
     BeginEndNotifier(const BeginEndNotifier&) = delete;
     BeginEndNotifier& operator=(const BeginEndNotifier&) = delete;
@@ -530,6 +531,13 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
     DisplayManagerObserver::DisplayConfigurationChange CreateConfigChange()
         const;
 
+    // Propagates change notifications only if `pending_display_changes_` is
+    // non-empty. This is necessary to handle change notifications triggering
+    // further changes and nested notifications.
+    // TODO(crbug.com/328134509): Update DisplayManager to better handle display
+    // changes during change propagation.
+    bool notify_on_pending_change_only_ = false;
+
     raw_ptr<DisplayManager> display_manager_;
   };
 
@@ -540,6 +548,9 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
     PendingDisplayChanges(const PendingDisplayChanges&) = delete;
     PendingDisplayChanges& operator=(const PendingDisplayChanges&) = delete;
     ~PendingDisplayChanges();
+
+    // True if there are no stored pending changes.
+    bool IsEmpty() const;
 
     // Store added display_ids to avoid copying potentially stale display
     // objects while update state is accumulated.

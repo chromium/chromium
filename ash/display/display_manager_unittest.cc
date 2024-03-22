@@ -5305,4 +5305,72 @@ TEST_F(DisplayManagerTest, DifferentDisplayConnectedToSameOutput) {
   EXPECT_EQ(kExternalId_2, screen->GetAllDisplays()[1].id());
 }
 
+// Regression test for crbug.com/327282654. This asserts that DisplayManager
+// changes that occur during change notification propagation are sequenced
+// correctly to all observers.
+TEST_F(DisplayManagerTest, DisplayManagerObserverNestedChangesOrdering) {
+  // Assert that observers receive display configuration notifications in order.
+  class ChangeOrderingObserver : public display::DisplayManagerObserver {
+   public:
+    explicit ChangeOrderingObserver(
+        base::OnceClosure on_processed_cb = base::NullCallback())
+        : on_processed_cb_(std::move(on_processed_cb)) {
+      auto* display_manager = Shell::Get()->display_manager();
+      EXPECT_EQ(1u, display_manager->GetNumDisplays());
+      tracked_display_ids_.insert(display_manager->GetDisplayAt(0).id());
+    }
+
+    // display::DisplayManagerObserver:
+    void OnWillProcessDisplayChanges() override {
+      EXPECT_EQ(0u, will_process_count_);
+      will_process_count_++;
+    }
+    void OnDidProcessDisplayChanges(
+        const DisplayConfigurationChange& configuration_change) override {
+      EXPECT_EQ(1u, will_process_count_);
+      will_process_count_ = 0;
+
+      // Update the set of tracked display ids communicated through did
+      // process changes.
+      base::ranges::transform(
+          configuration_change.added_displays,
+          std::inserter(tracked_display_ids_, tracked_display_ids_.begin()),
+          [](const display::Display& display) { return display.id(); });
+
+      // If correctly ordered observers should be notified of added displays
+      // before any changes to the metrics for these displays.
+      base::ranges::for_each(configuration_change.display_metrics_changes,
+                             [this](const auto& change) {
+                               EXPECT_TRUE(base::Contains(
+                                   tracked_display_ids_, change.display->id()));
+                             });
+
+      if (on_processed_cb_) {
+        std::move(on_processed_cb_).Run();
+      }
+    }
+
+   private:
+    size_t will_process_count_ = 0;
+    base::OnceClosure on_processed_cb_;
+    std::set<int64_t> tracked_display_ids_;
+  };
+
+  // Add a second display and configure the first observer to update the insets
+  // of the second display when a did process event for the display addition
+  // is received. The events should be received by the observers in the expected
+  // order.
+  ChangeOrderingObserver observer_1(base::BindOnce([]() {
+    auto* display_manager = Shell::Get()->display_manager();
+    EXPECT_EQ(2u, display_manager->GetNumDisplays());
+    const int64_t second_display_id = display_manager->GetDisplayAt(1).id();
+    display_manager->SetOverscanInsets(second_display_id,
+                                       gfx::Insets::TLBR(13, 12, 11, 10));
+  }));
+  ChangeOrderingObserver observer_2;
+  display_manager()->AddObserver(&observer_1);
+  display_manager()->AddObserver(&observer_2);
+  UpdateDisplay("800x600,800x600");
+}
+
 }  // namespace ash

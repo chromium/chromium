@@ -342,22 +342,38 @@ std::string ToString(DisplayManager::MultiDisplayMode mode) {
 }  // namespace
 
 DisplayManager::BeginEndNotifier::BeginEndNotifier(
-    DisplayManager* display_manager)
-    : display_manager_(display_manager) {
+    DisplayManager* display_manager,
+    bool notify_on_pending_change_only)
+    : notify_on_pending_change_only_(notify_on_pending_change_only),
+      display_manager_(display_manager) {
   if (display_manager_->notify_depth_++ == 0) {
     CHECK(!display_manager_->pending_display_changes_.has_value());
     display_manager_->pending_display_changes_.emplace();
-    display_manager_->NotifyWillProcessDisplayChanges();
+
+    if (!notify_on_pending_change_only_) {
+      display_manager_->NotifyWillProcessDisplayChanges();
+    }
   }
 }
 
 DisplayManager::BeginEndNotifier::~BeginEndNotifier() {
   if (--display_manager_->notify_depth_ == 0) {
     CHECK(display_manager_->pending_display_changes_.has_value());
-    DisplayManagerObserver::DisplayConfigurationChange config_change =
+    const bool has_pending_changes =
+        !display_manager_->pending_display_changes_->IsEmpty();
+    if (notify_on_pending_change_only_ && has_pending_changes) {
+      // To comply with API expectations we must emit will process notifications
+      // before did process notifications.
+      display_manager_->NotifyWillProcessDisplayChanges();
+    }
+
+    const DisplayManagerObserver::DisplayConfigurationChange config_change =
         CreateConfigChange();
     display_manager_->pending_display_changes_.reset();
-    display_manager_->NotifyDidProcessDisplayChanges(config_change);
+
+    if (!notify_on_pending_change_only_ || has_pending_changes) {
+      display_manager_->NotifyDidProcessDisplayChanges(config_change);
+    }
   }
 }
 
@@ -391,6 +407,11 @@ DisplayManager::BeginEndNotifier::CreateConfigChange() const {
 DisplayManager::PendingDisplayChanges::PendingDisplayChanges() = default;
 
 DisplayManager::PendingDisplayChanges::~PendingDisplayChanges() = default;
+
+bool DisplayManager::PendingDisplayChanges::IsEmpty() const {
+  return added_display_ids.empty() && removed_displays.empty() &&
+         display_metrics_changes.empty();
+}
 
 DisplayManager::DisplayManager(std::unique_ptr<Screen> screen)
     : screen_(std::move(screen)), layout_store_(new DisplayLayoutStore) {
@@ -2465,6 +2486,11 @@ void DisplayManager::NotifyWillProcessDisplayChanges() {
 
 void DisplayManager::NotifyDidProcessDisplayChanges(
     const DisplayManagerObserver::DisplayConfigurationChange& config_change) {
+  // Notifying observers may lead to further config changes, create a notifier
+  // to capture these here while preserving notification ordering.
+  CHECK(!pending_display_changes_.has_value());
+  BeginEndNotifier notifier(this, /*notify_on_pending_change_only=*/true);
+
   for (auto& manager_observer : manager_observers_) {
     manager_observer.OnDidProcessDisplayChanges(config_change);
   }
