@@ -10,11 +10,6 @@ function parallelPromiseTest(func, description) {
   }, description);
 }
 
-const BeaconTypes = [
-  {type: PendingPostBeacon, name: 'PendingPostBeacon', expectedMethod: 'POST'},
-  {type: PendingGetBeacon, name: 'PendingGetBeacon', expectedMethod: 'GET'},
-];
-
 /** @enum {string} */
 const BeaconDataType = {
   String: 'String',
@@ -193,37 +188,6 @@ async function expectBeacon(uuid, options) {
         decoder(res.data[i]), options.data[i],
         'The beacon data does not match expected value.');
   }
-}
-
-function postBeaconSendDataTest(dataType, testData, description, options) {
-  parallelPromiseTest(async t => {
-    const expectNoData = options && options.expectNoData;
-    const expectCount = (options && options.expectCount !== undefined) ?
-        options.expectCount :
-        1;
-    const uuid = token();
-    const url =
-        generateSetBeaconURL(uuid, (options && options.urlOptions) || {});
-    const beacon = new PendingPostBeacon(url);
-    assert_equals(beacon.method, 'POST', 'must be POST to call setData().');
-
-    if (options && options.setCookie) {
-      document.cookie = options.setCookie;
-    }
-
-    beacon.setData(makeBeaconData(
-        testData, dataType, (options && options.contentType) || {}));
-    beacon.sendNow();
-
-    const expectedData = expectNoData ? null : testData;
-    const percentDecoded =
-        !expectNoData && dataType === BeaconDataType.URLSearchParams;
-    await expectBeacon(uuid, {
-      count: expectCount,
-      data: [expectedData],
-      percentDecoded: percentDecoded
-    });
-  }, `PendingPostBeacon(${dataType}): ${description}`);
 }
 
 function generateHTML(script) {

@@ -13329,31 +13329,6 @@
             ]
         }
     ],
-    "PendingBeaconAPI": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "windows",
-                "mac",
-                "linux",
-                "fuchsia",
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledOnlyForOriginTrial",
-                    "params": {
-                        "requires_origin_trial": "true"
-                    },
-                    "enable_features": [
-                        "PendingBeaconAPI"
-                    ]
-                }
-            ]
-        }
-    ],
     "PerProcessReclaim": [
         {
             "platforms": [

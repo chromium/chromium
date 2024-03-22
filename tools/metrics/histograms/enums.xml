@@ -10657,18 +10657,18 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4271" label="ViewTimelineConstructor"/>
   <int value="4272" label="H1UserAgentFontSizeInSectionApplied"/>
   <int value="4273" label="OBSOLETE_kV8PendingBeacon_Constructor"/>
-  <int value="4274" label="V8PendingBeacon_Url_AttributeGetter"/>
+  <int value="4274" label="OBSOLETE_kV8PendingBeacon_Url_AttributeGetter"/>
   <int value="4275" label="OBSOLETE_kV8PendingBeacon_Url_AttributeSetter"/>
-  <int value="4276" label="V8PendingBeacon_Method_AttributeGetter"/>
+  <int value="4276" label="OBSOLETE_kV8PendingBeacon_Method_AttributeGetter"/>
   <int value="4277" label="OBSOLETE_kV8PendingBeacon_Method_AttributeSetter"/>
   <int value="4278"
       label="OBSOLETE_kV8PendingBeacon_PageHideTimeout_AttributeGetter"/>
   <int value="4279"
       label="OBSOLETE_kV8PendingBeacon_PageHideTimeout_AttributeSetter"/>
   <int value="4280" label="OBSOLETE_kV8PendingBeacon_State_AttributeGetter"/>
-  <int value="4281" label="V8PendingBeacon_Deactivate_Method"/>
+  <int value="4281" label="OBSOLETE_kV8PendingBeacon_Deactivate_Method"/>
   <int value="4282" label="OBSOLETE_kV8PendingBeacon_SetData_Method"/>
-  <int value="4283" label="V8PendingBeacon_SendNow_Method"/>
+  <int value="4283" label="OBSOLETE_kV8PendingBeacon_SendNow_Method"/>
   <int value="4284" label="TabSharingBarSwitchToCapturer"/>
   <int value="4285" label="TabSharingBarSwitchToCapturee"/>
   <int value="4286" label="AutomaticLazyAds"/>
@@ -10706,15 +10706,17 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4316" label="CrossOriginScrollIntoView"/>
   <int value="4317" label="LinkRelCanonical"/>
   <int value="4318" label="CredentialManagerIsConditionalMediationAvailable"/>
-  <int value="4319" label="V8PendingBeacon_Pending_AttributeGetter"/>
-  <int value="4320" label="V8PendingBeacon_BackgroundTimeout_AttributeGetter"/>
-  <int value="4321" label="V8PendingBeacon_BackgroundTimeout_AttributeSetter"/>
-  <int value="4322" label="V8PendingBeacon_Timeout_AttributeGetter"/>
-  <int value="4323" label="V8PendingBeacon_Timeout_AttributeSetter"/>
-  <int value="4324" label="V8PendingGetBeacon_Constructor"/>
-  <int value="4325" label="V8PendingGetBeacon_SetURL_Method"/>
-  <int value="4326" label="V8PendingPostBeacon_Constructor"/>
-  <int value="4327" label="V8PendingPostBeacon_SetData_Method"/>
+  <int value="4319" label="OBSOLETE_kV8PendingBeacon_Pending_AttributeGetter"/>
+  <int value="4320"
+      label="OBSOLETE_kV8PendingBeacon_BackgroundTimeout_AttributeGetter"/>
+  <int value="4321"
+      label="OBSOLETE_kV8PendingBeacon_BackgroundTimeout_AttributeSetter"/>
+  <int value="4322" label="OBSOLETE_kV8PendingBeacon_Timeout_AttributeGetter"/>
+  <int value="4323" label="OBSOLETE_kV8PendingBeacon_Timeout_AttributeSetter"/>
+  <int value="4324" label="OBSOLETE_kV8PendingGetBeacon_Constructor"/>
+  <int value="4325" label="OBSOLETE_kV8PendingGetBeacon_SetURL_Method"/>
+  <int value="4326" label="OBSOLETE_kV8PendingPostBeacon_Constructor"/>
+  <int value="4327" label="OBSOLETE_kV8PendingPostBeacon_SetData_Method"/>
   <int value="4328" label="ContentVisibilityAutoStateChangeHandlerRegistered"/>
   <int value="4329" label="ReplacedElementPaintedWithLargeOverflow"/>
   <int value="4330" label="FlexboxAbsPosJustifyContent"/>

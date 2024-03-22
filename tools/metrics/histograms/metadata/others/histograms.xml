@@ -8278,39 +8278,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PendingBeaconHost.Action" enum="PendingBeaconHostAction"
-    expires_after="M115">
-  <owner>mych@chromium.org</owner>
-  <owner>pending-beacon-experiment@chromium.org</owner>
-  <summary>
-    Warning: this histogram was expired from M113 to M115; data may be missing.
-
-    The type of PendingBeacon-related action that the browser has performed.
-
-    This is only recorded when the PendingBeacon API is called to create, send,
-    or cancel a beacon. See
-    https://chromium.googlesource.com/chromium/src/+/main/docs/experiments/pending-beacon.md
-    and https://crrev.com/c/4028260 for more details.
-  </summary>
-</histogram>
-
-<histogram name="PendingBeaconHost.BatchAction"
-    enum="PendingBeaconHostBatchAction" expires_after="M115">
-  <owner>mych@chromium.org</owner>
-  <owner>pending-beacon-experiment@chromium.org</owner>
-  <summary>
-    Warning: this histogram was expired from M113 to M115; data may be missing.
-
-    The type of batch PendingBeacon-related action that the browser has
-    performed. A batch action means the browser is about to batch process all
-    queued pending beacon requests at once.
-
-    See
-    https://chromium.googlesource.com/chromium/src/+/main/docs/experiments/pending-beacon.md
-    and https://crrev.com/c/4028260 for more details.
-  </summary>
-</histogram>
-
 <histogram name="Pepper.Graphics3DHasShareGroup" enum="BooleanShareGroup"
     expires_after="M77">
   <owner>jbauman@chromium.org</owner>

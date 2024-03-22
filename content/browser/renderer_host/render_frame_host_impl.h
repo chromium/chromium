@@ -64,7 +64,6 @@
 #include "content/browser/renderer_host/navigation_discard_reason.h"
 #include "content/browser/renderer_host/origin_trial_state_host_impl.h"
 #include "content/browser/renderer_host/page_impl.h"
-#include "content/browser/renderer_host/pending_beacon_host.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/transient_allow_popup.h"
@@ -2627,8 +2626,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       network::mojom::SharedDictionaryAccessDetailsPtr details) override;
 
   void GetSavableResourceLinksFromRenderer();
-  void GetPendingBeaconHost(
-      mojo::PendingReceiver<blink::mojom::PendingBeaconHost> receiver);
 
   // Helper for checking if a navigation to an error page should be excluded
   // from CanAccessDataForOrigin and/or CanCommitOriginAndUrl security checks.
@@ -2870,13 +2867,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const storage::BucketInfo& bucket,
       blink::mojom::BucketHost::GetDirectoryCallback callback) override;
   GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override;
-
-  // Sends out all pending beacons held by this document and all its child
-  // documents.
-  //
-  // This method must be called when navigating away from the current
-  // document.
-  void SendAllPendingBeaconsOnNavigation();
 
   // Returns false if this document not the initial empty document, or if the
   // current document's input stream has been opened with document.open(),

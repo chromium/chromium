@@ -1005,25 +1005,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kPartialLowEndModeExcludeCanvasFontCache;
 #endif
 
-// Whether the pending beacon API is enabled or not.
-// https://github.com/WICG/pending-beacon/blob/main/README.md
-// - kPendingBeaconAPI = {true: {"requires_origin_trial": false}} to enable the
-//   features globally.
-// - kPendingBeaconAPI = {true: {"requires_origin_trial": true}} to enable the
-//   features only for execution context with OT token.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPendingBeaconAPI);
-// If true, the execution context from client request needs to have OT token in
-// it, in addition to `kPendingBeaconAPI` being set to true, such that the API
-// can be enabled. If false, setting `kPendingBeaconAPI` to true enable the API
-// both in Chromium & in Blink.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kPendingBeaconAPIRequiresOriginTrial;
-// Allows control to decide whether to forced sending out beacons on navigating
-// away a page (transitioning to dispatch pagehide event).
-// Details in https://github.com/WICG/pending-beacon/issues/30
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kPendingBeaconAPIForcesSendingOnNavigation;
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPlzDedicatedWorker);
 
 // Whether first-party to third-party different-bucket same-origin post messages

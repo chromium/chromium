@@ -2899,14 +2899,6 @@
       status: "experimental",
     },
     {
-      name: "PendingBeaconAPI",
-      origin_trial_feature_name: "PendingBeaconAPI",
-      origin_trial_allows_third_party: true,
-      public: true,
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
       name: "PercentBasedScrolling",
       base_feature: "none",
       public: true,

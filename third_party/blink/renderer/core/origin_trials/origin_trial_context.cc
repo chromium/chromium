@@ -534,10 +534,6 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
         features::kSpeculationRulesPrefetchFuture);
   }
 
-  if (trial_name == "PendingBeaconAPI") {
-    return base::FeatureList::IsEnabled(features::kPendingBeaconAPI);
-  }
-
   if (trial_name == "BackForwardCacheSendNotRestoredReasons") {
     return base::FeatureList::IsEnabled(
         features::kBackForwardCacheSendNotRestoredReasons);

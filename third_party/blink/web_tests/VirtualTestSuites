@@ -2145,30 +2145,6 @@
     "owners": ["johannhof@chromium.org"],
     "expires": "Jul 1, 2024"
   },
-  {
-    "prefix": "pending-beacon",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/pending-beacon",
-      "wpt_internal/pending-beacon"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=PendingBeaconAPI:requires_origin_trial/false",
-      "--disable-threaded-compositing", "--disable-threaded-animation"
-    ],
-    "expires": "Jul 1, 2023"
-  },
-  {
-    "prefix": "pending-beacon-origin-trial",
-    "platforms": ["Linux"],
-    "bases": [
-      "http/tests/origin_trials/webexposed/pending-beacon-origin-trial-interfaces.html"
-    ],
-    "args": ["--enable-features=PendingBeaconAPI:requires_origin_trial/true",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
 
   "---------------------------- Close watchers -------------------------------",
   "TODO(https://crbug.com/1495208): These cannot be run in the normal web ",
