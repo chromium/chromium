@@ -491,21 +491,6 @@ TEST_F(ViewAXPlatformNodeDelegateTest, SetNameAndDescription) {
   EXPECT_EQ(button_accessibility()->GetNameFrom(),
             ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 
-  // Setting the description to the empty string without explicitly setting
-  // the source to reflect that should trigger a DCHECK in SetDescription.
-  EXPECT_DCHECK_DEATH_WITH(
-      button_accessibility()->SetDescription(""),
-      "Check failed: description.empty\\(\\) == description_from == "
-      "ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty");
-
-  // Setting the description to a non-empty string with a DescriptionFrom of
-  // kAttributeExplicitlyEmpty should trigger a DCHECK in SetDescription.
-  EXPECT_DCHECK_DEATH_WITH(
-      button_accessibility()->SetDescription(
-          "foo", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty),
-      "Check failed: description.empty\\(\\) == description_from == "
-      "ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty");
-
   button_accessibility()->SetDescription(
       "", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
   EXPECT_EQ(button_accessibility()->GetDescription(), "");

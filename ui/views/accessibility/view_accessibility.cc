@@ -155,7 +155,8 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   // Views may misbehave if their widget is closed; return an unknown role
   // rather than possibly crashing.
   const views::Widget* widget = view_->GetWidget();
-  if (!widget || !widget->widget_delegate() || widget->IsClosed()) {
+  if (!ignore_missing_widget_for_testing_ &&
+      (!widget || !widget->widget_delegate() || widget->IsClosed())) {
     data->role = ax::mojom::Role::kUnknown;
     data->SetRestriction(ax::mojom::Restriction::kDisabled);
 
@@ -593,11 +594,14 @@ bool ViewAccessibility::GetIsEnabled() const {
 void ViewAccessibility::SetDescription(
     const std::string& description,
     const ax::mojom::DescriptionFrom description_from) {
-  DCHECK_EQ(
-      description.empty(),
-      description_from == ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty)
-      << "If the description is being removed to improve the user experience, "
-         "|description_from| should be set to |kAttributeExplicitlyEmpty|.";
+  if (description.empty() &&
+      description_from !=
+          ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty) {
+    data_.RemoveStringAttribute(ax::mojom::StringAttribute::kDescription);
+    data_.RemoveIntAttribute(ax::mojom::IntAttribute::kDescriptionFrom);
+    return;
+  }
+
   data_.SetDescriptionFrom(description_from);
   data_.SetDescription(description);
 }
@@ -606,6 +610,45 @@ void ViewAccessibility::SetDescription(
     const std::u16string& description,
     const ax::mojom::DescriptionFrom description_from) {
   SetDescription(base::UTF16ToUTF8(description), description_from);
+}
+
+void ViewAccessibility::SetDescription(View& describing_view) {
+  DCHECK_NE(view_, &describing_view);
+
+  const std::string& name =
+      describing_view.GetViewAccessibility().GetViewAccessibilityName();
+  if (name.empty()) {
+    // TODO(javiercon): This is a temporary workaround for the scenarios where
+    // the name is set via View::SetAccessibleName, which means that
+    // ViewAccessibility's data_ will not have the name set. So we first check
+    // if it has been set via the old system, and if so we use it. Once
+    // SetAccessibleName is migrated to use the new system, remove this check
+    // but keep the DCHECK to make sure the name is not empty.
+    ui::AXNodeData data;
+    const_cast<View&>(describing_view).GetAccessibleNodeData(&data);
+    const std::string& view_name =
+        data.GetStringAttribute(ax::mojom::StringAttribute::kName).empty()
+            ? base::UTF16ToUTF8(describing_view.GetAccessibleName())
+            : data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+    DCHECK(!view_name.empty());
+    SetDescription(view_name, ax::mojom::DescriptionFrom::kRelatedElement);
+    data_.AddIntListAttribute(
+        ax::mojom::IntListAttribute::kDescribedbyIds,
+        {describing_view.GetViewAccessibility().GetUniqueId().Get()});
+  } else {
+    SetDescription(name, ax::mojom::DescriptionFrom::kRelatedElement);
+    data_.AddIntListAttribute(
+        ax::mojom::IntListAttribute::kDescribedbyIds,
+        {describing_view.GetViewAccessibility().GetUniqueId().Get()});
+  }
+}
+
+std::u16string ViewAccessibility::GetViewAccessibilityDescription() const {
+  if (data_.HasStringAttribute(ax::mojom::StringAttribute::kDescription)) {
+    return base::UTF8ToUTF16(
+        data_.GetStringAttribute(ax::mojom::StringAttribute::kDescription));
+  }
+  return std::u16string();
 }
 
 void ViewAccessibility::SetIsSelected(bool selected) {

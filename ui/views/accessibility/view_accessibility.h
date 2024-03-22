@@ -67,6 +67,10 @@ class VIEWS_EXPORT ViewAccessibility {
   // Views. See crbug.com/1468416 for more info.
   virtual void EnsureAtomicViewAXTreeManager() {}
 
+  void SetIgnoreMissingWidgetForTesting(bool value) {
+    ignore_missing_widget_for_testing_ = value;
+  }
+
   //
   // The following methods get or set accessibility attributes (in the owning
   // View's AXNodeData), overrideing any identical attributes which might have
@@ -210,6 +214,15 @@ class VIEWS_EXPORT ViewAccessibility {
   void SetDescription(const std::u16string& description,
                       const ax::mojom::DescriptionFrom description_from =
                           ax::mojom::DescriptionFrom::kAriaDescription);
+  void SetDescription(View& describing_view);
+  // This function cannot follow the established pattern and be named
+  // GetDescription() because of a function of the same name in
+  // AXPlatformNodeDelegate. ViewAXPlatformNodeDelegate extends both
+  // ViewAccessibility and AXPlatformNodeDelegate, which would lead to conflicts
+  // and confusion.
+  // TODO(accessibility): Rename to GetDescription once the ViewsAX project is
+  // completed and we don't have ViewAXPlatformNodeDelegate anymore.
+  std::u16string GetViewAccessibilityDescription() const;
 
   // Sets the platform-specific accessible name/title property of the
   // NativeViewAccessible window. This is needed on platforms where the name
@@ -394,6 +407,23 @@ class VIEWS_EXPORT ViewAccessibility {
   // owns an ViewsAXTreeManager. For other Views, this should be nullptr.
   std::unique_ptr<views::ViewsAXTreeManager> ax_tree_manager_;
 #endif
+
+  bool ignore_missing_widget_for_testing_ = false;
+};
+
+class IgnoreMissingWidgetForTestingScopedSetter {
+ public:
+  explicit IgnoreMissingWidgetForTestingScopedSetter(
+      ViewAccessibility& view_accessibility)
+      : view_accessibility_(&view_accessibility) {
+    view_accessibility_->SetIgnoreMissingWidgetForTesting(true);
+  }
+  ~IgnoreMissingWidgetForTestingScopedSetter() {
+    view_accessibility_->SetIgnoreMissingWidgetForTesting(false);
+  }
+
+ private:
+  raw_ptr<ViewAccessibility> view_accessibility_;
 };
 
 }  // namespace views
