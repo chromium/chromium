@@ -24,7 +24,7 @@ component("cpp") {
     "//chromeos/crosapi/mojom",
     "//chromeos/strings:strings_grit",
     "//ui/base",
-    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/color",
     "//ui/gfx",
     "//ui/views",
   ]

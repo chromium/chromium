@@ -1,6 +1,7 @@
 include_rules = [
   "+ui/base",
   "+ui/chromeos",
+  "+ui/color",
   "+ui/gfx",
   "+ui/views",
 ]

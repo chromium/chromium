@@ -9,7 +9,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
@@ -32,11 +32,11 @@ ExperimentBadge::ExperimentBadge() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysComplementVariant, kBadgeCornerRadius));
+      ui::kColorCrosSysComplementVariant, kBadgeCornerRadius));
 
   label_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_EDITOR_MENU_EXPERIMENT_BADGE)));
-  label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  label_->SetEnabledColorId(ui::kColorSysOnSurface);
   label_->SetLineHeight(kBadgeLabelHeight);
   label_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_MAHI_EXPERIMENT_BADGE_ACCESSIBLE_NAME));

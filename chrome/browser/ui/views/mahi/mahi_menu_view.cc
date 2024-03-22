@@ -23,7 +23,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -279,7 +278,7 @@ std::unique_ptr<views::FlexLayoutView> MahiMenuView::CreateInputContainer() {
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
           .SetBackground(views::CreateThemedRoundedRectBackground(
-              cros_tokens::kCrosSysHoverOnSubtle, kInputContainerCornerRadius))
+              ui::kColorSysStateHoverOnSubtle, kInputContainerCornerRadius))
           .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
           .SetProperty(views::kMarginsKey,
                        gfx::Insets::TLBR(kButtonTextfieldSpacing, 0, 0, 0))
@@ -311,10 +310,10 @@ std::unique_ptr<views::FlexLayoutView> MahiMenuView::CreateInputContainer() {
                   .SetImageModel(
                       views::Button::STATE_NORMAL,
                       ui::ImageModel::FromVectorIcon(vector_icons::kSendIcon))
-                  .SetImageModel(views::Button::STATE_DISABLED,
-                                 ui::ImageModel::FromVectorIcon(
-                                     vector_icons::kSendIcon,
-                                     cros_tokens::kCrosSysDisabled))
+                  .SetImageModel(
+                      views::Button::STATE_DISABLED,
+                      ui::ImageModel::FromVectorIcon(
+                          vector_icons::kSendIcon, ui::kColorSysStateDisabled))
                   .SetAccessibleName(l10n_util::GetStringUTF16(
                       IDS_MAHI_MENU_INPUT_SEND_BUTTON_ACCESSIBLE_NAME))
                   .SetProperty(views::kMarginsKey, kTextfieldButtonPadding)
@@ -329,7 +328,7 @@ std::unique_ptr<views::FlexLayoutView> MahiMenuView::CreateInputContainer() {
             submit_question_button_->GetPreferredSize().width());
 
   views::FocusRing::Install(textfield_);
-  views::FocusRing::Get(textfield_)->SetColorId(cros_tokens::kCrosSysFocusRing);
+  views::FocusRing::Get(textfield_)->SetColorId(ui::kColorSysStateFocusRing);
   views::InstallRoundRectHighlightPathGenerator(
       textfield_,
       gfx::Insets::TLBR(0, focus_ring_left_inset, 0, focus_ring_right_inset),
