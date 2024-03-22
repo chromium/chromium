@@ -103,7 +103,9 @@ export class BrowsingContextStorage {
     return result;
   }
 
-  verifyContextsList(contexts: BrowsingContext.BrowsingContext[] | undefined) {
+  verifyTopLevelContextsList(
+    contexts: BrowsingContext.BrowsingContext[] | undefined
+  ) {
     const foundContexts = new Set<BrowsingContextImpl>();
     if (!contexts) {
       return foundContexts;

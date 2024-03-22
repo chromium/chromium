@@ -789,15 +789,7 @@ export class BrowsingContextImpl {
       }
     }
     const realm = await this.getOrCreateSandbox(undefined);
-    const originResult = await realm.callFunction(
-      script,
-      {type: 'undefined'},
-      [],
-      false,
-      Script.ResultOwnership.None,
-      {},
-      false
-    );
+    const originResult = await realm.callFunction(script, false);
     assert(originResult.type === 'success');
     const origin = deserializeDOMRect(originResult.result);
     assert(origin);
@@ -929,11 +921,9 @@ export class BrowsingContextImpl {
           String((element: unknown) => {
             return element instanceof Element;
           }),
-          {type: 'undefined'},
-          [clip.element],
           false,
-          Script.ResultOwnership.None,
-          {}
+          {type: 'undefined'},
+          [clip.element]
         );
         if (result.type === 'exception') {
           throw new NoSuchElementException(
@@ -957,11 +947,9 @@ export class BrowsingContextImpl {
                 width: rect.width,
               };
             }),
-            {type: 'undefined'},
-            [clip.element],
             false,
-            Script.ResultOwnership.None,
-            {}
+            {type: 'undefined'},
+            [clip.element]
           );
           assert(result.type === 'success');
           const rect = deserializeDOMRect(result.result);
@@ -1235,12 +1223,11 @@ export class BrowsingContextImpl {
 
     const locatorResult = await realm.callFunction(
       locatorDelegate.functionDeclaration,
+      false,
       {type: 'undefined'},
       locatorDelegate.argumentsLocalValues,
-      false,
       Script.ResultOwnership.None,
-      serializationOptions,
-      false
+      serializationOptions
     );
 
     if (locatorResult.type !== 'success') {

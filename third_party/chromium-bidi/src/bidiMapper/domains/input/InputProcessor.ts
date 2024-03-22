@@ -105,12 +105,9 @@ export class InputProcessor {
           }
           return;
         }),
-        params.element,
-        [{type: 'number', value: params.files.length}],
         false,
-        Script.ResultOwnership.None,
-        {},
-        false
+        params.element,
+        [{type: 'number', value: params.files.length}]
       );
     } catch {
       throw new NoSuchElementException(
@@ -171,12 +168,8 @@ export class InputProcessor {
           );
           this.dispatchEvent(new Event('change', {bubbles: true}));
         }),
-        params.element,
-        [],
         false,
-        Script.ResultOwnership.None,
-        {},
-        false
+        params.element
       );
       return {};
     }
@@ -189,12 +182,10 @@ export class InputProcessor {
         String(function getFiles(this: HTMLInputElement, index: number) {
           return this.files?.item(index);
         }),
+        false,
         params.element,
         [{type: 'number', value: 0}],
-        false,
-        Script.ResultOwnership.Root,
-        {},
-        false
+        Script.ResultOwnership.Root
       );
       assert(result.type === 'success');
       if (result.result.type !== 'object') {
@@ -238,12 +229,8 @@ export class InputProcessor {
             })
           );
         }),
-        params.element,
-        [],
         false,
-        Script.ResultOwnership.None,
-        {},
-        false
+        params.element
       );
     }
     return {};

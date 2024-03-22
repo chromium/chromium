@@ -215,9 +215,9 @@ export class WindowRealm extends Realm {
 
   override async callFunction(
     functionDeclaration: string,
+    awaitPromise: boolean,
     thisLocalValue: Script.LocalValue,
     argumentsLocalValues: Script.LocalValue[],
-    awaitPromise: boolean,
     resultOwnership: Script.ResultOwnership,
     serializationOptions: Script.SerializationOptions,
     userActivation?: boolean
@@ -228,9 +228,9 @@ export class WindowRealm extends Realm {
 
     return await super.callFunction(
       functionDeclaration,
+      awaitPromise,
       thisLocalValue,
       argumentsLocalValues,
-      awaitPromise,
       resultOwnership,
       serializationOptions,
       userActivation

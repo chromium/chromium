@@ -20,7 +20,7 @@ import {
   InvalidArgumentException,
   MoveTargetOutOfBoundsException,
   NoSuchElementException,
-  Script,
+  type Script,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
@@ -56,11 +56,9 @@ async function getElementCenter(
   const sandbox = await context.getOrCreateSandbox(undefined);
   const result = await sandbox.callFunction(
     CALCULATE_IN_VIEW_CENTER_PT_DECL,
-    {type: 'undefined'},
-    [element],
     false,
-    Script.ResultOwnership.None,
-    {}
+    {type: 'undefined'},
+    [element]
   );
   if (result.type === 'exception') {
     throw new NoSuchElementException(
@@ -82,14 +80,7 @@ export class ActionDispatcher {
   static isMacOS = async (context: BrowsingContextImpl) => {
     const result = await (
       await context.getOrCreateSandbox(undefined)
-    ).callFunction(
-      IS_MAC_DECL,
-      {type: 'undefined'},
-      [],
-      false,
-      Script.ResultOwnership.None,
-      {}
-    );
+    ).callFunction(IS_MAC_DECL, false);
     assert(result.type !== 'exception');
     assert(result.result.type === 'boolean');
     return result.result.value;

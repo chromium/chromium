@@ -189,8 +189,8 @@ export abstract class Realm {
   async evaluate(
     expression: string,
     awaitPromise: boolean,
-    resultOwnership: Script.ResultOwnership,
-    serializationOptions: Script.SerializationOptions,
+    resultOwnership: Script.ResultOwnership = Script.ResultOwnership.None,
+    serializationOptions: Script.SerializationOptions = {},
     userActivation = false
   ): Promise<Script.EvaluateResult> {
     const cdpEvaluateResult = await this.cdpClient.sendCommand(
@@ -362,11 +362,13 @@ export abstract class Realm {
 
   async callFunction(
     functionDeclaration: string,
-    thisLocalValue: Script.LocalValue,
-    argumentsLocalValues: Script.LocalValue[],
     awaitPromise: boolean,
-    resultOwnership: Script.ResultOwnership,
-    serializationOptions: Script.SerializationOptions,
+    thisLocalValue: Script.LocalValue = {
+      type: 'undefined',
+    },
+    argumentsLocalValues: Script.LocalValue[] = [],
+    resultOwnership: Script.ResultOwnership = Script.ResultOwnership.None,
+    serializationOptions: Script.SerializationOptions = {},
     userActivation = false
   ): Promise<Script.EvaluateResult> {
     const callFunctionAndSerializeScript = `(...args) => {

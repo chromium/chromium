@@ -17,7 +17,7 @@
 
 import {
   type EmptyResult,
-  Script,
+  type Script,
   NoSuchScriptException,
 } from '../../../protocol/protocol';
 import type {LoggerFn} from '../../../utils/log';
@@ -50,7 +50,7 @@ export class ScriptProcessor {
   async addPreloadScript(
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
-    const contexts = this.#browsingContextStorage.verifyContextsList(
+    const contexts = this.#browsingContextStorage.verifyTopLevelContextsList(
       params.contexts
     );
 
@@ -78,23 +78,17 @@ export class ScriptProcessor {
   async removePreloadScript(
     params: Script.RemovePreloadScriptParameters
   ): Promise<EmptyResult> {
-    const bidiId = params.script;
+    const {script: id} = params;
 
-    const scripts = this.#preloadScriptStorage.find({
-      id: bidiId,
-    });
+    const scripts = this.#preloadScriptStorage.find({id});
 
     if (scripts.length === 0) {
-      throw new NoSuchScriptException(
-        `No preload script with BiDi ID '${bidiId}'`
-      );
+      throw new NoSuchScriptException(`No preload script with id '${id}'`);
     }
 
     await Promise.all(scripts.map((script) => script.remove()));
 
-    this.#preloadScriptStorage.remove({
-      id: bidiId,
-    });
+    this.#preloadScriptStorage.remove({id});
 
     return {};
   }
@@ -105,14 +99,12 @@ export class ScriptProcessor {
     const realm = await this.#getRealm(params.target);
     return await realm.callFunction(
       params.functionDeclaration,
-      params.this ?? {
-        type: 'undefined',
-      }, // `this` is `undefined` by default.
-      params.arguments ?? [], // `arguments` is `[]` by default.
       params.awaitPromise,
-      params.resultOwnership ?? Script.ResultOwnership.None,
-      params.serializationOptions ?? {},
-      params.userActivation ?? false
+      params.this,
+      params.arguments,
+      params.resultOwnership,
+      params.serializationOptions,
+      params.userActivation
     );
   }
 
@@ -123,9 +115,9 @@ export class ScriptProcessor {
     return await realm.evaluate(
       params.expression,
       params.awaitPromise,
-      params.resultOwnership ?? Script.ResultOwnership.None,
-      params.serializationOptions ?? {},
-      params.userActivation ?? false
+      params.resultOwnership,
+      params.serializationOptions,
+      params.userActivation
     );
   }
 
