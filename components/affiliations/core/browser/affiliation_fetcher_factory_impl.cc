@@ -16,8 +16,10 @@ std::unique_ptr<AffiliationFetcherInterface>
 AffiliationFetcherFactoryImpl::CreateInstance(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     AffiliationFetcherDelegate* delegate) {
-  return std::make_unique<HashAffiliationFetcher>(std::move(url_loader_factory),
-                                                  delegate);
+  return HashAffiliationFetcher::IsFetchPossible()
+             ? std::make_unique<HashAffiliationFetcher>(
+                   std::move(url_loader_factory), delegate)
+             : nullptr;
 }
 
 }  // namespace affiliations

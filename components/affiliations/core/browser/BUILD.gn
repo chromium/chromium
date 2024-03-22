@@ -103,7 +103,6 @@ source_set("unit_tests") {
     "affiliation_backend_unittest.cc",
     "affiliation_database_unittest.cc",
     "affiliation_fetch_throttler_unittest.cc",
-    "affiliation_fetcher_factory_impl_unittest.cc",
     "affiliation_service_impl_unittest.cc",
     "affiliation_utils_unittest.cc",
     "facet_manager_unittest.cc",

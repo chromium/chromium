@@ -33,7 +33,8 @@ class AffiliationFetcherFactory {
 
   // Constructs a fetcher to retrieve affiliations for requested facets
   // using the specified |url_loader_factory|, and will provide the results
-  // to the |delegate| on the same thread that creates the instance.
+  // to the |delegate| on the same thread that creates the instance. Returns
+  // nullptr is facet can't be created.
   virtual std::unique_ptr<AffiliationFetcherInterface> CreateInstance(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       AffiliationFetcherDelegate* delegate) = 0;

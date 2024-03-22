@@ -41,6 +41,7 @@ class HashAffiliationFetcher : public AffiliationFetcherInterface {
 
   // Builds the URL for the Affiliation API's lookup method.
   static GURL BuildQueryURL();
+  static bool IsFetchPossible();
 
   AffiliationFetcherDelegate* delegate() const;
 

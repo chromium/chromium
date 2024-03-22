@@ -183,6 +183,11 @@ GURL HashAffiliationFetcher::BuildQueryURL() {
       "key", google_apis::GetAPIKey());
 }
 
+// static
+bool HashAffiliationFetcher::IsFetchPossible() {
+  return google_apis::IsGoogleChromeAPIKeyUsed();
+}
+
 void HashAffiliationFetcher::FinalizeRequest(
     const std::string& payload,
     const GURL& query_url,

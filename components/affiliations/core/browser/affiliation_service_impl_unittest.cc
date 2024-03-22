@@ -342,6 +342,19 @@ TEST_F(AffiliationServiceImplTest, OnMalformedResponseResetsFetcher) {
 }
 
 TEST_F(AffiliationServiceImplTest,
+       PrefetchChangePasswordURLsWhenFetcherNotCreated) {
+  base::MockOnceClosure completion_callback;
+
+  EXPECT_CALL(mock_fetcher_factory(), CreateInstance).WillOnce(Return(nullptr));
+
+  service()->PrefetchChangePasswordURLs({GURL(k1ExampleURL)},
+                                        completion_callback.Get());
+
+  EXPECT_CALL(completion_callback, Run);
+  RunUntilIdle();
+}
+
+TEST_F(AffiliationServiceImplTest,
        EachPrefetchCallCreatesNewAffiliationFetcherInstance) {
   const GURL origin1(k1ExampleURL);
   const GURL origin2(k2ExampleURL);

@@ -142,6 +142,11 @@ void AffiliationServiceImpl::PrefetchChangePasswordURLs(
   }
   if (!facets.empty()) {
     auto fetcher = fetcher_factory_->CreateInstance(url_loader_factory_, this);
+    if (!fetcher) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(callback));
+      return;
+    }
     fetcher->StartRequest(facets, kChangePasswordUrlRequestInfo);
     pending_fetches_.emplace_back(std::move(fetcher), tuple_origins,
                                   std::move(callback));

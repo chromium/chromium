@@ -409,7 +409,10 @@ bool AffiliationBackend::OnCanSendNetworkRequest() {
     return false;
 
   fetcher_ = fetcher_factory_->CreateInstance(url_loader_factory_, this);
-
+  // Not possible to create facet, return false to indicate this.
+  if (!fetcher_) {
+    return false;
+  }
   // TODO(crbug.com/1354196): There is no need to request psl extension every
   // time, find a better way of caching it.
 #if BUILDFLAG(IS_ANDROID)
