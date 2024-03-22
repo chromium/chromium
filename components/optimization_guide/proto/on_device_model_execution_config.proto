@@ -9,7 +9,6 @@ option java_outer_classname = "ModelExecutionProto";
 
 package optimization_guide.proto;
 
-import "components/optimization_guide/proto/common_types.proto";
 import "components/optimization_guide/proto/descriptors.proto";
 import "components/optimization_guide/proto/redaction.proto";
 import "components/optimization_guide/proto/substitution.proto";
