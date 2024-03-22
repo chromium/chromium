@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity
     private static final String SHARED_PREF_SIDE_SHEET_MAX_BUTTON = "SideSheetMaxButton";
     private static final String SHARED_PREF_SIDE_SHEET_ROUNDED_CORNER = "RoundedCorner";
     private static final String SHARED_PREF_CONTENT_SCROLL = "ContentScrollMayResizeTab";
+    private static final String SHARED_PREF_SEARCH_IN_CCT = "SearchInCCT";
     private static final String SHARED_PREF_CONNECT_BUTTON = "ConnectButton";
     private static final String SHARED_PREF_DISCONNECT_BUTTON = "DisconnectButton";
     private static final String SHARED_PREF_WARMUP_BUTTON = "WarmupButton";
@@ -160,6 +161,7 @@ public class MainActivity extends AppCompatActivity
     private CheckBox mSideSheetMaxButtonCheckbox;
     private CheckBox mSideSheetRoundedCornerCheckbox;
     private CheckBox mContentScrollCheckbox;
+    private CheckBox mSearchInCCTCheckbox;
     private TextView mPcctBreakpointLabel;
     private SeekBar mPcctBreakpointSlider;
     private TextView mPcctInitialHeightLabel;
@@ -175,6 +177,8 @@ public class MainActivity extends AppCompatActivity
 
     public static final String EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE =
             "androidx.browser.customtabs.extra.ACTIVITY_SCROLL_CONTENT_RESIZE";
+    private static final String EXTRA_OMNIBOX_ENABLED =
+            "org.chromium.chrome.browser.customtabs.OMNIBOX_ENABLED";
 
     /** Once per second, asks the framework for the process importance, and logs any change. */
     private Runnable mLogImportance =
@@ -659,6 +663,9 @@ public class MainActivity extends AppCompatActivity
         mContentScrollCheckbox = findViewById(R.id.content_scroll_checkbox);
         mContentScrollCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_CONTENT_SCROLL, UNCHECKED) == CHECKED);
+        mSearchInCCTCheckbox = findViewById(R.id.search_in_cct_checkbox);
+        mSearchInCCTCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_SEARCH_IN_CCT, UNCHECKED) == CHECKED);
     }
 
     private void initializeCctSpinner() {
@@ -833,6 +840,7 @@ public class MainActivity extends AppCompatActivity
             editor.putBoolean(SHARED_PREF_MAY_LAUNCH_BUTTON, mMayLaunchButton.isEnabled());
             editor.putBoolean(
                     SHARED_PREF_ENGAGEMENT_SIGNALS_BUTTON, mEngagementSignalsButton.isEnabled());
+            editor.putBoolean(SHARED_PREF_SEARCH_IN_CCT, mSearchInCCTCheckbox.isChecked());
             editor.apply();
         }
         super.onDestroy();
@@ -1011,6 +1019,8 @@ public class MainActivity extends AppCompatActivity
                     mCctType.equals("Incognito CCT"));
             customTabsIntent.intent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, closeButtonPosition);
         }
+
+        customTabsIntent.intent.putExtra(EXTRA_OMNIBOX_ENABLED, mSearchInCCTCheckbox.isChecked());
 
         if (startActivityForResult) {
             customTabsIntent.intent.setData(Uri.parse(url));

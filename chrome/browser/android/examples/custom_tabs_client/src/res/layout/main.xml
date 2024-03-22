@@ -615,5 +615,11 @@
             android:checked = "false"
             android:text="@string/content_scroll_text" />
 
+        <CheckBox
+            android:id="@+id/search_in_cct_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/search_in_cct_text" />
     </LinearLayout>
 </ScrollView>
