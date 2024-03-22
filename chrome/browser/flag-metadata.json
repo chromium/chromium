@@ -1701,7 +1701,9 @@
     "owners": [
       "anunoy@chromium.org"
     ],
-    "expiry_milestone": 125
+    // Used by developers and for manual testing & debugging to fetch
+    // extension metadata from CWS more frequently.
+    "expiry_milestone": -1
   },
   {
     "name": "darken-websites-checkbox-in-themes-setting",

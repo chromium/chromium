@@ -26,6 +26,7 @@
   "cellular-bypass-esim-installation-connectivity-check",
   "cellular-use-second-euicc",
   "chrome-labs",
+  "cws-info-fast-check",
   "dcheck-is-fatal",
   "disable-accelerated-2d-canvas",
   "disable-accelerated-mjpeg-decode",
