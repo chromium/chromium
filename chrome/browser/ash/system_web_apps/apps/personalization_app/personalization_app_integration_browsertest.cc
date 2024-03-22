@@ -371,7 +371,7 @@ class PersonalizationAppIntegrationPixelBrowserTest
 
 // Do not run on very slow builds.
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    defined(THREAD_SANITIZER)
+    defined(THREAD_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_PixelTestFullscreenPreview DISABLED_PixelTestFullscreenPreview
 #else
 #define MAYBE_PixelTestFullscreenPreview PixelTestFullscreenPreview
