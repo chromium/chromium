@@ -734,8 +734,9 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
             gfx::SRGBToHSL(param0_, param1_, param2_);
       }
 
-      // Hue component is powerless for fully transparent colors.
-      if (IsFullyTransparent()) {
+      // Hue component is powerless for fully transparent or achromatic (s==0)
+      // colors.
+      if (IsFullyTransparent() || param1_ == 0) {
         param0_is_none_ = true;
       }
 
@@ -763,8 +764,8 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
             gfx::SRGBToHWB(param0_, param1_, param2_);
       }
 
-      // Hue component is powerless for fully transparent colors.
-      if (IsFullyTransparent()) {
+      // Hue component is powerless for fully transparent or achromatic colors.
+      if (IsFullyTransparent() || param1_ + param2_ >= 1) {
         param0_is_none_ = true;
       }
 

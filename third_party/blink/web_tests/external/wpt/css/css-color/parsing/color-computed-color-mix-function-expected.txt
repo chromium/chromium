@@ -1,13 +1,5 @@
 This is a testharness.js-based test.
-Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Property color value 'color-mix(in hsl, white, blue)'
-  Colors do not match.\nActual:   color(srgb 0.875 0.625 0.875)\nExpected: color(srgb 0.625 0.625 0.875).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.625 +/- 0.01, expected 0.625 but got 0.875
-[FAIL] Property color value 'color-mix(in hsl, white 10%, blue)'
-  Colors do not match.\nActual:   color(srgb 0.307 0.145 0.955)\nExpected: color(srgb 0.145 0.145 0.955).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.145 +/- 0.01, expected 0.145 but got 0.307
-[FAIL] Property color value 'color-mix(in hwb, white, blue)'
-  Colors do not match.\nActual:   color(srgb 1 0.5 1)\nExpected: color(srgb 0.5 0.5 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.5 +/- 0.01, expected 0.5 but got 1
-[FAIL] Property color value 'color-mix(in hwb, white 10%, blue)'
-  Colors do not match.\nActual:   color(srgb 0.28 0.1 1)\nExpected: color(srgb 0.1 0.1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.1 +/- 0.01, expected 0.1 but got 0.28
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property color value 'color-mix(in lch, white, blue)'
   Colors do not match.\nActual:   lch(64.7821 65.6161 328.997)\nExpected: lch(64.78 65.6 301.37).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 301.37 +/- 0.1, expected 301.37 but got 328.997
 [FAIL] Property color value 'color-mix(in lch, white 10%, blue)'
