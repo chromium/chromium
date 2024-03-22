@@ -156,9 +156,6 @@ void LogPhoneNumberImportParsingResult(bool parsed_successfully);
 // Logs that a specific type was edited in a save prompt.
 void LogNewProfileEditedType(FieldType edited_type);
 
-// Logs the number of edited fields for an accepted profile save.
-void LogNewProfileNumberOfEditedFields(int number_of_edited_fields);
-
 // Logs that a specific type changed in a profile update that received the
 // user |decision|. Note that additional manual edits in the update prompt are
 // not accounted for in this metric.
@@ -168,9 +165,6 @@ void LogProfileUpdateAffectedType(
 
 // Logs that a specific type was edited in an update prompt.
 void LogProfileUpdateEditedType(FieldType edited_type);
-
-// Logs the number of edited fields for an accepted profile update.
-void LogUpdateProfileNumberOfEditedFields(int number_of_edited_fields);
 
 // Logs the number of changed fields for a profile update that received the
 // user |decision|. Note that additional manual edits in the update prompt are
@@ -186,9 +180,6 @@ void LogProfileMigrationImportDecision(
 
 // Logs that a specific type was edited in a migration prompt.
 void LogProfileMigrationEditedType(FieldType edited_type);
-
-// Logs the number of edited fields for an accepted profile migration.
-void LogProfileMigrationNumberOfEditedFields(int number_of_edited_fields);
 
 }  // namespace autofill::autofill_metrics
 

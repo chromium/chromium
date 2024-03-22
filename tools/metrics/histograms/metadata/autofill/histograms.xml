@@ -3831,17 +3831,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.ProfileImport.MigrateProfileNumberOfEditedFields"
-    units="fields" expires_after="2024-07-07">
-  <owner>koerber@google.com</owner>
-  <owner>fleimgruber@google.com</owner>
-  <owner>src/components/autofill/OWNERS</owner>
-  <summary>
-    Logs the number of fields that have been edited by the user in the process
-    of succesfully migrating a profile after an observed form submission.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.ProfileImport.NewProfileDecision"
     enum="AutofillProfileImportDecision" expires_after="2024-09-15">
   <owner>koerber@google.com</owner>
@@ -3862,16 +3851,6 @@ chromium-metrics-reviews@google.com.
     shown to the user when a new address profile is observed in a form
     submission. This metric is emitted once the user-provided import decision is
     final.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.ProfileImport.NewProfileNumberOfEditedFields"
-    units="fields" expires_after="2024-12-12">
-  <owner>koerber@google.com</owner>
-  <owner>src/components/autofill/OWNERS</owner>
-  <summary>
-    Logs the number of fields that have been edited by the user in the process
-    of succesfully importing a new profile after an observed form submission.
   </summary>
 </histogram>
 
@@ -4014,17 +3993,6 @@ chromium-metrics-reviews@google.com.
         summary="No prompt is shown and no decision is needed to proceed with
                  the process."/>
   </token>
-</histogram>
-
-<histogram name="Autofill.ProfileImport.UpdateProfileNumberOfEditedFields"
-    units="fields" expires_after="2024-09-01">
-  <owner>koerber@google.com</owner>
-  <owner>src/components/autofill/OWNERS</owner>
-  <summary>
-    Logs the number of fields that have been edited by the user in the process
-    of succesfully updating an existing profile after an observed form
-    submission.
-  </summary>
 </histogram>
 
 <histogram

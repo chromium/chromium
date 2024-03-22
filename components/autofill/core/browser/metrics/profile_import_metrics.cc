@@ -150,12 +150,6 @@ void LogNewProfileEditedType(FieldType edited_type) {
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
 }
 
-void LogNewProfileNumberOfEditedFields(int number_of_edited_fields) {
-  base::UmaHistogramExactLinear(
-      "Autofill.ProfileImport.NewProfileNumberOfEditedFields",
-      number_of_edited_fields, /*exclusive_max=*/15);
-}
-
 void LogProfileUpdateAffectedType(
     FieldType affected_type,
     AutofillClient::AddressPromptUserDecision decision) {
@@ -175,12 +169,6 @@ void LogProfileUpdateEditedType(FieldType edited_type) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.UpdateProfileEditedType",
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
-}
-
-void LogUpdateProfileNumberOfEditedFields(int number_of_edited_fields) {
-  base::UmaHistogramExactLinear(
-      "Autofill.ProfileImport.UpdateProfileNumberOfEditedFields",
-      number_of_edited_fields, /*exclusive_max=*/15);
 }
 
 void LogUpdateProfileNumberOfAffectedFields(
@@ -209,12 +197,6 @@ void LogProfileMigrationEditedType(FieldType edited_type) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.MigrateProfileEditedType",
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
-}
-
-void LogProfileMigrationNumberOfEditedFields(int number_of_edited_fields) {
-  base::UmaHistogramExactLinear(
-      "Autofill.ProfileImport.MigrateProfileNumberOfEditedFields",
-      number_of_edited_fields, /*exclusive_max=*/15);
 }
 
 }  // namespace autofill::autofill_metrics

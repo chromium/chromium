@@ -482,12 +482,10 @@ int ProfileImportProcess::CollectedEditedTypeHistograms() const {
   if (user_decision_ != UserDecision::kEditAccepted) {
     return 0;
   }
-
   // Compute the number of edited settings-visible fields.
   std::vector<ProfileValueDifference> edit_difference =
       AutofillProfileComparator::GetSettingsVisibleProfileDifference(
           *import_candidate_, *confirmed_import_candidate_, app_locale_);
-
   // Log edited types.
   for (const ProfileValueDifference& difference : edit_difference) {
     if (import_type_ == AutofillProfileImportType::kNewProfile) {
@@ -499,19 +497,7 @@ int ProfileImportProcess::CollectedEditedTypeHistograms() const {
       autofill_metrics::LogProfileMigrationEditedType(difference.type);
     }
   }
-
-  // Log number of edited fields.
-  int num_edited_fields = edit_difference.size();
-  if (import_type_ == AutofillProfileImportType::kNewProfile) {
-    autofill_metrics::LogNewProfileNumberOfEditedFields(num_edited_fields);
-  } else if (is_confirmable_update()) {
-    autofill_metrics::LogUpdateProfileNumberOfEditedFields(num_edited_fields);
-  } else {
-    CHECK(is_migration());
-    autofill_metrics::LogProfileMigrationNumberOfEditedFields(
-        num_edited_fields);
-  }
-  return num_edited_fields;
+  return edit_difference.size();
 }
 
 }  // namespace autofill
