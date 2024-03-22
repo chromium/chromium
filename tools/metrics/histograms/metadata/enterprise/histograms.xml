@@ -134,6 +134,12 @@ chromium-metrics-reviews@google.com.
   <variant name="Recommended" summary="Recommended Policy"/>
 </variants>
 
+<variants name="ResumableRequestCheckType">
+  <variant name="Content" summary="Content upload step of a Resumable request"/>
+  <variant name="Metadata"
+      summary="Metadata upload step of a Resumable request."/>
+</variants>
+
 <variants name="StateDeterminationDmRequestTypes">
   <variant name="PsmRlweOprf" summary="PSM RLWE OPRF"/>
   <variant name="PsmRlweQuery" summary="PSM RLWE Query"/>
@@ -2329,7 +2335,7 @@ chromium-metrics-reviews@google.com.
   <owner>webprotect-team@google.com</owner>
   <summary>
     Records the size (in bytes) of data that might have been scanned by the
-    OnBulkDataEntry Enterprise Connector. Is is logged once per user action that
+    OnBulkDataEntry Enterprise Connector. It is logged once per user action that
     would trigger this Connector.
   </summary>
 </histogram>
@@ -2340,7 +2346,7 @@ chromium-metrics-reviews@google.com.
   <owner>dpr-eng@google.com</owner>
   <summary>
     Records the type of printing the user attempted that triggered content
-    analysis. Is is logged once per user action that would trigger this
+    analysis. It is logged once per user action that would trigger this
     Connector.
   </summary>
   <token key="ContentAnalysisType" variants="ContentAnalysisType"/>
@@ -2601,6 +2607,22 @@ chromium-metrics-reviews@google.com.
     Reporting events successfully uploaded to the reporting server bucketed by
     event type.
   </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.ResumableRequest.{ResumableRequestCheckType}Check.{ContentAnalysisRequestType}.Duration"
+    units="ms" expires_after="2025-03-21">
+  <owner>nancylanxiao@google.com</owner>
+  <owner>domfc@chromium.org</owner>
+  <owner>dpr-eng@google.com</owner>
+  <summary>
+    Records the duration of a {ResumableRequestCheckType} check part of a
+    broader {ContentAnalysisRequestType} Resumable request. It is logged once
+    per user action that would trigger this Connector.
+  </summary>
+  <token key="ContentAnalysisRequestType"
+      variants="ContentAnalysisRequestType"/>
+  <token key="ResumableRequestCheckType" variants="ResumableRequestCheckType"/>
 </histogram>
 
 <histogram name="Enterprise.SafeSites.Latency" units="ms"
@@ -3049,7 +3071,7 @@ chromium-metrics-reviews@google.com.
   <owner>dpr-eng@google.com</owner>
   <summary>
     Records the duration of scanning requests, parametrized by the protocol used
-    and the type of content that's uploaded. Is is logged once per user action
+    and the type of content that's uploaded. It is logged once per user action
     that would trigger this Connector.
   </summary>
   <token key="ContentAnalysisProtocol" variants="ContentAnalysisProtocol"/>
@@ -3065,7 +3087,7 @@ chromium-metrics-reviews@google.com.
   <owner>dpr-eng@google.com</owner>
   <summary>
     Records the result of scanning requests, parametrized by the protocol used
-    and the type of content that's uploaded. Is is logged once per user action
+    and the type of content that's uploaded. It is logged once per user action
     that would trigger this Connector.
   </summary>
   <token key="ContentAnalysisProtocol" variants="ContentAnalysisProtocol"/>

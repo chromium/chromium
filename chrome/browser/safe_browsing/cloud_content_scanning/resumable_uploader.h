@@ -13,6 +13,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/connector_upload_request.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -90,7 +91,8 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
   void SendMetadataRequest();
 
   // Called whenever a metadata request finishes (on success or failure).
-  void OnMetadataUploadCompleted(std::optional<std::string> response_body);
+  void OnMetadataUploadCompleted(base::TimeTicks start_time,
+                                 std::optional<std::string> response_body);
 
   // Initialize `data_pipe_getter_`
   void CreateDatapipe(std::unique_ptr<network::ResourceRequest> request,
@@ -110,7 +112,8 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
   void SendContentNow(std::unique_ptr<network::ResourceRequest> request);
 
   // Called whenever a content request finishes (on success or failure).
-  void OnSendContentCompleted(std::optional<std::string> response_body);
+  void OnSendContentCompleted(base::TimeTicks start_time,
+                              std::optional<std::string> response_body);
 
   // Returns true if all of the following conditions are met:
   //    1. The HTTP status is OK.
@@ -122,6 +125,9 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
   void Finish(int net_error,
               int response_code,
               std::optional<std::string> response_body);
+
+  // Helper used by metrics logging code.
+  std::string GetRequestType();
 
   // Retrieved from metadata response to be used in upload content to the
   // server.
