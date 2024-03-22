@@ -215,6 +215,9 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // `game_dashboard_button_` UI.
   void UpdateOnMainMenuClosed();
 
+  // Ensures that the main menu stacks above the toolbar.
+  void EnsureMainMenuAboveToolbar();
+
   const raw_ptr<aura::Window> game_window_;
 
   const std::string app_id_;

@@ -172,6 +172,10 @@ void GameDashboardContext::Initialize() {
 
 void GameDashboardContext::MaybeStackAboveWidget(views::Widget* widget) {
   DCHECK(widget);
+  DCHECK(game_dashboard_button_widget_);
+
+  game_dashboard_button_widget_->StackAboveWidget(widget);
+
   if (welcome_dialog_widget_) {
     welcome_dialog_widget_->StackAboveWidget(widget);
   }
@@ -183,6 +187,8 @@ void GameDashboardContext::MaybeStackAboveWidget(views::Widget* widget) {
   if (toolbar_widget_) {
     toolbar_widget_->StackAboveWidget(widget);
   }
+
+  EnsureMainMenuAboveToolbar();
 }
 
 void GameDashboardContext::SetToolbarSnapLocation(
@@ -214,6 +220,10 @@ void GameDashboardContext::UpdateForGameControlsFlags() {
     toolbar_view_->UpdateViewForGameControls(
         game_window_->GetProperty(kArcGameControlsFlagsKey));
   }
+
+  // Ensure that the main menu is above the toolbar because updating toolbar
+  // changes its zorder.
+  EnsureMainMenuAboveToolbar();
 }
 
 void GameDashboardContext::ToggleMainMenuByAccelerator() {
@@ -278,10 +288,8 @@ bool GameDashboardContext::ToggleToolbar() {
     MaybeUpdateToolbarWidgetBounds();
 
     toolbar_widget_->ShowInactive();
-    if (main_menu_widget_) {
-      // Display the toolbar behind the main menu view.
-      main_menu_widget_->StackAboveWidget(toolbar_widget_.get());
-    }
+    // Display the toolbar behind the main menu view.
+    EnsureMainMenuAboveToolbar();
     RecordGameDashboardToolbarToggleState(app_id_, /*toggled_on=*/true);
     return true;
   }
@@ -675,6 +683,12 @@ void GameDashboardContext::UpdateOnMainMenuClosed() {
   RemoveCursorHandler();
   main_menu_view_ = nullptr;
   game_dashboard_button_->SetToggled(false);
+}
+
+void GameDashboardContext::EnsureMainMenuAboveToolbar() {
+  if (main_menu_widget_ && toolbar_widget_) {
+    main_menu_widget_->StackAboveWidget(toolbar_widget_.get());
+  }
 }
 
 }  // namespace ash

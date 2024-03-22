@@ -944,6 +944,39 @@ TEST_F(GameDashboardContextTest, GameControlsEditMode) {
   EXPECT_TRUE(tool_bar_widget->IsVisible());
 }
 
+// Verify that main menu always stacks above the toolbar.
+TEST_F(GameDashboardContextTest, ZorderWithGameControls) {
+  CreateGameWindow(/*is_arc_window=*/true);
+  // Game Controls is available, not empty, enabled and hint on.
+  game_window_->SetProperty(
+      kArcGameControlsFlagsKey,
+      static_cast<ArcGameControlsFlag>(
+          ArcGameControlsFlag::kKnown | ArcGameControlsFlag::kAvailable |
+          ArcGameControlsFlag::kEnabled | ArcGameControlsFlag::kHint));
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+  EXPECT_TRUE(test_api_->GetMainMenuWidget()->IsStackedAbove(
+      test_api_->GetToolbarWidget()->GetNativeView()));
+
+  // Hide Game Controls mapping hint.
+  LeftClickOn(test_api_->GetMainMenuGameControlsTile());
+  EXPECT_TRUE(test_api_->GetMainMenuWidget()->IsStackedAbove(
+      test_api_->GetToolbarWidget()->GetNativeView()));
+  // Show Game Controls mapping hint.
+  LeftClickOn(test_api_->GetMainMenuGameControlsTile());
+  EXPECT_TRUE(test_api_->GetMainMenuWidget()->IsStackedAbove(
+      test_api_->GetToolbarWidget()->GetNativeView()));
+
+  // Disable Game Controls feature.
+  LeftClickOn(test_api_->GetMainMenuGameControlsFeatureSwitch());
+  EXPECT_TRUE(test_api_->GetMainMenuWidget()->IsStackedAbove(
+      test_api_->GetToolbarWidget()->GetNativeView()));
+  // Enable Game Controls feature.
+  LeftClickOn(test_api_->GetMainMenuGameControlsFeatureSwitch());
+  EXPECT_TRUE(test_api_->GetMainMenuWidget()->IsStackedAbove(
+      test_api_->GetToolbarWidget()->GetNativeView()));
+}
+
 TEST_F(GameDashboardContextTest,
        RecordEditControlsWithEmptyStateHistogramTest) {
   CreateGameWindow(/*is_arc_window=*/true);
@@ -1721,6 +1754,9 @@ TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseToolbarWidget) {
   EXPECT_TRUE(test_api_->GetToolbarGamepadButton());
   EXPECT_TRUE(test_api_->GetToolbarRecordGameButton());
   EXPECT_TRUE(test_api_->GetToolbarScreenshotButton());
+  // Verify that main menu always stacks above the toolbar.
+  EXPECT_TRUE(test_api_->GetMainMenuWidget()->IsStackedAbove(
+      test_api_->GetToolbarWidget()->GetNativeView()));
   if (IsArcGame()) {
     EXPECT_TRUE(test_api_->GetToolbarGameControlsButton());
   } else {
@@ -1734,7 +1770,9 @@ TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseToolbarWidget) {
   toolbar_tile = test_api_->GetMainMenuToolbarTile();
   EXPECT_EQ(toolbar_tile->sub_label()->GetText(), visible_label);
   EXPECT_TRUE(test_api_->GetToolbarWidget());
-
+  // Verify that main menu always stacks above the toolbar.
+  EXPECT_TRUE(test_api_->GetMainMenuWidget()->IsStackedAbove(
+      test_api_->GetToolbarWidget()->GetNativeView()));
   test_api_->CloseTheToolbar();
 
   // Verify that the toolbar widget is no longer available and is toggled off.
