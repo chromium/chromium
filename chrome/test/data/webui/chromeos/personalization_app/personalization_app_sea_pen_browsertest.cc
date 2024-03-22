@@ -8,6 +8,7 @@
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/personalization_app/test/personalization_app_mojom_banned_mocha_test_base.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_mocha_test_base.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
@@ -44,7 +45,6 @@ IN_PROC_BROWSER_TEST_F(SeaPenControllerTest, All) {
 }
 
 // Tests the SeaPen UI.
-// TODO(b/329149811) Add screenplay id
 class PersonalizationAppSeaPenBrowserTest
     : public PersonalizationAppMochaTestBase {
  public:
@@ -65,6 +65,8 @@ class PersonalizationAppSeaPenBrowserTest
   ~PersonalizationAppSeaPenBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    base::AddFeatureIdTagToTestResult(
+        "screenplay-1bacd0f6-45cb-4dbd-a5df-cde7dedae42d");
     PersonalizationAppMochaTestBase::SetUpOnMainThread();
 
     //  Creates a fake SeaPen image and saves it to disk.
