@@ -675,7 +675,7 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
 std::string GetRequiredString(const base::Value::Dict* dict, const char* key) {
   const base::Value* v = dict->Find(key);
   if (!v) {
-    NOTREACHED() << "Required key missing: " << key;
+    DUMP_WILL_BE_NOTREACHED_NORETURN() << "Required key missing: " << key;
     return std::string();
   }
   if (!v->is_string()) {
