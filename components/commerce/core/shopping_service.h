@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <unordered_set>
 #include <utility>
 
 #include "base/cancelable_callback.h"
@@ -432,6 +433,11 @@ class ShoppingService : public KeyedService,
   // when deciding to build infrastructure.
   virtual bool IsParcelTrackingEligible();
 
+  // Returns a list of URLs corresponding to active WebWrappers the shopping
+  // service is keeping track of. This does not map to open tabs across all
+  // platforms.
+  virtual std::vector<GURL> GetUrlsForActiveWebWrappers();
+
   // Starts tracking a list of parcels from a given page.
   void StartTrackingParcels(
       const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
@@ -745,6 +751,8 @@ class ShoppingService : public KeyedService,
 
   // The object for local extractions of commerce information.
   std::unique_ptr<commerce::WebExtractor> web_extractor_;
+
+  std::unordered_set<WebWrapper*> open_web_wrappers_;
 
   // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
   //     See ConsentLevel::kSync documentation for details.

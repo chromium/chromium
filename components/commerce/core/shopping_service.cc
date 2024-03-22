@@ -222,7 +222,9 @@ AccountChecker* ShoppingService::GetAccountChecker() {
   return account_checker_.get();
 }
 
-void ShoppingService::WebWrapperCreated(WebWrapper* web) {}
+void ShoppingService::WebWrapperCreated(WebWrapper* web) {
+  open_web_wrappers_.insert(web);
+}
 
 void ShoppingService::DidNavigatePrimaryMainFrame(WebWrapper* web) {
   HandleDidNavigatePrimaryMainFrameForProductInfo(web);
@@ -450,6 +452,7 @@ bool ShoppingService::CheckIsPDPFromMetaOnly(
 }
 
 void ShoppingService::WebWrapperDestroyed(WebWrapper* web) {
+  open_web_wrappers_.erase(web);
   UpdateProductInfoCacheForRemoval(web->GetLastCommittedURL());
   UpdatePriceInsightsInfoCacheForRemoval(web->GetLastCommittedURL());
 }
@@ -809,6 +812,14 @@ bool ShoppingService::IsShoppingPageTypesApiEnabled() {
 bool ShoppingService::IsDiscountInfoApiEnabled() {
   return IsRegionLockedFeatureEnabled(kEnableDiscountInfoApi,
                                       kEnableDiscountInfoApiRegionLaunched);
+}
+
+std::vector<GURL> ShoppingService::GetUrlsForActiveWebWrappers() {
+  std::vector<GURL> urls;
+  for (auto web : open_web_wrappers_) {
+    urls.push_back(web->GetLastCommittedURL());
+  }
+  return urls;
 }
 
 void ShoppingService::HandleOptGuideProductInfoResponse(

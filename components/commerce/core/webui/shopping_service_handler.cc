@@ -603,6 +603,11 @@ void ShoppingServiceHandler::GetProductSpecificationsForUrls(
                 weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void ShoppingServiceHandler::GetUrlsOpenInTabs(
+    GetUrlsOpenInTabsCallback callback) {
+  std::move(callback).Run(shopping_service_->GetUrlsForActiveWebWrappers());
+}
+
 void ShoppingServiceHandler::OnFetchPriceInsightsInfoForCurrentUrl(
     GetPriceInsightsInfoForCurrentUrlCallback callback,
     const GURL& url,

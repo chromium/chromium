@@ -150,6 +150,9 @@ interface ShoppingServiceHandler {
   GetProductSpecificationsForUrls(array<url.mojom.Url> urls)
       => (ProductSpecifications productSpecs);
 
+  // Returns a list of URLs that are open in the user's tabs.
+  GetUrlsOpenInTabs() => (array<url.mojom.Url> urls);
+
   // Notify the backend that the UI is ready to be shown.
   ShowInsightsSidePanelUI();
 

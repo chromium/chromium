@@ -39,7 +39,6 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
     products: [],
     productDimensionMap: new Map<bigint, string>(),
   };
-
   private shoppingCollectionId_: bigint = BigInt(-1);
 
   constructor() {
@@ -50,6 +49,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'untrackPriceForBookmark',
       'getProductInfoForCurrentUrl',
       'getPriceInsightsInfoForCurrentUrl',
+      'getUrlsOpenInTabs',
       'showInsightsSidePanelUi',
       'openUrlInNewTab',
       'showFeedback',
@@ -113,6 +113,11 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
   getPriceInsightsInfoForCurrentUrl() {
     this.methodCalled('getPriceInsightsInfoForCurrentUrl');
     return Promise.resolve({priceInsightsInfo: this.priceInsights_});
+  }
+
+  getUrlsOpenInTabs() {
+    this.methodCalled('getUrlsOpenInTabs');
+    return Promise.resolve({urls: []});
   }
 
   showInsightsSidePanelUi() {

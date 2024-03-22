@@ -357,6 +357,45 @@ TEST_P(ShoppingServiceTest, TestProductInfoCacheURLCount) {
   ASSERT_EQ(0, GetProductInfoCacheOpenURLCount(GURL(url2)));
 }
 
+// Ensure we keep track of live web wrappers.
+TEST_P(ShoppingServiceTest, TestWebWrapperSet) {
+  test_features_.InitWithFeatures({kShoppingList}, {});
+
+  std::string url1 = "http://example.com/foo";
+  MockWebWrapper web1(GURL(url1), false);
+  std::string url2 = "http://example.com/bar";
+  MockWebWrapper web2(GURL(url2), false);
+  std::string url3 = "http://example.com/baz";
+  MockWebWrapper web3(GURL(url3), false);
+
+  ASSERT_TRUE(shopping_service_->GetUrlsForActiveWebWrappers().empty());
+
+  WebWrapperCreated(&web1);
+  WebWrapperCreated(&web2);
+  WebWrapperCreated(&web3);
+
+  std::vector<GURL> open_urls =
+      shopping_service_->GetUrlsForActiveWebWrappers();
+  ASSERT_EQ(3u, open_urls.size());
+  ASSERT_TRUE(base::Contains(open_urls, GURL(url1)));
+  ASSERT_TRUE(base::Contains(open_urls, GURL(url2)));
+  ASSERT_TRUE(base::Contains(open_urls, GURL(url3)));
+
+  // Close one of the tabs
+  WebWrapperDestroyed(&web1);
+
+  open_urls = shopping_service_->GetUrlsForActiveWebWrappers();
+  ASSERT_EQ(2u, open_urls.size());
+  ASSERT_FALSE(base::Contains(open_urls, GURL(url1)));
+  ASSERT_TRUE(base::Contains(open_urls, GURL(url2)));
+  ASSERT_TRUE(base::Contains(open_urls, GURL(url3)));
+
+  WebWrapperDestroyed(&web2);
+  WebWrapperDestroyed(&web3);
+
+  ASSERT_TRUE(shopping_service_->GetUrlsForActiveWebWrappers().empty());
+}
+
 // Test that product info is inserted into the cache without a client
 // necessarily querying for it.
 TEST_P(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {

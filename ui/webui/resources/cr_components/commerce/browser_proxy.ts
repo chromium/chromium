@@ -21,6 +21,7 @@ export interface BrowserProxy {
   getPriceInsightsInfoForCurrentUrl():
       Promise<{priceInsightsInfo: PriceInsightsInfo}>;
   showInsightsSidePanelUi(): void;
+  getUrlsOpenInTabs(): Promise<{urls: Url[]}>;
   isShoppingListEligible(): Promise<{eligible: boolean}>;
   getShoppingCollectionBookmarkFolderId(): Promise<{collectionId: bigint}>;
   getPriceTrackingStatusForCurrentUrl(): Promise<{tracked: boolean}>;
@@ -80,6 +81,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   getProductSpecificationsForUrls(urls: Url[]) {
     return this.handler.getProductSpecificationsForUrls(urls);
+  }
+
+  getUrlsOpenInTabs() {
+    return this.handler.getUrlsOpenInTabs();
   }
 
   showInsightsSidePanelUi() {

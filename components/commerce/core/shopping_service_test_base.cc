@@ -488,6 +488,11 @@ void ShoppingServiceTestBase::DidNavigateAway(WebWrapper* web,
   base::RunLoop().RunUntilIdle();
 }
 
+void ShoppingServiceTestBase::WebWrapperCreated(WebWrapper* web) {
+  shopping_service_->WebWrapperCreated(web);
+  base::RunLoop().RunUntilIdle();
+}
+
 void ShoppingServiceTestBase::WebWrapperDestroyed(WebWrapper* web) {
   shopping_service_->WebWrapperDestroyed(web);
   base::RunLoop().RunUntilIdle();
