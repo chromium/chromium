@@ -103,6 +103,10 @@ class CONTENT_EXPORT ContentRendererClient {
   // binding requests from RenderProcessHost::BindReceiver().
   virtual void ExposeInterfacesToBrowser(mojo::BinderMap* binders) {}
 
+  // Sets up trap handling for WebAssembly. Default implementation assumes that
+  // a crash handler (such as crashpad) is already in use.
+  virtual void SetUpWebAssemblyTrapHandler();
+
   // Notifies that a new RenderFrame has been created.
   virtual void RenderFrameCreated(RenderFrame* render_frame) {}
 

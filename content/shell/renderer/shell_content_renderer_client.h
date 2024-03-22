@@ -30,6 +30,7 @@ class ShellContentRendererClient : public ContentRendererClient {
   ~ShellContentRendererClient() override;
 
   // ContentRendererClient implementation.
+  void SetUpWebAssemblyTrapHandler() override;
   void RenderThreadStarted() override;
   void ExposeInterfacesToBrowser(mojo::BinderMap* binders) override;
   void RenderFrameCreated(RenderFrame* render_frame) override;

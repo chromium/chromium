@@ -20,8 +20,29 @@
 #include "ui/gfx/icc_profile.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "v8/include/v8-initialization.h"
 
 namespace content {
+
+void ContentRendererClient::SetUpWebAssemblyTrapHandler() {
+  constexpr bool use_v8_trap_handler =
+#if BUILDFLAG(IS_WIN)
+      // On Windows we use the default trap handler provided by V8.
+      true
+#elif BUILDFLAG(IS_MAC)
+      // On macOS, Crashpad uses exception ports to handle signals in a
+      // different process. As we cannot just pass a callback to this other
+      // process, we ask V8 to install its own signal handler to deal with
+      // WebAssembly traps.
+      true
+#else
+      // The trap handler is set as the first chance handler for Crashpad's
+      // signal handler.
+      false
+#endif
+      ;
+  v8::V8::EnableWebAssemblyTrapHandler(use_v8_trap_handler);
+}
 
 SkBitmap* ContentRendererClient::GetSadPluginBitmap() {
   return nullptr;
