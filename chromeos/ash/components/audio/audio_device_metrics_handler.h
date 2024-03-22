@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 
 namespace ash {
@@ -169,6 +170,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
           "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio."
           "BeforeAndAfterAudioDeviceSet.NonChromeRestarts";
 
+  // A series of histogram metrics to record consecutive devices change event
+  // time elapsed.
+  static constexpr char kConsecutiveInputDevicsChanged[] =
+      "ChromeOS.AudioSelection.Input.ConsecutiveDevicesChangeTimeElapsed.Any";
+  static constexpr char kConsecutiveOutputDevicsChanged[] =
+      "ChromeOS.AudioSelection.Output.ConsecutiveDevicesChangeTimeElapsed.Any";
+  static constexpr char kConsecutiveInputDevicsAdded[] =
+      "ChromeOS.AudioSelection.Input.ConsecutiveDevicesChangeTimeElapsed.Add";
+  static constexpr char kConsecutiveOutputDevicsAdded[] =
+      "ChromeOS.AudioSelection.Output.ConsecutiveDevicesChangeTimeElapsed.Add";
+
   // Record system selection related metrics in the case of chrome restarts,
   // including system boots and users sign out, as well as the case of normal
   // user hotplug or unplug.
@@ -191,6 +203,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       bool is_switched,
       bool is_chrome_restarts,
       int time_delta) const;
+
+  // Record the time elaspsed between two consecutive devices change event,
+  // including devices added/removed and devices changed.
+  void RecordConsecutiveAudioDevicsChangeTimeElapsed(bool is_input,
+                                                     bool is_device_added);
+
+ private:
+  // The timestamp when devices have changed, including devices added/removed
+  // and devices changed. Used for recording the time elaspsed between two
+  // consecutive devices change event.
+  std::optional<base::TimeTicks> input_devices_changed_at_ = std::nullopt;
+  std::optional<base::TimeTicks> output_devices_changed_at_ = std::nullopt;
+  std::optional<base::TimeTicks> input_devices_added_at_ = std::nullopt;
+  std::optional<base::TimeTicks> output_devices_added_at_ = std::nullopt;
 };
 
 }  // namespace ash

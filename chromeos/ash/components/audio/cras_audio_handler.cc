@@ -2333,6 +2333,17 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
       HasDeviceChange(nodes, true, &hotplug_input_devices, &has_input_removed,
                       &active_input_removed);
 
+  // Record consecutive devices change metrics.
+  if (input_devices_changed) {
+    audio_device_metrics_handler_.RecordConsecutiveAudioDevicsChangeTimeElapsed(
+        /*is_input=*/true, /*is_device_added=*/!hotplug_input_devices.empty());
+  }
+  if (output_devices_changed) {
+    audio_device_metrics_handler_.RecordConsecutiveAudioDevicsChangeTimeElapsed(
+        /*is_input=*/false,
+        /*is_device_added=*/!hotplug_output_devices.empty());
+  }
+
   std::vector<AudioDevice> devices;
   devices.reserve(nodes.size());
   for (AudioNode node : nodes) {

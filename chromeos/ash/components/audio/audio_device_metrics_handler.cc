@@ -167,4 +167,31 @@ void AudioDeviceMetricsHandler::
   RecordUserOverrideMetrics(user_override_histogram_name, time_delta);
 }
 
+void AudioDeviceMetricsHandler::RecordConsecutiveAudioDevicsChangeTimeElapsed(
+    bool is_input,
+    bool is_device_added) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  std::optional<base::TimeTicks>& devices_changed_at =
+      is_input ? input_devices_changed_at_ : output_devices_changed_at_;
+  if (devices_changed_at.has_value()) {
+    int time_delta = (now - devices_changed_at.value()).InSeconds();
+    base::UmaHistogramSparse(is_input ? kConsecutiveInputDevicsChanged
+                                      : kConsecutiveOutputDevicsChanged,
+                             time_delta);
+  }
+  devices_changed_at = now;
+
+  if (is_device_added) {
+    std::optional<base::TimeTicks>& devices_added_at =
+        is_input ? input_devices_added_at_ : output_devices_added_at_;
+    if (devices_added_at.has_value()) {
+      int time_delta = (now - devices_added_at.value()).InSeconds();
+      base::UmaHistogramSparse(is_input ? kConsecutiveInputDevicsAdded
+                                        : kConsecutiveOutputDevicsAdded,
+                               time_delta);
+    }
+    devices_added_at = now;
+  }
+}
+
 }  // namespace ash

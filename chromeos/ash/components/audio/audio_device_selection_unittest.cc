@@ -199,6 +199,27 @@ void ExpectUserOverrideSystemDecisionTimeDelta(
       /*expected_count=*/1);
 }
 
+// Test the histogram of consecutive decives change.
+void ExpectConsecutiveDeviceChangeHistogramCount(
+    const base::HistogramTester& histogram_tester,
+    uint16_t expected_consecutive_input_device_changed,
+    uint16_t expected_consecutive_output_device_changed,
+    uint16_t expected_consecutive_input_device_added,
+    uint16_t expected_consecutive_output_device_added) {
+  histogram_tester.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kConsecutiveInputDevicsChanged,
+      expected_consecutive_input_device_changed);
+  histogram_tester.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kConsecutiveOutputDevicsChanged,
+      expected_consecutive_output_device_changed);
+  histogram_tester.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kConsecutiveInputDevicsAdded,
+      expected_consecutive_input_device_added);
+  histogram_tester.ExpectTotalCount(
+      AudioDeviceMetricsHandler::kConsecutiveOutputDevicsAdded,
+      expected_consecutive_output_device_added);
+}
+
 class AudioDeviceSelectionTest : public AudioDeviceSelectionTestBase {};
 
 TEST_F(AudioDeviceSelectionTest, PlugUnplugMetricAction) {
@@ -337,6 +358,11 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
   uint16_t num_of_input_devices = 0;
   uint16_t num_of_output_devices = 0;
 
+  uint16_t expected_consecutive_input_device_changed = 0;
+  uint16_t expected_consecutive_output_device_changed = 0;
+  uint16_t expected_consecutive_input_device_added = 0;
+  uint16_t expected_consecutive_output_device_added = 0;
+
   // Plug in internal mic and speaker.
   // Do not record if there is no alternative device available.
   Plug(input_internal);
@@ -349,6 +375,12 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       expected_system_not_switch_input_count,
       expected_system_switch_output_count,
       expected_system_not_switch_output_count, /*is_chrome_restarts=*/false);
+
+  ExpectConsecutiveDeviceChangeHistogramCount(
+      histogram_tester(), expected_consecutive_input_device_changed,
+      expected_consecutive_output_device_changed,
+      expected_consecutive_input_device_added,
+      expected_consecutive_output_device_added);
 
   // Plug in USB devices with higher priority than current active one.
   // Expect to record system has switched both input and output.
@@ -434,6 +466,12 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
           /*device_set_after=*/{AudioDevice(output_internal),
                                 AudioDevice(output_USB)}),
       /*bucket_count=*/1);
+
+  ExpectConsecutiveDeviceChangeHistogramCount(
+      histogram_tester(), ++expected_consecutive_input_device_changed,
+      ++expected_consecutive_output_device_changed,
+      ++expected_consecutive_input_device_added,
+      ++expected_consecutive_output_device_added);
 
   // User switches input device immediately.
   // Expect to record user overrides system decision of switching input
@@ -532,6 +570,12 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
                                 AudioDevice(input_bluetooth_nb)}),
       /*bucket_count=*/1);
 
+  ExpectConsecutiveDeviceChangeHistogramCount(
+      histogram_tester(), ++expected_consecutive_input_device_changed,
+      expected_consecutive_output_device_changed,
+      ++expected_consecutive_input_device_added,
+      expected_consecutive_output_device_added);
+
   // User switches to USB input after some time.
   // Expect to record user overrides system decision of not switching input
   // device.
@@ -602,6 +646,12 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
                                 AudioDevice(input_bluetooth_nb)}),
       /*bucket_count=*/1);
 
+  ExpectConsecutiveDeviceChangeHistogramCount(
+      histogram_tester(), ++expected_consecutive_input_device_changed,
+      expected_consecutive_output_device_changed,
+      expected_consecutive_input_device_added,
+      expected_consecutive_output_device_added);
+
   // User switches to input_bluetooth_nb after some time.
   // Expect to record user overrides system decision of switching input device.
   FastForwardBy(base::Minutes(kTimeDeltaInMinuteC));
@@ -626,6 +676,12 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       expected_system_not_switch_input_count,
       expected_system_switch_output_count,
       expected_system_not_switch_output_count, /*is_chrome_restarts=*/false);
+
+  ExpectConsecutiveDeviceChangeHistogramCount(
+      histogram_tester(), ++expected_consecutive_input_device_changed,
+      expected_consecutive_output_device_changed,
+      expected_consecutive_input_device_added,
+      expected_consecutive_output_device_added);
 }
 
 TEST_F(AudioDeviceSelectionTest, SystemBootsHistogramMetrics) {

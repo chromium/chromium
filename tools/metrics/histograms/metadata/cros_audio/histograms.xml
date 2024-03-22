@@ -22,6 +22,26 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram
+    name="ChromeOS.AudioSelection.{AudioType}.ConsecutiveDevicesChangeTimeElapsed.{ChangeType}"
+    units="seconds" expires_after="2025-02-25">
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Recorded when {AudioType} audio devices have changed, including
+    {ChangeType}. Record the time elaspsed between two consecutive devices
+    change event.
+  </summary>
+  <token key="AudioType">
+    <variant name="Input" summary="input"/>
+    <variant name="Output" summary="output"/>
+  </token>
+  <token key="ChangeType">
+    <variant name="Add" summary="devices added"/>
+    <variant name="Any" summary="devices added/removed and devices changed"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.AudioSelection.{AudioType}.SystemSwitchAudio"
     enum="BooleanSwitched" expires_after="2024-09-01">
   <owner>zhangwenyu@google.com</owner>
