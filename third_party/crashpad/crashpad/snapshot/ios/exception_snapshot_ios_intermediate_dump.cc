@@ -149,6 +149,33 @@ bool ExceptionSnapshotIOSIntermediateDump::InitializeFromSignal(
   GetDataValueFromMap(exception_data, Key::kSignalCode, &code);
   codes_.push_back(code);
 
+  const IOSIntermediateDumpList* thread_context_memory_regions =
+      GetListFromMap(exception_data, Key::kThreadContextMemoryRegions);
+  if (thread_context_memory_regions) {
+    for (auto& region : *thread_context_memory_regions) {
+      vm_address_t address;
+      const IOSIntermediateDumpData* region_data =
+          region->GetAsData(Key::kThreadContextMemoryRegionData);
+      if (!region_data)
+        continue;
+      if (GetDataValueFromMap(
+              region.get(), Key::kThreadContextMemoryRegionAddress, &address)) {
+        const std::vector<uint8_t>& bytes = region_data->bytes();
+        vm_size_t data_size = bytes.size();
+        if (data_size == 0)
+          continue;
+
+        const vm_address_t data =
+            reinterpret_cast<const vm_address_t>(bytes.data());
+
+        auto memory =
+            std::make_unique<internal::MemorySnapshotIOSIntermediateDump>();
+        memory->Initialize(address, data, data_size);
+        extra_memory_.push_back(std::move(memory));
+      }
+    }
+  }
+
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;
 }
@@ -281,8 +308,11 @@ const std::vector<uint64_t>& ExceptionSnapshotIOSIntermediateDump::Codes()
 
 std::vector<const MemorySnapshot*>
 ExceptionSnapshotIOSIntermediateDump::ExtraMemory() const {
-  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  return std::vector<const MemorySnapshot*>();
+  std::vector<const MemorySnapshot*> extra_memory;
+  for (const auto& memory : extra_memory_) {
+    extra_memory.push_back(memory.get());
+  }
+  return extra_memory;
 }
 
 void ExceptionSnapshotIOSIntermediateDump::LoadContextFromThread(
