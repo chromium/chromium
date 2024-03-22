@@ -1407,7 +1407,6 @@ export namespace Script {
     | Script.SetRemoteValue
     | Script.WeakMapRemoteValue
     | Script.WeakSetRemoteValue
-    | Script.IteratorRemoteValue
     | Script.GeneratorRemoteValue
     | Script.ErrorRemoteValue
     | Script.ProxyRemoteValue
@@ -1504,13 +1503,6 @@ export namespace Script {
 export namespace Script {
   export type WeakSetRemoteValue = {
     type: 'weakset';
-    handle?: Script.Handle;
-    internalId?: Script.InternalId;
-  };
-}
-export namespace Script {
-  export type IteratorRemoteValue = {
-    type: 'iterator';
     handle?: Script.Handle;
     internalId?: Script.InternalId;
   };

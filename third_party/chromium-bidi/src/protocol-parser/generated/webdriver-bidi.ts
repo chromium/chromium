@@ -1801,7 +1801,6 @@ export namespace Script {
       Script.SetRemoteValueSchema,
       Script.WeakMapRemoteValueSchema,
       Script.WeakSetRemoteValueSchema,
-      Script.IteratorRemoteValueSchema,
       Script.GeneratorRemoteValueSchema,
       Script.ErrorRemoteValueSchema,
       Script.ProxyRemoteValueSchema,
@@ -1931,15 +1930,6 @@ export namespace Script {
   export const WeakSetRemoteValueSchema = z.lazy(() =>
     z.object({
       type: z.literal('weakset'),
-      handle: Script.HandleSchema.optional(),
-      internalId: Script.InternalIdSchema.optional(),
-    })
-  );
-}
-export namespace Script {
-  export const IteratorRemoteValueSchema = z.lazy(() =>
-    z.object({
-      type: z.literal('iterator'),
       handle: Script.HandleSchema.optional(),
       internalId: Script.InternalIdSchema.optional(),
     })
