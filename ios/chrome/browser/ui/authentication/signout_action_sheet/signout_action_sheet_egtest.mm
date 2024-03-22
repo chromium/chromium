@@ -24,12 +24,6 @@
 
 @implementation SignoutActionSheetTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-  return config;
-}
-
 #pragma mark - Tests
 
 // Tests the sign-out flow from the accounts table view. This test

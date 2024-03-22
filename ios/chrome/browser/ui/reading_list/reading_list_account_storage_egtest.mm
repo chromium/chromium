@@ -413,19 +413,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                           fakeIdentity2.userEmail)]
       performAction:grey_tap()];
 
-  // The sign-in snackbar is only displayed if the feature
-  // syncer::kReplaceSyncPromosWithSignInPromos is disabled, as per logic
-  // introduced in https://crrev.com/c/4733378.
-  if (![ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    [ChromeEarlGrey
-        waitForUIElementToAppearWithMatcher:SignedInSnackbar(
-                                                fakeIdentity2.userEmail)];
-    // Dismiss the sign-in snackbar.
-    [[EarlGrey
-        selectElementWithMatcher:SignedInSnackbar(fakeIdentity2.userEmail)]
-        performAction:grey_tap()];
-  }
-
   // Verify that the second account is signed-in.
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity2.userEmail
                                         consent:signin::ConsentLevel::kSignin];

@@ -820,10 +820,7 @@ NSString* const kDomain2 = @"domain2.com";
   ConditionBlock condition = ^{
     NSError* error = nil;
     NSString* noticeTitle =
-        [ChromeEarlGrey isReplaceSyncWithSigninEnabled]
-            ? l10n_util::GetNSString(
-                  IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE_WITH_UNO)
-            : l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE);
+        l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE_WITH_UNO);
     [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(noticeTitle)]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];

@@ -341,15 +341,10 @@ void TapSecondaryActionButton() {
   // Tap the signin item.
   TapView(set_up_list::kSignInItemID);
   [ChromeEarlGreyUI waitForAppToIdle];
-  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    // The fake signin UI appears. Dismiss it.
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kFakeAuthCancelButtonIdentifier)]
-        performAction:grey_tap()];
-  } else {
-    // The full-screen signin promo appears. Dismiss it.
-    TapPromoStyleSecondaryActionButton();
-  }
+  // The fake signin UI appears. Dismiss it.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthCancelButtonIdentifier)]
+      performAction:grey_tap()];
 
   // Verify the All Set item is shown.
   condition = ^{
@@ -415,15 +410,10 @@ void TapSecondaryActionButton() {
   // Tap the signin item.
   TapView(set_up_list::kSignInItemID);
   [ChromeEarlGreyUI waitForAppToIdle];
-  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    // The fake signin UI appears. Dismiss it.
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kFakeAuthCancelButtonIdentifier)]
-        performAction:grey_tap()];
-  } else {
-    // The full-screen signin promo appears. Dismiss it.
-    TapPromoStyleSecondaryActionButton();
-  }
+  // The fake signin UI appears. Dismiss it.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthCancelButtonIdentifier)]
+      performAction:grey_tap()];
 
   // Verify the All Set item is shown.
   condition = ^{

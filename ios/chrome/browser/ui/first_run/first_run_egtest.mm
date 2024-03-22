@@ -209,13 +209,8 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   switch (FRESigninIntent) {
     case FRESigninIntentRegular:
       title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
-      if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-        subtitle = l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
-      } else {
-        subtitle =
-            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
-      }
+      subtitle = l10n_util::GetNSString(
+          IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
       disclaimerStrings = @[
         l10n_util::GetNSString(
             IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
@@ -272,13 +267,8 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       break;
     case FRESigninIntentSigninWithPolicy:
       title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
-      if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-        subtitle = l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
-      } else {
-        subtitle =
-            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
-      }
+      subtitle = l10n_util::GetNSString(
+          IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
       disclaimerStrings = @[
         l10n_util::GetNSString(
             IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
@@ -290,13 +280,8 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       break;
     case FRESigninIntentSigninWithUMAReportingDisabledPolicy:
       title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
-      if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-        subtitle = l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
-      } else {
-        subtitle =
-            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
-      }
+      subtitle = l10n_util::GetNSString(
+          IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
       disclaimerStrings = @[
         l10n_util::GetNSString(
             IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
@@ -353,36 +338,19 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 }
 
 - (void)acceptSyncOrHistory {
-  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    // Accept the history opt-in screen.
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
-        performAction:grey_tap()];
-  } else {
-    // Accept sync.
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityID(
-                                     kTangibleSyncViewAccessibilityIdentifier)]
-        assertWithMatcher:grey_notNil()];
-    [[self elementInteractionWithGreyMatcher:
-               chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
-                        scrollViewIdentifier:
-                            kPromoStyleScrollViewAccessibilityIdentifier]
-        performAction:grey_tap()];
-  }
+  // Accept the history opt-in screen.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+      performAction:grey_tap()];
 }
 
 - (void)verifySyncOrHistoryEnabled:(BOOL)enabled {
-  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    if (enabled) {
-      GREYAssertTrue([ChromeEarlGrey isSyncHistoryDataTypeSelected],
-                     @"History sync was unexpectedly disabled.");
-    } else {
-      GREYAssertFalse([ChromeEarlGrey isSyncHistoryDataTypeSelected],
-                      @"History sync was unexpectedly enabled.");
-    }
+  if (enabled) {
+    GREYAssertTrue([ChromeEarlGrey isSyncHistoryDataTypeSelected],
+                   @"History sync was unexpectedly disabled.");
   } else {
-    [SigninEarlGrey verifySyncUIEnabled:enabled];
+    GREYAssertFalse([ChromeEarlGrey isSyncHistoryDataTypeSelected],
+                    @"History sync was unexpectedly enabled.");
   }
 }
 
@@ -413,23 +381,6 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  if ([self isRunningTest:@selector(testSignInWithNoAccount)] ||
-      [self isRunningTest:@selector(testHistorySyncSkipIfNoSignIn)] ||
-      [self isRunningTest:@selector(testHistorySyncShownAfterSignIn)] ||
-      [self isRunningTest:@selector
-            (testSignInSubtitleIfHistorySyncOptInEnabled)] ||
-      [self
-          isRunningTest:@selector(testHistorySyncConsentGrantedAfterConfirm)] ||
-      [self isRunningTest:@selector
-            (testHistorySyncConsentNotGrantedAfterReject)] ||
-      [self isRunningTest:@selector(testHistorySyncSkipIfSyncDisabled)] ||
-      [self isRunningTest:@selector(testHistorySyncSkipIfTabsSyncDisabled)] ||
-      [self isRunningTest:@selector
-            (testHistorySyncShownIfBookmarksSyncDisabled)] ||
-      [self isRunningTest:@selector(testHistorySyncLayout)]) {
-    config.features_enabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
 
   if ([self isRunningTest:@selector
             (testHistorySyncShownWithEquallyWeightedButtons)] ||

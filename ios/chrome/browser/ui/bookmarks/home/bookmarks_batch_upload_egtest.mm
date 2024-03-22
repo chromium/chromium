@@ -138,12 +138,6 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 @implementation BookmarksBatchUploadTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];

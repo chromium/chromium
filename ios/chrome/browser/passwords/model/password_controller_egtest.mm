@@ -106,16 +106,6 @@ BOOL WaitForKeyboardToAppear() {
     config.features_enabled.push_back(
         password_manager::features::kIOSPasswordBottomSheet);
   }
-  if ([self isRunningTest:@selector
-            (testPasswordGenerationForSignedInNotSyncingAccount)] ||
-      [self
-          isRunningTest:@selector
-          (testPasswordGenerationForSignedInNotSyncingWithPasswordsDisabled)] ||
-      [self isRunningTest:@selector
-            (testPasswordGenerationForSignedInNotSyncingWithError)]) {
-    config.features_enabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
   return config;
 }
 

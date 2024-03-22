@@ -100,7 +100,6 @@ void OpenNTPAndBackgroundAndForegroundApp() {
   // "com.apple.configuration.managed" key.
   AppLaunchConfiguration config;
   config.features_enabled.push_back(switches::kForceStartupSigninPromo);
-  config.features_enabled.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableUpgradeSigninPromo);
   // Without relaunch upgrade signin promo will not be shown again.

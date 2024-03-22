@@ -258,24 +258,18 @@ void ClearRelevantData() {
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  BookmarkModelType inStorage = [ChromeEarlGrey isReplaceSyncWithSigninEnabled]
-                                    ? BookmarkModelType::kAccount
-                                    : BookmarkModelType::kLocalOrSyncable;
   [BookmarkEarlGrey addBookmarkWithTitle:@"goo"
                                      URL:@"https://www.goo.com"
-                               inStorage:inStorage];
+                               inStorage:BookmarkModelType::kAccount];
   WaitForEntitiesOnFakeServer(1, syncer::BOOKMARKS);
 }
 
 // Tests that a bookmark injected in the FakeServer is synced down to the
 // client.
 - (void)testSyncDownloadBookmark {
-  BookmarkModelType inStorage = [ChromeEarlGrey isReplaceSyncWithSigninEnabled]
-                                    ? BookmarkModelType::kAccount
-                                    : BookmarkModelType::kLocalOrSyncable;
   [BookmarkEarlGrey verifyBookmarksWithTitle:@"hoo"
                                expectedCount:0
-                                   inStorage:inStorage];
+                                   inStorage:BookmarkModelType::kAccount];
   const GURL URL = web::test::HttpServer::MakeUrl("http://www.hoo.com");
   [ChromeEarlGrey addFakeSyncServerBookmarkWithURL:URL title:"hoo"];
 
@@ -288,7 +282,7 @@ void ClearRelevantData() {
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey verifyBookmarksWithTitle:@"hoo"
                                expectedCount:1
-                                   inStorage:inStorage];
+                                   inStorage:BookmarkModelType::kAccount];
 }
 
 // Tests that the local cache guid changes when the user signs out and then
@@ -517,16 +511,12 @@ void ClearRelevantData() {
   NSString* title1 = @"title1";
   NSString* title2 = @"title2";
 
-  BookmarkModelType inStorage = [ChromeEarlGrey isReplaceSyncWithSigninEnabled]
-                                    ? BookmarkModelType::kAccount
-                                    : BookmarkModelType::kLocalOrSyncable;
-
   [BookmarkEarlGrey verifyBookmarksWithTitle:title1
                                expectedCount:0
-                                   inStorage:inStorage];
+                                   inStorage:BookmarkModelType::kAccount];
   [BookmarkEarlGrey verifyBookmarksWithTitle:title2
                                expectedCount:0
-                                   inStorage:inStorage];
+                                   inStorage:BookmarkModelType::kAccount];
 
   // Mimic the creation of two bookmarks from two different devices, with the
   // same client item ID.
@@ -549,10 +539,10 @@ void ClearRelevantData() {
 
   [BookmarkEarlGrey verifyBookmarksWithTitle:title1
                                expectedCount:1
-                                   inStorage:inStorage];
+                                   inStorage:BookmarkModelType::kAccount];
   [BookmarkEarlGrey verifyBookmarksWithTitle:title2
                                expectedCount:1
-                                   inStorage:inStorage];
+                                   inStorage:BookmarkModelType::kAccount];
 }
 
 - (void)testSyncInvalidationsEnabled {

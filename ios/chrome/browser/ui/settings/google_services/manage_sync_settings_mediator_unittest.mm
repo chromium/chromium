@@ -156,9 +156,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   }
 
   void SimulateFirstSetupSyncOffWithSignedInAccount() {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
     ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(false));
     ON_CALL(*sync_service_mock_, GetTransportState())
         .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));

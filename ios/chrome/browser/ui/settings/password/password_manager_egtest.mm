@@ -3682,7 +3682,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 // Checks password details page offers move to account option if the password is
 // saved in the local store.
-- (void)testMovePasswordToAccountStoreIfSignedIn_SyncToSigninEnabled {
+- (void)testMovePasswordToAccountStoreIfSignedIn {
   // Save form to be moved to account later.
   SavePasswordFormToProfileStore();
 

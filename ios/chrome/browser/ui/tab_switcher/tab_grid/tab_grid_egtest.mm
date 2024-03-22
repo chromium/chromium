@@ -355,16 +355,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [super tearDown];
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  if ([self isRunningTest:@selector
-            (testPromoInTabsFromOtherDevicesListensToSignin)]) {
-    config.features_enabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-  return config;
-}
-
 // Tests entering and leaving the tab grid.
 - (void)testEnteringAndLeavingTabGrid {
   [ChromeEarlGreyUI openTabGrid];
@@ -2842,7 +2832,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // other devices" reacts accordingly if the user signs in via a different
 // surface. More specifically: on tap the promo shouldn't offer the sign-in
 // sheet but only the history opt-in.
-// kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testPromoInTabsFromOtherDevicesListensToSignin {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 

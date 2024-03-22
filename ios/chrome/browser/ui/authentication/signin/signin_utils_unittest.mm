@@ -294,10 +294,6 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfDisabledByPolicy) {
 
 // Should show if the user is signed-in without history opt-in.
 TEST_F(SigninUtilsTest, TestWillShowIfSignedInWithoutHistoryOptIn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
   FakeSystemIdentity* identity =
       [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                      gaiaID:@"foo1ID"
@@ -319,10 +315,6 @@ TEST_F(SigninUtilsTest, TestWillShowIfSignedInWithoutHistoryOptIn) {
 
 // Should not show if the user is signed-in with history opt-in.
 TEST_F(SigninUtilsTest, TestWillNotShowIfSignedInWithHistoryOptIn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
   FakeSystemIdentity* identity =
       [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
                                      gaiaID:@"foo1ID"

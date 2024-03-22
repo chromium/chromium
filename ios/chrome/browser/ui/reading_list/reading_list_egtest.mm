@@ -474,8 +474,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
       [self isRunningTest:@selector
             (testSignOutFromAccountSettingsFromReadingListManager)] ||
       [self isRunningTest:@selector(testSigninToReviewAccountSettingsPromo)]) {
-    config.features_enabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
     config.features_enabled.push_back(kEnableReviewAccountSettingsPromo);
   }
 

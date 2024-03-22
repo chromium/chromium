@@ -220,18 +220,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  if ([self
-          isRunningTest:@selector
-          (testPasswordGenerationOnManualFallbackSignedInNotSyncingAccount)] ||
-      [self isRunningTest:@selector
-            (testPasswordGenerationFallbackSignedInNotSyncingPasswordsDisabled
-                )] ||
-      [self
-          isRunningTest:@selector
-          (testPasswordGenerationFallbackSignedInNotSyncingEncryptionError)]) {
-    config.features_enabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
   if ([self isRunningTest:@selector
             (testPasswordControllerSupportsIFrameMessaging)] ||
       [self isRunningTest:@selector

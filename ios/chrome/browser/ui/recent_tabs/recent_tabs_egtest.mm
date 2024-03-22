@@ -144,31 +144,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
         "<dict><key>SyncTypesListDisabled</key><array><string>tabs</"
         "string></array></dict>");
   }
-  if ([self isRunningTest:@selector
-            (testShowPromoIfSignedOut_SyncToSigninDisabled)] ||
-      [self isRunningTest:@selector
-            (testShowPromoIfSignedIn_SyncToSigninDisabled)]) {
-    config.features_disabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-  if ([self isRunningTest:@selector
-            (testShowPromoIfSignedOutAndHasAccounts_SyncToSigninEnabled)] ||
-      [self isRunningTest:@selector
-            (testShowPromoIfSignedOutAndNoAccounts_SyncToSigninEnabled)] ||
-      [self isRunningTest:@selector
-            (testDelineHistorySyncIfSignedOut_SyncToSigninEnabled)] ||
-      [self isRunningTest:@selector
-            (testDelineRepeatedlyHistorySyncIfSignedIn_SyncToSigninEnabled)] ||
-      [self isRunningTest:@selector
-            (testShowPromoIfSignedInAndTabsDisabled_SyncToSigninEnabled)] ||
-      [self isRunningTest:@selector
-            (testDelineHistorySyncIfSignedInAndTabsDisabled_SyncToSigninEnabled
-                )] ||
-      [self isRunningTest:@selector
-            (testNoPromoIfSignedInAndTabsEnabled_SyncToSigninEnabled)]) {
-    config.features_enabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
   return config;
 }
 
@@ -298,36 +273,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey closeCurrentTab];
 }
 
-// Tests that a promo to sign in + sync is shown to a signed out user.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-- (void)testShowPromoIfSignedOut_SyncToSigninDisabled {
-  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  OpenRecentTabsPanel();
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-  [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount
-                           closeButton:NO];
-
-  // Accept the promo.
-  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kConfirmationAccessibilityIdentifier)]
-      performAction:grey_tap()];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  [SigninEarlGreyUI verifySigninPromoNotVisible];
-}
-
 // Tests that a promo to sign in is shown to a signed out user without device
 // accounts. Tapping the promo shows the auth activity then the history opt-in.
-// kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)testShowPromoIfSignedOutAndNoAccounts_SyncToSigninEnabled {
+- (void)testShowPromoIfSignedOutAndNoAccounts {
   OpenRecentTabsPanel();
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(RecentTabsTable(),
@@ -358,8 +306,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that a promo to sign in is shown to a signed out user who has device
 // accounts. Tapping the promo shows the sign-in sheet then the history opt-in.
-// kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)testShowPromoIfSignedOutAndHasAccounts_SyncToSigninEnabled {
+- (void)testShowPromoIfSignedOutAndHasAccounts {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -426,8 +373,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that for a signed out user, sign-in using the promo then decline
 // history sync promo signs the user out and does not enable history sync.
-// kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)testDelineHistorySyncIfSignedOut_SyncToSigninEnabled {
+- (void)testDelineHistorySyncIfSignedOut {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -481,7 +427,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that for a signed in user, after declining twice History Sync, the
 // History Sync is still shown when tapping on the promo action button.
-- (void)testDelineRepeatedlyHistorySyncIfSignedIn_SyncToSigninEnabled {
+- (void)testDelineRepeatedlyHistorySyncIfSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
@@ -545,9 +491,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that no promo to sign-in + sync is shown to a signed-out user if sync
 // is disabled by policy.
-// Note this also applies when kReplaceSyncPromosWithSignInPromos is enabled:
-// even though kSyncDisabled doesn't block sign-in, there's no sense in
-// promoting sign-in if the user won't be able to see their tabs from other
+// Note that even though kSyncDisabled doesn't block sign-in, there's no sense
+// in promoting sign-in if the user won't be able to see their tabs from other
 // devices.
 - (void)testNoPromoIfSignedOutAndSyncDisabledByPolicy {
   // Set the policy and dismiss the bottom sheet that it causes.
@@ -567,36 +512,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
-// Tests that a promo to sync is shown to a signed-in non-syncing user.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-- (void)testShowPromoIfSignedIn_SyncToSigninDisabled {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  OpenRecentTabsPanel();
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
-                        SigninPromoViewModeSignedInWithPrimaryAccount
-                                         closeButton:NO];
-
-  // Accept the promo.
-  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kConfirmationAccessibilityIdentifier)]
-      performAction:grey_tap()];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  [SigninEarlGreyUI verifySigninPromoNotVisible];
-}
-
 // Tests that the tab sync promo is shown to a signed-in user who hasn't
 // opted in yet.
-// kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)testShowPromoIfSignedInAndTabsDisabled_SyncToSigninEnabled {
+- (void)testShowPromoIfSignedInAndTabsDisabled {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
@@ -659,8 +577,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that for a signed-in user, declining history sync does not sign the
 // user out and does not enable history sync.
-// kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)testDelineHistorySyncIfSignedInAndTabsDisabled_SyncToSigninEnabled {
+- (void)testDelineHistorySyncIfSignedInAndTabsDisabled {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
@@ -713,8 +630,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests no promo is shown to a signed-in user who has already opted in to
 // tab sync.
-// kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)testNoPromoIfSignedInAndTabsEnabled_SyncToSigninEnabled {
+- (void)testNoPromoIfSignedInAndTabsEnabled {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [SigninEarlGrey setSelectedType:(syncer::UserSelectableType::kTabs)
                           enabled:YES];
@@ -801,10 +717,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   [ChromeEarlGrey
-                                       isReplaceSyncWithSigninEnabled]
-                                       ? IDS_IOS_HISTORY_SYNC_TITLE
-                                       : IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE))]
+                                   IDS_IOS_HISTORY_SYNC_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

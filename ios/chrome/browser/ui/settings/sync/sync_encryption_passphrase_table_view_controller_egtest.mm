@@ -34,14 +34,6 @@ namespace {
 
 NSString* const kPassphrase = @"hello";
 
-// Depending on whether feature kReplaceSyncPromosWithSignInPromos is enabled,
-// the label ID for the button to enter a passphrase differs.
-int GetInfoBarEnterPassphraseButtonLabelId() {
-  return [ChromeEarlGrey isReplaceSyncWithSigninEnabled]
-             ? IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL
-             : IDS_IOS_SYNC_ENTER_PASSPHRASE_BUTTON;
-}
-
 }  // namespace
 
 @interface SyncEncryptionPassphraseTestCase : ChromeTestCase
@@ -85,9 +77,9 @@ int GetInfoBarEnterPassphraseButtonLabelId() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey openNewTab];
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                   GetInfoBarEnterPassphraseButtonLabelId())]
+  [[EarlGrey selectElementWithMatcher:
+                 ButtonWithAccessibilityLabelId(
+                     IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
       performAction:grey_tap()];
@@ -113,7 +105,7 @@ int GetInfoBarEnterPassphraseButtonLabelId() {
   [[EarlGrey selectElementWithMatcher:
                  MatchInWindowWithNumber(
                      1, ButtonWithAccessibilityLabelId(
-                            GetInfoBarEnterPassphraseButtonLabelId()))]
+                            IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL))]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:MatchInWindowWithNumber(
                                           1, NavigationBarCancelButton())]
@@ -147,9 +139,9 @@ int GetInfoBarEnterPassphraseButtonLabelId() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey openNewTab];
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                   GetInfoBarEnterPassphraseButtonLabelId())]
+  [[EarlGrey selectElementWithMatcher:
+                 ButtonWithAccessibilityLabelId(
+                     IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL)]
       performAction:grey_tap()];
 
   // Type and submit the sync passphrase.
@@ -157,10 +149,5 @@ int GetInfoBarEnterPassphraseButtonLabelId() {
   [ChromeEarlGreyUI openSettingsMenu];
   // Check the user is signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-
-  if (![ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    // Check Sync On label is visible.
-    [SigninEarlGrey verifySyncUIEnabled:YES];
-  }
 }
 @end

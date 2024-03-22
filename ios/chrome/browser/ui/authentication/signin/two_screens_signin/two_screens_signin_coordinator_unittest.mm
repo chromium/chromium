@@ -165,16 +165,9 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
 
   NextScreen();
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // Expect the history sync opt-in screen to be presented.
-    EXPECT_TRUE(
-        [TopViewController() isKindOfClass:[HistorySyncViewController class]]);
-  } else {
-    // Expect the tangible sync screen to be presented.
-    EXPECT_TRUE(
-        [TopViewController() isKindOfClass:[TangibleSyncViewController class]]);
-  }
+  // Expect the history sync opt-in screen to be presented.
+  EXPECT_TRUE(
+      [TopViewController() isKindOfClass:[HistorySyncViewController class]]);
 
   // Shut it down.
   __block BOOL interrupt_completion_done = NO;
