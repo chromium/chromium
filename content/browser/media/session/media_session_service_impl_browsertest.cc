@@ -77,6 +77,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
 
   bool HasAudio(int player_id) const override { return true; }
   bool HasVideo(int player_id) const override { return false; }
+  bool IsPaused(int player_id) const override { return false; }
 
   std::string GetAudioOutputSinkId(int player_id) const override { return ""; }
 

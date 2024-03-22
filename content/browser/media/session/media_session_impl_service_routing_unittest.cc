@@ -104,6 +104,8 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
            audio_video_state_ == MediaAudioVideoState::kAudioVideo;
   }
 
+  bool IsPaused(int player_id) const override { return false; }
+
   std::string GetAudioOutputSinkId(int player_id) const override { return ""; }
 
   bool SupportsAudioOutputDeviceSwitching(int player_id) const override {

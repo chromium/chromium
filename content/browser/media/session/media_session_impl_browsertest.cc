@@ -220,7 +220,7 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
   void UIResume() { media_session_->Resume(MediaSession::SuspendType::kUI); }
 
   void SystemResume() {
-    media_session_->OnResumeInternal(MediaSession::SuspendType::kSystem);
+    media_session_->Resume(MediaSession::SuspendType::kSystem);
   }
 
   void UISuspend() { media_session_->Suspend(MediaSession::SuspendType::kUI); }
@@ -524,9 +524,10 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
-                       AddPlayerOnSuspendedFocusUnducks) {
+                       AddPlayerOnSuspendedFocusUnducksWhenPlaybackRestarts) {
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
       media::MediaContentType::kPersistent);
+  constexpr int player_id = 0;
   StartNewPlayer(player_observer.get());
   ResolveAudioFocusSuccess();
 
@@ -534,11 +535,14 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
   EXPECT_FALSE(IsActive());
 
   SystemStartDucking();
-  EXPECT_EQ(kDuckingVolumeMultiplier, player_observer->GetVolumeMultiplier(0));
+  EXPECT_EQ(kDuckingVolumeMultiplier,
+            player_observer->GetVolumeMultiplier(player_id));
 
-  EXPECT_TRUE(AddPlayer(player_observer.get(), 0));
+  // On resume, ducking should stop.
+  UIResume();
   ResolveAudioFocusSuccess();
-  EXPECT_EQ(kDefaultVolumeMultiplier, player_observer->GetVolumeMultiplier(0));
+  EXPECT_EQ(kDefaultVolumeMultiplier,
+            player_observer->GetVolumeMultiplier(player_id));
 }
 
 IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
@@ -1514,7 +1518,8 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
               observer.session_info()->playback_state);
   }
 
-  SystemSuspend(true);
+  // Temporarily suspend, which does not give up audio focus.
+  media_session_->Suspend(MediaSession::SuspendType::kSystem);
 
   {
     media_session::test::MockMediaSessionMojoObserver observer(*media_session_);
@@ -1523,20 +1528,26 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
 
     EXPECT_EQ(MediaPlaybackState::kPaused,
               observer.session_info()->playback_state);
+    EXPECT_TRUE(media_session_->IsSuspended());
+    EXPECT_FALSE(IsActive());
   }
 
   {
     media_session::test::MockMediaSessionMojoObserver observer(*media_session_);
 
     // This should resume the session and update the controls.
-    AddPlayer(player_observer.get(), 0);
-    ResolveAudioFocusSuccess();
+    SystemResume();
+    // The player was paused, and still has the audio focus anyway.  For either
+    // reason, it should not request audio focus now.
+    EXPECT_FALSE(HasUnresolvedAudioFocusRequest());
 
     observer.WaitForState(MediaSessionInfo::SessionState::kActive);
     observer.WaitForControllable(true);
 
     EXPECT_EQ(MediaPlaybackState::kPlaying,
               observer.session_info()->playback_state);
+    // Verify that it still has audio focus, even though it wasn't requested.
+    EXPECT_TRUE(IsActive());
   }
 
   EXPECT_TRUE(IsControllable());

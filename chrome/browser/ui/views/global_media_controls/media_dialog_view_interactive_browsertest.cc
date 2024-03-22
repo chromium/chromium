@@ -1239,6 +1239,11 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
             rfh->GetLifecycleState());
   EXPECT_FALSE(ui_.IsDialogVisible());
 
+  // The restored page is paused, and we do not expect the toolbar icon to be
+  // present until the playback restarts.
+  EXPECT_TRUE(ui_.WaitForToolbarIconHidden());
+  StartPlayback();
+  WaitForStart();
   EXPECT_TRUE(ui_.WaitForToolbarIconShown());
   ui_.ClickToolbarIcon();
   EXPECT_TRUE(ui_.WaitForDialogOpened());

@@ -461,16 +461,32 @@ bool MediaSessionImpl::AddPlayer(MediaSessionPlayerObserver* observer,
     }
   }
 
-  State old_audio_focus_state = audio_focus_state_;
-  RequestSystemAudioFocus(required_audio_focus_type);
+  // If this player is paused, then don't actually request audio focus on its
+  // behalf.  Otherwise, we might take focus away from something else, even
+  // though we don't really need it right now.  Note that we don't abandon focus
+  // when playback is paused; we will continue to hold it.  However, if we have
+  // given it up, e.g. when playback is suspended, or lost it to some other
+  // request, then we don't want to take it back for a paused player.
+  // Otherwise, any random update to the player (e.g., metadata as in
+  // b/40946745) will re-request focus even while paused.
+  if (!observer->IsPaused(player_id)) {
+    State old_audio_focus_state = audio_focus_state_;
+    RequestSystemAudioFocus(required_audio_focus_type);
 
-  if (audio_focus_state_ != State::ACTIVE)
-    return false;
+    if (audio_focus_state_ != State::ACTIVE) {
+      return false;
+    }
 
-  // The session should be reset if a player is starting while all players are
-  // suspended.
-  if (old_audio_focus_state != State::ACTIVE)
-    normal_players_.clear();
+    // The session should be reset if a player is starting while all players
+    // are suspended.
+    if (old_audio_focus_state != State::ACTIVE) {
+      normal_players_.clear();
+    }
+  } else if (audio_focus_state_ == State::INACTIVE) {
+    // We switch from `INACTIVE` to `SUSPENDED` to indicate that we want to have
+    // the focus, but don't right now.  This makes the session controllable.
+    audio_focus_state_ = State::SUSPENDED;
+  }
 
   auto iter = normal_players_.find(key);
   if (iter == normal_players_.end())
@@ -572,7 +588,8 @@ void MediaSessionImpl::OnPlayerPaused(MediaSessionPlayerObserver* observer,
   }
 
   // Otherwise, suspend the session.
-  DCHECK(IsActive());
+  // The session might not have audio focus if it was paused prior to being
+  // suspended, which is fine.
   OnSuspendInternal(SuspendType::kContent, State::SUSPENDED);
 }
 
@@ -648,6 +665,12 @@ void MediaSessionImpl::Resume(SuspendType suspend_type) {
 
     if (audio_focus_state_ != State::ACTIVE)
       return;
+  } else {
+    // System resume implies that we have the focus and should start playing if
+    // the system was what suspended us.  Otherwise, we're suspended.
+    SetAudioFocusState((suspend_type_ == SuspendType::kSystem)
+                           ? State::ACTIVE
+                           : State::SUSPENDED);
   }
 
   OnResumeInternal(suspend_type);
@@ -925,8 +948,6 @@ void MediaSessionImpl::OnSuspendInternal(SuspendType suspend_type,
 void MediaSessionImpl::OnResumeInternal(SuspendType suspend_type) {
   if (suspend_type == SuspendType::kSystem && suspend_type_ != suspend_type)
     return;
-
-  SetAudioFocusState(State::ACTIVE);
 
   for (const auto& it : normal_players_)
     it.first.observer->OnResume(it.first.player_id);

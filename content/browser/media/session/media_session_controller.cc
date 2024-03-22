@@ -298,6 +298,11 @@ bool MediaSessionController::HasVideo(int player_id) const {
   return has_video_;
 }
 
+bool MediaSessionController::IsPaused(int player_id) const {
+  DCHECK_EQ(player_id_, player_id);
+  return is_paused_;
+}
+
 std::string MediaSessionController::GetAudioOutputSinkId(int player_id) const {
   DCHECK_EQ(player_id_, player_id);
   return audio_output_sink_id_;

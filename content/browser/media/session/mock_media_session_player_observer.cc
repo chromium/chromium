@@ -216,6 +216,12 @@ bool MockMediaSessionPlayerObserver::HasVideo(int player_id) const {
   return false;
 }
 
+bool MockMediaSessionPlayerObserver::IsPaused(int player_id) const {
+  EXPECT_GE(player_id, 0);
+  EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
+  return !players_[player_id].is_playing_;
+}
+
 std::string MockMediaSessionPlayerObserver::GetAudioOutputSinkId(
     int player_id) const {
   EXPECT_GE(player_id, 0);

@@ -195,9 +195,16 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
     return MediaSessionImpl::Get(web_contents());
   }
 
-  void StartNewPlayer() {
-    GetMediaSession()->AddPlayer(player_observer_.get(),
-                                 player_observer_->StartNewPlayer());
+  // Returns the player ID.
+  int StartNewPlayer() {
+    int player_id;
+    GetMediaSession()->AddPlayer(
+        player_observer_.get(), player_id = player_observer_->StartNewPlayer());
+    return player_id;
+  }
+
+  MockMediaSessionPlayerObserver* player_observer() {
+    return player_observer_.get();
   }
 
   const std::set<media_session::mojom::MediaSessionAction>& default_actions()
@@ -844,6 +851,35 @@ TEST_F(MediaSessionImplTest, SufficientlyVisibleVideo_MultiplePlayers) {
 TEST_F(MediaSessionImplTest, SessionInfoDontHideMetadataByDefault) {
   EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
                    ->hide_metadata);
+}
+
+TEST_F(MediaSessionImplTest, PausedPlayersDoNotRequestFocus) {
+  // If a player is paused when it's added, it should be controllable but should
+  // not request audio focus.
+  MockAudioFocusDelegate* delegate = new MockAudioFocusDelegate();
+  SetDelegateForTests(GetMediaSession(), delegate);
+  int player_id = StartNewPlayer();
+  EXPECT_TRUE(GetMediaSession()->IsActive());
+  EXPECT_TRUE(GetMediaSession()->IsControllable());
+  EXPECT_EQ(delegate->request_audio_focus_count(), 1);
+  player_observer()->SetPlaying(player_id, false);
+  // Remember that the player still has the audio focus.  Re-adding the paused
+  // player should neither lose the focus, nor re-request it.
+  GetMediaSession()->AddPlayer(player_observer(), player_id);
+  EXPECT_EQ(delegate->request_audio_focus_count(), 1);
+  EXPECT_TRUE(GetMediaSession()->IsActive());
+
+  // Give up audio focus.
+  GetMediaSession()->RemovePlayer(player_observer(), player_id);
+  EXPECT_FALSE(GetMediaSession()->IsActive());
+  EXPECT_FALSE(GetMediaSession()->IsControllable());
+
+  // Adding should now result in an inactive session that is controllable,
+  // without requesting focus again.
+  GetMediaSession()->AddPlayer(player_observer(), player_id);
+  EXPECT_EQ(delegate->request_audio_focus_count(), 1);
+  EXPECT_FALSE(GetMediaSession()->IsActive());
+  EXPECT_TRUE(GetMediaSession()->IsControllable());
 }
 
 class MediaSessionImplWithMediaSessionClientTest : public MediaSessionImplTest {

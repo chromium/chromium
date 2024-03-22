@@ -120,6 +120,10 @@ bool PepperPlayerDelegate::HasVideo(int player_id) const {
   return true;
 }
 
+bool PepperPlayerDelegate::IsPaused(int player_id) const {
+  return false;
+}
+
 std::string PepperPlayerDelegate::GetAudioOutputSinkId(int player_id) const {
   // This operation is not supported for pepper players.
   return "";
