@@ -22,6 +22,8 @@
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
@@ -54,7 +56,10 @@ class MockPage : public shopping_service::mojom::Page {
 
 class MockDelegate : public ShoppingServiceHandler::Delegate {
  public:
-  MockDelegate() { SetCurrentTabUrl(GURL("http://example.com")); }
+  MockDelegate() {
+    SetCurrentTabUrl(GURL("http://example.com"));
+    SetCurrentTabUkmSourceId(123);
+  }
   ~MockDelegate() override = default;
 
   MOCK_METHOD(std::optional<GURL>, GetCurrentTabUrl, (), (override));
@@ -66,10 +71,15 @@ class MockDelegate : public ShoppingServiceHandler::Delegate {
               (),
               (override));
   MOCK_METHOD(void, ShowBookmarkEditorForCurrentUrl, (), (override));
+  MOCK_METHOD(ukm::SourceId, GetCurrentTabUkmSourceId, (), (override));
 
   void SetCurrentTabUrl(const GURL& url) {
     ON_CALL(*this, GetCurrentTabUrl)
         .WillByDefault(testing::Return(std::make_optional<GURL>(url)));
+  }
+
+  void SetCurrentTabUkmSourceId(ukm::SourceId id) {
+    ON_CALL(*this, GetCurrentTabUkmSourceId).WillByDefault(testing::Return(id));
   }
 };
 
@@ -602,6 +612,7 @@ TEST_F(ShoppingServiceHandlerTest,
 }
 
 TEST_F(ShoppingServiceHandlerTest, TestTrackPriceForCurrentUrl) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   const bookmarks::BookmarkNode* product = AddProductBookmark(
       bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
       false, 1230000, "usd");
@@ -613,6 +624,12 @@ TEST_F(ShoppingServiceHandlerTest, TestTrackPriceForCurrentUrl) {
       .Times(1);
 
   handler_->SetPriceTrackingStatusForCurrentUrl(true);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Shopping_ShoppingAction::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::Shopping_ShoppingAction::kPriceTrackedName, 1);
 }
 
 TEST_F(ShoppingServiceHandlerTest, TestUntrackPriceForCurrentUrl) {

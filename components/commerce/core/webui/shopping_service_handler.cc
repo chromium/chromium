@@ -15,6 +15,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
@@ -500,6 +501,9 @@ void ShoppingServiceHandler::SetPriceTrackingStatusForCurrentUrl(bool track) {
     // If the product on the page isn't already tracked, create a bookmark for
     // it and start tracking.
     TrackPriceForBookmark(delegate_->GetOrAddBookmarkForCurrentUrl()->id());
+    commerce::metrics::RecordShoppingActionUKM(
+        delegate_->GetCurrentTabUkmSourceId(),
+        commerce::metrics::ShoppingAction::kPriceTracked);
   } else {
     // If the product is already tracked, there must be a bookmark, but it's not
     // necessarily the page the user is currently on (i.e. multi-merchant

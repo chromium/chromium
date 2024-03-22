@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/commerce/core/webui/shopping_service_handler.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class ShoppingInsightsSidePanelUI;
 
@@ -39,6 +40,9 @@ class ShoppingUiHandlerDelegate : public ShoppingServiceHandler::Delegate {
   void ShowBookmarkEditorForCurrentUrl() override;
 
   void ShowFeedback() override;
+
+  // Get the main frame source id from the page load.
+  ukm::SourceId GetCurrentTabUkmSourceId() override;
 
  private:
   // This delegate is owned by |insights_side_panel_ui_| so we expect

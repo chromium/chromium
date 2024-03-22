@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 class PrefService;
@@ -59,6 +60,8 @@ class ShoppingServiceHandler :
     virtual void ShowBookmarkEditorForCurrentUrl() = 0;
 
     virtual void ShowFeedback() = 0;
+
+    virtual ukm::SourceId GetCurrentTabUkmSourceId() = 0;
   };
 
   ShoppingServiceHandler(

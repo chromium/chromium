@@ -153,6 +153,9 @@ void RecordShoppingActionUKM(ukm::SourceId ukm_source_id,
     case ShoppingAction::kPriceInsightsOpened:
       ukm_builder.SetPriceInsightsOpened(true);
       break;
+    case ShoppingAction::kPriceTracked:
+      ukm_builder.SetPriceTracked(true);
+      break;
     default:
       NOTREACHED();
       return;

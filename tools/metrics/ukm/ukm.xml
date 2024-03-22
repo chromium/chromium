@@ -24752,6 +24752,12 @@ be describing additional metrics about the same event.
       show the price insights.
     </summary>
   </metric>
+  <metric name="PriceTracked" enum="Boolean">
+    <summary>
+      Whether the user has tracked the product on the current page using any of
+      the on-page entry points.
+    </summary>
+  </metric>
 </event>
 
 <event name="Shopping.WillSendRequest">
