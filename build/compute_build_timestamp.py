@@ -109,7 +109,8 @@ def main():
   # use_dummy_lastchange is set.
   lastchange_file = os.path.join(THIS_DIR, 'util', 'LASTCHANGE.committime')
   last_commit_timestamp = int(open(lastchange_file).read())
-  build_date = datetime.datetime.utcfromtimestamp(last_commit_timestamp)
+  build_date = datetime.datetime.fromtimestamp(last_commit_timestamp,
+                                               datetime.timezone.utc)
 
   # For official builds we want full fidelity time stamps because official
   # builds are typically added to symbol servers and Windows symbol servers
