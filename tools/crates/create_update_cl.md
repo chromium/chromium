@@ -15,15 +15,25 @@ work - e.g. ones based on `git-new-workdir`).
 
 ## Automated step: `create_update_cl.py`
 
-The first actual step of the rotation is manually running the
-`tools/crates/create_update_cl.py` script.
+The first actual step of the rotation is running the script:
 
-`//tools/crates/create_update_cl.py` runs `gnrt update`, `gnrt vendor`, and
-`gnrt gen`, and then uploads zero, one, or more resulting CLs to Gerrit.
+```
+$ tools/crates/create_update_cl.py auto
+```
+
 `create_update_cl.py` has to be invoked from within a Chromium repo.
 The script depends on `depot_tools` and `git` being present in the `PATH`.
+
+In `auto` mode `//tools/crates/create_update_cl.py` runs `gnrt update` to
+discover all possible minor version updates and then for each update creates a
+new local git branch (and a Gerrit CL unless invoked with `--no-upload`).
+Each branch contains an update created by `gnrt update <old crate id>`, `gnrt
+vendor`, and `gnrt gen`.
 Depending on how many crates are updated, the script may need 10-15 minutes to
 run.
+
+(Side-note: outside the rotation one may also use the script to update a single
+crate - e.g. `tools/crates/create_update_cl.py single <crate name>`.)
 
 Before the auto-generated CLs can be landed, some additional manual steps need
 to be done first - see the sections below.

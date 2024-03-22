@@ -100,6 +100,10 @@ def ConvertCrateIdToCrateName(crate_id: str) -> str:
     return crate_id[:crate_id.find("@")]
 
 
+def ConvertCrateIdToCrateVersion(crate_id: str) -> str:
+    return crate_id[crate_id.find("@") + 1:]
+
+
 def FindUpdateableCrates() -> List[str]:
     """Runs `gnrt update` and returns a `list` of old package identifiers (e.g.
     "syn@2.0.50") that can be updated to a new version.  (Idempotent -
@@ -249,7 +253,7 @@ Disable-Rts: True
     return description
 
 
-def UpdateCrate(crate_id: str, upstream_branch: str):
+def UpdateCrate(args, crate_id: str, upstream_branch: str):
     """Runs `gnrt update <crate_id>` and other follow-up commands to actually
     update the crate."""
 
@@ -276,11 +280,12 @@ def UpdateCrate(crate_id: str, upstream_branch: str):
     Git("branch", "--set-upstream-to", upstream_branch)
     Git("add", "-f", "third_party/rust")
     Git("commit", "-m", description)
-    print(f"  Running `git cl upload ...` ...")
-    Git("cl", "upload", "--bypass-hooks", "--force",
-        "--hashtag=cratesio-autoupdate",
-        "--cc=chrome-rust-experiments+autoupdate@google.com")
-    issue = Git("cl", "issue")
+    if args.upload:
+        print(f"  Running `git cl upload ...` ...")
+        Git("cl", "upload", "--bypass-hooks", "--force",
+            "--hashtag=cratesio-autoupdate",
+            "--cc=chrome-rust-experiments+autoupdate@google.com")
+        issue = Git("cl", "issue")
 
     # git mv <vendor/old version> <vendor/new version>
     print(f"  Running `git mv <vendor/old version> <vendor/new version>`...")
@@ -298,9 +303,10 @@ def UpdateCrate(crate_id: str, upstream_branch: str):
         Git("mv", "--", old_dir, new_dir)
     Git("add", "-f", "third_party/rust")
     Git("commit", "-m", "git mv <old dir> <new dir> (for better diff)")
-    print(f"  Running `git cl upload ...` ...")
-    Git("cl", "upload", "--bypass-hooks", "--force", "-m",
-        "git mv <old dir> <new dir> (for better diff)")
+    if args.upload:
+        print(f"  Running `git cl upload ...` ...")
+        Git("cl", "upload", "--bypass-hooks", "--force", "-m",
+            "git mv <old dir> <new dir> (for better diff)")
 
     # gnrt vendor
     print(f"  Running `gnrt vendor`...")
@@ -314,12 +320,13 @@ def UpdateCrate(crate_id: str, upstream_branch: str):
         f.write(new_content)
     Git("add", INCLUSIVE_LANG_CONFIG)
     Git("commit", "-m", "gnrt vendor")
-    print(f"  Running `git cl upload ...` ...")
-    Git("cl", "upload", "--bypass-hooks", "--force", "-m", "gnrt vendor")
-    print(f"  Running `git cl description ...` ...")
-    description = CreateCommitDescription(crate_id, old_versions, new_versions,
-                                          True)
-    Git("cl", "description", f"--new-description={description}")
+    if args.upload:
+        print(f"  Running `git cl upload ...` ...")
+        Git("cl", "upload", "--bypass-hooks", "--force", "-m", "gnrt vendor")
+        print(f"  Running `git cl description ...` ...")
+        description = CreateCommitDescription(crate_id, old_versions,
+                                              new_versions, True)
+        Git("cl", "description", f"--new-description={description}")
 
     # gnrt gen
     print(f"  Running `gnrt gen`...")
@@ -329,29 +336,22 @@ def UpdateCrate(crate_id: str, upstream_branch: str):
     if Git("status", "--porcelain"):
         Git("add", "-f", "third_party/rust")
         Git("commit", "-m", "gnrt gen")
-        print(f"  Running `git cl upload ...` ...")
-        Git("cl", "upload", "--bypass-hooks", "--force", "-m", "gnrt gen")
+        if args.upload:
+            print(f"  Running `git cl upload ...` ...")
+            Git("cl", "upload", "--bypass-hooks", "--force", "-m", "gnrt gen")
 
-    print(f"  {issue}")
+    if args.upload:
+        print(f"  {issue}")
 
     return new_branch
 
 
-def main():
-    parser = argparse.ArgumentParser(description='Update Rust crates')
-    parser.add_argument(
-        "--upstream-branch",
-        default="origin/main",
-        help="The upstream branch on which to base the series of CLs.")
-    args = parser.parse_args()
-    upstream_branch = args.upstream_branch
-
-    # Checkout `upstream_branch` branch.
-    print(f"Checking out the `{upstream_branch}` branch...")
+def CheckoutInitialBranch(branch):
+    print(f"Checking out the `{branch}` branch...")
     if Git("status", "--porcelain"):
         raise RuntimeError("Dirty `git status` - save you local changes "\
                            "before rerunning the script")
-    Git("checkout", upstream_branch)
+    Git("checkout", branch)
     if Git("status", "--porcelain"):
         raise RuntimeError("Dirty `git status` - save you local changes "\
                            "before rerunning the script")
@@ -359,6 +359,40 @@ def main():
     # Ensure the //third_party/rust-toolchain version matches the branch.
     print("Running //tools/rust/update_rust.py (hopefully a no-op)...")
     RunCommandAndCheckForErrors([UPDATE_RUST_SCRIPT], False)
+
+
+def ResolveCrateNameToCrateId(crate_name):
+    """Parses `Cargo.toml` to resolve `crate_name` into "crate-name@1.2.3".
+    Throws if `crate_name` can't be resolved.
+
+    Parameters:
+      crate_name: Either "crate-name" or already "crate-name@1.2.3"
+    """
+    t = toml.load(open(CARGO_LOCK))
+    if '@' in crate_name:
+        resolved_crate_version = ConvertCrateIdToCrateVersion(crate_name)
+        resolved_crate_name = ConvertCrateIdToCrateName(crate_name)
+    else:
+        same_name = [p for p in t["package"] if p["name"] == crate_name]
+        if len(same_name) == 0:
+            raise RuntimeError(
+                f"`Cargo.toml` has no crates matching `{crate_name}`")
+        elif len(same_name) > 1:
+            ver1 = same_name[0]["version"]
+            ver2 = same_name[1]["version"]
+            raise RuntimeError(
+                f"Ambiguous argument - specify which old version to update, "\
+                f"e.g. `{crate_name}@{ver1}` or `{crate_name}@{ver2}")
+        resolved_crate_name = crate_name
+        resolved_crate_version = same_name[0]["version"]
+
+    crate_id = f"{resolved_crate_name}@{resolved_crate_version}"
+    return crate_id
+
+
+def AutoUpdate(args):
+    upstream_branch = args.upstream_branch
+    CheckoutInitialBranch(upstream_branch)
 
     crate_ids = FindUpdateableCrates()
     if not crate_ids:
@@ -373,7 +407,48 @@ def main():
     print(f"** Updating {len(crate_ids)} crates! "
           f"Expect this to take about {len(crate_ids) * 2} minutes.")
     for crate_id in crate_ids:
-        upstream_branch = UpdateCrate(crate_id, upstream_branch)
+        upstream_branch = UpdateCrate(args, crate_id, upstream_branch)
+
+
+def SingleCrate(args):
+    upstream_branch = args.upstream_branch
+    CheckoutInitialBranch(upstream_branch)
+
+    crate_id = ResolveCrateNameToCrateId(args.crate[0])
+    UpdateCrate(args, crate_id, upstream_branch)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Update Rust crates")
+    parser.add_argument("--no-upload",
+                        dest='upload',
+                        default=True,
+                        action='store_false',
+                        help="Avoids uploading CLs to Gerrit")
+    subparsers = parser.add_subparsers(required=True)
+
+    parser_auto = subparsers.add_parser(
+        "auto", description="Automatically update minor version of all crates")
+    parser_auto.set_defaults(func=AutoUpdate)
+    parser_auto.add_argument(
+        "--upstream-branch",
+        default="origin/main",
+        help="The upstream branch on which to base the series of CLs.")
+
+    parser_single = subparsers.add_parser(
+        "single",
+        description="Automatically update minor version of a single crate")
+    parser_single.set_defaults(func=SingleCrate)
+    parser_single.add_argument("crate",
+                               nargs=1,
+                               help="The name of the crate to update.")
+    parser_single.add_argument(
+        "--upstream-branch",
+        default="origin/main",
+        help="The upstream branch on which to base the update CL.")
+
+    args = parser.parse_args()
+    args.func(args)
 
     return 0
 
