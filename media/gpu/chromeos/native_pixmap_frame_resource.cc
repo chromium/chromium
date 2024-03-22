@@ -305,6 +305,11 @@ NativePixmapFrameResource::CreateNativePixmapDmaBuf() const {
       std::move(native_pixmap_handle));
 }
 
+const scoped_refptr<const gfx::NativePixmapDmaBuf>&
+NativePixmapFrameResource::GetNativePixmapDmaBuf() const {
+  return pixmap_;
+}
+
 gfx::GpuMemoryBufferHandle
 NativePixmapFrameResource::CreateGpuMemoryBufferHandle() const {
   // Duplicate FD's into a new NativePixmapHandle
@@ -492,11 +497,6 @@ scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateVideoFrame() const {
       base::WrapRefCounted<const NativePixmapFrameResource>(this)));
 
   return video_frame;
-}
-
-const scoped_refptr<const gfx::NativePixmapDmaBuf>&
-NativePixmapFrameResource::GetNativePixmapDmaBuf() const {
-  return pixmap_;
 }
 
 }  // namespace media

@@ -37,6 +37,10 @@ class VideoFrameResource : public FrameResource {
   int GetDmabufFd(size_t i) const override;
   scoped_refptr<gfx::NativePixmapDmaBuf> CreateNativePixmapDmaBuf()
       const override;
+  // GetNativePixmapDmaBuf() always returns an invalid NativePixmap, since there
+  // is no NativePixmap-backed VideoFrame.
+  const scoped_refptr<const gfx::NativePixmapDmaBuf>& GetNativePixmapDmaBuf()
+      const override;
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const override;
   gfx::GpuMemoryBuffer* GetGpuMemoryBuffer() const override;
   gfx::GenericSharedMemoryId GetSharedMemoryId() const override;

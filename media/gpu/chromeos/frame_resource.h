@@ -89,6 +89,17 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   virtual scoped_refptr<gfx::NativePixmapDmaBuf> CreateNativePixmapDmaBuf()
       const = 0;
 
+  // Returns true if |this| is backed by a NativePixmap.
+  bool HasNativePixmap() const {
+    return static_cast<bool>(GetNativePixmapDmaBuf());
+  }
+
+  // Gets the NativePixmapDmaBuf backing |this|. Ownership is retained by
+  // |this| unless the returned value is copied. Then a reference is taken by
+  // the caller.
+  virtual const scoped_refptr<const gfx::NativePixmapDmaBuf>&
+  GetNativePixmapDmaBuf() const = 0;
+
   // Create a shared GPU memory handle to |this|'s data.
   virtual gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const = 0;
 

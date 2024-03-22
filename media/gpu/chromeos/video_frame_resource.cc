@@ -76,6 +76,14 @@ VideoFrameResource::CreateNativePixmapDmaBuf() const {
   return media::CreateNativePixmapDmaBuf(frame_.get());
 }
 
+const scoped_refptr<const gfx::NativePixmapDmaBuf>&
+VideoFrameResource::GetNativePixmapDmaBuf() const {
+  // |invalid_dmabuf| is stored as static so we can return a reference to it.
+  static const scoped_refptr<const gfx::NativePixmapDmaBuf> invalid_dmabuf;
+
+  return invalid_dmabuf;
+}
+
 gfx::GpuMemoryBufferHandle VideoFrameResource::CreateGpuMemoryBufferHandle()
     const {
   return media::CreateGpuMemoryBufferHandle(frame_.get());
