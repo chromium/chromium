@@ -79,7 +79,10 @@ class ImageProcessorWithPool {
   // The frame pool to allocate output frames of the image processor.
   // The caller should guarantee the pool alive during the lifetime of this
   // ImageProcessorWithPool instance.
-  const raw_ptr<DmabufVideoFramePool> frame_pool_;
+  //
+  // Dangling in VideoDecoderPipelineTest.PickDecoderOutputFormatLinearModifier
+  // on chromeos-amd64-generic-rel-gtest
+  const raw_ptr<DmabufVideoFramePool, DanglingUntriaged> frame_pool_;
 
   // The pending input frames that wait for passing to |image_processor_|.
   base::queue<std::pair<scoped_refptr<FrameResource>, FrameResourceReadyCB>>

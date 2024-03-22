@@ -73,7 +73,6 @@ class CfmHotlineClientTest : public testing::Test {
         .WillRepeatedly(Invoke(this, &CfmHotlineClientTest::ConnectToSignal));
 
     CfmHotlineClient::Initialize(mock_bus_.get());
-    client_ = CfmHotlineClient::Get();
 
     // The easiest source of fds is opening /dev/null.
     test_file_ = base::File(base::FilePath("/dev/null"),
@@ -130,7 +129,6 @@ class CfmHotlineClientTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<CfmHotlineClient> client_;
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;
   std::deque<std::unique_ptr<dbus::Response>> responses_;
@@ -138,8 +136,8 @@ class CfmHotlineClientTest : public testing::Test {
 
  private:
   std::deque<std::unique_ptr<dbus::Response>> used_responses_;
-  // Maps from biod signal name to the corresponding callback provided by
-  // |client_|.
+  // Maps from biod signal name to the corresponding callback provided by the
+  // CfmHotlineClient.
   std::map<std::string, dbus::ObjectProxy::SignalCallback> signal_callbacks_;
 };
 
@@ -153,7 +151,7 @@ TEST_F(CfmHotlineClientTest, BootstrapMojoSuccessTest) {
       callback;
   EXPECT_CALL(callback, Run(true)).Times(1);
 
-  client_->BootstrapMojoConnection(
+  CfmHotlineClient::Get()->BootstrapMojoConnection(
       base::ScopedFD(test_file_.TakePlatformFile()), callback.Get());
 
   base::RunLoop().RunUntilIdle();
@@ -168,7 +166,7 @@ TEST_F(CfmHotlineClientTest, BootstrapMojoFailureTest) {
   EXPECT_CALL(callback, Run(false)).Times(1);
 
   // Fail with no normal or error response
-  client_->BootstrapMojoConnection(
+  CfmHotlineClient::Get()->BootstrapMojoConnection(
       base::ScopedFD(test_file_.TakePlatformFile()), callback.Get());
 
   base::RunLoop().RunUntilIdle();

@@ -117,7 +117,8 @@ class WaylandScreen : public PlatformScreen {
   };
 
   void AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics);
-  raw_ptr<WaylandConnection> connection_ = nullptr;
+  // Dangling on DemoIntegrationTest.NewTab on lacros-amd64-generic-rel-gtest
+  raw_ptr<WaylandConnection, DanglingUntriaged> connection_ = nullptr;
 
   base::flat_map<WaylandOutput::Id, int64_t> display_id_map_;
   display::DisplayList display_list_;
