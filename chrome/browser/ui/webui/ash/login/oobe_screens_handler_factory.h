@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_factory.mojom.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -39,6 +40,13 @@ class OobeScreensHandlerFactory
 
   void CreatePackagedLicensePageHandler(
       mojo::PendingReceiver<screens_oobe::mojom::PackagedLicensePageHandler>
+          receiver) override;
+
+  void CreateLacrosDataBackwardMigrationScreenHandler(
+      mojo::PendingRemote<screens_login::mojom::LacrosDataBackwardMigrationPage>
+          page,
+      mojo::PendingReceiver<
+          screens_login::mojom::LacrosDataBackwardMigrationPageHandler>
           receiver) override;
 
   mojo::Receiver<screens_factory::mojom::ScreensFactory> page_factory_receiver_{

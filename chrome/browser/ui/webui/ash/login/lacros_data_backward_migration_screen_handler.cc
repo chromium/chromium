@@ -36,14 +36,6 @@ void LacrosDataBackwardMigrationScreenHandler::Show() {
   ShowInWebUI();
 }
 
-void LacrosDataBackwardMigrationScreenHandler::SetProgressValue(int progress) {
-  CallExternalAPI("setProgressValue", progress);
-}
-
-void LacrosDataBackwardMigrationScreenHandler::SetFailureStatus() {
-  CallExternalAPI("setFailureStatus");
-}
-
 base::WeakPtr<LacrosDataBackwardMigrationScreenView>
 LacrosDataBackwardMigrationScreenHandler::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

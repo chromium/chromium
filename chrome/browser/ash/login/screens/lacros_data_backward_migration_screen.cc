@@ -15,13 +15,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom.h"
 #include "chrome/common/chrome_paths.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
-
-namespace {
-constexpr char kUserActionCancel[] = "cancel";
-}
 
 BrowserDataBackMigratorBase*
     LacrosDataBackwardMigrationScreen::migrator_for_testing_ = nullptr;
@@ -36,6 +35,18 @@ LacrosDataBackwardMigrationScreen::LacrosDataBackwardMigrationScreen(
 
 LacrosDataBackwardMigrationScreen::~LacrosDataBackwardMigrationScreen() =
     default;
+
+void LacrosDataBackwardMigrationScreen::BindRemoteAndReciever(
+    mojo::PendingRemote<screens_login::mojom::LacrosDataBackwardMigrationPage>
+        pending_page,
+    mojo::PendingReceiver<
+        screens_login::mojom::LacrosDataBackwardMigrationPageHandler>
+        receiver) {
+  page_handler_.reset();
+  page_.reset();
+  page_handler_.Bind(std::move(receiver));
+  page_.Bind(std::move(pending_page));
+}
 
 void LacrosDataBackwardMigrationScreen::ShowImpl() {
   if (!view_)
@@ -85,22 +96,19 @@ void LacrosDataBackwardMigrationScreen::ShowImpl() {
 }
 
 void LacrosDataBackwardMigrationScreen::OnProgress(int percent) {
-  view_->SetProgressValue(percent);
+  if (page_.is_bound()) {
+    page_->SetProgressValue(percent);
+  }
 }
 
-void LacrosDataBackwardMigrationScreen::OnUserAction(
-    const base::Value::List& args) {
-  const std::string& action_id = args[0].GetString();
-
-  if (action_id == kUserActionCancel) {
-    LOG(WARNING) << "User cancelled backward migration.";
-    migrator_->CancelMigration(
-        base::BindOnce(&LacrosDataBackwardMigrationScreen::OnCanceled,
-                       weak_factory_.GetWeakPtr()));
-
-  } else {
-    BaseScreen::OnUserAction(args);
+void LacrosDataBackwardMigrationScreen::OnCancelButtonClicked() {
+  if (is_hidden()) {
+    return;
   }
+  LOG(WARNING) << "User cancelled backward migration.";
+  migrator_->CancelMigration(
+      base::BindOnce(&LacrosDataBackwardMigrationScreen::OnCanceled,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void LacrosDataBackwardMigrationScreen::OnMigrated(
@@ -110,7 +118,9 @@ void LacrosDataBackwardMigrationScreen::OnMigrated(
       chrome::AttemptRestart();
       break;
     case BrowserDataBackMigratorBase::Result::kFailed:
-      view_->SetFailureStatus();
+      if (page_.is_bound()) {
+        page_->SetFailureStatus();
+      }
       break;
   }
 }

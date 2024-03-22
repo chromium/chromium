@@ -1,0 +1,25 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.screens_login.mojom;
+
+// Interface for the lacros data backward migration screen.
+// Lives in the browser process. A renderer uses this to invoke
+// methods that are implemented in the browser process.
+interface  LacrosDataBackwardMigrationPageHandler {
+  // Emits a cancel button clicked.
+  OnCancelButtonClicked();
+};
+
+// Interface for the lacros data backward migration screen.
+// Lives in the render process. Implemented in Typescript and
+// used by the page handler to send updates.
+interface  LacrosDataBackwardMigrationPage {
+  // Invoked to update the progress bar.
+  // progress in percentage.
+  SetProgressValue(int64 progress);
+
+  // Invoked to show an error message.
+  SetFailureStatus();
+};

@@ -5,19 +5,34 @@
 module ash.screens_factory.mojom;
 
 import "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom";
+import "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom";
 import "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom";
 
 // Lives in the browser process. A renderer uses this to create a page handler
 // that enables communication between a renderer and the browser process.
 interface ScreensFactory {
+  // ash.screens_common.mojom
+
   // Creates a GaiaInfoPageHandler and connects it up to the GaiaInfoPage.
   CreateGaiaInfoScreenHandler(
         pending_remote<ash.screens_common.mojom.GaiaInfoPage> page,
         pending_receiver<ash.screens_common.mojom.GaiaInfoPageHandler> handler);
 
+  // ash.screens_oobe.mojom
+
   // Creates a PackagedLicensePageHandler and
   // connects it up to the PackagedLicensePage.
   CreatePackagedLicensePageHandler(
         pending_receiver<ash.screens_oobe.mojom.PackagedLicensePageHandler>
+            handler);
+
+  // ash.screens_login.mojom
+
+  // Creates a LacrosDataBackwardMigrationPageHandler and connects
+  // it up to the LacrosDataBackwardMigrationPage.
+  CreateLacrosDataBackwardMigrationScreenHandler(
+      pending_remote<ash.screens_login.mojom.LacrosDataBackwardMigrationPage>
+            page,
+      pending_receiver<ash.screens_login.mojom.LacrosDataBackwardMigrationPageHandler>
             handler);
 };

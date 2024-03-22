@@ -7,10 +7,13 @@
 #include "base/check.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
+#include "chrome/browser/ash/login/screens/lacros_data_backward_migration_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_factory.mojom.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
 
 namespace ash {
@@ -58,4 +61,17 @@ void OobeScreensHandlerFactory::CreatePackagedLicensePageHandler(
   packaged_license->BindReceiver(std::move(receiver));
 }
 
+void OobeScreensHandlerFactory::CreateLacrosDataBackwardMigrationScreenHandler(
+    mojo::PendingRemote<screens_login::mojom::LacrosDataBackwardMigrationPage>
+        page,
+    mojo::PendingReceiver<
+        screens_login::mojom::LacrosDataBackwardMigrationPageHandler>
+        receiver) {
+  CHECK(WizardController::default_controller());
+  LacrosDataBackwardMigrationScreen* lacros_data_backward =
+      WizardController::default_controller()
+          ->GetScreen<LacrosDataBackwardMigrationScreen>();
+  lacros_data_backward->BindRemoteAndReciever(std::move(page),
+                                              std::move(receiver));
+}
 }  // namespace ash
