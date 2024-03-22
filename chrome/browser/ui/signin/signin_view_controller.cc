@@ -29,6 +29,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -132,9 +133,14 @@ void HandleSignoutConfirmationChoice(
     case ChromeSignoutConfirmationChoice::kSignout: {
       signin::IdentityManager* identity_manager =
           IdentityManagerFactory::GetForProfile(profile);
-      // Sign out from all accounts.
-      browser->signin_view_controller()->ShowGaiaLogoutTab(
-          token_signout_source);
+      // Sign out from all accounts on the web if needed.
+      signin::AccountsInCookieJarInfo accounts_in_cookies =
+          identity_manager->GetAccountsInCookieJar();
+      if (!accounts_in_cookies.accounts_are_fresh ||
+          !accounts_in_cookies.signed_in_accounts.empty()) {
+        browser->signin_view_controller()->ShowGaiaLogoutTab(
+            token_signout_source);
+      }
       if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
               switches::ExplicitBrowserSigninPhase::kFull)) {
         // In Uno, Gaia logout tab invalidating the account will lead to a sign

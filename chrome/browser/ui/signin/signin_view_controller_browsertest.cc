@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
+#include "chrome/browser/signin/logout_tab_helper.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -190,3 +191,47 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
+
+class SigninViewControllerBrowserCookieParamTest
+    : public SigninViewControllerBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool with_cookies() const { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(SigninViewControllerBrowserCookieParamTest, SignOut) {
+  // Setup a primary account, and cookie if requested.
+  AccountInfo primary_account_info = SetPrimaryAccount();
+  if (with_cookies()) {
+    identity_test_env()->SetCookieAccounts(
+        {{.email = kTestEmail,
+          .gaia_id = signin::GetTestGaiaIdForEmail(kTestEmail),
+          .signed_out = false}});
+  }
+  identity_test_env()->SetFreshnessOfAccountsInGaiaCookie(true);
+  ASSERT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Trigger the Chrome signout action, there is no prompt.
+  browser()->signin_view_controller()->SignoutOrReauthWithPrompt(
+      kTestAccessPoint,
+      signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
+      signin_metrics::SourceForRefreshTokenOperation::
+          kUserMenu_SignOutAllAccounts);
+
+  // User was signed out.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // Signout tab was opened only if cookies there were cookies for the account.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(LogoutTabHelper::FromWebContents(tab) != nullptr, with_cookies());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SigninViewControllerBrowserCookieParamTest,
+                         testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WithCookie" : "NoCookie";
+                         });
