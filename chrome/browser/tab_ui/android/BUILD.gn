@@ -3,25 +3,38 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/tab_ui/InvalidationAwareThumbnailProvider.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabContentManager.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabListFaviconProvider.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabUiThemeUtils.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/ThumbnailProvider.java",
   ]
   deps = [
     ":java_resources",
+    "//base:base_cached_flags_java",
     "//base:base_java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/hub:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/favicon:java_resources",
+    "//chrome/browser/ui/android/native_page:java",
     "//components/browser_ui/styles/android:java",
     "//components/embedder_support/android:util_java",
     "//components/tab_groups:tab_groups_java",
+    "//content/public/android:content_full_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
@@ -35,12 +48,18 @@ android_resources("java_resources") {
     "java/res/drawable/tabstrip_favicon_background.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
+    "java/res/values/values.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
   ]
+}
+
+generate_jni("jni_headers") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/tab_ui/TabContentManager.java" ]
 }
 
 robolectric_library("junit") {

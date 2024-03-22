@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+  <!-- The number of thumbnails that the thumbnail cache can hold. -->
+  <integer name="default_thumbnail_cache_size">2</integer>
+  <!-- The maximum size of the write queue in the thumbnail cache. -->
+  <integer name="default_write_queue_size">5</integer>
+  <!-- The maximum size of the compression queue in the thumbnail cache. -->
+  <integer name="default_compression_queue_size">5</integer>
+</resources>
