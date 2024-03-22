@@ -12,11 +12,13 @@ import '../../components/buttons/oobe_next_button.js';
 import '../../components/buttons/oobe_text_button.js';
 import '../../components/oobe_cr_lottie.js';
 
+import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
+import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import type {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 
@@ -152,8 +154,11 @@ export class GestureNavigation extends GestureScreenElementBase {
    * param enabled Whether the animation should play or not.
    */
   private setPlayCurrentScreenAnimation(enabled: boolean): void {
+    const currentStep =
+        this.shadowRoot?.querySelector<OobeAdaptiveDialog>('#' + this.uiStep);
+    assert(currentStep instanceof OobeAdaptiveDialog);
     const animation =
-        this.shadowRoot!.querySelector<OobeCrLottie>('.gesture-animation');
+        currentStep.querySelector<OobeCrLottie>('.gesture-animation');
     if (animation) {
       animation.playing = enabled;
     }
