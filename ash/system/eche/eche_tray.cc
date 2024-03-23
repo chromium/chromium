@@ -720,10 +720,8 @@ void EcheTray::InitBubble(
   header_view_ = bubble_view->AddChildView(CreateBubbleHeaderView(phone_name));
 
   // We need the header be always visible with the same size.
-  static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
-      ->SetFlexForView(header_view_, 0, true);
-  static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
-      ->set_inside_border_insets(kBubblePadding);
+  bubble_view->box_layout()->SetFlexForView(header_view_, 0, true);
+  bubble_view->box_layout()->set_inside_border_insets(kBubblePadding);
 
   // TODO(b/271478560): Re-use initializer_webview_ when available, once support
   // launching apps on prewarmed connection is available.

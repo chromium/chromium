@@ -47,6 +47,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/painter.h"
 #include "ui/views/views_delegate.h"
 #include "ui/wm/core/shadow_types.h"
@@ -103,42 +104,55 @@ bool MouseMoveDetectorHost::Contains(const gfx::Point& screen_point,
 
 // Custom layout for the bubble-view. Does the default box-layout if there is
 // enough height. Otherwise, makes sure the bottom rows are visible.
-class BottomAlignedBoxLayout : public views::BoxLayout {
+class BottomAlignedBoxLayout : public views::LayoutManagerBase {
  public:
   explicit BottomAlignedBoxLayout(TrayBubbleView* bubble_view)
-      : BoxLayout(BoxLayout::Orientation::kVertical),
-        bubble_view_(bubble_view) {}
+      : bubble_view_(bubble_view) {
+    box_layout_ = AddOwnedLayout(std::make_unique<views::BoxLayout>());
+    box_layout_->SetDefaultFlex(1);
+    box_layout_->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  }
 
   BottomAlignedBoxLayout(const BottomAlignedBoxLayout&) = delete;
   BottomAlignedBoxLayout& operator=(const BottomAlignedBoxLayout&) = delete;
 
   ~BottomAlignedBoxLayout() override {}
 
+  views::BoxLayout* box_layout() const { return box_layout_; }
+
  private:
-  void LayoutImpl() override {
-    if (host_view()->height() >= host_view()->GetPreferredSize().height() ||
+  views::ProposedLayout CalculateProposedLayout(
+      const views::SizeBounds& size_bounds) const override {
+    if (!size_bounds.is_fully_bounded() ||
+        size_bounds.height() >= host_view()->GetPreferredSize({}).height() ||
         !bubble_view_->is_gesture_dragging()) {
-      views::BoxLayout::LayoutImpl();
-      return;
+      return box_layout_->GetProposedLayout(size_bounds, PassKey());
     }
 
+    views::ProposedLayout layout;
     int consumed_height = 0;
     for (auto i = host_view()->children().rbegin();
          i != host_view()->children().rend() &&
-         consumed_height < host_view()->height();
+         consumed_height < size_bounds.height().value();
          ++i) {
-      View* child = *i;
-      if (!child->GetVisible()) {
+      auto& child = layout.child_layouts.emplace_back(*i, (*i)->GetVisible());
+      if (!child.visible) {
         continue;
       }
-      gfx::Size size = child->GetPreferredSize();
-      child->SetBounds(0,
-                       host_view()->height() - consumed_height - size.height(),
-                       host_view()->width(), size.height());
+      gfx::Size size = child.child_view->GetPreferredSize({});
+      child.bounds = gfx::Rect(
+          0, size_bounds.height().value() - consumed_height - size.height(),
+          size_bounds.width().value(), size.height());
       consumed_height += size.height();
     }
+
+    layout.host_size =
+        gfx::Size(size_bounds.width().value(), size_bounds.height().value());
+
+    return layout;
   }
 
+  raw_ptr<views::BoxLayout> box_layout_;
   raw_ptr<TrayBubbleView> bubble_view_;
 };
 
@@ -344,8 +358,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   }
 
   auto layout = std::make_unique<BottomAlignedBoxLayout>(this);
-  layout->SetDefaultFlex(1);
-  layout_ = SetLayoutManager(std::move(layout));
+  layout_ = SetLayoutManager(std::move(layout))->box_layout();
 
   if (init_params.anchor_mode == AnchorMode::kRect) {
     SetAnchorView(nullptr);

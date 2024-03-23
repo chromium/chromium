@@ -280,6 +280,9 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
   void CloseBubbleView();
 
+  views::BoxLayout* box_layout() { return layout_; }
+  const views::BoxLayout* box_layout() const { return layout_; }
+
  protected:
   // views::View:
   void ChildPreferredSizeChanged(View* child) override;
@@ -287,9 +290,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // Changes the insets from the bubble border. These were initially set using
   // the InitParams.insets, but may need to be reset programmatically.
   void SetBubbleBorderInsets(gfx::Insets insets);
-
-  views::BoxLayout* box_layout() { return layout_; }
-  const views::BoxLayout* box_layout() const { return layout_; }
 
  private:
   // This reroutes receiving key events to the TrayBubbleView passed in the
