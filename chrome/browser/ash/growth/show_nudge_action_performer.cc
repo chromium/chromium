@@ -190,13 +190,7 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
       nudge_payload->FindInt(kArrowPath).value_or(int(Arrow::kBottomRight));
   nudge_data.arrow = ConvertArrow(static_cast<Arrow>(arrow_value));
 
-  // Shell may not be initialized in test.
-  if (ash::Shell::HasInstance()) {
-    ash::Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
-  }
-
-  // TODO: b/330933332 - Notify other events.
-  NotifyReadyToLogImpression();
+  ash::Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
 
   return true;
 }
@@ -206,10 +200,6 @@ void ShowNudgeActionPerformer::MaybeSetButtonData(
     const base::Value::Dict* button_dict,
     ash::AnchoredNudgeData& nudge_data,
     bool is_primary) {
-  if (!button_dict) {
-    return;
-  }
-
   const auto* button_text_value = button_dict->FindString(kLabelPath);
   const auto* action = button_dict->FindDict(kActionPath);
   if (!button_text_value || button_text_value->empty() || !action) {

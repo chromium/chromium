@@ -32,7 +32,7 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
               GetDemoModeAppVersion,
               (),
               (const, override));
-  MOCK_METHOD(ActionMap, GetCampaignsActions, (), (override));
+  MOCK_METHOD(ActionMap, GetCampaignsActions, (), (const, override));
   MOCK_METHOD(void,
               RegisterSyntheticFieldTrial,
               (const std::optional<int> study_id, const int campaign_id),

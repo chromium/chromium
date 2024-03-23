@@ -114,8 +114,8 @@ TEST_F(OpenUrlActionPerformerTest, TestValidOpenUrlParams) {
 }
 
 TEST_F(OpenUrlActionPerformerTest, TestInvalidOpenUrlParams) {
-  auto* const invalidOpenUrlParam = "{}";
-  auto value = base::JSONReader::Read(invalidOpenUrlParam);
+  auto* const validOpenUrlParam = "{}";
+  auto value = base::JSONReader::Read(validOpenUrlParam);
   ASSERT_TRUE(value.has_value());
   action().Run(
       /*campaign_id=*/1, &value->GetDict(),

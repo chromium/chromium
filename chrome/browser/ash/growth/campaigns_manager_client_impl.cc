@@ -103,19 +103,15 @@ const base::Version& CampaignsManagerClientImpl::GetDemoModeAppVersion() const {
   return version.value();
 }
 
-growth::ActionMap CampaignsManagerClientImpl::GetCampaignsActions() {
+growth::ActionMap CampaignsManagerClientImpl::GetCampaignsActions() const {
   growth::ActionMap action_map;
   action_map.emplace(
       make_pair(growth::ActionType::kInstallWebApp,
                 std::make_unique<InstallWebAppActionPerformer>()));
   action_map.emplace(make_pair(growth::ActionType::kOpenUrl,
                                std::make_unique<OpenUrlActionPerformer>()));
-
-  std::unique_ptr<ShowNudgeActionPerformer> show_nudge_performer =
-      std::make_unique<ShowNudgeActionPerformer>();
-  show_nudge_performer_observation_.Observe(show_nudge_performer.get());
   action_map.emplace(make_pair(growth::ActionType::kShowNudge,
-                               std::move(show_nudge_performer)));
+                               std::make_unique<ShowNudgeActionPerformer>()));
   return action_map;
 }
 
@@ -131,26 +127,6 @@ void CampaignsManagerClientImpl::RegisterSyntheticFieldTrial(
   base::StringAppendF(&group_name, "%d", campaign_id);
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
                                                             group_name);
-}
-
-void CampaignsManagerClientImpl::OnReadyToLogImpression() {
-  // TODO: b/329671682 - Record metrics.
-}
-
-void CampaignsManagerClientImpl::OnUiDismissed() {
-  // TODO: b/329671682 - Record metrics.
-}
-
-void CampaignsManagerClientImpl::OnPrimaryButtonPressed() {
-  // TODO: b/329671682 - Record metrics.
-}
-
-void CampaignsManagerClientImpl::OnSecondaryButtonPressed() {
-  // TODO: b/329671682 - Record metrics.
-}
-
-void CampaignsManagerClientImpl::OnCloseButtonPressed() {
-  // TODO: b/329671682 - Record metrics.
 }
 
 void CampaignsManagerClientImpl::OnComponentDownloaded(

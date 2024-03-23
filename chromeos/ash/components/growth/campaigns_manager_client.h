@@ -53,8 +53,7 @@ class CampaignsManagerClient {
 
   // Get the implementations for the various Actions on the growth
   // framework.
-  // TODO: b/330930157 - Rename to BuildCampaignsActions.
-  virtual ActionMap GetCampaignsActions() = 0;
+  virtual ActionMap GetCampaignsActions() const = 0;
 
   // Register sythetical trial for current session.
   virtual void RegisterSyntheticFieldTrial(std::optional<int> study_id,

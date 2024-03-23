@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+/// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/growth/ui_action_performer.h"
+#include "chromeos/ash/components/growth/action_performer.h"
 
 // Dictionary of supported nudge payload. For example:
 // {
@@ -19,7 +19,7 @@
 using NudgePayload = base::Value::Dict;
 
 // Implements the action to show nudge.
-class ShowNudgeActionPerformer : public UiActionPerformer {
+class ShowNudgeActionPerformer : public growth::ActionPerformer {
  public:
   ShowNudgeActionPerformer();
   ~ShowNudgeActionPerformer() override;
