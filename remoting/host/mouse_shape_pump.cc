@@ -68,23 +68,25 @@ void MouseShapePump::OnMouseCursor(webrtc::MouseCursor* cursor) {
 
   std::unique_ptr<webrtc::MouseCursor> owned_cursor(cursor);
 
-  std::unique_ptr<protocol::CursorShapeInfo> cursor_proto(
-      new protocol::CursorShapeInfo());
-  cursor_proto->set_width(cursor->image()->size().width());
-  cursor_proto->set_height(cursor->image()->size().height());
-  cursor_proto->set_hotspot_x(cursor->hotspot().x());
-  cursor_proto->set_hotspot_y(cursor->hotspot().y());
+  if (cursor_shape_stub_) {
+    std::unique_ptr<protocol::CursorShapeInfo> cursor_proto(
+        new protocol::CursorShapeInfo());
+    cursor_proto->set_width(cursor->image()->size().width());
+    cursor_proto->set_height(cursor->image()->size().height());
+    cursor_proto->set_hotspot_x(cursor->hotspot().x());
+    cursor_proto->set_hotspot_y(cursor->hotspot().y());
 
-  cursor_proto->set_data(std::string());
-  uint8_t* current_row = cursor->image()->data();
-  for (int y = 0; y < cursor->image()->size().height(); ++y) {
-    cursor_proto->mutable_data()->append(
-        current_row, current_row + cursor->image()->size().width() *
-                                       webrtc::DesktopFrame::kBytesPerPixel);
-    current_row += cursor->image()->stride();
+    cursor_proto->set_data(std::string());
+    uint8_t* current_row = cursor->image()->data();
+    for (int y = 0; y < cursor->image()->size().height(); ++y) {
+      cursor_proto->mutable_data()->append(
+          current_row, current_row + cursor->image()->size().width() *
+                                         webrtc::DesktopFrame::kBytesPerPixel);
+      current_row += cursor->image()->stride();
+    }
+
+    cursor_shape_stub_->SetCursorShape(*cursor_proto);
   }
-
-  cursor_shape_stub_->SetCursorShape(*cursor_proto);
 
   if (callback_) {
     callback_->OnMouseCursor(owned_cursor.release());
