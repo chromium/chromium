@@ -94,6 +94,25 @@ TEST(PrintBackendCupsTest, PrinterBasicInfoFromCUPS) {
 #endif
 }
 
+TEST(PrintBackendCupsTest, PrinterBasicInfoFromCUPSNoOptionsDisplayName) {
+  constexpr char kName[] = "printer";
+  cups_dest_t* printer = nullptr;
+  ASSERT_EQ(
+      1, cupsAddDest(kName, /*instance=*/nullptr, /*num_dests=*/0, &printer));
+  ASSERT_TRUE(printer);
+
+  PrinterBasicInfo printer_info;
+  EXPECT_EQ(PrintBackendCUPS::PrinterBasicInfoFromCUPS(*printer, &printer_info),
+            mojom::ResultCode::kSuccess);
+
+  // Ensure that even if no options are specified that the display name is still
+  // set.
+  EXPECT_EQ(kName, printer_info.printer_name);
+  EXPECT_EQ(kName, printer_info.display_name);
+
+  cupsFreeDests(/*num_dests=*/1, printer);
+}
+
 TEST(PrintBackendCupsTest, PrinterDriverInfoFromCUPS) {
   constexpr char kName[] = "test-printer-name";
   constexpr char kDescription[] = "A test printer";

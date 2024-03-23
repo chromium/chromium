@@ -154,6 +154,13 @@ class CupsPrinterImpl : public CupsPrinter {
     // On Mac, "printer-info" option specifies the human-readable printer name,
     // while "printer-make-and-model" specifies the printer description.
     printer_info->display_name = info;
+
+    // It is possible to create a printer with a blank display name, so just
+    // use the printer name in such a case.
+    if (printer_info->display_name.empty()) {
+      printer_info->display_name = printer->name;
+    }
+
     printer_info->printer_description = make_and_model;
 #else
     // On other platforms, "printer-info" specifies the printer description.

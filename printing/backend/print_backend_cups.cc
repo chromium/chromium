@@ -110,6 +110,13 @@ mojom::ResultCode PrintBackendCUPS::PrinterBasicInfoFromCUPS(
   // "printer-make-and-model" specifies the printer description.
   if (info)
     printer_info->display_name = info;
+
+  // It is possible to create a printer with a blank display name, so just
+  // use the printer name in such a case.
+  if (printer_info->display_name.empty()) {
+    printer_info->display_name = printer.name;
+  }
+
   if (drv_info)
     printer_info->printer_description = drv_info;
 #else
