@@ -90,7 +90,10 @@ void ExtractIOTask::FinishedExtraction(base::FilePath directory, bool success) {
   if (success) {
     // Open a new window to show the extracted content.
     platform_util::ShowItemInFolder(profile_, directory);
+  } else {
+    any_archive_failed_ = true;
   }
+
   // Release the unpacker parameters stored for the extraction.
   auto unpacker = unpackers_[directory];
   if (unpacker) {
@@ -103,10 +106,9 @@ void ExtractIOTask::FinishedExtraction(base::FilePath directory, bool success) {
   }
   DCHECK_GT(extractCount_, 0u);
   if (--extractCount_ == 0) {
-    progress_.state = success ? State::kSuccess : State::kError;
-    RecordUmaExtractStatus(progress_.state == State::kSuccess
-                               ? ExtractStatus::kSuccess
-                               : ExtractStatus::kUnknownError);
+    progress_.state = any_archive_failed_ ? State::kError : State::kSuccess;
+    RecordUmaExtractStatus(any_archive_failed_ ? ExtractStatus::kUnknownError
+                                               : ExtractStatus::kSuccess);
     Complete();
   }
 }
@@ -174,6 +176,7 @@ void ExtractIOTask::ExtractIntoNewDirectory(
   } else {
     LOG(ERROR) << "Cannot create directory "
                << zip::Redact(destination_directory);
+    ZipExtractCallback(base::FilePath(), false);
   }
 }
 

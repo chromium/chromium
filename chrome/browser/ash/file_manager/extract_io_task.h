@@ -126,6 +126,9 @@ class ExtractIOTask : public IOTask {
   // Boolean set to true if the encryption scheme is AES.
   bool uses_aes_encryption_ = false;
 
+  // Boolean set to true if any archive extraction fails.
+  bool any_archive_failed_ = false;
+
   // Counter of the number of archives needing extraction.
   size_t extractCount_;
 
