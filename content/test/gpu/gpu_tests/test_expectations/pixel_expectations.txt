@@ -438,10 +438,11 @@ crbug.com/1372149 [ android android-sm-a235m no-passthrough renderer-skia-vulkan
 
 
 # Flaky failures vulkan queue submission, causing dchecks on CQ
-crbug.com/1495573 [ android-pixel-6 android-t angle-disabled no-passthrough renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
-crbug.com/1495573 [ android-pixel-6 angle-opengles passthrough renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
-crbug.com/1495573 [ android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
-crbug.com/1495573 [ android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
+# finder:disable-narrowing
+crbug.com/40937765 [ android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
+crbug.com/40937765 [ android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
+crbug.com/40937765 [ android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
+# finder:enable-narrowing
 
 # ChromeOS Volteer failures
 crbug.com/1516977 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLContextRestored [ Failure ]
