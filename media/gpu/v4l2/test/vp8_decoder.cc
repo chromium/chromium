@@ -575,6 +575,8 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(const int frame_number,
     CreateCAPTUREQueue(kNumberOfBuffersInCaptureQueue);
   }
 
+  v4l2_ioctl_->WaitForRequestCompletion(OUTPUT_queue_);
+
   v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id);
   CAPTURE_queue_->DequeueBufferId(buffer_id);
 

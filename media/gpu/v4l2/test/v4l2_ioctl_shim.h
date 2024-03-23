@@ -227,6 +227,10 @@ class V4L2IoctlShim {
   // Re-initializes the previously allocated request for reuse.
   void MediaRequestIocReinit(const std::unique_ptr<V4L2Queue>& queue) const;
 
+  // Completion of the request implies that the OUTPUT and CAPTURE buffers
+  // are available for dequeueing
+  void WaitForRequestCompletion(const std::unique_ptr<V4L2Queue>& queue) const;
+
   // Finds available media device for video decoder. This function also checks
   // to make sure either |bus_info| or |driver| field from |media_device_info|
   // struct (obtained from MEDIA_IOC_DEVICE_INFO call) is matched from the same

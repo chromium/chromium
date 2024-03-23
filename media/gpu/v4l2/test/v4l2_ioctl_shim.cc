@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 #include <linux/media.h>
+#include <poll.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
@@ -18,6 +19,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/video_types.h"
@@ -28,9 +30,6 @@ namespace media {
 namespace v4l2_test {
 
 constexpr int kIoctlOk = 0;
-// |kMaxRetryCount = 2^24| takes around 20 seconds to exhaust all retries on
-// Trogdor when a decode stalls.
-constexpr int kMaxRetryCount = 1 << 24;
 
 #define V4L2_REQUEST_CODE_AND_STRING(x) \
   { x, #x }
@@ -517,53 +516,25 @@ void V4L2IoctlShim::DQBuf(const std::unique_ptr<V4L2Queue>& queue,
   v4l2_buffer.m.planes = planes.data();
   v4l2_buffer.length = queue->num_planes();
 
+  const bool ret = Ioctl(VIDIOC_DQBUF, &v4l2_buffer);
+  LOG_ASSERT(ret) << "VIDIOC_DQBUF failed for " << queue->type() << " queue.";
+
+  // V4L2 explains |index| to be id number of the buffer. We are using
+  // |buffer_id| (or |id|) instead of |index| consistently in the platform
+  // decoding code to avoid confusion.
+  const uint32_t id = v4l2_buffer.index;
+
   if (queue->type() == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
-    // If no buffers have been dequeued for more than |kMaxRetryCount| retries,
-    // we should exit the program. Something is wrong in the decoder or with
-    // how we are controlling it.
-    int num_tries = kMaxRetryCount;
-
-    while ((num_tries != 0) && !Ioctl(VIDIOC_DQBUF, &v4l2_buffer)) {
-      if (errno != EAGAIN) {
-        LOGF(FATAL) << "VIDIOC_DQBUF failed with errno: " << errno << ".";
-      }
-
-      num_tries--;
-    }
-
-    if (num_tries == 0) {
-      LOGF(FATAL)
-          << "Decoder appeared to stall. VIDIOC_DQBUF ioctl call timed out.";
-    } else {
-      // Successfully dequeued a buffer. Reset the |num_tries| counter.
-      num_tries = kMaxRetryCount;
-    }
-
-    // V4L2 explains |index| to be id number of the buffer. We are using
-    // |buffer_id| (or |id|) instead of |index| consistently in the platform
-    // decoding code to avoid confusion.
-    const uint32_t id = v4l2_buffer.index;
-
     // We set |v4l2_buffer.timestamp.tv_usec| in the encoded chunk enqueued in
     // the OUTPUT queue, and the driver propagates it to the corresponding
     // decoded video frame (or at least is expected to). This gives us
-    // information about which encoded frame corresponds to the current decoded
-    // video frame.
+    // information about which encoded frame corresponds to the current
+    // decoded video frame.
     queue->GetBuffer(id)->set_buffer_id(id);
     queue->GetBuffer(id)->set_frame_number(v4l2_buffer.timestamp.tv_usec);
-
-    *buffer_id = id;
-
-    return;
   }
 
-  DCHECK_EQ(queue->type(), V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
-
-  // Currently, only 1 OUTPUT buffer is used.
-  *buffer_id = 0;
-
-  const bool ret = Ioctl(VIDIOC_DQBUF, &v4l2_buffer);
-  LOG_ASSERT(ret) << "VIDIOC_DQBUF failed for " << queue->type() << " queue.";
+  *buffer_id = id;
 }
 
 void V4L2IoctlShim::StreamOn(const enum v4l2_buf_type type) const {
@@ -634,18 +605,26 @@ void V4L2IoctlShim::MediaRequestIocQueue(
 void V4L2IoctlShim::MediaRequestIocReinit(
     const std::unique_ptr<V4L2Queue>& queue) const {
   int req_fd = queue->media_request_fd();
-  constexpr uint32_t kMaxRetries = 16;
-  uint32_t retries = 0;
 
-  do {
-    if (Ioctl(MEDIA_REQUEST_IOC_REINIT, req_fd)) {
-      return;
-    }
+  const bool ret = Ioctl(MEDIA_REQUEST_IOC_REINIT, req_fd);
 
-    usleep(1 << retries);
-  } while (++retries < kMaxRetries);
+  LOG_ASSERT(ret) << "MEDIA_REQUEST_IOC_REINIT failed.";
+}
 
-  LOGF(FATAL) << "MEDIA_REQUEST_IOC_REINIT call timed out.";
+void V4L2IoctlShim::WaitForRequestCompletion(
+    const std::unique_ptr<V4L2Queue>& queue) const {
+  struct pollfd pollfds[] = {
+      {.fd = queue->media_request_fd(), .events = POLLPRI}};
+
+  // There are some test vectors that are not expected to play back at real
+  // time. 250ms corresponds to 4fps.
+  constexpr int kPollTimeoutMS = 250;
+  const int poll_result =
+      HANDLE_EINTR(poll(pollfds, std::size(pollfds), kPollTimeoutMS));
+  LOG_ASSERT(poll_result >= 0) << "Polling on request fd failed.";
+  LOG_ASSERT(poll_result > 0) << "Polling on request fd timed out.";
+  LOG_ASSERT(pollfds[0].revents & POLLPRI)
+      << "Polling on request fd exited with incorrect revents.";
 }
 
 bool V4L2IoctlShim::FindMediaDevice(struct v4l2_capability* cap) {
