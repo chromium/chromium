@@ -5,10 +5,10 @@
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/api/declarative_net_request/dnr_test_base.h"
@@ -17,6 +17,7 @@
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
+
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
@@ -120,7 +121,7 @@ class RulesetManagerTest : public DNRTestBase {
 
   // Returns renderer-initiated request params for the given |url|.
   WebRequestInfoInitParams GetRequestParamsForURL(
-      base::StringPiece url,
+      std::string_view url,
       std::optional<url::Origin> initiator = std::nullopt) {
     const int kRendererId = 1;
     WebRequestInfoInitParams info;
@@ -134,7 +135,7 @@ class RulesetManagerTest : public DNRTestBase {
   // Returns renderer-initiated request params for the given |url| and
   // |request_headers| request headers.
   WebRequestInfoInitParams GetRequestParamsForURLWithHeaders(
-      base::StringPiece url,
+      std::string_view url,
       const std::vector<std::string>& request_headers) {
     const int kRendererId = 1;
     WebRequestInfoInitParams info;
