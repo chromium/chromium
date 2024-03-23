@@ -216,7 +216,8 @@ AslrMask(uintptr_t bits) {
            // !defined(ARCH_CPU_S390X) && !defined(ARCH_CPU_S390)
 
       // For all other POSIX variants, use 30 bits.
-      PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
+      PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
+      ASLRMask() {
         return AslrMask(30);
       }
 
@@ -249,7 +250,8 @@ AslrMask(uintptr_t bits) {
         // The range 0x20000000 - 0x60000000 is relatively unpopulated across a
         // variety of ASLR modes (PAE kernel, NX compat mode, etc) and on macOS
         // 10.6 and 10.7.
-        PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
+        PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
+        ASLROffset() {
           return AslrAddress(0x20000000ULL);
         }
 
