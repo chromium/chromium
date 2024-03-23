@@ -182,8 +182,8 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
 
       canAddPassword_: {
         type: Boolean,
-        computed: 'computeCanAddPassword_(websiteErrorMessage_, username_, ' +
-            'password_, note_)',
+        computed: 'computeCanAddPassword_(websiteErrorMessage_, website_, ' +
+            'usernameErrorMessage_, password_, note_)',
       },
 
       storeOptionAccountValue_: {
