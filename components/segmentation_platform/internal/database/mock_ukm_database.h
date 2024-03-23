@@ -33,7 +33,7 @@ class MockUkmDatabase : public UkmDatabase {
 
   MOCK_METHOD2(AddUmaMetric, void(const std::string&, const UmaMetricEntry&));
 
-  MOCK_METHOD2(RunReadonlyQueries,
+  MOCK_METHOD2(RunReadOnlyQueries,
                void(QueryList&& queries, QueryCallback callback));
 
   MOCK_METHOD1(DeleteEntriesOlderThan, void(base::Time time));

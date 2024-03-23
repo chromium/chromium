@@ -162,6 +162,7 @@ void UkmDatabaseBackend::InitDatabase(SuccessCallback callback) {
 
 void UkmDatabaseBackend::StoreUkmEntry(ukm::mojom::UkmEntryPtr entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SCOPED_UMA_HISTOGRAM_TIMER("SegmentationPlatform.Database.StoreUkmEntry");
   if (status_ != Status::INIT_SUCCESS) {
     return;
   }
@@ -194,6 +195,8 @@ void UkmDatabaseBackend::UpdateUrlForUkmSource(ukm::SourceId source_id,
                                                bool is_validated,
                                                const std::string& profile_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "SegmentationPlatform.Database.UpdateUrlForUkmSource");
   if (status_ != Status::INIT_SUCCESS) {
     return;
   }
@@ -241,6 +244,7 @@ void UkmDatabaseBackend::OnUrlValidated(const GURL& url,
 void UkmDatabaseBackend::RemoveUrls(const std::vector<GURL>& urls,
                                     bool all_urls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SCOPED_UMA_HISTOGRAM_TIMER("SegmentationPlatform.Database.RemoveUrls");
   if (status_ != Status::INIT_SUCCESS) {
     return;
   }
@@ -269,15 +273,18 @@ void UkmDatabaseBackend::RemoveUrls(const std::vector<GURL>& urls,
 void UkmDatabaseBackend::AddUmaMetric(const std::string& profile_id,
                                       const UmaMetricEntry& row) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SCOPED_UMA_HISTOGRAM_TIMER("SegmentationPlatform.Database.AddUmaMetric");
   if (status_ != Status::INIT_SUCCESS) {
     return;
   }
   uma_metrics_table_.AddUmaMetric(profile_id, row);
 }
 
-void UkmDatabaseBackend::RunReadonlyQueries(QueryList&& queries,
+void UkmDatabaseBackend::RunReadOnlyQueries(QueryList&& queries,
                                             QueryCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "SegmentationPlatform.Database.RunReadOnlyQueries");
   if (status_ != Status::INIT_SUCCESS) {
     callback_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false,

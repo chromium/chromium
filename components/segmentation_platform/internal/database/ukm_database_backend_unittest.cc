@@ -124,7 +124,7 @@ class UkmDatabaseBackendTest : public testing::Test {
                          bool expect_success,
                          const processing::IndexedTensors& expected_values) {
     base::RunLoop wait_for_query3;
-    backend_->RunReadonlyQueries(
+    backend_->RunReadOnlyQueries(
         std::move(queries),
         base::BindOnce(
             [](base::OnceClosure quit, bool expect_success,

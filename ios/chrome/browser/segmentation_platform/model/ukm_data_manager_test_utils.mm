@@ -42,14 +42,14 @@ ukm::mojom::UkmEntryPtr GetSamplePageLoadEntry(ukm::SourceId source_id) {
 }
 
 // Runs the given query and returns the result as float value. See
-// RunReadonlyQueries() for more info.
+// RunReadOnlyQueries() for more info.
 std::optional<float> RunQueryAndGetResult(UkmDatabase* database,
                                           UkmDatabase::CustomSqlQuery&& query) {
   std::optional<float> output;
   UkmDatabase::QueryList queries;
   queries.emplace(0, std::move(query));
   base::RunLoop wait_for_query;
-  database->RunReadonlyQueries(
+  database->RunReadOnlyQueries(
       std::move(queries),
       base::BindOnce(
           [](base::OnceClosure quit, std::optional<float>* output, bool success,

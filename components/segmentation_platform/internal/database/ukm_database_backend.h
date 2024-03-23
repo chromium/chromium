@@ -53,7 +53,7 @@ class UkmDatabaseBackend : public UkmDatabase {
   void RemoveUrls(const std::vector<GURL>& urls, bool all_urls) override;
   void AddUmaMetric(const std::string& profile_id,
                     const UmaMetricEntry& row) override;
-  void RunReadonlyQueries(QueryList&& queries, QueryCallback callback) override;
+  void RunReadOnlyQueries(QueryList&& queries, QueryCallback callback) override;
   void DeleteEntriesOlderThan(base::Time time) override;
   void CommitTransactionForTesting() override;
 
