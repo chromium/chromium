@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -172,7 +173,7 @@ BrowserThemePack::PersistentID GetPersistentIDByIDR(int idr) {
 
 // Returns true if the scales in |input| match those in |expected|.
 // The order must match as the index is used in determining the raw id.
-bool InputScalesValid(const base::StringPiece& input,
+bool InputScalesValid(std::string_view input,
                       const std::vector<ui::ResourceScaleFactor>& expected) {
   if (input.size() != expected.size() * sizeof(float))
     return false;
@@ -759,7 +760,7 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
     return nullptr;
   }
 
-  std::optional<base::StringPiece> pointer =
+  std::optional<std::string_view> pointer =
       data_pack->GetStringPiece(kHeaderID);
   if (!pointer) {
     return nullptr;
@@ -916,17 +917,17 @@ bool BrowserThemePack::WriteToDisk(const base::FilePath& path) const {
   // Add resources for each of the property arrays.
   RawDataForWriting resources;
   resources[kHeaderID] =
-      base::StringPiece(reinterpret_cast<const char*>(header_.get()),
-                        sizeof(BrowserThemePackHeader));
+      std::string_view(reinterpret_cast<const char*>(header_.get()),
+                       sizeof(BrowserThemePackHeader));
   resources[kTintsID] =
-      base::StringPiece(reinterpret_cast<const char*>(tints_.get()),
-                        sizeof(TintEntry[kTintTableLength]));
+      std::string_view(reinterpret_cast<const char*>(tints_.get()),
+                       sizeof(TintEntry[kTintTableLength]));
   resources[kColorsID] =
-      base::StringPiece(reinterpret_cast<const char*>(colors_.get()),
-                        sizeof(ColorPair[kColorsArrayLength]));
-  resources[kDisplayPropertiesID] = base::StringPiece(
-      reinterpret_cast<const char*>(display_properties_.get()),
-      sizeof(DisplayPropertyPair[kDisplayPropertiesSize]));
+      std::string_view(reinterpret_cast<const char*>(colors_.get()),
+                       sizeof(ColorPair[kColorsArrayLength]));
+  resources[kDisplayPropertiesID] =
+      std::string_view(reinterpret_cast<const char*>(display_properties_.get()),
+                       sizeof(DisplayPropertyPair[kDisplayPropertiesSize]));
 
   int source_count = 1;
   SourceImage* end = source_images_;
@@ -934,11 +935,11 @@ bool BrowserThemePack::WriteToDisk(const base::FilePath& path) const {
     source_count++;
   }
   resources[kSourceImagesID] =
-      base::StringPiece(reinterpret_cast<const char*>(source_images_.get()),
-                        source_count * sizeof(*source_images_));
+      std::string_view(reinterpret_cast<const char*>(source_images_.get()),
+                       source_count * sizeof(*source_images_));
 
   // Store results of GetResourceScaleFactorsAsString() in std::string as
-  // base::StringPiece does not copy data in constructor.
+  // std::string_view does not copy data in constructor.
   std::string scale_factors_string =
       GetResourceScaleFactorsAsString(scale_factors_);
   resources[kScaleFactorsID] = scale_factors_string;
@@ -1981,9 +1982,9 @@ void BrowserThemePack::MergeImageCaches(
 
 void BrowserThemePack::AddRawImagesTo(const RawImages& images,
                                       RawDataForWriting* out) const {
-  for (auto it = images.begin(); it != images.end(); ++it) {
-    (*out)[it->first] = base::StringPiece(
-        it->second->front_as<char>(), it->second->size());
+  for (const auto& pair : images) {
+    (*out)[pair.first] =
+        std::string_view(pair.second->front_as<char>(), pair.second->size());
   }
 }
 
