@@ -155,6 +155,12 @@ BASE_FEATURE(kAutofillRelaxCreditCardImport,
              "AutofillRelaxCreditCardImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a new implementation for address field parsing that is based on
+// backtracking.
+BASE_FEATURE(kAutofillEnableAddressFieldParserNG,
+             "AutofillEnableAddressFieldParserNG",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, autofill will fill <selectlist> elements.
 // TODO(crbug.com/1427153) Remove once autofilling <selectlist> is launched.
 BASE_FEATURE(kAutofillEnableSelectList,

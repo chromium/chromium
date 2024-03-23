@@ -334,6 +334,12 @@ class AddressComponent {
   // Returns a constant vector of pointers to the child nodes of the component.
   const SubcomponentsList& Subcomponents() const { return subcomponents_; }
 
+  // Returns a constant vector of pointers to the synthesized child nodes of the
+  // component.
+  const SubcomponentsList& SynthesizedSubcomponents() const {
+    return synthesized_subcomponents_;
+  }
+
   // Returns a pointer to the parent node.
   AddressComponent* Parent() const { return parent_; }
 
