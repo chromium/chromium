@@ -1435,6 +1435,8 @@ source_set("ash") {
     "growth/open_url_action_performer.h",
     "growth/show_nudge_action_performer.cc",
     "growth/show_nudge_action_performer.h",
+    "growth/ui_action_performer.cc",
+    "growth/ui_action_performer.h",
     "guest_os/guest_id.cc",
     "guest_os/guest_id.h",
     "guest_os/guest_os_diagnostics_builder.cc",
@@ -1944,6 +1946,8 @@ source_set("ash") {
     "login/screens/hardware_data_collection_screen.h",
     "login/screens/hid_detection_screen.cc",
     "login/screens/hid_detection_screen.h",
+    "login/screens/install_attributes_error_screen.cc",
+    "login/screens/install_attributes_error_screen.h",
     "login/screens/kiosk_autolaunch_screen.cc",
     "login/screens/kiosk_autolaunch_screen.h",
     "login/screens/kiosk_enable_screen.cc",
@@ -2032,9 +2036,6 @@ source_set("ash") {
     "nonclosable_app_ui_utils.h",
     "policy/handlers/multi_screen_capture_policy_handler.cc",
     "policy/handlers/multi_screen_capture_policy_handler.h",
-
-    "login/screens/install_attributes_error_screen.cc",
-    "login/screens/install_attributes_error_screen.h",
 
     # Template used by the `tools/oobe/generate_screen_template.py` script.
     "login/screens/placeholder_screen.cc",
@@ -5646,6 +5647,7 @@ source_set("unit_tests") {
     "growth/campaigns_manager_session_unittest.cc",
     "growth/install_web_app_action_unittest.cc",
     "growth/open_url_action_performer_unittest.cc",
+    "growth/show_nudge_action_performer_unittest.cc",
     "guest_os/guest_id_unittest.cc",
     "guest_os/guest_os_diagnostics_builder_unittest.cc",
     "guest_os/guest_os_dlc_helper_unittest.cc",
