@@ -1278,7 +1278,7 @@ void LocationBarView::FocusSearch() {
 void LocationBarView::UpdateContentSettingsIcons() {
   if (RefreshContentSettingViews()) {
     // TODO(crbug.com/40648316): Remove Layout override and transition
-    // LocationBarView to use LayoutManager. Then when child view visibility
+    // LocationBarView to use a layout manager. Then when child view visibility
     // changes LocationBarView's layout will be automatically invalidated and
     // this InvalidateLayout() call can be removed.
     InvalidateLayout();

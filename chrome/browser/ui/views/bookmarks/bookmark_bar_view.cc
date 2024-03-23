@@ -685,9 +685,9 @@ gfx::Size BookmarkBarView::GetMinimumSize() const {
 }
 
 // TODO(crbug.com/40648316, crbug.com/330763840): Remove Layout override and
-// transition BookmarkBarView to use LayoutManager. Afterwards, for most if not
-// all calls to LayoutAndPaint can be migrated to only schedule paint and not
-// invalidate layout because the layout manager will invalidate layout
+// transition BookmarkBarView to use a layout manager. Afterwards, for most if
+// not all calls to LayoutAndPaint can be migrated to only schedule paint and
+// not invalidate layout because the layout manager will invalidate layout
 // automatically for things like adding and removing child views.
 void BookmarkBarView::Layout(PassKey) {
   // Skip layout during destruction, when no model exists.
