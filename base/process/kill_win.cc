@@ -50,11 +50,11 @@ TerminationStatus GetTerminationStatus(ProcessHandle handle, int* exit_code) {
 
     if (wait_result == WAIT_FAILED) {
       DPLOG(ERROR) << "WaitForSingleObject() failed";
+      *exit_code = static_cast<int>(wait_result);
     } else {
       DCHECK_EQ(WAIT_OBJECT_0, wait_result);
-
-      // Strange, the process used 0x103 (STILL_ACTIVE) as exit code.
-      NOTREACHED();
+      DLOG(ERROR) << "The process used 0x103 (STILL_ACTIVE) as exit code.";
+      *exit_code = static_cast<int>(tmp_exit_code);
     }
 
     return TERMINATION_STATUS_ABNORMAL_TERMINATION;
