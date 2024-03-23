@@ -5348,6 +5348,13 @@
        {}
       ]
      ],
+     "caret-display-list.html": [
+      "f7c7a740e18925dba2da8704700ee23a5359921f",
+      [
+       null,
+       {}
+      ]
+     ],
      "change-input-type-of-focused-text-control-and-make-it-editing-host.html": [
       "fec4ff13e8cbb45b6faa2a0872b47558003a58b7",
       [
@@ -470160,7 +470167,7 @@
     },
     "css-viewport": {
      "computedStyle-zoom.html": [
-      "30ed78e30b6a7c4c208f60aa84461f9ed13ddc73",
+      "82af111bbe72d3ab20f071d97ff5919781061add",
       [
        null,
        {}
@@ -476679,6 +476686,13 @@
        }
       ]
      ],
+     "state-css-selector-nth-of.html": [
+      "c7b7183ccb4368ac20e65877f5671058174169a9",
+      [
+       null,
+       {}
+      ]
+     ],
      "state-css-selector-shadow-dom.html": [
       "9d86b5d26035476ac3392be4940b397c51f5f0a7",
       [
@@ -476689,7 +476703,7 @@
       ]
      ],
      "state-css-selector.html": [
-      "d29c92722343dd8c7e9e2ec2227a8b52299f1179",
+      "4c80ecbd4a21584f7d5929fb04e6f0a1bb3d8871",
       [
        null,
        {
