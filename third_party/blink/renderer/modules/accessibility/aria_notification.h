@@ -47,6 +47,7 @@ class AriaNotifications {
 
   ConstIterator begin() const { return notifications_.begin(); }
   ConstIterator end() const { return notifications_.end(); }
+  wtf_size_t Size() const { return notifications_.size(); }
 
   void Add(const String& announcement, const AriaNotificationOptions* options);
 

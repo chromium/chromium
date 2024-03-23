@@ -1312,25 +1312,48 @@ AccessibleNode* AXObject::GetAccessibleNode() const {
 
 namespace {
 
-void SerializeAriaNotificationAttributes(const AriaNotification& notification,
+void SerializeAriaNotificationAttributes(const AriaNotifications& notifications,
                                          ui::AXNodeData* node_data) {
   DCHECK(node_data);
 
+  const auto size = notifications.Size();
+  if (!size) {
+    // Avoid serializing empty attribute lists if there are no notifications.
+    return;
+  }
+
+  std::vector<std::string> announcements;
+  std::vector<std::string> notification_ids;
+  std::vector<int32_t> interrupt_properties;
+  std::vector<int32_t> priority_properties;
+
+  announcements.reserve(size);
+  notification_ids.reserve(size);
+  interrupt_properties.reserve(size);
+  priority_properties.reserve(size);
+
+  for (const auto& notification : notifications) {
+    announcements.emplace_back(TruncateString(notification.Announcement()));
+    notification_ids.emplace_back(
+        TruncateString(notification.NotificationId()));
+    interrupt_properties.emplace_back(
+        static_cast<int32_t>(notification.Interrupt()));
+    priority_properties.emplace_back(
+        static_cast<int32_t>(notification.Priority()));
+  }
+
   node_data->AddStringListAttribute(
       ax::mojom::blink::StringListAttribute::kAriaNotificationAnnouncements,
-      {TruncateString(notification.Announcement())});
-
+      announcements);
   node_data->AddStringListAttribute(
       ax::mojom::blink::StringListAttribute::kAriaNotificationIds,
-      {TruncateString(notification.NotificationId())});
-
+      notification_ids);
   node_data->AddIntListAttribute(
       ax::mojom::blink::IntListAttribute::kAriaNotificationInterruptProperties,
-      {static_cast<int32_t>(notification.Interrupt())});
-
+      interrupt_properties);
   node_data->AddIntListAttribute(
       ax::mojom::blink::IntListAttribute::kAriaNotificationPriorityProperties,
-      {static_cast<int32_t>(notification.Priority())});
+      priority_properties);
 }
 
 }  // namespace
@@ -1434,10 +1457,8 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
 
   SerializeOtherScreenReaderAttributes(node_data);
 
-  for (const auto& notification :
-       AXObjectCache().RetrieveAriaNotifications(this)) {
-    SerializeAriaNotificationAttributes(notification, node_data);
-  }
+  SerializeAriaNotificationAttributes(
+      AXObjectCache().RetrieveAriaNotifications(this), node_data);
 
   // Return early. The following attributes are unnecessary for ignored nodes.
   // Exception: focusable ignored nodes are fully serialized, so that reasonable

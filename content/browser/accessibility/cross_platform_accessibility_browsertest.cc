@@ -2836,4 +2836,65 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
+                       TestConsecutiveAriaNotifications) {
+  const std::string url_str(R"HTML(
+      <!DOCTYPE html>
+      <div aria-label="Container">
+        <button aria-label="a" id="a" onclick="notify(this)"></button>
+      </div>
+      <script>
+      function notify(clickedElement) {
+        clickedElement.ariaNotify("one", {"notificationId": "kOne",
+                                          "interrupt": "all"});
+        clickedElement.ariaNotify("two", {"priority": "important"});
+        clickedElement.ariaNotify("three", {"notificationId": "kThree",
+                                            "interrupt": "pending"});
+      }
+      </script>)HTML");
+
+  LoadInitialAccessibilityTreeFromHtml(url_str);
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Container");
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED);
+
+    ExecuteScript("document.getElementById('a').click();");
+    ASSERT_TRUE(waiter.WaitForNotification());
+
+    const auto* button = FindNode("a");
+    ASSERT_NE(button, nullptr);
+
+    EXPECT_EQ(
+        std::vector<std::string>({"one", "two", "three"}),
+        button->GetStringListAttribute(
+            ax::mojom::StringListAttribute::kAriaNotificationAnnouncements));
+
+    EXPECT_EQ(std::vector<std::string>({"kOne", "", "kThree"}),
+              button->GetStringListAttribute(
+                  ax::mojom::StringListAttribute::kAriaNotificationIds));
+
+    EXPECT_EQ(
+        std::vector<int32_t>(
+            {static_cast<int32_t>(ax::mojom::AriaNotificationInterrupt::kAll),
+             static_cast<int32_t>(ax::mojom::AriaNotificationInterrupt::kNone),
+             static_cast<int32_t>(
+                 ax::mojom::AriaNotificationInterrupt::kPending)}),
+        button->GetIntListAttribute(
+            ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties));
+
+    EXPECT_EQ(
+        std::vector<int32_t>(
+            {static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNone),
+             static_cast<int32_t>(
+                 ax::mojom::AriaNotificationPriority::kImportant),
+             static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNone)}),
+        button->GetIntListAttribute(
+            ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties));
+  }
+}
+
 }  // namespace content
