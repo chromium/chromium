@@ -469,6 +469,8 @@ source_set("base") {
     sources += [
       "win/media_foundation_package_locator_helper.cc",
       "win/media_foundation_package_locator_helper.h",
+      "win/media_foundation_package_runtime_locator.cc",
+      "win/media_foundation_package_runtime_locator.h",
       "win/mf_feature_checks.cc",
       "win/mf_feature_checks.h",
     ]

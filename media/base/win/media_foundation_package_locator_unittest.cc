@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/win/scoped_co_mem.h"
+#include "base/win/windows_version.h"
 #include "media/base/test_helpers.h"
 #include "media/base/win/media_foundation_package_locator_helper.h"
 #include "media/base/win/mf_initializer.h"
@@ -17,6 +18,7 @@ namespace media {
 namespace {
 
 using VideoCodecMap = base::flat_map<VideoCodec, GUID>;
+using AudioCodecMap = base::flat_map<AudioCodec, GUID>;
 
 const VideoCodecMap& GetVideoCodecsMap() {
   static const base::NoDestructor<VideoCodecMap> AllVideoCodecsMap(
@@ -26,12 +28,23 @@ const VideoCodecMap& GetVideoCodecsMap() {
   return *AllVideoCodecsMap;
 }
 
-bool CanMfDecodeVideoCodec(VideoCodec codec) {
-  auto codecs = GetVideoCodecsMap();
-  MFT_REGISTER_TYPE_INFO input_type = {MFMediaType_Video, codecs[codec]};
+const AudioCodecMap& GetAudioCodecsMap() {
+  static const base::NoDestructor<AudioCodecMap> AllAudioCodecsMap(
+      {{AudioCodec::kEAC3, MFAudioFormat_Dolby_DDPlus},
+       {AudioCodec::kAC4, MFAudioFormat_Dolby_AC4}});
+  return *AllAudioCodecsMap;
+}
+
+template <typename TCodec, typename TType, typename TCategory, typename TFunc>
+bool CanMfDecodeCodec(TCodec codec,
+                      TType mft_type,
+                      TCategory mft_category,
+                      TFunc get_codecs) {
+  auto codecs = get_codecs();
+  MFT_REGISTER_TYPE_INFO input_type = {mft_type, codecs[codec]};
   base::win::ScopedCoMem<IMFActivate*> imf_activates;
   uint32_t count = 0;
-  if (FAILED(MFTEnumEx(MFT_CATEGORY_VIDEO_DECODER,
+  if (FAILED(MFTEnumEx(mft_category,
                        MFT_ENUM_FLAG_SYNCMFT | MFT_ENUM_FLAG_ASYNCMFT |
                            MFT_ENUM_FLAG_HARDWARE,
                        &input_type, /*output_type=*/nullptr, &imf_activates,
@@ -96,7 +109,8 @@ TEST_F(MediaFoundationPackageLocatorTest, VP9) {
   std::vector<base::FilePath> paths = GetMediaFoundationPackageInstallPaths(
       L"msvp9dec_store.dll", media::MediaFoundationCodecPackage::kVP9);
 
-  if (CanMfDecodeVideoCodec(VideoCodec::kVP9)) {
+  if (CanMfDecodeCodec(VideoCodec::kVP9, MFMediaType_Video,
+                       MFT_CATEGORY_VIDEO_DECODER, GetVideoCodecsMap)) {
     DVLOG(2) << __func__ << ": MF VP9 installed";
     VerifyMfCodecPaths(paths);
   } else {
@@ -109,7 +123,8 @@ TEST_F(MediaFoundationPackageLocatorTest, AV1) {
   std::vector<base::FilePath> paths = GetMediaFoundationPackageInstallPaths(
       L"av1decodermft_store.dll", media::MediaFoundationCodecPackage::kAV1);
 
-  if (CanMfDecodeVideoCodec(VideoCodec::kAV1)) {
+  if (CanMfDecodeCodec(VideoCodec::kAV1, MFMediaType_Video,
+                       MFT_CATEGORY_VIDEO_DECODER, GetVideoCodecsMap)) {
     DVLOG(2) << __func__ << ": MF AV1 installed";
     VerifyMfCodecPaths(paths);
   } else {
@@ -123,8 +138,50 @@ TEST_F(MediaFoundationPackageLocatorTest, HEVC) {
   std::vector<base::FilePath> paths = GetMediaFoundationPackageInstallPaths(
       L"hevcdecoder_store.dll", media::MediaFoundationCodecPackage::kHEVC);
 
-  if (CanMfDecodeVideoCodec(VideoCodec::kHEVC)) {
+  if (CanMfDecodeCodec(VideoCodec::kHEVC, MFMediaType_Video,
+                       MFT_CATEGORY_VIDEO_DECODER, GetVideoCodecsMap)) {
     DVLOG(2) << __func__ << ": MF HEVC installed";
+    VerifyMfCodecPaths(paths);
+  } else {
+    ASSERT_TRUE(paths.empty());
+  }
+}
+
+TEST_F(MediaFoundationPackageLocatorTest, EAC3) {
+  AddPackageFamilyName(
+      L"DolbyLaboratories.DolbyDigitalPlusDecoderOEM_rz1tebttyb220");
+  std::vector<base::FilePath> paths = GetMediaFoundationPackageInstallPaths(
+      L"DolbyDDPDecMft.dll", media::MediaFoundationCodecPackage::kEAC3);
+
+  // MS preloaded Dolby's AC3,EAC3 decoder into Windows image, but from
+  // Windows 11 build 25992, all of them will be removed and provided by Dolby
+  // as codec packs.
+  auto& version = base::win::OSInfo::GetInstance()->version_number();
+  bool is_inbox_decoder_present = version.major >= 10 && version.build < 25992;
+  bool can_decode =
+      CanMfDecodeCodec(AudioCodec::kEAC3, MFMediaType_Audio,
+                       MFT_CATEGORY_AUDIO_DECODER, GetAudioCodecsMap);
+  if (is_inbox_decoder_present) {
+    DVLOG(2) << __func__ << ": MF EAC3/AC3 inbox decoder present.";
+    ASSERT_TRUE(can_decode);
+  } else {
+    if (can_decode) {
+      DVLOG(2) << __func__ << ": MF EAC3/AC3 installed";
+      VerifyMfCodecPaths(paths);
+    } else {
+      ASSERT_TRUE(paths.empty());
+    }
+  }
+}
+
+TEST_F(MediaFoundationPackageLocatorTest, AC4) {
+  AddPackageFamilyName(L"DolbyLaboratories.DolbyAC4DecoderOEM_rz1tebttyb220");
+  std::vector<base::FilePath> paths = GetMediaFoundationPackageInstallPaths(
+      L"DolbyAc4DecMft.dll", media::MediaFoundationCodecPackage::kAC4);
+
+  if (CanMfDecodeCodec(AudioCodec::kAC4, MFMediaType_Audio,
+                       MFT_CATEGORY_AUDIO_DECODER, GetAudioCodecsMap)) {
+    DVLOG(2) << __func__ << ": MF AC4 installed";
     VerifyMfCodecPaths(paths);
   } else {
     ASSERT_TRUE(paths.empty());

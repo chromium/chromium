@@ -339,7 +339,7 @@ bool MediaFoundationAudioDecoder::CreateDecoder() {
 
   // Create the decoder from the factory. Activate the first MFT object.
   RETURN_ON_HR_FAILURE(acts[0]->ActivateObject(IID_PPV_ARGS(&decoder_)),
-                       "Failed to activate DTS MFT", false);
+                       "Failed to activate MFT", false);
 
   // Release all activated and unactivated object after creating the decoder
   for (UINT32 curr_act = 0; curr_act < acts_num; ++curr_act) {

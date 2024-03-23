@@ -57,7 +57,14 @@ std::vector<base::FilePath> MediaFoundationPackageInstallPaths(
         package_paths.clear();
         return package_paths;
       }
-      package_paths.emplace_back(package_path);
+
+      // Dolby places their MFT inside a 'MFT' folder.
+      if (codec_package == MediaFoundationCodecPackage::kEAC3 ||
+          codec_package == MediaFoundationCodecPackage::kAC4) {
+        package_paths.emplace_back(base::FilePath(package_path).Append(L"MFT"));
+      } else {
+        package_paths.emplace_back(package_path);
+      }
     }
   }
 
