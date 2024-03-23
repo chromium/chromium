@@ -25,6 +25,46 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
     OSCryptMocker::TearDown();
   }
 
+  // Adds mock data for url_id = 1 tied to visit_id = 10, and url_id = 2 tied to
+  // visit_id = 11.
+  void AddBasicMockData(SqlDatabase* sql_database) {
+    {
+      UrlPassages url_passages_1(1, 10, base::Time::Now());
+      url_passages_1.passages.add_passages("fake passage 1");
+      url_passages_1.passages.add_passages("fake passage 2");
+      ASSERT_TRUE(sql_database->InsertOrReplacePassages(url_passages_1));
+
+      UrlEmbeddings embeddings_1(1, 10, base::Time::Now());
+      embeddings_1.embeddings.push_back(Embedding({1.0f, 2.0f, 3.0f, 4.0f}));
+      ASSERT_TRUE(sql_database->AddUrlEmbeddings(embeddings_1));
+    }
+
+    {
+      UrlPassages url_passages_2(2, 11, base::Time::Now());
+      url_passages_2.passages.add_passages("fake passage 3");
+      url_passages_2.passages.add_passages("fake passage 4");
+      ASSERT_TRUE(sql_database->InsertOrReplacePassages(url_passages_2));
+
+      UrlEmbeddings embeddings_2(2, 11, base::Time::Now());
+      embeddings_2.embeddings.push_back(Embedding({1.0f, 2.0f, 3.0f, 4.0f}));
+      ASSERT_TRUE(sql_database->AddUrlEmbeddings(embeddings_2));
+    }
+
+    ASSERT_TRUE(sql_database->GetPassages(1));
+    ASSERT_TRUE(sql_database->GetPassages(2));
+    ASSERT_EQ(GetEmbeddingCount(sql_database), 2U);
+  }
+
+  size_t GetEmbeddingCount(SqlDatabase* sql_database) {
+    auto iterator = sql_database->MakeEmbeddingsIterator();
+    EXPECT_TRUE(iterator);
+    size_t count = 0;
+    while (auto* embedding = iterator->Next()) {
+      count++;
+    }
+    return count;
+  }
+
  protected:
   base::ScopedTempDir history_dir_;
 };
@@ -139,15 +179,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, InsertOrReplacePassages) {
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, IteratorMaySafelyOutliveDatabase) {
   auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
-
-  UrlEmbeddings url_embeddings(1, 1, base::Time::Now());
-  url_embeddings.embeddings.push_back(Embedding({
-      1.0f,
-      2.0f,
-      3.0f,
-      4.0f,
-  }));
-  EXPECT_TRUE(sql_database->AddUrlEmbeddings(url_embeddings));
+  AddBasicMockData(sql_database.get());
 
   // Without database reset, iteration reads data.
   {
@@ -169,6 +201,52 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, IteratorMaySafelyOutliveDatabase) {
     // Iterator access with dead database doesn't crash, just ends iteration.
     EXPECT_FALSE(iterator->Next());
   }
+}
+
+TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataForUrlId) {
+  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  AddBasicMockData(sql_database.get());
+
+  EXPECT_TRUE(sql_database->DeleteDataForUrlId(3))
+      << "Deleting a non-existing url_id = 3 should return true but do "
+         "nothing.";
+  EXPECT_TRUE(sql_database->GetPassages(1));
+  EXPECT_TRUE(sql_database->GetPassages(2));
+  EXPECT_EQ(GetEmbeddingCount(sql_database.get()), 2U);
+
+  EXPECT_TRUE(sql_database->DeleteDataForUrlId(2))
+      << "Succeeds. url_id = 2 does exist.";
+  EXPECT_TRUE(sql_database->GetPassages(1));
+  EXPECT_FALSE(sql_database->GetPassages(2));
+  EXPECT_EQ(GetEmbeddingCount(sql_database.get()), 1U);
+}
+
+TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataForVisitId) {
+  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  AddBasicMockData(sql_database.get());
+
+  EXPECT_TRUE(sql_database->DeleteDataForVisitId(40))
+      << "Deleting a non-existing visit_id = 40 should return true but do "
+         "nothing.";
+  EXPECT_TRUE(sql_database->GetPassages(1));
+  EXPECT_TRUE(sql_database->GetPassages(2));
+  EXPECT_EQ(GetEmbeddingCount(sql_database.get()), 2U);
+
+  EXPECT_TRUE(sql_database->DeleteDataForVisitId(11))
+      << "Succeeds. visit_id = 11 does exist.";
+  EXPECT_TRUE(sql_database->GetPassages(1));
+  EXPECT_FALSE(sql_database->GetPassages(2));
+  EXPECT_EQ(GetEmbeddingCount(sql_database.get()), 1U);
+}
+
+TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteAllData) {
+  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  AddBasicMockData(sql_database.get());
+
+  EXPECT_TRUE(sql_database->DeleteAllData());
+  EXPECT_FALSE(sql_database->GetPassages(1));
+  EXPECT_FALSE(sql_database->GetPassages(2));
+  EXPECT_EQ(GetEmbeddingCount(sql_database.get()), 0U);
 }
 
 }  // namespace history_embeddings

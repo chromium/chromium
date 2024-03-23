@@ -49,6 +49,12 @@ class SqlDatabase : public VectorDatabase {
   bool AddUrlEmbeddings(const UrlEmbeddings& url_embeddings) override;
   std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator() override;
 
+  // These three methods are used to keep the on-disk persistence in sync with
+  // History deletions, either from user action or time-based expiration.
+  bool DeleteDataForUrlId(history::URLID url_id);
+  bool DeleteDataForVisitId(history::VisitID visit_id);
+  bool DeleteAllData();
+
  private:
   // Initializes the database, if it's not already initialized. Returns true if
   // the initialization was successful (or already succeeded in the past).

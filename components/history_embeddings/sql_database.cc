@@ -48,7 +48,7 @@ namespace {
   // Create an index over visit_id so we can quickly delete passages associated
   // with visits that get deleted.
   if (!db.Execute("CREATE INDEX IF NOT EXISTS index_passages_visit_id ON "
-                  "passages (visit_id)")) {
+                  "passages(visit_id)")) {
     return false;
   }
 
@@ -68,6 +68,13 @@ namespace {
       // vectors from this URL/visit source.
       "embeddings_blob BLOB NOT NULL);";
   if (!db.Execute(kSqlCreateTableEmbeddings)) {
+    return false;
+  }
+
+  // Create an index over visit_id so we can quickly delete embeddings
+  // associated with visits that get deleted.
+  if (!db.Execute("CREATE INDEX IF NOT EXISTS index_embeddings_visit_id ON "
+                  "embeddings(visit_id)")) {
     return false;
   }
 
@@ -303,6 +310,81 @@ SqlDatabase::MakeEmbeddingsIterator() {
 
   return std::make_unique<RowEmbeddingsIterator>(
       weak_ptr_factory_.GetWeakPtr());
+}
+
+bool SqlDatabase::DeleteDataForUrlId(history::URLID url_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit()) {
+    return false;
+  }
+
+  bool delete_passages_success = false;
+  {
+    constexpr char kSqlDeleteFromPassagesByUrl[] =
+        "DELETE FROM passages WHERE url_id=?";
+    DCHECK(db_.IsSQLValid(kSqlDeleteFromPassagesByUrl));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromPassagesByUrl));
+    statement.BindInt64(0, url_id);
+    delete_passages_success = statement.Run();
+  }
+  bool delete_embeddings_success = false;
+  {
+    constexpr char kSqlDeleteFromEmbeddingsByUrl[] =
+        "DELETE FROM embeddings WHERE url_id=?";
+    DCHECK(db_.IsSQLValid(kSqlDeleteFromEmbeddingsByUrl));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromEmbeddingsByUrl));
+    statement.BindInt64(0, url_id);
+    delete_embeddings_success = statement.Run();
+  }
+
+  return delete_passages_success && delete_embeddings_success;
+}
+
+bool SqlDatabase::DeleteDataForVisitId(history::VisitID visit_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit()) {
+    return false;
+  }
+
+  bool delete_passages_success = false;
+  {
+    constexpr char kSqlDeleteFromPassagesByVisit[] =
+        "DELETE FROM passages WHERE visit_id=?";
+    DCHECK(db_.IsSQLValid(kSqlDeleteFromPassagesByVisit));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromPassagesByVisit));
+    statement.BindInt64(0, visit_id);
+    delete_passages_success = statement.Run();
+  }
+  bool delete_embeddings_success = false;
+  {
+    constexpr char kSqlDeleteFromEmbeddingsByVisit[] =
+        "DELETE FROM embeddings WHERE visit_id=?";
+    DCHECK(db_.IsSQLValid(kSqlDeleteFromEmbeddingsByVisit));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromEmbeddingsByVisit));
+    statement.BindInt64(0, visit_id);
+    delete_embeddings_success = statement.Run();
+  }
+
+  return delete_passages_success && delete_embeddings_success;
+}
+
+bool SqlDatabase::DeleteAllData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit()) {
+    return false;
+  }
+
+  bool delete_passages_success = db_.Execute("DELETE FROM passages;");
+  bool delete_embeddings_success = db_.Execute("DELETE FROM embeddings;");
+
+  return delete_passages_success && delete_embeddings_success;
 }
 
 void SqlDatabase::DatabaseErrorCallback(int extended_error,
