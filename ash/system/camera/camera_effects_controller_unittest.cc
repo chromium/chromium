@@ -80,10 +80,8 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
  public:
   // NoSessionAshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kVideoConference,
-         features::kCameraEffectsSupportedByHardware},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFeatureManagementVideoConference);
 
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
@@ -245,7 +243,8 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
 TEST_F(CameraEffectsControllerTest, IsEffectControlAvailable) {
   {
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures({}, {features::kVideoConference});
+    scoped_feature_list.InitWithFeatures(
+        {}, {features::kFeatureManagementVideoConference});
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundBlur));
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
@@ -256,7 +255,8 @@ TEST_F(CameraEffectsControllerTest, IsEffectControlAvailable) {
 
   {
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures({features::kVideoConference}, {});
+    scoped_feature_list.InitWithFeatures(
+        {features::kFeatureManagementVideoConference}, {});
     EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundBlur));
     EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
@@ -267,8 +267,9 @@ TEST_F(CameraEffectsControllerTest, IsEffectControlAvailable) {
 
   {
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures({features::kVideoConference},
-                                         {features::kVcPortraitRelight});
+    scoped_feature_list.InitWithFeatures(
+        {features::kFeatureManagementVideoConference},
+        {features::kVcPortraitRelight});
     EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundBlur));
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
@@ -280,7 +281,9 @@ TEST_F(CameraEffectsControllerTest, IsEffectControlAvailable) {
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures(
-        {features::kVideoConference, features::kVcBackgroundReplace}, {});
+        {features::kFeatureManagementVideoConference,
+         features::kVcBackgroundReplace},
+        {});
     EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundBlur));
     EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(

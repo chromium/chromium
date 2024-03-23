@@ -3493,10 +3493,6 @@ const char kUseSearchClickForRightClickDescription[] =
     "webpages and apps to consume alt+click. When disabled the legacy "
     "behavior of remapping alt+click to right click will remain unchanged.";
 
-const char kVideoConferenceName[] = "Enable video conference features";
-const char kVideoConferenceDescription[] =
-    "Enables all features for ChromeOS built-in video conferencing UI.";
-
 const char kVcBackgroundReplaceName[] = "Enable vc background replacement";
 const char kVcBackgroundReplaceDescription[] =
     "Enables background replacement feature for video conferencing on "

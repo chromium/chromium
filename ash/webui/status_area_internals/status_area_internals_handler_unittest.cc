@@ -56,10 +56,8 @@ class StatusAreaInternalsHandlerTest : public AshTestBase {
   ~StatusAreaInternalsHandlerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kVideoConference,
-                              features::kCameraEffectsSupportedByHardware},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFeatureManagementVideoConference);
 
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in

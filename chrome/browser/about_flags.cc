@@ -9440,10 +9440,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "LargeFaviconFromGoogle")},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"video-conference", flag_descriptions::kVideoConferenceName,
-     flag_descriptions::kVideoConferenceDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kVideoConference)},
-
     {"vc-background-replace", flag_descriptions::kVcBackgroundReplaceName,
      flag_descriptions::kVcBackgroundReplaceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kVcBackgroundReplace)},
@@ -9461,7 +9457,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"vc-web-api", flag_descriptions::kVcWebApiName,
      flag_descriptions::kVcWebApiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kVcWebApi)},
-
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

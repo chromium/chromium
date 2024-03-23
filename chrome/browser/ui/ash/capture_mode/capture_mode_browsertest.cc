@@ -4,7 +4,6 @@
 
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_controller.h"
@@ -928,16 +927,14 @@ class CaptureModeVideoConferenceBrowserTests
       : is_share_screen_icon_enabled_(GetParam()) {
     if (is_share_screen_icon_enabled_) {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{ash::features::kVideoConference,
-                                ash::features::kVcStopAllScreenShare,
+          /*enabled_features=*/{ash::features::kVcStopAllScreenShare,
                                 ash::features::
-                                    kCameraEffectsSupportedByHardware},
+                                    kFeatureManagementVideoConference},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{ash::features::kVideoConference,
-                                ash::features::
-                                    kCameraEffectsSupportedByHardware},
+          /*enabled_features=*/{ash::features::
+                                    kFeatureManagementVideoConference},
           /*disabled_features=*/{});
     }
   }
@@ -962,13 +959,6 @@ class CaptureModeVideoConferenceBrowserTests
 
   ash::VideoConferenceTrayButton* vc_tray_screen_share_icon() {
     return video_conference_tray()->screen_share_icon();
-  }
-
-  // InProcessBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    CaptureModeCameraBrowserTests::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(
-        ash::switches::kCameraEffectsSupportedByHardware);
   }
 
   ash::VideoConferenceMediaState GetMediaStateInVideoConferenceManager() {

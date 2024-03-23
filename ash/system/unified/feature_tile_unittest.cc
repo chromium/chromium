@@ -119,8 +119,7 @@ class FeatureTileTest
     if (IsVcDlcUiEnabled()) {
       scoped_feature_list_
           .InitWithFeatures(/*enabled_features=*/
-                            {features::kVideoConference,
-                             features::kCameraEffectsSupportedByHardware,
+                            {features::kFeatureManagementVideoConference,
                              features::kVcDlcUi},
                             /*disabled_features=*/{});
       // Need to create a fake VC tray controller if VcDlcUi is enabled because

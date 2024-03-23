@@ -318,10 +318,8 @@ TEST_P(NotificationCenterTrayTest, DoNotDisturbUpdatesPinnedIcons) {
 TEST_P(NotificationCenterTrayTest, NoPrivacyIndicatorsWhenVcEnabled) {
   // No privacy indicators when `kVideoConference` is enabled.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kVideoConference,
-                            features::kCameraEffectsSupportedByHardware},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kFeatureManagementVideoConference);
 
   auto notification_tray =
       std::make_unique<NotificationCenterTray>(GetPrimaryShelf());

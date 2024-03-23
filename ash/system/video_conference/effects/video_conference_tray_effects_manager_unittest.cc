@@ -69,8 +69,7 @@ class VideoConferenceTrayEffectsManagerTest
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features = {};
     if (IsVcDlcUiEnabled()) {
-      enabled_features.push_back(features::kVideoConference);
-      enabled_features.push_back(features::kCameraEffectsSupportedByHardware);
+      enabled_features.push_back(features::kFeatureManagementVideoConference);
       enabled_features.push_back(features::kVcDlcUi);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features,

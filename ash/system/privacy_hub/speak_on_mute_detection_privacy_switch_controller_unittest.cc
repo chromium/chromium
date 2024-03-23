@@ -25,8 +25,8 @@ class PrivacyHubSpeakOnMuteControllerTest : public AshTestBase {
     // and the video conference feature flag together with the camera effects
     // switch to enable video conference.
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kCrosPrivacyHub, ash::features::kVideoConference,
-         features::kCameraEffectsSupportedByHardware},
+        {ash::features::kCrosPrivacyHub,
+         features::kFeatureManagementVideoConference},
         {});
   }
 

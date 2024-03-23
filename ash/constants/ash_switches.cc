@@ -1156,10 +1156,6 @@ const char kWebUiDataSourcePathForTesting[] =
 // the internal OAuth client ID.
 const char kGetAccessTokenForTest[] = "get-access-token-for-test";
 
-// Indicates whether camera effects use flag is set in ChromeOS.
-const char kCameraEffectsSupportedByHardware[] =
-    "camera-effects-supported-by-hardware";
-
 // Prevent kiosk autolaunch for testing.
 const char kPreventKioskAutolaunchForTesting[] =
     "prevent-kiosk-autolaunch-for-testing";
@@ -1335,11 +1331,6 @@ bool IsSkipRecorderNudgeShowThresholdDurationEnabled() {
 bool IsStabilizeTimeDependentViewForTestsEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kStabilizeTimeDependentViewForTests);
-}
-
-bool IsCameraEffectsSupportedByHardware() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kCameraEffectsSupportedByHardware);
 }
 
 bool UseFakeCrasAudioClientForDBus() {

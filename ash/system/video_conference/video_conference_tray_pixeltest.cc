@@ -37,10 +37,9 @@ class VideoConferenceTrayPixelTest : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kJellyroll,
-                              features::kVideoConference,
                               features::kVcStopAllScreenShare,
                               chromeos::features::kJelly,
-                              features::kCameraEffectsSupportedByHardware},
+                              features::kFeatureManagementVideoConference},
         /*disabled_features=*/{});
 
     // Instantiates a fake controller (the real one is created in

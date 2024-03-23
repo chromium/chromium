@@ -72,11 +72,10 @@ class UnifiedSystemTrayTest : public AshTestBase,
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features;
 
-    enabled_features.push_back(features::kCameraEffectsSupportedByHardware);
     if (IsVcControlsUiEnabled()) {
       fake_video_conference_tray_controller_ =
           std::make_unique<FakeVideoConferenceTrayController>();
-      enabled_features.push_back(features::kVideoConference);
+      enabled_features.push_back(features::kFeatureManagementVideoConference);
     }
     feature_list_.InitWithFeatures(enabled_features, {});
     AshTestBase::SetUp();

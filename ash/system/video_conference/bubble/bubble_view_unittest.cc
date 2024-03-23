@@ -129,10 +129,8 @@ class BubbleViewTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kVideoConference,
-         features::kCameraEffectsSupportedByHardware},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFeatureManagementVideoConference);
 
     // Instantiates a fake controller (the real one is created in
     // `ChromeBrowserMainExtraPartsAsh::PreProfileInit()` which is not called in
@@ -476,10 +474,8 @@ class ResourceDependencyTest
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kVideoConference,
-         features::kCameraEffectsSupportedByHardware},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFeatureManagementVideoConference);
 
     // Here we have to create the global instance of `CrasAudioHandler` before
     // `FakeVideoConferenceTrayController`, so we do it here and not do it in

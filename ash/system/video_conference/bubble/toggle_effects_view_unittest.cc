@@ -42,7 +42,7 @@ class ToggleEffectsViewTest
   // AshTestBase:
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features = {
-        features::kVideoConference, features::kCameraEffectsSupportedByHardware,
+        features::kFeatureManagementVideoConference,
         chromeos::features::kJelly};
     if (IsVcDlcUiEnabled()) {
       enabled_features.push_back(features::kVcDlcUi);

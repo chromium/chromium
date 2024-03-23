@@ -381,14 +381,6 @@ const base::FeatureParam<BorealisZinkGlDriverParam> kBorealisZinkGlDriverParam{
     BorealisZinkGlDriverParam::kZinkEnableRecommended,
     &borealis_zink_gl_driver_options};
 
-// Controls whether the camera effects are supported by hardware.
-// Note that this feature can be overridden by login_manager based on
-// whether a per-board build sets the USE camera_feature_effects flag.
-// Refer to: chromiumos/src/platform2/login_manager/chrome_setup.cc
-BASE_FEATURE(kCameraEffectsSupportedByHardware,
-             "CameraEffectsSupportedByHardware",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the feature to parameterize glyph for "Campbell" feature.
 BASE_FEATURE(kCampbellGlyph,
              "CampbellGlyph",
@@ -2883,10 +2875,6 @@ BASE_FEATURE(kUserActivityPrediction,
              "UserActivityPrediction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the video conference feature is enabled.
-BASE_FEATURE(kVideoConference,
-             "VideoConference",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 // Restricts the video conference feature to the intended
 // target population,
 BASE_FEATURE(kFeatureManagementVideoConference,
@@ -4501,9 +4489,7 @@ bool IsUpstreamTrustedReportsFirmwareEnabled() {
 }
 
 bool IsVideoConferenceEnabled() {
-  return (base::FeatureList::IsEnabled(kVideoConference) ||
-          base::FeatureList::IsEnabled(kFeatureManagementVideoConference)) &&
-         base::FeatureList::IsEnabled(kCameraEffectsSupportedByHardware);
+  return base::FeatureList::IsEnabled(kFeatureManagementVideoConference);
 }
 
 bool IsStopAllScreenShareEnabled() {

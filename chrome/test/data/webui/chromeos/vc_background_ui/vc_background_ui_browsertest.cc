@@ -17,9 +17,8 @@ class VcBackgroundUIBrowserTest : public WebUIMochaBrowserTest {
  protected:
   VcBackgroundUIBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kVideoConference, features::kVcBackgroundReplace,
-         manta::features::kMantaService,
-         features::kCameraEffectsSupportedByHardware},
+        {features::kVcBackgroundReplace, manta::features::kMantaService,
+         features::kFeatureManagementVideoConference},
         {});
     set_test_loader_host(std::string(kChromeUIVcBackgroundHost));
   }

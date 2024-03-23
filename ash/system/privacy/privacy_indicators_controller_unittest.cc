@@ -361,10 +361,8 @@ TEST_F(PrivacyIndicatorsControllerTest, NotificationWithTwoApps) {
 TEST_F(PrivacyIndicatorsControllerTest,
        DoNotShowNotificationWithVideoConferenceEnabled) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatures(
-      {ash::features::kVideoConference,
-       ash::features::kCameraEffectsSupportedByHardware},
-      {});
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kFeatureManagementVideoConference);
 
   // Try to show a notification.
   std::string app_id = "test_app_id";
@@ -780,8 +778,7 @@ class PrivacyIndicatorsControllerVideoConferenceTest
   PrivacyIndicatorsControllerVideoConferenceTest() {
     scoped_feature_list_.InitWithFeatureStates({
         {features::kPrivacyIndicators, true},
-        {features::kVideoConference, true},
-        {features::kCameraEffectsSupportedByHardware, true},
+        {features::kFeatureManagementVideoConference, true},
     });
   }
   PrivacyIndicatorsControllerVideoConferenceTest(

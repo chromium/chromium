@@ -20414,11 +20414,9 @@
                 {
                     "name": "BackgroundReplaceEnabled",
                     "enable_features": [
-                        "CameraEffectsSupportedByHardware",
                         "CrOSLateBootAudioAPNoiseCancellation",
                         "FeatureManagementVideoConference",
-                        "VCBackgroundReplace",
-                        "VideoConference"
+                        "VCBackgroundReplace"
                     ]
                 },
                 {

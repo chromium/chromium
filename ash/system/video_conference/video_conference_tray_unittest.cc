@@ -112,8 +112,8 @@ class VideoConferenceTrayTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kVideoConference, features::kVcStopAllScreenShare,
-         features::kCameraEffectsSupportedByHardware},
+        {features::kVcStopAllScreenShare,
+         features::kFeatureManagementVideoConference},
         {});
 
     // Instantiates a fake controller (the real one is created in
@@ -1116,10 +1116,8 @@ class VideoConferenceTrayDelayTest : public VideoConferenceTrayTest {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kVideoConference,
-         features::kCameraEffectsSupportedByHardware},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFeatureManagementVideoConference);
 
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in

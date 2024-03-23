@@ -373,8 +373,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kWebUiDataSourcePathForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGetAccessTokenForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kCameraEffectsSupportedByHardware[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kPreventKioskAutolaunchForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAllowDefaultShelfPinLayoutIgnoringSync[];
@@ -494,9 +492,6 @@ bool IsSkipRecorderNudgeShowThresholdDurationEnabled();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsStabilizeTimeDependentViewForTestsEnabled();
-
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsCameraEffectsSupportedByHardware();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool UseFakeCrasAudioClientForDBus();

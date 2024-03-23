@@ -122,9 +122,9 @@ class VideoConferenceIntegrationTest
   VideoConferenceIntegrationTest() {
     // kOnDeviceSpeechRecognition is to support live caption.
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kVideoConference, ash::features::kVcStopAllScreenShare,
+        {ash::features::kVcStopAllScreenShare,
          ash::features::kOnDeviceSpeechRecognition,
-         ash::features::kCameraEffectsSupportedByHardware,
+         ash::features::kFeatureManagementVideoConference,
          ash::features::kShowLiveCaptionInVideoConferenceTray},
         {});
   }

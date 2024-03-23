@@ -134,10 +134,8 @@ class VideoConferenceAshBrowserTest : public InProcessBrowserTest {
       const VideoConferenceAshBrowserTest&) = delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kVideoConference,
-         ash::features::kCameraEffectsSupportedByHardware},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kFeatureManagementVideoConference);
 
     InProcessBrowserTest::SetUp();
   }
