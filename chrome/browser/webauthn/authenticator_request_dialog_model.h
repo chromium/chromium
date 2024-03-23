@@ -586,8 +586,7 @@ class AuthenticatorRequestDialogModel
   void OnGPMOnboardingAccepted();
 
   // Called when the user accepts passkey creation in the GPM bubble.
-  // TODO(enclave): Add transition to authentication or bootstrapping device.
-  void OnGPMCreatePasskey() {}
+  void OnGPMCreatePasskey();
 
   // Called when the user enters the GPM pin in the UI (during initial setup or
   // authentication).

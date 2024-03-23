@@ -1261,6 +1261,17 @@ void AuthenticatorRequestDialogModel::OnGPMOnboardingAccepted() {
   SetCurrentStep(Step::kGPMCreatePin);
 }
 
+void AuthenticatorRequestDialogModel::OnGPMCreatePasskey() {
+  DCHECK_EQ(current_step(), Step::kGPMCreatePasskey);
+  DCHECK(account_state_ == AccountState::kReady ||
+         account_state_ == AccountState::kReadyWithPIN);
+  if (account_state_ == AccountState::kReady) {
+    SetCurrentStep(Step::kWaitingForEnclave);
+  } else if (account_state_ == AccountState::kReadyWithPIN) {
+    PromptForGPMPin();
+  }
+}
+
 void AuthenticatorRequestDialogModel::OnTrustThisComputer() {
   DCHECK_EQ(current_step(), Step::kTrustThisComputer);
   SetCurrentStep(Step::kRecoverSecurityDomain);
@@ -1881,15 +1892,12 @@ void AuthenticatorRequestDialogModel::StartICloudKeychain() {
 void AuthenticatorRequestDialogModel::StartEnclave() {
   switch (account_state_) {
     case AccountState::kReady:
-      SetCurrentStep(Step::kWaitingForEnclave);
-      break;
-
     case AccountState::kReadyWithPIN:
-      PromptForGPMPin();
+      SetCurrentStep(Step::kGPMCreatePasskey);
       break;
 
     case AccountState::kRecoverable:
-      SetCurrentStep(Step::kRecoverSecurityDomain);
+      SetCurrentStep(Step::kTrustThisComputer);
       break;
 
     case AccountState::kLoading:
@@ -1908,7 +1916,7 @@ void AuthenticatorRequestDialogModel::StartEnclave() {
       break;
 
     case AccountState::kEmpty:
-      SetCurrentStep(Step::kGPMCreatePin);
+      SetCurrentStep(Step::kGPMOnboarding);
       break;
   }
 }
