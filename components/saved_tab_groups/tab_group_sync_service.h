@@ -60,20 +60,17 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // propagate the changes to server side, and notify any UI observers such
   // as revisit surface to update their UI accordingly.
   virtual void AddOrUpdateGroup(SavedTabGroup group) = 0;
-  virtual void RemoveGroup(const tab_groups::TabGroupId& local_id) = 0;
+  virtual void RemoveGroup(const LocalTabGroupID& local_id) = 0;
 
   // Get methods.
   virtual std::vector<SavedTabGroup> GetAllGroups() = 0;
   virtual std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) = 0;
-  virtual std::optional<SavedTabGroup> GetGroup(
-      tab_groups::TabGroupId& local_id) = 0;
+  virtual std::optional<SavedTabGroup> GetGroup(LocalTabGroupID& local_id) = 0;
 
   // Book-keeping methods to map the IDs.
-  virtual void SetLocalTabGroupIdForSyncId(
-      const base::Uuid& sync_id,
-      tab_groups::TabGroupId& local_id) = 0;
-  virtual base::Uuid GetSyncIdForLocalTabGroupId(
-      tab_groups::TabGroupId& local_id) = 0;
+  virtual void SetLocalTabGroupIdForSyncId(const base::Uuid& sync_id,
+                                           LocalTabGroupID& local_id) = 0;
+  virtual base::Uuid GetSyncIdForLocalTabGroupId(LocalTabGroupID& local_id) = 0;
   virtual base::Uuid GetLocalIdForSyncId(const base::Uuid& sync_id) = 0;
 
   // For connecting to sync engine.

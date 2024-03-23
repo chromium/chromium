@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -29,7 +30,7 @@ class SavedTabGroupTab {
       const base::Uuid& group_guid,
       std::optional<size_t> position,
       std::optional<base::Uuid> saved_tab_guid = std::nullopt,
-      std::optional<base::Token> local_tab_id = std::nullopt,
+      std::optional<LocalTabID> local_tab_id = std::nullopt,
       std::optional<base::Time> creation_time_windows_epoch_micros =
           std::nullopt,
       std::optional<base::Time> update_time_windows_epoch_micros = std::nullopt,
@@ -40,9 +41,7 @@ class SavedTabGroupTab {
   // Accessors.
   const base::Uuid& saved_tab_guid() const { return saved_tab_guid_; }
   const base::Uuid& saved_group_guid() const { return saved_group_guid_; }
-  const std::optional<base::Token> local_tab_id() const {
-    return local_tab_id_;
-  }
+  const std::optional<LocalTabID> local_tab_id() const { return local_tab_id_; }
   std::optional<size_t> position() const { return position_; }
   const GURL& url() const { return url_; }
   const std::u16string& title() const { return title_; }
@@ -70,7 +69,7 @@ class SavedTabGroupTab {
     SetUpdateTimeWindowsEpochMicros(base::Time::Now());
     return *this;
   }
-  SavedTabGroupTab& SetLocalTabID(std::optional<base::Token> local_tab_id) {
+  SavedTabGroupTab& SetLocalTabID(std::optional<LocalTabID> local_tab_id) {
     local_tab_id_ = local_tab_id;
     SetUpdateTimeWindowsEpochMicros(base::Time::Now());
     return *this;
@@ -116,7 +115,7 @@ class SavedTabGroupTab {
   base::Uuid saved_group_guid_;
 
   // The ID used to represent the tab in reference to the web_contents locally.
-  std::optional<base::Token> local_tab_id_;
+  std::optional<LocalTabID> local_tab_id_;
 
   // The current position of the tab in relation to all other tabs in the group.
   // A value of nullopt means that the group was not assigned a position and

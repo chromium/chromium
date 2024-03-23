@@ -12,6 +12,7 @@
 
 #include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -26,23 +27,22 @@ namespace tab_groups {
 // tab_group_editor_bubble_view.
 class SavedTabGroup {
  public:
-  SavedTabGroup(
-      const std::u16string& title,
-      const tab_groups::TabGroupColorId& color,
-      const std::vector<SavedTabGroupTab>& urls,
-      std::optional<size_t> position,
-      std::optional<base::Uuid> saved_guid = std::nullopt,
-      std::optional<tab_groups::TabGroupId> local_group_id = std::nullopt,
-      std::optional<base::Time> creation_time_windows_epoch_micros =
-          std::nullopt,
-      std::optional<base::Time> update_time_windows_epoch_micros =
-          std::nullopt);
+  SavedTabGroup(const std::u16string& title,
+                const tab_groups::TabGroupColorId& color,
+                const std::vector<SavedTabGroupTab>& urls,
+                std::optional<size_t> position,
+                std::optional<base::Uuid> saved_guid = std::nullopt,
+                std::optional<LocalTabGroupID> local_group_id = std::nullopt,
+                std::optional<base::Time> creation_time_windows_epoch_micros =
+                    std::nullopt,
+                std::optional<base::Time> update_time_windows_epoch_micros =
+                    std::nullopt);
   SavedTabGroup(const SavedTabGroup& other);
   ~SavedTabGroup();
 
   // Metadata accessors.
   const base::Uuid& saved_guid() const { return saved_guid_; }
-  const std::optional<tab_groups::TabGroupId>& local_group_id() const {
+  const std::optional<LocalTabGroupID>& local_group_id() const {
     return local_group_id_;
   }
   const base::Time& creation_time_windows_epoch_micros() const {
@@ -64,27 +64,26 @@ class SavedTabGroup {
 
   // Accessors for Tabs based on id.
   const SavedTabGroupTab* GetTab(const base::Uuid& saved_tab_guid) const;
-  const SavedTabGroupTab* GetTab(const base::Token& local_tab_id) const;
+  const SavedTabGroupTab* GetTab(const LocalTabID& local_tab_id) const;
 
   // Non const accessors for tabs based on id. this should only be used inside
   // of the model methods.
   SavedTabGroupTab* GetTab(const base::Uuid& saved_tab_guid);
-  SavedTabGroupTab* GetTab(const base::Token& local_tab_id);
+  SavedTabGroupTab* GetTab(const LocalTabID& local_tab_id);
 
   // Returns the index for `tab_id` in `saved_tabs_` if it exists. Otherwise,
   // returns std::nullopt.
   std::optional<int> GetIndexOfTab(const base::Uuid& saved_tab_guid) const;
-  std::optional<int> GetIndexOfTab(const base::Token& local_tab_id) const;
+  std::optional<int> GetIndexOfTab(const LocalTabID& local_tab_id) const;
 
   // Returns true if the `tab_id` was found in `saved_tabs_`.
   bool ContainsTab(const base::Uuid& saved_tab_guid) const;
-  bool ContainsTab(const base::Token& tab_id) const;
+  bool ContainsTab(const LocalTabID& tab_id) const;
 
   // Metadata mutators.
   SavedTabGroup& SetTitle(std::u16string title);
   SavedTabGroup& SetColor(tab_groups::TabGroupColorId color);
-  SavedTabGroup& SetLocalGroupId(
-      std::optional<tab_groups::TabGroupId> tab_group_id);
+  SavedTabGroup& SetLocalGroupId(std::optional<LocalTabGroupID> tab_group_id);
   SavedTabGroup& SetUpdateTimeWindowsEpochMicros(
       base::Time update_time_windows_epoch_micros);
   SavedTabGroup& SetPosition(size_t position);
@@ -179,7 +178,7 @@ class SavedTabGroup {
   // The ID of the tab group in the tab strip which is associated with the saved
   // tab group object. This can be null if the saved tab group is not in any tab
   // strip.
-  std::optional<tab_groups::TabGroupId> local_group_id_;
+  std::optional<LocalTabGroupID> local_group_id_;
 
   // The title of the saved tab group.
   std::u16string title_;

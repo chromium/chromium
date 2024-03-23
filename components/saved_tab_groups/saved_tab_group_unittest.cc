@@ -4,6 +4,7 @@
 
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "base/token.h"
+#include "build/build_config.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -20,10 +21,14 @@ base::Uuid MakeUniqueGUID() {
       as_bytes(base::make_span(kBytes)));
 }
 
-base::Token MakeUniqueToken() {
+LocalTabID MakeUniqueTabID() {
   static uint64_t unique_value = 0;
   unique_value++;
+#if BUILDFLAG(IS_ANDROID)
+  return unique_value;
+#else
   return base::Token(0, unique_value);
+#endif
 }
 
 SavedTabGroup CreateDefaultEmptySavedTabGroup() {
@@ -36,10 +41,9 @@ SavedTabGroupTab CreateDefaultSavedTabGroupTab(const base::Uuid& group_guid) {
                           /*position=*/std::nullopt);
 }
 
-void AddTabToEndOfGroup(
-    SavedTabGroup& group,
-    std::optional<base::Uuid> saved_guid = std::nullopt,
-    std::optional<base::Token> local_tab_id = std::nullopt) {
+void AddTabToEndOfGroup(SavedTabGroup& group,
+                        std::optional<base::Uuid> saved_guid = std::nullopt,
+                        std::optional<LocalTabID> local_tab_id = std::nullopt) {
   group.AddTabLocally(SavedTabGroupTab(
       GURL(url::kAboutBlankURL), std::u16string(u"default_title"),
       group.saved_guid(), /*position=*/group.saved_tabs().size(), saved_guid,
@@ -64,9 +68,9 @@ TEST(SavedTabGroupTest, GetTabByGUID) {
   EXPECT_EQ(&group.saved_tabs()[1], tab_2);
 }
 
-TEST(SavedTabGroupTest, GetTabByToken) {
-  base::Token tab_1_local_id = MakeUniqueToken();
-  base::Token tab_2_local_id = MakeUniqueToken();
+TEST(SavedTabGroupTest, GetTabById) {
+  LocalTabID tab_1_local_id = MakeUniqueTabID();
+  LocalTabID tab_2_local_id = MakeUniqueTabID();
 
   // create a group with a couple tabs
   SavedTabGroup group = CreateDefaultEmptySavedTabGroup();

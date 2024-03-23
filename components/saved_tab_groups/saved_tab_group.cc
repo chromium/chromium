@@ -28,7 +28,7 @@ SavedTabGroup::SavedTabGroup(
     const std::vector<SavedTabGroupTab>& urls,
     std::optional<size_t> position,
     std::optional<base::Uuid> saved_guid,
-    std::optional<tab_groups::TabGroupId> local_group_id,
+    std::optional<LocalTabGroupID> local_group_id,
     std::optional<base::Time> creation_time_windows_epoch_micros,
     std::optional<base::Time> update_time_windows_epoch_micros)
     : saved_guid_(saved_guid.value_or(base::Uuid::GenerateRandomV4())),
@@ -55,7 +55,7 @@ const SavedTabGroupTab* SavedTabGroup::GetTab(
 }
 
 const SavedTabGroupTab* SavedTabGroup::GetTab(
-    const base::Token& local_tab_id) const {
+    const LocalTabID& local_tab_id) const {
   std::optional<int> index = GetIndexOfTab(local_tab_id);
   if (!index.has_value())
     return nullptr;
@@ -70,7 +70,7 @@ SavedTabGroupTab* SavedTabGroup::GetTab(const base::Uuid& saved_tab_guid) {
   return &saved_tabs()[index.value()];
 }
 
-SavedTabGroupTab* SavedTabGroup::GetTab(const base::Token& local_tab_id) {
+SavedTabGroupTab* SavedTabGroup::GetTab(const LocalTabID& local_tab_id) {
   std::optional<int> index = GetIndexOfTab(local_tab_id);
   if (!index.has_value()) {
     return nullptr;
@@ -83,7 +83,7 @@ bool SavedTabGroup::ContainsTab(const base::Uuid& saved_tab_guid) const {
   return index.has_value();
 }
 
-bool SavedTabGroup::ContainsTab(const base::Token& local_tab_id) const {
+bool SavedTabGroup::ContainsTab(const LocalTabID& local_tab_id) const {
   std::optional<int> index = GetIndexOfTab(local_tab_id);
   return index.has_value();
 }
@@ -100,7 +100,7 @@ std::optional<int> SavedTabGroup::GetIndexOfTab(
 }
 
 std::optional<int> SavedTabGroup::GetIndexOfTab(
-    const base::Token& local_tab_id) const {
+    const LocalTabID& local_tab_id) const {
   auto it = base::ranges::find_if(saved_tabs(),
                                   [local_tab_id](const SavedTabGroupTab& tab) {
                                     return tab.local_tab_id() == local_tab_id;
@@ -123,7 +123,7 @@ SavedTabGroup& SavedTabGroup::SetColor(tab_groups::TabGroupColorId color) {
 }
 
 SavedTabGroup& SavedTabGroup::SetLocalGroupId(
-    std::optional<tab_groups::TabGroupId> tab_group_id) {
+    std::optional<LocalTabGroupID> tab_group_id) {
   local_group_id_ = tab_group_id;
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;

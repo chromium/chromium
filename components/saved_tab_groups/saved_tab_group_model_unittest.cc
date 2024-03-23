@@ -10,9 +10,11 @@
 #include <string>
 #include <vector>
 
+#include "base/rand_util.h"
 #include "base/test/gtest_util.h"
 #include "base/token.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -26,6 +28,22 @@
 
 namespace tab_groups {
 namespace {
+
+LocalTabGroupID GenerateRandomTabGroupID() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::RandInt(0, 1000);
+#else
+  return tab_groups::TabGroupId::GenerateNew();
+#endif
+}
+
+LocalTabID GenerateRandomTabID() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::RandInt(0, 1000);
+#else
+  return base::Token::CreateRandom();
+#endif
+}
 
 void CompareSavedTabGroupTabs(const std::vector<SavedTabGroupTab>& v1,
                               const std::vector<SavedTabGroupTab>& v2) {
@@ -892,7 +910,7 @@ TEST_F(SavedTabGroupModelObserverTest, UpdatedElementFromSync) {
 // index.
 TEST_F(SavedTabGroupModelObserverTest, OnGroupClosedInTabStrip) {
   SavedTabGroup group_4 = CreateTestSavedTabGroup();
-  tab_groups::TabGroupId tab_group_id = tab_groups::TabGroupId::GenerateNew();
+  LocalTabGroupID tab_group_id = GenerateRandomTabGroupID();
   group_4.SetLocalGroupId(tab_group_id);
   saved_tab_group_model_->Add(group_4);
   const int index =
@@ -962,7 +980,7 @@ TEST_F(SavedTabGroupModelObserverTest, GetGroupContainingTab) {
   base::Uuid matching_group_guid = matching_group.saved_guid();
 
   base::Uuid matching_tab_guid = base::Uuid::GenerateRandomV4();
-  base::Token matching_local_tab_id = base::Token::CreateRandom();
+  LocalTabID matching_local_tab_id = GenerateRandomTabID();
 
   SavedTabGroupTab tab(GURL(url::kAboutBlankURL), std::u16string(u"title"),
                        matching_group.saved_guid(), /*position=*/std::nullopt,
@@ -985,7 +1003,7 @@ TEST_F(SavedTabGroupModelObserverTest, GetGroupContainingTab) {
   EXPECT_EQ(nullptr, saved_tab_group_model_->GetGroupContainingTab(
                          base::Uuid::GenerateRandomV4()));
   EXPECT_EQ(nullptr,
-            saved_tab_group_model_->GetGroupContainingTab(base::Token()));
+            saved_tab_group_model_->GetGroupContainingTab(LocalTabID()));
 }
 
 }  // namespace tab_groups

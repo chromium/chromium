@@ -16,6 +16,7 @@ source_set("core") {
     "tab_group_sync_service.h",
     "tab_group_sync_service_impl.cc",
     "tab_group_sync_service_impl.h",
+    "types.h",
   ]
   deps = [
     "//base",

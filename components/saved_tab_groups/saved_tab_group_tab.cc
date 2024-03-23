@@ -15,7 +15,7 @@ SavedTabGroupTab::SavedTabGroupTab(
     const base::Uuid& group_guid,
     std::optional<size_t> position,
     std::optional<base::Uuid> saved_tab_guid,
-    std::optional<base::Token> local_tab_id,
+    std::optional<LocalTabID> local_tab_id,
     std::optional<base::Time> creation_time_windows_epoch_micros,
     std::optional<base::Time> update_time_windows_epoch_micros,
     std::optional<gfx::Image> favicon)

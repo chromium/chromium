@@ -43,7 +43,7 @@ SavedTabGroupModel::SavedTabGroupModel() = default;
 SavedTabGroupModel::~SavedTabGroupModel() = default;
 
 std::optional<int> SavedTabGroupModel::GetIndexOf(
-    tab_groups::TabGroupId tab_group_id) const {
+    LocalTabGroupID tab_group_id) const {
   for (size_t i = 0; i < saved_tab_groups_.size(); i++) {
     if (saved_tab_groups_[i].local_group_id() == tab_group_id)
       return i;
@@ -71,7 +71,7 @@ const SavedTabGroup* SavedTabGroupModel::Get(const base::Uuid& id) const {
 }
 
 const SavedTabGroup* SavedTabGroupModel::Get(
-    const tab_groups::TabGroupId local_group_id) const {
+    const LocalTabGroupID local_group_id) const {
   std::optional<int> index = GetIndexOf(local_group_id);
   if (!index.has_value())
     return nullptr;
@@ -95,7 +95,7 @@ void SavedTabGroupModel::Add(SavedTabGroup saved_group) {
   }
 }
 
-void SavedTabGroupModel::Remove(const tab_groups::TabGroupId tab_group_id) {
+void SavedTabGroupModel::Remove(const LocalTabGroupID tab_group_id) {
   if (!Contains(tab_group_id))
     return;
 
@@ -128,7 +128,7 @@ void SavedTabGroupModel::Remove(const base::Uuid& id) {
 }
 
 void SavedTabGroupModel::UpdateVisualData(
-    tab_groups::TabGroupId tab_group_id,
+    LocalTabGroupID tab_group_id,
     const tab_groups::TabGroupVisualData* visual_data) {
   if (!Contains(tab_group_id))
     return;
@@ -166,8 +166,7 @@ void SavedTabGroupModel::AddedFromSync(SavedTabGroup saved_group) {
   }
 }
 
-void SavedTabGroupModel::RemovedFromSync(
-    const tab_groups::TabGroupId tab_group_id) {
+void SavedTabGroupModel::RemovedFromSync(const LocalTabGroupID tab_group_id) {
   if (!Contains(tab_group_id))
     return;
 
@@ -192,7 +191,7 @@ void SavedTabGroupModel::RemovedFromSync(const base::Uuid& id) {
 }
 
 void SavedTabGroupModel::UpdatedVisualDataFromSync(
-    tab_groups::TabGroupId tab_group_id,
+    LocalTabGroupID tab_group_id,
     const tab_groups::TabGroupVisualData* visual_data) {
   if (!Contains(tab_group_id))
     return;
@@ -229,7 +228,7 @@ SavedTabGroup* SavedTabGroupModel::GetGroupContainingTab(
 }
 
 SavedTabGroup* SavedTabGroupModel::GetGroupContainingTab(
-    const base::Token& local_tab_id) {
+    const LocalTabID& local_tab_id) {
   for (auto& saved_group : saved_tab_groups_) {
     if (saved_group.ContainsTab(local_tab_id))
       return &saved_group;
@@ -299,7 +298,7 @@ void SavedTabGroupModel::UpdateTabInGroup(const base::Uuid& group_id,
 
 void SavedTabGroupModel::UpdateLocalTabId(const base::Uuid& group_id,
                                           SavedTabGroupTab tab,
-                                          std::optional<base::Token> local_id) {
+                                          std::optional<LocalTabID> local_id) {
   std::optional<int> group_index = GetIndexOf(group_id);
   CHECK(group_index.has_value());
   tab.SetLocalTabID(local_id);
@@ -495,7 +494,7 @@ SavedTabGroupModel::LoadStoredEntries(
 }
 
 void SavedTabGroupModel::OnGroupClosedInTabStrip(
-    const tab_groups::TabGroupId& tab_group_id) {
+    const LocalTabGroupID& tab_group_id) {
   const std::optional<int> index = GetIndexOf(tab_group_id);
   if (!index.has_value())
     return;
@@ -513,7 +512,7 @@ void SavedTabGroupModel::OnGroupClosedInTabStrip(
 
 void SavedTabGroupModel::OnGroupOpenedInTabStrip(
     const base::Uuid& id,
-    const tab_groups::TabGroupId& tab_group_id) {
+    const LocalTabGroupID& tab_group_id) {
   const std::optional<int> index = GetIndexOf(id);
   CHECK(index.has_value());
   CHECK_GE(index.value(), 0);

@@ -45,8 +45,7 @@ syncer::ModelTypeSyncBridge* TabGroupSyncServiceImpl::bridge() {
 
 void TabGroupSyncServiceImpl::AddOrUpdateGroup(SavedTabGroup group) {}
 
-void TabGroupSyncServiceImpl::RemoveGroup(
-    const tab_groups::TabGroupId& local_id) {}
+void TabGroupSyncServiceImpl::RemoveGroup(const LocalTabGroupID& local_id) {}
 
 std::vector<SavedTabGroup> TabGroupSyncServiceImpl::GetAllGroups() {
   // TODO(b/326546431): Implement.
@@ -60,19 +59,19 @@ std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
 }
 
 std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
-    tab_groups::TabGroupId& local_id) {
+    LocalTabGroupID& local_id) {
   // TODO(b/326546431): Implement.
   return std::nullopt;
 }
 
 void TabGroupSyncServiceImpl::SetLocalTabGroupIdForSyncId(
     const base::Uuid& sync_id,
-    tab_groups::TabGroupId& local_id) {
+    LocalTabGroupID& local_id) {
   // TODO(b/326546431): Implement.
 }
 
 base::Uuid TabGroupSyncServiceImpl::GetSyncIdForLocalTabGroupId(
-    tab_groups::TabGroupId& local_id) {
+    LocalTabGroupID& local_id) {
   // TODO(b/326546431): Implement.
   return base::Uuid();
 }

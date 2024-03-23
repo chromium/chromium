@@ -38,15 +38,13 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   // TabGroupSyncService implementation.
   void AddOrUpdateGroup(SavedTabGroup group) override;
-  void RemoveGroup(const tab_groups::TabGroupId& local_id) override;
+  void RemoveGroup(const LocalTabGroupID& local_id) override;
   std::vector<SavedTabGroup> GetAllGroups() override;
   std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) override;
-  std::optional<SavedTabGroup> GetGroup(
-      tab_groups::TabGroupId& local_id) override;
+  std::optional<SavedTabGroup> GetGroup(LocalTabGroupID& local_id) override;
   void SetLocalTabGroupIdForSyncId(const base::Uuid& sync_id,
-                                   tab_groups::TabGroupId& local_id) override;
-  base::Uuid GetSyncIdForLocalTabGroupId(
-      tab_groups::TabGroupId& local_id) override;
+                                   LocalTabGroupID& local_id) override;
+  base::Uuid GetSyncIdForLocalTabGroupId(LocalTabGroupID& local_id) override;
   base::Uuid GetLocalIdForSyncId(const base::Uuid& sync_id) override;
   syncer::ModelTypeSyncBridge* bridge() override;
   void AddObserver(TabGroupSyncService::Observer* observer) override;
@@ -69,7 +67,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // in order to link them together again once the SavedTabGroupModelLoaded is
   // called. After the model is loaded, this variable is emptied to conserve
   // memory.
-  std::vector<std::pair<base::Uuid, tab_groups::TabGroupId>>
+  std::vector<std::pair<base::Uuid, LocalTabGroupID>>
       saved_guid_to_local_group_id_mapping_;
 
   // Obsevers of the model.
