@@ -33983,15 +33983,18 @@ would be helpful to identify which type is being sent.
   <int value="-1615505903" label="media_gallery_util"/>
   <int value="-1468742076" label="storage.mojom.StorageService"/>
   <int value="-1450594275" label="identity"/>
+  <int value="-1436638555" label="auction_worklet.mojom.AuctionWorkletService"/>
   <int value="-1307090589" label="ui"/>
   <int value="-1289115149" label="device"/>
   <int value="-1015990949" label="proxy_resolver"/>
   <int value="-988537037" label="video_capture"/>
   <int value="-859807435" label="device.mojom.XRDeviceService"/>
+  <int value="-848001757" label="chrome.mojom.DocumentAnalysisService"/>
   <int value="-740182636" label="audio.mojom.AudioService"/>
   <int value="-732644393" label="chrome.mojom.FileUtilService"/>
   <int value="-725144915" label="local_state"/>
   <int value="-678751616" label="media.mojom.SpeechRecognitionService"/>
+  <int value="-657784776" label="screen_ai.mojom.ScreenAIServiceFactory"/>
   <int value="-657129659" label="printing.mojom.PrintCompositor"/>
   <int value="-461949820" label="heap_profiling"/>
   <int value="-407184831" label="catalog"/>
@@ -34001,6 +34004,7 @@ would be helpful to identify which type is being sent.
   <int value="-2816355" label="profile_import"/>
   <int value="69152809" label="font_service"/>
   <int value="239791233" label="media.mojom.CdmServiceBroker"/>
+  <int value="278046784" label="on_device_model.mojom.OnDeviceModelService"/>
   <int value="281581793" label="printing.mojom.PrintingService"/>
   <int value="331504207" label="data_decoder.mojom.DataDecoderService"/>
   <int value="357224138" label="user_id"/>
@@ -34016,7 +34020,9 @@ would be helpful to identify which type is being sent.
   <int value="1051118555" label="resource_coordinator"/>
   <int value="1340314881" label="media.mojom.CdmService"/>
   <int value="1395049324" label="patch_service"/>
+  <int value="1411170475" label="chrome.mojom.ProcessorMetrics"/>
   <int value="1484328260" label="autoclick_app"/>
+  <int value="1624669190" label="chrome.mojom.UtilReadIcon"/>
   <int value="1746181704" label="proxy_resolver.mojom.ProxyResolverFactory"/>
   <int value="1803540096" label="tap_visualizer_app"/>
   <int value="1882216268" label="patch.mojom.FilePatcher"/>
