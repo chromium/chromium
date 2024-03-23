@@ -47,8 +47,8 @@ void VerifyValidationResult(const base::FilePath& path1,
   ASSERT_TRUE(process1.IsRunning());
   auto process2 = StartSuspendedFakeProcess(path2);
   ASSERT_TRUE(process2.IsRunning());
-  const auto data =
-      GenerateValidationData(ProtectionLevel::PATH_VALIDATION, process1);
+  const auto data = GenerateValidationData(
+      ProtectionLevel::PROTECTION_PATH_VALIDATION, process1);
   ASSERT_TRUE(data.has_value()) << data.error();
   EXPECT_EQ(expected_match, ValidateData(process2, *data))
       << path1 << " vs. " << path2;
@@ -67,23 +67,24 @@ class CallerValidationTest : public ::testing::Test {
 
 TEST_F(CallerValidationTest, NoneValidationTest) {
   const auto my_process = base::Process::Current();
-  const auto data = GenerateValidationData(ProtectionLevel::NONE, my_process);
+  const auto data =
+      GenerateValidationData(ProtectionLevel::PROTECTION_NONE, my_process);
   ASSERT_TRUE(data.has_value()) << data.error();
   ASSERT_TRUE(ValidateData(my_process, *data));
 }
 
 TEST_F(CallerValidationTest, PathValidationTest) {
   const auto my_process = base::Process::Current();
-  const auto data =
-      GenerateValidationData(ProtectionLevel::PATH_VALIDATION, my_process);
+  const auto data = GenerateValidationData(
+      ProtectionLevel::PROTECTION_PATH_VALIDATION, my_process);
   ASSERT_TRUE(data.has_value()) << data.error();
   ASSERT_TRUE(ValidateData(my_process, *data));
 }
 
 TEST_F(CallerValidationTest, PathValidationTestFail) {
   const auto my_process = base::Process::Current();
-  const auto data =
-      GenerateValidationData(ProtectionLevel::PATH_VALIDATION, my_process);
+  const auto data = GenerateValidationData(
+      ProtectionLevel::PROTECTION_PATH_VALIDATION, my_process);
   ASSERT_TRUE(data.has_value()) << data.error();
 
   auto notepad_process =
@@ -104,7 +105,7 @@ TEST_F(CallerValidationTest, PathValidationTestOtherProcess) {
         base::LaunchProcess(L"calc.exe", base::LaunchOptions());
     ASSERT_TRUE(notepad_process.IsRunning());
 
-    data = GenerateValidationData(ProtectionLevel::PATH_VALIDATION,
+    data = GenerateValidationData(ProtectionLevel::PROTECTION_PATH_VALIDATION,
                                   notepad_process);
     ASSERT_TRUE(notepad_process.Terminate(0, true));
   }
@@ -123,7 +124,8 @@ TEST_F(CallerValidationTest, PathValidationTestOtherProcess) {
 
 TEST_F(CallerValidationTest, NoneValidationTestOtherProcess) {
   const auto my_process = base::Process::Current();
-  const auto data = GenerateValidationData(ProtectionLevel::NONE, my_process);
+  const auto data =
+      GenerateValidationData(ProtectionLevel::PROTECTION_NONE, my_process);
   ASSERT_TRUE(data.has_value()) << data.error();
 
   auto notepad_process =
@@ -222,8 +224,8 @@ TEST_F(CallerValidationTest, PathValidationFuzzyPathMatch) {
 // --gtest_filter=CallerValidationTest.PathValidationNetwork
 // --gtest_also_run_disabled_tests.
 TEST_F(CallerValidationTest, DISABLED_PathValidationNetwork) {
-  const auto data = GenerateValidationData(ProtectionLevel::PATH_VALIDATION,
-                                           base::Process::Current());
+  const auto data = GenerateValidationData(
+      ProtectionLevel::PROTECTION_PATH_VALIDATION, base::Process::Current());
   EXPECT_FALSE(data.has_value());
   EXPECT_EQ(data.error(), Elevator::kErrorUnsupportedFilePath);
 }

@@ -151,13 +151,14 @@ base::expected<std::vector<uint8_t>, HRESULT> GenerateValidationData(
     ProtectionLevel level,
     const base::Process& process) {
   switch (level) {
-    case ProtectionLevel::NONE:
-      return std::vector<uint8_t>{ProtectionLevel::NONE};
-    case ProtectionLevel::PATH_VALIDATION:
+    case ProtectionLevel::PROTECTION_NONE:
+      return std::vector<uint8_t>{ProtectionLevel::PROTECTION_NONE};
+    case ProtectionLevel::PROTECTION_PATH_VALIDATION:
       auto path_validation_data = GeneratePathValidationData(process);
       if (path_validation_data.has_value()) {
-        path_validation_data->insert(path_validation_data->cbegin(),
-                                     ProtectionLevel::PATH_VALIDATION);
+        path_validation_data->insert(
+            path_validation_data->cbegin(),
+            ProtectionLevel::PROTECTION_PATH_VALIDATION);
         return *path_validation_data;
       }
       return base::unexpected(path_validation_data.error());
@@ -174,10 +175,10 @@ bool ValidateData(const base::Process& process,
   ProtectionLevel level = static_cast<ProtectionLevel>(validation_data[0]);
 
   switch (level) {
-    case ProtectionLevel::NONE:
+    case ProtectionLevel::PROTECTION_NONE:
       // No validation always returns true.
       return true;
-    case ProtectionLevel::PATH_VALIDATION:
+    case ProtectionLevel::PROTECTION_PATH_VALIDATION:
       return ValidatePath(process, validation_data.subspan(1), log_message);
   }
 }

@@ -66,8 +66,9 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
                               const BSTR plaintext,
                               BSTR* ciphertext,
                               DWORD* last_error) {
-  if (protection_level > ProtectionLevel::PATH_VALIDATION)
+  if (protection_level > ProtectionLevel::PROTECTION_PATH_VALIDATION) {
     return E_INVALIDARG;
+  }
 
   UINT length = ::SysStringByteLen(plaintext);
 

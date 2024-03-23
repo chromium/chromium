@@ -10,13 +10,13 @@ with a `ProtectionLevel` specified by the caller.
 
 `ProtectionLevels` are defined by chrome/elevation_service and are currently:
 
- - `ProtectionLevel::NONE`
+ - `ProtectionLevel::PROTECTION_NONE`
 
    This acts identically to DPAPI in that the protection level is user-bound.
    Only a `DecryptAppBoundString` call that comes from the same user principle
    as the original `EncryptAppBoundString` call with succeed.
 
- - `ProtectionLevel::PATH_VALIDATION`
+ - `ProtectionLevel::PROTECTION_PATH_VALIDATION`
 
    This adds an additional protection that the path of the calling application
    will be validated. Only a `DecryptAppBoundString` call that comes from the

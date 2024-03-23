@@ -106,8 +106,8 @@ std::string EncryptAndRecordMetricsOnCOMThread() {
   {
     SCOPED_UMA_HISTOGRAM_TIMER(
         "OSCrypt.AppBoundEncryption.PathValidation.Encrypt.Time");
-    hr = EncryptAppBoundString(ProtectionLevel::PATH_VALIDATION, kFixedData,
-                               encrypted_data, last_error);
+    hr = EncryptAppBoundString(ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                               kFixedData, encrypted_data, last_error);
   }
 
   base::UmaHistogramSparse(

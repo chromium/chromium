@@ -115,8 +115,9 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecrypt) {
   std::string ciphertext;
   DWORD last_error;
 
-  HRESULT hr = EncryptAppBoundString(ProtectionLevel::PATH_VALIDATION,
-                                     plaintext, ciphertext, last_error);
+  HRESULT hr =
+      EncryptAppBoundString(ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                            plaintext, ciphertext, last_error);
 
   ASSERT_HRESULT_SUCCEEDED(hr);
 
@@ -181,8 +182,9 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestNoService, DISABLED_NoService) {
   std::string ciphertext;
   DWORD last_error;
 
-  HRESULT hr = EncryptAppBoundString(ProtectionLevel::PATH_VALIDATION,
-                                     plaintext, ciphertext, last_error);
+  HRESULT hr =
+      EncryptAppBoundString(ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                            plaintext, ciphertext, last_error);
 
   EXPECT_EQ(REGDB_E_CLASSNOTREG, hr);
   EXPECT_EQ(DWORD{ERROR_GEN_FAILURE}, last_error);
