@@ -1,1 +1,1 @@
-chromeos-chrome-amd64-125.0.6372.0_rc-r1-merged.afdo.bz2
+chromeos-chrome-amd64-125.0.6374.0_rc-r1-merged.afdo.bz2
