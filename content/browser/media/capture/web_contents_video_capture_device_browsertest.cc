@@ -462,7 +462,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 // to be delivered, to ensure the client is up-to-date.
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
-#if defined(MEMORY_SANITIZER)
+// TODO(crbug/328419809): Also flaky on Mac.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
 #define MAYBE_SuspendsAndResumes DISABLED_SuspendsAndResumes
 #else
 #define MAYBE_SuspendsAndResumes SuspendsAndResumes
@@ -638,7 +639,8 @@ INSTANTIATE_TEST_SUITE_P(
 // and whether the main document contains a cross-site iframe.
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
-#if defined(MEMORY_SANITIZER)
+// TODO(crbug/328419809): Also flaky on Mac.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
 #define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
 #else
 #define MAYBE_CapturesContentChanges CapturesContentChanges
