@@ -56,7 +56,6 @@
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "media/mojo/services/webrtc_video_perf_history.h"
 #include "storage/browser/blob/blob_storage_context.h"
-#include "storage/browser/database/database_tracker.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
@@ -251,13 +250,6 @@ void BrowserContext::EnsureResourceContextInitialized() {
 
 void BrowserContext::SaveSessionState() {
   StoragePartition* storage_partition = GetDefaultStoragePartition();
-
-  storage::DatabaseTracker* database_tracker =
-      storage_partition->GetDatabaseTracker();
-  database_tracker->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&storage::DatabaseTracker::SetForceKeepSessionState,
-                     base::WrapRefCounted(database_tracker)));
 
   storage_partition->GetCookieManagerForBrowserProcess()
       ->SetForceKeepSessionState();
