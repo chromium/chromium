@@ -702,6 +702,7 @@ src/webgpu/shader/validation/shader_validation_test.ts
 src/webgpu/shader/validation/const_assert/const_assert.spec.ts
 src/webgpu/shader/validation/decl/compound_statement.spec.ts
 src/webgpu/shader/validation/decl/const.spec.ts
+src/webgpu/shader/validation/decl/let.spec.ts
 src/webgpu/shader/validation/decl/override.spec.ts
 src/webgpu/shader/validation/decl/util.ts
 src/webgpu/shader/validation/decl/ptr_spelling.spec.ts
