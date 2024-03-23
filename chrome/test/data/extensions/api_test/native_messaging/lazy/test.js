@@ -49,7 +49,7 @@ chrome.test.getConfig(function(config) {
     // The goal of this test is just not to crash.
     function sendMessageWithoutCallback() {
       var message = {'text': 'Hi there!', 'number': 3};
-      chrome.extension.sendNativeMessage(appName, message);
+      chrome.runtime.sendNativeMessage(appName, message);
       chrome.test.succeed();  // Mission Complete
     },
 
