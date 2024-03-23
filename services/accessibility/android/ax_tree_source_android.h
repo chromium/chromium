@@ -34,7 +34,9 @@ using AXTreeAndroidSerializer = ui::AXTreeSerializer<
 
 // This class represents the accessibility tree from the focused ARC window.
 class AXTreeSourceAndroid
-    : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
+    : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
+                              ui::AXTreeData*,
+                              ui::AXNodeData>,
       public ui::AXActionHandler {
  public:
   class Delegate {

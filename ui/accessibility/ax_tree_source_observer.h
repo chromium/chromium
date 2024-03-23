@@ -10,21 +10,31 @@
 
 namespace ui {
 
-template <typename AXNodeSource>
+template <typename AXNodeSource,
+          typename AXTreeDataType,
+          typename AXNodeDataType>
 class AXTreeSource;
 
 // This is an interface for a class that observes changes to an `AXTreeSource`.
-template <typename AXNodeSource>
+template <typename AXNodeSource,
+          typename AXTreeDataType,
+          typename AXNodeDataType>
 class AX_BASE_EXPORT AXTreeSourceObserver : public base::CheckedObserver {
  public:
   ~AXTreeSourceObserver() override = default;
 
-  virtual void OnNodeAdded(const AXTreeSource<AXNodeSource>& tree_source,
-                           const AXNodeSource& node_source) = 0;
-  virtual void OnNodeUpdated(const AXTreeSource<AXNodeSource>& tree_source,
-                             const AXNodeSource& node_source) = 0;
-  virtual void OnNodeRemoved(const AXTreeSource<AXNodeSource>& tree_source,
-                             const AXNodeSource& node_source) = 0;
+  virtual void OnNodeAdded(
+      const AXTreeSource<AXNodeSource, AXTreeDataType, AXNodeDataType>&
+          tree_source,
+      const AXNodeSource& node_source) = 0;
+  virtual void OnNodeUpdated(
+      const AXTreeSource<AXNodeSource, AXTreeDataType, AXNodeDataType>&
+          tree_source,
+      const AXNodeSource& node_source) = 0;
+  virtual void OnNodeRemoved(
+      const AXTreeSource<AXNodeSource, AXTreeDataType, AXNodeDataType>&
+          tree_source,
+      const AXNodeSource& node_source) = 0;
 };
 
 }  // namespace ui

@@ -73,8 +73,8 @@ std::string TreeToString(const AXTree& tree) {
 }
 
 AXTreeUpdate SerializeEntireTree(AXSerializableTree& tree) {
-  std::unique_ptr<AXTreeSource<const AXNode*>> tree_source(
-      tree.CreateTreeSource());
+  std::unique_ptr<AXTreeSource<const AXNode*, ui::AXTreeData*, ui::AXNodeData>>
+      tree_source(tree.CreateTreeSource());
   AXTreeSerializer<const AXNode*, std::vector<const AXNode*>> serializer(
       tree_source.get());
   AXTreeUpdate update;
@@ -269,8 +269,9 @@ TEST_P(SerializeGeneratedTreesTest, SerializeGeneratedTrees) {
 
           // Start by serializing tree0 and unserializing it into a new
           // empty tree |dst_tree|.
-          std::unique_ptr<AXTreeSource<const AXNode*>> tree0_source(
-              tree0.CreateTreeSource());
+          std::unique_ptr<
+              AXTreeSource<const AXNode*, ui::AXTreeData*, ui::AXNodeData>>
+              tree0_source(tree0.CreateTreeSource());
           AXTreeSerializer<const AXNode*, std::vector<const AXNode*>>
               serializer(tree0_source.get());
           AXTreeUpdate update0;
@@ -286,8 +287,9 @@ TEST_P(SerializeGeneratedTreesTest, SerializeGeneratedTrees) {
           EXPECT_EQ(TreeToString(tree0), TreeToString(dst_tree));
 
           // Next, pretend that tree0 turned into tree1.
-          std::unique_ptr<AXTreeSource<const AXNode*>> tree1_source(
-              tree1.CreateTreeSource());
+          std::unique_ptr<
+              AXTreeSource<const AXNode*, ui::AXTreeData*, ui::AXNodeData>>
+              tree1_source(tree1.CreateTreeSource());
           serializer.ChangeTreeSourceForTesting(tree1_source.get());
 
           // Mark as dirty the subtree rooted at one of the nodes.

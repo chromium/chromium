@@ -29,7 +29,7 @@ class AXObjectCacheImpl;
 
 class MODULES_EXPORT BlinkAXTreeSource
     : public GarbageCollected<BlinkAXTreeSource>,
-      public ui::AXTreeSource<AXObject*> {
+      public ui::AXTreeSource<AXObject*, ui::AXTreeData*, ui::AXNodeData> {
  public:
   // Pass truncate_inline_textboxes_ if inline textboxes should be removed
   // from the serialized tree, even if they are already available in the cache.

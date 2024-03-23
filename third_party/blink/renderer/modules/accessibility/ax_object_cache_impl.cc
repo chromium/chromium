@@ -6185,12 +6185,14 @@ void AXObjectCacheImpl::AddPluginTreeToUpdate(ui::AXTreeUpdate* update) {
   }
 }
 
-ui::AXTreeSource<const ui::AXNode*>* AXObjectCacheImpl::GetPluginTreeSource() {
+ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>*
+AXObjectCacheImpl::GetPluginTreeSource() {
   return plugin_tree_source_.get();
 }
 
 void AXObjectCacheImpl::SetPluginTreeSource(
-    ui::AXTreeSource<const ui::AXNode*>* source) {
+    ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>*
+        source) {
   if (plugin_tree_source_.get() == source) {
     return;
   }

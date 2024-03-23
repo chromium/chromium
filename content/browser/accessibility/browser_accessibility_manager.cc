@@ -1656,8 +1656,9 @@ bool BrowserAccessibilityManager::IsRootFrameManager() const {
 }
 
 ui::AXTreeUpdate BrowserAccessibilityManager::SnapshotAXTreeForTesting() {
-  std::unique_ptr<ui::AXTreeSource<const ui::AXNode*>> tree_source(
-      ax_serializable_tree()->CreateTreeSource());
+  std::unique_ptr<
+      ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>>
+      tree_source(ax_serializable_tree()->CreateTreeSource());
   ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>
       serializer(tree_source.get());
   ui::AXTreeUpdate update;

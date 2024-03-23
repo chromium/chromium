@@ -69,8 +69,9 @@ struct ClientTreeNode;
 template <typename AXSourceNode, typename AXSourceNodeVectorType>
 class AXTreeSerializer {
  public:
-  explicit AXTreeSerializer(AXTreeSource<AXSourceNode>* tree,
-                            bool crash_on_error = true);
+  explicit AXTreeSerializer(
+      AXTreeSource<AXSourceNode, ui::AXTreeData*, ui::AXNodeData>* tree,
+      bool crash_on_error = true);
   ~AXTreeSerializer();
 
   // Throw out the internal state that keeps track of the nodes the client
@@ -132,7 +133,8 @@ class AXTreeSerializer {
   // state and then call ChangeTreeSourceForTesting and then SerializeChanges
   // to simulate the changes you'd get if a tree changed from the initial
   // state to the second tree's state.
-  void ChangeTreeSourceForTesting(AXTreeSource<AXSourceNode>* new_tree);
+  void ChangeTreeSourceForTesting(
+      AXTreeSource<AXSourceNode, ui::AXTreeData*, ui::AXNodeData>* new_tree);
 
   // Returns the number of nodes in the client tree. After a serialization
   // operation this should be an accurate representation of the tree source
@@ -218,7 +220,9 @@ class AXTreeSerializer {
   ClientTreeNode* GetClientTreeNodeParent(ClientTreeNode* obj);
 
   // The tree source.
-  raw_ptr<AXTreeSource<AXSourceNode>, DanglingUntriaged> tree_;
+  raw_ptr<AXTreeSource<AXSourceNode, ui::AXTreeData*, ui::AXNodeData>,
+          DanglingUntriaged>
+      tree_;
 
   // The tree data most recently sent to the client.
   AXTreeData client_tree_data_;
@@ -281,7 +285,7 @@ struct AX_EXPORT ClientTreeNode {
 
 template <typename AXSourceNode, typename AXSourceNodeVectorType>
 AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::AXTreeSerializer(
-    AXTreeSource<AXSourceNode>* tree,
+    AXTreeSource<AXSourceNode, ui::AXTreeData*, ui::AXNodeData>* tree,
     bool crash_on_error)
     : tree_(tree), crash_on_error_(crash_on_error) {}
 
@@ -317,7 +321,8 @@ void AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::InternalReset() {
 
 template <typename AXSourceNode, typename AXSourceNodeVectorType>
 void AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::
-    ChangeTreeSourceForTesting(AXTreeSource<AXSourceNode>* new_tree) {
+    ChangeTreeSourceForTesting(
+        AXTreeSource<AXSourceNode, ui::AXTreeData*, ui::AXNodeData>* new_tree) {
   tree_ = new_tree;
 }
 

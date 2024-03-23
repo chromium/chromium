@@ -12,8 +12,7 @@
 
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_tree_data.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_source_observer.h"
 
 namespace ui {
@@ -26,13 +25,15 @@ namespace ui {
 // as an AXNodeData. This is the primary interface to use when
 // an accessibility tree will be sent over an IPC before being
 // consumed.
-template <typename AXNodeSource>
+template <typename AXNodeSource,
+          typename AXTreeDataType,
+          typename AXNodeDataType>
 class AXTreeSource {
  public:
   virtual ~AXTreeSource() = default;
 
   // Get the tree data and returns true if there is any data to copy.
-  virtual bool GetTreeData(AXTreeData* data) const = 0;
+  virtual bool GetTreeData(AXTreeDataType data) const = 0;
 
   // Get the root of the tree.
   virtual AXNodeSource GetRoot() const = 0;
@@ -71,11 +72,12 @@ class AXTreeSource {
   virtual AXNodeSource GetNull() const = 0;
 
   // Serialize one node in the tree.
-  virtual void SerializeNode(AXNodeSource node, AXNodeData* out_data) const = 0;
+  virtual void SerializeNode(AXNodeSource node,
+                             AXNodeDataType* out_data) const = 0;
 
   // Return a string useful for debugging a node.
   virtual std::string GetDebugString(AXNodeSource node) const {
-    AXNodeData node_data;
+    AXNodeDataType node_data;
     SerializeNode(node, &node_data);
     return node_data.ToString();
   }
@@ -84,12 +86,15 @@ class AXTreeSource {
   // `AXTreeSourceObserver`, which is notified when nodes are added, removed or
   // updated in this tree source.
 
-  virtual void AddObserver(ui::AXTreeSourceObserver<AXNodeSource>* observer) {
+  virtual void AddObserver(
+      ui::AXTreeSourceObserver<AXNodeSource, AXTreeDataType, AXNodeDataType>*
+          observer) {
     NOTIMPLEMENTED();
   }
 
   virtual void RemoveObserver(
-      ui::AXTreeSourceObserver<AXNodeSource>* observer) {
+      ui::AXTreeSourceObserver<AXNodeSource, AXTreeDataType, AXNodeDataType>*
+          observer) {
     NOTIMPLEMENTED();
   }
 

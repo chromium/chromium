@@ -9,6 +9,7 @@
 
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_source.h"
 #include "ui/accessibility/ax_tree_source_observer.h"
 
@@ -20,7 +21,9 @@ namespace ui {
 // work on multiple `AXNodeSource`s, e.g. `AXNode*` and `WebAXObject`.
 template <typename AXNodeSource>
 class AX_EXPORT AXTreeSourceAnnotator
-    : public AXTreeSourceObserver<AXNodeSource> {
+    : public AXTreeSourceObserver<AXNodeSource,
+                                  ui::AXTreeData*,
+                                  ui::AXNodeData> {
  public:
   virtual ~AXTreeSourceAnnotator() = default;
 
@@ -28,7 +31,8 @@ class AX_EXPORT AXTreeSourceAnnotator
   // `AXNodeSource`, if any. For example, in the case of an unlabeled image,
   // this would return automatically generated alt text for the image.
   virtual std::string GetAnnotation(
-      const AXTreeSource<AXNodeSource>& tree_source,
+      const AXTreeSource<AXNodeSource, ui::AXTreeData*, ui::AXNodeData>&
+          tree_source,
       const AXNodeSource& node_source) const = 0;
 
   // Returns a value indicating the status of the automatically generated
@@ -37,20 +41,24 @@ class AX_EXPORT AXTreeSourceAnnotator
   //
   // TODO(nektar): Rename `ImageAnnotationStatus` to `AnnotationStatus`.
   virtual ax::mojom::ImageAnnotationStatus GetAnnotationStatus(
-      const AXTreeSource<AXNodeSource>& tree_source,
+      const AXTreeSource<AXNodeSource, ui::AXTreeData*, ui::AXNodeData>&
+          tree_source,
       const AXNodeSource& node_source) const = 0;
 
   // Returns true if an accessible name for the given `AXNodeSource` has already
   // been automatically generated.
   virtual bool HasAnnotationInCache(
-      const AXTreeSource<AXNodeSource>& tree_source,
+      const AXTreeSource<AXNodeSource, ui::AXTreeData*, ui::AXNodeData>&
+          tree_source,
       const AXNodeSource& node_source) const = 0;
 
   // Returns true if an accessible name for the given `AXNodeSource` has already
   // been automatically generated, is in the process of being generated, or has
   // encountered an error.
-  virtual bool HasNodeInCache(const AXTreeSource<AXNodeSource>& tree_source,
-                              const AXNodeSource& node_source) const = 0;
+  virtual bool HasNodeInCache(
+      const AXTreeSource<AXNodeSource, ui::AXTreeData*, ui::AXNodeData>&
+          tree_source,
+      const AXNodeSource& node_source) const = 0;
 
   // Returns true if the existing accessible name for a node consists of mostly
   // stopwords, such as "the" and "of". This would be a strong indication that

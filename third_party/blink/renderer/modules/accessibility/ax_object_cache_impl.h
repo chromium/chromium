@@ -469,8 +469,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Plugin support. These could in (along with the tree source/serializer
   // fields) move to their own subclass of AXObject.
   void AddPluginTreeToUpdate(ui::AXTreeUpdate* update);
-  ui::AXTreeSource<const ui::AXNode*>* GetPluginTreeSource();
-  void SetPluginTreeSource(ui::AXTreeSource<const ui::AXNode*>* source);
+  ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>*
+  GetPluginTreeSource();
+  void SetPluginTreeSource(
+      ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>*
+          source);
   ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>*
   GetPluginTreeSerializer();
   void MarkPluginDescendantDirty(ui::AXNodeID node_id);
@@ -1196,7 +1199,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   // AXTreeSerializer's AXSourceNodeVectorType is not a vector<raw_ptr> due to
   // performance regressions detected in blink_perf.accessibility tests.
   RAW_PTR_EXCLUSION std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;
-  raw_ptr<ui::AXTreeSource<const ui::AXNode*>> plugin_tree_source_;
+  raw_ptr<ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>>
+      plugin_tree_source_;
 
   // So we can ensure the serialization pipeline never stalls with dirty objects
   // remaining to be serialized.

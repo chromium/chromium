@@ -550,7 +550,8 @@ TEST_F(RenderAccessibilityImplTest, TestExpandCollapseTreeItem) {
 }
 
 class MockPluginAccessibilityTreeSource
-    : public ui::AXTreeSource<const ui::AXNode*>,
+    : public ui::
+          AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>,
       public content::PluginAXTreeActionTargetAdapter {
  public:
   MockPluginAccessibilityTreeSource(ui::AXNodeID root_node_id) {

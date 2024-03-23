@@ -47,8 +47,10 @@ class AXTreeSerializerTest : public testing::Test {
   AXTreeUpdate treedata1_;
   std::unique_ptr<AXSerializableTree> tree0_;
   std::unique_ptr<AXSerializableTree> tree1_;
-  std::unique_ptr<AXTreeSource<const AXNode*>> tree0_source_;
-  std::unique_ptr<AXTreeSource<const AXNode*>> tree1_source_;
+  std::unique_ptr<AXTreeSource<const AXNode*, ui::AXTreeData*, ui::AXNodeData>>
+      tree0_source_;
+  std::unique_ptr<AXTreeSource<const AXNode*, ui::AXTreeData*, ui::AXNodeData>>
+      tree1_source_;
   std::unique_ptr<BasicAXTreeSerializer> serializer_;
 };
 
@@ -302,7 +304,8 @@ TEST_F(AXTreeSerializerTest, ReparentingWithDirtySubtreeUpdates) {
 
 // A variant of AXTreeSource that does not serialize one particular id,
 // returning nullptr from methods that try to retrieve it.
-class AXTreeSourceWithInvalidId : public AXTreeSource<const AXNode*> {
+class AXTreeSourceWithInvalidId
+    : public AXTreeSource<const AXNode*, ui::AXTreeData*, ui::AXNodeData> {
  public:
   AXTreeSourceWithInvalidId(AXTree* tree, int invalid_id)
       : tree_(tree),
@@ -596,8 +599,9 @@ TEST_F(AXTreeSerializerTest, TestPartialSerialization) {
     }
 
     // The result should be indistinguishable from the source tree.
-    std::unique_ptr<AXTreeSource<const AXNode*>> dst_tree_source(
-        dst_tree.CreateTreeSource());
+    std::unique_ptr<
+        AXTreeSource<const AXNode*, ui::AXTreeData*, ui::AXNodeData>>
+        dst_tree_source(dst_tree.CreateTreeSource());
     BasicAXTreeSerializer serializer(dst_tree_source.get());
     AXTreeUpdate dst_update;
     CHECK(serializer.SerializeChanges(dst_tree.root(), &dst_update));

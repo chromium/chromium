@@ -29,7 +29,8 @@ class AXAuraObjWrapper;
 // the Widget/View hierarchy or a new node (for example to create the "desktop"
 // node for the extension API call chrome.automation.getDesktop()).
 class VIEWS_EXPORT AXTreeSourceViews
-    : public ui::AXTreeSource<AXAuraObjWrapper*> {
+    : public ui::
+          AXTreeSource<AXAuraObjWrapper*, ui::AXTreeData*, ui::AXNodeData> {
  public:
   AXTreeSourceViews(ui::AXNodeID root_id,
                     const ui::AXTreeID& tree_id,

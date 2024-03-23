@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_source.h"
 
 namespace ui {
@@ -31,7 +32,8 @@ void CleanAXNodeDataString(std::string* error_str) {
 // explicit. This allows us to test that AXTreeSourceChecker properly warns
 // about errors in accessibility trees that have inconsistent parent/child
 // links.
-class FakeAXTreeSource : public AXTreeSource<const FakeAXNode*> {
+class FakeAXTreeSource
+    : public AXTreeSource<const FakeAXNode*, ui::AXTreeData*, ui::AXNodeData> {
  public:
   FakeAXTreeSource(std::vector<FakeAXNode> nodes, AXNodeID root_id)
       : nodes_(nodes), root_id_(root_id) {

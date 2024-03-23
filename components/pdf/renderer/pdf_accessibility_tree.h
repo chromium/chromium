@@ -70,7 +70,9 @@ enum class PdfOcrRequestStatus {
 };
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*>,
+class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
+                                                     ui::AXTreeData*,
+                                                     ui::AXNodeData>,
                              public content::PluginAXTreeActionTargetAdapter,
                              public content::RenderFrameObserver,
                              public chrome_pdf::PdfAccessibilityDataHandler {

@@ -1009,7 +1009,8 @@ int WebAXObject::GenerateAXID() {
 }
 
 void WebAXObject::SetPluginTreeSource(
-    ui::AXTreeSource<const ui::AXNode*>* source) {
+    ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>*
+        source) {
   private_->AXObjectCache().SetPluginTreeSource(source);
 }
 

@@ -29,8 +29,10 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_serializable_tree.h"
+#include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_serializer.h"
@@ -66,7 +68,8 @@ class AXMediaAppUntrustedHandler
       private ui::AXActionHandlerBase,
       private ui::AXModeObserver {
  public:
-  using TreeSource = ui::AXTreeSource<const ui::AXNode*>;
+  using TreeSource =
+      ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>;
   using TreeSerializer =
       ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>;
 
