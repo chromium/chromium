@@ -95,7 +95,7 @@ TEST_F(CallerValidationTest, PathValidationTestFail) {
 }
 
 TEST_F(CallerValidationTest, PathValidationTestOtherProcess) {
-  base::expected<std::string, HRESULT> data;
+  base::expected<std::vector<uint8_t>, HRESULT> data;
 
   // Start two separate notepad processes to validate that path validation only
   // cares about the process path and not the process itself.
@@ -226,6 +226,31 @@ TEST_F(CallerValidationTest, DISABLED_PathValidationNetwork) {
                                            base::Process::Current());
   EXPECT_FALSE(data.has_value());
   EXPECT_EQ(data.error(), Elevator::kErrorUnsupportedFilePath);
+}
+
+TEST_F(CallerValidationTest, TrimProcessPath) {
+  struct TestData {
+    base::FilePath::StringPieceType input;
+    base::FilePath::StringPieceType expected;
+  } cases[] = {
+      {L"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+       L"C:\\Program Files\\Google\\Chrome"},
+      {L"C:\\Program Files\\Google\\Chrome\\Temp\\chrome.exe",
+       L"C:\\Program Files\\Google\\Chrome"},
+      {L"C:\\Program Files (x86)\\Google\\Chrome\\Temp\\chrome.exe",
+       L"C:\\Program Files\\Google\\Chrome"},
+      {L"C:\\Program Files (x86)\\Google\\Chrome\\Blah\\chrome.exe",
+       L"C:\\Program Files\\Google\\Chrome\\Blah"},
+      {L"C:\\Dir\\app.exe", L"C:\\Dir"},
+      {L"C:\\Dir\\", L"C:\\Dir"},
+      {L"C:\\Dir", L"C:\\Dir"},
+  };
+
+  for (size_t i = 0; i < std::size(cases); ++i) {
+    base::FilePath input(cases[i].input);
+    auto output = MaybeTrimProcessPathForTesting(input);
+    EXPECT_EQ(output.value(), cases[i].expected);
+  }
 }
 
 }  // namespace elevation_service

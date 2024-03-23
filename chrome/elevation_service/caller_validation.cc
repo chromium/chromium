@@ -8,14 +8,17 @@
 
 #include <psapi.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/types/expected.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/elevation_service/elevator.h"
@@ -24,36 +27,35 @@ namespace elevation_service {
 
 namespace {
 
-constexpr char kPathValidationPrefix[] = "PATH";
-constexpr char kNoneValidationPrefix[] = "NONE";
-
-// Paths look like this: "\Device\HarddiskVolume6\Program Files\Blah\app.exe".
+// Paths look like this: "C:\Program Files\Blah\app.exe".
 // This function will remove the final EXE, then it will remove paths that match
 // 'Temp' or 'Application' if they are the final directory.
 //
 // Examples:
-// "\Device\HarddiskVolume6\Program Files\Blah\app.exe" ->
-// "\Device\HarddiskVolume6\Program Files\Blah\"
+// "C:\Program Files\Blah\app.exe" ->
+// "C:\Program Files\Blah"
 //
-// "\Device\HarddiskVolume6\Program Files\Blah\app2.exe" ->
-// "\Device\HarddiskVolume6\Program Files\Blah\"
+// "C:\Program Files\Blah\app2.exe" ->
+// "C:\Program Files\Blah"
 //
-// "\Device\HarddiskVolume6\Program Files\Blah\Temp\app.exe" ->
-// "\Device\HarddiskVolume6\Program Files\Blah\"
+// "C:\Program Files\Blah\Temp\app.exe" ->
+// "C:\Program Files\Blah"
 //
-// "\Device\HarddiskVolume6\Program Files\Blah\Application\app.exe" ->
-// "\Device\HarddiskVolume6\Program Files\Blah\"
+// "C:\Program Files\Blah\Application\app.exe" ->
+// "C:\Program Files\Blah"
 //
-// Note: base::FilePath is not used here because NT paths are not real paths.
-std::string MaybeTrimProcessPath(const std::string& full_path) {
-  auto tokens = base::SplitString(full_path, "\\", base::KEEP_WHITESPACE,
-                                  base::SPLIT_WANT_ALL);
-  std::string output;
+// "C:\Program Files (x86)\Blah\Application\app.exe" ->
+// "C:\Program Files\Blah"
+//
+base::FilePath MaybeTrimProcessPath(const base::FilePath& full_path) {
+  auto components = full_path.GetComponents();
+  std::vector<std::wstring> trimmed_components;
+
   size_t token = 0;
-  for (auto it = tokens.rbegin(); it != tokens.rend(); ++it) {
+  for (auto it = components.crbegin(); it != components.crend(); ++it) {
     token++;
     if (token == 1 &&
-        base::EndsWith(*it, ".exe", base::CompareCase::INSENSITIVE_ASCII)) {
+        base::EndsWith(*it, L".exe", base::CompareCase::INSENSITIVE_ASCII)) {
       continue;
     }
     if (token == 2 && (base::EqualsCaseInsensitiveASCII(*it, "Temp") ||
@@ -66,104 +68,122 @@ std::string MaybeTrimProcessPath(const std::string& full_path) {
     // Since this code is dealing with NT paths the junction has already been
     // resolved to the non-localized version so it is safe to use hard-coded
     // strings here.
-    if (base::EqualsCaseInsensitiveASCII(*it, "Program Files (x86)")) {
-      output = base::StrCat({"Program Files\\", output});
+    if (base::EqualsCaseInsensitiveASCII(*it, L"Program Files (x86)")) {
+      trimmed_components.push_back(L"Program Files");
       continue;
     }
-    output = base::StrCat({*it, "\\", output});
+    trimmed_components.push_back(*it);
   }
-  return output;
+  base::FilePath trimmed_path;
+  for (auto it = trimmed_components.crbegin(); it != trimmed_components.crend();
+       ++it) {
+    trimmed_path = trimmed_path.Append(*it);
+  }
+  return trimmed_path;
 }
 
-std::string GetProcessExecutablePath(const base::Process& process) {
-  std::string image_path(MAX_PATH, L'\0');
+base::expected<base::FilePath, DWORD> GetProcessExecutablePath(
+    const base::Process& process) {
+  std::wstring image_path(MAX_PATH, L'\0');
   DWORD path_length = image_path.size();
-  BOOL success = ::QueryFullProcessImageNameA(
-      process.Handle(), PROCESS_NAME_NATIVE, image_path.data(), &path_length);
+  BOOL success = ::QueryFullProcessImageNameW(process.Handle(), 0,
+                                              image_path.data(), &path_length);
   if (!success && ::GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
     // Process name is potentially greater than MAX_PATH, try larger max size.
     // https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
     image_path.resize(UNICODE_STRING_MAX_CHARS);
     path_length = image_path.size();
-    success = ::QueryFullProcessImageNameA(
-        process.Handle(), PROCESS_NAME_NATIVE, image_path.data(), &path_length);
+    success = ::QueryFullProcessImageNameW(process.Handle(), 0,
+                                           image_path.data(), &path_length);
   }
   if (!success) {
     PLOG_IF(ERROR, ::GetLastError() != ERROR_GEN_FAILURE)
         << "Failed to get process image path";
-    return std::string();
+    return base::unexpected(::GetLastError());
   }
-  image_path.resize(path_length);
-  return image_path;
+  return base::FilePath(image_path);
 }
 
 // Generate path based validation data, or return empty string if this was not
 // possible.
-base::expected<std::string, HRESULT> GeneratePathValidationData(
+base::expected<std::vector<uint8_t>, HRESULT> GeneratePathValidationData(
     const base::Process& process) {
   auto path = GetProcessExecutablePath(process);
-  if (path.empty()) {
+  if (!path.has_value()) {
     return base::unexpected(
         elevation_service::Elevator::kErrorCouldNotObtainPath);
   }
-  // Application identity capture for encrypt is only supported on local paths.
-  if (!base::StartsWith(path, "\\Device\\HarddiskVolume",
-                        base::CompareCase::INSENSITIVE_ASCII)) {
+  if (path->IsNetwork()) {
     return base::unexpected(
         elevation_service::Elevator::kErrorUnsupportedFilePath);
   }
-  return path;
+  // Wide to narrow data loss is fine here, because the same system will always
+  // be dealing with the same data.
+  auto narrow_path = base::SysWideToUTF8(MaybeTrimProcessPath(*path).value());
+  return std::vector<uint8_t>(narrow_path.begin(), narrow_path.end());
 }
 
 bool ValidatePath(const base::Process& process,
-                  const std::string& data,
+                  base::span<const uint8_t> data,
                   std::string* log_message) {
-  const auto& data_path = MaybeTrimProcessPath(data);
-  const auto& current_path =
-      MaybeTrimProcessPath(GetProcessExecutablePath(process));
-  if (data_path == current_path) {
+  auto current_path = GeneratePathValidationData(process);
+  if (!current_path.has_value()) {
+    return false;
+  }
+
+  if (data.size() == current_path->size() &&
+      std::equal(data.begin(), data.end(), current_path->cbegin())) {
     return true;
   }
+
   if (log_message) {
-    *log_message = "Data: '" + data_path + "'. Current: '" + current_path + "'";
+    *log_message =
+        "Data: '" + std::string(data.begin(), data.end()) + "'. Current: '" +
+        std::string(current_path->cbegin(), current_path->cend()) + "'";
   }
+
   return false;
 }
 
 }  // namespace
 
-base::expected<std::string, HRESULT> GenerateValidationData(
+base::expected<std::vector<uint8_t>, HRESULT> GenerateValidationData(
     ProtectionLevel level,
     const base::Process& process) {
   switch (level) {
     case ProtectionLevel::NONE:
-      return kNoneValidationPrefix;
+      return std::vector<uint8_t>{ProtectionLevel::NONE};
     case ProtectionLevel::PATH_VALIDATION:
       auto path_validation_data = GeneratePathValidationData(process);
       if (path_validation_data.has_value()) {
-        path_validation_data->insert(0, kPathValidationPrefix);
+        path_validation_data->insert(path_validation_data->cbegin(),
+                                     ProtectionLevel::PATH_VALIDATION);
+        return *path_validation_data;
       }
-      return path_validation_data;
+      return base::unexpected(path_validation_data.error());
   }
 }
 
 bool ValidateData(const base::Process& process,
-                  const std::string& validation_data,
+                  base::span<const uint8_t> validation_data,
                   std::string* log_message) {
-  // Determine which kind of validation was requested.
-  if (base::StartsWith(validation_data, kNoneValidationPrefix,
-                       base::CompareCase::SENSITIVE)) {
-    // No validation always returns true.
-    return true;
-  } else if (base::StartsWith(validation_data, kPathValidationPrefix,
-                              base::CompareCase::SENSITIVE)) {
-    // Strip off the path validation header.
-    const std::string path_validation_data =
-        validation_data.substr(sizeof(kPathValidationPrefix) - 1);
-    // Defer to the path validation.
-    return ValidatePath(process, path_validation_data, log_message);
+  if (validation_data.empty()) {
+    return false;
   }
-  return false;
+
+  ProtectionLevel level = static_cast<ProtectionLevel>(validation_data[0]);
+
+  switch (level) {
+    case ProtectionLevel::NONE:
+      // No validation always returns true.
+      return true;
+    case ProtectionLevel::PATH_VALIDATION:
+      return ValidatePath(process, validation_data.subspan(1), log_message);
+  }
+}
+
+base::FilePath MaybeTrimProcessPathForTesting(const base::FilePath& full_path) {
+  return MaybeTrimProcessPath(full_path);
 }
 
 }  // namespace elevation_service

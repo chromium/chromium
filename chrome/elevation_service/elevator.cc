@@ -9,6 +9,9 @@
 
 #include <stdint.h>
 
+#include <string>
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -84,14 +87,16 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
     if (!calling_process.IsValid())
       return kErrorCouldNotObtainCallingProcess;
 
-    auto validation_data =
+    const auto validation_data =
         GenerateValidationData(protection_level, calling_process);
     if (!validation_data.has_value()) {
       return validation_data.error();
     }
+    const auto data =
+        std::string(validation_data->cbegin(), validation_data->cend());
 
     std::string data_to_encrypt;
-    AppendStringWithLength(*validation_data, data_to_encrypt);
+    AppendStringWithLength(data, data_to_encrypt);
     AppendStringWithLength(
         std::string(reinterpret_cast<char*>(plaintext), length),
         data_to_encrypt);
@@ -171,18 +176,21 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
     std::string mutable_plaintext(reinterpret_cast<char*>(output.pbData),
                                   output.cbData);
 
-    std::string validation_data = PopFromStringFront(mutable_plaintext);
-    if (validation_data.empty())
+    const std::string validation_data = PopFromStringFront(mutable_plaintext);
+    if (validation_data.empty()) {
       return E_INVALIDARG;
+    }
+    const auto data =
+        std::vector<uint8_t>(validation_data.cbegin(), validation_data.cend());
     const auto process = GetCallingProcess();
     if (!process.IsValid()) {
       *last_error = ::GetLastError();
       return kErrorCouldNotObtainCallingProcess;
     }
 
-    // Validation should always be done as the caller.
+    // Note: Validation should always be done using caller impersonation token.
     std::string log_message;
-    if (!ValidateData(process, validation_data, &log_message)) {
+    if (!ValidateData(process, data, &log_message)) {
       *last_error = ::GetLastError();
       // Only enable extended logging on Dev channel.
       if (install_static::GetChromeChannel() == version_info::Channel::DEV &&
