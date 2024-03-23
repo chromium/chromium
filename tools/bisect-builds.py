@@ -213,7 +213,7 @@ class PathContext(object):
     if marker:
       marker_param = '&marker=' + str(marker)
     if self.is_asan:
-      prefix = '%s-%s' % (self.GetASANPlatformDir(), self.build_type)
+      prefix = '%s-%s/' % (self.GetASANPlatformDir(), self.build_type)
       return self.base_url + '/?delimiter=&prefix=' + prefix + marker_param
     else:
       return (self.base_url + '/?delimiter=/&prefix=' +
@@ -247,11 +247,10 @@ class PathContext(object):
 
   def GetASANBaseName(self):
     """Returns the base name of the ASAN zip file."""
-    if 'linux' in self.platform:
-      return 'asan-symbolized-%s-%s' % (self.GetASANPlatformDir(),
-                                        self.build_type)
-    else:
-      return 'asan-%s-%s' % (self.GetASANPlatformDir(), self.build_type)
+    # Historical note: Linux ASan builds <= r398598 used asan-symbolized-%s-%s
+    # as a base name. It's probably unnecessary to handle builds that old at
+    # this point, so just do the simple thing here.
+    return 'asan-%s-%s' % (self.GetASANPlatformDir(), self.build_type)
 
   def GetLaunchPath(self, revision):
     """Returns a relative path (presumably from the archive extraction location)
@@ -585,7 +584,7 @@ def UnzipFilenameToDir(filename, directory):
         os.makedirs(name)
     else:  # file
       directory = os.path.dirname(name)
-      if not os.path.isdir(directory):
+      if directory and not os.path.isdir(directory):
         os.makedirs(directory)
       out = open(name, 'wb')
       out.write(zf.read(name))
@@ -664,7 +663,15 @@ def RunRevision(context, revision, zip_file, profile, num_runs, command, args):
                             stderr=subprocess.PIPE)
     proc.communicate()
 
-  UnzipFilenameToDir(zip_file, tempdir)
+  if context.is_asan:
+    # ASAN archives do not extract files into a subfolder, so specify a
+    # subfolder here. This matches where `GetLaunchPath()` expects to find the
+    # resulting Chrome binary.
+    UnzipFilenameToDir(
+        zip_file,
+        os.path.join(tempdir, f'{context.GetASANBaseName()}-{revision}'))
+  else:
+    UnzipFilenameToDir(zip_file, tempdir)
 
   # Hack: Some Chrome OS archives are missing some files; try to copy them
   # from the local directory.
@@ -973,6 +980,19 @@ def Bisect(context,
           context, rev, fetch.zip_file, profile, num_runs, command, try_args)
     except Exception as e:
       print(e, file=sys.stderr)
+
+    # For ASAN bisects, use a heuristic to look for errors and print them out.
+    if context.is_asan:
+      _ASAN_ERROR_RE = re.compile(
+          '^==1==ERROR: AddressSanitizer:'
+          '.+?'
+          '^==1==ABORTING$', re.MULTILINE | re.DOTALL)
+      try:
+        for (i, asan_error) in enumerate(
+            _ASAN_ERROR_RE.findall(stderr.decode('utf-8'))):
+          print(f'ASan error #{i+1}:\n{asan_error}\n')
+      except:
+        print('Unable to print ASan errors; stderr is malformed UTF-8')
 
     # Call the evaluate function to see if the current revision is good or bad.
     # On that basis, kill one of the background downloads and complete the
