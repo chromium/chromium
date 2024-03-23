@@ -3287,12 +3287,15 @@
     },
     {
       "id": 423,
-      "description": "Legacy AMD GPUs can't synchronize multiple write streams on SharedImages [b/293613437, b/300686930]",
+      "description": "Legacy AMD GPUs can't synchronize multiple write streams on SharedImages [b/293613437, b/300686930, b/330342819]",
       "os": {
         "type": "chromeos"
       },
       "vendor_id": "0x1002",
-      "device_id": ["0x9802", "0x9834"],
+      "device_id": [
+          "0x9802", "0x9834", "0x9806", "0x9874", "0x1636", "0x9996",
+          "0x9715", "0x9809", "0x98e4", "0x68c0", "0x9807", "0x9808"
+      ],
       "features": [
         "disable_webgpu_shared_images"
       ]
