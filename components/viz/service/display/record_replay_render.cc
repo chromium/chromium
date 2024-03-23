@@ -282,14 +282,16 @@ void OnRepaintFinished() {
 static cc::ProxyMain* gCurrentCompositorProxy;
 
 void SetCompositorProxy(cc::ProxyMain* proxy) {
-  CHECK(IsMainThread());
-  gCurrentCompositorProxy = proxy;
+  if (IsMainThread()) {
+    gCurrentCompositorProxy = proxy;
+  }
 }
 
 void CompositorProxyDestroyed(cc::ProxyMain* proxy) {
-  CHECK(IsMainThread());
-  if (gCurrentCompositorProxy == proxy)
+  if (gCurrentCompositorProxy == proxy) {
+    CHECK(IsMainThread());
     gCurrentCompositorProxy = nullptr;
+  }
 }
 
 static char* PaintWhenDiverged(const char* mime_type, int jpeg_quality) {
