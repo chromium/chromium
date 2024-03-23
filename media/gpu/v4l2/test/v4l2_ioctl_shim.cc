@@ -155,10 +155,9 @@ MmappedBuffer::~MmappedBuffer() {
 
 V4L2Queue::V4L2Queue(enum v4l2_buf_type type,
                      const gfx::Size& resolution,
-                     enum v4l2_memory memory,
-                     uint32_t num_buffers)
+                     enum v4l2_memory memory)
     : type_(type),
-      num_buffers_(num_buffers),
+      num_buffers_(0),
       resolution_(resolution),
       num_planes_(1),
       memory_(memory) {}
@@ -444,25 +443,8 @@ void V4L2IoctlShim::TryFmt(struct v4l2_format* fmt) const {
   LOG_ASSERT(ret) << "VIDIOC_TRY_FMT for " << type << " queue failed.";
 }
 
-void V4L2IoctlShim::ReqBufs(std::unique_ptr<V4L2Queue>& queue) const {
-  struct v4l2_requestbuffers reqbuf;
-
-  memset(&reqbuf, 0, sizeof(reqbuf));
-  reqbuf.count = queue->num_buffers();
-  reqbuf.type = queue->type();
-  reqbuf.memory = queue->memory();
-
-  const bool ret = Ioctl(VIDIOC_REQBUFS, &reqbuf);
-
-  queue->set_num_buffers(reqbuf.count);
-
-  LOGF(INFO) << queue->num_buffers() << " buffers requested, " << reqbuf.count
-             << " buffers returned for " << queue->type() << ".";
-  LOG_ASSERT(ret) << "VIDIOC_REQBUFS for " << queue->type() << " queue failed.";
-}
-
-void V4L2IoctlShim::ReqBufsWithCount(std::unique_ptr<V4L2Queue>& queue,
-                                     uint32_t count) const {
+void V4L2IoctlShim::ReqBufs(std::unique_ptr<V4L2Queue>& queue,
+                            uint32_t count) const {
   struct v4l2_requestbuffers reqbuf;
 
   memset(&reqbuf, 0, sizeof(reqbuf));

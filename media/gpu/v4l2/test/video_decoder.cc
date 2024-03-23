@@ -109,12 +109,11 @@ void VideoDecoder::CreateOUTPUTQueue(uint32_t compressed_fourcc) {
   // (fd) & buffer with the output queue for 4K60 requirement.
   // https://buganizer.corp.google.com/issues/202214561#comment31
   OUTPUT_queue_ = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, display_resolution_, V4L2_MEMORY_MMAP,
-      kNumberOfBuffersInOutputQueue);
+      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, display_resolution_, V4L2_MEMORY_MMAP);
   OUTPUT_queue_->set_fourcc(compressed_fourcc);
 
   v4l2_ioctl_->SetFmt(OUTPUT_queue_);
-  v4l2_ioctl_->ReqBufs(OUTPUT_queue_);
+  v4l2_ioctl_->ReqBufs(OUTPUT_queue_, kNumberOfBuffersInOutputQueue);
   v4l2_ioctl_->QueryAndMmapQueueBuffers(OUTPUT_queue_);
 
   int media_request_fd;
@@ -130,8 +129,7 @@ void VideoDecoder::CreateCAPTUREQueue(uint32_t num_buffers) {
   // |num_planes| represents separate memory buffers, not planes for Y, U, V.
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format
   CAPTURE_queue_ = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, gfx::Size(0, 0), V4L2_MEMORY_MMAP,
-      num_buffers);
+      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, gfx::Size(0, 0), V4L2_MEMORY_MMAP);
 
   NegotiateCAPTUREFormat();
 
@@ -139,7 +137,7 @@ void VideoDecoder::CreateCAPTUREQueue(uint32_t num_buffers) {
                  .Contains(gfx::Rect(OUTPUT_queue_->resolution())))
       << "Display size is not contained within the coded size. DRC?";
 
-  v4l2_ioctl_->ReqBufs(CAPTURE_queue_);
+  v4l2_ioctl_->ReqBufs(CAPTURE_queue_, num_buffers);
   v4l2_ioctl_->QueryAndMmapQueueBuffers(CAPTURE_queue_);
   // Only 1 CAPTURE buffer is needed for 1st key frame decoding. Remaining
   // CAPTURE buffers will be queued after that.
@@ -164,7 +162,7 @@ void VideoDecoder::HandleDynamicResolutionChange(
 
   // Free all CAPTURE buffers from the driver side by calling VIDIOC_REQBUFS()
   // on the CAPTURE queue with a buffer count of zero.
-  v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_, 0);
+  v4l2_ioctl_->ReqBufs(CAPTURE_queue_, 0);
 
   // Free queued CAPTURE buffer indexes that are tracked by the client side.
   CAPTURE_queue_->DequeueAllBufferIds();
@@ -176,7 +174,7 @@ void VideoDecoder::HandleDynamicResolutionChange(
 
   NegotiateCAPTUREFormat();
 
-  v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_, num_buffers);
+  v4l2_ioctl_->ReqBufs(CAPTURE_queue_, num_buffers);
   v4l2_ioctl_->QueryAndMmapQueueBuffers(CAPTURE_queue_);
 
   // Only 1 CAPTURE buffer is needed for 1st key frame decoding. Remaining
