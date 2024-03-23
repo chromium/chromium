@@ -4,7 +4,9 @@
 
 #include <optional>
 
+#include "base/base_paths.h"
 #include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "base/test/gmock_expected_support.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -23,17 +25,19 @@ class IsolatedWebAppCspBrowserTest : public IsolatedWebAppBrowserTestHarness {
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
 
-    embedded_https_test_server().ServeFilesFromSourceDirectory(resource_path());
+    embedded_https_test_server().ServeFilesFromDirectory(resource_path());
     ASSERT_TRUE(embedded_https_test_server().Start());
 
-    embedded_test_server()->ServeFilesFromSourceDirectory(resource_path());
+    embedded_test_server()->ServeFilesFromDirectory(resource_path());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
  protected:
   base::FilePath resource_path() {
-    return GetChromeTestDataDir().Append(
-        FILE_PATH_LITERAL("web_apps/isolated_csp"));
+    base::FilePath base_path;
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_path));
+    return base_path.Append(GetChromeTestDataDir())
+        .AppendASCII("web_apps/isolated_csp");
   }
 };
 
@@ -62,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppCspBrowserTest, Base) {
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppCspBrowserTest, Src) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
       IsolatedWebAppBuilder(ManifestBuilder())
-          .AddFolderFromDisk("/", resource_path().AsUTF8Unsafe())
+          .AddFolderFromDisk("/", resource_path())
           .BuildBundle();
 
   app->TrustSigningKey();

@@ -632,8 +632,9 @@ IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddFolderFromDisk(
     const std::string& chrome_test_data_relative_path) {
   base::FilePath base_path;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_path));
-  base::FilePath absolute_path = base_path.Append(
-      base::FilePath::FromUTF8Unsafe(chrome_test_data_relative_path));
+  base::FilePath absolute_path =
+      base_path.AppendASCII("chrome/test/data")
+          .AppendASCII(chrome_test_data_relative_path);
   return AddFolderFromDisk(resource_path, absolute_path);
 }
 

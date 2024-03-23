@@ -5,17 +5,16 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_path.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/service_worker_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -27,11 +26,10 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/test/extension_test_message_listener.h"
-#include "net/base/net_errors.h"
-#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace controlled_frame {
 
@@ -53,35 +51,32 @@ const extensions::MenuItem::Id CreateMenuItemId(
 }
 
 const content::EvalJsResult CreateContextMenuItem(
-    content::WebContents* app_contents,
+    content::RenderFrameHost* app_frame,
     const std::string& id,
     const std::string& title) {
-  return content::EvalJs(app_contents, content::JsReplace(R"(
-      (async function() {
+  return content::EvalJs(app_frame, content::JsReplace(R"(
+      new Promise((resolve, reject) => {
         const frame = document.getElementsByTagName('controlledframe')[0];
-        return await new Promise((resolve, reject) => {
-          if (!frame || !frame.contextMenus || !frame.contextMenus.create) {
-            reject('FAIL: frame, frame.contextMenus, or ' +
-                'frame.contextMenus.create is undefined');
-            return;
-          }
-          frame.contextMenus.create(
-              { title: $2, id: $1 },
-              () => { resolve('SUCCESS'); });
-        });
-      })();
+        if (!frame || !frame.contextMenus || !frame.contextMenus.create) {
+          reject('FAIL: frame, frame.contextMenus, or ' +
+              'frame.contextMenus.create is undefined');
+          return;
+        }
+        frame.contextMenus.create(
+            { title: $2, id: $1 },
+            () => { resolve('SUCCESS'); });
+      });
     )",
-                                                          id, title));
+                                                       id, title));
 }
 
 const content::EvalJsResult UpdateContextMenuItemTitle(
-    content::WebContents* app_contents,
+    content::RenderFrameHost* app_frame,
     const std::string& id,
     const std::string& new_title) {
-  return content::EvalJs(app_contents, content::JsReplace(R"(
-    (async function() {
-      const frame = document.getElementsByTagName('controlledframe')[0];
-      return await new Promise((resolve, reject) =>{
+  return content::EvalJs(app_frame, content::JsReplace(R"(
+      new Promise((resolve, reject) => {
+        const frame = document.getElementsByTagName('controlledframe')[0];
         if (!frame || !frame.contextMenus || !frame.contextMenus.update) {
           reject('FAIL: frame, frame.contextMenus, or ' +
               'frame.contextMenus.update is undefined');
@@ -93,17 +88,15 @@ const content::EvalJsResult UpdateContextMenuItemTitle(
             { title: $2 },
             () => { resolve('SUCCESS'); });
       });
-    })();
   )",
-                                                          id, new_title));
+                                                       id, new_title));
 }
 
 const content::EvalJsResult RemoveContextMenuItem(
-    content::WebContents* app_contents,
+    content::RenderFrameHost* app_frame,
     const std::string& id) {
-  return content::EvalJs(app_contents, content::JsReplace(R"(
-    (async function() {
-      return await new Promise((resolve, reject) =>{
+  return content::EvalJs(app_frame, content::JsReplace(R"(
+      new Promise((resolve, reject) => {
         const frame = document.getElementsByTagName('controlledframe')[0];
         if (!frame || !frame.contextMenus || !frame.contextMenus.remove) {
           reject('FAIL: frame, frame.contextMenus, or ' +
@@ -115,16 +108,14 @@ const content::EvalJsResult RemoveContextMenuItem(
             /*id=*/$1,
             () => { resolve('SUCCESS'); });
       });
-    })();
   )",
-                                                          id));
+                                                       id));
 }
 
 const content::EvalJsResult RemoveAllContextMenuItems(
-    content::WebContents* app_contents) {
-  return content::EvalJs(app_contents, R"(
-    (async function() {
-      return await new Promise((resolve, reject) =>{
+    content::RenderFrameHost* app_frame) {
+  return content::EvalJs(app_frame, R"(
+      new Promise((resolve, reject) => {
         const frame = document.getElementsByTagName('controlledframe')[0];
         if (!frame || !frame.contextMenus || !frame.contextMenus.removeAll) {
           reject('FAIL: frame, frame.contextMenus, or ' +
@@ -134,7 +125,6 @@ const content::EvalJsResult RemoveAllContextMenuItems(
 
         frame.contextMenus.removeAll(() => { resolve('SUCCESS'); });
       });
-    })();
   )");
 }
 
@@ -149,10 +139,9 @@ const content::EvalJsResult SetBackgroundColorToWhite(
 }
 
 const content::EvalJsResult ExecuteScriptRedBackgroundCode(
-    content::WebContents* app_contents) {
-  return content::EvalJs(app_contents, R"(
-    (async function() {
-      return await new Promise((resolve, reject) => {
+    content::RenderFrameHost* app_frame) {
+  return content::EvalJs(app_frame, R"(
+      new Promise((resolve, reject) => {
         const frame = document.getElementsByTagName('controlledframe')[0];
         if (!frame || !frame.request) {
           reject('FAIL');
@@ -162,15 +151,13 @@ const content::EvalJsResult ExecuteScriptRedBackgroundCode(
           {code: "document.body.style.backgroundColor = 'red';"},
           () => { resolve('SUCCESS') });
       });
-    })();
   )");
 }
 
 const content::EvalJsResult ExecuteScriptRedBackgroundFile(
-    content::WebContents* app_contents) {
-  return content::EvalJs(app_contents, R"(
-    (async function() {
-      return await new Promise((resolve, reject) => {
+    content::RenderFrameHost* app_frame) {
+  return content::EvalJs(app_frame, R"(
+      new Promise((resolve, reject) => {
         const frame = document.getElementsByTagName('controlledframe')[0];
         if (!frame || !frame.request) {
           reject('FAIL');
@@ -180,7 +167,6 @@ const content::EvalJsResult ExecuteScriptRedBackgroundFile(
           {file: "/execute_script.input.js"},
           () => { resolve('SUCCESS') });
       });
-    })();
   )");
 }
 
@@ -197,14 +183,10 @@ const content::EvalJsResult VerifyBackgroundColorIsRed(
   )");
 }
 
-// TODO(odejesush): Add tests for the rest of the Promise API methods.
-const char* kControlledFramePromiseApiMethods[]{"back", "forward", "go"};
-
 [[nodiscard]] bool IsControlledFramePresent(
-    content::WebContents* web_contents) {
-  return ExecJs(web_contents, R"(
-    (async function() {
-      return await new Promise((resolve, reject) => {
+    content::RenderFrameHost* app_frame) {
+  return ExecJs(app_frame, R"(
+      new Promise((resolve, reject) => {
         const controlledframe = document.createElement('controlledframe');
         if (('src' in controlledframe)) {
           // Tag is defined.
@@ -213,45 +195,38 @@ const char* kControlledFramePromiseApiMethods[]{"back", "forward", "go"};
           reject('FAIL');
         }
       });
-    })();
   )");
 }
+
+// TODO(odejesush): Add tests for the rest of the Promise API methods.
+const char* kControlledFramePromiseApiMethods[]{"back", "forward", "go"};
 
 }  // namespace
 
 class ControlledFrameApiTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
-  ControlledFrameApiTest() {
-    StartIsolatedWebAppServer("web_apps/simple_isolated_app");
+  void SetUpOnMainThread() override {
+    web_app::IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        GetChromeTestDataDir().AppendASCII("web_apps/simple_isolated_app"));
+    ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
-  void SetUpOnMainThread() override { InstallAndLaunchIsolatedWebApp(); }
-
-  void TearDownOnMainThread() override { app_contents_ = nullptr; }
-
-  void StartIsolatedWebAppServer(const std::string& path) {
-    base::FilePath::StringType os_path;
-#if BUILDFLAG(IS_WIN)
-    os_path = base::UTF8ToWide(path);
-#else
-    os_path = path;
-#endif
-    isolated_web_app_dev_server_ = CreateAndStartServer(os_path);
+  web_app::IsolatedWebAppUrlInfo CreateAndInstallEmptyApp(
+      const web_app::ManifestBuilder& manifest_builder) {
+    app_ = web_app::IsolatedWebAppBuilder(manifest_builder).BuildBundle();
+    app_->TrustSigningKey();
+    base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
+        app_->Install(profile());
+    CHECK(url_info.has_value()) << url_info.error();
+    return url_info.value();
   }
 
-  void InstallAndLaunchIsolatedWebApp() {
-    web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-        isolated_web_app_dev_server().GetOrigin());
-    Browser* app_browser = LaunchWebAppBrowserAndWait(url_info.app_id());
-    app_contents_ = app_browser->tab_strip_model()->GetActiveWebContents();
-  }
-
-  [[nodiscard]] bool CreateControlledFrame(content::WebContents* web_contents,
+  [[nodiscard]] bool CreateControlledFrame(content::RenderFrameHost* frame,
                                            const GURL& src) {
     static std::string kCreateControlledFrame = R"(
-      (async function() {
-        await new Promise((resolve, reject) => {
+        new Promise((resolve, reject) => {
           const controlledframe = document.createElement('controlledframe');
           if (!('src' in controlledframe)) {
             // Tag is undefined or generates a malformed response.
@@ -263,25 +238,22 @@ class ControlledFrameApiTest
           controlledframe.addEventListener('loadabort', reject);
           document.body.appendChild(controlledframe);
         });
-      })();
     )";
-    return ExecJs(web_contents,
-                  content::JsReplace(kCreateControlledFrame, src));
+    return ExecJs(frame, content::JsReplace(kCreateControlledFrame, src));
   }
 
   extensions::WebViewGuest* GetWebViewGuest(
-      content::WebContents* embedder_web_contents) {
+      content::RenderFrameHost* embedder_frame) {
     extensions::WebViewGuest* web_view_guest = nullptr;
-    embedder_web_contents->GetPrimaryMainFrame()
-        ->ForEachRenderFrameHostWithAction(
-            [&web_view_guest](content::RenderFrameHost* rfh) {
-              if (auto* web_view =
-                      extensions::WebViewGuest::FromRenderFrameHost(rfh)) {
-                web_view_guest = web_view;
-                return content::RenderFrameHost::FrameIterationAction::kStop;
-              }
-              return content::RenderFrameHost::FrameIterationAction::kContinue;
-            });
+    embedder_frame->ForEachRenderFrameHostWithAction(
+        [&web_view_guest](content::RenderFrameHost* rfh) {
+          if (auto* web_view =
+                  extensions::WebViewGuest::FromRenderFrameHost(rfh)) {
+            web_view_guest = web_view;
+            return content::RenderFrameHost::FrameIterationAction::kStop;
+          }
+          return content::RenderFrameHost::FrameIterationAction::kContinue;
+        });
     return web_view_guest;
   }
 
@@ -289,7 +261,7 @@ class ControlledFrameApiTest
       const extensions::MenuItem::ExtensionKey& extension_key,
       const std::string& expected_id,
       const std::string& expected_title) {
-    auto* menu_manager = extensions::MenuManager::Get(browser_context());
+    auto* menu_manager = extensions::MenuManager::Get(profile());
     extensions::MenuItem* menu_item =
         menu_manager->GetItemById(CreateMenuItemId(extension_key, expected_id));
 
@@ -297,28 +269,19 @@ class ControlledFrameApiTest
     EXPECT_EQ(expected_title, menu_item->title());
   }
 
-  const net::EmbeddedTestServer& isolated_web_app_dev_server() {
-    return *isolated_web_app_dev_server_.get();
-  }
-
-  content::WebContents* app_contents() { return app_contents_; }
-
-  content::BrowserContext* browser_context() {
-    return app_contents_->GetBrowserContext();
-  }
-
  private:
-  raw_ptr<content::WebContents> app_contents_;
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_;
 };
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusCreate) {
-  const GURL& kOriginalControlledFrameUrl =
-      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
-  ASSERT_TRUE(
-      CreateControlledFrame(app_contents(), kOriginalControlledFrameUrl));
-  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_contents());
-  auto* menu_manager = extensions::MenuManager::Get(browser_context());
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html")));
+  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
+  auto* menu_manager = extensions::MenuManager::Get(profile());
 
   const extensions::MenuItem::ExtensionKey extension_key(
       /*extension_id=*/"", web_view_guest->owner_rfh()->GetProcess()->GetID(),
@@ -329,37 +292,39 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusCreate) {
   static constexpr std::string kItem1ID = "1";
   static constexpr std::string kItem1Title = "Test";
   EXPECT_EQ(kEvalSuccessStr,
-            CreateContextMenuItem(app_contents(), kItem1ID, kItem1Title));
+            CreateContextMenuItem(app_frame, kItem1ID, kItem1Title));
   ASSERT_EQ(1u, menu_manager->MenuItemsSize(extension_key));
   ExpectMenuItemWithIdAndTitle(extension_key, kItem1ID, kItem1Title);
 
   static constexpr std::string kItem2ID = "2";
   static constexpr std::string kItem2Title = "Test2";
   EXPECT_EQ(kEvalSuccessStr,
-            CreateContextMenuItem(app_contents(), kItem2ID, kItem2Title));
+            CreateContextMenuItem(app_frame, kItem2ID, kItem2Title));
   ASSERT_EQ(2u, menu_manager->MenuItemsSize(extension_key));
   ExpectMenuItemWithIdAndTitle(extension_key, kItem2ID, kItem2Title);
 
   static constexpr std::string kItem3ID = "3";
   static constexpr std::string kItem3Title = "Test3";
   EXPECT_EQ(kEvalSuccessStr,
-            CreateContextMenuItem(app_contents(), kItem3ID, kItem3Title));
+            CreateContextMenuItem(app_frame, kItem3ID, kItem3Title));
   ASSERT_EQ(3u, menu_manager->MenuItemsSize(extension_key));
   ExpectMenuItemWithIdAndTitle(extension_key, kItem3ID, kItem3Title);
 }
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusUpdate) {
-  const GURL& kOriginalControlledFrameUrl =
-      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
-  ASSERT_TRUE(
-      CreateControlledFrame(app_contents(), kOriginalControlledFrameUrl));
-  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_contents());
-  auto* menu_manager = extensions::MenuManager::Get(browser_context());
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html")));
+  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
+  auto* menu_manager = extensions::MenuManager::Get(profile());
 
   static constexpr std::string kItem1ID = "1";
   static constexpr std::string kItem1Title = "Test";
   EXPECT_EQ(kEvalSuccessStr,
-            CreateContextMenuItem(app_contents(), kItem1ID, kItem1Title));
+            CreateContextMenuItem(app_frame, kItem1ID, kItem1Title));
 
   const extensions::MenuItem::ExtensionKey extension_key(
       /*extension_id=*/"", web_view_guest->owner_rfh()->GetProcess()->GetID(),
@@ -369,29 +334,31 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusUpdate) {
   ExpectMenuItemWithIdAndTitle(extension_key, kItem1ID, kItem1Title);
 
   static constexpr std::string kItem1NewTitle = "Test1";
-  EXPECT_EQ(kEvalSuccessStr, UpdateContextMenuItemTitle(
-                                 app_contents(), kItem1ID, kItem1NewTitle));
+  EXPECT_EQ(kEvalSuccessStr,
+            UpdateContextMenuItemTitle(app_frame, kItem1ID, kItem1NewTitle));
 
   ASSERT_EQ(1u, menu_manager->MenuItemsSize(extension_key));
   ExpectMenuItemWithIdAndTitle(extension_key, kItem1ID, kItem1NewTitle);
 }
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusRemove) {
-  const GURL& kOriginalControlledFrameUrl =
-      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
-  ASSERT_TRUE(
-      CreateControlledFrame(app_contents(), kOriginalControlledFrameUrl));
-  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_contents());
-  auto* menu_manager = extensions::MenuManager::Get(browser_context());
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html")));
+  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
+  auto* menu_manager = extensions::MenuManager::Get(profile());
 
   static constexpr std::string kItem1ID = "1";
   static constexpr std::string kItem1Title = "Test1";
   EXPECT_EQ(kEvalSuccessStr,
-            CreateContextMenuItem(app_contents(), kItem1ID, kItem1Title));
-  EXPECT_EQ(kEvalSuccessStr, CreateContextMenuItem(app_contents(), /*id=*/"2",
+            CreateContextMenuItem(app_frame, kItem1ID, kItem1Title));
+  EXPECT_EQ(kEvalSuccessStr, CreateContextMenuItem(app_frame, /*id=*/"2",
                                                    /*title=*/"Test2"));
 
-  EXPECT_EQ(kEvalSuccessStr, RemoveContextMenuItem(app_contents(), kItem1ID));
+  EXPECT_EQ(kEvalSuccessStr, RemoveContextMenuItem(app_frame, kItem1ID));
 
   const extensions::MenuItem::ExtensionKey extension_key(
       /*extension_id=*/"", web_view_guest->owner_rfh()->GetProcess()->GetID(),
@@ -405,19 +372,21 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusRemove) {
 }
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusRemoveAll) {
-  const GURL& kOriginalControlledFrameUrl =
-      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
-  ASSERT_TRUE(
-      CreateControlledFrame(app_contents(), kOriginalControlledFrameUrl));
-  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_contents());
-  auto* menu_manager = extensions::MenuManager::Get(browser_context());
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  EXPECT_EQ(kEvalSuccessStr, CreateContextMenuItem(app_contents(), /*id=*/"1",
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html")));
+  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
+  auto* menu_manager = extensions::MenuManager::Get(profile());
+
+  EXPECT_EQ(kEvalSuccessStr, CreateContextMenuItem(app_frame, /*id=*/"1",
                                                    /*title=*/"Test1"));
-  EXPECT_EQ(kEvalSuccessStr, CreateContextMenuItem(app_contents(), /*id=*/"2",
+  EXPECT_EQ(kEvalSuccessStr, CreateContextMenuItem(app_frame, /*id=*/"2",
                                                    /*title=*/"Test2"));
 
-  EXPECT_EQ(kEvalSuccessStr, RemoveAllContextMenuItems(app_contents()));
+  EXPECT_EQ(kEvalSuccessStr, RemoveAllContextMenuItems(app_frame));
 
   const extensions::MenuItem::ExtensionKey extension_key(
       /*extension_id=*/"", web_view_guest->owner_rfh()->GetProcess()->GetID(),
@@ -429,20 +398,23 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusRemoveAll) {
 // This test checks if the Controlled Frame is able to intercept URL navigation
 // requests.
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, URLLoaderIsProxied) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
   const GURL& kOriginalControlledFrameUrl =
-      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
-  ASSERT_TRUE(
-      CreateControlledFrame(app_contents(), kOriginalControlledFrameUrl));
+      embedded_https_test_server().GetURL("/index.html");
+  ASSERT_TRUE(CreateControlledFrame(app_frame, kOriginalControlledFrameUrl));
 
   auto* web_request_event_router =
-      extensions::WebRequestEventRouter::Get(browser_context());
+      extensions::WebRequestEventRouter::Get(profile());
   EXPECT_EQ(0u, web_request_event_router->GetListenerCountForTesting(
-                    browser_context(), kWebRequestOnBeforeRequestEventName));
+                    profile(), kWebRequestOnBeforeRequestEventName));
 
   const std::string& kServerHostPort =
-      isolated_web_app_dev_server().host_port_pair().ToString();
-  EXPECT_EQ("SUCCESS", content::EvalJs(app_contents(),
-                                       content::JsReplace(R"(
+      embedded_https_test_server().host_port_pair().ToString();
+  EXPECT_EQ("SUCCESS",
+            content::EvalJs(app_frame, content::JsReplace(R"(
     (function() {
       const frame = document.getElementsByTagName('controlledframe')[0];
       if (!frame || !frame.request) {
@@ -450,23 +422,23 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, URLLoaderIsProxied) {
       }
       frame.request.onBeforeRequest.addListener(() => {
         return { cancel: true };
-      }, { urls: ['http://*/controlled_frame_cancel.html'] }, ['blocking']);
+      }, { urls: ['https://*/controlled_frame_cancel.html'] }, ['blocking']);
       frame.request.onBeforeRequest.addListener(() => {
         return { cancel: false };
-      }, { urls: ['http://*/controlled_frame_success.html'] }, ['blocking']);
+      }, { urls: ['https://*/controlled_frame_success.html'] }, ['blocking']);
       frame.request.onBeforeRequest.addListener(() => {
         return {
-          redirectUrl: 'http://' + $1 + '/controlled_frame_redirect_target.html'
+          redirectUrl: 'https://' + $1 + '/controlled_frame_redirect_target.html'
         };
-      }, { urls: ['http://*/controlled_frame_redirect.html'] }, ['blocking']);
+      }, { urls: ['https://*/controlled_frame_redirect.html'] }, ['blocking']);
       return 'SUCCESS';
     })();
   )",
                                                           kServerHostPort)));
   EXPECT_EQ(3u, web_request_event_router->GetListenerCountForTesting(
-                    browser_context(), kWebRequestOnBeforeRequestEventName));
+                    profile(), kWebRequestOnBeforeRequestEventName));
 
-  auto* web_view_guest = GetWebViewGuest(app_contents());
+  auto* web_view_guest = GetWebViewGuest(app_frame);
   content::WebContents* guest_web_contents = web_view_guest->web_contents();
 
   // Check that navigations can be cancelled.
@@ -475,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, URLLoaderIsProxied) {
         guest_web_contents, net::Error::ERR_BLOCKED_BY_CLIENT,
         content::MessageLoopRunner::QuitMode::IMMEDIATE,
         /*ignore_uncommitted_navigations=*/false);
-    web_view_guest->NavigateGuest(isolated_web_app_dev_server()
+    web_view_guest->NavigateGuest(embedded_https_test_server()
                                       .GetURL("/controlled_frame_cancel.html")
                                       .spec(),
                                   /*force_navigation=*/false);
@@ -491,12 +463,12 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, URLLoaderIsProxied) {
   {
     content::TestNavigationObserver navigation_observer(
         guest_web_contents, /*expected_number_of_navigations=*/1u);
-    web_view_guest->NavigateGuest(isolated_web_app_dev_server()
+    web_view_guest->NavigateGuest(embedded_https_test_server()
                                       .GetURL("/controlled_frame_redirect.html")
                                       .spec(),
                                   /*force_navigation=*/false);
     navigation_observer.WaitForNavigationFinished();
-    EXPECT_EQ(isolated_web_app_dev_server().GetURL(
+    EXPECT_EQ(embedded_https_test_server().GetURL(
                   "/controlled_frame_redirect_target.html"),
               web_view_guest->GetGuestMainFrame()->GetLastCommittedURL());
     EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
@@ -507,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, URLLoaderIsProxied) {
     content::TestNavigationObserver navigation_observer(
         guest_web_contents, /*expected_number_of_navigations=*/1u);
     const GURL& kControlledFrameSuccessUrl =
-        isolated_web_app_dev_server().GetURL("/controlled_frame_success.html");
+        embedded_https_test_server().GetURL("/controlled_frame_success.html");
     web_view_guest->NavigateGuest(kControlledFrameSuccessUrl.spec(),
                                   /*force_navigation=*/false);
     navigation_observer.WaitForNavigationFinished();
@@ -518,19 +490,19 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, URLLoaderIsProxied) {
 }
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, AuthRequestIsProxied) {
-  const GURL& kOriginalControlledFrameUrl =
-      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
-  ASSERT_TRUE(
-      CreateControlledFrame(app_contents(), kOriginalControlledFrameUrl));
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html")));
 
   auto* web_request_event_router =
-      extensions::WebRequestEventRouter::Get(browser_context());
+      extensions::WebRequestEventRouter::Get(profile());
   EXPECT_EQ(0u, web_request_event_router->GetListenerCountForTesting(
-                    browser_context(), kWebRequestOnAuthRequiredEventName));
+                    profile(), kWebRequestOnAuthRequiredEventName));
 
-  const std::string& kServerHostPort =
-      isolated_web_app_dev_server().host_port_pair().ToString();
-  EXPECT_EQ(true, content::EvalJs(app_contents(), R"(
+  EXPECT_EQ(true, content::EvalJs(app_frame, R"(
     (function() {
       const frame = document.getElementsByTagName('controlledframe')[0];
       if (!frame || !frame.request) {
@@ -546,14 +518,14 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, AuthRequestIsProxied) {
             password: expectedPassword
           }
         };
-      }, { urls: [`http://*/auth-basic*`] }, ['blocking']);
+      }, { urls: [`https://*/auth-basic*`] }, ['blocking']);
       return true;
     })();
   )"));
   EXPECT_EQ(1u, web_request_event_router->GetListenerCountForTesting(
-                    browser_context(), kWebRequestOnAuthRequiredEventName));
+                    profile(), kWebRequestOnAuthRequiredEventName));
 
-  auto* web_view_guest = GetWebViewGuest(app_contents());
+  auto* web_view_guest = GetWebViewGuest(app_frame);
   content::WebContents* guest_web_contents = web_view_guest->web_contents();
 
   // Check that the injecting the credentials through WebRequest produces a
@@ -563,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, AuthRequestIsProxied) {
         guest_web_contents,
         /*expected_number_of_navigations=*/1u);
     const GURL& kAuthBasicUrl =
-        isolated_web_app_dev_server().GetURL("/auth-basic?password=pass");
+        embedded_https_test_server().GetURL("/auth-basic?password=pass");
     web_view_guest->NavigateGuest(kAuthBasicUrl.spec(),
                                   /*force_navigation=*/false);
     navigation_observer.WaitForNavigationFinished();
@@ -579,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, AuthRequestIsProxied) {
         guest_web_contents,
         /*expected_number_of_navigations=*/1u);
     const GURL& kAuthBasicUrl =
-        isolated_web_app_dev_server().GetURL("/auth-basic?password=badpass");
+        embedded_https_test_server().GetURL("/auth-basic?password=badpass");
     web_view_guest->NavigateGuest(kAuthBasicUrl.spec(),
                                   /*force_navigation=*/false);
     navigation_observer.WaitForNavigationFinished();
@@ -594,14 +566,35 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, AuthRequestIsProxied) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ExecuteScript) {
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+          .AddHtml("/execute_script.input.js",
+                   "document.body.style.backgroundColor = 'red';")
+          .BuildBundle();
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->Install(profile()));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html")));
+
+  auto* web_view_guest = GetWebViewGuest(app_frame);
+
+  // Verify that executeScript() using JS code can change the background color.
+  EXPECT_EQ(kEvalSuccessStr, SetBackgroundColorToWhite(web_view_guest));
+  EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundCode(app_frame));
+  EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(web_view_guest));
+
+  // Verify that executeScript() using a JS file changes the background color.
+  EXPECT_EQ(kEvalSuccessStr, SetBackgroundColorToWhite(web_view_guest));
+  EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundFile(app_frame));
+  EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(web_view_guest));
+}
+
 class ControlledFrameWebSocketApiTest : public ControlledFrameApiTest {
  public:
-  ControlledFrameWebSocketApiTest() = default;
-  ControlledFrameWebSocketApiTest(const ControlledFrameWebSocketApiTest&) =
-      delete;
-  ControlledFrameWebSocketApiTest& operator=(
-      const ControlledFrameWebSocketApiTest&) = delete;
-
   void SetUpOnMainThread() override {
     ControlledFrameApiTest::SetUpOnMainThread();
     websocket_test_server_ = std::make_unique<net::SpawnedTestServer>(
@@ -624,19 +617,22 @@ class ControlledFrameWebSocketApiTest : public ControlledFrameApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameWebSocketApiTest, WebSocketIsProxied) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
   const GURL& kOriginalControlledFrameUrl =
-      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
-  ASSERT_TRUE(
-      CreateControlledFrame(app_contents(), kOriginalControlledFrameUrl));
+      embedded_https_test_server().GetURL("/index.html");
+  ASSERT_TRUE(CreateControlledFrame(app_frame, kOriginalControlledFrameUrl));
 
   auto* web_request_event_router =
-      extensions::WebRequestEventRouter::Get(browser_context());
+      extensions::WebRequestEventRouter::Get(profile());
   EXPECT_EQ(0u, web_request_event_router->GetListenerCountForTesting(
-                    browser_context(), kWebRequestOnBeforeRequestEventName));
+                    profile(), kWebRequestOnBeforeRequestEventName));
 
   // Use Web Sockets before installing a WebRequest event listener to verify
   // that it works inside of the Controlled Frame.
-  auto* web_view_guest = GetWebViewGuest(app_contents());
+  auto* web_view_guest = GetWebViewGuest(app_frame);
   content::WebContents* guest_web_contents = web_view_guest->web_contents();
   GURL::Replacements http_scheme_replacement;
   http_scheme_replacement.SetSchemeStr("http");
@@ -673,7 +669,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameWebSocketApiTest, WebSocketIsProxied) {
 
   // Set up a WebRequest event listener that cancels any requests to the Web
   // Socket server.
-  EXPECT_EQ(true, content::EvalJs(app_contents(),
+  EXPECT_EQ(true, content::EvalJs(app_frame,
                                   R"(
     (function() {
       const frame = document.getElementsByTagName('controlledframe')[0];
@@ -687,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameWebSocketApiTest, WebSocketIsProxied) {
     })();
   )"));
   EXPECT_EQ(1u, web_request_event_router->GetListenerCountForTesting(
-                    browser_context(), kWebRequestOnBeforeRequestEventName));
+                    profile(), kWebRequestOnBeforeRequestEventName));
   {
     content::TitleWatcher title_watcher(guest_web_contents, u"PASS");
     title_watcher.AlsoWaitForTitle(u"FAIL");
@@ -706,15 +702,10 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameWebSocketApiTest, WebSocketIsProxied) {
 
 class ControlledFrameWebTransportApiTest : public ControlledFrameApiTest {
  public:
-  ControlledFrameWebTransportApiTest() { webtransport_server_.Start(); }
-
-  ControlledFrameWebTransportApiTest(
-      const ControlledFrameWebTransportApiTest&) = delete;
-  ControlledFrameWebTransportApiTest& operator=(
-      const ControlledFrameWebTransportApiTest&) = delete;
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ControlledFrameApiTest::SetUpCommandLine(command_line);
     webtransport_server_.SetUpCommandLine(command_line);
+    webtransport_server_.Start();
   }
 
   content::WebTransportSimpleTestServer& webtransport_server() {
@@ -727,19 +718,21 @@ class ControlledFrameWebTransportApiTest : public ControlledFrameApiTest {
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameWebTransportApiTest,
                        WebTransportIsProxied) {
-  const GURL& kOriginalControlledFrameUrl =
-      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
-  ASSERT_TRUE(
-      CreateControlledFrame(app_contents(), kOriginalControlledFrameUrl));
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html")));
 
   auto* web_request_event_router =
-      extensions::WebRequestEventRouter::Get(browser_context());
+      extensions::WebRequestEventRouter::Get(profile());
   EXPECT_EQ(0u, web_request_event_router->GetListenerCountForTesting(
-                    browser_context(), kWebRequestOnBeforeRequestEventName));
+                    profile(), kWebRequestOnBeforeRequestEventName));
 
   // Use WebTransport before installing a WebRequest event listener to verify
   // that it works inside of the Controlled Frame.
-  auto* web_view_guest = GetWebViewGuest(app_contents());
+  auto* web_view_guest = GetWebViewGuest(app_frame);
   EXPECT_EQ(true, content::EvalJs(
                       web_view_guest->GetGuestMainFrame(),
                       content::JsReplace(
@@ -760,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameWebTransportApiTest,
 
   // Set up a WebRequest event listener that cancels any requests to the
   // WebTransport server.
-  EXPECT_EQ(true, content::EvalJs(app_contents(),
+  EXPECT_EQ(true, content::EvalJs(app_frame,
                                   R"(
     let cancelRequest = false;
     (function() {
@@ -776,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameWebTransportApiTest,
     })();
   )"));
   EXPECT_EQ(1u, web_request_event_router->GetListenerCountForTesting(
-                    browser_context(), kWebRequestOnBeforeRequestEventName));
+                    profile(), kWebRequestOnBeforeRequestEventName));
 
   EXPECT_EQ(false, content::EvalJs(
                        web_view_guest->GetGuestMainFrame(),
@@ -805,58 +798,16 @@ constexpr char kPermissionDisallowedHost[] = "permission-disllowed.com";
 
 class ControlledFramePermissionsPolicyTest : public ControlledFrameApiTest {
  public:
-  ControlledFramePermissionsPolicyTest() = default;
-
-  ControlledFramePermissionsPolicyTest(
-      const ControlledFramePermissionsPolicyTest&) = delete;
-  ControlledFramePermissionsPolicyTest& operator=(
-      const ControlledFramePermissionsPolicyTest&) = delete;
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ControlledFrameApiTest::SetUpCommandLine(command_line);
     command_line->AppendArg("--use-fake-device-for-media-stream");
-    mock_cert_verifier_.SetUpCommandLine(command_line);
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    ControlledFrameApiTest::SetUpInProcessBrowserTestFixture();
-    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
-  }
-
-  void TearDownOnMainThread() override {
-    CHECK(embedded_test_server_.ShutdownAndWaitUntilComplete());
-    ControlledFrameApiTest::TearDownOnMainThread();
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
-    ControlledFrameApiTest::TearDownInProcessBrowserTestFixture();
-  }
-
-  bool StartEmbeddedTestServer(const std::string& path) {
-    base::FilePath::StringType os_path;
-#if BUILDFLAG(IS_WIN)
-    os_path = base::UTF8ToWide(path);
-#else
-    os_path = path;
-#endif
-    const base::FilePath server_root =
-        base::FilePath(FILE_PATH_LITERAL("chrome/test/data"))
-            .Append(base::FilePath(os_path));
-    embedded_test_server_.AddDefaultHandlers(server_root);
-    return embedded_test_server_.Start();
-  }
-
-  void SetUpPermissionRequestEventListener(bool allow_permission) {
+  void SetUpPermissionRequestEventListener(content::RenderFrameHost* app_frame,
+                                           bool allow_permission) {
     const std::string& handle_request_str = allow_permission ? "allow" : "deny";
-    EXPECT_EQ("SUCCESS",
-              content::EvalJs(app_contents(),
-                              content::JsReplace(R"(
+    EXPECT_EQ("SUCCESS", content::EvalJs(app_frame, content::JsReplace(
+                                                        R"(
       (function() {
         const frame = document.getElementsByTagName('controlledframe')[0];
         if (!frame) {
@@ -868,15 +819,16 @@ class ControlledFramePermissionsPolicyTest : public ControlledFrameApiTest {
         return 'SUCCESS'
       })();
     )",
-                                                 handle_request_str)));
+                                                        handle_request_str)));
   }
 
   void RequestMediaPermissionFromControlledFrame(
+      content::RenderFrameHost* app_frame,
       bool request_audio,
       bool request_video,
       bool expect_audio_permission_allowed,
       bool expect_video_permission_allowed) {
-    extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_contents());
+    extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
     EXPECT_EQ("SUCCESS", content::EvalJs(web_view_guest->GetGuestMainFrame(),
                                          content::JsReplace(
                                              R"(
@@ -926,34 +878,23 @@ class ControlledFramePermissionsPolicyTest : public ControlledFrameApiTest {
                                              expect_audio_permission_allowed,
                                              expect_video_permission_allowed)));
   }
-
-  net::EmbeddedTestServer* embedded_test_server() {
-    return &embedded_test_server_;
-  }
-
- protected:
-  net::EmbeddedTestServer embedded_test_server_{
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
-  content::ContentMockCertVerifier mock_cert_verifier_;
 };
-
-namespace {}
 
 IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
                        CameraPermissionAllowed) {
-  const std::string& test_server_dir =
-      "web_apps/controlled_frame_permissions_policy/camera";
-  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder().AddPermissionsPolicy(
+          blink::mojom::PermissionsPolicyFeature::kCamera, /*self=*/true,
+          {embedded_https_test_server().GetOrigin(kPermissionAllowedHost)}));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  StartIsolatedWebAppServer(test_server_dir);
-  InstallAndLaunchIsolatedWebApp();
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL(kPermissionAllowedHost,
+                                                     "/index.html")));
 
-  const GURL& kControlledFrameUrl =
-      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
-  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
-
-  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  SetUpPermissionRequestEventListener(app_frame, /*allow_permission=*/true);
   RequestMediaPermissionFromControlledFrame(
+      app_frame,
       /*request_audio=*/false,
       /*request_video=*/true,
       /*expect_audio_permission_allowed=*/false,
@@ -962,19 +903,19 @@ IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
 
 IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
                        OnlyCameraPermissionAllowed) {
-  const std::string& test_server_dir =
-      "web_apps/controlled_frame_permissions_policy/camera";
-  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder().AddPermissionsPolicy(
+          blink::mojom::PermissionsPolicyFeature::kCamera, /*self=*/true,
+          {embedded_https_test_server().GetOrigin(kPermissionAllowedHost)}));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  StartIsolatedWebAppServer(test_server_dir);
-  InstallAndLaunchIsolatedWebApp();
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL(kPermissionAllowedHost,
+                                                     "/index.html")));
 
-  const GURL& kControlledFrameUrl =
-      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
-  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
-
-  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  SetUpPermissionRequestEventListener(app_frame, /*allow_permission=*/true);
   RequestMediaPermissionFromControlledFrame(
+      app_frame,
       /*request_audio=*/true,
       /*request_video=*/true,
       /*expect_audio_permission_allowed=*/false,
@@ -983,19 +924,19 @@ IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
 
 IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
                        CameraPermissionDenied) {
-  const std::string& test_server_dir =
-      "web_apps/controlled_frame_permissions_policy/camera";
-  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder().AddPermissionsPolicy(
+          blink::mojom::PermissionsPolicyFeature::kCamera, /*self=*/true,
+          {embedded_https_test_server().GetOrigin(kPermissionAllowedHost)}));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  StartIsolatedWebAppServer(test_server_dir);
-  InstallAndLaunchIsolatedWebApp();
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL(kPermissionAllowedHost,
+                                                     "/index.html")));
 
-  const GURL& kControlledFrameUrl =
-      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
-  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
-
-  SetUpPermissionRequestEventListener(/*allow_permission=*/false);
+  SetUpPermissionRequestEventListener(app_frame, /*allow_permission=*/false);
   RequestMediaPermissionFromControlledFrame(
+      app_frame,
       /*request_audio=*/false,
       /*request_video=*/true,
       /*expect_audio_permission_allowed=*/false,
@@ -1004,19 +945,19 @@ IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
 
 IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
                        CameraPermissionDisallowed) {
-  const std::string& test_server_dir =
-      "web_apps/controlled_frame_permissions_policy/camera";
-  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder().AddPermissionsPolicy(
+          blink::mojom::PermissionsPolicyFeature::kCamera, /*self=*/true,
+          {embedded_https_test_server().GetOrigin(kPermissionAllowedHost)}));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  StartIsolatedWebAppServer(test_server_dir);
-  InstallAndLaunchIsolatedWebApp();
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL(kPermissionDisallowedHost,
+                                                     "/index.html")));
 
-  const GURL& kControlledFrameUrl =
-      embedded_test_server()->GetURL(kPermissionDisallowedHost, "/index.html");
-  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
-
-  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  SetUpPermissionRequestEventListener(app_frame, /*allow_permission=*/true);
   RequestMediaPermissionFromControlledFrame(
+      app_frame,
       /*request_audio=*/false,
       /*request_video=*/true,
       /*expect_audio_permission_allowed=*/false,
@@ -1025,19 +966,19 @@ IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
 
 IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
                        MicrophonePermissionAllowed) {
-  const std::string& test_server_dir =
-      "web_apps/controlled_frame_permissions_policy/microphone";
-  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder().AddPermissionsPolicy(
+          blink::mojom::PermissionsPolicyFeature::kMicrophone, /*self=*/true,
+          {embedded_https_test_server().GetOrigin(kPermissionAllowedHost)}));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  StartIsolatedWebAppServer(test_server_dir);
-  InstallAndLaunchIsolatedWebApp();
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL(kPermissionAllowedHost,
+                                                     "/index.html")));
 
-  const GURL& kControlledFrameUrl =
-      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
-  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
-
-  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  SetUpPermissionRequestEventListener(app_frame, /*allow_permission=*/true);
   RequestMediaPermissionFromControlledFrame(
+      app_frame,
       /*request_audio=*/true,
       /*request_video=*/false,
       /*expect_audio_permission_allowed=*/true,
@@ -1046,19 +987,19 @@ IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
 
 IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
                        OnlyMicrophonePermissionAllowed) {
-  const std::string& test_server_dir =
-      "web_apps/controlled_frame_permissions_policy/microphone";
-  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder().AddPermissionsPolicy(
+          blink::mojom::PermissionsPolicyFeature::kMicrophone, /*self=*/true,
+          {embedded_https_test_server().GetOrigin(kPermissionAllowedHost)}));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  StartIsolatedWebAppServer(test_server_dir);
-  InstallAndLaunchIsolatedWebApp();
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL(kPermissionAllowedHost,
+                                                     "/index.html")));
 
-  const GURL& kControlledFrameUrl =
-      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
-  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
-
-  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  SetUpPermissionRequestEventListener(app_frame, /*allow_permission=*/true);
   RequestMediaPermissionFromControlledFrame(
+      app_frame,
       /*request_audio=*/true,
       /*request_video=*/true,
       /*expect_audio_permission_allowed=*/true,
@@ -1067,19 +1008,19 @@ IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
 
 IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
                        MicrophonePermissionDenied) {
-  const std::string& test_server_dir =
-      "web_apps/controlled_frame_permissions_policy/microphone";
-  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder().AddPermissionsPolicy(
+          blink::mojom::PermissionsPolicyFeature::kMicrophone, /*self=*/true,
+          {embedded_https_test_server().GetOrigin(kPermissionAllowedHost)}));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  StartIsolatedWebAppServer(test_server_dir);
-  InstallAndLaunchIsolatedWebApp();
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL(kPermissionAllowedHost,
+                                                     "/index.html")));
 
-  const GURL& kControlledFrameUrl =
-      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
-  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
-
-  SetUpPermissionRequestEventListener(/*allow_permission=*/false);
+  SetUpPermissionRequestEventListener(app_frame, /*allow_permission=*/false);
   RequestMediaPermissionFromControlledFrame(
+      app_frame,
       /*request_audio=*/true,
       /*request_video=*/false,
       /*expect_audio_permission_allowed=*/false,
@@ -1088,19 +1029,19 @@ IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
 
 IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
                        MicrophonePermissionDisallowed) {
-  const std::string& test_server_dir =
-      "web_apps/controlled_frame_permissions_policy/microphone";
-  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder().AddPermissionsPolicy(
+          blink::mojom::PermissionsPolicyFeature::kMicrophone, /*self=*/true,
+          {embedded_https_test_server().GetOrigin(kPermissionAllowedHost)}));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  StartIsolatedWebAppServer(test_server_dir);
-  InstallAndLaunchIsolatedWebApp();
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL(kPermissionDisallowedHost,
+                                                     "/index.html")));
 
-  const GURL& kControlledFrameUrl =
-      embedded_test_server()->GetURL(kPermissionDisallowedHost, "/index.html");
-  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
-
-  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  SetUpPermissionRequestEventListener(app_frame, /*allow_permission=*/true);
   RequestMediaPermissionFromControlledFrame(
+      app_frame,
       /*request_audio=*/true,
       /*request_video=*/false,
       /*expect_audio_permission_allowed=*/false,
@@ -1109,19 +1050,25 @@ IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
 
 IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
                        CameraAndMicrophonePermissionAllowed) {
-  const std::string& test_server_dir =
-      "web_apps/controlled_frame_permissions_policy/camera_and_microphone";
-  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+  web_app::IsolatedWebAppUrlInfo url_info = CreateAndInstallEmptyApp(
+      web_app::ManifestBuilder()
+          .AddPermissionsPolicy(
+              blink::mojom::PermissionsPolicyFeature::kCamera, /*self=*/true,
+              {embedded_https_test_server().GetOrigin(kPermissionAllowedHost)})
+          .AddPermissionsPolicy(
+              blink::mojom::PermissionsPolicyFeature::kMicrophone,
+              /*self=*/true,
+              {embedded_https_test_server().GetOrigin(
+                  kPermissionAllowedHost)}));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  StartIsolatedWebAppServer(test_server_dir);
-  InstallAndLaunchIsolatedWebApp();
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL(kPermissionAllowedHost,
+                                                     "/index.html")));
 
-  const GURL& kControlledFrameUrl =
-      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
-  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
-
-  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  SetUpPermissionRequestEventListener(app_frame, /*allow_permission=*/true);
   RequestMediaPermissionFromControlledFrame(
+      app_frame,
       /*request_audio=*/true,
       /*request_video=*/true,
       /*expect_audio_permission_allowed=*/true,
@@ -1130,19 +1077,25 @@ IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
 
 IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
                        CameraAndMicrophonePermissionDenied) {
-  const std::string& test_server_dir =
-      "web_apps/controlled_frame_permissions_policy/camera_and_microphone";
-  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+  web_app::IsolatedWebAppUrlInfo url_info = CreateAndInstallEmptyApp(
+      web_app::ManifestBuilder()
+          .AddPermissionsPolicy(
+              blink::mojom::PermissionsPolicyFeature::kCamera, /*self=*/true,
+              {embedded_https_test_server().GetOrigin(kPermissionAllowedHost)})
+          .AddPermissionsPolicy(
+              blink::mojom::PermissionsPolicyFeature::kMicrophone,
+              /*self=*/true,
+              {embedded_https_test_server().GetOrigin(
+                  kPermissionAllowedHost)}));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  StartIsolatedWebAppServer(test_server_dir);
-  InstallAndLaunchIsolatedWebApp();
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL(kPermissionAllowedHost,
+                                                     "/index.html")));
 
-  const GURL& kControlledFrameUrl =
-      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
-  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
-
-  SetUpPermissionRequestEventListener(/*allow_permission=*/false);
+  SetUpPermissionRequestEventListener(app_frame, /*allow_permission=*/false);
   RequestMediaPermissionFromControlledFrame(
+      app_frame,
       /*request_audio=*/true,
       /*request_video=*/true,
       /*expect_audio_permission_allowed=*/false,
@@ -1151,19 +1104,25 @@ IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
 
 IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
                        CameraAndMicrophonePermissionDisallowed) {
-  const std::string& test_server_dir =
-      "web_apps/controlled_frame_permissions_policy/camera_and_microphone";
-  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+  web_app::IsolatedWebAppUrlInfo url_info = CreateAndInstallEmptyApp(
+      web_app::ManifestBuilder()
+          .AddPermissionsPolicy(
+              blink::mojom::PermissionsPolicyFeature::kCamera, /*self=*/true,
+              {embedded_https_test_server().GetOrigin(kPermissionAllowedHost)})
+          .AddPermissionsPolicy(
+              blink::mojom::PermissionsPolicyFeature::kMicrophone,
+              /*self=*/true,
+              {embedded_https_test_server().GetOrigin(
+                  kPermissionAllowedHost)}));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  StartIsolatedWebAppServer(test_server_dir);
-  InstallAndLaunchIsolatedWebApp();
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL(kPermissionDisallowedHost,
+                                                     "/index.html")));
 
-  const GURL& kControlledFrameUrl =
-      embedded_test_server()->GetURL(kPermissionDisallowedHost, "/index.html");
-  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
-
-  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  SetUpPermissionRequestEventListener(app_frame, /*allow_permission=*/true);
   RequestMediaPermissionFromControlledFrame(
+      app_frame,
       /*request_audio=*/true,
       /*request_video=*/true,
       /*expect_audio_permission_allowed=*/false,
@@ -1175,28 +1134,24 @@ class ControlledFramePromiseApiTest
       public testing::WithParamInterface<const char*> {};
 
 IN_PROC_BROWSER_TEST_P(ControlledFramePromiseApiTest, PromiseAPIs) {
-  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
-      isolated_web_app_dev_server().GetOrigin());
-  Browser* app_browser = LaunchWebAppBrowserAndWait(url_info.app_id());
-  content::WebContents* app_contents =
-      app_browser->tab_strip_model()->GetActiveWebContents();
-  const GURL& test_url =
-      url_info.origin().GetURL().Resolve("/controlled_frame_api_test.html");
-  ASSERT_TRUE(content::NavigateToURL(app_contents, test_url));
+  std::unique_ptr<web_app::ScopedProxyIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+          .AddFolderFromDisk("/", "web_apps/simple_isolated_app")
+          .BuildAndStartProxyServer();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       app->Install(profile()));
+  content::RenderFrameHost* app_frame =
+      OpenApp(url_info.app_id(), "/controlled_frame_api_test.html");
 
-  const GURL& original_controlled_frame_url =
-      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
-  ASSERT_TRUE(
-      CreateControlledFrame(app_contents, original_controlled_frame_url));
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, app->proxy_server().GetURL("/controlled_frame.html")));
 
   EXPECT_EQ("SUCCESS",
-            content::EvalJs(app_contents, content::JsReplace(R"(
-      (async function() {
+            content::EvalJs(app_frame, content::JsReplace(R"(
         const frame = document.getElementsByTagName('controlledframe')[0];
-        return await testAPI(frame, $1);
-      })();
+        testAPI(frame, $1);
     )",
-                                                             GetParam())));
+                                                          GetParam())));
 }
 
 INSTANTIATE_TEST_SUITE_P(PromiseAPIs,
@@ -1210,6 +1165,13 @@ class ControlledFrameServiceWorkerTest
       delete;
   ControlledFrameServiceWorkerTest& operator=(
       const ControlledFrameServiceWorkerTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    extensions::ServiceWorkerBasedBackgroundTest::SetUpOnMainThread();
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        GetChromeTestDataDir());
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
 
  protected:
   ControlledFrameServiceWorkerTest() {
@@ -1240,7 +1202,8 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameServiceWorkerTest, PRE_Basic) {
   const extensions::ExtensionId extension_id = extension->id();
   EXPECT_TRUE(worker_listener.WaitUntilSatisfied());
 
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  const GURL url =
+      embedded_https_test_server().GetURL("/extensions/test_file.html");
   content::WebContents* new_web_contents =
       extensions::browsertest_util::AddTab(browser(), url);
   EXPECT_TRUE(new_web_contents);
@@ -1257,30 +1220,12 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameServiceWorkerTest, PRE_Basic) {
 IN_PROC_BROWSER_TEST_F(ControlledFrameServiceWorkerTest, Basic) {
   ExtensionTestMessageListener newtab_listener("CREATED");
   newtab_listener.set_failure_message("CREATE_FAILED");
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  const GURL url =
+      embedded_https_test_server().GetURL("/extensions/test_file.html");
   content::WebContents* new_web_contents =
       extensions::browsertest_util::AddTab(browser(), url);
   EXPECT_TRUE(new_web_contents);
   EXPECT_TRUE(newtab_listener.WaitUntilSatisfied());
-}
-
-IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ExecuteScript) {
-  const GURL& kOriginalControlledFrameUrl =
-      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
-  ASSERT_TRUE(
-      CreateControlledFrame(app_contents(), kOriginalControlledFrameUrl));
-
-  auto* web_view_guest = GetWebViewGuest(app_contents());
-
-  // Verify that executeScript() using JS code can change the background color.
-  EXPECT_EQ(kEvalSuccessStr, SetBackgroundColorToWhite(web_view_guest));
-  EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundCode(app_contents()));
-  EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(web_view_guest));
-
-  // Verify that executeScript() using a JS file changes the background color.
-  EXPECT_EQ(kEvalSuccessStr, SetBackgroundColorToWhite(web_view_guest));
-  EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundFile(app_contents()));
-  EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(web_view_guest));
 }
 
 class ControlledFrameAvailableChannelTest
@@ -1288,11 +1233,6 @@ class ControlledFrameAvailableChannelTest
       public testing::WithParamInterface<version_info::Channel> {
  protected:
   ControlledFrameAvailableChannelTest() : channel_(GetParam()) {}
-  ~ControlledFrameAvailableChannelTest() = default;
-  ControlledFrameAvailableChannelTest(
-      const ControlledFrameAvailableChannelTest&) = delete;
-  ControlledFrameAvailableChannelTest& operator=(
-      const ControlledFrameAvailableChannelTest&) = delete;
 
  private:
   extensions::ScopedCurrentChannel channel_;
@@ -1307,12 +1247,15 @@ INSTANTIATE_TEST_SUITE_P(ControlledFrameAvailableChannels,
                                          version_info::Channel::DEFAULT));
 
 IN_PROC_BROWSER_TEST_P(ControlledFrameAvailableChannelTest, Test) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html")));
+
   // Test if Controlled Frame is available.
-  const GURL& kOriginalControlledFrameUrl =
-      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
-  ASSERT_TRUE(
-      CreateControlledFrame(app_contents(), kOriginalControlledFrameUrl));
-  EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundFile(app_contents()));
+  EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundFile(app_frame));
 }
 
 class ControlledFrameNotAvailableChannelTest
@@ -1320,11 +1263,6 @@ class ControlledFrameNotAvailableChannelTest
       public testing::WithParamInterface<version_info::Channel> {
  protected:
   ControlledFrameNotAvailableChannelTest() : channel_(GetParam()) {}
-  ~ControlledFrameNotAvailableChannelTest() = default;
-  ControlledFrameNotAvailableChannelTest(
-      const ControlledFrameNotAvailableChannelTest&) = delete;
-  ControlledFrameNotAvailableChannelTest& operator=(
-      const ControlledFrameNotAvailableChannelTest&) = delete;
 
  private:
   extensions::ScopedCurrentChannel channel_;
@@ -1341,19 +1279,14 @@ INSTANTIATE_TEST_SUITE_P(ControlledFrameNotAvailableChannels,
 IN_PROC_BROWSER_TEST_P(ControlledFrameNotAvailableChannelTest, Test) {
   // Test if Controlled Frame is not available.
   const GURL start_url("https://app.site.test/example/index");
-  const webapps::AppId app_id = InstallPWA(start_url);
+  InstallPWA(start_url);
   content::WebContents* app_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  ASSERT_FALSE(IsControlledFramePresent(app_contents));
+  ASSERT_FALSE(IsControlledFramePresent(app_contents->GetPrimaryMainFrame()));
 }
 
 class ControlledFrameDisabledTest : public ControlledFrameApiTest {
- public:
-  ControlledFrameDisabledTest(const ControlledFrameDisabledTest&) = delete;
-  ControlledFrameDisabledTest& operator=(const ControlledFrameDisabledTest&) =
-      delete;
-
  protected:
   ControlledFrameDisabledTest() {
     feature_list.InitWithFeatures(
@@ -1368,9 +1301,11 @@ class ControlledFrameDisabledTest : public ControlledFrameApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameDisabledTest, MissingFeature) {
-  const GURL& kOriginalControlledFrameUrl =
-      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
-  ASSERT_FALSE(IsControlledFramePresent(app_contents()));
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_FALSE(IsControlledFramePresent(app_frame));
 }
 
 }  // namespace controlled_frame
