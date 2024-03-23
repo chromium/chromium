@@ -21,6 +21,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/view_class_properties.h"
 
 using SidePanelWebUIViewT_LensUntrustedUI =
     SidePanelWebUIViewT<lens::LensUntrustedUI>;
@@ -115,6 +116,8 @@ LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView() {
           tab_browser_->profile(), IDS_SIDE_PANEL_COMPANION_TITLE,
           /*webui_resizes_host=*/false,
           /*esc_closes_ui=*/false));
+  view->SetProperty(views::kElementIdentifierKey,
+                    LensOverlayController::kOverlaySidePanelWebViewId);
   side_panel_web_view_ = view.get();
   // Important safety note: creating the SidePanelWebUIViewT can result in
   // synchronous construction of the WebUIController. Until

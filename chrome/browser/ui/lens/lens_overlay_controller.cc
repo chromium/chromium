@@ -80,6 +80,8 @@ LensOverlayController::~LensOverlayController() {
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController, kOverlayId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController,
+                                      kOverlaySidePanelWebViewId);
 
 void LensOverlayController::ShowUI() {
   // If UI is already showing or in the process of showing, do nothing.

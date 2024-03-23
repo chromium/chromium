@@ -5,15 +5,29 @@
 import './text_layer.js';
 import './region_selection.js';
 
+import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BrowserProxyImpl} from './browser_proxy.js';
 import {type RegionSelectionElement} from './region_selection.js';
 import {getTemplate} from './selection_overlay.html.js';
 import {DRAG_THRESHOLD, DragFeature, emptyGestureEvent, type GestureEvent, GestureState} from './selection_utils.js';
 
+/**
+ * Returns a mojo RectF corresponding to the gesture provided.
+ */
+function getRectFromGesture(gesture: GestureEvent): RectF {
+  const width = Math.abs(gesture.clientX - gesture.startX);
+  const height = Math.abs(gesture.clientY - gesture.startY);
+  const topLeftX = Math.min(gesture.clientX, gesture.startX);
+  const topLeftY = Math.min(gesture.clientY, gesture.startY);
+  return {x: topLeftX, y: topLeftY, width: width, height: height};
+}
+
 export interface SelectionOverlayElement {
   $: {regionSelectionLayer: RegionSelectionElement};
 }
+
 /*
  * Element responsible for coordinating selections between the various selection
  * features. This includes:
@@ -69,6 +83,10 @@ export class SelectionOverlayElement extends PolymerElement {
     switch (this.currentGesture.state) {
       case GestureState.DRAGGING:
         // Drag has finished. Let the features respond to the end of a drag.
+        if (this.draggingRespondent === DragFeature.MANUAL_REGION) {
+          BrowserProxyImpl.getInstance().handler.issueLensRequest(
+              getRectFromGesture(this.currentGesture));
+        }
         break;
       case GestureState.STARTING:
         // This gesture was a tap. Let the features respond to a tap.

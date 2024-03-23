@@ -11,12 +11,8 @@
     left: 0;
   }
 
-  .close {
+  #closeButton {
     top: 25px;
-  }
-
-  .side-panel {
-    top: 60px;
   }
 
   lens-selection-overlay {
@@ -27,7 +23,7 @@
   }
 
   /* Temporary red scrim to make it evident the overlay is opened. */
-  .scrim {
+  #scrim {
     position: absolute;
     inset: 0;
     background-color: rgba(255, 0, 0, 0.15);
@@ -36,15 +32,9 @@
 </style>
 <div class="app-container">
   <lens-selection-overlay></lens-selection-overlay>
-  <cr-button id="closeButton" class="action-button close"
+  <cr-button id="closeButton" class="action-button"
       on-click="onCloseButtonClick_">
     $i18n{close}
   </cr-button>
-  <cr-button class="action-button side-panel"
-      on-click="onSidePanelButtonClick_">
-    <!-- This is a temporary button that will be removed in the future, so
-         i18n is not required. -->
-    Open side panels
-  </cr-button>
-  <div class="scrim"></div>
+  <div id="scrim"></div>
 </div>

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/lens/lens_features.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/views/controls/webview/webview.h"
@@ -27,6 +28,18 @@ namespace {
 using State = LensOverlayController::State;
 
 class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
+ protected:
+  content::WebContents* GetOverlayWebContents() {
+    auto* controller =
+        browser()->tab_strip_model()->GetActiveTab()->lens_overlay_controller();
+    raw_ptr<views::WebView> overlay_web_view =
+        views::AsViewClass<views::WebView>(
+            controller->GetOverlayWidgetForTesting()
+                ->GetContentsView()
+                ->children()[0]);
+    return overlay_web_view->GetWebContents();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{lens::features::kLensOverlay};
 };
@@ -67,13 +80,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {
 
   // Assert that the web view was created and loaded WebUI.
   GURL webui_url(chrome::kChromeUILensUntrustedURL);
-  raw_ptr<views::WebView> overlay_web_view = views::AsViewClass<views::WebView>(
-      controller->GetOverlayWidgetForTesting()
-          ->GetContentsView()
-          ->children()[0]);
-  ASSERT_TRUE(content::WaitForLoadStop(overlay_web_view->GetWebContents()));
-  ASSERT_EQ(overlay_web_view->GetWebContents()->GetLastCommittedURL(),
-            webui_url);
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  ASSERT_EQ(GetOverlayWebContents()->GetLastCommittedURL(), webui_url);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {

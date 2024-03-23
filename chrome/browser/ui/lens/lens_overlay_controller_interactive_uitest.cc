@@ -66,14 +66,82 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, OpenAndClose) {
       // The overlay controller is an independent floating widget associated
       // with a tab rather than a browser window, so by convention gets its own
       // element context.
-      InAnyContext(InstrumentNonTabWebView(kOverlayId,
-                                           LensOverlayController::kOverlayId)),
+      InAnyContext(Steps(InstrumentNonTabWebView(
+                             kOverlayId, LensOverlayController::kOverlayId),
+                         WaitForWebContentsReady(
+                             kOverlayId, GURL("chrome-untrusted://lens")))),
       // Wait for the webview to finish loading to prevent re-entrancy.
       InSameContext(Steps(FlushEvents(),
                           EnsurePresent(kOverlayId, kPathToCloseButton),
                           ExecuteJsAt(kOverlayId, kPathToCloseButton, kClickFn,
                                       ExecuteJsMode::kFireAndForget),
                           WaitForHide(kOverlayId))));
+}
+
+// This tests the following CUJ:
+//  (1) User navigates to a website.
+//  (2) User opens lens overlay.
+//  (3) User drags to select a manual region on the overlay.
+//  (4) Side panel opens with results.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, SelectManualRegion) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+
+  const DeepQuery kPathToRegionSelection{
+      "lens-overlay-app",
+      "lens-selection-overlay",
+      "#regionSelectionLayer",
+  };
+  const DeepQuery kPathToResultsFrame{
+      "lens-side-panel-app",
+      "#results",
+  };
+
+  auto off_center_point = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center =
+        browser_view->contents_web_view()->bounds().CenterPoint();
+    off_center.Offset(100, 100);
+    return off_center;
+  });
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
+      // TODO(https://crbug.com/328501283): Use a UI entry point.
+      Do([&]() {
+        browser()
+            ->tab_strip_model()
+            ->GetActiveTab()
+            ->lens_overlay_controller()
+            ->ShowUI();
+      }),
+      // The overlay controller is an independent floating widget
+      // associated with a tab rather than a browser window, so by
+      // convention gets its own element context.
+      InAnyContext(Steps(InstrumentNonTabWebView(
+                             kOverlayId, LensOverlayController::kOverlayId),
+                         WaitForWebContentsReady(
+                             kOverlayId, GURL("chrome-untrusted://lens")))),
+      // Wait for the webview to finish loading to prevent re-entrancy. Then do
+      // a drag offset from the center. Flush tasks after drag to prevent
+      // flakiness.
+      InSameContext(Steps(FlushEvents(),
+                          WaitForShow(LensOverlayController::kOverlayId),
+                          EnsurePresent(kOverlayId, kPathToRegionSelection),
+                          MoveMouseTo(LensOverlayController::kOverlayId),
+                          DragMouseTo(off_center_point))),
+
+      // The drag should have opened the side panel with the results frame.
+      InAnyContext(Steps(
+          FlushEvents(),
+          InstrumentNonTabWebView(
+              kOverlaySidePanelWebViewId,
+              LensOverlayController::kOverlaySidePanelWebViewId),
+          FlushEvents(),
+          EnsurePresent(kOverlaySidePanelWebViewId, kPathToResultsFrame))));
 }
 
 }  // namespace
