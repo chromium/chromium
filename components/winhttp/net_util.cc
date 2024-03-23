@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/strings/sys_string_conversions.h"
 
@@ -36,8 +35,7 @@ HRESULT QueryHeadersString(HINTERNET request_handle,
                              &num_bytes, WINHTTP_NO_HEADER_INDEX)) {
     return HRESULTFromLastError();
   }
-  // TODO(crbug.com/325343942): replace with CHECK.
-  DUMP_WILL_BE_CHECK(num_bytes % sizeof(wchar_t) == 0);
+  CHECK_EQ(num_bytes % sizeof(wchar_t), 0u);
   buffer.resize(num_bytes / sizeof(wchar_t));
   value->assign(buffer.begin(), buffer.end());
   return S_OK;

@@ -486,8 +486,8 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
                                                      DWORD status,
                                                      void* info,
                                                      DWORD info_len) {
-  DUMP_WILL_BE_CHECK(handle);
-  DUMP_WILL_BE_CHECK(context);
+  CHECK(handle);
+  CHECK(context);
 
   base::StringPiece status_string;
   std::wstring info_string;
@@ -538,8 +538,8 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
       break;
     case WINHTTP_CALLBACK_STATUS_DATA_AVAILABLE:
       status_string = "data available";
-      DUMP_WILL_BE_CHECK(info);
-      DUMP_WILL_BE_CHECK(info_len == sizeof(uint32_t));
+      CHECK(info);
+      CHECK_EQ(info_len, sizeof(uint32_t));
       info_string = base::NumberToWString(*static_cast<uint32_t*>(info));
       break;
     case WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE:
@@ -560,8 +560,8 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
       break;
     case WINHTTP_CALLBACK_STATUS_SECURE_FAILURE:
       status_string = "https failure";
-      DUMP_WILL_BE_CHECK(info);
-      DUMP_WILL_BE_CHECK(info_len == sizeof(uint32_t));
+      CHECK(info);
+      CHECK_EQ(info_len, sizeof(uint32_t));
       info_string = base::ASCIIToWide(
           base::StringPrintf("%#x", *static_cast<uint32_t*>(info)));
       break;
@@ -598,12 +598,12 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
           base::BindOnce(&NetworkFetcher::HeadersAvailable, network_fetcher);
       break;
     case WINHTTP_CALLBACK_STATUS_READ_COMPLETE:
-      DUMP_WILL_BE_CHECK(info == &network_fetcher->read_buffer_.front());
+      CHECK_EQ(info, &network_fetcher->read_buffer_.front());
       callback = base::BindOnce(&NetworkFetcher::ReadDataComplete,
                                 network_fetcher, size_t{info_len});
       break;
     case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
-      DUMP_WILL_BE_CHECK(info);
+      CHECK(info);
       callback = base::BindOnce(
           &NetworkFetcher::RequestError, network_fetcher,
           static_cast<const WINHTTP_ASYNC_RESULT*>(info)->dwError);
