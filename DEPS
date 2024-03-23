@@ -592,7 +592,7 @@ deps = {
       },
     ],
     'dep_type': 'cipd',
-    'condition': 'checkout_mac',
+    'condition': 'checkout_mac or checkout_ios',
   },
   'src/third_party/apache-mac-arm64': {
     'packages': [
@@ -602,7 +602,7 @@ deps = {
       },
     ],
     'dep_type': 'cipd',
-    'condition': 'checkout_mac',
+    'condition': 'checkout_mac or checkout_ios',
   },
 
   'src/third_party/apache-linux': {
