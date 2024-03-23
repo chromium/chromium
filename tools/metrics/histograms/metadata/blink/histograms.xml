@@ -701,32 +701,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.ColorGamut.Destination" enum="Gamut" expires_after="M85">
-  <owner>brianosman@chromium.org</owner>
-  <owner>mcasas@google.com</owner>
-  <owner>ccameron@chromium.org</owner>
-  <summary>Gamut properties of destination color space.</summary>
-</histogram>
-
-<histogram name="Blink.ColorSpace.Destination" enum="Gamma" expires_after="M85">
-  <owner>brianosman@chromium.org</owner>
-  <owner>mcasas@google.com</owner>
-  <owner>ccameron@chromium.org</owner>
-  <summary>Gamma properties of destination color space.</summary>
-</histogram>
-
-<histogram name="Blink.ColorSpace.Destination.NonlinearFitErrorCombined"
-    units="units" expires_after="M85">
-  <owner>brianosman@chromium.org</owner>
-  <owner>mcasas@google.com</owner>
-  <owner>ccameron@chromium.org</owner>
-  <summary>
-    The L-infinity error (in 8-bit values) of the numerical approximation of
-    table-based ICC profile transfer functions for all channels combined, when
-    the nonlinear approximation converged.
-  </summary>
-</histogram>
-
 <histogram name="Blink.CommitDocumentLoaderTime" units="ms"
     expires_after="2024-09-19">
   <owner>nidhijaju@chromium.org</owner>
