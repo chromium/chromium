@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_child_layout_context.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_item_result_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
@@ -57,15 +58,35 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
     box->ComputeTextMetrics(line_style, *box->font, baseline_type_);
   }
 
-  for (InlineItemResult& item_result : *line_items) {
+#if DCHECK_IS_ON()
+  if (line_info->IsBlockInInline()) {
+    DCHECK_EQ(line_items->size(), 1u);
+    DCHECK_EQ((*line_items)[0].item->Type(), InlineItem::kBlockInInline);
+  }
+#endif
+  box = HandleItemResults(*line_info, *line_items, line_box, main_line_helper,
+                          box);
+
+  box_states_->OnEndPlaceItems(constraint_space_, line_box, baseline_type_);
+
+  if (UNLIKELY(node_.IsBidiEnabled())) {
+    box_states_->PrepareForReorder(line_box);
+    BidiReorder(line_info->BaseDirection(), line_box);
+    box_states_->UpdateAfterReorder(line_box);
+  } else {
+    DCHECK(IsLtr(line_info->BaseDirection()));
+  }
+}
+
+InlineBoxState* LogicalLineBuilder::HandleItemResults(
+    const LineInfo& line_info,
+    InlineItemResults& line_items,
+    LogicalLineItems* line_box,
+    InlineLayoutAlgorithm* main_line_helper,
+    InlineBoxState* box) {
+  for (InlineItemResult& item_result : line_items) {
     DCHECK(item_result.item);
     const InlineItem& item = *item_result.item;
-#if DCHECK_IS_ON()
-    if (line_info->IsBlockInInline()) {
-      DCHECK_EQ(line_items->size(), 1u);
-      DCHECK_EQ(item.Type(), InlineItem::kBlockInInline);
-    }
-#endif
     if (item.Type() == InlineItem::kText) {
       DCHECK(item.GetLayoutObject());
       DCHECK(item.GetLayoutObject()->IsText() ||
@@ -120,7 +141,7 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
       item.GetLayoutObject()->ClearNeedsLayoutWithFullPaintInvalidation();
 
     } else if (item.Type() == InlineItem::kControl) {
-      PlaceControlItem(item, line_info->ItemsData().text_content, &item_result,
+      PlaceControlItem(item, line_info.ItemsData().text_content, &item_result,
                        line_box, box);
     } else if (item.Type() == InlineItem::kOpenTag) {
       box = HandleOpenTag(item, item_result, line_box, box_states_);
@@ -131,9 +152,12 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
       has_relative_positioned_items_ |=
           item.Style()->GetPosition() == EPosition::kRelative;
     } else if (item.Type() == InlineItem::kBlockInInline) {
-      DCHECK(line_info->IsBlockInInline());
+      DCHECK(line_info.IsBlockInInline());
       DCHECK(main_line_helper);
       main_line_helper->PlaceBlockInInline(item, &item_result, line_box);
+    } else if (item.Type() == InlineItem::kOpenRubyColumn) {
+      DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
+      box = PlaceRubyColumn(line_info, item_result, *line_box, box);
     } else if (item.Type() == InlineItem::kListMarker) {
       PlaceListMarker(item, &item_result);
     } else if (item.Type() == InlineItem::kOutOfFlowPositioned) {
@@ -177,16 +201,7 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
       PlaceInitialLetterBox(item, &item_result, line_box);
     }
   }
-
-  box_states_->OnEndPlaceItems(constraint_space_, line_box, baseline_type_);
-
-  if (UNLIKELY(node_.IsBidiEnabled())) {
-    box_states_->PrepareForReorder(line_box);
-    BidiReorder(line_info->BaseDirection(), line_box);
-    box_states_->UpdateAfterReorder(line_box);
-  } else {
-    DCHECK(IsLtr(line_info->BaseDirection()));
-  }
+  return box;
 }
 
 InlineBoxState* LogicalLineBuilder::HandleOpenTag(
@@ -368,6 +383,21 @@ void LogicalLineBuilder::PlaceInitialLetterBox(const InlineItem& item,
       std::move(item_result->layout_result),
       LogicalOffset{item_result->margins.inline_start, LayoutUnit()},
       item_result->inline_size, /* children_count */ 0, item.BidiLevel());
+}
+
+InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
+    const LineInfo& line_info,
+    InlineItemResult& item_result,
+    LogicalLineItems& line_box,
+    InlineBoxState* box) {
+  box = HandleItemResults(line_info,
+                          *item_result.ruby_column->base_line.MutableResults(),
+                          &line_box,
+                          /* main_line_helper */ nullptr, box);
+
+  // TODO(crbug.com/324111880): Handle annotation lines.
+
+  return box;
 }
 
 // Place a list marker.

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_LOGICAL_LINE_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_LOGICAL_LINE_BUILDER_H_
 
+#include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 
 namespace blink {
@@ -15,7 +16,6 @@ class InlineLayoutStateStack;
 class LineInfo;
 class LogicalLineItems;
 struct InlineBoxState;
-struct InlineItemResult;
 
 // This class is responsible to build a LogicalLineItems from a LineInfo.
 // It's a helper for InlineLayoutAlgorithm.
@@ -51,6 +51,11 @@ class LogicalLineBuilder {
                                 InlineLayoutStateStack*) const;
 
  private:
+  InlineBoxState* HandleItemResults(const LineInfo& line_info,
+                                    InlineItemResults& line_items,
+                                    LogicalLineItems* line_box,
+                                    InlineLayoutAlgorithm* main_line_helper,
+                                    InlineBoxState* box);
   InlineBoxState* HandleCloseTag(const InlineItem&,
                                  const InlineItemResult&,
                                  LogicalLineItems* line_box,
@@ -75,6 +80,10 @@ class LogicalLineBuilder {
                          LogicalLineItems* line_box,
                          InlineBoxState*,
                          LayoutUnit inline_offset = LayoutUnit());
+  InlineBoxState* PlaceRubyColumn(const LineInfo& line_info,
+                                  InlineItemResult& item_result,
+                                  LogicalLineItems& line_box,
+                                  InlineBoxState* box);
   void PlaceListMarker(const InlineItem&, InlineItemResult*);
 
   void BidiReorder(TextDirection base_direction, LogicalLineItems* line_box);
