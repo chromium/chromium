@@ -6,11 +6,20 @@
 
 #include <optional>
 #include <string>
+
 #include "base/logging.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 
 namespace {
+
+base::HistogramBase* GetMediaPreviewDurationHistogram(std::string name) {
+  // Duration buckets as powers of 2
+  const std::vector<int> custom_ranges{1, 2, 4, 8, 16, 32, 64, 128, 256, 512};
+  return base::CustomHistogram::FactoryGet(
+      name, custom_ranges, base::HistogramBase::kUmaTargetedHistogramFlag);
+}
 
 std::optional<std::string> MapContextToString(
     media_preview_metrics::Context context) {
@@ -152,6 +161,24 @@ void RecordPreviewVideoActualFPS(Context context, int actual_fps) {
 #endif
   }
   base::UmaHistogramCustomCounts(context_metric_id, actual_fps, 0, 60, 12);
+}
+
+void RecordMediaPreviewDuration(Context context, const base::TimeDelta& delta) {
+  std::string metric_name;
+  if (context.preview_type == PreviewType::kCameraAndMic) {
+    if (context.ui_location == UiLocation::kPageInfo) {
+      return;
+    }
+    metric_name = "MediaPreviews.UI.Permissions.CameraAndMic.Duration";
+  } else {
+    std::optional<std::string> context_metric_id = MapContextToString(context);
+    if (!context_metric_id) {
+      return;
+    }
+    metric_name = "MediaPreviews.UI." + context_metric_id.value() + ".Duration";
+  }
+
+  GetMediaPreviewDurationHistogram(metric_name)->Add(delta.InSeconds());
 }
 
 }  // namespace media_preview_metrics

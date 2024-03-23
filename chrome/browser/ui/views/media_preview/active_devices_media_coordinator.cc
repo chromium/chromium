@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
 #include "chrome/browser/ui/views/media_preview/scroll_media_preview.h"
 #include "components/user_prefs/user_prefs.h"
@@ -61,7 +60,11 @@ ActiveDevicesMediaCoordinator::ActiveDevicesMediaCoordinator(
     : view_type_(view_type),
       stream_type_(view_type_ == MediaCoordinator::ViewType::kCameraOnly
                        ? blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE
-                       : blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+                       : blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE),
+      media_preview_metrics_context_(
+          media_preview_metrics::UiLocation::kPageInfo,
+          media_coordinator::GetPreviewTypeFromMediaCoordinatorViewType(
+              view_type_)) {
   CHECK(web_contents);
   web_contents_ = web_contents->GetWeakPtr();
 
@@ -80,9 +83,15 @@ ActiveDevicesMediaCoordinator::ActiveDevicesMediaCoordinator(
 
   MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
   UpdateMediaCoordinatorList();
+
+  media_preview_start_time_ = base::TimeTicks::Now();
 }
 
 ActiveDevicesMediaCoordinator::~ActiveDevicesMediaCoordinator() {
+  media_preview_metrics::RecordMediaPreviewDuration(
+      media_preview_metrics_context_,
+      base::TimeTicks::Now() - media_preview_start_time_);
+
   MediaCaptureDevicesDispatcher::GetInstance()->RemoveObserver(this);
 }
 
@@ -184,8 +193,7 @@ void ActiveDevicesMediaCoordinator::AddMediaCoordinatorForDevice(
           view_type_, *container_,
           /*is_subsection=*/true, eligible_devices, *prefs,
           /*allow_device_selection=*/!active_device_id.has_value(),
-          media_preview_metrics::Context(
-              media_preview_metrics::UiLocation::kPageInfo)));
+          media_preview_metrics_context_));
   separators_.emplace(coordinator_key,
                       container_->AddChildView(CreateSeparator()));
 }
