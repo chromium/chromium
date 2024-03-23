@@ -38,7 +38,6 @@ per-file README.md=*
 per-file WATCHLISTS=*
 
 # git submodules
-per-file ash/webui/conch=*
 per-file build/fuchsia/internal=*
 per-file chromeos/assistant/internal=*
 per-file clank=*
