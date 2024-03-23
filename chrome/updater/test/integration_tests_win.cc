@@ -1396,10 +1396,17 @@ void SetupLaunchCommandElevated(const std::wstring& app_id,
       app_id, name, pv, command_id,
       base::StrCat({cmd_exe_command_line.GetCommandLineString(),
                     command_parameters.c_str()}));
+
+  // Enable usage stats to allow this launch command to send an app command
+  // ping.
+  base::win::RegKey client_state_key(
+      CreateAppClientStateKey(UpdaterScope::kSystem, app_id));
+  EXPECT_EQ(client_state_key.WriteValue(L"usagestats", 1), ERROR_SUCCESS);
 }
 
 void DeleteLaunchCommandElevated(const std::wstring& app_id,
                                  const std::wstring& command_id) {
+  DeleteAppClientStateKey(UpdaterScope::kSystem, app_id);
   EXPECT_EQ(CreateAppClientKey(UpdaterScope::kSystem, app_id)
                 .DeleteValue(command_id.c_str()),
             ERROR_SUCCESS);
@@ -1464,6 +1471,9 @@ void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
   // Succeeds when the command is present in the registry.
   ASSERT_HRESULT_SUCCEEDED(
       ProcessLaunchCmdElevated(process_launcher, kAppId1, kCommandId, 5420));
+
+  // Allows time for the app command ping to be sent.
+  base::PlatformThread::Sleep(base::Seconds(1));
 
   DeleteLaunchCommandElevated(kAppId1, kCommandId);
   EXPECT_EQ(

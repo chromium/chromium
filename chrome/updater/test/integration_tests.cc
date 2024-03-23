@@ -1453,8 +1453,21 @@ TEST_F(IntegrationTest, MarshalInterface) {
 }
 
 TEST_F(IntegrationTest, LegacyProcessLauncher) {
+  if (!IsSystemInstall(GetTestScope())) {
+    GTEST_SKIP() << "Process launcher is only registered for system installs.";
+  }
+  ScopedServer test_server(test_commands_);
+
   ASSERT_NO_FATAL_FAILURE(Install());
+
+  // `ExpectLegacyProcessLauncherSucceeds` runs the process launcher once with
+  // usagestats enabled, and twice without, so only a single ping is expected.
+  ASSERT_NO_FATAL_FAILURE(ExpectAppCommandPing(
+      &test_server, "{831EF4D0-B729-4F61-AA34-91526481799D}", "cmd", 5420, 1,
+      update_client::protocol_request::kEventAppCommandComplete, {}));
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyProcessLauncherSucceeds());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
