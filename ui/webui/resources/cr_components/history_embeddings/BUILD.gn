@@ -10,6 +10,10 @@ assert(!is_android)
 mojom("mojo_bindings") {
   sources = [ "history_embeddings.mojom" ]
   webui_module_path = ""
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
 }
 
 build_webui("build") {

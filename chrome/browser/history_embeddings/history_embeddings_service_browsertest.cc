@@ -66,8 +66,8 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
 
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/inner_text/test1.html")));
+  const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Wait for passage retrieval to complete.
   {
@@ -78,11 +78,12 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
   }
 
   // Search for the passage.
-  base::test::TestFuture<std::vector<ScoredUrl>> future;
+  base::test::TestFuture<SearchResult> future;
   service->Search("A B C D e f g", 1, future.GetCallback());
-  std::vector<ScoredUrl> scored_urls = future.Take();
-  EXPECT_EQ(scored_urls.size(), 1u);
-  EXPECT_EQ(scored_urls[0].passage, "A B C D");
+  SearchResult result = future.Take();
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_EQ(result[0].scored_url.passage, "A B C D");
+  EXPECT_EQ(result[0].row.url(), url);
 }
 
 }  // namespace history_embeddings

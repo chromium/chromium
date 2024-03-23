@@ -4,13 +4,62 @@
 
 #include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 
+#include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
+#include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/history_embeddings_service.h"
+
+namespace {
+
+// Receives the results of a HistoryEmbeddingsService::Search call, builds
+// them into mojom objects for the page, and sends them to the callback.
+void OnSearchCompleted(HistoryEmbeddingsHandler::SearchCallback callback,
+                       history_embeddings::SearchResult native_search_result) {
+  auto mojom_search_result = history_embeddings::mojom::SearchResult::New();
+  for (history_embeddings::ScoredUrlRow& scored_url_row :
+       native_search_result) {
+    auto item = history_embeddings::mojom::SearchResultItem::New();
+    item->url = scored_url_row.row.url();
+    item->last_url_visit_time = scored_url_row.row.last_visit();
+    item->visit_time = scored_url_row.scored_url.visit_time;
+    item->source_passage = scored_url_row.scored_url.passage;
+    mojom_search_result->items.push_back(std::move(item));
+  }
+  std::move(callback).Run(std::move(mojom_search_result));
+}
+
+}  // namespace
+
 HistoryEmbeddingsHandler::HistoryEmbeddingsHandler(
     mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
-        pending_page_handler)
-    : page_handler_(this, std::move(pending_page_handler)) {}
+        pending_page_handler,
+    base::WeakPtr<Profile> profile)
+    : page_handler_(this, std::move(pending_page_handler)),
+      profile_(std::move(profile)) {}
 
 HistoryEmbeddingsHandler::~HistoryEmbeddingsHandler() = default;
 
 void HistoryEmbeddingsHandler::DoSomething(DoSomethingCallback callback) {
   std::move(callback).Run(true);
+}
+
+void HistoryEmbeddingsHandler::Search(
+    history_embeddings::mojom::SearchQueryPtr query,
+    SearchCallback callback) {
+  if (!profile_) {
+    std::move(callback).Run(history_embeddings::mojom::SearchResult::New());
+    return;
+  }
+
+  // Service may be null in tests.
+  // TODO(b/325108118): Remove this special case once we have mocks in place.
+  history_embeddings::HistoryEmbeddingsService* service =
+      HistoryEmbeddingsServiceFactory::GetForProfile(profile_.get());
+  if (!service) {
+    std::move(callback).Run(history_embeddings::mojom::SearchResult::New());
+    return;
+  }
+
+  service->Search(query->query,
+                  history_embeddings::kSearchResultItemCount.Get(),
+                  base::BindOnce(&OnSearchCompleted, std::move(callback)));
 }

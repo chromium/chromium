@@ -71,15 +71,15 @@ std::vector<Embedding> StubComputePassagesEmbeddings(
 HistoryEmbeddingsService::HistoryEmbeddingsService(
     const base::FilePath& storage_dir,
     history::HistoryService* history_service)
-    : weak_ptr_factory_(this) {
+    : history_service_(history_service), weak_ptr_factory_(this) {
   if (!base::FeatureList::IsEnabled(kHistoryEmbeddings)) {
     // If the feature flag is disabled, skip initialization. Note we don't also
     // check the pref here, because the pref can change at runtime.
     return;
   }
 
-  CHECK(history_service);
-  history_service_observation_.Observe(history_service);
+  CHECK(history_service_);
+  history_service_observation_.Observe(history_service_);
 
   storage_ = base::SequenceBound<Storage>(
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -118,7 +118,9 @@ void HistoryEmbeddingsService::Search(std::string query,
                                       SearchResultCallback callback) {
   storage_.AsyncCall(&Storage::Search)
       .WithArgs(std::move(query), count)
-      .Then(std::move(callback));
+      .Then(base::BindOnce(&HistoryEmbeddingsService::OnSearchCompleted,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(callback)));
 }
 
 void HistoryEmbeddingsService::Shutdown() {
@@ -170,6 +172,32 @@ void HistoryEmbeddingsService::OnPassagesRetrieved(PassagesCallback callback,
   storage_.AsyncCall(&Storage::ProcessAndStorePassages)
       .WithArgs(base::BindOnce(&StubComputePassagesEmbeddings), url_passages)
       .Then(base::BindOnce(std::move(callback), url_passages));
+}
+
+void HistoryEmbeddingsService::OnSearchCompleted(
+    SearchResultCallback callback,
+    std::vector<ScoredUrl> scored_urls) {
+  SearchResult result;
+  result.reserve(scored_urls.size());
+
+  if (history::URLDatabase* history_database =
+          history_service_->InMemoryDatabase()) {
+    // Move each ScoredUrl into a more complete ScoredUrlRow with more info from
+    // the history database.
+    for (ScoredUrl& scored_url : scored_urls) {
+      result.emplace_back(std::move(scored_url));
+      if (!history_database->GetURLRow(result.back().scored_url.url_id,
+                                       &result.back().row)) {
+        // This omission covers an edge case and should generally not happen
+        // unless a notification was missed or the history database and
+        // history_embeddings database went out of sync. It's theoretically
+        // possible since operations across separate databases are not atomic.
+        result.pop_back();
+      }
+    }
+  }
+
+  std::move(callback).Run(std::move(result));
 }
 
 }  // namespace history_embeddings

@@ -259,7 +259,8 @@ void HistoryUI::BindInterface(
     mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
         pending_page_handler) {
   history_embeddings_handler_ = std::make_unique<HistoryEmbeddingsHandler>(
-      std::move(pending_page_handler));
+      std::move(pending_page_handler),
+      Profile::FromWebUI(web_ui())->GetWeakPtr());
 }
 
 void HistoryUI::BindInterface(

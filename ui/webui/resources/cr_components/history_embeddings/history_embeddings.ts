@@ -12,6 +12,7 @@ import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bund
 
 import {HistoryEmbeddingsBrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './history_embeddings.html.js';
+import type {SearchQuery, SearchResult} from './history_embeddings.mojom-webui.js';
 
 // Temporary interface for some mocked history embeddings UI. This is only to
 // show some data in the UI for now and currently matches normal history
@@ -49,12 +50,21 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
   private browserProxy_ = HistoryEmbeddingsBrowserProxyImpl.getInstance();
   private hasLoaded_ = false;
+  private searchResult_: SearchResult;
   searchQuery: string;
   results: MockHistoryEntry[];
 
   override ready() {
     super.ready();
     this.browserProxy_.doSomething().then(success => this.hasLoaded_ = success);
+
+    // This is an example usage to be moved into place as front end develops.
+    const query: SearchQuery = {
+      query: 'this is a placeholder search query',
+      timeRangeStart: null,
+    };
+    this.browserProxy_.search(query).then(
+        result => this.searchResult_ = result);
   }
 
   private onResultClick_(e: DomRepeatEvent<MockHistoryEntry>) {

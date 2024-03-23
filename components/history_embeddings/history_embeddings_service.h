@@ -14,6 +14,8 @@
 #include "base/threading/sequence_bound.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/history/core/browser/url_database.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -24,7 +26,18 @@ namespace history_embeddings {
 using PassagesCallback = base::OnceCallback<void(UrlPassages)>;
 using ComputeEmbeddingsCallback =
     base::OnceCallback<std::vector<Embedding>(const UrlPassages&)>;
-using SearchResultCallback = base::OnceCallback<void(std::vector<ScoredUrl>)>;
+
+// A single item that forms part of a search result; combines metadata found in
+// the history embeddings database with additional info from history database.
+struct ScoredUrlRow {
+  explicit ScoredUrlRow(ScoredUrl scored_url)
+      : scored_url(std::move(scored_url)) {}
+
+  ScoredUrl scored_url;
+  history::URLRow row;
+};
+using SearchResult = std::vector<ScoredUrlRow>;
+using SearchResultCallback = base::OnceCallback<void(SearchResult)>;
 
 class HistoryEmbeddingsService : public KeyedService,
                                  public history::HistoryServiceObserver {
@@ -80,6 +93,18 @@ class HistoryEmbeddingsService : public KeyedService,
 
   // Called indirectly via RetrievePassages when passage extraction completes.
   void OnPassagesRetrieved(PassagesCallback callback, UrlPassages passages);
+
+  // Finishes a search result by combining found data with additional data from
+  // history database. Moves each ScoredUrl into a more complete structure with
+  // a history URLRow. Omits any entries that don't have corresponding data in
+  // the history database.
+  void OnSearchCompleted(SearchResultCallback callback,
+                         std::vector<ScoredUrl> scored_urls);
+
+  // The history service is used to fill in details about URLs and visits
+  // found via search. It strictly outlives this due to the dependency
+  // specified in HistoryEmbeddingsServiceFactory.
+  raw_ptr<history::HistoryService> history_service_;
 
   // Tracks the observed history service, for cleanup.
   base::ScopedObservation<history::HistoryService,

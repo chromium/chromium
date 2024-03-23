@@ -18,6 +18,9 @@ BASE_DECLARE_FEATURE(kHistoryEmbeddings);
 extern const base::FeatureParam<int>
     kPassageExtractionMaxWordsPerAggregatePassage;
 
+// Specifies the number of best matching items to take from the search.
+extern const base::FeatureParam<int> kSearchResultItemCount;
+
 }  // namespace history_embeddings
 
 #endif  // COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_FEATURES_H_

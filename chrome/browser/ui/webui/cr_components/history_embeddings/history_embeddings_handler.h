@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -14,18 +16,26 @@
 
 class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
  public:
-  explicit HistoryEmbeddingsHandler(
+  HistoryEmbeddingsHandler(
       mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
-          pending_page_handler);
+          pending_page_handler,
+      base::WeakPtr<Profile> profile);
   HistoryEmbeddingsHandler(const HistoryEmbeddingsHandler&) = delete;
   HistoryEmbeddingsHandler& operator=(const HistoryEmbeddingsHandler&) = delete;
   ~HistoryEmbeddingsHandler() override;
 
   // history_embeddings::mojom::PageHandler:
   void DoSomething(DoSomethingCallback callback) override;
+  void Search(history_embeddings::mojom::SearchQueryPtr query,
+              SearchCallback callback) override;
 
  private:
   mojo::Receiver<history_embeddings::mojom::PageHandler> page_handler_;
+
+  // The profile is used to get the HistoryEmbeddingsService to fulfill
+  // search requests.
+  const base::WeakPtr<Profile> profile_;
+
   base::WeakPtrFactory<HistoryEmbeddingsHandler> weak_ptr_factory_{this};
 };
 

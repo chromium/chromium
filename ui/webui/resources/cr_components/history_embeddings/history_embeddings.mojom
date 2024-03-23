@@ -4,8 +4,46 @@
 
 module history_embeddings.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
+
+// A single completed history entry reference that forms part of a search
+// result and can be presented to the user with source context.
+struct SearchResultItem {
+  // The URL from the history database.
+  url.mojom.Url url;
+
+  // The last visit time for the above URL, from history.
+  mojo_base.mojom.Time last_url_visit_time;
+
+  // The visit time from the history_embeddings database. This represents
+  // the time at which passage extraction and vector embedding occurred.
+  mojo_base.mojom.Time visit_time;
+
+  // The full source passage that was used to recall this item.
+  string source_passage;
+};
+
+// Represents a search query for the history embeddings database.
+struct SearchQuery {
+  // Search query text.
+  string query;
+
+  // Optional time window to narrow search: last week, last month, etc.
+  // The end of the time range is implicitly now.
+  mojo_base.mojom.Time? time_range_start;
+};
+
+// Represents the results of a search query.
+struct SearchResult {
+  array<SearchResultItem> items;
+};
+
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // Temporary method to see successful interaction between WebUI and handler.
   DoSomething() => (bool success);
+
+  // Search method to retrieve history embeddings search results.
+  Search(SearchQuery query) => (SearchResult result);
 };

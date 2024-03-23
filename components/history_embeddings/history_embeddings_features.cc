@@ -17,4 +17,8 @@ const base::FeatureParam<int> kPassageExtractionMaxWordsPerAggregatePassage(
     "PassageExtractionMaxWordsPerAggregatePassage",
     200);
 
+const base::FeatureParam<int> kSearchResultItemCount(&kHistoryEmbeddings,
+                                                     "SearchResultItemCount",
+                                                     3);
+
 }  // namespace history_embeddings

@@ -25,6 +25,7 @@ suite('cr-history-embeddings', () => {
     HistoryEmbeddingsBrowserProxyImpl.setInstance(
         new HistoryEmbeddingsBrowserProxyImpl(handler));
     handler.setResultFor('doSomething', Promise.resolve(true));
+    handler.setResultFor('search', Promise.resolve({items: []}));
 
     element = document.createElement('cr-history-embeddings');
     document.body.appendChild(element);
@@ -34,6 +35,8 @@ suite('cr-history-embeddings', () => {
   test('CallsProxy', async () => {
     await handler.whenCalled('doSomething');
     assertEquals(1, handler.getCallCount('doSomething'));
+    await handler.whenCalled('search');
+    assertEquals(1, handler.getCallCount('search'));
   });
 
   test('DisplaysHeading', () => {
