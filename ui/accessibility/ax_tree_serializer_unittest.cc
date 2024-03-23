@@ -16,6 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_serializable_tree.h"
+#include "ui/accessibility/ax_tree_update.h"
 
 using testing::UnorderedElementsAre;
 
@@ -23,7 +24,10 @@ namespace ui {
 
 using BasicAXTreeSerializer =
     AXTreeSerializer<const AXNode*,
-                     std::vector<raw_ptr<const AXNode, VectorExperimental>>>;
+                     std::vector<raw_ptr<const AXNode, VectorExperimental>>,
+                     ui::AXTreeUpdate*,
+                     ui::AXTreeData*,
+                     ui::AXNodeData>;
 
 // The framework for these tests is that each test sets up |treedata0_|
 // and |treedata1_| and then calls GetTreeSerializer, which creates a

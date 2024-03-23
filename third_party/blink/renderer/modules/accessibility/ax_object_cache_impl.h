@@ -474,7 +474,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   void SetPluginTreeSource(
       ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>*
           source);
-  ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>*
+  ui::AXTreeSerializer<const ui::AXNode*,
+                       std::vector<const ui::AXNode*>,
+                       ui::AXTreeUpdate*,
+                       ui::AXTreeData*,
+                       ui::AXNodeData>*
   GetPluginTreeSerializer();
   void MarkPluginDescendantDirty(ui::AXNodeID node_id);
 
@@ -1169,7 +1173,11 @@ class MODULES_EXPORT AXObjectCacheImpl
       render_accessibility_host_;
 
   Member<BlinkAXTreeSource> ax_tree_source_;
-  std::unique_ptr<ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>>>
+  std::unique_ptr<ui::AXTreeSerializer<AXObject*,
+                                       HeapVector<Member<AXObject>>,
+                                       ui::AXTreeUpdate*,
+                                       ui::AXTreeData*,
+                                       ui::AXNodeData>>
       ax_tree_serializer_;
 
   HeapVector<Member<AXDirtyObject>> dirty_objects_;
@@ -1195,7 +1203,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   gfx::Size max_image_data_size_;
 
   using PluginAXTreeSerializer =
-      ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>;
+      ui::AXTreeSerializer<const ui::AXNode*,
+                           std::vector<const ui::AXNode*>,
+                           ui::AXTreeUpdate*,
+                           ui::AXTreeData*,
+                           ui::AXNodeData>;
   // AXTreeSerializer's AXSourceNodeVectorType is not a vector<raw_ptr> due to
   // performance regressions detected in blink_perf.accessibility tests.
   RAW_PTR_EXCLUSION std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;

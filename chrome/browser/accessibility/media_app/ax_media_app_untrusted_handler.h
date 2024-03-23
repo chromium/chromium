@@ -70,8 +70,11 @@ class AXMediaAppUntrustedHandler
  public:
   using TreeSource =
       ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>;
-  using TreeSerializer =
-      ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>;
+  using TreeSerializer = ui::AXTreeSerializer<const ui::AXNode*,
+                                              std::vector<const ui::AXNode*>,
+                                              ui::AXTreeUpdate*,
+                                              ui::AXTreeData*,
+                                              ui::AXNodeData>;
 
   AXMediaAppUntrustedHandler(
       content::BrowserContext& context,

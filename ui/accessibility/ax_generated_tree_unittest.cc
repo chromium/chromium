@@ -16,6 +16,7 @@
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_serializer.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/tree_generator.h"
 
 namespace ui {
@@ -75,8 +76,9 @@ std::string TreeToString(const AXTree& tree) {
 AXTreeUpdate SerializeEntireTree(AXSerializableTree& tree) {
   std::unique_ptr<AXTreeSource<const AXNode*, ui::AXTreeData*, ui::AXNodeData>>
       tree_source(tree.CreateTreeSource());
-  AXTreeSerializer<const AXNode*, std::vector<const AXNode*>> serializer(
-      tree_source.get());
+  AXTreeSerializer<const AXNode*, std::vector<const AXNode*>, ui::AXTreeUpdate*,
+                   ui::AXTreeData*, ui::AXNodeData>
+      serializer(tree_source.get());
   AXTreeUpdate update;
   CHECK(serializer.SerializeChanges(tree.root(), &update));
   return update;
@@ -272,7 +274,8 @@ TEST_P(SerializeGeneratedTreesTest, SerializeGeneratedTrees) {
           std::unique_ptr<
               AXTreeSource<const AXNode*, ui::AXTreeData*, ui::AXNodeData>>
               tree0_source(tree0.CreateTreeSource());
-          AXTreeSerializer<const AXNode*, std::vector<const AXNode*>>
+          AXTreeSerializer<const AXNode*, std::vector<const AXNode*>,
+                           ui::AXTreeUpdate*, ui::AXTreeData*, ui::AXNodeData>
               serializer(tree0_source.get());
           AXTreeUpdate update0;
           ASSERT_TRUE(serializer.SerializeChanges(tree0.root(), &update0));

@@ -102,9 +102,12 @@ std::string ParentChainToStringHelper(const AXObject* obj) {
   return builder;
 }
 
-void CheckTreeConsistency(
-    AXObjectCacheImpl& cache,
-    ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>>& serializer) {
+void CheckTreeConsistency(AXObjectCacheImpl& cache,
+                          ui::AXTreeSerializer<AXObject*,
+                                               HeapVector<Member<AXObject>>,
+                                               ui::AXTreeUpdate*,
+                                               ui::AXTreeData*,
+                                               ui::AXNodeData>& serializer) {
   // If all serializations are complete, check that the number of included nodes
   // being serialized is the same as the number of included nodes according to
   // the AXObjectCache.

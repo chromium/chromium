@@ -95,7 +95,10 @@ class VIEWS_EXPORT ViewsAXTreeManager : public ui::AXTreeManager,
  private:
   using ViewsAXTreeSerializer = ui::AXTreeSerializer<
       AXAuraObjWrapper*,
-      std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>>;
+      std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>,
+      ui::AXTreeUpdate*,
+      ui::AXTreeData*,
+      ui::AXNodeData>;
 
   void SerializeTreeUpdates();
   void UnserializeTreeUpdates(const std::vector<ui::AXTreeUpdate>& updates);

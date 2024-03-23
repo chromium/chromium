@@ -839,10 +839,10 @@ void AXObjectCacheImpl::EnsureRelationCache() {
 
 void AXObjectCacheImpl::EnsureSerializer() {
   if (!ax_tree_serializer_) {
-    ax_tree_serializer_ = std::make_unique<
-        ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>>>(
-        ax_tree_source_,
-        /*crash_on_error*/ true);
+    ax_tree_serializer_ = std::make_unique<ui::AXTreeSerializer<
+        AXObject*, HeapVector<Member<AXObject>>, ui::AXTreeUpdate*,
+        ui::AXTreeData*, ui::AXNodeData>>(ax_tree_source_,
+                                          /*crash_on_error*/ true);
   }
 }
 
@@ -5404,8 +5404,9 @@ bool AXObjectCacheImpl::SerializeEntireTree(
   // or a partial accessibility tree. AXTreeSerializer is stateful, but the
   // first time you serialize from a brand-new tree you're guaranteed to get a
   // complete tree.
-  ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>> serializer(
-      tree_source);
+  ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>,
+                       ui::AXTreeUpdate*, ui::AXTreeData*, ui::AXNodeData>
+      serializer(tree_source);
 
   if (max_node_count)
     serializer.set_max_node_count(max_node_count);
@@ -6202,7 +6203,11 @@ void AXObjectCacheImpl::SetPluginTreeSource(
       source ? std::make_unique<PluginAXTreeSerializer>(source) : nullptr;
 }
 
-ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>*
+ui::AXTreeSerializer<const ui::AXNode*,
+                     std::vector<const ui::AXNode*>,
+                     ui::AXTreeUpdate*,
+                     ui::AXTreeData*,
+                     ui::AXNodeData>*
 AXObjectCacheImpl::GetPluginTreeSerializer() {
   return plugin_serializer_.get();
 }

@@ -477,7 +477,8 @@ void ReadAnythingAppController::Distill() {
   std::unique_ptr<
       ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>>
       tree_source(tree->CreateTreeSource());
-  ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>
+  ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>,
+                       ui::AXTreeUpdate*, ui::AXTreeData*, ui::AXNodeData>
       serializer(tree_source.get());
   ui::AXTreeUpdate snapshot;
   if (!tree->root()) {
