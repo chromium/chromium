@@ -10,7 +10,7 @@ import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.
 import {AggregatableResult} from './aggregatable_result.mojom-webui.js';
 import type {TriggerVerification} from './attribution.mojom-webui.js';
 import {AttributionSupport} from './attribution.mojom-webui.js';
-import type {HandlerInterface, ObserverInterface, ReportID, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISourceRegistration, WebUITrigger} from './attribution_internals.mojom-webui.js';
+import type {HandlerInterface, ObserverInterface, ReportID, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISourceRegistration, WebUITrigger, WebUIFilter} from './attribution_internals.mojom-webui.js';
 import {Factory, HandlerRemote, ObserverReceiver, WebUISource_Attributability} from './attribution_internals.mojom-webui.js';
 import type {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {OsRegistrationResult, RegistrationType} from './attribution_reporting.mojom-webui.js';
@@ -394,6 +394,35 @@ class SourceTableModel extends ArrayTableModel<Source> {
         ],
         5,  // Sort by registration time by default.
         'No sources.',
+    );
+  }
+}
+
+class Filter {
+  epoch: bigint;
+  origin: string;
+  initialBudget: number;
+  consumedBudget: number;
+
+  constructor(mojo: WebUIFilter) {
+    this.epoch = mojo.epoch;
+    this.origin = originToText(mojo.origin);
+    this.initialBudget = mojo.initialBudget;
+    this.consumedBudget = mojo.consumedBudget;
+  }
+}
+
+class FilterTableModel extends ArrayTableModel<Filter> {
+  constructor() {
+    super(
+      [
+        ValueColumn.of('Epoch', 'epoch', asNumber),
+        ValueColumn.of('Origin', 'origin', asUrl),
+        ValueColumn.of('Initial Budget', 'initialBudget', asNumber),
+        ValueColumn.of('Consumed Budget', 'consumedBudget', asNumber),
+      ],
+      0,  // Sort by epoch by default.
+      'No filters.',
     );
   }
 }
@@ -957,6 +986,7 @@ class AttributionInternals implements ObserverInterface {
   private readonly triggers = new TriggerTableModel();
   private readonly debugReports = new DebugReportTableModel();
   private readonly osRegistrations = new OsRegistrationTableModel();
+  private readonly filters = new FilterTableModel();
   private readonly eventLevelReports: ReportTableModel<EventLevelReport>;
   private readonly aggregatableReports:
       ReportTableModel<AggregatableAttributionReport>;
@@ -1008,7 +1038,7 @@ class AttributionInternals implements ObserverInterface {
         this.osRegistrations, document.querySelector<HTMLElement>('#os-tab')!);
 
     installUnreadIndicator(
-      this.sources, document.querySelector<HTMLElement>('#filters-tab')!);
+      this.filters, document.querySelector<HTMLElement>('#filters-tab')!);
 
     document
         .querySelector<AttributionInternalsTableElement<Source>>(
@@ -1040,8 +1070,8 @@ class AttributionInternals implements ObserverInterface {
             '#osRegistrationTable')!.setModel(this.osRegistrations);
     
     document
-        .querySelector<AttributionInternalsTableElement<Source>>(
-            '#filterTable')!.setModel(this.sources);
+        .querySelector<AttributionInternalsTableElement<Filter>>(
+            '#filterTable')!.setModel(this.filters);
 
     Factory.getRemote().create(
         new ObserverReceiver(this).$.bindNewPipeAndPassRemote(),
@@ -1050,6 +1080,13 @@ class AttributionInternals implements ObserverInterface {
 
   onSourcesChanged(): void {
     this.updateSources();
+    //add an example filter
+    this.filters.addRow(new Filter({
+      epoch: 0n,
+      origin: {host: 'example.com', port: 443, scheme: 'https'},
+      initialBudget: 10,
+      consumedBudget: 2,
+    }));  
   }
 
   onReportsChanged(): void {

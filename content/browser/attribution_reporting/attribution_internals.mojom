@@ -126,6 +126,13 @@ struct WebUISource {
   Attributability attributability;
 };
 
+struct WebUIFilter {
+  uint64 epoch;
+  url.mojom.Origin origin;
+  double initial_budget;
+  double consumed_budget;
+};
+
 struct WebUIRegistration {
   double time;
   url.mojom.Origin context_origin;
