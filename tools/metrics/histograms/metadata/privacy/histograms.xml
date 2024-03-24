@@ -1318,17 +1318,6 @@ reviewer.
 </histogram>
 
 <histogram
-    name="PrivacySandbox.TrackingProtection.OnboardingStartup.SentimentSurveyGroup"
-    enum="SentimentSurveyGroupMetrics" expires_after="2024-09-30">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the user's sentiment survey group. This occurs once per profile
-    during the browser startup.
-  </summary>
-</histogram>
-
-<histogram
     name="PrivacySandbox.TrackingProtection.OnboardingStartup.SinceFirstNoticeRequest"
     units="ms" expires_after="2024-09-30">
   <owner>boujane@google.com</owner>
@@ -1381,38 +1370,6 @@ reviewer.
   <summary>
     Records the time it takes while waiting to be onboarded to 3PCD. This occurs
     once per profile during the startup of onboarding.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.SentimentSurvey.HatsGroupRegisteredAndEligible"
-    enum="SentimentSurveyGroupMetrics" expires_after="2024-09-30">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the group that the profile is part of in RunHatsLogic function
-    before the ProbabilityCheck.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.TrackingProtection.SentimentSurvey.Registered"
-    enum="SentimentSurveyGroupMetrics" expires_after="2024-09-30">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the group that the profile is registered to for the sentiment
-    survey. This occurs once per profile.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.TrackingProtection.SentimentSurvey.WasSurveyed"
-    enum="Boolean" expires_after="2024-09-30">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    WARNING: the values in this histograms are inverted. See b/313698252.
-    Currently, true is recorded when the profile was not presented with a survey
-    and false otherwise.
   </summary>
 </histogram>
 

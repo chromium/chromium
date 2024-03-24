@@ -58,17 +58,6 @@ class TrackingProtectionOnboarding : public KeyedService {
     kTreatmentDelayed = 4,
   };
 
-  // Enum used for emitting metrics during the process of the Sentiment Survey
-  // given to users.
-  enum class SentimentSurveyGroupMetrics {
-    kControlImmediate = 0,
-    kTreatmentImmediate = 1,
-    kControlDelayed = 2,
-    kTreatmentDelayed = 3,
-    kNotSet = 4,
-    kMaxValue = kNotSet,
-  };
-
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
   enum class NoticeAction {
     // Other action taken - notice dismissed due to other actions.

@@ -114,40 +114,6 @@ void RecordActionMetrics(TrackingProtectionOnboarding::NoticeAction action) {
   }
 }
 
-void CreateHistogramSentimentSurveyRegistration(
-    TrackingProtectionOnboarding::SentimentSurveyGroupMetrics group) {
-  base::UmaHistogramEnumeration(
-      "PrivacySandbox.TrackingProtection.SentimentSurvey.Registered", group);
-}
-
-void EmitRegistrationHistogram(SentimentSurveyGroup group) {
-  switch (group) {
-    case TrackingProtectionOnboarding::SentimentSurveyGroup::kNotSet:
-      break;
-    case TrackingProtectionOnboarding::SentimentSurveyGroup::kControlImmediate:
-      CreateHistogramSentimentSurveyRegistration(
-          TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-              kControlImmediate);
-      break;
-    case TrackingProtectionOnboarding::SentimentSurveyGroup::kControlDelayed:
-      CreateHistogramSentimentSurveyRegistration(
-          TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-              kControlDelayed);
-      break;
-    case TrackingProtectionOnboarding::SentimentSurveyGroup::
-        kTreatmentImmediate:
-      CreateHistogramSentimentSurveyRegistration(
-          TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-              kTreatmentImmediate);
-      break;
-    case TrackingProtectionOnboarding::SentimentSurveyGroup::kTreatmentDelayed:
-      CreateHistogramSentimentSurveyRegistration(
-          TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-              kTreatmentDelayed);
-      break;
-  }
-}
-
 void CreateHistogramOnboardingStartupState(
     TrackingProtectionOnboarding::OnboardingStartupState state) {
   base::UmaHistogramEnumeration(
@@ -245,32 +211,6 @@ void RecordEligibleWaitingToOnboardHistogramsOnStartup(
       waiting_to_onboard_since);
 }
 
-TrackingProtectionOnboarding::SentimentSurveyGroupMetrics
-ToSentimentSurveyGroupMetrics(
-    tracking_protection::TrackingProtectionSentimentSurveyGroup
-        internal_group) {
-  switch (internal_group) {
-    case tracking_protection::TrackingProtectionSentimentSurveyGroup::kNotSet:
-      return TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::kNotSet;
-    case tracking_protection::TrackingProtectionSentimentSurveyGroup::
-        kControlDelayed:
-      return TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-          kControlDelayed;
-    case tracking_protection::TrackingProtectionSentimentSurveyGroup::
-        kControlImmediate:
-      return TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-          kControlImmediate;
-    case tracking_protection::TrackingProtectionSentimentSurveyGroup::
-        kTreatmentDelayed:
-      return TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-          kTreatmentDelayed;
-    case tracking_protection::TrackingProtectionSentimentSurveyGroup::
-        kTreatmentImmediate:
-      return TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-          kTreatmentImmediate;
-  }
-}
-
 void RecordHistogramsOnboardingOnStartup(PrefService* pref_service) {
   auto status = GetInternalOnboardingStatus(pref_service);
   switch (status) {
@@ -307,17 +247,6 @@ void RecordHistogramsOnboardingOnStartup(PrefService* pref_service) {
       RecordOnboardedHistogramsOnStartup(pref_service);
       break;
   }
-
-  TrackingProtectionOnboarding::SentimentSurveyGroupMetrics group =
-      ToSentimentSurveyGroupMetrics(
-          static_cast<
-              tracking_protection::TrackingProtectionSentimentSurveyGroup>(
-              pref_service->GetInteger(
-                  prefs::kTrackingProtectionSentimentSurveyGroup)));
-  base::UmaHistogramEnumeration(
-      "PrivacySandbox.TrackingProtection.OnboardingStartup."
-      "SentimentSurveyGroup",
-      group);
 }
 
 void RecordHistogramsSilentOnboardingOnStartup(PrefService* pref_service) {
@@ -445,7 +374,6 @@ void MaybeSetStartAndEndSurveyTime(PrefService* pref_service,
                             anchor_time + kHatsImmediateStartTimeDelta);
       pref_service->SetTime(prefs::kTrackingProtectionSentimentSurveyEndTime,
                             anchor_time + kHatsImmediateEndTimeDelta);
-      EmitRegistrationHistogram(group);
       return;
     case SentimentSurveyGroup::kTreatmentDelayed:
     case SentimentSurveyGroup::kControlDelayed:
@@ -453,7 +381,6 @@ void MaybeSetStartAndEndSurveyTime(PrefService* pref_service,
                             anchor_time + kHatsDelayedStartTimeDelta);
       pref_service->SetTime(prefs::kTrackingProtectionSentimentSurveyEndTime,
                             anchor_time + kHatsDelayedEndTimeDelta);
-      EmitRegistrationHistogram(group);
       return;
   }
 }

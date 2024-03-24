@@ -31638,14 +31638,6 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="Payload is too large"/>
 </enum>
 
-<enum name="SentimentSurveyGroupMetrics">
-  <int value="0" label="kControlImmediate"/>
-  <int value="1" label="kTreatmentImmediate"/>
-  <int value="2" label="kControlDelayed"/>
-  <int value="3" label="kTreatmentDelayed"/>
-  <int value="4" label="kNotSet"/>
-</enum>
-
 <enum name="ServiceRequestResultType">
   <int value="0" label="Failure or response error"/>
   <int value="1" label="Success with empty suggestions"/>

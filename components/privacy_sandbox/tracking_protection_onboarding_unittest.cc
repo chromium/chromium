@@ -715,10 +715,7 @@ INSTANTIATE_TEST_SUITE_P(
                   TrackingProtectionOnboardingAckAction::kClosed)));
 
 class TrackingProtectionSentimentTracking
-    : public TrackingProtectionOnboardingTest {
- protected:
-  base::HistogramTester histogram_tester_;
-};
+    : public TrackingProtectionOnboardingTest {};
 
 TEST_F(TrackingProtectionSentimentTracking, RegistersProfileCorrectly) {
   // Group unset initially.
@@ -744,11 +741,6 @@ TEST_F(TrackingProtectionSentimentTracking, RegistersProfileCorrectly) {
 
   EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
             SentimentSurveyGroup::kControlImmediate);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.SentimentSurvey.Registered",
-      TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-          kControlImmediate,
-      1);
 }
 
 TEST_F(TrackingProtectionSentimentTracking,
@@ -764,11 +756,6 @@ TEST_F(TrackingProtectionSentimentTracking,
   // Registered group not yet returned
   EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
             SentimentSurveyGroup::kNotSet);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.SentimentSurvey.Registered",
-      TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-          kControlDelayed,
-      1);
 
   // Registered group returned once the profile is eligible for the survey:
   // After the survey start time, but before the survey end time.
@@ -823,12 +810,6 @@ TEST_F(TrackingProtectionSentimentTracking, RegistersTreatmentAfterAck) {
   tracking_protection_onboarding()->RegisterSentimentSurveyGroup(
       SentimentSurveyGroup::kTreatmentDelayed);
 
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.SentimentSurvey.Registered",
-      TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-          kTreatmentDelayed,
-      1);
-
   // Verification: Registration no longer required.
   EXPECT_FALSE(
       tracking_protection_onboarding()->RequiresSentimentSurveyGroup());
@@ -871,11 +852,6 @@ TEST_F(TrackingProtectionSentimentTracking, RegistersTreatmentAndAcksLater) {
   task_env_.FastForwardBy(base::Minutes(3));
   EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
             SentimentSurveyGroup::kTreatmentImmediate);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.SentimentSurvey.Registered",
-      TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-          kTreatmentImmediate,
-      1);
 }
 
 class TrackingProtectionSentimentTrackinWithSilentOnboarding
@@ -927,12 +903,6 @@ TEST_F(TrackingProtectionSentimentTrackinWithSilentOnboarding,
   tracking_protection_onboarding()->RegisterSentimentSurveyGroup(
       SentimentSurveyGroup::kControlDelayed);
 
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.SentimentSurvey.Registered",
-      TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-          kControlDelayed,
-      1);
-
   // Verification: Registration no longer required.
   EXPECT_FALSE(
       tracking_protection_onboarding()->RequiresSentimentSurveyGroup());
@@ -974,71 +944,7 @@ TEST_F(TrackingProtectionSentimentTrackinWithSilentOnboarding,
   task_env_.FastForwardBy(base::Minutes(3));
   EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
             SentimentSurveyGroup::kControlImmediate);
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.SentimentSurvey.Registered",
-      TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-          kControlImmediate,
-      1);
 }
-class TrackingProtectionOnboardingStartupSentimentSurvey
-    : public TrackingProtectionOnboardingTest,
-      public testing::WithParamInterface<std::pair<
-          TrackingProtectionOnboarding::SentimentSurveyGroup,
-          TrackingProtectionOnboarding::SentimentSurveyGroupMetrics>> {
- protected:
-  base::HistogramTester histogram_tester_;
-};
-
-TEST_P(TrackingProtectionOnboardingStartupSentimentSurvey,
-       OnboardingStartupSentimentSurveyHistograms) {
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.OnboardingStartup."
-      "SentimentSurveyGroup",
-      TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::kNotSet, 1);
-  tracking_protection_onboarding()->MaybeMarkEligible();
-  tracking_protection_onboarding()->OnboardingNoticeShown();
-  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
-      TrackingProtectionOnboarding::NoticeAction::kGotIt);
-
-  TrackingProtectionOnboarding::SentimentSurveyGroup register_group =
-      std::get<0>(GetParam());
-  TrackingProtectionOnboarding::SentimentSurveyGroupMetrics metric_group =
-      std::get<1>(GetParam());
-
-  tracking_protection_onboarding()->RegisterSentimentSurveyGroup(
-      register_group);
-
-  tracking_protection_onboarding_service_.reset();
-  tracking_protection_onboarding_service_ =
-      std::make_unique<TrackingProtectionOnboarding>(
-          prefs(), version_info::Channel::UNKNOWN);
-
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.OnboardingStartup."
-      "SentimentSurveyGroup",
-      metric_group, 1);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    TrackingProtectionOnboardingStartupSentimentSurvey,
-    TrackingProtectionOnboardingStartupSentimentSurvey,
-    testing::Values(
-        std::pair(
-            TrackingProtectionOnboarding::SentimentSurveyGroup::kControlDelayed,
-            TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-                kControlDelayed),
-        std::pair(TrackingProtectionOnboarding::SentimentSurveyGroup::
-                      kControlImmediate,
-                  TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-                      kControlImmediate),
-        std::pair(TrackingProtectionOnboarding::SentimentSurveyGroup::
-                      kTreatmentDelayed,
-                  TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-                      kTreatmentDelayed),
-        std::pair(TrackingProtectionOnboarding::SentimentSurveyGroup::
-                      kTreatmentImmediate,
-                  TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
-                      kTreatmentImmediate)));
 
 class TrackingProtectionOffboardingTest
     : public TrackingProtectionOnboardingTest {
