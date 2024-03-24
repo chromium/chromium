@@ -176,8 +176,7 @@ class FormFieldParser {
       base::span<const MatchPatternRef> patterns,
       const AutofillField& field,
       const char* regex_name = "",
-      std::initializer_list<MatchParams (*)(const MatchParams&)> projections =
-          {});
+      MatchParams (*projection)(const MatchParams&) = nullptr);
 
 #if defined(UNIT_TEST)
   static bool MatchForTesting(ParsingContext& context,

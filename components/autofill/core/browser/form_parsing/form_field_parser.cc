@@ -19,7 +19,6 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/address_field_parser.h"
-#include "components/autofill/core/browser/form_parsing/address_field_parser_ng.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
@@ -149,11 +148,8 @@ void FormFieldParser::ParseFormFields(
                       field_candidates);
 
   // Address pass.
-  ParseFormFieldsPass(base::FeatureList::IsEnabled(
-                          features::kAutofillEnableAddressFieldParserNG)
-                          ? AddressFieldParserNG::Parse
-                          : AddressFieldParser::Parse,
-                      context, processed_fields, field_candidates);
+  ParseFormFieldsPass(AddressFieldParser::Parse, context, processed_fields,
+                      field_candidates);
 
   // Numeric quantity pass.
   ParseFormFieldsPass(NumericQuantityFieldParser::Parse, context,
@@ -343,7 +339,7 @@ bool FormFieldParser::FieldMatchesMatchPatternRef(
     base::span<const MatchPatternRef> patterns,
     const AutofillField& field,
     const char* regex_name,
-    std::initializer_list<MatchParams (*)(const MatchParams&)> projections) {
+    MatchParams (*projection)(const MatchParams&)) {
   // Calling the regex engine with multiple smaller regexes is less efficient
   // than calling it with one larger regex. For this reasons, positive_patterns
   // are batched by OR-ing them together. Since matching further depends on the
@@ -357,10 +353,8 @@ bool FormFieldParser::FieldMatchesMatchPatternRef(
     CHECK(!IsEmpty(pattern.positive_pattern));
     MatchParams match_params(pattern.match_field_attributes,
                              pattern.form_control_types);
-    for (auto projection : projections) {
-      if (projection) {
-        match_params = (*projection)(match_params);
-      }
+    if (projection) {
+      match_params = (*projection)(match_params);
     }
     if (!MatchesFormControlType(field.form_control_type,
                                 match_params.field_types)) {
@@ -450,7 +444,7 @@ bool FormFieldParser::ParseFieldSpecificsWithNewPatterns(
   }
   AutofillField* field = scanner->Cursor();
   if (FieldMatchesMatchPatternRef(context, patterns, *field, regex_name,
-                                  {projection})) {
+                                  projection)) {
     if (match) {
       *match = field;
     }
