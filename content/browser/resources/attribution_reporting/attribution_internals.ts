@@ -1007,6 +1007,9 @@ class AttributionInternals implements ObserverInterface {
     installUnreadIndicator(
         this.osRegistrations, document.querySelector<HTMLElement>('#os-tab')!);
 
+    installUnreadIndicator(
+      this.sources, document.querySelector<HTMLElement>('#filters-tab')!);
+
     document
         .querySelector<AttributionInternalsTableElement<Source>>(
             '#sourceTable')!.setModel(this.sources);
@@ -1035,6 +1038,10 @@ class AttributionInternals implements ObserverInterface {
     document
         .querySelector<AttributionInternalsTableElement<OsRegistration>>(
             '#osRegistrationTable')!.setModel(this.osRegistrations);
+    
+    document
+        .querySelector<AttributionInternalsTableElement<Source>>(
+            '#filterTable')!.setModel(this.sources);
 
     Factory.getRemote().create(
         new ObserverReceiver(this).$.bindNewPipeAndPassRemote(),
