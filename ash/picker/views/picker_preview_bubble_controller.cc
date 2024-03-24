@@ -34,7 +34,7 @@ void PickerPreviewBubbleController::CloseBubble() {
     return;
   }
   bubble_view_->Close();
-  bubble_view_ = nullptr;
+  OnWidgetDestroying(bubble_view_->GetWidget());
 }
 
 void PickerPreviewBubbleController::OnWidgetDestroying(views::Widget* widget) {

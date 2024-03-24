@@ -116,5 +116,22 @@ TEST_F(PickerPreviewBubbleControllerTest, CloseBubbleWithoutShowing) {
   EXPECT_EQ(controller.bubble_view_for_testing(), nullptr);
 }
 
+TEST_F(PickerPreviewBubbleControllerTest, ShowingBubbleWhileClosingOldBubble) {
+  std::unique_ptr<views::Widget> anchor_widget =
+      CreateAnchorWidget(GetContext());
+  PickerPreviewBubbleController controller;
+  controller.ShowBubble(anchor_widget->GetContentsView());
+
+  // CloseBubble is asynchronous.
+  controller.CloseBubble();
+  controller.ShowBubble(anchor_widget->GetContentsView());
+  views::View* bubble_view = controller.bubble_view_for_testing();
+  ViewDrawnWaiter().Wait(bubble_view);
+
+  ASSERT_EQ(controller.bubble_view_for_testing(), bubble_view);
+  EXPECT_EQ(controller.bubble_view_for_testing()->GetWidget(),
+            bubble_view->GetWidget());
+}
+
 }  // namespace
 }  // namespace ash
