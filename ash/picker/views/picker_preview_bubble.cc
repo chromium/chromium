@@ -53,6 +53,7 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   set_corner_radius(kPickerBubbleCornerRadius);
   set_margins(kMargins);
+  SetCanActivate(false);
 
   // Contents of this view.
   const ui::ImageModel icon = ui::ImageModel::FromVectorIcon(

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/picker/views/picker_preview_bubble.h"
 #include "ash/picker/views/picker_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/test/ash_test_base.h"
@@ -94,6 +95,25 @@ TEST_F(PickerWidgetTest, LosingFocusClosesPickerWidget) {
   EXPECT_TRUE(window->HasFocus());
 
   EXPECT_TRUE(picker_widget->IsClosed());
+}
+
+TEST_F(PickerWidgetTest, PreviewBubbleDoesNotStealFocusPickerWidget) {
+  std::unique_ptr<views::Widget> anchor_widget = CreateFramelessTestWidget();
+  anchor_widget->SetContentsView(std::make_unique<views::View>());
+
+  // Create the PickerWidget and make sure it has focus.
+  FakePickerViewDelegate delegate;
+  auto picker_widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  picker_widget->Show();
+
+  // Show bubble widget and expect the PickerWidget to not close.
+  views::View* bubble_view =
+      new PickerPreviewBubbleView(anchor_widget->GetContentsView());
+  bubble_view->GetWidget()->Show();
+
+  EXPECT_FALSE(picker_widget->IsClosed());
+
+  bubble_view->GetWidget()->CloseNow();
 }
 
 }  // namespace

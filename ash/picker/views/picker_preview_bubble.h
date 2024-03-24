@@ -5,12 +5,14 @@
 #ifndef ASH_PICKER_VIEWS_PICKER_PREVIEW_BUBBLE_H_
 #define ASH_PICKER_VIEWS_PICKER_PREVIEW_BUBBLE_H_
 
+#include "ash/ash_export.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
-class PickerPreviewBubbleView : public views::BubbleDialogDelegateView {
+class ASH_EXPORT PickerPreviewBubbleView
+    : public views::BubbleDialogDelegateView {
   METADATA_HEADER(PickerPreviewBubbleView, views::BubbleDialogDelegateView)
 
  public:
