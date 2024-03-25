@@ -1436,10 +1436,8 @@ String StylePropertySerializer::OffsetValue() const {
       anchor && (!is_initial_identifier_value(anchor, CSSValueID::kAuto));
 
   StringBuilder result;
-  if (RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled()) {
-    if (use_position) {
-      result.Append(position->CssText());
-    }
+  if (use_position) {
+    result.Append(position->CssText());
   }
   if (use_path) {
     if (!result.empty()) {
@@ -1455,11 +1453,9 @@ String StylePropertySerializer::OffsetValue() const {
     result.Append(" ");
     result.Append(rotate->CssText());
   }
-  if (RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled()) {
-    if (use_anchor) {
-      result.Append(" / ");
-      result.Append(anchor->CssText());
-    }
+  if (use_anchor) {
+    result.Append(" / ");
+    result.Append(anchor->CssText());
   }
   return result.ReleaseString();
 }

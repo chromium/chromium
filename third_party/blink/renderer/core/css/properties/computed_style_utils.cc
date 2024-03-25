@@ -203,15 +203,13 @@ CSSValue* ComputedStyleUtils::ValueForOffset(const ComputedStyle& style,
                                              bool allow_visited_style,
                                              CSSValuePhase value_phase) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled()) {
-    CSSValue* position = ValueForPosition(style.OffsetPosition(), style);
-    auto* position_identifier_value = DynamicTo<CSSIdentifierValue>(position);
-    if (!position_identifier_value ||
-        position_identifier_value->GetValueID() == CSSValueID::kAuto) {
-      list->Append(*position);
-    } else {
-      DCHECK(position_identifier_value->GetValueID() == CSSValueID::kNormal);
-    }
+  CSSValue* position = ValueForPosition(style.OffsetPosition(), style);
+  auto* position_identifier_value = DynamicTo<CSSIdentifierValue>(position);
+  if (!position_identifier_value ||
+      position_identifier_value->GetValueID() == CSSValueID::kAuto) {
+    list->Append(*position);
+  } else {
+    DCHECK_EQ(position_identifier_value->GetValueID(), CSSValueID::kNormal);
   }
 
   static const CSSProperty* longhands[3] = {&GetCSSPropertyOffsetPath(),
@@ -224,18 +222,16 @@ CSSValue* ComputedStyleUtils::ValueForOffset(const ComputedStyle& style,
     list->Append(*value);
   }
 
-  if (RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled()) {
-    CSSValue* anchor = ValueForPosition(style.OffsetAnchor(), style);
-    auto* anchor_identifier_value = DynamicTo<CSSIdentifierValue>(anchor);
-    if (!anchor_identifier_value) {
-      // Add a slash before anchor.
-      CSSValueList* result = CSSValueList::CreateSlashSeparated();
-      result->Append(*list);
-      result->Append(*anchor);
-      return result;
-    }
-    DCHECK(anchor_identifier_value->GetValueID() == CSSValueID::kAuto);
+  CSSValue* anchor = ValueForPosition(style.OffsetAnchor(), style);
+  auto* anchor_identifier_value = DynamicTo<CSSIdentifierValue>(anchor);
+  if (!anchor_identifier_value) {
+    // Add a slash before anchor.
+    CSSValueList* result = CSSValueList::CreateSlashSeparated();
+    result->Append(*list);
+    result->Append(*anchor);
+    return result;
   }
+  DCHECK_EQ(anchor_identifier_value->GetValueID(), CSSValueID::kAuto);
   return list;
 }
 

@@ -6299,7 +6299,10 @@ CSSValue* ConsumePathFunction(CSSParserTokenRange& range,
 
 CSSValue* ConsumeRay(CSSParserTokenRange& range,
                      const CSSParserContext& context) {
-  DCHECK_EQ(range.Peek().FunctionId(), CSSValueID::kRay);
+  if (range.Peek().FunctionId() != CSSValueID::kRay) {
+    return nullptr;
+  }
+
   CSSParserTokenRange function_range = range;
   CSSParserTokenRange function_args = ConsumeFunction(function_range);
 
@@ -6325,7 +6328,7 @@ CSSValue* ConsumeRay(CSSParserTokenRange& range,
         continue;
       }
     }
-    if (RuntimeEnabledFeatures::CSSOffsetPathRayContainEnabled() && !contain) {
+    if (!contain) {
       contain = ConsumeIdent<CSSValueID::kContain>(function_args);
       if (contain) {
         continue;
@@ -6400,28 +6403,6 @@ CSSValue* ConsumeScrollPadding(CSSParserTokenRange& range,
                                 UnitlessQuirk::kForbid);
 }
 
-namespace {
-
-// https://drafts.csswg.org/css-shapes-1/#supported-basic-shapes
-bool IsBasicShapeSupportedByOffsetPath(const CSSValueID& id) {
-  switch (id) {
-    case CSSValueID::kCircle:
-    case CSSValueID::kEllipse:
-      return RuntimeEnabledFeatures::
-          CSSOffsetPathBasicShapesCircleAndEllipseEnabled();
-    case CSSValueID::kInset:
-    case CSSValueID::kXywh:
-    case CSSValueID::kRect:
-    case CSSValueID::kPolygon:
-      return RuntimeEnabledFeatures::
-          CSSOffsetPathBasicShapesRectanglesAndPolygonEnabled();
-    default:
-      return false;
-  }
-}
-
-}  // namespace
-
 CSSValue* ConsumeScrollStart(CSSParserTokenRange& range,
                              const CSSParserContext& context) {
   if (CSSIdentifierValue* ident =
@@ -6441,32 +6422,23 @@ CSSValue* ConsumeScrollStartTarget(CSSParserTokenRange& range) {
 
 CSSValue* ConsumeOffsetPath(CSSParserTokenRange& range,
                             const CSSParserContext& context) {
-  CSSValue* offset_path = nullptr;
-  CSSValue* coord_box = nullptr;
-
   if (CSSValue* none = ConsumeIdent<CSSValueID::kNone>(range)) {
     return none;
   }
-  if (RuntimeEnabledFeatures::CSSOffsetPathCoordBoxEnabled()) {
-    coord_box = ConsumeCoordBox(range);
-  }
+  CSSValue* coord_box = ConsumeCoordBox(range);
 
-  const CSSValueID function_id = range.Peek().FunctionId();
-  if (RuntimeEnabledFeatures::CSSOffsetPathRayEnabled() &&
-      function_id == CSSValueID::kRay) {
-    offset_path = ConsumeRay(range, context);
+  CSSValue* offset_path = ConsumeRay(range, context);
+  if (!offset_path) {
+    offset_path = ConsumeBasicShape(range, context, AllowPathValue::kForbid);
   }
-  if (!offset_path && IsBasicShapeSupportedByOffsetPath(function_id)) {
-    offset_path = ConsumeBasicShape(range, context);
-  }
-  if (!offset_path && RuntimeEnabledFeatures::CSSOffsetPathUrlEnabled()) {
+  if (!offset_path) {
     offset_path = ConsumeUrl(range, context);
   }
   if (!offset_path) {
     offset_path = ConsumePathFunction(range, EmptyPathStringHandling::kFailure);
   }
 
-  if (!coord_box && RuntimeEnabledFeatures::CSSOffsetPathCoordBoxEnabled()) {
+  if (!coord_box) {
     coord_box = ConsumeCoordBox(range);
   }
 

@@ -2713,72 +2713,46 @@ bool Offset::ParseShorthand(
     return false;
   }
 
-  if ((offset_position || offset_anchor) &&
-      !RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled()) {
-    return false;
+  if (!offset_position) {
+    offset_position = CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kOffsetPosition, CSSPropertyID::kOffset, *offset_position,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
 
-  if (offset_position) {
-    css_parsing_utils::AddProperty(
-        CSSPropertyID::kOffsetPosition, CSSPropertyID::kOffset,
-        *offset_position, important,
-        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  } else if (RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled()) {
-    css_parsing_utils::AddProperty(
-        CSSPropertyID::kOffsetPosition, CSSPropertyID::kOffset,
-        *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
-        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  if (!offset_path) {
+    offset_path = CSSIdentifierValue::Create(CSSValueID::kNone);
   }
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kOffsetPath, CSSPropertyID::kOffset, *offset_path,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
 
-  if (offset_path) {
-    css_parsing_utils::AddProperty(
-        CSSPropertyID::kOffsetPath, CSSPropertyID::kOffset, *offset_path,
-        important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-        properties);
-  } else {
-    css_parsing_utils::AddProperty(
-        CSSPropertyID::kOffsetPath, CSSPropertyID::kOffset,
-        *CSSIdentifierValue::Create(CSSValueID::kNone), important,
-        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  if (!offset_distance) {
+    offset_distance =
+        CSSNumericLiteralValue::Create(0, CSSPrimitiveValue::UnitType::kPixels);
   }
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kOffsetDistance, CSSPropertyID::kOffset, *offset_distance,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
 
-  if (offset_distance) {
-    css_parsing_utils::AddProperty(
-        CSSPropertyID::kOffsetDistance, CSSPropertyID::kOffset,
-        *offset_distance, important,
-        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  } else {
-    css_parsing_utils::AddProperty(
-        CSSPropertyID::kOffsetDistance, CSSPropertyID::kOffset,
-        *CSSNumericLiteralValue::Create(0,
-                                        CSSPrimitiveValue::UnitType::kPixels),
-        important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-        properties);
+  if (!offset_rotate) {
+    offset_rotate = CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kOffsetRotate, CSSPropertyID::kOffset, *offset_rotate,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
 
-  if (offset_rotate) {
-    css_parsing_utils::AddProperty(
-        CSSPropertyID::kOffsetRotate, CSSPropertyID::kOffset, *offset_rotate,
-        important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-        properties);
-  } else {
-    css_parsing_utils::AddProperty(
-        CSSPropertyID::kOffsetRotate, CSSPropertyID::kOffset,
-        *CSSIdentifierValue::Create(CSSValueID::kAuto), important,
-        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  if (!offset_anchor) {
+    offset_anchor = CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
-
-  if (offset_anchor) {
-    css_parsing_utils::AddProperty(
-        CSSPropertyID::kOffsetAnchor, CSSPropertyID::kOffset, *offset_anchor,
-        important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-        properties);
-  } else if (RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled()) {
-    css_parsing_utils::AddProperty(
-        CSSPropertyID::kOffsetAnchor, CSSPropertyID::kOffset,
-        *CSSIdentifierValue::Create(CSSValueID::kAuto), important,
-        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  }
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kOffsetAnchor, CSSPropertyID::kOffset, *offset_anchor,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
 
   return true;
 }

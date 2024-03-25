@@ -913,34 +913,6 @@
       status: "stable",
     },
     {
-      name: "CSSOffsetPathBasicShapesCircleAndEllipse",
-      status: "stable",
-    },
-    {
-      name: "CSSOffsetPathBasicShapesRectanglesAndPolygon",
-      status: "stable",
-    },
-    {
-      name: "CSSOffsetPathCoordBox",
-      status: "stable",
-    },
-    {
-      name: "CSSOffsetPathRay",
-      status: "stable",
-    },
-    {
-      name: "CSSOffsetPathRayContain",
-      status: "stable",
-    },
-    {
-      name: "CSSOffsetPathUrl",
-      status: "stable",
-    },
-    {
-      name: "CSSOffsetPositionAnchor",
-      status: "stable",
-    },
-    {
       name: "CSSOverflowMediaFeatures",
       status: "stable",
     },
