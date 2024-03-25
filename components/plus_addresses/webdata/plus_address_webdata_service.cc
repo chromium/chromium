@@ -9,8 +9,10 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/bind_post_task.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_sync_bridge.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"
@@ -31,25 +33,44 @@ PlusAddressWebDataService::PlusAddressWebDataService(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : WebDataServiceBase(wdbs, ui_task_runner),
-      ui_task_runner_(ui_task_runner),
-      db_task_runner_(db_task_runner) {
+      ui_task_runner_(std::move(ui_task_runner)),
+      db_task_runner_(std::move(db_task_runner)) {
   if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
     sync_bridge_wrapper_ =
-        base::MakeRefCounted<SyncBridgeDBSequenceWrapper>(db_task_runner);
+        base::MakeRefCounted<SyncBridgeDBSequenceWrapper>(db_task_runner_);
+
+    // When sync changes `PlusAddressTable`, observers on the `ui_task_runner_`
+    // are notified. To avoid round trips to the `db_task_runner_`, this
+    // notification includes the newest set of profiles from the database.
+    auto notify_sync_observers =
+        base::BindRepeating(
+            [](WebDatabaseService* wdbs) {
+              return PlusAddressTable::FromWebDatabase(wdbs->GetDatabaseOnDB())
+                  ->GetPlusProfiles();
+            },
+            base::RetainedRef(wdbs_))
+            .Then(base::BindPostTask(
+                ui_task_runner_,
+                base::BindRepeating(
+                    &PlusAddressWebDataService::NotifyOnWebDataChangedBySync,
+                    weak_factory_.GetWeakPtr())));
+
     // The `state->sync_bridge` can only be used on the sequence that it
     // was constructed on. Ensure it is created on the `db_task_runner_`.
     db_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](scoped_refptr<WebDatabaseBackend> db_backend,
+               base::RepeatingClosure notify_observers,
                SyncBridgeDBSequenceWrapper* wrapper) {
               wrapper->sync_bridge = std::make_unique<PlusAddressSyncBridge>(
                   std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
                       syncer::PLUS_ADDRESS,
                       /*dump_stack=*/base::DoNothing()),
-                  std::move(db_backend));
+                  std::move(db_backend), std::move(notify_observers));
             },
-            wdbs_->GetBackend(), base::RetainedRef(sync_bridge_wrapper_)));
+            wdbs_->GetBackend(), std::move(notify_sync_observers),
+            base::RetainedRef(sync_bridge_wrapper_)));
   }
 }
 
@@ -117,6 +138,14 @@ PlusAddressWebDataService::GetSyncControllerDelegate() {
                                  ->GetControllerDelegate();
                            },
                            base::RetainedRef(sync_bridge_wrapper_)));
+}
+
+void PlusAddressWebDataService::NotifyOnWebDataChangedBySync(
+    std::vector<PlusProfile> profiles) {
+  CHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+  for (Observer& o : observers_) {
+    o.OnWebDataChangedBySync(profiles);
+  }
 }
 
 }  // namespace plus_addresses

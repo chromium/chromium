@@ -29,9 +29,11 @@ namespace plus_addresses {
 
 PlusAddressSyncBridge::PlusAddressSyncBridge(
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-    scoped_refptr<WebDatabaseBackend> db_backend)
+    scoped_refptr<WebDatabaseBackend> db_backend,
+    base::RepeatingClosure notify_data_changed_by_sync)
     : ModelTypeSyncBridge(std::move(change_processor)),
-      db_backend_(std::move(db_backend)) {
+      db_backend_(std::move(db_backend)),
+      notify_data_changed_by_sync_(std::move(notify_data_changed_by_sync)) {
   CHECK(db_backend_);
   // Initializing the database from disk can fail.
   if (!db_backend_->database()) {
@@ -107,6 +109,7 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
   if (!transaction.Commit()) {
     return syncer::ModelError(FROM_HERE, "Failed to commit transaction.");
   }
+  notify_data_changed_by_sync_.Run();
   return std::nullopt;
 }
 
@@ -123,15 +126,18 @@ void PlusAddressSyncBridge::ApplyDisableSyncChanges(
         {FROM_HERE, "Failed to remove profiles from database."});
     return;
   }
-  if (!TransferMetadataChanges(std::move(delete_metadata_change_list))) {
-    // `TransferMetadataChanges()` already reported an error to the processor.
+  // `TransferMetadataChanges()` returns an optional<ModelError>.
+  if (TransferMetadataChanges(std::move(delete_metadata_change_list))) {
+    // The error was already reported to the change processor.
     return;
   }
 
   if (!transaction.Commit()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to commit transaction."});
+    return;
   }
+  notify_data_changed_by_sync_.Run();
 }
 
 void PlusAddressSyncBridge::GetData(StorageKeyList storage_keys,

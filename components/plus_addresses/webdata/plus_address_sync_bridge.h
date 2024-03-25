@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_SYNC_BRIDGE_H_
 #define COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_SYNC_BRIDGE_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/sync/model/model_type_sync_bridge.h"
@@ -19,7 +20,8 @@ class PlusAddressSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
   PlusAddressSyncBridge(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-      scoped_refptr<WebDatabaseBackend> db_backend);
+      scoped_refptr<WebDatabaseBackend> db_backend,
+      base::RepeatingClosure notify_data_changed_by_sync);
   ~PlusAddressSyncBridge() override;
 
   PlusAddressSyncBridge(const PlusAddressSyncBridge&) = delete;
@@ -60,6 +62,11 @@ class PlusAddressSyncBridge : public syncer::ModelTypeSyncBridge {
   // only `WebDatabase` is used. However, since only the backend is ref-counted,
   // arguing about the lifetime is easier this way.
   const scoped_refptr<WebDatabaseBackend> db_backend_;
+
+  // The bridges writes to the database directly (rather than through
+  // `PlusAddressWebDataService`). Whenever it does, it notifies observers
+  // about these changes through this callback.
+  base::RepeatingClosure notify_data_changed_by_sync_;
 };
 
 }  // namespace plus_addresses

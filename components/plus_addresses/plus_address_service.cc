@@ -61,7 +61,7 @@ PlusAddressService::PlusAddressService(
     : identity_manager_(identity_manager),
       pref_service_(pref_service),
       plus_address_http_client_(std::move(plus_address_http_client)),
-      webdata_service_(webdata_service),
+      webdata_service_(std::move(webdata_service)),
       plus_address_allocator_(std::make_unique<PlusAddressJitAllocator>(
           plus_address_http_client_.get())),
       excluded_sites_(GetAndParseExcludedSites()) {
@@ -69,8 +69,11 @@ PlusAddressService::PlusAddressService(
   if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
   }
-  if (webdata_service_ && is_enabled()) {
-    webdata_service_->GetPlusProfiles(this);
+  if (webdata_service_) {
+    webdata_service_observation_.Observe(webdata_service_.get());
+    if (is_enabled()) {
+      webdata_service_->GetPlusProfiles(this);
+    }
   }
 }
 
@@ -342,17 +345,26 @@ void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
   webdata_service_->GetPlusProfiles(this);
 }
 
+void PlusAddressService::OnWebDataChangedBySync(
+    const std::vector<PlusProfile>& profiles) {
+  ReplacePlusProfiles(profiles);
+}
+
 void PlusAddressService::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle handle,
     std::unique_ptr<WDTypedResult> result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(result->GetType(), PLUS_ADDRESS_RESULT);
-  std::vector<PlusProfile> plus_profiles =
+  ReplacePlusProfiles(
       static_cast<WDResult<std::vector<PlusProfile>>*>(result.get())
-          ->GetValue();
+          ->GetValue());
+}
+
+void PlusAddressService::ReplacePlusProfiles(
+    const std::vector<PlusProfile>& profiles) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   plus_address_by_site_.clear();
   plus_addresses_.clear();
-  for (const PlusProfile& plus_profile : plus_profiles) {
+  for (const PlusProfile& plus_profile : profiles) {
     plus_address_by_site_.insert(
         {plus_profile.facet, plus_profile.plus_address});
     plus_addresses_.insert(plus_profile.plus_address);

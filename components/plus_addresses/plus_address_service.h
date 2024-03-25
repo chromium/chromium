@@ -43,6 +43,7 @@ class PlusAddressHttpClient;
 class PlusAddressService : public KeyedService,
                            public autofill::AutofillPlusAddressDelegate,
                            public signin::IdentityManager::Observer,
+                           public PlusAddressWebDataService::Observer,
                            public WebDataServiceConsumer {
  public:
   class Observer : public base::CheckedObserver {
@@ -76,6 +77,10 @@ class PlusAddressService : public KeyedService,
       std::u16string_view focused_field_value,
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
   void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
+
+  // PlusAddressWebDataService::Observer:
+  void OnWebDataChangedBySync(
+      const std::vector<PlusProfile>& profiles) override;
 
   // WebDataServiceConsumer:
   void OnWebDataServiceRequestDone(
@@ -175,6 +180,10 @@ class PlusAddressService : public KeyedService,
   // on `excluded_sites_` set, and scheme is http or https.
   bool IsSupportedOrigin(const url::Origin& origin) const;
 
+  // Replaces the data stored in `plus_address_by_site_` and `plus_addresses_`
+  // with the contents of `profiles`, and notifies observers about this change.
+  void ReplacePlusProfiles(const std::vector<PlusProfile>& profiles);
+
   // The user's existing set of plus addresses, scoped to sites.
   PlusAddressMap plus_address_by_site_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -224,6 +233,10 @@ class PlusAddressService : public KeyedService,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+
+  base::ScopedObservation<PlusAddressWebDataService,
+                          PlusAddressWebDataService::Observer>
+      webdata_service_observation_{this};
 
   base::ObserverList<Observer> observers_;
 

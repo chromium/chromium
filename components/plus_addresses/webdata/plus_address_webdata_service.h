@@ -9,6 +9,9 @@
 
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/webdata/common/web_data_service_base.h"
@@ -37,10 +40,22 @@ class PlusAddressSyncBridge;
 // Owned by `WebDataServiceWrapper`.
 class PlusAddressWebDataService : public WebDataServiceBase {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called whenever `PlusAddressTable` was modified directly on the DB
+    // sequence by `PlusAddressSyncBridge`. `profiles` are the newest set of
+    // profiles from `PlusAddressTable`.
+    virtual void OnWebDataChangedBySync(
+        const std::vector<PlusProfile>& profiles) = 0;
+  };
+
   PlusAddressWebDataService(
       scoped_refptr<WebDatabaseService> wdbs,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<base::SequencedTaskRunner> db_task_runner);
+
+  void AddObserver(Observer* o) { observers_.AddObserver(o); }
+  void RemoveObserver(Observer* o) { observers_.RemoveObserver(o); }
 
   // `PlusAddressTable`'s API, for the subset of functions needed on the UI
   // sequence.
@@ -58,9 +73,6 @@ class PlusAddressWebDataService : public WebDataServiceBase {
   ~PlusAddressWebDataService() override;
 
  private:
-  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
-
   // `PlusAddressWebDataService` owns the `PlusAddressSyncBridge`. However, the
   // bridge itself lives on the `db_task_runner_`. `SyncBridgeDBSequenceWrapper`
   // is a wrapper around the bridge, to ensure destruction happens on
@@ -79,10 +91,21 @@ class PlusAddressWebDataService : public WebDataServiceBase {
 
     ~SyncBridgeDBSequenceWrapper();
   };
+
+  // Notifies all `observers_` about `OnWebDataChangedBySync()`.
+  void NotifyOnWebDataChangedBySync(std::vector<PlusProfile> profiles);
+
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
+
   // `scoped_refptr<>`, because the destruction order of
   // `PlusAddressWebDataService` and `db_task_runner_` is unclear.
   // `PlusAddressWebDataService` is the primary owner.
   scoped_refptr<SyncBridgeDBSequenceWrapper> sync_bridge_wrapper_;
+
+  base::ObserverList<Observer> observers_;
+
+  base::WeakPtrFactory<PlusAddressWebDataService> weak_factory_{this};
 };
 
 }  // namespace plus_addresses

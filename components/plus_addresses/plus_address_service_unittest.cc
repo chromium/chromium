@@ -38,6 +38,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/webdata/common/web_database.h"
+#include "components/webdata/common/web_database_backend.h"
 #include "components/webdata/common/web_database_service.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -756,6 +757,11 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
 
   PlusAddressService& service() { return *service_; }
 
+  PlusAddressTable& table() {
+    return *PlusAddressTable::FromWebDatabase(
+        webdatabase_service_->GetBackend()->database());
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<WebDatabaseService> webdatabase_service_;
@@ -781,6 +787,22 @@ TEST_F(PlusAddressServiceWebDataTest, DatabaseRoundTrip) {
   // Wait for the DB task to finish and expect that the address is available.
   test::PlusAddressesChangedWaiter(&service()).Wait();
   EXPECT_TRUE(service().GetPlusAddress(foo_origin).has_value());
+}
+
+TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
+  const PlusProfile profile = test::GetPlusProfile();
+  // Simulate adding a `profile` to the database directly, as sync would. This
+  // triggers `OnWebDataChangedBySync()`. Prior to the notification, `service()`
+  // has no way of knowing about this data.
+  table().AddOrUpdatePlusProfile(profile);
+  EXPECT_THAT(service().GetPlusProfiles(), testing::IsEmpty());
+  service().OnWebDataChangedBySync({profile});
+  // TODO(b/322147254): Once `PlusAddressService` stores profile_ids, use
+  // testing::UnorderedElementsAre().
+  const std::vector<PlusProfile> service_profiles = service().GetPlusProfiles();
+  ASSERT_EQ(service_profiles.size(), 1u);
+  EXPECT_EQ(service_profiles[0].facet, profile.facet);
+  EXPECT_EQ(service_profiles[0].plus_address, profile.plus_address);
 }
 
 class PlusAddressServiceDisabledTest : public PlusAddressServiceTest {
