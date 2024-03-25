@@ -57,8 +57,7 @@ import java.util.Set;
  * command-line flag that a base class has removed (or vice versa). Similarly, uses of these
  * annotations on a test method will take precedence over uses on the containing class.
  *
- * <p>
- * These annonations may also be used on Junit4 Rule classes and on their base classes. Note,
+ * <p>These annotations may also be used on Junit4 Rule classes and on their base classes. Note,
  * however that the annotation processor only looks at the declared type of the Rule, not its actual
  * type, so in, for example:
  *
@@ -69,13 +68,14 @@ import java.util.Set;
  *
  * will only look for CommandLineFlags annotations on TestRule, not for CommandLineFlags annotations
  * on ChromeActivityTestRule.
- * <p>
- * In addition a rule may not remove flags added by an independently invoked rule, although it may
- * remove flags added by its base classes.
- * <p>
- * Uses of these annotations on the test class or methods take precedence over uses on Rule classes.
- * <p>
- * Note that this class should never be instantiated.
+ *
+ * <p>In addition a rule may not remove flags added by an independently invoked rule, although it
+ * may remove flags added by its base classes.
+ *
+ * <p>Uses of these annotations on the test class or methods take precedence over uses on Rule
+ * classes.
+ *
+ * <p>Note that this class should never be instantiated.
  */
 public final class CommandLineFlags {
     private static final String TAG = "CommandLineFlags";
@@ -297,7 +297,7 @@ public final class CommandLineFlags {
                 @Override
                 public void evaluate() throws Throwable {
                     try {
-                        Class clazz = description.getTestClass();
+                        Class<?> clazz = description.getTestClass();
                         CommandLineFlags.setUpClass(clazz);
                         CommandLineFlags.setUpMethod(clazz.getMethod(description.getMethodName()));
 
