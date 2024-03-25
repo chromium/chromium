@@ -19,6 +19,7 @@
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 #include "content/public/browser/stable_video_decoder_factory.h"
 #include "media/base/media_switches.h"
+#include "mojo/public/cpp/bindings/message.h"
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 namespace content {
@@ -97,6 +98,47 @@ void FramelessMediaInterfaceProxy::CreateVideoDecoder(
   factory->CreateVideoDecoder(std::move(receiver),
                               std::move(oop_video_decoder));
 }
+
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+void FramelessMediaInterfaceProxy::CreateStableVideoDecoder(
+    mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
+        video_decoder) {
+  DVLOG(2) << __func__;
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  switch (media::GetOutOfProcessVideoDecodingMode()) {
+    case media::OOPVDMode::kEnabledWithGpuProcessAsProxy:
+    case media::OOPVDMode::kDisabled:
+      // Well-behaved clients shouldn't call CreateStableVideoDecoder() in this
+      // OOP-VD mode.
+      //
+      // Note: FramelessMediaInterfaceProxy::CreateStableVideoDecoder() might be
+      // called outside of a message dispatch, e.g., by
+      // GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities().
+      // However, these calls should only occur inside of the browser process
+      // which we can trust not to reach this point, hence the CHECK().
+      CHECK(mojo::IsInMessageDispatch());
+      mojo::ReportBadMessage("CreateStableVideoDecoder() called unexpectedly");
+      return;
+    case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy:
+      if (!render_process_host_) {
+        if (!stable_vd_factory_remote_.is_bound()) {
+          LaunchStableVideoDecoderFactory(
+              stable_vd_factory_remote_.BindNewPipeAndPassReceiver());
+          stable_vd_factory_remote_.reset_on_disconnect();
+        }
+
+        CHECK(stable_vd_factory_remote_.is_bound());
+
+        stable_vd_factory_remote_->CreateStableVideoDecoder(
+            std::move(video_decoder), /*tracker=*/{});
+      } else {
+        render_process_host_->CreateStableVideoDecoder(
+            std::move(video_decoder));
+      }
+      break;
+  }
+}
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 void FramelessMediaInterfaceProxy::CreateAudioEncoder(
     mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) {

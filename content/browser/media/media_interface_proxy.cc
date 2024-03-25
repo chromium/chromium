@@ -78,6 +78,7 @@
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 #include "content/public/browser/stable_video_decoder_factory.h"
 #include "media/base/media_switches.h"
+#include "mojo/public/cpp/bindings/message.h"
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 namespace content {
@@ -319,6 +320,28 @@ void MediaInterfaceProxy::CreateVideoDecoder(
   factory->CreateVideoDecoder(std::move(receiver),
                               std::move(oop_video_decoder));
 }
+
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+void MediaInterfaceProxy::CreateStableVideoDecoder(
+    mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
+        video_decoder) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  switch (media::GetOutOfProcessVideoDecodingMode()) {
+    case media::OOPVDMode::kEnabledWithGpuProcessAsProxy:
+    case media::OOPVDMode::kDisabled:
+      // Well-behaved clients shouldn't call CreateStableVideoDecoder() in this
+      // OOP-VD mode and MediaInterfaceProxy::CreateStableVideoDecoder() should
+      // always be called during a message dispatch.
+      CHECK(mojo::IsInMessageDispatch());
+      mojo::ReportBadMessage("CreateStableVideoDecoder() called unexpectedly");
+      return;
+    case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy:
+      render_frame_host().GetProcess()->CreateStableVideoDecoder(
+          std::move(video_decoder));
+      break;
+  }
+}
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 void MediaInterfaceProxy::CreateAudioEncoder(
     mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) {

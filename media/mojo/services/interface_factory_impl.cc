@@ -193,6 +193,15 @@ void InterfaceFactoryImpl::CreateVideoDecoder(
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
 }
 
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+void InterfaceFactoryImpl::CreateStableVideoDecoder(
+    mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
+        video_decoder) {
+  // The browser process ensures that this is not called in the GPU process.
+  NOTREACHED_NORETURN();
+}
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+
 void InterfaceFactoryImpl::CreateAudioEncoder(
     mojo::PendingReceiver<mojom::AudioEncoder> receiver) {
 #if BUILDFLAG(ENABLE_MOJO_AUDIO_ENCODER)

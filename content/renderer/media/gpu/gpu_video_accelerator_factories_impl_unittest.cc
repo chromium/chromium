@@ -278,6 +278,14 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
         std::move(receiver));
   }
 
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+  void CreateStableVideoDecoder(
+      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
+          video_decoder) override {
+    // TODO(b/327268445): we'll need to complete this for GTFO OOP-VD testing.
+  }
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+
   // Stub out other mojom::InterfaceFactory interfaces.
   void CreateAudioDecoder(
       mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) override {}

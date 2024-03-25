@@ -72,6 +72,24 @@ void MediaInterfaceFactory::CreateVideoDecoder(
                                                  /*dst_video_decoder=*/{});
 }
 
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+void MediaInterfaceFactory::CreateStableVideoDecoder(
+    mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
+        video_decoder) {
+  if (!task_runner_->BelongsToCurrentThread()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MediaInterfaceFactory::CreateStableVideoDecoder,
+                       weak_this_, std::move(video_decoder)));
+    return;
+  }
+
+  DVLOG(1) << __func__;
+  GetMediaInterfaceFactory()->CreateStableVideoDecoder(
+      std::move(video_decoder));
+}
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+
 void MediaInterfaceFactory::CreateAudioEncoder(
     mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) {
   if (!task_runner_->BelongsToCurrentThread()) {

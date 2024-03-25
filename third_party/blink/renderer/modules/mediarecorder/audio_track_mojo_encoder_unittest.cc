@@ -90,6 +90,13 @@ class TestInterfaceFactory final : public media::mojom::InterfaceFactory {
           dst_video_decoder) override {
     NOTREACHED();
   }
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+  void CreateStableVideoDecoder(
+      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
+          video_decoder) override {
+    NOTREACHED();
+  }
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   void CreateAudioDecoder(
       mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) override {
     NOTREACHED();

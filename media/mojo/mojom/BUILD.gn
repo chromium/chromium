@@ -110,6 +110,10 @@ mojom("mojom") {
     enabled_features += [ "is_linux_or_chromeos" ]
   }
 
+  if (allow_oop_video_decoder) {
+    enabled_features += [ "allow_oop_video_decoder" ]
+  }
+
   # Help select ServiceSandbox for media_service.mojom.
   if (mojo_media_host == "browser") {
     enabled_features += [ "mojo_media_in_browser" ]

@@ -28,9 +28,24 @@ interface InterfaceFactory {
   // the GPU process acts a proxy between a renderer and a video decoder process
   // so that it can create a gpu::Mailbox for each decoded frame. As such, only
   // the GPU process should be provided with a valid |dst_video_decoder|.
+  //
+  // TODO(b/327268445): we can remove the `dst_video_decoder` parameter once
+  // GTFO OOP-VD is used instead of regular OOP-VD.
   CreateVideoDecoder(
       pending_receiver<VideoDecoder> video_decoder,
       pending_remote<media.stable.mojom.StableVideoDecoder>? dst_video_decoder);
+
+  // Creates a StableVideoDecoder (`video_decoder`). This method is intended to
+  // be used only for the "GTFO OOP-VD" mode, i.e., when the StableVideoDecoder
+  // client talks directly to the StableVideoDecoder service without using the
+  // GPU process as a proxy (in contrast to the "regular OOP-VD" mode).
+  //
+  // The StableVideoDecoder implementation lives in a utility process. Clients
+  // are expected to live in either the browser process (for supported profile
+  // querying) or the renderer process (to drive video decoding).
+  [EnableIf=allow_oop_video_decoder]
+  CreateStableVideoDecoder(
+      pending_receiver<media.stable.mojom.StableVideoDecoder> video_decoder);
 
   // Creates an AudioEncoder bound to a given receiver.
   CreateAudioEncoder(pending_receiver<AudioEncoder> audio_encoder);
