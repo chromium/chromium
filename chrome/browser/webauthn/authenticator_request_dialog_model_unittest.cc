@@ -5,6 +5,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -145,7 +146,7 @@ class BluetoothAdapterPowerOnCallbackReceiver {
   bool was_called_ = false;
 };
 
-base::StringPiece RequestTypeToString(RequestType req_type) {
+std::string_view RequestTypeToString(RequestType req_type) {
   switch (req_type) {
     case RequestType::kGetAssertion:
       return "GetAssertion";
@@ -185,7 +186,7 @@ enum class TransportAvailabilityParam {
   kHintClientDevice,
 };
 
-base::StringPiece TransportAvailabilityParamToString(
+std::string_view TransportAvailabilityParamToString(
     TransportAvailabilityParam param) {
   switch (param) {
     case TransportAvailabilityParam::kMaybeHasPlatformCredential:
@@ -247,7 +248,7 @@ base::StringPiece TransportAvailabilityParamToString(
   }
 }
 
-template <typename T, base::StringPiece (*F)(T)>
+template <typename T, std::string_view (*F)(T)>
 std::string SetToString(base::flat_set<T> s) {
   return base::JoinString(base::ToVector(s, F), ", ");
 }

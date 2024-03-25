@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_WEBAUTHN_CABLEV2_DEVICES_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "device/fido/fido_constants.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -77,7 +77,7 @@ struct KnownDevices {
   static std::unique_ptr<KnownDevices> FromProfile(Profile* profile);
 
   // Names returns a list of all names (which may contain duplicates).
-  std::vector<base::StringPiece> Names() const;
+  std::vector<std::string_view> Names() const;
 
   std::vector<std::unique_ptr<device::cablev2::Pairing>> synced_devices;
   std::vector<std::unique_ptr<device::cablev2::Pairing>> linked_devices;
@@ -115,7 +115,7 @@ bool RenamePairing(
     PrefService* pref_service,
     const std::array<uint8_t, device::kP256X962Length>& public_key,
     const std::string& new_name,
-    base::span<const base::StringPiece> existing_names);
+    base::span<const std::string_view> existing_names);
 
 }  // namespace cablev2
 

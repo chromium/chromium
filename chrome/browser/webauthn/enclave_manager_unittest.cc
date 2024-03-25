@@ -4,6 +4,8 @@
 
 #include "chrome/browser/webauthn/enclave_manager.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -270,7 +272,7 @@ std::unique_ptr<network::NetworkService> CreateNetwork(
   return service;
 }
 
-scoped_refptr<device::JSONRequest> JSONFromString(base::StringPiece json_str) {
+scoped_refptr<device::JSONRequest> JSONFromString(std::string_view json_str) {
   base::Value json_request = base::JSONReader::Read(json_str).value();
   return base::MakeRefCounted<device::JSONRequest>(std::move(json_request));
 }

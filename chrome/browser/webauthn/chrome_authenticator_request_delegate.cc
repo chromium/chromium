@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -18,7 +19,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/sys_byteorder.h"
 #include "base/task/thread_pool.h"
@@ -136,10 +136,10 @@ bool IsOriginListedInEnterpriseAttestationSwitch(
   std::string cmdline_origins =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           webauthn::switches::kPermitEnterpriseAttestationOriginList);
-  std::vector<base::StringPiece> origin_strings = base::SplitStringPiece(
+  std::vector<std::string_view> origin_strings = base::SplitStringPiece(
       cmdline_origins, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   return base::ranges::any_of(
-      origin_strings, [&caller_origin](base::StringPiece origin_string) {
+      origin_strings, [&caller_origin](std::string_view origin_string) {
         return url::Origin::Create(GURL(origin_string)) == caller_origin;
       });
 }
@@ -1176,7 +1176,7 @@ void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorAdded(
 }
 
 void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorRemoved(
-    base::StringPiece authenticator_id) {
+    std::string_view authenticator_id) {
   if (!IsWebAuthnUIEnabled()) {
     return;
   }

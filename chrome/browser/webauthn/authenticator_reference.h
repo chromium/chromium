@@ -6,15 +6,15 @@
 #define CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_REFERENCE_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "device/fido/fido_transport_protocol.h"
 
 // Encapsulates information about authenticators that have been found but to
 // which the CTAP request is not dispatched until after receiving confirmation
 // from the user via the UI.
 struct AuthenticatorReference {
-  AuthenticatorReference(base::StringPiece device_id,
+  AuthenticatorReference(std::string_view device_id,
                          device::FidoTransportProtocol transport,
                          device::AuthenticatorType type);
 

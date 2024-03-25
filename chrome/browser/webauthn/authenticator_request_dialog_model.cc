@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -1325,7 +1326,7 @@ void AuthenticatorRequestDialogModel::AddAuthenticator(
 }
 
 void AuthenticatorRequestDialogModel::RemoveAuthenticator(
-    base::StringPiece authenticator_id) {
+    std::string_view authenticator_id) {
   ephemeral_state_.saved_authenticators_.RemoveAuthenticator(authenticator_id);
 }
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -611,7 +612,7 @@ class AuthenticatorRequestDialogModel
   // first authenticator added with transport `kInternal` (or without a
   // transport) is considered to be the default platform authenticator.
   void AddAuthenticator(const device::FidoAuthenticator& authenticator);
-  void RemoveAuthenticator(base::StringPiece authenticator_id);
+  void RemoveAuthenticator(std::string_view authenticator_id);
 
   // SelectAccount is called to trigger an account selection dialog.
   void SelectAccount(

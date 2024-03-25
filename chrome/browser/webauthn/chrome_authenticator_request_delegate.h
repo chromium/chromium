@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
@@ -213,7 +212,7 @@ class ChromeAuthenticatorRequestDelegate
       const device::FidoAuthenticator& authenticator) override;
   void FidoAuthenticatorAdded(
       const device::FidoAuthenticator& authenticator) override;
-  void FidoAuthenticatorRemoved(base::StringPiece authenticator_id) override;
+  void FidoAuthenticatorRemoved(std::string_view authenticator_id) override;
   void BluetoothAdapterPowerChanged(bool is_powered_on) override;
   bool SupportsPIN() const override;
   void CollectPIN(
