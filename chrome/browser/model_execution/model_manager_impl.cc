@@ -88,6 +88,8 @@ void ModelManagerImpl::CreateGenericSession(
     std::move(callback).Run(/*success=*/false);
     return;
   }
+  // The new `ModelExecutionSession` shares the same lifetime with the
+  // `receiver`.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ModelExecutionSession>(std::move(session)),
       std::move(receiver));

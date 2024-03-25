@@ -26,11 +26,6 @@ ModelExecutionSession::ModelExecutionSession(
 
 ModelExecutionSession::~ModelExecutionSession() = default;
 
-void ModelExecutionSession::BindReceiver(
-    mojo::PendingReceiver<blink::mojom::ModelGenericSession> receiver) {
-  receiver_.Bind(std::move(receiver));
-}
-
 blink::mojom::ModelStreamingResponseStatus ConvertModelExecutionError(
     ModelExecutionError error) {
   switch (error) {
