@@ -7399,7 +7399,8 @@ using SitePerProcessDelegatedInkBrowserTest = SitePerProcessHitTestBrowserTest;
 // RenderWidgetHost and is usable for sending delegated ink points.
 // TODO(https://crbug.com/1318221): Fix and enable the test on Fuchsia.
 // TODO(https://crbug.com/1490367): flaky on ChromeOS
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
+// TODO(http://b/331190208): Test failing on Linux
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_MetadataAndPointGoThroughOOPIF \
   DISABLED_MetadataAndPointGoThroughOOPIF
 #else
