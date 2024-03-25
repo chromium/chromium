@@ -33,19 +33,19 @@
 namespace ash {
 namespace {
 
-using testing::_;
-using testing::AnyNumber;
-using testing::AtLeast;
-using testing::ElementsAre;
-using testing::Eq;
-using testing::Field;
-using testing::Invoke;
-using testing::IsEmpty;
-using testing::IsSupersetOf;
-using testing::NiceMock;
-using testing::Property;
-using testing::SaveArg;
-using testing::VariantWith;
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::AtLeast;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Invoke;
+using ::testing::IsEmpty;
+using ::testing::IsSupersetOf;
+using ::testing::NiceMock;
+using ::testing::Property;
+using ::testing::SaveArg;
+using ::testing::VariantWith;
 
 constexpr base::TimeDelta kMetricMetricTime = base::Milliseconds(300);
 
@@ -123,7 +123,7 @@ class MockPickerClient : public PickerClient {
 };
 
 using MockSearchResultsCallback =
-    testing::MockFunction<PickerSearchRequest::SearchResultsCallback>;
+    ::testing::MockFunction<PickerSearchRequest::SearchResultsCallback>;
 
 class PickerSearchRequestTest : public testing::Test {
  protected:

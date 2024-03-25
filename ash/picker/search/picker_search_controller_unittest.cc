@@ -33,22 +33,22 @@
 namespace ash {
 namespace {
 
-using testing::_;
-using testing::AnyNumber;
-using testing::AtLeast;
-using testing::Each;
-using testing::ElementsAre;
-using testing::Eq;
-using testing::Field;
-using testing::Invoke;
-using testing::InvokeWithoutArgs;
-using testing::IsEmpty;
-using testing::IsSupersetOf;
-using testing::NiceMock;
-using testing::Not;
-using testing::Property;
-using testing::SaveArg;
-using testing::VariantWith;
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::AtLeast;
+using ::testing::Each;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Invoke;
+using ::testing::InvokeWithoutArgs;
+using ::testing::IsEmpty;
+using ::testing::IsSupersetOf;
+using ::testing::NiceMock;
+using ::testing::Not;
+using ::testing::Property;
+using ::testing::SaveArg;
+using ::testing::VariantWith;
 
 constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(400);
 
@@ -140,7 +140,7 @@ class MockPickerClient : public PickerClient {
 };
 
 using MockSearchResultsCallback =
-    testing::MockFunction<PickerViewDelegate::SearchResultsCallback>;
+    ::testing::MockFunction<PickerViewDelegate::SearchResultsCallback>;
 
 class PickerSearchControllerTest : public testing::Test {
  protected:
