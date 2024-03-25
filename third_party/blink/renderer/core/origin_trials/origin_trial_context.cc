@@ -551,10 +551,6 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
                network::features::kAttributionReportingCrossAppWeb);
   }
 
-  if (trial_name == "ComputePressure_v2") {
-    return base::FeatureList::IsEnabled(features::kComputePressure);
-  }
-
   if (trial_name == "SoftNavigationHeuristics") {
     return base::FeatureList::IsEnabled(features::kSoftNavigationDetection);
   }

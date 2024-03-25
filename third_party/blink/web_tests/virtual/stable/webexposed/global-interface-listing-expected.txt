@@ -6500,6 +6500,21 @@ interface PresentationRequest : EventTarget
     method reconnect
     method start
     setter onconnectionavailable
+interface PressureObserver
+    static getter supportedSources
+    attribute @@toStringTag
+    method constructor
+    method disconnect
+    method observe
+    method takeRecords
+    method unobserve
+interface PressureRecord
+    attribute @@toStringTag
+    getter source
+    getter state
+    getter time
+    method constructor
+    method toJSON
 interface ProcessingInstruction : CharacterData
     attribute @@toStringTag
     getter sheet
