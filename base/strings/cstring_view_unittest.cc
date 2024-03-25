@@ -29,6 +29,13 @@ static_assert(std::ranges::borrowed_range<cstring_view>);
 // The view is the size of 2 pointers (technically, pointer and address).
 static_assert(sizeof(cstring_view) == sizeof(uintptr_t) + sizeof(size_t));
 
+static_assert(cstring_view::npos == std::string_view::npos);
+static_assert(u16cstring_view::npos == std::u16string_view::npos);
+static_assert(u16cstring_view::npos == std::u32string_view::npos);
+#if BUILDFLAG(IS_WIN)
+static_assert(wcstring_view::npos == std::wstring_view::npos);
+#endif
+
 TEST(CStringViewTest, DefaultConstructed) {
   constexpr auto c = cstring_view();
   static_assert(std::same_as<decltype(c), const cstring_view>);
@@ -377,6 +384,211 @@ TEST(CStringViewTest, CopyAssign) {
   empty = stuff;
   EXPECT_EQ(empty.data(), stuff.data());
   EXPECT_EQ(empty.size(), stuff.size());
+}
+
+TEST(CStringViewTest, RemovePrefix) {
+  auto empty = cstring_view();
+  auto mod_empty = empty;
+  mod_empty.remove_prefix(0u);
+  EXPECT_EQ(mod_empty.data(), &empty[0u]);
+  EXPECT_EQ(mod_empty.size(), 0u);
+
+  auto stuff = cstring_view("stuff");
+  auto mod_stuff = stuff;
+  mod_stuff.remove_prefix(0u);
+  EXPECT_EQ(mod_stuff.data(), &stuff[0u]);
+  EXPECT_EQ(mod_stuff.size(), 5u);
+  mod_stuff.remove_prefix(2u);
+  EXPECT_EQ(mod_stuff.data(), &stuff[2u]);
+  EXPECT_EQ(mod_stuff.size(), 3u);
+  mod_stuff.remove_prefix(1u);
+  EXPECT_EQ(mod_stuff.data(), &stuff[3u]);
+  EXPECT_EQ(mod_stuff.size(), 2u);
+  mod_stuff.remove_prefix(2u);
+  EXPECT_EQ(mod_stuff.data(), &stuff[5u]);
+  EXPECT_EQ(mod_stuff.size(), 0u);
+
+  static_assert([] {
+    auto stuff = cstring_view("stuff");
+    stuff.remove_prefix(2u);
+    return stuff;
+  }() == "uff");
+
+  auto stuff16 = u16cstring_view(u"stuff");
+  auto mod_stuff16 = stuff16;
+  mod_stuff16.remove_prefix(2u);
+  EXPECT_EQ(mod_stuff16.data(), &stuff16[2u]);
+  EXPECT_EQ(mod_stuff16.size(), 3u);
+
+  auto stuff32 = u32cstring_view(U"stuff");
+  auto mod_stuff32 = stuff32;
+  mod_stuff32.remove_prefix(2u);
+  EXPECT_EQ(mod_stuff32.data(), &stuff32[2u]);
+  EXPECT_EQ(mod_stuff32.size(), 3u);
+
+#if BUILDFLAG(IS_WIN)
+  auto stuffw = wcstring_view(L"stuff");
+  auto mod_stuffw = stuffw;
+  mod_stuffw.remove_prefix(2u);
+  EXPECT_EQ(mod_stuffw.data(), &stuffw[2u]);
+  EXPECT_EQ(mod_stuffw.size(), 3u);
+#endif
+}
+
+TEST(CStringViewDeathTest, RemovePrefixChecked) {
+  auto empty = cstring_view();
+  BASE_EXPECT_DEATH(empty.remove_prefix(1u), "");
+
+  auto stuff = cstring_view("stuff");
+  BASE_EXPECT_DEATH(stuff.remove_prefix(6u), "");
+  stuff.remove_prefix(4u);
+  BASE_EXPECT_DEATH(stuff.remove_prefix(2u), "");
+}
+
+TEST(CStringViewTest, Swap) {
+  auto empty = cstring_view();
+  auto stuff = cstring_view("stuff");
+  empty.swap(stuff);
+  EXPECT_EQ(stuff, cstring_view(""));
+  EXPECT_EQ(empty, cstring_view("stuff"));
+
+  static_assert([] {
+    auto abc = cstring_view("abc");
+    auto ef = cstring_view("ef");
+    abc.swap(ef);
+    return ef;
+  }() == "abc");
+
+  auto one16 = u16cstring_view(u"one");
+  auto two16 = u16cstring_view(u"twotwo");
+  one16.swap(two16);
+  EXPECT_EQ(one16, u16cstring_view(u"twotwo"));
+  EXPECT_EQ(two16, u16cstring_view(u"one"));
+}
+
+TEST(CStringViewTest, Substr) {
+  auto substr = cstring_view("hello").substr(1u);
+  static_assert(std::same_as<std::string_view, decltype(substr)>);
+
+  static_assert(cstring_view("").substr(0u) == "");
+  static_assert(cstring_view("").substr(0u, 0u) == "");
+  static_assert(cstring_view("stuff").substr(0u) == "stuff");
+  static_assert(cstring_view("stuff").substr(0u, 2u) == "st");
+  static_assert(cstring_view("stuff").substr(2u) == "uff");
+  static_assert(cstring_view("stuff").substr(2u, 3u) == "uff");
+  static_assert(cstring_view("stuff").substr(2u, 1u) == "u");
+  static_assert(cstring_view("stuff").substr(2u, 0u) == "");
+
+  // `count` going off the end is clamped. Same as for string_view with
+  // hardening.
+  static_assert(cstring_view("stuff").substr(2u, 4u) == "uff");
+  static_assert(std::string_view("stuff").substr(2u, 4u) == "uff");
+}
+
+TEST(CStringViewDeathTest, SubstrBoundsChecked) {
+  auto use = [](auto x) { base::debug::Alias(&x); };
+
+  auto stuff = cstring_view("stuff");
+
+  // `pos` going off the end is CHECKed. Same as for string_view with hardening.
+  BASE_EXPECT_DEATH(use(stuff.substr(6u, 0u)), "");
+  BASE_EXPECT_DEATH(use(std::string_view("stuff").substr(6u, 0u)), "");
+  BASE_EXPECT_DEATH(use(stuff.substr(6u, 1u)), "");
+  BASE_EXPECT_DEATH(use(std::string_view("stuff").substr(6u, 1u)), "");
+}
+
+TEST(CStringViewTest, StartsWith) {
+  // Comparison with `const char*`.
+  static_assert(!cstring_view("").starts_with("hello"));
+  static_assert(cstring_view("").starts_with(""));
+  static_assert(cstring_view("hello").starts_with("hello"));
+  static_assert(cstring_view("hello").starts_with(""));
+  static_assert(cstring_view("hello").starts_with("he"));
+  static_assert(!cstring_view("hello").starts_with("ello"));
+  constexpr const char* query = "ello";
+  static_assert(!cstring_view("hello").starts_with(query));
+
+  static_assert(u16cstring_view(u"hello").starts_with(u"he"));
+  static_assert(u32cstring_view(U"hello").starts_with(U"he"));
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello").starts_with(L"he"));
+#endif
+
+  // Comparison with `string/string_view/cstring_view`.
+  static_assert(cstring_view("hello").starts_with(std::string("he")));
+  static_assert(!cstring_view("hello").starts_with(std::string("el")));
+  static_assert(cstring_view("hello").starts_with(std::string_view("he")));
+  static_assert(!cstring_view("hello").starts_with(std::string_view("el")));
+  static_assert(cstring_view("hello").starts_with(cstring_view("he")));
+  static_assert(!cstring_view("hello").starts_with(cstring_view("el")));
+
+  static_assert(!cstring_view("hello").starts_with(std::string("hellos")));
+  static_assert(!cstring_view("hello").starts_with(std::string_view("hellos")));
+  static_assert(!cstring_view("hello").starts_with(cstring_view("hellos")));
+
+  static_assert(u16cstring_view(u"hello").starts_with(std::u16string(u"he")));
+  static_assert(u32cstring_view(U"hello").starts_with(std::u32string(U"he")));
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello").starts_with(std::wstring(L"he")));
+#endif
+
+  // Comparison with a character.
+  static_assert(!cstring_view("").starts_with('h'));
+  static_assert(cstring_view("hello").starts_with('h'));
+  static_assert(!cstring_view("hello").starts_with('e'));
+
+  static_assert(u16cstring_view(u"hello").starts_with(u'h'));
+  static_assert(u32cstring_view(U"hello").starts_with(U'h'));
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello").starts_with(L'h'));
+#endif
+}
+
+TEST(CStringViewTest, EndsWith) {
+  // Comparison with `const char*`.
+  static_assert(!cstring_view("").ends_with("hello"));
+  static_assert(cstring_view("").ends_with(""));
+  static_assert(cstring_view("hello").ends_with("hello"));
+  static_assert(cstring_view("hello").ends_with(""));
+  static_assert(cstring_view("hello").ends_with("lo"));
+  static_assert(!cstring_view("hello").ends_with("hel"));
+  constexpr const char* query = "hel";
+  static_assert(!cstring_view("hello").ends_with(query));
+
+  static_assert(u16cstring_view(u"hello").ends_with(u"lo"));
+  static_assert(u32cstring_view(U"hello").ends_with(U"lo"));
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello").ends_with(L"lo"));
+#endif
+
+  // Comparison with `string/string_view/cstring_view`.
+  static_assert(cstring_view("hello").ends_with(std::string("lo")));
+  static_assert(!cstring_view("hello").ends_with(std::string("ell")));
+  static_assert(cstring_view("hello").ends_with(std::string_view("lo")));
+  static_assert(!cstring_view("hello").ends_with(std::string_view("ell")));
+  static_assert(cstring_view("hello").ends_with(cstring_view("lo")));
+  static_assert(!cstring_view("hello").ends_with(cstring_view("ell")));
+
+  static_assert(!cstring_view("hello").ends_with(std::string("shello")));
+  static_assert(!cstring_view("hello").ends_with(std::string_view("shello")));
+  static_assert(!cstring_view("hello").ends_with(cstring_view("shello")));
+
+  static_assert(u16cstring_view(u"hello").ends_with(std::u16string(u"lo")));
+  static_assert(u32cstring_view(U"hello").ends_with(std::u32string(U"lo")));
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello").ends_with(std::wstring(L"lo")));
+#endif
+
+  // Comparison with a character.
+  static_assert(!cstring_view("").ends_with('h'));
+  static_assert(cstring_view("hello").ends_with('o'));
+  static_assert(!cstring_view("hello").ends_with('l'));
+
+  static_assert(u16cstring_view(u"hello").ends_with(u'o'));
+  static_assert(u32cstring_view(U"hello").ends_with(U'o'));
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello").ends_with(L'o'));
+#endif
 }
 
 TEST(CStringViewTest, Example_CtorLiteral) {

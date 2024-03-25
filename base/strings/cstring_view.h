@@ -51,6 +51,9 @@ class basic_cstring_view {
   using size_type = size_t;
   using difference_type = ptrdiff_t;
 
+  // The `npos` constant represents a non-existent position in the cstring view.
+  constexpr static auto npos = static_cast<size_t>(-1);
+
   // Constructs an empty cstring view, which points to an empty string with a
   // terminating NUL.
   constexpr basic_cstring_view() noexcept : ptr_(kEmpty), len_(0u) {}
@@ -256,6 +259,80 @@ class basic_cstring_view {
     return UNSAFE_BUFFERS(ptr_[len_ - 1u]);
   }
 
+  // Modifies the cstring view in place, moving the front ahead by `n`
+  // characters.
+  //
+  // # Checks
+  // The function CHECKs that `n <= size()`, and will terminate otherwise.
+  constexpr void remove_prefix(size_t n) noexcept {
+    CHECK_LE(n, len_);
+    // SAFETY: Since `n <= len_`, the pointer at offset `n` is inside the string
+    // (or at the terminating NUL) and the `len_ - n` value will not underflow.
+    // Thus the resulting pointer is still a NUL- terminated string of length
+    // `len_ - n`.
+    ptr_ = UNSAFE_BUFFERS(ptr_ + n);
+    len_ = len_ - n;
+  }
+
+  // No `remove_suffix()` method exists as it would remove the terminating NUL
+  // character. Convert to a `std::string_view` (either by construction or with
+  // a `substr(0u)` call) to construct arbitrary substrings that are not
+  // NUL-terminated.
+  void remove_suffix(size_t n) = delete;
+
+  // Modifies the cstring view in place, swapping its contents with another view
+  // of the same type.
+  constexpr void swap(basic_cstring_view& other) noexcept {
+    std::swap(ptr_, other.ptr_);
+    std::swap(len_, other.len_);
+  }
+
+  // Returns a string view of the subrange starting as `pos` and including
+  // `count` characters. If `count` is not specified, or exceeds the length of
+  // the string after `pos`, the subrange returned will include all characters
+  // up to the terminating NUL.
+  //
+  // # Checks
+  // The function CHECKs that `pos` is in range for the string (or at the
+  // terminating NULL), and will terminate otherwise.
+  PURE_FUNCTION constexpr std::basic_string_view<Char> substr(
+      size_t pos,
+      size_t count = npos) const noexcept {
+    // Ensure `ptr_ + pos` is valid. and `len_ - pos` does not underflow.
+    CHECK_LE(pos, len_);
+    // SAFETY: We require that:
+    // * `ptr_ + pos` is a pointer in the string.
+    // * `pos + count <= len_` so that resulting substring's end is in range.
+    //
+    // The first follows directly from the CHECK above that `pos <= len_`. The
+    // second follows from clamping `count` to at most `len_ - pos`.
+    return UNSAFE_BUFFERS(
+        std::basic_string_view<Char>(ptr_ + pos, std::min(count, len_ - pos)));
+  }
+
+  // Returns whether the cstring view starts with the given `prefix`. Will
+  // always return false if `prefix` is larger than the current cstring view.
+  constexpr bool starts_with(
+      std::basic_string_view<Char> prefix) const noexcept {
+    return std::basic_string_view<Char>(*this).starts_with(prefix);
+  }
+
+  // Returns whether the cstring view starts with the given `character`.
+  constexpr bool starts_with(Char character) const noexcept {
+    return std::basic_string_view<Char>(*this).starts_with(character);
+  }
+
+  // Returns whether the cstring view ends with the given `suffix`. Will
+  // always return false if `suffix` is larger than the current cstring view.
+  constexpr bool ends_with(std::basic_string_view<Char> suffix) const noexcept {
+    return std::basic_string_view<Char>(*this).ends_with(suffix);
+  }
+
+  // Returns whether the cstring view starts with the given `character`.
+  constexpr bool ends_with(Char character) const noexcept {
+    return std::basic_string_view<Char>(*this).ends_with(character);
+  }
+
   // Compare two cstring views for equality, comparing the string contents.
   friend constexpr bool operator==(basic_cstring_view l, basic_cstring_view r) {
     return std::ranges::equal(l, r);
@@ -270,6 +347,21 @@ class basic_cstring_view {
                                                   basic_cstring_view r) {
     return std::lexicographical_compare_three_way(l.begin(), l.end(), r.begin(),
                                                   r.end());
+  }
+
+  // Implicitly converts from cstring_view to a non-NUL-terminated
+  // std::string_view. The std::string_view type implicitly constructs from
+  // `const char*` and cstring view is meant to replace the latter, so this acts
+  // like an implicit constructor on `std::string_view` for cstring views.
+  //
+  // This operator also avoids a requirement on having overloads for both
+  // std::string_view and cstring_view. Such overloads are ambiguous because
+  // both can construct from a character array.
+  //
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr operator std::basic_string_view<Char>() const noexcept {
+    // SAFETY: The cstring view provides that `ptr_ + len_` to be valid.
+    return UNSAFE_BUFFERS(std::basic_string_view<Char>(ptr_, len_));
   }
 
  private:

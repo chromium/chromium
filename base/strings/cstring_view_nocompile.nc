@@ -53,6 +53,17 @@ void WontCompileCompareTypeMismatch() {
   (void)(cstring_view() <=> u16cstring_view());  // expected-error {{invalid operands to binary expression}}
 }
 
+void WontCompileSwapTypeMismatch() {
+  auto a = cstring_view("8");
+  auto b = u16cstring_view(u"16");
+  a.swap(b);  // expected-error {{cannot bind to a value of unrelated type}}
+}
+
+void WontCompileStartsEndWithMismatch() {
+  u16cstring_view(u"abc").starts_with("ab");  // expected-error {{no matching member function}}
+  u16cstring_view(u"abc").ends_with("ab");  // expected-error {{no matching member function}}
+}
+
 void WontCompileDanglingInput() {
   // TODO: construct from string.
   // auto v1 = cstring_view(std::string("abc"));
