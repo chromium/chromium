@@ -169,6 +169,7 @@ class Metrics {
     kRetryCount,
     kAccessTokenLatency,
     kApiLatency,
+    kAuthError,
   };
 
   Metrics() = delete;
@@ -180,6 +181,7 @@ class Metrics {
   void RecordApiLatency(
       ProtoFetcherStatus::HttpStatusOrNetErrorType http_status_or_net_error);
   virtual void RecordStatusLatency(const ProtoFetcherStatus& status) const;
+  void RecordAuthError(const ProtoFetcherStatus& status) const;
   void RecordHttpStatusOrNetError(const ProtoFetcherStatus& status) const;
 
  protected:

@@ -318,6 +318,8 @@ TEST_P(ProtoFetcherTest, NoAccessToken) {
   std::unique_ptr<Receiver> receiver = MakeReceiver();
   std::unique_ptr<Fetcher> fetcher = MakeFetcher(*receiver.get());
 
+  base::HistogramTester histogram_tester;
+
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
@@ -327,6 +329,19 @@ TEST_P(ProtoFetcherTest, NoAccessToken) {
             ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR);
   EXPECT_EQ(receiver->GetResult().error().google_service_auth_error().state(),
             GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
+
+  if (MetricsAreExpected()) {
+    // This tests just the metrics related to the auth error case; the rest of
+    // the metrics are tested in other tests.
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({*GetConfig().histogram_basename, ".Status"}),
+        ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR, 1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({*GetConfig().histogram_basename, ".AuthError"}),
+        GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS, 1);
+  } else {
+    EXPECT_FALSE(fetcher->IsMetricsRecordingEnabled());
+  }
 }
 
 // Tests a flow where incoming data from RPC can't be deserialized to a valid

@@ -772,6 +772,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="{RequestType}.AuthError" enum="GoogleServiceAuthError"
+    expires_after="2024-09-01">
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    The detailed reason for AuthError failures. Recorded for each request to the
+    API where {RequestType}.Status is AuthError.
+  </summary>
+  <token key="RequestType" variants="ProtoFetcherRequestType"/>
+</histogram>
+
 <histogram name="{RequestType}.HttpStatusOrNetError"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-09-01">
   <owner>tju@google.com</owner>

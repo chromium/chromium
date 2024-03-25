@@ -31,6 +31,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_status_code.h"
+#include "proto_fetcher.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
@@ -130,7 +131,7 @@ ProtoFetcherStatus::ProtoFetcherStatus(
 ProtoFetcherStatus::~ProtoFetcherStatus() = default;
 
 ProtoFetcherStatus::ProtoFetcherStatus(State state) : state_(state) {
-  DCHECK(state != State::GOOGLE_SERVICE_AUTH_ERROR);
+  DCHECK_NE(state, State::GOOGLE_SERVICE_AUTH_ERROR);
 }
 ProtoFetcherStatus::ProtoFetcherStatus(
     HttpStatusOrNetErrorType http_status_or_net_error)
@@ -267,9 +268,17 @@ void Metrics::RecordStatusLatency(const ProtoFetcherStatus& status) const {
                           stopwatch_.Elapsed());
 }
 
+void Metrics::RecordAuthError(const ProtoFetcherStatus& status) const {
+  CHECK_EQ(status.state(),
+           ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR);
+  base::UmaHistogramEnumeration(GetFullHistogramName(MetricType::kAuthError),
+                                status.google_service_auth_error().state(),
+                                GoogleServiceAuthError::NUM_STATES);
+}
+
 void Metrics::RecordHttpStatusOrNetError(
     const ProtoFetcherStatus& status) const {
-  CHECK(status.state() == ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR);
+  CHECK_EQ(status.state(), ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR);
   base::UmaHistogramSparse(
       GetFullHistogramName(MetricType::kHttpStatusOrNetError),
       status.http_status_or_net_error().value());
@@ -287,6 +296,8 @@ std::string Metrics::GetMetricKey(MetricType metric_type) const {
       return "AccessTokenLatency";
     case MetricType::kApiLatency:
       return "ApiLatency";
+    case MetricType::kAuthError:
+      return "AuthError";
     case MetricType::kRetryCount:
       NOTREACHED_NORETURN();
     default:
@@ -408,9 +419,21 @@ void AbstractProtoFetcher::RecordMetrics(const ProtoFetcherStatus& status) {
   metrics_->RecordLatency();
   metrics_->RecordStatusLatency(status);
 
-  // Record additional metrics for various failures.
-  if (status.state() == ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR) {
-    metrics_->RecordHttpStatusOrNetError(status);
+  // Record additional status-specific metrics.
+  switch (status.state()) {
+    case ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR:
+      metrics_->RecordAuthError(status);
+      break;
+
+    case ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR:
+      metrics_->RecordHttpStatusOrNetError(status);
+      break;
+
+    case ProtoFetcherStatus::State::OK:
+    case ProtoFetcherStatus::State::INVALID_RESPONSE:
+    case ProtoFetcherStatus::State::DATA_ERROR:
+      // No additional metrics to record.
+      break;
   }
 }
 
