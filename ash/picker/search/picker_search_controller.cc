@@ -32,18 +32,15 @@ void PickerSearchController::StartSearch(
     std::optional<PickerCategory> category,
     base::span<const PickerCategory> available_categories,
     PickerViewDelegate::SearchResultsCallback callback) {
-  StopSearch();
+  search_request_.reset();
+  // `PickerSearchAggregator::StopSearch` is called from this
+  // `PickerSearchAggregator::StartSearch` call.
   aggregator_.StartSearch(std::move(callback));
   search_request_ = std::make_unique<PickerSearchRequest>(
       query, std::move(category),
       base::BindRepeating(&PickerSearchAggregator::HandleSearchSourceResults,
                           aggregator_.GetWeakPtr()),
       &client_.get(), &emoji_search_, available_categories);
-}
-
-void PickerSearchController::StopSearch() {
-  search_request_.reset();
-  aggregator_.StopSearch();
 }
 
 }  // namespace ash

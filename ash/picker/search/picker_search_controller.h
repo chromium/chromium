@@ -39,10 +39,6 @@ class ASH_EXPORT PickerSearchController {
                    PickerViewDelegate::SearchResultsCallback callback);
 
  private:
-  // Stops the current search, and resets the state to begin a new search.
-  // This is called in `StartSearch` before every new search query.
-  void StopSearch();
-
   const raw_ref<PickerClient> client_;
 
   emoji::EmojiSearch emoji_search_;

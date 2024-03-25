@@ -27,16 +27,16 @@ class ASH_EXPORT PickerSearchAggregator {
 
   void StartSearch(PickerViewDelegate::SearchResultsCallback callback);
 
-  // Stops the current search, and resets the state to begin a new search.
-  // This is called in `StartSearch` before every new search query.
-  void StopSearch();
-
   void HandleSearchSourceResults(PickerSearchSource source,
                                  std::vector<PickerSearchResult> results);
 
   base::WeakPtr<PickerSearchAggregator> GetWeakPtr();
 
  private:
+  // Stops the current search, and resets the state to begin a new search.
+  // This is called in `StartSearch` before every new search query.
+  void StopSearch();
+
   // Whether there is no current search. This could be because a search was
   // never started, or `StopSearch` was called (possibly as part of
   // `StartSearch`).
