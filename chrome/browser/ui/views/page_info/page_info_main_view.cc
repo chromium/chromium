@@ -163,9 +163,6 @@ void PageInfoMainView::SetCookieInfo(const CookiesNewInfo& cookie_info) {
   if (cookie_button_ != nullptr) {
     return;
   }
-  PageInfo::PermissionInfo info;
-  info.type = ContentSettingsType::COOKIES;
-  info.setting = CONTENT_SETTING_ALLOW;
 
   ui::ImageModel icon;
   std::u16string tooltip, title, label = std::u16string();
