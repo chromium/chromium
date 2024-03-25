@@ -21,8 +21,8 @@ wallpaper-grid-item.sea-pen-image {
 }
 
 .sea-pen-image[aria-selected='true']::part(ironIcon) {
-  left: -4px;
-  top: -4px;
+  left: -2px;
+  top: -2px;
 }
 
 .sea-pen-image[aria-selected='true']::part(iconContainer) {
