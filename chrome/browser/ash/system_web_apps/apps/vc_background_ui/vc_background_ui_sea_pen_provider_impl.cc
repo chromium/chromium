@@ -18,7 +18,9 @@
 #include "base/json/json_writer.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_base.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
+#include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "components/manta/features.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -58,7 +60,10 @@ VcBackgroundUISeaPenProviderImpl::VcBackgroundUISeaPenProviderImpl(
     : PersonalizationAppSeaPenProviderBase(
           web_ui,
           std::move(wallpaper_fetcher_delegate),
-          manta::proto::FeatureName::CHROMEOS_VC_BACKGROUNDS) {}
+          manta::proto::FeatureName::CHROMEOS_VC_BACKGROUNDS) {
+  content::URLDataSource::Add(profile_,
+                              std::make_unique<SanitizedImageSource>(profile_));
+}
 
 VcBackgroundUISeaPenProviderImpl::~VcBackgroundUISeaPenProviderImpl() = default;
 
