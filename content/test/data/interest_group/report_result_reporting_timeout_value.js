@@ -3,17 +3,14 @@
 // found in the LICENSE file.
 
 function scoreAd(
-  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   return {desirability: bid, allowComponentAuction: true};
 }
 
 function reportResult(auctionConfig, browserSignals) {
-  const timeout = 'reportingTimeout' in auctionConfig ?
-      auctionConfig.reportingTimeout :
-      'undefined';
   sendReportTo(
-      auctionConfig.seller +
-      '/echoall?report_seller,reportingTimeout=' + timeout);
+      auctionConfig.seller + '/echoall?report_seller,reportingTimeout=' +
+      auctionConfig.reportingTimeout);
   return {
     'success': true,
     'signalsForWinner': {'signalForWinner': 1},

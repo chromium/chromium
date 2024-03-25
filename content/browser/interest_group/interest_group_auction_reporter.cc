@@ -855,8 +855,8 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
       component_seller_winning_bid_info_
           ? top_level_seller_winning_bid_info_.auction_config->seller
           : std::optional<url::Origin>(),
-      winning_bid_info_.bidding_signals_data_version,
       auction_config->non_shared_params.reporting_timeout,
+      winning_bid_info_.bidding_signals_data_version,
       top_level_seller_winning_bid_info_.trace_id,
       base::BindOnce(&InterestGroupAuctionReporter::OnBidderReportWinComplete,
                      weak_ptr_factory_.GetWeakPtr(),
