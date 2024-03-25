@@ -1764,6 +1764,10 @@ void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
 
   ui::ScopedClipboardWriter scoped_clipboard_writer(clipboard_buffer);
   scoped_clipboard_writer.WriteText(selected_text);
+  if (!ShouldDoLearning()) {
+    // Data is copied from an incognito window, so mark it as off the record.
+    scoped_clipboard_writer.MarkAsOffTheRecord();
+  }
 
   // Regardless of |write_url|, don't write a hyperlink to the clipboard.
   // Plaintext URLs are simply handled more consistently than hyperlinks.
