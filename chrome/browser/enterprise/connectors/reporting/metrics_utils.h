@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_METRICS_UTILS_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_METRICS_UTILS_H_
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 
@@ -30,7 +32,7 @@ enum class EnterpriseReportingEventType {
 
 // Mapping from event name to UMA enum for logging histogram.
 constexpr auto kEventNameToUmaEnumMap =
-    base::MakeFixedFlatMap<base::StringPiece, EnterpriseReportingEventType>({
+    base::MakeFixedFlatMap<std::string_view, EnterpriseReportingEventType>({
         {extensions::SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent,
          EnterpriseReportingEventType::kPasswordReuseEvent},
         {extensions::SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent,
@@ -58,7 +60,7 @@ constexpr auto kEventNameToUmaEnumMap =
 
 // Return the UMA EnterpriseReportingEventType enum for the given event name.
 EnterpriseReportingEventType GetUmaEnumFromEventName(
-    const base::StringPiece& eventName);
+    std::string_view eventName);
 
 }  // namespace enterprise_connectors
 

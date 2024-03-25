@@ -4,10 +4,12 @@
 
 #include "chrome/browser/enterprise/connectors/reporting/metrics_utils.h"
 
+#include <string_view>
+
 namespace enterprise_connectors {
 
 EnterpriseReportingEventType GetUmaEnumFromEventName(
-    const base::StringPiece& eventName) {
+    std::string_view eventName) {
   auto it = kEventNameToUmaEnumMap.find(eventName);
   return it != kEventNameToUmaEnumMap.end()
              ? it->second

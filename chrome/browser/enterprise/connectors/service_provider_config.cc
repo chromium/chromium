@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/enterprise/connectors/service_provider_config.h"
+
 #include <array>
 #include <iterator>
+#include <string_view>
 
-#include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "base/json/json_reader.h"
 
 namespace enterprise_connectors {
@@ -88,7 +90,7 @@ const ServiceProviderConfig* GetServiceProviderConfig() {
   // corresponding policy definitions.
   // LINT.IfChange
   static constexpr ServiceProviderConfig kServiceProviderConfig =
-      base::MakeFixedFlatMap<base::StringPiece, ServiceProvider>({
+      base::MakeFixedFlatMap<std::string_view, ServiceProvider>({
           {
               "google",
               {

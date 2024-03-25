@@ -7,10 +7,10 @@
 #include <winerror.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/win/registry.h"
 #include "url/gurl.h"

@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/device_trust/test/device_trust_test_environment.h"
+
+#include <string_view>
+
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 
 namespace enterprise_connectors {
 
 DeviceTrustTestEnvironment::DeviceTrustTestEnvironment(
-    base::StringPiece thread_name,
+    std::string_view thread_name,
     HttpResponseCode upload_response_code)
     : worker_thread_(std::string(thread_name)),
       upload_response_code_(upload_response_code) {

@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_TEST_DEVICE_TRUST_TEST_ENVIRONMENT_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
@@ -21,7 +21,7 @@ class DeviceTrustTestEnvironment {
  public:
   using HttpResponseCode = KeyNetworkDelegate::HttpResponseCode;
 
-  DeviceTrustTestEnvironment(base::StringPiece thread_name,
+  DeviceTrustTestEnvironment(std::string_view thread_name,
                              HttpResponseCode upload_response_code);
 
   virtual ~DeviceTrustTestEnvironment();
