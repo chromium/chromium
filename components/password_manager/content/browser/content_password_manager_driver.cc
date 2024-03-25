@@ -70,15 +70,33 @@ bool HasValidURL(content::RenderFrameHost* render_frame_host) {
 }
 
 bool IsRenderFrameHostSupported(content::RenderFrameHost* rfh) {
-  // [spec] https://wicg.github.io/anonymous-iframe/#spec-autofill
-  // > Browsers that implement autofill or password manager functionalities
-  //   should make them unavailable in credentialless iframes.
-  if (rfh->IsCredentialless()) {
-    return false;
+  // Explanation of current PasswordManagerDriver limitations:
+  // * Currently, PasswordManagerDriver binding has RenderFrameHost lifetime,
+  //   not document lifetime. This can lead to premature binding in rare race
+  //   conditions (see https://crbug.com/329989911).
+  // * Due to this, we can't reliably determine if the document will be
+  //   credentialless at this stage. Returning 'false' speculatively would be
+  //   destructive.
+  // * Workaround: Temporarily return 'true'; the function will be re-evaluated
+  //   on commit via `DidNavigate`.
+  //
+  // TODO(https://crbug.com/40615943): After RenderDocument is enabled, consider
+  // simplifying by binding PasswordManagerDriver via `PopulateFrameBinders`
+  // instead of `RegisterAssociatedInterfaceBindersForRenderFrameHost`.
+  if (rfh->GetLifecycleState() ==
+      content::RenderFrameHost::LifecycleState::kPendingCommit) {
+    return true;
   }
 
   if (rfh->GetLifecycleState() ==
       content::RenderFrameHost::LifecycleState::kPrerendering) {
+    return false;
+  }
+
+  // [spec] https://wicg.github.io/anonymous-iframe/#spec-autofill
+  // > Browsers that implement autofill or password manager functionalities
+  //   should make them unavailable in credentialless iframes.
+  if (rfh->IsCredentialless()) {
     return false;
   }
 
