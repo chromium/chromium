@@ -44,10 +44,11 @@ import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBu
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_LEFT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_RIGHT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_TOP;
-
-import static java.lang.String.CASE_INSENSITIVE_ORDER;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_WIDTH;
 
+import static java.lang.String.CASE_INSENSITIVE_ORDER;
+
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -189,6 +190,33 @@ public class AccessibilityNodeInfoUtils {
                 .append(toString(node.getActionList(), includeScreenSizeDependentAttributes));
         builder.append(" bundle:")
                 .append(toString(node.getExtras(), includeScreenSizeDependentAttributes));
+
+        // Add bounds when including screen size dependent attributes.
+        if (includeScreenSizeDependentAttributes) {
+            Rect output = new Rect();
+            node.getBoundsInScreen(output);
+            builder.append(" bounds:[")
+                    .append(output.left)
+                    .append(", ")
+                    .append(output.top)
+                    .append(" - ")
+                    .append(output.width())
+                    .append("x")
+                    .append(output.height())
+                    .append("]");
+
+            output = new Rect();
+            node.getBoundsInParent(output);
+            builder.append(" boundsInParent:[")
+                    .append(output.left)
+                    .append(", ")
+                    .append(output.top)
+                    .append(" - ")
+                    .append(output.width())
+                    .append("x")
+                    .append(output.height())
+                    .append("]");
+        }
 
         return builder.toString();
     }

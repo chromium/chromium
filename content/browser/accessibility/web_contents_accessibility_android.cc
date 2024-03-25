@@ -1491,6 +1491,8 @@ void WebContentsAccessibilityAndroid::UpdateFrameInfo(float page_scale) {
 void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& view_structure_root,
+    const base::android::JavaParamRef<jobject>& accessibility_coordinates,
+    const base::android::JavaParamRef<jobject>& view,
     const base::android::JavaParamRef<jobject>& on_done_callback) {
   // This method should only be called by the unified snapshots feature.
   CHECK(base::FeatureList::IsEnabled(features::kAccessibilityUnifiedSnapshots));
@@ -1500,6 +1502,8 @@ void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
   // be confused with the ProcessCompletedAccessibilityTreeSnapshot callback
   // below, which is called once the renderer has returned all AXTreeUpdates.
   on_done_callback_ = std::move(on_done_callback);
+  accessibility_coordinates_ = accessibility_coordinates;
+  view_ = view;
 
   base::android::ScopedJavaGlobalRef<jobject> movable_view_structure_root;
   movable_view_structure_root.Reset(env, view_structure_root);
@@ -1611,8 +1615,16 @@ void WebContentsAccessibilityAndroid::PopulateViewStructureNode(
       node->HasTextStyle(ax::mojom::TextStyle::kUnderline),
       node->HasTextStyle(ax::mojom::TextStyle::kLineThrough));
 
-  Java_AssistDataBuilder_populateBoundsProperties(env, obj,
-                                                  java_side_assist_data_object);
+  float dip_scale =
+      1 /
+      web_contents_->GetPrimaryMainFrame()->AccessibilityGetDeviceScaleFactor();
+  gfx::Rect absolute_rect = gfx::ScaleToEnclosingRect(
+      node->GetUnclippedRootFrameBoundsRect(), dip_scale, dip_scale);
+
+  Java_AssistDataBuilder_populateBoundsProperties(
+      env, obj, java_side_assist_data_object, absolute_rect.x(),
+      absolute_rect.y(), absolute_rect.width(), absolute_rect.height(),
+      accessibility_coordinates_, view_);
 
   std::vector<std::vector<std::u16string>> html_attrs;
   for (const auto& attr : node->GetHtmlAttributes()) {

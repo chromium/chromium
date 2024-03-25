@@ -5,7 +5,9 @@
 package org.chromium.content.browser.accessibility;
 
 import android.app.assist.AssistStructure.ViewNode;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewStructure;
 import android.view.ViewStructure.HtmlInfo;
 
@@ -67,7 +69,25 @@ public class AssistDataBuilder {
 
     // Stubbed.
     @CalledByNative
-    public void populateBoundsProperties(ViewStructure node) {}
+    public void populateBoundsProperties(
+            ViewStructure node,
+            int absoluteLeft,
+            int absoluteTop,
+            int absoluteWidth,
+            int absoluteHeight,
+            AccessibilityDelegate.AccessibilityCoordinates accessibilityCoordinates,
+            View view) {
+        Rect rect =
+                new Rect(
+                        absoluteLeft,
+                        absoluteTop,
+                        absoluteLeft + absoluteWidth,
+                        absoluteTop + absoluteHeight);
+        AccessibilityNodeInfoBuilder.convertWebRectToAndroidCoordinates(
+                rect, node.getExtras(), accessibilityCoordinates, view);
+
+        node.setDimens(rect.left, rect.top, 0, 0, rect.width(), rect.height());
+    }
 
     @CalledByNative
     public void populateHTMLProperties(

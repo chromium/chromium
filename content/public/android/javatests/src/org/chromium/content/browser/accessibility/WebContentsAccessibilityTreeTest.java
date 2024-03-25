@@ -45,6 +45,9 @@ public class WebContentsAccessibilityTreeTest {
     private static final String DEFAULT_FILE_SUFFIX = "-expected-android-external.txt";
     private static final String ASSIST_DATA_FILE_SUFFIX = "-expected-android-assist-data.txt";
 
+    // Debug flag to print bounding boxes etc which are normally excluded in test outputs.
+    private static final boolean sIncludeScreenSizeDependentAttributes = false;
+
     @Rule
     public AccessibilityContentShellActivityTestRule mActivityTestRule =
             new AccessibilityContentShellActivityTestRule();
@@ -180,7 +183,9 @@ public class WebContentsAccessibilityTreeTest {
         int rootNodevvId =
                 mActivityTestRule.waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
         AccessibilityNodeInfoCompat nodeInfo = createAccessibilityNodeInfo(rootNodevvId);
-        builder.append(AccessibilityNodeInfoUtils.toString(nodeInfo, false));
+        builder.append(
+                AccessibilityNodeInfoUtils.toString(
+                        nodeInfo, sIncludeScreenSizeDependentAttributes));
 
         // Recursively generate strings for all descendants.
         for (int i = 0; i < nodeInfo.getChildCount(); ++i) {
@@ -194,6 +199,8 @@ public class WebContentsAccessibilityTreeTest {
 
     private String generateViewStructureTree() {
         TestViewStructure testViewStructure = new TestViewStructure();
+        testViewStructure.setShouldIncludeScreenSizeDependentAttributes(
+                sIncludeScreenSizeDependentAttributes);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.mWcax.onProvideVirtualStructure(testViewStructure, false));
         CriteriaHelper.pollUiThread(
@@ -213,7 +220,9 @@ public class WebContentsAccessibilityTreeTest {
             AccessibilityNodeInfoCompat node, StringBuilder builder, String indent) {
         builder.append("\n")
                 .append(indent)
-                .append(AccessibilityNodeInfoUtils.toString(node, false));
+                .append(
+                        AccessibilityNodeInfoUtils.toString(
+                                node, sIncludeScreenSizeDependentAttributes));
         for (int j = 0; j < node.getChildCount(); ++j) {
             int childId = mActivityTestRule.getChildId(node, j);
             AccessibilityNodeInfoCompat childNodeInfo = createAccessibilityNodeInfo(childId);

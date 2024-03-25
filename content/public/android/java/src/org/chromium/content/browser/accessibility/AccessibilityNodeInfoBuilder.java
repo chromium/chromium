@@ -489,7 +489,11 @@ public class AccessibilityNodeInfoBuilder {
         node.setBoundsInParent(boundsInParent);
 
         Rect rect = new Rect(absoluteLeft, absoluteTop, absoluteLeft + width, absoluteTop + height);
-        convertWebRectToAndroidCoordinates(rect, node.getExtras());
+        convertWebRectToAndroidCoordinates(
+                rect,
+                node.getExtras(),
+                mDelegate.getAccessibilityCoordinates(),
+                mDelegate.getView());
 
         node.setBoundsInScreen(rect);
 
@@ -624,9 +628,13 @@ public class AccessibilityNodeInfoBuilder {
         return charSequence;
     }
 
-    protected void convertWebRectToAndroidCoordinates(Rect rect, Bundle extras) {
+    public static void convertWebRectToAndroidCoordinates(
+            Rect rect,
+            Bundle extras,
+            AccessibilityDelegate.AccessibilityCoordinates accessibilityCoordinates,
+            View view) {
         // Offset by the scroll position.
-        AccessibilityDelegate.AccessibilityCoordinates ac = mDelegate.getAccessibilityCoordinates();
+        AccessibilityDelegate.AccessibilityCoordinates ac = accessibilityCoordinates;
         rect.offset(-(int) ac.getScrollX(), -(int) ac.getScrollY());
 
         // Convert CSS (web) pixels to Android View pixels
@@ -640,7 +648,7 @@ public class AccessibilityNodeInfoBuilder {
 
         // Finally offset by the location of the view within the screen.
         final int[] viewLocation = new int[2];
-        mDelegate.getView().getLocationOnScreen(viewLocation);
+        view.getLocationOnScreen(viewLocation);
         rect.offset(viewLocation[0], viewLocation[1]);
 
         // rect is the unclipped values, but we need to clip to viewport bounds. The original
