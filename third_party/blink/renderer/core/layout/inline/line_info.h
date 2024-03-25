@@ -48,6 +48,7 @@ class CORE_EXPORT LineInfo {
   void SetLineStyle(const InlineNode&,
                     const InlineItemsData&,
                     bool use_first_line_style);
+  void OverrideLineStyle(const ComputedStyle& style) { line_style_ = style; }
 
   // True if this line is a first formatted line.
   // https://drafts.csswg.org/css-pseudo-4/#first-formatted-line

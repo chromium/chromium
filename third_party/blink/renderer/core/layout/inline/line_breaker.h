@@ -30,6 +30,7 @@ class LineBreakCandidateContext;
 class LineInfo;
 class ResolvedTextLayoutAttributesIterator;
 class ShapingLineBreaker;
+struct AnnotationBreakTokenData;
 
 // The line breaker needs to know which mode its in to properly handle floats.
 enum class LineBreakerMode { kContent, kMinContent, kMaxContent };
@@ -213,6 +214,19 @@ class CORE_EXPORT LineBreaker {
                            LineInfo*);
   void ComputeMinMaxContentSizeForBlockChild(const InlineItem&,
                                              InlineItemResult*);
+  // Returns false if we can't handle the current InlineItem as a ruby.
+  bool HandleRuby(LineInfo* line_info);
+  LineInfo CreateSubLineInfo(InlineItemTextIndex start,
+                             wtf_size_t end_item_index,
+                             LayoutUnit limit);
+  InlineItemResult* AddRubyColumnResult(
+      const InlineItem& item,
+      const LineInfo& base_line_info,
+      const HeapVector<LineInfo, 1>& annotation_line_list,
+      const Vector<AnnotationBreakTokenData, 1>& annotation_data_list,
+      LayoutUnit ruby_size,
+      LineInfo& line_info);
+  bool CanBreakAfterRubyColumn(const InlineItemResult& column_result) const;
 
   bool CanBreakAfterAtomicInline(const InlineItem& item) const;
   bool CanBreakAfter(const InlineItem& item) const;

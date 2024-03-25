@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_item_result_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_segment.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/line_break_candidate.h"
@@ -328,6 +329,15 @@ inline LayoutTextCombine* MayBeTextCombine(const InlineItem* item) {
   if (!item)
     return nullptr;
   return DynamicTo<LayoutTextCombine>(item->GetLayoutObject());
+}
+
+LayoutUnit MaxLineWidth(const LineInfo& base_line,
+                        const HeapVector<LineInfo, 1>& annotation_lines) {
+  LayoutUnit max = base_line.Width();
+  for (const auto& line : annotation_lines) {
+    max = std::max(max, line.Width());
+  }
+  return max;
 }
 
 }  // namespace
@@ -889,6 +899,13 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
       HandleBlockInInline(item, block_break_token, line_info);
       continue;
     }
+    if (item.Type() == InlineItem::kCloseRubyColumn) {
+      // Usually HandleRuby() consumes kCloseRubyColumn, but HandleRuby()
+      // doesn't do it if the ruby column has no <rt>. In that case, we can
+      // ignore kCloseRubyColumn.
+      MoveToNextOf(item);
+      continue;
+    }
 
     // Items after this point are not trailable. If we're trailing, break before
     // any non-trailable items
@@ -904,6 +921,19 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
     }
     if (UNLIKELY(item.Type() == InlineItem::kInitialLetterBox)) {
       HandleInitialLetter(item, line_info);
+      continue;
+    }
+    if (item.Type() == InlineItem::kOpenRubyColumn) {
+      // Skip an empty ruby column.
+      if (Items()[current_.item_index + 1].Type() ==
+          InlineItem::kCloseRubyColumn) {
+        MoveToNextOf(item);
+        MoveToNextOf(Items()[current_.item_index]);
+        continue;
+      }
+      if (!HandleRuby(line_info)) {
+        MoveToNextOf(item);
+      }
       continue;
     }
     if (item.Type() == InlineItem::kOutOfFlowPositioned) {
@@ -2901,6 +2931,119 @@ void LineBreaker::HandleBlockInInline(const InlineItem& item,
     MoveToNextOf(item);
   }
   state_ = LineBreakState::kDone;
+}
+
+bool LineBreaker::HandleRuby(LineInfo* line_info) {
+  InlineItemTextIndex base_start = current_;
+  wtf_size_t base_end_index;
+  Vector<AnnotationBreakTokenData, 1> annotation_data;
+  wtf_size_t open_column_item_index;
+  {
+    open_column_item_index = current_.item_index;
+    RubyItemIndexes ruby_indexes =
+        ParseRubyInInlineItems(Items(), current_.item_index);
+    base_end_index = ruby_indexes.base_end;
+    if (Items()[base_end_index].Type() == InlineItem::kCloseRubyColumn) {
+      // No ruby-text. We don't need a kOpenRubyColumn result.
+      return false;
+    }
+    DCHECK_EQ(Items()[base_end_index].Type(), InlineItem::kOpenTag);
+    DCHECK(Items()[base_end_index].GetLayoutObject()->IsInlineRubyText());
+    base_start = {current_.item_index + 1,
+                  Items()[current_.item_index].EndOffset()};
+
+    wtf_size_t start = ruby_indexes.annotation_start;
+    annotation_data.push_back(AnnotationBreakTokenData{
+        {start, Items()[start].StartOffset()}, start, ruby_indexes.column_end});
+  }
+  // TODO(crbug.com/324111880): Setup for a wrapped ruby column.
+  const InlineItem& item = Items()[open_column_item_index];
+
+  LineInfo base_line_info =
+      CreateSubLineInfo(base_start, base_end_index, LayoutUnit::Max());
+
+  HeapVector<LineInfo, 1> annotation_line_list;
+  for (const auto& data : annotation_data) {
+    annotation_line_list.push_back(
+        CreateSubLineInfo(data.start, data.end_item_index, LayoutUnit::Max()));
+  }
+
+  LayoutUnit ruby_size = MaxLineWidth(base_line_info, annotation_line_list);
+
+  {
+    AddRubyColumnResult(item, base_line_info, annotation_line_list,
+                        annotation_data, ruby_size, *line_info);
+    position_ += ruby_size;
+    // Adjust the state in order to move to the next of kCloseRubyColumn.
+    current_.item_index = annotation_line_list[0].EndItemIndex();
+    const InlineItem& close_column = Items()[current_.item_index];
+    DCHECK_EQ(close_column.Type(), InlineItem::kCloseRubyColumn);
+    current_.text_offset = close_column.StartOffset();
+    MoveToNextOf(close_column);
+    return true;
+  }
+  // TODO(crbug.com/324111880): Break the ruby if ruby_size is longer than
+  // RemainingAvailableWidth().
+}
+
+LineInfo LineBreaker::CreateSubLineInfo(InlineItemTextIndex start,
+                                        wtf_size_t end_item_index,
+                                        LayoutUnit limit) {
+  ExclusionSpace empty_exclusion_space;
+  LeadingFloats empty_leading_floats;
+  LineInfo sub_line_info;
+  LineBreaker sub_line_breaker(
+      node_,
+      limit == LayoutUnit::Max() ? LineBreakerMode::kMaxContent
+                                 : LineBreakerMode::kContent,
+      constraint_space_, LineLayoutOpportunity(limit), empty_leading_floats,
+      /* break_token */ nullptr,
+      /* column_spanner_path */ nullptr, &empty_exclusion_space);
+  sub_line_breaker.SetInputRange(start, end_item_index);
+  sub_line_breaker.NextLine(&sub_line_info);
+  return sub_line_info;
+}
+
+InlineItemResult* LineBreaker::AddRubyColumnResult(
+    const InlineItem& item,
+    const LineInfo& base_line_info,
+    const HeapVector<LineInfo, 1>& annotation_line_list,
+    const Vector<AnnotationBreakTokenData, 1>& annotation_data_list,
+    LayoutUnit ruby_size,
+    LineInfo& line_info) {
+  CHECK_EQ(item.Type(), InlineItem::kOpenRubyColumn);
+  InlineItemResult* column_result = AddEmptyItem(item, &line_info);
+  column_result->inline_size = ruby_size;
+  auto* data = MakeGarbageCollected<InlineItemResultRubyColumn>();
+  column_result->ruby_column = data;
+  data->base_line = base_line_info;
+  if (base_line_info.MayHaveTextCombineItem()) {
+    line_info.SetHaveTextCombineItem();
+  }
+
+  data->annotation_line_list = annotation_line_list;
+  for (wtf_size_t i = 0; i < annotation_line_list.size(); ++i) {
+    LayoutObject& annotation_object =
+        *Items()[annotation_data_list[i].start_item_index].GetLayoutObject();
+    data->annotation_line_list[i].OverrideLineStyle(*annotation_object.Style());
+    const LayoutObject* parent = annotation_object.Parent();
+    data->is_under_annotation_list.push_back(
+        parent->IsInlineRuby() &&
+        parent->Style()->GetRubyPosition() == RubyPosition::kAfter);
+  }
+  DCHECK_EQ(data->annotation_line_list.size(),
+            data->is_under_annotation_list.size());
+
+  column_result->text_offset.end = annotation_line_list[0].EndTextOffset();
+  column_result->should_create_line_box = true;
+  column_result->can_break_after = CanBreakAfterRubyColumn(*column_result);
+  return column_result;
+}
+
+bool LineBreaker::CanBreakAfterRubyColumn(
+    const InlineItemResult& column_result) const {
+  // TODO(crbug.com/324111880): Implement this correctly.
+  return true;
 }
 
 // Figure out if the float should be pushed after the current line. This

@@ -69,6 +69,38 @@ std::tuple<LayoutUnit, LayoutUnit> AdjustTextOverUnderOffsetsForEmHeight(
 
 }  // anonymous namespace
 
+RubyItemIndexes ParseRubyInInlineItems(const HeapVector<InlineItem>& items,
+                                       wtf_size_t start_item_index) {
+  CHECK_LT(start_item_index, items.size());
+  CHECK_EQ(items[start_item_index].Type(), InlineItem::kOpenRubyColumn);
+  RubyItemIndexes indexes = {start_item_index, WTF::kNotFound, WTF::kNotFound,
+                             WTF::kNotFound};
+  for (wtf_size_t i = start_item_index + 1; i < items.size(); ++i) {
+    const InlineItem& item = items[i];
+    if (item.Type() == InlineItem::kCloseRubyColumn) {
+      if (indexes.base_end == WTF::kNotFound) {
+        DCHECK_EQ(indexes.annotation_start, WTF::kNotFound);
+        indexes.base_end = i;
+      } else {
+        DCHECK_NE(indexes.annotation_start, WTF::kNotFound);
+      }
+      indexes.column_end = i;
+      return indexes;
+    }
+    if (item.Type() == InlineItem::kOpenTag &&
+        item.GetLayoutObject()->IsInlineRubyText()) {
+      DCHECK_EQ(indexes.base_end, WTF::kNotFound);
+      DCHECK_EQ(indexes.annotation_start, WTF::kNotFound);
+      indexes.base_end = i;
+      indexes.annotation_start = i;
+    } else if (item.Type() == InlineItem::kOpenRubyColumn) {
+      RubyItemIndexes sub_indexes = ParseRubyInInlineItems(items, i);
+      i = sub_indexes.column_end;
+    }
+  }
+  NOTREACHED_NORETURN();
+}
+
 PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
                                        const ComputedStyle& style,
                                        const ShapeResultView* shape_view,

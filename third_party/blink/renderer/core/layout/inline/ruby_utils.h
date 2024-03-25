@@ -6,11 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_RUBY_UTILS_H_
 
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
 
 class ComputedStyle;
+class InlineItem;
 class LineInfo;
 class LogicalLineItems;
 class PhysicalBoxFragment;
@@ -18,6 +20,22 @@ class ShapeResultView;
 struct FontHeight;
 struct InlineItemResult;
 struct PhysicalRect;
+
+struct RubyItemIndexes {
+  // Points a kOpenRubyColumn item.
+  wtf_size_t column_start;
+  // Points a kOpenTag for <rt> item or a kCloseRubyColumn item.
+  wtf_size_t base_end;
+  // Points a kOpenTag for <rt> item, or WTF::kNotFound.
+  wtf_size_t annotation_start;
+  // Points a kCloseRubyColumn item.
+  wtf_size_t column_end;
+};
+
+// Get item indexes for a ruby column starting at `start_item_index`.
+// `start_item_index` must point to kOpenRubyColumn item.
+RubyItemIndexes ParseRubyInInlineItems(const HeapVector<InlineItem>& items,
+                                       wtf_size_t start_item_index);
 
 // Adjust the specified |rect| of a text fragment for 'em' height.
 // This is called on computing scrollable overflow with kEmHeight.

@@ -16,6 +16,15 @@ namespace blink {
 
 class BlockBreakToken;
 
+// Break information in a ruby annotation.
+struct AnnotationBreakTokenData {
+  InlineItemTextIndex start;
+  // Points to an open tag InlineItem with display:ruby-text.
+  wtf_size_t start_item_index;
+  // Points to the corresponding close tag InlineItem.
+  wtf_size_t end_item_index;
+};
+
 // Represents a break token for an inline node.
 class CORE_EXPORT InlineBreakToken final : public BreakToken {
  public:
