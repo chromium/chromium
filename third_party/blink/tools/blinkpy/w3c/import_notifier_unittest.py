@@ -184,7 +184,7 @@ class ImportNotifierTest(unittest.TestCase):
                 MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA': '',
                 MOCK_WEB_TESTS + 'TestExpectations': contents_before,
             },
-            message='Import wpt@543210')
+            message=f'Import wpt@{"e" * 40}')
         contents_after = textwrap.dedent("""\
             # results: [ Failure Pass Timeout ]
             external/wpt/foo/bar.html [ Failure ]
@@ -193,14 +193,14 @@ class ImportNotifierTest(unittest.TestCase):
             {
                 MOCK_WEB_TESTS + 'TestExpectations': contents_after,
             },
-            message='Import wpt@abcdef')
+            message=f'Import wpt@{"f" * 40}')
 
     def _setup_import_cl(self, messages: List[str]):
         gerrit_query = (
             'https://chromium-review.googlesource.com/changes/'
             '?q=owner:wpt-autoroller%40chops-service-accounts.'
             'iam.gserviceaccount.com'
-            '+prefixsubject:"Import+wpt%40abcdef"+status:merged'
+            f'+prefixsubject:"Import+wpt%40{"f" * 40}"+status:merged'
             '&n=1&o=CURRENT_FILES&o=CURRENT_REVISION&o=COMMIT_FOOTERS'
             '&o=DETAILED_ACCOUNTS&o=MESSAGES')
         payload = {
@@ -232,7 +232,7 @@ class ImportNotifierTest(unittest.TestCase):
         with mock.patch.object(self.notifier.owners_extractor,
                                'read_dir_metadata',
                                return_value=dir_metadata):
-            self.assertTrue(self.notifier.main(CommitRange('HEAD~1', 'HEAD')))
+            self.notifier.main()
 
         self.buganizer_client.NewIssue.assert_called_once()
         issue = self.buganizer_client.NewIssue.call_args.args[0]
@@ -241,7 +241,7 @@ class ImportNotifierTest(unittest.TestCase):
             'by import https://crrev.com/c/77777')
         self.assertEqual(issue.component_id, '123')
         self.assertEqual(issue.cc, [])
-        self.assertIn('543210...abcdef', issue.description,
+        self.assertIn(f'{"e" * 40}...{"f" * 40}', issue.description,
                       'description does not contain WPT revision range')
 
         self.assertEqual(len(self.host.web.requests), 1,
@@ -268,22 +268,22 @@ class ImportNotifierTest(unittest.TestCase):
         with mock.patch.object(self.notifier.owners_extractor,
                                'read_dir_metadata',
                                return_value=dir_metadata):
-            self.assertTrue(self.notifier.main(CommitRange('HEAD~1', 'HEAD')))
+            self.notifier.main()
 
         self.buganizer_client.NewIssue.assert_not_called()
         self.assertEqual(len(self.host.web.requests), 0,
                          'Gerrit client should not post a comment')
 
     def test_main_with_no_failures_to_notify(self):
-        self.git.commit_locally_with_message('Import wpt@543210')
-        self.git.commit_locally_with_message('Import wpt@abcdef')
+        self.git.commit_locally_with_message(f'Import wpt@{"e" * 40}')
+        self.git.commit_locally_with_message(f'Import wpt@{"f" * 40}')
         self._setup_import_cl(['Patch set 1: ignore this message\n'])
         dir_metadata = WPTDirMetadata(buganizer_public_component='123',
                                       should_notify=True)
         with mock.patch.object(self.notifier.owners_extractor,
                                'read_dir_metadata',
                                return_value=dir_metadata):
-            self.assertTrue(self.notifier.main(CommitRange('HEAD~1', 'HEAD')))
+            self.notifier.main()
 
         self.buganizer_client.NewIssue.assert_not_called()
         self.assertEqual(len(self.host.web.requests), 0,
@@ -294,7 +294,8 @@ class ImportNotifierTest(unittest.TestCase):
         with mock.patch.object(self.gerrit_api,
                                'query_cls',
                                side_effect=GerritError):
-            self.assertFalse(self.notifier.main(CommitRange('HEAD~1', 'HEAD')))
+            with self.assertRaises(GerritError):
+                self.notifier.main()
 
         self.buganizer_client.NewIssue.assert_not_called()
         self.assertEqual(len(self.host.web.requests), 0,
@@ -327,8 +328,7 @@ class ImportNotifierTest(unittest.TestCase):
         })
 
         gerrit_url_with_ps = 'https://crrev.com/c/12345/3/'
-        self.notifier.examine_baseline_changes(CommitRange('HEAD~1', 'HEAD'),
-                                               CLRevisionID(12345, 3))
+        self.notifier.examine_baseline_changes('HEAD', CLRevisionID(12345, 3))
         self.assertEqual(
             self.notifier.new_failures_by_directory, {
                 'external/wpt/foo': [
@@ -378,8 +378,7 @@ class ImportNotifierTest(unittest.TestCase):
             '',
         })
 
-        self.notifier.examine_new_test_expectations(
-            CommitRange('HEAD~1', 'HEAD'))
+        self.notifier.examine_new_test_expectations('HEAD')
         self.assertEqual(
             self.notifier.new_failures_by_directory, {
                 'external/wpt/foo': [

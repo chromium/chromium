@@ -15,7 +15,6 @@ from functools import cached_property
 import json
 import logging
 
-from blinkpy.common.checkout.git import CommitRange
 from blinkpy.common.net.git_cl import GitCL
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.path_finder import PathFinder
@@ -107,8 +106,7 @@ class TestImporter:
                          '/+/main/docs/testing/web_platform_tests.md'
                          '#GitHub-credentials for instructions on how to set '
                          'your credentials up.')
-        self.github = self.github or WPTGitHub(self.host, gh_user,
-                                                       gh_token)
+        self.github = self.github or WPTGitHub(self.host, gh_user, gh_token)
         self.git_cl = GitCL(
             self.host, auth_refresh_token_json=options.auth_refresh_token_json)
 
@@ -119,6 +117,11 @@ class TestImporter:
         local_wpt = LocalWPT(self.host, gh_token=gh_token)
         local_wpt.fetch()
         self.wpt_git = self.host.git(local_wpt.path)
+
+        # File bugs for the previous imported CL. This is done at the start so
+        # that manually revived CLs still receive bugs.
+        gerrit_api = GerritAPI.from_credentials(self.host, credentials)
+        self.send_notifications(local_wpt, gerrit_api, options.auto_file_bugs)
 
         if options.revision is not None:
             _log.info('Checking out %s', options.revision)
@@ -194,11 +197,6 @@ class TestImporter:
         finally:
             if self.git_cl.get_cl_status().lower() != 'closed':
                 self.git_cl.close()
-
-        gerrit_api = GerritAPI.from_credentials(self.host, credentials)
-        if not self.send_notifications(local_wpt, gerrit_api,
-                                       options.auto_file_bugs):
-            return 1
         return 0
 
     def log_try_job_results(self, try_job_results) -> None:
@@ -666,13 +664,13 @@ class TestImporter:
     def send_notifications(self,
                            local_wpt: LocalWPT,
                            gerrit_api: GerritAPI,
-                           auto_file_bugs: bool = True) -> bool:
+                           auto_file_bugs: bool = True):
+        _log.info('Filing bugs for the last WPT import')
         from blinkpy.w3c.import_notifier import ImportNotifier
         # Construct the notifier here so that any errors won't affect the import.
         notifier = ImportNotifier(self.host, self.project_git, local_wpt,
                                   gerrit_api)
-        return notifier.main(CommitRange('origin/main', 'HEAD'),
-                             dry_run=(not auto_file_bugs))
+        notifier.main(dry_run=(not auto_file_bugs))
 
     def update_testlist_with_idlharness_changes(self, testlist_path):
         """Update testlist file to include idlharness test changes

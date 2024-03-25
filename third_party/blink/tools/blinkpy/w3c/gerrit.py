@@ -226,10 +226,6 @@ class GerritCL(object):
         return CLRevisionID(self.number, patchset)
 
     @property
-    def latest_revision_id(self) -> CLRevisionID:
-        return CLRevisionID(self.number)
-
-    @property
     def has_review_started(self):
         return self._data.get('has_review_started')
 

@@ -13,7 +13,7 @@ from collections import defaultdict
 import logging
 import re
 import typing
-from typing import List, NamedTuple, Optional, Union
+from typing import List, NamedTuple, Optional, Tuple, Union
 
 from blinkpy.common import path_finder
 from blinkpy.common.checkout.git import CommitRange
@@ -41,7 +41,7 @@ from blinkpy.w3c.common import (
     WPT_GH_RANGE_URL_TEMPLATE,
 )
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
-from blinkpy.w3c.gerrit import GerritAPI, GerritCL, GerritError, OutputOption
+from blinkpy.w3c.gerrit import GerritAPI, GerritCL, OutputOption
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.w3c.wpt_results_processor import TestType
 
@@ -76,55 +76,65 @@ class ImportNotifier:
         self.owners_extractor = DirectoryOwnersExtractor(host)
         self.new_failures_by_directory = defaultdict(list)
 
-    def main(self, import_range: CommitRange, dry_run: bool = False) -> bool:
+    def main(self, dry_run: bool = False):
         """Files bug reports for new failures.
 
         Arguments:
-            import_range: The commits before (exclusive) and after (inclusive)
-                the imported CL.
             dry_run: If True, no bugs will be actually filed to crbug.com.
 
-        Returns:
-            True iff the notifications were successful.
+        Raises:
+            GerritError: A network failure when calling Gerrit.
+            ImportNotifierError: An invariant violation, which could suggest
+                checkout or Gerrit corruption.
 
         Note: "test names" are paths of the tests relative to web_tests.
         """
-        try:
-            wpt_range = CommitRange(
-                self._latest_wpt_revision_in_range(import_range.start),
-                self._latest_wpt_revision_in_range(import_range))
-            cl = self._cl_for_wpt_revision(wpt_range.end)
-        except (GerritError, ImportNotifierError) as error:
-            # A failure here represents some sort of corruption in Gerrit or the
-            # current checkout, so this should rarely occur.
-            _log.exception(
-                'Unable to fetch CL or commit data; skipping bug filing.',
-                exc_info=error)
-            return False
+        # TODO(crbug.com/40631540): Add the GitHub comparison link to each
+        # import commit message. Then, the notifier can parse out the WPT
+        # revision range here without needing to look at the second most recent
+        # commit.
+        wpt_end_rev, import_rev = self._latest_wpt_revision_in_range()
+        cl = self._cl_for_wpt_revision(wpt_end_rev)
+        repo = self.host.project_config.gerrit_project
+        _log.info(f'Identifying failures for {repo}@{import_rev} ({cl.url})')
         if self._bugs_already_filed(cl):
-            _log.info(
-                f'Bugs have already been filed for {cl.latest_revision_id}.')
-            return True
+            _log.info(f'Bugs have already been filed.')
+            return
+        wpt_start_rev, _ = self._latest_wpt_revision_in_range(
+            f'{import_rev}~1')
 
-        self.examine_baseline_changes(import_range, cl.current_revision_id)
-        self.examine_new_test_expectations(import_range)
+        self.examine_baseline_changes(import_rev, cl.current_revision_id)
+        self.examine_new_test_expectations(import_rev)
+        wpt_range = CommitRange(wpt_start_rev, wpt_end_rev)
         bugs = self.create_bugs_from_new_failures(wpt_range,
-                                                  cl.latest_revision_id)
+                                                  CLRevisionID(cl.number))
         filed_bugs = self.file_bugs(bugs, dry_run)
         if filed_bugs:
             cl.post_comment(self.COMMENT_PREAMBLE +
                             ', '.join(bug.link for bug in filed_bugs))
-        return True
 
     def _latest_wpt_revision_in_range(
-            self, commits: Union[None, str, CommitRange]) -> str:
-        subject = self.git.most_recent_log_matching(
+            self,
+            commits: Union[None, str, CommitRange] = None) -> Tuple[str, str]:
+        """Get commit hashes for the last WPT import.
+
+        Returns:
+            A pair of SHA-1 hex digests (40 hex digits each):
+              * A valid commit in the WPT repo denoting how far WPT was rolled
+                (inclusive).
+              * The corresponding `chromium/src` commit where those changes
+                were rolled.
+        """
+        raw_log = self.git.most_recent_log_matching(
             f'^{self.IMPORT_SUBJECT_PREFIX}',
-            path=self.finder.chromium_base(),
             commits=commits,
-            format_pattern='%s').strip()
-        if subject.startswith(self.IMPORT_SUBJECT_PREFIX):
-            return subject[len(self.IMPORT_SUBJECT_PREFIX):]
+            format_pattern='%s:%H').strip()
+        if raw_log.startswith(self.IMPORT_SUBJECT_PREFIX):
+            revisions = raw_log[len(self.IMPORT_SUBJECT_PREFIX):]
+            wpt_rev, _, chromium_rev = revisions.partition(':')
+            assert len(wpt_rev) == 40, wpt_rev
+            assert len(chromium_rev) == 40, chromium_rev
+            return wpt_rev, chromium_rev
         raise ImportNotifierError(
             f'unable to find latest WPT revision within {commits!r}')
 
@@ -132,19 +142,19 @@ class ImportNotifier:
         return any(self.COMMENT_PREAMBLE in message['message']
                    for message in cl.messages)
 
-    def examine_baseline_changes(self, import_range: CommitRange,
+    def examine_baseline_changes(self, import_rev: str,
                                  cl_revision: CLRevisionID):
         """Examines all changed baselines to find new failures.
 
         Arguments:
-            import_range: The commits before (exclusive) and after (inclusive)
-                the imported CL.
+            import_rev: A chromium/src revision pointing to the import commit.
             cl_revision: Issue and patchset numbers of the imported CL.
         """
         assert cl_revision.patchset, cl_revision
         sep = re.escape(self.host.filesystem.sep)
         platform_pattern = f'(platform|flag-specific){sep}([^{sep}]+){sep}'
         baseline_pattern = re.compile(f'web_tests{sep}({platform_pattern})?')
+        import_range = CommitRange(f'{import_rev}~1', import_rev)
         for changed_file in self.git.changed_files(import_range):
             parts = baseline_pattern.split(changed_file, maxsplit=1)[1:]
             if not parts:
@@ -202,18 +212,18 @@ class ImportNotifier:
         except ScriptError:
             return []
 
-    def examine_new_test_expectations(self, import_range: CommitRange):
+    def examine_new_test_expectations(self, import_rev: str):
         """Examines new test expectations to find new failures.
 
         Arguments:
-            import_range: The commits before (exclusive) and after (inclusive)
-                the imported CL.
+            import_rev: A chromium/src revision pointing to the import commit.
         """
         exp_files = {
             *self.default_port.all_expectations_dict(),
             self.finder.path_from_web_tests('ChromeTestExpectations'),
             self.finder.path_from_web_tests('MobileTestExpectations'),
         }
+        import_range = CommitRange(f'{import_rev}~1', import_rev)
         for changed_file in self.git.changed_files(import_range):
             abs_changed_file = self.finder.path_from_chromium_base(
                 changed_file)

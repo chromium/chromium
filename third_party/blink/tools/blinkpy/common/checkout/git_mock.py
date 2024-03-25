@@ -106,9 +106,21 @@ class MockGit:
             # Exclude the start, include the end.
             start = self._get_commit_position(commits.start) + 1
             end = self._get_commit_position(commits.end) + 1
-        for commit in reversed(self._local_commits[start:end]):
+
+        for position in reversed(range(start, end)):
+            commit = self._local_commits[position]
             if re.search(grep_str, commit.message):
-                return f'{commit.message}\n'
+                # See https://git-scm.com/docs/pretty-formats for the complete
+                # list.
+                format_specifiers = {
+                    # The mock SHA-1 commit hash is simply the position as hex.
+                    'H': hex(position)[2:].zfill(40),
+                    's': commit.message.splitlines()[0],
+                }
+                return re.sub(
+                    '%(?P<specifier>[a-zA-Z])',
+                    lambda match: format_specifiers[match['specifier']],
+                    format_pattern) + '\n'
         return ''
 
     def local_commits(self):
@@ -164,12 +176,17 @@ class MockGit:
         return changed_files
 
     def _get_commit_position(self, ref: str) -> int:
-        match = re.fullmatch(r'HEAD(~(?P<offset>\d+))?', ref)
+        match = re.fullmatch(
+            r'(?P<base>HEAD|[\da-fA-F]{40})(~(?P<offset>\d+))?', ref)
         if not match:
             raise NotImplementedError(
-                'only the HEAD~<n> syntax is supported for now')
-        offset_from_end = int(match.group('offset') or 0)
-        return len(self._local_commits) - 1 - offset_from_end
+                'only the `(HEAD|<sha1>)(~<n>)?` syntax is supported')
+        if match['base'] == 'HEAD':
+            base_position = len(self._local_commits) - 1
+        else:
+            base_position = int(match['base'], 16)
+        offset_from_base = int(match['offset'] or 0)
+        return base_position - offset_from_base
 
     def unstaged_changes(self):
         return {}
