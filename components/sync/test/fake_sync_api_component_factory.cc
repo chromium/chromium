@@ -37,7 +37,7 @@ void FakeSyncApiComponentFactory::AllowFakeEngineInitCompletion(bool allow) {
 
 std::unique_ptr<DataTypeManager>
 FakeSyncApiComponentFactory::CreateDataTypeManager(
-    const DataTypeController::TypeMap* controllers,
+    const ModelTypeController::TypeMap* controllers,
     const DataTypeEncryptionHandler* encryption_handler,
     ModelTypeConfigurer* configurer,
     DataTypeManagerObserver* observer) {

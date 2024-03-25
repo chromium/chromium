@@ -94,7 +94,7 @@ class SyncSetupInProgressHandle {
 //
 //      When a datatype is in the process of becoming active, it may be
 //      in some intermediate state. Those finer-grained intermediate states
-//      are differentiated by the DataTypeController state, but not exposed.
+//      are differentiated by the ModelTypeController state, but not exposed.
 //
 // Sync Configuration:
 //

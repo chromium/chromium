@@ -59,7 +59,7 @@ HistoryDeleteDirectivesModelTypeController::
 HistoryDeleteDirectivesModelTypeController::
     ~HistoryDeleteDirectivesModelTypeController() = default;
 
-syncer::DataTypeController::PreconditionState
+syncer::ModelTypeController::PreconditionState
 HistoryDeleteDirectivesModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
   if (helper_.sync_service()->GetUserSettings()->IsEncryptEverythingEnabled()) {

@@ -203,10 +203,6 @@ class ModelTypeController : public base::SupportsWeakPtr<ModelTypeController> {
   std::unique_ptr<DataTypeActivationResponse> activation_response_;
 };
 
-// TODO(crbug.com/41487792): Remove this once all references have been updated
-// to ModelTypeController.
-using DataTypeController = ModelTypeController;
-
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_SERVICE_MODEL_TYPE_CONTROLLER_H_

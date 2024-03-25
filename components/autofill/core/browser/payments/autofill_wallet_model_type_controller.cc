@@ -49,7 +49,7 @@ void AutofillWalletModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
                             std::move(callback));
 }
 
-syncer::DataTypeController::PreconditionState
+syncer::ModelTypeController::PreconditionState
 AutofillWalletModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
   bool preconditions_met =

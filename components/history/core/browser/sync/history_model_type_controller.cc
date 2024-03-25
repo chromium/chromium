@@ -35,50 +35,50 @@ GetDelegateFromHistoryService(HistoryService* history_service,
   return history_service->GetHistorySyncControllerDelegate();
 }
 
-syncer::DataTypeController::PreconditionState
+syncer::ModelTypeController::PreconditionState
 GetPreconditionStateFromManagedStatus(
     const signin::AccountManagedStatusFinder* finder) {
   // The finder should generally exist, but if it doesn't, "stop and keep data"
   // is a safe default.
   if (!finder) {
-    return syncer::DataTypeController::PreconditionState::kMustStopAndKeepData;
+    return syncer::ModelTypeController::PreconditionState::kMustStopAndKeepData;
   }
 
   switch (finder->GetOutcome()) {
     case signin::AccountManagedStatusFinder::Outcome::kNonEnterprise:
     case signin::AccountManagedStatusFinder::Outcome::kEnterpriseGoogleDotCom:
       // Regular consumer accounts and @google.com accounts are supported.
-      return syncer::DataTypeController::PreconditionState::kPreconditionsMet;
+      return syncer::ModelTypeController::PreconditionState::kPreconditionsMet;
     case signin::AccountManagedStatusFinder::Outcome::kEnterprise:
       // syncer::HISTORY isn't supported for Dasher a.k.a. enterprise
       // accounts (with the exception of @google.com accounts).
-      return syncer::DataTypeController::PreconditionState::
+      return syncer::ModelTypeController::PreconditionState::
           kMustStopAndClearData;
     case signin::AccountManagedStatusFinder::Outcome::kPending:
     case signin::AccountManagedStatusFinder::Outcome::kError:
       // While the enterprise-ness of the account isn't known yet, or if the
       // detection failed, "stop and keep data" is a safe default.
-      return syncer::DataTypeController::PreconditionState::
+      return syncer::ModelTypeController::PreconditionState::
           kMustStopAndKeepData;
   }
 }
 
 // Higher number means more strict.
 int GetPreconditionStateStrictness(
-    syncer::DataTypeController::PreconditionState state) {
+    syncer::ModelTypeController::PreconditionState state) {
   switch (state) {
-    case syncer::DataTypeController::PreconditionState::kMustStopAndClearData:
+    case syncer::ModelTypeController::PreconditionState::kMustStopAndClearData:
       return 2;
-    case syncer::DataTypeController::PreconditionState::kMustStopAndKeepData:
+    case syncer::ModelTypeController::PreconditionState::kMustStopAndKeepData:
       return 1;
-    case syncer::DataTypeController::PreconditionState::kPreconditionsMet:
+    case syncer::ModelTypeController::PreconditionState::kPreconditionsMet:
       return 0;
   }
 }
 
-syncer::DataTypeController::PreconditionState GetStricterPreconditionState(
-    syncer::DataTypeController::PreconditionState state1,
-    syncer::DataTypeController::PreconditionState state2) {
+syncer::ModelTypeController::PreconditionState GetStricterPreconditionState(
+    syncer::ModelTypeController::PreconditionState state1,
+    syncer::ModelTypeController::PreconditionState state2) {
   if (GetPreconditionStateStrictness(state1) >=
       GetPreconditionStateStrictness(state2)) {
     return state1;
@@ -118,7 +118,7 @@ HistoryModelTypeController::HistoryModelTypeController(
 
 HistoryModelTypeController::~HistoryModelTypeController() = default;
 
-syncer::DataTypeController::PreconditionState
+syncer::ModelTypeController::PreconditionState
 HistoryModelTypeController::GetPreconditionState() const {
   // syncer::HISTORY doesn't support custom passphrase encryption.
   if (helper_.sync_service()->GetUserSettings()->IsEncryptEverythingEnabled()) {

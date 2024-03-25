@@ -36,7 +36,7 @@ FakeModelTypeControllerDelegate* FakeDataTypeController::model(
       GetDelegateForTesting(sync_mode));
 }
 
-DataTypeController::PreconditionState
+ModelTypeController::PreconditionState
 FakeDataTypeController::GetPreconditionState() const {
   return precondition_state_;
 }

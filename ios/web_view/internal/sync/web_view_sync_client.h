@@ -54,7 +54,7 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
   password_manager::PasswordReceiverService* GetPasswordReceiverService()
       override;
   password_manager::PasswordSenderService* GetPasswordSenderService() override;
-  syncer::DataTypeController::TypeVector CreateDataTypeControllers(
+  syncer::ModelTypeController::TypeVector CreateDataTypeControllers(
       syncer::SyncService* sync_service) override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;

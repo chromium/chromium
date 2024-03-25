@@ -34,7 +34,7 @@ class SessionModelTypeController : public syncer::ModelTypeController {
 
   ~SessionModelTypeController() override;
 
-  // DataTypeController overrides.
+  // ModelTypeController overrides.
   PreconditionState GetPreconditionState() const override;
 
  private:

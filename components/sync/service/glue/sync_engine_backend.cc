@@ -494,7 +494,7 @@ void SyncEngineBackend::LoadAndConnectNigoriController() {
       .sync_mode = SyncMode::kFull,
       .configuration_start_time = base::Time::Now()};
   nigori_controller_->LoadModels(configure_context, base::DoNothing());
-  DCHECK_EQ(nigori_controller_->state(), DataTypeController::MODEL_LOADED);
+  DCHECK_EQ(nigori_controller_->state(), ModelTypeController::MODEL_LOADED);
   sync_manager_->GetModelTypeConnector()->ConnectDataType(
       NIGORI, nigori_controller_->Connect());
 }

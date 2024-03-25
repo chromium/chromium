@@ -15,7 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using syncer::DataTypeController;
+using syncer::ModelTypeController;
 using ::testing::Return;
 
 class SupervisedUserSettingsModelTypeControllerTest : public testing::Test {
@@ -37,7 +37,7 @@ TEST_F(SupervisedUserSettingsModelTypeControllerTest,
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
       /*syncable_service=*/nullptr, &pref_service_);
-  EXPECT_EQ(DataTypeController::PreconditionState::kPreconditionsMet,
+  EXPECT_EQ(ModelTypeController::PreconditionState::kPreconditionsMet,
             controller.GetPreconditionState());
 }
 
@@ -47,7 +47,7 @@ TEST_F(SupervisedUserSettingsModelTypeControllerTest,
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
       /*syncable_service=*/nullptr, &pref_service_);
-  EXPECT_EQ(DataTypeController::PreconditionState::kMustStopAndClearData,
+  EXPECT_EQ(ModelTypeController::PreconditionState::kMustStopAndClearData,
             controller.GetPreconditionState());
 }
 

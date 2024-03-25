@@ -38,7 +38,7 @@ class HistoryModelTypeController : public syncer::ModelTypeController,
 
   ~HistoryModelTypeController() override;
 
-  // syncer::DataTypeController implementation.
+  // syncer::ModelTypeController implementation.
   PreconditionState GetPreconditionState() const override;
 
   // syncer::SyncServiceObserver implementation.

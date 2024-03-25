@@ -140,7 +140,7 @@ bool Syncer::ConfigureSyncShare(const ModelTypeSet& request_types,
 
   // It is possible during configuration that datatypes get unregistered from
   // ModelTypeRegistry before scheduled configure sync cycle gets executed.
-  // This happens either because DataTypeController::LoadModels fail and type
+  // This happens either because ModelTypeController::LoadModels fail and type
   // need to be stopped or during shutdown when all datatypes are stopped. When
   // it happens we should adjust set of types to download to only include
   // registered types.

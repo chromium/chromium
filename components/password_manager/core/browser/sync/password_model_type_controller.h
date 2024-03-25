@@ -48,7 +48,7 @@ class PasswordModelTypeController : public syncer::ModelTypeController,
 
   ~PasswordModelTypeController() override;
 
-  // DataTypeController overrides.
+  // ModelTypeController overrides.
   void LoadModels(const syncer::ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
   void Stop(syncer::SyncStopMetadataFate fate, StopCallback callback) override;

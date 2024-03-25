@@ -22,7 +22,7 @@ SessionModelTypeController::SessionModelTypeController(
 
 SessionModelTypeController::~SessionModelTypeController() = default;
 
-syncer::DataTypeController::PreconditionState
+syncer::ModelTypeController::PreconditionState
 SessionModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
   return helper_.GetPreconditionState();

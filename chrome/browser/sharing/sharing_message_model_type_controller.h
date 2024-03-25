@@ -25,7 +25,7 @@ class SharingMessageModelTypeController : public syncer::ModelTypeController {
   SharingMessageModelTypeController& operator=(
       const SharingMessageModelTypeController&) = delete;
 
-  // DataTypeController overrides.
+  // ModelTypeController overrides.
   void Stop(syncer::SyncStopMetadataFate fate, StopCallback callback) override;
 };
 

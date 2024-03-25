@@ -13,7 +13,7 @@
 
 namespace syncer {
 
-// Fake DataTypeController implementation based on ModelTypeController that
+// Fake ModelTypeController implementation based on ModelTypeController that
 // simulates the state machine of a typical asynchronous data type.
 class FakeDataTypeController : public ModelTypeController {
  public:

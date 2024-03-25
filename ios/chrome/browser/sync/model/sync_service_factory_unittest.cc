@@ -25,8 +25,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-using syncer::DataTypeController;
-
 class SyncServiceFactoryTest : public PlatformTest {
  public:
   SyncServiceFactoryTest() {

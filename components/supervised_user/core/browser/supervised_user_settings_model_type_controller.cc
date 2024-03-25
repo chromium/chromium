@@ -29,7 +29,7 @@ SupervisedUserSettingsModelTypeController::
 SupervisedUserSettingsModelTypeController::
     ~SupervisedUserSettingsModelTypeController() = default;
 
-syncer::DataTypeController::PreconditionState
+syncer::ModelTypeController::PreconditionState
 SupervisedUserSettingsModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
   // TODO(b/292493941): use IsSubjectToParentalControls() once it is decoupled

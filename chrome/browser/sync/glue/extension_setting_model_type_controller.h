@@ -37,7 +37,7 @@ class ExtensionSettingModelTypeController
 
   ~ExtensionSettingModelTypeController() override;
 
-  // DataTypeController overrides.
+  // ModelTypeController overrides.
   void LoadModels(const syncer::ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
 

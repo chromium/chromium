@@ -170,7 +170,7 @@ WebViewSyncClient::GetSendTabToSelfSyncService() {
   return nullptr;
 }
 
-syncer::DataTypeController::TypeVector
+syncer::ModelTypeController::TypeVector
 WebViewSyncClient::CreateDataTypeControllers(
     syncer::SyncService* sync_service) {
   return component_factory_->CreateCommonDataTypeControllers(GetDisabledTypes(),

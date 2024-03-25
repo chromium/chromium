@@ -37,7 +37,7 @@ void UserEventModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
                             std::move(callback));
 }
 
-DataTypeController::PreconditionState
+ModelTypeController::PreconditionState
 UserEventModelTypeController::GetPreconditionState() const {
   return sync_service_->GetUserSettings()->IsUsingExplicitPassphrase()
              ? PreconditionState::kMustStopAndClearData

@@ -31,7 +31,7 @@ class IncomingPasswordSharingInvitationModelTypeController
       const IncomingPasswordSharingInvitationModelTypeController&) = delete;
   ~IncomingPasswordSharingInvitationModelTypeController() override;
 
-  // syncer::DataTypeController implementation.
+  // syncer::ModelTypeController implementation.
   PreconditionState GetPreconditionState() const override;
 
   // syncer::SyncServiceObserver implementation.

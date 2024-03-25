@@ -27,7 +27,7 @@ class SendTabToSelfModelTypeController : public syncer::ModelTypeController {
 
   ~SendTabToSelfModelTypeController() override;
 
-  // DataTypeController overrides.
+  // ModelTypeController overrides.
   void Stop(syncer::SyncStopMetadataFate fate, StopCallback callback) override;
 };
 

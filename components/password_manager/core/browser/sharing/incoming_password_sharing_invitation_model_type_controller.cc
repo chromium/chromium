@@ -50,13 +50,14 @@ IncomingPasswordSharingInvitationModelTypeController::
 IncomingPasswordSharingInvitationModelTypeController::
     ~IncomingPasswordSharingInvitationModelTypeController() = default;
 
-syncer::DataTypeController::PreconditionState
+syncer::ModelTypeController::PreconditionState
 IncomingPasswordSharingInvitationModelTypeController::GetPreconditionState()
     const {
   DCHECK(CalledOnValidThread());
 
   if (!password_sharing_enabled_policy_.GetValue()) {
-    return syncer::DataTypeController::PreconditionState::kMustStopAndClearData;
+    return syncer::ModelTypeController::PreconditionState::
+        kMustStopAndClearData;
   }
 
   // Disable current data type if PASSWORDS encountered error. Note that
@@ -65,10 +66,11 @@ IncomingPasswordSharingInvitationModelTypeController::GetPreconditionState()
   // browser startup might cause an extra GetUpdates request.
   if (sync_service_->GetDownloadStatusFor(syncer::PASSWORDS) ==
       syncer::SyncService::ModelTypeDownloadStatus::kError) {
-    return syncer::DataTypeController::PreconditionState::kMustStopAndClearData;
+    return syncer::ModelTypeController::PreconditionState::
+        kMustStopAndClearData;
   }
 
-  return syncer::DataTypeController::PreconditionState::kPreconditionsMet;
+  return syncer::ModelTypeController::PreconditionState::kPreconditionsMet;
 }
 
 void IncomingPasswordSharingInvitationModelTypeController::OnStateChanged(

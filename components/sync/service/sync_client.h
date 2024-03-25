@@ -54,7 +54,7 @@ class SyncClient {
   virtual base::FilePath GetLocalSyncBackendFolder() = 0;
 
   // Returns a vector with all supported datatypes and their controllers.
-  virtual DataTypeController::TypeVector CreateDataTypeControllers(
+  virtual ModelTypeController::TypeVector CreateDataTypeControllers(
       SyncService* sync_service) = 0;
 
   virtual SyncInvalidationsService* GetSyncInvalidationsService() = 0;

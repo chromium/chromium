@@ -10,7 +10,7 @@
 
 class PrefService;
 
-// A DataTypeController for supervised user sync datatypes, which enables or
+// A ModelTypeController for supervised user sync datatypes, which enables or
 // disables these types based on the profile's IsSupervised state. Runs in
 // sync transport mode.
 class SupervisedUserSettingsModelTypeController
@@ -30,7 +30,7 @@ class SupervisedUserSettingsModelTypeController
 
   ~SupervisedUserSettingsModelTypeController() override;
 
-  // DataTypeController override.
+  // ModelTypeController override.
   PreconditionState GetPreconditionState() const override;
 
  private:

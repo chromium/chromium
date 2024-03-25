@@ -55,7 +55,7 @@ class ModelLoadManagerDelegate {
 // This class is owned by DataTypeManager.
 class ModelLoadManager {
  public:
-  ModelLoadManager(const DataTypeController::TypeMap* controllers,
+  ModelLoadManager(const ModelTypeController::TypeMap* controllers,
                    ModelLoadManagerDelegate* delegate);
 
   ModelLoadManager(const ModelLoadManager&) = delete;
@@ -93,8 +93,8 @@ class ModelLoadManager {
   // A helper to stop an individual datatype.
   void StopDatatypeImpl(const SyncError& error,
                         SyncStopMetadataFate metadata_fate,
-                        DataTypeController* dtc,
-                        DataTypeController::StopCallback callback);
+                        ModelTypeController* dtc,
+                        ModelTypeController::StopCallback callback);
 
   // Calls delegate's OnAllDataTypesReadyForConfigure() if all datatypes from
   // `preferred_types_without_errors_` are loaded. Ensures that
@@ -108,10 +108,10 @@ class ModelLoadManager {
 
   // Loads model for a type using `dtc`. Ensures that LoadModels is only
   // called for types which are not in a FAILED state.
-  void LoadModelsForType(DataTypeController* dtc);
+  void LoadModelsForType(ModelTypeController* dtc);
 
   // Set of all registered controllers.
-  const raw_ptr<const DataTypeController::TypeMap> controllers_;
+  const raw_ptr<const ModelTypeController::TypeMap> controllers_;
 
   // The delegate in charge of handling model load results.
   const raw_ptr<ModelLoadManagerDelegate> delegate_;

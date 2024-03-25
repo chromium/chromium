@@ -26,7 +26,7 @@ class SyncClientMock : public SyncClient {
   MOCK_METHOD(PrefService*, GetPrefService, (), (override));
   MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(base::FilePath, GetLocalSyncBackendFolder, (), (override));
-  MOCK_METHOD(DataTypeController::TypeVector,
+  MOCK_METHOD(ModelTypeController::TypeVector,
               CreateDataTypeControllers,
               (SyncService * sync_service),
               (override));

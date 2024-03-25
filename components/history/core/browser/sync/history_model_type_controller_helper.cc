@@ -29,12 +29,13 @@ HistoryModelTypeControllerHelper::HistoryModelTypeControllerHelper(
 
 HistoryModelTypeControllerHelper::~HistoryModelTypeControllerHelper() = default;
 
-syncer::DataTypeController::PreconditionState
+syncer::ModelTypeController::PreconditionState
 HistoryModelTypeControllerHelper::GetPreconditionState() const {
   return pref_service_->GetBoolean(prefs::kSavingBrowserHistoryDisabled)
-             ? syncer::DataTypeController::PreconditionState::
+             ? syncer::ModelTypeController::PreconditionState::
                    kMustStopAndClearData
-             : syncer::DataTypeController::PreconditionState::kPreconditionsMet;
+             : syncer::ModelTypeController::PreconditionState::
+                   kPreconditionsMet;
 }
 
 void HistoryModelTypeControllerHelper::OnSavingBrowserHistoryDisabledChanged() {

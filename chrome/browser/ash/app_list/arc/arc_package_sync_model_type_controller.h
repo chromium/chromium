@@ -24,7 +24,7 @@ class SyncableService;
 class SyncService;
 }  // namespace syncer
 
-// A DataTypeController for arc package sync datatypes, which enables or
+// A ModelTypeController for arc package sync datatypes, which enables or
 // disables these types based on whether ArcAppInstance is ready and whether
 // the OS sync feature is enabled.
 class ArcPackageSyncModelTypeController
@@ -47,7 +47,7 @@ class ArcPackageSyncModelTypeController
 
   ~ArcPackageSyncModelTypeController() override;
 
-  // DataTypeController overrides.
+  // ModelTypeController overrides.
   PreconditionState GetPreconditionState() const override;
 
   // ArcAppListPrefs::Observer overrides.

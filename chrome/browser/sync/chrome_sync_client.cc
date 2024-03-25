@@ -360,9 +360,9 @@ ChromeSyncClient::GetPasswordSenderService() {
   return PasswordSenderServiceFactory::GetForProfile(profile_);
 }
 
-syncer::DataTypeController::TypeVector
+syncer::ModelTypeController::TypeVector
 ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
-  syncer::DataTypeController::TypeVector controllers =
+  syncer::ModelTypeController::TypeVector controllers =
       component_factory_->CreateCommonDataTypeControllers(
           GetDisabledCommonDataTypes(), sync_service);
 

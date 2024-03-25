@@ -31,7 +31,7 @@ class UserEventModelTypeController : public syncer::ModelTypeController,
 
   ~UserEventModelTypeController() override;
 
-  // syncer::DataTypeController implementation.
+  // syncer::ModelTypeController implementation.
   void Stop(SyncStopMetadataFate fate, StopCallback callback) override;
   PreconditionState GetPreconditionState() const override;
 

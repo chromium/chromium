@@ -42,7 +42,7 @@ class AutofillWalletModelTypeController : public syncer::ModelTypeController,
 
   ~AutofillWalletModelTypeController() override;
 
-  // DataTypeController overrides.
+  // ModelTypeController overrides.
   void Stop(syncer::SyncStopMetadataFate fate, StopCallback callback) override;
   PreconditionState GetPreconditionState() const override;
 

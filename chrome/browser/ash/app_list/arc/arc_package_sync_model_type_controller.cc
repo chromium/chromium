@@ -70,7 +70,7 @@ ArcPackageSyncModelTypeController::~ArcPackageSyncModelTypeController() {
   arc_prefs_->RemoveObserver(this);
 }
 
-syncer::DataTypeController::PreconditionState
+syncer::ModelTypeController::PreconditionState
 ArcPackageSyncModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
   if (!arc::IsArcPlayStoreEnabledForProfile(profile_)) {

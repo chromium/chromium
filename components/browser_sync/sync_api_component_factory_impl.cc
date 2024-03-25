@@ -72,7 +72,6 @@
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USER)
 
-using syncer::DataTypeController;
 using syncer::DataTypeManager;
 using syncer::DataTypeManagerImpl;
 using syncer::DataTypeManagerObserver;
@@ -207,11 +206,11 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
 
 SyncApiComponentFactoryImpl::~SyncApiComponentFactoryImpl() = default;
 
-syncer::DataTypeController::TypeVector
+syncer::ModelTypeController::TypeVector
 SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     syncer::ModelTypeSet disabled_types,
     syncer::SyncService* sync_service) {
-  syncer::DataTypeController::TypeVector controllers;
+  syncer::ModelTypeController::TypeVector controllers;
 
   const base::RepeatingClosure dump_stack =
       base::BindRepeating(&syncer::ReportUnrecoverableError, channel_);
@@ -576,7 +575,7 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
 
 std::unique_ptr<DataTypeManager>
 SyncApiComponentFactoryImpl::CreateDataTypeManager(
-    const DataTypeController::TypeMap* controllers,
+    const ModelTypeController::TypeMap* controllers,
     const syncer::DataTypeEncryptionHandler* encryption_handler,
     syncer::ModelTypeConfigurer* configurer,
     DataTypeManagerObserver* observer) {

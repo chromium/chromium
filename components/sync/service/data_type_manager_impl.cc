@@ -101,7 +101,7 @@ base::queue<ModelTypeSet> PrioritizeTypes(const ModelTypeSet& types) {
 }  // namespace
 
 DataTypeManagerImpl::DataTypeManagerImpl(
-    const DataTypeController::TypeMap* controllers,
+    const ModelTypeController::TypeMap* controllers,
     const DataTypeEncryptionHandler* encryption_handler,
     ModelTypeConfigurer* configurer,
     DataTypeManagerObserver* observer)
@@ -121,14 +121,14 @@ DataTypeManagerImpl::DataTypeManagerImpl(
   // mark them accordingly in the status table.
   DataTypeStatusTable::TypeErrorMap existing_errors;
   for (const auto& [type, controller] : *controllers_) {
-    DataTypeController::State state = controller->state();
-    CHECK(state == DataTypeController::NOT_RUNNING ||
-          state == DataTypeController::STOPPING ||
-          state == DataTypeController::FAILED)
-        << " actual=" << DataTypeController::StateToString(state) << " for "
+    ModelTypeController::State state = controller->state();
+    CHECK(state == ModelTypeController::NOT_RUNNING ||
+          state == ModelTypeController::STOPPING ||
+          state == ModelTypeController::FAILED)
+        << " actual=" << ModelTypeController::StateToString(state) << " for "
         << ModelTypeToDebugString(type);
 
-    if (state == DataTypeController::FAILED) {
+    if (state == ModelTypeController::FAILED) {
       existing_errors[type] =
           SyncError(FROM_HERE, SyncError::DATATYPE_ERROR,
                     "Preexisting controller error on Sync startup", type);
@@ -170,7 +170,7 @@ void DataTypeManagerImpl::DataTypePreconditionChanged(ModelType type) {
   }
 
   switch (controllers_->find(type)->second->GetPreconditionState()) {
-    case DataTypeController::PreconditionState::kPreconditionsMet:
+    case ModelTypeController::PreconditionState::kPreconditionsMet:
       if (preferred_types_.Has(type)) {
         // Only reconfigure if the type is both ready and desired. This will
         // internally also update ready state of all other requested types.
@@ -178,14 +178,14 @@ void DataTypeManagerImpl::DataTypePreconditionChanged(ModelType type) {
       }
       break;
 
-    case DataTypeController::PreconditionState::kMustStopAndClearData:
+    case ModelTypeController::PreconditionState::kMustStopAndClearData:
       model_load_manager_.StopDatatype(
           type, SyncStopMetadataFate::CLEAR_METADATA,
           SyncError(FROM_HERE, syncer::SyncError::DATATYPE_POLICY_ERROR,
                     "Datatype preconditions not met.", type));
       break;
 
-    case DataTypeController::PreconditionState::kMustStopAndKeepData:
+    case ModelTypeController::PreconditionState::kMustStopAndKeepData:
       model_load_manager_.StopDatatype(
           type, SyncStopMetadataFate::KEEP_METADATA,
           SyncError(FROM_HERE, syncer::SyncError::UNREADY_ERROR,
@@ -260,8 +260,8 @@ void DataTypeManagerImpl::ConnectDataTypes() {
     if (dtc_iter == controllers_->end()) {
       continue;
     }
-    DataTypeController* dtc = dtc_iter->second.get();
-    if (dtc->state() != DataTypeController::MODEL_LOADED) {
+    ModelTypeController* dtc = dtc_iter->second.get();
+    if (dtc->state() != ModelTypeController::MODEL_LOADED) {
       continue;
     }
     // Only call Connect() for types that completed LoadModels()
@@ -272,7 +272,7 @@ void DataTypeManagerImpl::ConnectDataTypes() {
     std::unique_ptr<DataTypeActivationResponse> activation_response =
         dtc->Connect();
     DCHECK(activation_response);
-    CHECK_EQ(dtc->state(), DataTypeController::RUNNING);
+    CHECK_EQ(dtc->state(), ModelTypeController::RUNNING);
 
     if (activation_response->skip_engine_connection) {
       // |skip_engine_connection| means ConnectDataType() shouldn't be invoked
@@ -376,7 +376,7 @@ void DataTypeManagerImpl::Restart() {
   // encountered an error while it was NOT_RUNNING or STOPPING.
   DataTypeStatusTable::TypeErrorMap existing_errors;
   for (const auto& [type, controller] : *controllers_) {
-    if (controller->state() == DataTypeController::FAILED) {
+    if (controller->state() == ModelTypeController::FAILED) {
       existing_errors[type] =
           SyncError(FROM_HERE, SyncError::DATATYPE_ERROR,
                     "Preexisting controller error on configuration", type);
@@ -455,7 +455,7 @@ bool DataTypeManagerImpl::UpdatePreconditionError(ModelType type) {
   }
 
   switch (iter->second->GetPreconditionState()) {
-    case DataTypeController::PreconditionState::kPreconditionsMet: {
+    case ModelTypeController::PreconditionState::kPreconditionsMet: {
       const bool data_type_policy_error_changed =
           data_type_status_table_.ResetDataTypePolicyErrorFor(type);
       const bool unready_status_changed =
@@ -471,13 +471,13 @@ bool DataTypeManagerImpl::UpdatePreconditionError(ModelType type) {
       return true;
     }
 
-    case DataTypeController::PreconditionState::kMustStopAndClearData: {
+    case ModelTypeController::PreconditionState::kMustStopAndClearData: {
       return data_type_status_table_.UpdateFailedDataType(
           type, SyncError(FROM_HERE, SyncError::DATATYPE_POLICY_ERROR,
                           "Datatype preconditions not met.", type));
     }
 
-    case DataTypeController::PreconditionState::kMustStopAndKeepData: {
+    case ModelTypeController::PreconditionState::kMustStopAndKeepData: {
       return data_type_status_table_.UpdateFailedDataType(
           type, SyncError(FROM_HERE, SyncError::UNREADY_ERROR,
                           "Datatype not ready at config time.", type));
@@ -749,7 +749,7 @@ ModelTypeSet DataTypeManagerImpl::GetPurgedDataTypes() const {
   ModelTypeSet purged_types;
 
   for (const auto& [type, controller] : *controllers_) {
-    if (controller->state() == DataTypeController::NOT_RUNNING) {
+    if (controller->state() == ModelTypeController::NOT_RUNNING) {
       purged_types.Put(type);
     }
   }

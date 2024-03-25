@@ -53,7 +53,7 @@ class SyncServiceImplStartupTest : public testing::Test {
   ~SyncServiceImplStartupTest() override { sync_service_->Shutdown(); }
 
   void CreateSyncService(ModelTypeSet registered_types = {BOOKMARKS}) {
-    DataTypeController::TypeVector controllers;
+    ModelTypeController::TypeVector controllers;
     for (ModelType type : registered_types) {
       auto controller = std::make_unique<FakeDataTypeController>(type);
       // Hold a raw pointer to directly interact with the controller.
@@ -669,7 +669,8 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
 
   // Prevent immediate configuration of one datatype, to verify the state
   // during CONFIGURING.
-  ASSERT_EQ(DataTypeController::NOT_RUNNING, get_controller(SESSIONS)->state());
+  ASSERT_EQ(ModelTypeController::NOT_RUNNING,
+            get_controller(SESSIONS)->state());
   get_controller(SESSIONS)->model()->EnableManualModelStart();
 
   // Releasing the setup in progress handle lets the service actually configure

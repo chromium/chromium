@@ -84,7 +84,7 @@ class WebViewSyncClientTest : public PlatformTest {
 // Verify enabled data types.
 TEST_F(WebViewSyncClientTest, CreateDataTypeControllers) {
   syncer::TestSyncService sync_service;
-  syncer::DataTypeController::TypeVector data_type_controllers =
+  syncer::ModelTypeController::TypeVector data_type_controllers =
       client_.CreateDataTypeControllers(&sync_service);
   syncer::ModelTypeSet allowed_types = {syncer::DEVICE_INFO,
                                         syncer::AUTOFILL,
