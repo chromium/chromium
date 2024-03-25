@@ -48,8 +48,8 @@ class HTMLDetailsElement final : public HTMLElement {
   // setting the open attribute.
   static bool ExpandDetailsAncestors(const Node&);
 
-  bool HandleInvokeInternal(HTMLElement& invoker,
-                            AtomicString& action) override;
+  bool IsValidInvokeAction(HTMLElement& invoker, InvokeAction action) override;
+  bool HandleInvokeInternal(HTMLElement& invoker, InvokeAction action) override;
 
   // The name attribute for grouping of related details; empty string
   // means no grouping.
