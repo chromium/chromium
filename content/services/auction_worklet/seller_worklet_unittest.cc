@@ -5106,12 +5106,6 @@ TEST_F(SellerWorkletRealTimeTest, ScoreAdZeroTimeout) {
   RunScoreAdWithReturnValueExpectingResult(
       "10", /*expected_score=*/0,
       /*expected_errors=*/{"scoreAd() aborted due to zero timeout."});
-
-  // Test robustness with negative values, too.
-  seller_timeout_ = base::Seconds(-1);
-  RunScoreAdWithReturnValueExpectingResult(
-      "10", /*expected_score=*/0,
-      /*expected_errors=*/{"scoreAd() aborted due to zero timeout."});
 }
 
 TEST_F(SellerWorkletRealTimeTest, ScoreAdSellerTimeoutFromAuctionConfig) {

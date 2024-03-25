@@ -6453,14 +6453,6 @@ TEST_F(BidderWorkletTest, PerBuyerTimeoutZero) {
       mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{"generateBid() aborted due to zero timeout."});
-
-  // Test robustness with negative values, too.
-  per_buyer_timeout_ = base::Seconds(-1);
-  RunGenerateBidWithReturnValueExpectingResult(
-      R"({ad: "ad", bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBidPtr(),
-      /*expected_data_version=*/std::nullopt,
-      /*expected_errors=*/{"generateBid() aborted due to zero timeout."});
 }
 
 // Test that in the case of multiple setBid() calls, the most recent call takes
