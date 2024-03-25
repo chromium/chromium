@@ -52,7 +52,12 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 
 // Returns the identifier of the currently active pinned tab.
 web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
-  return GetActiveWebStateIdentifier(web_state_list, PinnedState::kPinned);
+  web::WebState* active_web_state =
+      GetActiveWebState(web_state_list, PinnedState::kPinned);
+  if (!active_web_state) {
+    return web::WebStateID();
+  }
+  return active_web_state->GetUniqueIdentifier();
 }
 
 }  // namespace

@@ -50,8 +50,8 @@
     int webStateIndex = self.webStateList->active_index();
     if (webStateIndex != WebStateList::kInvalidIndex) {
       web::WebState* webState = self.webStateList->GetWebStateAt(webStateIndex);
-      TabSwitcherItem* selectedItem = [[TabSwitcherItem alloc]
-          initWithIdentifier:webState->GetUniqueIdentifier()];
+      TabSwitcherItem* selectedItem =
+          [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
       identifier = [GridItemIdentifier tabIdentifier:selectedItem];
     }
 

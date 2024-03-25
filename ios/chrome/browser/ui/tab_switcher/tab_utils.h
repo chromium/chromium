@@ -40,9 +40,9 @@ struct WebStateSearchCriteria {
 int GetWebStateIndex(WebStateList* web_state_list,
                      WebStateSearchCriteria criteria);
 
-// Returns the identifier of the active tab in `web_state_list` with `the given
-// `pinned_state`. Returns an invalid `WebStateID` if the tab is not found.
-web::WebStateID GetActiveWebStateIdentifier(
+// Returns the active tab in `web_state_list` with the given `pinned_state`.
+// Returns `nullptr` if the tab is not found.
+web::WebState* GetActiveWebState(
     WebStateList* web_state_list,
     WebStateSearchCriteria::PinnedState pinned_state);
 
@@ -51,7 +51,7 @@ web::WebStateID GetActiveWebStateIdentifier(
 web::WebState* GetWebState(WebStateList* web_state_list,
                            WebStateSearchCriteria criteria);
 
-// Returns the TabItem object representing the tab with `the given `criteria`.
+// Returns the TabItem object representing the tab with the given `criteria`.
 // Returns `nil` if the tab is not found.
 TabItem* GetTabItem(WebStateList* web_state_list,
                     WebStateSearchCriteria criteria);

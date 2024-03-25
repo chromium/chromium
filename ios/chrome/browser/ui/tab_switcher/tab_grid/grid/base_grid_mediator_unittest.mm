@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test/fake_tab_grid_toolbars_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/web_state_id.h"
@@ -101,15 +102,15 @@ class BaseGridMediatorWithPriceDropIndicatorsTest
 TEST_P(BaseGridMediatorTest, DragAndDropClosedItem) {
   std::unique_ptr<web::FakeWebState> web_state =
       CreateFakeWebStateWithURL(GURL("https://google.com"));
-  web::WebStateID item_identifier = web_state.get()->GetUniqueIdentifier();
+  web::WebState* web_state_ptr = web_state.get();
   browser_->GetWebStateList()->InsertWebState(
       std::move(web_state), WebStateList::InsertionParams::AtIndex(1));
 
-  TabSwitcherItem* itemToSelect =
-      [[TabSwitcherItem alloc] initWithIdentifier:item_identifier];
+  TabSwitcherItem* item_to_select =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state_ptr];
   [mediator_ switchToMode:TabGridModeSelection];
   [mediator_
-      addToSelectionItemID:[GridItemIdentifier tabIdentifier:itemToSelect]];
+      addToSelectionItemID:[GridItemIdentifier tabIdentifier:item_to_select]];
 
   browser_->GetWebStateList()->CloseWebStateAt(1,
                                                WebStateList::CLOSE_USER_ACTION);
@@ -499,11 +500,9 @@ TEST_P(BaseGridMediatorTest, TestToolbarsSelectionModeWithSelection) {
   [mediator_ selectTabsButtonTapped:nil];
 
   // Simulate a user who tapped on a tab.
-  TabSwitcherItem* itemToTap =
-      [[TabSwitcherItem alloc] initWithIdentifier:browser_->GetWebStateList()
-                                                      ->GetWebStateAt(1)
-                                                      ->GetUniqueIdentifier()];
-  [mediator_ userTappedOnItemID:[GridItemIdentifier tabIdentifier:itemToTap]];
+  TabSwitcherItem* item_to_tap = [[WebStateTabSwitcherItem alloc]
+      initWithWebState:browser_->GetWebStateList()->GetWebStateAt(1)];
+  [mediator_ userTappedOnItemID:[GridItemIdentifier tabIdentifier:item_to_tap]];
 
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectAllButton);
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
@@ -535,11 +534,9 @@ TEST_P(BaseGridMediatorTest, NoToolbarUpdateNotSelected) {
   [mediator_ currentlySelectedGrid:NO];
 
   // Simulate a user who tapped on a tab.
-  TabSwitcherItem* itemToTap =
-      [[TabSwitcherItem alloc] initWithIdentifier:browser_->GetWebStateList()
-                                                      ->GetWebStateAt(1)
-                                                      ->GetUniqueIdentifier()];
-  [mediator_ userTappedOnItemID:[GridItemIdentifier tabIdentifier:itemToTap]];
+  TabSwitcherItem* item_to_tap = [[WebStateTabSwitcherItem alloc]
+      initWithWebState:browser_->GetWebStateList()->GetWebStateAt(1)];
+  [mediator_ userTappedOnItemID:[GridItemIdentifier tabIdentifier:item_to_tap]];
 
   // No update on the configuration as the mediator is no longer selected.
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectAllButton);

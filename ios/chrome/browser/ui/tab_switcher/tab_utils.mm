@@ -64,26 +64,25 @@ int GetWebStateIndex(WebStateList* web_state_list,
   return WebStateList::kInvalidIndex;
 }
 
-web::WebStateID GetActiveWebStateIdentifier(WebStateList* web_state_list,
-                                            PinnedState pinned_state) {
+web::WebState* GetActiveWebState(
+    WebStateList* web_state_list,
+    WebStateSearchCriteria::PinnedState pinned_state) {
   if (!web_state_list) {
-    return web::WebStateID();
+    return nullptr;
   }
 
   int web_state_index = web_state_list->active_index();
   if (web_state_index == WebStateList::kInvalidIndex) {
-    return web::WebStateID();
+    return nullptr;
   }
 
   if (IsPinnedTabsEnabled() &&
       web_state_list->IsWebStatePinnedAt(web_state_index) &&
       pinned_state != PinnedState::kPinned) {
-    return web::WebStateID();
+    return nullptr;
   }
 
-  // WebState cannot be null, so no need to check here.
-  web::WebState* web_state = web_state_list->GetWebStateAt(web_state_index);
-  return web_state->GetUniqueIdentifier();
+  return web_state_list->GetWebStateAt(web_state_index);
 }
 
 web::WebState* GetWebState(WebStateList* web_state_list,

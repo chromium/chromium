@@ -260,8 +260,8 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
 
   web::WebState* detachedWebState = detachChange.detached_web_state();
-  TabSwitcherItem* itemToRemove = [[TabSwitcherItem alloc]
-      initWithIdentifier:detachedWebState->GetUniqueIdentifier()];
+  TabSwitcherItem* itemToRemove =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:detachedWebState];
 
   [_consumer
       removeItemWithIdentifier:[GridItemIdentifier tabIdentifier:itemToRemove]

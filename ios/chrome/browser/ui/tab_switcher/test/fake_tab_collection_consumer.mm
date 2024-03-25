@@ -24,7 +24,7 @@
 
 - (void)populateItems:(NSArray<GridItemIdentifier*>*)items
     selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
-  self.selectedItemID = selectedItemIdentifier.tabSwitcherItem.identifier;
+  _selectedItemID = selectedItemIdentifier.tabSwitcherItem.identifier;
   _items.clear();
   for (GridItemIdentifier* item in items) {
     CHECK(item.type == GridItemType::Tab);

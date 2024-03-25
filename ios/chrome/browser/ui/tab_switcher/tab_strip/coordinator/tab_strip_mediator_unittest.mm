@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -560,9 +561,8 @@ TEST_F(TabStripMediatorTest, ActivateTab) {
   ASSERT_EQ(1, web_state_list_->active_index());
   ASSERT_EQ(2, web_state_list_->count());
 
-  TabSwitcherItem* item = [[TabSwitcherItem alloc]
-      initWithIdentifier:web_state_list_->GetWebStateAt(0)
-                             ->GetUniqueIdentifier()];
+  TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
+      initWithWebState:web_state_list_->GetWebStateAt(0)];
 
   [mediator_ activateItem:item];
 
@@ -582,9 +582,8 @@ TEST_F(TabStripMediatorTest, CloseTab) {
   ASSERT_EQ(1, web_state_list_->active_index());
   ASSERT_EQ(2, web_state_list_->count());
 
-  TabSwitcherItem* item = [[TabSwitcherItem alloc]
-      initWithIdentifier:web_state_list_->GetWebStateAt(1)
-                             ->GetUniqueIdentifier()];
+  TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
+      initWithWebState:web_state_list_->GetWebStateAt(1)];
   [mediator_ closeItem:item];
 
   EXPECT_EQ(0, web_state_list_->active_index());
@@ -610,9 +609,8 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptPinned) {
   ASSERT_EQ(5, web_state_list_->active_index());
   ASSERT_EQ(6, web_state_list_->count());
 
-  TabSwitcherItem* item = [[TabSwitcherItem alloc]
-      initWithIdentifier:web_state_list_->GetWebStateAt(1)
-                             ->GetUniqueIdentifier()];
+  TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
+      initWithWebState:web_state_list_->GetWebStateAt(1)];
   [mediator_ closeAllItemsExcept:item];
 
   EXPECT_EQ(1, web_state_list_->active_index());
@@ -642,9 +640,8 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptNonActive) {
   ASSERT_EQ(5, web_state_list_->active_index());
   ASSERT_EQ(6, web_state_list_->count());
 
-  TabSwitcherItem* item = [[TabSwitcherItem alloc]
-      initWithIdentifier:web_state_list_->GetWebStateAt(3)
-                             ->GetUniqueIdentifier()];
+  TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
+      initWithWebState:web_state_list_->GetWebStateAt(3)];
   [mediator_ closeAllItemsExcept:item];
 
   EXPECT_EQ(2, web_state_list_->active_index());
@@ -674,9 +671,8 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptActive) {
   ASSERT_EQ(5, web_state_list_->active_index());
   ASSERT_EQ(6, web_state_list_->count());
 
-  TabSwitcherItem* item = [[TabSwitcherItem alloc]
-      initWithIdentifier:web_state_list_->GetWebStateAt(5)
-                             ->GetUniqueIdentifier()];
+  TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
+      initWithWebState:web_state_list_->GetWebStateAt(5)];
   [mediator_ closeAllItemsExcept:item];
 
   EXPECT_EQ(2, web_state_list_->active_index());

@@ -121,7 +121,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 // The supplementary view registration for the grid header.
 @property(nonatomic, strong)
     UICollectionViewSupplementaryRegistration* gridHeaderRegistration;
-// Identifier of the selected item.
+// Identifier of the selected item. This should only be used for lookup or
+// equality checks, in that it is usually not possible to fetch its images
+// (favicon, snapshot). Use the GridItemIdentifier from the data source that
+// matches instead.
 @property(nonatomic, strong) GridItemIdentifier* selectedItemIdentifier;
 // Index of the selected item.
 @property(nonatomic, readonly) NSUInteger selectedIndex;
