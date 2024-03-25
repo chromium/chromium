@@ -17,6 +17,20 @@ import textwrap
 import toml
 from typing import List, Set, Dict
 
+# Throughout the script, the following naming conventions are used (illustrated
+# with a crate named `syn` and published as version `2.0.50`):
+#
+# * `crate_name`   : "syn" string
+# * `crate_version`: "2.0.50" string
+# * `crate_id`     : "syn@2.0.50" string (syntax used by `cargo`)
+# * `crate_epoch`  : "syn@v2" string (made up syntax)
+#
+# The `old_versions` and `new_versions` dictionaries use `crate_epoch` as a key
+# and `crate_version` as the value.  Note that `crate_name` may not be unique
+# (e.g. if there is both `syn@1.0.109` and `syn@2.0.50`).  Also note that
+# `crate_epoch` doesn't change during a minor version update (such as the one
+# that this script produces in `auto` and `single` modes).
+
 THIS_DIR = os.path.dirname(__file__)
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
 CRATES_DIR = os.path.join(CHROMIUM_DIR, "third_party", "rust",
@@ -73,39 +87,61 @@ def Gnrt(*args) -> str:
 
 
 def GetCurrentCrateVersions() -> Dict[str, str]:
-    """Parses Cargo.lock and returns a dictionary from crate name to version."""
+    """Parses Cargo.lock and returns a dictionary from crate epochs to versions
+    (e.g. "syn@v2" -> "2.0.50")."""
     t = toml.load(open(CARGO_LOCK))
     result = dict()
     for p in t["package"]:
         name = p["name"]
         version = p["version"]
-        result[name] = version
+        key = GetCrateEpoch(name, version)
+        assert key not in result
+        result[key] = version
     return result
 
 
 def DiffCrateVersions(old_versions: Dict[str, str],
                       new_versions: Dict[str, str]) -> Set[str]:
     """Compares two results of `GetCurrentCrateVersions` and returns a `set` of
-    old package identifiers (e.g. "syn@2.0.50") that have a different version in
+    old crate ids (e.g. "syn@2.0.50") that have a different minor version in
     `new_versions`"""
     result = set()
-    for name, old_version in old_versions.items():
-        new_version = new_versions.get(name)
+    for crate_epoch, old_version in old_versions.items():
+        new_version = new_versions.get(crate_epoch)
         if new_version and old_version != new_version:
+            name = ConvertCrateIdToCrateName(crate_epoch)
             result.add(f"{name}@{old_version}")
     return result
 
 
+def GetEpoch(crate_version: str) -> str:
+    v = crate_version.split('.')
+    if v[0] == '0':
+        return f'v0_{v[1]}'
+    return f'v{v[0]}'
+
+
+def GetCrateEpoch(crate_name: str, crate_version: str) -> str:
+    epoch = GetEpoch(crate_version)
+    return f'{crate_name}@{epoch}'
+
+
 def ConvertCrateIdToCrateName(crate_id: str) -> str:
+    """ Converts a `crate_id` (`crate_epoch` also ok) into a `crate_name`."""
     return crate_id[:crate_id.find("@")]
 
 
 def ConvertCrateIdToCrateVersion(crate_id: str) -> str:
-    return crate_id[crate_id.find("@") + 1:]
+    """ Converts a `crate_id` into a `crate_version`."""
+    # Unlike ConvertCrateIdToCrateName this func can't work with a `crate_epoch`
+    assert '@v' not in crate_id
+
+    crate_version = crate_id[crate_id.find("@") + 1:]
+    return crate_version
 
 
 def FindUpdateableCrates() -> List[str]:
-    """Runs `gnrt update` and returns a `list` of old package identifiers (e.g.
+    """Runs `gnrt update` and returns a `list` of old crate ids (e.g.
     "syn@2.0.50") that can be updated to a new version.  (Idempotent -
     afterwards it runs `git reset --hard` to undo any changes.)"""
     print("Checking which crates can be updated...")
@@ -148,43 +184,42 @@ def SortedMarkdownList(input_list: List[str]) -> str:
     return "\n".join(input_list)
 
 
-def CreateVetPolicyDescription(crate_names: List[str],
-                               crate_versions: Dict[str, str]) -> str:
+def CreateVetPolicyDescription(crate_ids: List[str]) -> str:
     """Returns a textual description of the required `cargo vet`'s
     certifications.
 
     Args:
-        crate_names: List of crate names (e.g. `["clap", "clap_derive"]`)
-        crate_versions: Dict from crate names to crate versions
+        crate_ids: List of crate ids - e.g. `["clap@1.2.3","clap_derive@1.2.3"]`
 
     Returns:
         String suitable for including in the CL description.
     """
     vet_config = toml.load(open(VET_CONFIG))
-    crate_to_criteria = dict()
-    for crate_name in crate_names:
-        crate_version = crate_versions[crate_name]
+    crate_id_to_criteria = dict()
+    for crate_id in crate_ids:
+        crate_name = ConvertCrateIdToCrateName(crate_id)
+        crate_version = ConvertCrateIdToCrateVersion(crate_id)
         policy = vet_config["policy"][f"{crate_name}:{crate_version}"][
             "criteria"]
         policy.sort()
-        crate_to_criteria[crate_name] = policy
+        crate_id_to_criteria[crate_id] = policy
 
-    criteria_to_crates = dict()
-    for crate_name, criteria in crate_to_criteria.items():
+    criteria_to_crate_ids = dict()
+    for crate_id, criteria in crate_id_to_criteria.items():
         criteria = ', '.join(criteria)
-        if criteria not in criteria_to_crates:
-            criteria_to_crates[criteria] = []
-        criteria_to_crates[criteria].append(crate_name)
+        if criteria not in criteria_to_crate_ids:
+            criteria_to_crate_ids[criteria] = []
+        criteria_to_crate_ids[criteria].append(crate_id)
 
     items = []
-    for criteria, crate_names in criteria_to_crates.items():
-        crate_names.sort()
-        crate_names = ', '.join(crate_names)
+    for criteria, crate_ids in criteria_to_crate_ids.items():
+        crate_ids.sort()
+        crate_ids = ', '.join(crate_ids)
         if not criteria:
             criteria = "No audit criteria found. Crates with no audit " \
                        "criteria can be submitted without an update to " \
                        "audits.toml."
-        items.append(f"{crate_names}: {criteria}")
+        items.append(f"{crate_ids}: {criteria}")
 
     description = "The following `cargo vet` audit criteria are required:\n\n"
     description += SortedMarkdownList(items)
@@ -196,8 +231,10 @@ def CreateCommitDescription(crate_id: str, old_versions: Dict[str, str],
                             new_versions: Dict[str, str],
                             include_vet_criteria: bool) -> str:
     crate_name = ConvertCrateIdToCrateName(crate_id)
-    old_version = old_versions[crate_name]
-    new_version = new_versions[crate_name]
+    old_version = ConvertCrateIdToCrateVersion(crate_id)
+    crate_epoch = GetCrateEpoch(crate_name, old_version)
+    new_version = new_versions[crate_epoch]
+    assert crate_epoch == GetCrateEpoch(crate_name, new_version)
     roll_summary = f"{crate_name}: {old_version} => {new_version}"
     description = f"""Roll {roll_summary} in //third_party/rust.
 
@@ -206,22 +243,24 @@ process and other details can be found at
 //tools/crates/create_update_cl.md
 """
 
-    new_or_updated_crate_names = []
+    new_or_updated_crate_ids = []
     update_descriptions = []
     new_crate_descriptions = []
-    for name, new_version in new_versions.items():
-        if name in old_versions:
-            old_version = old_versions[name]
+    for new_epoch, new_version in new_versions.items():
+        name = ConvertCrateIdToCrateName(new_epoch)
+        if new_epoch in old_versions:
+            old_version = old_versions[new_epoch]
             if old_version != new_version:
-                new_or_updated_crate_names.append(name)
+                new_or_updated_crate_ids.append(f'{name}@{new_version}')
                 update_descriptions.append(
                     f"{name}: {old_version} => {new_version}")
         else:
-            new_or_updated_crate_names.append(name)
+            new_or_updated_crate_ids.append(f'{name}@{new_version}')
             new_crate_descriptions.append(f"{name} {new_version}")
     removed_crate_descriptions = []
-    for name, old_version in old_versions.items():
-        if name not in new_versions:
+    for old_epoch, old_version in old_versions.items():
+        if old_epoch not in new_versions:
+            name = ConvertCrateIdToCrateName(old_epoch)
             removed_crate_descriptions.append(f"{name} {old_version}")
     update_descriptions = SortedMarkdownList(update_descriptions)
     new_crate_descriptions = SortedMarkdownList(new_crate_descriptions)
@@ -234,8 +273,7 @@ process and other details can be found at
         description += f"\nRemoved crates:\n\n{removed_crate_descriptions}\n"
 
     if include_vet_criteria:
-        vet_policies = CreateVetPolicyDescription(new_or_updated_crate_names,
-                                                  new_versions)
+        vet_policies = CreateVetPolicyDescription(new_or_updated_crate_ids)
         description += f"\n{vet_policies}"
 
     description += """
@@ -289,18 +327,16 @@ def UpdateCrate(args, crate_id: str, upstream_branch: str):
 
     # git mv <vendor/old version> <vendor/new version>
     print(f"  Running `git mv <vendor/old version> <vendor/new version>`...")
-    updated_crate_names = []
-    for crate_name, new_version in new_versions.items():
-        if crate_name in old_versions:
-            old_version = old_versions[crate_name]
+    for new_epoch, new_version in new_versions.items():
+        if new_epoch in old_versions:
+            old_version = old_versions[new_epoch]
             if old_version != new_version:
-                updated_crate_names.append(crate_name)
-    for crate_name in updated_crate_names:
-        old_dir = os.path.join(VENDOR_DIR,
-                               f"{crate_name}-{old_versions[crate_name]}")
-        new_dir = os.path.join(VENDOR_DIR,
-                               f"{crate_name}-{new_versions[crate_name]}")
-        Git("mv", "--", old_dir, new_dir)
+                crate_name = ConvertCrateIdToCrateName(new_epoch)
+                old_dir = os.path.join(VENDOR_DIR,
+                                       f"{crate_name}-{old_version}")
+                new_dir = os.path.join(VENDOR_DIR,
+                                       f"{crate_name}-{new_version}")
+                Git("mv", "--", old_dir, new_dir)
     Git("add", "-f", "third_party/rust")
     Git("commit", "-m", "git mv <old dir> <new dir> (for better diff)")
     if args.upload:
