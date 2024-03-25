@@ -43,6 +43,11 @@ class AppShimRegistry {
   std::set<base::FilePath> GetInstalledProfilesForApp(
       const std::string& app_id) const;
 
+  // Returns true if `profile` is among the profile paths in which the specified
+  // app is installed.
+  bool IsAppInstalledInProfile(const std::string& app_id,
+                               const base::FilePath& profile) const;
+
   // Query the profiles paths that were last open in the app (which are the
   // profiles to open when the app starts).
   std::set<base::FilePath> GetLastActiveProfilesForApp(

@@ -959,6 +959,9 @@ TEST_F(AppShimManagerTest, AppLifetimeOld) {
 }
 
 TEST_F(AppShimManagerTest, FailToLaunch) {
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+
   // When the app activates, it requests a launch.
   ShimLaunchedCallback launch_callback;
   delegate_->SetCaptureShimLaunchedCallback(&launch_callback);
@@ -988,6 +991,9 @@ TEST_F(AppShimManagerTest, FailToLaunch) {
 }
 
 TEST_F(AppShimManagerTest, FailToConnect) {
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+
   // When the app activates, it requests a launch.
   ShimLaunchedCallback launched_callback;
   delegate_->SetCaptureShimLaunchedCallback(&launched_callback);
@@ -1033,6 +1039,9 @@ TEST_F(AppShimManagerTest, FailToConnect) {
 }
 
 TEST_F(AppShimManagerTest, FailCodeSignature) {
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+
   manager_->SetAcceptablyCodeSigned(false);
   ShimLaunchedCallback launched_callback;
   delegate_->SetCaptureShimLaunchedCallback(&launched_callback);

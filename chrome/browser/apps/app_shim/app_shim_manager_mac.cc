@@ -737,7 +737,9 @@ void AppShimManager::OnShimLaunchRequested(
   // TODO(mek): Rather than this workaround, we should make sure to destroy
   // AppShimHost and terminate app shims when an app is uninstalled.
   if (web_app::RecreateShimsRequested(update_behavior) &&
-      !delegate_->AppIsInstalled(profile, host->GetAppId())) {
+      (!delegate_->AppIsInstalled(profile, host->GetAppId()) ||
+       !AppShimRegistry::Get()->IsAppInstalledInProfile(host->GetAppId(),
+                                                        profile->GetPath()))) {
     LOG(ERROR)
         << "Attempting to launch shim for an app that is no longer installed.";
     std::move(terminated_callback).Run();

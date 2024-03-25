@@ -82,6 +82,12 @@ std::set<base::FilePath> AppShimRegistry::GetInstalledProfilesForApp(
   return installed_profiles;
 }
 
+bool AppShimRegistry::IsAppInstalledInProfile(
+    const std::string& app_id,
+    const base::FilePath& profile) const {
+  return GetInstalledProfilesForApp(app_id).contains(profile);
+}
+
 std::set<base::FilePath> AppShimRegistry::GetLastActiveProfilesForApp(
     const std::string& app_id) const {
   std::set<base::FilePath> last_active_profiles;
