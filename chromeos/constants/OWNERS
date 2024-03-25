@@ -1,6 +1,8 @@
-# Allow people to add CrOS-specific feature flags without needing CrOS owners
-# oversight. It is preferable to add CrOS-specific feature flags here instead
-# of in chrome_features.{cc,h}
+# Allow people to add CrOS-specific feature flags and switches without needing
+# CrOS owners oversight. It is preferable to add CrOS-specific feature flags and
+# switches here instead of in chrome_{features,switches}.{cc,h}
 per-file chromeos_features.cc=*
 per-file chromeos_features.h=*
+per-file chromeos_switches.cc=*
+per-file chromeos_switches.h=*
 per-file pkcs11_definitions.h=file://chromeos/components/kcer/OWNERS

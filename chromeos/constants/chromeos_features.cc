@@ -11,6 +11,7 @@
 #include "chromeos/startup/browser_params_proxy.h"
 #else  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/hash/sha1.h"
+#include "chromeos/constants/chromeos_switches.h"
 #endif
 
 namespace chromeos::features {
@@ -317,8 +318,11 @@ bool IsContainerAppPreinstallEnabled() {
   constexpr char kKey[] =
       "\xa1\x65\xcd\x65\x2a\x94\xed\xe6\x97\x7d\xcc\x5b\xcc\x94\x66\xd4\x0a\x90"
       "\x67\x65";
+  // NOTE: Key may be provided via param or via standalone command-line switch.
   return base::FeatureList::IsEnabled(kContainerAppPreinstall) &&
-         base::SHA1HashString(kContainerAppPreinstallKey.Get()) == kKey;
+         (base::SHA1HashString(kContainerAppPreinstallKey.Get()) == kKey ||
+          base::SHA1HashString(switches::GetContainerAppPreinstallKey()) ==
+              kKey);
 #endif
 }
 

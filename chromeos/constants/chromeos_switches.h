@@ -1,0 +1,28 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMEOS_CONSTANTS_CHROMEOS_SWITCHES_H_
+#define CHROMEOS_CONSTANTS_CHROMEOS_SWITCHES_H_
+
+#include <string>
+
+#include "base/component_export.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
+
+// This file is only for command-line switches that are shared between
+// ash-chrome and lacros-chrome. For ash command-line switches, please add them
+// in //ash/constants/ash_switches.h.
+namespace chromeos::switches {
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kContainerAppPreinstallKey[];
+
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS) std::string GetContainerAppPreinstallKey();
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+}  // namespace chromeos::switches
+
+#endif  // CHROMEOS_CONSTANTS_CHROMEOS_SWITCHES_H_

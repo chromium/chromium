@@ -10,6 +10,8 @@ component("constants") {
   sources = [
     "chromeos_features.cc",
     "chromeos_features.h",
+    "chromeos_switches.cc",
+    "chromeos_switches.h",
     "devicetype.cc",
     "devicetype.h",
     "pkcs11_definitions.h",
