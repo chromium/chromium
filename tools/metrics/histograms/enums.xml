@@ -33069,13 +33069,15 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="XHR succeeded"/>
   <int value="4" label="Frame detached"/>
   <int value="5" label="(obsolete) By context menu"/>
-  <int value="6" label="DOM mutation after XHR"/>
-  <int value="7" label="Provisionally saved form on start provisional load"/>
+  <int value="6" label="(obsolete) DOM mutation after XHR"/>
+  <int value="7"
+      label="(obsolete) Provisionally saved form on start provisional load"/>
   <int value="8" label="(obsolete) Filled form on start provisional load"/>
   <int value="9"
       label="(obsolete) Filled input elements on start provisional load"/>
   <int value="10" label="Probable form submission"/>
   <int value="11" label="Change password form cleared"/>
+  <int value="12" label="DOM mutation after Autofill"/>
 </enum>
 
 <enum name="SubresourceFilterActions2">
