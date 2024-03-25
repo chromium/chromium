@@ -23,8 +23,10 @@
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/group_utils.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/web/public/web_state.h"
 
@@ -104,8 +106,11 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 - (NSArray<UIMenuElement*>*)menuElementsForTabCell:(TabCell*)cell
                                       menuScenario:
                                           (MenuScenarioHistogram)scenario {
+  CHECK(cell.itemIdentifier.type == GridItemType::Tab);
   // Record that this context menu was shown to the user.
   RecordMenuShown(scenario);
+
+  web::WebStateID tabID = cell.itemIdentifier.tabSwitcherItem.identifier;
 
   __weak __typeof(self) weakSelf = self;
 
@@ -117,7 +122,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
       scenario == kMenuScenarioHistogramTabGridSearchResult;
   const BOOL inactive = scenario == kMenuScenarioHistogramInactiveTabsEntry;
 
-  TabItem* item = [self tabItemForIdentifier:cell.itemIdentifier];
+  TabItem* item = [self tabItemForIdentifier:tabID];
 
   if (!item) {
     return @[];
@@ -130,13 +135,11 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   if (isPinActionEnabled) {
     if (pinned) {
       [menuElements addObject:[actionFactory actionToUnpinTabWithBlock:^{
-                      [self.contextMenuDelegate
-                          unpinTabWithIdentifier:cell.itemIdentifier];
+                      [self.contextMenuDelegate unpinTabWithIdentifier:tabID];
                     }]];
     } else {
       [menuElements addObject:[actionFactory actionToPinTabWithBlock:^{
-                      [self.contextMenuDelegate
-                          pinTabWithIdentifier:cell.itemIdentifier];
+                      [self.contextMenuDelegate pinTabWithIdentifier:tabID];
                     }]];
     }
   }
@@ -146,13 +149,12 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
         GetAllGroupsForBrowserState(_browserState);
 
     auto actionResult = ^(const TabGroup* group) {
-      [weakSelf handleAddWebState:cell.itemIdentifier toGroup:group];
+      [weakSelf handleAddWebState:tabID toGroup:group];
     };
     UIMenuElement* addTabToGroupMenu =
         [actionFactory menuToAddTabToGroupWithGroups:groups
                                         numberOfTabs:1
                                                block:actionResult];
-
     [menuElements addObject:addTabToGroupMenu];
   }
 
@@ -212,7 +214,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 
   UIAction* closeTabAction;
   ProceduralBlock closeTabActionBlock = ^{
-    [self.contextMenuDelegate closeTabWithIdentifier:cell.itemIdentifier
+    [self.contextMenuDelegate closeTabWithIdentifier:tabID
                                            incognito:self.incognito];
   };
 
@@ -232,33 +234,19 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 - (NSArray<UIMenuElement*>*)menuElementsForTabGroupCell:(TabCell*)cell
                                            menuScenario:
                                                (MenuScenarioHistogram)scenario {
+  CHECK(cell.itemIdentifier.type == GridItemType::Group);
   // Record that this context menu was shown to the user.
   RecordMenuShown(scenario);
 
   ActionFactory* actionFactory =
       [[ActionFactory alloc] initWithScenario:scenario];
 
-  TabItem* item = [self tabItemForIdentifier:cell.itemIdentifier];
-
-  if (!item) {
-    return @[];
-  }
-
-  __weak __typeof(self) weakSelf = self;
-
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
   // TODO(crbug.com/1501837): Add the blocks to every action in the tab group
   // context menu.
 
-  // `Rename Group` is an entry point to the create group view controller for
-  // now, it will be replaced once the model and the methods are available for
-  // tab groups.
-  [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
-                  [weakSelf.contextMenuDelegate
-                      createNewTabGroupWithIdentifier:cell.itemIdentifier
-                                            incognito:weakSelf.incognito];
-                }]];
+  [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:nil]];
 
   [menuElements
       addObject:[actionFactory actionToAddNewTabInGroupWithBlock:nil]];
@@ -278,17 +266,21 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 }
 
 // Returns `YES` if the tab for the given `identifier` is pinned.
-- (BOOL)isTabPinnedForIdentifier:(web::WebStateID)identifier {
+- (BOOL)isTabPinnedForIdentifier:(GridItemIdentifier*)identifier {
+  if (!identifier || (identifier.type != GridItemType::Tab)) {
+    return NO;
+  }
+
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(_browserState);
 
   for (Browser* browser : browserList->AllRegularBrowsers()) {
     WebStateList* webStateList = browser->GetWebStateList();
-    web::WebState* webState =
-        GetWebState(webStateList, WebStateSearchCriteria{
-                                      .identifier = identifier,
-                                      .pinned_state = PinnedState::kPinned,
-                                  });
+    web::WebState* webState = GetWebState(
+        webStateList, WebStateSearchCriteria{
+                          .identifier = identifier.tabSwitcherItem.identifier,
+                          .pinned_state = PinnedState::kPinned,
+                      });
     if (webState) {
       return YES;
     }

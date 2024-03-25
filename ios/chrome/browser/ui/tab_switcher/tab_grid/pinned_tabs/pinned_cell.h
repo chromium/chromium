@@ -10,6 +10,10 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_to_tab_transition_view.h"
 
+namespace web {
+class WebStateID;
+}  // namespace web
+
 // A cell for the pinned tabs view. Contains an icon, title, snapshot.
 @interface PinnedCell : TabCell
 
@@ -25,6 +29,7 @@
 @property(nonatomic, strong) UIImage* icon;
 @property(nonatomic, strong) UIImage* snapshot;
 @property(nonatomic, copy) NSString* title;
+@property(nonatomic, assign) web::WebStateID pinnedItemIdentifier;
 
 // Starts the activity indicator animation.
 - (void)showActivityIndicator;

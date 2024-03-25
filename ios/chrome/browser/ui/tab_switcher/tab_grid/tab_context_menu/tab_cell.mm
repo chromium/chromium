@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
 
-#import "ios/web/public/web_state_id.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 
 @implementation TabCell
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  self.itemIdentifier = web::WebStateID();
+  self.itemIdentifier = nil;
 }
 
 @end

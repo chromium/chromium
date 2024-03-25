@@ -59,6 +59,7 @@ source_set("pinned_tabs_ui") {
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:items",
     "//ios/chrome/browser/ui/tab_switcher:utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_item_identifier",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu",

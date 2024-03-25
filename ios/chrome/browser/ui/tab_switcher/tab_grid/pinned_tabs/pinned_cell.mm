@@ -13,11 +13,14 @@
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state_id.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/gfx/ios/uikit_util.h"
 
@@ -146,6 +149,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   self.icon = nil;
   self.title = nil;
   self.snapshot = nil;
+  self.pinnedItemIdentifier = web::WebStateID();
 }
 
 #pragma mark - Public
@@ -204,6 +208,17 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   [_activityIndicator stopAnimating];
   [_activityIndicator setHidden:YES];
   [_faviconContainerView setHidden:NO];
+}
+
+- (void)setPinnedItemIdentifier:(web::WebStateID)pinnedItemIdentifier {
+  _pinnedItemIdentifier = pinnedItemIdentifier;
+  if (pinnedItemIdentifier.valid()) {
+    TabSwitcherItem* item =
+        [[TabSwitcherItem alloc] initWithIdentifier:pinnedItemIdentifier];
+    self.itemIdentifier = [GridItemIdentifier tabIdentifier:item];
+  } else {
+    self.itemIdentifier = nil;
+  }
 }
 
 #pragma mark - UIAccessibility

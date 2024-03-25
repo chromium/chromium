@@ -462,8 +462,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // change to the other properties such as center, bounds, etc.
     attributes.frame = [self.collectionView convertRect:attributes.frame
                                                  toView:nil];
-    if (cell.itemIdentifier ==
-        self.selectedItemIdentifier.tabSwitcherItem.identifier) {
+    if ([cell.itemIdentifier isEqual:self.selectedItemIdentifier]) {
       GridTransitionCell* activeCell =
           [GridTransitionCell transitionCellFromCell:cell];
       activeItem =
@@ -472,7 +471,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                                   size:attributes.size];
       // If the active item is the last inserted item, it needs to be animated
       // differently.
-      if (cell.itemIdentifier == self.lastInsertedItemID) {
+      if (cell.itemIdentifier.tabSwitcherItem.identifier ==
+          self.lastInsertedItemID) {
         activeItem.isAppearing = YES;
       }
       selectionItem = [LegacyGridTransitionItem
@@ -1040,7 +1040,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - GridCellDelegate
 
 - (void)closeButtonTappedForCell:(GridCell*)cell {
-  [self.mutator closeItemID:cell.itemIdentifier];
+  [self.mutator closeItemID:cell.itemIdentifier.tabSwitcherItem.identifier];
   // Record when a tab is closed via the X.
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridCloseControlTapped"));
@@ -1053,7 +1053,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - GroupGridCellDelegate
 
 - (void)closeButtonTappedForGroupCell:(GroupGridCell*)cell {
-  [self.mutator closeItemID:cell.itemIdentifier];
+  // TODO(crbug.com/1501837): Add the group closing in the mutator.
 }
 
 #pragma mark - SuggestedActionsViewControllerDelegate
@@ -1682,7 +1682,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   CHECK(item);
   cell.delegate = self;
   cell.theme = self.theme;
-  cell.itemIdentifier = item.identifier;
+  cell.itemIdentifier = [GridItemIdentifier tabIdentifier:item];
   cell.title = item.title;
   cell.titleHidden = item.hidesTitle;
   cell.accessibilityIdentifier = GridCellAccessibilityIdentifier(index);
@@ -1698,14 +1698,14 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }
   [item fetchFavicon:^(TabSwitcherItem* innerItem, UIImage* icon) {
     // Only update the icon if the cell is not already reused for another item.
-    if (cell.itemIdentifier == innerItem.identifier) {
+    if ([cell.itemIdentifier.tabSwitcherItem isEqual:innerItem]) {
       cell.icon = icon;
     }
   }];
 
   [item fetchSnapshot:^(TabSwitcherItem* innerItem, UIImage* snapshot) {
     // Only update the icon if the cell is not already reused for another item.
-    if (cell.itemIdentifier == innerItem.identifier) {
+    if ([cell.itemIdentifier.tabSwitcherItem isEqual:innerItem]) {
       cell.snapshot = snapshot;
     }
   }];
@@ -1714,7 +1714,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   [self.priceCardDataSource
       priceCardForIdentifier:itemID
                   completion:^(PriceCardItem* priceCardItem) {
-                    if (priceCardItem && cell.itemIdentifier == itemID) {
+                    if (priceCardItem &&
+                        cell.itemIdentifier.tabSwitcherItem.identifier ==
+                            itemID) {
                       [cell setPriceDrop:priceCardItem.price
                            previousPrice:priceCardItem.previousPrice];
                     }
