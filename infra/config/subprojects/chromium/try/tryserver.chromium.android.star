@@ -81,6 +81,7 @@ try_.builder(
 try_.orchestrator_builder(
     name = "android-12-x64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "<h1>NOTE: This bot is deprecated. Please use 'android-x64-rel' instead.</h1>",
     mirrors = [
         "ci/android-12-x64-rel",
     ],
@@ -102,7 +103,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
@@ -929,8 +929,7 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    # TODO(b/329832511): Make this a required CQ builder once ready
-    # tryjob = try_.job(),
+    tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
