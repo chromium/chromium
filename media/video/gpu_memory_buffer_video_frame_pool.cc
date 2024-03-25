@@ -1248,7 +1248,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     return nullptr;
   }
 
-  gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
+  scoped_refptr<gpu::ClientSharedImage> shared_images[VideoFrame::kMaxPlanes];
   bool is_webgpu_compatible = false;
   // Set up the planes creating the mailboxes needed to refer to the textures.
   for (size_t plane = 0; plane < NumSharedImages(output_format_); plane++) {
@@ -1294,8 +1294,6 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     }
 #endif
 
-    const gfx::BufferFormat buffer_format =
-        GpuMemoryBufferFormat(output_format_, plane);
     // Bind the texture and create or rebind the image. This image may be read
     // via the raster interface for import into canvas and/or 2-copy import into
     // WebGL as well as potentially being read via the GLES interface for 1-copy
@@ -1342,26 +1340,25 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
       sii->UpdateSharedImage(frame_resources->sync_token,
                              plane_resource.shared_image->mailbox());
     }
-    auto texture_target = plane_resource.shared_image->GetTextureTarget(
-        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, buffer_format);
-    mailbox_holders[plane] =
-        gpu::MailboxHolder(plane_resource.shared_image->mailbox(),
-                           gpu::SyncToken(), texture_target);
+    shared_images[plane] = plane_resource.shared_image;
   }
 
   // Insert a sync_token, this is needed to make sure that the textures the
   // mailboxes refer to will be used only after all the previous commands posted
   // in the SharedImageInterface have been processed.
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
-  for (size_t plane = 0; plane < NumSharedImages(output_format_); plane++)
-    mailbox_holders[plane].sync_token = sync_token;
+  const gfx::BufferFormat buffer_format =
+      GpuMemoryBufferFormat(output_format_, 0);
+  auto texture_target = shared_images[0]->GetTextureTarget(
+      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, buffer_format);
 
   VideoPixelFormat frame_format = VideoFormat(output_format_);
 
   // Create the VideoFrame backed by native textures.
-  scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
-      frame_format, mailbox_holders, VideoFrame::ReleaseMailboxCB(), coded_size,
-      visible_rect, natural_size, timestamp);
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImages(
+      frame_format, shared_images, sync_token, texture_target,
+      VideoFrame::ReleaseMailboxCB(), coded_size, visible_rect, natural_size,
+      timestamp);
 
   if (!frame) {
     frame_resources->MarkUnused(tick_clock_->NowTicks());

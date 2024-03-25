@@ -486,7 +486,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImages(
     if (shared_images[i]) {
       frame->mailbox_holders_[i] = gpu::MailboxHolder(
           shared_images[i]->mailbox(), sync_token, texture_target);
-      frame->shared_images_[i] = shared_images[i];
+      frame->shared_images_[i] = shared_images[i]->MakeUnowned();
     }
   }
   frame->mailbox_holders_and_gmb_release_cb_ =
