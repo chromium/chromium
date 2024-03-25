@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/anchor_evaluator.h"
+#include "third_party/blink/renderer/core/css/anchor_query.h"
 
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"

@@ -7,9 +7,9 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 
+#include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment_link.h"
-#include "third_party/blink/renderer/core/layout/anchor_query.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
 namespace blink {

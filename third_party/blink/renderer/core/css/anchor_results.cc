@@ -17,7 +17,7 @@ void AnchorResults::Trace(Visitor* visitor) const {
 }
 
 std::optional<LayoutUnit> AnchorResults::Evaluate(const AnchorQuery& query) {
-  if (GetMode() == AnchorScope::Mode::kNone) {
+  if (GetMode() == AnchorEvaluator::Mode::kNone) {
     return std::nullopt;
   }
   auto* item = MakeGarbageCollected<AnchorItem>(GetMode(), query);
@@ -31,7 +31,7 @@ std::optional<LayoutUnit> AnchorResults::Evaluate(const AnchorQuery& query) {
   return std::nullopt;
 }
 
-void AnchorResults::Set(AnchorScope::Mode mode,
+void AnchorResults::Set(AnchorEvaluator::Mode mode,
                         const AnchorQuery& query,
                         std::optional<LayoutUnit> result) {
   map_.Set(MakeGarbageCollected<AnchorItem>(mode, query), result);

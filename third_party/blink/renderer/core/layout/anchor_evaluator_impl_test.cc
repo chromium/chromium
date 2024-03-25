@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/anchor_query.h"
+#include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
@@ -13,10 +13,10 @@
 namespace blink {
 namespace {
 
-class AnchorQueryTest : public RenderingTest,
-                        private ScopedCSSAnchorPositioningForTest {
+class AnchorEvaluatorImplTest : public RenderingTest,
+                                private ScopedCSSAnchorPositioningForTest {
  public:
-  AnchorQueryTest() : ScopedCSSAnchorPositioningForTest(true) {}
+  AnchorEvaluatorImplTest() : ScopedCSSAnchorPositioningForTest(true) {}
 
   const PhysicalAnchorQuery* AnchorQuery(const Element& element) const {
     const LayoutBlockFlow* container =
@@ -62,7 +62,7 @@ std::ostream& operator<<(std::ostream& os, const AnchorTestData& value) {
   return os << value.name << ": " << value.rect;
 }
 
-TEST_F(AnchorQueryTest, AnchorNameAdd) {
+TEST_F(AnchorEvaluatorImplTest, AnchorNameAdd) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -95,7 +95,7 @@ TEST_F(AnchorQueryTest, AnchorNameAdd) {
                                                   PhysicalRect(0, 0, 50, 20)}));
 }
 
-TEST_F(AnchorQueryTest, AnchorNameChange) {
+TEST_F(AnchorEvaluatorImplTest, AnchorNameChange) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -132,7 +132,7 @@ TEST_F(AnchorQueryTest, AnchorNameChange) {
                                                   PhysicalRect(0, 0, 50, 20)}));
 }
 
-TEST_F(AnchorQueryTest, AnchorNameRemove) {
+TEST_F(AnchorEvaluatorImplTest, AnchorNameRemove) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -166,7 +166,7 @@ TEST_F(AnchorQueryTest, AnchorNameRemove) {
   EXPECT_FALSE(anchor_query);
 }
 
-TEST_F(AnchorQueryTest, BlockFlow) {
+TEST_F(AnchorEvaluatorImplTest, BlockFlow) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -212,7 +212,7 @@ TEST_F(AnchorQueryTest, BlockFlow) {
           AnchorTestData{AtomicString("--div3"), PhysicalRect(0, 70, 800, 0)}));
 }
 
-TEST_F(AnchorQueryTest, Inline) {
+TEST_F(AnchorEvaluatorImplTest, Inline) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -275,7 +275,7 @@ TEST_F(AnchorQueryTest, Inline) {
                          PhysicalRect(50, 0, 20, 10)}));
 }
 
-TEST_F(AnchorQueryTest, OutOfFlow) {
+TEST_F(AnchorEvaluatorImplTest, OutOfFlow) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -301,7 +301,7 @@ TEST_F(AnchorQueryTest, OutOfFlow) {
 }
 
 // Relative-positioning should shift the rectangles.
-TEST_F(AnchorQueryTest, Relative) {
+TEST_F(AnchorEvaluatorImplTest, Relative) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -321,7 +321,7 @@ TEST_F(AnchorQueryTest, Relative) {
 }
 
 // CSS Transform should not shift the rectangles.
-TEST_F(AnchorQueryTest, Transform) {
+TEST_F(AnchorEvaluatorImplTest, Transform) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -341,7 +341,7 @@ TEST_F(AnchorQueryTest, Transform) {
 }
 
 // Scroll positions should not shift the rectangles.
-TEST_F(AnchorQueryTest, Scroll) {
+TEST_F(AnchorEvaluatorImplTest, Scroll) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -365,7 +365,7 @@ TEST_F(AnchorQueryTest, Scroll) {
                   AtomicString("--inner"), PhysicalRect(0, 0, 400, 500)}));
 }
 
-TEST_F(AnchorQueryTest, FragmentedContainingBlock) {
+TEST_F(AnchorEvaluatorImplTest, FragmentedContainingBlock) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {

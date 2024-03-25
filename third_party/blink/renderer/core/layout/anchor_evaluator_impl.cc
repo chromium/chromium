@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/anchor_query.h"
+#include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 
 #include "third_party/blink/renderer/core/layout/anchor_query_map.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"

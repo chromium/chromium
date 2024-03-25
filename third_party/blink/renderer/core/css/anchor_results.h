@@ -11,6 +11,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/anchor_evaluator.h"
+#include "third_party/blink/renderer/core/css/anchor_query.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -30,7 +31,7 @@ namespace blink {
 // results.
 class CORE_EXPORT AnchorItem : public GarbageCollected<AnchorItem> {
  public:
-  AnchorItem(AnchorScope::Mode mode, AnchorQuery query)
+  AnchorItem(AnchorEvaluator::Mode mode, AnchorQuery query)
       : mode_(mode), query_(query) {}
 
   bool operator==(const AnchorItem& other) const {
@@ -38,7 +39,7 @@ class CORE_EXPORT AnchorItem : public GarbageCollected<AnchorItem> {
   }
   bool operator!=(const AnchorItem& other) const { return !operator==(other); }
 
-  AnchorScope::Mode GetMode() const { return mode_; }
+  AnchorEvaluator::Mode GetMode() const { return mode_; }
   const AnchorQuery& Query() const { return query_; }
 
   unsigned GetHash() const {
@@ -51,7 +52,7 @@ class CORE_EXPORT AnchorItem : public GarbageCollected<AnchorItem> {
   void Trace(Visitor*) const;
 
  private:
-  AnchorScope::Mode mode_;
+  AnchorEvaluator::Mode mode_;
   AnchorQuery query_;
 };
 
@@ -97,7 +98,9 @@ class CORE_EXPORT AnchorResults : public AnchorEvaluator {
  public:
   std::optional<LayoutUnit> Evaluate(const AnchorQuery&) override;
 
-  void Set(AnchorScope::Mode, const AnchorQuery&, std::optional<LayoutUnit>);
+  void Set(AnchorEvaluator::Mode,
+           const AnchorQuery&,
+           std::optional<LayoutUnit>);
   void Clear();
 
   // Used for invalidation, see class comment.
