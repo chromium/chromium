@@ -66,7 +66,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/app/metrics/TabbedActivityLaunchCauseMetricsTest.java",
   "javatests/src/org/chromium/chrome/browser/app/tab_activity_glue/TabletPhoneLayoutChangeTest.java",
   "javatests/src/org/chromium/chrome/browser/app/tabmodel/ChromeNextTabPolicySupplierTest.java",
-  "javatests/src/org/chromium/chrome/browser/autofill/AutofillPopupWithKeyboardTest.java",
   "javatests/src/org/chromium/chrome/browser/autofill/AutofillSnackbarControllerTest.java",
   "javatests/src/org/chromium/chrome/browser/autofill/AutofillUpstreamTest.java",
   "javatests/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptRenderTest.java",
