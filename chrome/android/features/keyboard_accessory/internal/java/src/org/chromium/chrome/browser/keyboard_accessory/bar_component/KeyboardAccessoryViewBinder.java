@@ -126,6 +126,7 @@ class KeyboardAccessoryViewBinder {
                     if (iconId != 0) {
                         isIPHShown =
                                 showHelpBubble(
+                                        mKeyboardAccessory.getFeatureEngagementTracker(),
                                         item.getFeatureForIPH(),
                                         chipView.getStartIconViewRect(),
                                         chipView.getContext(),
@@ -134,6 +135,7 @@ class KeyboardAccessoryViewBinder {
                     } else {
                         isIPHShown =
                                 showHelpBubble(
+                                        mKeyboardAccessory.getFeatureEngagementTracker(),
                                         item.getFeatureForIPH(),
                                         chipView,
                                         mRootViewForIPH,
@@ -142,6 +144,7 @@ class KeyboardAccessoryViewBinder {
                 } else {
                     isIPHShown =
                             showHelpBubble(
+                                    mKeyboardAccessory.getFeatureEngagementTracker(),
                                     item.getFeatureForIPH(),
                                     chipView,
                                     mRootViewForIPH,
@@ -195,7 +198,7 @@ class KeyboardAccessoryViewBinder {
             assert action != null : "Tried to bind item without action. Chose a wrong ViewHolder?";
             chipView.setOnClickListener(
                     view -> {
-                        item.maybeEmitEventForIPH();
+                        item.maybeEmitEventForIPH(mKeyboardAccessory.getFeatureEngagementTracker());
                         action.getCallback().onResult(action);
                     });
             if (action.getLongPressCallback() != null) {
@@ -289,9 +292,10 @@ class KeyboardAccessoryViewBinder {
             RectProvider swipingIphRectProvider = view.getSwipingIphRect();
             if (model.get(SHOW_SWIPING_IPH)
                     && swipingIphRectProvider != null
-                    && hasShownAnyAutofillIphBefore()) {
+                    && hasShownAnyAutofillIphBefore(view.getFeatureEngagementTracker())) {
                 boolean isIPHShown =
                         showHelpBubble(
+                                view.getFeatureEngagementTracker(),
                                 FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
                                 swipingIphRectProvider,
                                 view.getContext(),

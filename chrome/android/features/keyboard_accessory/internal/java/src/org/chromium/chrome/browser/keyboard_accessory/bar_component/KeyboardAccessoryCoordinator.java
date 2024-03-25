@@ -19,6 +19,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
@@ -170,6 +171,7 @@ public class KeyboardAccessoryCoordinator {
                                     createUiConfiguration(
                                             context,
                                             PersonalDataManagerFactory.getForProfile(profile))));
+                    mView.setFeatureEngagementTracker(TrackerFactory.getTrackerForProfile(profile));
                 });
 
         mButtonGroup.setTabObserver(mMediator);

@@ -15,6 +15,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -182,8 +183,8 @@ class KeyboardAccessoryProperties {
             mFeature = feature;
         }
 
-        void maybeEmitEventForIPH() {
-            if (mFeature != null) KeyboardAccessoryIPHUtils.emitFillingEvent(mFeature);
+        void maybeEmitEventForIPH(Tracker tracker) {
+            if (mFeature != null) KeyboardAccessoryIPHUtils.emitFillingEvent(tracker, mFeature);
         }
 
         @Nullable
