@@ -305,11 +305,11 @@ export class NetworkRequest {
   async failRequest(errorReason: Protocol.Network.ErrorReason) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
-    this.#interceptPhase = undefined;
     await this.cdpClient.sendCommand('Fetch.failRequest', {
       requestId: this.#fetchId,
       errorReason,
     });
+    this.#interceptPhase = undefined;
   }
 
   onRequestPaused(event: Protocol.Fetch.RequestPausedEvent) {
@@ -383,7 +383,6 @@ export class NetworkRequest {
   ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
-    this.#interceptPhase = undefined;
     await this.cdpClient.sendCommand('Fetch.continueRequest', {
       requestId: this.#fetchId,
       url,
@@ -393,6 +392,7 @@ export class NetworkRequest {
       // postData:,
       // interceptResponse:,
     });
+    this.#interceptPhase = undefined;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse */
@@ -403,13 +403,13 @@ export class NetworkRequest {
   }: Omit<Protocol.Fetch.ContinueResponseRequest, 'requestId'> = {}) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
-    this.#interceptPhase = undefined;
     await this.cdpClient.sendCommand('Fetch.continueResponse', {
       requestId: this.#fetchId,
       responseCode,
       responsePhrase,
       responseHeaders,
     });
+    this.#interceptPhase = undefined;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth */
@@ -420,11 +420,11 @@ export class NetworkRequest {
   ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
-    this.#interceptPhase = undefined;
     await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
       requestId: this.#fetchId,
       authChallengeResponse,
     });
+    this.#interceptPhase = undefined;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
@@ -436,7 +436,6 @@ export class NetworkRequest {
   }: Omit<Protocol.Fetch.FulfillRequestRequest, 'requestId'>) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
-    this.#interceptPhase = undefined;
     await this.cdpClient.sendCommand('Fetch.fulfillRequest', {
       requestId: this.#fetchId,
       responseCode,
@@ -444,6 +443,7 @@ export class NetworkRequest {
       responseHeaders,
       ...(body ? {body: btoa(body)} : {}), // TODO: Double-check if btoa usage is correct.
     });
+    this.#interceptPhase = undefined;
   }
 
   get #context() {
