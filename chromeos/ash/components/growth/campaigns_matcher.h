@@ -25,6 +25,7 @@ class CampaignsMatcher {
 
   void SetCampaigns(const CampaignsPerSlot* campaigns);
 
+  const std::string& opened_app_id() const { return opened_app_id_; }
   void SetOpenedApp(const std::string& app_id);
 
   // Select the targeted campaign for the given `slot`. Returns nullptr if no

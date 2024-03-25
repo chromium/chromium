@@ -10,6 +10,7 @@
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "ui/aura/window.h"
 
 class Profile;
 
@@ -24,6 +25,8 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
   CampaignsManagerSession& operator=(const CampaignsManagerSession&) = delete;
   ~CampaignsManagerSession() override;
 
+  static CampaignsManagerSession* Get();
+
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
 
@@ -33,6 +36,8 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
       apps::InstanceRegistry* cache) override;
 
   void SetProfileForTesting(Profile* profile);
+
+  aura::Window* GetOpenedWindow() { return opened_window_; }
 
  private:
   Profile* GetProfile();
@@ -49,6 +54,8 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
   base::ScopedObservation<apps::InstanceRegistry,
                           apps::InstanceRegistry::Observer>
       scoped_observation_{this};
+
+  raw_ptr<aura::Window, AllowPtrArithmetic> opened_window_ = nullptr;
 
   base::WeakPtrFactory<CampaignsManagerSession> weak_ptr_factory_{this};
 };

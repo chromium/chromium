@@ -16,6 +16,9 @@
 #include "components/session_manager/session_manager_types.h"
 
 namespace {
+
+CampaignsManagerSession* g_instance = nullptr;
+
 void MaybeTriggerNudgeCampaigns() {
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
@@ -51,7 +54,16 @@ void MaybeTriggerCampaignsWhenAppOpened() {
 
 }  // namespace
 
+// static
+CampaignsManagerSession* CampaignsManagerSession::Get() {
+  DCHECK(g_instance);
+  return g_instance;
+}
+
 CampaignsManagerSession::CampaignsManagerSession() {
+  CHECK_EQ(g_instance, nullptr);
+  g_instance = this;
+
   // SessionManager may be unset in unit tests.
   auto* session_manager = session_manager::SessionManager::Get();
   if (session_manager) {
@@ -60,7 +72,10 @@ CampaignsManagerSession::CampaignsManagerSession() {
   }
 }
 
-CampaignsManagerSession::~CampaignsManagerSession() = default;
+CampaignsManagerSession::~CampaignsManagerSession() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
 
 void CampaignsManagerSession::OnSessionStateChanged() {
   if (session_manager::SessionManager::Get()->session_state() !=
@@ -83,16 +98,24 @@ void CampaignsManagerSession::OnSessionStateChanged() {
 
 void CampaignsManagerSession::OnInstanceUpdate(
     const apps::InstanceUpdate& update) {
-  // TODO: b/330409492 - Maybe handling other event like app closed.
-  if (!update.IsCreation()) {
-    return;
-  }
-
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
 
-  campaigns_manager->SetOpenedApp(update.AppId());
-  MaybeTriggerCampaignsWhenAppOpened();
+  auto app_id = update.AppId();
+
+  if (update.IsCreation()) {
+    campaigns_manager->SetOpenedApp(app_id);
+    opened_window_ = update.Window();
+
+    MaybeTriggerCampaignsWhenAppOpened();
+  } else if (update.IsDestruction()) {
+    // TODO: b/330409492 - Maybe trigger a campaign when app is about to be
+    // destroyed.
+    if (app_id == campaigns_manager->GetOpenedAppId()) {
+      campaigns_manager->SetOpenedApp(std::string());
+      opened_window_ = nullptr;
+    }
+  }
 }
 
 void CampaignsManagerSession::OnInstanceRegistryWillBeDestroyed(

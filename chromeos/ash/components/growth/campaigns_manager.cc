@@ -131,6 +131,10 @@ const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
   return match_result;
 }
 
+const std::string& CampaignsManager::GetOpenedAppId() const {
+  return matcher_.opened_app_id();
+}
+
 void CampaignsManager::SetOpenedApp(const std::string& app_id) {
   matcher_.SetOpenedApp(app_id);
 }

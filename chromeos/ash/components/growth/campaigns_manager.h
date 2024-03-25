@@ -59,6 +59,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // TODO(b/308684443): Rename this to `GetCampaignBySlotAndRegisterTrial`.
   const Campaign* GetCampaignBySlot(Slot slot) const;
 
+  // Get latest opened app id.
+  const std::string& GetOpenedAppId() const;
+
   // Set the current opened app. Used in `CampaignsMatcher` for matching
   // opened app targeting.
   void SetOpenedApp(const std::string& app_id);
