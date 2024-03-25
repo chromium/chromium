@@ -65,7 +65,7 @@ std::vector<BirchAttachmentItem> MakeAttachmentItemList(int item_count) {
         /*icon_url=*/GURL(),
         /*start_time=*/base::Time(),
         /*end_time=*/base::Time(),
-        /*file_id=*/"");
+        /*file_id=*/"file_id" + base::NumberToString(i));
   }
   return attachment_item_list;
 }
@@ -1029,6 +1029,52 @@ TEST_F(BirchModelTest, RemoveAndFilterCalendarItem) {
 
   // Remove the second item and check that it is filtered from `all_items`.
   model->RemoveItem(&calendar_item_list[1]);
+
+  all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 2u);
+}
+
+TEST_F(BirchModelTest, RemoveAndFilterAttachmentItem) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  model->SetCalendarItems({});
+  model->SetRecentTabItems({});
+  model->SetFileSuggestItems({});
+  model->SetWeatherItems({});
+  model->SetReleaseNotesItems({});
+
+  std::vector<BirchAttachmentItem> attachment_item_list =
+      MakeAttachmentItemList(/*item_count=*/3);
+  model->SetAttachmentItems(attachment_item_list);
+
+  std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 3u);
+
+  // Remove the second item and check that it is filtered from `all_items`.
+  model->RemoveItem(&attachment_item_list[1]);
+
+  all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 2u);
+}
+
+TEST_F(BirchModelTest, RemoveAndFilterFileItem) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  model->SetCalendarItems({});
+  model->SetAttachmentItems({});
+  model->SetRecentTabItems({});
+  model->SetWeatherItems({});
+  model->SetReleaseNotesItems({});
+
+  std::vector<BirchFileItem> file_item_list =
+      MakeFileItemList(/*item_count=*/3);
+  model->SetFileSuggestItems(file_item_list);
+
+  std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 3u);
+
+  // Remove the second item and check that it is filtered from `all_items`.
+  model->RemoveItem(&file_item_list[1]);
 
   all_items = model->GetAllItems();
   ASSERT_EQ(all_items.size(), 2u);

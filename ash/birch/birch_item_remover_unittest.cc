@@ -87,5 +87,63 @@ TEST_F(BirchItemRemoverTest, RemoveCalendarItem) {
   EXPECT_EQ(calendar_items, std::vector({item0, item2}));
 }
 
+TEST_F(BirchItemRemoverTest, RemoveFileItem) {
+  BirchFileItem item0(base::FilePath(), u"justification", base::Time(),
+                      "file_id_0");
+  BirchFileItem item1(base::FilePath(), u"justification", base::Time(),
+                      "file_id_1");
+  BirchFileItem item2(base::FilePath(), u"justification", base::Time(),
+                      "file_id_2");
+  std::vector<BirchFileItem> file_items = {item0, item1, item2};
+
+  // Filter `file_items` before any items are removed. The list should remain
+  // unchanged.
+  item_remover_->FilterRemovedFileItems(&file_items);
+  ASSERT_EQ(3u, file_items.size());
+
+  // Remove `item1`, and filter it from the list of file items.
+  item_remover_->RemoveItem(&item1);
+  item_remover_->FilterRemovedFileItems(&file_items);
+
+  // Check that `item1` is filtered out.
+  ASSERT_EQ(2u, file_items.size());
+  EXPECT_EQ(file_items, std::vector({item0, item2}));
+}
+
+TEST_F(BirchItemRemoverTest, RemoveAttachmentItem) {
+  BirchAttachmentItem item0(u"attachment 0",
+                            /*file_url=*/GURL(),
+                            /*icon_url=*/GURL(),
+                            /*start_time=*/base::Time(),
+                            /*end_time=*/base::Time(),
+                            /*file_id=*/"file_id_0");
+  BirchAttachmentItem item1(u"attachment 1",
+                            /*file_url=*/GURL(),
+                            /*icon_url=*/GURL(),
+                            /*start_time=*/base::Time(),
+                            /*end_time=*/base::Time(),
+                            /*file_id=*/"file_id_1");
+  BirchAttachmentItem item2(u"attachment 2",
+                            /*file_url=*/GURL(),
+                            /*icon_url=*/GURL(),
+                            /*start_time=*/base::Time(),
+                            /*end_time=*/base::Time(),
+                            /*file_id=*/"file_id_2");
+  std::vector<BirchAttachmentItem> attachment_items = {item0, item1, item2};
+
+  // Filter `attachment_items` before any items are removed. The list should
+  // remain unchanged.
+  item_remover_->FilterRemovedAttachmentItems(&attachment_items);
+  ASSERT_EQ(3u, attachment_items.size());
+
+  // Remove `item1`, and filter it from the list of attachment items.
+  item_remover_->RemoveItem(&item1);
+  item_remover_->FilterRemovedAttachmentItems(&attachment_items);
+
+  // Check that `item1` is filtered out.
+  ASSERT_EQ(2u, attachment_items.size());
+  EXPECT_EQ(attachment_items, std::vector({item0, item2}));
+}
+
 }  // namespace
 }  // namespace ash

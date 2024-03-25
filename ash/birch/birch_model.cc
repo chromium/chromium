@@ -219,9 +219,10 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
     return {};
   }
 
-  // TODO(b/305094537): Filter removed files and calendar attachments.
   item_remover_->FilterRemovedTabs(&recent_tab_items_);
   item_remover_->FilterRemovedCalendarItems(&calendar_items_);
+  item_remover_->FilterRemovedAttachmentItems(&attachment_items_);
+  item_remover_->FilterRemovedFileItems(&file_suggest_items_);
 
   BirchRanker ranker(GetTime());
   ranker.RankCalendarItems(&calendar_items_);
@@ -256,6 +257,9 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
             [](const auto& item_a, const auto& item_b) {
               return item_a->ranking() < item_b->ranking();
             });
+
+  // TODO(b/330392691): Remove any duplicate items between file suggestions and
+  // calendar file attachments.
 
   return all_items;
 }

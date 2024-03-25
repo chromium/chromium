@@ -24,4 +24,9 @@ message RemovedItemsProto {
   // We only need support for quick key lookup, and we do not care about the
   // (bool) value.
   map<string, bool> removed_calendar_items = 3;
+
+  // All hashed file ids that should be removed.
+  // We only need support for quick key lookup, and we do not care about the
+  // (bool) value.
+  map<string, bool> removed_file_items = 4;
 }

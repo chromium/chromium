@@ -45,6 +45,9 @@ class ASH_EXPORT BirchItemRemover {
   void FilterRemovedTabs(std::vector<BirchTabItem>* tab_items);
   void FilterRemovedCalendarItems(
       std::vector<BirchCalendarItem>* calendar_items);
+  void FilterRemovedAttachmentItems(
+      std::vector<BirchAttachmentItem>* file_items);
+  void FilterRemovedFileItems(std::vector<BirchFileItem>* file_items);
 
   void SetProtoInitCallbackForTest(base::OnceClosure callback);
 
