@@ -1,7 +1,7 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -11,6 +11,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -754,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
   EXPECT_EQ(enterprise_reporting_private::CertificateStatus::kOk, cert.status);
   EXPECT_TRUE(cert.encoded_certificate.has_value());
 
-  base::StringPiece der_cert = net::x509_util::CryptoBufferAsStringPiece(
+  std::string_view der_cert = net::x509_util::CryptoBufferAsStringPiece(
       client_certs()[0]->cert_buffer());
   std::vector<uint8_t> expected_der_bytes(der_cert.begin(), der_cert.end());
 

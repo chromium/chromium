@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -505,7 +506,7 @@ void EnterpriseReportingPrivateGetCertificateFunction::OnClientCertFetched(
   ret.status =
       extensions::api::enterprise_reporting_private::CertificateStatus::kOk;
   if (cert) {
-    base::StringPiece der_cert = net::x509_util::CryptoBufferAsStringPiece(
+    std::string_view der_cert = net::x509_util::CryptoBufferAsStringPiece(
         cert->certificate()->cert_buffer());
     ret.encoded_certificate.emplace(der_cert.begin(), der_cert.end());
   }
