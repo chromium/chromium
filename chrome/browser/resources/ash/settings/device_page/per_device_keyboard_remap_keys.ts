@@ -760,7 +760,8 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   protected shouldShowFkeys(): boolean {
     return this.areF11andF12KeyShortcutsEnabled &&
         (this.keyboard?.settings?.f11 != null &&
-         this.keyboard?.settings?.f12 != null);
+         this.keyboard?.settings?.f12 != null) &&
+        !this.hasFunctionKey;
   }
 
   private onPoliciesChanged(): void {

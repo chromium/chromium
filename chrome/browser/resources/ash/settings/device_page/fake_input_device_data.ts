@@ -204,8 +204,8 @@ export const fakeKeyboards: Keyboard[] = [
       topRowAreFkeys: false,
       suppressMetaFkeyRewrites: false,
       sixPackKeyRemappings: defaultSixPackKeyRemappings,
-      f11: null,
-      f12: null,
+      f11: ExtendedFkeysModifier.kAlt,
+      f12: ExtendedFkeysModifier.kShift,
     },
   },
 ];

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeInputDeviceSettingsProvider, fakeKeyboards, Keyboard, KeyboardRemapModifierKeyRowElement, MetaKey, ModifierKey, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, FkeyRowElement, Keyboard, KeyboardRemapModifierKeyRowElement, MetaKey, ModifierKey, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -79,6 +79,29 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
     assertEquals(ModifierKey.kFunction, page.get('fakeFunctionPref.value'));
     assertEquals(metaDefaultMapping, page.get('fakeMetaPref.value'));
   }
+
+  /**
+   * Verify that the f11 and f12 key rows are hidden in the remap subpage when
+   * keyboard has function key as a modifier key.
+   */
+  test('hide f11 and f12 key row', async () => {
+    await initializePerDeviceKeyboardRemapKeys(4);
+
+    const f11KeyRow = page.shadowRoot!.querySelector<FkeyRowElement>('#f11');
+    const f12KeyRow = page.shadowRoot!.querySelector<FkeyRowElement>('#f12');
+    assertFalse(isVisible(f11KeyRow));
+    assertFalse(isVisible(f12KeyRow));
+
+    // Initialize a keyboard without function key as a modifier key.
+    await initializePerDeviceKeyboardRemapKeys(1);
+
+    const updatedF11KeyRow =
+        page.shadowRoot!.querySelector<FkeyRowElement>('#f11');
+    const updatedF12KeyRow =
+        page.shadowRoot!.querySelector<FkeyRowElement>('#f12');
+    assertTrue(isVisible(updatedF11KeyRow));
+    assertTrue(isVisible(updatedF12KeyRow));
+  });
 
   /**
    * Verify that the function key row is shown in the remap subpage when

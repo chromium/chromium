@@ -221,11 +221,12 @@
           pref="{{insertPref}}"
           aria-label="$i18n{sixPackKeyLabelInsert}">
       </keyboard-six-pack-key-row>
-      <template is="dom-if" if="[[shouldShowFkeys(keyboard.*)]]">
-        <fkey-row key="f11" aria-label="$i18n{f11KeyLabel}"
+      <template is="dom-if"
+          if="[[shouldShowFkeys(keyboard.*, hasFunctionKey)]]">
+        <fkey-row key="f11" aria-label="$i18n{f11KeyLabel}" id="f11"
             pref="{{f11KeyPref}}" keyboard="[[keyboard]]">
         </fkey-row>
-        <fkey-row key="f12" aria-label="$i18n{f12KeyLabel}"
+        <fkey-row key="f12" aria-label="$i18n{f12KeyLabel}" id="f12"
             pref="{{f12KeyPref}}" keyboard="[[keyboard]]">
         </fkey-row>
       </template>
