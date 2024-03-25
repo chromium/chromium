@@ -457,16 +457,14 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
                       /*icon_rect=*/gfx::Rect(),
                       /*label_rect=*/gfx::Rect(8, 196, 250, 36),
                       /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_CENTER,
-                      /*image_rect=*/gfx::Rect(8, 8, 250, 180),
-                      /*focus_rectangle_inset=*/0)
+                      /*image_rect=*/gfx::Rect(8, 8, 250, 180))
                 : DesktopMediaSourceViewStyle(
                       /*columns=*/2,
                       /*item_size=*/gfx::Size(270, 220),
                       /*icon_rect=*/gfx::Rect(),
                       /*label_rect=*/gfx::Rect(15, 165, 240, 40),
                       /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_CENTER,
-                      /*image_rect=*/gfx::Rect(15, 15, 240, 150),
-                      /*focus_rectangle_inset=*/5);
+                      /*image_rect=*/gfx::Rect(15, 15, 240, 150));
 
         const DesktopMediaSourceViewStyle kSingleScreenStyle =
             base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)
@@ -477,8 +475,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
                       /*icon_rect=*/gfx::Rect(),
                       /*label_rect=*/gfx::Rect(),
                       /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_CENTER,
-                      /*image_rect=*/gfx::Rect(20, 20, 320, 240),
-                      /*focus_rectangle_inset=*/5);
+                      /*image_rect=*/gfx::Rect(20, 20, 320, 240));
 
         std::unique_ptr<views::ScrollView> screen_scroll_view =
             CreateScrollView(audio_requested_);
@@ -519,16 +516,14 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
                       /*icon_rect=*/gfx::Rect(8, 136, 16, 16),
                       /*label_rect=*/gfx::Rect(32, 136, 136, 20),
                       /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_LEFT,
-                      /*image_rect=*/gfx::Rect(8, 8, 160, 120),
-                      /*focus_rectangle_inset=*/10)
+                      /*image_rect=*/gfx::Rect(8, 8, 160, 120))
                 : DesktopMediaSourceViewStyle(
                       /*columns=*/3,
                       /*item_size=*/gfx::Size(180, 160),
                       /*icon_rect=*/gfx::Rect(10, 120, 20, 20),
                       /*label_rect=*/gfx::Rect(32, 110, 138, 40),
                       /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_LEFT,
-                      /*image_rect=*/gfx::Rect(8, 8, 164, 104),
-                      /*focus_rectangle_inset=*/5);
+                      /*image_rect=*/gfx::Rect(8, 8, 164, 104));
 
         std::unique_ptr<views::ScrollView> window_scroll_view =
             CreateScrollView(audio_requested_);
@@ -584,8 +579,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             /*icon_rect=*/gfx::Rect(),
             /*label_rect=*/gfx::Rect(),
             /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_CENTER,
-            /*image_rect=*/gfx::Rect(20, 20, 320, 240),
-            /*focus_rectangle_inset=*/5);
+            /*image_rect=*/gfx::Rect(20, 20, 320, 240));
         std::unique_ptr<views::ScrollView> window_scroll_view =
             CreateScrollView(audio_requested_);
         const std::u16string title = l10n_util::GetStringUTF16(

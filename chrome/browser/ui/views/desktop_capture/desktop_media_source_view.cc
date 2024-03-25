@@ -34,15 +34,13 @@ DesktopMediaSourceViewStyle::DesktopMediaSourceViewStyle(
     const gfx::Rect& icon_rect,
     const gfx::Rect& label_rect,
     gfx::HorizontalAlignment text_alignment,
-    const gfx::Rect& image_rect,
-    int focus_rectangle_inset)
+    const gfx::Rect& image_rect)
     : columns(columns),
       item_size(item_size),
       icon_rect(icon_rect),
       label_rect(label_rect),
       text_alignment(text_alignment),
-      image_rect(image_rect),
-      focus_rectangle_inset(focus_rectangle_inset) {}
+      image_rect(image_rect) {}
 
 DesktopMediaSourceView::DesktopMediaSourceView(
     DesktopMediaListView* parent,

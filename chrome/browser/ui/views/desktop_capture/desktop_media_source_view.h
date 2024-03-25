@@ -29,8 +29,7 @@ struct DesktopMediaSourceViewStyle {
                               const gfx::Rect& icon_rect,
                               const gfx::Rect& label_rect,
                               gfx::HorizontalAlignment text_alignment,
-                              const gfx::Rect& image_rect,
-                              int focus_rectangle_inset);
+                              const gfx::Rect& image_rect);
 
   // This parameter controls how many source items can be displayed in a row.
   // Source items are instances of DesktopMediaSourceView.
@@ -45,10 +44,6 @@ struct DesktopMediaSourceViewStyle {
   gfx::Rect label_rect;
   gfx::HorizontalAlignment text_alignment;
   gfx::Rect image_rect;
-
-  // When a source item is focused, we paint dotted line. This parameter
-  // controls the distance between dotted line and the source view boundary.
-  int focus_rectangle_inset;
 };
 
 // View used for each item in DesktopMediaListView. Shows a single desktop media
