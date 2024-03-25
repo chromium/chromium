@@ -137,7 +137,7 @@ void HotspotConfigurationHandler::UpdateHotspotConfigAndRunCallback(
     SetHotspotConfigCallback callback,
     std::optional<base::Value::Dict> properties) {
   if (!properties) {
-    NET_LOG(EVENT) << "Error getting Shill manager properties.";
+    NET_LOG(ERROR) << "Error getting Shill manager properties.";
     std::move(callback).Run(
         hotspot_config::mojom::SetHotspotConfigResult::kSuccess);
     return;
@@ -145,7 +145,7 @@ void HotspotConfigurationHandler::UpdateHotspotConfigAndRunCallback(
   const base::Value::Dict* shill_tethering_config =
       properties->FindDict(shill::kTetheringConfigProperty);
   if (!shill_tethering_config) {
-    NET_LOG(EVENT) << "Error getting " << shill::kTetheringConfigProperty
+    NET_LOG(ERROR) << "Error getting " << shill::kTetheringConfigProperty
                    << " in Shill manager properties";
     std::move(callback).Run(
         hotspot_config::mojom::SetHotspotConfigResult::kSuccess);

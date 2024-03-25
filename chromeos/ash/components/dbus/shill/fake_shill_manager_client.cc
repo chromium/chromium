@@ -237,6 +237,8 @@ const char kNetworkActivated[] = "activated";
 const char kNetworkDisabled[] = "disabled";
 const char kCellularServicePath[] = "/service/cellular1";
 const char kRoamingRequired[] = "required";
+const char kDefaultTetheringSSID[] = "test_tethering_ssid";
+const char kDefaultTetheringPassphrase[] = "tetheringpassword";
 
 }  // namespace
 
@@ -1198,10 +1200,46 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
   }
   shill_device_property_map_.clear();
 
+  SetDefaultProperties();
+
   SortManagerServices(/*notify=*/true);
 }
 
 // Private methods
+
+void FakeShillManagerClient::SetDefaultProperties() {
+  auto tethering_config =
+      base::Value::Dict()
+          .Set(shill::kTetheringConfAutoDisableProperty, true)
+          .Set(shill::kTetheringConfBandProperty, shill::kBandAll)
+          .Set(shill::kTetheringConfSecurityProperty, shill::kSecurityWpa2)
+          .Set(shill::kTetheringConfSSIDProperty,
+               base::HexEncode(kDefaultTetheringSSID))
+          .Set(shill::kTetheringConfPassphraseProperty,
+               kDefaultTetheringPassphrase)
+          .Set(shill::kTetheringConfMARProperty, true);
+  SetManagerProperty(shill::kTetheringConfigProperty,
+                     base::Value(std::move(tethering_config)));
+
+  auto tethering_capabilities =
+      base::Value::Dict()
+          .Set(shill::kTetheringCapUpstreamProperty,
+               base::Value::List().Append(shill::kTypeCellular))
+          .Set(shill::kTetheringCapDownstreamProperty,
+               base::Value::List().Append(shill::kTypeWifi))
+          .Set(shill::kTetheringCapSecurityProperty,
+               base::Value::List().Append(shill::kSecurityWpa2));
+  SetManagerProperty(shill::kTetheringCapabilitiesProperty,
+                     base::Value(std::move(tethering_capabilities)));
+
+  auto tethering_state =
+      base::Value::Dict()
+          .Set(shill::kTetheringStatusStateProperty, shill::kTetheringStateIdle)
+          .Set(shill::kTetheringStatusIdleReasonProperty,
+               shill::kTetheringIdleReasonInitialState);
+  SetManagerProperty(shill::kTetheringStatusProperty,
+                     base::Value(std::move(tethering_state)));
+}
 
 void FakeShillManagerClient::PassNullopt(
     chromeos::DBusMethodCallback<base::Value::Dict> callback) const {

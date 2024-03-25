@@ -196,7 +196,7 @@ TEST_F(HotspotConfigurationHandlerTest, SetAndGetHotspotConfig) {
   LoginToRegularUser();
   EXPECT_EQ(hotspot_config::mojom::SetHotspotConfigResult::kSuccess,
             SetHotspotConfig(GenerateTestConfig()));
-  EXPECT_EQ(1u, observer_.hotspot_configuration_changed_count());
+  EXPECT_EQ(2u, observer_.hotspot_configuration_changed_count());
   auto hotspot_config = hotspot_configuration_handler_->GetHotspotConfig();
   EXPECT_TRUE(hotspot_config);
   EXPECT_FALSE(hotspot_config->auto_disable);
@@ -214,7 +214,7 @@ TEST_F(HotspotConfigurationHandlerTest, SetAndGetHotspotConfig) {
 
   Logout();
   ASSERT_FALSE(hotspot_configuration_handler_->GetHotspotConfig());
-  EXPECT_EQ(2u, observer_.hotspot_configuration_changed_count());
+  EXPECT_EQ(3u, observer_.hotspot_configuration_changed_count());
 }
 
 }  // namespace ash
