@@ -782,6 +782,7 @@ void FetchLoaderBase::Start(ExceptionState& exception_state) {
 
   // "- should fetching |request| be blocked as content security returns
   //    blocked"
+  CHECK(execution_context_);
   if (!execution_context_->GetContentSecurityPolicyForWorld(world_.Get())
            ->AllowConnectToSource(fetch_request_data_->Url(),
                                   fetch_request_data_->Url(),

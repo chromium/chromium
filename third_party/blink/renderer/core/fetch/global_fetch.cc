@@ -91,6 +91,14 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
     FetchRequestData* request_data =
         r->PassRequestData(script_state, exception_state);
     MeasureFetchProperties(execution_context, request_data);
+
+    // Even if this was checked at the beginning of the function, it might
+    // have been set to nullptr during Request::Create.
+    if (!fetch_manager_->GetExecutionContext()) {
+      exception_state.ThrowTypeError("The global scope is shutting down.");
+      return ScriptPromiseTyped<Response>();
+    }
+
     auto promise = fetch_manager_->Fetch(script_state, request_data,
                                          r->signal(), exception_state);
     if (exception_state.HadException())
