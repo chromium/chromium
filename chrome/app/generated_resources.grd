@@ -9232,6 +9232,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_TITLE" desc="Title on dialog to upload an image to Google Lens.">
         Search any image with Google Lens
       </message>
+      <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_TITLE_SHORT" desc="Short title on dialog to upload an image to Google Lens.">
+        Search any image with Lens
+      </message>
       <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_DRAG_TITLE" desc="Message to user on drop zone where they can drag-and-drop an image to search.">
         Drag an image here or
       </message>
