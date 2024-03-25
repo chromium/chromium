@@ -5,8 +5,10 @@
 #ifndef REMOTING_HOST_WIN_RDP_CLIENT_WINDOW_H_
 #define REMOTING_HOST_WIN_RDP_CLIENT_WINDOW_H_
 
-// Must be included before <atlapp.h>.
-#include "base/win/atl.h"  // NOLINT(build/include_order)
+// clang-format off
+// This needs to be included before ATL headers.
+#include "base/win/atl.h"
+// clang-format on
 
 #include <atlapp.h>
 #include <atlcrack.h>
