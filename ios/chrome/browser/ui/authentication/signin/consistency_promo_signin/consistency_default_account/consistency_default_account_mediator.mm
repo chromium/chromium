@@ -7,11 +7,9 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check.h"
-#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -52,11 +50,6 @@ NSString* GetPromoLabelString(
       // Configuring feed interests is independent of sync.
       return l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_ONLY_PROMO_LABEL);
     case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
-      if (!base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos)) {
-        return l10n_util::GetNSString(
-            IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
-      }
       // This could check `sync_types_disabled_by_policy` only for the types
       // mentioned in the regular string, but don't bother.
       return sync_transport_disabled_by_policy ||

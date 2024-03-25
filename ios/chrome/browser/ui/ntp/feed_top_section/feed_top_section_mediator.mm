@@ -6,7 +6,6 @@
 
 #import <UserNotifications/UserNotifications.h>
 
-#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -15,7 +14,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
@@ -107,11 +105,7 @@ using base::UserMetricsAction;
 // Called when a user changes the syncing state.
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  auto consent =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync;
-  switch (event.GetEventTypeFor(consent)) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       if (!self.signinPromoMediator.showSpinner) {
         // User has signed in, stop showing the promo.
@@ -203,11 +197,7 @@ using base::UserMetricsAction;
 }
 
 - (BOOL)isUserSignedIn {
-  auto consent =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync;
-  return self.identityManager->HasPrimaryAccount(consent);
+  return self.identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 // Returns true if notifications are enabled in Chime or at the OS level.

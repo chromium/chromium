@@ -17,7 +17,6 @@
 #import "components/signin/public/base/signin_client.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_manager_builder.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -95,8 +94,7 @@ std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
   params.account_tracker_service = std::make_unique<AccountTrackerService>();
   params.account_tracker_service->Initialize(params.pref_service,
                                              params.profile_path);
-  params.require_sync_consent_for_scope_verification =
-      !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
+  params.require_sync_consent_for_scope_verification = false;
 
   std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate =
       std::make_unique<ProfileOAuth2TokenServiceIOSDelegate>(

@@ -6,7 +6,6 @@
 
 #import <utility>
 
-#import "base/feature_list.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/no_destructor.h"
@@ -16,7 +15,6 @@
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/reading_list/core/reading_list_model_storage_impl.h"
 #import "components/signin/public/identity_manager/tribool.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/storage_type.h"
 #import "components/sync/model/model_type_store_service.h"
 #import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
@@ -29,12 +27,6 @@
 
 namespace {
 
-// Kill switch as an extra safeguard, in addition to the guarding behind
-// syncer::kReplaceSyncPromosWithSignInPromos.
-BASE_FEATURE(kAllowReadingListModelWipingForFirstSessionAfterDeviceRestore,
-             "AllowReadingListModelWipingForFirstSessionAfterDeviceRestore",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Returns what the local-or-syncable instance should do when sync is disabled,
 // that is, whether reading list entries might need to be deleted.
 syncer::WipeModelUponSyncDisabledBehavior
@@ -43,13 +35,7 @@ GetWipeModelUponSyncDisabledBehaviorForSyncableModel() {
     return syncer::WipeModelUponSyncDisabledBehavior::kNever;
   }
 
-  return (base::FeatureList::IsEnabled(
-              kAllowReadingListModelWipingForFirstSessionAfterDeviceRestore) &&
-          base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos))
-             ? syncer::WipeModelUponSyncDisabledBehavior::
-                   kOnceIfTrackingMetadata
-             : syncer::WipeModelUponSyncDisabledBehavior::kNever;
+  return syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata;
 }
 
 }  // namespace

@@ -4,10 +4,8 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_icon.h"
 
-#import "base/feature_list.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -252,19 +250,10 @@ UIView* IconInSquare(NSString* symbol,
 - (UIView*)createTypeIcon {
   switch (_type) {
     case SetUpListItemType::kSignInSync: {
-      if (base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos)) {
-        return _inSquare ? IconInSquare(kPersonCropCircleSymbol, _compactLayout,
-                                        kGreen500Color)
-                         : IconInCircle(kPersonCropCircleSymbol, _compactLayout,
-                                        kGreen500Color);
-      }
-
-      UIImageView* iconImage = IconForSymbol(
-          kSyncCircleSymbol, _compactLayout,
-          @[ [UIColor whiteColor], [UIColor colorNamed:kGreen500Color] ]);
-      return _inSquare ? IconInSquareContainer(iconImage, kGreen500Color)
-                       : iconImage;
+      return _inSquare ? IconInSquare(kPersonCropCircleSymbol, _compactLayout,
+                                      kGreen500Color)
+                       : IconInCircle(kPersonCropCircleSymbol, _compactLayout,
+                                      kGreen500Color);
     }
     case SetUpListItemType::kDefaultBrowser: {
       UIImageView* iconImage = DefaultBrowserIcon(_compactLayout || _inSquare);

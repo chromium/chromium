@@ -7,10 +7,8 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
-#import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/ui/settings/cells/byo_textfield_item.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -36,11 +34,7 @@ using sync_encryption_passphrase::SectionIdentifierPassphrase;
         l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_CREATE_PASSPHRASE);
     self.headerMessage = nil;
     self.footerMessage =
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-            ? l10n_util::GetNSString(
-                  IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO_UNO)
-            : l10n_util::GetNSString(
-                  IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO);
+        l10n_util::GetNSString(IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO_UNO);
     self.processingMessage =
         l10n_util::GetNSString(IDS_IOS_SYNC_PASSPHRASE_ENCRYPTING);
 

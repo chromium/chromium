@@ -6,7 +6,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -14,7 +13,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -686,12 +684,8 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   self.identityDiscImage = DefaultSymbolTemplateWithPointSize(
       kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconDimension);
 
-  self.identityDiscAccessibilityLabel =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? l10n_util::GetNSString(
-                IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL)
-          : l10n_util::GetNSString(
-                IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL_WITH_SYNC);
+  self.identityDiscAccessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL);
   // `self.identityDiscButton` should not be updated if the view has not been
   // created yet.
   if (self.identityDiscButton) {

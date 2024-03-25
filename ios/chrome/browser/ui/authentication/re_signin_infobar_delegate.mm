@@ -9,12 +9,10 @@
 #import <memory>
 #import <utility>
 
-#import "base/feature_list.h"
 #import "base/logging.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
@@ -119,19 +117,13 @@ bool ReSignInInfoBarDelegate::ShouldExpire(
 }
 
 std::u16string ReSignInInfoBarDelegate::GetTitleText() const {
-  return base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos)
-             ? l10n_util::GetStringUTF16(
-                   IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_ENCRYPTION_FIX_NOW)
-             : std::u16string();
+  return l10n_util::GetStringUTF16(
+      IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_ENCRYPTION_FIX_NOW);
 }
 
 std::u16string ReSignInInfoBarDelegate::GetMessageText() const {
-  return base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos)
-             ? l10n_util::GetStringUTF16(
-                   IDS_IOS_SYNC_LOGIN_INFO_OUT_OF_DATE_WITH_UNO)
-             : l10n_util::GetStringUTF16(IDS_IOS_SYNC_LOGIN_INFO_OUT_OF_DATE);
+  return l10n_util::GetStringUTF16(
+      IDS_IOS_SYNC_LOGIN_INFO_OUT_OF_DATE_WITH_UNO);
 }
 
 int ReSignInInfoBarDelegate::GetButtons() const {
@@ -140,12 +132,8 @@ int ReSignInInfoBarDelegate::GetButtons() const {
 
 std::u16string ReSignInInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
-  return base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos)
-             ? l10n_util::GetStringUTF16(
-                   IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_BUTTON_LABEL)
-             : l10n_util::GetStringUTF16(
-                   IDS_IOS_SYNC_INFOBAR_SIGN_IN_SETTINGS_BUTTON_MOBILE);
+  return l10n_util::GetStringUTF16(
+      IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_BUTTON_LABEL);
 }
 
 ui::ImageModel ReSignInInfoBarDelegate::GetIcon() const {

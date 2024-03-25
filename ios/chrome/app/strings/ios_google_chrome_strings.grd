@@ -362,17 +362,6 @@
       <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_CHECKBOX" desc="Checkbox to accept the metrics reporting consent. Related to IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION and IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE. [iOS only]">
         Help Improve Chrome's Features and Performance
         </message>
-      <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION" desc="Text that explains the benefits users will get and what data is shared if they turn on the metrics sharing option. Bullet points lines should start with 2 spaces, followed by • and with a space right after. Related to IDS_IOS_FIRST_RUN_UMA_DIALOG_CHECKBOX and IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE. [iOS only]">
-        When on:
-<ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Help make Chrome better for people who use it the way you do.<ph name="END_INDENT">END_INDENT</ph>
-
-Things to consider:
-<ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Info is sent to Google about your Chrome usage, but it isn't tied to you.
-
-  • If Chrome crashes, details about the crash may include some personal info.
-
-  • If you turn on sync, metrics may also include info about URLs you visit.<ph name="END_INDENT">END_INDENT</ph>
-      </message>
       <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION_NO_SYNC" desc="Text that explains the benefits users will get and what data is shared if they turn on the metrics sharing option. Bullet points lines should start with 2 spaces, followed by • and with a space right after. Related to IDS_IOS_FIRST_RUN_UMA_DIALOG_CHECKBOX and IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE. [iOS only]">
         When on:
 <ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Help make Chrome better for people who use it the way you do.<ph name="END_INDENT">END_INDENT</ph>
@@ -611,11 +600,6 @@ Things to consider:
       </message>
       <message name="IDS_IOS_MINI_MAP_IPH_TITLE" desc="The text of the iph string displayed on Mini Map screen on first trigger [iOS only].">
         Chrome detects addresses and uses Google Maps to give you directions and local info.
-      </message>
-      <message name="IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO" desc="The information text for encrypting sync using a passphrase, shown on the passphrase screen [iOS only]">
-        Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chrome won’t sync.
-
-Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO_UNO" desc="The information text for encrypting sync using a passphrase, shown on the passphrase screen [iOS only]">
         Payment methods and addresses won’t be encrypted. Browsing history from Chrome won’t sync.
@@ -979,11 +963,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
       <message name="IDS_IOS_SUGGESTED_STRONG_PASSWORD_HINT_DISPLAYING_EMAIL" desc="Text shown alongside a suggested password to tell user that generated passwords are recorded by chrome. [Length: unlimited] [iOS only]">
             You won't need to remember this password. It will be saved to Google Password Manager for <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
-      </message>
-      <message name="IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_HINT" desc="The information text on how to reset encryption passphrase for sync, shown on the sync encryption settings [Length: 300em] [iOS only]">
-        Passphrase encryption doesn’t include payment methods and addresses from Google Pay.
-
-To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_HINT_UNO" desc="The information text on how to reset encryption passphrase for sync, shown on the sync encryption settings [Length: 300em] [iOS only]">
         Passphrase encryption doesn’t include payment methods and addresses.

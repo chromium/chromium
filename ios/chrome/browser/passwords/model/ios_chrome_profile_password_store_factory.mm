@@ -19,7 +19,6 @@
 #import "components/password_manager/core/browser/password_store_factory_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/signin/public/identity_manager/tribool.h"
-#import "components/sync/base/features.h"
 #import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
@@ -37,12 +36,6 @@ namespace {
 using affiliations::AffiliationService;
 using password_manager::AffiliatedMatchHelper;
 
-// Kill switch as an extra safeguard, in addition to the guarding behind
-// syncer::kReplaceSyncPromosWithSignInPromos.
-BASE_FEATURE(kAllowPasswordsModelWipingForFirstSessionAfterDeviceRestore,
-             "AllowPasswordsModelWipingForFirstSessionAfterDeviceRestore",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Returns what the profile store should do when sync is disabled, that is,
 // whether passwords might need to be deleted.
 syncer::WipeModelUponSyncDisabledBehavior
@@ -51,13 +44,7 @@ GetWipeModelUponSyncDisabledBehaviorForProfileStore() {
     return syncer::WipeModelUponSyncDisabledBehavior::kNever;
   }
 
-  return (base::FeatureList::IsEnabled(
-              kAllowPasswordsModelWipingForFirstSessionAfterDeviceRestore) &&
-          base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos))
-             ? syncer::WipeModelUponSyncDisabledBehavior::
-                   kOnceIfTrackingMetadata
-             : syncer::WipeModelUponSyncDisabledBehavior::kNever;
+  return syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata;
 }
 
 }  // namespace

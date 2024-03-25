@@ -86,7 +86,6 @@ extern NSString* const kChartBarXAxisSymbol;
 extern NSString* const kCircleSymbol;
 extern NSString* const kCircleFillSymbol;
 extern NSString* const kSyncEnabledSymbol;
-extern NSString* const kSyncCircleSymbol;
 extern NSString* const kDefaultBrowserSymbol;
 extern NSString* const kDefaultBrowseriOS14Symbol;
 extern NSString* const kDiscoverSymbol;

@@ -1572,17 +1572,8 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_LEARN_MORE" desc="The text in the 'Learn More' button, displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy.">
         Learn More
       </message>
-      <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_MESSAGE" desc="Message displayed in a prompt when the user is signed out due to browser sign-in becoming disabled by policy.">
-        Your organization turned off sign in. You can still see your bookmarks, history, passwords and other settings on this device. If you make changes, they won’t sync to your account.
-      </message>
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_MESSAGE_WITH_UNO" desc="Message displayed in a prompt when the user is signed out due to browser sign-in becoming disabled by policy. Related with IDS_IOS_ENTERPRISE_SIGNED_OUT.">
         Your organization turned off sign-in. New bookmarks, passwords, and more will be saved only to this device.
-      </message>
-      <message name="IDS_IOS_ENTERPRISE_SYNC_DISABLED_MESSAGE" desc="Message displayed in a prompt when sync is disabled due to an enterprise policy. [iOS only]">
-        Your organization turned off sync. You can still see your bookmarks, history, passwords and other settings on this device. If you make changes, they won’t sync to your account.
-      </message>
-      <message name="IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE" desc="Title displayed in a prompt when sync is disabled due to an enterprise policy. [iOS only]">
-        Sync has Been Turned Off
       </message>
       <message name="IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE_WITH_UNO" desc="Message displayed in a prompt when saving data (like bookmarks/reading list/passwords...) is disabled due to an enterprise policy. Related with IDS_IOS_ENTERPRISE_SYNC_DISABLED_MESSAGE_UNO.">
         Some Features No Longer Available
@@ -1925,9 +1916,6 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL" desc="The content description for a toolbar button displaying the signed-out avatar. Tapping on this button opens the sign-in sheet [iOS only].">
         Signed out. Opens options to sign in.
-      </message>
-      <message name="IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL_WITH_SYNC" desc="The content description for a toolbar button displaying the signed-out avatar. Tapping on this button navigates to 'Turn on Sync' page in settings [iOS only].">
-        Signed out. Opens dialog to sign in and turn on sync.
       </message>
       <message name="IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL" desc="Text in the sheet that offers the user to sign-in to Chrome [iOS only].">
         Get your bookmarks, passwords, and more on all your devices.
@@ -2517,9 +2505,6 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_ENABLE_BUTTON" desc="The text for the button in notifications opt-in screen that enables the selected notifications.">
         Turn on Notifications
-      </message>
-      <message name="IDS_IOS_NTP_FEED_SIGNIN_COMPACT_PROMO_BODY" desc="The text on the body of the new tab page Feed Signin Promo (compact version), explaining that users will content based on users interests if they enable sync. [iOS only]">
-        Sync to get content based on your interests.
       </message>
       <message name="IDS_IOS_NTP_FEED_SIGNIN_FULL_PROMO_BODY" desc="The text on the body of the new tab page Feed Signin Promo, explaining that users will see more relevant content if they enable sync. [iOS only]">
         Sync for the most relevant content based on your interests.
@@ -4537,20 +4522,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE" desc="Title for the Set Up List item that encourages the user to enable Chrome notifications.">
         Get Notifications
       </message>
-      <message name="IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to sign in and set up syncing.">
-        Sign in with your Google Account to sync your bookmarks, history, and more.
-      </message>
-      <message name="IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_MAGIC_STACK_DESCRIPTION" desc="Description for the Set Up List item in the Magic Stack that encourages the user to sign in and set up syncing.">
-        Sign in with your Google Account to sync your passwords and more.
-      </message>
-      <message name="IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION" desc="Shortened description for the Set Up List item that encourages the user to sign in and set up syncing.">
-        Sync your bookmarks, history, and more.
-      </message>
       <message name="IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION_NO_SYNC" desc="Same as IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION but without mentioning sync.">
         Get your bookmarks, passwords, and more.
-      </message>
-      <message name="IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_TITLE" desc="Title for the Set Up List item that encourages the user to sign in and set up syncing.">
-        Sign in and Sync
       </message>
       <message name="IDS_IOS_SET_UP_LIST_TRY_BUTTON_ACCESSIBILITY_HINT" desc="Action hint for the Try button on the Set Up List view. This is spoken by VoiceOver. ">
         Double tap to try
@@ -4908,9 +4881,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SYNC_INCORRECT_PASSPHRASE" desc="Message when the passphrase is incorrect.">
         Incorrect passphrase
-      </message>
-      <message name="IDS_IOS_SYNC_INFOBAR_SIGN_IN_SETTINGS_BUTTON_MOBILE" desc="Infobar button on Chrome Welcome page to let the user access the Sing in settings view. [Length: 20em]">
-        Sign in settings
       </message>
       <message name="IDS_IOS_SYNC_LOGIN_INFO_OUT_OF_DATE" desc="The login information for the user is out of date - for example, the user changed their password and therefore signing in again is required.">
         Account sign-in details are out of date.
