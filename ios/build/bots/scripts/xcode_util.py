@@ -13,6 +13,7 @@ import sys
 
 import iossim_util
 import mac_util
+import test_runner
 import test_runner_errors
 
 LOGGER = logging.getLogger(__name__)
@@ -545,3 +546,27 @@ def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
     return False, False
   else:
     return True, is_legacy_xcode
+
+
+def xctest_path(test_app_path: str) -> str:
+  """Gets xctest-file from egtests/PlugIns folder.
+
+  Returns:
+      A path for xctest in the format of /PlugIns/file.xctest
+
+  Raises:
+      PlugInsNotFoundError: If no PlugIns folder found in egtests.app.
+      XCTestPlugInNotFoundError: If no xctest-file found in PlugIns.
+  """
+  plugins_dir = os.path.join(test_app_path, 'PlugIns')
+  if not os.path.exists(plugins_dir):
+    raise test_runner.PlugInsNotFoundError(plugins_dir)
+  plugin_xctest = None
+  if os.path.exists(plugins_dir):
+    for plugin in os.listdir(plugins_dir):
+      if plugin.endswith('.xctest'):
+        plugin_xctest = os.path.join(plugins_dir, plugin)
+  if not plugin_xctest:
+    raise test_runner.XCTestPlugInNotFoundError(plugin_xctest)
+
+  return plugin_xctest.replace(test_app_path, '')

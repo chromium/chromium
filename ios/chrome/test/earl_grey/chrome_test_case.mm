@@ -157,9 +157,8 @@ void ResetAuthentication() {
 // Sets up mock authentication.
 + (void)enableMockAuthentication;
 
-// Returns a NSArray of test names in this class that contain the prefix
-// "FLAKY_".
-+ (NSArray*)flakyTestNames;
+// Returns a NSArray of test names in this class that contain the given prefix
++ (NSArray*)testNamesWithPrefix:(NSString*)prefix;
 
 // Returns a NSArray of test names in this class for multitasking test suite.
 + (NSArray*)multitaskingTestNames;
@@ -175,10 +174,13 @@ void ResetAuthentication() {
   NSString* targetName = [NSBundle mainBundle].infoDictionary[@"CFBundleName"];
   if ([targetName hasSuffix:kFlakyEarlGreyTestTargetSuffix]) {
     // Only run FLAKY_ tests for flaky test suites.
-    return [self flakyTestNames];
+    return [self testNamesWithPrefix:@"FLAKY"];
   } else if ([targetName isEqualToString:kMultitaskingEarlGreyTestTargetName]) {
     // Only run white listed tests for the multitasking test suite.
     return [self multitaskingTestNames];
+  } else if ([[NSProcessInfo.processInfo.environment
+                 objectForKey:@"RUN_DISABLED_EARL_GREY_TESTS"] boolValue]) {
+    return [self testNamesWithPrefix:@"DISABLED"];
   } else {
     return [super testInvocations];
   }
@@ -378,24 +380,23 @@ void ResetAuthentication() {
   [ChromeEarlGrey setUpFakeSyncServer];
 }
 
-+ (NSArray*)flakyTestNames {
-  const char kFlakyTestPrefix[] = "FLAKY";
++ (NSArray*)testNamesWithPrefix:(NSString*)prefix {
   unsigned int count = 0;
   Method* methods = class_copyMethodList(self, &count);
-  NSMutableArray* flakyTestNames = [NSMutableArray array];
+  NSMutableArray* testNames = [NSMutableArray array];
   for (unsigned int i = 0; i < count; i++) {
     SEL selector = method_getName(methods[i]);
-    if (base::StartsWith(sel_getName(selector), kFlakyTestPrefix)) {
+    if (base::StartsWith(sel_getName(selector), prefix.UTF8String)) {
       NSMethodSignature* methodSignature =
           [self instanceMethodSignatureForSelector:selector];
       NSInvocation* invocation =
           [NSInvocation invocationWithMethodSignature:methodSignature];
       invocation.selector = selector;
-      [flakyTestNames addObject:invocation];
+      [testNames addObject:invocation];
     }
   }
   free(methods);
-  return flakyTestNames;
+  return testNames;
 }
 
 + (NSArray*)multitaskingTestNames {

@@ -340,7 +340,7 @@ class ResultCollection(object):
     num_failures_by_type = {}
     tests = OrderedDict()
     seen_names = set()
-    shard_index = shard_util.shard_index()
+    shard_index = shard_util.gtest_shard_index()
 
     for test_result in self._test_results:
       test_name = test_result.name

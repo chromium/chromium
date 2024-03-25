@@ -340,7 +340,7 @@ class ResultCollectionTest(test_runner_test.TestCase):
     self.assertEqual(len(collection.test_results), len(mock_report.mock_calls))
     mock_sink_close.assert_called()
 
-  @mock.patch('shard_util.shard_index', return_value=0)
+  @mock.patch('shard_util.gtest_shard_index', return_value=0)
   @mock.patch('time.time', return_value=10000)
   def test_standard_json_output(self, *args):
     """Tests standard_json_output."""

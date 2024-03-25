@@ -45,6 +45,14 @@ if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
 from plugin_constants import VIDEO_RECORDER_PLUGIN_OPTIONS
 
 
+def format_exception_step_text(e: Exception) -> str:
+  return '%s%s' % (e.__class__.__name__, ': %s' % e.args[0] if e.args else '')
+
+
+def use_xcodebuild_runner(args):
+  return args.xcodebuild_sim_runner or args.xcodebuild_device_runner
+
+
 class Runner():
   """
   Object to encapsulate iOS test runner execution coordination. Parses
@@ -66,64 +74,15 @@ class Runner():
     if args:
       self.parse_args(args)
 
-  def use_xcodebuild_runner(self, args):
-    return args.xcodebuild_sim_runner or args.xcodebuild_device_runner
-
-  def resolve_test_cases(self):
-    """Forms |self.args.test_cases| considering swarming shard and cmd inputs.
-
-    Raises:
-      ExcessShardsError: If this test suite is configured to run on more than
-      one shard, there are more shards than test cases (resulting in
-      self.args.test_cases being empty) and the test suite uses the
-      xcodebuild runner (ex. to run EG tests).
-
-    Note:
-    - Xcode intallation is required before invoking this method since it
-      requires otool to parse test names from compiled targets.
-    - It's validated in |parse_args| that test filters won't work in sharding
-      environment.
-    """
-    args_json = json.loads(self.args.args_json)
-
-    # GTEST_SHARD_INDEX and GTEST_TOTAL_SHARDS are additional test environment
-    # variables, set by Swarming, that are only set for a swarming task
-    # shard count is > 1.
-    #
-    # For a given test on a given run, otool should return the same total
-    # counts and thus, should generate the same sublists. With the shard
-    # index, each shard would then know the exact test case to run.
-    gtest_shard_index = shard_util.shard_index()
-    gtest_total_shards = shard_util.total_shards()
-    if gtest_total_shards > 1:
-      self.args.test_cases = shard_util.shard_test_cases(
-          self.args, gtest_shard_index, gtest_total_shards)
-
-      if self.args.test_cases:
-        assert (
-            self.use_xcodebuild_runner(self.args)
-        ), 'Only real XCTests can use sharding by shard_util.shard_test_cases()'
-      else:
-        if self.use_xcodebuild_runner(self.args):
-          raise test_runner_errors.ExcessShardsError()
-    else:
-      self.args.test_cases = self.args.test_cases or []
-      if self.args.gtest_filter:
-        self.args.test_cases.extend(self.args.gtest_filter.split(':'))
-      if self.args.isolated_script_test_filter:
-        self.args.test_cases.extend(
-            self.args.isolated_script_test_filter.split('::'))
-      self.args.test_cases.extend(args_json.get('test_cases', []))
-
   def sharding_env_vars(self):
     """Returns env_var arg with GTest sharding env var."""
-    gtest_total_shards = shard_util.total_shards()
+    gtest_total_shards = shard_util.gtest_total_shards()
     if gtest_total_shards > 1:
       assert not any((el.startswith('GTEST_SHARD_INDEX') or
                       el.startswith('GTEST_TOTAL_SHARDS'))
                      for el in self.args.env_var
                     ), 'GTest shard env vars should not be passed in --env-var'
-      gtest_shard_index = shard_util.shard_index()
+      gtest_shard_index = shard_util.gtest_shard_index()
       return [
           'GTEST_SHARD_INDEX=%d' % gtest_shard_index,
           'GTEST_TOTAL_SHARDS=%d' % gtest_total_shards
@@ -154,8 +113,6 @@ class Runner():
       os.makedirs(self.args.out_dir)
 
     try:
-      self.resolve_test_cases()
-
       if self.args.xcodebuild_sim_runner:
         tr = xcodebuild_runner.SimulatorParallelTestRunner(
             self.args.app,
@@ -259,17 +216,17 @@ class Runner():
 
       logging.info("Using test runner %s" % type(tr).__name__)
       return 0 if tr.launch() else 1
-    except test_runner_errors.ExcessShardsError as e:
-      logging.error("Test suite misconfigured to have excess shards.")
-      summary['step_text'] = '%s%s' % (e.__class__.__name__,
-                                       ': %s' % e.args[0] if e.args else '')
-
+    except shard_util.ExcessShardsError as e:
+      logging.error(e)
+      summary['step_text'] = format_exception_step_text(e)
+      return 2
+    except test_runner_errors.XcodeEnumerateTestsError as e:
+      logging.error(e)
+      summary['step_text'] = format_exception_step_text(e)
       return 2
     except test_runner.DeviceError as e:
       sys.stderr.write(traceback.format_exc())
-      summary['step_text'] = '%s%s' % (e.__class__.__name__,
-                                       ': %s' % e.args[0] if e.args else '')
-
+      summary['step_text'] = format_exception_step_text(e)
       # Swarming infra marks device status unavailable for any device related
       # issue using this return code.
       return 3
@@ -279,17 +236,14 @@ class Runner():
       # want to cache it anymore (when it's in new Xcode format).
       self.should_move_xcode_runtime_to_cache = False
       sys.stderr.write(traceback.format_exc())
-      summary['step_text'] = '%s%s' % (e.__class__.__name__,
-                                       ': %s' % e.args[0] if e.args else '')
+      summary['step_text'] = format_exception_step_text(e)
       return 2
     except test_runner.MIGServerDiedError as e:
       self.should_delete_xcode_cache = True
       return 2
     except test_runner.TestRunnerError as e:
       sys.stderr.write(traceback.format_exc())
-      summary['step_text'] = '%s%s' % (e.__class__.__name__,
-                                       ': %s' % e.args[0] if e.args else '')
-
+      summary['step_text'] = format_exception_step_text(e)
       # test_runner.Launch returns 0 on success, 1 on failure, so return 2
       # on exception to distinguish between a test failure, and a failure
       # to launch the test at all.
@@ -301,8 +255,10 @@ class Runner():
       with open(os.path.join(self.args.out_dir, 'summary.json'), 'w') as f:
         json.dump(summary, f)
 
+      is_eg_test = use_xcodebuild_runner(self.args)
       test_results = (
-          tr.test_results if tr else test_runner.init_test_result_defaults())
+          tr.test_results
+          if tr else test_runner.init_test_result_defaults(is_eg_test))
 
       with open(os.path.join(self.args.out_dir, 'full_results.json'), 'w') as f:
         json.dump(test_results, f)
@@ -576,8 +532,8 @@ class Runner():
     def load_from_json(args):
       """Loads and sets arguments from args_json.
 
-      Note: |test_cases| in --args-json is handled in
-      |Runner.resolve_test_cases()| instead of this function.
+      Note: |test_cases| in --args-json is handled in merge_test_case instead
+      of this function.
       """
       args_json = json.loads(args.args_json)
       args.env_var = args.env_var or []
@@ -596,7 +552,7 @@ class Runner():
       """
       Runs argument validation
       """
-      if (not self.use_xcodebuild_runner(args) and
+      if (not use_xcodebuild_runner(args) and
           (args.iossim or args.platform or args.version)):
         # If any of --iossim, --platform, or --version
         # are specified then they must all be specified.
@@ -608,7 +564,7 @@ class Runner():
         parser.error('--xcodebuild-sim-runner also requires '
                      'both -p/--platform and -v/--version')
 
-      if not self.use_xcodebuild_runner(args) and args.record_video:
+      if not use_xcodebuild_runner(args) and args.record_video:
         parser.error('--record-video is only supported on EG tests')
 
       # Do not retry when repeat
@@ -617,14 +573,30 @@ class Runner():
 
       args_json = json.loads(args.args_json)
       if (args.gtest_filter or args.test_cases or
-          args_json.get('test_cases')) and shard_util.total_shards() > 1:
+          args_json.get('test_cases')) and shard_util.gtest_total_shards() > 1:
         parser.error(
             'Specifying test cases is not supported in multiple swarming '
             'shards environment.')
 
+    def merge_test_cases(args):
+      """Forms |args.test_cases| considering cmd inputs.
+
+      Note:
+      - It's validated above that test filters won't work in
+        sharding environment.
+      """
+      args.test_cases = args.test_cases or []
+      if args.gtest_filter:
+        args.test_cases.extend(args.gtest_filter.split(':'))
+      if args.isolated_script_test_filter:
+        args.test_cases.extend(args.isolated_script_test_filter.split('::'))
+      args_json = json.loads(args.args_json)
+      args.test_cases.extend(args_json.get('test_cases', []))
+
     args, test_args = parser.parse_known_args(args)
     load_from_json(args)
     validate(args)
+    merge_test_cases(args)
     # TODO(crbug.com/1056820): |app| won't contain "Debug" or "Release" after
     # recipe migrations.
     args.release = args.release or (args.app and "Release" in args.app)
