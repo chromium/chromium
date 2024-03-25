@@ -193,6 +193,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   Vector<WebInputEventAttribution> GetPendingUserInputInfo(
       bool include_continuous) const override;
   void StartIdlePeriodForTesting() override;
+  void SetRendererBackgroundedForTesting(bool backgrounded) override;
 
   // ThreadScheduler implementation:
   bool ShouldYieldForHighPriorityWork() override;

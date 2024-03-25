@@ -349,6 +349,8 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
     }
   }
 
+  void SetRendererBackgroundedForTesting(bool) override {}
+
  private:
   raw_ptr<v8::Isolate> isolate_ = nullptr;
 };

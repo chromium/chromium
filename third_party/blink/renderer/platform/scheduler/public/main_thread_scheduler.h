@@ -88,6 +88,9 @@ class PLATFORM_EXPORT MainThreadScheduler : public ThreadScheduler {
   // before this method was called have run.
   virtual void StartIdlePeriodForTesting() = 0;
 
+  // See WebThreadScheduler::SetRendererBackgrounded().
+  virtual void SetRendererBackgroundedForTesting(bool backgrounded) = 0;
+
  private:
   // For `ToWebMainThreadScheduler`.
   friend class scheduler::WebThreadScheduler;

@@ -96,6 +96,7 @@ class DummyMainThreadScheduler : public MainThreadScheduler {
   void RemoveTaskObserver(base::TaskObserver*) override {}
   void SetV8Isolate(v8::Isolate*) override {}
   void StartIdlePeriodForTesting() override {}
+  void SetRendererBackgroundedForTesting(bool) override {}
 };
 
 class UserLevelMemoryPressureSignalGeneratorTest : public testing::Test {

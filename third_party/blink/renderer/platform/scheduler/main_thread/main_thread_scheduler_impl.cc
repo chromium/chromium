@@ -1074,6 +1074,11 @@ void MainThreadSchedulerImpl::SetRendererBackgrounded(bool backgrounded) {
   memory_purge_manager_.SetRendererBackgrounded(backgrounded);
 }
 
+void MainThreadSchedulerImpl::SetRendererBackgroundedForTesting(
+    bool backgrounded) {
+  SetRendererBackgrounded(backgrounded);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void MainThreadSchedulerImpl::PauseTimersForAndroidWebView() {
   main_thread_only().pause_timers_for_webview = true;
