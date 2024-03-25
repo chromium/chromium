@@ -832,6 +832,7 @@ targets.mixin(
         dimensions = {
             "gpu": "1002:7340",
             "os": "Ubuntu-22.04.3",
+            "display_attached": "1",
             "pool": "chromium.tests.gpu",
         },
     ),
@@ -843,6 +844,7 @@ targets.mixin(
         dimensions = {
             "gpu": "8086:9bc5-23.2.1",
             "os": "Ubuntu-22.04.4",
+            "display_attached": "1",
             "pool": "chromium.tests.gpu",
         },
     ),
@@ -865,6 +867,7 @@ targets.mixin(
         dimensions = {
             "gpu": "8086:4680-23.2.1",
             "os": "Ubuntu-22.04.4",
+            "display_attached": "1",
             "pool": "chromium.tests.gpu",
         },
     ),
