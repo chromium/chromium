@@ -90,9 +90,6 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.TouchExploreSecondaryDisplay*
 -TouchExplorationTest
 -SelectToSpeakMouseSelectionTest.VoiceSwitching
-# TODO(crbug/1484723): Flaky
--BrowserAppShelfControllerBrowserTest.WindowedApps
--BrowserAppShelfControllerBrowserTest.TabbedApps
 # TODO(crbug.com/330377625): Permanently failing, no culprit identified.
 -ChromeVoxSettingsPagesTest.TtsRateCommandOnSettingsPage
 # TODO(crbug.com/330450836): Permanently failing, no culprit identified.
