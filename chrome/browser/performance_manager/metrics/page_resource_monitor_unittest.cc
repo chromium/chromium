@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -93,9 +93,9 @@ using SimulatedCPUMeasurementDelegateFactory =
 class PatternedHistogramTester {
  public:
   explicit PatternedHistogramTester(
-      base::StringPiece prefix =
+      std::string_view prefix =
           "PerformanceManager.PerformanceInterventions.CPU",
-      base::StringPiece suffix = "")
+      std::string_view suffix = "")
       : prefix_(prefix), suffix_(suffix) {}
 
   ~PatternedHistogramTester() = default;
@@ -106,7 +106,7 @@ class PatternedHistogramTester {
   // Expects prefix.`name`.suffix to contain exactly 1 sample in the
   // `sample_bucket` bucket.
   void ExpectUniqueSample(
-      base::StringPiece name,
+      std::string_view name,
       int sample_bucket,
       const base::Location& location = base::Location::Current()) const {
     histogram_tester_->ExpectUniqueSample(HistogramName(name), sample_bucket, 1,
@@ -115,7 +115,7 @@ class PatternedHistogramTester {
 
   // Expects prefix.`name`.suffix to contain no samples at all.
   void ExpectNone(
-      base::StringPiece name,
+      std::string_view name,
       const base::Location& location = base::Location::Current()) const {
     histogram_tester_->ExpectTotalCount(HistogramName(name), 0, location);
   }
@@ -145,7 +145,7 @@ class PatternedHistogramTester {
   }
 
   // Returns a copy of this object that appends `suffix` to histogram names.
-  PatternedHistogramTester WithSuffix(base::StringPiece suffix) const {
+  PatternedHistogramTester WithSuffix(std::string_view suffix) const {
     return PatternedHistogramTester(prefix_, suffix, histogram_tester_);
   }
 
@@ -160,12 +160,12 @@ class PatternedHistogramTester {
 
   // Internal constructor used by WithSuffix() to use a shared HistogramTester.
   PatternedHistogramTester(
-      base::StringPiece prefix,
-      base::StringPiece suffix,
+      std::string_view prefix,
+      std::string_view suffix,
       scoped_refptr<RefCountedHistogramTester> histogram_tester)
       : prefix_(prefix), suffix_(suffix), histogram_tester_(histogram_tester) {}
 
-  std::string HistogramName(base::StringPiece name) const {
+  std::string HistogramName(std::string_view name) const {
     return base::StrCat({
         prefix_,
         prefix_.empty() ? "" : ".",
