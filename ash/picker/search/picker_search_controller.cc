@@ -57,11 +57,8 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
 
 PickerSearchController::PickerSearchController(
     PickerClient* client,
-    base::span<const PickerCategory> available_categories,
     base::TimeDelta burn_in_period)
     : client_(CHECK_DEREF(client)),
-      available_categories_(available_categories.begin(),
-                            available_categories.end()),
       burn_in_period_(burn_in_period) {}
 
 PickerSearchController::~PickerSearchController() = default;
@@ -69,6 +66,7 @@ PickerSearchController::~PickerSearchController() = default;
 void PickerSearchController::StartSearch(
     const std::u16string& query,
     std::optional<PickerCategory> category,
+    base::span<const PickerCategory> available_categories,
     PickerViewDelegate::SearchResultsCallback callback) {
   StopSearch();
   current_callback_ = std::move(callback);
@@ -80,7 +78,7 @@ void PickerSearchController::StartSearch(
       query, std::move(category),
       base::BindRepeating(&PickerSearchController::HandleSearchSourceResults,
                           weak_ptr_factory_.GetWeakPtr()),
-      &client_.get(), &emoji_search_, available_categories_);
+      &client_.get(), &emoji_search_, available_categories);
 }
 
 void PickerSearchController::StopSearch() {

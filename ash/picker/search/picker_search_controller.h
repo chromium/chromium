@@ -32,7 +32,6 @@ class ASH_EXPORT PickerSearchController {
  public:
   explicit PickerSearchController(
       PickerClient* client,
-      base::span<const PickerCategory> available_categories,
       base::TimeDelta burn_in_period);
   PickerSearchController(const PickerSearchController&) = delete;
   PickerSearchController& operator=(const PickerSearchController&) = delete;
@@ -40,6 +39,7 @@ class ASH_EXPORT PickerSearchController {
 
   void StartSearch(const std::u16string& query,
                    std::optional<PickerCategory> category,
+                   base::span<const PickerCategory> available_categories,
                    PickerViewDelegate::SearchResultsCallback callback);
 
  private:
@@ -63,7 +63,6 @@ class ASH_EXPORT PickerSearchController {
                                  std::vector<PickerSearchResult> results);
 
   const raw_ref<PickerClient> client_;
-  std::vector<PickerCategory> available_categories_;
 
   base::TimeDelta burn_in_period_;
   base::OneShotTimer burn_in_timer_;

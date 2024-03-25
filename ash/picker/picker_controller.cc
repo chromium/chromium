@@ -202,8 +202,8 @@ void PickerController::SetClient(PickerClient* client) {
   if (client_ == nullptr) {
     search_controller_ = nullptr;
   } else {
-    search_controller_ = std::make_unique<PickerSearchController>(
-        client_, model_.GetAvailableCategories(), kBurnInPeriod);
+    search_controller_ =
+        std::make_unique<PickerSearchController>(client_, kBurnInPeriod);
   }
 }
 
@@ -271,6 +271,7 @@ void PickerController::StartSearch(const std::u16string& query,
                                    SearchResultsCallback callback) {
   CHECK(search_controller_);
   search_controller_->StartSearch(query, std::move(category),
+                                  GetAvailableCategories(),
                                   std::move(callback));
 }
 
