@@ -1477,7 +1477,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.TPCD.CookieAccess.ThirdPartyCookieAllowMechanism3"
+    name="PageLoad.Clients.TPCD.CookieAccess.ThirdPartyCookieAllowMechanism2"
     enum="ThirdPartyCookieAllowMechanism" expires_after="2024-09-01">
   <owner>victortan@chromium.org</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>
@@ -1519,7 +1519,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus2"
+<histogram name="PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus"
     enum="CookieReadStatus" expires_after="2024-09-01">
   <owner>johnidel@chromium.org</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>

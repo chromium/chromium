@@ -23184,7 +23184,7 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="RedirectHeuristic.CookieAccess2">
+<event name="RedirectHeuristic.CookieAccess">
   <owner>amaliev@chromium.org</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
@@ -23200,7 +23200,7 @@ be describing additional metrics about the same event.
   <metric name="AccessId">
     <summary>
       A random integer to identify this cookie access and associate this event
-      with a RedirectHeuristic.CookieAccessThirdParty2 event.
+      with a RedirectHeuristic.CookieAccessThirdParty event.
     </summary>
   </metric>
   <metric name="DoesFirstPartyPrecedeThirdParty" enum="Boolean">
@@ -23253,7 +23253,7 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="RedirectHeuristic.CookieAccessThirdParty2">
+<event name="RedirectHeuristic.CookieAccessThirdParty">
   <owner>amaliev@chromium.org</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
@@ -23263,7 +23263,7 @@ be describing additional metrics about the same event.
   <metric name="AccessId">
     <summary>
       A random integer to identify this cookie access and associate this event
-      with a RedirectHeuristic.CookieAccess2 event.
+      with a RedirectHeuristic.CookieAccess event.
     </summary>
   </metric>
 </event>
@@ -26779,7 +26779,7 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Tpcd.Mitigations.Dt.FirstParty.Deployment2">
+<event name="Tpcd.Mitigations.Dt.FirstParty.Deployment">
   <owner>njeunje@google.com</owner>
   <owner>tpcd-mitigations-team@google.com</owner>
   <summary>

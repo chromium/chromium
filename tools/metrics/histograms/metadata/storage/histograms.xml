@@ -55,7 +55,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Web" summary="Web"/>
 </variants>
 
-<histogram name="API.StorageAccess.AllowedRequests3" enum="StorageAccessResult"
+<histogram name="API.StorageAccess.AllowedRequests2" enum="StorageAccessResult"
     expires_after="2024-07-28">
   <owner>mkwst@chromium.org</owner>
   <owner>brandm@microsoft.com</owner>

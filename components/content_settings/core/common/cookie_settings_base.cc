@@ -100,7 +100,7 @@ constexpr std::optional<SettingSource> GetSettingSource(
     case ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
     case ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
       return SettingSource::SETTING_SOURCE_TPCD_GRANT;
-      // Other mechanisms do not map to a `SettingSource`.
+    // Other mechanisms do not map to a `SettingSource`.
     case ThirdPartyCookieAllowMechanism::kNone:
     case ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting:
     case ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting:
@@ -512,25 +512,42 @@ CookieSettingsBase::DecideAccess(const GURL& url,
   if (!IsAllowed(setting)) {
     return BlockAllCookies{};
   }
-
+  if (is_explicit_setting) {
+    if (setting_source == SettingSource::SETTING_SOURCE_POLICY) {
+      return AllowAllCookies{ThirdPartyCookieAllowMechanism::
+                                 kAllowByEnterprisePolicyCookieAllowedForUrls};
+    }
+    return AllowAllCookies{
+        ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting};
+  }
+  if (!is_third_party_request) {
+    return AllowAllCookies{ThirdPartyCookieAllowMechanism::kNone};
+  }
   if (!ShouldBlockThirdPartyCookies() &&
       !Are3pcsForceDisabledByOverride(overrides)) {
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting};
   }
-
-  if (!is_third_party_request) {
-    return AllowAllCookies{ThirdPartyCookieAllowMechanism::kNone};
-  }
   if (IsThirdPartyCookiesAllowedScheme(first_party_url.scheme())) {
     return AllowAllCookies{ThirdPartyCookieAllowMechanism::kNone};
   }
-
-  // Site controlled mechanisms (ex: web APIs, deprecation trial):
+  if (IsAllowedByTopLevel3pcdTrialSettings(first_party_url, overrides)) {
+    return AllowAllCookies{
+        ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD};
+  }
+  if (IsAllowedBy3pcdTrialSettings(url, first_party_url, overrides)) {
+    return AllowAllCookies{ThirdPartyCookieAllowMechanism::kAllowBy3PCD};
+  }
+  if (IsAllowedBy3pcdHeuristicsGrantsSettings(url, first_party_url,
+                                              overrides)) {
+    return AllowAllCookies{
+        ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics};
+  }
   if (IsAllowedByCORS(overrides, url, first_party_url)) {
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowByCORSException};
   }
+
   if (IsAllowedByTopLevelStorageAccessGrant(url, first_party_url, overrides)) {
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowByTopLevelStorageAccess};
@@ -539,38 +556,14 @@ CookieSettingsBase::DecideAccess(const GURL& url,
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowByStorageAccess};
   }
-  if (IsAllowedBy3pcdHeuristicsGrantsSettings(url, first_party_url,
-                                              overrides)) {
-    return AllowAllCookies{
-        ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics};
-  }
 
-  if (IsAllowedByTopLevel3pcdTrialSettings(first_party_url, overrides)) {
-    return AllowAllCookies{
-        ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD};
-  }
-  if (IsAllowedBy3pcdTrialSettings(url, first_party_url, overrides)) {
-    return AllowAllCookies{ThirdPartyCookieAllowMechanism::kAllowBy3PCD};
-  }
-
-  // Enterprise Policies:
-  if (is_explicit_setting &&
-      setting_source == SettingSource::SETTING_SOURCE_POLICY) {
-    return AllowAllCookies{ThirdPartyCookieAllowMechanism::
-                               kAllowByEnterprisePolicyCookieAllowedForUrls};
-  }
-
-  // Chrome controlled mechanisms (ex. 3PCD Metadata Grants):
   SettingInfo info;
+  // Sets the 3PCD Metadata Grants last, to prioritize grants from other
+  // mitigations and access protocols.
   if (IsAllowedBy3pcdMetadataGrantsSettings(url, first_party_url, overrides,
                                             &info)) {
     return AllowAllCookies{TpcdMetadataSourceToAllowMechanism(
         info.metadata.tpcd_metadata_rule_source())};
-  }
-
-  if (is_explicit_setting) {
-    return AllowAllCookies{
-        ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting};
   }
 
   return AllowPartitionedCookies{};
