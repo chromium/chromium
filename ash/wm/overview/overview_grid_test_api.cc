@@ -16,4 +16,9 @@ OverviewGridTestApi::OverviewGridTestApi(aura::Window* root)
 
 OverviewGridTestApi::~OverviewGridTestApi() = default;
 
+const std::vector<raw_ptr<BirchChipButton>>&
+OverviewGridTestApi::GetBirchChips() const {
+  return overview_grid_->birch_bar_view_->chips_;
+}
+
 }  // namespace ash

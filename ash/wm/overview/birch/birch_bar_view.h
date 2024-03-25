@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "base/callback_list.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
@@ -92,7 +91,7 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   void RemoveChip(BirchItem* birch_item);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(BirchBarLayoutTest, ResponsiveLayout);
+  friend class OverviewGridTestApi;
 
   // The layouts that the birch bar may use. When current available space can
   // hold all present chips, a 1x4 grids layout is used. Otherwise, a 2x2 grids

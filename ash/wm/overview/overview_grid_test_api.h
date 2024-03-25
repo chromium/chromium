@@ -15,6 +15,8 @@ class Window;
 
 namespace ash {
 
+class BirchChipButton;
+
 class OverviewGridTestApi {
  public:
   explicit OverviewGridTestApi(OverviewGrid* overview_grid);
@@ -33,6 +35,8 @@ class OverviewGridTestApi {
     return overview_grid_->birch_bar_view_;
   }
   BirchBarView* birch_bar_view() { return overview_grid_->birch_bar_view_; }
+
+  const std::vector<raw_ptr<BirchChipButton>>& GetBirchChips() const;
 
  private:
   const raw_ptr<OverviewGrid> overview_grid_;

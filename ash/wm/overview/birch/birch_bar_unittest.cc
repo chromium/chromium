@@ -5,6 +5,7 @@
 #include "ash/birch/birch_client.h"
 #include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_item.h"
+#include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -15,6 +16,9 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
+#include "ash/wm/overview/birch/birch_bar_controller.h"
+#include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
 #include "ash/wm/overview/birch/birch_bar_view.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -24,10 +28,14 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/submenu_view.h"
 
 namespace ash {
 
@@ -112,6 +120,7 @@ class TestBirchClient : public BirchClient {
         std::make_unique<TestBirchDataProvider<BirchReleaseNotesItem>>(
             base::BindRepeating(&BirchModel::SetReleaseNotesItems,
                                 base::Unretained(birch_model)));
+    EXPECT_TRUE(test_dir_.CreateUniqueTempDir());
   }
   TestBirchClient(const TestBirchClient&) = delete;
   TestBirchClient& operator=(const TestBirchClient&) = delete;
@@ -158,7 +167,9 @@ class TestBirchClient : public BirchClient {
     std::move(callback).Run();
   }
 
-  base::FilePath GetRemovedItemsFilePath() override { return base::FilePath(); }
+  base::FilePath GetRemovedItemsFilePath() override {
+    return test_dir_.GetPath();
+  }
 
  private:
   void HandleCalendarFetch(const std::vector<BirchCalendarItem>& items) {
@@ -173,6 +184,7 @@ class TestBirchClient : public BirchClient {
   std::unique_ptr<TestBirchDataProvider<BirchTabItem>> tab_provider_;
   std::unique_ptr<TestBirchDataProvider<BirchReleaseNotesItem>>
       release_notes_provider_;
+  base::ScopedTempDir test_dir_;
 };
 
 }  // namespace
@@ -203,13 +215,15 @@ class BirchBarTest : public AshTestBase {
                                 base::Unretained(birch_model)));
     weather_provider_ = weather_provider.get();
     birch_model->OverrideWeatherProviderForTest(std::move(weather_provider));
+    base::RunLoop run_loop;
+    Shell::Get()
+        ->birch_model()
+        ->GetItemRemoverForTest()
+        ->SetProtoInitCallbackForTest(run_loop.QuitClosure());
+    run_loop.Run();
 
     // Prepare a file item for test.
-    std::vector<BirchFileItem> file_items;
-    file_items.emplace_back(base::FilePath("test path"), u"Suggestion",
-                            base::Time(), "file_id_0");
-    file_items.back().set_ranking(1.0f);
-    birch_client_->SetFileSuggestItems(file_items);
+    SetFileItems(/*rankings=*/{1.0f});
   }
 
   void TearDown() override {
@@ -221,6 +235,75 @@ class BirchBarTest : public AshTestBase {
   }
 
  protected:
+  // Adds several file birch items to data source with given `rankings`.
+  void SetFileItems(const std::vector<float>& rankings) {
+    std::vector<BirchFileItem> item_list;
+    for (size_t i = 0; i < rankings.size(); i++) {
+      item_list.emplace_back(
+          /*file_path=*/base::FilePath(base::StringPrintf("test path %lu", i)),
+          /*justification=*/u"suggestion",
+          /*timestamp=*/base::Time(),
+          /*file_id=*/base::StringPrintf("file_id_%lu", i));
+      item_list.back().set_ranking(rankings[i]);
+    }
+    birch_client_->SetFileSuggestItems(item_list);
+  }
+
+  // Adds several calendar birch items to data source with given `rankings`.
+  void SetCalendarItems(const std::vector<float>& rankings) {
+    std::vector<BirchCalendarItem> item_list;
+    for (size_t i = 0; i < rankings.size(); i++) {
+      item_list.emplace_back(
+          /*title=*/u"Event " + base::NumberToString16(i),
+          /*start_time=*/base::Time(),
+          /*end_time=*/base::Time(),
+          /*calendar_url=*/GURL(),
+          /*conference_url=*/GURL(),
+          /*event_id=*/base::StringPrintf("event_id_%ld", i));
+      item_list.back().set_ranking(rankings[i]);
+    }
+    birch_client_->SetCalendarItems(item_list);
+  }
+
+  // Adds several tab birch items to data source with given `rankings`.
+  void SetTabItems(const std::vector<float>& rankings) {
+    std::vector<BirchTabItem> item_list;
+    for (auto ranking : rankings) {
+      item_list.emplace_back(
+          /*title=*/u"tab", /*url*/ GURL("foo.bar"), /*timestamp=*/base::Time(),
+          /*favicon_url=*/GURL("favicon"), /*session_name=*/"session",
+          /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
+      item_list.back().set_ranking(ranking);
+    }
+    birch_client_->SetRecentTabsItems(item_list);
+  }
+
+  // Adds several release notes birch items to data source with given
+  // `rankings`.
+  void SetReleaseNotesItems(const std::vector<float>& rankings) {
+    std::vector<BirchReleaseNotesItem> item_list;
+    for (auto ranking : rankings) {
+      item_list.emplace_back(/*release_notes_title=*/u"note",
+                             /*release_notes_text=*/u"explore",
+                             /*url=*/GURL("foo.bar"),
+                             /*first_seen=*/base::Time());
+      item_list.back().set_ranking(ranking);
+    }
+    birch_client_->SetReleaseNotesItems(item_list);
+  }
+
+  // Adds several weather birch items to data source with given `rankings`.
+  void SetWeatherItems(const std::vector<float>& rankings) {
+    std::vector<BirchWeatherItem> item_list;
+    for (auto ranking : rankings) {
+      item_list.emplace_back(/*weather_description=*/u"cloudy",
+                             /*temperature=*/u"16 c",
+                             /*icon*/ ui::ImageModel());
+      item_list.back().set_ranking(ranking);
+    }
+    weather_provider_->set_items(item_list);
+  }
+
   std::unique_ptr<TestBirchClient> birch_client_;
   raw_ptr<TestBirchDataProvider<BirchWeatherItem>> weather_provider_;
 
@@ -276,16 +359,17 @@ TEST_F(BirchBarTest, HideBirchBarInPartialSplitScreen) {
 
   // The birch bar should be shown in the normal Overview.
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
-  EXPECT_TRUE(OverviewGridTestApi(root_window).birch_bar_view());
+  auto grid_test_api = OverviewGridTestApi(root_window);
+  EXPECT_TRUE(grid_test_api.birch_bar_view());
 
   // Snap window 1 to create a split screen and the birch bar should be hidden.
   SplitViewController::Get(root_window)
       ->SnapWindow(window_1.get(), SnapPosition::kPrimary);
-  EXPECT_FALSE(OverviewGridTestApi(root_window).birch_bar_view());
+  EXPECT_FALSE(grid_test_api.birch_bar_view());
 
   // Dismiss the split screen, the birch bar should be shown.
   window_1.reset();
-  EXPECT_TRUE(OverviewGridTestApi(root_window).birch_bar_view());
+  EXPECT_TRUE(grid_test_api.birch_bar_view());
 }
 
 // Tests that the birch bar will be hidden in the Tablet mode.
@@ -295,17 +379,137 @@ TEST_F(BirchBarTest, HideBirchBarInTabletMode) {
   EnterOverview();
 
   // The birch bar should be shown in the normal Overview.
-  aura::Window* root = Shell::GetPrimaryRootWindow();
-  EXPECT_TRUE(OverviewGridTestApi(root).birch_bar_view());
+  auto grid_test_api = OverviewGridTestApi(Shell::GetPrimaryRootWindow());
+  EXPECT_TRUE(grid_test_api.birch_bar_view());
 
   // Convert to Tablet mode, the birch bar should be hidden.
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_FALSE(OverviewGridTestApi(root).birch_bar_view());
+  EXPECT_FALSE(grid_test_api.birch_bar_view());
 
   // Convert to Clamshell mode, the birch bar should be shown.
   tablet_mode_controller->SetEnabledForTest(false);
-  EXPECT_TRUE(OverviewGridTestApi(root).birch_bar_view());
+  EXPECT_TRUE(grid_test_api.birch_bar_view());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// BirchBarMenuTest:
+// The test class of birch bar context menu.
+class BirchBarMenuTest : public BirchBarTest {
+ public:
+  BirchBarMenuTest() = default;
+  BirchBarMenuTest(const BirchBarMenuTest&) = delete;
+  BirchBarMenuTest& operator=(const BirchBarMenuTest&) = delete;
+  ~BirchBarMenuTest() override = default;
+
+  // BirchBarTest:
+  void SetUp() override {
+    BirchBarTest::SetUp();
+    // Clear existing items.
+    birch_client_->Reset();
+  }
+
+ protected:
+  BirchBarMenuModelAdapter* GetBirchBarChipMenuModelAdaper() {
+    auto* overview_session = GetOverviewSession();
+    CHECK(overview_session);
+    return overview_session->birch_bar_controller()
+        ->chip_menu_model_adapter_.get();
+  }
+
+  const std::vector<std::unique_ptr<BirchItem>>& GetBirchItemsInController()
+      const {
+    auto* overview_session = GetOverviewSession();
+    CHECK(overview_session);
+    return overview_session->birch_bar_controller()->items_;
+  }
+};
+
+// Tests that removing a suggestion from context menu.
+TEST_F(BirchBarMenuTest, RemoveChipFromContextMenu) {
+  // Create 5 suggestions with different item types.
+  SetWeatherItems(/*rankings=*/{1.0f});
+  SetCalendarItems(/*rankings=*/{2.0f, 5.0f});
+  SetFileItems(/*rankings=*/{3.0f});
+  SetTabItems(/*rankings=*/{4.0f});
+
+  // Add another screen such that we will have two synchronized bar views.
+  UpdateDisplay("1000x800,1000x800");
+
+  // Enter Overview and check the two bar views are created.
+  EnterOverview();
+
+  aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
+  ASSERT_EQ(root_windows.size(), 2u);
+  auto* root_window_1 = root_windows[0].get();
+  auto grid_test_api_1 = OverviewGridTestApi(root_window_1);
+  auto* root_window_2 = root_windows[1].get();
+  auto grid_test_api_2 = OverviewGridTestApi(root_window_2);
+
+  EXPECT_TRUE(grid_test_api_1.birch_bar_view());
+  EXPECT_TRUE(grid_test_api_2.birch_bar_view());
+
+  // Cache the chips on two bar views.
+  const auto& bar_1_chips = grid_test_api_1.GetBirchChips();
+  const auto& bar_2_chips = grid_test_api_2.GetBirchChips();
+
+  // Cached items in birch bar controller.
+  const auto& cached_items = GetBirchItemsInController();
+
+  // A functor to check if the current number of items are as expected and the
+  // chips showing on the bar match the items
+  auto chips_match_items = [&](size_t expected_num) {
+    for (const auto& chips : {bar_1_chips, bar_2_chips}) {
+      size_t item_num = cached_items.size();
+      EXPECT_EQ(item_num, expected_num);
+      EXPECT_EQ(
+          chips.size(),
+          std::min(static_cast<size_t>(BirchBarView::kMaxChipsNum), item_num));
+      for (size_t i = 0; i < chips.size(); i++) {
+        EXPECT_EQ(chips[i]->item(), cached_items[i].get());
+      }
+    }
+  };
+
+  // Initially, we should have all 5 items in controller.
+  chips_match_items(5);
+
+  // Remove the second chip on the first bar view.
+  // Right clicking on the second chip of first bar view to show the context
+  // menu.
+  RightClickOn(bar_1_chips[2]);
+
+  auto* model_adapter = GetBirchBarChipMenuModelAdaper();
+  EXPECT_TRUE(model_adapter->IsShowingMenu());
+
+  // Hiding the second suggestion by selecting the corresponding menu item.
+  const auto* hide_suggestion_item =
+      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(0);
+  EXPECT_EQ(hide_suggestion_item->GetCommand(),
+            base::to_underlying(
+                BirchBarContextMenuModel::CommandId::kHideSuggestion));
+
+  // Reset the model adapter pointer before selection to avoid dangling pointer,
+  // since the menu will be closed after selection.
+  model_adapter = nullptr;
+  LeftClickOn(hide_suggestion_item);
+
+  // Check if the item is removed and the chips on both bars get updated.
+  chips_match_items(4);
+
+  // Remove the second chips on the second bar.
+  RightClickOn(bar_2_chips[2]);
+
+  model_adapter = GetBirchBarChipMenuModelAdaper();
+  EXPECT_TRUE(model_adapter->IsShowingMenu());
+
+  hide_suggestion_item =
+      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(0);
+
+  model_adapter = nullptr;
+  LeftClickOn(hide_suggestion_item);
+  // Check if the item is removed and the chips on both bars get updated.
+  chips_match_items(3);
 }
 
 // The parameter structure for birch bar responsive layout tests.

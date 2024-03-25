@@ -52,6 +52,8 @@ class BirchBarController {
   void OnItemHiddenByUser(BirchItem* item);
 
  private:
+  friend class BirchBarMenuTest;
+
   // Called when birch items are fetched from model or the fetching process
   // timed out.
   void OnItemsFecthedFromModel();
