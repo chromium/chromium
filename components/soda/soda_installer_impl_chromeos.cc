@@ -77,7 +77,6 @@ SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
       {"ja-JP", {"libsoda-model-ja-jp-df23d1", LanguageCode::kJaJp}});
   available_languages.insert(
       {"de-DE", {"libsoda-model-de-de-df23d1", LanguageCode::kDeDe}});
-  available_languages.insert({"es-ES", {"", LanguageCode::kEsEs}});
   available_languages.insert(
       {"fr-FR", {"libsoda-model-fr-fr-df23d1", LanguageCode::kFrFr}});
   available_languages.insert(
@@ -109,7 +108,9 @@ SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
   available_languages.insert(
       {"de-CH", {"libsoda-model-de-ch-df23d1", LanguageCode::kDeCh}});
   available_languages.insert(
-      {"es-US", {"libsoda-model-en-us-df23d1", LanguageCode::kEsUs}});
+      {"es-US", {"libsoda-model-es-us-df23d1", LanguageCode::kEsUs}});
+  available_languages.insert(
+      {"es-ES", {"libsoda-model-es-us-df23d1", LanguageCode::kEsEs}});
   available_languages.insert({"da-DK", {"", LanguageCode::kDaDk}});
   available_languages.insert({"fr-CA", {"", LanguageCode::kFrCa}});
   available_languages.insert({"hi-IN", {"", LanguageCode::kHiIn}});
