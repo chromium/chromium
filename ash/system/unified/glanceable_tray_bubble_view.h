@@ -100,7 +100,7 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   raw_ptr<views::FlexLayoutView> time_management_container_view_ = nullptr;
 
   // Child bubble view for the tasks glanceable. Owned by this view.
-  raw_ptr<GlanceablesTasksViewBase> tasks_bubble_view_ = nullptr;
+  raw_ptr<GlanceablesTasksView> tasks_bubble_view_ = nullptr;
 
   // Child bubble view for the student classrooms glanceable. Owned by
   // this view.

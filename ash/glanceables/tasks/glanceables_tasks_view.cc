@@ -169,24 +169,13 @@ END_METADATA
 
 }  // namespace
 
-GlanceablesTasksViewBase::GlanceablesTasksViewBase(
-    bool use_glanceables_container_style)
-    : GlanceableTrayChildBubble(use_glanceables_container_style),
-      shown_time_(base::Time::Now()) {}
-
-GlanceablesTasksViewBase::~GlanceablesTasksViewBase() {
-  RecordTotalShowTimeForTasks(base::Time::Now() - shown_time_);
-}
-
-BEGIN_METADATA(GlanceablesTasksViewBase)
-END_METADATA
-
 // It is the parent container of GlanceablesTasksView that matches the style
 // of GlanceableTrayChildBubble, so `use_glanceables_container_style` is set to
 // false here.
 GlanceablesTasksView::GlanceablesTasksView(
     const ui::ListModel<api::TaskList>* task_lists)
-    : GlanceablesTasksViewBase(/*use_glanceables_container_style=*/false) {
+    : GlanceableTrayChildBubble(/*use_glanceables_container_style=*/false),
+      shown_time_(base::Time::Now()) {
   SetAccessibleRole(ax::mojom::Role::kGroup);
 
   auto* layout_manager =
@@ -285,6 +274,7 @@ GlanceablesTasksView::GlanceablesTasksView(
 }
 
 GlanceablesTasksView::~GlanceablesTasksView() {
+  RecordTotalShowTimeForTasks(base::Time::Now() - shown_time_);
   if (first_task_list_shown_) {
     RecordTasksListChangeCount(tasks_list_change_count_);
     RecordNumberOfAddedTasks(added_tasks_, task_list_initially_empty_,
@@ -296,14 +286,14 @@ void GlanceablesTasksView::ChildPreferredSizeChanged(View* child) {
   PreferredSizeChanged();
 }
 
-void GlanceablesTasksView::CancelUpdates() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
 void GlanceablesTasksView::OnViewFocused(views::View* view) {
   CHECK_EQ(view, task_list_combo_box_view_);
 
   AnnounceListStateOnComboBoxAccessibility();
+}
+
+void GlanceablesTasksView::CancelUpdates() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void GlanceablesTasksView::UpdateTaskLists(

@@ -36,30 +36,10 @@ class GlanceablesProgressBarView;
 class GlanceablesTaskViewV2;
 class TasksComboboxModel;
 
-// Temporary interface to allow smooth migration from `TasksBubbleView` to
-// `GlanceablesTasksView`.
-class ASH_EXPORT GlanceablesTasksViewBase : public GlanceableTrayChildBubble {
-  METADATA_HEADER(GlanceablesTasksViewBase, GlanceableTrayChildBubble)
-
- public:
-  explicit GlanceablesTasksViewBase(bool use_glanceables_container_style);
-  GlanceablesTasksViewBase(const GlanceablesTasksViewBase&) = delete;
-  GlanceablesTasksViewBase& operator=(const GlanceablesTasksViewBase&) = delete;
-  ~GlanceablesTasksViewBase() override;
-
-  // Invalidates any pending tasks, or tasks lists requests. Called when the
-  // glanceables bubble widget starts closing to avoid unnecessary UI updates.
-  virtual void CancelUpdates() = 0;
-
- private:
-  // Time stamp of when the view was created.
-  const base::Time shown_time_;
-};
-
 // Glanceables view responsible for interacting with Google Tasks.
-class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
+class ASH_EXPORT GlanceablesTasksView : public GlanceableTrayChildBubble,
                                         public views::ViewObserver {
-  METADATA_HEADER(GlanceablesTasksView, GlanceablesTasksViewBase)
+  METADATA_HEADER(GlanceablesTasksView, GlanceableTrayChildBubble)
 
  public:
   explicit GlanceablesTasksView(const ui::ListModel<api::TaskList>* task_lists);
@@ -70,11 +50,12 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   // views::View:
   void ChildPreferredSizeChanged(View* child) override;
 
-  // GlanceablesTasksViewBase:
-  void CancelUpdates() override;
-
   // views::ViewObserver:
   void OnViewFocused(views::View* view) override;
+
+  // Invalidates any pending tasks, or tasks lists requests. Called when the
+  // glanceables bubble widget starts closing to avoid unnecessary UI updates.
+  void CancelUpdates();
 
   // Updates the cached task lists to `task_lists` and the tasks that are
   // supposed to show.
@@ -206,6 +187,9 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   // Whether the user had a single task list with no tasks when the current task
   // list was selected.
   bool user_with_no_tasks_ = false;
+
+  // Time stamp of when the view was created.
+  const base::Time shown_time_;
 
   // Callback that recreates `task_list_combo_box_view_`.
   base::OnceClosure recreate_combobox_callback_;

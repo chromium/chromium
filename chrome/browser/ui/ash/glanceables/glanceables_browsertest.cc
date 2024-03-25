@@ -13,7 +13,6 @@
 #include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
-#include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/glanceables/tasks/glanceables_task_view_v2.h"
 #include "ash/glanceables/tasks/test/glanceables_tasks_test_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -242,12 +241,6 @@ class GlanceablesMvpBrowserTest : public GlanceablesBrowserTest {
     GlanceablesBrowserTest::SetUpOnMainThread();
     base::AddFeatureIdTagToTestResult(
         "screenplay-ace3b729-5402-40cd-b2bf-d488bc95b7e2");
-  }
-
-  // Returns the task view at `item_index`.
-  GlanceablesTaskView* GetTaskItemView(int item_index) {
-    return views::AsViewClass<GlanceablesTaskView>(
-        GetTasksItemContainerView()->children()[item_index]);
   }
 
  private:

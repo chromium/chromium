@@ -22,7 +22,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/classroom_bubble_student_view.h"
-#include "ash/system/unified/tasks_bubble_view.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -296,7 +295,8 @@ void GlanceableTrayBubbleView::InitializeContents() {
 
   auto* const tasks_client =
       Shell::Get()->glanceables_controller()->GetTasksClient();
-  if (should_show_non_calendar_glanceables && tasks_client) {
+  if (should_show_non_calendar_glanceables &&
+      features::IsGlanceablesTimeManagementTasksViewEnabled() && tasks_client) {
     CHECK(!tasks_bubble_view_);
     auto* cached_list = tasks_client->GetCachedTaskLists();
     if (!cached_list) {
@@ -400,18 +400,12 @@ void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
   }
 
   // Add tasks bubble before everything.
-  if (features::IsGlanceablesTimeManagementTasksViewEnabled()) {
-    time_management_container_view_ =
-        AddChildViewAt(std::make_unique<TimeManagementContainer>(), 0);
-    box_layout()->SetFlexForView(time_management_container_view_, 1);
-    tasks_bubble_view_ = time_management_container_view_->AddChildView(
-        std::make_unique<GlanceablesTasksView>(task_lists));
-    UpdateBubble();
-  } else {
-    tasks_bubble_view_ = scroll_view_->contents()->AddChildViewAt(
-        std::make_unique<TasksBubbleView>(task_lists), 0);
-    box_layout()->SetFlexForView(scroll_view_, 1);
-  }
+  time_management_container_view_ =
+      AddChildViewAt(std::make_unique<TimeManagementContainer>(), 0);
+  box_layout()->SetFlexForView(time_management_container_view_, 1);
+  tasks_bubble_view_ = time_management_container_view_->AddChildView(
+      std::make_unique<GlanceablesTasksView>(task_lists));
+  UpdateBubble();
 
   AdjustChildrenFocusOrder();
 }
@@ -469,23 +463,9 @@ void GlanceableTrayBubbleView::AdjustChildrenFocusOrder() {
     }
   }
 
-  const bool time_management_stable_launch =
-      features::AreAnyGlanceablesTimeManagementViewsEnabled();
-
-  // Only adds the time management view/container after the calendar
-  // view/container in the focus list if the calendar flag and the time
-  // management flag are on or off at the same time. Otherwise one of them will
-  // be in the scroll view and the other will be at the same level of the scroll
-  // view.
-  if (is_calendar_for_glanceables != time_management_stable_launch) {
-    return;
-  }
-
-  if (time_management_stable_launch) {
+  if (features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
     time_management_container_view_->InsertAfterInFocusList(
         calendar_container_);
-  } else {
-    tasks_bubble_view_->InsertAfterInFocusList(calendar_view_);
   }
 }
 
