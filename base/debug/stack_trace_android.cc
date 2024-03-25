@@ -91,7 +91,7 @@ void StackTrace::PrintWithPrefix(const char* prefix_string) const {
 // symbolize and demangle (e.g., addr2line, c++filt).
 void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
                                           const char* prefix_string) const {
-  if (!count_) {
+  if (!count_ || ShouldSuppressOutput()) {
     return;
   }
 

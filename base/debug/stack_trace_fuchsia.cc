@@ -245,7 +245,7 @@ void StackTrace::PrintWithPrefix(const char* prefix_string) const {
 // https://fuchsia.googlesource.com/zircon/+/master/docs/symbolizer_markup.md
 void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
                                           const char* prefix_string) const {
-  if (!count_) {
+  if (!count_ || ShouldSuppressOutput()) {
     return;
   }
   SymbolMap map;

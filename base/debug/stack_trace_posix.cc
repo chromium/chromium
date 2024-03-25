@@ -1045,7 +1045,7 @@ size_t CollectStackTrace(const void** trace, size_t count) {
 void StackTrace::PrintWithPrefix(const char* prefix_string) const {
 // NOTE: This code MUST be async-signal safe (it's used by in-process
 // stack dumping signal handler). NO malloc or stdio is allowed here.
-if (!count_) {
+if (!count_ || ShouldSuppressOutput()) {
   return;
 }
 #if defined(HAVE_BACKTRACE)
@@ -1057,7 +1057,7 @@ if (!count_) {
 #if defined(HAVE_BACKTRACE)
 void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
                                           const char* prefix_string) const {
-  if (!count_) {
+  if (!count_ || ShouldSuppressOutput()) {
     return;
   }
   StreamBacktraceOutputHandler handler(os);

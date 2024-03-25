@@ -396,7 +396,7 @@ void StackTrace::PrintWithPrefix(const char* prefix_string) const {
 
 void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
                                           const char* prefix_string) const {
-  if (!count_) {
+  if (!count_ || ShouldSuppressOutput()) {
     return;
   }
   SymbolContext* context = SymbolContext::GetInstance();
