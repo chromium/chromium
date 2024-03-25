@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "net/base/host_port_pair.h"
@@ -330,7 +331,7 @@ bool ThroughputAnalyzer::MaybeGetThroughputObservation(
   }
 
   // Round-up |downstream_kbps_double|.
-  *downstream_kbps = static_cast<int64_t>(std::ceil(downstream_kbps_double));
+  *downstream_kbps = base::ClampCeil<int32_t>(downstream_kbps_double);
   DCHECK(IsCurrentlyTrackingThroughput());
 
   // Stop the observation window since a throughput measurement has been taken.
