@@ -19,9 +19,6 @@ bool IsJapaneseSettingsMigrationComplete(const PrefService& prefs);
 
 void SetJapaneseSettingsMigrationComplete(PrefService& prefs, bool value);
 
-void MigrateJapaneseSettingsToPrefs(PrefService& prefs,
-                                    ime::mojom::JapaneseConfig config);
-
 // Returns true if Autocorrect is supported for a given engine id.
 bool IsAutocorrectSupported(const std::string& engine_id);
 
