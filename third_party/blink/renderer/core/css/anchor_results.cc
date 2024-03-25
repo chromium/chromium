@@ -13,6 +13,7 @@ void AnchorItem::Trace(Visitor* visitor) const {
 }
 
 void AnchorResults::Trace(Visitor* visitor) const {
+  AnchorEvaluator::Trace(visitor);
   visitor->Trace(map_);
 }
 

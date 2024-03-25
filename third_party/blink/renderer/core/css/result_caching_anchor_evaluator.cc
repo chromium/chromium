@@ -21,7 +21,7 @@ std::optional<LayoutUnit> ResultCachingAnchorEvaluator::Evaluate(
     return std::nullopt;
   }
   // Forward mode to inner evaluator.
-  AnchorScope anchor_scope(GetMode(), evaluator_);
+  AnchorScope anchor_scope(GetMode(), GetPositionAnchorName(), evaluator_);
   std::optional<LayoutUnit> result =
       evaluator_ ? evaluator_->Evaluate(query) : std::optional<LayoutUnit>();
   results_.Set(GetMode(), query, result);

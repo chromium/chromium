@@ -4351,6 +4351,7 @@
       runtime_flag: "CSSAnchorPositioning",
       valid_for_permission_element: true,
       valid_for_position_try: true,
+      priority: 1,
     },
     {
       name: "position-fallback-bounds",

@@ -258,15 +258,16 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   AnchorEvaluatorImpl(const LayoutObject& query_object,
                       const LogicalAnchorQuery& anchor_query,
-                      const ScopedCSSName* default_anchor_specifier,
+                      const ScopedCSSName* position_anchor_name,
                       const LayoutObject* implicit_anchor,
                       const WritingModeConverter& container_converter,
                       WritingDirectionMode self_writing_direction,
                       const PhysicalOffset& offset_to_padding_box,
                       const PhysicalSize& available_size)
-      : query_object_(&query_object),
+      : AnchorEvaluator(position_anchor_name),
+        query_object_(&query_object),
         anchor_query_(&anchor_query),
-        default_anchor_specifier_(default_anchor_specifier),
+        position_anchor_specifier_(position_anchor_name),
         implicit_anchor_(implicit_anchor),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
@@ -279,16 +280,17 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   // instead of |LogicalAnchorQuery|.
   AnchorEvaluatorImpl(const LayoutObject& query_object,
                       const LogicalAnchorQueryMap& anchor_queries,
-                      const ScopedCSSName* default_anchor_specifier,
+                      const ScopedCSSName* position_anchor_name,
                       const LayoutObject* implicit_anchor,
                       const LayoutObject& containing_block,
                       const WritingModeConverter& container_converter,
                       WritingDirectionMode self_writing_direction,
                       const PhysicalOffset& offset_to_padding_box,
                       const PhysicalSize& available_size)
-      : query_object_(&query_object),
+      : AnchorEvaluator(position_anchor_name),
+        query_object_(&query_object),
         anchor_queries_(&anchor_queries),
-        default_anchor_specifier_(default_anchor_specifier),
+        position_anchor_specifier_(position_anchor_name),
         implicit_anchor_(implicit_anchor),
         containing_block_(&containing_block),
         container_converter_(container_converter),
@@ -349,10 +351,12 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
     return IsYAxis() ? available_size_.height : available_size_.width;
   }
 
+  void ValidateDefaultAnchor() const;
+
   const LayoutObject* query_object_ = nullptr;
   mutable const LogicalAnchorQuery* anchor_query_ = nullptr;
   const LogicalAnchorQueryMap* anchor_queries_ = nullptr;
-  const ScopedCSSName* default_anchor_specifier_ = nullptr;
+  mutable const ScopedCSSName* position_anchor_specifier_ = nullptr;
   const LayoutObject* implicit_anchor_ = nullptr;
   const LayoutObject* containing_block_ = nullptr;
   const WritingModeConverter container_converter_{

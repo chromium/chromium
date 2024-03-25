@@ -360,9 +360,19 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::Evaluate(
   }
 }
 
+void AnchorEvaluatorImpl::ValidateDefaultAnchor() const {
+  if (!base::ValuesEquivalent(GetPositionAnchorName(),
+                              position_anchor_specifier_)) {
+    position_anchor_specifier_ = GetPositionAnchorName();
+    default_anchor_.reset();
+    default_anchor_scroll_container_layer_.reset();
+  }
+}
+
 const LogicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorReference(
     const AnchorSpecifierValue& anchor_specifier) const {
-  if (!anchor_specifier.IsNamed() && !default_anchor_specifier_ &&
+  ValidateDefaultAnchor();
+  if (!anchor_specifier.IsNamed() && !position_anchor_specifier_ &&
       !implicit_anchor_) {
     return nullptr;
   }
@@ -374,14 +384,15 @@ const LogicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorReference(
     return anchor_query->AnchorReference(*query_object_,
                                          &anchor_specifier.GetName());
   }
-  if (anchor_specifier.IsDefault() && default_anchor_specifier_) {
+  if (anchor_specifier.IsDefault() && position_anchor_specifier_) {
     return anchor_query->AnchorReference(*query_object_,
-                                         default_anchor_specifier_);
+                                         position_anchor_specifier_);
   }
   return anchor_query->AnchorReference(*query_object_, implicit_anchor_);
 }
 
 const LayoutObject* AnchorEvaluatorImpl::DefaultAnchor() const {
+  ValidateDefaultAnchor();
   if (!default_anchor_.has_value()) {
     const LogicalAnchorReference* reference =
         ResolveAnchorReference(*AnchorSpecifierValue::Default());
@@ -398,6 +409,7 @@ const LayoutObject* AnchorEvaluatorImpl::DefaultAnchor() const {
 
 const PaintLayer* AnchorEvaluatorImpl::DefaultAnchorScrollContainerLayer()
     const {
+  ValidateDefaultAnchor();
   if (!default_anchor_scroll_container_layer_.has_value()) {
     // We won't reach here without a default anchor.
     default_anchor_scroll_container_layer_ =

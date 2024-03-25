@@ -107,7 +107,7 @@ class CORE_EXPORT AnchorResults : public AnchorEvaluator {
   bool IsEmpty() const { return map_.empty(); }
   bool IsAnyResultDifferent(AnchorEvaluator*) const;
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  private:
   AnchorResultMap map_;

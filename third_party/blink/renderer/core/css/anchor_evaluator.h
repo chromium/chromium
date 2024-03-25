@@ -17,9 +17,15 @@ namespace blink {
 
 class AnchorQuery;
 class AnchorScope;
+class ComputedStyleBuilder;
+class ScopedCSSName;
 
 class CORE_EXPORT AnchorEvaluator {
+  DISALLOW_NEW();
+
  public:
+  AnchorEvaluator() = default;
+
   // The evaluation of anchor() and anchor-size() functions is affected
   // by the context they are used in. For example, it is not allowed to
   // do anchor() queries "cross-axis" (e.g. left:anchor(--a top)),
@@ -61,18 +67,32 @@ class CORE_EXPORT AnchorEvaluator {
   // axis.), in which case the fallback should be used.
   virtual std::optional<LayoutUnit> Evaluate(const AnchorQuery&) = 0;
 
+  virtual void Trace(Visitor*) const;
+
  protected:
+  explicit AnchorEvaluator(const ScopedCSSName* position_anchor_name)
+      : position_anchor_name_(position_anchor_name) {}
+
+  const ScopedCSSName* GetPositionAnchorName() const {
+    return position_anchor_name_;
+  }
   Mode GetMode() const { return mode_; }
 
  private:
   friend class AnchorScope;
+
+  // The computed position-anchor in use for the current try option.
+  Member<const ScopedCSSName> position_anchor_name_;
+  // The computed position-anchor in use for the current try option.
   Mode mode_ = Mode::kNone;
 };
 
-// Temporarily sets the Mode of an AnchorEvaluator.
+// Temporarily changes Mode, default anchor (position-anchor), and apply the
+// current inset-area to modify the containing block position / size. When going
+// out of scope the AnchorEvaluator is reset back to its previous state with
+// caches that need to be invalidated cleared.
 //
-// This class behaves like base::AutoReset, except it allows `anchor_evalutor`
-// to be nullptr (in which case the AnchorScope has no effect).
+// If the anchor_evaluator is nullptr the AnchorScope should have no effect.
 //
 // See AnchorEvaluator::Mode for more information.
 class CORE_EXPORT AnchorScope {
@@ -81,22 +101,27 @@ class CORE_EXPORT AnchorScope {
  public:
   using Mode = AnchorEvaluator::Mode;
 
-  explicit AnchorScope(Mode mode, AnchorEvaluator* anchor_evaluator)
-      : target_(anchor_evaluator ? &anchor_evaluator->mode_ : nullptr),
-        original_(anchor_evaluator ? anchor_evaluator->mode_ : Mode::kNone) {
-    if (target_) {
-      *target_ = mode;
-    }
-  }
+  // Temporarily change Mode, applied inset-area and position-anchor.
+  AnchorScope(Mode, const ComputedStyleBuilder&, AnchorEvaluator*);
+  AnchorScope(Mode,
+              const ScopedCSSName* position_anchor_name,
+              AnchorEvaluator*);
+  // Temporarily change Mode only. Applied inset-area and position-anchor stay
+  // the same.
+  AnchorScope(Mode, AnchorEvaluator*);
+
   ~AnchorScope() {
-    if (target_) {
-      *target_ = original_;
+    if (anchor_evaluator_) {
+      anchor_evaluator_->mode_ = original_mode_;
+      anchor_evaluator_->position_anchor_name_ = original_position_anchor_name_;
     }
   }
 
  private:
-  Mode* target_;
-  Mode original_;
+  AnchorEvaluator* anchor_evaluator_ = nullptr;
+  const ScopedCSSName* original_position_anchor_name_ = nullptr;
+  Mode original_mode_ = Mode::kNone;
+  // TODO(329584105): Add inset-area
 };
 
 }  // namespace blink
