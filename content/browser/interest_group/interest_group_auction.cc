@@ -244,6 +244,7 @@ bool IsValidBid(double bid) {
 // individual bids; TryToCreateBid does that.
 bool IsValidMultiBid(
     auction_worklet::mojom::KAnonymityBidMode kanon_mode,
+    AuctionMetricsRecorder* auction_metrics_recorder,
     const std::vector<auction_worklet::mojom::BidderWorkletBidPtr>& mojo_bids,
     uint16_t multi_bid_limit) {
   unsigned kanon_bids = 0;
@@ -265,6 +266,9 @@ bool IsValidMultiBid(
         break;
     }
   }
+
+  auction_metrics_recorder->RecordNumberOfBidsFromGenerateBid(kanon_bids,
+                                                              mojo_bids.size());
 
   // There shouldn't be any k-anon bids if we're not dealing with it.
   if (kanon_mode == auction_worklet::mojom::KAnonymityBidMode::kNone &&
@@ -1872,7 +1876,8 @@ class InterestGroupAuction::BuyerHelper
     // Validate that we did not get too many bids and that the k-anon roles
     // aren't weird.
     auto kanon_mode = auction_->kanon_mode_;
-    if (!IsValidMultiBid(kanon_mode, mojo_bids, multi_bid_limit_)) {
+    if (!IsValidMultiBid(kanon_mode, auction_->auction_metrics_recorder_,
+                         mojo_bids, multi_bid_limit_)) {
       mojo_bids.clear();
       generate_bid_client_receiver_set_.ReportBadMessage(
           "Too many bids or wrong roles");
@@ -1895,14 +1900,10 @@ class InterestGroupAuction::BuyerHelper
       state->reject_reason = reject_reason;
     }
 
-    // Provide legacy metrics for non-multibid case.
-    // TODO(https://crbug.com/323856489) Proper metrics for multi-bid.
-
+    // Provide legacy metrics for non-multibid cases.
     if (mojo_bids.empty()) {
       auction_->auction_metrics_recorder_->RecordInterestGroupWithNoBids();
-    }
-
-    if (mojo_bids.size() == 1) {
+    } else if (mojo_bids.size() == 1) {
       if (mojo_bids[0]->bid_role ==
           auction_worklet::mojom::BidRole::kBothKAnonModes) {
         auction_->auction_metrics_recorder_
@@ -1911,15 +1912,16 @@ class InterestGroupAuction::BuyerHelper
         auction_->auction_metrics_recorder_
             ->RecordInterestGroupWithOnlyNonKAnonBid();
       }
-    }
-
-    if (mojo_bids.size() == 2 &&
-        mojo_bids[0]->bid_role ==
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon &&
-        mojo_bids[1]->bid_role ==
-            auction_worklet::mojom::BidRole::kEnforcedKAnon) {
+    } else if (mojo_bids.size() == 2 &&
+               mojo_bids[0]->bid_role ==
+                   auction_worklet::mojom::BidRole::kUnenforcedKAnon &&
+               mojo_bids[1]->bid_role ==
+                   auction_worklet::mojom::BidRole::kEnforcedKAnon) {
       auction_->auction_metrics_recorder_
           ->RecordInterestGroupWithSeparateBidsForKAnonAndNonKAnon();
+    } else {
+      auction_->auction_metrics_recorder_
+          ->RecordInterestGroupWithOtherMultiBid();
     }
 
     // Even bidders who do not bid are allowed to get loss reports.

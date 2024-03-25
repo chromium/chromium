@@ -144,6 +144,15 @@ void AuctionMetricsRecorder::OnAuctionEnd(AuctionResult auction_result) {
   builder_.SetNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnon(
       GetExponentialBucketMinForCounts1000(
           num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon_));
+  builder_.SetNumInterestGroupsWithOtherMultiBid(
+      GetExponentialBucketMinForCounts1000(
+          num_interest_groups_with_other_multi_bid_));
+
+  if (num_bids_generated_) {
+    base::UmaHistogramPercentage(
+        "Ads.InterestGroup.Auction.PercentBidsKAnon",
+        100 * num_kanon_bids_generated_ / num_bids_generated_);
+  }
 
   MaybeSetMeanAndMaxLatency(
       component_auction_latency_aggregator_,
@@ -444,6 +453,19 @@ void AuctionMetricsRecorder::
 void AuctionMetricsRecorder::
     RecordInterestGroupWithSameBidForKAnonAndNonKAnon() {
   ++num_interest_groups_with_same_bid_for_k_anon_and_non_k_anon_;
+}
+
+void AuctionMetricsRecorder::RecordInterestGroupWithOtherMultiBid() {
+  ++num_interest_groups_with_other_multi_bid_;
+}
+
+void AuctionMetricsRecorder::RecordNumberOfBidsFromGenerateBid(
+    size_t k_anom_num,
+    size_t total_num) {
+  num_kanon_bids_generated_ += k_anom_num;
+  num_bids_generated_ += total_num;
+  base::UmaHistogramCounts100(
+      "Ads.InterestGroup.Auction.NumBidsGeneratedAtOnce", total_num);
 }
 
 void AuctionMetricsRecorder::RecordComponentAuctionLatency(

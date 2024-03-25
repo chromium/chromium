@@ -2440,6 +2440,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                 Entry::kNumInterestGroupsWithSameBidForKAnonAndNonKAnonName,
                 Entry::
                     kNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnonName,
+                Entry::kNumInterestGroupsWithOtherMultiBidName,
                 /* ComponentAuction latency metrics */
                 Entry::kMeanComponentAuctionLatencyInMillisName,
                 Entry::kMaxComponentAuctionLatencyInMillisName,
@@ -2625,6 +2626,12 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       return *this;
     }
 
+    MetricsExpectations& SetNumInterestGroupsWithOtherMultiBid(int64_t value) {
+      num_interest_groups_with_other_multi_bid = value;
+      InferHasBidRelatedLatencyMetrics();
+      return *this;
+    }
+
     // This should be called after calls to any of the SetNumInterestGroups*
     // methods above, as those override the value of this expectation.
     MetricsExpectations& SetHasBidForOneInterestGroupLatencyMetrics(
@@ -2658,7 +2665,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       bool generated_bids =
           num_interest_groups_with_only_non_k_anon_bid +
               num_interest_groups_with_same_bid_for_k_anon_and_non_k_anon +
-              num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon >
+              num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon +
+              num_interest_groups_with_other_multi_bid >
           0;
       SetHasBidForOneInterestGroupLatencyMetrics(generated_bids);
       SetHasGenerateSingleBidLatencyMetrics(generated_bids);
@@ -2711,6 +2719,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     int64_t num_interest_groups_with_same_bid_for_k_anon_and_non_k_anon = 0;
     int64_t num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon =
         0;
+    int64_t num_interest_groups_with_other_multi_bid = 0;
 
     bool has_bid_for_one_interest_group_latency_metrics = false;
     bool has_generate_single_bid_latency_metrics = false;
@@ -2888,6 +2897,11 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
             UkmEntry::kNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnonName,
             expectations
                 .num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon));
+
+    EXPECT_THAT(ukm_metrics,
+                HasMetricWithValue(
+                    UkmEntry::kNumInterestGroupsWithOtherMultiBidName,
+                    expectations.num_interest_groups_with_other_multi_bid));
 
     bool is_multi_seller_auction =
         expectations.num_sellers && *expectations.num_sellers >= 2;
@@ -20921,6 +20935,13 @@ TEST_P(AuctionRunnerKAnonTest, MultiBid) {
   };
 
   base::flat_set<std::string> expected_k_anon_keys_to_join;
+  MetricsExpectations expectations(AuctionResult::kSuccess);
+  expectations.SetNumInterestGroups(2)
+      .SetNumOwnersAndDistinctOwners(2)
+      .SetNumOwnersWithoutInterestGroups(0)
+      .SetNumSellers(1)
+      .SetNumBidderWorklets(2)
+      .SetNumInterestGroupsWithOtherMultiBid(2);
   switch (kanon_mode()) {
     case KAnonMode::kNone:
       // k-anonymity is not being considered, so the bid with value 10, bd3,
@@ -20932,6 +20953,9 @@ TEST_P(AuctionRunnerKAnonTest, MultiBid) {
                   testing::ElementsAre("https://reporting.example.com/10"));
       expected_k_anon_keys_to_join.insert(bd3_k_anon_keys.begin(),
                                           bd3_k_anon_keys.end());
+      histogram_tester_->ExpectUniqueSample(
+          /*name=*/"Ads.InterestGroup.Auction.PercentBidsKAnon",
+          /*sample=*/0, /*expected_bucket_count=*/1);
       break;
 
     case KAnonMode::kEnforce:
@@ -20946,6 +20970,9 @@ TEST_P(AuctionRunnerKAnonTest, MultiBid) {
                                           bd3_k_anon_keys.end());
       expected_k_anon_keys_to_join.insert(ad3_k_anon_keys.begin(),
                                           ad3_k_anon_keys.end());
+      histogram_tester_->ExpectUniqueSample(
+          /*name=*/"Ads.InterestGroup.Auction.PercentBidsKAnon",
+          /*sample=*/50, /*expected_bucket_count=*/1);
       break;
 
     case KAnonMode::kSimulate:
@@ -20960,8 +20987,18 @@ TEST_P(AuctionRunnerKAnonTest, MultiBid) {
                                           bd3_k_anon_keys.end());
       expected_k_anon_keys_to_join.insert(ad3_k_anon_keys.begin(),
                                           ad3_k_anon_keys.end());
+      histogram_tester_->ExpectUniqueSample(
+          /*name=*/"Ads.InterestGroup.Auction.PercentBidsKAnon",
+          /*sample=*/50, /*expected_bucket_count=*/1);
       break;
   }
+  CheckMetrics(expectations);
+
+  // This test always produces 3 bids from each IG.
+  histogram_tester_->ExpectBucketCount(
+      /*name=*/"Ads.InterestGroup.Auction.NumBidsGeneratedAtOnce",
+      /*sample=*/3, /*expected_count=*/2);
+
   // Have to spin all message loops to flush any k-anon set join events.
   task_environment()->RunUntilIdle();
   EXPECT_THAT(interest_group_manager_->TakeJoinedKAnonSets(),

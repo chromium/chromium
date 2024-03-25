@@ -737,6 +737,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.NumBidsGeneratedAtOnce" units="bids"
+    expires_after="2025-03-15">
+  <owner>morlovich@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Number of bids produced by a particular generateBid() call that will need
+    scoring (counting the k-anon re-run as the same call). This includes the
+    non-k-anon bids, including those produced when splitting a bid into two to
+    subset component ads.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.NumInterestGroups" units="groups"
     expires_after="2024-08-25">
   <owner>mmenke@chromium.org</owner>
@@ -854,6 +869,20 @@ chromium-metrics-reviews@google.com.
     skipped due to enforcing the auction limit, see
     NumAuctionsSkippedDueToAuctionLimit. Also, not updated if runAdAuction()
     fails before the auction worklets run.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.PercentBidsKAnon" units="%"
+    expires_after="2025-03-15">
+  <owner>morlovich@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Percentage of total generated bids that's k-anon eligible for participation
+    in the real auction (as opposed to non-k-anon requiring one), aggregated
+    over the entire auction (including components).
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
