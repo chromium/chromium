@@ -321,6 +321,16 @@ def _render(jinja_env: jinja2.Environment, template_name: str,
                             params)
 
 
+def _add_default_params(test: _TestParams) -> _TestParams:
+    params = {
+        'desc': '',
+        'size': [100, 50],
+        'variant_names': [],
+    }
+    params.update(test)
+    return params
+
+
 def _write_reference_test(jinja_env: jinja2.Environment, params: _TestParams,
                           enabled_tests: Set[_CanvasType],
                           output_files: _OutputPaths) -> None:
@@ -428,16 +438,8 @@ def _generate_test(test: _TestParams, jinja_env: jinja2.Environment,
 
     enabled_canvas_types = _get_enabled_canvas_types(test)
 
-    # Defaults:
-    params = {
-        'desc': '',
-        'size': [100, 50],
-    }
-
-    params.update(test)
-
     # Render parameters used in the test name.
-    name = jinja_env.from_string(name).render(params)
+    name = jinja_env.from_string(name).render(test)
     print(f'\r({name})', ' ' * 32, '\t')
 
     expected_img = None
@@ -446,6 +448,7 @@ def _generate_test(test: _TestParams, jinja_env: jinja2.Environment,
                                                 enabled_canvas_types,
                                                 output_dirs)
 
+    params = dict(test)
     params.update({
         'code': _expand_test_code(test['code']),
         'expected_img': expected_img
@@ -572,6 +575,7 @@ def generate_test_files(name_to_dir_file: str) -> None:
 
     used_tests = collections.defaultdict(set)
     for test in tests:
+        test = _add_default_params(test)
         for variant in _get_variants(test):
             sub_dir = _get_test_sub_dir(variant['name'], name_to_sub_dir)
             _generate_test(variant, jinja_env, used_tests,
