@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/timer/elapsed_timer.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -138,6 +139,11 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(200);
     self.actionButtonsVisibility =
         isRestricted ? ActionButtonsVisibility::kEquallyWeightedButtonShown
                      : ActionButtonsVisibility::kRegularButtonsShown;
+    signin_metrics::SyncButtonsType buttonType =
+        isRestricted
+            ? signin_metrics::SyncButtonsType::kHistorySyncEqualWeighted
+            : signin_metrics::SyncButtonsType::kHistorySyncNotEqualWeighted;
+    base::UmaHistogramEnumeration("Signin.SyncButtons.Shown", buttonType);
   }
 }
 
