@@ -97,6 +97,11 @@
 // view of this view controller is initialized. This must only be called once.
 - (void)setBadgeView:(UIView*)badgeView;
 
+// Sets the Contextual Panel Entrypoint view to display different entrypoint
+// UIs. This must be called only once and set before the view of this view
+// controller is initialized.
+- (void)setContextualPanelEntrypointView:(UIView*)contextualPanelEntrypointView;
+
 // Switches between the two states of the location bar:
 // - editing state, with the textfield;
 // - non-editing state, with location icon and text.

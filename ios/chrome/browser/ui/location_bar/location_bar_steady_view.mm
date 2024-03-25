@@ -49,6 +49,9 @@ const CGFloat kLeadingMargin = 20;
 // view.
 @property(nonatomic, strong) UIView* locationContainerView;
 
+// The stackview containing the infobar badge and Contextual Panel entrypoint.
+@property(nonatomic, strong) UIStackView* badgesContainerStackView;
+
 // Leading constraint for locationContainerView when there is no BadgeView to
 // its left.
 @property(nonatomic, strong)
@@ -63,14 +66,15 @@ const CGFloat kLeadingMargin = 20;
 // based on the type of trailing button in use (i.e. share or voice search).
 @property(nonatomic, readonly) CGFloat trailingButtonTrailingSpacing;
 
-// Constraints to pin the badge view to the right next to the
+// Constraints to pin the badges container stackview to the right next to the
 // `locationContainerView`.
 @property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* badgeViewFullScreenEnabledConstraints;
+    NSArray<NSLayoutConstraint*>* badgesStackViewFullScreenEnabledConstraints;
 
-// Constraints to pin the badge view to the left side of the LocationBar.
+// Constraints to pin the badges container stackview to the left side of the
+// LocationBar.
 @property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* badgeViewFullScreenDisabledConstraints;
+    NSArray<NSLayoutConstraint*>* badgesStackViewFullScreenDisabledConstraints;
 
 // Constraints to hide the location image view.
 @property(nonatomic, strong)
@@ -232,8 +236,40 @@ const CGFloat kLeadingMargin = 20;
 
     [self addSubview:_locationButton];
 
-
     AddSameConstraints(self, _locationButton);
+
+    // Badges (infobar badge & Contextual Panel entrypoint) container stackview.
+    _badgesContainerStackView = [[UIStackView alloc] init];
+    _badgesContainerStackView.translatesAutoresizingMaskIntoConstraints = NO;
+    _badgesContainerStackView.isAccessibilityElement = NO;
+    _badgesContainerStackView.axis = UILayoutConstraintAxisHorizontal;
+    _badgesContainerStackView.alignment = UIStackViewAlignmentCenter;
+    [_locationButton addSubview:_badgesContainerStackView];
+
+    self.badgesStackViewFullScreenEnabledConstraints = @[
+      [_badgesContainerStackView.leadingAnchor
+          constraintGreaterThanOrEqualToAnchor:self.leadingAnchor],
+      [_badgesContainerStackView.trailingAnchor
+          constraintEqualToAnchor:self.locationContainerView.leadingAnchor],
+    ];
+
+    self.badgesStackViewFullScreenDisabledConstraints = @[
+      [_badgesContainerStackView.leadingAnchor
+          constraintEqualToAnchor:self.leadingAnchor],
+      [_badgesContainerStackView.trailingAnchor
+          constraintLessThanOrEqualToAnchor:self.locationContainerView
+                                                .leadingAnchor],
+    ];
+
+    [NSLayoutConstraint
+        activateConstraints:
+            [self.badgesStackViewFullScreenDisabledConstraints
+                arrayByAddingObjectsFromArray:@[
+                  [_badgesContainerStackView.topAnchor
+                      constraintEqualToAnchor:self.topAnchor],
+                  [_badgesContainerStackView.bottomAnchor
+                      constraintEqualToAnchor:self.bottomAnchor],
+                ]]];
 
     // Make the label gravitate towards the center of the view.
     _xConstraint = [_locationContainerView.centerXAnchor
@@ -371,41 +407,38 @@ const CGFloat kLeadingMargin = 20;
   if (!hadBadgeView && badgeView) {
     _badgeView.translatesAutoresizingMaskIntoConstraints = NO;
     _badgeView.isAccessibilityElement = NO;
-    [self.locationButton addSubview:_badgeView];
-    // Adding InfobarBadge button as an accessibility element behind location
-    // label. Thus, there should be at least one object already in
-    // `accessibleElements`.
-    DCHECK_GT([self.accessibleElements count], 0U);
-    [self.accessibleElements insertObject:_badgeView atIndex:1];
+    [_badgesContainerStackView addArrangedSubview:_badgeView];
 
-    // Lazy init.
-    self.badgeViewFullScreenEnabledConstraints = @[
-      [self.badgeView.leadingAnchor
-          constraintGreaterThanOrEqualToAnchor:self.leadingAnchor],
-      [self.badgeView.trailingAnchor
-          constraintEqualToAnchor:self.locationContainerView.leadingAnchor],
-    ];
-
-    self.badgeViewFullScreenDisabledConstraints = @[
-      [self.badgeView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-      [self.badgeView.trailingAnchor
-          constraintLessThanOrEqualToAnchor:self.locationContainerView
-                                                .leadingAnchor],
-    ];
-
-    [NSLayoutConstraint deactivateConstraints:@[
-      self.locationContainerViewLeadingAnchorConstraint
+    [NSLayoutConstraint activateConstraints:@[
+      [_badgeView.heightAnchor
+          constraintEqualToAnchor:_badgesContainerStackView.heightAnchor],
     ]];
 
-    [NSLayoutConstraint
-        activateConstraints:
-            [self.badgeViewFullScreenDisabledConstraints
-                arrayByAddingObjectsFromArray:@[
-                  [self.badgeView.topAnchor
-                      constraintEqualToAnchor:self.topAnchor],
-                  [self.badgeView.bottomAnchor
-                      constraintEqualToAnchor:self.bottomAnchor],
-                ]]];
+    [self updateAccessibility];
+  }
+}
+
+- (void)setContextualPanelEntrypointView:
+    (UIView*)contextualPanelEntrypointView {
+  BOOL hadEntrypointView = _contextualPanelEntrypointView != nil;
+  if (!hadEntrypointView && contextualPanelEntrypointView) {
+    _contextualPanelEntrypointView = contextualPanelEntrypointView;
+    _contextualPanelEntrypointView.translatesAutoresizingMaskIntoConstraints =
+        NO;
+    _contextualPanelEntrypointView.isAccessibilityElement = NO;
+
+    // The Contextual Panel entrypoint view should be first in its containing
+    // stackview, regardless of when it was added.
+    [_badgesContainerStackView
+        insertArrangedSubview:_contextualPanelEntrypointView
+                      atIndex:0];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_contextualPanelEntrypointView.heightAnchor
+          constraintEqualToAnchor:_badgesContainerStackView.heightAnchor],
+    ]];
+
+    [self updateAccessibility];
   }
 }
 
@@ -415,31 +448,21 @@ const CGFloat kLeadingMargin = 20;
   }
   if (isFullScreenCollapsed) {
     [NSLayoutConstraint
-        activateConstraints:self.badgeViewFullScreenEnabledConstraints];
-    [NSLayoutConstraint
-        deactivateConstraints:self.badgeViewFullScreenDisabledConstraints];
+        activateConstraints:self.badgesStackViewFullScreenEnabledConstraints];
+    [NSLayoutConstraint deactivateConstraints:
+                            self.badgesStackViewFullScreenDisabledConstraints];
   } else {
     [NSLayoutConstraint
-        deactivateConstraints:self.badgeViewFullScreenEnabledConstraints];
+        deactivateConstraints:self.badgesStackViewFullScreenEnabledConstraints];
     [NSLayoutConstraint
-        activateConstraints:self.badgeViewFullScreenDisabledConstraints];
+        activateConstraints:self.badgesStackViewFullScreenDisabledConstraints];
   }
 }
 
 - (void)displayBadgeView:(BOOL)display animated:(BOOL)animated {
-  if (display) {
-    // Adding InfobarBadge button as an accessibility element behind location
-    // label. Thus, there should be at least one object alreading in
-    // `accessibleElements`.
-    DCHECK([self.accessibleElements count] > 0);
-    if ([self.accessibleElements indexOfObject:self.badgeView] == NSNotFound) {
-      [self.accessibleElements insertObject:self.badgeView atIndex:1];
-    }
-  } else {
-    [self.accessibleElements removeObject:self.badgeView];
-  }
   void (^changeHiddenState)() = ^{
     self.badgeView.hidden = !display;
+    [self updateAccessibility];
   };
   if (animated) {
     [UIView animateWithDuration:kbadgeViewAnimationDuration
@@ -509,7 +532,13 @@ const CGFloat kLeadingMargin = 20;
 
 #pragma mark - private
 
+// Updates the location accessibility label and adds the correct views to
+// accessible elements depending on their current displayed state.
 - (void)updateAccessibility {
+  [self.accessibleElements removeAllObjects];
+
+  [_accessibleElements addObject:_locationButton];
+
   if (self.securityLevelAccessibilityString.length > 0) {
     self.locationButton.accessibilityValue =
         [NSString stringWithFormat:@"%@ %@", self.locationLabel.text,
@@ -519,13 +548,17 @@ const CGFloat kLeadingMargin = 20;
         [NSString stringWithFormat:@"%@", self.locationLabel.text];
   }
 
-  if (self.trailingButton.enabled) {
-    if ([self.accessibleElements indexOfObject:self.trailingButton] ==
-        NSNotFound) {
-      [self.accessibleElements addObject:self.trailingButton];
-    }
-  } else {
-    [self.accessibleElements removeObject:self.trailingButton];
+  if (self.contextualPanelEntrypointView &&
+      !self.contextualPanelEntrypointView.hidden) {
+    [self.accessibleElements addObject:self.contextualPanelEntrypointView];
+  }
+
+  if (self.badgeView && !self.badgeView.hidden) {
+    [self.accessibleElements addObject:self.badgeView];
+  }
+
+  if (self.trailingButton && self.trailingButton.enabled) {
+    [self.accessibleElements addObject:self.trailingButton];
   }
 }
 

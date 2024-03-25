@@ -214,6 +214,15 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
             initWithBaseViewController:self.viewController
                                browser:self.browser];
     [self.contextualPanelEntrypointCoordinator start];
+
+    [self.viewController
+        addChildViewController:self.contextualPanelEntrypointCoordinator
+                                   .viewController];
+    [self.viewController
+        setContextualPanelEntrypointView:
+            self.contextualPanelEntrypointCoordinator.viewController.view];
+    [self.contextualPanelEntrypointCoordinator.viewController
+        didMoveToParentViewController:self.viewController];
   }
 
   // Create button factory that wil be used by the ViewController to get

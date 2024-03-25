@@ -50,6 +50,7 @@
       kInfobarSymbolPointSize);
 
   [self.consumer setEntrypointImage:image];
+  [self.consumer showEntrypoint];
 }
 
 @end

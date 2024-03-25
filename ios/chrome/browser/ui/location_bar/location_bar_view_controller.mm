@@ -49,10 +49,6 @@ typedef NS_ENUM(int, TrailingButtonState) {
 // The size of the symbol image.
 const CGFloat kSymbolImagePointSize = 18.;
 
-// FullScreen progress threshold in which to toggle between full screen on and
-// off mode for the badge view.
-const double kFullscreenProgressBadgeViewThreshold = 0.85;
-
 // Identifier for the omnibox embedded in this location bar as a scribble
 // element.
 const NSString* kScribbleOmniboxElementId = @"omnibox";
@@ -69,6 +65,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
 // The injected badge view.
 @property(nonatomic, strong) UIView* badgeView;
+
+// The injected Contextual Panel entrypoint view;
+@property(nonatomic, strong) UIView* contextualPanelEntrypointView;
 
 // The view that displays current location when the omnibox is not focused.
 @property(nonatomic, strong) LocationBarSteadyView* locationBarSteadyView;
@@ -114,6 +113,12 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 - (void)setBadgeView:(UIView*)badgeView {
   DCHECK(!self.badgeView);
   _badgeView = badgeView;
+}
+
+- (void)setContextualPanelEntrypointView:
+    (UIView*)contextualPanelEntrypointView {
+  DCHECK(!self.contextualPanelEntrypointView);
+  _contextualPanelEntrypointView = contextualPanelEntrypointView;
 }
 
 - (void)switchToEditing:(BOOL)editing {
@@ -174,6 +179,14 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   [super viewDidLoad];
   self.view.clipsToBounds = YES;
 
+  // TODO(crbug.com/328446957): Cleanup when fully launched, at which point
+  // `contextualPanelEntrypointView` should be CHECK()'ed. Until fully launched,
+  // the entrypoint view might be nil if the flag is disabled.
+  if (self.contextualPanelEntrypointView) {
+    self.locationBarSteadyView.contextualPanelEntrypointView =
+        self.contextualPanelEntrypointView;
+  }
+
   DCHECK(self.badgeView) << "The badge view must be set at this point";
   self.locationBarSteadyView.badgeView = self.badgeView;
 
@@ -228,8 +241,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   CGFloat alphaValue = fmax((progress - 0.85) / 0.15, 0);
   CGFloat scaleValue = 0.79 + 0.21 * progress;
   self.locationBarSteadyView.trailingButton.alpha = alphaValue;
-  BOOL badgeViewShouldCollapse =
-      progress <= kFullscreenProgressBadgeViewThreshold;
+  BOOL badgeViewShouldCollapse = progress <= kFullscreenProgressThreshold;
   [self.locationBarSteadyView
       setFullScreenCollapsedMode:badgeViewShouldCollapse];
   self.locationBarSteadyView.transform =

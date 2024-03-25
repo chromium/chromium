@@ -60,6 +60,8 @@
 // The view displaying badges in the leading corner of the view.
 // TODO(crbug.com/991241): Pass into init as parameter.
 @property(nonatomic, strong) UIView* badgeView;
+// The view displaying the Contextual Panel's entrypoint.
+@property(nonatomic, strong) UIView* contextualPanelEntrypointView;
 // The button displayed in the trailing corner of the view, i.e. share button.
 @property(nonatomic, strong) CustomHighlightableButton* trailingButton;
 // The string that describes the current security level. Used for a11y.

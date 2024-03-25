@@ -20,5 +20,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/fullscreen",
   ]
 }

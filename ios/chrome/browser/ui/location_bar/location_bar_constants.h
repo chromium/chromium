@@ -12,6 +12,10 @@
 // on an iPhone.
 extern const CGFloat kiPhoneLocationBarPlaceholderColorBrightness;
 
+// FullScreen progress threshold in which to toggle between full screen on and
+// off mode for the leading views in the location bar.
+extern const double kFullscreenProgressThreshold;
+
 // Last button in accessory view for keyboard, commonly used TLD.
 extern NSString* const kDotComTLD;
 

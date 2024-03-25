@@ -6,6 +6,8 @@
 
 const CGFloat kiPhoneLocationBarPlaceholderColorBrightness = 150 / 255.0;
 
+const double kFullscreenProgressThreshold = 0.85;
+
 NSString* const kDotComTLD = @".com";
 
 NSString* const kOmniboxShareButtonIdentifier =

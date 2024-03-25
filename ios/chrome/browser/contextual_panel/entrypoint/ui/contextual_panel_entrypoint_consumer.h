@@ -13,6 +13,9 @@
 // Update the consumer with the image to be shown on the entrypoint badge.
 - (void)setEntrypointImage:(UIImage*)image;
 
+// Notify the consumer to show the entrypoint.
+- (void)showEntrypoint;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_ENTRYPOINT_UI_CONTEXTUAL_PANEL_ENTRYPOINT_CONSUMER_H_

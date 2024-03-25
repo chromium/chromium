@@ -8,12 +8,13 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 
 @protocol ContextualPanelEntrypointMutator;
 
 // View controller for ContextualPanelEntrypoint.
 @interface ContextualPanelEntrypointViewController
-    : UIViewController <ContextualPanelEntrypointConsumer>
+    : UIViewController <ContextualPanelEntrypointConsumer, FullscreenUIElement>
 
 // This view controller's mutator.
 @property(nonatomic, weak) id<ContextualPanelEntrypointMutator> mutator;
