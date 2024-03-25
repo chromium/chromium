@@ -8,7 +8,9 @@ export function open_and_wait_for_popup(origin, path) {
 
     // We rely on the popup page to send us a message when done.
     const popup_message_handler = (event) => {
-      if (event.origin == origin) {
+      // We use new URL() to ensure the two origins are normalized the same
+      // way (especially so that default ports are handled identically).
+      if (new URL(event.origin).toString() == new URL(origin).toString()) {
         popup_window.close();
         window.removeEventListener('message', popup_message_handler);
         resolve();
