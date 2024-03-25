@@ -6,20 +6,18 @@
 
 #include "base/logging.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_osauth.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/local_data_loss_warning_screen_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/user_manager/user_manager.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 namespace {
-
-constexpr const char kUserActionContinueAnyway[] = "recreateUser";
-constexpr const char kUserActionPowerwash[] = "powerwash";
-constexpr const char kUserActionBack[] = "back";
-constexpr const char kUserActionCancel[] = "cancel";
 
 bool isOwner(const AccountId& account_id) {
   auto* user = user_manager::UserManager::Get()->FindUser(account_id);
@@ -62,6 +60,13 @@ LocalDataLossWarningScreen::LocalDataLossWarningScreen(
 
 LocalDataLossWarningScreen::~LocalDataLossWarningScreen() = default;
 
+void LocalDataLossWarningScreen::BindReceiver(
+    mojo::PendingReceiver<
+        screens_osauth::mojom::LocalDataLossWarningPageHandler> receiver) {
+  page_handler_.reset();
+  page_handler_.Bind(std::move(receiver));
+}
+
 void LocalDataLossWarningScreen::ShowImpl() {
   bool can_go_back = context()->knowledge_factor_setup.data_loss_back_option !=
                      WizardContext::DataLossBackOptions::kNone;
@@ -70,38 +75,49 @@ void LocalDataLossWarningScreen::ShowImpl() {
               can_go_back);
 }
 
-void LocalDataLossWarningScreen::OnUserAction(const base::Value::List& args) {
-  const std::string& action_id = args[0].GetString();
-  if (action_id == kUserActionContinueAnyway) {
-    mount_performer_->RemoveUserDirectory(
-        std::move(context()->user_context),
-        base::BindOnce(&LocalDataLossWarningScreen::OnRemovedUserDirectory,
-                       weak_factory_.GetWeakPtr()));
-    return;
-  } else if (action_id == kUserActionPowerwash) {
-    if (!isOwner(context()->user_context->GetAccountId())) {
-      LOG(ERROR) << "Non owner user requesting powerwash, ignoring";
-      return;
-    }
-    SessionManagerClient::Get()->StartDeviceWipe(base::DoNothing());
-    return;
-  } else if (action_id == kUserActionBack) {
-    switch (context()->knowledge_factor_setup.data_loss_back_option) {
-      case WizardContext::DataLossBackOptions::kNone:
-        NOTREACHED() << "Back button should not be shown";
-        return;
-      case WizardContext::DataLossBackOptions::kBackToOnlineAuth:
-        exit_callback_.Run(Result::kBackToOnlineAuth);
-        return;
-      case WizardContext::DataLossBackOptions::kBackToLocalAuth:
-        exit_callback_.Run(Result::kBackToLocalAuth);
-        return;
-    }
-  } else if (action_id == kUserActionCancel) {
-    exit_callback_.Run(Result::kCancel);
+void LocalDataLossWarningScreen::OnPowerwash() {
+  if (is_hidden()) {
     return;
   }
-  BaseOSAuthSetupScreen::OnUserAction(args);
+  if (!isOwner(context()->user_context->GetAccountId())) {
+    LOG(ERROR) << "Non owner user requesting powerwash, ignoring";
+    return;
+  }
+  SessionManagerClient::Get()->StartDeviceWipe(base::DoNothing());
+}
+
+void LocalDataLossWarningScreen::OnRecreateUser() {
+  if (is_hidden()) {
+    return;
+  }
+  mount_performer_->RemoveUserDirectory(
+      std::move(context()->user_context),
+      base::BindOnce(&LocalDataLossWarningScreen::OnRemovedUserDirectory,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void LocalDataLossWarningScreen::OnCancel() {
+  if (is_hidden()) {
+    return;
+  }
+  exit_callback_.Run(Result::kCancel);
+}
+
+void LocalDataLossWarningScreen::OnBack() {
+  if (is_hidden()) {
+    return;
+  }
+  switch (context()->knowledge_factor_setup.data_loss_back_option) {
+    case WizardContext::DataLossBackOptions::kNone:
+      NOTREACHED() << "Back button should not be shown";
+      return;
+    case WizardContext::DataLossBackOptions::kBackToOnlineAuth:
+      exit_callback_.Run(Result::kBackToOnlineAuth);
+      return;
+    case WizardContext::DataLossBackOptions::kBackToLocalAuth:
+      exit_callback_.Run(Result::kBackToLocalAuth);
+      return;
+  }
 }
 
 void LocalDataLossWarningScreen::OnRemovedUserDirectory(

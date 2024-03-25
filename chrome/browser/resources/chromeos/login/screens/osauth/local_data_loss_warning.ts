@@ -17,8 +17,10 @@ import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {LocalDataLossWarningPageHandlerRemote} from '../../mojom-webui/screens_osauth.mojom-webui.js';
+import {OobeScreensFacotryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './local_data_loss_warning.html.js';
 
@@ -76,11 +78,16 @@ export class LocalDataLossWarning extends LocalDataLossWarningBase {
   private disabled : boolean;
   private isOwner : boolean;
   private canGoBack : boolean;
+  private handler: LocalDataLossWarningPageHandlerRemote;
 
 
   constructor() {
     super();
     this.disabled = false;
+    this.handler = new LocalDataLossWarningPageHandlerRemote();
+    OobeScreensFacotryBrowserProxy.getInstance()
+        .screenFactory.createLocalDataLossWarningPageHandler(
+            this.handler.$.bindNewPipeAndPassReceiver());
   }
 
   override ready(): void {
@@ -120,7 +127,7 @@ export class LocalDataLossWarning extends LocalDataLossWarningBase {
       return;
     }
     this.disabled = true;
-    this.userActed('recreateUser');
+    this.handler.onRecreateUser();
   }
 
   private onResetClicked(): void {
@@ -128,21 +135,21 @@ export class LocalDataLossWarning extends LocalDataLossWarningBase {
       return;
     }
     this.disabled = true;
-    this.userActed('powerwash');
+    this.handler.onPowerwash();
   }
 
   private onBackButtonClicked(): void {
     if (this.disabled) {
       return;
     }
-    this.userActed('back');
+    this.handler.onBack();
   }
 
   private onCancelClicked() : void {
     if (this.disabled) {
       return;
     }
-    this.userActed('cancel');
+    this.handler.onCancel();
   }
 }
 

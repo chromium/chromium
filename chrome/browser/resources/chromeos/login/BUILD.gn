@@ -60,6 +60,7 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/ui/webui/ash/login/mojom/screens_factory.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/ash/login/mojom/screens_osauth.mojom-webui.ts",
   ]
 
   mojo_base_path = "mojom-webui"

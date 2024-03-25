@@ -8,6 +8,7 @@ mojom("mojom") {
     "screens_factory.mojom",
     "screens_login.mojom",
     "screens_oobe.mojom",
+    "screens_osauth.mojom",
   ]
   webui_module_path = "/"
 }

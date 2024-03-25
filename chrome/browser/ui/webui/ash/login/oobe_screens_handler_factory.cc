@@ -8,12 +8,14 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
 #include "chrome/browser/ash/login/screens/lacros_data_backward_migration_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/local_data_loss_warning_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_factory.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom.h"
+#include "chrome/browser/ui/webui/ash/login/osauth/local_data_loss_warning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
 
 namespace ash {
@@ -74,4 +76,15 @@ void OobeScreensHandlerFactory::CreateLacrosDataBackwardMigrationScreenHandler(
   lacros_data_backward->BindRemoteAndReciever(std::move(page),
                                               std::move(receiver));
 }
+
+void OobeScreensHandlerFactory::CreateLocalDataLossWarningPageHandler(
+    mojo::PendingReceiver<
+        screens_osauth::mojom::LocalDataLossWarningPageHandler> receiver) {
+  CHECK(WizardController::default_controller());
+  LocalDataLossWarningScreen* local_data_loss_warning =
+      WizardController::default_controller()
+          ->GetScreen<LocalDataLossWarningScreen>();
+  local_data_loss_warning->BindReceiver(std::move(receiver));
+}
+
 }  // namespace ash

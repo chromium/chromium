@@ -1,0 +1,22 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.screens_osauth.mojom;
+
+// Interface for the local data loss warning screen.
+// Lives in the browser process. A renderer uses this to invoke
+// methods that are implemented in the browser process.
+interface  LocalDataLossWarningPageHandler {
+  // Emits a reset button clicked.
+  OnPowerwash();
+
+  // Emits a continue button clicked.
+  OnRecreateUser();
+
+  // Emits a cancel button clicked.
+  OnCancel();
+
+  // Emits a back button clicked.
+  OnBack();
+};

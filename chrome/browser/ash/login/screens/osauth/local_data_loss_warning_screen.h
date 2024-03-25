@@ -11,14 +11,19 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_osauth.mojom.h"
 #include "chromeos/ash/components/login/auth/mount_performer.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-shared.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
 class LocalDataLossWarningScreenView;
 
-class LocalDataLossWarningScreen : public BaseOSAuthSetupScreen {
+class LocalDataLossWarningScreen
+    : public BaseOSAuthSetupScreen,
+      public screens_osauth::mojom::LocalDataLossWarningPageHandler {
  public:
   using TView = LocalDataLossWarningScreenView;
 
@@ -43,13 +48,25 @@ class LocalDataLossWarningScreen : public BaseOSAuthSetupScreen {
 
   ~LocalDataLossWarningScreen() override;
 
+  void BindReceiver(
+      mojo::PendingReceiver<
+          screens_osauth::mojom::LocalDataLossWarningPageHandler> receiver);
+
  private:
   // BaseScreen:
   void ShowImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+
+  // screens_osauth::mojom::LocalDataLossWarningPageHandler:
+  void OnPowerwash() override;
+  void OnRecreateUser() override;
+  void OnCancel() override;
+  void OnBack() override;
 
   void OnRemovedUserDirectory(std::unique_ptr<UserContext> user_context,
                               std::optional<AuthenticationError> error);
+
+  mojo::Receiver<screens_osauth::mojom::LocalDataLossWarningPageHandler>
+      page_handler_{this};
 
   base::WeakPtr<LocalDataLossWarningScreenView> view_;
 

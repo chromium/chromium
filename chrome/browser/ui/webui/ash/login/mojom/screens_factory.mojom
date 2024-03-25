@@ -7,6 +7,7 @@ module ash.screens_factory.mojom;
 import "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom";
 import "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom";
 import "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom";
+import "chrome/browser/ui/webui/ash/login/mojom/screens_osauth.mojom";
 
 // Lives in the browser process. A renderer uses this to create a page handler
 // that enables communication between a renderer and the browser process.
@@ -35,4 +36,12 @@ interface ScreensFactory {
             page,
       pending_receiver<ash.screens_login.mojom.LacrosDataBackwardMigrationPageHandler>
             handler);
+
+  // ash.screens_osauth.mojom
+
+  // Creates a LocalDataLossWarningPageHandler and
+  // connects it up to the LocalDataLossWarningPage.
+  CreateLocalDataLossWarningPageHandler(
+    pending_receiver<ash.screens_osauth.mojom.LocalDataLossWarningPageHandler>
+        handler);
 };
