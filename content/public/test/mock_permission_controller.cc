@@ -10,18 +10,4 @@ MockPermissionController::MockPermissionController() = default;
 
 MockPermissionController::~MockPermissionController() = default;
 
-void MockPermissionController::RequestPermissionFromCurrentDocument(
-    RenderFrameHost* render_frame_host,
-    PermissionRequestDescription request_description,
-    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {}
-
-void MockPermissionController::RequestPermissionsFromCurrentDocument(
-    RenderFrameHost* render_frame_host,
-    PermissionRequestDescription request_description,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
-        callback) {}
-
-void MockPermissionController::ResetPermission(blink::PermissionType permission,
-                                               const url::Origin& origin) {}
-
 }  // namespace content
