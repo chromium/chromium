@@ -8,6 +8,7 @@
 
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/browser_task_environment.h"
@@ -32,63 +33,39 @@ const char kAllHostsPermission[] = "*://*/*";
 // These `cws_info` variables are used to test the various
 // `safety_check_extensions_handler` states.
 // Will trigger the extension handler due to the malware violation.
-static extensions::CWSInfoService::CWSInfo cws_info_malware{
-    true,
-    false,
-    base::Time::Now(),
-    extensions::CWSInfoService::CWSViolationType::kMalware,
-    false,
-    false};
+static CWSInfoService::CWSInfo cws_info_malware{
+    true,  false, base::Time::Now(), CWSInfoService::CWSViolationType::kMalware,
+    false, false};
 // Will trigger the extension handler due to the policy violation.
-static extensions::CWSInfoService::CWSInfo cws_info_policy{
-    true,
-    false,
-    base::Time::Now(),
-    extensions::CWSInfoService::CWSViolationType::kPolicy,
-    false,
-    false};
+static CWSInfoService::CWSInfo cws_info_policy{
+    true,  false, base::Time::Now(), CWSInfoService::CWSViolationType::kPolicy,
+    false, false};
 // Will trigger the extension handler due to being unpublished.
-static extensions::CWSInfoService::CWSInfo cws_info_unpublished{
-    true,
-    false,
-    base::Time::Now(),
-    extensions::CWSInfoService::CWSViolationType::kNone,
-    true,
-    false};
+static CWSInfoService::CWSInfo cws_info_unpublished{
+    true, false, base::Time::Now(), CWSInfoService::CWSViolationType::kNone,
+    true, false};
 // Will trigger the extension handler due to multiple triggers.
-static extensions::CWSInfoService::CWSInfo cws_info_multi{
-    true,
-    false,
-    base::Time::Now(),
-    extensions::CWSInfoService::CWSViolationType::kMalware,
-    true,
-    false};
+static CWSInfoService::CWSInfo cws_info_multi{
+    true, false, base::Time::Now(), CWSInfoService::CWSViolationType::kMalware,
+    true, false};
 // Will not trigger the extension handler.
-static extensions::CWSInfoService::CWSInfo cws_info_no_trigger{
-    true,
-    false,
-    base::Time::Now(),
-    extensions::CWSInfoService::CWSViolationType::kNone,
-    false,
-    false};
+static CWSInfoService::CWSInfo cws_info_no_trigger{
+    true,  false, base::Time::Now(), CWSInfoService::CWSViolationType::kNone,
+    false, false};
 // Will not trigger the extension handler.
-static extensions::CWSInfoService::CWSInfo cws_info_no_data{
-    false,
-    false,
-    base::Time::Now(),
-    extensions::CWSInfoService::CWSViolationType::kMalware,
-    false,
-    false};
+static CWSInfoService::CWSInfo cws_info_no_data{
+    false, false, base::Time::Now(), CWSInfoService::CWSViolationType::kMalware,
+    false, false};
 
-class MockCWSInfoService : public extensions::CWSInfoService {
+class MockCWSInfoService : public CWSInfoService {
  public:
   MOCK_METHOD(std::optional<bool>,
               IsLiveInCWS,
-              (const extensions::Extension&),
+              (const Extension&),
               (const, override));
   MOCK_METHOD(std::optional<CWSInfoServiceInterface::CWSInfo>,
               GetCWSInfo,
-              (const extensions::Extension&),
+              (const Extension&),
               (const, override));
   MOCK_METHOD(void, CheckAndMaybeFetchInfo, (), (override));
   MOCK_METHOD(void,
@@ -139,13 +116,12 @@ class SafetyCheckExtensionsHandlerTest : public testing::Test {
   }
 
   void RemoveExtension(const Extension* extension) {
-    extensions::ExtensionRegistry::Get(profile_.get())
-        ->TriggerOnUninstalled(extension,
-                               extensions::UNINSTALL_REASON_FOR_TESTING);
+    ExtensionRegistry::Get(profile_.get())
+        ->TriggerOnUninstalled(extension, UNINSTALL_REASON_FOR_TESTING);
   }
 
   void AcknowledgeSafetyCheck(const std::string& name) {
-    extensions::ExtensionPrefs::Get(profile_.get())
+    ExtensionPrefs::Get(profile_.get())
         ->UpdateExtensionPref(name, "ack_safety_check_warning",
                               base::Value(true));
   }
@@ -155,6 +131,7 @@ class SafetyCheckExtensionsHandlerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   testing::NiceMock<MockCWSInfoService> mock_cws_info_service_;
   std::unique_ptr<settings::SafetyCheckExtensionsHandler> safety_check_handler_;
+  base::test::ScopedFeatureList feature_list_;
   raw_ptr<ExtensionPrefs> extension_prefs_;
 };
 
@@ -197,13 +174,16 @@ TEST_F(SafetyCheckExtensionsHandlerTest,
 
 TEST_F(SafetyCheckExtensionsHandlerTest,
        GetNumberOfExtensionsThatNeedReview_BlocklistPrefs) {
-  // Create 3 mock extensions, of which 2 are a blocklist triggers for review
-  // (malware, policy violation).
+  feature_list_.InitAndEnableFeature(features::kSafetyHubExtensionsUwSTrigger);
+  // Create 4 mock extensions, of which 3 are a blocklist triggers for review
+  // (malware, policy violation, uws).
   const std::string extension_name_malware = "TestExtensionMalware";
   const std::string extension_name_policy = "TestExtensionPolicy";
+  const std::string extension_name_uws = "TestExtensionUwS";
   AddExtension(extension_name_malware, ManifestLocation::kInternal);
   AddExtension(extension_name_policy, ManifestLocation::kInternal);
-  AddExtension("TestExtension3", ManifestLocation::kInternal);
+  AddExtension(extension_name_uws, ManifestLocation::kInternal);
+  AddExtension("TestExtension4", ManifestLocation::kInternal);
 
   // Add blocklist states to 2 extensions.
   blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
@@ -213,15 +193,20 @@ TEST_F(SafetyCheckExtensionsHandlerTest,
       crx_file::id_util::GenerateId(extension_name_policy),
       BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
       extension_prefs());
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      crx_file::id_util::GenerateId(extension_name_uws),
+      extensions::BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+      extension_prefs());
 
   EXPECT_CALL(mock_cws_info_service_, GetCWSInfo)
-      .Times(3)
+      .Times(4)
+      .WillOnce(testing::Return(cws_info_no_trigger))
       .WillOnce(testing::Return(cws_info_no_trigger))
       .WillOnce(testing::Return(cws_info_no_trigger))
       .WillOnce(testing::Return(cws_info_no_trigger));
 
-  // 2 triggering extensions based on blocklist prefs.
-  EXPECT_EQ(2, GetNumberOfExtensionsThatNeedReview());
+  // 3 triggering extensions based on blocklist prefs.
+  EXPECT_EQ(3, GetNumberOfExtensionsThatNeedReview());
 }
 
 TEST_F(SafetyCheckExtensionsHandlerTest, OnExtensionPrefsDeletedTest) {

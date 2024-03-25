@@ -1109,6 +1109,9 @@ BASE_FEATURE(kRemoveSupervisedUsersOnStartup,
 BASE_FEATURE(kSafetyCheckExtensions,
              "SafetyCheckExtensions",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSafetyHubExtensionsUwSTrigger,
+             "SafetyHubExtensionsUwSTrigger",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables Safety Hub feature.

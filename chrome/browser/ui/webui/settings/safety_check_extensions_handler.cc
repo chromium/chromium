@@ -6,6 +6,7 @@
 
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
@@ -88,8 +89,13 @@ bool SafetyCheckExtensionsHandler::CheckExtensionForTrigger(
     case extensions::BitMapBlocklistState::BLOCKLISTED_MALWARE:
     case extensions::BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION:
       return true;
-    case extensions::BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY:
     case extensions::BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED:
+      if (base::FeatureList::IsEnabled(
+              features::kSafetyHubExtensionsUwSTrigger)) {
+        return true;
+      }
+      break;
+    case extensions::BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY:
     case extensions::BitMapBlocklistState::NOT_BLOCKLISTED:
       // no-op.
       break;

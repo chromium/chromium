@@ -36,6 +36,7 @@
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -614,6 +615,27 @@ TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_PolicyViolation) {
     EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF),
               info->safety_check_text->panel_string);
   }
+}
+
+TEST_F(ExtensionInfoGeneratorUnitTest,
+       SafetyCheckStringsTest_PotentiallyUnwanted) {
+  feature_list_.InitAndEnableFeature(features::kSafetyHubExtensionsUwSTrigger);
+  const scoped_refptr<const Extension> extension =
+      CreateExtension("test", base::Value::List(), ManifestLocation::kInternal);
+
+  // Blocklist - Potentially unwanted.
+  service()->GreylistExtensionForTest(
+      extension->id(), BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED);
+  EXPECT_CALL(mock_cws_info_service_, GetCWSInfo)
+      .Times(1)
+      .WillOnce(testing::Return(MockCWSInfoService::GetCWSInfoNone()));
+  std::unique_ptr<developer::ExtensionInfo> info =
+      GenerateExtensionInfo(extension->id());
+  // TODO(crbug.com/5327689): Update strings to real values once finalized.
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED),
+            info->safety_check_text->detail_string);
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_UNPUBLISHED_OFF),
+            info->safety_check_text->panel_string);
 }
 
 TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_DifferentStates) {

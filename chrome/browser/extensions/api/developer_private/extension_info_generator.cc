@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -837,6 +838,9 @@ ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
           BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION ||
       (valid_cws_info &&
        cws_info->violation_type == CWSInfoService::CWSViolationType::kPolicy);
+  bool potentially_unwanted =
+      base::FeatureList::IsEnabled(features::kSafetyHubExtensionsUwSTrigger) &&
+      blocklist_state == BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED;
 
   if (malware) {
     detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_MALWARE;
@@ -846,6 +850,12 @@ ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
     panel_string_id = state == developer::ExtensionState::kEnabled
                           ? IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON
                           : IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF;
+  } else if (potentially_unwanted) {
+    // TODO(crbug.com/5327689): Update strings to real values once finalized.
+    detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED;
+    panel_string_id = state == developer::ExtensionState::kEnabled
+                          ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
+                          : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
   } else if (valid_cws_info && cws_info->unpublished_long_ago) {
     detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED;
     panel_string_id = state == developer::ExtensionState::kEnabled
