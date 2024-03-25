@@ -22,6 +22,7 @@
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_store/password_model_type_controller_delegate_android.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
@@ -304,6 +305,20 @@ SmartBubbleStatsStore* PasswordStoreBuiltInBackend::GetSmartBubbleStatsStore() {
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordStoreBuiltInBackend::CreateSyncControllerDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+  // TODO: crbug.com/321220529 - Return
+  // PasswordModelTypeConrollerDelegateAndroid directly.
+  if (password_manager::features::
+          IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()) {
+    auto delegate =
+        std::make_unique<PasswordModelTypeConrollerDelegateAndroid>();
+    return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        base::BindRepeating(
+            &PasswordModelTypeConrollerDelegateAndroid::GetWeakPtrToBaseClass,
+            std::move(delegate)));
+  }
+#endif
   DCHECK(helper_);
   // Note that a callback is bound for
   // GetSyncControllerDelegate() because this getter itself
