@@ -53,16 +53,14 @@ ProductSpecificationsSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   // TODO(b/329519487) implement
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  return {};
 }
 std::optional<syncer::ModelError>
 ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   // TODO(b/329519488) implement
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  return {};
 }
 
 std::string ProductSpecificationsSyncBridge::GetStorageKey(
