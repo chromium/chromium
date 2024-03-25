@@ -440,6 +440,7 @@ const RoleEntry kReverseRoles[] = {
     {"option", ax::mojom::blink::Role::kMenuListOption},
     {"option", ax::mojom::blink::Role::kListBoxOption},
     {"group", ax::mojom::blink::Role::kDetails},
+    {"generic", ax::mojom::blink::Role::kFooterAsNonLandmark},
     {"combobox", ax::mojom::blink::Role::kComboBoxMenuButton},
     {"combobox", ax::mojom::blink::Role::kComboBoxSelect},
     {"combobox", ax::mojom::blink::Role::kTextFieldWithComboBox}};
