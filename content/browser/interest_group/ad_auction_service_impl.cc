@@ -5,6 +5,7 @@
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 
 #include <map>
+#include <memory>
 #include <optional>
 #include <set>
 #include <string>
@@ -368,8 +369,15 @@ void AdAuctionServiceImpl::CreateAuctionNonce(
         "CreateAuctionNonce with FledgeNegativeTargeting off");
     return;
   }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgeCreateAuctionNonceSynchronousResolution)) {
+    ReportBadMessageAndDeleteThis(
+        "CreateAuctionNonce with FledgeCreateAuctionNonceSynchronousResolution "
+        "on");
+    return;
+  }
   std::move(callback).Run(
-      static_cast<base::Uuid>(auction_nonce_manager_.CreateAuctionNonce()));
+      static_cast<base::Uuid>(auction_nonce_manager_->CreateAuctionNonce()));
 }
 
 void AdAuctionServiceImpl::RunAdAuction(
@@ -445,7 +453,7 @@ void AdAuctionServiceImpl::RunAdAuction(
                           base::Unretained(this));
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
-      &auction_worklet_manager_, &auction_nonce_manager_,
+      &auction_worklet_manager_, auction_nonce_manager_.get(),
       &GetInterestGroupManager(), render_frame_host().GetBrowserContext(),
       private_aggregation_manager_, std::move(ad_auction_page_data_callback),
       // Unlike other callbacks, this needs to be safe to call after destruction
@@ -727,7 +735,7 @@ AdAuctionServiceImpl::AdAuctionServiceImpl(
           GetTopWindowOrigin(),
           origin(),
           this),
-      auction_nonce_manager_(GetFrame()),
+      auction_nonce_manager_(CreateAuctionNonceManager(GetFrame())),
       private_aggregation_manager_(PrivateAggregationManager::GetManager(
           *render_frame_host.GetBrowserContext())) {
   // Throughout the auction, the `PageImpl` of the frame which initiates the

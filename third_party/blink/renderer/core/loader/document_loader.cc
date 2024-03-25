@@ -43,6 +43,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/types/optional_util.h"
+#include "base/uuid.h"
 #include "build/chromeos_buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/client_hints.h"
@@ -290,6 +291,7 @@ struct SameSizeAsDocumentLoader
   scoped_refptr<SharedBuffer> data_buffer;
   Vector<DocumentLoader::DecodedBodyData> decoded_data_buffer_;
   base::UnguessableToken devtools_navigation_token;
+  base::Uuid base_auction_nonce;
   LoaderFreezeMode defers_loading;
   bool last_navigation_had_transient_user_activation;
   bool had_sticky_activation;
@@ -521,6 +523,7 @@ DocumentLoader::DocumentLoader(
       in_commit_data_(false),
       data_buffer_(SharedBuffer::Create()),
       devtools_navigation_token_(params_->devtools_navigation_token),
+      base_auction_nonce_(params_->base_auction_nonce),
       last_navigation_had_transient_user_activation_(
           params_->had_transient_user_activation),
       had_sticky_activation_(params_->is_user_activated),
@@ -681,6 +684,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->service_worker_network_provider =
       std::move(service_worker_network_provider_);
   params->devtools_navigation_token = devtools_navigation_token_;
+  params->base_auction_nonce = base_auction_nonce_;
   params->is_user_activated = had_sticky_activation_;
   params->had_transient_user_activation =
       last_navigation_had_transient_user_activation_;
@@ -2741,7 +2745,8 @@ void DocumentLoader::CommitNavigation() {
           .WithSrcdocDocument(loading_srcdoc_)
           .WithJavascriptURL(commit_reason_ == CommitReason::kJavascriptUrl)
           .WithFallbackBaseURL(fallback_base_url_)
-          .WithUkmSourceId(ukm_source_id_));
+          .WithUkmSourceId(ukm_source_id_)
+          .WithBaseAuctionNonce(base_auction_nonce_));
 
   RecordUseCountersForCommit();
   RecordConsoleMessagesForCommit();

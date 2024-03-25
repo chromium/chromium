@@ -40,6 +40,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/uuid.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink-forward.h"
@@ -1208,6 +1209,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void SetCookieManager(
       mojo::PendingRemote<network::mojom::blink::RestrictedCookieManager>
           cookie_manager);
+
+  const base::Uuid& base_auction_nonce();
 
   const AtomicString& referrer() const;
 
@@ -2756,6 +2759,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // Used for document.cookie. May be null.
   Member<CookieJar> cookie_jar_;
+
+  // Seed for all PAAPI Auction Nonces generated for this document.
+  base::Uuid base_auction_nonce_;
 
   bool toggle_during_parsing_ = false;
 

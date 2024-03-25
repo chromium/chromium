@@ -31,6 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_INIT_H_
 
 #include "base/dcheck_is_on.h"
+#include "base/uuid.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -146,6 +147,9 @@ class CORE_EXPORT DocumentInit final {
   DocumentInit& WithUkmSourceId(ukm::SourceId ukm_source_id);
   ukm::SourceId UkmSourceId() const { return ukm_source_id_; }
 
+  DocumentInit& WithBaseAuctionNonce(base::Uuid base_auction_nonce);
+  base::Uuid BaseAuctionNonce() const { return base_auction_nonce_; }
+
  private:
   DocumentInit() = default;
 
@@ -172,6 +176,9 @@ class CORE_EXPORT DocumentInit final {
 
   // Source id to set on the Document to be created.
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
+
+  // Seed for all PAAPI Auction Nonces generated for this document.
+  base::Uuid base_auction_nonce_;
 
   bool is_for_external_handler_ = false;
 

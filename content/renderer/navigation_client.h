@@ -6,6 +6,7 @@
 #define CONTENT_RENDERER_NAVIGATION_CLIENT_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/uuid.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
@@ -43,6 +44,7 @@ class NavigationClient : mojom::NavigationClient {
           fetch_later_loader_factory,
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token,
+      const base::Uuid& base_auction_nonce,
       const std::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,

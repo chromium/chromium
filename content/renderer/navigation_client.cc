@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/uuid.h"
 #include "content/common/frame.mojom.h"
 #include "content/renderer/render_frame_impl.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -43,6 +44,7 @@ void NavigationClient::CommitNavigation(
         fetch_later_loader_factory,
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
+    const base::Uuid& base_auction_nonce,
     const std::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
@@ -68,7 +70,7 @@ void NavigationClient::CommitNavigation(
       std::move(subresource_proxying_loader_factory),
       std::move(keep_alive_loader_factory),
       std::move(fetch_later_loader_factory), document_token,
-      devtools_navigation_token, permissions_policy,
+      devtools_navigation_token, base_auction_nonce, permissions_policy,
       std::move(policy_container), std::move(code_cache_host),
       std::move(code_cache_host_for_background), std::move(cookie_manager_info),
       std::move(storage_info), std::move(callback));

@@ -36,6 +36,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "base/uuid.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -734,6 +735,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   Vector<DecodedBodyData> decoded_data_buffer_;
 
   const base::UnguessableToken devtools_navigation_token_;
+
+  const base::Uuid base_auction_nonce_;
 
   LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
 

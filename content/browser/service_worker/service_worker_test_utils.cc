@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_consts.h"
@@ -100,6 +101,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
           fetch_later_loader_factory,
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token,
+      const base::Uuid& base_auction_nonce,
       const std::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
@@ -273,7 +275,9 @@ void ServiceWorkerRemoteContainerEndpoint::BindForWindow(
       /*subresource_proxying_loader_factory=*/mojo::NullRemote(),
       /*keep_alive_loader_factory=*/mojo::NullRemote(),
       /*fetch_later_loader_factory=*/mojo::NullAssociatedRemote(),
-      blink::DocumentToken(), base::UnguessableToken::Create(),
+      /*document_token=*/blink::DocumentToken(),
+      /*devtools_navigation_token=*/base::UnguessableToken::Create(),
+      /*base_auction_nonce=*/base::Uuid::GenerateRandomV4(),
       std::vector<blink::ParsedPermissionsPolicyDeclaration>(),
       CreateStubPolicyContainer(), /*code_cache_host=*/mojo::NullRemote(),
       /*code_cache_host_for_background=*/mojo::NullRemote(),
