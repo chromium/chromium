@@ -89,13 +89,27 @@ std::optional<AppInstallData> ParseAppInstallResponseProto(
 
   result.description = instance.description();
 
-  for (const proto::AppInstallResponse_Icon& proto_icon : instance.icons()) {
-    AppInstallIcon icon{.url = GURL(proto_icon.url()),
-                        .width_in_pixels = proto_icon.width_in_pixels(),
-                        .mime_type = proto_icon.mime_type(),
-                        .is_masking_allowed = proto_icon.is_masking_allowed()};
+  if (instance.has_icon()) {
+    AppInstallIcon icon{
+        .url = GURL(instance.icon().url()),
+        .width_in_pixels = instance.icon().width_in_pixels(),
+        .mime_type = instance.icon().mime_type(),
+        .is_masking_allowed = instance.icon().is_masking_allowed()};
     if (icon.url.is_valid() && icon.width_in_pixels > 0) {
-      result.icons.push_back(std::move(icon));
+      result.icon = std::move(icon);
+    }
+  }
+
+  for (const proto::AppInstallResponse_Screenshot& instance_screenshot :
+       instance.screenshots()) {
+    AppInstallScreenshot screenshot{
+        .url = GURL(instance_screenshot.url()),
+        .mime_type = instance_screenshot.mime_type(),
+        .width_in_pixels = instance_screenshot.width_in_pixels(),
+        .height_in_pixels = instance_screenshot.height_in_pixels(),
+    };
+    if (screenshot.url.is_valid()) {
+      result.screenshots.push_back(std::move(screenshot));
     }
   }
 

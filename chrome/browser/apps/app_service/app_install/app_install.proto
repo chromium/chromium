@@ -29,8 +29,7 @@ message AppInstallRequest {
 message AppInstallResponse {
   // An individual App Icon.
   message Icon {
-    // Url to query to get the icon. This will always be from the host
-    // meltingpot.googleusercontent.com
+    // Url to query to get the icon itself (ie. the bytes).
     optional string url = 1;
 
     // Width of the icon in pixels.
@@ -42,6 +41,21 @@ message AppInstallResponse {
     // Whether or not we have permission from the platform to mask the icon.
     // This means that ChromeOS will put a circle around it.
     optional bool is_masking_allowed = 4;
+  }
+
+  // A screenshot used to preview the app.
+  message Screenshot {
+    // Url to query to get the image itself (ie. the bytes).
+    optional string url = 1;
+
+    // Mime type of the screenshot.
+    optional string mime_type = 2;
+
+    // Width of the screenshot in pixels.
+    optional int32 width_in_pixels = 3;
+
+    // Height of the screenshot in pixels.
+    optional int32 height_in_pixels = 4;
   }
 
   // Represents an instance of an app regardless of what platform it runs on.
@@ -58,8 +72,11 @@ message AppInstallResponse {
     // The description of the app if present.
     optional string description = 3;
 
-    // A set of icons for the app.
-    repeated Icon icons = 4;
+    // The App's Icon.
+    optional Icon icon = 4;
+
+    // A screenshot for the app if available. Note: this is empty for most apps.
+    repeated Screenshot screenshots = 5;
 
     // Every platform has its own [Platform]Extras message to store platform
     // specific metadata.

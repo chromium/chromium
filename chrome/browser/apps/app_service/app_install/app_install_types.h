@@ -45,7 +45,21 @@ struct AppInstallIcon {
   bool is_masking_allowed;
 };
 
-std::ostream& operator<<(std::ostream& out, const AppInstallIcon& data);
+std::ostream& operator<<(std::ostream& out, const AppInstallIcon& icon);
+
+// App screenshots hosted by Almanac for use during app installation.
+struct AppInstallScreenshot {
+  GURL url;
+
+  std::string mime_type;
+
+  int32_t width_in_pixels;
+
+  int32_t height_in_pixels;
+};
+
+std::ostream& operator<<(std::ostream& out,
+                         const AppInstallScreenshot& screenshot);
 
 // Android specific data for use during Android app installation.
 // Currently empty but available to be extended with data if needed.
@@ -88,7 +102,9 @@ struct AppInstallData {
 
   std::string description;
 
-  std::vector<AppInstallIcon> icons;
+  std::optional<AppInstallIcon> icon;
+
+  std::vector<AppInstallScreenshot> screenshots;
 
   absl::variant<AndroidAppInstallData, WebAppInstallData> app_type_data;
 };

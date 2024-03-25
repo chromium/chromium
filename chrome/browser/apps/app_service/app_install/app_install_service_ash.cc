@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_almanac_connector.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
@@ -84,27 +85,6 @@ AppInstallResult InstallWebAppWithBrowserInstallDialog(
   web_app_provider_bridge->ScheduleNavigateAndTriggerInstallDialog(
       install_url, origin_url, is_renderer_initiated);
   return AppInstallResult::kUnknown;
-}
-
-// Gets the first icon larger than `kIconSize` from `icons` and returns
-// the url. If none exist, returns the url of the largest icon. Returns empty
-// GURL if vector is empty.
-// TODO(crbug.com/1488697): This function assumes icons is sorted, which it may
-// not be. Icon purpose also needs to be considered.
-const GURL& GetIconUrl(const std::vector<AppInstallIcon>& icons) {
-  if (icons.empty()) {
-    return GURL::EmptyGURL();
-  }
-
-  const GURL* icon_url = &GURL::EmptyGURL();
-  for (const auto& icon : icons) {
-    icon_url = &icon.url;
-    if (icon.width_in_pixels > ash::app_install::kIconSize) {
-      break;
-    }
-  }
-
-  return *icon_url;
 }
 
 // TODO(b/330414871): AppInstallService shouldn't know about publisher specific
@@ -272,7 +252,10 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
             args->url = web_app_data->document_url;
             args->name = data->name;
             args->description = data->description;
-            args->icon_url = GetIconUrl(data->icons);
+            args->icon_url = data->icon ? data->icon->url : GURL::EmptyGURL();
+            base::ranges::transform(data->screenshots,
+                                    std::back_inserter(args->screenshot_urls),
+                                    &AppInstallScreenshot::url);
 
             webapps::AppId expected_app_id = GetAppId(data->package_id);
             base::WeakPtr<ash::app_install::AppInstallDialog> dialog =
