@@ -140,6 +140,12 @@ BASE_FEATURE(kDoubleTapToZoomInTabletMode,
 BASE_FEATURE(kEnableDPAPIEncryptionProvider,
              "EnableDPAPIEncryptionProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When this feature is enabled, the App-Bound encryption provider is registered
+// with Chrome.
+BASE_FEATURE(kRegisterAppBoundEncryptionProvider,
+             "RegisterAppBoundEncryptionProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Enables usage of the FedCM API without third party cookies at the same time.

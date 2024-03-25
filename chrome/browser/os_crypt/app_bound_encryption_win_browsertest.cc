@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
@@ -23,10 +24,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/os_crypt/test_support.h"
 #include "chrome/elevation_service/elevator.h"
-#include "chrome/install_static/install_constants.h"
 #include "chrome/install_static/test/scoped_install_details.h"
-#include "chrome/installer/util/install_service_work_item.h"
-#include "chrome/installer/util/util_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 
@@ -63,49 +61,21 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
       GTEST_SKIP() << "Elevation is required for this test.";
     enable_metrics_feature_.InitAndEnableFeature(
         features::kAppBoundEncryptionMetrics);
-    ASSERT_TRUE(InstallService());
+    maybe_uninstall_service_ = InstallService();
+    EXPECT_TRUE(maybe_uninstall_service_.has_value());
     InProcessBrowserTest::SetUp();
   }
 
   void TearDown() override {
-    if (base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY)
-      return;
     InProcessBrowserTest::TearDown();
-    std::ignore = UnInstallService();
   }
 
   base::HistogramTester histogram_tester_;
 
  private:
-  static bool InstallService() {
-    base::FilePath exe_dir;
-    base::PathService::Get(base::DIR_EXE, &exe_dir);
-    base::CommandLine service_cmd(
-        exe_dir.Append(installer::kElevationServiceExe));
-    service_cmd.AppendSwitch(
-        elevation_service::switches::kElevatorClsIdForTestingSwitch);
-    installer::InstallServiceWorkItem install_service_work_item(
-        install_static::GetElevationServiceName(),
-        install_static::GetElevationServiceDisplayName(), SERVICE_DEMAND_START,
-        service_cmd, base::CommandLine(base::CommandLine::NO_PROGRAM),
-        install_static::GetClientStateKeyPath(),
-        {install_static::GetElevatorClsid()},
-        {install_static::GetElevatorIid()});
-    install_service_work_item.set_best_effort(true);
-    install_service_work_item.set_rollback_enabled(false);
-    return install_service_work_item.Do();
-  }
-
-  static bool UnInstallService() {
-    return installer::InstallServiceWorkItem::DeleteService(
-        install_static::GetElevationServiceName(),
-        install_static::GetClientStateKeyPath(),
-        {install_static::GetElevatorClsid()},
-        {install_static::GetElevatorIid()});
-  }
-
   install_static::ScopedInstallDetails scoped_install_details_;
   base::test::ScopedFeatureList enable_metrics_feature_;
+  std::optional<base::ScopedClosureRunner> maybe_uninstall_service_;
 };
 
 // Test the basic interface to Encrypt and Decrypt data.
@@ -148,26 +118,48 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecryptInvalid) {
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, PRE_MetricsTest) {
   histogram_tester_.ExpectUniqueSample(
       "OSCrypt.AppBoundEncryption.SupportLevel", SupportLevel::kSupported, 1);
-  // These histograms are recorded on a background worker thread, so the test
-  // needs to wait until this task completes and the histograms are recorded.
-  WaitForHistogram(
-      "OSCrypt.AppBoundEncryption.PathValidation.Encrypt.ResultCode");
-  histogram_tester_.ExpectBucketCount(
-      "OSCrypt.AppBoundEncryption.PathValidation.Encrypt.ResultCode", S_OK, 1);
+  // If the App-Bound provider is enabled, it does the metrics logging.
+  if (base::FeatureList::IsEnabled(
+          features::kRegisterAppBoundEncryptionProvider)) {
+    // These histograms are recorded on a background worker thread, so the test
+    // needs to wait until this task completes and the histograms are recorded.
+    WaitForHistogram("OSCrypt.AppBoundProvider.Encrypt.ResultCode");
+    histogram_tester_.ExpectBucketCount(
+        "OSCrypt.AppBoundProvider.Encrypt.ResultCode", S_OK, 1);
 
-  WaitForHistogram("OSCrypt.AppBoundEncryption.PathValidation.Encrypt.Time");
+    WaitForHistogram("OSCrypt.AppBoundProvider.Encrypt.Time");
+  } else {
+    WaitForHistogram(
+        "OSCrypt.AppBoundEncryption.PathValidation.Encrypt.ResultCode");
+    histogram_tester_.ExpectBucketCount(
+        "OSCrypt.AppBoundEncryption.PathValidation.Encrypt.ResultCode", S_OK,
+        1);
+
+    WaitForHistogram("OSCrypt.AppBoundEncryption.PathValidation.Encrypt.Time");
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MetricsTest) {
   ASSERT_TRUE(install_static::IsSystemInstall());
-  // These histograms are recorded on a background worker thread, so the test
-  // needs to wait until this task completes and the histograms are recorded.
-  WaitForHistogram(
-      "OSCrypt.AppBoundEncryption.PathValidation.Decrypt.ResultCode");
-  histogram_tester_.ExpectBucketCount(
-      "OSCrypt.AppBoundEncryption.PathValidation.Decrypt.ResultCode", S_OK, 1);
+  // If the App-Bound provider is enabled, it does the metrics logging.
+  if (base::FeatureList::IsEnabled(
+          features::kRegisterAppBoundEncryptionProvider)) {
+    // These histograms are recorded on a background worker thread, so the test
+    // needs to wait until this task completes and the histograms are recorded.
+    WaitForHistogram("OSCrypt.AppBoundProvider.Decrypt.ResultCode");
+    histogram_tester_.ExpectBucketCount(
+        "OSCrypt.AppBoundProvider.Decrypt.ResultCode", S_OK, 1);
 
-  WaitForHistogram("OSCrypt.AppBoundEncryption.PathValidation.Decrypt.Time");
+    WaitForHistogram("OSCrypt.AppBoundProvider.Decrypt.Time");
+  } else {
+    WaitForHistogram(
+        "OSCrypt.AppBoundEncryption.PathValidation.Decrypt.ResultCode");
+    histogram_tester_.ExpectBucketCount(
+        "OSCrypt.AppBoundEncryption.PathValidation.Decrypt.ResultCode", S_OK,
+        1);
+
+    WaitForHistogram("OSCrypt.AppBoundEncryption.PathValidation.Decrypt.Time");
+  }
 }
 
 // Run this test manually to force uninstall the service using

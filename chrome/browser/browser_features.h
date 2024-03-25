@@ -50,6 +50,7 @@ BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
 
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kEnableDPAPIEncryptionProvider);
+BASE_DECLARE_FEATURE(kRegisterAppBoundEncryptionProvider);
 #endif
 
 BASE_DECLARE_FEATURE(kFedCmWithoutThirdPartyCookies);

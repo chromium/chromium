@@ -14,8 +14,13 @@ namespace os_crypt {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 // Posts background tasks to measure the app bound encryption metrics. This
-// should be called on the UI thread.
-bool MeasureAppBoundEncryptionStatus(PrefService* local_state);
+// should be called on the UI thread. If `record_full_metrics` is true then full
+// metrics will be reported, otherwise only SupportLevel metric will be
+// reported. `record_full_metrics` should only be set to true if app bound
+// encryption APIs are not being used elsewhere, to avoid affecting the quality
+// of the data.
+bool MeasureAppBoundEncryptionStatus(PrefService* local_state,
+                                     bool record_full_metrics);
 
 }  // namespace os_crypt
 

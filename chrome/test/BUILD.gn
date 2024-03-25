@@ -3269,7 +3269,6 @@ if (!is_android) {
         "../browser/importer/edge_importer_browsertest_win.cc",
         "../browser/importer/ie_importer_browsertest_win.cc",
         "../browser/net/chrome_mojo_proxy_resolver_win_browsertest.cc",
-        "../browser/net/cookie_encryption_provider_browsertest.cc",
         "../browser/printing/pdf_to_emf_converter_browsertest.cc",
         "../browser/process_singleton_browsertest.cc",
         "../browser/profiles/profile_shortcut_manager_browsertest_win.cc",
@@ -11455,6 +11454,7 @@ if (!is_android && !is_chromeos_device) {
     if (is_win) {
       sources += [
         "../browser/downgrade/user_data_downgrade_browsertest.cc",
+        "../browser/net/cookie_encryption_provider_browsertest.cc",
         "../browser/net/sandboxed_network_change_notifier_win_browsertest.cc",
         "../browser/notifications/notification_platform_bridge_win_interactive_uitest.cc",
         "../browser/notifications/win/fake_itoastnotifier.cc",
@@ -11473,7 +11473,9 @@ if (!is_android && !is_chromeos_device) {
       deps += [
         "//chrome:other_version",
         "//chrome/app:chrome_dll_resources",
+        "//chrome/browser/os_crypt",
         "//chrome/browser/os_crypt:browser_tests",
+        "//chrome/browser/os_crypt:test_support",
         "//chrome/elevation_service:public_headers",
         "//chrome/install_static:install_static_util",
         "//chrome/installer/util:strings",

@@ -553,7 +553,13 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
 #endif
 
   if (base::FeatureList::IsEnabled(features::kAppBoundEncryptionMetrics)) {
-    os_crypt::MeasureAppBoundEncryptionStatus(g_browser_process->local_state());
+    // Only record full metrics if the App-Bound provider is not registered. The
+    // App-Bound provider records these itself, and only one place should record
+    // them to accurately reflect the final production environment.
+    os_crypt::MeasureAppBoundEncryptionStatus(
+        g_browser_process->local_state(),
+        /*record_full_metrics=*/!base::FeatureList::IsEnabled(
+            features::kRegisterAppBoundEncryptionProvider));
   }
 
   // Record Processor Metrics. This is very low priority, hence posting as

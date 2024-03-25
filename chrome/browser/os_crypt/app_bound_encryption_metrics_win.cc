@@ -139,7 +139,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kOsCryptAppBoundFixedData2PrefName, {});
 }
 
-bool MeasureAppBoundEncryptionStatus(PrefService* local_state) {
+bool MeasureAppBoundEncryptionStatus(PrefService* local_state,
+                                     bool record_full_metrics) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto support = GetAppBoundEncryptionSupportLevel();
@@ -148,6 +149,13 @@ bool MeasureAppBoundEncryptionStatus(PrefService* local_state) {
                                 support);
 
   if (support != SupportLevel::kSupported) {
+    return true;
+  }
+
+  // Only record separate timing metrics if the App-Bound provider is not,
+  // itself, recording these metrics separately. This ensures the metrics
+  // accurately reflect final client behavior.
+  if (!record_full_metrics) {
     return true;
   }
 

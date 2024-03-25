@@ -7775,7 +7775,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     The result code of the application-bound Decrypt operation with path
     validation. This is logged once during browser startup on a background
-    thread for supported Windows installs only.
+    thread for supported Windows installs only. This metric is not recorded if
+    App-Bound encryption provider is enabled, and
+    OSCrypt.AppBoundProvider.Decrypt.ResultCode is recorded instead.
   </summary>
 </histogram>
 
@@ -7788,6 +7790,8 @@ chromium-metrics-reviews@google.com.
     The GetLastError code for a failed application-bound Decrypt operation with
     path validation. This is logged once during browser startup on a background
     thread for supported Windows installs only, if the call to Decrypt failed.
+    This metric is not recorded if App-Bound encryption provider is enabled, and
+    OSCrypt.AppBoundProvider.Decrypt.ResultLastError is recorded instead.
   </summary>
 </histogram>
 
@@ -7798,7 +7802,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     The amount of time, in ms, that it takes to perform an application-bound
     Decrypt call with path validation. This is logged once during browser
-    startup on a background thread for supported Windows installs only.
+    startup on a background thread for supported Windows installs only. This
+    metric is not recorded if App-Bound encryption provider is enabled, and
+    OSCrypt.AppBoundProvider.Decrypt.Time is recorded instead.
   </summary>
 </histogram>
 
@@ -7810,7 +7816,9 @@ chromium-metrics-reviews@google.com.
     The result code of the application-bound Encrypt operation with path
     validation. This is logged once during browser startup on a background
     thread for supported Windows installs only, for a client that is
-    initializing a new local state or a previously failing client.
+    initializing a new local state or a previously failing client. This metric
+    is not recorded if App-Bound encryption provider is enabled, and
+    OSCrypt.AppBoundProvider.Encrypt.ResultCode is recorded instead.
   </summary>
 </histogram>
 
@@ -7824,7 +7832,9 @@ chromium-metrics-reviews@google.com.
     path validation. This is logged once during browser startup on a background
     thread for supported Windows installs only, if the call to Encrypt failed,
     for a client that is initializing a new local state or a previously failing
-    client.
+    client. This metric is not recorded if App-Bound encryption provider is
+    enabled, and OSCrypt.AppBoundProvider.Encrypt.ResultLastError is recorded
+    instead.
   </summary>
 </histogram>
 
@@ -7837,7 +7847,8 @@ chromium-metrics-reviews@google.com.
     Encrypt call with path validation. This is logged once during browser
     startup on a background thread for supported Windows installs only, for a
     client that is initializing a new local state or a previously failing
-    client.
+    client. This metric is not recorded if App-Bound encryption provider is
+    enabled, and OSCrypt.AppBoundProvider.Encrypt.Time is recorded instead.
   </summary>
 </histogram>
 
@@ -7848,6 +7859,94 @@ chromium-metrics-reviews@google.com.
   <summary>
     The status of the current level of support for App-Bound encryption. This is
     logged once during browser startup on Windows only.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.AppBoundProvider.Decrypt.ResultCode" enum="Hresult"
+    expires_after="2024-09-01">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The result code of the application-bound Decrypt operation. This is logged
+    once during browser startup on a background thread for supported Windows
+    installs only, for a client that is decrypting a previously encrypted stored
+    key, when the App-Bound encryption provider is enabled.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.AppBoundProvider.Decrypt.ResultLastError"
+    enum="WinGetLastError" expires_after="2024-09-01">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The GetLastError code for a failed application-bound Decrypt operation. This
+    is logged once during browser startup on a background thread for supported
+    Windows installs only, if the call to Decrypt failed, for a client that is
+    decrypting a previously encrypted stored key, when the App-Bound encryption
+    provider is enabled.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.AppBoundProvider.Decrypt.Time" units="ms"
+    expires_after="2024-09-01">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The amount of time, in ms, that it takes to perform an application-bound
+    Decrypt call. This is logged once during browser startup on a background
+    thread for supported Windows installs only, for a client that is decrypting
+    a previously encrypted stored key, when the App-Bound encryption provider is
+    enabled.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.AppBoundProvider.Encrypt.ResultCode" enum="Hresult"
+    expires_after="2024-09-01">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The result code of the application-bound Encrypt operation with path
+    validation. This is logged once during browser startup on a background
+    thread for supported Windows installs only, for a client that is
+    initializing a new local state or a previously failing client, when the
+    App-Bound encryption provider is enabled.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.AppBoundProvider.Encrypt.ResultLastError"
+    enum="WinGetLastError" expires_after="2024-09-01">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The GetLastError code for a failed application-bound Encrypt operation with
+    path validation. This is logged once during browser startup on a background
+    thread for supported Windows installs only, if the call to Encrypt failed,
+    for a client that is initializing a new local state or a previously failing
+    client, when the App-Bound encryption provider is enabled.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.AppBoundProvider.Encrypt.Time" units="ms"
+    expires_after="2024-09-01">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The amount of time, in ms, that it takes to perform an application-bound
+    Encrypt call with path validation. This is logged once during browser
+    startup on a background thread for supported Windows installs only, for a
+    client that is initializing a new local state or a previously failing
+    client, when the App-Bound encryption provider is enabled.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.AppBoundProvider.KeyRetrieval.Status"
+    enum="OSCryptAppBoundKeyRetrievalStatus" expires_after="2024-09-01">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The result of the App-Bound OSCrypt Async Key Provider reading the key from
+    persistent storage while being initialized. This is recorded once during
+    browser startup if the App-Bound Key Provider is enabled, on Windows only.
   </summary>
 </histogram>
 

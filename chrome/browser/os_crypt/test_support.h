@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_OS_CRYPT_TEST_SUPPORT_H_
 #define CHROME_BROWSER_OS_CRYPT_TEST_SUPPORT_H_
 
+#include <optional>
+
+#include "base/functional/callback_helpers.h"
 #include "chrome/install_static/install_details.h"
 
 namespace os_crypt {
@@ -32,6 +35,11 @@ class FakeInstallDetails : public install_static::PrimaryInstallDetails {
  private:
   install_static::InstallConstants constants_;
 };
+
+// Install the elevation service corresponding to the set of install details for
+// the current process, returns a closure that will uninstall the service when
+// it goes out of scope.
+[[nodiscard]] std::optional<base::ScopedClosureRunner> InstallService();
 
 }  // namespace os_crypt
 
