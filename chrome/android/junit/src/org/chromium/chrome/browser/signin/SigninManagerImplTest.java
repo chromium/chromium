@@ -161,21 +161,6 @@ public class SigninManagerImplTest {
                 .thenReturn(true);
 
         AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
-
-        // TODO(crbug/1491005): Verify the first call to
-        // seedAccountsThenReloadAllAccountsWithPrimaryAccount that is made on creation of the
-        // SigninManager when the SeedAccountsRevamp flag is enabled. This can be done by creating
-        // the SigninManager in the test method directly.
-        mSigninManager =
-                (SigninManagerImpl)
-                        SigninManagerImpl.create(
-                                NATIVE_SIGNIN_MANAGER,
-                                mProfile,
-                                mAccountTrackerService,
-                                mIdentityManager,
-                                mIdentityMutator,
-                                mSyncService);
-        mSigninManager.addSignInStateObserver(mSignInStateObserver);
     }
 
     @After
@@ -187,23 +172,17 @@ public class SigninManagerImplTest {
 
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
-    public void testAccountManagerFacadeObserverAddedOnCreate_seedAccountsRevampEnabled() {
+    public void
+            testAccountManagerFacadeObserverAddedOnCreate_accountFetchSucceeded_seedAccountsRevampEnabled() {
         CoreAccountInfo coreAccountInfo =
                 CoreAccountInfo.createFromEmailAndGaiaId("email@domain.com", "gaia-id");
         AccountManagerFacade accountManagerFacadeMock = Mockito.mock(AccountManagerFacade.class);
         when(accountManagerFacadeMock.getCoreAccountInfos())
                 .thenReturn(Promise.fulfilled(List.of(coreAccountInfo)));
+        when(accountManagerFacadeMock.didAccountFetchSucceed()).thenReturn(true);
         AccountManagerFacadeProvider.setInstanceForTests(accountManagerFacadeMock);
 
-        mSigninManager =
-                (SigninManagerImpl)
-                        SigninManagerImpl.create(
-                                NATIVE_SIGNIN_MANAGER,
-                                mProfile,
-                                mAccountTrackerService,
-                                mIdentityManager,
-                                mIdentityMutator,
-                                mSyncService);
+        createSigninManager();
 
         verify(accountManagerFacadeMock).addObserver(mSigninManager);
         verify(mIdentityMutator)
@@ -213,7 +192,45 @@ public class SigninManagerImplTest {
 
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+    public void
+            testAccountManagerFacadeObserverAddedOnCreate_accountFetchFailed_accountListPopulated_seedAccountsRevampEnabled() {
+        CoreAccountInfo coreAccountInfo =
+                CoreAccountInfo.createFromEmailAndGaiaId("email@domain.com", "gaia-id");
+        AccountManagerFacade accountManagerFacadeMock = Mockito.mock(AccountManagerFacade.class);
+        when(accountManagerFacadeMock.getCoreAccountInfos())
+                .thenReturn(Promise.fulfilled(List.of(coreAccountInfo)));
+        when(accountManagerFacadeMock.didAccountFetchSucceed()).thenReturn(false);
+        AccountManagerFacadeProvider.setInstanceForTests(accountManagerFacadeMock);
+
+        createSigninManager();
+
+        verify(accountManagerFacadeMock).addObserver(mSigninManager);
+        verify(mIdentityMutator)
+                .seedAccountsThenReloadAllAccountsWithPrimaryAccount(
+                        List.of(coreAccountInfo), null);
+    }
+
+    @Test
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+    public void
+            testAccountManagerFacadeObserverAddedOnCreate_accountFetchFailed_accountListEmpty_seedAccountsRevampEnabled() {
+        AccountManagerFacade accountManagerFacadeMock = Mockito.mock(AccountManagerFacade.class);
+        when(accountManagerFacadeMock.getCoreAccountInfos())
+                .thenReturn(Promise.fulfilled(List.of()));
+        when(accountManagerFacadeMock.didAccountFetchSucceed()).thenReturn(false);
+        AccountManagerFacadeProvider.setInstanceForTests(accountManagerFacadeMock);
+
+        createSigninManager();
+
+        verify(accountManagerFacadeMock).addObserver(mSigninManager);
+        verify(mIdentityMutator, never())
+                .seedAccountsThenReloadAllAccountsWithPrimaryAccount(any(), any());
+    }
+
+    @Test
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void testOnCoreAccountInfosChanged_seedAccountsRevampEnabled() {
+        createSigninManager();
         mFakeAccountManagerFacade.addAccount(ACCOUNT_INFO);
 
         List<CoreAccountInfo> coreAccountInfos =
@@ -226,6 +243,7 @@ public class SigninManagerImplTest {
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void
             testOnCoreAccountInfosChanged_signoutWhenPrimaryAccountIsRemoved_seedAccountsRevampEnabled() {
+        createSigninManager();
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId("test@email.com", "test-id"));
@@ -238,6 +256,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void testOnCoreAccountInfosChanged_PrimaryAccountRenamed_seedAccountsRevampEnabled() {
+        createSigninManager();
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
                 .thenReturn(ACCOUNT_INFO);
@@ -261,6 +280,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinAndTurnSyncOn() {
+        createSigninManager();
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
             when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
         }
@@ -316,6 +336,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinAndTurnSyncOn_seedAccountsRevampEnabled() {
+        createSigninManager();
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
             when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
         }
@@ -380,6 +401,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinNoTurnSyncOn() {
+        createSigninManager();
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt(), any()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
 
@@ -414,6 +436,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinNoTurnSyncOn_seedAccountsRevampEnabled() {
+        createSigninManager();
         mFakeAccountManagerFacade.addAccount(ACCOUNT_INFO);
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt(), any()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
@@ -461,6 +484,7 @@ public class SigninManagerImplTest {
         SigninFeatures.SEED_ACCOUNTS_REVAMP
     })
     public void signinNoTurnSyncOn_enterprisePoliciesOnSignin() {
+        createSigninManager();
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt(), any()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
 
@@ -513,6 +537,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutNonSyncingAccountFromJavaWithManagedDomain() {
+        createSigninManager();
         when(mNativeMock.getManagementDomain(NATIVE_SIGNIN_MANAGER)).thenReturn("TestDomain");
 
         // Trigger the sign out flow!
@@ -531,6 +556,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutNonSyncingAccountFromJavaWithManagedDomain_seedAccountsRevampEnabled() {
+        createSigninManager();
         when(mNativeMock.getManagementDomain(NATIVE_SIGNIN_MANAGER)).thenReturn("TestDomain");
 
         // Trigger the sign out flow!
@@ -551,6 +577,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutSyncingAccountFromJavaWithManagedDomain() {
+        createSigninManager();
         when(mNativeMock.getManagementDomain(NATIVE_SIGNIN_MANAGER)).thenReturn("TestDomain");
 
         // Trigger the sign out flow!
@@ -569,6 +596,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutSyncingAccountFromJavaWithManagedDomain_seedAccountsRevampEnabled() {
+        createSigninManager();
         when(mNativeMock.getManagementDomain(NATIVE_SIGNIN_MANAGER)).thenReturn("TestDomain");
 
         // Trigger the sign out flow!
@@ -589,6 +617,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutNonSyncingAccountFromJavaWithNullDomain() {
+        createSigninManager();
         mSigninManager.signOut(SignoutReason.TEST);
 
         // The primary account should be cleared *before* clearing any account data.
@@ -605,6 +634,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutNonSyncingAccountFromJavaWithNullDomain_seedAccountsRevampEnabled() {
+        createSigninManager();
         mSigninManager.signOut(SignoutReason.TEST);
 
         // The primary account should be cleared *before* clearing any account data.
@@ -623,6 +653,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutSyncingAccountFromJavaWithNullDomain() {
+        createSigninManager();
         // Simulate sign-out with non-managed account.
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
@@ -644,6 +675,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutSyncingAccountFromJavaWithNullDomain_seedAccountsRevampEnabled() {
+        createSigninManager();
         // Simulate sign-out with non-managed account.
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
@@ -668,6 +700,7 @@ public class SigninManagerImplTest {
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     @EnableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)
     public void syncPromoShowCountResetWhenSignOutSyncingAccount() {
+        createSigninManager();
         ChromeSharedPreferences.getInstance()
                 .writeInt(
                         ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
@@ -701,6 +734,7 @@ public class SigninManagerImplTest {
         SigninFeatures.SEED_ACCOUNTS_REVAMP
     })
     public void syncPromoShowCountResetWhenSignOutSyncingAccount_seedAccountsRevampEnabled() {
+        createSigninManager();
         ChromeSharedPreferences.getInstance()
                 .writeInt(
                         ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
@@ -731,6 +765,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutSyncingAccountFromJavaWithNullDomainAndForceWipe() {
+        createSigninManager();
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
@@ -752,6 +787,7 @@ public class SigninManagerImplTest {
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void
             signOutSyncingAccountFromJavaWithNullDomainAndForceWipe_seedAccountsRevampEnabled() {
+        createSigninManager();
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
@@ -776,6 +812,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void revokeSyncConsentFromJavaWithNullDomain() {
+        createSigninManager();
         SigninManager.SignOutCallback callback = mock(SigninManager.SignOutCallback.class);
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
@@ -797,6 +834,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void revokeSyncConsentFromJavaWithNullDomain_seedAccountsRevampEnabled() {
+        createSigninManager();
         SigninManager.SignOutCallback callback = mock(SigninManager.SignOutCallback.class);
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
@@ -818,6 +856,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void revokeSyncConsentFromJavaWithNullDomainAndWipeData_noLocalUpm() {
+        createSigninManager();
         when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
                 .thenReturn(false);
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
@@ -854,6 +893,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void revokeSyncConsentFromJavaWithNullDomainAndWipeData_withLocalUpm() {
+        createSigninManager();
         when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
                 .thenReturn(true);
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
@@ -889,6 +929,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void wipeSyncDataOnly_noLocalUpm() {
+        createSigninManager();
         when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
                 .thenReturn(false);
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
@@ -922,6 +963,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void wipeSyncDataOnly_withLocalUpm() {
+        createSigninManager();
         when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
                 .thenReturn(true);
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
@@ -954,6 +996,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedOut() {
+        createSigninManager();
         mFakeAccountManagerFacade.addAccount(
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()));
 
@@ -968,6 +1011,7 @@ public class SigninManagerImplTest {
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void
             clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedOut_seedAccountsRevampEnabled() {
+        createSigninManager();
         mFakeAccountManagerFacade.addAccount(ACCOUNT_INFO);
 
         mIdentityManager.onAccountsCookieDeletedByUserAction();
@@ -980,6 +1024,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedInAndSync() {
+        createSigninManager();
         mFakeAccountManagerFacade.addAccount(
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()));
 
@@ -994,6 +1039,7 @@ public class SigninManagerImplTest {
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void
             clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedInAndSync_seedAccountsRevampEnabled() {
+        createSigninManager();
         mFakeAccountManagerFacade.addAccount(
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()));
 
@@ -1007,6 +1053,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedInWithoutSync() {
+        createSigninManager();
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
                 .thenReturn(ACCOUNT_INFO);
@@ -1024,10 +1071,8 @@ public class SigninManagerImplTest {
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void
             clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedInWithoutSync_seedAccountsRevampEnabled() {
-        // TODO(crbug.com/1491005): Figure out why adding an account to the fake account manager
-        // changes its id to `id[gaia-id-user_at_domain.com]` and fix this.
-        mFakeAccountManagerFacade.addAccount(
-                AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()));
+        createSigninManager();
+        mFakeAccountManagerFacade.addAccount(ACCOUNT_INFO);
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
                 .thenReturn(
@@ -1045,6 +1090,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void callbackNotifiedWhenNoOperationIsInProgress() {
+        createSigninManager();
         AtomicInteger callCount = new AtomicInteger(0);
 
         mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
@@ -1054,6 +1100,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void callbackNotifiedWhenNoOperationIsInProgress_seedAccountsRevampEnabled() {
+        createSigninManager();
         AtomicInteger callCount = new AtomicInteger(0);
 
         mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
@@ -1069,6 +1116,7 @@ public class SigninManagerImplTest {
         SigninFeatures.SEED_ACCOUNTS_REVAMP
     })
     public void callbackNotifiedOnSignout() {
+        createSigninManager();
         doAnswer(
                         invocation -> {
                             mIdentityManager.onPrimaryAccountChanged(
@@ -1096,6 +1144,7 @@ public class SigninManagerImplTest {
     @DisableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void callbackNotifiedOnSignout_seedAccountsRevampEnabled() {
+        createSigninManager();
         doAnswer(
                         invocation -> {
                             mIdentityManager.onPrimaryAccountChanged(
@@ -1119,6 +1168,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void callbackNotifiedOnSignin() {
+        createSigninManager();
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
             when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
         }
@@ -1157,6 +1207,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void callbackNotifiedOnSignin_seedAccountsRevampEnabled() {
+        createSigninManager();
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
             when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
         }
@@ -1196,6 +1247,7 @@ public class SigninManagerImplTest {
     @Test(expected = AssertionError.class)
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinfailsWhenAlreadySignedIn() {
+        createSigninManager();
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
@@ -1205,15 +1257,18 @@ public class SigninManagerImplTest {
     @Test(expected = AssertionError.class)
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinfailsWhenAlreadySignedIn_seedAccountsRevampEnabled() {
+        createSigninManager();
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
+
         mSigninManager.signinAndEnableSync(ACCOUNT_INFO, SigninAccessPoint.UNKNOWN, null);
     }
 
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signInStateObserverCallOnSignIn() {
+        createSigninManager();
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
             when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
         }
@@ -1255,6 +1310,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signInStateObserverCallOnSignIn_seedAccountsRevampEnabled() {
+        createSigninManager();
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
             when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
         }
@@ -1304,6 +1360,7 @@ public class SigninManagerImplTest {
         SigninFeatures.SEED_ACCOUNTS_REVAMP
     })
     public void signInStateObserverCallOnSignOut() {
+        createSigninManager();
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
@@ -1319,6 +1376,7 @@ public class SigninManagerImplTest {
     @DisableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signInStateObserverCallOnSignOut_seedAccountsRevampEnabled() {
+        createSigninManager();
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
@@ -1333,6 +1391,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutNotAllowedForChildAccounts() {
+        createSigninManager();
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
@@ -1345,6 +1404,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signOutNotAllowedForChildAccounts_seedAccountsRevampEnabled() {
+        createSigninManager();
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
@@ -1357,6 +1417,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signInShouldBeSupportedForNonDemoUsers() {
+        createSigninManager();
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(true);
 
         // Make sure that the user is not a demo user.
@@ -1372,6 +1433,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signInShouldBeSupportedForNonDemoUsers_seedAccountsRevampEnabled() {
+        createSigninManager();
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(true);
 
         // Make sure that the user is not a demo user.
@@ -1387,6 +1449,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signInShouldNotBeSupportedWhenGooglePlayServicesIsRequiredAndNotAvailable() {
+        createSigninManager();
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(false);
 
         // Make sure that the user is not a demo user.
@@ -1402,6 +1465,7 @@ public class SigninManagerImplTest {
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void
             signInShouldNotBeSupportedWhenGooglePlayServicesIsRequiredAndNotAvailable_seedAccountsRevampEnabled() {
+        createSigninManager();
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(false);
 
         // Make sure that the user is not a demo user.
@@ -1411,5 +1475,18 @@ public class SigninManagerImplTest {
         shadowApplication.setSystemService(Context.USER_SERVICE, userManager);
 
         assertFalse(mSigninManager.isSigninSupported(/* requireUpdatedPlayServices= */ true));
+    }
+
+    private void createSigninManager() {
+        mSigninManager =
+                (SigninManagerImpl)
+                        SigninManagerImpl.create(
+                                NATIVE_SIGNIN_MANAGER,
+                                mProfile,
+                                mAccountTrackerService,
+                                mIdentityManager,
+                                mIdentityMutator,
+                                mSyncService);
+        mSigninManager.addSignInStateObserver(mSignInStateObserver);
     }
 }

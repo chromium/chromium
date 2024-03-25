@@ -168,7 +168,9 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
             mAccountManagerFacade.addObserver(this);
             Promise<List<CoreAccountInfo>> coreAccountInfosPromise =
                     mAccountManagerFacade.getCoreAccountInfos();
-            if (coreAccountInfosPromise.isFulfilled()) {
+            if (coreAccountInfosPromise.isFulfilled()
+                    && (mAccountManagerFacade.didAccountFetchSucceed()
+                            || !coreAccountInfosPromise.getResult().isEmpty())) {
                 seedThenReloadAllAccountsFromSystem(
                         CoreAccountInfo.getIdFrom(
                                 identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
@@ -177,8 +179,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     }
 
     /**
-     * Triggered during SigninManagerAndroidWrapper's KeyedService::Shutdown.
-     * Drop references with external services and native.
+     * Triggered during SigninManagerAndroidWrapper's KeyedService::Shutdown. Drop references with
+     * external services and native.
      */
     @VisibleForTesting
     @CalledByNative
@@ -203,6 +205,12 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                 mAccountManagerFacade.getCoreAccountInfos();
         assert coreAccountInfosPromise.isFulfilled();
         List<CoreAccountInfo> coreAccountInfos = coreAccountInfosPromise.getResult();
+        if (!mAccountManagerFacade.didAccountFetchSucceed() && coreAccountInfos.isEmpty()) {
+            // If the account fetch did not succeed, the AccountManagerFacade falls back to an empty
+            // list. Do nothing when this is the case.
+            return;
+        }
+
         @Nullable
         CoreAccountInfo primaryAccountInfo =
                 mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);

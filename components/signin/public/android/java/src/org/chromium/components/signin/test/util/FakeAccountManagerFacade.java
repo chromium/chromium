@@ -185,6 +185,11 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         callback.onResult(new Bundle());
     }
 
+    @Override
+    public boolean didAccountFetchSucceed() {
+        return true;
+    }
+
     /**
      * Adds an account to the fake AccountManagerFacade.
      *
