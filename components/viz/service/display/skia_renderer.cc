@@ -3799,9 +3799,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       const_cast<SharedQuadState*>(quad->shared_quad_state);
 
   std::optional<gfx::Transform> quad_to_target_transform_inverse;
-  // We cannot handle rotation with clip rect or mask filter.
-  if (!shared_quad_state->quad_to_target_transform.HasPerspective() &&
-      shared_quad_state->quad_to_target_transform.IsInvertible()) {
+  if (shared_quad_state->quad_to_target_transform.IsInvertible()) {
     quad_to_target_transform_inverse.emplace();
     // Flatten before inverting, since we're interested in how points
     // with z=0 in local space map to the clip rect, not in how the clip
@@ -3826,6 +3824,9 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     // well for overlay sizing.
     gfx::RectF clip_rect(quad->shared_quad_state->clip_rect.value_or(
         current_frame()->current_render_pass->output_rect));
+    // NOTE: If the quad to target transform has rotation, skew, or perspective,
+    // the modified clip rect might be expanded to ensure the quad image covers
+    // the original area when transformed by the overlay.
     clip_rect = quad_to_target_transform_inverse->MapRect(clip_rect);
     auto_reset_clip_rect.emplace(&shared_quad_state->clip_rect,
                                  gfx::ToEnclosedRect(clip_rect));
@@ -3837,10 +3838,26 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 
   // The |mask_filter_info| is in the device coordinate and with all transforms
   // (translation, scaling, rotation, etc), so remove them.
-  if (quad_to_target_transform_inverse &&
-      !shared_quad_state->mask_filter_info.IsEmpty()) {
-    shared_quad_state->mask_filter_info.ApplyTransform(
-        *quad_to_target_transform_inverse);
+  std::optional<base::AutoReset<gfx::MaskFilterInfo>> auto_reset_mask_info;
+  if (!shared_quad_state->mask_filter_info.IsEmpty()) {
+    if (quad_to_target_transform_inverse) {
+      // Instantiate the auto reset with the original value so that
+      // ApplyTransform can modify it in place, but it will still be reset to
+      // the original value.
+      auto_reset_mask_info.emplace(&shared_quad_state->mask_filter_info,
+                                   shared_quad_state->mask_filter_info);
+      // NOTE: ApplyTransform only supports scale+translate transformations, if
+      // the quad has rotation, skew, or perspective, the mask filter will be
+      // discarded automatically since it can't be represented in the quad's
+      // local coordinate space.
+      shared_quad_state->mask_filter_info.ApplyTransform(
+          *quad_to_target_transform_inverse);
+    } else {
+      // If we can't position the mask info into the render pass space, we
+      // shouldn't use it when rendering.
+      auto_reset_mask_info.emplace(&shared_quad_state->mask_filter_info,
+                                   gfx::MaskFilterInfo());
+    }
   }
 
   const auto& viewport_size = current_frame()->device_viewport_size;
