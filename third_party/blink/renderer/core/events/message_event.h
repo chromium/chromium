@@ -204,6 +204,11 @@ class CORE_EXPORT MessageEvent final : public Event {
       const WrapperTypeInfo*,
       v8::Local<v8::Object> wrapper) override;
 
+  // Dependency graph node ID for when this event was created.
+  int RecordReplayDependencyGraphNodeId() const {
+    return record_replay_dependency_graph_node_id_;
+  }
+
  private:
   enum DataType {
     kDataTypeNull,  // For "messageerror" events.
@@ -219,6 +224,8 @@ class CORE_EXPORT MessageEvent final : public Event {
   void RegisterAmountOfExternallyAllocatedMemory();
 
   void UnregisterAmountOfExternallyAllocatedMemory();
+
+  void RecordReplayInitDependencyGraphNodeId();
 
   DataType data_type_;
   WorldSafeV8Reference<v8::Value> data_as_v8_value_;
@@ -243,6 +250,7 @@ class CORE_EXPORT MessageEvent final : public Event {
   // information of whether the actual original SerializedScriptValue was locked
   // to the agent cluster.
   bool locked_to_agent_cluster_ = false;
+  int record_replay_dependency_graph_node_id_ = 0;
 };
 
 }  // namespace blink

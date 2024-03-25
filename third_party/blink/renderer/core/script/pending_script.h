@@ -156,6 +156,9 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
     return original_execution_context_;
   }
 
+  // IDs for nodes which executing the script depends on.
+  Vector<int> record_replay_dependency_node_ids_;
+
  private:
   static void ExecuteScriptBlockInternal(
       Script*,

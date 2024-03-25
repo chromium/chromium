@@ -1154,6 +1154,16 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
     std::unique_ptr<SourceLocation> location,
     const base::UnguessableToken& source_agent_cluster_id) {
   TRACE_EVENT0("blink", "LocalDOMWindow::DispatchMessageEventWithOriginCheck");
+
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    int node_id = recordreplay::NewDependencyGraphNode("{\"kind\":\"dispatchMessageEvent\"}");
+    int created_node_id = event->RecordReplayDependencyGraphNodeId();
+    if (created_node_id)
+      recordreplay::AddDependencyGraphEdge(created_node_id, node_id, "{\"kind\":\"messageEventCreated\"}");
+    execute.emplace(node_id);
+  }
+
   if (intended_target_origin) {
     bool valid_target =
         intended_target_origin->IsSameOriginWith(GetSecurityOrigin());

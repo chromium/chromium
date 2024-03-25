@@ -2265,6 +2265,17 @@ void Document::UpdateStyle() {
   RUNTIME_CALL_TIMER_SCOPE(V8PerIsolateData::MainThreadIsolate(),
                            RuntimeCallStats::CounterId::kUpdateStyle);
 
+  // Updating style can trigger network requests, so keep track of execution.
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "documentUpdateStyle");
+    info.Set("url", Url().GetString().Utf8());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    execute.emplace(recordreplay::NewDependencyGraphNode(json.c_str()));
+  }
+
   unsigned initial_element_count = GetStyleEngine().StyleForElementCount();
 
   lifecycle_.AdvanceTo(DocumentLifecycle::kInStyleRecalc);
@@ -3663,8 +3674,7 @@ void Document::close() {
 }
 
 void Document::RecordReplayOnRemoveLoadEventDelay() {
-  if (recordreplay::IsReplaying() &&
-      !recordreplay::FeatureEnabled("no-dependency-graph")) {
+  if (recordreplay::DependencyGraphEnabled()) {
     int node_id = V8RecordReplayDependencyGraphExecutionNode();
     if (node_id) {
       record_replay_load_event_dependency_nodes_.push_back(node_id);
@@ -3678,7 +3688,7 @@ void Document::ImplicitClose() {
   DCHECK(!InStyleRecalc());
 
   absl::optional<recordreplay::AutoDependencyExecution> execute;
-  if (recordreplay::IsReplaying()) {
+  if (recordreplay::DependencyGraphEnabled()) {
     base::Value::Dict info;
     info.Set("kind", "documentLoaded");
     info.Set("url", Url().GetString().Utf8());
@@ -3897,6 +3907,16 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
          !GetEventTargetData()->event_listener_map.Contains(
              event_type_names::kBeforeunload));
 
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "documentBeforeUnload");
+    info.Set("url", Url().GetString().Utf8());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    execute.emplace(recordreplay::NewDependencyGraphNode(json.c_str()));
+  }
+
   PageDismissalScope in_page_dismissal;
   auto& before_unload_event = *MakeGarbageCollected<BeforeUnloadEvent>();
   before_unload_event.initEvent(event_type_names::kBeforeunload, false, true);
@@ -3981,6 +4001,16 @@ void Document::DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info) {
       // already complete.
       load_event_progress_ > kUnloadEventInProgress) {
     return;
+  }
+
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "documentUnloaded");
+    info.Set("url", Url().GetString().Utf8());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    execute.emplace(recordreplay::NewDependencyGraphNode(json.c_str()));
   }
 
   Element* current_focused_element = FocusedElement();
@@ -7166,6 +7196,17 @@ void Document::OnPrepareToStopParsing() {
 void Document::FinishedParsing() {
   DCHECK(!GetScriptableDocumentParser() || !parser_->IsParsing());
   DCHECK(!GetScriptableDocumentParser() || ready_state_ != kLoading);
+
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "documentFinishedParsing");
+    info.Set("url", Url().GetString().Utf8());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    execute.emplace(recordreplay::NewDependencyGraphNode(json.c_str()));
+  }
+
   SetParsingState(kInDOMContentLoaded);
   DocumentParserTiming::From(*this).MarkParserStop();
 

@@ -119,6 +119,10 @@ void V8FrameCallback::Trace(blink::Visitor* visitor) const {
 }
 
 void V8FrameCallback::Invoke(double highResTime) {
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "ScriptExecution", "V8FrameCallback::Invoke"
+  );
+
   callback_->InvokeAndReportException(nullptr, highResTime);
 }
 

@@ -25,6 +25,8 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
+#include "base/json/json_writer.h"
+
 namespace blink {
 
 namespace {
@@ -735,6 +737,19 @@ void ThrottlingURLLoader::OnReceiveRedirect(
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
   DCHECK(!loader_completed_);
   DCHECK(deferring_throttles_.empty());
+
+  // Keep track of network requests triggered by the download message we are
+  // handling from the browser process.
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "receivedRedirect");
+    info.Set("original_url", original_url_.spec());
+    info.Set("new_url", redirect_info.new_url.spec());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    execute.emplace(recordreplay::NewDependencyGraphNode(json.c_str()));
+  }
 
   if (!throttles_.empty()) {
     bool deferred = false;

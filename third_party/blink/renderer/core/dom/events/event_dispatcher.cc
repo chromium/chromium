@@ -70,6 +70,9 @@ DispatchEventResult EventDispatcher::DispatchEvent(Node& node, Event& event) {
 #if DCHECK_IS_ON()
   DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
 #endif
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "ScriptExecution", "EventDispatcher::DispatchEvent"
+  );
   EventDispatcher dispatcher(node, event);
   return event.DispatchEvent(dispatcher);
 }

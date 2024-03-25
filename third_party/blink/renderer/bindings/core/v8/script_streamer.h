@@ -266,6 +266,8 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
   v8::ScriptCompiler::StreamedSource::Encoding encoding_;
 
   v8::ScriptType script_type_;
+
+  int record_replay_scheduled_node_id_ = 0;
 };
 
 // BackgroundInlineScriptStreamer allows parsing and compiling inline scripts in

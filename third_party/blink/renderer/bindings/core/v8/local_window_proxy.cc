@@ -166,6 +166,10 @@ void LocalWindowProxy::Initialize() {
   // https://linear.app/replay/issue/RUN-749
   recordreplay::Assert("LocalWindowProxy::Initialize Start");
 
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "ScriptExecution", "LocalWindowProxy::Initialize"
+  );
+
   TRACE_EVENT2("v8", "LocalWindowProxy::Initialize", "IsMainFrame",
                GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
                GetFrame()->IsOutermostMainFrame());

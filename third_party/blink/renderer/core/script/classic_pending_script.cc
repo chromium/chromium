@@ -502,6 +502,12 @@ void ClassicPendingScript::AdvanceReadyState(ReadyState new_ready_state) {
 
   ready_state_ = new_ready_state;
 
+  if (IsReady()) {
+    record_replay_dependency_node_ids_.push_back(
+      recordreplay::NewDependencyGraphNode("{\"kind\":\"pendingScriptReady\"}")
+    );
+  }
+
   // Did we transition into a 'ready' state?
   if (IsReady() && IsWatchingForLoad())
     PendingScriptFinished();

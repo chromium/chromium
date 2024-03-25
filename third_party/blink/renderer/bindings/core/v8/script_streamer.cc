@@ -801,6 +801,10 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   // This reset will also cancel the watcher.
   watcher_.reset();
 
+  record_replay_scheduled_node_id_ = recordreplay::NewDependencyGraphNode(
+    "{\"kind\":\"scheduleScriptStreamingTask\"}"
+  );
+
   // Script streaming tasks are high priority, as they can block the parser,
   // and they can (and probably will) block during their own execution as
   // they wait for more input.
@@ -987,6 +991,20 @@ void ResourceScriptStreamer::StreamingComplete(LoadingState loading_state) {
         inspector_parse_script_event::Data(
             std::move(context), ScriptResourceIdentifier(), ScriptURLString());
       });
+
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    int node_id = recordreplay::NewDependencyGraphNode(
+      "{\"kind\":\"scriptStreamingComplete\"}"
+    );
+    if (record_replay_scheduled_node_id_) {
+      recordreplay::AddDependencyGraphEdge(
+        record_replay_scheduled_node_id_, node_id,
+        "{\"kind\":\"scheduler\"}"
+      );
+    }
+    execute.emplace(node_id);
+  }
 
   // The background task is completed; do the necessary ramp-down in the main
   // thread.

@@ -174,6 +174,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
       UpdateFromElementBehavior,
       network::mojom::ReferrerPolicy = network::mojom::ReferrerPolicy::kDefault,
       UpdateType = UpdateType::kAsync,
+      int record_replay_scheduled_node_id = 0,
       bool force_blocking = false);
 
   virtual void DispatchLoadEvent() = 0;
@@ -307,6 +308,8 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   };
 
   HeapVector<Member<DecodeRequest>> decode_requests_;
+
+  int record_replay_created_node_id_ = 0;
 };
 
 }  // namespace blink

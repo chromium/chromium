@@ -496,6 +496,10 @@ AutoUnlockMaybeEventsDisallowed::~AutoUnlockMaybeEventsDisallowed() {
   }
 }
 
+bool DependencyGraphEnabled() {
+  return IsReplaying() && !FeatureEnabled("no-dependency-graph");
+}
+
 int NewDependencyGraphNode(const char* json) {
   return V8RecordReplayNewDependencyGraphNode(json);
 }

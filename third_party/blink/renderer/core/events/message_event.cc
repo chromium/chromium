@@ -90,7 +90,14 @@ void MessageEvent::UnregisterAmountOfExternallyAllocatedMemory() {
   }
 }
 
-MessageEvent::MessageEvent() : data_type_(kDataTypeScriptValue) {}
+void MessageEvent::RecordReplayInitDependencyGraphNodeId() {
+  record_replay_dependency_graph_node_id_ =
+    recordreplay::NewDependencyGraphNode("{\"kind\":\"newMessageEvent\"}");
+}
+
+MessageEvent::MessageEvent() : data_type_(kDataTypeScriptValue) {
+  RecordReplayInitDependencyGraphNodeId();
+}
 
 MessageEvent::MessageEvent(const AtomicString& type,
                            const MessageEventInit* initializer)
@@ -122,6 +129,7 @@ MessageEvent::MessageEvent(const AtomicString& type,
   if (initializer->hasUserActivation())
     user_activation_ = initializer->userActivation();
   DCHECK(IsValidSource(source_.Get()));
+  RecordReplayInitDependencyGraphNodeId();
 }
 
 MessageEvent::MessageEvent(const String& origin,
@@ -135,6 +143,7 @@ MessageEvent::MessageEvent(const String& origin,
       source_(source),
       ports_(ports) {
   DCHECK(IsValidSource(source_.Get()));
+  RecordReplayInitDependencyGraphNodeId();
 }
 
 MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
@@ -159,6 +168,7 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
     last_event_id.Utf8().c_str());
   DCHECK(IsValidSource(source_.Get()));
   RegisterAmountOfExternallyAllocatedMemory();
+  RecordReplayInitDependencyGraphNodeId();
 }
 
 MessageEvent::MessageEvent(
@@ -186,6 +196,7 @@ MessageEvent::MessageEvent(
     last_event_id.Utf8().c_str());
   DCHECK(IsValidSource(source_.Get()));
   RegisterAmountOfExternallyAllocatedMemory();
+  RecordReplayInitDependencyGraphNodeId();
 }
 
 MessageEvent::MessageEvent(const String& origin, EventTarget* source)
@@ -194,6 +205,7 @@ MessageEvent::MessageEvent(const String& origin, EventTarget* source)
       origin_(origin),
       source_(source) {
   DCHECK(IsValidSource(source_.Get()));
+  RecordReplayInitDependencyGraphNodeId();
 }
 
 MessageEvent::MessageEvent(const String& data, const String& origin)
@@ -202,6 +214,7 @@ MessageEvent::MessageEvent(const String& data, const String& origin)
       data_as_string_(data),
       origin_(origin) {
   RegisterAmountOfExternallyAllocatedMemory();
+  RecordReplayInitDependencyGraphNodeId();
 }
 
 MessageEvent::MessageEvent(Blob* data, const String& origin)
@@ -210,6 +223,7 @@ MessageEvent::MessageEvent(Blob* data, const String& origin)
       data_as_blob_(data),
       origin_(origin) {
   RegisterAmountOfExternallyAllocatedMemory();
+  RecordReplayInitDependencyGraphNodeId();
 }
 
 MessageEvent::MessageEvent(DOMArrayBuffer* data, const String& origin)
@@ -218,6 +232,7 @@ MessageEvent::MessageEvent(DOMArrayBuffer* data, const String& origin)
       data_as_array_buffer_(data),
       origin_(origin) {
   RegisterAmountOfExternallyAllocatedMemory();
+  RecordReplayInitDependencyGraphNodeId();
 }
 
 MessageEvent::~MessageEvent() {

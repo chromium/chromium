@@ -95,6 +95,10 @@ void EventQueue::DispatchEvent(Event* event) {
 
   DCHECK(GetExecutionContext());
 
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "ScriptExecution", "EventQueue::DispatchEvent"
+  );
+
   probe::AsyncTask async_task(GetExecutionContext(),
                               event->async_task_context());
   EventTarget* target = event->target();

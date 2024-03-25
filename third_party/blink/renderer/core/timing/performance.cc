@@ -1006,6 +1006,10 @@ void Performance::SuspendObserver(PerformanceObserver& observer) {
 }
 
 void Performance::DeliverObservationsTimerFired(TimerBase*) {
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "ScriptExecution", "Performance::DeliverObservationsTimerFired"
+  );
+
   decltype(active_observers_) observers;
   active_observers_.Swap(observers);
   for (const auto& observer : observers) {

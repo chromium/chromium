@@ -25,6 +25,8 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/size.h"
 
+#include "base/json/json_writer.h"
+
 namespace {
 
 WTF::Vector<SkBitmap> DecodeImageData(const std::string& data,
@@ -170,6 +172,18 @@ void ImageDownloaderImpl::DownloadImage(const KURL& image_url,
                                         uint32_t max_bitmap_size,
                                         bool bypass_cache,
                                         DownloadImageCallback callback) {
+  // Keep track of network requests triggered by the download mojo message
+  // we are handling.
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "downloadImage");
+    info.Set("url", image_url.GetString().Utf8());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    execute.emplace(recordreplay::NewDependencyGraphNode(json.c_str()));
+  }
+
   // Constrain the preferred size by the max bitmap size. This will prevent
   // resizing of the resulting image if the preferred size is used.
   gfx::Size constrained_preferred_size(preferred_size);

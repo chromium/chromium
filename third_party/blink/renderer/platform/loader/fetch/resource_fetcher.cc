@@ -2375,13 +2375,26 @@ void ResourceFetcher::ScheduleStaleRevalidate(Resource* stale_resource) {
   if (stale_resource->StaleRevalidationStarted())
     return;
   stale_resource->SetStaleRevalidationStarted();
+
+  int node_id = recordreplay::NewDependencyGraphNode("{\"kind\":\"scheduleRevalidateStaleResource\"}");
   freezable_task_runner_->PostTask(
       FROM_HERE,
       WTF::BindOnce(&ResourceFetcher::RevalidateStaleResource,
-                    WrapWeakPersistent(this), WrapPersistent(stale_resource)));
+                    WrapWeakPersistent(this), WrapPersistent(stale_resource), node_id));
 }
 
-void ResourceFetcher::RevalidateStaleResource(Resource* stale_resource) {
+void ResourceFetcher::RevalidateStaleResource(Resource* stale_resource,
+                                              int record_replay_scheduled_node_id) {
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    int node_id = recordreplay::NewDependencyGraphNode("{\"kind\":\"revalidateStaleResource\"}");
+    recordreplay::AddDependencyGraphEdge(
+      record_replay_scheduled_node_id, node_id,
+      "{\"kind\":\"scheduler\"}"
+    );
+    execute.emplace(node_id);
+  }
+
   // Creating FetchParams from Resource::GetResourceRequest doesn't create
   // the exact same request as the original one, while for revalidation
   // purpose this is probably fine.

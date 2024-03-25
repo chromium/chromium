@@ -59,6 +59,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+#include "base/json/json_writer.h"
+
 namespace blink {
 
 namespace {
@@ -383,6 +385,10 @@ void Resource::FinishAsError(const ResourceError& error,
 
 void Resource::Finish(base::TimeTicks load_response_end,
                       base::SingleThreadTaskRunner* task_runner) {
+  record_replay_dependency_node_ids_.push_back(
+    recordreplay::NewDependencyGraphNode("{\"kind\":\"resourceFinished\"}")
+  );
+
   DCHECK(!is_revalidating_);
   load_response_end_ = load_response_end;
   if (!ErrorOccurred())
@@ -595,6 +601,22 @@ void Resource::DidAddClient(ResourceClient* client) {
   if (!HasClient(client))
     return;
   if (IsLoaded()) {
+    absl::optional<recordreplay::AutoDependencyExecution> execute;
+    if (recordreplay::DependencyGraphEnabled()) {
+      base::Value::Dict info;
+      info.Set("kind", "resourceAlreadyLoaded");
+      info.Set("url", Url().GetString().Utf8());
+      std::string json;
+      base::JSONWriter::Write(info, &json);
+      int node_id = recordreplay::NewDependencyGraphNode(json.c_str());
+      for (int other_node_id : record_replay_dependency_node_ids_) {
+        recordreplay::AddDependencyGraphEdge(
+          other_node_id, node_id, "{\"kind\":\"loadResource\"}"
+        );
+      }
+      execute.emplace(node_id);
+    }
+
     client->SetHasFinishedFromMemoryCache();
     client->NotifyFinished(this);
     if (clients_.Contains(client)) {

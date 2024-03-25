@@ -1721,16 +1721,9 @@ static void GetCurrentNetworkStreamData(const v8::FunctionCallbackInfo<v8::Value
   args.GetReturnValue().Set(result);
 }
 
-static std::string MakeRequestIdentifier(uint64_t identifier) {
-  char request_id[64];
-  snprintf(request_id, 64, "%d.%lu", (int) base::GetCurrentProcId(), (unsigned long) identifier);
-  return std::string(request_id);
-}
-
 static std::string GetRequestIdentifierProperty(const base::DictionaryValue& info) {
-  uint64_t identifier =
-    *info.FindPath("identifier")->GetIfDouble();
-  return MakeRequestIdentifier(identifier);
+  const std::string *requestId = info.FindPath("requestId")->GetIfString();
+  return *requestId;
 }
 
 static void CopyDictionaryProperty(base::DictionaryValue& dst,

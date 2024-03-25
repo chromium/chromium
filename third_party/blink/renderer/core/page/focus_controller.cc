@@ -882,6 +882,10 @@ bool FocusController::IsDocumentFocused(const Document& document) const {
 }
 
 void FocusController::FocusHasChanged() {
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "ScriptExecution", "FocusController::FocusHasChanged"
+  );
+
   bool focused = IsFocused();
   if (!focused) {
     if (auto* focused_or_main_local_frame =

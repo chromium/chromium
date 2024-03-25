@@ -149,6 +149,10 @@ void NetworkInformation::ConnectionChange(
     bool save_data) {
   DCHECK(GetExecutionContext()->IsContextThread());
 
+  recordreplay::AutoDependencyExecution execute(
+    recordreplay::NewDependencyGraphNode("{\"kind\":\"networkConnectionChange\"}")
+  );
+
   const String host = Host();
   uint32_t new_http_rtt_msec =
       GetNetworkStateNotifier().RoundRtt(host, http_rtt);

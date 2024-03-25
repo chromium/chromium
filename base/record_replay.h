@@ -285,6 +285,9 @@ class SCOPED_LOCKABLE AutoUnlockMaybeEventsDisallowed {
   base::Lock& lock_;
 };
 
+// Returns whether dependency graph APIs need to be called.
+bool DependencyGraphEnabled();
+
 int NewDependencyGraphNode(const char* json);
 void AddDependencyGraphEdge(int source, int target, const char* json);
 void BeginDependencyExecution(int node);

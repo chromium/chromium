@@ -249,6 +249,11 @@ void DedicatedWorker::OnHostCreated(
     CrossVariantMojoRemote<
         mojom::blink::BackForwardCacheControllerHostInterfaceBase>
         back_forward_cache_controller_host) {
+  // Keep track of network requests made while starting the worker.
+  recordreplay::AutoDependencyExecution execute(
+    recordreplay::NewDependencyGraphNode("{\"kind\":\"workerHostCreated\"}")
+  );
+
   DCHECK(!base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
   const RejectCoepUnsafeNone reject_coep_unsafe_none(
       network::CompatibleWithCrossOriginIsolated(parent_coep));

@@ -156,6 +156,10 @@ void ResizeObserver::DeliverObservations() {
   if (active_observations_.empty())
     return;
 
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "ScriptExecution", "ResizeObserver::DeliverObservations"
+  );
+
   HeapVector<Member<ResizeObserverEntry>> entries;
 
   for (auto& observation : active_observations_) {

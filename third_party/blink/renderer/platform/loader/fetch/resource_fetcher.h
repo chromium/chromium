@@ -443,7 +443,7 @@ class PLATFORM_EXPORT ResourceFetcher
                               bool same_top_frame_site_resource_cached) const;
 
   void ScheduleStaleRevalidate(Resource* stale_resource);
-  void RevalidateStaleResource(Resource* stale_resource);
+  void RevalidateStaleResource(Resource* stale_resource, int record_replay_scheduled_node_id);
 
   void WarnUnusedPreloads();
 

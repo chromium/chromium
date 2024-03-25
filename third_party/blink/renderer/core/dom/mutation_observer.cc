@@ -118,6 +118,10 @@ class MutationObserverAgentData
     // https://linear.app/replay/issue/RUN-1040
     recordreplay::Assert("MutationObserverAgentData::DeliverMutations");
 
+    recordreplay::AutoMarkerDependencyExecution execute(
+      "ScriptExecution", "MutationObserverAgentData::DeliverMutations"
+    );
+
     // These steps are defined in DOM Standard's "notify mutation observers".
     // https://dom.spec.whatwg.org/#notify-mutation-observers
     DCHECK(IsMainThread());

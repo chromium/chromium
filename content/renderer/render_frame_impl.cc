@@ -255,6 +255,8 @@
 #include "content/renderer/java/gin_java_bridge_dispatcher.h"
 #endif
 
+#include "base/json/json_writer.h"
+
 using base::Time;
 using blink::ContextMenuData;
 using blink::WebContentDecryptionModule;
@@ -2092,6 +2094,10 @@ void RenderFrameImpl::Unload(
                routing_id_);
   DCHECK(!base::RunLoop::IsNestedOnCurrentThread());
 
+  recordreplay::AutoDependencyExecution execute(
+    recordreplay::NewDependencyGraphNode("{\"kind\":\"renderFrameUnload\"}")
+  );
+
   // Send an UpdateState message before we get deleted.
   // TODO(dcheng): Improve this comment to clarify why it's important to sent
   // state updates.
@@ -2579,6 +2585,16 @@ void RenderFrameImpl::CommitNavigation(
   DCHECK(!blink::IsRendererDebugURL(common_params->url));
   DCHECK(!NavigationTypeUtils::IsSameDocument(common_params->navigation_type));
   LogCommitHistograms(commit_params->commit_sent, is_main_frame_);
+
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "renderFrameNavigate");
+    info.Set("url", common_params->url.spec());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    execute.emplace(recordreplay::NewDependencyGraphNode(json.c_str()));
+  }
 
   AssertNavigationCommits assert_navigation_commits(
       this, kMayReplaceInitialEmptyDocument);

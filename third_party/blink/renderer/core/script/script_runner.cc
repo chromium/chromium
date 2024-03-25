@@ -44,6 +44,8 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+#include "base/json/json_writer.h"
+
 namespace {
 
 void PostTaskWithLowPriorityUntilTimeout(
@@ -278,11 +280,10 @@ void ScriptRunner::ExecutePendingScript(PendingScript* pending_script) {
   DCHECK(!document_->domWindow() || !document_->domWindow()->IsContextPaused());
   DCHECK(pending_script);
 
-  pending_script->ExecuteScriptBlock();
+  int node_id = recordreplay::NewDependencyGraphNode("{\"kind\":\"executePendingScript\"}");
+  recordreplay::AutoDependencyExecution execute(node_id);
 
-  recordreplay::AutoMarkerDependencyExecution execute(
-    "LoadEventDelay", "ScriptRunner::ExecutePendingScript"
-  );
+  pending_script->ExecuteScriptBlock();
 
   document_->DecrementLoadEventDelayCount();
 }

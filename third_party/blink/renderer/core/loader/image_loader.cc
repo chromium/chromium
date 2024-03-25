@@ -71,6 +71,8 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
+#include "base/json/json_writer.h"
+
 namespace blink {
 
 namespace {
@@ -129,6 +131,9 @@ class ImageLoader::Task {
     ExecutionContext* context = loader_->GetElement()->GetExecutionContext();
     async_task_context_.Schedule(context, "Image");
     world_ = context->GetCurrentWorld();
+    record_replay_scheduled_node_id_ = recordreplay::NewDependencyGraphNode(
+      "{\"kind\":\"scheduleImageUpdateTask\"}"
+    );
   }
 
   void Run() {
@@ -139,7 +144,9 @@ class ImageLoader::Task {
                          element->RecordReplayId());
     ExecutionContext* context = element->GetExecutionContext();
     probe::AsyncTask async_task(context, &async_task_context_);
-    loader_->DoUpdateFromElement(world_, update_behavior_, referrer_policy_);
+    loader_->DoUpdateFromElement(world_, update_behavior_, referrer_policy_,
+                                 UpdateType::kAsync,
+                                 record_replay_scheduled_node_id_);
   }
 
   void ClearLoader() {
@@ -155,6 +162,8 @@ class ImageLoader::Task {
   scoped_refptr<const DOMWrapperWorld> world_;
   network::mojom::ReferrerPolicy referrer_policy_;
 
+  int record_replay_scheduled_node_id_ = 0;
+
   probe::AsyncTaskContext async_task_context_;
   base::WeakPtrFactory<Task> weak_factory_{this};
 };
@@ -166,6 +175,10 @@ ImageLoader::ImageLoader(Element* element)
       was_deferred_explicitly_(false),
       lazy_image_load_state_(LazyImageLoadState::kNone) {
   RESOURCE_LOADING_DVLOG(1) << "new ImageLoader " << this;
+
+  record_replay_created_node_id_ = recordreplay::NewDependencyGraphNode(
+    "{\"kind\":\"imageLoaderCreated\"}"
+  );
 }
 
 ImageLoader::~ImageLoader() = default;
@@ -456,10 +469,28 @@ void ImageLoader::DoUpdateFromElement(
     UpdateFromElementBehavior update_behavior,
     network::mojom::ReferrerPolicy referrer_policy,
     UpdateType update_type,
+    int record_replay_scheduled_node_id,
     bool force_blocking) {
-  recordreplay::AutoMarkerDependencyExecution execute(
-    "LoadEventDelay", "ImageLoader::DoUpdateFromElement"
-  );
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "imageUpdateFromElement");
+    info.Set("url", element_->ImageSourceURL().GetString().Utf8());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    int node_id = recordreplay::NewDependencyGraphNode(json.c_str());
+    recordreplay::AddDependencyGraphEdge(
+      record_replay_created_node_id_, node_id,
+      "{\"kind\":\"imageLoader\"}"
+    );
+    if (record_replay_scheduled_node_id) {
+      recordreplay::AddDependencyGraphEdge(
+        record_replay_scheduled_node_id, node_id,
+        "{\"kind\":\"imageUpdateScheduled\"}"
+      );
+    }
+    execute.emplace(node_id);
+  }
 
   // FIXME: According to
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/embedded-content.html#the-img-element:the-img-element-55
@@ -698,6 +729,7 @@ void ImageLoader::UpdateFromElement(
                          element_->RecordReplayId());
     DoUpdateFromElement(element_->GetExecutionContext()->GetCurrentWorld(),
                         update_behavior, referrer_policy, UpdateType::kSync,
+                        /* record_replay_scheduled_node_id */ 0,
                         force_blocking);
     return;
   }
@@ -924,11 +956,23 @@ void ImageLoader::DispatchPendingLoadEvent(
   if (!image_content_)
     return;
   CHECK(image_complete_);
-  DispatchLoadEvent();
 
-  recordreplay::AutoMarkerDependencyExecution execute(
-    "LoadEventDelay", "ImageLoader::DispatchPendingLoadEvent"
-  );
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "imageLoaded");
+    info.Set("url", element_->ImageSourceURL().GetString().Utf8());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    int node_id = recordreplay::NewDependencyGraphNode(json.c_str());
+    recordreplay::AddDependencyGraphEdge(
+      record_replay_created_node_id_, node_id,
+      "{\"kind\":\"imageLoader\"}"
+    );
+    execute.emplace(node_id);
+  }
+
+  DispatchLoadEvent();
 
   // Checks Document's load event synchronously here for performance.
   // This is safe because DispatchPendingLoadEvent() is called asynchronously.
@@ -937,11 +981,22 @@ void ImageLoader::DispatchPendingLoadEvent(
 
 void ImageLoader::DispatchPendingErrorEvent(
     std::unique_ptr<IncrementLoadEventDelayCount> count) {
-  GetElement()->DispatchEvent(*Event::Create(event_type_names::kError), "ImageLoader::DispatchPendingErrorEvent");
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "imageError");
+    info.Set("url", element_->ImageSourceURL().GetString().Utf8());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    int node_id = recordreplay::NewDependencyGraphNode(json.c_str());
+    recordreplay::AddDependencyGraphEdge(
+      record_replay_created_node_id_, node_id,
+      "{\"kind\":\"imageLoader\"}"
+    );
+    execute.emplace(node_id);
+  }
 
-  recordreplay::AutoMarkerDependencyExecution execute(
-    "LoadEventDelay", "ImageLoader::DispatchPendingErrorEvent"
-  );
+  GetElement()->DispatchEvent(*Event::Create(event_type_names::kError), "ImageLoader::DispatchPendingErrorEvent");
 
   // Checks Document's load event synchronously here for performance.
   // This is safe because DispatchPendingErrorEvent() is called asynchronously.

@@ -46,11 +46,15 @@ static const char* HttpVersionToString(blink::ResourceResponse::HTTPVersion vers
   }
 }
 
-static uint64_t RecordReplayNetworkRequestId(uint64_t inspector_id) {
+static std::string RecordReplayNetworkRequestId(uint64_t inspector_id) {
   // Inspector identifiers can vary when replaying due to differences in inspector
   // behavior. Make sure the identifiers we report to the recorder are consistent
   // by manually recording/replaying the identifier.
-  return RecordReplayValue("NetworkRequestId", inspector_id);
+  uint64_t identifier = RecordReplayValue("NetworkRequestId", inspector_id);
+
+  char request_id[64];
+  snprintf(request_id, 64, "%d.%lu", (int) base::GetCurrentProcId(), (unsigned long) identifier);
+  return std::string(request_id);
 }
 
 static const char* GetRequestCauseString(const ResourceRequest& req) {
@@ -197,11 +201,21 @@ void OnNetworkPrepareRequest(const blink::Document* document, const blink::Resou
   // where the devtools stack id is taken.
   uint64_t bookmark = NewBookmark();
 
+  std::string requestId = RecordReplayNetworkRequestId(request.InspectorId());
+
+  if (recordreplay::IsReplaying()) {
+    base::Value::Dict info;
+    info.Set("kind", "networkRequest");
+    info.Set("requestId", requestId);
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    recordreplay::NewDependencyGraphNode(json.c_str());
+  }
+
   base::DictionaryValue dict;
 
   dict.SetDoubleKey("bookmark", (double) bookmark);
-  dict.SetDoubleKey("identifier",
-                    (double) RecordReplayNetworkRequestId(request.InspectorId()));
+  dict.SetString("requestId", requestId);
   dict.SetString("requestUrl", url_string);
   dict.SetString("requestMethod", request.HttpMethod().Utf8());
   const char* requestCause = GetRequestCauseString(request);
@@ -234,8 +248,7 @@ void OnNetworkPrepareRequest(const blink::Document* document, const blink::Resou
   if (form_body) {
     WTF::String data = form_body->FlattenToString();
     base::DictionaryValue requestDataDict;
-    requestDataDict.SetDoubleKey("identifier",
-                                 (double) RecordReplayNetworkRequestId(request.InspectorId()));
+    requestDataDict.SetString("requestId", requestId);
     std::string dataStr = data.Utf8();
     requestDataDict.SetString("data", dataStr);
     requestDataDict.SetInteger("dataLength", (int)dataStr.size());
@@ -250,8 +263,7 @@ void OnNetworkResourceRedirect(uint64_t inspector_id, const blink::KURL& new_url
   }
 
   base::DictionaryValue dict;
-  dict.SetDoubleKey("identifier",
-                    (double) RecordReplayNetworkRequestId(inspector_id));
+  dict.SetString("requestId", RecordReplayNetworkRequestId(inspector_id));
   dict.SetString("requestUrl", new_url.GetString().Utf8());
 
   base::ListValue headers;
@@ -275,8 +287,7 @@ void OnNetworkReceiveResponse(uint64_t inspector_id,
   }
 
   base::DictionaryValue dict;
-  dict.SetDoubleKey("identifier",
-                    (double) RecordReplayNetworkRequestId(inspector_id));
+  dict.SetString("requestId", RecordReplayNetworkRequestId(inspector_id));
   const char* http_version = HttpVersionToString(response.HttpVersion());
   base::ListValue headers;
   for (auto header : response.HttpHeaderFields()) {
@@ -298,9 +309,20 @@ void OnNetworkReceiveData(uint64_t inspector_id, const char* data, int length) {
     return;
   }
 
+  std::string requestId = RecordReplayNetworkRequestId(inspector_id);
+
+  if (recordreplay::IsReplaying()) {
+    base::Value::Dict info;
+    info.Set("kind", "networkReceiveData");
+    info.Set("requestId", requestId);
+    info.Set("length", length);
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    recordreplay::NewDependencyGraphNode(json.c_str());
+  }
+
   base::DictionaryValue dict;
-  dict.SetDoubleKey("identifier",
-                    (double) RecordReplayNetworkRequestId(inspector_id));
+  dict.SetString("requestId", requestId);
   dict.SetDoubleKey("dataLength", (double) length);
   if (data) {
     std::string data_base64 = base::Base64Encode(
@@ -322,8 +344,7 @@ void OnNetworkFinishLoading(uint64_t inspector_id,
   }
 
   base::DictionaryValue dict;
-  dict.SetDoubleKey("identifier",
-                    (double) RecordReplayNetworkRequestId(inspector_id));
+  dict.SetString("requestId", RecordReplayNetworkRequestId(inspector_id));
   dict.SetDoubleKey("encodedBodySize", (double) encoded_body_length);
   dict.SetDoubleKey("decodedBodySize", (double) decoded_body_length);
   BrowserEvent("Network.DidFinishLoading", dict);
@@ -336,8 +357,7 @@ void OnNetworkFail(uint64_t inspector_id, const blink::WebURLError& error) {
 
   std::string reason = net::ErrorToShortString(error.reason());
   base::DictionaryValue dict;
-  dict.SetDoubleKey("identifier",
-                    (double) RecordReplayNetworkRequestId(inspector_id));
+  dict.SetString("requestId", RecordReplayNetworkRequestId(inspector_id));
   dict.SetString("requestFailedReason", std::move(reason));
   BrowserEvent("Network.DidFailLoading", dict);
 }

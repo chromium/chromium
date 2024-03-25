@@ -216,6 +216,10 @@ void DedicatedWorkerMessagingProxy::PostMessageToWorkerObject(
   if (!worker_object_ || AskedToTerminate())
     return;
 
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "ScriptExecution", "DedicatedWorkerMessagingProxy::PostMessageToWorkerObject"
+  );
+
   ThreadDebugger* debugger =
       ThreadDebugger::From(GetExecutionContext()->GetIsolate());
   MessagePortArray* ports = MessagePort::EntanglePorts(

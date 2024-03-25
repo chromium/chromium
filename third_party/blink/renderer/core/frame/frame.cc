@@ -747,8 +747,6 @@ bool Frame::SwapImpl(
         remote_frame_receiver) {
   DCHECK(IsAttached());
 
-  recordreplay::AutoMarkerDependencyExecution execute("LoadEventDelay", "Frame::SwapImpl");
-
   using std::swap;
 
   // Important: do not cache frame tree pointers (e.g.  `previous_sibling_`,
