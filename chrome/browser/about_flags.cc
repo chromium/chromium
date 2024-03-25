@@ -9480,10 +9480,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"lacros-shared-components-dir",
-     flag_descriptions::kLacrosSharedComponentsDirName,
-     flag_descriptions::kLacrosSharedComponentsDirDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kLacrosSharedComponentsDir)},
     {"lacros-launch-at-login-screen",
      flag_descriptions::kLacrosLaunchAtLoginScreenName,
      flag_descriptions::kLacrosLaunchAtLoginScreenDescription, kOsCrOS,

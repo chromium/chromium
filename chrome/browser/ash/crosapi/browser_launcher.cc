@@ -270,9 +270,6 @@ void DoLacrosBackgroundWorkPreLaunch(
 
   params.logfd = base::ScopedFD(fd);
 
-  params.enable_shared_components_dir =
-      base::FeatureList::IsEnabled(features::kLacrosSharedComponentsDir);
-
   params.enable_resource_file_sharing =
       base::FeatureList::IsEnabled(features::kLacrosResourcesFileSharing);
   // If resource file sharing feature is disabled, clear the cached shared
@@ -578,13 +575,6 @@ void SetUpFeatures(const LaunchParamsFromBackground& params,
     // run with enabling the feature as well since the feature is based on some
     // ash behavior(clear or move cached shared resource file at lacros launch).
     parameters.command_line.AppendSwitch(switches::kEnableResourcesFileSharing);
-  }
-
-  if (params.enable_shared_components_dir) {
-    // Passes a flag to enable using a location shared across users for browser
-    // components.
-    parameters.command_line.AppendSwitch(
-        switches::kEnableLacrosSharedComponentsDir);
   }
 
   if (params.enable_fork_zygotes_at_login_screen) {

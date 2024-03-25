@@ -99,7 +99,6 @@ extern const char kEnableExtensionActivityLogTesting[];
 extern const char kEnableHangoutServicesExtensionForTesting[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kEnableLacrosForkZygotesAtLoginScreen[];
-extern const char kEnableLacrosSharedComponentsDir[];
 #endif
 extern const char kEnableNaCl[];
 extern const char kEnableNetBenchmarking[];

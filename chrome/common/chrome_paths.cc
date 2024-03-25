@@ -419,10 +419,7 @@ bool PathProvider(int key, base::FilePath* result) {
     case chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM: {
       int components_dir =
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kEnableLacrosSharedComponentsDir)
-              ? static_cast<int>(chromeos::lacros_paths::LACROS_SHARED_DIR)
-              : static_cast<int>(chrome::DIR_USER_DATA);
+          static_cast<int>(chromeos::lacros_paths::LACROS_SHARED_DIR);
 #else
           chrome::DIR_USER_DATA;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -4193,9 +4193,6 @@ extern const char kWifiDirectDescription[];
 extern const char kWindowSplittingName[];
 extern const char kWindowSplittingDescription[];
 
-extern const char kLacrosSharedComponentsDirName[];
-extern const char kLacrosSharedComponentsDirDescription[];
-
 extern const char kLacrosLaunchAtLoginScreenName[];
 extern const char kLacrosLaunchAtLoginScreenDescription[];
 

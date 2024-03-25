@@ -5198,11 +5198,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "lacros-shared-components-dir",
-    "owners": [ "andreaorru@chromium.org", "hidehiko@chromium.org", "lacros-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "lacros-stability",
     "owners": [ "jamescook@chromium.org", "erikchen@chromium.org", "lacros-team@google.com" ],
     // Once Lacros is launched, this flag can be removed. Until then, this

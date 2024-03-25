@@ -70,9 +70,6 @@ class BrowserLauncher {
     // Sets true if Lacros uses resource file sharing.
     bool enable_resource_file_sharing = false;
 
-    // Sets true if Lacros uses a shared components directory.
-    bool enable_shared_components_dir = false;
-
     // Sets true if Lacros forks Zygotes at login screen.
     bool enable_fork_zygotes_at_login_screen = false;
 

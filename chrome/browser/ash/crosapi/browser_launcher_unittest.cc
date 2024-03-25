@@ -185,7 +185,8 @@ TEST_F(BrowserLauncherTest, BackgroundWorkPreLaunch) {
 
   // Add feature and check if it's reflected to `params`.
   base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(features::kLacrosSharedComponentsDir);
+  scoped_features.InitAndEnableFeature(
+      browser_util::kLacrosForkZygotesAtLoginScreen);
 
   BrowserLauncher::LaunchParamsFromBackground params;
   base::test::TestFuture<void> future;
@@ -194,7 +195,7 @@ TEST_F(BrowserLauncherTest, BackgroundWorkPreLaunch) {
       /*launching_at_login_screen=*/false, future.GetCallback(), params);
 
   EXPECT_TRUE(future.Wait());
-  EXPECT_TRUE(params.enable_shared_components_dir);
+  EXPECT_TRUE(params.enable_fork_zygotes_at_login_screen);
 }
 
 TEST_F(BrowserLauncherTest, BackgroundWorkPreLaunchOnLaunchingAtLoginScreen) {
@@ -205,7 +206,8 @@ TEST_F(BrowserLauncherTest, BackgroundWorkPreLaunchOnLaunchingAtLoginScreen) {
 
   // Add feature and check if it's reflected to `params`.
   base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(features::kLacrosSharedComponentsDir);
+  scoped_features.InitAndEnableFeature(
+      browser_util::kLacrosForkZygotesAtLoginScreen);
 
   BrowserLauncher::LaunchParamsFromBackground params;
   base::test::TestFuture<void> future;
@@ -214,7 +216,7 @@ TEST_F(BrowserLauncherTest, BackgroundWorkPreLaunchOnLaunchingAtLoginScreen) {
       /*launching_at_login_screen=*/true, future.GetCallback(), params);
 
   EXPECT_TRUE(future.Wait());
-  EXPECT_TRUE(params.enable_shared_components_dir);
+  EXPECT_TRUE(params.enable_fork_zygotes_at_login_screen);
 }
 
 // TODO(elkurin): Add kLacrosChromeAdditionalArgsFile unit test.

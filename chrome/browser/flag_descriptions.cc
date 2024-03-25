@@ -7262,12 +7262,6 @@ const char kWindowSplittingName[] = "CrOS Labs - Window splitting";
 const char kWindowSplittingDescription[] =
     "Enables splitting windows by dragging one over another.";
 
-const char kLacrosSharedComponentsDirName[] =
-    "Place browser components in a shared location";
-const char kLacrosSharedComponentsDirDescription[] =
-    "When enabled, it causes Lacros to use a location shared across users for "
-    "browser components.";
-
 const char kLacrosLaunchAtLoginScreenName[] =
     "Pre-launch Lacros at login screen";
 const char kLacrosLaunchAtLoginScreenDescription[] =

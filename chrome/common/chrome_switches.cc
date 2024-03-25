@@ -273,10 +273,6 @@ const char kEnableHangoutServicesExtensionForTesting[] =
 // screen.
 const char kEnableLacrosForkZygotesAtLoginScreen[] =
     "enable-lacros-fork-zygotes-at-login-screen";
-
-// Makes Lacros use a location shared across users for browser components.
-const char kEnableLacrosSharedComponentsDir[] =
-    "enable-lacros-shared-components-dir";
 #endif
 
 // Allows NaCl to run in all contexts (such as open web). Note that
