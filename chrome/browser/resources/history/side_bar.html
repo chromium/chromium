@@ -85,14 +85,14 @@
           on-click="onItemClick_">
         <iron-icon icon="cr:history"></iron-icon>
         $i18n{historyMenuItem}
-        <paper-ripple></paper-ripple>
+        <cr-ripple></cr-ripple>
       </a>
       <a id="syncedTabs" role="menuitem" href="/syncedTabs"
           class="page-item cr-nav-menu-item"
           path="syncedTabs" on-click="onItemClick_">
         <iron-icon icon="cr:phonelink"></iron-icon>
         $i18n{openTabsMenuItem}
-        <paper-ripple></paper-ripple>
+        <cr-ripple></cr-ripple>
       </a>
       <!-- tabindex is needed below because <a> without href attribute is not
             focusable in sequential keyboard navigation by default. -->
@@ -105,7 +105,7 @@
         <iron-icon icon="cr:delete"></iron-icon>
         $i18n{clearBrowsingData}
         <div class="cr-icon icon-external"></div>
-        <paper-ripple id="cbd-ripple"></paper-ripple>
+        <cr-ripple></cr-ripple>
       </a>
     </cr-menu-selector>
 

@@ -54,7 +54,7 @@
       on-click="onLinkClick_" data-path="items-list">
     <iron-icon icon="extensions-icons:my_extensions"></iron-icon>
     $i18n{sidebarExtensions}
-    <paper-ripple></paper-ripple>
+    <cr-ripple></cr-ripple>
   </a>
   <a class="cr-nav-menu-item" id="sectionsSitePermissions"
       hidden="[[!enableEnhancedSiteControls]]"
@@ -62,13 +62,13 @@
       data-path="site-permissions">
     <iron-icon icon="extensions-icons:site_permissions"></iron-icon>
     $i18n{sitePermissions}
-    <paper-ripple></paper-ripple>
+    <cr-ripple></cr-ripple>
   </a>
   <a class="cr-nav-menu-item" id="sectionsShortcuts" href="/shortcuts"
       on-click="onLinkClick_" data-path="keyboard-shortcuts">
       <iron-icon icon="extensions-icons:keyboard_shortcuts"></iron-icon>
     $i18n{keyboardShortcuts}
-    <paper-ripple></paper-ripple>
+    <cr-ripple></cr-ripple>
   </a>
 </iron-selector>
 <div>
@@ -79,6 +79,6 @@
     <span id="discover-more-text" class="cr-secondary-text"
         on-click="onMoreExtensionsClick_"
         inner-h-t-m-l="[[discoverMoreText_]]"></span>
-    <paper-ripple></paper-ripple>
+    <cr-ripple></cr-ripple>
   </div>
 </div>

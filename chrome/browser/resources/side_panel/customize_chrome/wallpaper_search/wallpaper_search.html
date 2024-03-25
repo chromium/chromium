@@ -105,7 +105,7 @@
     background-color: var(--cr-hover-background-color);
   }
 
-  #descriptorMenuD button paper-ripple {
+  #descriptorMenuD button cr-ripple {
     --paper-ripple-opacity: 1;
     color: var(--cr-active-background-color);
   }
@@ -344,7 +344,7 @@
             <button class="default-color" on-click="onDefaultColorClick_"
                 aria-current$="[[getColorCheckedStatus_(item, selectedDefaultColor_)]]"
                 title$="[[getColorLabel_(item)]]">
-              <paper-ripple></paper-ripple>
+              <cr-ripple></cr-ripple>
               <customize-chrome-check-mark-wrapper class="color-check-mark"
                   checked="[[isColorSelected_(item, selectedDefaultColor_)]]"
                   checkmark-border-hidden>
@@ -356,7 +356,7 @@
           <button id="customColorContainer" on-click="onCustomColorClick_"
               aria-current$="[[getCustomColorCheckedStatus_(selectedHue_)]]"
               title="$i18n{colorPickerLabel}">
-            <paper-ripple></paper-ripple>
+            <cr-ripple></cr-ripple>
             <customize-chrome-check-mark-wrapper class="color-check-mark"
                 checked="[[selectedHue_]]" checkmark-border-hidden>
               <div class="descriptor-d"
