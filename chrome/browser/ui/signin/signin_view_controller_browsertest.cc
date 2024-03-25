@@ -72,6 +72,27 @@ class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
     return confirmation_prompt->widget_delegate()->AsDialogDelegate();
   }
 
+  bool IsSigninTab(content::WebContents* tab) const {
+    DiceTabHelper* dice_tab_helper = DiceTabHelper::FromWebContents(tab);
+    if (!dice_tab_helper) {
+      return false;
+    }
+
+    if (!dice_tab_helper->IsChromeSigninPage()) {
+      ADD_FAILURE();
+      return false;
+    }
+    if (dice_tab_helper->signin_access_point() != kTestAccessPoint) {
+      ADD_FAILURE();
+      return false;
+    }
+    return true;
+  }
+
+  bool IsSignoutTab(content::WebContents* tab) const {
+    return LogoutTabHelper::FromWebContents(tab);
+  }
+
  private:
   void OnWillCreateBrowserContextServices(
       content::BrowserContext* context) override {
@@ -102,13 +123,8 @@ class SigninViewControllerBrowserImplicitSigninTest
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserImplicitSigninTest,
                        NoPrompt) {
-  // Setup a primary account in error state.
+  // Setup a primary account.
   AccountInfo primary_account_info = SetPrimaryAccount();
-  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
-      primary_account_info.account_id,
-      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-              CREDENTIALS_REJECTED_BY_SERVER));
 
   // Add pending sync data.
   AddUnsyncedData();
@@ -120,9 +136,12 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserImplicitSigninTest,
       signin_metrics::SourceForRefreshTokenOperation::
           kUserMenu_SignOutAllAccounts);
 
-  // User was signed out immediately.
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  // Sign out tab opens immediately. The user may not be signed out yet, as the
+  // sign out happens through the web.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(IsSignoutTab(tab));
 }
 
 class SigninViewControllerBrowserTest
@@ -159,22 +178,45 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
-  DiceTabHelper* dice_tab_helper = DiceTabHelper::FromWebContents(tab);
-  EXPECT_TRUE(dice_tab_helper->IsChromeSigninPage());
-  EXPECT_EQ(dice_tab_helper->signin_access_point(), kTestAccessPoint);
+  EXPECT_TRUE(IsSigninTab(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       SignoutOrReauthWithPrompt_Cancel) {
+  // Setup a primary account.
+  AccountInfo primary_account_info = SetPrimaryAccount();
+  ASSERT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Add pending sync data.
+  AddUnsyncedData();
+
+  // Trigger the Chrome signout action.
+  views::DialogDelegate* dialog_delegate =
+      TriggerSignoutAndWaitForConfirmationPrompt();
+  ASSERT_TRUE(dialog_delegate);
+
+  // Click "Cancel".
+  dialog_delegate->AcceptDialog();
+
+  // User is still signed in.
+  EXPECT_EQ(
+      primary_account_info.account_id,
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+  // The tab was not navigated to the signin page or signout page.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_FALSE(IsSigninTab(tab));
+  EXPECT_FALSE(IsSignoutTab(tab));
 }
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
                        SignoutOrReauthWithPrompt_SignOut) {
-  // Setup a primary account in error state.
+  // Setup a primary account.
   AccountInfo primary_account_info = SetPrimaryAccount();
   ASSERT_TRUE(
       GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
-  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
-      primary_account_info.account_id,
-      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-              CREDENTIALS_REJECTED_BY_SERVER));
 
   // Add pending sync data.
   AddUnsyncedData();
@@ -190,6 +232,12 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   // User was signed out.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // The tab was navigated to the signout page.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(IsSignoutTab(tab));
 }
 
 class SigninViewControllerBrowserCookieParamTest
@@ -226,7 +274,9 @@ IN_PROC_BROWSER_TEST_P(SigninViewControllerBrowserCookieParamTest, SignOut) {
   // Signout tab was opened only if cookies there were cookies for the account.
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(LogoutTabHelper::FromWebContents(tab) != nullptr, with_cookies());
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(IsSignoutTab(tab), with_cookies());
+  EXPECT_FALSE(IsSigninTab(tab));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

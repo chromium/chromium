@@ -28,6 +28,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -106,6 +107,8 @@
 #endif
 
 namespace {
+
+constexpr char kTestEmail[] = "foo@example.com";
 
 class UnconsentedPrimaryAccountChecker
     : public StatusChangeChecker,
@@ -350,11 +353,19 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
 // Test that sets up a primary account (without sync) and simulates a click on
 // the signout button.
 class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
-                                   public InProcessBrowserTest {
+                                   public SigninBrowserTestBase {
  public:
-  ProfileMenuViewSignoutTest() = default;
+  ProfileMenuViewSignoutTest()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      // Signout is not allowed on the main profile.
+      : SigninBrowserTestBase(/*use_main_profile=*/false){}
+#else
+      = default;
+#endif
 
-  CoreAccountId account_id() const { return account_id_; }
+        CoreAccountId account_id() const {
+    return account_id_;
+  }
 
   bool Signout() {
     OpenProfileMenu();
@@ -365,14 +376,6 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
     return true;
   }
 
-  signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForProfile(GetProfile());
-  }
-
-  Profile* GetProfile() {
-    return profile_ ? profile_.get() : browser()->profile();
-  }
-
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   GURL GetExpectedLogoutURL(bool uno_enabled) const {
     if (uno_enabled) {
@@ -381,28 +384,26 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
       return GaiaUrls::GetInstance()->service_logout_url();
     }
   }
-#else
-  void UseSecondaryProfile() {
-    // Signout not allowed in the main profile.
-    profile_ = CreateAdditionalProfile();
-    SetTargetBrowser(CreateBrowser(profile_));
-  }
 #endif
 
-  // InProcessBrowserTest:
+  // SigninBrowserTestBase:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    SetTargetBrowser(browser());
+    SigninBrowserTestBase::SetUpOnMainThread();
+    SetTargetBrowser(GetProfile() == browser()->profile()
+                         ? browser()
+                         : CreateBrowser(GetProfile()));
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Signout is not allowed on the main profile.
-    UseSecondaryProfile();
-#endif
-    // Add an account (no sync).
-    account_id_ =
-        signin::MakeAccountAvailable(identity_manager(), "foo@example.com")
-            .account_id;
+    // Add an account (no sync) with cookie.
+    signin::AccountAvailabilityOptionsBuilder builder =
+        identity_test_env()
+            ->CreateAccountAvailabilityOptionsBuilder()
+            .AsPrimary(signin::ConsentLevel::kSignin)
+            .WithCookie();
+    CoreAccountInfo account_info =
+        identity_test_env()->MakeAccountAvailable(builder.Build(kTestEmail));
+    account_id_ = account_info.account_id;
     ASSERT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id_));
+    identity_test_env()->SetFreshnessOfAccountsInGaiaCookie(true);
   }
 
  private:
@@ -661,7 +662,7 @@ class ProfileMenuViewSyncErrorButtonTest : public ProfileMenuViewTestBase,
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
     account_info_ = signin::MakePrimaryAccountAvailable(
-        identity_manager, "foo@example.com", signin::ConsentLevel::kSync);
+        identity_manager, kTestEmail, signin::ConsentLevel::kSync);
     signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
     ASSERT_TRUE(
         identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
@@ -745,7 +746,7 @@ class ProfileMenuViewSigninErrorButtonTest : public ProfileMenuViewTestBase,
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
     account_info_ = signin::MakePrimaryAccountAvailable(
-        identity_manager, "foo@example.com", signin::ConsentLevel::kSignin);
+        identity_manager, kTestEmail, signin::ConsentLevel::kSignin);
     signin::UpdatePersistentErrorOfRefreshTokenForAccount(
         identity_manager, account_info_.account_id,
         GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(

@@ -7,12 +7,16 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome_signout_confirmation_prompt.h"
 #include "content/public/test/browser_test.h"
 
 class ChromeSignoutConfirmationPromptPixelTest : public DialogBrowserTest {
  public:
   void ShowUi(const std::string& name) override {
-    ShowChromeSignoutConfirmationPrompt(*browser(), base::DoNothing());
+    ShowChromeSignoutConfirmationPrompt(
+        *browser(),
+        ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton,
+        base::DoNothing());
   }
 };
 

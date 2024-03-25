@@ -548,6 +548,14 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
     signin_metrics::ProfileSignout profile_signout_source,
     signin_metrics::SourceForRefreshTokenOperation token_signout_source,
     syncer::ModelTypeSet unsynced_datatypes) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser_->profile());
+  CoreAccountId primary_account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (primary_account_id.empty()) {
+    return;
+  }
+
   // Show the confirmation prompt if there is data pending upload.
   bool should_show_confirmation_prompt = !unsynced_datatypes.Empty();
   base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback =
@@ -556,10 +564,21 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
                      token_signout_source);
 
   if (should_show_confirmation_prompt) {
+    CHECK(!primary_account_id.empty());
+    bool needs_reauth =
+        !identity_manager->HasAccountWithRefreshToken(primary_account_id) ||
+        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            primary_account_id);
+    ChromeSignoutConfirmationPromptVariant prompt_variant =
+        needs_reauth ? ChromeSignoutConfirmationPromptVariant::
+                           kUnsyncedDataWithReauthButton
+                     : ChromeSignoutConfirmationPromptVariant::kUnsyncedData;
+
     // Show confirmation prompt where the user can reauth or sign out.
-    ShowChromeSignoutConfirmationPrompt(*browser_, std::move(callback));
+    ShowChromeSignoutConfirmationPrompt(*browser_, prompt_variant,
+                                        std::move(callback));
   } else {
-    // Sign out immediately.
+    // Sign out immediately
     std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout);
   }
 }

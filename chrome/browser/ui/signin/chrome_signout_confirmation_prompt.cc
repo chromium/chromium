@@ -14,6 +14,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome_signout_confirmation_prompt.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
@@ -22,6 +23,7 @@ namespace {
 
 std::unique_ptr<ui::DialogModel>
 CreateChromeSignoutConfirmationPromptDialogModel(
+    ChromeSignoutConfirmationPromptVariant variant,
     base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback) {
   // Split the callback in 3: Ok, Cancel, Close.
   auto [ok_callback, temp_callback] =
@@ -29,11 +31,21 @@ CreateChromeSignoutConfirmationPromptDialogModel(
   auto [cancel_callback, close_callback] =
       base::SplitOnceCallback(std::move(temp_callback));
 
-  // Button strings and choices.
-  std::u16string ok_label = l10n_util::GetStringUTF16(
-      IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BUTTON);
-  const ChromeSignoutConfirmationChoice ok_choice =
-      ChromeSignoutConfirmationChoice::kReauth;
+  // Strings and choices.
+  int body_string_id = IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY;
+  int ok_string_id = IDS_CANCEL;
+  ChromeSignoutConfirmationChoice ok_choice =
+      ChromeSignoutConfirmationChoice::kDismissed;
+  switch (variant) {
+    case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
+      break;
+    case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
+      body_string_id = IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY;
+      ok_string_id = IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BUTTON;
+      ok_choice = ChromeSignoutConfirmationChoice::kReauth;
+      break;
+  }
+  std::u16string ok_label = l10n_util::GetStringUTF16(ok_string_id);
   std::u16string cancel_label = l10n_util::GetStringUTF16(
       IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_SIGNOUT_BUTTON);
   const ChromeSignoutConfirmationChoice cancel_choice =
@@ -44,8 +56,7 @@ CreateChromeSignoutConfirmationPromptDialogModel(
   return dialog_builder.SetInternalName("ChromeSignoutConfirmationChoicePrompt")
       .SetTitle(l10n_util::GetStringUTF16(
           IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_TITLE))
-      .AddParagraph(
-          ui::DialogModelLabel(IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_BODY))
+      .AddParagraph(ui::DialogModelLabel(body_string_id))
       .AddOkButton(
           base::BindOnce(std::move(ok_callback), ok_choice),
           ui::DialogModel::Button::Params().SetLabel(std::move(ok_label)))
@@ -62,8 +73,9 @@ CreateChromeSignoutConfirmationPromptDialogModel(
 
 void ShowChromeSignoutConfirmationPrompt(
     Browser& browser,
+    ChromeSignoutConfirmationPromptVariant variant,
     base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback) {
-  chrome::ShowBrowserModal(
-      &browser,
-      CreateChromeSignoutConfirmationPromptDialogModel(std::move(callback)));
+  chrome::ShowBrowserModal(&browser,
+                           CreateChromeSignoutConfirmationPromptDialogModel(
+                               variant, std::move(callback)));
 }
