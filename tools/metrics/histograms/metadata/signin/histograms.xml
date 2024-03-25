@@ -1259,32 +1259,6 @@ the browser and content area. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.ListFamilyMembersRequest.HttpStatusOrNetError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-09-01">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    The status of the net or http communication to the Kids Management API. This
-    is recorded for each request to the Kids Management API (ListFamilyMembers
-    rpc).
-  </summary>
-</histogram>
-
-<histogram name="Signin.ListFamilyMembersRequest.Latency" units="ms"
-    expires_after="2024-09-15">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    This metric captures the latency of one individual call to the Kids
-    Management API that might be retried if an error occurs. It includes both
-    the actual RPC call and the time spent in requesting access token.
-
-    For the overall request latency in retrying fetchers, see
-    Signin.ListFamilyMembersRequest.OverallLatency. Googlers only: See
-    go/chrome-kids-backend-monitoring for backend-related metrics.
-  </summary>
-</histogram>
-
 <histogram name="Signin.ListFamilyMembersRequest.OverallLatency" units="ms"
     expires_after="2024-09-01">
   <owner>tju@google.com</owner>
@@ -1315,38 +1289,6 @@ the browser and content area. -->
   <summary>
     The number of retries before a decisive status (OK or permanent error).
   </summary>
-</histogram>
-
-<histogram name="Signin.ListFamilyMembersRequest.Status"
-    enum="SupervisedUserProtoFetcherStatus" expires_after="2024-09-15">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    The status of every fetch to the Kids Management API, including the retried
-    ones. The final status is case of retrying fetchers is recorded in
-    Signin.ListFamilyMembersRequest.OverallStatus.
-  </summary>
-</histogram>
-
-<histogram name="Signin.ListFamilyMembersRequest.{Status}.Latency" units="ms"
-    expires_after="2024-09-01">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    Latency of the calls to the Kids Management API that resulted with
-    &quot;{Status}&quot; status. It includes both the actual RPC call and the
-    time spent in requesting access token.
-  </summary>
-  <token key="Status">
-    <variant name="AuthError" summary="authentication error"/>
-    <variant name="DataError"
-        summary="contract error (data in the response missing despite
-                 succesful parsing)"/>
-    <variant name="HttpStatusOrNetError"
-        summary="transport error or HTTP status"/>
-    <variant name="NoError" summary="no error recorded"/>
-    <variant name="ParseError" summary="parsing error"/>
-  </token>
 </histogram>
 
 <histogram name="Signin.LoadedIdentities.Count" units="identities"
