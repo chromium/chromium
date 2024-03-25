@@ -145,8 +145,9 @@ void MdTextButton::StateChanged(ButtonState old_state) {
   UpdateColors();
 }
 
-void MdTextButton::SetImageModel(ButtonState for_state,
-                                 const ui::ImageModel& image_model) {
+void MdTextButton::SetImageModel(
+    ButtonState for_state,
+    const std::optional<ui::ImageModel>& image_model) {
   LabelButton::SetImageModel(for_state, image_model);
   UpdatePadding();
 }
@@ -309,13 +310,15 @@ void MdTextButton::UpdateBackgroundColor() {
 void MdTextButton::UpdateIconColor() {
   if (features::IsChromeRefresh2023() && use_text_color_for_icon_ &&
       HasImage(ButtonState::STATE_NORMAL)) {
-    auto image_model = GetImageModel(ButtonState::STATE_NORMAL);
-    if (image_model.IsVectorIcon()) {
-      LabelButton::SetImageModel(ButtonState::STATE_NORMAL,
-                                 ui::ImageModel::FromVectorIcon(
-                                     *image_model.GetVectorIcon().vector_icon(),
-                                     LabelButton::GetCurrentTextColor(),
-                                     image_model.GetVectorIcon().icon_size()));
+    const std::optional<ui::ImageModel>& image_model =
+        GetImageModel(ButtonState::STATE_NORMAL);
+    if (image_model.has_value() && image_model->IsVectorIcon()) {
+      LabelButton::SetImageModel(
+          ButtonState::STATE_NORMAL,
+          ui::ImageModel::FromVectorIcon(
+              *image_model->GetVectorIcon().vector_icon(),
+              LabelButton::GetCurrentTextColor(),
+              image_model->GetVectorIcon().icon_size()));
     }
   }
 }

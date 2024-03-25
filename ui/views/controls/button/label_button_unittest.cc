@@ -5,6 +5,7 @@
 #include "ui/views/controls/button/label_button.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -820,9 +821,15 @@ TEST_F(LabelButtonTest, UpdateImageAfterSettingImageModel) {
                           ui::ImageModel::FromImageSkia(disabled_image));
   EXPECT_TRUE(is_showing_image(disabled_image));
 
+  // An empty disabled image should take precedence over the normal image.
+  auto disabled_empty_image = gfx::test::CreateImageSkia(0);
+  button()->SetImageModel(Button::STATE_DISABLED,
+                          ui::ImageModel::FromImageSkia(disabled_empty_image));
+  EXPECT_TRUE(is_showing_image(disabled_empty_image));
+
   // Removing the disabled image should result in falling back to the normal
   // image again.
-  button()->SetImageModel(Button::STATE_DISABLED, ui::ImageModel());
+  button()->SetImageModel(Button::STATE_DISABLED, std::nullopt);
   EXPECT_TRUE(is_showing_image(normal_image));
 }
 

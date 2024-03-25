@@ -80,31 +80,37 @@ LabelButton::~LabelButton() {
   views::InkDrop::Remove(this);
 }
 
-gfx::ImageSkia LabelButton::GetImage(ButtonState for_state) const {
-  for_state = ImageStateForState(for_state);
-  return GetImageModel(for_state).Rasterize(GetColorProvider());
+gfx::ImageSkia LabelButton::GetImage(ButtonState state) const {
+  state = ImageStateForState(state);
+  auto image_model = GetImageModel(state).value_or(ui::ImageModel());
+  return image_model.Rasterize(GetColorProvider());
 }
 
-const ui::ImageModel& LabelButton::GetImageModel(ButtonState for_state) const {
-  return button_state_image_models_[for_state];
+const std::optional<ui::ImageModel>& LabelButton::GetImageModel(
+    ButtonState state) const {
+  return button_state_image_models_[state];
 }
 
-void LabelButton::SetImageModel(ButtonState for_state,
-                                const ui::ImageModel& image_model) {
-  if (button_state_image_models_[for_state] == image_model)
+void LabelButton::SetImageModel(
+    ButtonState state,
+    const std::optional<ui::ImageModel>& image_model) {
+  if (button_state_image_models_[state] == image_model) {
     return;
+  }
 
   const auto old_image_state = ImageStateForState(GetVisualState());
 
-  button_state_image_models_[for_state] = image_model;
+  button_state_image_models_[state] = image_model;
 
-  if (for_state == old_image_state ||
-      for_state == ImageStateForState(GetVisualState()))
+  if (state == old_image_state ||
+      state == ImageStateForState(GetVisualState())) {
     UpdateImage();
+  }
 }
 
-bool LabelButton::HasImage(ButtonState for_state) const {
-  return !button_state_image_models_[for_state].IsEmpty();
+bool LabelButton::HasImage(ButtonState state) const {
+  return button_state_image_models_[state].has_value() &&
+         !button_state_image_models_[state]->IsEmpty();
 }
 
 const std::u16string& LabelButton::GetText() const {
@@ -685,8 +691,8 @@ void LabelButton::ResetLabelEnabledColor() {
 
 Button::ButtonState LabelButton::ImageStateForState(
     ButtonState for_state) const {
-  return button_state_image_models_[for_state].IsEmpty() ? STATE_NORMAL
-                                                         : for_state;
+  return button_state_image_models_[for_state].has_value() ? for_state
+                                                           : STATE_NORMAL;
 }
 
 void LabelButton::FlipCanvasOnPaintForRTLUIChanged() {

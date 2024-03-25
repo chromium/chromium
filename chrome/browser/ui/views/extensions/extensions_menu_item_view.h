@@ -111,9 +111,6 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
   HoverButton* site_permissions_button_for_testing() {
     return site_permissions_button_;
   }
-  views::View* site_permissions_button_icon_for_testing() {
-    return site_permissions_button_icon_;
-  }
 
  private:
   // Sets ups the context menu button controllers. Must be called by the
@@ -144,7 +141,6 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
   // Button that displays the extension site access and opens its site
   // permissions page.
   raw_ptr<HoverButton> site_permissions_button_ = nullptr;
-  raw_ptr<views::View> site_permissions_button_icon_ = nullptr;
 
   raw_ptr<HoverButton> pin_button_ = nullptr;
 

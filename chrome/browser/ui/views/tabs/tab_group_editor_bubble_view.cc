@@ -174,10 +174,11 @@ void TabGroupEditorBubbleView::AddedToWidget() {
             : color_utils::DeriveDefaultIconColor(text_color);
     const SkColor icon_color = enabled ? enabled_icon_color : text_color;
 
-    const ui::ImageModel& old_image_model =
+    const std::optional<ui::ImageModel>& old_image_model =
         menu_item->GetImageModel(button_state);
-    if (!old_image_model.IsEmpty() && old_image_model.IsVectorIcon()) {
-      ui::VectorIconModel vector_icon_model = old_image_model.GetVectorIcon();
+    if (old_image_model.has_value() && !old_image_model->IsEmpty() &&
+        old_image_model->IsVectorIcon()) {
+      ui::VectorIconModel vector_icon_model = old_image_model->GetVectorIcon();
       const gfx::VectorIcon* icon = vector_icon_model.vector_icon();
       const ui::ImageModel new_image_model =
           ui::ImageModel::FromVectorIcon(*icon, icon_color);

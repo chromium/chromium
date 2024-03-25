@@ -53,14 +53,21 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   LabelButton& operator=(const LabelButton&) = delete;
   ~LabelButton() override;
 
-  // Gets or sets the image shown for the specified button state.
-  // GetImage returns the image for STATE_NORMAL if the state's image is empty.
-  virtual gfx::ImageSkia GetImage(ButtonState for_state) const;
+  // Gets the image shown for state.
+  virtual gfx::ImageSkia GetImage(ButtonState state) const;
 
-  const ui::ImageModel& GetImageModel(ButtonState for_state) const;
-  virtual void SetImageModel(ButtonState for_state,
-                             const ui::ImageModel& image_model);
-  bool HasImage(ButtonState for_state) const;
+  // Gets the image model set for `state`. This may not be the image shown,
+  // since a nullopt image model will use the STATE_NORMAL image.
+  const std::optional<ui::ImageModel>& GetImageModel(ButtonState state) const;
+
+  // Sets the image show for `state`. If `image_model` is nullopt, it will use
+  // the STATE_NORMAL image. If `image_model` is empty, image won't be shown in
+  // the button.
+  virtual void SetImageModel(ButtonState state,
+                             const std::optional<ui::ImageModel>& image_model);
+
+  // Returns whether the image shown for `state` is not empty.
+  bool HasImage(ButtonState state) const;
 
   // Gets or sets the text shown on the button.
   const std::u16string& GetText() const;
@@ -247,8 +254,8 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   // correct for the current background.
   void ResetLabelEnabledColor();
 
-  // Returns the state whose image is shown for |for_state|, by falling back to
-  // STATE_NORMAL when |for_state|'s image is empty.
+  // Returns the state whose image is shown for `for_state`, by falling back to
+  // STATE_NORMAL when `for_state` has not been set.
   ButtonState ImageStateForState(ButtonState for_state) const;
 
   void FlipCanvasOnPaintForRTLUIChanged();
@@ -268,7 +275,7 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   gfx::FontList cached_default_button_font_list_;
 
   // The image models and colors for each button state.
-  ui::ImageModel button_state_image_models_[STATE_COUNT] = {};
+  std::optional<ui::ImageModel> button_state_image_models_[STATE_COUNT] = {};
   absl::variant<SkColor, ui::ColorId> button_state_colors_[STATE_COUNT] = {};
 
   // Used to track whether SetTextColor() has been invoked.
@@ -341,6 +348,7 @@ VIEW_BUILDER_PROPERTY(std::optional<SkColor>, EnabledTextColors)
 VIEW_BUILDER_PROPERTY(bool, IsDefault)
 VIEW_BUILDER_PROPERTY(int, ImageLabelSpacing)
 VIEW_BUILDER_PROPERTY(bool, ImageCentered)
+VIEW_BUILDER_METHOD(SetImageModel, Button::ButtonState, const ui::ImageModel&)
 END_VIEW_BUILDER
 
 }  // namespace views

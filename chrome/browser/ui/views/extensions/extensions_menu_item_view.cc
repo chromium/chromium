@@ -215,6 +215,54 @@ ExtensionMenuItemView::ExtensionMenuItemView(
   SetupContextMenuButton();
 }
 
+views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
+    views::Button::PressedCallback callback,
+    bool is_enterprise,
+    int small_icon_size,
+    int icon_size,
+    int icon_label_spacing) {
+  auto button_builder =
+      views::Builder<HoverButton>(
+          std::make_unique<HoverButton>(std::move(callback), std::u16string()))
+          // Align the main and secondary row text by adding the primary
+          // action button's icon size as margin.
+          .SetProperty(views::kMarginsKey, gfx::Insets::VH(0, icon_size))
+          // Border should be the same as the space between icon and
+          // label in the primary action button.
+          .SetBorder(
+              views::CreateEmptyBorder(gfx::Insets::VH(0, icon_label_spacing)));
+
+  if (is_enterprise) {
+    // Add left-aligned business icon for enterprise extensions.
+    button_builder.SetHorizontalAlignment(gfx::ALIGN_LEFT)
+        .SetImageModel(views::Button::ButtonState::STATE_NORMAL,
+                       ui::ImageModel::FromVectorIcon(
+                           features::IsChromeRefresh2023()
+                               ? vector_icons::kBusinessChromeRefreshIcon
+                               : vector_icons::kBusinessIcon,
+                           ui::kColorIcon, small_icon_size));
+
+  } else {
+    // Add right-aligned arrow icon for non-enterprise extensions when the
+    // button is not disabled.
+    auto arrow_icon = ui::ImageModel::FromVectorIcon(
+        features::IsChromeRefresh2023()
+            ? vector_icons::kSubmenuArrowChromeRefreshIcon
+            : vector_icons::kSubmenuArrowIcon,
+        ui::kColorIcon,
+        features::IsChromeRefresh2023()
+            ? small_icon_size
+            : gfx::GetDefaultSizeOfVectorIcon(vector_icons::kSubmenuArrowIcon));
+
+    button_builder.SetHorizontalAlignment(gfx::ALIGN_RIGHT)
+        .SetImageModel(views::Button::ButtonState::STATE_NORMAL, arrow_icon)
+        .SetImageModel(views::Button::ButtonState::STATE_DISABLED,
+                       ui::ImageModel());
+  }
+
+  return button_builder;
+}
+
 ExtensionMenuItemView::ExtensionMenuItemView(
     Browser* browser,
     bool is_enterprise,
@@ -238,18 +286,6 @@ ExtensionMenuItemView::ExtensionMenuItemView(
       provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
   const int horizontal_spacing =
       provider->GetDistanceMetric(DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
-
-  auto site_permissions_button_icon =
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          features::IsChromeRefresh2023()
-              ? vector_icons::kSubmenuArrowChromeRefreshIcon
-              : vector_icons::kSubmenuArrowIcon,
-          ui::kColorIcon,
-          features::IsChromeRefresh2023()
-              ? small_icon_size
-              : gfx::GetDefaultSizeOfVectorIcon(
-                    vector_icons::kSubmenuArrowIcon)));
-  site_permissions_button_icon_ = site_permissions_button_icon.get();
 
   views::Builder<ExtensionMenuItemView>(this)
       // Set so the extension button receives enter/exit on children to
@@ -311,33 +347,10 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                           IDS_EXTENSIONS_MENU_EXTENSION_CONTEXT_MENU_BUTTON_TOOLTIP))),
           // Secondary row.
           views::Builder<views::FlexLayoutView>().AddChildren(
-              // Site permissions button.
-              views::Builder<HoverButton>(
-                  std::make_unique<HoverButton>(
-                      std::move(site_permissions_button_callback),
-                      is_enterprise
-                          ? std::make_unique<views::ImageView>(
-                                ui::ImageModel::FromVectorIcon(
-                                    features::IsChromeRefresh2023()
-                                        ? vector_icons::
-                                              kBusinessChromeRefreshIcon
-                                        : vector_icons::kBusinessIcon,
-                                    ui::kColorIcon, small_icon_size))
-                          : nullptr,
-                      std::u16string(), std::u16string(),
-                      std::move(site_permissions_button_icon),
-                      /*add_vertical_label_spacing=*/false))
-                  .CopyAddressTo(&site_permissions_button_)
-                  // Align the main and secondary row text by adding the primary
-                  // action button's icon size as margin.
-                  .SetProperty(views::kMarginsKey,
-                               gfx::Insets::VH(0, icon_size))
-                  // Border should be the same as the space between icon and
-                  // label in the primary action button.
-                  .SetBorder(views::CreateEmptyBorder(
-                      gfx::Insets::VH(0, icon_label_spacing)))
-                  .SetTooltipText(l10n_util::GetStringUTF16(
-                      IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_TOOLTIP))))
+              GetSitePermissionsButtonBuilder(
+                  std::move(site_permissions_button_callback), is_enterprise,
+                  small_icon_size, icon_size, icon_label_spacing)
+                  .CopyAddressTo(&site_permissions_button_)))
       .BuildChildren();
 
   if (features::IsChromeRefresh2023()) {
@@ -405,12 +418,11 @@ void ExtensionMenuItemView::Update(
                                          SitePermissionsButtonState::kEnabled);
     std::u16string site_permissions_text =
         GetSitePermissionsButtonText(site_permissions_button_access);
-    site_permissions_button_->title()->SetText(site_permissions_text);
+    site_permissions_button_->SetText(site_permissions_text);
+    // TODO(crbug.com/326111337): Add tooltip based on button state.
     site_permissions_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ACCESSIBLE_NAME,
         site_permissions_text));
-    site_permissions_button_icon_->SetVisible(
-        site_permissions_button_state == SitePermissionsButtonState::kEnabled);
 
     // Update button size after changing its contents so it fits in the menu
     // item row.
