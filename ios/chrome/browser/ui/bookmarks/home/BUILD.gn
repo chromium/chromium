@@ -35,6 +35,7 @@ source_set("home") {
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/net/model:crurl",

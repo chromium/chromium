@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -258,7 +259,9 @@ enum class PresentedState {
       showSnackbarMessage:[self.mediator addBookmarkWithTitle:title
                                                           URL:bookmarkedURL
                                                    editAction:editAction]];
-  default_browser::NotifyBookmarkAddOrEdit();
+  default_browser::NotifyBookmarkAddOrEdit(
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          _currentBrowserState.get()));
 }
 
 - (void)presentBookmarkEditorForURL:(const GURL&)URL {
@@ -275,7 +278,9 @@ enum class PresentedState {
   }
   [self presentEditorForURLNode:bookmark];
 
-  default_browser::NotifyBookmarkAddOrEdit();
+  default_browser::NotifyBookmarkAddOrEdit(
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          _currentBrowserState.get()));
 }
 
 - (void)presentBookmarks {
@@ -284,7 +289,9 @@ enum class PresentedState {
                 ->subtle_root_node_with_unspecified_children()
                             selectingBookmark:nil];
 
-  default_browser::NotifyBookmarkManagerOpened();
+  default_browser::NotifyBookmarkManagerOpened(
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          _currentBrowserState.get()));
 }
 
 - (void)presentFolderChooser {
@@ -349,6 +356,15 @@ enum class PresentedState {
   }
   DCHECK(self.bookmarkNavigationController);
 
+  if (urlsToOpen.empty()) {
+    default_browser::NotifyBookmarkManagerClosed(
+        feature_engagement::TrackerFactory::GetForBrowserState(
+            _currentBrowserState.get()));
+  } else {
+    default_browser::NotifyURLFromBookmarkOpened(
+        feature_engagement::TrackerFactory::GetForBrowserState(
+            _currentBrowserState.get()));
+  }
   // If trying to open urls with tab mode changed, we need to postpone openUrls
   // until the dismissal of Bookmarks is done.  This is to prevent the race
   // condition between the dismissal of bookmarks and switch of BVC.
@@ -517,7 +533,9 @@ enum class PresentedState {
       showSnackbarMessage:[self.mediator addBookmarks:_URLs toFolder:folder]];
   _URLs = nil;
 
-  default_browser::NotifyBookmarkAddOrEdit();
+  default_browser::NotifyBookmarkAddOrEdit(
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          _currentBrowserState.get()));
 }
 
 - (void)bookmarksFolderChooserCoordinatorDidCancel:
@@ -572,7 +590,9 @@ enum class PresentedState {
           new_tab_page_uma::ACTION_OPENED_BOOKMARK);
       base::RecordAction(
           base::UserMetricsAction("MobileBookmarkManagerEntryOpened"));
-      default_browser::NotifyURLFromBookmarkOpened();
+      default_browser::NotifyURLFromBookmarkOpened(
+          feature_engagement::TrackerFactory::GetForBrowserState(
+              _currentBrowserState.get()));
 
       if (newTab ||
           ((!!inIncognito) != _currentBrowserState->IsOffTheRecord())) {

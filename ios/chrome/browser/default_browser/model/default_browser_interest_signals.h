@@ -37,17 +37,17 @@ void NotifyPasswordSavedOrUpdated(feature_engagement::Tracker* tracker);
 void NotifyRemoteTabsGridViewed(feature_engagement::Tracker* tracker);
 
 // Records all necessary information when user added or edited a bookmark.
-void NotifyBookmarkAddOrEdit();
+void NotifyBookmarkAddOrEdit(feature_engagement::Tracker* tracker);
 
 // Records all necessary information when user opens bookmark manager.
-void NotifyBookmarkManagerOpened();
+void NotifyBookmarkManagerOpened(feature_engagement::Tracker* tracker);
 
 // Records all necessary information when user closes bookmark manager.
 // TODO(b/315330160): Consider not tracking Bookmark manager close events.
-void NotifyBookmarkManagerClosed();
+void NotifyBookmarkManagerClosed(feature_engagement::Tracker* tracker);
 
 // Records all necessary information when user opens a URL from bookmarks.
-void NotifyURLFromBookmarkOpened();
+void NotifyURLFromBookmarkOpened(feature_engagement::Tracker* tracker);
 
 // Records all necessary information when user copy-pastes a URL in omnibox.
 void NotifyOmniboxURLCopyPaste(feature_engagement::Tracker* tracker);

@@ -55,28 +55,28 @@ void NotifyRemoteTabsGridViewed(feature_engagement::Tracker* tracker) {
   LogRemoteTabsUseForCriteriaExperiment();
 }
 
-void NotifyBookmarkAddOrEdit() {
+void NotifyBookmarkAddOrEdit(feature_engagement::Tracker* tracker) {
   // TODO(b/322358517): Migrate to FET.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
   LogBookmarkUseForCriteriaExperiment();
 }
 
-void NotifyBookmarkManagerOpened() {
+void NotifyBookmarkManagerOpened(feature_engagement::Tracker* tracker) {
   // TODO(b/322358517): Migrate to FET.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
   LogBookmarkUseForCriteriaExperiment();
 }
 
-void NotifyBookmarkManagerClosed() {
+void NotifyBookmarkManagerClosed(feature_engagement::Tracker* tracker) {
   // TODO(b/322358517): Migrate to FET.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
   LogBookmarkUseForCriteriaExperiment();
 }
 
-void NotifyURLFromBookmarkOpened() {
+void NotifyURLFromBookmarkOpened(feature_engagement::Tracker* tracker) {
   // TODO(b/322358517): Migrate to FET.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
