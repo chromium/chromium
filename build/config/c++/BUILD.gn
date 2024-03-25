@@ -49,7 +49,7 @@ config("runtime_library") {
   # dependency tracking (because it's an #include of headers included via
   # -isysroot).
   # TODO(thakis): Remove this after a few days.
-  if (is_asan) {
+  if (is_fuchsia) {
     defines += [ "TEMP_REBUILD_HACK" ]
   }
 

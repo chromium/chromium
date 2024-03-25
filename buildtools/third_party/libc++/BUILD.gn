@@ -74,7 +74,8 @@ target(_libcxx_target_type, "libc++") {
     "__config_site",
   ]
 
-  # TODO(crbug.com/1458042): Move this build file to third_party/libc++/BUILD.gn once submodule migration is done
+  # TODO(crbug.com/1458042): Move this build file to third_party/libc++/BUILD.gn
+  # once submodule migration is done.
   sources = [
     "//third_party/libc++/src/src/algorithm.cpp",
     "//third_party/libc++/src/src/any.cpp",
