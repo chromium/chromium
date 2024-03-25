@@ -934,7 +934,8 @@ std::optional<base::Value::Dict> AddJsonMetadataGenerator() {
 }
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_MetadataGeneratorBeforeTracing \
   DISABLED_MetadataGeneratorBeforeTracing
 #else
@@ -1064,7 +1065,8 @@ TEST_F(TraceEventDataSourceTest,
 #endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_BasicTraceEvent DISABLED_BasicTraceEvent
 #else
 #define MAYBE_BasicTraceEvent BasicTraceEvent
@@ -1091,7 +1093,8 @@ TEST_F(TraceEventDataSourceTest, MAYBE_BasicTraceEvent) {
 }
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_ActiveProcessesMetadata DISABLED_ActiveProcessesMetadata
 #else
 #define MAYBE_ActiveProcessesMetadata ActiveProcessesMetadata
@@ -1196,7 +1199,8 @@ TEST_F(TraceEventDataSourceTest, MAYBE_InstantTraceEventOnOtherThread) {
 }
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_EventWithStringArgs DISABLED_EventWithStringArgs
 #else
 #define MAYBE_EventWithStringArgs EventWithStringArgs
@@ -1227,7 +1231,8 @@ TEST_F(TraceEventDataSourceTest, MAYBE_EventWithStringArgs) {
 }
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_EventWithCopiedStrings DISABLED_EventWithCopiedStrings
 #else
 #define MAYBE_EventWithCopiedStrings EventWithCopiedStrings
@@ -1294,7 +1299,8 @@ TEST_F(TraceEventDataSourceTest, EventWithIntArgs) {
 }
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_EventWithBoolArgs DISABLED_EventWithBoolArgs
 #else
 #define MAYBE_EventWithBoolArgs EventWithBoolArgs
@@ -1320,7 +1326,8 @@ TEST_F(TraceEventDataSourceTest, MAYBE_EventWithBoolArgs) {
 }
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_EventWithDoubleArgs DISABLED_EventWithDoubleArgs
 #else
 #define MAYBE_EventWithDoubleArgs EventWithDoubleArgs
@@ -1344,7 +1351,8 @@ TEST_F(TraceEventDataSourceTest, MAYBE_EventWithDoubleArgs) {
 }
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_EventWithPointerArgs DISABLED_EventWithPointerArgs
 #else
 #define MAYBE_EventWithPointerArgs EventWithPointerArgs
@@ -1369,7 +1377,8 @@ TEST_F(TraceEventDataSourceTest, MAYBE_EventWithPointerArgs) {
 }
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_EventWithConvertableArgs DISABLED_EventWithConvertableArgs
 #else
 #define MAYBE_EventWithConvertableArgs EventWithConvertableArgs
@@ -1573,7 +1582,8 @@ TEST_F(TraceEventDataSourceTest, TaskExecutionEvent) {
 }
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_TaskExecutionEventWithoutFunction \
   DISABLED_TaskExecutionEventWithoutFunction
 #else
@@ -1968,7 +1978,8 @@ TEST_F(TraceEventDataSourceTest, DISABLED_TrackSupportWithLambda) {
 // TODO(eseckler): Add a test with multiple events + same strings with reset.
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_InternedStrings DISABLED_InternedStrings
 #else
 #define MAYBE_InternedStrings InternedStrings
@@ -2373,7 +2384,8 @@ TEST_F(TraceEventDataSourceTest, TypedArgumentsTracingOnBegin) {
 }
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_TypedArgumentsTracingOnEnd DISABLED_TypedArgumentsTracingOnEnd
 #else
 #define MAYBE_TypedArgumentsTracingOnEnd TypedArgumentsTracingOnEnd
@@ -2430,7 +2442,8 @@ TEST_F(TraceEventDataSourceTest, TypedArgumentsTracingOnBeginAndEnd) {
 }
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_TypedArgumentsTracingOnInstant \
   DISABLED_TypedArgumentsTracingOnInstant
 #else
@@ -2560,7 +2573,8 @@ TEST_F(TraceEventDataSourceTest, TypedArgumentsTracingOnScopedMultipleEvents) {
 }
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_HistogramSampleTraceConfigEmpty \
   DISABLED_HistogramSampleTraceConfigEmpty
 #else
@@ -2674,7 +2688,8 @@ struct InternedLogMessageBody
 }  // namespace
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_TypedEventInterning DISABLED_TypedEventInterning
 #else
 #define MAYBE_TypedEventInterning TypedEventInterning
@@ -2702,7 +2717,8 @@ TEST_F(TraceEventDataSourceTest, MAYBE_TypedEventInterning) {
 }
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_TypedAndUntypedEventsWithDebugAnnotations \
   DISABLED_TypedAndUntypedEventsWithDebugAnnotations
 #else
@@ -2731,7 +2747,8 @@ TEST_F(TraceEventDataSourceTest,
 }
 
 // TODO: crbug.com/328036618 - Very flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/328832459): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_EmptyPacket DISABLED_EmptyPacket
 #else
 #define MAYBE_EmptyPacket EmptyPacket
