@@ -70,6 +70,7 @@ import org.chromium.components.browser_ui.widget.DateDividedAdapter;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewHolder;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.prefs.PrefService;
@@ -421,7 +422,7 @@ public class HistoryUITest {
 
         // Close the search view.
         Assert.assertTrue(mHistoryManager.getHandleBackPressChangedSupplier().get());
-        toolbar.onNavigationBack();
+        toolbar.onSearchNavigationBack();
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
         Assert.assertEquals(View.GONE, toolbarSearchView.getVisibility());
     }
@@ -576,6 +577,27 @@ public class HistoryUITest {
         assertTrue(emptyText.getText().toString().startsWith("Can’t find that page."));
         assertNotNull(
                 mHistoryManager.getSelectableListLayout().findViewById(R.id.empty_state_icon));
+    }
+
+    @Test
+    @SmallTest
+    public void testAppSpecificToolbar() {
+        mHistoryManager =
+                new HistoryManager(
+                        mActivity,
+                        true,
+                        mSnackbarManager,
+                        mProfile,
+                        /* Supplier<Tab>= */ null,
+                        mHistoryProvider,
+                        new HistoryUmaRecorder(),
+                        null,
+                        true,
+                        true);
+        final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
+        Assert.assertNull(toolbar.getItemById(R.id.close_menu_id));
+        Assert.assertEquals(
+                toolbar.getNavigationButtonForTests(), NavigationButton.NORMAL_VIEW_BACK);
     }
 
     @Test

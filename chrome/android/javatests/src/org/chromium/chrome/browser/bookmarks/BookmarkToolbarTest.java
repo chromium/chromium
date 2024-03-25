@@ -281,7 +281,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     public void onNavigationBack() {
         initializeNormal();
         mBookmarkToolbar.setCurrentFolder(BOOKMARK_ID_FOLDER);
-        mBookmarkToolbar.onNavigationBack();
+        mBookmarkToolbar.onSearchNavigationBack();
         Mockito.verify(mNavigateBackRunnable).run();
     }
 
@@ -291,7 +291,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     public void onNavigationBack_searching() {
         initializeNormal();
         mBookmarkToolbar.setBookmarkUiMode(BookmarkUiMode.SEARCHING);
-        mBookmarkToolbar.onNavigationBack();
+        mBookmarkToolbar.onSearchNavigationBack();
         assertFalse(mBookmarkToolbar.isSearching());
     }
 

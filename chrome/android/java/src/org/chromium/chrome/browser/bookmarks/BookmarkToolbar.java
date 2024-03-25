@@ -198,9 +198,9 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     // SelectableListToolbar implementation.
 
     @Override
-    public void onNavigationBack() {
+    public void onSearchNavigationBack() {
         if (isSearching()) {
-            super.onNavigationBack();
+            super.onSearchNavigationBack();
             return;
         }
 

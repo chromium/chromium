@@ -40,7 +40,7 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
 
     /** Shows the Back arrow navigation button in the upper left corner. */
     public void showBackArrow() {
-        setNavigationButton(NavigationButton.BACK);
+        setNavigationButton(NavigationButton.SEARCH_BACK);
     }
 
     /** Sets whether any filter chips are |selected| in the dialog. */
@@ -52,9 +52,9 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
     // SelectableListToolbar:
 
     @Override
-    public void onNavigationBack() {
+    public void onSearchNavigationBack() {
         if (isSearching()) {
-            super.onNavigationBack();
+            super.onSearchNavigationBack();
         } else {
             mDelegate.onNavigationBackCallback();
         }

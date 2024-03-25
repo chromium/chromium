@@ -207,19 +207,19 @@ public class SelectableListLayout<E> extends FrameLayout
     /**
      * Initializes the SelectionToolbar.
      *
-     * @param toolbarLayoutId The resource id of the toolbar layout. This will be inflated into
-     *                        a ViewStub.
+     * @param toolbarLayoutId The resource id of the toolbar layout. This will be inflated into a
+     *     ViewStub.
      * @param delegate The SelectionDelegate that will inform the toolbar of selection changes.
      * @param titleResId The resource id of the title string. May be 0 if this class shouldn't set
-     *                   set a title when the selection is cleared.
+     *     set a title when the selection is cleared.
      * @param normalGroupResId The resource id of the menu group to show when a selection isn't
-     *                         established.
+     *     established.
      * @param selectedGroupResId The resource id of the menu item to show when a selection is
-     *                           established.
+     *     established.
      * @param listener The OnMenuItemClickListener to set on the toolbar.
      * @param updateStatusBarColor Whether the status bar color should be updated to match the
-     *                             toolbar color. If true, the status bar will only be updated if
-     *                             the current device fully supports theming and is on Android M+.
+     *     toolbar color. If true, the status bar will only be updated if the current device fully
+     *     supports theming and is on Android M+.
      * @return The initialized SelectionToolbar.
      */
     public SelectableListToolbar<E> initializeToolbar(
@@ -230,12 +230,57 @@ public class SelectableListLayout<E> extends FrameLayout
             int selectedGroupResId,
             @Nullable OnMenuItemClickListener listener,
             boolean updateStatusBarColor) {
+        return initializeToolbar(
+                toolbarLayoutId,
+                delegate,
+                titleResId,
+                normalGroupResId,
+                selectedGroupResId,
+                listener,
+                updateStatusBarColor,
+                false);
+    }
+
+    /**
+     * Initializes the SelectionToolbar with the option to show the back button in normal view.
+     * #onNavigationBack must also be overridden in order to assign behavior to the button.
+     *
+     * @param toolbarLayoutId The resource id of the toolbar layout. This will be inflated into a
+     *     ViewStub.
+     * @param delegate The SelectionDelegate that will inform the toolbar of selection changes.
+     * @param titleResId The resource id of the title string. May be 0 if this class shouldn't set
+     *     set a title when the selection is cleared.
+     * @param normalGroupResId The resource id of the menu group to show when a selection isn't
+     *     established.
+     * @param selectedGroupResId The resource id of the menu item to show when a selection is
+     *     established.
+     * @param listener The OnMenuItemClickListener to set on the toolbar.
+     * @param updateStatusBarColor Whether the status bar color should be updated to match the
+     *     toolbar color. If true, the status bar will only be updated if the current device fully
+     *     supports theming and is on Android M+.
+     * @param showBackInNormalView Whether the back arrow should appear on the normal view.
+     * @return The initialized SelectionToolbar.
+     */
+    public SelectableListToolbar<E> initializeToolbar(
+            int toolbarLayoutId,
+            SelectionDelegate<E> delegate,
+            int titleResId,
+            int normalGroupResId,
+            int selectedGroupResId,
+            @Nullable OnMenuItemClickListener listener,
+            boolean updateStatusBarColor,
+            boolean showBackInNormalView) {
         mToolbarStub.setLayoutResource(toolbarLayoutId);
         @SuppressWarnings("unchecked")
         SelectableListToolbar<E> toolbar = (SelectableListToolbar<E>) mToolbarStub.inflate();
         mToolbar = toolbar;
         mToolbar.initialize(
-                delegate, titleResId, normalGroupResId, selectedGroupResId, updateStatusBarColor);
+                delegate,
+                titleResId,
+                normalGroupResId,
+                selectedGroupResId,
+                updateStatusBarColor,
+                showBackInNormalView);
 
         if (listener != null) {
             mToolbar.setOnMenuItemClickListener(listener);

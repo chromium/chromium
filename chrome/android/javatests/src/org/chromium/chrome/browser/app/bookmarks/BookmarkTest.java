@@ -390,7 +390,7 @@ public class BookmarkTest {
 
         // Check that we are in the mobile bookmarks folder.
         assertEquals("Mobile bookmarks", mToolbar.getTitle());
-        assertEquals(NavigationButton.BACK, mToolbar.getNavigationButtonForTests());
+        assertEquals(NavigationButton.SEARCH_BACK, mToolbar.getNavigationButtonForTests());
         assertFalse(mToolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
 
         // Open the new test folder.
@@ -398,7 +398,7 @@ public class BookmarkTest {
 
         // Check that we are in the editable test folder.
         assertEquals(TEST_FOLDER_TITLE, mToolbar.getTitle());
-        assertEquals(NavigationButton.BACK, mToolbar.getNavigationButtonForTests());
+        assertEquals(NavigationButton.SEARCH_BACK, mToolbar.getNavigationButtonForTests());
         assertTrue(mToolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
 
         runOnUiThreadBlocking(
@@ -413,7 +413,7 @@ public class BookmarkTest {
 
         // Check that we are back in the mobile folder
         assertEquals("Mobile bookmarks", mToolbar.getTitle());
-        assertEquals(NavigationButton.BACK, mToolbar.getNavigationButtonForTests());
+        assertEquals(NavigationButton.SEARCH_BACK, mToolbar.getNavigationButtonForTests());
         assertFalse(mToolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
 
         // Call BookmarkToolbar#onClick() to activate the navigation button.
@@ -1937,7 +1937,7 @@ public class BookmarkTest {
 
         // Check that we are in the mobile bookmarks folder.
         assertEquals("Tracked products", mToolbar.getTitle());
-        assertEquals(NavigationButton.BACK, mToolbar.getNavigationButtonForTests());
+        assertEquals(NavigationButton.SEARCH_BACK, mToolbar.getNavigationButtonForTests());
     }
 
     @Test
@@ -2001,7 +2001,7 @@ public class BookmarkTest {
         // Don't try to validate the current number of selected items, just visibility.
         NumberRollView numberRollView = mToolbar.findViewById(R.id.selection_mode_number);
         assertEquals(View.VISIBLE, numberRollView.getVisibility());
-        assertEquals(NavigationButton.BACK, mToolbar.getNavigationButtonForTests());
+        assertEquals(NavigationButton.SEARCH_BACK, mToolbar.getNavigationButtonForTests());
     }
 
     /**

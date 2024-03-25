@@ -194,7 +194,9 @@ class BookmarkToolbarMediator
         } else if (id == R.id.search_menu_id) {
             assert mBookmarkDelegate != null;
             mBookmarkDelegate.openSearchUi();
-            mModel.set(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE, NavigationButton.BACK);
+            mModel.set(
+                    BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE,
+                    NavigationButton.SEARCH_BACK);
             return true;
         } else if (id == R.id.selection_mode_edit_menu_id) {
             List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
@@ -294,7 +296,9 @@ class BookmarkToolbarMediator
             mModel.set(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE, false);
         } else if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
                 && mode == BookmarkUiMode.SEARCHING) {
-            mModel.set(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE, NavigationButton.BACK);
+            mModel.set(
+                    BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE,
+                    NavigationButton.SEARCH_BACK);
             if (!mSelectionDelegate.isSelectionEnabled()) {
                 mModel.set(
                         BookmarkToolbarProperties.TITLE,
@@ -332,14 +336,14 @@ class BookmarkToolbarMediator
             navigationButton = NavigationButton.NONE;
         } else if (folder.equals(BookmarkId.SHOPPING_FOLDER)) {
             title = res.getString(R.string.price_tracking_bookmarks_filter_title);
-            navigationButton = NavigationButton.BACK;
+            navigationButton = NavigationButton.SEARCH_BACK;
         } else if (mBookmarkModel.getTopLevelFolderIds().contains(folderItem.getParentId())
                 && TextUtils.isEmpty(folderItem.getTitle())) {
             title = res.getString(R.string.bookmarks);
-            navigationButton = NavigationButton.BACK;
+            navigationButton = NavigationButton.SEARCH_BACK;
         } else {
             title = folderItem.getTitle();
-            navigationButton = NavigationButton.BACK;
+            navigationButton = NavigationButton.SEARCH_BACK;
         }
         // This doesn't handle selection state correctly, must be before we fake a selection change.
         mModel.set(BookmarkToolbarProperties.TITLE, title);

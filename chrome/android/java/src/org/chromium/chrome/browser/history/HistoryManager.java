@@ -192,7 +192,8 @@ public class HistoryManager
                                 R.id.normal_menu_group,
                                 R.id.selection_mode_menu_group,
                                 this,
-                                isSeparateActivity);
+                                isSeparateActivity,
+                                appSpecificHistory);
         mToolbar.setManager(this);
         mToolbar.setPrefService(UserPrefs.get(profile));
         mToolbar.initializeSearchView(this, R.string.history_manager_search, R.id.search_menu_id);
@@ -393,6 +394,10 @@ public class HistoryManager
     /** @return The SelectableListLayout that displays HistoryItems. */
     public SelectableListLayout<HistoryItem> getSelectableListLayout() {
         return mSelectableListLayout;
+    }
+
+    protected void finish() {
+        mActivity.finish();
     }
 
     private void openItemsInNewTabs(List<HistoryItem> items, boolean isIncognito) {

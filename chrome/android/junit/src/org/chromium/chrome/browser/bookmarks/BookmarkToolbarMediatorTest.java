@@ -267,7 +267,7 @@ public class BookmarkToolbarMediatorTest {
         assertTrue(mModel.get(BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE));
         assertFalse(mModel.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));
         assertEquals("Tracked products", mModel.get(BookmarkToolbarProperties.TITLE));
-        assertTrue(navigationButtonMatchesModel(NavigationButton.BACK));
+        assertTrue(navigationButtonMatchesModel(NavigationButton.SEARCH_BACK));
     }
 
     @Test
@@ -283,7 +283,7 @@ public class BookmarkToolbarMediatorTest {
         assertTrue(mModel.get(BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE));
         assertTrue(mModel.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));
         assertEquals("Bookmarks", mModel.get(BookmarkToolbarProperties.TITLE));
-        assertTrue(navigationButtonMatchesModel(NavigationButton.BACK));
+        assertTrue(navigationButtonMatchesModel(NavigationButton.SEARCH_BACK));
     }
 
     @Test
@@ -295,7 +295,7 @@ public class BookmarkToolbarMediatorTest {
         assertTrue(mModel.get(BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE));
         assertTrue(mModel.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));
         assertEquals("test folder", mModel.get(BookmarkToolbarProperties.TITLE));
-        assertTrue(navigationButtonMatchesModel(NavigationButton.BACK));
+        assertTrue(navigationButtonMatchesModel(NavigationButton.SEARCH_BACK));
     }
 
     @Test
@@ -554,7 +554,7 @@ public class BookmarkToolbarMediatorTest {
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
         assertEquals("Search", mModel.get(BookmarkToolbarProperties.TITLE));
         assertEquals(
-                NavigationButton.BACK,
+                NavigationButton.SEARCH_BACK,
                 (long) mModel.get(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE));
     }
 
