@@ -377,7 +377,7 @@ BASE_FEATURE(kPrivacySandboxAdsAPIsM1Override,
 // one fails, a warning is simply displayed in DevTools.
 BASE_FEATURE(kPrivateNetworkAccessForNavigationsWarningOnly,
              "PrivateNetworkAccessForNavigationsWarningOnly",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables reporting ResourceTiming entries for document, who initiated a
 // cancelled navigation in one of their <iframe>.
