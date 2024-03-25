@@ -9,40 +9,13 @@
       "fuchsia",
       "android"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PrivacySandboxIpProtectionEnabled": false
-        },
-        "prefs": {
-          "tracking_protection.ip_protection_enabled": {
-            "location": "user_profile",
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "PrivacySandboxIpProtectionEnabled": true
-        },
-        "prefs": {
-          "tracking_protection.ip_protection_enabled": {
-            "location": "user_profile",
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-        },
-        "prefs": {
-          "tracking_protection.ip_protection_enabled": {
-            "default_value": false,
-            "location": "user_profile",
-            "note": "If unset, the policy doesn't affect the pref."
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+	    "pref_name": "tracking_protection.ip_protection_enabled",
+	    "default_value": false,
+	    "values_to_test": [
+	      true,
+	      false
+	    ]
+    }
   }
 ]
