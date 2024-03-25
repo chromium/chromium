@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination} from '../utils/print_preview_cros_app_types.js';
+import {getDestinationProvider} from '../utils/mojo_data_providers.js';
+import {Destination, DestinationProvider} from '../utils/print_preview_cros_app_types.js';
 
 import {PDF_DESTINATION} from './destination_constants.js';
 
@@ -30,17 +31,34 @@ export class DestinationManager extends EventTarget {
   }
 
   // Non-static properties:
+  private destinationProvider: DestinationProvider;
   private destinations: Destination[] = [
     // Digital destinations can be added at creation and will be removed if not
     // supported by policy.
     PDF_DESTINATION,
   ];
+  private initialDestinationsLoaded = false;
 
-  // TODO(b/323585997): Returns true if initial fetch has returned
+  // Private to prevent additional initialization.
+  private constructor() {
+    super();
+
+    // Setup mojo data providers.
+    this.destinationProvider = getDestinationProvider();
+
+    // Request initial data.
+    // TODO(b/323421684): Once all initial fetch completes update has initial
+    // destinations and trigger event.
+    this.destinationProvider.getLocalDestinations().then((): void => {
+      this.initialDestinationsLoaded = true;
+    });
+  }
+
+  // TODO(b/323421684): Returns true if initial fetch has returned
   // and there are valid destinations available in the destination
   // cache.
   hasInitialDestinationsLoaded(): boolean {
-    return false;
+    return this.initialDestinationsLoaded;
   }
 
   // Retrieve a list of all known destinations.

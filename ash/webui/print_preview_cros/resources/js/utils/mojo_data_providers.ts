@@ -4,9 +4,10 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import {FakeDestinationProvider} from '../fakes/fake_destination_provider.js';
 import {FakePrintPreviewPageHandler} from '../fakes/fake_print_preview_page_handler.js';
 
-import {type PrintPreviewPageHandler} from './print_preview_cros_app_types.js';
+import {DestinationProvider, type PrintPreviewPageHandler} from './print_preview_cros_app_types.js';
 
 /**
  * @fileoverview
@@ -15,6 +16,7 @@ import {type PrintPreviewPageHandler} from './print_preview_cros_app_types.js';
  */
 
 let printPreviewPageHandler: PrintPreviewPageHandler|null = null;
+let destinationProvider: DestinationProvider|null = null;
 
 // Returns shared instance of PrintPreviewPageHandler.
 export function getPrintPreviewPageHandler(): PrintPreviewPageHandler {
@@ -30,4 +32,20 @@ export function getPrintPreviewPageHandler(): PrintPreviewPageHandler {
 export function setPrintPreviewPageHandlerForTesting(
     handler: PrintPreviewPageHandler): void {
   printPreviewPageHandler = handler;
+}
+
+// Returns shared instance of DestinationProvider.
+export function getDestinationProvider(): DestinationProvider {
+  if (destinationProvider == null) {
+    destinationProvider = new FakeDestinationProvider();
+  }
+
+  assert(destinationProvider);
+  return destinationProvider;
+}
+
+// Override shared instance of DestinationProvider for testing.
+export function setDestinationProviderForTesting(provider: DestinationProvider):
+    void {
+  destinationProvider = provider;
 }

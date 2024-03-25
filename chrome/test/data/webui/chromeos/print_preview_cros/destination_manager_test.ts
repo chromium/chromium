@@ -6,19 +6,26 @@ import 'chrome://os-print/js/data/destination_manager.js';
 
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
 import {DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
+import {FakeDestinationProvider, GET_LOCAL_DESTINATIONS_METHOD} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
+import {setDestinationProviderForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {Destination} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
 import {assertEquals, assertFalse, assertNotEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 suite('DestinationManager', () => {
   let instance: DestinationManager;
+  let destinationProvider: FakeDestinationProvider;
 
   setup(() => {
     DestinationManager.resetInstanceForTesting();
+    destinationProvider = new FakeDestinationProvider();
+    setDestinationProviderForTesting(destinationProvider);
+
     instance = DestinationManager.getInstance();
   });
 
   teardown(() => {
     DestinationManager.resetInstanceForTesting();
+    destinationProvider.reset();
   });
 
   test('is a singleton', () => {
@@ -46,5 +53,14 @@ suite('DestinationManager', () => {
         destinations.findIndex((d: Destination) => d.id === PDF_DESTINATION.id);
     const notFoundIndex = -1;
     assertNotEquals(notFoundIndex, pdfIndex, 'PDF destination available');
+  });
+
+  // Verify getLocalPrinters is called on construction of manager.
+  test('on create getLocalPrinters is called', () => {
+    const expectedCallCount = 1;
+    assertEquals(
+        expectedCallCount,
+        destinationProvider.getCallCount(GET_LOCAL_DESTINATIONS_METHOD),
+        `${GET_LOCAL_DESTINATIONS_METHOD} called in construction of manager`);
   });
 });
