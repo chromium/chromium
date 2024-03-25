@@ -98,6 +98,9 @@ message ClientUserContext {
 
     // A managed user who has a @google.com account.
     USERTYPE_GOOGLE = 5;
+
+    // A managed guest account on the device.
+    USERTYPE_MANAGED_GUEST = 6;
   }
 
   // The language-country identifier for the user in language in

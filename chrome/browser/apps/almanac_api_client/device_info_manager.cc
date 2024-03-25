@@ -53,6 +53,8 @@ apps::proto::ClientUserContext::UserType ConvertStringUserTypeToProto(
     return apps::proto::ClientUserContext::USERTYPE_CHILD;
   } else if (user_type == apps::kUserTypeGuest) {
     return apps::proto::ClientUserContext::USERTYPE_GUEST;
+  } else if (user_type == apps::kUserTypeManagedGuest) {
+    return apps::proto::ClientUserContext::USERTYPE_MANAGED_GUEST;
   }
   return apps::proto::ClientUserContext::USERTYPE_UNKNOWN;
 }

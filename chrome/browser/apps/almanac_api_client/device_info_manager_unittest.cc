@@ -143,6 +143,12 @@ TEST_F(DeviceInfoManagerTest, UserTypeToProto) {
   }
   {
     DeviceInfo info;
+    info.user_type = "managed_guest";
+    EXPECT_EQ(info.ToUserContext().user_type(),
+              proto::ClientUserContext::USERTYPE_MANAGED_GUEST);
+  }
+  {
+    DeviceInfo info;
     info.user_type = "dog";
     EXPECT_EQ(info.ToUserContext().user_type(),
               proto::ClientUserContext::USERTYPE_UNKNOWN);
