@@ -83,8 +83,11 @@ ActionInfo::ActionInfo(ActionInfo&&) = default;
 ActionInfo& ActionInfo::operator=(ActionInfo&& other) = default;
 
 CompositeMatcher::CompositeMatcher(MatcherList matchers,
+                                   const ExtensionId& extension_id,
                                    HostPermissionsAlwaysRequired mode)
-    : matchers_(std::move(matchers)), host_permissions_always_required_(mode) {
+    : matchers_(std::move(matchers)),
+      extension_id_(extension_id),
+      host_permissions_always_required_(mode) {
   DCHECK(AreIDsUnique(matchers_));
 }
 
@@ -170,7 +173,7 @@ ActionInfo CompositeMatcher::GetAction(
         GetMaxPriorityAction(std::move(final_action), std::move(action));
   }
 
-  params.allow_rule_max_priority[this] = max_allow_rule_priority;
+  params.allow_rule_max_priority[extension_id_] = max_allow_rule_priority;
 
   if (!final_action)
     return ActionInfo();
@@ -192,12 +195,12 @@ ActionInfo CompositeMatcher::GetAction(
 std::vector<RequestAction> CompositeMatcher::GetModifyHeadersActions(
     const RequestParams& params) const {
   std::vector<RequestAction> modify_headers_actions;
-  DCHECK(params.allow_rule_max_priority.contains(this));
+  DCHECK(params.allow_rule_max_priority.contains(extension_id_));
 
   // The priority of the highest priority matching allow or allowAllRequests
   // rule within this matcher, or std::nullopt if no such rule exists.
   std::optional<uint64_t> max_allow_rule_priority =
-      params.allow_rule_max_priority[this];
+      params.allow_rule_max_priority[extension_id_];
 
   for (const auto& matcher : matchers_) {
     // Plumb |max_allow_rule_priority| into GetModifyHeadersActions so that

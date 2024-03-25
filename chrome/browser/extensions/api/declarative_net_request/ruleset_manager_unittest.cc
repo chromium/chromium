@@ -106,7 +106,8 @@ class RulesetManagerTest : public DNRTestBase {
         sources[0].CreateVerifiedMatcher(expected_checksum, &matchers[0]));
 
     *matcher = std::make_unique<CompositeMatcher>(
-        std::move(matchers), HostPermissionsAlwaysRequired::kFalse);
+        std::move(matchers), last_loaded_extension_->id(),
+        HostPermissionsAlwaysRequired::kFalse);
   }
 
   void SetIncognitoEnabled(const Extension* extension, bool incognito_enabled) {

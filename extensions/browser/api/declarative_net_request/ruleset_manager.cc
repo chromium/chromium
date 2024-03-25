@@ -80,14 +80,11 @@ RulesetManager::~RulesetManager() {
 void RulesetManager::AddRuleset(const ExtensionId& extension_id,
                                 std::unique_ptr<CompositeMatcher> matcher) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!GetMatcherForExtension(extension_id))
+      << "AddRuleset called twice in succession for " << extension_id;
 
-  bool inserted =
-      rulesets_
-          .emplace(extension_id, prefs_->GetLastUpdateTime(extension_id),
-                   std::move(matcher))
-          .second;
-  DCHECK(inserted) << "AddRuleset called twice in succession for "
-                   << extension_id;
+  rulesets_.emplace(extension_id, prefs_->GetLastUpdateTime(extension_id),
+                    std::move(matcher));
 
   if (test_observer_)
     test_observer_->OnRulesetCountChanged(rulesets_.size());

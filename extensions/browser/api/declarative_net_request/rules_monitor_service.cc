@@ -1114,7 +1114,8 @@ void RulesMonitorService::AddCompositeMatcher(
     return;
 
   auto matcher = std::make_unique<CompositeMatcher>(
-      std::move(matchers), GetHostPermissionsAlwaysRequired(extension));
+      std::move(matchers), extension.id(),
+      GetHostPermissionsAlwaysRequired(extension));
   ruleset_manager_.AddRuleset(extension.id(), std::move(matcher));
 }
 
