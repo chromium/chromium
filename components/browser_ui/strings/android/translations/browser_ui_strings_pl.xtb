@@ -265,7 +265,7 @@
 <translation id="5459413148890178711">Gdy ta opcja jest włączona, strony internetowe mogą prosić o dostęp do Twojej lokalizacji. Gdy jest wyłączona, strony nie widzą Twojej lokalizacji.</translation>
 <translation id="5489227211564503167">Upłynęło: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" /></translation>
 <translation id="5502860503640766021">Dozwolone: <ph name="PERMISSION_1" />, zablokowane: <ph name="PERMISSION_2" /></translation>
-<translation id="5505264765875738116">Strony nie mogą prosić o zgodę na wysyłanie powiadomień</translation>
+<translation id="5505264765875738116">Witryny nie mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="5516455585884385570">Otwórz ustawienia powiadomień</translation>
 <translation id="5527111080432883924">Pytaj, czy zezwolić stronom na odczytywanie tekstu i obrazów ze schowka (zalecane)</translation>
 <translation id="5545693483061321551">Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych witryn, na przykład w celu personalizowania reklam. W niektórych witrynach mogą nie działać funkcje.</translation>
@@ -319,7 +319,7 @@
 <translation id="6231752747840485235">Odinstalować aplikację „<ph name="APP_NAME" />”?</translation>
 <translation id="6262191102408817757">Na podstawie ostatniej karty</translation>
 <translation id="6262279340360821358">Zablokowane: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
-<translation id="6270391203985052864">Strony mogą prosić o zgodę na wysyłanie powiadomień</translation>
+<translation id="6270391203985052864">Witryny mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="6295158916970320988">Wszystkie witryny</translation>
 <translation id="6304434827459067558">Witryna <ph name="SITE" /> nie może używać Twoich danych na</translation>
 <translation id="6320088164292336938">Wibracje</translation>
