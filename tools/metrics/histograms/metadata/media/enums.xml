@@ -321,19 +321,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kBrowserSideTimerClosedWindow"/>
 </enum>
 
-<enum name="ContentTypeParseableResult">
-  <int value="0" label="IsSupported returned and MIME type parseable"/>
-  <int value="1" label="MayBeSupported returned and MIME type parseable"/>
-  <int value="2" label="IsNotSupported returned and MIME type parseable"/>
-  <int value="3"
-      label="IsSupported returned and MIME type not parseable (should fail)"/>
-  <int value="4"
-      label="MayBeSupported returned and MIME type not parseable (should
-             fail)"/>
-  <int value="5"
-      label="IsNotSupported returned and MIME type not parseable (acceptable)"/>
-</enum>
-
 <enum name="ContextResult">
   <int value="0" label="Success"/>
   <int value="1" label="TransientFailure"/>
@@ -450,36 +437,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Other"/>
   <int value="1" label="Back to Tab"/>
   <int value="2" label="Close"/>
-</enum>
-
-<enum name="DXVALifetimeProgression">
-  <int value="0" label="kInitializeStarted">
-    A decoder has started the initialization step.
-  </int>
-  <int value="1" label="kDX11InitializeSucceeded">
-    A decoder has completed the initialization step for DX11 successfully.
-  </int>
-  <int value="2" label="kDX11PlaybackFailedBeforeFirstFrame">
-    A decoder failed DX11 playback without sending a frame to the client.
-  </int>
-  <int value="3" label="kDX11PlaybackFailedAfterFirstFrame">
-    A decoder failed DX11 playback after sending a frame to the client.
-  </int>
-  <int value="4" label="kDX11PlaybackSucceeded">
-    A decoder has finished playing with DX11.
-  </int>
-  <int value="5" label="kDX9InitializeSucceeded">
-    A decoder has completed the initialization step for DX9 successfully.
-  </int>
-  <int value="6" label="kDX9PlaybackFailedBeforeFirstFrame">
-    A decoder failed DX9 playback without sending a frame to the client.
-  </int>
-  <int value="7" label="kDX9PlaybackFailedAfterFirstFrame">
-    A decoder failed DX9 playback after sending a frame to the client.
-  </int>
-  <int value="8" label="kDX9PlaybackSucceeded">
-    A decoder has finished playing with DX9.
-  </int>
 </enum>
 
 <enum name="EmeSessionType">
@@ -1146,40 +1103,6 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="FailedToInitDCompTextureWrapper"/>
   <int value="15" label="FailedToSetPlaybackRate"/>
   <int value="16" label="FailedToGetMediaEngineEx"/>
-</enum>
-
-<enum name="MediaGalleriesUsageType">
-  <int value="0" label="Gallery added from permission dialog"/>
-  <int value="1" label="Gallery permission added from permission dialog"/>
-  <int value="2" label="Gallery permission removed from permission dialog"/>
-  <int value="3" label="GetMediaFileSystems API invocations"/>
-  <int value="4" label="Profiles With API Usage (corrected in M35)"/>
-  <int value="5" label="Dialog shown"/>
-  <int value="6" label="Dialog permissions saved"/>
-  <int value="7" label="Gallery added from WebUI"/>
-  <int value="8" label="Gallery removed from WebUI"/>
-  <int value="9" label="Preferences initialized"/>
-  <int value="10" label="Preferences initialization failed"/>
-  <int value="11"
-      label="GetAllMediaFileSystemMetadata API invocations (obsolete)"/>
-  <int value="12" label="GetMetadata API invocations"/>
-  <int value="13" label="AddUserSelectedFolder API invocations"/>
-  <int value="14" label="StartMediaScan API invocations (obsolete)"/>
-  <int value="15" label="CancelMediaScan API invocations (obsolete)"/>
-  <int value="16" label="AddScanResults API invocations (obsolete)"/>
-  <int value="17" label="A media scan completed (obsolete)"/>
-  <int value="18" label="AddScanResults dialog cancelled (obsolete)"/>
-  <int value="19" label="AddScanResults dialog accepted (obsolete)"/>
-  <int value="20"
-      label="Gallery removed from AddScanResults dialog (obsolete)"/>
-  <int value="21" label="Gallery removed from permission dialog"/>
-  <int value="22"
-      label="DropPermissionForMediaFileSystem API invocations (obsolete)"/>
-  <int value="23" label="GetAllGalleryWatch API invocations (obsolete)"/>
-  <int value="24" label="RemoveAllGalleryWatch API invocations (obsolete)"/>
-  <int value="25" label="iTunes file system used this session"/>
-  <int value="26" label="Picasa file system used this session"/>
-  <int value="27" label="iPhoto file system used this session (obsolete)"/>
 </enum>
 
 <enum name="MediaHardwareKeyAction">
@@ -1935,11 +1858,6 @@ chromium-metrics-reviews@google.com.
   <int value="31" label="Other VA functions"/>
 </enum>
 
-<enum name="VAJEAEncoderResult">
-  <int value="0" label="VAAPI_SUCCESS"/>
-  <int value="1" label="VAAPI_ERROR"/>
-</enum>
-
 <enum name="VideoCaptureApi">
   <int value="0" label="UNKNOWN">UNKNOWN</int>
   <int value="1" label="LINUX_V4L2_SINGLE_PLANE">LINUX_V4L2_SINGLE_PLANE</int>
@@ -2318,14 +2236,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Unsupported Stream Parameters"/>
   <int value="4" label="Decode Error"/>
   <int value="5" label="Unsupported Stream"/>
-</enum>
-
-<enum name="WebMediaPlayerWatchTimeType">
-  <int value="0" label="RendererImplFactory"/>
-  <int value="1" label="MojoRendererFactory"/>
-  <int value="2" label="MediaPlayerRendererClientFactory"/>
-  <int value="3" label="CourierRendererFactory"/>
-  <int value="4" label="FlingingRendererClientFactory"/>
 </enum>
 
 </enums>
