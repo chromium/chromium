@@ -74,7 +74,8 @@ class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {
   bool SubmitCompressedFrameData(void* ctrls,
                                  const void* data,
                                  size_t length,
-                                 uint64_t frame_id);
+                                 uint64_t frame_id,
+                                 const base::ScopedFD& request_fd);
 
   // Prepare the buffers required by the driver to hold the compressed data.
   bool PrepareBuffers(size_t num_buffers, const gfx::Size resolution);

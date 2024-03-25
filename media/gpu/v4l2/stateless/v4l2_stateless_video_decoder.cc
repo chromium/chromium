@@ -396,8 +396,14 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(
     }
   }
 
-  if (input_queue_->SubmitCompressedFrameData(ctrls, data, size,
-                                              dec_surface->FrameID())) {
+  // Each request needs a FD. A pool of FD's can be reused, but require
+  // reinitialization after use. Instead a scoped FD is created, which will
+  // be closed at the end of this function. This is fine as the driver will
+  // keep the FD open until it is done using it.
+  base::ScopedFD request_fd = device_->CreateRequestFD();
+
+  if (input_queue_->SubmitCompressedFrameData(
+          ctrls, data, size, dec_surface->FrameID(), request_fd)) {
     surfaces_queued_.push(std::move(dec_surface));
     ArmBufferMonitor();
 

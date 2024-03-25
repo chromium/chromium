@@ -251,7 +251,8 @@ void InputQueue::Reclaim(Buffer& buffer) {
 bool InputQueue::SubmitCompressedFrameData(void* ctrls,
                                            const void* data,
                                            size_t length,
-                                           uint64_t frame_id) {
+                                           uint64_t frame_id,
+                                           const base::ScopedFD& request_fd) {
   // Failing to acquire a buffer is a normal part of the process. All of the
   // input buffers can be full if the output buffers are not being cleared.
   auto buffer_index = GetFreeBufferIndex();
@@ -272,12 +273,6 @@ bool InputQueue::SubmitCompressedFrameData(void* ctrls,
                << buffer.PlaneCount();
     return false;
   }
-
-  // Each request needs an FD. A pool of FD's can be reused, but require
-  // reinitialization after use. Instead a scoped FD is created, which will
-  // be closed at the end of this function. This is fine as the driver will
-  // keep the FD open until it is done using it.
-  const base::ScopedFD request_fd = device_->CreateRequestFD();
 
   // |frame_id| is used for two things:
   // 1. To track the buffer from compressed to uncompressed. The timestamp will
