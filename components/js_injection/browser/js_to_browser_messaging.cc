@@ -54,10 +54,6 @@ class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
   void PostWebMessage(blink::WebMessagePayload message) override {
     java_to_js_messaging_->OnPostMessage(std::move(message));
   }
-  bool IsInBackForwardCache() override {
-    return render_frame_host_->GetLifecycleState() ==
-           content::RenderFrameHost::LifecycleState::kInBackForwardCache;
-  }
   content::Page& GetPage() override { return render_frame_host_->GetPage(); }
 
  private:
