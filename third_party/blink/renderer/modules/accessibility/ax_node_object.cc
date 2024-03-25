@@ -1961,6 +1961,7 @@ void AXNodeObject::Detach() {
   SANITIZER_CHECK(!is_adding_children_)
       << "Cannot detach |this| during AddChildren(): " << GetNode();
 #endif
+
   AXObject::Detach();
   node_ = nullptr;
 }

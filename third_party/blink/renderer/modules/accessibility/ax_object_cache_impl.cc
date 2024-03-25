@@ -1905,6 +1905,12 @@ void AXObjectCacheImpl::Remove(LayoutObject* layout_object,
 
 // This is safe to call even if there isn't a current mapping.
 void AXObjectCacheImpl::Remove(Node* node) {
+  // Ensure that our plugin serializer, if it exists, is properly
+  // reset. Paired with AXNodeObject::Detach.
+  if (IsA<HTMLEmbedElement>(node)) {
+    ResetPluginTreeSerializer();
+  }
+
   Remove(node, /* notify_parent */ true);
 }
 
@@ -5534,6 +5540,10 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
                ->CachedChildrenIncludingIgnored()
                .Find(obj);
 
+    // If there's a plugin, force the tree data to be generated in every
+    // message so the plugin can merge its own tree data changes.
+    AddPluginTreeToUpdate(&update);
+
     if (RuntimeEnabledFeatures::
             AccessibilitySerializationSizeMetricsEnabled()) {
       update.AccumulateSize(node_data_size);
@@ -5597,25 +5607,16 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
   }
 
 #if DCHECK_IS_ON()
-  CheckTreeConsistency(*this, *ax_tree_serializer_);
+  CheckTreeConsistency(*this, *ax_tree_serializer_, plugin_serializer_.get());
 
   // Provide the expected node count in the last update, so that
   // AXTree::Unserialize() can check for tree consistency on the browser side.
   if (!updates.back().tree_checks) {
     updates.back().tree_checks.emplace();
   }
-  updates.back().tree_checks->node_count = included_node_count_;
+  updates.back().tree_checks->node_count =
+      GetIncludedNodeCount() + GetPluginIncludedNodeCount();
 #endif  // DCHECK_IS_ON()
-
-  // If there's a plugin, force the tree data to be generated in every
-  // message so the plugin can merge its own tree data changes.
-  // TODO(accessibility): consider moving into above loop if we decide to
-  // include within consistency checks.
-  if (plugin_tree_source_) {
-    for (auto& update : updates) {
-      AddPluginTreeToUpdate(&update);
-    }
-  }
 }
 
 #if DCHECK_IS_ON()
@@ -5624,6 +5625,22 @@ void AXObjectCacheImpl::UpdateIncludedNodeCount(const AXObject* obj) {
     ++included_node_count_;
   } else {
     --included_node_count_;
+  }
+}
+
+void AXObjectCacheImpl::UpdatePluginIncludedNodeCount() {
+  plugin_included_node_count_ = 0;
+  if (plugin_tree_source_ && plugin_tree_source_->GetRoot()) {
+    std::stack<const ui::AXNode*> nodes;
+    nodes.push(plugin_tree_source_->GetRoot());
+    while (!nodes.empty()) {
+      const ui::AXNode* child = nodes.top();
+      nodes.pop();
+      plugin_included_node_count_++;
+      for (size_t i = 0; i < plugin_tree_source_->GetChildCount(child); i++) {
+        nodes.push(plugin_tree_source_->ChildAt(child, i));
+      }
+    }
   }
 }
 #endif  // DCHECK_IS_ON()
@@ -6142,6 +6159,13 @@ void AXObjectCacheImpl::SetAutofillSuggestionAvailability(
 }
 
 void AXObjectCacheImpl::AddPluginTreeToUpdate(ui::AXTreeUpdate* update) {
+  if (!plugin_tree_source_) {
+#if DCHECK_IS_ON()
+    plugin_included_node_count_ = 0;
+#endif  // DCHECK_IS_ON()
+    return;
+  }
+
   // Conceptually, a plugin tree "stitches" itself into an existing Blink
   // accessibility node. For example, the node could be an <embed>. The plugin
   // tree itself contains a root who's parent is the target of the stitching
@@ -6151,14 +6175,15 @@ void AXObjectCacheImpl::AddPluginTreeToUpdate(ui::AXTreeUpdate* update) {
 
   CHECK(plugin_serializer_.get());
 
-  // TODO(accessibility): this ensures the serializer always provides a correct
-  // update. Eventually, we should send over an incremental update.
-  plugin_serializer_->Reset();
-
   // Search for the Blink accessibility node onto which we want to stitch the
   // plugin tree.
   for (ui::AXNodeData& node : update->nodes) {
     if (node.role == ax::mojom::Role::kEmbeddedObject) {
+      // The embed node should already exist in the blink tree source's client
+      // tree.
+      CHECK(ax_tree_serializer_->IsInClientTree(
+          ax_tree_source_->GetFromId(node.id)));
+
       // The plugin tree contains its own tree source, serializer pair. It isn't
       // using Blink's source, serializer pair because its backing template tree
       // source type is a pure AXNodeData.
@@ -6184,6 +6209,10 @@ void AXObjectCacheImpl::AddPluginTreeToUpdate(ui::AXTreeUpdate* update) {
       break;
     }
   }
+
+#if DCHECK_IS_ON()
+  UpdatePluginIncludedNodeCount();
+#endif  // DCHECK_IS_ON()
 }
 
 ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>*
@@ -6210,6 +6239,12 @@ ui::AXTreeSerializer<const ui::AXNode*,
                      ui::AXNodeData>*
 AXObjectCacheImpl::GetPluginTreeSerializer() {
   return plugin_serializer_.get();
+}
+
+void AXObjectCacheImpl::ResetPluginTreeSerializer() {
+  if (plugin_serializer_.get()) {
+    plugin_serializer_->Reset();
+  }
 }
 
 void AXObjectCacheImpl::MarkPluginDescendantDirty(ui::AXNodeID node_id) {
