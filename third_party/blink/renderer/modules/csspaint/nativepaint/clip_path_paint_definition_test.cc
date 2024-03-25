@@ -49,18 +49,27 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
 
  protected:
   void SetUp() override {
+    scoped_composite_clip_path_animation =
+        std::make_unique<ScopedCompositeClipPathAnimationForTest>(true);
+    scoped_composite_bgcolor_animation =
+        std::make_unique<ScopedCompositeBGColorAnimationForTest>(false);
     PageTestBase::SetUp();
     MockClipPathPaintImageGenerator* generator =
         MakeGarbageCollected<MockClipPathPaintImageGenerator>();
     GetFrame().SetClipPathPaintImageGeneratorForTesting(generator);
     GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
   }
+
+ private:
+  std::unique_ptr<ScopedCompositeClipPathAnimationForTest>
+      scoped_composite_clip_path_animation;
+  std::unique_ptr<ScopedCompositeBGColorAnimationForTest>
+      scoped_composite_bgcolor_animation;
 };
 
 // Test the case where there is a clip-path animation with two simple
 // keyframes that will not fall back to main.
 TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationNotFallback) {
-  ScopedCompositeClipPathAnimationForTest composite_clip_path_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
     </div>
@@ -115,7 +124,6 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationNotFallback) {
 // the main thread. In this case, the paint properties should update to avoid
 // any crashes or paint worklets existing beyond their validity.
 TEST_F(ClipPathPaintDefinitionTest, FallbackOnNonCompositableSecondAnimation) {
-  ScopedCompositeClipPathAnimationForTest composite_clip_path_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
     </div>
@@ -199,7 +207,6 @@ TEST_F(ClipPathPaintDefinitionTest, FallbackOnNonCompositableSecondAnimation) {
 }
 
 TEST_F(ClipPathPaintDefinitionTest, ClipBoundingBoxEncompassesAnimation) {
-  ScopedCompositeClipPathAnimationForTest composite_clip_path_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="position: fixed; width: 100px; height: 100px">
     </div>

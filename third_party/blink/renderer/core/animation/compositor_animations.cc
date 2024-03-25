@@ -1154,7 +1154,7 @@ bool CompositorAnimations::CanStartScrollTimelineOnCompositor(Node* target) {
     return layout_box->FirstFragment().PaintProperties() &&
            layout_box->FirstFragment().PaintProperties()->Scroll();
   }
-  if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
+  if (NativePaintImageGenerator::NativePaintWorkletAnimationsEnabled() &&
       target->GetDocument().Lifecycle().GetState() <
           DocumentLifecycle::kPaintClean) {
     // TODO(crbug.com/1434728): This happens when we paint a scroll-driven

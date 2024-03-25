@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
+#include "third_party/blink/renderer/core/css/native_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
@@ -4027,7 +4028,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
       }
     }
     // TODO(crbug.com/1246826): Remove CompositablePaintAnimationChanged.
-    if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled()) {
+    if (NativePaintImageGenerator::NativePaintWorkletAnimationsEnabled()) {
       if (layout_style->CompositablePaintAnimationChanged()) {
         apply_changes = LayoutObject::ApplyStyleChanges::kYes;
       }
