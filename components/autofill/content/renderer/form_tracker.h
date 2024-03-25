@@ -179,7 +179,7 @@ class FormTracker : public content::RenderFrameObserver,
   // Called in a posted task by textFieldDidChange() to work-around a WebKit bug
   // http://bugs.webkit.org/show_bug.cgi?id=16976 , we also don't want to
   // process element while it is changing.
-  void FormControlDidChangeImpl(const blink::WebFormControlElement& element,
+  void FormControlDidChangeImpl(FieldRendererId element_id,
                                 Observer::SaveFormReason change_source);
   void FireProbablyFormSubmitted();
   void FireFormSubmitted(const blink::WebFormElement& form);

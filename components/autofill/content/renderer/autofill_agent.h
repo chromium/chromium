@@ -340,7 +340,7 @@ class AutofillAgent : public content::RenderFrameObserver,
       const blink::WebElement& node);
 
   void OnTextFieldDidChange(const blink::WebFormControlElement& element);
-  void DidChangeScrollOffsetImpl(const blink::WebFormControlElement& element);
+  void DidChangeScrollOffsetImpl(FieldRendererId element_id);
 
   // Shows Password Manager, password generation, or Autofill suggestions for
   // `element`. This call is asynchronous and may or may not lead to the showing

@@ -333,11 +333,6 @@ void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
 }
 
 void AutofillAgent::DidChangeScrollOffset() {
-  WebFormControlElement last_queried_element = last_queried_element_.GetField();
-  if (last_queried_element.IsNull()) {
-    return;
-  }
-
   if (!config_.focus_requires_scroll) {
     // Post a task here since scroll offset may change during layout.
     // TODO(crbug.com/804886): Do not cancel other tasks and do not invalidate
@@ -348,15 +343,16 @@ void AutofillAgent::DidChangeScrollOffset() {
           ->PostTask(FROM_HERE,
                      base::BindOnce(&AutofillAgent::DidChangeScrollOffsetImpl,
                                     weak_ptr_factory_.GetWeakPtr(),
-                                    last_queried_element));
+                                    last_queried_element_.GetId()));
     }
   } else {
     HidePopup();
   }
 }
 
-void AutofillAgent::DidChangeScrollOffsetImpl(
-    const WebFormControlElement& element) {
+void AutofillAgent::DidChangeScrollOffsetImpl(FieldRendererId element_id) {
+  WebFormControlElement element =
+      form_util::GetFormControlByRendererId(element_id);
   if (element != last_queried_element_.GetField() || element.IsNull() ||
       config_.focus_requires_scroll || !is_popup_possibly_visible_ ||
       !element.Focused()) {
