@@ -27,6 +27,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListPopupWindow;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -56,7 +57,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
@@ -181,6 +181,38 @@ public class StripLayoutHelper
             "Android.TabStrip.PlaceholderStripTabsNeededDuringRestoreCount";
     private static final String PLACEHOLDER_VISIBLE_DURATION_HISTOGRAM_NAME =
             "Android.TabStrip.PlaceholderStripVisibleDuration";
+
+    // An observer that is notified of changes to a {@link TabGroupModelFilter} object.
+    private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
+            new TabGroupModelFilterObserver() {
+                @Override
+                public void willMoveTabGroup(int tabModelOldIndex, int tabModelNewIndex) {
+                    mMovingGroup = true;
+                }
+
+                @Override
+                public void didMoveTabGroup(
+                        Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
+                    mMovingGroup = false;
+                }
+
+                @Override
+                public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
+                    rebuildStripViews();
+                }
+
+                @Override
+                public void didChangeTabGroupColor(int rootId, @TabGroupColorId int newColor) {
+                    final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
+                    if (groupTitle == null) return;
+
+                    @ColorInt
+                    int color =
+                            ColorPickerUtils.getTabGroupColorPickerItemColor(
+                                    mContext, newColor, mIncognito);
+                    groupTitle.updateTint(color);
+                }
+            };
 
     // External influences
     private final LayoutUpdateHost mUpdateHost;
@@ -486,6 +518,10 @@ public class StripLayoutHelper
         if (mTabHoverCardView != null) {
             mTabHoverCardView.destroy();
             mTabHoverCardView = null;
+        }
+        if (mTabGroupModelFilter != null) {
+            mTabGroupModelFilter.removeTabGroupObserver(mTabGroupModelFilterObserver);
+            mTabGroupModelFilter = null;
         }
     }
 
@@ -802,32 +838,25 @@ public class StripLayoutHelper
      * @param tabGroupModelFilter The {@link TabGroupModelFilter}.
      */
     public void setTabGroupModelFilter(TabGroupModelFilter tabGroupModelFilter) {
+        if (mTabGroupModelFilter != null) {
+            mTabGroupModelFilter.removeTabGroupObserver(mTabGroupModelFilterObserver);
+        }
+
         mTabGroupModelFilter = tabGroupModelFilter;
-        mTabGroupModelFilter.addTabGroupObserver(
-                new TabGroupModelFilterObserver() {
-                    @Override
-                    public void willMoveTabGroup(int tabModelOldIndex, int tabModelNewIndex) {
-                        mMovingGroup = true;
-                    }
+        mTabGroupModelFilter.addTabGroupObserver(mTabGroupModelFilterObserver);
 
-                    @Override
-                    public void didMoveTabGroup(
-                            Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
-                        mMovingGroup = false;
-                    }
-
-                    @Override
-                    public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
-                        rebuildStripViews();
-                    }
-                });
         rebuildStripViews();
+    }
+
+    TabGroupModelFilterObserver getTabGroupModelFilterObserverForTesting() {
+        return mTabGroupModelFilterObserver;
     }
 
     /**
      * Helper-specific updates. Cascades the values updated by the animations and flings.
+     *
      * @param time The current time of the app in ms.
-     * @return     Whether or not animations are done.
+     * @return Whether or not animations are done.
      */
     public boolean updateLayout(long time) {
         mLastUpdateTime = time;
@@ -2184,8 +2213,8 @@ public class StripLayoutHelper
     }
 
     private StripLayoutGroupTitle createGroupTitle(int rootId) {
-        @TabGroupColorId
-        int colorId = TabGroupColorUtils.getOrCreateTabGroupColor(rootId, mTabGroupModelFilter);
+        @TabGroupColorId int colorId = mTabGroupModelFilter.getTabGroupColor(rootId);
+        @ColorInt
         int color = ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, colorId, mIncognito);
 
         StripLayoutGroupTitle groupTitle =

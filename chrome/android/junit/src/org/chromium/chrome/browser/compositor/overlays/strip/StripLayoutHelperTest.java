@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
@@ -3351,5 +3352,36 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabHoverCardView(mTabHoverCardView);
         // For ease of dp/px calculation.
         mContext.getResources().getDisplayMetrics().density = 1f;
+    }
+
+    @Test
+    public void testSetTabModelFilter() {
+        // Setup and verify initial state.
+        initializeTest(false, false, 0);
+        TabGroupModelFilterObserver observer =
+                mStripLayoutHelper.getTabGroupModelFilterObserverForTesting();
+        verify(mTabGroupModelFilter).addTabGroupObserver(observer);
+
+        // Set a new tab group model filter.
+        TabGroupModelFilter newModelFilter = mock(TabGroupModelFilter.class);
+        mStripLayoutHelper.setTabGroupModelFilter(newModelFilter);
+
+        // Verify the observers have been updated as expected.
+        verify(mTabGroupModelFilter).removeTabGroupObserver(observer);
+        verify(newModelFilter).addTabGroupObserver(observer);
+    }
+
+    @Test
+    public void testDestroy() {
+        // Setup.
+        initializeTest(false, false, 0);
+        TabGroupModelFilterObserver observer =
+                mStripLayoutHelper.getTabGroupModelFilterObserverForTesting();
+
+        // Destroy the instance.
+        mStripLayoutHelper.destroy();
+
+        // Verify the observer has been removed as expected.
+        verify(mTabGroupModelFilter).removeTabGroupObserver(observer);
     }
 }

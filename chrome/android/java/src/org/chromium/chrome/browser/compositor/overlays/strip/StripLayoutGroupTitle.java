@@ -55,13 +55,13 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         assert rootId != Tab.INVALID_TAB_ID : "Tried to create a group title for an invalid group.";
 
         mContext = context;
-        mColor = color;
         mUpdateHost = updateHost;
         mEffectiveMinWidth = MIN_VISUAL_WIDTH_DP + (DEFAULT_MARGIN_DP * 2);
         mEffectiveMaxWidth = MAX_VISUAL_WIDTH_DP + (DEFAULT_MARGIN_DP * 2);
 
         updateRootId(rootId);
         updateTitle(TabGroupTitleUtils.getTabGroupTitle(mRootId), 0);
+        updateTint(color);
     }
 
     @Override
@@ -136,8 +136,14 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      * @return The tint color resource that represents the tab group title indicator background.
      */
     public @ColorInt int getTint() {
-        // TODO(crbug.com/326492787): Update whenever tab group's color may have changed.
         return mColor;
+    }
+
+    /**
+     * @param color The color used when displaying this group.
+     */
+    public void updateTint(@ColorInt int color) {
+        mColor = color;
     }
 
     protected void updateTitle(String title, float width) {
