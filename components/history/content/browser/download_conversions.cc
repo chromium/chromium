@@ -92,7 +92,11 @@ download::DownloadDangerType ToContentDownloadDangerType(
     case DownloadDangerType::PROMPT_FOR_SCANNING:
       return download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING;
     case DownloadDangerType::BLOCKED_UNSUPPORTED_FILETYPE:
-      return download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE;
+      // BLOCKED_UNSUPPORTED_FILETYPE has been deprecated in
+      // https://crbug.com/330373911. Any remaining entries in history are
+      // mapped to NOT_DANGEROUS. Since these downloads were canceled at
+      // shutdown, this does not result in any user-visible change.
+      return download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
     case DownloadDangerType::DANGEROUS_ACCOUNT_COMPROMISE:
       return download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE;
     case DownloadDangerType::DEEP_SCANNED_FAILED:
