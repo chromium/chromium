@@ -748,7 +748,6 @@ ios_builder(
     name = "ios17-beta-simulator",
     mirrors = ["ci/ios17-beta-simulator"],
     gn_args = "ci/ios17-beta-simulator",
-    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
 )
 
