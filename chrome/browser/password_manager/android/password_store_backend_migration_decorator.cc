@@ -205,14 +205,6 @@ PasswordStoreBackendMigrationDecorator::GetSmartBubbleStatsStore() {
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegate() {
-  if (base::FeatureList::IsEnabled(
-          features::kUnifiedPasswordManagerSyncUsingAndroidBackendOnly)) {
-    // The android backend (PasswordStoreAndroidBackend) creates a controller
-    // delegate that prevents sync from actually communicating with the sync
-    // server using the built in SyncEngine.
-    return android_backend_->CreateSyncControllerDelegate();
-  }
-
   return built_in_backend_->CreateSyncControllerDelegate();
 }
 

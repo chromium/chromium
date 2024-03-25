@@ -106,14 +106,6 @@ BASE_FEATURE(kPasswordSuggestionBottomSheetV2,
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
              "UnifiedPasswordManagerLocalPasswordsMigrationWarning",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, the built-in sync functionality in PasswordSyncBridge becomes
-// unused, meaning that SyncService/SyncEngine will no longer download or
-// upload changes to/from the Sync server. Instead, an external Android-specific
-// backend will be used to achieve similar behavior.
-BASE_FEATURE(kUnifiedPasswordManagerSyncUsingAndroidBackendOnly,
-             "UnifiedPasswordManagerSyncUsingAndroidBackendOnly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
