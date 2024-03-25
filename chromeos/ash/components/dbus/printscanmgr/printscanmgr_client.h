@@ -27,6 +27,10 @@ class COMPONENT_EXPORT(PRINTSCANMGR) PrintscanmgrClient
   // Creates and initializes a fake global instance.
   static void InitializeFake();
 
+  // Creates and overrides any existing instance with a fake global instance for
+  // tests.
+  static void InitializeFakeForTest();
+
   // Destroys the global instance if it has been initialized.
   static void Shutdown();
 

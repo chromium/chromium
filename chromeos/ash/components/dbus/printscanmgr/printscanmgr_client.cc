@@ -254,6 +254,12 @@ void PrintscanmgrClient::InitializeFake() {
 }
 
 // static
+void PrintscanmgrClient::InitializeFakeForTest() {
+  g_instance = new FakePrintscanmgrClient();
+  g_instance->Init(nullptr);
+}
+
+// static
 void PrintscanmgrClient::Shutdown() {
   CHECK(g_instance);
   delete g_instance;

@@ -1142,6 +1142,7 @@ if (is_chromeos && is_chromeos_device) {
         "../browser/ash/web_handwriting_integration_test.cc",
         "../browser/ui/ash/quick_settings_integration_test.cc",
         "../browser/ui/ash/shelf/shelf_integration_test.cc",
+        "../browser/ui/webui/ash/settings/pages/printing/integration_tests/printer_settings_integration_test.cc",
         "base/chromeos/crosier/helper/test_sudo_helper_client_test.cc",
         "base/chromeos/crosier/upstart_test.cc",
 
@@ -1172,10 +1173,12 @@ if (is_chromeos && is_chromeos_device) {
         "//chrome/browser/ash:test_support",
         "//chrome/test/base/chromeos/crosier:proto",
         "//chrome/test/base/chromeos/crosier/helper:common",
+        "//chromeos/ash/components/dbus/printscanmgr:printscanmgr",
         "//chromeos/ash/components/standalone_browser",
         "//chromeos/ash/components/standalone_browser:test_support",
         "//chromeos/ash/services/assistant/public/cpp",
         "//chromeos/services/machine_learning/public/cpp",
+        "//ui/events:test_support",
       ]
 
       data_deps += [
