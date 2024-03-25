@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import type {CdpClient} from '../../../cdp/CdpClient.js';
 import type {BidiPlusChannel} from '../../../protocol/chromium-bidi.js';
 import type {
   ChromiumBidi,
@@ -26,13 +27,36 @@ import type {EventManager} from './EventManager.js';
 
 export class SessionProcessor {
   #eventManager: EventManager;
+  #browserCdpClient: CdpClient;
 
-  constructor(eventManager: EventManager) {
+  constructor(eventManager: EventManager, browserCdpClient: CdpClient) {
     this.#eventManager = eventManager;
+    this.#browserCdpClient = browserCdpClient;
   }
 
   status(): Session.StatusResult {
     return {ready: false, message: 'already connected'};
+  }
+
+  async create(_params: Session.NewParameters): Promise<Session.NewResult> {
+    // Since mapper exists, there is a session already.
+    // Still the mapper can handle capabilities for us.
+    // Currently, only Puppeteer calls here but, eventually, every client
+    // should delegrate capability processing here.
+    const version =
+      await this.#browserCdpClient.sendCommand('Browser.getVersion');
+    return {
+      sessionId: 'unknown',
+      capabilities: {
+        acceptInsecureCerts: false,
+        browserName: version.product,
+        browserVersion: version.revision,
+        platformName: '',
+        setWindowRect: false,
+        webSocketUrl: '',
+        userAgent: version.userAgent,
+      },
+    };
   }
 
   async subscribe(

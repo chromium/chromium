@@ -133,7 +133,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       preloadScriptStorage,
       logger
     );
-    this.#sessionProcessor = new SessionProcessor(eventManager);
+    this.#sessionProcessor = new SessionProcessor(
+      eventManager,
+      browserCdpClient
+    );
     this.#storageProcessor = new StorageProcessor(
       browserCdpClient,
       browsingContextStorage,
@@ -147,7 +150,6 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   ): Promise<ChromiumBidi.ResultData> {
     switch (command.method) {
       case 'session.end':
-      case 'session.new':
         // TODO: Implement.
         break;
 
@@ -325,6 +327,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
 
       // Session domain
       // keep-sorted start block=yes
+      case 'session.new':
+        return await this.#sessionProcessor.create(command.params);
       case 'session.status':
         return this.#sessionProcessor.status();
       case 'session.subscribe':
