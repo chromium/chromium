@@ -266,27 +266,15 @@ TEST_F(LayoutTableTest, OutOfOrderHeadAndBody) {
     <table>
   )HTML");
   auto* table = GetTableByElementId("table");
-  auto* head_section =
-      To<LayoutTableSection>(GetLayoutObjectByElementId("head"));
   auto* body_section =
       To<LayoutTableSection>(GetLayoutObjectByElementId("body"));
   ASSERT_TRUE(table);
-  ASSERT_TRUE(head_section);
   ASSERT_TRUE(body_section);
 
-  EXPECT_EQ(head_section, table->FirstSection());
-
-  EXPECT_EQ(body_section,
-            table->NextSection(head_section, kDoNotSkipEmptySections));
-  EXPECT_EQ(nullptr, table->NextSection(body_section, kDoNotSkipEmptySections));
-
-  EXPECT_EQ(body_section, table->FirstNonEmptySection());
-  EXPECT_EQ(body_section, table->LastNonEmptySection());
-
-  EXPECT_EQ(nullptr, table->PreviousSection(head_section, kSkipEmptySections));
-  EXPECT_EQ(nullptr, table->PreviousSection(body_section, kSkipEmptySections));
-  EXPECT_EQ(head_section,
-            table->PreviousSection(body_section, kDoNotSkipEmptySections));
+  EXPECT_EQ(body_section, table->FirstSection());
+  EXPECT_EQ(body_section, table->LastSection());
+  EXPECT_EQ(nullptr, table->NextSection(body_section));
+  EXPECT_EQ(nullptr, table->PreviousSection(body_section));
 }
 
 TEST_F(LayoutTableTest, OutOfOrderFootAndBody) {
@@ -299,25 +287,13 @@ TEST_F(LayoutTableTest, OutOfOrderFootAndBody) {
   auto* table = GetTableByElementId("table");
   auto* body_section =
       To<LayoutTableSection>(GetLayoutObjectByElementId("body"));
-  auto* foot_section =
-      To<LayoutTableSection>(GetLayoutObjectByElementId("foot"));
   ASSERT_TRUE(table);
   ASSERT_TRUE(body_section);
-  ASSERT_TRUE(foot_section);
 
   EXPECT_EQ(body_section, table->FirstSection());
-
-  EXPECT_EQ(nullptr, table->NextSection(body_section, kSkipEmptySections));
-  EXPECT_EQ(foot_section,
-            table->NextSection(body_section, kDoNotSkipEmptySections));
-  EXPECT_EQ(nullptr, table->NextSection(foot_section, kDoNotSkipEmptySections));
-
-  EXPECT_EQ(body_section, table->FirstNonEmptySection());
-  EXPECT_EQ(body_section, table->LastNonEmptySection());
-
-  EXPECT_EQ(body_section,
-            table->PreviousSection(foot_section, kSkipEmptySections));
-  EXPECT_EQ(nullptr, table->PreviousSection(body_section, kSkipEmptySections));
+  EXPECT_EQ(body_section, table->LastSection());
+  EXPECT_EQ(nullptr, table->NextSection(body_section));
+  EXPECT_EQ(nullptr, table->PreviousSection(body_section));
 }
 
 TEST_F(LayoutTableTest, OutOfOrderHeadFootAndBody) {
@@ -341,17 +317,15 @@ TEST_F(LayoutTableTest, OutOfOrderHeadFootAndBody) {
   ASSERT_TRUE(foot_section);
 
   EXPECT_EQ(head_section, table->FirstSection());
+  EXPECT_EQ(foot_section, table->LastSection());
 
-  EXPECT_EQ(body_section, table->NextSection(head_section, kSkipEmptySections));
-  EXPECT_EQ(foot_section, table->NextSection(body_section, kSkipEmptySections));
+  EXPECT_EQ(body_section, table->NextSection(head_section));
+  EXPECT_EQ(foot_section, table->NextSection(body_section));
+  EXPECT_EQ(nullptr, table->NextSection(foot_section));
 
-  EXPECT_EQ(head_section, table->FirstNonEmptySection());
-  EXPECT_EQ(foot_section, table->LastNonEmptySection());
-
-  EXPECT_EQ(body_section,
-            table->PreviousSection(foot_section, kSkipEmptySections));
-  EXPECT_EQ(head_section,
-            table->PreviousSection(body_section, kSkipEmptySections));
+  EXPECT_EQ(body_section, table->PreviousSection(foot_section));
+  EXPECT_EQ(head_section, table->PreviousSection(body_section));
+  EXPECT_EQ(nullptr, table->PreviousSection(head_section));
 }
 
 TEST_F(LayoutTableTest, VisualOverflowCleared) {

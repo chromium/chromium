@@ -935,7 +935,7 @@ unsigned AXLayoutObject::RowCount() const {
   unsigned row_count = 0;
   while (table_section) {
     row_count += table_section->NumRows();
-    table_section = table->NextSection(table_section, kSkipEmptySections);
+    table_section = table->NextSection(table_section);
   }
   return row_count;
 }
@@ -978,7 +978,7 @@ unsigned AXLayoutObject::RowIndex() const {
   const LayoutTableSection* section = table->FirstSection();
   while (section && section != row_section) {
     row_index += section->NumRows();
-    section = table->NextSection(section, kSkipEmptySections);
+    section = table->NextSection(section);
   }
 
   return row_index;
@@ -1062,7 +1062,7 @@ AXObject* AXLayoutObject::CellForColumnAndRow(unsigned target_column_index,
     }
 
     row_offset += table_section->NumRows();
-    table_section = table->NextSection(table_section, kSkipEmptySections);
+    table_section = table->NextSection(table_section);
   }
 
   return nullptr;
@@ -1087,7 +1087,7 @@ bool AXLayoutObject::FindAllTableCellsWithRole(ax::mojom::blink::Role role,
       }
     }
 
-    table_section = table->NextSection(table_section, kSkipEmptySections);
+    table_section = table->NextSection(table_section);
   }
 
   return true;

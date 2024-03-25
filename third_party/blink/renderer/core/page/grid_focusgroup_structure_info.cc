@@ -224,7 +224,7 @@ Element* AutomaticGridFocusgroupStructureInfo::NextRow(Element* row_element) {
 }
 
 Element* AutomaticGridFocusgroupStructureInfo::FirstRow() {
-  auto* first_section = Table()->FirstNonEmptySection();
+  auto* first_section = Table()->FirstSection();
   auto* first_row = first_section->FirstRow();
   while (first_row) {
     // Layout rows can be empty (i.e., have no cells), so make sure that we
@@ -238,7 +238,7 @@ Element* AutomaticGridFocusgroupStructureInfo::FirstRow() {
 }
 
 Element* AutomaticGridFocusgroupStructureInfo::LastRow() {
-  auto* last_section = Table()->LastNonEmptySection();
+  auto* last_section = Table()->LastSection();
   auto* last_row = last_section->LastRow();
   while (last_row) {
     // See comment in `PreviousRow()` to understand why we need to ensure this
@@ -345,8 +345,7 @@ LayoutTableRow* AutomaticGridFocusgroupStructureInfo::PreviousRow(
       continue;
     }
 
-    auto* previous_section =
-        Table()->PreviousSection(current_section, kSkipEmptySections);
+    auto* previous_section = Table()->PreviousSection(current_section);
     if (!previous_section)
       return nullptr;
 
@@ -376,8 +375,7 @@ LayoutTableRow* AutomaticGridFocusgroupStructureInfo::NextRow(
       continue;
     }
 
-    auto* next_section =
-        Table()->NextSection(current_section, kSkipEmptySections);
+    auto* next_section = Table()->NextSection(current_section);
     if (!next_section)
       return nullptr;
 
