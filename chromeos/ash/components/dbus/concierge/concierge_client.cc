@@ -99,8 +99,8 @@ class ConciergeClientImpl : public ConciergeClient {
     std::vector<base::ScopedFD> fds;
     fds.emplace_back(std::move(fd));
 
-    CallMethodWithFds(concierge::kCreateDiskImage2Method, request, std::move(fds),
-                      std::move(callback));
+    CallMethodWithFds(concierge::kCreateDiskImage2Method, request,
+                      std::move(fds), std::move(callback));
   }
 
   void DestroyDiskImage(
@@ -400,11 +400,7 @@ class ConciergeClientImpl : public ConciergeClient {
       return;
     }
 
-    // TODO(b/324960184): Keep this check for compatibility until we update
-    // CreateDiskImage and ExportDiskImage
-    if (fd.is_valid()) {
-      writer.AppendFileDescriptor(fd.get());
-    }
+    writer.AppendFileDescriptor(fd.get());
 
     concierge_proxy_->CallMethod(
         &method_call, kConciergeDBusTimeoutMs,
@@ -416,8 +412,21 @@ class ConciergeClientImpl : public ConciergeClient {
   void CallMethod(const std::string& method_name,
                   const RequestProto& request,
                   chromeos::DBusMethodCallback<ResponseProto> callback) {
-    CallMethodWithFd(method_name, request, base::ScopedFD(),
-                     std::move(callback));
+    dbus::MethodCall method_call(concierge::kVmConciergeInterface, method_name);
+    dbus::MessageWriter writer(&method_call);
+
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode protobuf for " << method_name;
+      // TODO(uekawa): Check if posttask is needed.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+      return;
+    }
+
+    concierge_proxy_->CallMethod(
+        &method_call, kConciergeDBusTimeoutMs,
+        base::BindOnce(&ConciergeClientImpl::OnDBusProtoResponse<ResponseProto>,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   template <typename ResponseProto>
