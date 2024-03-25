@@ -10,6 +10,7 @@
 
 #include "ash/app_list/app_collections_constants.h"
 #include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/model/app_list_model.h"
@@ -49,8 +50,17 @@ std::vector<AppListItem*> GetAppListItemsForCollection(
   AppListItemList* items = model->top_level_item_list();
 
   for (size_t i = 0; i < items->item_count(); i++) {
-    if (items->item_at(i)->collection_id() == collection_id) {
-      collection.emplace_back(items->item_at(i));
+    AppListItem* app_item = items->item_at(i);
+    if (app_item->is_folder()) {
+      // Ignore app folder items.
+      continue;
+    }
+    if (app_item->app_status() != AppStatus::kReady) {
+      // Ignore apps that are not ready.
+      continue;
+    }
+    if (app_item->collection_id() == collection_id) {
+      collection.emplace_back(app_item);
     }
   }
   return collection;
