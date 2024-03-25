@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_address_cell.h"
 
 #import "base/metrics/user_metrics.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
@@ -44,9 +45,6 @@
 @end
 
 @interface ManualFillAddressCell ()
-
-// Separator line between cells, if needed.
-@property(nonatomic, strong) UIView* grayLine;
 
 // The label with the line1 -- line2.
 @property(nonatomic, strong) UILabel* addressLabel;
@@ -94,6 +92,9 @@
 // The content delegate for this item.
 @property(nonatomic, weak) id<ManualFillContentInjector> contentInjector;
 
+// Layout guide for the cell's content.
+@property(nonatomic, strong) UILayoutGuide* layoutGuide;
+
 @end
 
 @implementation ManualFillAddressCell
@@ -129,7 +130,6 @@
   self.contentInjector = contentInjector;
 
   NSMutableArray<UIView*>* verticalLeadViews = [[NSMutableArray alloc] init];
-  UIView* guide = self.grayLine;
 
   NSString* blackText = nil;
   NSString* grayText = nil;
@@ -218,7 +218,7 @@
 
   [self layMultipleViews:nameLineViews
           withLargeTypes:largeTypes
-                 onGuide:guide
+                 onGuide:self.layoutGuide
       addFirstLineViewTo:verticalLeadViews];
 
   // Company line.
@@ -269,7 +269,7 @@
 
   [self layMultipleViews:zipCityLineViews
           withLargeTypes:largeTypes
-                 onGuide:guide
+                 onGuide:self.layoutGuide
       addFirstLineViewTo:verticalLeadViews];
 
   // State and country line.
@@ -294,7 +294,7 @@
 
   [self layMultipleViews:stateCountryLineViews
           withLargeTypes:largeTypes
-                 onGuide:guide
+                 onGuide:self.layoutGuide
       addFirstLineViewTo:verticalLeadViews];
 
   if (address.phoneNumber.length) {
@@ -328,7 +328,7 @@
 // Constraints are added to `self.dynamicConstraints` property.
 - (void)layMultipleViews:(NSArray<UIView*>*)views
           withLargeTypes:(BOOL)largeTypes
-                 onGuide:(UIView*)guide
+                 onGuide:(UILayoutGuide*)guide
       addFirstLineViewTo:(NSMutableArray<UIView*>*)verticalLeadViews {
   if (views.count == 0)
     return;
@@ -350,9 +350,11 @@
 
 // Creates and sets up the view hierarchy.
 - (void)createViewHierarchy {
+  self.layoutGuide = AddLayoutGuideToContentView(self.contentView);
+
   self.selectionStyle = UITableViewCellSelectionStyleNone;
 
-  self.grayLine = CreateGraySeparatorForContainer(self.contentView);
+  CreateGraySeparatorForContainer(self.contentView);
 
   NSMutableArray<NSLayoutConstraint*>* staticConstraints =
       [[NSMutableArray alloc] init];
@@ -360,8 +362,7 @@
   self.addressLabel = CreateLabel();
   [self.contentView addSubview:self.addressLabel];
   AppendHorizontalConstraintsForViews(staticConstraints, @[ self.addressLabel ],
-                                      self.contentView,
-                                      kButtonHorizontalMargin);
+                                      self.layoutGuide);
 
   self.firstNameButton =
       CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
@@ -379,7 +380,7 @@
       CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.companyButton];
   AppendHorizontalConstraintsForViews(
-      staticConstraints, @[ self.companyButton ], self.grayLine,
+      staticConstraints, @[ self.companyButton ], self.layoutGuide,
       kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
@@ -387,7 +388,7 @@
       CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.line1Button];
   AppendHorizontalConstraintsForViews(
-      staticConstraints, @[ self.line1Button ], self.grayLine,
+      staticConstraints, @[ self.line1Button ], self.layoutGuide,
       kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
@@ -395,7 +396,7 @@
       CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.line2Button];
   AppendHorizontalConstraintsForViews(
-      staticConstraints, @[ self.line2Button ], self.grayLine,
+      staticConstraints, @[ self.line2Button ], self.layoutGuide,
       kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
@@ -419,7 +420,7 @@
       CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.phoneNumberButton];
   AppendHorizontalConstraintsForViews(
-      staticConstraints, @[ self.phoneNumberButton ], self.grayLine,
+      staticConstraints, @[ self.phoneNumberButton ], self.layoutGuide,
       kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
@@ -427,7 +428,7 @@
       CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.emailAddressButton];
   AppendHorizontalConstraintsForViews(
-      staticConstraints, @[ self.emailAddressButton ], self.grayLine,
+      staticConstraints, @[ self.emailAddressButton ], self.layoutGuide,
       kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 

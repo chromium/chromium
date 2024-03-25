@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-// Left and right margins of the cell content and buttons.
-extern const CGFloat kButtonHorizontalMargin;
+// Left and right margins of the cell content.
+extern const CGFloat kCellHorizontalMargin;
 
 // Left and right margins for the chips.
 extern const CGFloat kChipsHorizontalMargin;
@@ -50,19 +50,19 @@ void AppendVerticalConstraintsSpacingForViews(
     CGFloat BottomSystemSpacingMultiplier);
 
 // Adds constraints to the given list, for the given `views`, so as to lay them
-// out horizontally, parallel to the `guide` view. Constraints are not
+// out horizontally, aligned with the `layout_guide`. Constraints are not
 // activated.
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
-    UIView* guide);
+    UILayoutGuide* layout_guide);
 
 // Adds constraints like `AppendHorizontalConstraintsForViews` above but also
 // applies the given constant `margin` at both ends of the whole row.
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
-    UIView* guide,
+    UILayoutGuide* layout_guide,
     CGFloat margin);
 
 // Adds constraints like `AppendHorizontalConstraintsForViews` above
@@ -70,7 +70,7 @@ void AppendHorizontalConstraintsForViews(
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
-    UIView* guide,
+    UILayoutGuide* layout_guide,
     CGFloat margin,
     AppendConstraints options);
 
@@ -88,5 +88,8 @@ UILabel* CreateLabel();
 // constraints are enabled to keep the line at the bottom of the container and
 // within the horizontal safe area.
 UIView* CreateGraySeparatorForContainer(UIView* container);
+
+// Creates a layout guide for the cell and adds it to the given 'content_view`.
+UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view);
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_MANUAL_FILL_CELL_UTILS_H_

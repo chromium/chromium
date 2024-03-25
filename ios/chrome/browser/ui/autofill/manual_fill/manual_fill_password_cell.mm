@@ -7,6 +7,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
@@ -120,6 +121,9 @@ static const CGFloat NoMultiplier = 1.0;
 
 // The delegate in charge of processing the user actions in this cell.
 @property(nonatomic, weak) id<ManualFillContentInjector> contentInjector;
+
+// Layout guide for the cell's content.
+@property(nonatomic, strong) UILayoutGuide* layoutGuide;
 
 @end
 
@@ -258,9 +262,10 @@ static const CGFloat NoMultiplier = 1.0;
 
 // Creates and sets up the view hierarchy.
 - (void)createViewHierarchy {
+  self.layoutGuide = AddLayoutGuideToContentView(self.contentView);
+
   self.selectionStyle = UITableViewCellSelectionStyleNone;
 
-  self.grayLine = CreateGraySeparatorForContainer(self.contentView);
   NSMutableArray<NSLayoutConstraint*>* staticConstraints =
       [[NSMutableArray alloc] init];
 
@@ -288,15 +293,16 @@ static const CGFloat NoMultiplier = 1.0;
 
   [self.contentView addSubview:stackView];
 
+  self.grayLine = CreateGraySeparatorForContainer(self.contentView);
+
   AppendHorizontalConstraintsForViews(staticConstraints, @[ stackView ],
-                                      self.contentView,
-                                      kButtonHorizontalMargin);
+                                      self.layoutGuide);
 
   self.usernameButton = CreateChipWithSelectorAndTarget(
       @selector(userDidTapUsernameButton:), self);
   [self.contentView addSubview:self.usernameButton];
   AppendHorizontalConstraintsForViews(
-      staticConstraints, @[ self.usernameButton ], self.grayLine,
+      staticConstraints, @[ self.usernameButton ], self.layoutGuide,
       kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
@@ -304,7 +310,7 @@ static const CGFloat NoMultiplier = 1.0;
       @selector(userDidTapPasswordButton:), self);
   [self.contentView addSubview:self.passwordButton];
   AppendHorizontalConstraintsForViews(
-      staticConstraints, @[ self.passwordButton ], self.grayLine,
+      staticConstraints, @[ self.passwordButton ], self.layoutGuide,
       kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 

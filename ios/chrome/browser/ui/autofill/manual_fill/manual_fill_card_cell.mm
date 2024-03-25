@@ -12,6 +12,7 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_list_delegate.h"
@@ -113,6 +114,9 @@ using autofill::CreditCard::RecordType::kVirtualCard;
 // The credit card data for this cell.
 @property(nonatomic, weak) ManualFillCreditCard* card;
 
+// Layout guide for the cell's content.
+@property(nonatomic, strong) UILayoutGuide* layoutGuide;
+
 @end
 
 @implementation ManualFillCardCell
@@ -175,6 +179,8 @@ using autofill::CreditCard::RecordType::kVirtualCard;
 
 // Creates and sets up the view hierarchy.
 - (void)createViewHierarchy:(autofill::CreditCard::RecordType)cardRecordType {
+  self.layoutGuide = AddLayoutGuideToContentView(self.contentView);
+
   self.selectionStyle = UITableViewCellSelectionStyleNone;
 
   // Create the UIViews, add them to the contentView.
@@ -233,13 +239,12 @@ using autofill::CreditCard::RecordType::kVirtualCard;
 - (void)horizontallyArrangeViews:
             (autofill::CreditCard::RecordType)cardRecordType
      withExpirationDateSeparator:(UILabel*)expirationDateSeparatorLabel {
-  UIView* grayLine = CreateGraySeparatorForContainer(self.contentView);
+  CreateGraySeparatorForContainer(self.contentView);
 
   NSMutableArray<NSLayoutConstraint*>* staticConstraints =
       [[NSMutableArray alloc] init];
   AppendHorizontalConstraintsForViews(
-      staticConstraints, @[ self.cardIcon, self.cardLabel ], self.contentView,
-      kButtonHorizontalMargin);
+      staticConstraints, @[ self.cardIcon, self.cardLabel ], self.layoutGuide);
   [NSLayoutConstraint activateConstraints:@[
     [self.cardIcon.centerYAnchor
         constraintEqualToAnchor:self.cardLabel.centerYAnchor]
@@ -252,25 +257,25 @@ using autofill::CreditCard::RecordType::kVirtualCard;
     if (cardRecordType == kVirtualCard) {
       AppendHorizontalConstraintsForViews(
           staticConstraints, @[ self.virtualCardInstructionTextView ],
-          self.contentView, kButtonHorizontalMargin);
+          self.layoutGuide);
     }
     AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.cardNumberLabeledChip ], grayLine,
+        staticConstraints, @[ self.cardNumberLabeledChip ], self.layoutGuide,
         kChipsHorizontalMargin,
         AppendConstraintsHorizontalEqualOrSmallerThanGuide);
     AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.expirationDateLabeledChip ], grayLine,
-        kChipsHorizontalMargin,
+        staticConstraints, @[ self.expirationDateLabeledChip ],
+        self.layoutGuide, kChipsHorizontalMargin,
         AppendConstraintsHorizontalEqualOrSmallerThanGuide);
     AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.cardholderLabeledChip ], grayLine,
+        staticConstraints, @[ self.cardholderLabeledChip ], self.layoutGuide,
         kChipsHorizontalMargin,
         AppendConstraintsHorizontalEqualOrSmallerThanGuide);
   } else {
     // TODO(crbug.com/330329960): Deprecate button use once
     // kAutofillEnableVirtualCards is enabled.
     AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.cardNumberButton ], grayLine,
+        staticConstraints, @[ self.cardNumberButton ], self.layoutGuide,
         kChipsHorizontalMargin,
         AppendConstraintsHorizontalEqualOrSmallerThanGuide);
     AppendHorizontalConstraintsForViews(
@@ -279,11 +284,11 @@ using autofill::CreditCard::RecordType::kVirtualCard;
           self.expirationMonthButton, expirationDateSeparatorLabel,
           self.expirationYearButton
         ],
-        grayLine, kChipsHorizontalMargin,
+        self.layoutGuide, kChipsHorizontalMargin,
         AppendConstraintsHorizontalSyncBaselines |
             AppendConstraintsHorizontalEqualOrSmallerThanGuide);
     AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.cardholderButton ], grayLine,
+        staticConstraints, @[ self.cardholderButton ], self.layoutGuide,
         kChipsHorizontalMargin,
         AppendConstraintsHorizontalEqualOrSmallerThanGuide);
   }

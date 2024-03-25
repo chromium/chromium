@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_button.h"
-#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -99,16 +98,9 @@
 
   [self.contentView addSubview:self.titleButton];
 
-  NSMutableArray<NSLayoutConstraint*>* constraints =
-      [[NSMutableArray alloc] initWithArray:@[
-        [self.contentView.topAnchor
-            constraintEqualToAnchor:self.titleButton.topAnchor],
-        [self.contentView.bottomAnchor
-            constraintEqualToAnchor:self.titleButton.bottomAnchor],
-      ]];
-  AppendHorizontalConstraintsForViews(constraints, @[ self.titleButton ],
-                                      self.contentView);
-  [NSLayoutConstraint activateConstraints:constraints];
+  AddSameConstraintsToSides(self.titleButton, self.contentView,
+                            LayoutSides::kTop | LayoutSides::kBottom |
+                                LayoutSides::kTrailing | LayoutSides::kLeading);
   [self addInteraction:[[ViewPointerInteraction alloc] init]];
 }
 

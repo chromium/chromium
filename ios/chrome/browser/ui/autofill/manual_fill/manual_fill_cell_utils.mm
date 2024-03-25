@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/chip_button.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -17,7 +18,7 @@ namespace {
 constexpr CGFloat kHorizontalSpacing = 16;
 }  // namespace
 
-const CGFloat kButtonHorizontalMargin = 16;
+const CGFloat kCellHorizontalMargin = 16;
 const CGFloat kChipsHorizontalMargin = -1;
 const CGFloat TopSystemSpacingMultiplier = 2;
 const CGFloat BottomSystemSpacingMultiplier = 2.26;
@@ -69,54 +70,58 @@ void AppendVerticalConstraintsSpacingForViews(
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
-    UIView* guide) {
-  AppendHorizontalConstraintsForViews(constraints, views, guide, 0);
+    UILayoutGuide* layout_guide) {
+  AppendHorizontalConstraintsForViews(constraints, views, layout_guide, 0);
 }
 
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
-    UIView* guide,
+    UILayoutGuide* layout_guide,
     CGFloat margin) {
-  AppendHorizontalConstraintsForViews(constraints, views, guide, margin, 0);
+  AppendHorizontalConstraintsForViews(constraints, views, layout_guide, margin,
+                                      0);
 }
 
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
-    UIView* guide,
+    UILayoutGuide* layout_guide,
     CGFloat margin,
     AppendConstraints options) {
-  if (views.count == 0)
+  if (views.count == 0) {
     return;
+  }
 
-  NSLayoutXAxisAnchor* previousAnchor = guide.leadingAnchor;
+  NSLayoutXAxisAnchor* previous_anchor = layout_guide.leadingAnchor;
 
-  BOOL isFirstView = YES;
+  BOOL is_first_view = YES;
   for (UIView* view in views) {
-    CGFloat constant = isFirstView ? margin : kHorizontalSpacing;
+    CGFloat spacing = is_first_view ? margin : kHorizontalSpacing;
     [constraints
-        addObject:[view.leadingAnchor constraintEqualToAnchor:previousAnchor
-                                                     constant:constant]];
+        addObject:[view.leadingAnchor constraintEqualToAnchor:previous_anchor
+                                                     constant:spacing]];
     [view setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                           forAxis:
                                               UILayoutConstraintAxisHorizontal];
     [view setContentHuggingPriority:UILayoutPriorityDefaultHigh
                             forAxis:UILayoutConstraintAxisHorizontal];
-    previousAnchor = view.trailingAnchor;
-    isFirstView = NO;
+    previous_anchor = view.trailingAnchor;
+    is_first_view = NO;
   }
 
   if (options & AppendConstraintsHorizontalEqualOrSmallerThanGuide) {
     [constraints
         addObject:[views.lastObject.trailingAnchor
-                      constraintLessThanOrEqualToAnchor:guide.trailingAnchor
+                      constraintLessThanOrEqualToAnchor:layout_guide
+                                                            .trailingAnchor
                                                constant:-margin]];
 
   } else {
-    [constraints addObject:[views.lastObject.trailingAnchor
-                               constraintEqualToAnchor:guide.trailingAnchor
-                                              constant:-margin]];
+    [constraints
+        addObject:[views.lastObject.trailingAnchor
+                      constraintEqualToAnchor:layout_guide.trailingAnchor
+                                     constant:-margin]];
     // Give all remaining space to the last button, minus margin, as per UX.
     [views.lastObject
         setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
@@ -126,6 +131,7 @@ void AppendHorizontalConstraintsForViews(
         setContentHuggingPriority:UILayoutPriorityDefaultLow
                           forAxis:UILayoutConstraintAxisHorizontal];
   }
+
   if (options & AppendConstraintsHorizontalSyncBaselines) {
     AppendEqualBaselinesConstraints(constraints, views);
   }
@@ -167,10 +173,29 @@ UIView* CreateGraySeparatorForContainer(UIView* container) {
     [grayLine.heightAnchor constraintEqualToConstant:1],
     // Horizontal constraints.
     [grayLine.leadingAnchor constraintEqualToAnchor:safeArea.leadingAnchor
-                                           constant:kButtonHorizontalMargin],
+                                           constant:kCellHorizontalMargin],
     [safeArea.trailingAnchor constraintEqualToAnchor:grayLine.trailingAnchor
-                                            constant:kButtonHorizontalMargin],
+                                            constant:kCellHorizontalMargin],
   ]];
 
   return grayLine;
+}
+
+UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view) {
+  UILayoutGuide* layout_guide = [[UILayoutGuide alloc] init];
+  [content_view addLayoutGuide:layout_guide];
+
+  id<LayoutGuideProvider> safe_area = content_view.safeAreaLayoutGuide;
+  [NSLayoutConstraint activateConstraints:@[
+    [layout_guide.topAnchor constraintEqualToAnchor:content_view.topAnchor],
+    [layout_guide.bottomAnchor
+        constraintEqualToAnchor:content_view.bottomAnchor],
+    [layout_guide.leadingAnchor constraintEqualToAnchor:safe_area.leadingAnchor
+                                               constant:kCellHorizontalMargin],
+    [layout_guide.trailingAnchor
+        constraintEqualToAnchor:safe_area.trailingAnchor
+                       constant:-kCellHorizontalMargin],
+  ]];
+
+  return layout_guide;
 }
