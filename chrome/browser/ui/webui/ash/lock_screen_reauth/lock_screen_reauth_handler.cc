@@ -72,15 +72,15 @@ bool ShouldDoSamlRedirect(const std::string& email) {
   return user && user->using_saml();
 }
 
-Profile* GetActiveUserProfile() {
+Profile* GetPrimaryUserProfile() {
   const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
+      user_manager::UserManager::Get()->GetPrimaryUser();
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
   return profile;
 }
 
 std::string GetHostedDomain(const std::string& gaia_id) {
-  Profile* profile = GetActiveUserProfile();
+  Profile* profile = GetPrimaryUserProfile();
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager) {
     return std::string();
@@ -98,7 +98,7 @@ std::string GetSSOProfile() {
 
 std::string GetDeviceId(const user_manager::KnownUser& known_user) {
   const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
+      user_manager::UserManager::Get()->GetPrimaryUser();
   CHECK(user) << "Could not find an active user for lock screen";
 
   std::string device_id = known_user.GetDeviceId(user->GetAccountId());
@@ -153,7 +153,7 @@ void LockScreenReauthHandler::LoadAuthenticatorParam() {
   context.force_reload = true;
   context.email = email_;
   context.gaia_id = user_manager::UserManager::Get()
-                        ->GetActiveUser()
+                        ->GetPrimaryUser()
                         ->GetAccountId()
                         .GetGaiaId();
 

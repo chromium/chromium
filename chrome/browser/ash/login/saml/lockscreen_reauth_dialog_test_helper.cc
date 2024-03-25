@@ -118,7 +118,7 @@ bool LockScreenReauthDialogTestHelper::ShowDialogAndWaitImpl() {
     return false;
   }
 
-  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
+  ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetBoolean(
       prefs::kLockScreenReauthenticationEnabled, true);
 
   LockScreenStartReauthDialog::Show();
