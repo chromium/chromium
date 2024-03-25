@@ -71,6 +71,7 @@ class NearbyConnectionsManagerImpl
   Payload* GetIncomingPayload(int64_t payload_id) override;
   void Cancel(int64_t payload_id) override;
   void ClearIncomingPayloads() override;
+  void ClearIncomingPayloadWithId(int64_t payload_id) override;
   std::optional<std::string> GetAuthenticationToken(
       const std::string& endpoint_id) override;
   std::optional<std::vector<uint8_t>> GetRawAuthenticationToken(

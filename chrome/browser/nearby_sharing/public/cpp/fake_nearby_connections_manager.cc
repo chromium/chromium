@@ -162,6 +162,14 @@ void FakeNearbyConnectionsManager::ClearIncomingPayloads() {
   payload_status_listeners_.clear();
 }
 
+void FakeNearbyConnectionsManager::ClearIncomingPayloadWithId(
+    int64_t payload_id) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  incoming_payloads_.erase(payload_id);
+  payload_status_listeners_.erase(payload_id);
+}
+
 std::optional<std::string> FakeNearbyConnectionsManager::GetAuthenticationToken(
     const std::string& endpoint_id) {
   DCHECK(!is_shutdown());

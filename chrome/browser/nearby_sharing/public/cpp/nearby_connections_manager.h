@@ -171,6 +171,9 @@ class NearbyConnectionsManager {
   // Clears all incoming payloads.
   virtual void ClearIncomingPayloads() = 0;
 
+  // Clears a specific incoming payload with the given `payload_id`.
+  virtual void ClearIncomingPayloadWithId(int64_t payload_id) = 0;
+
   // Gets the user-readable authentication token for the |endpoint_id|.
   virtual std::optional<std::string> GetAuthenticationToken(
       const std::string& endpoint_id) = 0;

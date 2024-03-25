@@ -546,6 +546,18 @@ void NearbyConnectionsManagerImpl::ClearIncomingPayloads() {
   incoming_payloads_.clear();
 }
 
+void NearbyConnectionsManagerImpl::ClearIncomingPayloadWithId(
+    int64_t payload_id) {
+  auto payload_found = incoming_payloads_.find(payload_id);
+  if (payload_found != incoming_payloads_.end()) {
+    std::vector<PayloadPtr> payload_found_container;
+    payload_found_container.push_back(std::move(payload_found->second));
+    file_handler_.ReleaseFilePayloads(std::move(payload_found_container));
+    incoming_payloads_.erase(payload_found);
+  }
+  payload_status_listeners_.erase(payload_id);
+}
+
 std::optional<std::string> NearbyConnectionsManagerImpl::GetAuthenticationToken(
     const std::string& endpoint_id) {
   auto it = connection_info_map_.find(endpoint_id);
