@@ -18,8 +18,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
+#include "components/attribution_reporting/eligibility.h"
 #include "components/attribution_reporting/features.h"
-#include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
+#include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
@@ -28,7 +29,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/trigger_verification.h"
-#include "services/network/public/mojom/attribution.mojom-shared.h"
+#include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
@@ -55,21 +56,10 @@ KeepAliveAttributionRequestHelper::CreateIfNeeded(
     return nullptr;
   }
 
-  RegistrationEligibility registration_eligibility;
-  switch (eligibility) {
-    case network::mojom::AttributionReportingEligibility::kEmpty:
-      return nullptr;
-    case network::mojom::AttributionReportingEligibility::kUnset:
-    case network::mojom::AttributionReportingEligibility::kTrigger:
-      registration_eligibility = RegistrationEligibility::kTrigger;
-      break;
-    case network::mojom::AttributionReportingEligibility::kEventSource:
-    case network::mojom::AttributionReportingEligibility::kNavigationSource:
-      registration_eligibility = RegistrationEligibility::kSource;
-      break;
-    case network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger:
-      registration_eligibility = RegistrationEligibility::kSourceOrTrigger;
-      break;
+  std::optional<RegistrationEligibility> registration_eligibility =
+      attribution_reporting::GetRegistrationEligibility(eligibility);
+  if (!registration_eligibility.has_value()) {
+    return nullptr;
   }
 
   AttributionDataHostManager* data_host_manager = context.data_host_manager();
@@ -86,7 +76,7 @@ KeepAliveAttributionRequestHelper::CreateIfNeeded(
   BackgroundRegistrationsId id(unique_id_counter.GetNext());
 
   data_host_manager->NotifyBackgroundRegistrationStarted(
-      id, context, registration_eligibility, std::move(token),
+      id, context, *registration_eligibility, std::move(token),
       devtools_request_id);
   return base::WrapUnique(new KeepAliveAttributionRequestHelper(
       id, data_host_manager,

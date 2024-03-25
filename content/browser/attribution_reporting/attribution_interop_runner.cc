@@ -42,11 +42,12 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/aggregation_service/features.h"
+#include "components/attribution_reporting/eligibility.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/privacy_math.h"
-#include "components/attribution_reporting/registration_eligibility.mojom.h"
+#include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/cbor/reader.h"
@@ -89,7 +90,6 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::mojom::RegistrationEligibility;
-using ::attribution_reporting::mojom::RegistrationType;
 using ::network::mojom::AttributionReportingEligibility;
 
 constexpr int64_t kNavigationId(-1);
@@ -331,6 +331,12 @@ class AttributionEventHandler {
   }
 
   void Handle(AttributionSimulationEvent event) {
+    std::optional<RegistrationEligibility> eligibility =
+        attribution_reporting::GetRegistrationEligibility(event.eligibility);
+    if (!eligibility.has_value()) {
+      return;
+    }
+
     fake_cookie_checker_->set_debug_cookie_set(event.debug_permission);
 
     const BackgroundRegistrationsId id(unique_id_counter_++);
@@ -339,39 +345,22 @@ class AttributionEventHandler {
 
     std::optional<blink::AttributionSrcToken> attribution_src_token;
 
-    // TODO(apaseltiner): Share this code with similar logic in
-    // third_party/blink/renderer/core/frame/attribution_src_loader.cc.
-    RegistrationEligibility eligibility;
-    switch (event.eligibility) {
-      case AttributionReportingEligibility::kEmpty:
-        return;
-      case AttributionReportingEligibility::kEventSource:
-        eligibility = RegistrationEligibility::kSource;
-        break;
-      case AttributionReportingEligibility::kUnset:
-      case AttributionReportingEligibility::kTrigger:
-        eligibility = RegistrationEligibility::kTrigger;
-        break;
-      case AttributionReportingEligibility::kEventSourceOrTrigger:
-        eligibility = RegistrationEligibility::kSourceOrTrigger;
-        break;
-      case AttributionReportingEligibility::kNavigationSource:
-        eligibility = RegistrationEligibility::kSource;
-        attribution_src_token.emplace();
-        attribution_data_host_manager
-            ->NotifyNavigationWithBackgroundRegistrationsWillStart(
-                attribution_src_token.value(),
-                /*background_registrations_count=*/1);
-        attribution_data_host_manager->NotifyNavigationRegistrationStarted(
-            AttributionSuitableContext::CreateForTesting(
-                event.context_origin,
-                /*is_nested_within_fenced_frame=*/false, kFrameId,
-                /*last_navigation_id=*/kNavigationId),
-            attribution_src_token.value(), kNavigationId,
-            /*devtools_request_id=*/"");
-        attribution_data_host_manager->NotifyNavigationRegistrationCompleted(
-            attribution_src_token.value());
-        break;
+    if (event.eligibility ==
+        AttributionReportingEligibility::kNavigationSource) {
+      attribution_src_token.emplace();
+      attribution_data_host_manager
+          ->NotifyNavigationWithBackgroundRegistrationsWillStart(
+              attribution_src_token.value(),
+              /*background_registrations_count=*/1);
+      attribution_data_host_manager->NotifyNavigationRegistrationStarted(
+          AttributionSuitableContext::CreateForTesting(
+              event.context_origin,
+              /*is_nested_within_fenced_frame=*/false, kFrameId,
+              /*last_navigation_id=*/kNavigationId),
+          attribution_src_token.value(), kNavigationId,
+          /*devtools_request_id=*/"");
+      attribution_data_host_manager->NotifyNavigationRegistrationCompleted(
+          attribution_src_token.value());
     }
 
     storage_task_runner_->PostTask(
@@ -385,7 +374,7 @@ class AttributionEventHandler {
         AttributionSuitableContext::CreateForTesting(
             event.context_origin,
             /*is_nested_within_fenced_frame=*/false, kFrameId, kNavigationId),
-        eligibility, attribution_src_token,
+        *eligibility, attribution_src_token,
         /*devtools_request_id=*/"");
 
     attribution_data_host_manager->NotifyBackgroundRegistrationData(

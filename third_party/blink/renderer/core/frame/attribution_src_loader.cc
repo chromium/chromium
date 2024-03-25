@@ -20,6 +20,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
+#include "components/attribution_reporting/eligibility.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/os_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/registrar.h"
@@ -756,30 +757,20 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     return false;
   }
 
-  RegistrationEligibility registration_eligibility;
+  // Navigation sources are only processed on navigations, which are handled
+  // by the browser, or on background attributionsrc requests on
+  // navigations, which are handled by `ResourceClient`, so this branch
+  // shouldn't be reachable in practice.
+  CHECK_NE(request.GetAttributionReportingEligibility(),
+           AttributionReportingEligibility::kNavigationSource);
 
-  switch (request.GetAttributionReportingEligibility()) {
-    case AttributionReportingEligibility::kEmpty:
-      headers.MaybeLogAllSourceHeadersIgnored(local_frame_->DomWindow());
-      headers.MaybeLogAllTriggerHeadersIgnored(local_frame_->DomWindow());
-      return false;
-    case AttributionReportingEligibility::kNavigationSource:
-      // Navigation sources are only processed on navigations, which are handled
-      // by the browser, or on background attributionsrc requests on
-      // navigations, which are handled by `ResourceClient`, so this branch
-      // shouldn't be reachable in practice.
-      NOTREACHED();
-      return false;
-    case AttributionReportingEligibility::kEventSource:
-      registration_eligibility = RegistrationEligibility::kSource;
-      break;
-    case AttributionReportingEligibility::kUnset:
-    case AttributionReportingEligibility::kTrigger:
-      registration_eligibility = RegistrationEligibility::kTrigger;
-      break;
-    case AttributionReportingEligibility::kEventSourceOrTrigger:
-      registration_eligibility = RegistrationEligibility::kSourceOrTrigger;
-      break;
+  std::optional<RegistrationEligibility> registration_eligibility =
+      attribution_reporting::GetRegistrationEligibility(
+          request.GetAttributionReportingEligibility());
+  if (!registration_eligibility.has_value()) {
+    headers.MaybeLogAllSourceHeadersIgnored(local_frame_->DomWindow());
+    headers.MaybeLogAllTriggerHeadersIgnored(local_frame_->DomWindow());
+    return false;
   }
 
   auto registration_info = GetRegistrationInfo(
@@ -796,12 +787,12 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
       document->IsPrerendering()) {
     document->AddPostPrerenderingActivationStep(WTF::BindOnce(
         &AttributionSrcLoader::RegisterAttributionHeaders,
-        WrapPersistentIfNeeded(this), registration_eligibility, support,
+        WrapPersistentIfNeeded(this), *registration_eligibility, support,
         std::move(*reporting_origin), std::move(headers),
         response.GetTriggerVerifications(), registration_info.value()));
   } else {
     RegisterAttributionHeaders(
-        registration_eligibility, support, std::move(*reporting_origin),
+        *registration_eligibility, support, std::move(*reporting_origin),
         headers, response.GetTriggerVerifications(), registration_info.value());
   }
 
