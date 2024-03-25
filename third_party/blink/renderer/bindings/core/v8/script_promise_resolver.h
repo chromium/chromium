@@ -59,7 +59,7 @@ class ScriptPromiseResolverTyped;
 // to `Resolve()`.
 //
 // `DowncastTo` will DCHECK in the case of a bad cast. It's not a security issue
-// because all ScriptPromiseResolver/ScriptPromiseResolveTyped classes have the
+// because all ScriptPromiseResolver/ScriptPromiseResolverTyped classes have the
 // same memory layout and vtable, but it is a correctness issue because the
 // promise will be resolved with an incorrect type.
 //
