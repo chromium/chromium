@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
@@ -408,6 +409,11 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     builder.SetWordSpacing(0);
   }
 
+  if (builder.GetDisplayStyle().Display() != EDisplay::kNone &&
+      builder.GetDisplayStyle().Display() != EDisplay::kInlineBlock) {
+    builder.SetDisplay(EDisplay::kInlineBlock);
+  }
+
   // TODO(crbug.com/1462930): Add here checks to force the min/max-width/height.
 
   // TODO(crbug.com/1462930): Validate here the `letter-spacing` property, and
@@ -417,13 +423,10 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
 
   // TODO(crbug.com/1462930): Ensure font-size at least as large as the
   // equivalent of 'small'.
-
-  // TODO(crbug.com/1462930): Ensure any value of display other than 'none' is
-  // converted to 'inline-block'.
 }
 
 void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {
-  if (AreColorsNonOpaque(GetComputedStyle()) ||
+  if (!GetComputedStyle() || AreColorsNonOpaque(GetComputedStyle()) ||
       ContrastBetweenColorAndBackgroundColor(GetComputedStyle()) <
           kMinimumAllowedContrast) {
     DisableClickingIndefinitely(DisableReason::kInvalidStyle);

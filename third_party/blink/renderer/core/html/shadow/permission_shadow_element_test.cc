@@ -29,7 +29,6 @@ TEST_F(PermissionShadowElementTest, PropagateCSSPropertyInnerElement) {
   SetHtmlInnerHTML(R"HTML(
     <style>
       permission {
-        display: table-cell;
         height: 40px;
         vertical-align: middle;
         width: 200px;
@@ -49,7 +48,7 @@ TEST_F(PermissionShadowElementTest, PropagateCSSPropertyInnerElement) {
   auto* permission_text_span = To<HTMLSpanElement>(container->firstChild());
   EXPECT_TRUE(permission_text_span);
   const ComputedStyle& text_style = permission_text_span->ComputedStyleRef();
-  EXPECT_EQ(EDisplay::kTableCell, text_style.Display());
+  EXPECT_EQ(EDisplay::kInlineBlock, text_style.Display());
   EXPECT_EQ(EVerticalAlign::kMiddle, text_style.VerticalAlign());
 }
 
