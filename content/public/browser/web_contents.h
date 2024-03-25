@@ -676,6 +676,10 @@ class WebContents : public PageNavigator,
   // main resource of the page.
   virtual bool IsWaitingForResponse() = 0;
 
+  // Returns whether this WebContents's primary frame tree node is navigating,
+  // i.e. it has an associated NavigationRequest.
+  virtual bool HasUncommittedNavigationInPrimaryMainFrame() = 0;
+
   // Returns the current load state and the URL associated with it.
   // The load state is only updated while IsLoading() is true.
   virtual const net::LoadStateWithParam& GetLoadState() = 0;

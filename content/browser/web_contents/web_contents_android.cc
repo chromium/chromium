@@ -368,6 +368,11 @@ bool WebContentsAndroid::ShouldShowLoadingUI(JNIEnv* env) const {
   return web_contents_->ShouldShowLoadingUI();
 }
 
+bool WebContentsAndroid::HasUncommittedNavigationInPrimaryMainFrame(
+    JNIEnv* env) const {
+  return web_contents_->HasUncommittedNavigationInPrimaryMainFrame();
+}
+
 void WebContentsAndroid::DispatchBeforeUnload(JNIEnv* env, bool auto_cancel) {
   web_contents_->DispatchBeforeUnload(auto_cancel);
 }

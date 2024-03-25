@@ -162,13 +162,10 @@ class TabImpl implements Tab {
     /** Whether or not the Tab is currently visible to the user. */
     private boolean mIsHidden = true;
 
-    /** Whether or not a navigation in primary main frame is in progress. */
-    private boolean mNavigationInPrimaryMainFrameInProgress;
-
     /**
      * Importance of the WebContents currently attached to this tab. Note the key difference from
-     * |mIsHidden| is that a tab is hidden when the application is hidden, but the importance is
-     * not affected by this signal.
+     * |mIsHidden| is that a tab is hidden when the application is hidden, but the importance is not
+     * affected by this signal.
      */
     private @ChildProcessImportance int mImportance = ChildProcessImportance.NORMAL;
 
@@ -730,11 +727,6 @@ class TabImpl implements Tab {
     }
 
     @Override
-    public boolean isNavigationInPrimaryMainFrameInProgress() {
-        return mNavigationInPrimaryMainFrameInProgress;
-    }
-
-    @Override
     public boolean isBeingRestored() {
         return mIsBeingRestored;
     }
@@ -1218,30 +1210,20 @@ class TabImpl implements Tab {
         mIsBeingRestored = false;
     }
 
-    /** Update internal Tab state when a navigation in primary main frame has started. */
-    void handleDidStartNavigationInPrimaryMainFrame() {
-        assert !mNavigationInPrimaryMainFrameInProgress;
-        mNavigationInPrimaryMainFrameInProgress = true;
-    }
-
     /**
      * Update internal Tab state when provisional load gets committed.
      *
      * @param url The URL that was loaded.
      * @param transitionType The transition type to the current URL.
-     * @param committed Whether the navigation has been committed.
      * @param isPdf Whether the navigation is for PDF content.
      */
-    void handleDidFinishNavigationInPrimaryMainFrame(
-            GURL url, int transitionType, boolean committed, boolean isPdf) {
-        mNavigationInPrimaryMainFrameInProgress = false;
-        if (!committed) return;
+    void handleDidFinishNavigation(GURL url, int transitionType, boolean isPdf) {
         mIsNativePageCommitPending = false;
-
         boolean isReload = (transitionType & PageTransition.CORE_MASK) == PageTransition.RELOAD;
         if (!maybeShowNativePage(url.getSpec(), isReload, isPdf ? new PdfInfo() : null)) {
             showRenderedPage();
         }
+
         setLastNavigationCommittedTimestampMillis(System.currentTimeMillis());
     }
 
@@ -1424,8 +1406,6 @@ class TabImpl implements Tab {
     /** This is currently called when committing a pre-rendered page or activating a portal. */
     @CalledByNative
     void swapWebContents(WebContents webContents, boolean didStartLoad, boolean didFinishLoad) {
-        mNavigationInPrimaryMainFrameInProgress = false;
-
         boolean hasWebContents = mContentView != null && mWebContents != null;
         Rect original =
                 hasWebContents

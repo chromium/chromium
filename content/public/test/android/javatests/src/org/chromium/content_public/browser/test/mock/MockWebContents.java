@@ -161,6 +161,11 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
+    public boolean hasUncommittedNavigationInPrimaryMainFrame() {
+        return false;
+    }
+
+    @Override
     public void dispatchBeforeUnload(boolean autoCancel) {}
 
     @Override

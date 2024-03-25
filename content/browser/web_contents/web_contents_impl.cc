@@ -2279,6 +2279,10 @@ bool WebContentsImpl::IsWaitingForResponse() {
   return ongoing_navigation_request != nullptr;
 }
 
+bool WebContentsImpl::HasUncommittedNavigationInPrimaryMainFrame() {
+  return primary_frame_tree_.root()->HasNavigation();
+}
+
 const net::LoadStateWithParam& WebContentsImpl::GetLoadState() {
   return load_state_;
 }

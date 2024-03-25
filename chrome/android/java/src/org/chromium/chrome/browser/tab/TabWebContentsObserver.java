@@ -258,8 +258,6 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 mTab.didStartPageLoad(navigation.getUrl());
             }
 
-            mTab.handleDidStartNavigationInPrimaryMainFrame();
-
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) {
                 observers.next().onDidStartNavigationInPrimaryMainFrame(mTab, navigation);
@@ -286,21 +284,11 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             }
             mLastUrl = navigation.getUrl();
 
-            if (!navigation.hasCommitted()) {
-                mTab.handleDidFinishNavigationInPrimaryMainFrame(
-                        navigation.getUrl(),
-                        navigation.pageTransition(),
-                        navigation.hasCommitted(),
-                        navigation.isPdf());
-                return;
-            }
+            if (!navigation.hasCommitted()) return;
 
             mTab.updateTitle();
-            mTab.handleDidFinishNavigationInPrimaryMainFrame(
-                    navigation.getUrl(),
-                    navigation.pageTransition(),
-                    navigation.hasCommitted(),
-                    navigation.isPdf());
+            mTab.handleDidFinishNavigation(
+                    navigation.getUrl(), navigation.pageTransition(), navigation.isPdf());
             mTab.setIsShowingErrorPage(navigation.isErrorPage());
 
             // TODO(crbug.com/1434461) remove this call. onUrlUpdated should have been called

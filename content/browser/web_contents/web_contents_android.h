@@ -73,6 +73,7 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   bool IsLoading(JNIEnv* env) const;
   bool ShouldShowLoadingUI(JNIEnv* env) const;
+  bool HasUncommittedNavigationInPrimaryMainFrame(JNIEnv* env) const;
 
   void DispatchBeforeUnload(JNIEnv* env, bool auto_cancel);
 

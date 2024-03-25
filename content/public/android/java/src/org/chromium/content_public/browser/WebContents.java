@@ -230,10 +230,15 @@ public interface WebContents extends Parcelable {
     boolean isLoading();
 
     /**
-     * @return Whether this WebContents is loading and expects any loading UI to
-     * be displayed.
+     * @return Whether this WebContents is loading and expects any loading UI to be displayed.
      */
     boolean shouldShowLoadingUI();
+
+    /**
+     * Returns whether this WebContents's primary frame tree node is navigating, i.e. it has an
+     * associated NavigationRequest.
+     */
+    boolean hasUncommittedNavigationInPrimaryMainFrame();
 
     /**
      * Runs the beforeunload handler, if any. The tab will be closed if there's no beforeunload

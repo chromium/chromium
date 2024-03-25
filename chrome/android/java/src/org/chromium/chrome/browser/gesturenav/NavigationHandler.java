@@ -268,7 +268,7 @@ class NavigationHandler implements TouchEventObserver {
                         x, y, getProgress(), getBackDirection(), forward);
             }
             BackPressMetrics.recordNavStatusOnGestureStart(
-                    mTab.isNavigationInPrimaryMainFrameInProgress(),
+                    mTab.getWebContents().hasUncommittedNavigationInPrimaryMainFrame(),
                     mTab.getWindowAndroid().getActivity().get().getWindow());
             mStartNavDuringOngoingGesture = false;
             mBackGestureForTabHistoryInProgress = true;

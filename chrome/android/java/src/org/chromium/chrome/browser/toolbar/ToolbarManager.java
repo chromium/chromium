@@ -453,7 +453,10 @@ public class ToolbarManager
         @Override
         public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
             BackPressMetrics.recordNavStatusOnGestureStart(
-                    mActivityTabProvider.get().isNavigationInPrimaryMainFrameInProgress(),
+                    mActivityTabProvider
+                            .get()
+                            .getWebContents()
+                            .hasUncommittedNavigationInPrimaryMainFrame(),
                     mActivity.getWindow());
             mStartNavDuringOngoingGesture = false;
             mBackGestureInProgress = true;

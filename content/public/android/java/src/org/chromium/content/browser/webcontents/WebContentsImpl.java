@@ -543,6 +543,13 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
+    public boolean hasUncommittedNavigationInPrimaryMainFrame() {
+        checkNotDestroyed();
+        return WebContentsImplJni.get()
+                .hasUncommittedNavigationInPrimaryMainFrame(mNativeWebContentsAndroid);
+    }
+
+    @Override
     public void dispatchBeforeUnload(boolean autoCancel) {
         if (mNativeWebContentsAndroid == 0) return;
         WebContentsImplJni.get().dispatchBeforeUnload(mNativeWebContentsAndroid, autoCancel);
@@ -1257,6 +1264,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         boolean isLoading(long nativeWebContentsAndroid);
 
         boolean shouldShowLoadingUI(long nativeWebContentsAndroid);
+
+        boolean hasUncommittedNavigationInPrimaryMainFrame(long nativeWebContentsAndroid);
 
         void dispatchBeforeUnload(long nativeWebContentsAndroid, boolean autoCancel);
 
