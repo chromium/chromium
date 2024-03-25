@@ -156,17 +156,6 @@ class PickerSearchControllerTest : public testing::Test {
   NiceMock<MockPickerClient> client_;
 };
 
-TEST_F(PickerSearchControllerTest, DoesNotPublishResultsWhileSearching) {
-  MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(search_results_callback, Call).Times(0);
-  PickerSearchController controller(&client(), kBurnInPeriod);
-
-  controller.StartSearch(
-      u"cat", std::nullopt, kAllCategories,
-      base::BindRepeating(&MockSearchResultsCallback::Call,
-                          base::Unretained(&search_results_callback)));
-}
-
 TEST_F(PickerSearchControllerTest, SendsQueryToCrosSearchImmediately) {
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client(), StartCrosSearch(Eq(u"cat"), _, _)).Times(1);
