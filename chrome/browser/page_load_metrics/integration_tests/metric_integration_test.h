@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_INTEGRATION_TESTS_METRIC_INTEGRATION_TEST_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_INTEGRATION_TESTS_METRIC_INTEGRATION_TEST_H_
 
-#include "base/strings/string_piece.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "content/public/browser/render_widget_host.h"
+#include <string_view>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/render_widget_host.h"
 
 namespace base {
 class CommandLine;
@@ -91,30 +91,30 @@ class MetricIntegrationTest : public InProcessBrowserTest {
   ukm::TestAutoSetUkmRecorder& ukm_recorder() { return *ukm_recorder_; }
   base::HistogramTester& histogram_tester() { return *histogram_tester_; }
 
-  std::vector<double> GetPageLoadMetricsAsList(base::StringPiece metric_name);
+  std::vector<double> GetPageLoadMetricsAsList(std::string_view metric_name);
 
   // Checks for a single UKM entry under the PageLoad event with the specified
   // metric name and value.
-  void ExpectUKMPageLoadMetric(base::StringPiece metric_name,
+  void ExpectUKMPageLoadMetric(std::string_view metric_name,
                                int64_t expected_value);
 
-  void ExpectUKMPageLoadMetricNonExistence(base::StringPiece metric_name);
+  void ExpectUKMPageLoadMetricNonExistence(std::string_view metric_name);
 
-  void ExpectUkmEventNotRecorded(base::StringPiece event_name);
+  void ExpectUkmEventNotRecorded(std::string_view event_name);
 
   void ExpectUKMPageLoadMetricNonExistenceWithExpectedPageLoadMetricsNum(
       unsigned long expected_num_page_load_metrics,
-      base::StringPiece metric_name);
+      std::string_view metric_name);
 
-  void ExpectUKMPageLoadMetricGreaterThan(base::StringPiece metric_name,
+  void ExpectUKMPageLoadMetricGreaterThan(std::string_view metric_name,
                                           int64_t expected_value);
-  void ExpectUKMPageLoadMetricLowerThan(base::StringPiece metric_name,
+  void ExpectUKMPageLoadMetricLowerThan(std::string_view metric_name,
                                         int64_t expected_value);
 
-  void ExpectUKMPageLoadMetricsInAscendingOrder(base::StringPiece metric_name1,
-                                                base::StringPiece metric_name2);
+  void ExpectUKMPageLoadMetricsInAscendingOrder(std::string_view metric_name1,
+                                                std::string_view metric_name2);
 
-  int64_t GetUKMPageLoadMetricFlagSet(base::StringPiece metric_name);
+  int64_t GetUKMPageLoadMetricFlagSet(std::string_view metric_name);
 
   // The expected being true means ALL the bits present in the expected
   // flag_set should also be present in the flag_set retrieved from the ukm
@@ -122,43 +122,43 @@ class MetricIntegrationTest : public InProcessBrowserTest {
   // The expected being false means NONE of the bits present in the expected
   // flag_set should be present in the flag_set retrieved from the ukm
   // metrics.
-  void ExpectUKMPageLoadMetricFlagSet(base::StringPiece metric_name,
+  void ExpectUKMPageLoadMetricFlagSet(std::string_view metric_name,
                                       uint32_t flag_set,
                                       bool expected);
 
-  void ExpectUKMPageLoadMetricFlagSetExactMatch(base::StringPiece metric_name,
+  void ExpectUKMPageLoadMetricFlagSetExactMatch(std::string_view metric_name,
                                                 uint32_t flag_set);
 
-  void ExpectUKMPageLoadMetricNear(base::StringPiece metric_name,
+  void ExpectUKMPageLoadMetricNear(std::string_view metric_name,
                                    double expected_value,
                                    double epsilon);
 
   // Checks that the UMA entry is in the bucket for |expected_value| or within
   // the bucket for |expected_value| +- 1.
-  void ExpectUniqueUMAPageLoadMetricNear(base::StringPiece metric_name,
+  void ExpectUniqueUMAPageLoadMetricNear(std::string_view metric_name,
                                          double expected_value);
 
   // Checks that the UMA entry is in the bucket for |expected_value| or within
   // the bucket for |expected_value| +- `range`.
-  void ExpectUniqueUMAWithinRange(base::StringPiece metric_name,
+  void ExpectUniqueUMAWithinRange(std::string_view metric_name,
                                   double expected_value,
                                   double below,
                                   double above);
 
   // Checks that the UMA bucket count precisely matches the provided value.
-  void ExpectUniqueUMABucketCount(base::StringPiece metric_name,
+  void ExpectUniqueUMABucketCount(std::string_view metric_name,
                                   base::Histogram::Sample sample,
                                   base::Histogram::Count count);
 
   // Checks that we have a single UMA entry.
-  void ExpectUniqueUMA(base::StringPiece metric_name);
+  void ExpectUniqueUMA(std::string_view metric_name);
 
   // Checks that the value of |metric_name| in the latest timing update trace
   // event emitted by UkmPageLoadMetricsObserver is within |epsilon| of
   // |expected_value|.
   void ExpectMetricInLastUKMUpdateTraceEventNear(
       trace_analyzer::TraceAnalyzer& trace_analyzer,
-      base::StringPiece metric_name,
+      std::string_view metric_name,
       double expected_value,
       double epsilon);
 

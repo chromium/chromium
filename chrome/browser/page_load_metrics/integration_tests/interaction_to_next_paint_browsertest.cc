@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
+#include <string_view>
 
 #include "base/test/trace_event_analyzer.h"
 #include "build/build_config.h"
+#include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -27,7 +28,7 @@ class InteractionToNextPaintTest : public MetricIntegrationTest {
   // This function will extract the target UKM value from ukm_recorder
   // by the given metric_name in PageLoad.
   bool ExtractUKMPageLoadMetric(const ukm::TestUkmRecorder& ukm_recorder,
-                                base::StringPiece metric_name,
+                                std::string_view metric_name,
                                 int64_t* extracted_value);
 
   // This function extract the maximum duration for EventTiming from
@@ -49,7 +50,7 @@ class InteractionToNextPaintTest : public MetricIntegrationTest {
 
 bool InteractionToNextPaintTest::ExtractUKMPageLoadMetric(
     const ukm::TestUkmRecorder& ukm_recorder,
-    base::StringPiece metric_name,
+    std::string_view metric_name,
     int64_t* extracted_value) {
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
       ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);

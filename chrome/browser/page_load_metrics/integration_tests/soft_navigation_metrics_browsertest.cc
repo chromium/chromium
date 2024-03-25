@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <cstdint>
+#include <string_view>
 #include <vector>
+
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/trace_event_analyzer.h"
@@ -68,7 +70,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
 
   std::map<int64_t, double> GetSoftNavigationMetrics(
       const ukm::TestUkmRecorder& ukm_recorder,
-      base::StringPiece metric_name) {
+      std::string_view metric_name) {
     std::map<int64_t, double> source_id_to_metric_name;
     for (const ukm::mojom::UkmEntry* entry : ukm_recorder.GetEntriesByName(
              ukm::builders::SoftNavigation::kEntryName)) {
@@ -233,7 +235,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
   }
 
   bool ExtractUKMPageLoadMetric(const ukm::TestUkmRecorder& ukm_recorder,
-                                base::StringPiece metric_name,
+                                std::string_view metric_name,
                                 int64_t* extracted_value) {
     std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
         ukm_recorder.GetMergedEntriesByName(

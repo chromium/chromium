@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -91,7 +92,7 @@ uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
   return result;
 }
 
-uint64_t StrToHash64Bit(base::StringPiece str) {
+uint64_t StrToHash64Bit(std::string_view str) {
   auto bytes = base::as_bytes(base::make_span(str));
   const base::SHA1Digest digest = base::SHA1HashSpan(bytes);
   return PackBytes(base::make_span(digest).subspan<0, 8>());
