@@ -229,6 +229,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1882814835921407042">Dim rhwydwaith symudol</translation>
 <translation id="1882897271359938046">Wrthi'n adlewyrchu i <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Gallwch ddatgloi gyda'ch olion bysedd</translation>
+<translation id="1904997243703671177">Pan fyddwch yn diffodd Bluetooth, bydd <ph name="DEVICE_COUNT" /> o ddyfeisiau allanol yn datgysylltu o'ch <ph name="DEVICE_TYPE" />, gan gynnwys:</translation>
 <translation id="1908992311423394684">Gosodiad newydd</translation>
 <translation id="1915307458270490472">Dod â'r sgwrs i ben</translation>
 <translation id="1918022425394817322">Mae'r camera wedi'i snapio i'r gornel dde uchaf</translation>
@@ -960,6 +961,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4813311884204119883">Llusgwch y ddolen i fan gwag ar y stribed tabiau</translation>
 <translation id="4814539958450445987">Sgrîn Mewngofnodi</translation>
 <translation id="481455355267255546">Nesaf</translation>
+<translation id="481749895090480684">Rhestr tasgau: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">camera a meicroffon</translation>
 <translation id="482908187605862807">Apiau sydd ar gael o'r Play Store</translation>
 <translation id="4831034276697007977">Ydych chi'n siŵr eich bod am ddiffodd cliciau awtomatig?</translation>
@@ -1001,6 +1003,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4952936045814352993">Nid yw lleoli ffôn ar gael pan fydd synau larwm wedi'u hanalluogi</translation>
 <translation id="4960324571663582548">Mae <ph name="MANAGER" /> yn gofyn i chi rholio eich <ph name="DEVICE_TYPE" /> yn ôl. Bydd eich dyfais yn ailosod a bydd eich data yn cael eu dileu.</translation>
 <translation id="4961318399572185831">Castio'r sgrîn</translation>
+<translation id="4964188651935955085">Pan fyddwch yn diffodd Bluetooth, bydd y ddyfais allanol hon yn datgysylltu o'ch <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Troi'r sain i fyny</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />a <ph name="MINUTES" />m <ph name="SECONDS" />e</translation>
 <translation id="4975771730019223894">Rhoi bathodynnau i apiau</translation>
@@ -1827,6 +1830,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8155628902202578800">Agor y deialog gwybodaeth ar gyfer <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Yn defnyddio <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Troi'r ddewislen ymlaen/ei diffodd i newid maint y modd clo</translation>
+<translation id="8192727139462702395">Pan fyddwch yn diffodd Bluetooth, bydd y dyfeisiau allanol hyn yn datgysylltu o'ch <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Wrthi'n castio tab</translation>
 <translation id="8200772114523450471">Parhau</translation>
 <translation id="8203795194971602413">De-glicio</translation>

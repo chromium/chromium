@@ -229,6 +229,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1882814835921407042">Nessuna rete mobile</translation>
 <translation id="1882897271359938046">Mirroring su <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Sblocca con l'impronta digitale</translation>
+<translation id="1904997243703671177">Se disattivi il Bluetooth, <ph name="DEVICE_COUNT" /> dispositivi esterni verranno scollegati da <ph name="DEVICE_TYPE" />, tra cui:</translation>
 <translation id="1908992311423394684">Nuova installazione</translation>
 <translation id="1915307458270490472">Chiudi</translation>
 <translation id="1918022425394817322">Fotocamera allineata all'angolo in alto a destra</translation>
@@ -957,6 +958,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4813311884204119883">Trascina il link in un'area vuota della tabstrip</translation>
 <translation id="4814539958450445987">Schermata di accesso</translation>
 <translation id="481455355267255546">Prossimi eventi</translation>
+<translation id="481749895090480684">Elenco di attività: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">fotocamera e microfono</translation>
 <translation id="482908187605862807">App disponibili dal Play Store</translation>
 <translation id="4831034276697007977">Vuoi disattivare i clic automatici?</translation>
@@ -998,6 +1000,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4952936045814352993">Localizza telefono non è disponibile quando i suoni di avviso sono disattivati</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> richiede il rollback di <ph name="DEVICE_TYPE" />. Il dispositivo verrà reimpostato e tutti i dati verranno eliminati.</translation>
 <translation id="4961318399572185831">Trasmetti schermo</translation>
+<translation id="4964188651935955085">Se disattivi il Bluetooth, questo dispositivo esterno verrà scollegato da <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Alza il volume</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> m <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Badge dell'app</translation>
@@ -1824,6 +1827,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8155628902202578800">Apri la finestra di dialogo delle informazioni per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">In uso: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Attiva/disattiva il menu per la modalità di blocco del ridimensionamento</translation>
+<translation id="8192727139462702395">Se disattivi il Bluetooth, questi dispositivi esterni verranno scollegati da <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Trasmissione della scheda in corso…</translation>
 <translation id="8200772114523450471">Riprendi</translation>
 <translation id="8203795194971602413">Clic con il pulsante destro</translation>

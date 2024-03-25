@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">Безопасный просмотр</translation>
 <translation id="164269334534774161">Эта офлайн-копия страницы была создана <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">История</translation>
+<translation id="1644969410150602449">Здесь вы найдете свою историю веб-поиска</translation>
 <translation id="1657932388559784161">Нижний экран статистики страницы закрыт</translation>
 <translation id="1670399744444387456">Основные настройки</translation>
 <translation id="1671236975893690980">Ожидание скачивания…</translation>
@@ -617,7 +618,7 @@
 <translation id="4320177379694898372">Нет подключения к Интернету</translation>
 <translation id="4326079409704643112">Чтобы использовать и сохранять данные Chrome в аккаунте Google, подтвердите свою личность.</translation>
 <translation id="433213510553688132">Подписка…</translation>
-<translation id="4335835283689002019">Отключено</translation>
+<translation id="4335835283689002019">Безопасный просмотр отключен</translation>
 <translation id="4351244548802238354">Закрыть</translation>
 <translation id="4355272626458588338">Добавьте страницу с важными сведениями в закладки, и вам не придется ее долго искать.</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>

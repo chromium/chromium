@@ -229,6 +229,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1882814835921407042">Nu este disponibilă nicio rețea mobilă</translation>
 <translation id="1882897271359938046">Se oglindește pe <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Deblochează cu amprenta</translation>
+<translation id="1904997243703671177">Când dezactivezi Bluetooth, <ph name="DEVICE_COUNT" /> dispozitive externe se vor deconecta de la <ph name="DEVICE_TYPE" />, inclusiv:</translation>
 <translation id="1908992311423394684">Instalare nouă</translation>
 <translation id="1915307458270490472">Încheie apelul</translation>
 <translation id="1918022425394817322">Camera foto este aliniată cu colțul din dreapta sus</translation>
@@ -960,6 +961,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4813311884204119883">Trage linkul în zona liberă din bara de file</translation>
 <translation id="4814539958450445987">Ecranul de conectare</translation>
 <translation id="481455355267255546">Urmează</translation>
+<translation id="481749895090480684">Lista de sarcini: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">cameră și microfon</translation>
 <translation id="482908187605862807">Aplicații disponibile din Magazinul Play</translation>
 <translation id="4831034276697007977">Sigur vrei să dezactivezi clicurile automate?</translation>
@@ -1001,6 +1003,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4952936045814352993">Funcția de găsire a telefonului nu este disponibilă atunci când sunetul alarmei este dezactivat</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> solicită să revii la starea anterioară a dispozitivului <ph name="DEVICE_TYPE" />. Dispozitivul va fi resetat și toate datele vor fi șterse.</translation>
 <translation id="4961318399572185831">Proiectează ecranul</translation>
+<translation id="4964188651935955085">Când dezactivezi Bluetooth, acest dispozitiv extern se va deconecta de la <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Crește volumul</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min. <ph name="SECONDS" /> sec.</translation>
 <translation id="4975771730019223894">Marcarea cu insignă a aplicațiilor</translation>
@@ -1827,6 +1830,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8155628902202578800">Deschide fereastra de dialog cu informații pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Se folosește <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Activează / dezactivează meniul pentru a redimensiona modul de blocare</translation>
+<translation id="8192727139462702395">Când dezactivezi Bluetooth, următoarele dispozitive externe se vor deconecta de la <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Se proiectează fila</translation>
 <translation id="8200772114523450471">Reia</translation>
 <translation id="8203795194971602413">Clic dreapta</translation>

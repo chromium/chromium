@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">କୌଣସି ମୋବାଇଲ ନେଟୱାର୍କ ନାହିଁ</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />ର ପ୍ରତିଫଳନ</translation>
 <translation id="1885785240814121742">ଟିପଚିହ୍ନ ସାହାଯ୍ୟରେ ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
+<translation id="1904997243703671177">ଆପଣ ବ୍ଲୁଟୁଥ ବନ୍ଦ କଲେ, ଏଗୁଡ଼ିକ ସମେତ <ph name="DEVICE_COUNT" /> ଏକ୍ସଟର୍ନଲ ଡିଭାଇସ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରୁ ଡିସକନେକ୍ଟ ହୋଇଯିବ:</translation>
 <translation id="1908992311423394684">ଏହାକୁ ନୂଆ ଇନଷ୍ଟଲ କରାଯାଇଛି</translation>
 <translation id="1915307458270490472">ସମାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="1918022425394817322">କ୍ୟାମେରାକୁ ଉପର ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
@@ -960,6 +961,7 @@
 <translation id="4813311884204119883">ଟାବ ଷ୍ଟ୍ରିପରେ ଥିବା ଖାଲି ଏରିଆକୁ ଲିଙ୍କ ଡ୍ରାଗ କରନ୍ତୁ</translation>
 <translation id="4814539958450445987">ଲଗ୍‍ଇନ୍ ସ୍କ୍ରିନ୍</translation>
 <translation id="481455355267255546">ପରବର୍ତ୍ତୀ</translation>
+<translation id="481749895090480684">ଟାସ୍କ ତାଲିକା: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">କେମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ</translation>
 <translation id="482908187605862807">Play Storeରେ ଉପଲବ୍ଧ ଥିବା ଆପ୍ସ</translation>
 <translation id="4831034276697007977">ଆପଣ ସ୍ୱଚାଳିତ କ୍ଲିକ୍‌ଗୁଡ଼ିକୁ ବନ୍ଦ କରିବାକୁ ଚାହୁଁଥିବା ସୁନିଶ୍ଚିତ କି?</translation>
@@ -1001,6 +1003,7 @@
 <translation id="4952936045814352993">ଆଲାରାମର ସାଉଣ୍ଡକୁ ଅକ୍ଷମ କରାଯାଇଥିବା ସମୟରେ ଲୋକେଟ୍ ଫୋନ୍ ଉପଲବ୍ଧ ହୁଏ ନାହିଁ</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> ପାଇଁ ଆପଣ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ପ୍ରତ୍ୟାହାର କରିବା ଆବଶ୍ୟକ। ଆପଣଙ୍କ ଡିଭାଇସ ରିସେଟ ହେବ ଏବଂ ସମସ୍ତ ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="4961318399572185831">କାଷ୍ଟ ସ୍କ୍ରିନ୍‌</translation>
+<translation id="4964188651935955085">ଆପଣ ବ୍ଲୁଟୁଥ ବନ୍ଦ କଲେ, ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରୁ ଡିସକନେକ୍ଟ ହୋଇଯିବ:</translation>
 <translation id="4966431234408005599">ଭଲ୍ୟୁମ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ଘ <ph name="MINUTES" />ମି <ph name="SECONDS" />ସେ</translation>
 <translation id="4975771730019223894">ଆପ୍ ବ୍ୟାଜିଂ</translation>
@@ -1826,6 +1829,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ସୂଚନା ଡାଏଲଗ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />କୁ ବ୍ୟବହାର କରାଯାଉଛି</translation>
 <translation id="8185090165691050712">ଲକ ମୋଡକୁ ରିସାଇଜ କରିବା ପାଇଁ ମେନୁକୁ ଚାଲୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="8192727139462702395">ଆପଣ ବ୍ଲୁଟୁଥ ବନ୍ଦ କଲେ, ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସଗୁଡ଼ିକ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରୁ ଡିସକନେକ୍ଟ ହୋଇଯିବ:</translation>
 <translation id="8198456017687137612">କାଷ୍ଟିଂ ଟାବ୍</translation>
 <translation id="8200772114523450471">ସାରାଶଂ</translation>
 <translation id="8203795194971602413">ଡାହାଣ କ୍ଲିକ୍</translation>

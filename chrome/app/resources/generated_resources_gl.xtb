@@ -33,6 +33,7 @@
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">O teu dispositivo está xestionado por <ph name="DOMAIN" />. Os administradores poden acceder aos datos de calquera perfil deste dispositivo.</translation>
 <translation id="1022719295563085177">Opción predeterminada da rede</translation>
+<translation id="1024852227421769661">Usar localización. Permite que os servizos, sitios web e aplicacións para Android e ChromeOS con permiso de localización utilicen a do teu dispositivo. Google pode recompilar datos de localización periodicamente e usalos de forma anónima para mellorar a precisión da localización e os servizos baseados nela. <ph name="BEGIN_LINK1" />Máis información<ph name="END_LINK1" /></translation>
 <translation id="1026655690966755180">Engadir porto</translation>
 <translation id="1026822031284433028">Cargar imaxe</translation>
 <translation id="1026959648338730078">Windows Hello ou unha chave de seguranza externa</translation>
@@ -1935,6 +1936,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2435248616906486374">Rede desconectada</translation>
 <translation id="2435457462613246316">Mostrar contrasinal</translation>
 <translation id="2436385001956947090">Copiar &amp;ligazón</translation>
+<translation id="2436746748253887661">Os servizos do sistema que teñan permiso poderán usar a túa localización. Pódense empregar diversas fontes (a wifi, as redes de telefonía móbil, os sensores…) para axudar a determinar onde está o teu dispositivo. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Non hai ningunha impresora conectada</translation>
 <translation id="2439152382014731627">Restablecer o contrasinal do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Cargando <ph name="WINDOW_TITLE" /></translation>
@@ -3513,6 +3515,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3665589677786828986">Chrome detectou que outro programa danou algunhas opcións de configuración e restableceunas aos valores predeterminados orixinais.</translation>
 <translation id="3665919494326051362">A versión actual é <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Baleirado de depuración para Intel Wifi NICs</translation>
+<translation id="3666971425390608309">Descarga en pausa: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Dispositivos de calquera provedor</translation>
 <translation id="3670229581627177274">Activar Bluetooth</translation>
 <translation id="3670480940339182416">Os sitios poden usar o optimizador de V8</translation>
@@ -3607,6 +3610,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3727850735097852673">Para poder usar o xestor de contrasinais de Google con Keychain de macOS, reinicia Chrome e dálle acceso a Keychain. Despois do reinicio volverán abrirse as pestanas.</translation>
 <translation id="3728188878314831180">Reproducir as notificacións do teu teléfono</translation>
 <translation id="3728681439294129328">Configurar enderezo de rede</translation>
+<translation id="3728805180379554595">Esta opción de configuración está controlada por <ph name="USER_EMAIL" />.</translation>
 <translation id="3729506734996624908">Sitios permitidos</translation>
 <translation id="3729957991398443677">Para ver o contrasinal ou engadir unha nota sobre el, na barra de busca e de enderezos selecciona a opción Xestionar os teus contrasinais</translation>
 <translation id="3730076362938942381">Aplicación para escribir co lapis óptico</translation>
@@ -3662,6 +3666,8 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3765055238058255342">este tipo de tarxeta</translation>
 <translation id="3765246971671567135">Non se puido ler a política do modo de demostración sen conexión.</translation>
 <translation id="3765696567014520261">Os sitios web non poden utilizar cookies para ver a túa actividade de navegación en distintos sitios (por exemplo, para personalizar os anuncios). As funcións dalgúns sitios poden non estar operativas</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />O servizo de localización de Google utiliza fontes como a wifi, as redes de telefonía móbil e os sensores para calcular a localización do dispositivo.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Podes desactivar a localización de ChromeOS e Android no teu dispositivo en calquera momento. Para facelo, vai a Configuración &gt; Privacidade e seguranza &gt; Controis de privacidade &gt; Acceso á localización. Na páxina Configuración de localización avanzada dese mesmo menú, podes desactivar a opción Mellorar a precisión da localización para que non se utilicen a wifi, as redes de telefonía móbil nin os sensores co fin de determinar a localización de Android.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Máis información sobre O meu teléfono</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Polo de agora, só podes compartir contrasinais cos membros da familia. <ph name="BEGIN_LINK" />Invita os membros da familia<ph name="END_LINK" /> a unirse ao teu grupo e aproveita os teus produtos e subscricións de Google.</translation>
@@ -4327,6 +4333,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4278779213160967034">Este proceso pode tardar uns minutiños. Descargando ficheiros.</translation>
 <translation id="4279129444466079448">Podes instalar ata <ph name="PROFILE_LIMIT" /> perfís de eSIM neste dispositivo. Para engadir outro perfil, primeiro quita un que xa teñas.</translation>
 <translation id="4280325816108262082">O dispositivo desconectarase automaticamente cando se atope apagado ou non se estea utilizando</translation>
+<translation id="4281637354026226955">Permite que os servizos e as aplicacións para Android e ChromeOS con permiso de localización utilicen a do teu dispositivo. Google pode recompilar datos de localización periodicamente e utilizalos de forma anónima para mellorar a precisión da localización e os servizos baseados nela.</translation>
 <translation id="4281844954008187215">Condicións de servizo</translation>
 <translation id="4281849573951338030">Personalizar botóns do lapis</translation>
 <translation id="4282196459431406533">Smart Lock está activado</translation>
@@ -5259,6 +5266,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5010886807652684893">Vista visual</translation>
 <translation id="5012523644916800014">Xestionar contrasinais e claves de acceso</translation>
 <translation id="501394389332262641">Son de batería baixa</translation>
+<translation id="50145804426592479">Usar localización. Permite que os servizos, sitios webs e aplicacións para Android e ChromeOS con permiso de localización utilicen a deste dispositivo. Google pode recompilar datos de localización periodicamente e usalos de forma anónima para mellorar a precisión da localización e os servizos baseados nela. <ph name="BEGIN_LINK1" />Máis información<ph name="END_LINK1" /></translation>
 <translation id="5015344424288992913">Resolvendo proxy...</translation>
 <translation id="5016305686459575361">Se conectas o teléfono, poderás usar as seguintes funcións:</translation>
 <translation id="5016491575926936899">Podes enviar mensaxes de texto desde o ordenador, compartir a conexión a Internet, responder cando recibas notificacións de conversas e desbloquear o dispositivo <ph name="DEVICE_TYPE" /> co teléfono.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
@@ -5639,6 +5647,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5319712128756744240">Vincular dispositivo novo</translation>
 <translation id="5320135788267874712">Novo nome do dispositivo</translation>
 <translation id="5320261549977878764">Deixar de gardar grupo</translation>
+<translation id="5322274928052138413">Xestiona o acceso á localización por parte das aplicacións, sitios web e servizos do sistema. Pódense empregar diversas fontes (a wifi, as redes de telefonía móbil, os sensores…) para axudar a determinar onde está o teu dispositivo. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="532247166573571973">É posible que non se poida acceder ao servidor. Téntao de novo máis tarde.</translation>
 <translation id="5323328004379641163">Personaliza o aspecto de Chrome e desta páxina</translation>
 <translation id="5324300749339591280">Lista de aplicacións</translation>
@@ -6079,6 +6088,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5667546120811588575">Configurando Google Play...</translation>
 <translation id="5668351004957198136">Produciuse un erro</translation>
 <translation id="5669863904928111203">ChromeOS está desactualizado</translation>
+<translation id="5670011773727436698">Xestionar os permisos de localización de sitios en Chrome</translation>
 <translation id="5671641761787789573">Imaxes bloqueadas</translation>
 <translation id="5671658447180261823">Quitar a suxestión: <ph name="SUGGESTION_NAME" /></translation>
 <translation id="567210741546439261">Marcadores e listas</translation>
@@ -6202,6 +6212,8 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (predeterminado do sistema)</translation>
 <translation id="5776450228446082914">Lista de sitios web que poden abrirse en calquera dos navegadores.</translation>
 <translation id="5776571780337000608">Podes abrir e editar ficheiros compatibles con esta aplicación desde o explorador de ficheiros ou outras aplicacións. Para controlar os ficheiros que se abren nesta aplicación de forma predeterminada, consulta <ph name="BEGIN_LINK" />como definir aplicacións predeterminadas no teu dispositivo<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">O servizo de localización de Google utiliza redes wifi, de telefonía móbil e sensores para mellorar a precisión da localización e calcular onde está o teu dispositivo. Google pode recompilar periodicamente datos de localización e utilizalos de forma anónima para aumentar a devandita precisión e os servizos baseados nela.
+    Se desactivas esta opción, Android só utilizará o enderezo IP para a localización, o que pode afectar á precisión da localización utilizada por aplicacións como Maps.</translation>
 <translation id="5778491106820461378">Podes xestionar as Contas de Google coas que teñas a sesión iniciada desde <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />. Pode que se apliquen a todas as contas os permisos que lles concedeses aos sitios web e ás aplicacións. Se non queres que os sitios ou as aplicacións accedan á información da túa conta, podes iniciar sesión no dispositivo (<ph name="DEVICE_TYPE" />) como convidado.</translation>
 <translation id="5780011244986845107">O cartafol que seleccionaches contén ficheiros confidenciais. Seguro que queres conceder a <ph name="APP_NAME" /> acceso de lectura permanente a este cartafol?</translation>
 <translation id="5780973441651030252">Prioridade do proceso</translation>
@@ -6287,6 +6299,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5836999627049108525">Idioma do que traducir</translation>
 <translation id="583756221537636748">Estoxo</translation>
 <translation id="5840680448799937675">Os ficheiros sempre se compartirán sen conexión</translation>
+<translation id="5841167715783969407">Fuso horario automático en función das redes wifi ou de telefonía móbil</translation>
 <translation id="5841270259333717135">Configurar Ethernet</translation>
 <translation id="5842497610951477805">Activar Bluetooth</translation>
 <translation id="5844284118433003733">Cando tes a sesión iniciada, estes datos asócianse á túa Conta de Google para protexerte nos servizos de Google (por exemplo, aumentando a protección en Gmail despois dun incidente de seguranza).</translation>
@@ -6735,6 +6748,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6180510783007738939">Ferramenta de liñas</translation>
 <translation id="6180550893222597997">Que clave de acceso queres usar para <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Descarga bloqueada</translation>
+<translation id="6183369864942961155">Tema escuro/claro automático</translation>
 <translation id="6184099524311454384">Realiza buscas nas pestanas</translation>
 <translation id="6184868291074982484">Chrome limita automaticamente as cookies de terceiros</translation>
 <translation id="6185132558746749656">Localización do dispositivo</translation>
@@ -7004,6 +7018,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6401597285454423070">O ordenador contén un dispositivo de seguranza Trusted Platform Module (TPM) que se utiliza para implementar moitas funcións de seguranza esenciais en Chrome OS. Consulta o Centro de Axuda de Chromebook para obter máis información: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">Os sitios poden solicitar permiso para controlar e volver programar os teus dispositivos MIDI</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
+<translation id="640457954117263537">Usar localización cos servizos e aplicacións para Android e ChromeOS.</translation>
 <translation id="6406303162637086258">Simular reinicio do navegador</translation>
 <translation id="6406506848690869874">Sincronización</translation>
 <translation id="6406708970972405507">Configuración: <ph name="SECTION_TITLE" /></translation>
@@ -7136,6 +7151,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6513247462497316522">Google Chrome utilizará datos móbiles se non estás conectado a outra rede.</translation>
 <translation id="6514010653036109809">Dispositivo dispoñible:</translation>
 <translation id="6517227424170598783">Queres quitar o atallo <ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />?</translation>
+<translation id="6517382055541687102">O dispositivo seleccionado pasou a ser <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Os ficheiros de A miña unidade sincronízanse co teu Chromebook automaticamente para que poidas acceder a eles sen conexión a Internet. Con esta acción usaranse aproximadamente <ph name="REQUIRED_SPACE" />. Actualmente tes <ph name="FREE_SPACE_AVAILABLE" /> de espazo dispoñible.</translation>
 <translation id="6517709704288360414">É posible que o dispositivo deixe de funcionar adecuadamente e que teñas problemas de seguranza e de rendemento. O feito de desactivar as actualizacións pode afectarlle ao teu dereito a facer reclamacións legais se tes algún problema.</translation>
 <translation id="6518014396551869914">Co&amp;piar imaxe</translation>
@@ -7293,6 +7309,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6636623428211296678">Explora máis opcións de configuración a continuación ou remata agora</translation>
 <translation id="6639554308659482635">Memoria SQLite</translation>
 <translation id="6640268266988685324">Pestana aberta</translation>
+<translation id="6642424629311432059">Permite que os servizos e as aplicacións para Android e ChromeOS con permiso de localización utilicen a deste dispositivo. Google pode recompilar datos de localización periodicamente e usalos de forma anónima para mellorar a precisión da localización e os servizos baseados nela.</translation>
 <translation id="6642720633335369752">Para ver todas as ventás abertas da aplicación, pasa o dedo cara arriba desde a parte inferior da pantalla e mantena premida.</translation>
 <translation id="664290675870910564">Selección de rede</translation>
 <translation id="6643016212128521049">Borrar</translation>
@@ -7392,6 +7409,7 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6713441551032149301">Mantén premida a tecla do menú de aplicacións para cambiar entre as teclas de función e as teclas da fila superior do sistema</translation>
 <translation id="6713668088933662563">Non ofrecer nunca que se traduzan estes idiomas</translation>
 <translation id="6715803357256707211">Produciuse un erro durante a instalación da aplicación Linux. Fai clic na notificación para ver os detalles.</translation>
+<translation id="6716049856796700977">Nada pode usar a túa localización. Con todo, poida que siga sendo visible para os sitios web e as aplicacións mediante o teu enderezo IP. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Perdeuse a conexión de rede. Comproba a túa conexión de rede ou proba con outra rede wifi.</translation>
 <translation id="6718849325281682232">Actualizamos as cores dos temas de Chrome para que resulten máis cómodas para todo o mundo, tanto no modo claro como no escuro</translation>
 <translation id="671928215901716392">Bloquear pantalla</translation>
@@ -8373,6 +8391,8 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7478658909253570368">Non permitir que os sitios se conecten a portos en serie</translation>
 <translation id="7479221278376295180">Visión xeral do uso do almacenamento</translation>
 <translation id="747981547666531654">Conexión establecida cos dispositivos Bluetooth chamados "<ph name="FIRST_DEVICE" />" e "<ph name="SECOND_DEVICE" />"</translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />O servizo de localización de Google utiliza fontes como a wifi, as redes de telefonía móbil e os sensores para calcular a localización deste dispositivo.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Podes desactivar a localización de ChromeOS e Android neste dispositivo en calquera momento. Para facelo, vai a Configuración &gt; Privacidade e seguranza &gt; Controis de privacidade &gt; Acceso á localización. Na páxina Configuración de localización avanzada dese mesmo menú, podes desactivar a opción Mellorar a precisión da localización para que non se utilicen a wifi, as redes de telefonía móbil nin os sensores co fin de determinar a localización de Android.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Adiante</translation>
 <translation id="7481358317100446445">Listo</translation>
 <translation id="748138892655239008">Restricións básicas do certificado</translation>
@@ -8464,6 +8484,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7552846755917812628">Proba os seguintes consellos:</translation>
 <translation id="7553012839257224005">Comprobando contedor de Linux</translation>
 <translation id="7553242001898162573">Introduce o teu contrasinal</translation>
+<translation id="7553487223484420820">As aplicacións, sitios web e servizos do sistema poden usar a túa localización. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">O teu administrador non admite este idioma</translation>
 <translation id="7554791636758816595">Nova pestana</translation>
 <translation id="7556033326131260574">Smart Lock non puido verificar a túa conta. Escribe o teu contrasinal para acceder.</translation>
@@ -9173,6 +9194,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8062844841289846053">{COUNT,plural, =1{1 folla}other{{COUNT} follas}}</translation>
 <translation id="8063235345342641131">Avatar verde predeterminado</translation>
 <translation id="8063535366119089408">Ver ficheiro</translation>
+<translation id="8064015041956107954">Podes abrir os marcadores, o modo de lectura e moito máis desde o menú de Chrome (na parte superior dereita)</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8064279191081105977">Grupo <ph name="GROUP_NAME" />. <ph name="GROUP_CONTENTS" />. <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Cadro de diálogo de conexión</translation>
@@ -9379,6 +9401,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8224427620313426549">Non se eliminará a túa conta de <ph name="DOMAIN_LINK" /></translation>
 <translation id="8225046344534779393">Comproba a conexión a Internet</translation>
 <translation id="8225265270453771718">Compartir unha ventá dunha aplicación</translation>
+<translation id="8225516926291976401">Só os servizos do sistema poden usar a túa localización. Con todo, poida que siga sendo visible para os sitios web e as aplicacións mediante o teu enderezo IP. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Non permitido</translation>
 <translation id="8226619461731305576">Cola</translation>
 <translation id="8227119283605456246">Anexar ficheiro</translation>
@@ -9419,6 +9442,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8253198102038551905">Facer clic en "+" para obter as propiedades da rede</translation>
 <translation id="8255212965098517578">Aplicacións, notificacións e fotos recentes</translation>
 <translation id="8256319818471787266">Cadelo</translation>
+<translation id="8257796129973882597">Podes abrir os marcadores, o modo de lectura e moito máis desde o menú de Chrome</translation>
 <translation id="8257950718085972371">Continuar bloqueando o acceso á cámara</translation>
 <translation id="8258027225380843424">Completouse a importación</translation>
 <translation id="8259048637628995340">Conecta o teu teléfono Android para desfrutar dunha experiencia fluída</translation>
@@ -9814,6 +9838,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8552102814346875916">Gardar na lista Sitios que se manteñen sempre activos</translation>
 <translation id="8553342806078037065">Xestionar outras persoas</translation>
 <translation id="8554899698005018844">Ningún idioma</translation>
+<translation id="8555444629041783356">Programación automática do solpor</translation>
 <translation id="855604308879080518">Permite que as aplicacións para Android accedan a dispositivos USB neste Chromebook. Pediráseche permiso cada vez que conectes un dispositivo USB. As distintas aplicacións para Android solicitarán outros permisos adicionais.</translation>
 <translation id="8557022314818157177">Sigue tocando a chave de seguranza ata que se capture a túa impresión dixital</translation>
 <translation id="8557180006508471423">No Mac, vai a Location Services (Servizos de localización) e activa Google Chrome</translation>

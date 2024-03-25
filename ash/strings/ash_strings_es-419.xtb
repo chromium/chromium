@@ -229,6 +229,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1882814835921407042">Sin red móvil</translation>
 <translation id="1882897271359938046">Duplicando en <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloquear con huella dactilar</translation>
+<translation id="1904997243703671177">Cuando desactives el Bluetooth, <ph name="DEVICE_COUNT" /> dispositivos externos se desconectarán de tu <ph name="DEVICE_TYPE" />, lo que incluye:</translation>
 <translation id="1908992311423394684">Nueva instalación</translation>
 <translation id="1915307458270490472">Colgar</translation>
 <translation id="1918022425394817322">Se ajustó la cámara a la esquina superior derecha</translation>
@@ -961,6 +962,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4813311884204119883">Arrastra el vínculo al área en blanco de la barra de pestañas</translation>
 <translation id="4814539958450445987">Pantalla de acceso</translation>
 <translation id="481455355267255546">A continuación</translation>
+<translation id="481749895090480684">Lista de tareas: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">cámara y micrófono</translation>
 <translation id="482908187605862807">Apps disponibles en Play Store</translation>
 <translation id="4831034276697007977">¿Confirmas que quieres desactivar los clics automáticos?</translation>
@@ -1002,6 +1004,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4952936045814352993">La opción Ubicar teléfono no está disponible cuando se inhabilitan los sonidos de las alarmas</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requiere que reviertas tu <ph name="DEVICE_TYPE" />. Se restablecerá tu dispositivo y se borrarán todos los datos.</translation>
 <translation id="4961318399572185831">Transmitir pantalla</translation>
+<translation id="4964188651935955085">Cuando desactives el Bluetooth, este dispositivo externo se desconectará de tu <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Subir el volumen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Insignias de apps</translation>
@@ -1828,6 +1831,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8155628902202578800">Abrir el diálogo de información de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> en uso</translation>
 <translation id="8185090165691050712">Activar o desactivar el menú para cambiar el tamaño del modo bloqueado</translation>
+<translation id="8192727139462702395">Cuando desactives el Bluetooth, estos dispositivos externos se desconectarán de tu <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Pestaña de transmisión</translation>
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="8203795194971602413">Clic con botón derecho</translation>

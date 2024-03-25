@@ -229,6 +229,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1882814835921407042">Ni mobilnih omrežij</translation>
 <translation id="1882897271359938046">Zrcaljenje na <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Odklepanje s prstnim odtisom</translation>
+<translation id="1904997243703671177">Ko izklopite Bluetooth, bo povezava med zunanjimi napravami (<ph name="DEVICE_COUNT" />) in napravo <ph name="DEVICE_TYPE" /> prekinjena, vključno s temi:</translation>
 <translation id="1908992311423394684">Nova namestitev</translation>
 <translation id="1915307458270490472">Prekini</translation>
 <translation id="1918022425394817322">Fotoaparat je pripet v zgornji desni kot</translation>
@@ -960,6 +961,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4813311884204119883">Povlecite povezavo na prazno območje na traku z zavihki</translation>
 <translation id="4814539958450445987">Zaslon za prijavo</translation>
 <translation id="481455355267255546">Sledi</translation>
+<translation id="481749895090480684">Seznam opravil: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamero in mikrofon</translation>
 <translation id="482908187605862807">Razpoložljive aplikacije iz Trgovine Play</translation>
 <translation id="4831034276697007977">Ali ste prepričani, da želite izklopiti samodejne klike?</translation>
@@ -1001,6 +1003,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4952936045814352993">Iskanje telefona ni na voljo, če so onemogočeni zvoki alarma.</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> zahteva, da napravo <ph name="DEVICE_TYPE" /> povrnete na prejšnjo različico. Naprava se bo ponastavila in vaši podatki bodo izbrisani.</translation>
 <translation id="4961318399572185831">Predvajanje zaslona</translation>
+<translation id="4964188651935955085">Ko izklopite Bluetooth, bo povezava te zunanje naprave z napravo <ph name="DEVICE_TYPE" /> prekinjena:</translation>
 <translation id="4966431234408005599">Povečanje glasnosti</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Označevanje aplikacij z značko</translation>
@@ -1827,6 +1830,7 @@ Nova namestitev</translation>
 <translation id="8155628902202578800">Odpri pogovorno okno z informacijami o uporabniku <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Uporaba jezika <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Vklop/izklop menija za spreminjanje velikosti zaklenjenega načina</translation>
+<translation id="8192727139462702395">Ko izklopite Bluetooth, bo povezava teh zunanjih naprav z napravo <ph name="DEVICE_TYPE" /> prekinjena:</translation>
 <translation id="8198456017687137612">Predvajanje vsebine zavihka</translation>
 <translation id="8200772114523450471">Nadaljuj</translation>
 <translation id="8203795194971602413">Desni klik</translation>

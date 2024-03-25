@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">无移动网络</translation>
 <translation id="1882897271359938046">正在镜像到<ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">使用指纹解锁</translation>
+<translation id="1904997243703671177">关闭蓝牙后，<ph name="DEVICE_COUNT" /> 个外部设备将与您的 <ph name="DEVICE_TYPE" /> 断开连接，包括：</translation>
 <translation id="1908992311423394684">新安装</translation>
 <translation id="1915307458270490472">中止</translation>
 <translation id="1918022425394817322">相机已对准右上角</translation>
@@ -959,6 +960,7 @@
 <translation id="4813311884204119883">将链接拖到标签栏的空白区域</translation>
 <translation id="4814539958450445987">登录屏幕</translation>
 <translation id="481455355267255546">即将到来的活动</translation>
+<translation id="481749895090480684">任务列表：<ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">摄像头和麦克风</translation>
 <translation id="482908187605862807">Play 商店提供的应用</translation>
 <translation id="4831034276697007977">确定要关闭自动点击吗？</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4952936045814352993">当闹钟提示音处于停用状态时，无法使用“定位手机”功能</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> 要求您回滚 <ph name="DEVICE_TYPE" />。您的设备将会重置，并且所有数据都会被删除。</translation>
 <translation id="4961318399572185831">投放屏幕</translation>
+<translation id="4964188651935955085">关闭蓝牙后，以下外部设备将与您的 <ph name="DEVICE_TYPE" /> 断开连接：</translation>
 <translation id="4966431234408005599">调高音量</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> 小时 <ph name="MINUTES" /> 分 <ph name="SECONDS" /> 秒</translation>
 <translation id="4975771730019223894">应用通知数量标志</translation>
@@ -1825,6 +1828,7 @@
 <translation id="8155628902202578800">打开与 <ph name="USER_EMAIL_ADDRESS" /> 对应的信息对话框</translation>
 <translation id="8167567890448493835">目前使用的是“<ph name="LOCALE_NAME" />”</translation>
 <translation id="8185090165691050712">开启/关闭菜单即可调整锁定模式的范围</translation>
+<translation id="8192727139462702395">关闭蓝牙后，以下外部设备将与您的 <ph name="DEVICE_TYPE" /> 断开连接：</translation>
 <translation id="8198456017687137612">正在投放标签页</translation>
 <translation id="8200772114523450471">继续</translation>
 <translation id="8203795194971602413">点击鼠标右键</translation>

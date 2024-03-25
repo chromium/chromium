@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">沒有行動網路</translation>
 <translation id="1882897271359938046">正在建立 <ph name="DISPLAY_NAME" /> 鏡像</translation>
 <translation id="1885785240814121742">使用指紋解鎖</translation>
+<translation id="1904997243703671177">關閉藍牙後，<ph name="DEVICE_COUNT" /> 個外接裝置會與 <ph name="DEVICE_TYPE" /> 中斷連線，包括：</translation>
 <translation id="1908992311423394684">最新安裝</translation>
 <translation id="1915307458270490472">掛斷</translation>
 <translation id="1918022425394817322">攝影機已對齊右上角</translation>
@@ -957,6 +958,7 @@
 <translation id="4813311884204119883">將連結拖曳到分頁列上的空白區域</translation>
 <translation id="4814539958450445987">登入畫面</translation>
 <translation id="481455355267255546">即將到來的活動</translation>
+<translation id="481749895090480684">工作清單：<ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">攝影機和麥克風</translation>
 <translation id="482908187605862807">Play 商店提供的應用程式</translation>
 <translation id="4831034276697007977">確定要關閉自動點擊功能嗎？</translation>
@@ -998,6 +1000,7 @@
 <translation id="4952936045814352993">停用鬧鐘音效後無法使用尋找手機的功能</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> 要求你復原 <ph name="DEVICE_TYPE" />。你的裝置將會重設，且所有資料將遭到刪除。</translation>
 <translation id="4961318399572185831">投放螢幕</translation>
+<translation id="4964188651935955085">關閉藍牙後，以下外接裝置會與 <ph name="DEVICE_TYPE" /> 中斷連線：</translation>
 <translation id="4966431234408005599">調高音量</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> 小時 <ph name="MINUTES" /> 分鐘 <ph name="SECONDS" /> 秒</translation>
 <translation id="4975771730019223894">應用程式標記</translation>
@@ -1823,6 +1826,7 @@
 <translation id="8155628902202578800">開啟 <ph name="USER_EMAIL_ADDRESS" /> 的資訊對話方塊</translation>
 <translation id="8167567890448493835">使用<ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">開啟/關閉選單即可調整鎖定模式的大小</translation>
+<translation id="8192727139462702395">關閉藍牙後，以下外接裝置會與 <ph name="DEVICE_TYPE" /> 中斷連線：</translation>
 <translation id="8198456017687137612">正在投放分頁</translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8203795194971602413">按右鍵</translation>

@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">کوئی موبائل نیٹ ورک نہیں ہے</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> میں معکوس سازی</translation>
 <translation id="1885785240814121742">فنگر پرنٹ کی مدد سے غیر مقفل کریں</translation>
+<translation id="1904997243703671177">جب آپ بلوٹوتھ کو آف کرتے ہیں تو <ph name="DEVICE_COUNT" /> بیرونی آلات آپ کے <ph name="DEVICE_TYPE" /> سے غیر منسلک ہو جائیں گے، بشمول:</translation>
 <translation id="1908992311423394684">نئی انسٹال کردہ ایپ</translation>
 <translation id="1915307458270490472">کال منقطع کریں</translation>
 <translation id="1918022425394817322">کیمرا اوپری دائیں کونے میں اسنیپ کیا گیا ہے</translation>
@@ -960,6 +961,7 @@
 <translation id="4813311884204119883">لنک کو ٹیب اسٹرپ پر خالی جگہ پر گھسیٹیں</translation>
 <translation id="4814539958450445987">لاگ ان اسکرین</translation>
 <translation id="481455355267255546">اس کے آگے</translation>
+<translation id="481749895090480684">ٹاسک کی فہرست: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">کیمرا اور مائیکروفون</translation>
 <translation id="482908187605862807">‏Play اسٹور سے دستیاب ایپس</translation>
 <translation id="4831034276697007977">کیا آپ واقعی خودکار کلکس کو آف کرنا چاہتے ہیں؟</translation>
@@ -1001,6 +1003,7 @@
 <translation id="4952936045814352993">الارم کی آوازیں غیر فعال ہونے پر فون کا پتہ لگانے والی خصوصیت دستیاب نہیں ہے</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> کا تقاضہ ہے کہ آپ اپنے <ph name="DEVICE_TYPE" /> پر واپس جائیں۔ آپ کا آلہ ری سیٹ ہو جائے گا اور تمام ڈیٹا حذف ہو جائے گا۔</translation>
 <translation id="4961318399572185831">اسکرین کاسٹ کریں</translation>
+<translation id="4964188651935955085">جب آپ بلوٹوتھ آف کرتے ہیں، تو یہ بیرونی آلہ آپ کے <ph name="DEVICE_TYPE" /> سے غیر منسلک ہو جائے گا:</translation>
 <translation id="4966431234408005599">والیوم بڑھائیں</translation>
 <translation id="4969092041573468113">h <ph name="MINUTES" />m <ph name="SECONDS" />s<ph name="HOURS" /></translation>
 <translation id="4975771730019223894">ایپ بیجینگ</translation>
@@ -1826,6 +1829,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> کے لئے معلومات کا ڈائلاگ کھولیں</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> استعمال کر کے</translation>
 <translation id="8185090165691050712">قفل موڈ کا سائز تبدیل کرنے کے لیے مینیو کو آن/آف کریں</translation>
+<translation id="8192727139462702395">جب آپ بلوٹوتھ کو آف کرتے ہیں، تو یہ بیرونی آلات آپ کے <ph name="DEVICE_TYPE" /> سے غیر منسلک ہو جائیں گے:</translation>
 <translation id="8198456017687137612">کاسٹنگ ٹیب</translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
 <translation id="8203795194971602413">دائیں طرف کلک کریں</translation>

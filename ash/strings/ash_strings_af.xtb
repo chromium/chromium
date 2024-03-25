@@ -229,6 +229,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1882814835921407042">Geen selnetwerk nie</translation>
 <translation id="1882897271359938046">Weerspieëling na <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Ontsluit met vingerafdruk</translation>
+<translation id="1904997243703671177">Wanneer jy Bluetooth afskakel, sal <ph name="DEVICE_COUNT" /> eksterne toestelle van jou <ph name="DEVICE_TYPE" /> ontkoppel, insluitend:</translation>
 <translation id="1908992311423394684">Nuwe installasie</translation>
 <translation id="1915307458270490472">Sit neer</translation>
 <translation id="1918022425394817322">Kamera is geglip na hoek bo regs</translation>
@@ -961,6 +962,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4813311884204119883">Sleep skakel na leë area op die oortjiestrook</translation>
 <translation id="4814539958450445987">Aanmeldskerm</translation>
 <translation id="481455355267255546">Volgende</translation>
+<translation id="481749895090480684">Taaklys: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera en mikrofoon</translation>
 <translation id="482908187605862807">Beskikbare apps vanaf die Play Winkel</translation>
 <translation id="4831034276697007977">Is jy seker jy wil outomatiese klikke afskakel?</translation>
@@ -1002,6 +1004,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4952936045814352993">Spoor foon op is nie beskikbaar wanneer wekkerklanke gedeaktiveer is nie</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> vereis dat jy jou <ph name="DEVICE_TYPE" /> terugrol. Jou toestel sal teruggestel word en alle data sal uitgevee word.</translation>
 <translation id="4961318399572185831">Saai skerm uit</translation>
+<translation id="4964188651935955085">Wanneer jy Bluetooth afskakel, sal hierdie eksterne toestel van jou <ph name="DEVICE_TYPE" /> ontkoppel:</translation>
 <translation id="4966431234408005599">Stel volume harder</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> u. <ph name="MINUTES" /> m. <ph name="SECONDS" /> s.</translation>
 <translation id="4975771730019223894">Programkentekens</translation>
@@ -1828,6 +1831,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8155628902202578800">Maak inligtingdialoog oop vir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Gebruik tans <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Skakel kieslys aan/af om die grootte van die sluitmodus te verander</translation>
+<translation id="8192727139462702395">Wanneer jy Bluetooth afskakel, sal hierdie eksterne toestelle van jou <ph name="DEVICE_TYPE" /> ontkoppel:</translation>
 <translation id="8198456017687137612">Saai tans oortjie uit</translation>
 <translation id="8200772114523450471">Hervat</translation>
 <translation id="8203795194971602413">Regsklik</translation>

@@ -229,6 +229,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1882814835921407042">Žádná mobilní síť</translation>
 <translation id="1882897271359938046">Zrcadlení na displej <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Odemknutí otiskem prstu</translation>
+<translation id="1904997243703671177">Když vypnete Bluetooth, od zařízení <ph name="DEVICE_TYPE" /> se odpojí tento počet externích zařízení: <ph name="DEVICE_COUNT" />.</translation>
 <translation id="1908992311423394684">Nová instalace</translation>
 <translation id="1915307458270490472">Zavěsit</translation>
 <translation id="1918022425394817322">Kamera byla připnuta do pravého horního rohu</translation>
@@ -960,6 +961,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4813311884204119883">Přetáhněte odkaz do prázdné oblasti na liště karet</translation>
 <translation id="4814539958450445987">Přihlašovací obrazovka</translation>
 <translation id="481455355267255546">Další v pořadí</translation>
+<translation id="481749895090480684">Seznam úkolů: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">fotoaparát a mikrofon</translation>
 <translation id="482908187605862807">Dostupné aplikace z Obchodu Play</translation>
 <translation id="4831034276697007977">Opravdu chcete automatická kliknutí vypnout?</translation>
@@ -1001,6 +1003,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4952936045814352993">Když jsou vypnuté zvuky budíků, funkce Najít telefon není k dispozici</translation>
 <translation id="4960324571663582548">Organizace <ph name="MANAGER" /> vyžaduje, abyste toto zařízení <ph name="DEVICE_TYPE" /> převedli na starší verzi. Zařízení se resetuje a všechna data se vymažou.</translation>
 <translation id="4961318399572185831">Odesílání obrazovky</translation>
+<translation id="4964188651935955085">Když vypnete Bluetooth, od zařízení <ph name="DEVICE_TYPE" /> se odpojí toto externí zařízení:</translation>
 <translation id="4966431234408005599">Zvýšit hlasitost</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Označování aplikací odznakem</translation>
@@ -1826,6 +1829,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8155628902202578800">Otevřít dialogové okno s informacemi o účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Používá se <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Zapnout/vypnout nabídku změny velikosti zamknutého režimu</translation>
+<translation id="8192727139462702395">Když vypnete Bluetooth, od zařízení <ph name="DEVICE_TYPE" /> se odpojí tato externí zařízení:</translation>
 <translation id="8198456017687137612">Odesílání karty</translation>
 <translation id="8200772114523450471">Pokračovat</translation>
 <translation id="8203795194971602413">Kliknutí pravým tlačítkem</translation>

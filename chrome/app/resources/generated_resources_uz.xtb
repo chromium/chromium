@@ -1939,6 +1939,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2435248616906486374">Tarmoqqa ulanish yo‘q</translation>
 <translation id="2435457462613246316">Parolni ko‘rsatish</translation>
 <translation id="2436385001956947090">Havolani nusxalash</translation>
+<translation id="2436746748253887661">Bu tizim xizmatlariga joylashuvingizdan foydalanishga ruxsat beradi. Joylashuvni aniqlash xizmati bu qurilmaning joylashuvini bilish uchun Wi-Fi, mobil tarmoqlar va sensorlar kabi manbalardan foydalanadi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Printerga ulanmagan</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> parolini almashtirish</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> yuklanmoqda</translation>
@@ -3514,6 +3515,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3665589677786828986">Chrome‘ning ba’zi sozlamalari tashqi dastur tomonidan o‘zgartirildi. Brauzer birlamchi sozlamalarini tiklab oldi.</translation>
 <translation id="3665919494326051362">Joriy versiya: <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel WiFi NICs Debug Dump</translation>
+<translation id="3666971425390608309">Yuklab olish pauza qilindi: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Har qanday taʼminotchi qurilmalari</translation>
 <translation id="3670229581627177274">Bluetooth aloqasini yoqish</translation>
 <translation id="3670480940339182416">V8 optimizer ishlatishi mumkin saytlar</translation>
@@ -3664,6 +3666,8 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3765055238058255342">bu turdagi karta</translation>
 <translation id="3765246971671567135">Demo rejim parametrini oflayn rejimda oʻqib boʻlmadi.</translation>
 <translation id="3765696567014520261">Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzata olmaydi Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Google joylashuv xizmati Wi-Fi, mobil tarmoq va sensorlardan qurilmangiz joylashuvini aniqlashda foydalanadi.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Istalgan vaqtda Sozlamalar &gt; Maxfiylik va xavfsizlik &gt; Daxlsizlik nazorati &gt; Joylashuvga kirishni ochib, qurilmangizda ChromeOS va Android joylashuvini faolsizlantirishingiz mumkin. Shuningdek, ayni shu menyudagi "Qoʻshimcha joylashuv sozlamalari" ostida "joylashuv aniqligi" parametrini faolsizlantirish orqali Wi-Fi, mobil tarmoqlar va Android joylashuv sensorlaridan foydalanishni ham faolsizlantirish mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Phone Hub haqida batafsil</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Hozircha parollarni faqat oiladagilarga ulashish mumkin. <ph name="BEGIN_LINK" />Oiladagilarni guruhingizga taklif qiling<ph name="END_LINK" /> va barcha Google mahsulot va obunalaridan birga foydalaning.</translation>
@@ -4329,6 +4333,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4278779213160967034">Bu jarayon bir necha daqiqa vaqt olishi mumkin. Fayllar yuklab olinmoqda.</translation>
 <translation id="4279129444466079448">Bu qurilmada <ph name="PROFILE_LIMIT" /> gacha eSIM profillarini oʻrnatish mumkin. Boshqa profil kiritish uchun avval mavjud profillardan birini olib tashlang.</translation>
 <translation id="4280325816108262082">Qurilma faolsizlantirilganda yoki ishlatilmayotganda avtomatik ravishda uziladi</translation>
+<translation id="4281637354026226955">Joylashuv axborotiga ruxsat olgan ChromeOS va Android ilova va xizmatlariga qurilmangiz joylashuvi axborotidan foydalanishiga ruxsat bering. Joylashuv axborotining aniqligini oshirish hamda ayrim xizmatlar sifatini yaxshilash maqsadida Google vaqti-vaqti bilan foydalanuvchilarning joylashuvi haqidagi anonimlashtirilgan axborotni olib turishi ham mumkin.</translation>
 <translation id="4281844954008187215">Xizmat shartlari</translation>
 <translation id="4281849573951338030">Pero tugmalarini moslash</translation>
 <translation id="4282196459431406533">Smart Lock yoniq</translation>
@@ -6210,6 +6215,8 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (Tizim standarti)</translation>
 <translation id="5776450228446082914">Ikkala brauzerda ham ochilishi mumkin boʻlgan saytlar roʻyxati.</translation>
 <translation id="5776571780337000608">Mos keladigan fayllarni bu ilova bilan fayl brauzeri yoki boshqa ilovalar orqali ochishingiz va tahrirlashingiz mumkin. Bu ilova bilan standart holatda qaysi ilovalar ochilishini boshqarish uchun <ph name="BEGIN_LINK" />qurilmangizda standart ilovalarni sozlash haqida batafsil axborot oling<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">Google joylashuv xizmati joylashuv axborotining aniqligini oshirish uchun Wi-Fi, mobil tarmoq va sensorlardan foydalanadi. Google joylashuv axborotini vaqti-vaqti bilan olib turishi hamda joylashuv axboroti va joylashuvga asoslangan xizmatlarning aniqligini oshirish uchun ushbu axborotlardan anonim shaklda foydalanishi mumkin.
+    Android sozlamalarida bu parametr faolsizlantirilsa, joylashuvni aniqlash uchun qurilmangiz faqat IP manzilidan foydalanadi. Bu Xaritalar kabi ilovalar tomonidan ishlatiladigan joylashuv axborotining aniqligiga taʼsir qilishi mumkin.</translation>
 <translation id="5778491106820461378">Google hisoblarini <ph name="LINK_BEGIN" />Sozlamalar<ph name="LINK_END" /> orqali boshqarishingiz mumkin. Sayt va ilovalarga berilgan ruxsatlar barcha hisoblarga tatbiq etiladi. Sayt va ilovalarni hisob axborotingizga kirishini istamasangiz, <ph name="DEVICE_TYPE" /> qurilmasiga mehmon sifatida kiring.</translation>
 <translation id="5780011244986845107">Tanlangan jildda maxfiy maʼlumotlar mavjud. “<ph name="APP_NAME" />” ilovasiga ushbu jildni oʻqish uchun doimiy ruxsat berilsinmi?</translation>
 <translation id="5780973441651030252">Jarayonlarning muhimligi</translation>
@@ -6295,6 +6302,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5836999627049108525">Tarjima qilinishi kerak til</translation>
 <translation id="583756221537636748">Garnitura jild ichida</translation>
 <translation id="5840680448799937675">Fayllar doim oflayn rejimda yuboriladi</translation>
+<translation id="5841167715783969407">Vaqt mintaqasi Wi-FI yoki mobil internet asosida avtomatik aniqlanadi.</translation>
 <translation id="5841270259333717135">Ethernet tarmoqni sozlash</translation>
 <translation id="5842497610951477805">Bluetooth yoniq</translation>
 <translation id="5844284118433003733">Hisobingizga kirsangiz, maʼlumotlar Google hisobingizga ulanadi. Bu sizni Google xizmatlarida himoya qilishda (masalan, xavfsizlik hodisasidan keyin Gmailda himoyani kuchaytirishda) yordam beradi.</translation>
@@ -6744,6 +6752,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6180510783007738939">Chiziq vositasi</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" /> ilovasida qaysi kod ishlatilsin?</translation>
 <translation id="6181431612547969857">Yuklash olish taqiqlangan</translation>
+<translation id="6183369864942961155">Kunduzi va tungi mavzuni avtomatik yoqish</translation>
 <translation id="6184099524311454384">Varaqlar ichidan qidirish</translation>
 <translation id="6184868291074982484">Chrome avtomatik tarzda tashqi cookie fayllarni cheklaydi</translation>
 <translation id="6185132558746749656">Qurilma joylashuvi</translation>
@@ -7146,6 +7155,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6513247462497316522">Boshqa tarmoqqa ulanish yo‘qligida, Google Chrome mobil internet tarmog‘idan foydalanadi.</translation>
 <translation id="6514010653036109809">Mavjud qurilma:</translation>
 <translation id="6517227424170598783">“<ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" />” yorligʻi olib tashlansinmi?</translation>
+<translation id="6517382055541687102">Tanlangan qurilma oʻzgardi: <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">My Drive jildidagi fayllar Chromebook qurilmangizga avtomatik sinxronlanadi va ularni internetsiz ham ochish mumkin. Bu taxminan <ph name="REQUIRED_SPACE" /> joy oladi. Sizda hozir <ph name="FREE_SPACE_AVAILABLE" /> boʻsh.</translation>
 <translation id="6517709704288360414">Endi qurilmangiz ishlashi, xavfsizlik va unumdorlikda muammolar yuz berishi mumkin. Yangilanishlar faolsizlantirilganda foydalanishdagi muammolar yuzasida yuridik shikoyat qila olmaysiz.</translation>
 <translation id="6518014396551869914">Rasmni &amp;nusxalash</translation>
@@ -7403,6 +7413,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6713441551032149301">Funksiya tugmalari va yuqori qatordagi tizim tugmalarini almashtirish uchun launcher tugmasini bosib turing</translation>
 <translation id="6713668088933662563">Hech qachon ushbu tillardagi sahifalarni tarjima qilish taklif qilinmasin</translation>
 <translation id="6715803357256707211">Linux ilovasini oʻrnatishda xatolik yuz berdi. Batafsil axborot olish uchun bildirishnoma ustiga bosing.</translation>
+<translation id="6716049856796700977">Joylashuv axborotiga ruxsat berilmaydi. Ammo ayrim ilova va saytlar joylashuvingizni IP manzilingiz orqali aniqlashi mumkin. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Internet uzilib qoldi. Tarmoq sozlamalarini tekshiring yoki boshqa Wi-Fi tarmoqqa ulaning.</translation>
 <translation id="6718849325281682232">Chrome mavzu ranglari kunduzgi va tungi rejimlarda hamma uchun qulay tarzda yangilandi</translation>
 <translation id="671928215901716392">Bloklash ekrani</translation>
@@ -8384,6 +8395,8 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7478658909253570368">Saytlarga seriyali portlarga ulanishni taqiqlash</translation>
 <translation id="7479221278376295180">Xotira sarfiga nazar solish</translation>
 <translation id="747981547666531654"><ph name="FIRST_DEVICE" /> va <ph name="SECOND_DEVICE" /> nomli Bluetooth qurilmalarga ulangan</translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Google joylashuvni aniqlash xizmati bu qurilmaning joylashuvini bilish uchun Wi-Fi, mobil tarmoqlar va sensorlar kabi manbalardan foydalanadi.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Istalgan vaqtda Sozlamalar &gt; Maxfiylik va xavfsizlik &gt; Daxlsizlik nazorati &gt; Joylashuvga kirish orqali ushbu qurilmada ChromeOS va Android joylashuvini faolsizlantirish mumkin. Shuningdek, ayni shu menyudagi "Qoʻshimcha joylashuv sozlamalari" ostida "joylashuv aniqligi" parametrini faolsizlantirish orqali Wi-Fi, mobil tarmoqlar va Android joylashuv sensorlaridan foydalanishni ham faolsizlantirish mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Oldinga</translation>
 <translation id="7481358317100446445">Tayyor</translation>
 <translation id="748138892655239008">Sertifikatga asosiy cheklovlar</translation>
@@ -8475,6 +8488,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7552846755917812628">Quyidagi amallarni bajarib ko‘ring:</translation>
 <translation id="7553012839257224005">Linux konteyneri tekshirilmoqda</translation>
 <translation id="7553242001898162573">Parolni kiriting</translation>
+<translation id="7553487223484420820">Ruxsat olgan ilova, sayt va tizim xizmatlari joylashuvingiz axborotidan foydalanishi mumkin. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">Bu til administrator tomonidan taqiqlangan</translation>
 <translation id="7554791636758816595">Yangi varaq</translation>
 <translation id="7556033326131260574">Smart Lock yordamida hisobga kirib bo‘lmayapti. Parolingizni kiriting.</translation>
@@ -9390,6 +9404,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" /> hisobingiz oʻchirilmaydi</translation>
 <translation id="8225046344534779393">Internet aloqasini tekshiring</translation>
 <translation id="8225265270453771718">Ilova oynasini namoyish qilish</translation>
+<translation id="8225516926291976401">Joylashuv axborotidan faqat tizim xizmatlari foydalanishi mumkin. Ammo ayrim ilova va saytlar joylashuvingizni IP manzilingiz orqali aniqlashi mumkin. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Taqiqlangan</translation>
 <translation id="8226619461731305576">Navbat</translation>
 <translation id="8227119283605456246">Fayl biriktirish</translation>
@@ -9826,6 +9841,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8552102814346875916">“Quyidagi saytlar doim faol qolsin” roʻyxatiga saqlash</translation>
 <translation id="8553342806078037065">Boshqa foydalanuvchilarni boshqarish</translation>
 <translation id="8554899698005018844">Til tanlanmagan</translation>
+<translation id="8555444629041783356">Kun botishi avtomatik jadvali</translation>
 <translation id="855604308879080518">Android ilovalarga bu Chromebook USB qurilmalaridan foydalanishiga ruxsat berish. Har safar USB qurilma ulanganda ruxsat soʻraladi. Ayrim Android ilovalar qoʻshimcha ruxsatlar soʻrashi ham mumkin.</translation>
 <translation id="8557022314818157177">Barmoq izi yozib olinguncha elektron kalitga teginib turing</translation>
 <translation id="8557180006508471423">Mac qurilmangizda “﻿Location Services” orqali “Google Chrome” brauzerini yoqing</translation>

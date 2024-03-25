@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">모바일 네트워크 없음</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />에 미러링</translation>
 <translation id="1885785240814121742">지문으로 잠금 해제</translation>
+<translation id="1904997243703671177">블루투스를 사용 중지하면 다음 <ph name="DEVICE_COUNT" />개의 외부 기기와 <ph name="DEVICE_TYPE" />의 연결이 해제됩니다.</translation>
 <translation id="1908992311423394684">새로 설치됨</translation>
 <translation id="1915307458270490472">종료</translation>
 <translation id="1918022425394817322">카메라 미리보기가 오른쪽 상단으로 맞춰졌습니다</translation>
@@ -960,6 +961,7 @@
 <translation id="4813311884204119883">링크를 탭 표시줄의 빈 영역으로 드래그</translation>
 <translation id="4814539958450445987">로그인 화면</translation>
 <translation id="481455355267255546">다음 일정</translation>
+<translation id="481749895090480684">할 일 목록: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">카메라 및 마이크</translation>
 <translation id="482908187605862807">Play 스토어에서 사용 가능한 앱</translation>
 <translation id="4831034276697007977">자동 클릭을 사용 중지하시겠습니까?</translation>
@@ -1001,6 +1003,7 @@
 <translation id="4952936045814352993">알람 소리가 사용 중지되어 있는 상태에서는 휴대전화 찾기를 사용할 수 없습니다.</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기를 롤백할 것을 요구합니다. 기기가 재설정되고 모든 데이터가 삭제됩니다.</translation>
 <translation id="4961318399572185831">화면 전송</translation>
+<translation id="4964188651935955085">블루투스를 사용 중지하면 다음의 외부 기기와 <ph name="DEVICE_TYPE" />의 연결이 해제됩니다.</translation>
 <translation id="4966431234408005599">볼륨 높이기</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />시간 <ph name="MINUTES" />분 <ph name="SECONDS" />초</translation>
 <translation id="4975771730019223894">앱 배지 설정</translation>
@@ -1827,6 +1830,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> 정보 대화상자 열기</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> 사용 중</translation>
 <translation id="8185090165691050712">잠금 모드의 크기를 조절할 수 있는 메뉴 사용 설정/사용 중지</translation>
+<translation id="8192727139462702395">블루투스를 사용 중지하면 다음의 외부 기기와 <ph name="DEVICE_TYPE" />의 연결이 해제됩니다.</translation>
 <translation id="8198456017687137612">탭 전송 중</translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8203795194971602413">오른쪽 클릭</translation>

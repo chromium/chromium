@@ -366,6 +366,7 @@
 <translation id="2509468283778169019">Режим CAPS LOCK увімкнено</translation>
 <translation id="2514415433888497495">Вимкнути функцію "<ph name="CAPTURE_MEDIUM" />". Функція "<ph name="CAPTURE_MEDIUM" />" <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">Змінити елементи керування іграми</translation>
 <translation id="2526581474998477112">Розблокувати вікна</translation>
 <translation id="2528111225373402384">Налаштування точки доступу</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -1267,6 +1268,7 @@
 <translation id="5983567367406220847">Точку доступу вимкнено, оскільки ви нею не користувалися.</translation>
 <translation id="598407983968395253">Використати шаблон</translation>
 <translation id="598882571027504733">Щоб завантажити оновлення, перезапустіть Chromebook із під’єднаною клавіатурою.</translation>
+<translation id="5998374579424866922">Вимкнути елементи керування іграми</translation>
 <translation id="6000279412553873020">Клавіші, кнопки тощо</translation>
 <translation id="6002122790816966947">Ваші пристрої</translation>
 <translation id="6012623610530968780">Сторінка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1669,6 +1671,7 @@
 <translation id="7607002721634913082">Призупинено</translation>
 <translation id="7609951632080598826">Запис у календарі, <ph name="DATE" /> о <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камеру знову підключено.</translation>
+<translation id="7613620083300976559">Увімкнути елементи керування іграми</translation>
 <translation id="761736749114493194">Увімкнути або вимкнути режим слідкування. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Зображення з камери закріплено в нижньому правому куті</translation>

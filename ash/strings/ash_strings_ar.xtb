@@ -230,6 +230,7 @@
 <translation id="1882814835921407042">شبكة الجوّال غير متاحة</translation>
 <translation id="1882897271359938046">نسخ إلى <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">فتح القفل باستخدام بصمة الإصبع</translation>
+<translation id="1904997243703671177">بعد إيقاف البلوتوث، سيتم إلغاء ربط <ph name="DEVICE_COUNT" /> جهاز خارجي بجهاز <ph name="DEVICE_TYPE" />، بما في ذلك:</translation>
 <translation id="1908992311423394684">مثبَّت حديثًا</translation>
 <translation id="1915307458270490472">قطع الاتصال</translation>
 <translation id="1918022425394817322">تم توجيه الكاميرا إلى الزاوية العلوية اليمنى.</translation>
@@ -962,6 +963,7 @@
 <translation id="4813311884204119883">اسحب الرابط إلى منطقة فارغة في شريط علامات التبويب.</translation>
 <translation id="4814539958450445987">شاشة تسجيل الدخول</translation>
 <translation id="481455355267255546">الحدث التالي</translation>
+<translation id="481749895090480684">قائمة المهام: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">الكاميرا والميكروفون</translation>
 <translation id="482908187605862807">‏التطبيقات المتوفّرة من "متجر Play"</translation>
 <translation id="4831034276697007977">هل تريد فعلاً إيقاف النقرات التلقائية؟</translation>
@@ -1003,6 +1005,7 @@
 <translation id="4952936045814352993">ميزة "تحديد الموقع الجغرافي للهاتف" غير متاحة لأنّك أوقفت أصوات التنبيهات.</translation>
 <translation id="4960324571663582548">يتطلّب <ph name="MANAGER" /> منك العودة إلى استخدام جهاز <ph name="DEVICE_TYPE" />. ستتم إعادة ضبط جهازك ويتم حذف كل البيانات المتوفّرة عليه.</translation>
 <translation id="4961318399572185831">إرسال الشاشة</translation>
+<translation id="4964188651935955085">بعد إيقاف البلوتوث، سيتم إلغاء ربط هذا الجهاز الخارجي بجهاز <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">رفع مستوى الصوت</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> س <ph name="MINUTES" /> د <ph name="SECONDS" /> ث</translation>
 <translation id="4975771730019223894">وضع شارات على رمز التطبيق</translation>
@@ -1830,6 +1833,7 @@
 <translation id="8155628902202578800">فتح مربع حوار المعلومات للبريد الإلكتروني <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">استخدام <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">قائمة تفعيل/إيقاف وضع القفل لميزة تغيير الحجم</translation>
+<translation id="8192727139462702395">بعد إيقاف البلوتوث، سيتم إلغاء ربط هذه الأجهزة الخارجية بجهاز <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">جارٍ إرسال محتوى علامة التبويب</translation>
 <translation id="8200772114523450471">استئناف</translation>
 <translation id="8203795194971602413">النقر بالزر الأيمن</translation>

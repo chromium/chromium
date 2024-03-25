@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">Мабільная сетка адсутнічае</translation>
 <translation id="1882897271359938046">Выконваецца адлюстраванне на дысплэй <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Разблакіроўка па адбітку пальца</translation>
+<translation id="1904997243703671177">Пасля гэтага ад вашай прылады <ph name="DEVICE_TYPE" /> будуць адключаны знешнія прылады (<ph name="DEVICE_COUNT" />), у тым ліку:</translation>
 <translation id="1908992311423394684">Усталявана нядаўна</translation>
 <translation id="1915307458270490472">Закрыць</translation>
 <translation id="1918022425394817322">Акно перадпрагляду камеры прывязана да правага верхняга вугла</translation>
@@ -960,6 +961,7 @@
 <translation id="4813311884204119883">Перацягніце спасылку на пустое месца на панэлі ўкладак</translation>
 <translation id="4814539958450445987">Экран уваходу</translation>
 <translation id="481455355267255546">Будучыя падзеі</translation>
+<translation id="481749895090480684">Спіс задач: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">камеру і мікрафон</translation>
 <translation id="482908187605862807">Даступныя праграмы з Крамы Play</translation>
 <translation id="4831034276697007977">Сапраўды выключыць аўтаматычныя націсканні?</translation>
@@ -1001,6 +1003,7 @@
 <translation id="4952936045814352993">Функцыя "Знайсці тэлефон" недаступная, бо вы адключылі гукі будзільніка</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> патрабуе, каб выканалі адкат на прыладзе <ph name="DEVICE_TYPE" />. Налады прылады будуць скінуты, а ўсе даныя выдалены.</translation>
 <translation id="4961318399572185831">Трансляцыя экрана</translation>
+<translation id="4964188651935955085">Пасля гэтага ад вашай прылады <ph name="DEVICE_TYPE" /> будзе адключана наступная знешняя прылада:</translation>
 <translation id="4966431234408005599">Павялічыць гучнасць</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> гадз <ph name="MINUTES" /> хв <ph name="SECONDS" /> с</translation>
 <translation id="4975771730019223894">Значкі колькасці апавяшчэнняў у праграмах</translation>
@@ -1827,6 +1830,7 @@
 <translation id="8155628902202578800">Адкрыць дыялогавае акно інфармацыі аб уліковым запісе <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Выкарыстоўваецца <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Уключыць або выключыць меню рэжыму блакіроўкі змянення памеру</translation>
+<translation id="8192727139462702395">Пасля гэтага ад вашай прылады <ph name="DEVICE_TYPE" /> будуць адключаны наступныя знешнія прылады:</translation>
 <translation id="8198456017687137612">Ідзе трансляцыя ўкладкі</translation>
 <translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8203795194971602413">Націсканне правай клавішай мышы</translation>

@@ -344,6 +344,7 @@
 <translation id="677276454032249905">ออกจาก Chrome ใช่ไหม</translation>
 <translation id="6794858689789885890">ลบข้อมูลเว็บไซต์จากอุปกรณ์เสมอเมื่อปิด Chrome</translation>
 <translation id="683440813066116847">กฎขาเข้าสำหรับ Google Chrome Canary เพื่ออนุญาตการเข้าชมแบบ mDNS</translation>
+<translation id="684888714667046800">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ หากคุณใช้ไฟร์วอลล์ โปรดตรวจสอบว่า <ph name="PRODUCT_EXE_NAME" /> อยู่ในรายการที่อนุญาต</translation>
 <translation id="6851981911629679515">เปิดการปกป้องเพิ่มเติมในเครื่องมือ JavaScript และ WebAssembly ของ Chrome</translation>
 <translation id="6881299373831449287">กำลังอัปเดต Chrome</translation>
 <translation id="6885412569789873916">แอป Chrome เบต้า</translation>

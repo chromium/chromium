@@ -286,6 +286,7 @@
 <translation id="2531772459602846206">hortensia</translation>
 <translation id="2533048460510040082">Contido de axuda suxerido</translation>
 <translation id="2536159006530886390">Non foi posible conectarse a Internet.</translation>
+<translation id="2538719227433767804">E <ph name="NUM_HIDDEN_OPTIONS" /> máis</translation>
 <translation id="2561093647892030937">limóns</translation>
 <translation id="2570743873672969996">Executando proba de <ph name="TEST_NAME" />…</translation>
 <translation id="2584547424703650812">Paisaxes brillantes</translation>
@@ -587,6 +588,7 @@
 <translation id="458794348635939462">Produciuse un erro ao resolver todos os hosts</translation>
 <translation id="4593212453765072419">Requírese autenticación proxy</translation>
 <translation id="4609350030397390689">Reducir brillo do teclado</translation>
+<translation id="4617553623719764431">Non se mostra o tempo porque o servizo non detecta a túa localización. <ph name="BEGIN_LINK" />Activa o acceso á localización<ph name="END_LINK" /> para poder ver a información meteorolóxica.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Para cancelar o traballo de impresión, preme Intro.</translation>
 <translation id="463791356324567266">Cancelando escaneamento…</translation>
 <translation id="4646949265910132906">Conexión wifi segura</translation>

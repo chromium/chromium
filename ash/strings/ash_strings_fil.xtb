@@ -229,6 +229,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1882814835921407042">Walang mobile network</translation>
 <translation id="1882897271359938046">Nagmi-mirror sa <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">I-unlock gamit ang fingerprint</translation>
+<translation id="1904997243703671177">Kapag in-off mo ang Bluetooth, madidiskonekta ang <ph name="DEVICE_COUNT" /> (na) external na device sa iyong <ph name="DEVICE_TYPE" />, kabilang ang:</translation>
 <translation id="1908992311423394684">Kaka-install lang</translation>
 <translation id="1915307458270490472">Ibaba</translation>
 <translation id="1918022425394817322">Nag-snap ang camera sa kanang sulok sa itaas</translation>
@@ -960,6 +961,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4813311884204119883">I-drag ang link sa blangkong bahagi sa tabstrip</translation>
 <translation id="4814539958450445987">Screen sa Pag-log In</translation>
 <translation id="481455355267255546">Susunod</translation>
+<translation id="481749895090480684">Listahan ng gawain: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">camera at mikropono</translation>
 <translation id="482908187605862807">Mga available na app mula sa Play Store</translation>
 <translation id="4831034276697007977">Sigurado ka bang gusto mong i-off ang mga awtomatikong pag-click?</translation>
@@ -1001,6 +1003,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4952936045814352993">Hindi available ang paghanap sa telepono kapag naka-disable ang mga tunog ng alarm</translation>
 <translation id="4960324571663582548">Inaatasan ka ng <ph name="MANAGER" /> na i-roll back ang iyong <ph name="DEVICE_TYPE" />. Mare-reset ang iyong device at made-delete ang lahat ng data.</translation>
 <translation id="4961318399572185831">I-cast ang screen</translation>
+<translation id="4964188651935955085">Kapag in-off mo ang Bluetooth, madidiskonekta ang external na device na ito sa iyong <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Lakasan ang volume</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
 <translation id="4975771730019223894">Pag-badge ng app</translation>
@@ -1826,6 +1829,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8155628902202578800">Buksan ang dialog ng impormasyon para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Gamit ang <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">I-on/i-off ang menu para sa resize lock mode</translation>
+<translation id="8192727139462702395">Kapag in-off mo ang Bluetooth, madidiskonekta ang mga external na device na ito sa iyong <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Ikina-cast ang tab</translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8203795194971602413">Mag-right click</translation>

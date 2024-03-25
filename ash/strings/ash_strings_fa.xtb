@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">عدم وجود شبکه تلفن همراه</translation>
 <translation id="1882897271359938046">بازتاب به <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">قفل‌گشایی با اثر انگشت</translation>
+<translation id="1904997243703671177">هرگاه بلوتوث را خاموش کنید، اتصال<ph name="DEVICE_COUNT" /> دستگاه خارجی از <ph name="DEVICE_TYPE" /> قطع خواهد شد:</translation>
 <translation id="1908992311423394684">نصب جدید</translation>
 <translation id="1915307458270490472">قطع تماس</translation>
 <translation id="1918022425394817322">دوربین به گوشه بالا سمت راست چسبید</translation>
@@ -960,6 +961,7 @@
 <translation id="4813311884204119883">کشیدن پیوند به قسمتی خالی در نوار برگه</translation>
 <translation id="4814539958450445987">صفحه ورود به سیستم</translation>
 <translation id="481455355267255546">بعدی</translation>
+<translation id="481749895090480684">فهرست کارها: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">دوربین و میکروفون</translation>
 <translation id="482908187605862807">‏برنامه‌های موجود از «فروشگاه Play»</translation>
 <translation id="4831034276697007977">مطمئنید می‌خواهید کلیک‌های خودکار را خاموش کنید؟</translation>
@@ -1001,6 +1003,7 @@
 <translation id="4952936045814352993">وقتی صداهای هشدار غیرفعال هستند، «پیدا کردن تلفن» دردسترس نیست</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> از شما می‌خواهد <ph name="DEVICE_TYPE" /> را تنزل دهید. دستگاهتان بازنشانی و همه داده‌ها حذف خواهد شد.</translation>
 <translation id="4961318399572185831">فرستادن محتوای صفحه</translation>
+<translation id="4964188651935955085">هرگاه بلوتوث را خاموش کنید، اتصال این دستگاه خارجی به <ph name="DEVICE_TYPE" /> قطع خواهد شد:</translation>
 <translation id="4966431234408005599">افزایش صدا</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> س <ph name="MINUTES" /> د <ph name="SECONDS" /> ث</translation>
 <translation id="4975771730019223894">نشان‌گذاری برنامه</translation>
@@ -1827,6 +1830,7 @@
 <translation id="8155628902202578800">باز کردن کادر گفتگوی اطلاعات برای <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">درحال استفاده از <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">روشن/ خاموش کردن منو برای تغییر اندازه ‏حالت قفل</translation>
+<translation id="8192727139462702395">هرگاه بلوتوث را خاموش کنید، اتصال این دستگاه‌های خارجی از <ph name="DEVICE_TYPE" /> قطع خواهد شد:</translation>
 <translation id="8198456017687137612">فرستادن برگه</translation>
 <translation id="8200772114523450471">ازسرگیری</translation>
 <translation id="8203795194971602413">کلیک راست</translation>

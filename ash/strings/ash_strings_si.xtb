@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">ජංගම ජාලයක් නැත</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> වෙත කැඩපත් කරයි</translation>
 <translation id="1885785240814121742">ඇඟිලි සලකුණින් අගුළු හරින්න</translation>
+<translation id="1904997243703671177">ඔබ බ්ලූටූත් ක්‍රියාවිරහිත කළ විට, මේවා ඇතුළුව, බාහිර උපාංග <ph name="DEVICE_COUNT" />ක් ඔබේ <ph name="DEVICE_TYPE" /> වෙතින් විසන්ධි වනු ඇත:</translation>
 <translation id="1908992311423394684">නව ස්ථාපනය</translation>
 <translation id="1915307458270490472">විසන්ධි කරන්න</translation>
 <translation id="1918022425394817322">කැමරාව ඉහළ දකුණු කෙළවරට සවි කර ඇත</translation>
@@ -960,6 +961,7 @@
 <translation id="4813311884204119883">පටිති තීරුවේ ඇති හිස් ප්‍රදේශයට සබැඳිය අදින්න</translation>
 <translation id="4814539958450445987">පුරන තිරය</translation>
 <translation id="481455355267255546">මීළඟට</translation>
+<translation id="481749895090480684">කාර්ය ලැයිස්තුව: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">කැමරාව සහ මයික්‍රෆෝනය</translation>
 <translation id="482908187605862807">Play Store වෙතින් ලබා ගත හැකි යෙදුම්</translation>
 <translation id="4831034276697007977">ඔබට ස්වයංක්‍රීය ක්ලික් කිරීම් අක්‍රිය කළ යුතු බව ඔබට තහවුරුද?</translation>
@@ -1001,6 +1003,7 @@
 <translation id="4952936045814352993">එලාම හඬවල් අබල කර ඇති විට දුරකථනය තිබෙන තැන සොයා ගන්න ලබා ගත නොහැකිය</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> හට ඔබගේ <ph name="DEVICE_TYPE" /> ආපසු පෙරළීමට අවශ්‍යයි. ඔබගේ උපාංගය යළි සකසනු ඇති අතර සියලු දත්ත මකනු ඇත.</translation>
 <translation id="4961318399572185831">තිරය විකාශය කරන්න</translation>
+<translation id="4964188651935955085">ඔබ බ්ලූටූත් ක්‍රියාවිරහිත කළ විට, මෙම බාහිර උපාංගය ඔබේ <ph name="DEVICE_TYPE" /> වෙතින් විසන්ධි වනු ඇත:</translation>
 <translation id="4966431234408005599">හඬ පරිමාව වැඩි කරන්න</translation>
 <translation id="4969092041573468113">පැ<ph name="HOURS" /> මි<ph name="MINUTES" /> ත<ph name="SECONDS" /></translation>
 <translation id="4975771730019223894">යෙදුම් ලාංඡනය</translation>
@@ -1827,6 +1830,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> සඳහා තතු සංවාදය විවෘත කරන්න</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> භාවිත කිරීම</translation>
 <translation id="8185090165691050712">අගුලු ප්‍රකාරය ප්‍රතිප්‍රමාණ කිරීමට මෙනුව සක්‍රීය/අක්‍රිය කරන්න</translation>
+<translation id="8192727139462702395">ඔබ බ්ලූටූත් ක්‍රියාවිරහිත කළ විට, මෙම බාහිර උපාංග ඔබේ <ph name="DEVICE_TYPE" /> වෙතින් විසන්ධි වනු ඇත:</translation>
 <translation id="8198456017687137612">විකාශ ටැබය</translation>
 <translation id="8200772114523450471">කරගෙන යන්න</translation>
 <translation id="8203795194971602413">දකුණු ක්ලික් කිරීම</translation>

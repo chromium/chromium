@@ -229,6 +229,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1882814835921407042">Ez dago sare mugikorrik</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> pantailan islatzen</translation>
 <translation id="1885785240814121742">Desblokeatu hatz-marka bidez</translation>
+<translation id="1904997243703671177">Bluetootha desaktibatzen duzunean, kanpoko <ph name="DEVICE_COUNT" /> gailu deskonektatuko dira <ph name="DEVICE_TYPE" /> gailutik, hauek barne:</translation>
 <translation id="1908992311423394684">Berriki instalatu da</translation>
 <translation id="1915307458270490472">Amaitu deia</translation>
 <translation id="1918022425394817322">Atxiki egin da kamera goiko eskuinaldeko izkinan</translation>
@@ -961,6 +962,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4813311884204119883">Arrastatu esteka fitxen zintako zuriune batera</translation>
 <translation id="4814539958450445987">Saioa hasteko pantaila</translation>
 <translation id="481455355267255546">Hurrengoa</translation>
+<translation id="481749895090480684">Zereginen zerrenda: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera eta mikrofonoa</translation>
 <translation id="482908187605862807">Play Store-n erabilgarri dauden aplikazioak</translation>
 <translation id="4831034276697007977">Ziur klik automatikoak desaktibatu nahi dituzula?</translation>
@@ -1002,6 +1004,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4952936045814352993">Telefonoaren kokapena zehazteko aukera ez dago erabilgarri alarmen soinuak desgaituta daudenean</translation>
 <translation id="4960324571663582548"><ph name="DEVICE_TYPE" /> gailuaren aurreko bertsiora itzultzea eskatu dizu <ph name="MANAGER" /> kudeatzaileak. Gailua berrezarri egingo da, eta datu guztiak ezabatuko dira.</translation>
 <translation id="4961318399572185831">Igorri pantaila</translation>
+<translation id="4964188651935955085">Bluetootha desaktibatzen duzunean, kanpoko gailu hau deskonektatuko da <ph name="DEVICE_TYPE" /> gailutik:</translation>
 <translation id="4966431234408005599">Igo bolumena</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Aplikazio-multzokatzea</translation>
@@ -1828,6 +1831,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8155628902202578800">Ireki <ph name="USER_EMAIL_ADDRESS" /> erabiltzailearen informazio-leihoa</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> erabiltzen</translation>
 <translation id="8185090165691050712">Aktibatu/Desaktibatu tamaina aldatzeko aukera blokeatuta daukan moduaren menua</translation>
+<translation id="8192727139462702395">Bluetootha desaktibatzen duzunean, kanpoko gailu hauek deskonektatuko dira <ph name="DEVICE_TYPE" /> gailutik:</translation>
 <translation id="8198456017687137612">Edukia igortzen ari den fitxa</translation>
 <translation id="8200772114523450471">Berrekin</translation>
 <translation id="8203795194971602413">Egin klik eskuineko botoiarekin</translation>

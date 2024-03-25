@@ -229,6 +229,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1882814835921407042">Ei mobiiliverkkoa</translation>
 <translation id="1882897271359938046">Peilataan näyttöön: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Avaa sormenjäljellä</translation>
+<translation id="1904997243703671177">Kun laitat Bluetoothin pois päältä, <ph name="DEVICE_COUNT" /> ulkoista laitetta katkaisee yhteyden (<ph name="DEVICE_TYPE" />) esimerkiksi näihin:</translation>
 <translation id="1908992311423394684">Uusi asennus</translation>
 <translation id="1915307458270490472">Katkaise puhelu</translation>
 <translation id="1918022425394817322">Kamera kohdistettu oikeaan yläkulmaan</translation>
@@ -960,6 +961,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4813311884204119883">Vedä linkki välilehtirivin tyhjään kohtaan</translation>
 <translation id="4814539958450445987">Kirjautumisnäyttö</translation>
 <translation id="481455355267255546">Seuraavaksi</translation>
+<translation id="481749895090480684">Tehtävälista: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kameraasi ja mikrofoniasi</translation>
 <translation id="482908187605862807">Play Kaupassa saatavilla olevat sovellukset</translation>
 <translation id="4831034276697007977">Haluatko varmasti lopettaa automaattisen klikkaamisen?</translation>
@@ -1001,6 +1003,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4952936045814352993">Paikanna puhelin ei ole käytettävissä, kun hälytysäänet on poistettu käytöstä</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> edellyttää, että <ph name="DEVICE_TYPE" /> päivitetään aiempaan versioon. Laitteen tehdasasetukset palautetaan ja kaikki data poistetaan.</translation>
 <translation id="4961318399572185831">Suoratoista näyttö</translation>
+<translation id="4964188651935955085">Kun laitat Bluetoothin pois päältä, tämä ulkoinen laite katkaisee yhteyden (<ph name="DEVICE_TYPE" />):</translation>
 <translation id="4966431234408005599">Lisää äänenvoimakkuutta</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> t <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Sovellusten merkitseminen</translation>
@@ -1827,6 +1830,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8155628902202578800">Avaa tietoikkuna: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> käytössä</translation>
 <translation id="8185090165691050712">Muuta lukitustilan kokoa laittamalla valikko päälle tai pois päältä</translation>
+<translation id="8192727139462702395">Kun laitat Bluetoothin pois päältä, nämä ulkoiset laitteet katkaisevat yhteyden (<ph name="DEVICE_TYPE" />):</translation>
 <translation id="8198456017687137612">Välilehteä striimataan</translation>
 <translation id="8200772114523450471">Jatka</translation>
 <translation id="8203795194971602413">Klikkaus kakkospainikkeella</translation>

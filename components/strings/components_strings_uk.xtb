@@ -95,6 +95,7 @@
 <translation id="1175364870820465910">&amp;Друк...</translation>
 <translation id="1175393348063009671">Фотопапір (матовий)</translation>
 <translation id="1175875016430184367">Тричі скріпити праворуч</translation>
+<translation id="1176123604678140687">Місяць закінчення строку дії</translation>
 <translation id="1177548198167638471">Більше не запитувати</translation>
 <translation id="1177863135347784049">Спеціальне</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -485,6 +486,7 @@
 <translation id="1874224422119691492">Ви можете вимкнути цю функцію, перейшовши в розділ <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Лоток для фотографій</translation>
 <translation id="1875512691959384712">Google Форми</translation>
+<translation id="1876116428946561107">У вас немає збережених адрес. Додайте адресу, щоб використовувати її в Chrome.</translation>
 <translation id="1876399092304384674">За датами</translation>
 <translation id="187918866476621466">Відкрити стартові сторінки</translation>
 <translation id="1880901968112404879">Щоб наступного разу платити швидше, збережіть дані картки, зашифрований код безпеки й платіжну адресу в обліковому записі Google</translation>
@@ -614,6 +616,7 @@
 <translation id="2126374524350484896">Додаток, у якому створено PDF:</translation>
 <translation id="2130448033692577677">Вибрані шаблони можуть не застосовуватися, оскільки правило DnsOverHttpsMode не налаштовано.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2132825047782982803">Назви наведено в довільному порядку. Ви можете будь-коли змінити пошукову систему за умовчанням.</translation>
 <translation id="2137891579555018930">Очікування дозволу…</translation>
 <translation id="213826338245044447">Закладки на мобільному</translation>
 <translation id="2141000681034340397">Редагувати введені дані</translation>
@@ -642,6 +645,7 @@
 <translation id="2170417331417184438">Картку збережено лише на пристрої</translation>
 <translation id="2172089022819052306">Ремонт і обслуговування транспортних засобів</translation>
 <translation id="2175630235841878061">Файли розміром понад 100 МБ не можна завантажувати</translation>
+<translation id="2176198174348007293">Використовувати камери (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Зберегти адресу в обліковому записі</translation>
 <translation id="2178665390943006934">Кнопка "Оновити Chrome"; активуйте, щоб оновити веб-переглядач Chrome у його налаштуваннях</translation>
 <translation id="2181821976797666341">Правила</translation>
@@ -1303,6 +1307,7 @@
 <translation id="3507869775212388416">Вакансії в галузі юриспруденції</translation>
 <translation id="3507936815618196901">Створити 3D-карту вашого оточення та відстежувати положення камери</translation>
 <translation id="3512163584740124171">Це правило ігнорується, оскільки інше правило цієї групи має вищий пріоритет.</translation>
+<translation id="351522771072578657">Ви переглядаєте меню</translation>
 <translation id="3515972145999192222">Ваша організація заблокувала домен <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, оскільки він порушує правила. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Обробка кількох об'єктів</translation>
 <translation id="3525130752944427905">10 x 14 дюйм.</translation>
@@ -1363,6 +1368,7 @@
 <translation id="3620239073311576716">Уніформа й робочий одяг</translation>
 <translation id="36224234498066874">Очистити історію…</translation>
 <translation id="362276910939193118">Показати всю історію</translation>
+<translation id="3623041590998910684">Щоб використовувати камеру, надайте Chrome відповідний доступ у <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Романтичні фільми</translation>
 <translation id="3624292976554877583">Ектикетки (матові)</translation>
 <translation id="3628905806504633297">{0,plural, =1{Згідно з правилом адміністратора не рекомендовано переносити цей файл у розташування "<ph name="DESTINATION_NAME" />"}one{Згідно з правилом адміністратора не рекомендовано переносити ці файли в розташування "<ph name="DESTINATION_NAME" />"}few{Згідно з правилом адміністратора не рекомендовано переносити ці файли в розташування "<ph name="DESTINATION_NAME" />"}many{Згідно з правилом адміністратора не рекомендовано переносити ці файли в розташування "<ph name="DESTINATION_NAME" />"}other{Згідно з правилом адміністратора не рекомендовано переносити ці файли в розташування "<ph name="DESTINATION_NAME" />"}}</translation>
@@ -2049,6 +2055,7 @@
 <translation id="4958444002117714549">Розгорнути список</translation>
 <translation id="4960068118612257147">Щоб внести зміни, у Chrome перейдіть у налаштування конфіденційності в рекламі</translation>
 <translation id="4960203958361543136">Виберіть пошукову систему</translation>
+<translation id="4961708452830821006">Щоб використовувати мікрофон, надайте Chrome відповідний доступ у <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Ландшафтний дизайн</translation>
 <translation id="4967366744630699583">Редагувати адресу</translation>
 <translation id="4968522289500246572">Цей додаток створено для мобільних пристроїв, тому можуть виникати проблеми зі зміною розміру на різних екранах. Також можуть траплятися помилки в роботі й перезапуски.</translation>
@@ -2967,6 +2974,7 @@
 <translation id="677257480647123231">Безпека дітей в Інтернеті</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6779348349813025131">Google Менеджеру паролів потрібен доступ до додатка Ключар у MacOS</translation>
+<translation id="6782656837469339439">Рік закінчення строку дії</translation>
 <translation id="6785990323398321538">Ви можете будь-коли змінити пошукову систему в налаштуваннях Chrome.</translation>
 <translation id="6786145470008421571">Конверт 6 x 9 дюймів</translation>
 <translation id="67862343314499040">Фіолетовий</translation>
@@ -3117,6 +3125,7 @@
 <translation id="7064443976734085921">Компактні автомобілі</translation>
 <translation id="7064851114919012435">Контактна інформація</translation>
 <translation id="7067633076996245366">Соул і R&amp;B</translation>
+<translation id="7070144569727915108">налаштуваннях системи</translation>
 <translation id="70705239631109039">З'єднання не повністю захищене</translation>
 <translation id="7075452647191940183">Запит завеликий</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3144,6 +3153,7 @@
 <translation id="7111012039238467737">(Дійсний)</translation>
 <translation id="7111507312244504964">Оцінка вартості й перевірка нерухомості</translation>
 <translation id="7112327784801341716">Не відображається актуальна інформація? Попросіть представника банку оновити її.</translation>
+<translation id="7116334367957017155">У вас немає збережених адрес. Додайте адресу, щоб використовувати її в продуктах Google.</translation>
 <translation id="7118618213916969306">Пошук URL-адреси з буфера обміну, <ph name="SHORT_URL" /></translation>
 <translation id="7119063404975271297">Телевізійні драми</translation>
 <translation id="7119371694555167493">Час очікування копіювання минув</translation>
@@ -3589,6 +3599,7 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб дізнатися про функції Chrome</translation>
 <translation id="7949135979217012031">Антивіруси й зловмисне програмне забезпечення</translation>
 <translation id="7950027195171824198">Керуйте параметрами файлів cookie в налаштуваннях Chrome</translation>
+<translation id="7950440490184876634">Використовувати мікрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-розрядна версія)</translation>
 <translation id="7952192831285741665">EDP (Європейський Союз)</translation>
 <translation id="7952250633095257243">Потрібно вказати швидку команду</translation>
@@ -3748,6 +3759,7 @@
 <translation id="8249296373107784235">Скасувати</translation>
 <translation id="824968735947741546">Виконується переклад. Мова оригіналу: <ph name="SOURCE" /> (визначено автоматично). Мова перекладу: <ph name="TARGET" />.</translation>
 <translation id="8250094606476360498">Ця адреса зараз зберігається на поточному пристрої. Збережіть її у своєму обліковому записі Google (<ph name="ACCOUNT" />), щоб використовувати в усіх продуктах Google.</translation>
+<translation id="8251493595871259082">Вводьте свою адресу швидше</translation>
 <translation id="8252991034201168845">Кнопка "Керувати налаштуваннями спеціальних можливостей"; натисніть Enter, щоб персоналізувати інструменти спеціальних можливостей у налаштуваннях ОС Chrome.</translation>
 <translation id="8253091569723639551">Потрібно вказати платіжну адресу</translation>
 <translation id="8257387598443225809">Цей додаток створено для мобільних пристроїв</translation>
@@ -4136,6 +4148,7 @@
 <translation id="9014705027639070815">Сайти, які ви відвідуєте, можуть запитувати в Chrome інформацію, яка допоможе їм оцінювати ефективність їх оголошень. Chrome дозволяє сайтам збирати лише певні типи даних, наприклад про те, чи здійснили ви покупку після відвідування ресурсу.</translation>
 <translation id="9018120810758822233">Введіть код безпеки для кредитної картки <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">електронна адреса</translation>
+<translation id="90196294733273307">Показано вікно з даними кредитної картки</translation>
 <translation id="9020542370529661692">Цю сторінку перекладено такою мовою: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб поділитися цією вкладкою (надіслати посилання, створити QR-код, транслювати її тощо)</translation>

@@ -176,6 +176,7 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="DEVICE_AUTH
 <translation id="1117535567637097036">Les gestionnaires de protocoles définis par cette règle ne sont pas utilisés pour gérer les intents Android.</translation>
 <translation id="1118093128235245168">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un appareil USB connecté</translation>
 <translation id="111910763555783249">Paramètres de notification</translation>
+<translation id="1122068467107743258">Professionnel</translation>
 <translation id="1122089575901325963">La définition de cette règle permet de configurer le dispositif de contrôle de diagnostic et de télémétrie (DTC) de <ph name="WILCO_NAME" />, à condition qu'il soit disponible sur l'appareil. La taille du fichier de configuration ne peut pas dépasser 1 Mo (1 000 000 octets) et doit être au format JSON. Le dispositif DTC de <ph name="WILCO_NAME" /> en assure le traitement. Le hachage cryptographique permet de valider l'intégrité du téléchargement. La configuration est téléchargée et mise en cache. Elle est de nouveau téléchargée à chaque modification de l'URL ou du hachage.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier.</translation>
@@ -654,6 +655,7 @@ Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cl
 <translation id="152657506688053119">Liste d'URL alternatives pour le moteur de recherche par défaut</translation>
 <translation id="1530812829012954197">Toujours rendre les formats d'URL suivants dans le navigateur hôte</translation>
 <translation id="1534007181698071943">Autoriser les gestionnaires d'événements "unload" à être désactivés par défaut pendant le processus d'abandon</translation>
+<translation id="1539343118617844331">Scolaire</translation>
 <translation id="1542491165152947087">Autorisez les utilisateurs à activer ou désactiver le paramètre des thèmes publicitaires de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
 <translation id="1542958897137600427">Activer le provisionnement des certificats client</translation>
 <translation id="1550295162561011575">Cette règle permet aux administrateurs de configurer l'automatisation pour le lancement des applis sur les appareils <ph name="PRODUCT_NAME" />. Ces applis peuvent être lancées dès que l'utilisateur se connecte. L'utilisateur peut aussi les lancer depuis le lanceur d'applis.</translation>
@@ -1157,7 +1159,7 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet apr�
 <translation id="1930094135927166199">Désactiver le partage d'alimentation USB</translation>
 <translation id="1930127294345368978">Nombre maximal de feuilles pouvant être imprimées par tâche d'impression</translation>
 <translation id="1933378685401357864">Image de fond d'écran</translation>
-<translation id="1935409768874953955">La collecte de données anonymes incluant les URL est toujours active</translation>
+<translation id="1935409768874953955">La collecte de données anonymisées avec clé d'URL est toujours active</translation>
 <translation id="1942626390957213764">Désactiver le hub de partage du bureau</translation>
 <translation id="194407941132272412">Désactiver l'isolation pour tous les sites Web, mais autoriser l'utilisateur à l'activer</translation>
 <translation id="1945994447126139909">Cette règle permet d'assurer la transition à court terme vers <ph name="PRODUCT_NAME" /> 88, après quoi elle sera supprimée.
@@ -1271,11 +1273,11 @@ Remarque : Cette règle ne s'applique pas aux URL JavaScript intégrées dans l
 <translation id="2006530844219044261">Gestion de l'alimentation</translation>
 <translation id="2006954055163088863">Considérer l'utilisateur comme inactif pendant la lecture de la vidéo</translation>
 <translation id="2008514891623783266">La règle de gestion des adresses IP de WebRTC</translation>
-<translation id="201153120366509312">Si cette règle est définie sur "Autorisée" ou n'est pas configurée, la collecte de métriques incluant les URL est autorisée.
-Si la collecte de métriques incluant les URL est autorisée et activée par l'utilisateur, elle envoie à Google les URL des pages consultées par l'utilisateur afin d'améliorer la recherche et la navigation, ainsi que les statistiques d'utilisation par page.
-Les métriques incluant les URL comprennent également les identifiants et les statistiques d'utilisation d'autres composants du navigateur pouvant modifier ou fournir du contenu, comme les extensions.
+<translation id="201153120366509312">Si cette règle est définie sur "Autorisée" ou n'est pas configurée, la collecte de métriques avec clé d'URL est autorisée.
+Si la collecte de métriques avec clé d'URL est autorisée et activée par l'utilisateur, elle envoie à Google les URL des pages consultées par l'utilisateur afin d'améliorer la recherche et la navigation, ainsi que les statistiques d'utilisation par page.
+Les métriques avec clé d'URL comprennent également les identifiants et les statistiques d'utilisation d'autres composants du navigateur pouvant modifier ou fournir du contenu, comme les extensions.
 
-Si cette règle est définie sur "Non autorisée", les utilisateurs ne peuvent pas activer la collecte de métriques incluant les URL.</translation>
+Si cette règle est définie sur "Non autorisée", les utilisateurs ne peuvent pas activer la collecte de métriques avec clé d'URL.</translation>
 <translation id="2012296492055302633">Toujours activer l'écran de confidentialité</translation>
 <translation id="2014757022750736514">Contrôle le comportement de l'écran de connexion, où les internautes se connectent à leur compte. Les paramètres incluent qui peut se connecter, quels types de comptes sont autorisés, quelles méthodes d'authentification doivent être utilisées, ainsi que l'accessibilité générale, le mode de saisie et les paramètres régionaux.</translation>
 <translation id="201557587962247231">Fréquence d'importation des rapports sur l'état de l'appareil</translation>
@@ -1908,6 +1910,16 @@ Si cette règle n'est pas configurée, la valeur par défaut est <ph name="POLIC
 <translation id="2489558694350871332">Autoriser l'appareil à exécuter des machines virtuelles</translation>
 <translation id="2492240920793040106">Activer les rapports sur les informations système et du contenu de pages afin d'améliorer la navigation sécurisée</translation>
 <translation id="2496180316473517155">Historique de navigation</translation>
+<translation id="2497530682475109135">Cette règle permet de définir un libellé servant à identifier un profil connecté. Ce libellé sera affiché à différents endroits (par exemple, à côté de l'icône de profil dans la barre d'outils) pour aider les utilisateurs à identifier le profil.
+Il sera aussi utilisé comme nom par défaut pour les nouveaux profils, et les utilisateurs pourront le modifier.
+
+Si cette règle n'est pas configurée, le libellé par défaut ("Scolaire" ou "Professionnel") est utilisé.
+
+Si cette règle est définie sur "Ajouter le libellé 'Professionnel' au profil (1)", le libellé "Professionnel" est utilisé.
+
+Si cette règle est définie sur "Ajouter le libellé 'Scolaire' au profil (2)", le libellé "Scolaire" est utilisé.
+
+Cette règle sera remplacée par la règle <ph name="CUSTOM_PROFILE_LABEL_POLICY_NAME" /> si celle-ci est configurée.</translation>
 <translation id="2497751676088107779">Script utilisateur</translation>
 <translation id="2497965601277442929">Ne pas autoriser les utilisateurs à activer le mode HTTPS uniquement</translation>
 <translation id="249798396824949930"> Détermine si le navigateur peut ou non détecter le champ d'application obligatoire des règles sur <ph name="MAC_OS_NAME" />.
@@ -2158,6 +2170,13 @@ Les origines non spécifiées par la règle ni par les paramètres utilisateur n
       Cette règle s'applique à l'écran de connexion. Veuillez également consulter celle applicable à la session utilisateur (<ph name="SITE_PER_PROCESS_POLICY_NAME" />). Nous vous recommandons d'attribuer la même valeur à ces deux règles. Si les valeurs ne sont pas identiques, la règle relative aux utilisateurs s'applique. Cela peut ralentir l'ouverture de la session utilisateur.
       </translation>
 <translation id="2697717608663878828">Activer le test TLS Encrypted ClientHello</translation>
+<translation id="2698555428858508691">Cette règle permet de définir un libellé personnalisé servant à identifier un profil connecté.
+
+Si cette règle n'est pas configurée et qu'un libellé doit être affiché, le libellé par défaut ("Professionnel" ou "Scolaire") sera utilisé.
+
+Cette règle prévaut sur la règle <ph name="PROFILE_LABEL_POLICY_NAME" />.
+
+Le libellé personnalisé ne sera pas traduit.</translation>
 <translation id="2699836109975228367">Activer l'audio mono sur l'écran de connexion</translation>
 <translation id="2702023190395322609">Activer les recommandations de contenus multimédias</translation>
 <translation id="2702682139813393777">Forcer le lancement des hôtes de messagerie native Windows via cmd.exe</translation>
@@ -2495,6 +2514,7 @@ La règle <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> est
 <translation id="2985927503455169394">Utiliser le mode par défaut du processus de prise en main de l'Assistant</translation>
 <translation id="2987155890997901449">Activer ARC</translation>
 <translation id="2987227569419001736">Contrôler l'utilisation de l'API Web Bluetooth</translation>
+<translation id="2989259649530222762">Désactiver la fonctionnalité de protection contre le fingerprinting.</translation>
 <translation id="2989404644164421834">Actualiser les pages</translation>
 <translation id="299446489108785864">Liste d'URL indiquant les URL pour lesquelles la règle <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> s'applique. Cette règle n'a aucune incidence sur les valeurs définies par les utilisateurs pour l'ouverture automatique.
 
@@ -4135,6 +4155,13 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les utilisateurs à se connecter qu'aux services Bluetooth spécifiés. Exception : si la liste est vide, tous les services sont autorisés. Les IDUU réservés par Bluetooth SIG peuvent être représentés par <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> ou <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Les IDUU personnalisés peuvent être représentés par <ph name="BLUETOOTH_CUSTOM_UUID" />. Les IDUU ne sont pas sensibles à la casse. Si cette règle n'est pas définie, les utilisateurs peuvent se connecter à n'importe quel service Bluetooth.</translation>
 <translation id="4332177773549877617">Enregistrer des événements pour les installations d'applications Android</translation>
 <translation id="4333940819293342439">Fréquence de collecte des données télémétriques d'utilisation des applis en millisecondes.</translation>
+<translation id="4340121900958123942">Permet de définir le niveau de disponibilité du système de géolocalisation <ph name="PRODUCT_OS_NAME" />.
+
+Il s'agit d'une couche de contrôle supplémentaire, située en dessous de la couche d'autorisation pour les applis et sites Web. Par exemple, si cette règle est définie sur <ph name="GLS_BLOCKED" /> ou <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, aucune appli ni aucun site ne peuvent déterminer la position, quelles que soient leur autorisation respective d'accéder à la position. Toutefois, si cette règle est définie sur <ph name="GLS_ALLOWED" />, les applis et sites peuvent obtenir la position individuellement s'ils ont l'autorisation correspondante.
+
+Les utilisateurs ne peuvent pas ignorer les paramètres sélectionnés par l'administrateur. Si cette règle n'est pas configurée, les utilisateurs bénéficient d'une expérience grand public (c'est-à-dire qu'ils peuvent modifier librement le paramètre système de localisation, et dont la valeur par défaut est <ph name="GLS_ALLOWED" />).
+
+Remarque : cette règle rend obsolète la règle <ph name="ARC_GLS_POLICY_NAME" />. De plus, lorsque cette règle est configurée, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> n'a plus d'incidence sur la préférence de localisation <ph name="ANDROID_NAME" /> sur <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4341199399451274159">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> vous permet de spécifier les encodages de caractères compatibles avec le moteur de recherche. Ces encodages sont des noms de page de codes, comme UTF-8, GB2312 et ISO-8859-1, qui sont testés dans l'ordre dans lequel ils sont indiqués.
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> n'est pas configurée, l'encodage UTF-8 est alors utilisé.</translation>
@@ -4913,7 +4940,7 @@ Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle
 <translation id="5025239932007658691">Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> envoie des requêtes occasionnelles à un serveur Google pour récupérer un horodatage précis.
 
       Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> cesse d'envoyer ces requêtes.</translation>
-<translation id="5030415914668947893">Autoriser la collecte de métriques incluant les URL</translation>
+<translation id="5030415914668947893">Autoriser la collecte de métriques avec clé d'URL </translation>
 <translation id="5033070732967197381">Autoriser les requêtes API WebAuthn sur les sites avec des certificats TLS non fonctionnels.</translation>
 <translation id="5034504101537897433">Activer les rapports d'erreur de l'appareil</translation>
 <translation id="5036013147560568855">Version du protocole de provisionnement de certificat. La valeur par défaut est 1. 1 correspond au protocole "statique". 2 correspond au protocole "dynamique".</translation>
@@ -5643,14 +5670,14 @@ Si cette règle n'est pas configurée ou si elle est définie sur une liste vide
       Si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> applique le processus de déploiement par défaut pour interdire les hachages non sécurisés. Si elle est activée, <ph name="PRODUCT_NAME" /> autorise un serveur à utiliser des hachages non sécurisés lors de la négociation d'un handshake TLS. Si elle est désactivée, <ph name="PRODUCT_NAME" /> interdit à un serveur d'utiliser des hachages non sécurisés lors de la négociation d'un handshake TLS.</translation>
 <translation id="5611869109049836323">Appliquer des contraintes dans les ancres de confiance ajoutées localement</translation>
 <translation id="5614865701790130558">Enregistrer des événements pour les installations d'extensions basées sur des règles</translation>
-<translation id="561493980641967737">Si cette règle est activée, la collecte de données anonymes incluant les URL (qui envoie à Google les URL des pages que l'utilisateur visite afin d'améliorer la recherche et la navigation) est toujours active.
+<translation id="561493980641967737">Si cette règle est activée, la collecte de données anonymisées avec clé d'URL (qui envoie à Google les URL des pages que l'utilisateur visite afin d'améliorer la recherche et la navigation) est toujours active.
 
-Si cette règle est désactivée, les données anonymes incluant les URL ne sont pas collectées.
+Si cette règle est désactivée, les données anonymisées avec clé d'URL ne sont pas collectées.
 
 Si cette règle n'est pas configurée, l'utilisateur peut modifier ce paramètre manuellement.
 
-Dans <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle ne propose pas l'option "Laisser l'utilisateur décider". Si cette règle n'est pas configurée pour <ph name="PRODUCT_OS_NAME" /> Kiosk, la collecte de données anonymes incluant les URL est toujours active.
-Lorsqu'elle est définie pour <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle active la collecte de métriques incluant les URL pour les applis kiosque.</translation>
+Dans <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle ne propose pas l'option "Laisser l'utilisateur décider". Si cette règle n'est pas configurée pour <ph name="PRODUCT_OS_NAME" /> Kiosk, la collecte de données anonymisées avec clé d'URL est toujours active.
+Lorsqu'elle est définie pour <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle active la collecte de métriques avec clé d'URL  pour les applis kiosque.</translation>
 <translation id="5618398258385745432">Ce paramètre était utilisé avant la mise en œuvre de la règle impliquant une nouvelle authentification après consultation du mot de passe. Depuis lors, le paramètre et la règle correspondante sont sans effet sur le fonctionnement de Chrome. Chrome fonctionne actuellement comme si cette règle était définie sur la désactivation de l'affichage des mots de passe en texte clair dans la page des paramètres du gestionnaire de mots de passe. Cela signifie que la page des paramètres contient seulement un espace réservé, et que l'utilisateur doit cliquer sur "Afficher" (et saisir une nouvelle fois son mot de passe, si nécessaire) pour que Chrome affiche le mot de passe. La description initiale de la règle figure ci-dessous.
 
           Détermine si l'utilisateur peut afficher les mots de passe en texte clair dans le gestionnaire de mots de passe.
@@ -6073,6 +6100,7 @@ Si ces deux règles ne sont pas configurées, toutes les authentifications des s
       Si elle est désactivée, les utilisateurs ne peuvent pas envoyer de commentaires à Google.</translation>
 <translation id="5976636832661103220">Les paramètres F11 utilisent le raccourci qui contient la touche de modification Maj</translation>
 <translation id="5979376378555121803">Application hébergée</translation>
+<translation id="5981932073854958705">Activer ou non la fonctionnalité de protection contre le fingerprinting de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="5983274643567559194">La définition d'un raccourci pour l'action "Supprimer" est désactivée.</translation>
 <translation id="5984099692320899605">Ne pas utiliser l'authentification NTLM</translation>
 <translation id="5984237109586500246">Accepter les contenus Web diffusés via Signed HTTP Exchange</translation>
@@ -6140,7 +6168,7 @@ Cette règle a été abandonnée dans la version M124.</translation>
       Si elle est désactivée, ils ne peuvent pas en bénéficier.</translation>
 <translation id="6042407236638640864">Autoriser les pages avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> à accéder au cache amélioré</translation>
 <translation id="604243460476563291">Désactiver le transfert de fichiers dans les connexions d'assistance à distance avec les administrateurs de l'entreprise</translation>
-<translation id="6042629184389251062">La collecte de métriques incluant les URL n'est pas autorisée</translation>
+<translation id="6042629184389251062">La collecte de métriques avec clé d'URL  n'est pas autorisée</translation>
 <translation id="6045733613334942660">Pilotes de scanner</translation>
 <translation id="6046615715547751255">Ne pas autoriser les contrôles de rapports précis</translation>
 <translation id="6048199181629830227">Activer l'alimentation alternée en heures pleines</translation>
@@ -6187,7 +6215,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="60925735895026302">Interdire à tous les sites de demander l'accès aux imprimantes locales via l'API WebPrinting</translation>
 <translation id="6093156968240188330">Permettre aux utilisateurs distants d'interagir avec des fenêtres élevées dans les sessions d'assistance à distance</translation>
 <translation id="6094314311474620462">Désactivez l'impression</translation>
-<translation id="6097601282776163274">Activer la collecte des données anonymes incluant les URL</translation>
+<translation id="6097601282776163274">Activer la collecte de données anonymisées avec clé d'URL</translation>
 <translation id="6099853574908182288">Mode d'impression par défaut couleur</translation>
 <translation id="6102342563050263313">Activer le défilement jusqu'au texte spécifié dans des fragments d'URL</translation>
 <translation id="6102449843040973938">Ne pas empêcher <ph name="BOREALIS_NAME" /> de fonctionner sur un appareil</translation>
@@ -6291,6 +6319,13 @@ Vous pouvez modifier le délai d'inactivité avant l'affichage de l'économiseur
 <translation id="6181783961196084973">Valeur du paramètre de collecte de l'activité dans les applis. Si la règle est définie sur "True", l'activité de l'utilisateur dans les applications est transmise au serveur afin d'être affichée dans l'appli <ph name="PRODUCT_NAME" /> utilisée par l'enfant et les parents. Si la règle est définie sur "False", les limites de temps spécifiques à chaque application sont quand même applicables, mais aucune donnée n'est transmise au serveur ni affichée dans <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182206125906000651">Désactiver les mises à niveau HTTPS</translation>
 <translation id="6182563940865917569">Autoriser Chrome à lire automatiquement le contenu multimédia</translation>
+<translation id="6187573347027372072">Attention ! Cette règle étant obsolète, veuillez utiliser la règle <ph name="CROS_GLS_POLICY_NAME" /> à la place. <ph name="PRODUCT_OS_NAME" /> possède désormais un bouton système d'activation/de désactivation de la localisation pour l'ensemble du système, y compris <ph name="ANDROID_NAME" />. Le bouton d'activation/de désactivation <ph name="ANDROID_NAME" /> est désormais en lecture seule et reflète l'état de la localisation <ph name="PRODUCT_OS_NAME" />.
+
+Lors de la configuration initiale, si la règle est définie sur <ph name="GLS_ENABLED" />, les services de localisation Google sont activés, sauf si la règle <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> est définie sur <ph name="BLOCK_GEOLOCATION_SETTING" />. Si la règle est définie sur <ph name="GLS_DISABLED" /> ou n'est pas configurée, les services de localisation restent désactivés pendant la configuration.
+
+Si la règle est définie sur <ph name="GLS_UNDER_USER_CONTROL" />, les utilisateurs sont invités à préciser s'ils souhaitent ou non utiliser ces services. Si les utilisateurs les activent, les applis <ph name="ANDROID_NAME" />, ainsi que les applis, sites et services système <ph name="PRODUCT_OS_NAME" />, les utilisent pour rechercher la position de l'appareil et envoyer des données de localisation anonymes à Google.
+
+Après la configuration initiale, les utilisateurs peuvent activer ou désactiver les services de localisation Google.</translation>
 <translation id="6187632100458475876">Paramètre du libellé de l'avatar dans la barre d'outils gérée</translation>
 <translation id="6190367314942602985">Enregistrer les informations d'identification de l'utilisateur</translation>
 <translation id="6191963383731098056">Cette règle permet aux administrateurs de configurer la couleur du thème de <ph name="PRODUCT_NAME" />. La chaîne saisie doit être une couleur hexadécimale valide, comme "#RRGGBB".
@@ -6342,7 +6377,7 @@ Le salage doit être une chaîne comprenant entre 8 et 32 caractères.
       Si cette règle n'est pas définie, les suggestions de nouveaux contenus à explorer sont désactivées pour les utilisateurs gérés et activées pour les autres.
       </translation>
 <translation id="6233173491898450179">Définir le répertoire de téléchargement</translation>
-<translation id="6234167788423986573">La collecte de données anonymes incluant les URL n'est jamais active</translation>
+<translation id="6234167788423986573">La collecte de données anonymisées avec clé d'URL n'est jamais active</translation>
 <translation id="6234177445959386333">Configurez la liste des URL de connexion d'entreprise pour lesquelles le service de protection par mot de passe doit enregistrer une copie hachée et salée des mots de passe.</translation>
 <translation id="6236880578835238059">Configurez une liste d'URL autorisées à rester en mode plein écran sans afficher de notification lorsque l'appareil est réactivé après avoir été en mode verrouillage de l'écran.
 
@@ -6669,6 +6704,11 @@ Voir également la règle <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translatio
 <translation id="6440051664870270040">Autoriser les sites à parcourir et à ouvrir des pop-up simultanément</translation>
 <translation id="6441781723322254041">Autoriser les cookies tronqués</translation>
 <translation id="6446366416439249472">Désactiver la synchronisation de Google Drive via des connexions au réseau mobile</translation>
+<translation id="6447628816682315403">Règle permettant de définir si la fonctionnalité de protection contre le fingerprinting de <ph name="PRIVACY_SANDBOX_NAME" /> doit être activée ou désactivée pour vos utilisateurs.
+
+Si cette règle est désactivée, cette fonctionnalité le sera aussi pour les utilisateurs.
+Inversement, si cette règle est activée, cette fonctionnalité le sera aussi pour les utilisateurs.
+Si cette règle n'est pas configurée, les utilisateurs peuvent activer ou désactiver la fonctionnalité de protection contre le fingerprinting dans les paramètres de l'interface utilisateur. L'état par défaut est "False" ou "Désactivé", ce qui signifie que cette fonctionnalité de protection est désactivée.</translation>
 <translation id="6447948611083700881">Service de sauvegarde et de restauration désactivé</translation>
 <translation id="6449476513004303784">Ne pas autoriser les utilisateurs à gérer les certificats</translation>
 <translation id="6449541189334851559">Activer l'intégration de <ph name="GOOGLE_CALENDAR_NAME" /> permet aux utilisateurs <ph name="PRODUCT_OS_NAME" /> de récupérer des événements de <ph name="GOOGLE_CALENDAR_NAME" /> pour remplir le widget d'agenda <ph name="PRODUCT_OS_NAME" /> dans la barre d'état système.
@@ -6720,7 +6760,7 @@ Lorsque cette règle est définie sur "False", aucun redémarrage automatique n'
 Si vous la configurez, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
 Remarque : Pour le moment, les redémarrages automatiques ne sont activés que lorsque l'écran de connexion est affiché ou qu'une session d'appli kiosque est en cours.</translation>
-<translation id="6471018476824827813">La collecte de métriques incluant les URL est autorisée</translation>
+<translation id="6471018476824827813">La collecte de métriques avec clé d'URL  est autorisée</translation>
 <translation id="6471927932956897852">Cette règle permet de spécifier si le P2P doit être utilisé pour les charges utiles de mise à jour de l'OS.
 Si cette règle est définie sur "True", les appareils partagent et tentent de consommer les charges utiles de mise à jour sur le réseau local, ce qui peut réduire l'utilisation et la congestion de la bande passante Internet. Si la charge utile de mise à jour n'est pas disponible sur le réseau local, l'appareil repassera au téléchargement depuis un serveur de mise à jour.
 Si cette règle est définie sur "False", le P2P n'est pas utilisé.
@@ -7523,6 +7563,7 @@ Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_
 <translation id="7044883996351280650">Gérer le service de sauvegarde et de restauration Android</translation>
 <translation id="7045221780834308118">Si cette règle est activée, les applis Web tierces peuvent utiliser l'API Desk pour contrôler les bureaux <ph name="PRODUCT_OS_NAME" />. Si elle n'est pas configurée ou si elle est désactivée, <ph name="DESK_API_NAME" /> ne sera pas disponible. Cette règle ne s'applique qu'aux appareils enregistrés.</translation>
 <translation id="7046113122884041950">Ne pas autoriser Smart Lock</translation>
+<translation id="7046226611117346112">Activer la fonctionnalité de protection contre le fingerprinting.</translation>
 <translation id="7046997898355294677">Afficher les notifications de confidentialité jusqu'à leur suppression par l'utilisateur</translation>
 <translation id="7047495632846973438">Indique si la règle display-capture permissions-policy est sélectionnée ou ignorée.</translation>
 <translation id="7055022222176591388">Interdire le plug-in obsolète <ph name="FLASH_PLUGIN_NAME" /></translation>
@@ -7699,6 +7740,17 @@ La valeur de la règle est une liste de certificats X.509 encodés en base64. L
 
       Remarque : Cette règle n'a pas d'incidence sur Google Drive ni sur la mémoire de stockage interne. Les utilisateurs peuvent toujours accéder aux fichiers enregistrés dans le dossier "Téléchargements".</translation>
 <translation id="7177857088692019405">Déverrouillage rapide</translation>
+<translation id="7179157174254421614">Permet de définir le mode de détection automatique du fuseau horaire, sauf si la règle <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> désactive cette détection automatique. Notez que les utilisateurs ne peuvent pas modifier ce mode.
+
+Cette règle peut être définie sur les valeurs suivantes :
+ * <ph name="TIMEZONE_AUTOMATIC_DETECTION_DISABLED" /> : la détection automatique du fuseau horaire est toujours désactivée.
+ * <ph name="TTIMEZON_AUTOMATIC_DETECTION_IP_ONLY" /> : la détection automatique du fuseau horaire est toujours activée et repose exclusivement sur l'adresse IP.
+ * <ph name="TIMEZONE_AUTOMATIC_DETECTION_SEND_WIFI_ACCESS_POINTS" /> : la détection automatique du fuseau horaire est toujours activée. La liste des points d'accès Wi-Fi visibles est continuellement transmise au serveur de l'API Geolocation pour une détection plus précise du fuseau horaire.
+ * <ph name="TIMEZONE_AUTOMATIC_DETECTION_SEND_ALL_LOCATION_INFO" /> : la détection automatique du fuseau horaire est toujours activée. Les informations de localisation (telles que les points d'accès Wi-Fi et les antennes-relais accessibles) sont transmises à un serveur pour détecter le plus précisément possible le fuseau horaire.
+
+Si cette règle n'est pas configurée, ou qu'elle est définie sur "Choix laissé aux utilisateurs" ou "Aucun", les utilisateurs peuvent gérer la détection automatique du fuseau horaire à l'aide des commandes classiques disponibles dans <ph name="OS_SETTINGS_URL" />.
+
+Remarque : Si vous utilisez cette règle pour résoudre automatiquement le fuseau horaire, pensez à définir la règle <ph name="CROS_GLS_POLICY_NAME" /> sur <ph name="GLS_ALLOWED" /> ou <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />.</translation>
 <translation id="7179187054027029272">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs, les applications et les extensions peuvent utiliser le mode plein écran (dans lequel seul le contenu Web est affiché) à condition d'avoir les autorisations appropriées.
 
       Si cette règle est définie sur "False", les utilisateurs, les applications et les extensions ne peuvent pas utiliser ce mode.</translation>
@@ -8865,6 +8917,7 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
       Remarque : Si le module complémentaire Legacy Browser Support pour <ph name="IE_PRODUCT_NAME" /> n'est pas installé, cette règle n'a aucune incidence.</translation>
 <translation id="8179161412673077784">Empêcher les sites aux expériences abusives d'ouvrir de nouvelles fenêtres ou de nouveaux onglets</translation>
 <translation id="8183108371184777472">Empêcher l'ouverture de la fenêtre du navigateur</translation>
+<translation id="8185312100223853315">Libellé du profil</translation>
 <translation id="8186911565834244165">Autoriser les commentaires des utilisateurs</translation>
 <translation id="8195133650230097559">Ignorer les demandes de wakelocks pour la gestion de l'alimentation</translation>
 <translation id="8196558469954193908">Permet de procéder au multiplexage des connexions HTTP/2 lorsque des certificats client sont utilisés. Pour ce faire, le nom d'hôte de la nouvelle connexion potentielle et celui d'une connexion existante doivent correspondre à un ou plusieurs modèles définis par cette règle. Celle-ci permet d'établir la liste des hôtes selon le format de filtrage <ph name="URL_BLOCKLIST_POLICY_NAME" />, où une correspondance est établie entre "example.com" et "example.com" (et tous les sous-domaines tels que "sub.example.com"), tandis que ".example.net" correspond exactement à "example.net".
@@ -9891,6 +9944,7 @@ Remarque : Pour le moment, seule la première entrée est prise en compte. Les 
 <translation id="9020630127193895800">Rétroéclairage du clavier indigo</translation>
 <translation id="9031831501689819108">Activer Legacy Browser Support</translation>
 <translation id="9032595854515551464">Active le service <ph name="PRODUCT_NAME" /> V2 et lance le bureau à distance lors de la connexion</translation>
+<translation id="903334067190374761">Définir un libellé personnalisé de profil</translation>
 <translation id="9034285085962866065">Autoriser la personnalisation des raccourcis système</translation>
 <translation id="9035086760683255833">Active la fonctionnalité d'accessibilité de mise en surbrillance au clavier.
 

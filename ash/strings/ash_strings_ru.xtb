@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">Не подключено к мобильной сети</translation>
 <translation id="1882897271359938046">Дублирование экрана в <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Используйте разблокировку по отпечатку пальца</translation>
+<translation id="1904997243703671177">После этого от вашего устройства (<ph name="DEVICE_TYPE" />) будет отключено несколько внешних устройств (<ph name="DEVICE_COUNT" />), в том числе:</translation>
 <translation id="1908992311423394684">Недавно установленное приложение</translation>
 <translation id="1915307458270490472">Закрыть</translation>
 <translation id="1918022425394817322">Окно предварительного просмотра камеры привязано к правому верхнему углу</translation>
@@ -960,6 +961,7 @@
 <translation id="4813311884204119883">Перетащите ссылку в пустую область на панели вкладок</translation>
 <translation id="4814539958450445987">Экран входа</translation>
 <translation id="481455355267255546">Предстоящие мероприятия</translation>
+<translation id="481749895090480684">Список задач "<ph name="GLANCEABLES_TASKS_LIST_NAME" />"</translation>
 <translation id="4826588772550366629">"Камера" и "Микрофон"</translation>
 <translation id="482908187605862807">Доступные приложения из Google Play</translation>
 <translation id="4831034276697007977">Вы уверены, что хотите отключить функцию автоматического нажатия?</translation>
@@ -1001,6 +1003,7 @@
 <translation id="4952936045814352993">Функция "Найти телефон" недоступна, так как отключены сигналы оповещений</translation>
 <translation id="4960324571663582548">Согласно требованиям <ph name="MANAGER" /> вам нужно выполнить откат на устройстве <ph name="DEVICE_TYPE" />. Настройки устройства будут сброшены, а все данные – удалены.</translation>
 <translation id="4961318399572185831">Трансляция экрана</translation>
+<translation id="4964188651935955085">После этого от вашего устройства (<ph name="DEVICE_TYPE" />) будет отключено следующее внешнее устройство:</translation>
 <translation id="4966431234408005599">Увеличить громкость</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ч. <ph name="MINUTES" /> мин. <ph name="SECONDS" /> сек.</translation>
 <translation id="4975771730019223894">Число уведомлений на значке приложения</translation>
@@ -1827,6 +1830,7 @@
 <translation id="8155628902202578800">Открыть диалоговое окно с информацией об аккаунте <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Используемый язык: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Показать или скрыть меню для режима блокировки изменения размеров</translation>
+<translation id="8192727139462702395">После этого от вашего устройства (<ph name="DEVICE_TYPE" />) будут отключены следующие внешние устройства:</translation>
 <translation id="8198456017687137612">Трансляция вкладки</translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="8203795194971602413">Нажатие правой кнопкой мыши</translation>

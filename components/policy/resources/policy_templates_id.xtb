@@ -6864,6 +6864,16 @@ untuk memanggil API ini.</translation>
 <translation id="6374945506685352202">Daftar yang tidak diizinkan untuk jenis penginstalan ekstensi</translation>
 <translation id="6376540107659524656">Nonaktifkan SSH di Terminal System App</translation>
 <translation id="6376659517206731212">Bisa Jadi Wajib</translation>
+<translation id="637677821295115289">Menetapkan direktori penyimpanan Screenshot (baik screenshot maupun rekaman layar).
+Jika kebijakan ini disetel sesuai rekomendasi, nilainya akan digunakan secara default, tetapi pengguna dapat mengubahnya.
+Jika tidak, pengguna tidak dapat mengubahnya dan hasil screenshot akan selalu disimpan ke direktori yang ditentukan.
+
+Kebijakan ini menggunakan format yang sama dengan kebijakan <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+Lokasi penyimpanan screenshot dapat disetel ke sistem file lokal atau <ph name="GOOGLE_DRIVE_NAME" /> (dengan imbuhan '${google_drive}') atau <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (dengan imbuhan '${microsoft_onedrive}').
+Jika kebijakan ini disetel ke string kosong, screenshot akan dipaksa untuk disimpan di direktori "Download" lokal.
+Lihat daftar variabel yang dapat Anda gunakan ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).
+
+Jika kebijakan ini tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan direktori "Download" default untuk menyimpan screenshot, dan pengguna dapat mengubahnya.</translation>
 <translation id="6377031865393559909">Izinkan pengguna menggunakan template desktop</translation>
 <translation id="6378076389057087301">Tentukan apakah aktivitas audio memengaruhi pengelolaan daya</translation>
 <translation id="6378393933102834628">Jika kebijakan ditetapkan ke Benar (True), pintasan aplikasi akan ditampilkan. Jika kebijakan ditetapkan ke Salah (False), pintasan tidak akan pernah muncul.

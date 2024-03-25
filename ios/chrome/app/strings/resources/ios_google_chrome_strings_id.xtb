@@ -22,6 +22,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="1436059927646026729">Buka Tab Terbaru Saya di Chrome</translation>
 <translation id="1449241544691504574">Tambahkan Bookmark ke Chrome</translation>
 <translation id="1462727070346936664">Login untuk mengoptimalkan penggunaan Chrome.</translation>
+<translation id="1462833127986525564">Tautkan Chrome dan layanan Google lainnya jika Anda ingin layanan tersebut mempersonalisasi pengalaman Anda menggunakan data dari satu sama lain</translation>
 <translation id="1491435845014430217">Aktifkan “Kunci Tab Samaran Saat Anda Menutup Chrome”.</translation>
 <translation id="1493827051843127077">Setel Chrome sebagai browser default untuk menyinkronkan tab, sandi, dan info pembayaran di semua perangkat Anda</translation>
 <translation id="1504372625950710826">Chrome tidak dapat memeriksa update. Coba periksa koneksi internet Anda.</translation>
@@ -142,6 +143,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4834499902900503484">Saat Anda login ke Chrome, sandi yang Anda simpan akan disimpan di Akun Google Anda. Untuk menonaktifkannya, <ph name="BEGIN_LINK" />buka setelan<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Tidak didukung di Chrome Beta</translation>
 <translation id="4840404732697892756">Pengelola Sandi Google dapat memeriksa sandi jika Anda login dengan Akun Google Anda.</translation>
+<translation id="4856636171409137183">Untuk mendapatkan pengalaman yang paling dipersonalisasi, sertakan Chrome di <ph name="FEATURE_NAME_1" /> dan <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome dapat membantu Anda melacak paket ini di Halaman Tab Baru.}other{Chrome dapat membantu Anda melacak paket tersebut di Halaman Tab Baru.}}</translation>
 <translation id="4903674399067644695">Kartu ini menampilkan saran tentang cara memaksimalkan penggunaan Chrome.</translation>
 <translation id="49200511069271369">Organisasi Anda, <ph name="DOMAIN" />, mengelola akun yang Anda gunakan untuk login dan cara Chrome dapat digunakan. Administrator Anda dapat menyiapkan atau membatasi fitur tertentu.</translation>

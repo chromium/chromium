@@ -229,6 +229,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1882814835921407042">Ayikho inethiwekhi yeselula</translation>
 <translation id="1882897271359938046">Yenza isibuko ku-<ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Vula ngezigxivizo zeminwe</translation>
+<translation id="1904997243703671177">Uma uvala i-Bluetooth, amadivayisi angaphandle angu-<ph name="DEVICE_COUNT" /> azonqanyulwa kusukela ku-<ph name="DEVICE_TYPE" />yakho, okufaka:</translation>
 <translation id="1908992311423394684">Ukufaka okusha</translation>
 <translation id="1915307458270490472">Vala ikholi</translation>
 <translation id="1918022425394817322">Ikhamera iqondaniswe ekhoneni elingaphezulu ngakwesokudla</translation>
@@ -960,6 +961,7 @@ Ezinye izakhi zikhawulelwe ukuze kwandiswe impilo yebhethri.</translation>
 <translation id="4813311884204119883">Hudula ilinki iye endaweni engenalutho kumugqa wethebhu</translation>
 <translation id="4814539958450445987">Isikrini sokungena ngemvume</translation>
 <translation id="481455355267255546">Okulandelayo</translation>
+<translation id="481749895090480684">Uhlu lomsebenzi: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">ikhamela nemakrofoni</translation>
 <translation id="482908187605862807">Ama-app atholakalayo ku-Play Store</translation>
 <translation id="4831034276697007977">Ingabe uqinisekile ukuthi ufuna ukuvala ukuchofoza kwangokwezifiso?</translation>
@@ -1001,6 +1003,7 @@ Ezinye izakhi zikhawulelwe ukuze kwandiswe impilo yebhethri.</translation>
 <translation id="4952936045814352993">Ukuthola ifoni akutholakali uma imisindo ye-alamu ikhutshaziwe</translation>
 <translation id="4960324571663582548">I-<ph name="MANAGER" /> idinga ukuba ubuyele emuva ku-<ph name="DEVICE_TYPE" /> yakho. Idivayisi yakho izosethwa kabusha futhi yonke idatha izosulwa.</translation>
 <translation id="4961318399572185831">Sakaza isikrini</translation>
+<translation id="4964188651935955085">Uma uvala i-Bluetooth, le divayisi engaphandle izonqanyulwa kusukela ku-<ph name="DEVICE_TYPE" /> yakho:</translation>
 <translation id="4966431234408005599">Vulela ivolumu</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
 <translation id="4975771730019223894">Ibheji yohlelo lokusebenza</translation>
@@ -1827,6 +1830,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8155628902202578800">Vula ibhokisi lolwazi lwe-<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Usebenzisa i-<ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Vula/vala imenyu ukuze ushintshe usayizi wemodi yokukhiya</translation>
+<translation id="8192727139462702395">Uma uvala i-Bluetooth, lawa madivayisi angaphandle azonqanyulwa kusukela ku-<ph name="DEVICE_TYPE" /> yakho:</translation>
 <translation id="8198456017687137612">Ithebhu yokusakaza</translation>
 <translation id="8200772114523450471">Qala futhi</translation>
 <translation id="8203795194971602413">Ukuchofoza kwesokudla</translation>

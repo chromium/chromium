@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Буфер обміну</translation>
 <translation id="2597457036804169544">Не використовувати темну тему для сайтів</translation>
 <translation id="2606760465469169465">Автоматичне підтвердження</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Увімкнути JavaScript на певному сайті.</translation>
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2677748264148917807">Вийти</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Захищений контент</translation>
 <translation id="662080504995468778">Залишитися</translation>
 <translation id="6653342741369270081">Щоб вийти з повноекранного режиму, натисніть кнопку "Назад".</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Сховати опцію "Продовжити на цій вкладці"}one{Сховати опцію "Продовжити із цими вкладками"}few{Сховати опцію "Продовжити із цими вкладками"}many{Сховати опцію "Продовжити із цими вкладками"}other{Сховати опцію "Продовжити із цими вкладками"}}</translation>
 <translation id="6689172468748959065">Фотографії профілів</translation>
 <translation id="6697925417670533197">Активні завантаження</translation>
 <translation id="6722828510648505498">Блокувати підказки щодо входу від сервісів ідентифікації</translation>

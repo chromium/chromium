@@ -1939,6 +1939,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2435248616906486374">Síť odpojena</translation>
 <translation id="2435457462613246316">Zobrazit heslo</translation>
 <translation id="2436385001956947090">Kopírovat odkaz</translation>
+<translation id="2436746748253887661">Systémové služby s potřebným oprávněním budou moci používat vaši polohu. Poloha zařízení se určuje pomocí zdrojů, jako jsou sítě Wi-Fi, mobilní sítě a senzory. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Nejste připojeni k tiskárně</translation>
 <translation id="2439152382014731627">Obnovit heslo k zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Načítání služby <ph name="WINDOW_TITLE" /></translation>
@@ -3514,6 +3515,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3665589677786828986">Prohlížeč Chrome zjistil, že některá z vašich nastavení byla upravena jiným programem, a obnovil je na původní výchozí hodnoty.</translation>
 <translation id="3665919494326051362">Aktuální verze je <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Výpis ladění pro Intel Wi‑Fi NICs</translation>
+<translation id="3666971425390608309">Stahování souboru <ph name="FILE_NAME" /> bylo pozastaveno.</translation>
 <translation id="3670113805793654926">Zařízení od libovolného dodavatele</translation>
 <translation id="3670229581627177274">zapněte Bluetooth</translation>
 <translation id="3670480940339182416">Weby mohou používat optimalizátor V8</translation>
@@ -3664,6 +3666,8 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3765055238058255342">tento typ karty</translation>
 <translation id="3765246971671567135">Načtení zásady pro offline ukázkový režim se nezdařilo.</translation>
 <translation id="3765696567014520261">Weby nemohou pomocí souborů sledovat vaši aktivitu prohlížení na různých webech, například k personalizaci reklam. Některé weby mohou přestat fungovat</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Služba určování polohy Google k odhadu polohy vašeho zařízení používá zdroje, jako jsou sítě Wi-Fi, mobilní sítě a senzory.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Informace systémů ChromeOS a Android o poloze můžete na zařízení kdykoliv vypnout v sekci Nastavení &gt; Ochrana soukromí a zabezpečení &gt; Nastavení ochrany soukromí &gt; Přístup k poloze. Vypnutím možnosti Přesnost určování polohy Google v části Pokročilé geografické nastavení ve stejné nabídce můžete také vypnout používání Wi-Fi, mobilních sítí a senzorů ke zjišťování polohy systémem Android.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Další informace o Telefonním centru</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Prozatím můžete hesla sdílet pouze se členy rodiny. <ph name="BEGIN_LINK" />Pozvěte členy rodiny<ph name="END_LINK" /> do skupiny a využívejte své služby a předplatná na Googlu na plno.</translation>
@@ -4328,6 +4332,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4278779213160967034">Tento proces může trvat několik minut. Stahování souborů.</translation>
 <translation id="4279129444466079448">Do tohoto zařízení můžete nainstalovat nejvýše <ph name="PROFILE_LIMIT" /> profilů eSIM. Pokud chcete přidat další profil, nejdříve některý z existujících odstraňte.</translation>
 <translation id="4280325816108262082">Když zařízení vypnete nebo když nebude používáno, automaticky se odpojí</translation>
+<translation id="4281637354026226955">Povolit aplikacím a službám pro ChromeOS a Android s oprávněním pro přístup k poloze používat polohu vašeho zařízení. Google může pravidelně shromažďovat údaje o poloze a anonymně je používat ke zlepšování přesnosti polohy a služeb založených na poloze.</translation>
 <translation id="4281844954008187215">Smluvní podmínky</translation>
 <translation id="4281849573951338030">Přizpůsobit tlačítka pera</translation>
 <translation id="4282196459431406533">Funkce Smart Lock je zapnutá</translation>
@@ -6206,6 +6211,8 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (výchozí nastavení systému)</translation>
 <translation id="5776450228446082914">Seznam webů, které lze otevřít v obou prohlížečích.</translation>
 <translation id="5776571780337000608">Pomocí této aplikace můžete otevírat a upravovat podporované soubory z prohlížeče souborů nebo jiných aplikací. Pokud chcete určit, které soubory se ve výchozím nastavení otevírají v této aplikaci, přečtěte si, <ph name="BEGIN_LINK" />jak na zařízení nastavit výchozí aplikace<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">Služby určování polohy Google zlepšují přesnost určování polohy na základě sítí Wi-Fi, mobilních sítí a senzorů, pomocí kterých se snaží odhadnout vaši polohu. Google může pravidelně shromažďovat údaje o poloze a anonymně je používat ke zlepšování přesnosti polohy a služeb založených na poloze.
+    Pokud toto funkci vypnete, bude Android polohu určovat jen pomocí IP adresy. Může to mít vliv na přesnost polohy, kterou využívají aplikace jako Mapy.</translation>
 <translation id="5778491106820461378">Přihlášené účty Google můžete spravovat v <ph name="LINK_BEGIN" />Nastavení<ph name="LINK_END" />. Oprávnění, která jste udělili webům a aplikacím, se mohou vztahovat na všechny účty. Pokud nechcete, aby weby nebo aplikace měly přístup k informacím o vašem účtu, můžete se do zařízení <ph name="DEVICE_TYPE" /> přihlásit jako host.</translation>
 <translation id="5780011244986845107">Vybraná složka obsahuje citlivé soubory. Opravdu chcete aplikaci <ph name="APP_NAME" /> udělit trvalý přístup ke čtení této složky?</translation>
 <translation id="5780973441651030252">Priorita procesu</translation>
@@ -6291,6 +6298,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5836999627049108525">Jazyk, ze kterého se má překládat</translation>
 <translation id="583756221537636748">Pouzdro</translation>
 <translation id="5840680448799937675">Soubory se vždy budou sdílet offline</translation>
+<translation id="5841167715783969407">Automatické nastavení časového pásma podle Wi-Fi nebo mobilních sítí</translation>
 <translation id="5841270259333717135">Nakonfigurovat ethernet</translation>
 <translation id="5842497610951477805">Aktivace Bluetooth</translation>
 <translation id="5844284118433003733">Když jste přihlášeni, jsou tato data propojena s vaším účtem Google, aby vás ve službách Google bylo možné lépe chránit, například zvýšit ochranu v Gmailu po bezpečnostním incidentu.</translation>
@@ -6739,6 +6747,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6180510783007738939">Nástroj Čára</translation>
 <translation id="6180550893222597997">Který přístupový klíč chcete pro <ph name="APP_NAME" /> použít?</translation>
 <translation id="6181431612547969857">Stahování zablokováno</translation>
+<translation id="6183369864942961155">Automatické přepínání mezi světlým a tmavým motivem</translation>
 <translation id="6184099524311454384">Hledat karty</translation>
 <translation id="6184868291074982484">Chrome automaticky omezuje soubory cookie třetích stran</translation>
 <translation id="6185132558746749656">Poloha zařízení</translation>
@@ -7141,6 +7150,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6513247462497316522">Pokud nebudete připojeni k jiné síti, použije prohlížeč Google Chrome mobilní data.</translation>
 <translation id="6514010653036109809">Dostupné zařízení:</translation>
 <translation id="6517227424170598783">Odstranit zkratku „<ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" />“?</translation>
+<translation id="6517382055541687102">Vybrané zařízení se změnilo na <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Vaše soubory ve složce Můj disk se automaticky synchronizují s Chromebookem, takže k nim máte přístup bez připojení k internetu. Bude obsazeno místo o velikosti přibližně <ph name="REQUIRED_SPACE" />. Aktuálně máte k dispozici <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Vaše zařízení již nemusí pracovat správně a mohou se vyskytnout problémy se zabezpečením a výkonem. Vypnutí aktualizací může také ovlivnit vaše právo na právní nároky, pokud narazíte na nějaké problémy.</translation>
 <translation id="6518014396551869914">Kopírovat o&amp;brázek</translation>
@@ -7402,6 +7412,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6713441551032149301">Podržením spouštěcí klávesy můžete přepínat mezi funkčními klávesami a horní řadou systémových kláves</translation>
 <translation id="6713668088933662563">U těchto jazyků překlad nikdy nenabízet</translation>
 <translation id="6715803357256707211">Při instalaci aplikace pro Linux došlo k chybě. Podrobnosti zobrazíte kliknutím na oznámení.</translation>
+<translation id="6716049856796700977">Vaši polohu nic používat nemůže. Aplikace a weby ji však přesto můžou dokázat zjistit podle IP adresy. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Připojení k síti bylo ztraceno. Zkontrolujte připojení k síti nebo zkuste použít jinou síť Wi-Fi.</translation>
 <translation id="6718849325281682232">Barvy motivů Chrome byly aktualizovány, aby lépe fungovaly pro všechny – ať používají tmavý, nebo světlý režim</translation>
 <translation id="671928215901716392">Zamknout obrazovku</translation>
@@ -8383,6 +8394,8 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7478658909253570368">Nepovolovat webům připojení k sériovým portům</translation>
 <translation id="7479221278376295180">Přehled využití úložiště</translation>
 <translation id="747981547666531654">Připojeno k zařízením Bluetooth s názvy <ph name="FIRST_DEVICE" /> a <ph name="SECOND_DEVICE" /></translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Služby určování polohy Google používají zdroje, jako jsou sítě Wi-Fi, mobilní sítě a senzory, pomocí nichž se snaží odhadnout polohu tohoto zařízení.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Informace systémů ChromeOS a Android o poloze můžete na zařízení kdykoliv vypnout v sekci Nastavení &gt; Ochrana soukromí a zabezpečení &gt; Nastavení ochrany soukromí &gt; Přístup k poloze. Vypnutím možnosti Přesnost určování polohy Google v části Pokročilé geografické nastavení ve stejné nabídce můžete také vypnout používání Wi-Fi, mobilních sítí a senzorů ke zjišťování polohy systémem Android.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Vpřed</translation>
 <translation id="7481358317100446445">Připraveno</translation>
 <translation id="748138892655239008">Základní omezení certifikátu</translation>
@@ -8474,6 +8487,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7552846755917812628">Vyzkoušejte následující tipy:</translation>
 <translation id="7553012839257224005">Kontrola kontejneru systému Linux</translation>
 <translation id="7553242001898162573">Zadejte heslo.</translation>
+<translation id="7553487223484420820">Vaši polohu můžou používat aplikace, weby a systémové služby s oprávněním pro přístup k poloze. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">Váš administrátor tento jazyk nepovolil</translation>
 <translation id="7554791636758816595">Nová karta</translation>
 <translation id="7556033326131260574">Funkci Smart Lock se nepodařilo ověřit váš účet. Chcete-li zařízení otevřít, zadejte heslo.</translation>
@@ -9391,6 +9405,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8224427620313426549">Účet na webu <ph name="DOMAIN_LINK" /> smazán nebude</translation>
 <translation id="8225046344534779393">Zkontrolujte připojení k internetu</translation>
 <translation id="8225265270453771718">Sdílet okno aplikace</translation>
+<translation id="8225516926291976401">Vaši polohu můžou používat pouze systémové služby. Aplikace a weby ji však přesto můžou dokázat zjistit podle IP adresy. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Zakázané</translation>
 <translation id="8226619461731305576">Fronta</translation>
 <translation id="8227119283605456246">Přiložit soubor</translation>
@@ -9827,6 +9842,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8552102814346875916">Uložit do seznamu webů, které mají být vždy ponechány aktivní</translation>
 <translation id="8553342806078037065">Spravovat ostatní uživatele</translation>
 <translation id="8554899698005018844">Žádný jazyk</translation>
+<translation id="8555444629041783356">Automatický plán západu slunce</translation>
 <translation id="855604308879080518">Umožnit aplikacím pro Android na tomto Chromebooku přístup k zařízením USB. O oprávnění budete požádáni pokaždé, když připojíte zařízení USB. Jednotlivé aplikace pro Android budou žádat o další oprávnění.</translation>
 <translation id="8557022314818157177">Dotýkejte se bezpečnostního klíče, dokud se nesejme otisk prstu.</translation>
 <translation id="8557180006508471423">Na počítači Mac zapněte ve službách určování polohy Google Chrome</translation>

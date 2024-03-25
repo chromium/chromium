@@ -229,6 +229,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1882814835921407042">Nema mobilne mreže</translation>
 <translation id="1882897271359938046">Preslikavanje u <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Otključajte otiskom prsta</translation>
+<translation id="1904997243703671177">Kada isključite Bluetooth, broj spoljnih uređaja koji će prekinuti vezu sa uređajem <ph name="DEVICE_TYPE" /> je <ph name="DEVICE_COUNT" />, uključujući:</translation>
 <translation id="1908992311423394684">Novo instaliranje</translation>
 <translation id="1915307458270490472">Prekini vezu</translation>
 <translation id="1918022425394817322">Kamera je uklopljena u gornji desni ugao</translation>
@@ -961,6 +962,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4813311884204119883">Prevucite link u praznu oblast na traci sa karticama</translation>
 <translation id="4814539958450445987">Ekran za prijavljivanje</translation>
 <translation id="481455355267255546">Sledeće</translation>
+<translation id="481749895090480684">Lista zadataka: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera i mikrofon</translation>
 <translation id="482908187605862807">Dostupne aplikacije iz Play prodavnice</translation>
 <translation id="4831034276697007977">Želite li stvarno da isključite automatske klikove?</translation>
@@ -1002,6 +1004,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4952936045814352993">Funkcija Pronađi telefon nije dostupna kada su zvukovi alarma onemogućeni</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> zahteva da vratite <ph name="DEVICE_TYPE" /> na prethodnu verziju. Uređaj će se resetovati i svi podaci će biti izbrisani.</translation>
 <translation id="4961318399572185831">Prebacivanje ekrana</translation>
+<translation id="4964188651935955085">Kada isključite Bluetooth, ovaj spoljni uređaj će prekinuti vezu sa uređajem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Povećaj jačinu zvuka</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> s <ph name="MINUTES" /> min <ph name="SECONDS" /> sek</translation>
 <translation id="4975771730019223894">Dodavanje znački na aplikacije</translation>
@@ -1829,6 +1832,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8155628902202578800">Otvara dijalog sa informacijama za korisnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Koristi se <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Uključite ili isključite meni za promenu veličine zaključanog režima</translation>
+<translation id="8192727139462702395">Kada isključite Bluetooth, ovi spoljni uređaji će prekinuti vezu sa uređajem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Prebacuje se kartica</translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8203795194971602413">Desni klik</translation>

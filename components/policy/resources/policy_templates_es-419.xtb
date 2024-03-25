@@ -187,6 +187,7 @@ Si no estableces la política, no se permitirán excepciones a <ph name="DEVICE_
 <translation id="1117535567637097036">Los controladores de protocolo establecidos mediante esta política no se usan cuando se controlan intents en Android.</translation>
 <translation id="1118093128235245168">Permite que los sitios soliciten al usuario que otorgue acceso a un dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configuración de notificaciones</translation>
+<translation id="1122068467107743258">Trabajo</translation>
 <translation id="1122089575901325963">Si estableces la política, se configurará el controlador de telemetría y diagnósticos (DTC) <ph name="WILCO_NAME" /> (cuando lo admita el dispositivo). El tamaño de la configuración no puede superar 1 MB (1,000,000 bytes) y debe tener el formato JSON. El DTC <ph name="WILCO_NAME" /> es el responsable de administrarla. El hash criptográfico verifica la integridad de la descarga. La configuración se descarga y queda almacenada en caché y, cada vez que cambie la URL o el hash, se volverá a descargar.
 
       Si estableces esta política, los usuarios no podrán cambiarla.</translation>
@@ -670,6 +671,7 @@ Para obtener información detallada sobre los patrones de URL válidos, consulta
 <translation id="152657506688053119">Lista de las URL alternativas para el proveedor de búsqueda predeterminado</translation>
 <translation id="1530812829012954197">Siempre procesar los siguientes patrones de direcciones URL en el navegador del host</translation>
 <translation id="1534007181698071943">Permitir que los controladores del evento de descarga estén inhabilitados de forma predeterminada durante la baja</translation>
+<translation id="1539343118617844331">Institución educativa</translation>
 <translation id="1542491165152947087">Permitir que los usuarios activen o desactiven la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de temas de anuncios en sus dispositivos</translation>
 <translation id="1542958897137600427">Habilitar el aprovisionamiento de certificados de cliente</translation>
 <translation id="1550295162561011575">Si estableces esta política, los administradores podrán configurar la automatización de la ejecución de apps en dispositivos <ph name="PRODUCT_NAME" />. Estas apps se pueden ejecutar con el acceso del usuario, o los usuarios pueden ejecutarlas juntas desde el selector.</translation>
@@ -1973,6 +1975,16 @@ selección predeterminada.</translation>
 <translation id="2489558694350871332">Permitir que el dispositivo ejecute máquinas virtuales</translation>
 <translation id="2492240920793040106">Habilitar los informes de información del sistema y el contenido de la página para ayudar a mejorar la Navegación segura</translation>
 <translation id="2496180316473517155">Historial de navegación</translation>
+<translation id="2497530682475109135">Esta política controla una etiqueta que se usa para identificar un perfil en el que se accedió. Esta etiqueta se mostrará en varios lugares para ayudar a los usuarios a identificar el perfil, por ejemplo, junto al ícono de perfil de la barra de herramientas.
+Esta etiqueta también se usará como nombre predeterminado para los perfiles recién creados que los usuarios pueden modificar.
+
+Si no estableces esta política, se usará la etiqueta predeterminada "Trabajo" o "Institución educativa".
+
+Si estableces esta política como "Label the profile as Work (1)", se usará la etiqueta "Trabajo".
+
+Si estableces esta política como "Label the profile as School (2)", se usará la etiqueta "Institución educativa".
+
+La política <ph name="CUSTOM_PROFILE_LABEL_POLICY_NAME" /> anulará esta política si la estableces.</translation>
 <translation id="2497751676088107779">Secuencia de comandos del usuario</translation>
 <translation id="2497965601277442929">No permitir que los usuarios habiliten el modo solo HTTPS</translation>
 <translation id="249798396824949930"> Controla si el navegador puede o no detectar el alcance obligatorio de la política en <ph name="MAC_OS_NAME" />.
@@ -2242,6 +2254,13 @@ para llamar a esta API.</translation>
 <translation id="2696077732471707315">En la versión M77, se quitó esta política.
       Esta política se aplica a la pantalla de acceso. Consulta también la política <ph name="SITE_PER_PROCESS_POLICY_NAME" />, que se aplica a la sesión de usuario. Se recomienda establecer ambas políticas en el mismo valor. Si los valores no coinciden, es posible que se produzca un retraso cuando se ingresa una sesión de usuario mientras se aplica el valor que especifica la política del usuario.</translation>
 <translation id="2697717608663878828">Habilitar el experimento TLS Encrypted ClientHello</translation>
+<translation id="2698555428858508691">Esta política controla una etiqueta personalizada que se usa para identificar un perfil en el que se accedió.
+
+Si no estableces esta política y se debe mostrar una etiqueta, se usará la etiqueta predeterminada, "Trabajo" o "Institución educativa".
+
+Esta política anulará la política <ph name="PROFILE_LABEL_POLICY_NAME" />.
+
+No se traducirá la etiqueta personalizada.</translation>
 <translation id="2699836109975228367">Habilitar la función de audio mono en la pantalla de acceso</translation>
 <translation id="2702023190395322609">Habilitar las recomendaciones de contenido multimedia</translation>
 <translation id="2702682139813393777">Forzar los hosts de mensajería nativa de Windows para que se inicien mediante cmd.exe</translation>
@@ -2585,6 +2604,7 @@ La política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> 
 <translation id="2985927503455169394">Usa el modo predeterminado de la experiencia de integración del Asistente</translation>
 <translation id="2987155890997901449">Habilitar ARC</translation>
 <translation id="2987227569419001736">Controlar el uso de la API de Bluetooth web</translation>
+<translation id="2989259649530222762">Inhabilitar la función Fingerprinting Protection.</translation>
 <translation id="2989404644164421834">Volver a cargar páginas</translation>
 <translation id="299446489108785864">Se trata de una lista que incluye las URLs en las que se aplicará <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Esta política no afecta los valores abiertos automáticamente que configuran los usuarios.
 
@@ -4281,6 +4301,13 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que los usuarios se conecten a servicios de Bluetooth específicos, a menos que la lista esté vacía. En ese caso, permitirá que se use cualquier servicio. Los UUID reservados por Bluetooth SIG pueden estar representados como <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> o <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Los UUID personalizados pueden estar representados como <ph name="BLUETOOTH_CUSTOM_UUID" />. Los UUID no distinguen entre mayúsculas y minúsculas. Si no estableces la política, los usuarios podrán conectarse a cualquier servicio de Bluetooth.</translation>
 <translation id="4332177773549877617">Registrar eventos de instalaciones de apps de Android</translation>
 <translation id="4333940819293342439">Tasa de recopilación de la telemetría de uso de las apps en milisegundos</translation>
+<translation id="4340121900958123942">Establece el nivel de disponibilidad del sistema de ubicación geográfica de <ph name="PRODUCT_OS_NAME" />.
+
+Esta es una capa de control adicional que se encuentra debajo de la capa de permisos para apps y sitios web. Por ejemplo, si estableces esta política como <ph name="GLS_BLOCKED" /> o <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, ninguna app ni sitio web podrá determinar la ubicación, independientemente de sus respectivos permisos de ubicación. Sin embargo, si la estableces como <ph name="GLS_ALLOWED" />, las apps y los sitios web pueden obtener la ubicación de forma individual si tienen permiso.
+
+Los usuarios no pueden anular la selección de administrador. Si no estableces la política, los usuarios disfrutarán de la experiencia del consumidor, es decir, podrán modificar libremente la configuración de ubicación del sistema, si el valor predeterminado es <ph name="GLS_ALLOWED" />.
+
+Nota: Esta política da de baja la política <ph name="ARC_GLS_POLICY_NAME" />. Además, si estableces esta política, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> ya no afectará la preferencia de ubicación de <ph name="ANDROID_NAME" /> en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4341199399451274159">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> especificará la codificación de caracteres que admite el proveedor de búsqueda. Las codificaciones son nombres de página de código como UTF-8, GB2312 y ISO-8859-1. Estos se prueban en el orden establecido.
 
       Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />, se utilizará UTF-8.</translation>
@@ -6273,6 +6300,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si inhabilitas la política, los usuarios no podrán enviar los comentarios a Google.</translation>
 <translation id="5976636832661103220">La configuración de F11 usa la combinación de teclas que contiene la tecla modificadora mayúsculas</translation>
 <translation id="5979376378555121803">App alojada</translation>
+<translation id="5981932073854958705">Elegir si deseas habilitar la función Fingerprinting Protection de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="5983274643567559194">Inhabilitar la configuración de un acceso directo para la acción "Borrar"</translation>
 <translation id="5984099692320899605">No usar la autenticación de NTLM</translation>
 <translation id="5984237109586500246">Aceptar contenidos web que se presenten como intercambios HTTP firmados</translation>
@@ -6503,6 +6531,13 @@ El tiempo de espera de inactividad para iniciar el protector de pantalla y el in
 <translation id="6181783961196084973">El valor del botón de activación de la recopilación de actividades en apps. Si lo estableces como verdadero, se enviará al servidor la información de la actividad del usuario en apps para que se muestre en la app de <ph name="PRODUCT_NAME" /> del hijo y del padre o la madre. Si lo estableces como falso, seguirá activa la función de Límites de tiempo por app, pero no se enviarán datos al servidor y, por lo tanto, tampoco se mostrarán en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182206125906000651">Inhabilitar actualizaciones de HTTPS</translation>
 <translation id="6182563940865917569">Permitir que Chrome reproduzca contenido multimedia de forma automática</translation>
+<translation id="6187573347027372072">¡Advertencia! Esta política dejó de estar disponible; usa <ph name="CROS_GLS_POLICY_NAME" /> en su lugar. <ph name="PRODUCT_OS_NAME" /> ahora tiene un botón de activación de ubicación del sistema, que controla todo el sistema, incluido <ph name="ANDROID_NAME" />. El botón de activación de <ph name="ANDROID_NAME" /> ahora es de solo lectura y refleja el estado de ubicación de <ph name="PRODUCT_OS_NAME" />.
+
+A menos que establezcas la política <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> como <ph name="BLOCK_GEOLOCATION_SETTING" />, el parámetro de configuración <ph name="GLS_ENABLED" /> activará los Servicios de ubicación de Google durante la configuración inicial. Si la estableces como <ph name="GLS_DISABLED" /> o no la estableces, los Servicios de ubicación se mantendrán desactivados durante la configuración.
+
+Si estableces la política como <ph name="GLS_UNDER_USER_CONTROL" />, se enviará un mensaje a los usuarios para que acepten o rechacen el uso de los Servicios de ubicación de Google. Si lo aceptan, las apps de <ph name="ANDROID_NAME" /> y de <ph name="PRODUCT_OS_NAME" />, los sitios web y los servicios del sistema usarán los servicios para buscar la ubicación del dispositivo y enviar datos de ubicación anónimos a Google.
+
+Después de la configuración inicial, los usuarios podrán activar o desactivar los Servicios de ubicación de Google.</translation>
 <translation id="6187632100458475876">Configuración de etiquetas de avatar de la barra de herramientas administrada</translation>
 <translation id="6190367314942602985">Enviar la información de identificación del usuario</translation>
 <translation id="6191963383731098056">Esta política permite a los administradores configurar el color del tema de <ph name="PRODUCT_NAME" />. La string de entrada debe ser una string válida de un código hexadecimal de color que coincida con el formato "#RRGGBB".
@@ -6939,6 +6974,11 @@ Consulta también la política <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</trans
 <translation id="6440051664870270040">Permitir la navegación y las ventanas emergentes en los sitios al mismo tiempo</translation>
 <translation id="6441781723322254041">Permitir cookies truncadas</translation>
 <translation id="6446366416439249472">Inhabilitar la sincronización de Google Drive por conexiones móviles</translation>
+<translation id="6447628816682315403">Una política que controla si se debe habilitar o inhabilitar el parámetro de configuración de Fingerprinting Protection de <ph name="PRIVACY_SANDBOX_NAME" /> para los usuarios.
+
+Si la inhabilitas, se desactivará el parámetro de configuración de la función Fingerprinting Protection para los usuarios.
+Si la habilitas, los usuarios tendrán activado el parámetro de configuración de la función Fingerprinting Protection.
+Si no estableces la política, los usuarios podrán activar o desactivar la función Fingerprinting Protection en la configuración de la IU. El estado predeterminado será falso o inhabilitado, lo que significa que se desactivará la función Fingerprinting Protection.</translation>
 <translation id="6447948611083700881">Se inhabilitó la funcionalidad de copia de seguridad y restablecimiento</translation>
 <translation id="6449476513004303784">No permitir que los usuarios administren certificados</translation>
 <translation id="6449541189334851559">Habilita la integración de <ph name="GOOGLE_CALENDAR_NAME" />, que permite que los usuarios de <ph name="PRODUCT_OS_NAME" /> recuperen eventos de <ph name="GOOGLE_CALENDAR_NAME" /> a fin de propagar el widget del calendario de <ph name="PRODUCT_OS_NAME" /> en la barra de estado del sistema.
@@ -7821,6 +7861,7 @@ Si estableces esta política como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE
 <translation id="7044883996351280650">Controlar el servicio de restablecimiento y copias de seguridad</translation>
 <translation id="7045221780834308118">Si habilitas la política, las apps web de terceros podrán usar la API de Desk para controlar los escritorios de <ph name="PRODUCT_OS_NAME" />. Si no la estableces o la inhabilitas, la <ph name="DESK_API_NAME" /> no estará disponible. La política solo tendrá efecto en los dispositivos inscritos.</translation>
 <translation id="7046113122884041950">No permitir Smart Lock</translation>
+<translation id="7046226611117346112">Habilitar la función Fingerprinting Protection.</translation>
 <translation id="7046997898355294677">Mostrar las notificaciones de privacidad hasta que el usuario las descarte</translation>
 <translation id="7047495632846973438">Especificar si se marca o se omite la política de permisos para la captura de pantalla</translation>
 <translation id="7055022222176591388">No permitir el complemento de <ph name="FLASH_PLUGIN_NAME" /> desactualizado</translation>
@@ -8000,6 +8041,17 @@ certificado con una SPKI (SubjectPublicKeyInfo) que coincida no será de confian
 
       Nota: La política no afectará Google Drive ni el almacenamiento interno. Los usuarios podrán seguir accediendo a los archivos guardados en la carpeta de descargas.</translation>
 <translation id="7177857088692019405">Desbloqueo rápido</translation>
+<translation id="7179157174254421614">Si estableces la política, se definirá el método de detección automática de la zona horaria, a menos que la política <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> desactive esta opción. Los usuarios no podrán cambiar este parámetro.
+
+El comportamiento varía según el valor con el que se establezca la política:
+ * Si se establece el valor <ph name="TIMEZONE_AUTOMATIC_DETECTION_DISABLED" />, la detección automática de la zona horaria quedará desactivada.
+ * Si se establece el valor <ph name="TTIMEZON_AUTOMATIC_DETECTION_IP_ONLY" />, la detección automática de la zona horaria quedará activada y utilizará el método de solo IP.
+ * Si se establece el valor <ph name="TIMEZONE_AUTOMATIC_DETECTION_SEND_WIFI_ACCESS_POINTS" />, la detección automática de la zona horaria quedará activada y se enviará constantemente la lista de puntos de acceso Wi-Fi visibles al servidor de la API de Geolocation para lograr una detección detallada de la zona horaria.
+ * Si se establece el valor <ph name="TIMEZONE_AUTOMATIC_DETECTION_SEND_ALL_LOCATION_INFO" />, la detección automática de la zona horaria quedará activada y se enviará constantemente información de ubicación (p. ej., puntos de acceso de Wi-Fi, torres de telefonía móvil accesibles) a un servidor para lograr una detección más detallada de la zona horaria.
+
+Si no la estableces o la estableces como Dejar que los usuarios decidan o Ninguno, los usuarios podrán administrar la detección automática de la zona horaria con los controles normales que se encuentran en <ph name="OS_SETTINGS_URL" />.
+
+Nota: Si utilizas esta política para definir la zona horaria de forma automática, no olvides establecer la política <ph name="CROS_GLS_POLICY_NAME" /> como <ph name="GLS_ALLOWED" /> o <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />.</translation>
 <translation id="7179187054027029272">Si estableces la política como verdadera o no la estableces, los usuarios, las apps y las extensiones que cuenten con los permisos correspondientes podrán acceder al modo de pantalla completa (en el cual solo aparece el contenido web).
 
       Si la estableces como falsa, los usuarios, las apps y las extensiones no podrán acceder al modo de pantalla completa.</translation>
@@ -9189,6 +9241,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Nota: Si no está instalado el complemento de Compatibilidad con navegadores heredados para <ph name="IE_PRODUCT_NAME" />, esta política no tendrá ningún efecto.</translation>
 <translation id="8179161412673077784">Impide que los sitios que brindan experiencias abusivas abran ventanas o pestañas nuevas</translation>
 <translation id="8183108371184777472">Impide la ejecución de la ventana del navegador</translation>
+<translation id="8185312100223853315">Etiqueta de perfil</translation>
 <translation id="8186911565834244165">Permite que los usuarios hagan comentarios</translation>
 <translation id="8195133650230097559">Ignora las solicitudes de bloqueo de activación para la administración de energía</translation>
 <translation id="8196558469954193908">Esta política permite la integración de la conexión HTTP/2 cuando se usan los certificados de cliente. Para lograr la integración, el nombre de host de la nueva conexión potencial y el de la conexión existente deben coincidir con uno o más patrones descritos en esta política, que está compuesta por una lista de hosts con el siguiente formato de filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />: "example.com" coincide con "example.com" y todos los subdominios (p. ej. "sub.example.com"), mientras que ".example.net" coincide exactamente con "example.net".
@@ -10276,6 +10329,7 @@ Nota: Por el momento, solo se tendrá en cuenta la primera entrada. Las extensio
 <translation id="9020630127193895800">Color índigo para la retroiluminación del teclado</translation>
 <translation id="9031831501689819108">Habilitar la Compatibilidad con navegadores heredados</translation>
 <translation id="9032595854515551464">Habilitar el servicio de <ph name="PRODUCT_NAME" /> V2 y abrir el escritorio remoto al acceder</translation>
+<translation id="903334067190374761">Establecer una etiqueta de perfil personalizada</translation>
 <translation id="9034285085962866065">Permitir la personalización de combinaciones de teclas del sistema</translation>
 <translation id="9035086760683255833">Habilita la función de accesibilidad para destacar el cursor del teclado.
 

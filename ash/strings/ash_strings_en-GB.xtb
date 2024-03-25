@@ -229,6 +229,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1882814835921407042">No mobile network</translation>
 <translation id="1882897271359938046">Mirroring to <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Unlock with fingerprint</translation>
+<translation id="1904997243703671177">When you turn off Bluetooth, <ph name="DEVICE_COUNT" /> external devices will disconnect from your <ph name="DEVICE_TYPE" />, including:</translation>
 <translation id="1908992311423394684">New install</translation>
 <translation id="1915307458270490472">Hang up</translation>
 <translation id="1918022425394817322">Camera snapped to the top-right corner</translation>
@@ -960,6 +961,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4813311884204119883">Drag link to blank area on the tab strip</translation>
 <translation id="4814539958450445987">Login Screen</translation>
 <translation id="481455355267255546">Up next</translation>
+<translation id="481749895090480684">Task list: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">camera and microphone</translation>
 <translation id="482908187605862807">Available apps from the Play Store</translation>
 <translation id="4831034276697007977">Are you sure that you want to turn off automatic clicks?</translation>
@@ -1001,6 +1003,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4952936045814352993">Locate phone is not available when alarm sounds are disabled</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requires you to roll back your <ph name="DEVICE_TYPE" />. Your device will reset and all data will be deleted.</translation>
 <translation id="4961318399572185831">Cast screen</translation>
+<translation id="4964188651935955085">When you turn off Bluetooth, this external device will disconnect from your <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Turn volume up</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
 <translation id="4975771730019223894">App badging</translation>
@@ -1827,6 +1830,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8155628902202578800">Open info dialogue for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Using <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Turn on/off menu to resize lock mode</translation>
+<translation id="8192727139462702395">When you turn off Bluetooth, these external devices will disconnect from your <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Casting tab</translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8203795194971602413">Right click</translation>

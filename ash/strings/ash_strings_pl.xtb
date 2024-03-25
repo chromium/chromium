@@ -229,6 +229,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1882814835921407042">Brak sieci komórkowej</translation>
 <translation id="1882897271359938046">Kopia na <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Odblokuj odciskiem palca</translation>
+<translation id="1904997243703671177">Gdy wyłączysz Bluetooth, urządzenia zewnętrzne (<ph name="DEVICE_COUNT" />) rozłączą się z urządzeniem <ph name="DEVICE_TYPE" />. Będą to:</translation>
 <translation id="1908992311423394684">Nowa instalacja</translation>
 <translation id="1915307458270490472">Rozłącz</translation>
 <translation id="1918022425394817322">Podgląd z kamery został przyciągnięty do prawego górnego rogu</translation>
@@ -960,6 +961,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4813311884204119883">Przeciągnij link na pusty obszar na pasku kart</translation>
 <translation id="4814539958450445987">Ekran logowania</translation>
 <translation id="481455355267255546">Następne</translation>
+<translation id="481749895090480684">Lista zadań: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamery i mikrofonu</translation>
 <translation id="482908187605862807">Aplikacje dostępne w Sklepie Play</translation>
 <translation id="4831034276697007977">Czy na pewno chcesz wyłączyć automatyczne kliknięcia?</translation>
@@ -1001,6 +1003,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4952936045814352993">Funkcja Znajdź telefon jest niedostępna, kiedy dźwięki alarmu są wyłączone</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> wymaga przywrócenia wcześniejszej wersji systemu operacyjnego na urządzeniu <ph name="DEVICE_TYPE" />. Urządzenie zostanie zresetowane, a wszystkie dane – usunięte.</translation>
 <translation id="4961318399572185831">Przesyłanie ekranu</translation>
+<translation id="4964188651935955085">Gdy wyłączysz Bluetooth, to urządzenie zewnętrzne rozłączy się z urządzeniem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Zwiększ głośność</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> godz. <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Plakietki aplikacji</translation>
@@ -1826,6 +1829,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8155628902202578800">Otwórz okno informacyjne dla konta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">W użyciu jest: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Włącz/wyłącz menu, aby zmienić rozmiar trybu blokady</translation>
+<translation id="8192727139462702395">Gdy wyłączysz Bluetooth, te urządzenia zewnętrzne rozłączą się z urządzeniem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Przesyłam kartę</translation>
 <translation id="8200772114523450471">Wznów</translation>
 <translation id="8203795194971602413">Kliknięcie prawym przyciskiem</translation>

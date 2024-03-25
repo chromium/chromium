@@ -229,6 +229,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1882814835921407042">Nav mobilā tīkla</translation>
 <translation id="1882897271359938046">Spoguļo šeit: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Atbloķēšana ar pirksta nospiedumu</translation>
+<translation id="1904997243703671177">Izslēdzot Bluetooth, no jūsu ierīces (<ph name="DEVICE_TYPE" />) tiks atvienotas vairākas ārējās ierīces (<ph name="DEVICE_COUNT" />), tostarp:</translation>
 <translation id="1908992311423394684">Jauna instalācija</translation>
 <translation id="1915307458270490472">Pārtraukt</translation>
 <translation id="1918022425394817322">Kamera pārnesta uz labo augšējo stūri</translation>
@@ -960,6 +961,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4813311884204119883">Vilkt saiti uz tukšu apgabalu ciļņu joslā</translation>
 <translation id="4814539958450445987">Pierakstīšanās ekrāns</translation>
 <translation id="481455355267255546">Drīzumā</translation>
+<translation id="481749895090480684">Uzdevumu saraksts: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kameru un mikrofonu</translation>
 <translation id="482908187605862807">Play veikalā pieejamās lietotnes</translation>
 <translation id="4831034276697007977">Vai tiešām vēlaties izslēgt automātiskos klikšķus?</translation>
@@ -1001,6 +1003,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4952936045814352993">Funkcija “Atrast tālruni” nav pieejama, ja brīdinājumu skaņas ir atspējotas</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> pieprasa ierīcē <ph name="DEVICE_TYPE" /> atjaunot iepriekšējo versiju. Ierīce tiks atiestatīta, un visi dati tiks izdzēsti.</translation>
 <translation id="4961318399572185831">Ekrāna apraide</translation>
+<translation id="4964188651935955085">Izslēdzot Bluetooth, no jūsu ierīces (<ph name="DEVICE_TYPE" />) tiks atvienota šāda ārējā ierīce:</translation>
 <translation id="4966431234408005599">Palielināt skaļumu</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Lietotnes paziņojumu emblēma</translation>
@@ -1827,6 +1830,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8155628902202578800">Atvērt lietotāja <ph name="USER_EMAIL_ADDRESS" /> informācijas dialoglodziņu</translation>
 <translation id="8167567890448493835">Izmantotā valoda: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Ieslēgt/izslēgt bloķēšanas režīma lieluma maiņas izvēlni</translation>
+<translation id="8192727139462702395">Izslēdzot Bluetooth, no jūsu ierīces (<ph name="DEVICE_TYPE" />) tiks atvienotas šādas ārējās ierīces:</translation>
 <translation id="8198456017687137612">Apraides cilne</translation>
 <translation id="8200772114523450471">Kopsavilkums</translation>
 <translation id="8203795194971602413">Noklikšķināt ar peles labo pogu</translation>

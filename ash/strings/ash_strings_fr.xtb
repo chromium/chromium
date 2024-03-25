@@ -229,6 +229,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1882814835921407042">Pas de réseau mobile</translation>
 <translation id="1882897271359938046">Mise en miroir pour <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Déverrouillage avec empreinte</translation>
+<translation id="1904997243703671177">Les <ph name="DEVICE_COUNT" /> appareils externes suivants seront alors déconnectés de votre <ph name="DEVICE_TYPE" /> :</translation>
 <translation id="1908992311423394684">Nouvelle installation</translation>
 <translation id="1915307458270490472">Raccrocher</translation>
 <translation id="1918022425394817322">Appareil photo aligné sur l'angle supérieur droit</translation>
@@ -960,6 +961,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4813311884204119883">Faire glisser un lien vers une zone vide de la barre d'onglets</translation>
 <translation id="4814539958450445987">Écran de connexion</translation>
 <translation id="481455355267255546">Événement suivant</translation>
+<translation id="481749895090480684">Liste de tâches : <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">votre caméra et votre micro</translation>
 <translation id="482908187605862807">Applis disponibles sur le Play Store</translation>
 <translation id="4831034276697007977">Voulez-vous vraiment désactiver les clics automatiques ?</translation>
@@ -1001,6 +1003,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4952936045814352993">Impossible de localiser le téléphone lorsque les sons de l'alarme sont désactivés</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> exige un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
 <translation id="4961318399572185831">Caster l'écran</translation>
+<translation id="4964188651935955085">L'appareil externe suivant sera alors déconnecté de votre <ph name="DEVICE_TYPE" /> :</translation>
 <translation id="4966431234408005599">Augmenter le volume</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Afficher un badge sur l'application</translation>
@@ -1828,6 +1831,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8155628902202578800">Ouvrir la boîte de dialogue d'informations pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> en cours d'utilisation</translation>
 <translation id="8185090165691050712">Activer/Désactiver le menu pour redimensionner le mode verrouillé</translation>
+<translation id="8192727139462702395">Les appareils externes suivants seront alors déconnectés de votre <ph name="DEVICE_TYPE" /> :</translation>
 <translation id="8198456017687137612">Diffusion de l'onglet</translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8203795194971602413">Clic droit</translation>

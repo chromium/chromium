@@ -1943,6 +1943,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2435248616906486374">Võrguühendus puudub</translation>
 <translation id="2435457462613246316">Kuva parool</translation>
 <translation id="2436385001956947090">Lingi &amp;kopeerimine</translation>
+<translation id="2436746748253887661">See võimaldab süsteemiteenustel teie asukohateavet kasutada. Funktsioon Asukoht võib teie seadme asukoha tuvastamiseks kasutada selliseid allikaid nagu WiFi- ja mobiilsidevõrgud ning andurid. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Ei ole printeriga ühendatud</translation>
 <translation id="2439152382014731627">Seadme <ph name="DEVICE_TYPE" /> parooli lähtestamine</translation>
 <translation id="2439626940657133600">Akna <ph name="WINDOW_TITLE" /> laadimine</translation>
@@ -3518,6 +3519,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3665589677786828986">Chrome tuvastas, et teine programm rikkus teie seadeid, ja lähtestas need algsetele vaikevalikutele.</translation>
 <translation id="3665919494326051362">Praegune versioon on <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Inteli WiFi NIC-de silumisandmete tõmmis</translation>
+<translation id="3666971425390608309">Allalaadimine on peatatud: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Seadmed mis tahes teenusepakkujalt</translation>
 <translation id="3670229581627177274">Lülita Bluetooth sisse</translation>
 <translation id="3670480940339182416">Saidid võivad kasutada V8 optimeerijat</translation>
@@ -3668,6 +3670,8 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3765055238058255342">seda tüüpi kaart</translation>
 <translation id="3765246971671567135">Võrguühenduseta demorežiimi reeglit ei saanud lugeda.</translation>
 <translation id="3765696567014520261">Saidid ei saa reklaamide isikupärastamiseks küpsisefailide abil eri saitidel teie sirvimistegevust jälgida. Funktsioonid ei pruugi mõnel saidil toimida</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Google'i asukohateenus kasutab teie seadme asukoha prognoosimiseks selliseid allikaid nagu WiFi- ja mobiilsidevõrgud ning andurid.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Saate ChromeOS-i ja Androidi asukoha oma seadmes igal ajal välja lülitada, avades menüü Seaded &gt; Privaatsus ja turvalisus &gt; Privaatsuse seaded &gt; Juurdepääs asukohale. Peale selle saate välja lülitada ka WiFi- ja mobiilsidevõrkude ning andurite kasutamise Androidi asukoha tuvastamiseks, lülitades samas menüüs jaotises „Täpsemad asukohaseaded“ välja valiku „Asukohatäpsuse parandamine“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Lisateave Phone Hubi kohta</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Praegu saate paroole jagada ainult pereliikmetega. <ph name="BEGIN_LINK" />Kutsuge pereliikmeid<ph name="END_LINK" /> oma grupiga liituma ja saate oma toodetest ja tellimustest Google'is maksimumi võtta.</translation>
@@ -4333,6 +4337,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4278779213160967034">See protsess võib võtta mõne minuti. Faile laaditakse alla.</translation>
 <translation id="4279129444466079448">Saate sellesse seadmesse installida kuni <ph name="PROFILE_LIMIT" /> eSIM-i profiili. Veel ühe profiili lisamiseks eemaldage mõni olemasolev.</translation>
 <translation id="4280325816108262082">Kui seade on välja lülitatud või seda ei kasutata, katkestatakse automaatselt selle ühendus</translation>
+<translation id="4281637354026226955">Lubage asukohale juurdepääsu loaga ChromeOS-i ja Androidi rakendustel ning teenustel kasutada teie seadme asukohta. Google võib aeg-ajalt koguda asukohaandmeid ja kasutada neid anonüümselt asukohatäpsuse ning asukohapõhiste teenuste parendamiseks.</translation>
 <translation id="4281844954008187215">Teenusetingimused</translation>
 <translation id="4281849573951338030">Pliiatsinuppude kohandamine</translation>
 <translation id="4282196459431406533">Smart Lock on sisse lülitatud</translation>
@@ -6213,6 +6218,8 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (süsteemi vaikeseade)</translation>
 <translation id="5776450228446082914">Loend veebisaitidest, mida võib kummaski brauseris avada.</translation>
 <translation id="5776571780337000608">Võite toetatud faile avada ja redigeerida selle rakendusega oma failibrauseri või muude rakenduste kaudu. Selle haldamiseks, millised failid vaikimisi selles rakenduses avatakse, <ph name="BEGIN_LINK" />vaadake, kuidas oma seadmes vaikerakendusi seadistada<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">Google'i asukohateenus parandab asukoha tuvastamise täpsust, kasutades teie asukoha määramiseks WiFi- ja mobiilsidevõrke ning andureid. Google võib aeg-ajalt koguda asukohaandmeid ja kasutada neid anonüümselt asukohatäpsuse ning asukohapõhiste teenuste parendamiseks.
+    Kui selle välja lülitate, kasutab Android asukoha määramiseks ainult IP-aadressi. See võib mõjutada rakenduste (nt Maps) kasutatava asukoha täpsust.</translation>
 <translation id="5778491106820461378">Saate sisselogitud Google'i kontosid hallata jaotises <ph name="LINK_BEGIN" />Seaded<ph name="LINK_END" />. Veebisaitidele ja rakendustele antud load võivad kehtida kõigi kontode puhul. Kui te ei soovi, et saidid või rakendused teie konto teabele juurde pääseksid, saate seadmesse <ph name="DEVICE_TYPE" /> sisse logida külalisena.</translation>
 <translation id="5780011244986845107">Teie valitud kaust sisaldab tundlikke faile. Kas soovite kindlasti anda rakendusele „<ph name="APP_NAME" />” püsiva juurdepääsu selle kausta lugemiseks?</translation>
 <translation id="5780973441651030252">Protsessi prioriteet</translation>
@@ -6298,6 +6305,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5836999627049108525">Keel, millest tõlkida</translation>
 <translation id="583756221537636748">Ümbris</translation>
 <translation id="5840680448799937675">Faile jagatakse alati võrguühenduseta</translation>
+<translation id="5841167715783969407">Automaatne ajavöönd WiFi- või mobiilsidevõrkude põhjal</translation>
 <translation id="5841270259333717135">Etherneti seadistamine</translation>
 <translation id="5842497610951477805">Bluetoothi lubamine</translation>
 <translation id="5844284118433003733">Kui olete sisse logitud, lingitakse need andmed teie Google'i kontoga, et teid Google'i teenustest kaitsta. Näiteks suurendades pärast turvaintsidenti Gmailis kaitset.</translation>
@@ -6747,6 +6755,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6180510783007738939">Joonetööriist</translation>
 <translation id="6180550893222597997">Millist pääsuvõtit soovite rakenduse <ph name="APP_NAME" /> puhul kasutada?</translation>
 <translation id="6181431612547969857">Allalaadimine on blokeeritud</translation>
+<translation id="6183369864942961155">Automaatne hele/tume teema</translation>
 <translation id="6184099524311454384">Otsige vahelehtedelt</translation>
 <translation id="6184868291074982484">Chrome piirab automaatselt kolmanda osapoole küpsisefaile</translation>
 <translation id="6185132558746749656">Seadme asukoht</translation>
@@ -7149,6 +7158,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6513247462497316522">Google Chrome kasutab mobiilset andmesidet, kui te ei ole teise võrku ühendatud.</translation>
 <translation id="6514010653036109809">Saadaolev seade:</translation>
 <translation id="6517227424170598783">Kas eemaldada otsetee „<ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" />“?</translation>
+<translation id="6517382055541687102">Valitud seadmeks määrati <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Teie failid jaotises Minu ketas sünkroonitakse automaatselt teie Chromebookiga, nii et pääsete neile juurde ilma internetiühenduseta. See kasutab umbes <ph name="REQUIRED_SPACE" />. Teil on praegu saadaval <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Teie seade ei pruugi enam korralikult töötada ning võite kogeda turva- ja toimivusprobleeme. Värskenduste väljalülitamine võib mõjutada ka teie õigusi esitada probleemide ilmnemisel juriidilisi nõudeid.</translation>
 <translation id="6518014396551869914">Kop&amp;eeri pilt</translation>
@@ -7406,6 +7416,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6713441551032149301">Funktsiooniklahvide ja süsteemi ülemise rea klahvide vahel vahetamiseks hoidke all käivitajaklahvi</translation>
 <translation id="6713668088933662563">Ära kunagi paku nende keelte tõlkimist</translation>
 <translation id="6715803357256707211">Linuxi rakenduse installimisel ilmnes viga. Lisateabe saamiseks klõpsake märguandel.</translation>
+<translation id="6716049856796700977">Miski ei saa kasutada teie asukohta. Aga teie asukoht võib teie IP-aadressi kaudu olla rakendustele ja veebisaitidele endiselt nähtav. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Võrguühendus katkes. Kontrollige võrguühendust või proovige mõnda teist WiFi-võrku.</translation>
 <translation id="6718849325281682232">Chrome’i teemavärve on värskendatud, et need toimiksid kõigi jaoks paremini nii tumedas kui ka heledas režiimis</translation>
 <translation id="671928215901716392">Lukusta ekraan</translation>
@@ -8388,6 +8399,8 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7478658909253570368">Ära luba saitidel jadaportidega ühendust luua</translation>
 <translation id="7479221278376295180">Salvestusruumi kasutuse ülevaade</translation>
 <translation id="747981547666531654">Ühendatud Bluetooth-seadmetega <ph name="FIRST_DEVICE" /> ja <ph name="SECOND_DEVICE" /></translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Google'i asukohateenus kasutab selle seadme asukoha prognoosimiseks selliseid allikaid nagu WiFi- ja mobiilsidevõrgud ning andurid.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Saate ChromeOS-i ja Androidi asukoha selles seadmes igal ajal välja lülitada, avades menüü Seaded &gt; Privaatsus ja turvalisus &gt; Privaatsuse seaded &gt; Juurdepääs asukohale. Peale selle saate välja lülitada ka WiFi- ja mobiilsidevõrkude ning andurite kasutamise Androidi asukoha tuvastamiseks, lülitades samas menüüs jaotises „Täpsemad asukohaseaded“ välja valiku „Asukohatäpsuse parandamine“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Edasta</translation>
 <translation id="7481358317100446445">Valmis</translation>
 <translation id="748138892655239008">Sertifikaadi põhipiirangud</translation>
@@ -8479,6 +8492,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7552846755917812628">Proovige järgmiseid nõuandeid.</translation>
 <translation id="7553012839257224005">Linuxi konteineri kontrollimine</translation>
 <translation id="7553242001898162573">Sisestage parool</translation>
+<translation id="7553487223484420820">Asukohale juurdepääsu loaga rakendused, veebisaidid ja süsteemiteenused saavad kasutada teie asukohateavet. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">Teie administraator ei luba seda keelt kasutada</translation>
 <translation id="7554791636758816595">Uus vaheleht</translation>
 <translation id="7556033326131260574">Smart Lock ei suutnud teie kontot kinnitada. Sisestage sisenemiseks parool.</translation>
@@ -9396,6 +9410,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8224427620313426549">Teie teenuse <ph name="DOMAIN_LINK" /> kontot ei kustutata</translation>
 <translation id="8225046344534779393">Kontrollige internetiühendust</translation>
 <translation id="8225265270453771718">Rakenduse akna jagamine</translation>
+<translation id="8225516926291976401">Teie asukohateavet saavad kasutada ainult süsteemiteenused. Aga teie asukoht võib teie IP-aadressi kaudu olla rakendustele ja veebisaitidele endiselt nähtav. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Keelatud</translation>
 <translation id="8226619461731305576">Järjekord</translation>
 <translation id="8227119283605456246">Manusta fail</translation>
@@ -9832,6 +9847,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8552102814346875916">Salvesta loendisse „Järgmised saidid hoitakse alati aktiivsena“</translation>
 <translation id="8553342806078037065">Teiste inimeste haldamine</translation>
 <translation id="8554899698005018844">Keel puudub</translation>
+<translation id="8555444629041783356">Automaatne kasutuselt eemaldamise ajakava</translation>
 <translation id="855604308879080518">Androidi rakendustel lubatakse selles Chromebookis USB-seadmetele juurde pääseda. Luba taotletakse iga kord, kui USB-seadme ühendate. Individuaalsed Androidi rakendused küsivad lisalube.</translation>
 <translation id="8557022314818157177">Hoidke sõrme turvavõtmel, kuni sõrmejälg jäädvustatakse</translation>
 <translation id="8557180006508471423">Lülitage oma Maci jaotises Location Services sisse valik „Google Chrome”</translation>

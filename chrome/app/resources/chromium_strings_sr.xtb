@@ -334,6 +334,7 @@
 <translation id="67706546131546258">Chromium препоручује скенирање овог фајла јер може да буде опасан.</translation>
 <translation id="6779406956731413166">Chromium ОС омогућава додатни <ph name="BEGIN_LINK_CROS_OSS" />софтвер отвореног кода<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6847869444787758381">Chromium вас обавештава ако су лозинке угрожене</translation>
+<translation id="684888714667046800">Повезивање са интернетом није успело. Ако користите заштитни зид, проверите да ли се <ph name="PRODUCT_EXE_NAME" /> налази на листи дозвољених.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium је открио да <ph name="EXTENSION_NAME" /> садржи малвер</translation>
 <translation id="6893813176749746474">Chromium је ажуриран, али га нисте користили најмање 30 дана.</translation>

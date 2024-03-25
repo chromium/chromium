@@ -229,6 +229,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1882814835921407042">Ingen mobilnettverk</translation>
 <translation id="1882897271359938046">Speiler <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås opp med fingeravtrykk</translation>
+<translation id="1904997243703671177">Når du slår av Bluetooth, blir <ph name="DEVICE_COUNT" /> eksterne enheter koblet fra <ph name="DEVICE_TYPE" />, inkludert disse:</translation>
 <translation id="1908992311423394684">Nylig installert</translation>
 <translation id="1915307458270490472">Legg på</translation>
 <translation id="1918022425394817322">Kameraet er festet til øvre høyre hjørne</translation>
@@ -960,6 +961,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4813311884204119883">Dra en link til et tomt område på faneraden</translation>
 <translation id="4814539958450445987">Påloggingsskjerm</translation>
 <translation id="481455355267255546">Neste</translation>
+<translation id="481749895090480684">Huskeliste: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera og mikrofon</translation>
 <translation id="482908187605862807">Tilgjengelige apper fra Play-butikken</translation>
 <translation id="4831034276697007977">Er du sikker på at du vil slå av automatiske klikk?</translation>
@@ -1001,6 +1003,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4952936045814352993">Finn telefonen er ikke tilgjengelig når alarmlyder er slått av</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> krever rollback av <ph name="DEVICE_TYPE" />. Enheten blir tilbakestilt, og alle data blir slettet.</translation>
 <translation id="4961318399572185831">Cast skjermen</translation>
+<translation id="4964188651935955085">Når du slår av Bluetooth, blir denne eksterne enheten koblet fra <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Skru opp volumet</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> t <ph name="MINUTES" /> m <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Appmerking</translation>
@@ -1827,6 +1830,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8155628902202578800">Åpne dialogboksen for informasjon om <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Bruker <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Slå menyen på/av for å endre størrelsen på låsemodusen</translation>
+<translation id="8192727139462702395">Når du slår av Bluetooth, blir disse eksterne enhetene koblet fra <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Casting-fanen</translation>
 <translation id="8200772114523450471">Fortsett</translation>
 <translation id="8203795194971602413">Høyreklikk</translation>

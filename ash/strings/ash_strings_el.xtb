@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">Δεν υπάρχει δίκτυο κινητής τηλεφωνίας</translation>
 <translation id="1882897271359938046">Κατοπτρισμός σε <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Ξεκλείδωμα με δακτυλικό αποτύπωμα</translation>
+<translation id="1904997243703671177">Όταν απενεργοποιήσετε το Bluetooth, <ph name="DEVICE_COUNT" /> εξωτερικές συσκευές θα αποσυνδεθούν από τη συσκευή <ph name="DEVICE_TYPE" />, συμπεριλαμβανομένων των εξής:</translation>
 <translation id="1908992311423394684">Νέα εγκατάσταση</translation>
 <translation id="1915307458270490472">Τερματισμός κλήσης</translation>
 <translation id="1918022425394817322">Η προεπισκόπηση κάμερας τοποθετήθηκε στην επάνω δεξιά γωνία</translation>
@@ -960,6 +961,7 @@
 <translation id="4813311884204119883">Μεταφορά συνδέσμου σε κενή περιοχή της γραμμής καρτελών</translation>
 <translation id="4814539958450445987">Οθόνη σύνδεσης</translation>
 <translation id="481455355267255546">Ακολουθούν</translation>
+<translation id="481749895090480684">Λίστα εργασιών: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">κάμερα και μικρόφωνο</translation>
 <translation id="482908187605862807">Διαθέσιμες εφαρμογές από το Play Store</translation>
 <translation id="4831034276697007977">Είστε βέβαιοι ότι θέλετε να απενεργοποιήσετε τα αυτόματα κλικ;</translation>
@@ -1001,6 +1003,7 @@
 <translation id="4952936045814352993">Ο Εντοπισμός τηλεφώνου δεν είναι διαθέσιμος όταν οι ήχοι ξυπνητηριού είναι απενεργοποιημένοι</translation>
 <translation id="4960324571663582548">Ο τομέας <ph name="MANAGER" /> απαιτεί την επαναφορά της συσκευής <ph name="DEVICE_TYPE" /> σε προηγούμενη έκδοση. Θα γίνει επαναφορά της συσκευής σας και όλα τα δεδομένα θα διαγραφούν.</translation>
 <translation id="4961318399572185831">Μετάδοση οθόνης</translation>
+<translation id="4964188651935955085">Όταν απενεργοποιήσετε το Bluetooth, αυτή η εξωτερική συσκευή θα αποσυνδεθεί από τη συσκευή <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Αύξηση έντασης ήχου</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ώ. <ph name="MINUTES" />λ. <ph name="SECONDS" />δ.</translation>
 <translation id="4975771730019223894">Προσθήκη σήματος σε εφαρμογές</translation>
@@ -1827,6 +1830,7 @@
 <translation id="8155628902202578800">Άνοιγμα παραθύρου διαλόγου πληροφοριών για <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Χρησιμοποιείτε <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Ενεργοποίηση/απενεργοποίηση μενού για λειτουργία κλειδώματος αλλαγής μεγέθους</translation>
+<translation id="8192727139462702395">Όταν απενεργοποιήσετε το Bluetooth, αυτές οι εξωτερικές συσκευές θα αποσυνδεθούν από τη συσκευή <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Καρτέλα μετάδοσης</translation>
 <translation id="8200772114523450471">Συνέχιση</translation>
 <translation id="8203795194971602413">Δεξί κλικ</translation>

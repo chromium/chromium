@@ -1930,6 +1930,7 @@
 <translation id="2435248616906486374">网络连接已断开</translation>
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="2436385001956947090">复制链接(&amp;L)</translation>
+<translation id="2436746748253887661">这将允许具有相应权限的系统服务使用您的位置信息。位置信息服务可能会根据 Wi-Fi、移动网络和传感器等来源提供的信息推测设备所在的位置。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">未连接到打印机</translation>
 <translation id="2439152382014731627">重置 <ph name="DEVICE_TYPE" /> 密码</translation>
 <translation id="2439626940657133600">正在加载“<ph name="WINDOW_TITLE" />”</translation>
@@ -3504,6 +3505,7 @@
 <translation id="3665589677786828986">Chrome检测到您的部分设置被其他程序篡改了，因此已将这些设置重置为原始默认设置。</translation>
 <translation id="3665919494326051362">当前版本为 <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi NIC 调试转储</translation>
+<translation id="3666971425390608309"><ph name="FILE_NAME" /> 已暂停下载。</translation>
 <translation id="3670113805793654926">来自任何供应商的设备</translation>
 <translation id="3670229581627177274">开启蓝牙</translation>
 <translation id="3670480940339182416">网站可以使用 V8 优化工具</translation>
@@ -3654,6 +3656,8 @@
 <translation id="3765055238058255342">此类型的卡片</translation>
 <translation id="3765246971671567135">无法读取离线演示模式政策。</translation>
 <translation id="3765696567014520261">网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能无法正常运行</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Google 的位置信息服务会使用 Wi-Fi、移动网络和传感器等来源协助估测您的设备所在的位置。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您随时可在设备上依次前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”，关闭 ChromeOS 和 Android 位置信息服务。您还可在同一菜单中关闭“高级位置信息设置”下的“提高位置信息的精确度”，从而禁止 Android 使用 Wi-Fi、移动网络和传感器获取位置信息。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">详细了解 Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> 赫兹</translation>
 <translation id="3767835232661747729">目前，您只能向家庭成员分享密码。<ph name="BEGIN_LINK" />邀请家庭成员<ph name="END_LINK" />加入您的群组，与他们一起充分利用您所用的 Google 产品和订阅。</translation>
@@ -4318,6 +4322,7 @@
 <translation id="4278779213160967034">此过程可能需要几分钟的时间。正在下载文件。</translation>
 <translation id="4279129444466079448">您最多可以在此设备上安装 <ph name="PROFILE_LIMIT" /> 个 SIM 卡配置文件。若要再添加一个配置文件，请先移除一个现有的配置文件。</translation>
 <translation id="4280325816108262082">已关闭或未被使用时，设备会自动断开连接</translation>
+<translation id="4281637354026226955">允许有位置信息权限的 ChromeOS 与 Android 应用和服务使用您设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。</translation>
 <translation id="4281844954008187215">服务条款</translation>
 <translation id="4281849573951338030">自定义画笔按键</translation>
 <translation id="4282196459431406533">Smart Lock 已开启</translation>
@@ -6196,6 +6201,8 @@
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" />（系统默认设置）</translation>
 <translation id="5776450228446082914">可在这两款浏览器中的任一款中打开的网站的列表。</translation>
 <translation id="5776571780337000608">您可以在文件浏览器或其他应用中，使用此应用打开和编辑支持的文件。若要控制哪些文件默认打开此应用，请<ph name="BEGIN_LINK" />了解如何在设备上设置默认应用<ph name="END_LINK" />。</translation>
+<translation id="5776884611062957102">Google 的位置信息服务会使用 Wi-Fi、移动网络和传感器来协助推测您所在的位置，从而提高位置信息精确度。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。
+    如果您关闭位置信息服务，则 Android 将只会使用 IP 地址确定您所在的位置。这可能会影响 Google 地图等应用使用的位置信息的精确度。</translation>
 <translation id="5778491106820461378">您可从<ph name="LINK_BEGIN" />设置<ph name="LINK_END" />中管理已登录的 Google 账号。您向网站和应用授予的权限可能会应用于所有账号。如果不想让网站或应用获取您的账号信息，您不妨以访客身份登录 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="5780011244986845107">您所选的文件夹中包含敏感文件。确定要向“<ph name="APP_NAME" />”授予对此文件夹的永久读取权限吗？</translation>
 <translation id="5780973441651030252">进程优先级</translation>
@@ -6281,6 +6288,7 @@
 <translation id="5836999627049108525">原文语言</translation>
 <translation id="583756221537636748">耳机盒</translation>
 <translation id="5840680448799937675">始终离线分享</translation>
+<translation id="5841167715783969407">根据 Wi-Fi 或移动网络自动确定时区</translation>
 <translation id="5841270259333717135">配置以太网</translation>
 <translation id="5842497610951477805">蓝牙开关</translation>
 <translation id="5844284118433003733">当您登录后，这些数据将与您的 Google 账号关联，以便在各种 Google 服务中保护您，例如：于安全事件发生后在 Gmail 中加强对您的保护力度。</translation>
@@ -6729,6 +6737,7 @@
 <translation id="6180510783007738939">直线工具</translation>
 <translation id="6180550893222597997">您要将哪个通行密钥用于<ph name="APP_NAME" />？</translation>
 <translation id="6181431612547969857">下载已被阻止</translation>
+<translation id="6183369864942961155">自动切换浅色/深色主题</translation>
 <translation id="6184099524311454384">搜索标签页</translation>
 <translation id="6184868291074982484">Chrome 会自动限制第三方 Cookie</translation>
 <translation id="6185132558746749656">设备位置</translation>
@@ -7131,6 +7140,7 @@
 <translation id="6513247462497316522">如果您没有连接到其他网络，则 Google Chrome 会使用移动数据网络。</translation>
 <translation id="6514010653036109809">可用的设备：</translation>
 <translation id="6517227424170598783">要移除快捷方式“<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />”吗？</translation>
+<translation id="6517382055541687102">所选设备已更改为“<ph name="DEVICE_NAME" />”</translation>
 <translation id="6517420300299531857">您在“我的云端硬盘”中保存的文件会自动同步到 Chromebook，以供您在未联网的情况下访问。这将占用大约 <ph name="REQUIRED_SPACE" /> 的存储空间。您目前有 <ph name="FREE_SPACE_AVAILABLE" /> 的可用空间。</translation>
 <translation id="6517709704288360414">您的设备可能会无法继续正常运行，您则可能会遇到安全问题和性能问题。万一您遇到问题，关闭更新可能还会影响您依法索赔的权利。</translation>
 <translation id="6518014396551869914">复制图片(&amp;Y)</translation>
@@ -7388,6 +7398,7 @@
 <translation id="6713441551032149301">按住启动器键可在功能键和系统顶行按键之间切换</translation>
 <translation id="6713668088933662563">一律不询问是否翻译这些语言</translation>
 <translation id="6715803357256707211">安装 Linux 应用时出错。请点击通知以了解详情。</translation>
+<translation id="6716049856796700977">所有应用、网站和系统服务均无法使用您的位置信息。不过，应用和网站或许仍可通过您的 IP 地址获取您的位置信息。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">网络连接中断了。请检查您的网络连接状况，或尝试改用其他 Wi-Fi 网络。</translation>
 <translation id="6718849325281682232">Chrome 主题颜色已焕然一新，可更好地满足每个用户的需求，无论是处于深色模式还是浅色模式</translation>
 <translation id="671928215901716392">锁定屏幕</translation>
@@ -8370,6 +8381,8 @@
 <translation id="7478658909253570368">不允许网站连接到串行端口</translation>
 <translation id="7479221278376295180">存储空间使用情况概览</translation>
 <translation id="747981547666531654">已连接到名为“<ph name="FIRST_DEVICE" />”和“<ph name="SECOND_DEVICE" />”的蓝牙设备</translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Google 的位置信息服务会使用 Wi-Fi、移动网络和传感器等来源协助估测此设备所在的位置。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您随时可在此设备上依次前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”，关闭 ChromeOS 和 Android 位置信息服务。您还可在同一菜单中关闭“高级位置信息设置”下的“提高位置信息的精确度”，从而禁止 Android 使用 Wi-Fi、移动网络和传感器获取位置信息。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">前进</translation>
 <translation id="7481358317100446445">准备就绪</translation>
 <translation id="748138892655239008">证书基本约束</translation>
@@ -8461,6 +8474,7 @@
 <translation id="7552846755917812628">请尝试按以下提示操作：</translation>
 <translation id="7553012839257224005">正在检查 Linux 容器</translation>
 <translation id="7553242001898162573">输入您的密码</translation>
+<translation id="7553487223484420820">具有位置信息权限的应用、网站和系统服务可以使用您的位置信息。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">您的管理员不允许使用该语言</translation>
 <translation id="7554791636758816595">新标签页</translation>
 <translation id="7556033326131260574">Smart Lock 无法验证您的账号，您需要输入密码才能进入。</translation>
@@ -9378,6 +9392,7 @@
 <translation id="8224427620313426549">您的 <ph name="DOMAIN_LINK" /> 账号不会被删除</translation>
 <translation id="8225046344534779393">请检查互联网连接状况</translation>
 <translation id="8225265270453771718">共享应用窗口</translation>
+<translation id="8225516926291976401">只有系统服务才能使用您的位置信息。不过，应用和网站或许仍可通过您的 IP 地址获取您的位置信息。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">已被禁止</translation>
 <translation id="8226619461731305576">队列</translation>
 <translation id="8227119283605456246">附上文件</translation>
@@ -9814,6 +9829,7 @@
 <translation id="8552102814346875916">保存到“始终让这些网站保持活动状态”列表</translation>
 <translation id="8553342806078037065">管理其他用户</translation>
 <translation id="8554899698005018844">无语言</translation>
+<translation id="8555444629041783356">自动更新日落时间表</translation>
 <translation id="855604308879080518">允许 Android 应用在此 Chromebook 上访问 USB 设备。您每次插入 USB 设备时都会收到权限请求。个别 Android 应用会请求额外权限。</translation>
 <translation id="8557022314818157177">连续轻触您的安全密钥，直到您的指纹被捕获</translation>
 <translation id="8557180006508471423">在 Mac 上的“定位服务”中开启“Google Chrome”</translation>
@@ -10142,7 +10158,7 @@
 <translation id="8807588541160250261">未连接任何设备时</translation>
 <translation id="8807632654848257479">稳定</translation>
 <translation id="880812391407122701">让 Chrome 整理标签页</translation>
-<translation id="8808478386290700967">Chrome 应用商店</translation>
+<translation id="8808478386290700967">应用商店</translation>
 <translation id="8808686172382650546">猫</translation>
 <translation id="8809147117840417135">浅蓝绿色</translation>
 <translation id="8811862054141704416">Crostini 麦克风使用权限</translation>

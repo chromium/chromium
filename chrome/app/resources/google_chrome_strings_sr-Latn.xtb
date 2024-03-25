@@ -353,6 +353,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="677276454032249905">Želite li ipak da zatvorite Chrome?</translation>
 <translation id="6794858689789885890">Uvek izbrišite podatke o sajtovima sa uređaja kada zatvorite Chrome</translation>
 <translation id="683440813066116847">Pravilo za dolazni saobraćaj za Google Chrome Canary da biste omogućili mDNS saobraćaj.</translation>
+<translation id="684888714667046800">Povezivanje sa internetom nije uspelo. Ako koristite zaštitni zid, proverite da li se <ph name="PRODUCT_EXE_NAME" /> nalazi na listi dozvoljenih.</translation>
 <translation id="6851981911629679515">Uključite dodatnu zaštitu u Chrome alatki za JavaScript i WebAssembly</translation>
 <translation id="6881299373831449287">Ažuriramo Chrome</translation>
 <translation id="6885412569789873916">Chrome aplikacije za beta kanal</translation>

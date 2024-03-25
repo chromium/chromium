@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">मोबाइल नेटवर्क नाही</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> वर मिरर करत आहे</translation>
 <translation id="1885785240814121742">फिंगरप्रिंटने अनलॉक करा</translation>
+<translation id="1904997243703671177">तुम्ही ब्लूटूथ बंद कराल, तेव्हा पुढील गोष्टींच्या समावेशासह <ph name="DEVICE_COUNT" /> बाह्य डिव्हाइस तुमच्या <ph name="DEVICE_TYPE" /> वरून डिस्कनेक्ट होतील:</translation>
 <translation id="1908992311423394684">नवीन इंस्टॉल केले आहे</translation>
 <translation id="1915307458270490472">बंद करा</translation>
 <translation id="1918022425394817322">कॅमेरा सर्वात वरच्या उजव्या कोपर्‍यात स्नॅप केला आहे</translation>
@@ -960,6 +961,7 @@
 <translation id="4813311884204119883">टॅब स्ट्रिपवरील रिक्त भागावर लिंक ड्रॅग करा</translation>
 <translation id="4814539958450445987">लॉगिन स्क्रीन</translation>
 <translation id="481455355267255546">पुढील</translation>
+<translation id="481749895090480684">टास्क सूची: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">कॅमेरा आणि मायक्रोफोन</translation>
 <translation id="482908187605862807">Play Store वर उपलब्ध असलेली ॲप्स</translation>
 <translation id="4831034276697007977">तुम्हाला ऑटोमेटिक क्लिक नक्की बंद करायचे आहे का?</translation>
@@ -1001,6 +1003,7 @@
 <translation id="4952936045814352993">अलार्मचे आवाज बंद केले असताना फोन शोधा उपलब्ध नाही</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> नुसार तुम्ही तुमचे <ph name="DEVICE_TYPE" /> हे मागील आवृत्तीवर स्विच करणे आवश्यक आहे. तुमचे डिव्हाइस रीसेट केले जाईल आणि सर्व डेटा हटवला जाईल.</translation>
 <translation id="4961318399572185831">स्क्रीन कास्ट करा</translation>
+<translation id="4964188651935955085">तुम्ही ब्लूटूथ बंद कराल, तेव्हा हे बाह्य डिव्हाइस तुमच्या <ph name="DEVICE_TYPE" /> वरून डिस्कनेक्ट होईल:</translation>
 <translation id="4966431234408005599">व्‍हॉल्‍यूम वाढवा</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ता <ph name="MINUTES" />मि <ph name="SECONDS" />से</translation>
 <translation id="4975771730019223894">अ‍ॅप बॅजिंग</translation>
@@ -1827,6 +1830,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> साठी माहिती डायलॉग उघडा</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> वापरत आहे</translation>
 <translation id="8185090165691050712">लॉक मोडचा आकार बदलण्यासाठी मेनू सुरू/बंद करा</translation>
+<translation id="8192727139462702395">तुम्ही ब्लूटूथ बंद कराल, तेव्हा ही बाह्य डिव्हाइस तुमच्या <ph name="DEVICE_TYPE" /> वरून डिस्कनेक्ट होतील:</translation>
 <translation id="8198456017687137612">टॅब कास्‍ट करत आहे</translation>
 <translation id="8200772114523450471">रेझ्युमे</translation>
 <translation id="8203795194971602413">राइट क्लिक</translation>

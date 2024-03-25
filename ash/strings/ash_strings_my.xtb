@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">မိုဘိုင်းကွန်ရက် မရှိပါ</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> သို့ ပုံတူပွားနေ</translation>
 <translation id="1885785240814121742">လက်ဗွေရာသုံး၍ လော့ခ်ဖွင့်ခြင်း</translation>
+<translation id="1904997243703671177">ဘလူးတုသ် ပိတ်လိုက်သောအခါ အောက်ပါတို့ပါဝင်သော ပြင်ပစက် <ph name="DEVICE_COUNT" /> ခုကို သင့် <ph name="DEVICE_TYPE" /> နှင့် ချိတ်ဆက်မှုဖြုတ်ပါမည်-</translation>
 <translation id="1908992311423394684">အသစ်ထည့်သွင်းမှု</translation>
 <translation id="1915307458270490472">ဖုန်းချရန်</translation>
 <translation id="1918022425394817322">ကင်မရာကို အပေါ်ညာဘက်ထောင့်သို့ ကပ်ထားသည်</translation>
@@ -960,6 +961,7 @@
 <translation id="4813311884204119883">လင့်ခ်ကို တဘ်ဘားတန်းပေါ်ရှိ နေရာလွတ်သို့ ဖိဆွဲပါ</translation>
 <translation id="4814539958450445987">အကောင့်ဝင်ရန် ဖန်သားပြင်</translation>
 <translation id="481455355267255546">နောက်တစ်ခု</translation>
+<translation id="481749895090480684">လုပ်ဆောင်ရန်စာရင်း- <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">ကင်မရာနှင့် မိုက်ခရိုဖုန်း</translation>
 <translation id="482908187605862807">Play Store မှ ရနိုင်သောအက်ပ်များ</translation>
 <translation id="4831034276697007977">အလိုအလျောက်နှိပ်ခြင်းကို ပိတ်လိုသည်မှာ သေချာပါသလား။</translation>
@@ -1001,6 +1003,7 @@
 <translation id="4952936045814352993">သတိပေးချက်အသံများ ပိတ်ထားပါက ဖုန်းရှာဖွေခြင်းကို အသုံးပြု၍မရပါ</translation>
 <translation id="4960324571663582548">သင့် <ph name="DEVICE_TYPE" /> ကိုနောက်ပြန်ဆုတ်ရန် <ph name="MANAGER" /> ကသတ်မှတ်ထားသည်။ စက်ပြင်ဆင်သတ်မှတ်မည်ဖြစ်ပြီး ဒေတာအားလုံးကို ဖျက်ပါမည်။</translation>
 <translation id="4961318399572185831">Cast ဖန်မျက်နှာပြင်</translation>
+<translation id="4964188651935955085">ဘလူးတုသ် ပိတ်လိုက်သောအခါ ဤပြင်ပစက်ကို သင့် <ph name="DEVICE_TYPE" /> နှင့် ချိတ်ဆက်မှုဖြုတ်ပါမည်-</translation>
 <translation id="4966431234408005599">အသံချဲ့ရန်</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
 <translation id="4975771730019223894">အက်ပ်သင်္ကေတ</translation>
@@ -1827,6 +1830,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> အတွက် အချက်အလက်ဒိုင်ယာလော့ခ် ဖွင့်ပါ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> အသုံးပြုခြင်း</translation>
 <translation id="8185090165691050712">လော့ခ်မုဒ် အရွယ်အစားပြန်ပြုပြင်ရန်အတွက် မီနူးဖွင့်/ပိတ်ရန်</translation>
+<translation id="8192727139462702395">ဘလူးတုသ် ပိတ်လိုက်သောအခါ ဤပြင်ပစက်များကို သင့် <ph name="DEVICE_TYPE" /> နှင့် ချိတ်ဆက်မှုဖြုတ်ပါမည်-</translation>
 <translation id="8198456017687137612">တဘ်ကို ကာစ်လုပ်နေသည်</translation>
 <translation id="8200772114523450471">ပြန်ဆက်ရန်</translation>
 <translation id="8203795194971602413">ညာဘက်ခလုတ်ကို နှိပ်ရန်</translation>

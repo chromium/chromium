@@ -4160,6 +4160,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9036306139374661733">Cho phép dùng micrô?</translation>
 <translation id="9038649477754266430">Sử dụng dịch vụ gợi ý để tải trang nhanh hơn</translation>
 <translation id="9039213469156557790">Ngoài ra, trang này bao gồm các tài nguyên khác không an toàn. Những tài nguyên này có thể bị người khác xem khi đang gửi và có thể bị kẻ tấn công sửa đổi nhằm thay đổi hành vi của trang.</translation>
+<translation id="9040341831873780534">Xem điều khoản tại đây</translation>
 <translation id="9042617223719777575">Khay sức chứa lớn</translation>
 <translation id="9042827002460091668">Kiểm tra kết nối Internet rồi thử lại</translation>
 <translation id="9044359186343685026">Sử dụng Touch ID</translation>
@@ -4280,7 +4281,7 @@ Thông tin chi tiết bổ sung:
 <translation id="963734905955638680">Dựa trên luật tại khu vực của bạn, Chromium sẽ yêu cầu bạn chọn công cụ tìm kiếm mặc định. Đây là những công cụ tìm kiếm phổ biến tại khu vực của bạn và được hiển thị theo thứ tự ngẫu nhiên.</translation>
 <translation id="963837307749850257">Tất cả người dùng</translation>
 <translation id="964050462028070434">Quản lý mật khẩu và khoá đăng nhập…</translation>
-<translation id="969892804517981540">Phiên bản Chính thức</translation>
+<translation id="969892804517981540">Phiên bản chính thức</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Không có}=1{1 mục}other{# mục}}</translation>
 <translation id="976522784004777030">5 x 8 inch</translation>
 <translation id="977502174772294970">Tiệc cưới</translation>

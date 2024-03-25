@@ -229,6 +229,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1882814835921407042">Mobiilsidevõrku pole</translation>
 <translation id="1882897271359938046">Peegeldamine asukohta <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Sõrmejäljega avamine</translation>
+<translation id="1904997243703671177">Kui lülitate Bluetoothi välja, katkestatakse <ph name="DEVICE_COUNT" /> välisseadme ühendus teie seadmega <ph name="DEVICE_TYPE" />, sealhulgas:</translation>
 <translation id="1908992311423394684">Uus installimine</translation>
 <translation id="1915307458270490472">Lõpeta kõne</translation>
 <translation id="1918022425394817322">Kaamera kinnitati paremasse ülanurka</translation>
@@ -961,6 +962,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4813311884204119883">Lohistage link vahelehtede ribal tühjale alale</translation>
 <translation id="4814539958450445987">Sisselogimiskuva</translation>
 <translation id="481455355267255546">Järgmisena</translation>
+<translation id="481749895090480684">Ülesannete loend: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kaamerat ja mikrofoni</translation>
 <translation id="482908187605862807">Saadaolevad rakendused Play poest</translation>
 <translation id="4831034276697007977">Kas soovite automaatsed klikid kindlasti välja lülitada?</translation>
@@ -1002,6 +1004,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4952936045814352993">Telefoni asukoha määramine pole saadaval, kui alarmi helid on keelatud</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> nõuab seadme <ph name="DEVICE_TYPE" /> operatsioonisüsteemi varasemale versioonile üleminekut. Seade lähtestatakse ja kõik andmed kustutatakse.</translation>
 <translation id="4961318399572185831">Ekraani ülekandmine</translation>
+<translation id="4964188651935955085">Kui lülitate Bluetoothi välja, katkestatakse selle välisseadme ühendus teie seadmega <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Suurenda helitugevust</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Rakenduse ikooni märguandetäpp</translation>
@@ -1828,6 +1831,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8155628902202578800">Avage konto <ph name="USER_EMAIL_ADDRESS" /> teabedialoog</translation>
 <translation id="8167567890448493835">Kasutusel: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Lülita lukurežiimi suuruse muutmise menüü sisse/välja</translation>
+<translation id="8192727139462702395">Kui lülitate Bluetoothi välja, katkestatakse nende välisseadmete ühendus teie seadmega <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Vahelehe ülekandmine</translation>
 <translation id="8200772114523450471">Taasta</translation>
 <translation id="8203795194971602413">Paremklikk</translation>

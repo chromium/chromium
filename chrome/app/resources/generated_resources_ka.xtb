@@ -3513,6 +3513,7 @@
 <translation id="3665589677786828986">Chrome-მა აღმოაჩინა, რომ თქვენი ბრაუზერის ზოგიერთი პარამეტრი დაზიანდა სხვა პროგრამის მიერ და აღდგენილ იქნა ორიგინალი ნაგულისხმევი პარამეტრები.</translation>
 <translation id="3665919494326051362">მიმდინარე ვერსიაა <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi NIC-ების გამართვის მონაცემების გროვა</translation>
+<translation id="3666971425390608309">ჩამოტვირთვა დაპაუზდა: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">ნებისმიერი მომწოდებლის მოწყობილობები</translation>
 <translation id="3670229581627177274">Bluetooth-ის ჩართვა</translation>
 <translation id="3670480940339182416">საიტებს შეუძლია V8 ოპტიმიზატორის გამოყენება</translation>

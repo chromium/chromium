@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">Нема мобилне мреже</translation>
 <translation id="1882897271359938046">Пресликавање у <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Откључајте отиском прста</translation>
+<translation id="1904997243703671177">Када искључите Bluetooth, број спољних уређаја који ће прекинути везу са уређајем <ph name="DEVICE_TYPE" /> је <ph name="DEVICE_COUNT" />, укључујући:</translation>
 <translation id="1908992311423394684">Ново инсталирање</translation>
 <translation id="1915307458270490472">Прекини везу</translation>
 <translation id="1918022425394817322">Камера је уклопљена у горњи десни угао</translation>
@@ -961,6 +962,7 @@
 <translation id="4813311884204119883">Превуците линк у празну област на траци са картицама</translation>
 <translation id="4814539958450445987">Екран за пријављивање</translation>
 <translation id="481455355267255546">Следеће</translation>
+<translation id="481749895090480684">Листа задатака: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">камера и микрофон</translation>
 <translation id="482908187605862807">Доступне апликације из Play продавнице</translation>
 <translation id="4831034276697007977">Желите ли стварно да искључите аутоматске кликове?</translation>
@@ -1002,6 +1004,7 @@
 <translation id="4952936045814352993">Функција Пронађи телефон није доступна када су звукови аларма онемогућени</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> захтева да вратите <ph name="DEVICE_TYPE" /> на претходну верзију. Уређај ће се ресетовати и сви подаци ће бити избрисани.</translation>
 <translation id="4961318399572185831">Пребацивање екрана</translation>
+<translation id="4964188651935955085">Када искључите Bluetooth, овај спољни уређај ће прекинути везу са уређајем <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Повећај јачину звука</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> с <ph name="MINUTES" /> мин <ph name="SECONDS" /> сек</translation>
 <translation id="4975771730019223894">Додавање значки на апликације</translation>
@@ -1829,6 +1832,7 @@
 <translation id="8155628902202578800">Отвара дијалог са информацијама за корисника <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Користи се <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Укључите или искључите мени за промену величине закључаног режима</translation>
+<translation id="8192727139462702395">Када искључите Bluetooth, ови спољни уређаји ће прекинути везу са уређајем <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Пребацује се картица</translation>
 <translation id="8200772114523450471">Настави</translation>
 <translation id="8203795194971602413">Десни клик</translation>

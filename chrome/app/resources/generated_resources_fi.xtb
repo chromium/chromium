@@ -1951,6 +1951,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2435248616906486374">Verkkoyhteys katkaistu</translation>
 <translation id="2435457462613246316">Näytä salasana</translation>
 <translation id="2436385001956947090">Kopioi &amp;linkki</translation>
+<translation id="2436746748253887661">Näin järjestelmäpalvelut, joilla on lupa, voivat käyttää sijaintiasi. Sijainti voi käyttää esimerkiksi Wi‑Fi‑ ja mobiiliverkkoja sekä antureita laitteesi sijainnin arvioimiseen. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Ei yhdistetty tulostimeen</translation>
 <translation id="2439152382014731627">Salasanan vaihtaminen: <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Ladataan <ph name="WINDOW_TITLE" /></translation>
@@ -3526,6 +3527,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3665589677786828986">Chrome havaitsi, että toinen ohjelma oli muokannut joitakin selainasetuksia, ja palautti asetukset alkuperäisiksi.</translation>
 <translation id="3665919494326051362">Nykyinen versio on <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intelin Wi-Fi-verkon NIC-virheenkorjausvedos</translation>
+<translation id="3666971425390608309">Lataus keskeytetty: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Kaikkien toimittajien laitteet</translation>
 <translation id="3670229581627177274">Ota Bluetooth käyttöön</translation>
 <translation id="3670480940339182416">Sivustot voivat käyttää V8-optimoijaa</translation>
@@ -3676,6 +3678,8 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3765055238058255342">tämäntyyppinen kortti</translation>
 <translation id="3765246971671567135">Esittelytilan offline-käytäntöjä ei voitu lukea.</translation>
 <translation id="3765696567014520261">Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. personoidakseen mainoksia. Joidenkin sivustojen ominaisuudet eivät välttämättä toimi</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Googlen sijaintipalvelut pyrkivät arvioimaan laitteen sijainnin esim. Wi-Fi- ja mobiiliverkkojen sekä anturien avulla.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Voit milloin tahansa laittaa ChromeOS:n ja Androidin sijainnin pois päältä laitteellasi valitsemalla Asetukset &gt; Yksityisyys ja turvallisuus &gt; Yksityisyysasetukset &gt; Pääsy sijaintiin. Voit myös laittaa Wi-Fi- ja mobiiliverkkojen sekä anturien käytön Androidin sijainnin määrityksessä pois päältä: laita "Paranna sijaintitietojen tarkkuutta" pois päältä saman valikon "Sijainnin lisäasetukset" ‑kohdasta.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Lue lisää puhelinhubista</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Tällä hetkellä voit jakaa salasanoja vain perheenjäsenillesi. <ph name="BEGIN_LINK" />Kutsu perheenjäseniä<ph name="END_LINK" /> ryhmään, niin saat enemmän irti Googlen tuotteista ja tilauksista.</translation>
@@ -4338,6 +4342,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4278779213160967034">Tämä voi kulua muutama minuutti. Ladataan tiedostoja.</translation>
 <translation id="4279129444466079448">Voit asentaa tälle laitteelle enintään <ph name="PROFILE_LIMIT" /> eSIM-profiilia. Poista ensin jokin profiileista, niin voit lisätä uuden.</translation>
 <translation id="4280325816108262082">Laitteen yhteys katkeaa automaattisesti, kun laite sammutetaan tai sitä ei käytetä</translation>
+<translation id="4281637354026226955">Salli laitteen sijainnin käyttäminen ChromeOS:lle sekä Android-sovelluksille ja ‑palveluille, joilla on sijaintilupa. Google voi ajoittain kerätä sijaintitietoja ja käyttää niitä anonyymisti sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen.</translation>
 <translation id="4281844954008187215">Käyttöehdot</translation>
 <translation id="4281849573951338030">Muokkaa kynäpainikkeita</translation>
 <translation id="4282196459431406533">Smart Lock on käytössä.</translation>
@@ -6219,6 +6224,8 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (järjestelmän oletusarvo)</translation>
 <translation id="5776450228446082914">Verkkosivustot, jotka avautuvat molemmissa selaimissa.</translation>
 <translation id="5776571780337000608">Tällä sovelluksella voit avata ja muokata tuettuja tiedostoja tiedostoselaimesta tai muista sovelluksista. Jos haluat valita, mitkä tiedostot avautuvat oletuksena tässä sovelluksessa, <ph name="BEGIN_LINK" />lue lisää oletussovelluksen valitsemisesta laitteella<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">Googlen sijaintipalvelu parantaa sijaintitietojen tarkkuutta arvioimalla sijaintiasi Wi-Fi- ja mobiiliverkkojen sekä anturien avulla. Google voi ajoittain kerätä sijaintitietoja ja käyttää niitä ei-yksilöivästi sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen.
+    Jos poistat palvelun käytöstä, Android määrittää sijainnin pelkän IP-osoitteen perusteella. Tämä voi vaikuttaa sijainnin tarkkuuteen esimerkiksi Mapsissa.</translation>
 <translation id="5778491106820461378">Voit ylläpitää sisäänkirjautuneita Google-tilejä <ph name="LINK_BEGIN" />asetuksista<ph name="LINK_END" />. Sivustoille ja sovelluksille antamasi luvat saattavat koskea kaikkia tilejä. Jos et halua, että sivustot ja sovellukset saavat pääsyn tilitietoihisi, voit kirjautua laitteelle (<ph name="DEVICE_TYPE" />) vieraana.</translation>
 <translation id="5780011244986845107">Valitsemasi kansio sisältää arkaluontoisia tiedostoja. Haluatko varmasti, että <ph name="APP_NAME" /> saa pysyvän lukuoikeuden tähän kansioon?</translation>
 <translation id="5780973441651030252">Prosessien tärkeysjärjestys</translation>
@@ -6304,6 +6311,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5836999627049108525">Kieli, josta käännetään</translation>
 <translation id="583756221537636748">Kotelo</translation>
 <translation id="5840680448799937675">Tiedostot jaetaan aina offline-tilassa</translation>
+<translation id="5841167715783969407">Automaattinen aikavyöhyke perustuu Wi-Fi- tai mobiiliverkkoihin</translation>
 <translation id="5841270259333717135">Ethernet-asetukset</translation>
 <translation id="5842497610951477805">Bluetoothin käyttöönotto</translation>
 <translation id="5844284118433003733">Kun olet kirjautuneena sisään, tämä data linkitetään Google-tiliisi turvallisuudestasi huolehtimiseksi Googlen palveluissa, esimerkiksi tietoturvan lisäämiseksi Gmailissa tietoturvaongelman jälkeen.</translation>
@@ -6753,6 +6761,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6180510783007738939">Viivatyökalu</translation>
 <translation id="6180550893222597997">Mitä avainkoodia haluat käyttää sovelluksessa <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Lataus estettiin</translation>
+<translation id="6183369864942961155">Automaattinen vaalea/tumma teema</translation>
 <translation id="6184099524311454384">Hae välilehtiä</translation>
 <translation id="6184868291074982484">Chrome rajoittaa kolmannen osapuolen evästeet automaattisesti</translation>
 <translation id="6185132558746749656">Laitteen sijainti</translation>
@@ -7155,6 +7164,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6513247462497316522">Google Chrome käyttää mobiilitiedonsiirtoa, jos et ole yhteydessä toiseen verkkoon.</translation>
 <translation id="6514010653036109809">Käytettävissä oleva laite:</translation>
 <translation id="6517227424170598783">Poistetaanko pikakomento "<ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" />"?</translation>
+<translation id="6517382055541687102">Valituksi laitteeksi vaihdettu <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Omassa Drivessa olevat tiedostot synkronoituvat Chromebookiin automaattisesti, joten voit käyttää niitä ilman internetyhteyttä. Tämä edellyttää, että tilaa on noin <ph name="REQUIRED_SPACE" />. Tällä hetkellä vapaana on <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Laite ei välttämättä toimi kunnolla, ja saatat kokea turvallisuuteen ja suorituskykyyn liittyviä ongelmia. Päivitysten laittaminen pois päältä saattaa myös vaikuttaa oikeudellisten vaatimusten tekemiseen, jos havaitset ongelmia.</translation>
 <translation id="6518014396551869914">K&amp;opioi kuva</translation>
@@ -7412,6 +7422,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6713441551032149301">Vaihda toimintonäppäinten ja järjestelmän ylärivin näppäinten välillä painamalla käynnistysohjelmanäppäintä pitkään</translation>
 <translation id="6713668088933662563">Älä koskaan ehdota näiden kielten kääntämistä</translation>
 <translation id="6715803357256707211">Linux-sovelluksen asennuksessa tapahtui virhe. Katso lisätietoja klikkaamalla ilmoitusta.</translation>
+<translation id="6716049856796700977">Sijaintiasi ei voi käyttää. Sijaintisi voi kuitenkin näkyä sovelluksille ja verkkosivustoille IP-osoitteesi perusteella. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Verkkoyhteys katkesi. Tarkista verkkoyhteys tai kokeile toista Wi-Fi-verkkoa.</translation>
 <translation id="6718849325281682232">Chromen teemavärit on päivitetty niin, että ne toimivat paremmin kaikille, käytitpä sitten tummaa tai vaaleaa tilaa.</translation>
 <translation id="671928215901716392">Näytönlukitus</translation>
@@ -8394,6 +8405,8 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7478658909253570368">Älä salli sivustojen yhdistää sarjaportteihin</translation>
 <translation id="7479221278376295180">Tallennustilan käytön yleiskatsaus</translation>
 <translation id="747981547666531654">Yhdistetty Bluetooth-laitteisiin nimiltä <ph name="FIRST_DEVICE" /> ja <ph name="SECOND_DEVICE" /></translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Googlen sijaintipalvelut pyrkivät arvioimaan tämän laitteen sijainnin esim. Wi-Fi- ja mobiiliverkkojen sekä anturien avulla.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Voit milloin tahansa laittaa ChromeOS:n ja Androidin sijainnin pois päältä laitteellasi valitsemalla Asetukset &gt; Yksityisyys ja turvallisuus &gt; Yksityisyysasetukset &gt; Pääsy sijaintiin. Voit myös laittaa Wi-Fi- ja mobiiliverkkojen sekä anturien käytön Androidin sijainnin määrityksessä pois päältä: laita "Paranna sijaintitietojen tarkkuutta" pois päältä saman valikon "Sijainnin lisäasetukset" ‑kohdasta.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Seuraava</translation>
 <translation id="7481358317100446445">Valmis</translation>
 <translation id="748138892655239008">Varmenteen perusrajoitukset</translation>
@@ -8485,6 +8498,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7552846755917812628">Kokeile seuraavia keinoja:</translation>
 <translation id="7553012839257224005">Tarkistetaan Linux-säilöä</translation>
 <translation id="7553242001898162573">Lisää salasana</translation>
+<translation id="7553487223484420820">Sovellukset, verkkosivustot ja järjestelmäpalvelut, joilla on sijaintilupa, voivat käyttää sijaintiasi. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">Järjestelmänvalvoja ei salli tätä kieltä</translation>
 <translation id="7554791636758816595">Uusi välilehti</translation>
 <translation id="7556033326131260574">Smart Lock ei voinut vahvistaa tiliäsi. Avaa laite kirjoittamalla salasana.</translation>
@@ -9401,6 +9415,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8224427620313426549">Tiliäsi (<ph name="DOMAIN_LINK" />) ei poisteta</translation>
 <translation id="8225046344534779393">Tarkista internetyhteys</translation>
 <translation id="8225265270453771718">Jaa sovellusikkuna</translation>
+<translation id="8225516926291976401">Vain järjestelmäpalvelut voivat käyttää sijaintiasi. Sijaintisi voi kuitenkin näkyä sovelluksille ja verkkosivustoille IP-osoitteesi perusteella. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Kielletty</translation>
 <translation id="8226619461731305576">Jono</translation>
 <translation id="8227119283605456246">Liitä tiedosto</translation>
@@ -9837,6 +9852,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8552102814346875916">Tallenna "Pidä nämä sivustot aina aktiivisina" ‐listaan</translation>
 <translation id="8553342806078037065">Hallitse muita ihmisiä</translation>
 <translation id="8554899698005018844">Ei kieltä</translation>
+<translation id="8555444629041783356">Automaattinen käytöstäpoistoaikataulu</translation>
 <translation id="855604308879080518">Salli Android-sovellusten pääsy tämän Chromebookin USB-laitteisiin. Lupaa pyydetään aina, kun liität uuden USB-laitteen. Yksittäiset Android-sovellukset pyytävät lisälupia.</translation>
 <translation id="8557022314818157177">Jatka suojausavaimen koskettamista, kunnes sormenjälki tallennetaan</translation>
 <translation id="8557180006508471423">Salli "Google Chrome" Macin sijaintipalveluissa</translation>

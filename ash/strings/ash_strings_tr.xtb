@@ -229,6 +229,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1882814835921407042">Mobil ağ yok</translation>
 <translation id="1882897271359938046">Şuraya yansıtılıyor: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Parmak iziyle kilit açın</translation>
+<translation id="1904997243703671177">Bluetooth'u kapattığınızda aşağıdakiler de dahil olmak üzere <ph name="DEVICE_COUNT" /> harici cihazın, <ph name="DEVICE_TYPE" /> cihazınızla bağlantısı kesilir:</translation>
 <translation id="1908992311423394684">Yeni yükleme</translation>
 <translation id="1915307458270490472">Kapat</translation>
 <translation id="1918022425394817322">Kamera sağ üst köşeye tutturuldu</translation>
@@ -960,6 +961,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4813311884204119883">Bağlantıyı sekme şeridindeki boş bir alana sürükleyin</translation>
 <translation id="4814539958450445987">Giriş Ekranı</translation>
 <translation id="481455355267255546">Sıradaki</translation>
+<translation id="481749895090480684">Görev listesi: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera ve mikrofon</translation>
 <translation id="482908187605862807">Play Store'daki mevcut uygulamalar</translation>
 <translation id="4831034276697007977">Otomatik tıklamaları kapatmak istediğinizden emin misiniz?</translation>
@@ -1001,6 +1003,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4952936045814352993">Alarm sesleri devre dışıyken telefonu bulma özelliği kullanılamaz</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" />, <ph name="DEVICE_TYPE" /> cihazınızı geri çekmenizi zorunlu tutuyor. Cihazınız sıfırlanacak ve tüm veriler silinecek.</translation>
 <translation id="4961318399572185831">Ekranı yayınla</translation>
+<translation id="4964188651935955085">Bluetooth'u kapattığınızda aşağıdaki harici cihazın, <ph name="DEVICE_TYPE" /> cihazınızla bağlantısı kesilir:</translation>
 <translation id="4966431234408005599">Sesi açın</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> sa. <ph name="MINUTES" /> dk. <ph name="SECONDS" /> sn.</translation>
 <translation id="4975771730019223894">Uygulama rozeti ekleme</translation>
@@ -1827,6 +1830,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> için bilgi iletişim kutusunu aç</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> kullanılıyor</translation>
 <translation id="8185090165691050712">Kilit modunu yeniden boyutlandırmak için menüyü açın/kapatın</translation>
+<translation id="8192727139462702395">Bluetooth'u kapattığınızda aşağıdaki harici cihazların, <ph name="DEVICE_TYPE" /> cihazınızla bağlantısı kesilir:</translation>
 <translation id="8198456017687137612">Sekme yayınlanıyor</translation>
 <translation id="8200772114523450471">Sürdür</translation>
 <translation id="8203795194971602413">Sağ tıklama</translation>

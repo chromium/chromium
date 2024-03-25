@@ -229,6 +229,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1882814835921407042">No hi ha cap xarxa mòbil</translation>
 <translation id="1882897271359938046">S'està replicant <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloqueja amb l'empremta digital</translation>
+<translation id="1904997243703671177">En desactivar el Bluetooth, <ph name="DEVICE_COUNT" /> dispositius externs es desconnectaran del teu dispositiu <ph name="DEVICE_TYPE" />, inclosos:</translation>
 <translation id="1908992311423394684">Instal·lació nova</translation>
 <translation id="1915307458270490472">Penja</translation>
 <translation id="1918022425394817322">La càmera s'ha ajustat a l'extrem superior dret</translation>
@@ -960,6 +961,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4813311884204119883">Arrossega l'enllaç a l'àrea en blanc de la barra de pestanyes</translation>
 <translation id="4814539958450445987">Pantalla d'inici de sessió</translation>
 <translation id="481455355267255546">A continuació</translation>
+<translation id="481749895090480684">Llista de tasques: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">la càmera i el micròfon</translation>
 <translation id="482908187605862807">Aplicacions disponibles a Play Store</translation>
 <translation id="4831034276697007977">Confirmes que vols desactivar els clics automàtics?</translation>
@@ -1001,6 +1003,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4952936045814352993">La funció Localitza el telèfon no està disponible quan els sons d'alarma estan desactivats</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requereix que el dispositiu <ph name="DEVICE_TYPE" /> torni a una versió anterior. El dispositiu es restablirà i totes les dades se suprimiran.</translation>
 <translation id="4961318399572185831">Emet la pantalla</translation>
+<translation id="4964188651935955085">Quan desactivis el Bluetooth, aquest dispositiu extern es desconnectarà del teu dispositiu <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Apuja el volum</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Cercles a les aplicacions</translation>
@@ -1827,6 +1830,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8155628902202578800">Obre el quadre de diàleg d'informació per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">S'està utilitzant <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Activa/Desactiva el menú per canviar la mida del mode de bloqueig</translation>
+<translation id="8192727139462702395">Quan desactivis el Bluetooth, aquests dispositius externs es desconnectaran del teu dispositiu <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">S'està emetent la pestanya</translation>
 <translation id="8200772114523450471">Reprèn</translation>
 <translation id="8203795194971602413">Fes clic amb el botó dret</translation>

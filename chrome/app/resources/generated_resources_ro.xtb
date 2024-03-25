@@ -1938,6 +1938,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2435248616906486374">Rețea deconectată</translation>
 <translation id="2435457462613246316">Afișați parola</translation>
 <translation id="2436385001956947090">Copiază &amp;linkul</translation>
+<translation id="2436746748253887661">Astfel, serviciile de sistem au permisiunea de a-ți folosi locația. Locația poate folosi surse precum Wi-Fi, rețele mobile și senzori pentru a ajuta la estimarea locației dispozitivului. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Neconectat la imprimantă</translation>
 <translation id="2439152382014731627">Resetează parola <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Se încarcă <ph name="WINDOW_TITLE" /></translation>
@@ -3513,6 +3514,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3665589677786828986">Chrome a detectat că unele dintre setări au fost deteriorate de alt program și le-a resetat la valorile inițiale.</translation>
 <translation id="3665919494326051362">Versiunea actuală este <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Date pentru remedierea erorilor cardurilor de interfață cu rețeaua Intel Wi-Fi</translation>
+<translation id="3666971425390608309">Descărcare întreruptă: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Dispozitive de la orice furnizor</translation>
 <translation id="3670229581627177274">Activează Bluetooth</translation>
 <translation id="3670480940339182416">Site-urile pot folosi instrumentul de optimizare pentru V8</translation>
@@ -3663,6 +3665,8 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3765055238058255342">acest tip de card</translation>
 <translation id="3765246971671567135">Nu s-a putut citi politica offline privind modul demo.</translation>
 <translation id="3765696567014520261">Site-urile nu pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile. Este posibil ca funcțiile din anumite site-uri să nu ruleze</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Serviciul de localizare Google folosește surse precum rețelele Wi-Fi, rețelele mobile și senzorii pentru a estima locația dispozitivului.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Poți să dezactivezi oricând locația pentru ChromeOS și Android pe dispozitiv, accesând Setări &gt; Confidențialitate și securitate &gt; Opțiuni de confidențialitate &gt; Accesul la locație. Poți și să dezactivezi folosirea rețelelor Wi-Fi, a rețelelor mobile și a senzorilor pentru locația de pe Android dacă dezactivezi opțiunea Îmbunătățește precizia locației în Setări avansate privind locația, din același meniu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Află mai multe despre Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Momentan, poți permite accesul la parole doar membrilor familiei. <ph name="BEGIN_LINK" />Invită membrii familiei<ph name="END_LINK" /> să se alăture grupului și profită la maximum de produsele și abonamentele tale de pe Google.</translation>
@@ -4328,6 +4332,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4278779213160967034">Procesul poate dura câteva minute. Se descarcă fișierele.</translation>
 <translation id="4279129444466079448">Poți instala până la <ph name="PROFILE_LIMIT" /> profiluri eSIM pe acest dispozitiv. Pentru a adăuga alt profil, mai întâi elimină un profil existent.</translation>
 <translation id="4280325816108262082">Dispozitivul se va deconecta automat când este închis sau când nu este folosit</translation>
+<translation id="4281637354026226955">Permite ca serviciile și aplicațiile pentru ChromeOS și Android cu permisiune pentru locație să folosească locația dispozitivului. Google poate să culeagă periodic date despre locație și să le folosească în mod anonim pentru a îmbunătăți precizia locației și a serviciilor bazate pe locație.</translation>
 <translation id="4281844954008187215">Condiții de furnizare a serviciilor</translation>
 <translation id="4281849573951338030">Personalizează butoanele creionului</translation>
 <translation id="4282196459431406533">Smart Lock este activat</translation>
@@ -6208,6 +6213,8 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (Prestabilit de sistem)</translation>
 <translation id="5776450228446082914">Lista de site-uri care se pot deschide în orice browser.</translation>
 <translation id="5776571780337000608">Poți să deschizi și să editezi fișierele acceptate în această aplicație din browserul de fișiere sau din alte aplicații. Pentru a alege fișierele care deschid aplicația în mod prestabilit, <ph name="BEGIN_LINK" />află cum să setezi aplicații prestabilite pe dispozitiv<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">Serviciul de localizare Google îmbunătățește precizia locației folosind rețele Wi-Fi și mobile, precum și senzori pentru a estima locația ta. Google poate colecta periodic date privind locațiile și le poate folosi în mod anonim pentru a îmbunătăți precizia locației și serviciile bazate pe locație.
+    Dacă dezactivezi acest serviciu, Android va folosi doar adresa IP pentru locație. Această acțiune poate afecta precizia locației folosite de aplicații ca Maps.</translation>
 <translation id="5778491106820461378">Poți să gestionezi Conturile Google conectate din <ph name="LINK_BEGIN" />Setări<ph name="LINK_END" />. Permisiunile pe care le-ai acordat site-urilor și aplicațiilor se pot aplica tuturor conturilor. Dacă nu vrei ca site-urile sau aplicațiile să îți acceseze informațiile contului, poți să te conectezi pe <ph name="DEVICE_TYPE" /> ca invitat.</translation>
 <translation id="5780011244986845107">Dosarul pe care l-ai selectat conține fișiere cu informații sensibile. Sigur dorești să permiți accesul de scriere permanent pentru „<ph name="APP_NAME" />” la acest dosar?</translation>
 <translation id="5780973441651030252">Prioritatea procesului</translation>
@@ -6293,6 +6300,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5836999627049108525">Limba din care se traduce</translation>
 <translation id="583756221537636748">Caz</translation>
 <translation id="5840680448799937675">Fișierele vor fi distribuite întotdeauna offline</translation>
+<translation id="5841167715783969407">Fus orar automat bazat pe rețele Wi-Fi sau mobile</translation>
 <translation id="5841270259333717135">Configurează setările de Ethernet</translation>
 <translation id="5842497610951477805">Activează Bluetooth</translation>
 <translation id="5844284118433003733">Când te conectezi, aceste date sunt asociate Contului tău Google pentru a te proteja în toate serviciile Google, de exemplu, sporind gradul de protecție în Gmail după un incident de securitate.</translation>
@@ -6742,6 +6750,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6180510783007738939">Instrument pentru linii</translation>
 <translation id="6180550893222597997">Ce cheie de acces vrei să folosești pentru <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Descărcarea a fost blocată</translation>
+<translation id="6183369864942961155">Temă luminoasă / întunecată automată</translation>
 <translation id="6184099524311454384">Caută în file</translation>
 <translation id="6184868291074982484">Chrome limitează automat cookie-urile terță parte</translation>
 <translation id="6185132558746749656">Locația dispozitivului</translation>
@@ -7144,6 +7153,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6513247462497316522">Google Chrome va utiliza date mobile dacă nu ești conectat(ă) la altă rețea.</translation>
 <translation id="6514010653036109809">Dispozitiv disponibil:</translation>
 <translation id="6517227424170598783">Elimini comanda rapidă <ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" />?</translation>
+<translation id="6517382055541687102">Dispozitivul selectat s-a schimbat în <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Fișierele din Contul meu Drive se sincronizează automat cu Chromebookul, ca să le poți accesa fără conexiune la internet. Procesul va folosi aproximativ <ph name="REQUIRED_SPACE" />. Momentan ai <ph name="FREE_SPACE_AVAILABLE" /> la dispoziție.</translation>
 <translation id="6517709704288360414">Este posibil ca dispozitivul să nu mai funcționeze corespunzător și să întâmpini probleme de securitate și de performanță. Dezactivarea actualizărilor îți poate afecta dreptul de a face reclamații legale în cazul în care întâmpini probleme.</translation>
 <translation id="6518014396551869914">Cop&amp;iază imaginea</translation>
@@ -7403,6 +7413,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6713441551032149301">Ține apăsată tasta lansator pentru a comuta între tastele de funcții și tastele de sistem de pe rândul de sus</translation>
 <translation id="6713668088933662563">Nu oferi niciodată traducerea acestor limbi</translation>
 <translation id="6715803357256707211">A apărut o eroare în timpul instalării aplicației Linux. Dă clic pe notificare pentru detalii.</translation>
+<translation id="6716049856796700977">Nimic nu îți poate folosi locația. Cu toate acestea, locația poate fi vizibilă pentru aplicații și site-uri prin adresa IP. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">S-a pierdut conexiunea la rețea. Verifică starea conexiunii la rețea sau încearcă o altă rețea Wi-Fi.</translation>
 <translation id="6718849325281682232">Culorile temei Chrome au fost actualizate pentru a fi văzute de toată lumea, indiferent dacă se folosește modul întunecat sau cel luminos</translation>
 <translation id="671928215901716392">Blocați ecranul</translation>
@@ -8385,6 +8396,8 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7478658909253570368">Nu permite site-urilor să se conecteze la porturi seriale</translation>
 <translation id="7479221278376295180">Prezentare generală a utilizării spațiului de stocare</translation>
 <translation id="747981547666531654">Conectat la dispozitivele Bluetooth denumite <ph name="FIRST_DEVICE" /> și <ph name="SECOND_DEVICE" /></translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Serviciul de localizare Google folosește surse precum rețelele Wi-Fi, rețelele mobile și senzorii pentru a estima locația acestui dispozitiv.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Poți să dezactivezi oricând locația ChromeOS și Android pe acest dispozitiv, accesând Setări &gt; Confidențialitate și securitate &gt; Opțiuni de confidențialitate &gt; Acces la locație. Poți și să dezactivezi folosirea rețelelor Wi-Fi, a rețelelor mobile și a senzorilor pentru locația de pe Android dacă dezactivezi opțiunea Îmbunătățește precizia locației în Setări avansate privind locația, din același meniu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Înainte</translation>
 <translation id="7481358317100446445">Gata</translation>
 <translation id="748138892655239008">Limitări de bază pentru certificate</translation>
@@ -8476,6 +8489,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7552846755917812628">Încearcă următoarele sfaturi:</translation>
 <translation id="7553012839257224005">Verificarea containerului Linux este în curs</translation>
 <translation id="7553242001898162573">Introdu parola</translation>
+<translation id="7553487223484420820">Aplicațiile, site-urile și serviciile de sistem cu permisiunea pentru locație îți pot folosi locația. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">Administratorul nu permite această limbă</translation>
 <translation id="7554791636758816595">Filă nouă</translation>
 <translation id="7556033326131260574">Smart Lock nu a putut verifica contul tău. Pentru acces, introdu parola.</translation>
@@ -9393,6 +9407,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8224427620313426549">Contul tău <ph name="DOMAIN_LINK" /> nu se va șterge</translation>
 <translation id="8225046344534779393">Verifică starea conexiunii la internet</translation>
 <translation id="8225265270453771718">Arată fereastra unei aplicații</translation>
+<translation id="8225516926291976401">Numai serviciile de sistem îți pot folosi locația. Cu toate acestea, locația poate fi vizibilă pentru aplicații și site-uri prin adresa IP. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Interzis</translation>
 <translation id="8226619461731305576">Coadă</translation>
 <translation id="8227119283605456246">Atașează un fișier</translation>
@@ -9829,6 +9844,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8552102814346875916">Adaugă în lista Menține întotdeauna active aceste site-uri</translation>
 <translation id="8553342806078037065">Gestionează alte persoane</translation>
 <translation id="8554899698005018844">Nicio limbă</translation>
+<translation id="8555444629041783356">Program automat de retragere</translation>
 <translation id="855604308879080518">Permite accesul aplicațiilor pentru Android la dispozitivele USB conectate la acest Chromebook. Permisiunea va fi solicitată de fiecare dată când conectezi un dispozitiv USB. Aplicațiile pentru Android individuale vor solicita permisiuni suplimentare.</translation>
 <translation id="8557022314818157177">Atinge cheia de securitate până când ți se capturează amprenta</translation>
 <translation id="8557180006508471423">Activează Google Chrome în Servicii de localizare pe Mac</translation>

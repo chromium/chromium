@@ -353,6 +353,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="677276454032249905">Chrome을 종료하시겠습니까?</translation>
 <translation id="6794858689789885890">Chrome 종료 시 기기에서 사이트 데이터를 항상 삭제</translation>
 <translation id="683440813066116847">Chrome Canary가 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
+<translation id="684888714667046800">인터넷에 연결할 수 없습니다. 방화벽을 사용하는 경우 <ph name="PRODUCT_EXE_NAME" />이(가) 허용 목록에 있는지 확인해 주세요.</translation>
 <translation id="6851981911629679515">Chrome의 JavaScript 및 WebAssembly 엔진에서 추가 보호 기능 사용 설정</translation>
 <translation id="6881299373831449287">Chrome 업데이트 중</translation>
 <translation id="6885412569789873916">Chrome 베타 앱</translation>

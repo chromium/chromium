@@ -176,6 +176,7 @@ Wenn sie nicht konfiguriert ist, sind keine Ausnahmen zu „<ph name="DEVICE_AUT
 <translation id="1117535567637097036">Die über diese Richtlinie festgelegten Protokoll-Handler werden bei der Verarbeitung von Android-Intents nicht verwendet.</translation>
 <translation id="1118093128235245168">Websites dürfen den Nutzer um Zugriff auf ein angeschlossenes USB-Gerät bitten</translation>
 <translation id="111910763555783249">Benachrichtigungseinstellungen</translation>
+<translation id="1122068467107743258">Arbeit</translation>
 <translation id="1122089575901325963">Durch diese Richtlinie wird der <ph name="WILCO_NAME" /> Diagnostics and Telemetry Controller (DTC) konfiguriert, wenn er auf dem Gerät vorhanden ist. Die Konfiguration darf nicht größer als 1 MB (1.000.000 Byte) sein und muss im JSON-Format vorliegen. Der <ph name="WILCO_NAME" /> DTC übernimmt die Verwaltung. Die Integrität des Downloads wird anhand des kryptografischen Hashs verifiziert. Die Konfiguration wird heruntergeladen und im Cache gespeichert. Sobald sich URL oder Hash ändern, wird sie noch einmal heruntergeladen.
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden.</translation>
@@ -655,6 +656,7 @@ Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cl
 <translation id="152657506688053119">Liste alternativer URLs für den Standardsuchanbieter</translation>
 <translation id="1530812829012954197">Immer die folgenden URL-Muster im Host-Browser darstellen</translation>
 <translation id="1534007181698071943">Erlaubt die standardmäßige Deaktivierung von unloud-Event-Handlern während der Einstellungsphase</translation>
+<translation id="1539343118617844331">Schule</translation>
 <translation id="1542491165152947087">Nutzer dürfen die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für Anzeigenthemen auf ihrem Gerät aktivieren oder deaktivieren.</translation>
 <translation id="1542958897137600427">Bereitstellung von Clientzertifikaten aktivieren</translation>
 <translation id="1550295162561011575">Mit dieser Richtlinie können Administratoren eine Automatisierung für das Starten von Apps auf <ph name="PRODUCT_NAME" />-Geräten konfigurieren. Diese Apps können bei der Nutzeranmeldung oder gemeinsam von Nutzern über den Launcher gestartet werden.</translation>
@@ -1904,6 +1906,16 @@ Ist die Richtlinie nicht konfiguriert, ist „<ph name="POLICY_VALUE_VISIBLE" />
 <translation id="2489558694350871332">Zulassen, dass das Gerät virtuelle Maschinen ausführt</translation>
 <translation id="2492240920793040106">Berichte zu Systeminformationen und Seiteninhalten aktivieren, um Safe Browsing zu verbessern</translation>
 <translation id="2496180316473517155">Browserverlauf</translation>
+<translation id="2497530682475109135">Über diese Richtlinie wird ein Label gesteuert, mit dem ein angemeldetes Profil identifiziert werden kann. Dieses Label wird an verschiedenen Stellen angezeigt – z. B. neben dem Profilsymbol in der Symbolleiste –, damit die Nutzer das Profil leichter identifizieren können.
+Das Label wird auch als Standardname für neu erstellte Profile verwendet, die von den Nutzern geändert werden können.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird entweder „Arbeit“ oder „Schule“ verwendet.
+
+Wenn diese Richtlinie auf „Profil als ,Arbeit‘ (1) kennzeichnen“ festgelegt ist, wird das Label „Arbeit“ verwendet.
+
+Wenn diese Richtlinie auf „Profil als ,Schule‘ (2) kennzeichnen“ festgelegt ist, wird das Label „Schule“ verwendet.
+
+Diese Richtlinie wird durch die Richtlinie „<ph name="CUSTOM_PROFILE_LABEL_POLICY_NAME" />“ überschrieben, wenn diese konfiguriert ist.</translation>
 <translation id="2497751676088107779">Nutzerskript</translation>
 <translation id="2497965601277442929">Nutzern nicht erlauben, den Nur-HTTPS-Modus zu aktivieren</translation>
 <translation id="249798396824949930"> Über diese Richtlinie wird geregelt, ob der Browser den obligatorischen Anwendungsbereich von Richtlinien unter <ph name="MAC_OS_NAME" /> erkennen kann.
@@ -2154,6 +2166,13 @@ Für Ursprünge, die nicht durch eine Richtlinie oder Nutzereinstellungen angege
       Diese Richtlinie gilt für die Anmeldeseite. Sieh dir auch die Richtlinie "<ph name="SITE_PER_PROCESS_POLICY_NAME" />" für die eigentliche Nutzersitzung an. Es wird empfohlen, für beide Richtlinien denselben Wert festzulegen. Wenn die Werte nicht übereinstimmen, kann es beim Beginn einer Nutzersitzung zu einer Verzögerung kommen, weil der von der Nutzerrichtlinie angegebene Wert erst angewendet werden muss.
       </translation>
 <translation id="2697717608663878828">Test für TLS Encrypted ClientHello aktivieren</translation>
+<translation id="2698555428858508691">Über diese Richtlinie wird ein benutzerdefiniertes Label gesteuert, mit dem ein angemeldetes Profil identifiziert werden kann.
+
+Wenn diese Richtlinie nicht konfiguriert ist und ein Label angezeigt werden muss, wird das Standardlabel verwendet, also „Arbeit“ oder „Schule“.
+
+Diese Richtlinie überschreibt die Richtlinie „<ph name="PROFILE_LABEL_POLICY_NAME" />“.
+
+Das benutzerdefinierte Label wird nicht übersetzt.</translation>
 <translation id="2699836109975228367">„Mono-Audio“ auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="2702023190395322609">Empfehlungen zu Medien aktivieren</translation>
 <translation id="2702682139813393777">Erzwingen, dass Windows-Hosts für natives Messaging über cmd.exe gestartet werden</translation>
@@ -2491,6 +2510,7 @@ Die Richtlinie „<ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME
 <translation id="2985927503455169394">Standardmodus für das Einrichten von Assistant verwenden</translation>
 <translation id="2987155890997901449">ARC aktivieren</translation>
 <translation id="2987227569419001736">Verwendung der Web Bluetooth API steuern</translation>
+<translation id="2989259649530222762">Funktion „Fingerprinting-Schutz“ deaktivieren.</translation>
 <translation id="2989404644164421834">Seiten neu laden</translation>
 <translation id="299446489108785864">Eine Liste von URLs, die angibt, auf welche URLs die Richtlinie <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> angewendet wird. Diese Richtlinie hat keine Auswirkung auf automatisch geöffnete Werte, die von Nutzern festgelegt werden.
 
@@ -4135,6 +4155,13 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es Nutzern nur, sich mit den angegebenen Bluetooth-Diensten zu verbinden. Falls die Liste jedoch leer ist, darf jeder Dienst verwendet werden. Von Bluetooth SIG reservierte UUIDs können als <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> oder <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" /> dargestellt werden. Benutzerdefinierte UUIDs können als <ph name="BLUETOOTH_CUSTOM_UUID" /> dargestellt werden. Bei UUIDs muss die Groß- und Kleinschreibung nicht berücksichtigt werden. Wird die Richtlinie nicht konfiguriert, können Nutzer sich mit jedem Bluetooth-Dienst verbinden.</translation>
 <translation id="4332177773549877617">Ereignisse für Android-App-Installationen protokollieren</translation>
 <translation id="4333940819293342439">Häufigkeit der Erhebung von Telemetriedaten zur App-Nutzung in Millisekunden.</translation>
+<translation id="4340121900958123942">Verfügbarkeitsstufe des <ph name="PRODUCT_OS_NAME" />-Standortbestimmungssystems festlegen.
+
+Das ist eine zusätzliche Steuerungsebene, die vor der Berechtigungsebene für Apps und Websites Vorrang hat. Ist diese Richtlinie beispielsweise auf „<ph name="GLS_BLOCKED" />“ oder „<ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />“ gesetzt, können Apps oder Websites den Standort nicht bestimmen, unabhängig von ihrer jeweiligen Berechtigung zur Standortermittlung. Ist sie aber auf „<ph name="GLS_ALLOWED" />“ gesetzt, können Apps und Websites individuell auf den Standort zugreifen, wenn sie die entsprechende Berechtigung haben.
+
+Nutzer können die Administratorauswahl nicht überschreiben. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die Einstellung für den Systemstandort nach Bedarf ändern und festlegen, wo die Standardeinstellung „<ph name="GLS_ALLOWED" />“ ist.
+
+Hinweis: Diese Richtlinie ersetzt die Richtlinie „<ph name="ARC_GLS_POLICY_NAME" />“. Wenn diese Richtlinie konfiguriert ist, wirkt sich „<ph name="DEFAULT_GEO_SETTING_POLICY_NAME" />“ nicht mehr auf die <ph name="ANDROID_NAME" />-Standorteinstellung unter <ph name="PRODUCT_OS_NAME" /> aus.</translation>
 <translation id="4341199399451274159">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />" die Zeichencodierungen an, die vom Suchanbieter unterstützt werden. Dazu werden Codeseiten-Namen wie "UTF-8", "GB2312" oder "ISO-8859-1" verwendet. Sie werden in der angegebenen Reihenfolge ausprobiert
 
       Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />" nicht konfiguriert ist, wird "UTF-8" verwendet.</translation>
@@ -6049,6 +6076,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Ist die Richtlinie deaktiviert, können Nutzer kein Feedback an Google senden.</translation>
 <translation id="5976636832661103220">In den Einstellungen von F11 wird die Tastenkombination verwendet, die den Umschalttaste-Modifikator enthält</translation>
 <translation id="5979376378555121803">Gehostete App</translation>
+<translation id="5981932073854958705">Festlegen, ob die Funktion „<ph name="PRIVACY_SANDBOX_NAME" />-Fingerprinting-Schutz“ aktiviert werden soll.</translation>
 <translation id="5983274643567559194">Festlegen einer Tastenkombination für die Aktion „Löschen“ ist deaktiviert.</translation>
 <translation id="5984099692320899605">Keine NTLM-Authentifizierung verwenden</translation>
 <translation id="5984237109586500246">Webinhalte akzeptieren, die als Signed HTTP Exchanges implementiert sind</translation>
@@ -6267,6 +6295,13 @@ Das Zeitlimit bei Inaktivität bis zum Start des Bildschirmschoners und das Inte
 <translation id="6181783961196084973">Wert der Schaltfläche zum Umschalten der App-Aktivitätserfassung. Wenn diese Option auf „true“ gesetzt ist, werden die App-Aktivitäten von Nutzern an den Server gesendet, damit sie in der <ph name="PRODUCT_NAME" />-App des Kindes und des Elternteils angezeigt werden können. Ist sie auf „false“ gesetzt, funktionieren App-spezifische Zeitlimits zwar weiterhin, es werden jedoch keine Daten an den Server gesendet, sodass sie nicht in <ph name="PRODUCT_NAME" /> angezeigt werden können.</translation>
 <translation id="6182206125906000651">HTTPS-Upgrades deaktivieren.</translation>
 <translation id="6182563940865917569">Automatische Wiedergabe von Medien in Chrome zulassen</translation>
+<translation id="6187573347027372072">Warnung! Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie „<ph name="CROS_GLS_POLICY_NAME" />“. In <ph name="PRODUCT_OS_NAME" /> gibt es jetzt eine Ein/Aus-Schaltfläche für den Systemstandort, mit der das gesamte System, einschließlich <ph name="ANDROID_NAME" />, gesteuert wird. Die Ein/Aus-Schaltfläche für <ph name="ANDROID_NAME" /> ist jetzt schreibgeschützt und spiegelt die Standorteinstellung von <ph name="PRODUCT_OS_NAME" /> wider.
+
+Wenn die Einstellung „<ph name="GLS_ENABLED" />“ gewählt und die Richtlinie „<ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" />“ nicht auf „<ph name="BLOCK_GEOLOCATION_SETTING" />“ gesetzt ist, sind die Standortdienste von Google während der Ersteinrichtung aktiv. Wenn die Richtlinie auf „<ph name="GLS_DISABLED" />“ gesetzt oder nicht konfiguriert ist, sind die Standortdienste während der Ersteinrichtung nicht aktiv.
+
+Ist die Richtlinie auf „<ph name="GLS_UNDER_USER_CONTROL" />“ gesetzt, werden Nutzer dazu aufgefordert, anzugeben, ob sie die Standortdienste von Google verwenden möchten. Wenn sie die Einstellung aktivieren, verwenden <ph name="ANDROID_NAME" />-Apps, <ph name="PRODUCT_OS_NAME" />-Apps, Websites und Systemdienste die Dienste, um den Gerätestandort zu ermitteln und anonyme Standortdaten an Google zu senden.
+
+Nach der Ersteinrichtung können Nutzer die Standortdienste von Google flexibel aktivieren oder deaktivieren.</translation>
 <translation id="6187632100458475876">Verwaltete Einstellung von Labels für die Avatare von Symbolleisten</translation>
 <translation id="6190367314942602985">Personenbezogene Daten erfassen</translation>
 <translation id="6191963383731098056">Mit dieser Richtlinie können Administratoren die Farbe des Designs von <ph name="PRODUCT_NAME" /> konfigurieren. Der Eingabestring muss ein gültiger Hex-Farbcode mit dem Format „#RRGGBB“ sein.
@@ -6646,6 +6681,11 @@ Weitere Informationen findest du in der Richtlinie <ph name="HTTPS_ONLY_MODE_POL
 <translation id="6440051664870270040">Websites erlauben, gleichzeitig auf andere Websites weiterzuleiten und Pop-ups zu öffnen</translation>
 <translation id="6441781723322254041">Abgeschnittene Cookies zulassen</translation>
 <translation id="6446366416439249472">Google Drive-Synchronisierung über Mobilfunkverbindungen deaktivieren</translation>
+<translation id="6447628816682315403">Eine Richtlinie, mit der festgelegt wird, ob die Funktion „<ph name="PRIVACY_SANDBOX_NAME" />-Fingerprinting-Schutz“ für deine Nutzer aktiviert oder deaktiviert werden soll.
+
+Ist die Richtlinie deaktiviert, wird der Fingerprinting-Schutz für deine Nutzer deaktiviert.
+Wenn diese Richtlinie aktiviert ist, wird der Fingerprinting-Schutz für deine Nutzer aktiviert.
+Ist die Richtlinie nicht konfiguriert, können Nutzer den Fingerprinting-Schutz in ihren Einstellungen der Benutzeroberfläche aktivieren oder deaktivieren. Die Standardeinstellung ist „false“ oder „disabled“, wodurch der Fingerprinting-Schutz deaktiviert ist.</translation>
 <translation id="6447948611083700881">"Sicherung und Wiederherstellung" deaktiviert</translation>
 <translation id="6449476513004303784">Nutzern nicht erlauben, Zertifikate zu verwalten</translation>
 <translation id="6449541189334851559">Aktiviere die <ph name="GOOGLE_CALENDAR_NAME" />-Integration, damit <ph name="PRODUCT_OS_NAME" />-Nutzer Termine aus <ph name="GOOGLE_CALENDAR_NAME" /> abrufen und im <ph name="PRODUCT_OS_NAME" />-Kalenderwidget in der Systemstatusleiste anzeigen lassen können.
@@ -7498,6 +7538,7 @@ Wenn diese Richtlinie auf „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_
 <translation id="7044883996351280650">Android-Dienst "Sicherung und Wiederherstellung" konfigurieren</translation>
 <translation id="7045221780834308118">Wenn die Richtlinie aktiviert ist, können Webanwendungen von Drittanbietern die Desk API verwenden, um <ph name="PRODUCT_OS_NAME" />-Desktops zu steuern. Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, ist die <ph name="DESK_API_NAME" /> nicht verfügbar. Die Richtlinie wird nur auf registrierten Geräten angewendet.</translation>
 <translation id="7046113122884041950">Smart Lock nicht zulassen</translation>
+<translation id="7046226611117346112">Aktiviert die Funktion „Fingerprinting-Schutz“.</translation>
 <translation id="7046997898355294677">Datenschutzhinweise anzeigen, bis sie vom Nutzer geschlossen werden</translation>
 <translation id="7047495632846973438">Gibt an, ob die Richtlinie für Berechtigungen zur Display-Erfassung ausgewählt ist oder übersprungen wird.</translation>
 <translation id="7055022222176591388">Veraltete <ph name="FLASH_PLUGIN_NAME" />-Plug-ins nicht zulassen</translation>
@@ -7674,6 +7715,17 @@ Der Richtlinienwert ist eine Liste von base64-codierten X.509-Zertifikaten. Alle
 
       Hinweis: Die Richtlinie wirkt sich nicht auf Google Drive und internen Speicher aus. Die Nutzer können weiterhin auf Dateien zugreifen, die im Ordner "Downloads" gespeichert sind.</translation>
 <translation id="7177857088692019405">Schnelles Entsperren</translation>
+<translation id="7179157174254421614">Wenn die automatische Zeitzonenerkennung nicht durch die Richtlinie <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> deaktiviert ist, wird durch das Konfigurieren der Richtlinie die Methode zur Zeitzonenerkennung festgelegt. Diese kann von Nutzern nicht geändert werden.
+
+Die Richtlinie kann folgendermaßen konfiguriert werden:
+ * <ph name="TIMEZONE_AUTOMATIC_DETECTION_DISABLED" /> deaktiviert die automatische Zeitzonenerkennung.
+ * <ph name="TTIMEZON_AUTOMATIC_DETECTION_IP_ONLY" /> aktiviert die automatische Zeitzonenerkennung. Für die Erkennung wird die Methode „Nur IP“ verwendet.
+ * <ph name="TIMEZONE_AUTOMATIC_DETECTION_SEND_WIFI_ACCESS_POINTS" /> aktiviert die automatische Zeitzonenerkennung. Die Liste der sichtbaren WLAN-Zugangspunkte wird dabei zur genauen Erkennung der Zeitzone kontinuierlich an den Geolocation API-Server gesendet.
+ * <ph name="TIMEZONE_AUTOMATIC_DETECTION_SEND_ALL_LOCATION_INFO" /> aktiviert die automatische Zeitzonenerkennung. Standortinformationen wie WLAN-Zugangspunkte und erreichbare Mobilfunkmasten werden dabei zur genauen Erkennung der Zeitzone kontinuierlich an einen Server gesendet.
+
+Ist diese Richtlinie nicht konfiguriert oder auf „Keine“ oder „Nutzer entscheiden lassen“ gesetzt, können Nutzer die automatische Zeitzonenerkennung über die normalen Steuerelemente unter <ph name="OS_SETTINGS_URL" /> verwalten.
+
+Hinweis: Wenn du diese Richtlinie verwendest, um die Zeitzone automatisch zu ermitteln, denke daran, die Richtlinie „<ph name="CROS_GLS_POLICY_NAME" />“ auf „<ph name="GLS_ALLOWED" />“ oder „<ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />“ zu setzen.</translation>
 <translation id="7179187054027029272">Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, steht Nutzern, Apps und Erweiterungen mit entsprechenden Berechtigungen der Vollbildmodus (in dem nur Webinhalte angezeigt werden) zur Verfügung.
 
       Ist sie auf "False" gesetzt, können Nutzer, Apps und Erweiterungen nicht in den Vollbildmodus wechseln.</translation>
@@ -8834,6 +8886,7 @@ Wird diese Richtlinie nicht konfiguriert, ist der Datenschutzbildschirm anfangs 
       Hinweis: Wenn das Add-in „Unterstützung älterer Browser“ für <ph name="IE_PRODUCT_NAME" /> nicht installiert ist, hat die Richtlinie keine Auswirkung.</translation>
 <translation id="8179161412673077784">Verhindern, dass Websites mit irreführenden Inhalten neue Fenster oder Tabs öffnen</translation>
 <translation id="8183108371184777472">Öffnen des Browserfensters verhindern</translation>
+<translation id="8185312100223853315">Profillabel</translation>
 <translation id="8186911565834244165">Nutzerfeedback zulassen</translation>
 <translation id="8195133650230097559">Anfragen nach Wakelocks für die Energieverwaltung ignorieren</translation>
 <translation id="8196558469954193908">Mit dieser Richtlinie wird das Zusammenführen von HTTP/2-Verbindungen zugelassen, wenn Clientzertifikate verwendet werden. Dazu müssen der Hostname der potenziellen neuen Verbindung und der Hostname einer vorhandenen Verbindung mit einem oder mehreren Mustern übereinstimmen, die durch diese Richtlinie beschrieben werden. Die Richtlinie ist eine Liste von Hosts unter Verwendung des <ph name="URL_BLOCKLIST_POLICY_NAME" />-Filterformats: "example.com" entspricht "example.com" sowie allen Subdomains wie "sub.example.com", während ".example.net" nur "example.net" entspricht.
@@ -9867,6 +9920,7 @@ Hinweis: Derzeit wird nur der erste Eintrag berücksichtigt. Erweiterungen werde
 <translation id="9020630127193895800">Tastaturbeleuchtungsfarbe „Indigo“</translation>
 <translation id="9031831501689819108">Unterstützung älterer Browser aktivieren</translation>
 <translation id="9032595854515551464">Dienst <ph name="PRODUCT_NAME" /> Version 2 aktivieren und Remote-Desktop nach der Anmeldung starten</translation>
+<translation id="903334067190374761">Benutzerdefiniertes Profillabel festlegen</translation>
 <translation id="9034285085962866065">Anpassung von Tastenkombinationen auf Systemebene erlauben</translation>
 <translation id="9035086760683255833">Mit dieser Richtlinie wird die Bedienungshilfe "Objekt mit Tastaturfokus hervorheben" aktiviert.
 

@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">ไม่มีเครือข่ายมือถือ</translation>
 <translation id="1882897271359938046">กำลังแสดงผลไปที่ <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">ปลดล็อกด้วยลายนิ้วมือ</translation>
+<translation id="1904997243703671177">เมื่อปิดบลูทูธ อุปกรณ์ภายนอก <ph name="DEVICE_COUNT" /> เครื่องจะยกเลิกการเชื่อมต่อกับ <ph name="DEVICE_TYPE" /> ของคุณ ได้แก่</translation>
 <translation id="1908992311423394684">ติดตั้งใหม่</translation>
 <translation id="1915307458270490472">วางซ้อนไว้ด้านบน</translation>
 <translation id="1918022425394817322">จัดกล้องพอดีกับมุมขวาบนแล้ว</translation>
@@ -955,6 +956,7 @@
 <translation id="4813311884204119883">ลากลิงก์ไปยังพื้นที่ว่างบนแนวแท็บ</translation>
 <translation id="4814539958450445987">หน้าจอการเข้าสู่ระบบ</translation>
 <translation id="481455355267255546">กิจกรรมถัดไป</translation>
+<translation id="481749895090480684">รายการงาน: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">กล้องและไมโครโฟน</translation>
 <translation id="482908187605862807">แอปที่พร้อมใช้งานจาก Play Store</translation>
 <translation id="4831034276697007977">แน่ใจไหมว่าต้องการปิดการคลิกอัตโนมัติ</translation>
@@ -996,6 +998,7 @@
 <translation id="4952936045814352993">ระบุตำแหน่งของโทรศัพท์ไม่ได้เมื่อปิดเสียงการปลุกไว้</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> กำหนดให้คุณต้องย้อนกลับเวอร์ชันของ <ph name="DEVICE_TYPE" /> อุปกรณ์จะรีเซ็ตและระบบจะลบข้อมูลทั้งหมด</translation>
 <translation id="4961318399572185831">แคสต์หน้าจอ</translation>
+<translation id="4964188651935955085">เมื่อปิดบลูทูธ อุปกรณ์ภายนอกนี้จะยกเลิกการเชื่อมต่อกับ <ph name="DEVICE_TYPE" /> ของคุณ</translation>
 <translation id="4966431234408005599">เพิ่มระดับเสียง</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ชม. <ph name="MINUTES" /> นาที <ph name="SECONDS" /> วินาที</translation>
 <translation id="4975771730019223894">การติดป้ายแอป</translation>
@@ -1822,6 +1825,7 @@
 <translation id="8155628902202578800">เปิดกล่องโต้ตอบข้อมูลของ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">กำลังใช้<ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">เปิด/ปิดเมนูเพื่อปรับขนาดโหมดล็อก</translation>
+<translation id="8192727139462702395">เมื่อปิดบลูทูธ อุปกรณ์ภายนอกเหล่านี้จะยกเลิกการเชื่อมต่อกับ <ph name="DEVICE_TYPE" /> ของคุณ</translation>
 <translation id="8198456017687137612">กำลังแคสต์แท็บ</translation>
 <translation id="8200772114523450471">ทำต่อ</translation>
 <translation id="8203795194971602413">คลิกขวา</translation>

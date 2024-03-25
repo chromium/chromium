@@ -1934,6 +1934,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2435248616906486374">Red desconectada</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="2436385001956947090">Copiar &amp;vínculo</translation>
+<translation id="2436746748253887661">Esto habilita a los servicios del sistema con permiso a usar tu ubicación. La ubicación puede usar fuentes como Wi-Fi, redes móviles y sensores para obtener la ubicación estimada del dispositivo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">No se conectó a la impresora</translation>
 <translation id="2439152382014731627">Restablecer la contraseña de <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Cargando <ph name="WINDOW_TITLE" /></translation>
@@ -3509,6 +3510,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3665589677786828986">Chrome detectó que otro programa dañó algunas opciones de configuración, por lo que la restableció a los valores predeterminados.</translation>
 <translation id="3665919494326051362">La versión actual es <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Volcado de depuración de los NIC de Intel WiFi</translation>
+<translation id="3666971425390608309">Descarga en pausa: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Dispositivos de cualquier proveedor</translation>
 <translation id="3670229581627177274">Activar Bluetooth</translation>
 <translation id="3670480940339182416">Permitir que los sitios usen el optimizador V8</translation>
@@ -3659,6 +3661,8 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3765055238058255342">este tipo de tarjeta</translation>
 <translation id="3765246971671567135">No se pudo leer la política del modo de demostración sin conexión.</translation>
 <translation id="3765696567014520261">Los sitios no pueden usar tus cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />El servicio de ubicación de Google usa fuentes como Wi-Fi, redes móviles y sensores para ayudar a determinar la ubicación de tu dispositivo.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Puedes desactivar la ubicación de ChromeOS y Android en tu dispositivo en cualquier momento. Para ello, ve a Configuración &gt; Privacidad y seguridad &gt; Controles de privacidad &gt; Acceso a la ubicación. Además, si quieres desactivar el uso de Wi-Fi, redes móviles y sensores para la ubicación de este dispositivo Android, desactiva el parámetro "Mejorar la precisión de la ubicación" que se encuentra bajo "Configuración avanzada de ubicación" en el mismo menú.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Obtener más información sobre Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Por el momento, solo puedes compartir contraseñas con miembros de la familia. <ph name="BEGIN_LINK" />Invita a miembros de la familia<ph name="END_LINK" /> a unirse a tu grupo y aprovecha al máximo tus productos y suscripciones en Google.</translation>
@@ -4324,6 +4328,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4278779213160967034">Este proceso puede tardar unos minutos. Se están descargando los archivos.</translation>
 <translation id="4279129444466079448">Puedes instalar hasta <ph name="PROFILE_LIMIT" /> perfiles de eSIM en este dispositivo. Para agregar otro perfil, primero debes quitar uno de los perfiles existentes.</translation>
 <translation id="4280325816108262082">El dispositivo se desconectará de forma automática cuando lo desactives o no lo uses</translation>
+<translation id="4281637354026226955">Habilita a los servicios y las apps de ChromeOS y Android con permiso de ubicación a usar la ubicación de tu dispositivo. Es posible que Google recopile datos de ubicación periódicamente y los use de forma anónima para mejorar la precisión de la ubicación y los servicios basados en la ubicación.</translation>
 <translation id="4281844954008187215">Condiciones del Servicio</translation>
 <translation id="4281849573951338030">Personalizar los botones del lápiz</translation>
 <translation id="4282196459431406533">Smart Lock está activado</translation>
@@ -6204,6 +6209,8 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (predeterminado del sistema)</translation>
 <translation id="5776450228446082914">La lista de sitios que se pueden abrir en cualquier navegador.</translation>
 <translation id="5776571780337000608">Puedes abrir y editar los archivos compatibles con esta app desde el navegador de archivos o desde otras apps. A fin de controlar qué archivos se abren en esta app de forma predeterminada, <ph name="BEGIN_LINK" />obtén más información para establecer apps predeterminadas en tu dispositivo<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">Los servicios de ubicación de Google mejoran la precisión de la ubicación con sensores y redes Wi-Fi y móviles para ayudar a calcular tu ubicación. Es posible que Google recopile datos de ubicación periódicamente y los use de forma anónima para ayudar a mejorar la precisión de la ubicación y los servicios basados en la ubicación.
+    Si desactivas esta opción, Android solo usará la dirección IP para determinar tu ubicación, lo que puede afectar la precisión de la ubicación que usan apps como Maps.</translation>
 <translation id="5778491106820461378">Desde <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />, puedes administrar las Cuentas de Google a las que se accedió. Es posible que se apliquen a todas las cuentas los permisos que otorgaste a sitios web y apps. Si no quieres que los sitios o apps accedan a la información de la cuenta, puedes acceder a tu <ph name="DEVICE_TYPE" /> como invitado.</translation>
 <translation id="5780011244986845107">La carpeta seleccionada contiene archivos confidenciales. ¿Confirmas que deseas otorgar a "<ph name="APP_NAME" />" acceso de lectura permanente a esta carpeta?</translation>
 <translation id="5780973441651030252">Prioridad del proceso</translation>
@@ -6289,6 +6296,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5836999627049108525">Idioma del texto de origen</translation>
 <translation id="583756221537636748">Caso</translation>
 <translation id="5840680448799937675">Los archivos siempre se compartirán sin conexión</translation>
+<translation id="5841167715783969407">Zona horaria automática según el Wi-Fi o las redes móviles</translation>
 <translation id="5841270259333717135">Configurar Ethernet</translation>
 <translation id="5842497610951477805">Activación de Bluetooth</translation>
 <translation id="5844284118433003733">Cuando accedes, estos datos se vinculan a tu Cuenta de Google para protegerte en todos los servicios de Google, por ejemplo, aumentan la protección en Gmail después de un incidente de seguridad.</translation>
@@ -6738,6 +6746,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6180510783007738939">Herramienta de línea</translation>
 <translation id="6180550893222597997">¿Qué llave de acceso deseas usar para <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Descarga bloqueada</translation>
+<translation id="6183369864942961155">Tema claro/oscuro automático</translation>
 <translation id="6184099524311454384">Buscar pestañas</translation>
 <translation id="6184868291074982484">Chrome limita automáticamente las cookies de terceros</translation>
 <translation id="6185132558746749656">Ubicación del dispositivo</translation>
@@ -7140,6 +7149,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6513247462497316522">Google Chrome utilizará los datos para celulares si no te conectas a otra red.</translation>
 <translation id="6514010653036109809">Dispositivo disponible:</translation>
 <translation id="6517227424170598783">¿Quieres quitar el atajo "<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />"?</translation>
+<translation id="6517382055541687102">El dispositivo seleccionado cambió a <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Los archivos de Mi unidad se sincronizan automáticamente con tu Chromebook para que puedas acceder a ellos sin conexión a Internet. Espacio aproximado que se usará: <ph name="REQUIRED_SPACE" />. Espacio disponible actual: <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Es posible que el dispositivo ya no funcione de manera adecuada y que tengas problemas de seguridad y rendimiento. Desactivar las actualizaciones puede afectar tu derecho a realizar demandas legales si tienes un problema.</translation>
 <translation id="6518014396551869914">Copia&amp;r imagen</translation>
@@ -7397,6 +7407,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6713441551032149301">Mantén presionada la tecla del Selector para alternar entre las teclas de función y las teclas de la fila superior del sistema</translation>
 <translation id="6713668088933662563">Nunca ofrecer la traducción de estos idiomas</translation>
 <translation id="6715803357256707211">Se produjo un error durante la instalación de la app de Linux. Haz clic en la notificación para obtener más detalles.</translation>
+<translation id="6716049856796700977">Nadie puede usar tu ubicación. Sin embargo, es posible que tu ubicación aún sea visible para apps y sitios web a través de tu dirección IP. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Se interrumpió la conexión de red. Revísala o intenta usar otra red Wi-Fi.</translation>
 <translation id="6718849325281682232">Se actualizaron los colores del tema de Chrome para que funcionen mejor para todos, ya sea en modo oscuro o claro</translation>
 <translation id="671928215901716392">Bloquear pantalla</translation>
@@ -8379,6 +8390,8 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7478658909253570368">No permitir que los sitios se conecten a puertos en serie</translation>
 <translation id="7479221278376295180">Descripción general sobre el uso del almacenamiento</translation>
 <translation id="747981547666531654">Se estableció conexión con los dispositivos Bluetooth <ph name="FIRST_DEVICE" /> y <ph name="SECOND_DEVICE" /></translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />El servicio de ubicación de Google usa fuentes como Wi-Fi, redes móviles y sensores para determinar la ubicación de este dispositivo.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Puedes desactivar la ubicación de ChromeOS y Android en este dispositivo en cualquier momento. Para hacerlo, ve a Configuración &gt; Privacidad y seguridad &gt; Controles de privacidad &gt; Acceso a la ubicación. Además, si quieres desactivar el uso de Wi-Fi, redes móviles y sensores para la ubicación de este dispositivo Android, desactiva el parámetro "Mejorar la precisión de la ubicación" que se encuentra bajo "Configuración avanzada de ubicación" en el mismo menú.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Adelante</translation>
 <translation id="7481358317100446445">Listo</translation>
 <translation id="748138892655239008">Restricciones básicas del certificado</translation>
@@ -8470,6 +8483,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7552846755917812628">Intenta las siguientes sugerencias:</translation>
 <translation id="7553012839257224005">Revisando el contenedor de Linux</translation>
 <translation id="7553242001898162573">Ingresar contraseña</translation>
+<translation id="7553487223484420820">Las apps, los sitios web y los servicios del sistema con el permiso de ubicación pueden usar tu ubicación. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">Tu administrador no permite este idioma</translation>
 <translation id="7554791636758816595">Nueva pestaña</translation>
 <translation id="7556033326131260574">Smart Lock no pudo verificar la cuenta. Escribe la contraseña para acceder.</translation>
@@ -9387,6 +9401,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8224427620313426549">No se borrará tu cuenta de <ph name="DOMAIN_LINK" /></translation>
 <translation id="8225046344534779393">Comprueba la conexión a Internet.</translation>
 <translation id="8225265270453771718">Compartir la ventana de una aplicación</translation>
+<translation id="8225516926291976401">Solo los servicios del sistema pueden usar tu ubicación. Sin embargo, es posible que tu ubicación aún sea visible para apps y sitios web a través de tu dirección IP. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Prohibido</translation>
 <translation id="8226619461731305576">Cola</translation>
 <translation id="8227119283605456246">Adjuntar un archivo</translation>
@@ -9823,6 +9838,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8552102814346875916">Guardar en la lista "Mantener estos sitios siempre activos"</translation>
 <translation id="8553342806078037065">Administrar otras personas</translation>
 <translation id="8554899698005018844">Ningún idioma</translation>
+<translation id="8555444629041783356">Programación automática de horario de cambio de modo</translation>
 <translation id="855604308879080518">Permite que las apps para Android accedan a dispositivos USB en esta Chromebook. Se solicitará permiso cada vez que conectes un dispositivo USB. Las apps para Android individuales solicitarán permisos adicionales.</translation>
 <translation id="8557022314818157177">Continúa tocando la llave de seguridad hasta que se capture tu huella dactilar</translation>
 <translation id="8557180006508471423">Activa "Google Chrome" en los Servicios de ubicación de tu Mac</translation>

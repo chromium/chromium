@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">Мобайл сүлжээ алга</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> руу тусгаж байна</translation>
 <translation id="1885785240814121742">Түгжээг хурууны хээгээр тайлах</translation>
+<translation id="1904997243703671177">Таныг Bluetooth-г унтраах үед гадны <ph name="DEVICE_COUNT" /> төхөөрөмж таны <ph name="DEVICE_TYPE" />-с сална. Үүнд:</translation>
 <translation id="1908992311423394684">Шинээр суулгасан</translation>
 <translation id="1915307458270490472">Таслах</translation>
 <translation id="1918022425394817322">Камерыг баруун дээд булан руу зэрэгцүүлсэн</translation>
@@ -961,6 +962,7 @@
 <translation id="4813311884204119883">Таб зурваст холбоосыг хоосон бүс рүү чирнэ үү</translation>
 <translation id="4814539958450445987">Нэвтрэх дэлгэц</translation>
 <translation id="481455355267255546">Дараагийн</translation>
+<translation id="481749895090480684">Ажлын жагсаалт: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">камер, микрофон</translation>
 <translation id="482908187605862807">Play Store-с авах боломжтой аппууд</translation>
 <translation id="4831034276697007977">Автомат даралтыг унтраахдаа итгэлтэй байна уу?</translation>
@@ -1002,6 +1004,7 @@
 <translation id="4952936045814352993">Сэрүүлгийн дууг идэвхгүй болгосон үед утасны байршил олох боломжгүй</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> танаас <ph name="DEVICE_TYPE" />-г өмнөх хувилбар луу нь буцаахыг шаардаж байна. Таны төхөөрөмжийг шинэчилж, бүх өгөгдлийг устгана.</translation>
 <translation id="4961318399572185831">Дэлгэцийг каст хийх</translation>
+<translation id="4964188651935955085">Таныг Bluetooth-г унтраах үед энэ гадны төхөөрөмж таны <ph name="DEVICE_TYPE" />-с сална:</translation>
 <translation id="4966431234408005599">Дууны түвшнийг нэмэх</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ц <ph name="MINUTES" />м <ph name="SECONDS" />с</translation>
 <translation id="4975771730019223894">Аппын тэмдэг</translation>
@@ -1828,6 +1831,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" />-н мэдээллийн харилцах цонхыг нээх</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />-г ашиглаж байна</translation>
 <translation id="8185090165691050712">Түгжсэн горимын хэмжээг өөрчлөх цэсийг асаах/унтраах</translation>
+<translation id="8192727139462702395">Таныг Bluetooth-г унтраах үед эдгээр гадны төхөөрөмж таны <ph name="DEVICE_TYPE" />-с сална:</translation>
 <translation id="8198456017687137612">Табыг дамжуулж байна</translation>
 <translation id="8200772114523450471">Сэргээх</translation>
 <translation id="8203795194971602413">Баруун талыг товших</translation>

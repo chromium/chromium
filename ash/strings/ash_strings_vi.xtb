@@ -229,6 +229,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1882814835921407042">Không có mạng di động</translation>
 <translation id="1882897271359938046">Đang phản chiếu tới <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Mở khóa bằng vân tay</translation>
+<translation id="1904997243703671177">Khi bạn tắt Bluetooth, <ph name="DEVICE_COUNT" /> thiết bị bên ngoài sau đây sẽ ngắt kết nối khỏi <ph name="DEVICE_TYPE" />:</translation>
 <translation id="1908992311423394684">Mới cài đặt</translation>
 <translation id="1915307458270490472">Kết thúc</translation>
 <translation id="1918022425394817322">Máy ảnh đang bám theo góc trên bên phải</translation>
@@ -960,6 +961,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4813311884204119883">Kéo đường liên kết vào vùng trống trên dải thẻ</translation>
 <translation id="4814539958450445987">Màn hình đăng nhập</translation>
 <translation id="481455355267255546">Sắp diễn ra</translation>
+<translation id="481749895090480684">Danh sách việc cần làm: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">máy ảnh và micrô</translation>
 <translation id="482908187605862807">Ứng dụng hiện có trên Cửa hàng Play</translation>
 <translation id="4831034276697007977">Bạn có chắc chắn muốn tắt tính năng tự động nhấp không?</translation>
@@ -1001,6 +1003,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4952936045814352993">Bạn không dùng được tính năng Tìm điện thoại khi đã tắt chuông báo</translation>
 <translation id="4960324571663582548">Theo yêu cầu của <ph name="MANAGER" />, bạn phải hạ cấp hệ điều hành trên thiết bị <ph name="DEVICE_TYPE" /> của mình. Thiết bị của bạn sẽ được đặt lại và toàn bộ dữ liệu sẽ bị xoá.</translation>
 <translation id="4961318399572185831">Truyền màn hình</translation>
+<translation id="4964188651935955085">Khi bạn tắt Bluetooth, thiết bị bên ngoài sau đây sẽ ngắt kết nối khỏi <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Tăng âm lượng</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> giờ <ph name="MINUTES" /> phút <ph name="SECONDS" /> giây</translation>
 <translation id="4975771730019223894">Huy hiệu ứng dụng</translation>
@@ -1827,6 +1830,7 @@ Mới cài đặt</translation>
 <translation id="8155628902202578800">Mở hộp thoại thông tin cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Đang dùng <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Bật/tắt trình đơn thay đổi kích thước chế độ khoá</translation>
+<translation id="8192727139462702395">Khi bạn tắt Bluetooth, các thiết bị bên ngoài sau đây sẽ ngắt kết nối khỏi <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Đang truyền thẻ</translation>
 <translation id="8200772114523450471">Tiếp tục</translation>
 <translation id="8203795194971602413">Nhấp chuột phải</translation>

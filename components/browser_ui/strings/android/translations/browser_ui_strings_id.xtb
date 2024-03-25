@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Papan klip</translation>
 <translation id="2597457036804169544">Jangan terapkan tema gelap ke situs</translation>
 <translation id="2606760465469169465">Verifikasi otomatis</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Izinkan JavaScript untuk situs tertentu.</translation>
 <translation id="2653659639078652383">Kirim</translation>
 <translation id="2677748264148917807">Keluar</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Konten dilindungi</translation>
 <translation id="662080504995468778">Tinggal</translation>
 <translation id="6653342741369270081">Tekan tombol kembali untuk keluar dari mode layar penuh.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Sembunyikan lanjutkan dengan tab ini}other{Sembunyikan lanjutkan dengan tab ini}}</translation>
 <translation id="6689172468748959065">Foto profil</translation>
 <translation id="6697925417670533197">Download aktif</translation>
 <translation id="6722828510648505498">Blokir perintah login dari layanan identitas.</translation>

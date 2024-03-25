@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">Мобильдік желі жоқ.</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> арқылы экран көшірмесін көрсету</translation>
 <translation id="1885785240814121742">Құлыпты саусақ ізімен ашыңыз</translation>
+<translation id="1904997243703671177">Bluetooth өшірілгенде, <ph name="DEVICE_COUNT" /> сыртқы құрылғы <ph name="DEVICE_TYPE" /> құрылғыңыздан ажыратылады, оның ішінде:</translation>
 <translation id="1908992311423394684">Жаңадан орнатылған</translation>
 <translation id="1915307458270490472">Жабу</translation>
 <translation id="1918022425394817322">Камера жоғарғы оң жақ бұрышқа ауыстырылды.</translation>
@@ -960,6 +961,7 @@
 <translation id="4813311884204119883">Сілтемені қойындылар жолағындағы бос жерге сүйреу</translation>
 <translation id="4814539958450445987">Аккаунтқа кіру экраны</translation>
 <translation id="481455355267255546">Алдағы іс-шаралар</translation>
+<translation id="481749895090480684">Тапсырмалар тізімі: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">камера және микрофон</translation>
 <translation id="482908187605862807">Play Store-дан қолжетімді қолданбалар</translation>
 <translation id="4831034276697007977">Автоматты түрде басу функциясын шынымен де өшіргіңіз келе ме?</translation>
@@ -1001,6 +1003,7 @@
 <translation id="4952936045814352993">Дабыл сигналы өшірілсе, телефонды табу функциясы қолжетімді болмайды.</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> сізден <ph name="DEVICE_TYPE" /> құрылғысын алдыңғы нұсқаға қайтаруды талап етеді. Құрылғы бастапқы күйге қайтарылады және барлық дерек жойылады.</translation>
 <translation id="4961318399572185831">Экран трансляциясы</translation>
+<translation id="4964188651935955085">Bluetooth өшірілгенде, бұл сыртқы құрылғы <ph name="DEVICE_TYPE" /> құрылғыңыздан ажыратылады:</translation>
 <translation id="4966431234408005599">Дыбыс деңгейін көтеру</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />с <ph name="MINUTES" />м <ph name="SECONDS" />с</translation>
 <translation id="4975771730019223894">Қолданбаға танымбелгі қою</translation>
@@ -1827,6 +1830,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> аккаунты туралы ақпарат диалогтік терезесін ашу</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> тілін пайдалану</translation>
 <translation id="8185090165691050712">Өлшем өзгертуді құлыптау режимі мәзірін қосу/өшіру</translation>
+<translation id="8192727139462702395">Bluetooth өшірілгенде, мынадай сыртқы құрылғылар <ph name="DEVICE_TYPE" /> құрылғыңыздан ажыратылады:</translation>
 <translation id="8198456017687137612">Қойынды трансляциялануда</translation>
 <translation id="8200772114523450471">Жалғастыру</translation>
 <translation id="8203795194971602413">Тінтуірдің оң жақ түймесін басу</translation>

@@ -345,6 +345,7 @@
 <translation id="677276454032249905">¿Deseas salir de Chrome de todos modos?</translation>
 <translation id="6794858689789885890">Siempre borrar los datos de sitios de tu dispositivo cuando cierras Chrome</translation>
 <translation id="683440813066116847">Regla de entrada para que Google Chrome Canary permita el tráfico mDNS.</translation>
+<translation id="684888714667046800">No se puede establecer la conexión a Internet. Si usas un firewall, asegúrate de que <ph name="PRODUCT_EXE_NAME" /> esté en la lista de elementos permitidos.</translation>
 <translation id="6851981911629679515">Activar la protección adicional en el motor de JavaScript y de WebAssembly de Chrome</translation>
 <translation id="6881299373831449287">Actualizando Chrome</translation>
 <translation id="6885412569789873916">Apps de Chrome Beta</translation>

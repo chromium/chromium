@@ -1937,6 +1937,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2435248616906486374">Rete scollegata</translation>
 <translation id="2435457462613246316">Mostra password</translation>
 <translation id="2436385001956947090">Copia &amp;link</translation>
+<translation id="2436746748253887661">Questa autorizzazione consente ai servizi di sistema che dispongono dell'autorizzazione di utilizzare la tua posizione. Il servizio di geolocalizzazione potrebbe usare fonti quali reti Wi-Fi e mobili o i sensori per stabilire la posizione approssimativa del dispositivo. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Nessun collegamento alla stampante</translation>
 <translation id="2439152382014731627">Reimposta la password di <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Caricamento di <ph name="WINDOW_TITLE" /> in corso…</translation>
@@ -3663,6 +3664,8 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3765055238058255342">questo tipo di scheda</translation>
 <translation id="3765246971671567135">Impossibile leggere le norme offline relative alla modalità demo.</translation>
 <translation id="3765696567014520261">I siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Il servizio di geolocalizzazione di Google utilizza fonti quali le reti Wi-Fi e mobili o i sensori per stabilire la posizione approssimativa del dispositivo.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Puoi disattivare la geolocalizzazione di ChromeOS e Android sul tuo dispositivo in qualsiasi momento da Impostazioni &gt; Privacy e sicurezza &gt; Controlli per la privacy &gt; Accesso alla posizione. Puoi anche disattivare l'uso delle reti Wi-Fi e mobili e dei sensori per la posizione del dispositivo Android disabilitando "Migliora la precisione della geolocalizzazione" nella sezione "Impostazioni di geolocalizzazione avanzate" dello stesso menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Scopri di più su Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Al momento puoi condividere le password solo con i membri del gruppo Famiglia. <ph name="BEGIN_LINK" />Invita membri della tua famiglia<ph name="END_LINK" /> a unirsi al tuo gruppo e usa al meglio i tuoi prodotti e abbonamenti su Google.</translation>
@@ -4328,6 +4331,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4278779213160967034">Questa procedura potrebbe richiedere alcuni minuti. È in corso il download dei file.</translation>
 <translation id="4279129444466079448">Puoi installare fino a <ph name="PROFILE_LIMIT" /> profili eSIM su questo dispositivo. Per aggiungere un altro profilo, prima rimuovine uno esistente.</translation>
 <translation id="4280325816108262082">Il dispositivo si disconnetterà automaticamente quando verrà spento o non sarà in uso</translation>
+<translation id="4281637354026226955">Consenti alle app e ai servizi ChromeOS e per Android che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione del tuo dispositivo. Google potrebbe raccogliere periodicamente dati sulla posizione da usare in forma anonima per migliorare la precisione della geolocalizzazione e i servizi basati sulla posizione geografica.</translation>
 <translation id="4281844954008187215">Termini di servizio</translation>
 <translation id="4281849573951338030">Personalizza i pulsanti della penna</translation>
 <translation id="4282196459431406533">Funzione Smart Lock attiva</translation>
@@ -6206,6 +6210,8 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (Predefinito di sistema)</translation>
 <translation id="5776450228446082914">L'elenco di siti web che è possibile aprire in qualsiasi browser.</translation>
 <translation id="5776571780337000608">Puoi aprire e modificare i file supportati con questa app dal tuo browser di file o con altre app. Per stabilire quali file aprire per impostazione predefinita in questa app, <ph name="BEGIN_LINK" />scopri come impostare app predefinite sul dispositivo<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">Il servizio di geolocalizzazione di Google può migliorare la precisione della geolocalizzazione usando reti mobili, Wi-Fi e sensori. Google potrebbe raccogliere periodicamente dati sulla posizione da usare in forma anonima per migliorare la precisione della geolocalizzazione e i servizi basati sulla posizione geografica.
+    Se disattivi questo servizio, su Android verrà utilizzato solo l'indirizzo IP per la geolocalizzazione, il che potrebbe influire sulla precisione della geolocalizzazione utilizzata da app quali Maps.</translation>
 <translation id="5778491106820461378">Puoi gestire gli Account Google a cui hai eseguito l'accesso dalle <ph name="LINK_BEGIN" />Impostazioni<ph name="LINK_END" />. Le autorizzazioni concesse ai siti web e alle app potrebbero essere applicate a tutti gli account. Se non vuoi consentire a siti o app di accedere ai dati del tuo account, puoi accedere al tuo dispositivo <ph name="DEVICE_TYPE" /> come ospite.</translation>
 <translation id="5780011244986845107">La cartella che hai selezionato contiene file sensibili. Vuoi concedere a "<ph name="APP_NAME" />" accesso di lettura permanente a questa cartella?</translation>
 <translation id="5780973441651030252">Priorità processo</translation>
@@ -6291,6 +6297,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5836999627049108525">Lingua da cui tradurre</translation>
 <translation id="583756221537636748">Custodia</translation>
 <translation id="5840680448799937675">I file verranno condivisi sempre offline</translation>
+<translation id="5841167715783969407">Fuso orario automatico in base alle reti Wi-Fi o mobili</translation>
 <translation id="5841270259333717135">Configura Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth attivato</translation>
 <translation id="5844284118433003733">Se hai eseguito l'accesso, questi dati vengono collegati al tuo Account Google per proteggerti nei servizi Google, ad esempio aumentando la protezione in Gmail dopo un incidente di sicurezza.</translation>
@@ -6739,6 +6746,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6180510783007738939">Strumento Linea</translation>
 <translation id="6180550893222597997">Quale passkey vuoi utilizzare per <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Download bloccato</translation>
+<translation id="6183369864942961155">Tema scuro/chiaro automatico</translation>
 <translation id="6184099524311454384">Cerca tra le schede</translation>
 <translation id="6184868291074982484">Chrome limita automaticamente i cookie di terze parti</translation>
 <translation id="6185132558746749656">Posizione del dispositivo</translation>
@@ -7141,6 +7149,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6513247462497316522">Google Chrome utilizzerà i dati mobili se non sei connesso a un'altra rete.</translation>
 <translation id="6514010653036109809">Dispositivo disponibile:</translation>
 <translation id="6517227424170598783">Rimuovere la scorciatoia "<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />"?</translation>
+<translation id="6517382055541687102">Il dispositivo selezionato è cambiato in <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">I tuoi file in Il mio Drive verranno sincronizzati automaticamente con Chromebook per potervi accedere senza connessione a internet. Spazio richiesto: circa <ph name="REQUIRED_SPACE" />. Spazio attualmente disponibile: <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Il tuo dispositivo potrebbe non funzionare più correttamente e potresti riscontrare problemi di prestazioni e sicurezza. La disattivazione degli aggiornamenti può anche incidere sul tuo diritto a presentare rivendicazioni legali in caso di problemi.</translation>
 <translation id="6518014396551869914">Cop&amp;ia immagine</translation>
@@ -7398,6 +7407,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6713441551032149301">Tieni premuto il tasto Avvio app per spostarti tra i tasti funzione e i tasti della fila superiore del sistema</translation>
 <translation id="6713668088933662563">Non proporre mai di tradurre queste lingue</translation>
 <translation id="6715803357256707211">Si è verificato un errore durante l'installazione della tua applicazione Linux. Per informazioni dettagliate, fai clic sulla notifica.</translation>
+<translation id="6716049856796700977">La tua posizione non può essere mai utilizzata. Tuttavia, potrebbe essere ancora visibile in app e siti web tramite il tuo indirizzo IP. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Connessione di rete interrotta. Controlla la connessione o prova a usare un'altra rete Wi-Fi.</translation>
 <translation id="6718849325281682232">I colori del tema di Chrome sono stati aggiornati per essere più adatti a tutti, sia in modalità Buio sia in modalità Luce</translation>
 <translation id="671928215901716392">Blocca schermo</translation>
@@ -8380,6 +8390,8 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7478658909253570368">Non consentire ai siti di connettersi alle porte seriali</translation>
 <translation id="7479221278376295180">Panoramica dell'utilizzo dello spazio di archiviazione</translation>
 <translation id="747981547666531654">Connessione ai dispositivi Bluetooth con nome <ph name="FIRST_DEVICE" /> e <ph name="SECOND_DEVICE" /></translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Il servizio di geolocalizzazione di Google utilizza fonti quali le reti Wi-Fi e mobili o i sensori per stabilire la posizione approssimativa del dispositivo.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Puoi disattivare la geolocalizzazione di ChromeOS e Android su questo dispositivo in qualsiasi momento da Impostazioni &gt; Privacy e sicurezza &gt; Controlli per la privacy &gt; Accesso alla posizione. Puoi anche disattivare l'uso delle reti Wi-Fi e mobili e dei sensori per la posizione del dispositivo Android disabilitando "Migliora la precisione della geolocalizzazione" nella sezione "Impostazioni di geolocalizzazione avanzate" dello stesso menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Avanti</translation>
 <translation id="7481358317100446445">Pronta</translation>
 <translation id="748138892655239008">Limitazioni di base certificato</translation>
@@ -8471,6 +8483,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7552846755917812628">Prova i seguenti suggerimenti:</translation>
 <translation id="7553012839257224005">Controllo del container Linux</translation>
 <translation id="7553242001898162573">Inserisci la password</translation>
+<translation id="7553487223484420820">Le app, i siti web e i servizi di sistema che dispongono dell'autorizzazione di accesso alla posizione possono utilizzare la tua posizione. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">L'amministratore non consente questa lingua</translation>
 <translation id="7554791636758816595">Nuova scheda</translation>
 <translation id="7556033326131260574">Impossibile verificare il tuo account con Smart Lock. Digita la password per accedere.</translation>
@@ -9388,6 +9401,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8224427620313426549">Il tuo account <ph name="DOMAIN_LINK" /> non verrà eliminato</translation>
 <translation id="8225046344534779393">Controlla la connessione a Internet</translation>
 <translation id="8225265270453771718">Condividi una finestra dell'applicazione</translation>
+<translation id="8225516926291976401">Solo i servizi di sistema possono utilizzare la tua posizione. Tuttavia, potrebbe essere ancora visibile in app e siti web tramite il tuo indirizzo IP. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Vietato</translation>
 <translation id="8226619461731305576">Coda</translation>
 <translation id="8227119283605456246">Allega file</translation>
@@ -9824,6 +9838,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8552102814346875916">Salva nell'elenco "Mantieni questi siti sempre attivi"</translation>
 <translation id="8553342806078037065">Gestisci altre persone</translation>
 <translation id="8554899698005018844">Nessuna lingua</translation>
+<translation id="8555444629041783356">Programmazione per il tramonto automatica</translation>
 <translation id="855604308879080518">Consenti alle app per Android di accedere ai dispositivi USB su questo Chromebook. L'autorizzazione verrà richiesta ogni volta che inserisci un dispositivo USB. Le singole app per Android richiederanno autorizzazioni aggiuntive.</translation>
 <translation id="8557022314818157177">Continua a toccare il token di sicurezza finché l'impronta digitale non viene acquisita</translation>
 <translation id="8557180006508471423">Attiva "Google Chrome" in Servizi di localizzazione sul Mac</translation>

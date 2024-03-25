@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">মোবাইল নেটওয়ার্ক নেই</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> তে প্রতিবিম্বিত হচ্ছে</translation>
 <translation id="1885785240814121742">আঙ্গুলের ছাপ দিয়ে আনলক করুন</translation>
+<translation id="1904997243703671177">আপনি ব্লুটুথ বন্ধ করলে, আপনার <ph name="DEVICE_TYPE" /> থেকে <ph name="DEVICE_COUNT" />টি এক্সটার্নাল ডিভাইস ডিসকানেক্ট হয়ে যাবে, যার মধ্যে এগুলি আছে:</translation>
 <translation id="1908992311423394684">নতুন ইনস্টল</translation>
 <translation id="1915307458270490472">কল নামিয়ে রাখুন</translation>
 <translation id="1918022425394817322">ক্যামেরাটি উপরে ডানদিকের কোণে স্ন্যাপ করা হয়েছে</translation>
@@ -960,6 +961,7 @@
 <translation id="4813311884204119883">ট্যাব বারের ফাঁকা অঞ্চলে লিঙ্ক টেনে আনুন</translation>
 <translation id="4814539958450445987">লগ-ইন স্ক্রিন</translation>
 <translation id="481455355267255546">এর পরে</translation>
+<translation id="481749895090480684">টাস্ক লিস্ট: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">ক্যামেরা এবং মাইক্রোফোন</translation>
 <translation id="482908187605862807">Play Store-এ উপলভ্য অ্যাপ</translation>
 <translation id="4831034276697007977">অটোমেটিক ক্লিক বন্ধ করতে চান কিনা সেই বিষয়টি ভাল করে দেখে নিন?</translation>
@@ -1001,6 +1003,7 @@
 <translation id="4952936045814352993">অ্যালার্মের শব্দ বন্ধ করা হলে, ফোন শনাক্ত করার বিকল্প ব্যবহার করা যাবে না</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> আপনাকে <ph name="DEVICE_TYPE" /> আগের ভার্সনে ফিরিয়ে নিয়ে যেতে বলছে। আপনার ডিভাইস রিসেট করা হবে এবং সব ডেটা মুছে যাবে।</translation>
 <translation id="4961318399572185831">স্ক্রিন কাস্ট করুন</translation>
+<translation id="4964188651935955085">আপনি ব্লুটুথ বন্ধ করলে, আপনার <ph name="DEVICE_TYPE" /> থেকে এই এক্সটার্নাল ডিভাইস ডিসকানেক্ট হয়ে যাবে:</translation>
 <translation id="4966431234408005599">ভলিউম বাড়ান</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ঘঃ <ph name="MINUTES" />মিঃ <ph name="SECONDS" />সেঃ</translation>
 <translation id="4975771730019223894">অ্যাপ ব্যাজিং</translation>
@@ -1828,6 +1831,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য তথ্য সংক্রান্ত ডায়ালগ খুলুন</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ব্যবহার করা হচ্ছে</translation>
 <translation id="8185090165691050712">লক মোড ছোট বড় করতে মেনু চালু/বন্ধ করুন</translation>
+<translation id="8192727139462702395">আপনি ব্লুটুথ বন্ধ করলে, আপনার <ph name="DEVICE_TYPE" /> থেকে এইসব এক্সটার্নাল ডিভাইস ডিসকানেক্ট হয়ে যাবে:</translation>
 <translation id="8198456017687137612">কাস্ট করার ট্যাব</translation>
 <translation id="8200772114523450471">আবার চালু করা</translation>
 <translation id="8203795194971602413">ডানদিকের বোতামে ক্লিক করুন</translation>

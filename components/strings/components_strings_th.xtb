@@ -3225,7 +3225,7 @@
 <translation id="7243010569062352439"><ph name="PASSWORDS" /> <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">การดำเนินธุรกิจ</translation>
-<translation id="724691107663265825">ไซต์ที่จะเปิดมีมัลแวร์</translation>
+<translation id="724691107663265825">เว็บไซต์ที่กำลังจะเข้าชมมีมัลแวร์</translation>
 <translation id="7251437084390964440">การกำหนดค่าเครือข่ายไม่เป็นไปตามมาตรฐาน ONC ระบบอาจไม่นำเข้าการกำหนดค่าบางส่วน
 รายละเอียดเพิ่มเติม:
 <ph name="DEBUG_INFO" /></translation>
@@ -4159,6 +4159,7 @@
 <translation id="9036306139374661733">อนุญาตให้เข้าถึงไมโครโฟนไหม</translation>
 <translation id="9038649477754266430">ใช้บริการการคาดคะเนเพื่อโหลดหน้าได้เร็วขึ้น</translation>
 <translation id="9039213469156557790">นอกจากนี้ หน้านี้ประกอบด้วยทรัพยากรอื่นๆ ซึ่งไม่ปลอดภัย ผู้อื่นสามารถดูทรัพยากรเหล่านี้ขณะถ่ายโอน และผู้บุกรุกสามารถแก้ไขเพื่อเปลี่ยนการทำงานของหน้าได้</translation>
+<translation id="9040341831873780534">ดูข้อกำหนดที่นี่</translation>
 <translation id="9042617223719777575">ความจุมาก</translation>
 <translation id="9042827002460091668">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองอีกครั้ง</translation>
 <translation id="9044359186343685026">ใช้ Touch ID</translation>

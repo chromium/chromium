@@ -616,7 +616,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2126374524350484896">Outil de conversion PDF :</translation>
 <translation id="2130448033692577677">Les modèles que vous avez spécifiés risquent de ne pas être appliqués, car la règle DnsOverHttpsMode n'est pas configurée.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">Ces moteurs de recherche s'affichent dans un ordre aléatoire. Vous pouvez changer de navigateur par défaut à tout moment.</translation>
+<translation id="2132825047782982803">Ceux-ci s'affichent dans un ordre aléatoire. Vous pouvez modifier votre sélection à tout moment.</translation>
 <translation id="2137891579555018930">En attente d'autorisation…</translation>
 <translation id="213826338245044447">Favoris sur mobile</translation>
 <translation id="2141000681034340397">Modifier votre saisie</translation>
@@ -4160,6 +4160,7 @@ Informations supplémentaires :
 <translation id="9036306139374661733">Autoriser l'accès au micro ?</translation>
 <translation id="9038649477754266430">Utiliser un service de prédiction pour charger les pages plus rapidement</translation>
 <translation id="9039213469156557790">De plus, cette page inclut d'autres ressources qui ne sont pas sécurisées. Ces ressources peuvent être consultées par des tiers pendant leur transfert, et modifiées par un pirate informatique dans le but de changer le comportement de cette page.</translation>
+<translation id="9040341831873780534">Voir les conditions ici</translation>
 <translation id="9042617223719777575">Grande capacité</translation>
 <translation id="9042827002460091668">Vérifiez votre connexion Internet, puis réessayez</translation>
 <translation id="9044359186343685026">Utiliser Touch ID</translation>

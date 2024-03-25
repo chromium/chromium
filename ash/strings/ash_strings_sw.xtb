@@ -229,6 +229,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1882814835921407042">Hakuna mtandao wa simu</translation>
 <translation id="1882897271359938046">Inaakisi kwenye <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Tumia alama ya kidole kufungua</translation>
+<translation id="1904997243703671177">Unapozima Bluetooth, vifaa <ph name="DEVICE_COUNT" /> vya nje vitatenganishwa na <ph name="DEVICE_TYPE" /> yako, ikiwa ni pamoja na:</translation>
 <translation id="1908992311423394684">Imesakinishwa hivi karibuni</translation>
 <translation id="1915307458270490472">Kata simu</translation>
 <translation id="1918022425394817322">Onyesho la kukagua kamera limelinganishwa kwenye kona ya juu kulia</translation>
@@ -960,6 +961,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4813311884204119883">Buruta kiungo kwenye sehemu tupu katika ukanda wa vichupo</translation>
 <translation id="4814539958450445987">Skrini ya Kuingia katika Akaunti</translation>
 <translation id="481455355267255546">Yanayofuata</translation>
+<translation id="481749895090480684">Orodha ya majukumu <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera na maikrofoni</translation>
 <translation id="482908187605862807">Programu zinazopatikana kutoka kwenye Duka la Google Play</translation>
 <translation id="4831034276697007977">Je, una uhakika ungependa kuzima mibofyo ya kiotomatiki?</translation>
@@ -1001,6 +1003,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4952936045814352993">Kipengele cha kutafuta simu hakipatikani wakati umezima sauti za kengele</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> inahitaji urejeshe toleo la awali kwenye <ph name="DEVICE_TYPE" /> yako. Mipangilio ya kifaa chako itawekwa upya na data yote itafutwa.</translation>
 <translation id="4961318399572185831">Tuma skrini</translation>
+<translation id="4964188651935955085">Unapozima Bluetooth, kifaa hiki cha nje kitatenganishwa na <ph name="DEVICE_TYPE" /> yako:</translation>
 <translation id="4966431234408005599">Ongeza sauti</translation>
 <translation id="4969092041573468113">Saa <ph name="HOURS" /> dak <ph name="MINUTES" /> sek <ph name="SECONDS" /></translation>
 <translation id="4975771730019223894">Kuweka beji kwenye programu</translation>
@@ -1828,6 +1831,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8155628902202578800">Fungua kidirisha cha maelezo cha <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Unatumia <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Zima au uwashe menyu ili ubadilishe ukubwa wa hali ya kufunga</translation>
+<translation id="8192727139462702395">Unapozima Bluetooth, vifaa hivi vya nje vitatenganishwa na <ph name="DEVICE_TYPE" /> yako:</translation>
 <translation id="8198456017687137612">Inatuma maudhui ya kichupo</translation>
 <translation id="8200772114523450471">Endelea</translation>
 <translation id="8203795194971602413">Mbofyo wa kulia</translation>
