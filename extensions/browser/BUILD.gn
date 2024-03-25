@@ -651,6 +651,7 @@ source_set("browser_sources") {
     "//third_party/re2",
     "//third_party/zlib/google:zip",
     "//tools/json_schema_compiler:generated_api_util",
+    "//ui/color",
     "//ui/display",
     "//url",
   ]
