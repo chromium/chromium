@@ -16,4 +16,7 @@ public abstract class PermissionsAndroidFeatureList {
     public static final String BLOCK_MIDI_BY_DEFAULT = "BlockMidiByDefault";
 
     public static final String ONE_TIME_PERMISSION = "OneTimePermission";
+
+    public static final String ANDROID_CANCEL_PERMISSION_PROMPT_ON_TOUCH_OUTSIDE =
+            "AndroidCancelPermissionPromptOnTouchOutside";
 }

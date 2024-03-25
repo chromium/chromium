@@ -35,10 +35,14 @@ class PermissionDialogModelFactory {
                         .with(ModalDialogProperties.TOUCH_FILTERED_CALLBACK, touchFilteredCallback)
                         .with(
                                 ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
-                                UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS);
+                                UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS)
+                        .with(
+                                ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE,
+                                PermissionsAndroidFeatureMap.isEnabled(
+                                        PermissionsAndroidFeatureList
+                                                .ANDROID_CANCEL_PERMISSION_PROMPT_ON_TOUCH_OUTSIDE));
         if (delegate.canShowEphemeralOption()) {
             builder.with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true)
-                    .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                     .with(
                             ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST,
                             new ModalDialogProperties.ModalDialogButtonSpec[] {
