@@ -851,11 +851,15 @@ bool AutocompleteMatch::IsStarterPackType(Type type) {
   return type == AutocompleteMatchType::STARTER_PACK;
 }
 
-// static
-bool AutocompleteMatch::ShouldBeSkippedForGroupBySearchVsUrl(Type type) {
+bool AutocompleteMatch::IsClipboardType(Type type) {
   return type == AutocompleteMatchType::CLIPBOARD_URL ||
          type == AutocompleteMatchType::CLIPBOARD_TEXT ||
-         type == AutocompleteMatchType::CLIPBOARD_IMAGE ||
+         type == AutocompleteMatchType::CLIPBOARD_IMAGE;
+}
+
+// static
+bool AutocompleteMatch::ShouldBeSkippedForGroupBySearchVsUrl(Type type) {
+  return IsClipboardType(type) ||
          type == AutocompleteMatchType::TILE_NAVSUGGEST ||
          type == AutocompleteMatchType::TILE_MOST_VISITED_SITE ||
          type == AutocompleteMatchType::TILE_REPEATABLE_QUERY ||
@@ -1371,6 +1375,13 @@ int AutocompleteMatch::GetSortingOrder() const {
   if (IsStarterPackType(type)) {
     return 0;
   }
+
+  if constexpr (!kIsDesktop) {
+    if (IsClipboardType(type)) {
+      return 0;
+    }
+  }
+
 #if !BUILDFLAG(IS_IOS)
   // Group history cluster suggestions with searches.
   if (type == AutocompleteMatchType::HISTORY_CLUSTER) {

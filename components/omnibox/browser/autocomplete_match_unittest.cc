@@ -1285,3 +1285,15 @@ TEST_F(AutocompleteMatchTest, ValidateGetVectorIcons) {
   }
 }
 #endif
+
+TEST_F(AutocompleteMatchTest, IsClipboardType) {
+  std::set<int> clipboard_types{AutocompleteMatchType::CLIPBOARD_TEXT,
+                                AutocompleteMatchType::CLIPBOARD_URL,
+                                AutocompleteMatchType::CLIPBOARD_IMAGE};
+
+  for (int type = 0; type < AutocompleteMatchType::NUM_TYPES; type++) {
+    EXPECT_EQ(
+        AutocompleteMatch::IsClipboardType((AutocompleteMatchType::Type)type),
+        clipboard_types.contains(type));
+  }
+}

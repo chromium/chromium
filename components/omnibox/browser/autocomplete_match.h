@@ -336,6 +336,9 @@ struct AutocompleteMatch {
   // mode chips attach to.
   static bool IsStarterPackType(Type type);
 
+  // Returns whether this match is a Clipboard suggestion.
+  static bool IsClipboardType(Type type);
+
   // Convenience function to check if |type| is one of the suggest types we
   // need to skip for search vs url partitions - url, text or image in the
   // clipboard or query tile.
