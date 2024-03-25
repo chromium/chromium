@@ -205,6 +205,7 @@ suite('TopicsSubpageWithProactiveTopicsBlockingDisabled', function() {
 
   setup(async function() {
     testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    testPrivacySandboxBrowserProxy.setTestTopicState(getTestTopicsState());
     PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
@@ -224,6 +225,23 @@ suite('TopicsSubpageWithProactiveTopicsBlockingDisabled', function() {
   teardown(function() {
     Router.getInstance().resetRouteForTesting();
   });
+
+  function getTestTopicsState(): TopicsState {
+    return {
+      topTopics: [{
+        topicId: 1,
+        taxonomyVersion: 1,
+        displayString: 'test-topic-1',
+        description: '',
+      }],
+      blockedTopics: [{
+        topicId: 2,
+        taxonomyVersion: 1,
+        displayString: 'test-topic-2',
+        description: '',
+      }],
+    };
+  }
 
   function assertLearnMoreDialogClosed() {
     const dialog = page.shadowRoot!.querySelector<CrDialogElement>('#dialog');
@@ -664,6 +682,10 @@ suite('FledgeSubpageWithProactiveTopicsBlockingEnabled', function() {
 
   setup(async function() {
     testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    testPrivacySandboxBrowserProxy.setFledgeState({
+      joiningSites: ['test-site-one.com'],
+      blockedSites: ['test-site-two.com'],
+    });
     PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(settingsPrefs);
@@ -1910,6 +1932,10 @@ suite('FledgeSubpageWithProactiveTopicsBlockingDisabled', function() {
 
   setup(async function() {
     testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    testPrivacySandboxBrowserProxy.setFledgeState({
+      joiningSites: ['test-site-one.com'],
+      blockedSites: ['test-site-two.com'],
+    });
     PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
