@@ -225,7 +225,6 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
               &AccountSelectionViewBase::Observer::OnCloseButtonClicked,
               base::Unretained(observer_)),
           l10n_util::GetStringUTF16(IDS_CANCEL));
-  cancel_button_ = cancel_button.get();
   cancel_button->SetStyle(ui::ButtonStyle::kDefault);
   cancel_button->SetAppearDisabledInInactiveWidget(true);
   button_container->AddChildView(std::move(cancel_button));
@@ -235,6 +234,7 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
         std::make_unique<views::MdTextButton>(
             std::move(*continue_callback),
             l10n_util::GetStringUTF16(IDS_SIGNIN_CONTINUE));
+    continue_button_ = continue_button.get();
     continue_button->SetStyle(ui::ButtonStyle::kProminent);
     continue_button->SetAppearDisabledInInactiveWidget(true);
     button_container->AddChildView(std::move(continue_button));
@@ -245,6 +245,11 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
   }
 
   CHECK(!use_other_account_callback || !back_callback);
+
+  // Use other account or back button shown on the far left needs to be in its
+  // own child container because we want it aligned to the start of the button
+  // row container, whereas the other buttons are aligned to the end of the
+  // button row container.
   std::unique_ptr<views::FlexLayoutView> leftmost_button_container =
       std::make_unique<views::FlexLayoutView>();
   leftmost_button_container->SetProperty(
@@ -256,6 +261,7 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
         std::make_unique<views::MdTextButton>(
             std::move(*use_other_account_callback),
             l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT));
+    use_other_account_button_ = use_other_account_button.get();
     use_other_account_button->SetStyle(ui::ButtonStyle::kDefault);
     use_other_account_button->SetAppearDisabledInInactiveWidget(true);
     leftmost_button_container->AddChildView(
@@ -266,6 +272,7 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
         std::make_unique<views::MdTextButton>(
             std::move(*back_callback),
             l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_BACK));
+    back_button_ = back_button.get();
     back_button->SetStyle(ui::ButtonStyle::kDefault);
     back_button->SetAppearDisabledInInactiveWidget(true);
     leftmost_button_container->AddChildView(std::move(back_button));
@@ -363,9 +370,8 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
         idp_display_data_list[0].idp_metadata.config_url,
         idp_display_data_list[0].idp_metadata.idp_login_url);
   }
-  button_row_ =
-      AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
-                                   std::move(use_other_account_callback)));
+  AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
+                               std::move(use_other_account_callback)));
 
   InitDialogWidget();
 
@@ -388,12 +394,17 @@ void AccountSelectionModalView::ShowVerifyingSheet(
     account_row->SetEnabled(false);
   }
 
-  // Disable buttons.
-  CHECK(button_row_);
-  for (const auto& button : button_row_->children()) {
-    if (button != cancel_button_) {
-      button->SetEnabled(false);
-    }
+  // Disable text buttons.
+  if (use_other_account_button_) {
+    use_other_account_button_->SetEnabled(false);
+  }
+
+  if (back_button_) {
+    back_button_->SetEnabled(false);
+  }
+
+  if (continue_button_) {
+    continue_button_->SetEnabled(false);
   }
 
   InitDialogWidget();
@@ -442,7 +453,7 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
         base::Unretained(observer_), idp_display_data.idp_metadata.config_url,
         idp_display_data.idp_metadata.idp_login_url);
   }
-  button_row_ = AddChildView(CreateButtonRow(
+  AddChildView(CreateButtonRow(
       base::BindRepeating(
           &AccountSelectionViewBase::Observer::OnAccountSelected,
           base::Unretained(observer_), std::cref(account),
@@ -477,7 +488,7 @@ void AccountSelectionModalView::ShowLoadingDialog() {
   header_view_ = AddChildView(CreateAccountChooserHeader());
   AddProgressBar();
   AddChildView(CreatePlaceholderAccountRow());
-  button_row_ = AddChildView(CreateButtonRow());
+  AddChildView(CreateButtonRow());
 
   InitDialogWidget();
 }
@@ -533,7 +544,7 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
       AddChildView(CreateSingleAccountChooser(idp_display_data, account,
                                               /*should_hover=*/false,
                                               /*show_disclosure_label=*/true));
-  button_row_ = AddChildView(CreateButtonRow(
+  AddChildView(CreateButtonRow(
       base::BindRepeating(
           &AccountSelectionViewBase::Observer::OnAccountSelected,
           base::Unretained(observer_), std::cref(account),
@@ -572,10 +583,11 @@ std::optional<std::string> AccountSelectionModalView::GetDialogSubtitle()
 void AccountSelectionModalView::RemoveChildViews() {
   // Make sure not to keep dangling pointers around first.
   header_view_ = nullptr;
-  button_row_ = nullptr;
+  use_other_account_button_ = nullptr;
+  back_button_ = nullptr;
+  continue_button_ = nullptr;
   account_chooser_ = nullptr;
   title_label_ = nullptr;
-  cancel_button_ = nullptr;
 
   RemoveAllChildViews();
 }

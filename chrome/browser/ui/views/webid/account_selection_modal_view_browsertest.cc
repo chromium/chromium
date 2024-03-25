@@ -214,6 +214,18 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     }
   }
 
+  void CheckDisabledButtonRow(views::View* button_row) {
+    for (const auto& button : button_row->children()) {
+      auto* text_button = static_cast<views::MdTextButton*>(
+          std::string(button->GetClassName()) == "FlexLayoutView"
+              ? button->children()[0]
+              : button);
+      ASSERT_TRUE(!text_button->GetEnabled() ||
+                  text_button->GetText() ==
+                      l10n_util::GetStringUTF16(IDS_CANCEL));
+    }
+  }
+
   void TestSingleAccount(const std::u16string& expected_title,
                          const std::u16string& expected_body,
                          bool supports_add_account = false) {
@@ -322,14 +334,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       ASSERT_FALSE(item->GetEnabled());
     }
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> button_row =
-        dialog()->children()[3]->children();
-    for (const auto& button : button_row) {
-      auto* text_button = static_cast<views::MdTextButton*>(button);
-      ASSERT_TRUE(!text_button->GetEnabled() ||
-                  text_button->GetText() ==
-                      l10n_util::GetStringUTF16(IDS_CANCEL));
-    }
+    CheckDisabledButtonRow(dialog()->children()[3]);
   }
 
   void TestLoadingDialog(const std::u16string& expected_title,
@@ -353,14 +358,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     // Order: Placeholder account name, placeholder account email
     ASSERT_EQ(placeholder_text_column.size(), 2u);
 
-    std::vector<raw_ptr<views::View, VectorExperimental>> button_row =
-        dialog()->children()[3]->children();
-    for (const auto& button : button_row) {
-      auto* text_button = static_cast<views::MdTextButton*>(button);
-      ASSERT_TRUE(!text_button->GetEnabled() ||
-                  text_button->GetText() ==
-                      l10n_util::GetStringUTF16(IDS_CANCEL));
-    }
+    CheckDisabledButtonRow(dialog()->children()[3]);
   }
 
   AccountSelectionModalView* dialog() { return dialog_; }
@@ -433,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
 // Tests that the verifying sheet is rendered correctly, when it is shown after
 // the request permission dialog.
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
-                       DISABLED_VerifyingAfterRequestPermission) {
+                       VerifyingAfterRequestPermission) {
   TestRequestPermission(kTitleRequestPermission);
   TestVerifyingSheet(kTitleRequestPermission);
 }

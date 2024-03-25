@@ -130,20 +130,23 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // Removes all child views and dangling pointers.
   void RemoveChildViews();
 
-  // View containing the modal dialog header.
+  // View containing the header.
   raw_ptr<views::View> header_view_ = nullptr;
 
-  // View containing the modal dialog button row.
-  raw_ptr<views::View> button_row_ = nullptr;
+  // View containing the use other account button.
+  raw_ptr<views::View> use_other_account_button_ = nullptr;
 
-  // View containing the modal dialog account chooser.
+  // View containing the back button.
+  raw_ptr<views::View> back_button_ = nullptr;
+
+  // View containing the continue button.
+  raw_ptr<views::View> continue_button_ = nullptr;
+
+  // View containing the account chooser.
   raw_ptr<views::View> account_chooser_ = nullptr;
 
-  // View containing the modal dialog title.
+  // View containing the title.
   raw_ptr<views::Label> title_label_ = nullptr;
-
-  // View containing the modal dialog cancel button.
-  raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
 
   // The title for the modal dialog.
   std::u16string title_;
