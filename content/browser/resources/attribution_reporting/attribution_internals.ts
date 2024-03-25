@@ -1079,6 +1079,7 @@ class AttributionInternals implements ObserverInterface {
   }
 
   onSourcesChanged(): void {
+    this.updateFilters();
     this.updateSources();
   }
 
