@@ -62,7 +62,7 @@ bool IsExtendedPublicSuffixDomainMatch(
 }
 
 // Do post-processing on forms and mark PSL matches as such.
-LoginsResultOrError ProccessExactAndPSLForms(
+LoginsResultOrError ProcessExactAndPSLForms(
     const PasswordFormDigest& digest,
     const base::flat_set<std::string>& psl_extensions,
     LoginsResultOrError logins_or_error) {
@@ -177,7 +177,7 @@ void GetLoginsHelper::Init(AffiliatedMatchHelper* affiliated_match_helper,
     // If |affiliated_match_helper| is unavailable return only exact and PSL
     // matches.
     backend_->FillMatchingLoginsAsync(
-        base::BindOnce(&ProccessExactAndPSLForms, requested_digest_,
+        base::BindOnce(&ProcessExactAndPSLForms, requested_digest_,
                        base::flat_set<std::string>())
             .Then(std::move(callback)),
         FormSupportsPSL(requested_digest_), {requested_digest_});
@@ -211,7 +211,7 @@ void GetLoginsHelper::OnPSLExtensionsReceived(
     return;
   }
   backend_->FillMatchingLoginsAsync(
-      base::BindOnce(&ProccessExactAndPSLForms, requested_digest_,
+      base::BindOnce(&ProcessExactAndPSLForms, requested_digest_,
                      psl_extensions)
           .Then(std::move(forms_received_callback)),
       FormSupportsPSL(requested_digest_), {requested_digest_});
@@ -293,7 +293,7 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
     }
   }
   // Erase any form which has no match_type assigned. This can happen if PSL
-  // matched form was not marked as such inside ProccessExactAndPSLForms()
+  // matched form was not marked as such inside ProcessExactAndPSLForms()
   // because of PSL extension list.
   std::erase_if(final_result,
                 [](const auto& form) { return !form.match_type.has_value(); });
