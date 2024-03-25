@@ -478,17 +478,11 @@ def _recursive_expand_variant_matrix(original_test: Mapping[str, Any],
         # Selection for each variant is done, so add a new test to test_list.
         test = dict(original_test)
         variant_name_list = []
-        should_append_variant_names = original_test.get(
-            'append_variants_to_name', True)
         for variant_name, variant_params in current_selection:
-            variant_name_list.append(variant_name)
-            # Append variant name. Variant names starting with '_' are
-            # not appended, which is useful to create variants with the same
-            # name in different folders (element vs. offscreen).
-            if (should_append_variant_names
-                    and not variant_name.startswith('_')):
-                test['name'] += '.' + variant_name
             test.update(variant_params)
+            variant_name_list.append(variant_name)
+            if test.get('append_variants_to_name', True):
+                test['name'] += '.' + variant_name
         # Expose variant names as a list so they can be used from the yaml
         # files, which helps with better naming of tests.
         test.update({'variant_names': variant_name_list})

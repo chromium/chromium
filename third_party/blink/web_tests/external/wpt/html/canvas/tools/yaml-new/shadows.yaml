@@ -518,10 +518,12 @@
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
   variants: &load-image-variant-definition
-  - _HtmlCanvas:
+  - HtmlCanvas:
+      append_variants_to_name: false
       canvas_types: ['HtmlCanvas']
       load_image: var img = document.getElementById('{{ images[0] }}');
-    _OffscreenCanvas:
+    OffscreenCanvas:
+      append_variants_to_name: false
       canvas_types: ['OffscreenCanvas', 'Worker']
       test_type: promise
       load_image: |-
@@ -640,13 +642,15 @@
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
   variants: &create-canvas2-variant-definition
-  - _HtmlCanvas:
+  - HtmlCanvas:
+      append_variants_to_name: false
       canvas_types: ['HtmlCanvas']
       create_canvas2: |-
         var canvas2 = document.createElement('canvas');
         canvas2.width = 100;
         canvas2.height = 50;
-    _OffscreenCanvas:
+    OffscreenCanvas:
+      append_variants_to_name: false
       canvas_types: ['OffscreenCanvas', 'Worker']
       create_canvas2: |-
         var canvas2 = new OffscreenCanvas(100, 50);

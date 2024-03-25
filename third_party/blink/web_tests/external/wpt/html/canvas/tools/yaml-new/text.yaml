@@ -236,11 +236,13 @@
     @assert pixel 95,45 ==~ 0,255,0,255;
   expected: green
   variants: &load-font-variant-definition
-  - _HtmlCanvas:
+  - HtmlCanvas:
+      append_variants_to_name: false
       canvas_types: ['HtmlCanvas']
       load_font: |-
         await document.fonts.ready;
-    _OffscreenCanvas:
+    OffscreenCanvas:
+      append_variants_to_name: false
       canvas_types: ['OffscreenCanvas', 'Worker']
       load_font: |-
         var f = new FontFace("{{ fonts[0] }}", "url('/fonts/{{ fonts[0] }}.ttf')");
