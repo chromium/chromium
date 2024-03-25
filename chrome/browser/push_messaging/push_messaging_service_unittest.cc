@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/push_messaging_service.h"
-
 #include <stdint.h>
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -38,6 +37,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/permissions/permission_manager.h"
+#include "content/public/browser/push_messaging_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -349,10 +349,10 @@ TEST_F(PushMessagingServiceTest, MAYBE_PayloadEncryptionTest) {
 
   ASSERT_TRUE(gcm::CreateEncryptedPayloadForTesting(
       kTestPayload,
-      base::StringPiece(reinterpret_cast<char*>(subscription.p256dh_.data()),
-                        subscription.p256dh_.size()),
-      base::StringPiece(reinterpret_cast<char*>(subscription.auth_.data()),
-                        subscription.auth_.size()),
+      std::string_view(reinterpret_cast<char*>(subscription.p256dh_.data()),
+                       subscription.p256dh_.size()),
+      std::string_view(reinterpret_cast<char*>(subscription.auth_.data()),
+                       subscription.auth_.size()),
       &message));
 
   ASSERT_GT(message.raw_data.size(), 0u);
