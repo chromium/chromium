@@ -18540,6 +18540,22 @@
             ]
         }
     ],
+    "TimerSlackMac": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AlignWakeUps",
+                        "TimerSlackMac"
+                    ]
+                }
+            ]
+        }
+    ],
     "TopChromeWebUIUsesSpareRenderer": [
         {
             "platforms": [
