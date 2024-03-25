@@ -48,7 +48,8 @@ void LocalTabGroupListener::ResumeTracking() {
   paused_ = false;
 
   // Thoroughly check for consistency between the data structures we're linking.
-  // The saved tabs and the local tabs should match up in the same order.
+  // The saved tabs and the local tabs must match up 1:1, but it's OK if they
+  // are in a different order.
   const std::vector<SavedTabGroupTab>& saved_tabs =
       saved_group() ? saved_group()->saved_tabs()
                     : std::vector<SavedTabGroupTab>();
@@ -57,14 +58,18 @@ void LocalTabGroupListener::ResumeTracking() {
 
   CHECK_EQ(saved_tabs.size(), local_tabs.size());
   for (size_t i = 0; i < saved_tabs.size(); ++i) {
-    const SavedTabGroupTab& saved_tab = saved_tabs[i];
     content::WebContents* const local_tab = local_tabs[i];
 
     const auto map_entry = web_contents_to_tab_id_map_.find(local_tab);
     CHECK(map_entry != web_contents_to_tab_id_map_.end());
 
     const SavedTabGroupWebContentsListener& listener = map_entry->second;
-    CHECK_EQ(saved_tab.local_tab_id().value(), listener.token());
+
+    const auto is_local_tab = [&listener](const SavedTabGroupTab& saved_tab) {
+      return saved_tab.local_tab_id().value() == listener.token();
+    };
+    CHECK(std::find_if(saved_tabs.begin(), saved_tabs.end(), is_local_tab) !=
+          saved_tabs.end());
   }
 }
 

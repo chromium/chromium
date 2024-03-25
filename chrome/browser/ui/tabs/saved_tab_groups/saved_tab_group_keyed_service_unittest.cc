@@ -232,12 +232,14 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, ResumeTrackingValidatesConsistency) {
   service()->SaveGroup(group_id);
   base::Uuid saved_group_id = service()->model()->Get(group_id)->saved_guid();
 
-  // Pause tracking.
+  // Reordering during paused tracking is okay.
   service()->PauseTrackingLocalTabGroup(group_id);
-
-  // Swap the order of the tabs.
   browser_1->tab_strip_model()->MoveWebContentsAt(0, 1, false);
+  service()->ResumeTrackingLocalTabGroup(saved_group_id, group_id);
 
+  // Removing a tab from the group during paused tracking is not okay.
+  service()->PauseTrackingLocalTabGroup(group_id);
+  browser_1->tab_strip_model()->RemoveFromGroup({1});
   EXPECT_DEATH(service()->ResumeTrackingLocalTabGroup(saved_group_id, group_id),
                "");
 }
