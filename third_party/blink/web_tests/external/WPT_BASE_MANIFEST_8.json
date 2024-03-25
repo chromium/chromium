@@ -63269,6 +63269,19 @@
         {}
        ]
       ],
+      "table-vertical-align-baseline-008.xht": [
+       "1200ac1ae87c792cf8182072b02f426a0f692433",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "table-visual-layout-017.xht": [
        "25067cb68385a520a10a31949d742b520c7e9cd6",
        [
@@ -147751,7 +147764,7 @@
        ]
       ],
       "clip-path-path-with-zoom.html": [
-       "5879917f36e7efb74db4b1aaeb8a05bee96f39cd",
+       "981519d22b2a47093cd99fc6bc38e35ee9608a0a",
        [
         null,
         [
@@ -321069,7 +321082,7 @@
         []
        ],
        "clip-path-path-with-zoom-ref.html": [
-        "ef91c619c40615f633c64d59bfe302fcfbd8c5fb",
+        "76b6e473f06b788830748991a056d5f627d17315",
         []
        ],
        "clip-path-rectangle-border-ref.html": [
@@ -390145,6 +390158,14 @@
      "71ba9762ad73ad4139f3542c53e05cdcb5ceab9f",
      []
     ],
+    "url-statics-parse.any-expected.txt": [
+     "53c676d3eac2fdda5d6aacb7e601a5625fad9b63",
+     []
+    ],
+    "url-statics-parse.any.worker-expected.txt": [
+     "53c676d3eac2fdda5d6aacb7e601a5625fad9b63",
+     []
+    ],
     "urlsearchparams-delete.any-expected.txt": [
      "daa83c990d022d5c81871e0d476ee3179c199b3f",
      []
@@ -453253,7 +453274,7 @@
        ]
       },
       "clip-path-path-with-zoom-hittest.html": [
-       "30ceefcbc03980564136ad29b6fd1a8f9a318d38",
+       "ff85e8ff80d44c69be1a00b6b7f4f8b93ccb0c73",
        [
         null,
         {}
@@ -648724,6 +648745,17 @@
      ],
      [
       "url/url-statics-canparse.any.worker.html",
+      {}
+     ]
+    ],
+    "url-statics-parse.any.js": [
+     "0822e9da07af6a69c2c5e5cc747d312891afbef2",
+     [
+      "url/url-statics-parse.any.html",
+      {}
+     ],
+     [
+      "url/url-statics-parse.any.worker.html",
       {}
      ]
     ],
