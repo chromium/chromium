@@ -1510,7 +1510,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.Net.QoS.NewQosSocketCount" units="count"
+<histogram name="Arc.Net.Qos.NewQosSocketCount" units="count"
     expires_after="2024-08-31">
   <owner>chuweih@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
