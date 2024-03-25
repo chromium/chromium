@@ -1576,15 +1576,8 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 // Tests that the Search Engine Choice screen is displayed, that the primary
 // button is correctly updated when the user selects a search engine then
 // scrolls down and that it correctly sets the default search engine.
-// TODO(crbug.com/329210226): Re-enable the test on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testSearchEngineChoiceScreenSelectThenScroll \
-  DISABLED_testSearchEngineChoiceScreenSelectThenScroll
-#else
-#define MAYBE_testSearchEngineChoiceScreenSelectThenScroll \
-  testSearchEngineChoiceScreenSelectThenScroll
-#endif
-- (void)MAYBE_testSearchEngineChoiceScreenSelectThenScroll {
+// TODO(crbug.com/329210226): Re-enable the test.
+- (void)DISABLED_testSearchEngineChoiceScreenSelectThenScroll {
   // Skips sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
@@ -1621,15 +1614,8 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 // Tests that the Search Engine Choice screen is displayed, that the
 // primary button is correctly updated when the user scrolls down then selects a
 // search engine and that it correctly sets the default search engine.
-// TODO(crbug.com/329210226): Re-enable the test on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testSearchEngineChoiceScreenScrollThenSelect \
-  DISABLED_testSearchEngineChoiceScreenScrollThenSelect
-#else
-#define MAYBE_testSearchEngineChoiceScreenScrollThenSelect \
-  testSearchEngineChoiceScreenScrollThenSelect
-#endif
-- (void)MAYBE_testSearchEngineChoiceScreenScrollThenSelect {
+// TODO(crbug.com/329210226): Re-enable the test.
+- (void)DISABLED_testSearchEngineChoiceScreenScrollThenSelect {
   // Skips sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
