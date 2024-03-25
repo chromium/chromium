@@ -93,26 +93,28 @@ class GoogleURLLoaderThrottleTest
 
   void CallThrottleAndVerifyDeferExpectation(bool expect_defer,
                                              const GURL& url) {
+    // `WillStartRequest()` has to be occur before `WillRedirectRequest()`, so
+    // call it unconditionally.
     bool defer = false;
-    switch (GetParam()) {
-      case RequestAction::kWillStartRequest: {
-        network::ResourceRequest request;
-        request.url = url;
-        throttle()->WillStartRequest(&request, &defer);
-        break;
+    network::ResourceRequest request;
+    request.url = url;
+    throttle()->WillStartRequest(&request, &defer);
+    if (GetParam() == RequestAction::kWillRedirectRequest) {
+      // Undo effects of the initial request, if needed.
+      if (defer == true) {
+        UnblockRequestAndVerifyCallbackAction(
+            BoundSessionRequestThrottledHandler::UnblockAction::kResume);
       }
-      case RequestAction::kWillRedirectRequest: {
-        net::RedirectInfo redirect_info;
-        redirect_info.new_url = url;
-        network::mojom::URLResponseHead response_head;
-        std::vector<std::string> to_be_removed_headers;
-        net::HttpRequestHeaders modified_headers;
-        net::HttpRequestHeaders modified_cors_exempt_headers;
-        throttle()->WillRedirectRequest(
-            &redirect_info, response_head, &defer, &to_be_removed_headers,
-            &modified_headers, &modified_cors_exempt_headers);
-        break;
-      }
+
+      net::RedirectInfo redirect_info;
+      redirect_info.new_url = url;
+      network::mojom::URLResponseHead response_head;
+      std::vector<std::string> to_be_removed_headers;
+      net::HttpRequestHeaders modified_headers;
+      net::HttpRequestHeaders modified_cors_exempt_headers;
+      throttle()->WillRedirectRequest(&redirect_info, response_head, &defer,
+                                      &to_be_removed_headers, &modified_headers,
+                                      &modified_cors_exempt_headers);
     }
     EXPECT_EQ(expect_defer, defer);
     EXPECT_EQ(expect_defer, bound_session_listener()->IsRequestBlocked());
@@ -315,6 +317,19 @@ TEST_F(GoogleURLLoaderThrottleTest, NoInterceptRequestWithSendCookiesFalse) {
   throttle()->WillStartRequest(&request, &defer);
   EXPECT_FALSE(defer);
   EXPECT_FALSE(bound_session_listener()->IsRequestBlocked());
+
+  // Subsequent redirects shouldn't be intercepted as well.
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = kTestGoogleURL;
+  network::mojom::URLResponseHead response_head;
+  std::vector<std::string> to_be_removed_headers;
+  net::HttpRequestHeaders modified_headers;
+  net::HttpRequestHeaders modified_cors_exempt_headers;
+  throttle()->WillRedirectRequest(&redirect_info, response_head, &defer,
+                                  &to_be_removed_headers, &modified_headers,
+                                  &modified_cors_exempt_headers);
+  EXPECT_FALSE(defer);
+  EXPECT_FALSE(bound_session_listener()->IsRequestBlocked());
 }
 
 TEST_P(GoogleURLLoaderThrottleTest, InterceptBoundSessionCookieExpired) {
@@ -342,18 +357,6 @@ TEST_P(GoogleURLLoaderThrottleTest,
   UnblockRequestAndVerifyCallbackAction(
       BoundSessionRequestThrottledHandler::UnblockAction::kResume,
       /*is_expected_navigation=*/true);
-}
-
-TEST_P(GoogleURLLoaderThrottleTest, NoInterceptBoundSessionFeatureOff) {
-  base::test::ScopedFeatureList disable_feature;
-  disable_feature.InitAndDisableFeature(
-      switches::kEnableBoundSessionCredentials);
-
-  ConfigureBoundSessionThrottlerParams("google.com", "/",
-                                       base::Time::Now() - base::Minutes(10));
-  CallThrottleAndVerifyDeferExpectation(
-      /*expect_defer=*/false,
-      GURL("https://accounts.google.com/test/bar.html"));
 }
 
 TEST_P(GoogleURLLoaderThrottleTest, InterceptAndCancelRequest) {

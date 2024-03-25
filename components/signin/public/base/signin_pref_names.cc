@@ -148,4 +148,11 @@ const char kUserCloudSigninPolicyResponseFromPolicyTestPage[] =
 // web sign in or by an unknown source.
 const char kExplicitBrowserSignin[] = "signin.explicit_browser_signin";
 
+// Boolean indicating whether the Device Bound Session Credentials should be
+// enabled. Takes precedence over the "EnableBoundSessionCredentials" feature
+// flag state. The value is controlled by the BoundSessionCredentialsEnabled
+// policy. More details can be found at BoundSessionCredentialsEnabled.yaml.
+const char kBoundSessionCredentialsEnabled[] =
+    "signin.bound_session_credentials_enabled";
+
 }  // namespace prefs

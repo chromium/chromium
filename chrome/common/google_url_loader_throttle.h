@@ -78,6 +78,7 @@ class GoogleURLLoaderThrottle final : public blink::URLLoaderThrottle {
       bound_session_request_throttled_handler_;
   std::optional<base::TimeTicks> bound_session_request_throttled_start_time_;
   bool is_main_frame_navigation_ = false;
+  bool sends_cookies_ = false;
   // `true` if at least one URL in the redirect chain was affected.
   bool is_covered_by_bound_session_ = false;
   bool is_deferred_for_bound_session_ = false;

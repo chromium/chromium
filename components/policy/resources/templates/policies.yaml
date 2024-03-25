@@ -1242,6 +1242,7 @@ policies:
   1241: MultiScreenCaptureAllowedForUrls
   1242: ClassroomIntegrationEnabled
   1243: TasksIntegrationEnabled
+  1244: BoundSessionCredentialsEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

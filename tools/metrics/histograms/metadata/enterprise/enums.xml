@@ -2083,6 +2083,7 @@ chromium-metrics-reviews@google.com.
   <int value="1241" label="MultiScreenCaptureAllowedForUrls"/>
   <int value="1242" label="ClassroomIntegrationEnabled"/>
   <int value="1243" label="TasksIntegrationEnabled"/>
+  <int value="1244" label="BoundSessionCredentialsEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

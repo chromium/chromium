@@ -114,6 +114,7 @@
 #include "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/services/storage/public/cpp/storage_prefs.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/sync/base/pref_names.h"
@@ -1678,6 +1679,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
   { key::kRendererAppContainerEnabled,
     prefs::kRendererAppContainerEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kBoundSessionCredentialsEnabled,
+    prefs::kBoundSessionCredentialsEnabled,
     base::Value::Type::BOOLEAN },
   { key::kBrowserLegacyExtensionPointsBlocked,
     prefs::kBlockBrowserLegacyExtensionPoints,
