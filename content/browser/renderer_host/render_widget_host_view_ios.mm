@@ -73,7 +73,7 @@ gfx::Rect GetDefaultSizeForTesting() {
 
 // TODO(dtapuska): Change this to be UITextInput and handle the other
 // events to implement the composition and selection ranges.
-@interface RenderWidgetUIViewTextInput : UIView <UIKeyInput> {
+@interface RenderWidgetUIViewTextInput : UIView <UITextInput> {
   base::WeakPtr<content::RenderWidgetHostViewIOS> _view;
 }
 - (void)onUpdateTextInputState:(const ui::mojom::TextInputState&)state
@@ -105,6 +105,101 @@ gfx::Rect GetDefaultSizeForTesting() {
 
 @implementation RenderWidgetUIViewTextInput {
   BOOL _hasText;
+}
+@synthesize selectedTextRange;
+@synthesize markedTextRange;
+@synthesize markedTextStyle;
+@synthesize beginningOfDocument;
+@synthesize endOfDocument;
+@synthesize inputDelegate;
+@synthesize tokenizer;
+
+- (nullable NSString*)textInRange:(UITextRange*)range {
+  return nil;
+}
+
+- (void)replaceRange:(UITextRange*)range withText:(NSString*)text {
+}
+
+- (void)setMarkedText:(nullable NSString*)markedText
+        selectedRange:(NSRange)selectedRange {
+}
+
+- (void)unmarkText {
+}
+
+- (nullable UITextRange*)textRangeFromPosition:(UITextPosition*)fromPosition
+                                    toPosition:(UITextPosition*)toPosition {
+  return nil;
+}
+
+- (nullable UITextPosition*)positionFromPosition:(UITextPosition*)position
+                                          offset:(NSInteger)offset {
+  return nil;
+}
+
+- (nullable UITextPosition*)positionFromPosition:(UITextPosition*)position
+                                     inDirection:
+                                         (UITextLayoutDirection)direction
+                                          offset:(NSInteger)offset {
+  return nil;
+}
+
+- (NSComparisonResult)comparePosition:(UITextPosition*)position
+                           toPosition:(UITextPosition*)other {
+  return NSOrderedSame;
+}
+
+- (NSInteger)offsetFromPosition:(UITextPosition*)from
+                     toPosition:(UITextPosition*)toPosition {
+  return 0;
+}
+
+- (nullable UITextPosition*)positionWithinRange:(UITextRange*)range
+                            farthestInDirection:
+                                (UITextLayoutDirection)direction {
+  return nil;
+}
+
+- (nullable UITextRange*)
+    characterRangeByExtendingPosition:(UITextPosition*)position
+                          inDirection:(UITextLayoutDirection)direction {
+  return nil;
+}
+
+- (NSWritingDirection)baseWritingDirectionForPosition:(UITextPosition*)position
+                                          inDirection:(UITextStorageDirection)
+                                                          direction {
+  return NSWritingDirectionNatural;
+}
+
+- (void)setBaseWritingDirection:(NSWritingDirection)writingDirection
+                       forRange:(UITextRange*)range {
+}
+
+- (CGRect)firstRectForRange:(UITextRange*)range {
+  return CGRectZero;
+}
+
+- (CGRect)caretRectForPosition:(UITextPosition*)position {
+  return CGRectZero;
+}
+
+- (NSArray<UITextSelectionRect*>*)selectionRectsForRange:(UITextRange*)range {
+  return @[];
+}
+
+- (nullable UITextPosition*)closestPositionToPoint:(CGPoint)point {
+  return nil;
+}
+
+- (nullable UITextPosition*)closestPositionToPoint:(CGPoint)point
+                                       withinRange:(UITextRange*)range {
+  return nil;
+}
+
+- (nullable UITextRange*)characterRangeAtPoint:(CGPoint)point {
+  return nil;
 }
 
 - (instancetype)initWithWidget:
