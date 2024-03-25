@@ -3460,9 +3460,6 @@ crbug.com/1160916 external/wpt/css/css-backgrounds/border-radius-clip-002.htm [ 
 # [css-grid]
 crbug.com/1045599 external/wpt/css/css-grid/abspos/grid-abspos-staticpos-align-self-safe-001.html [ Failure ]
 
-# Simple to fix - but blocked on performance regression requiring cache logic change.
-crbug.com/1272533 external/wpt/css/css-flexbox/intrinsic-size/col-wrap-009.html [ Failure ]
-
 # Baseline Content-Alignment is not implemented yet for CSS Grid Layout
 crbug.com/764235 external/wpt/css/css-grid/alignment/grid-item-content-baseline-001.html [ Crash Failure Pass Timeout ]
 crbug.com/764235 external/wpt/css/css-grid/alignment/grid-item-content-baseline-002.html [ Crash Failure Pass Timeout ]

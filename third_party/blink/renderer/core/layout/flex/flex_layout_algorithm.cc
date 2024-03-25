@@ -721,12 +721,13 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       if (!layout_result) {
         ConstraintSpace child_space =
             BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
-        // TODO(crbug.com/1272533): This shouldn't return border/padding for
-        // children which are layout-clean. More cache slots are needed to
-        // handle the performance degradation to allow a layout within the
-        // min/max sizing pass.
+        std::optional<DisableLayoutSideEffectsScope> disable_side_effects;
         if (phase != Phase::kLayout && !Node().GetLayoutBox()->NeedsLayout()) {
-          return border_padding_in_child_writing_mode.BlockSum();
+          if (RuntimeEnabledFeatures::LayoutFlexUnderInvalidationFixEnabled()) {
+            disable_side_effects.emplace();
+          } else {
+            return border_padding_in_child_writing_mode.BlockSum();
+          }
         }
         layout_result = child.Layout(child_space, /* break_token */ nullptr);
         DCHECK(layout_result);
@@ -2118,11 +2119,11 @@ FlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
 
   largest_inline_size_contributions += BorderScrollbarPadding().InlineSum();
 
-  // TODO(crbug.com/1272533): depends_on_block_constraints should be true.
-  // However we need more cache slots to handle the performance degradation we
-  // currently experience. See bug for more details.
+  // This always depends on block constraints because if block constraints
+  // change, this flexbox could get a different number of columns.
   return {largest_inline_size_contributions,
-          /* depends_on_block_constraints */ false};
+          /* depends_on_block_constraints */ RuntimeEnabledFeatures::
+              LayoutFlexUnderInvalidationFixEnabled()};
 }
 
 MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {

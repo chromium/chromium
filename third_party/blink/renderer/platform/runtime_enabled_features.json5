@@ -2197,6 +2197,10 @@
       status: "test",
     },
     {
+      name: "LayoutFlexUnderInvalidationFix",
+      status: "stable",
+    },
+    {
       name: "LayoutIgnoreMarginsForSticky",
     },
     {

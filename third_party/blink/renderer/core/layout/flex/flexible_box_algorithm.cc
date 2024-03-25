@@ -550,11 +550,12 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
     flex_item.UpdateAutoMarginsInMainAxis(auto_margin_offset);
 
     LayoutUnit child_cross_axis_margin_box_extent;
-    const auto alignment = flex_item.Alignment();
     // TODO(crbug.com/1272533): We may not have a layout-result during min/max
     // calculations. This is incorrect, and should be re-enabled once we have
     // more cache slots.
-    if (flex_item.layout_result_ &&
+    const auto alignment = flex_item.Alignment();
+    if ((flex_item.layout_result_ ||
+         RuntimeEnabledFeatures::LayoutFlexUnderInvalidationFixEnabled()) &&
         (alignment == ItemPosition::kBaseline ||
          alignment == ItemPosition::kLastBaseline)) {
       LayoutUnit ascent = flex_item.MarginBoxAscent(
