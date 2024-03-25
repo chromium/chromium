@@ -32,10 +32,16 @@ found in the LICENSE file.
       android:layout_height="wrap_content"
       android:layout_marginStart="24dp"
       android:layout_marginEnd="24dp"
-      android:layout_marginBottom="16dp"
       android:focusable="true"
       android:gravity="center_horizontal"
       android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
       android:text="@string/signin_account_picker_bottom_sheet_subtitle"
       app:leading="@dimen/text_size_medium_leading" />
+
+    <!-- Using Space instead of bottom margin on the subtitle since the margin
+         should be preserved if the subtitle is gone. -->
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        />
 </merge>

@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
@@ -134,9 +133,9 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
     @Override
     public void onFlowComplete() {
         finish();
-        // Remove activity animation to avoid visual glitches due to the semi-transparent
+        // Override activity animation to avoid visual glitches due to the semi-transparent
         // background.
-        overridePendingTransition(0, R.anim.no_anim);
+        overridePendingTransition(0, android.R.anim.fade_out);
     }
 
     @Override
