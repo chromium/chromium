@@ -301,7 +301,8 @@ String CSSBasicShapePolygonValue::CustomCSSText() const {
 
 bool CSSBasicShapePolygonValue::Equals(
     const CSSBasicShapePolygonValue& other) const {
-  return CompareCSSValueVector(values_, other.values_);
+  return wind_rule_ == other.wind_rule_ &&
+         CompareCSSValueVector(values_, other.values_);
 }
 
 void CSSBasicShapePolygonValue::TraceAfterDispatch(
