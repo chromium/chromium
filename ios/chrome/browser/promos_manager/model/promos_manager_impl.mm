@@ -38,6 +38,11 @@ BASE_FEATURE(kPromosManagerDockingPromoSortKillswitch,
              "PromosManagerDockingPromoSortKillswitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Killswitch to control new DockingPromo histograms.
+BASE_FEATURE(kPromosManagerDockingPromoHistogramsKillswitch,
+             "PromosManagerDockingPromoHistogramsKillswitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Conditionally appends `promo` to the list pref `pref_path`. If `promo`
 // already exists in the list pref `pref_path`, does nothing. If `promo` doesn't
 // exist in the list pref `pref_path`, appends `promo` to the list.
@@ -207,6 +212,22 @@ std::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
 
   for (promos_manager::Promo promo : sorted_promos) {
     if (CanShowPromo(promo)) {
+      // TODO(crbug.com/330387623): Cleanup Docking Promo histograms.
+      if (base::FeatureList::IsEnabled(
+              kPromosManagerDockingPromoHistogramsKillswitch)) {
+        if (active_promos_with_context.contains(Promo::DockingPromo) &&
+            promo != Promo::DockingPromo) {
+          base::UmaHistogramEnumeration("IOS.DockingPromo.LostToCompetingPromo",
+                                        promo);
+        }
+        if (active_promos_with_context.contains(
+                Promo::DockingPromoRemindMeLater) &&
+            promo != Promo::DockingPromoRemindMeLater) {
+          base::UmaHistogramEnumeration(
+              "IOS.DockingPromoRemindMeLater.LostToCompetingPromo", promo);
+        }
+      }
+
       return promo;
     }
   }
