@@ -135,13 +135,6 @@ bool ShouldShowCompactToolbar(id<UITraitEnvironment> environment);
 // Whether toolbar should be shown in compact mode in `traitCollection`.
 bool ShouldShowCompactToolbar(UITraitCollection* traitCollection);
 
-// Whether the `environment` has a regular vertical and regular horizontal
-// size class.
-bool IsRegularXRegularSizeClass(id<UITraitEnvironment> environment);
-// Whether the `traitCollection` has a regular vertical and regular horizontal
-// size class.
-bool IsRegularXRegularSizeClass(UITraitCollection* traitCollection);
-
 // Returns whether the `environment`'s toolbar is split between top and bottom
 // toolbar or if it is displayed as only one toolbar.
 bool IsSplitToolbarMode(id<UITraitEnvironment> environment);

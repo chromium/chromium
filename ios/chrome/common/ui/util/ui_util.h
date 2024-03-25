@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_COMMON_UI_UTIL_UI_UTIL_H_
 #define IOS_CHROME_COMMON_UI_UTIL_UI_UTIL_H_
 
-#include <CoreGraphics/CoreGraphics.h>
+#include <UIKit/UIKit.h>
 
 // UI Util containing functions that do not require Objective-C.
 
@@ -40,5 +40,13 @@ CGRect CGRectMakeCenteredRectInFrame(CGSize frameSize, CGSize rectSize);
 
 // Returns whether `a` and `b` are within CGFloat's epsilon value.
 bool AreCGFloatsEqual(CGFloat a, CGFloat b);
+
+// Whether the `environment` has a regular vertical and regular horizontal
+// size class.
+bool IsRegularXRegularSizeClass(id<UITraitEnvironment> environment);
+
+// Whether the `traitCollection` has a regular vertical and regular horizontal
+// size class.
+bool IsRegularXRegularSizeClass(UITraitCollection* traitCollection);
 
 #endif  // IOS_CHROME_COMMON_UI_UTIL_UI_UTIL_H_

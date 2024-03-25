@@ -88,6 +88,7 @@ source_set("toolbar") {
     "//ios/chrome/browser/web/model",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",

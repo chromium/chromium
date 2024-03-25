@@ -209,15 +209,6 @@ bool IsCompactHeight(UITraitCollection* traitCollection) {
   return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
 }
 
-bool IsRegularXRegularSizeClass(id<UITraitEnvironment> environment) {
-  return IsRegularXRegularSizeClass(environment.traitCollection);
-}
-
-bool IsRegularXRegularSizeClass(UITraitCollection* traitCollection) {
-  return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
-         traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
-}
-
 bool ShouldShowCompactToolbar(id<UITraitEnvironment> environment) {
   return ShouldShowCompactToolbar(environment.traitCollection);
 }

@@ -5,17 +5,9 @@
 #import "ios/chrome/common/ui/promo_style/utils.h"
 
 #import "ios/chrome/common/ui/util/device_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
-
-// Whether the `traitCollection` has a regular vertical and regular horizontal
-// size class.
-// TODO(crbug.com/330745268): This method should be deduplicate with the version
-// in ios/chrome/browser/shared/ui/util/uikit_ui_util.h.
-bool IsRegularXRegularSizeClass(UITraitCollection* traitCollection) {
-  return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
-         traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
-}
 
 // Determines which font text style to use depending on the device size, the
 // size class and if dynamic type is enabled.

@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinatee.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_mediator.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 
 @interface ToolbarCoordinator () <PrimaryToolbarViewControllerDelegate,
