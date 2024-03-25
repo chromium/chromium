@@ -492,9 +492,8 @@ class CONTENT_EXPORT IndexedDBBucketContext
   base::TimeTicks bucket_space_remaining_timestamp_;
 
   // Members in the following block are used for `CreateAllExternalObjects`.
-  // Shared task runner used to read blob files on.
-  const scoped_refptr<base::TaskRunner> file_task_runner_;
-  // Shared task runner used for async I/O while reading blob files.
+  // This handle to the content IO thread is necessary because
+  // net::FileStream::Context can only be used from an IO thread on Windows.
   const scoped_refptr<base::TaskRunner> io_task_runner_;
   // Mojo connection to `BlobStorageContext`, which runs on the IO thread.
   mojo::Remote<storage::mojom::BlobStorageContext> blob_storage_context_;

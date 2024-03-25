@@ -4,23 +4,62 @@
 
 #include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
+#include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/net_adapters.h"
+#include "storage/browser/file_system/file_stream_reader.h"
 
 namespace content {
 
+namespace {
+
+// This class owns itself and deletes itself after `completion_callback_` is
+// run.
+class FileStreamReaderToDataPipe {
+ public:
+  FileStreamReaderToDataPipe(std::unique_ptr<storage::FileStreamReader> reader,
+                             mojo::ScopedDataPipeProducerHandle dest,
+                             base::OnceCallback<void(int)> completion_callback,
+                             uint64_t read_length);
+  ~FileStreamReaderToDataPipe();
+
+ private:
+  void ReadMore();
+  void DidRead(int result);
+
+  void OnDataPipeWritable(MojoResult result);
+  void OnDataPipeClosed(MojoResult result);
+  void OnComplete(int result);
+
+  std::unique_ptr<storage::FileStreamReader> reader_;
+  mojo::ScopedDataPipeProducerHandle dest_;
+  base::OnceCallback<void(int)> completion_callback_;
+  uint64_t transferred_bytes_ = 0;
+  uint64_t read_length_;
+
+  scoped_refptr<network::NetToMojoPendingBuffer> pending_write_;
+  // Optional so that its construction can be deferred.
+  std::optional<mojo::SimpleWatcher> writable_handle_watcher_;
+
+  base::WeakPtrFactory<FileStreamReaderToDataPipe> weak_factory_{this};
+};
+
 FileStreamReaderToDataPipe::FileStreamReaderToDataPipe(
     std::unique_ptr<storage::FileStreamReader> reader,
-    mojo::ScopedDataPipeProducerHandle dest)
-    : reader_(std::move(reader)), dest_(std::move(dest)) {}
-
-FileStreamReaderToDataPipe::~FileStreamReaderToDataPipe() = default;
-
-void FileStreamReaderToDataPipe::Start(
+    mojo::ScopedDataPipeProducerHandle dest,
     base::OnceCallback<void(int)> completion_callback,
-    uint64_t read_length) {
+    uint64_t read_length)
+    : reader_(std::move(reader)),
+      dest_(std::move(dest)),
+      completion_callback_(std::move(completion_callback)),
+      read_length_(read_length) {
   DCHECK(!writable_handle_watcher_.has_value());
   writable_handle_watcher_.emplace(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
@@ -29,11 +68,10 @@ void FileStreamReaderToDataPipe::Start(
       dest_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
       base::BindRepeating(&FileStreamReaderToDataPipe::OnDataPipeWritable,
                           base::Unretained(this)));
-
-  read_length_ = read_length;
-  completion_callback_ = std::move(completion_callback);
   ReadMore();
 }
+
+FileStreamReaderToDataPipe::~FileStreamReaderToDataPipe() = default;
 
 void FileStreamReaderToDataPipe::ReadMore() {
   DCHECK(!pending_write_.get());
@@ -111,6 +149,19 @@ void FileStreamReaderToDataPipe::OnComplete(int result) {
   dest_.reset();
 
   std::move(completion_callback_).Run(result);
+  delete this;
+}
+
+}  // namespace
+
+void MakeFileStreamAdapterAndRead(
+    std::unique_ptr<storage::FileStreamReader> reader,
+    mojo::ScopedDataPipeProducerHandle dest,
+    base::OnceCallback<void(int)> completion_callback,
+    uint64_t read_length) {
+  DCHECK(base::CurrentIOThread::IsSet());
+  new FileStreamReaderToDataPipe(std::move(reader), std::move(dest),
+                                 std::move(completion_callback), read_length);
 }
 
 }  // namespace content
