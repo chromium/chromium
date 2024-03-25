@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/context_recycler.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
@@ -429,6 +430,13 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     const std::optional<uint16_t> experiment_group_id_;
 
     mojo::Remote<mojom::AuctionSharedStorageHost> shared_storage_host_remote_;
+
+    // If `kFledgeAlwaysReuseSellerContext` is enabled, use this pointer to
+    // store our `ContextRecycler`. This `ContextRecycler` will be used on all
+    // calls to `ScoreAd`, but not for `ReportResult`. If
+    // `kFledgeAlwaysReuseSellerContext` is disabled, a fresh `ContextRecycler`
+    // will be created as needed.
+    std::unique_ptr<ContextRecycler> context_recycler_for_context_reuse_;
 
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };

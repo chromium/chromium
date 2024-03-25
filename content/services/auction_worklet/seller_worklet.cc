@@ -1023,10 +1023,17 @@ void SellerWorklet::V8State::ScoreAd(
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
 
-  // Short lived context, to avoid leaking data at global scope between either
-  // repeated calls to this worklet, or to calls to any other worklet.
-  ContextRecycler context_recycler(v8_helper_.get());
-  ContextRecyclerScope context_recycler_scope(context_recycler);
+  ContextRecycler* context_recycler = nullptr;
+  std::unique_ptr<ContextRecycler> fresh_context_recycler;
+  if (context_recycler_for_context_reuse_) {
+    context_recycler = context_recycler_for_context_reuse_.get();
+  } else {
+    fresh_context_recycler =
+        std::make_unique<ContextRecycler>(v8_helper_.get());
+    context_recycler = fresh_context_recycler.get();
+  }
+
+  ContextRecyclerScope context_recycler_scope(*context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
   AuctionV8Logger v8_logger(v8_helper_.get(), context);
 
@@ -1150,36 +1157,39 @@ void SellerWorklet::V8State::ScoreAd(
       worklet_script_.Get(isolate);
   std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
       v8_helper_->CreateTimeLimit(seller_timeout);
+  // For a context we're reusing, the top level script was already run and the
+  // bindings were already added.
+  if (!context_recycler_for_context_reuse_) {
+    bool success =
+        v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
+                              total_timeout.get(), errors_out);
+    if (!success) {
+      TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
+      PostScoreAdCallbackToUserThread(
+          std::move(callback), /*score=*/0,
+          /*reject_reason=*/mojom::RejectReason::kNotAvailable,
+          /*component_auction_modified_bid_params=*/nullptr,
+          /*bid_in_seller_currency=*/std::nullopt,
+          /*scoring_signals_data_version=*/std::nullopt,
+          /*debug_loss_report_url=*/std::nullopt,
+          /*debug_win_report_url=*/std::nullopt,
+          /*pa_requests=*/{},
+          /*scoring_latency=*/elapsed_timer.Elapsed(), std::move(errors_out));
+      return;
+    }
+    context_recycler->AddForDebuggingOnlyBindings();
+    context_recycler->AddPrivateAggregationBindings(
+        permissions_policy_state_->private_aggregation_allowed);
+    if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+      context_recycler->AddSharedStorageBindings(
+          shared_storage_host_remote_.is_bound()
+              ? shared_storage_host_remote_.get()
+              : nullptr,
+          permissions_policy_state_->shared_storage_allowed);
+    }
+  }
+
   bool success =
-      v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
-                            total_timeout.get(), errors_out);
-  if (!success) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
-    PostScoreAdCallbackToUserThread(
-        std::move(callback), /*score=*/0,
-        /*reject_reason=*/mojom::RejectReason::kNotAvailable,
-        /*component_auction_modified_bid_params=*/nullptr,
-        /*bid_in_seller_currency=*/std::nullopt,
-        /*scoring_signals_data_version=*/std::nullopt,
-        /*debug_loss_report_url=*/std::nullopt,
-        /*debug_win_report_url=*/std::nullopt,
-        /*pa_requests=*/{},
-        /*scoring_latency=*/elapsed_timer.Elapsed(), std::move(errors_out));
-    return;
-  }
-  context_recycler.AddForDebuggingOnlyBindings();
-  context_recycler.AddPrivateAggregationBindings(
-      permissions_policy_state_->private_aggregation_allowed);
-
-  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
-    context_recycler.AddSharedStorageBindings(
-        shared_storage_host_remote_.is_bound()
-            ? shared_storage_host_remote_.get()
-            : nullptr,
-        permissions_policy_state_->shared_storage_allowed);
-  }
-
-  success =
       v8_helper_
           ->CallFunction(context, debug_id_.get(),
                          v8_helper_->FormatScriptName(unbound_worklet_script),
@@ -1200,12 +1210,18 @@ void SellerWorklet::V8State::ScoreAd(
         /*bid_in_seller_currency=*/std::nullopt,
         /*scoring_signals_data_version=*/std::nullopt,
         /*debug_loss_report_url=*/
-        context_recycler.for_debugging_only_bindings()->TakeLossReportUrl(),
+        context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
         /*debug_win_report_url=*/std::nullopt,
-        context_recycler.private_aggregation_bindings()
+        context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*scoring_latency=*/elapsed, std::move(errors_out));
     return;
+  }
+
+  if (!context_recycler_for_context_reuse_ &&
+      base::FeatureList::IsEnabled(
+          blink::features::kFledgeAlwaysReuseSellerContext)) {
+    context_recycler_for_context_reuse_ = std::move(fresh_context_recycler);
   }
 
   double score;
@@ -1259,7 +1275,7 @@ void SellerWorklet::V8State::ScoreAd(
       PostScoreAdCallbackToUserThreadOnError(
           std::move(callback),
           /*scoring_latency=*/elapsed, std::move(errors_out),
-          context_recycler.private_aggregation_bindings()
+          context_recycler->private_aggregation_bindings()
               ->TakePrivateAggregationRequests());
       return;
     }
@@ -1298,7 +1314,7 @@ void SellerWorklet::V8State::ScoreAd(
         PostScoreAdCallbackToUserThreadOnError(
             std::move(callback),
             /*scoring_latency=*/elapsed, std::move(errors_out),
-            context_recycler.private_aggregation_bindings()
+            context_recycler->private_aggregation_bindings()
                 ->TakePrivateAggregationRequests());
         return;
       }
@@ -1379,7 +1395,7 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed, std::move(errors_out),
-        context_recycler.private_aggregation_bindings()
+        context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests());
     return;
   }
@@ -1391,9 +1407,9 @@ void SellerWorklet::V8State::ScoreAd(
         std::move(callback), /*score=*/0, reject_reason,
         /*component_auction_modified_bid_params=*/nullptr,
         /*bid_in_seller_currency=*/std::nullopt, scoring_signals_data_version,
-        context_recycler.for_debugging_only_bindings()->TakeLossReportUrl(),
-        context_recycler.for_debugging_only_bindings()->TakeWinReportUrl(),
-        context_recycler.private_aggregation_bindings()
+        context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
+        context_recycler->for_debugging_only_bindings()->TakeWinReportUrl(),
+        context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*scoring_latency=*/elapsed, std::move(errors_out));
     return;
@@ -1412,7 +1428,7 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed, std::move(errors_out),
-        context_recycler.private_aggregation_bindings()
+        context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests());
     return;
   }
@@ -1433,7 +1449,7 @@ void SellerWorklet::V8State::ScoreAd(
       PostScoreAdCallbackToUserThreadOnError(
           std::move(callback),
           /*scoring_latency=*/elapsed, std::move(errors_out),
-          context_recycler.private_aggregation_bindings()
+          context_recycler->private_aggregation_bindings()
               ->TakePrivateAggregationRequests());
       return;
     }
@@ -1457,9 +1473,9 @@ void SellerWorklet::V8State::ScoreAd(
       std::move(callback), score, reject_reason,
       std::move(component_auction_modified_bid_params), bid_in_seller_currency,
       scoring_signals_data_version,
-      context_recycler.for_debugging_only_bindings()->TakeLossReportUrl(),
-      context_recycler.for_debugging_only_bindings()->TakeWinReportUrl(),
-      context_recycler.private_aggregation_bindings()
+      context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
+      context_recycler->for_debugging_only_bindings()->TakeWinReportUrl(),
+      context_recycler->private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
       /*scoring_latency=*/elapsed, std::move(errors_out));
 }

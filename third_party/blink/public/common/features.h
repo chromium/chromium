@@ -573,6 +573,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kFledgeCustomMaxAuctionAdComponentsValue;
 
+// Reuse a single V8 context to score all ads in a seller worklet.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeAlwaysReuseSellerContext);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceWebContentsDarkMode);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkInversionMethod>
     kForceDarkInversionMethodParam;
