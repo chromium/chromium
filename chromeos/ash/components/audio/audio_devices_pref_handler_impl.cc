@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/audio_device_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -31,44 +32,6 @@ const int kPrefMuteOn = 1;
 // Prefs keys.
 const char kActiveKey[] = "active";
 const char kActivateByUserKey[] = "activate_by_user";
-
-// Gets the device id string for storing audio preference. The format of
-// device string is a string consisting of 3 parts:
-// |version of stable device ID| :
-// |integer from lower 32 bit of device id| :
-// |0(output device) or 1(input device)|
-// If an audio device has both integrated input and output devices, the first 2
-// parts of the string could be identical, only the last part will differentiate
-// them.
-// Note that |version of stable device ID| is present only for devices with
-// stable device ID version >= 2. For devices with version 1, the device id
-// string contains only latter 2 parts - in order to preserve backward
-// compatibility with existing ID from before v2 stable device ID was
-// introduced.
-std::string GetVersionedDeviceIdString(const AudioDevice& device, int version) {
-  CHECK(device.stable_device_id_version >= version);
-  DCHECK_GE(device.stable_device_id_version, 1);
-  DCHECK_LE(device.stable_device_id_version, 2);
-
-  bool use_deprecated_id = version == 1 && device.stable_device_id_version == 2;
-  uint64_t stable_device_id = use_deprecated_id
-                                  ? device.deprecated_stable_device_id
-                                  : device.stable_device_id;
-  std::string version_prefix = version == 2 ? "2 : " : "";
-  std::string device_id_string =
-      version_prefix +
-      base::NumberToString(stable_device_id &
-                           static_cast<uint64_t>(0xffffffff)) +
-      " : " + (device.is_input ? "1" : "0");
-  // Replace any periods from the device id string with a space, since setting
-  // names cannot contain periods.
-  std::replace(device_id_string.begin(), device_id_string.end(), '.', ' ');
-  return device_id_string;
-}
-
-std::string GetDeviceIdString(const AudioDevice& device) {
-  return GetVersionedDeviceIdString(device, device.stable_device_id_version);
-}
 
 // Migrates an entry associated with |device|'s v1 stable device ID in
 // |settings| to the key derived from |device|'s v2 stable device ID

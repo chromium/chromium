@@ -26,6 +26,8 @@ component("audio") {
     "audio_device.h",
     "audio_device_encoding.cc",
     "audio_device_encoding.h",
+    "audio_device_id.cc",
+    "audio_device_id.h",
     "audio_device_metrics_handler.cc",
     "audio_device_metrics_handler.h",
     "audio_devices_pref_handler.h",
@@ -79,6 +81,7 @@ source_set("unit_tests") {
   ]
   sources = [
     "audio_device_encoding_unittest.cc",
+    "audio_device_id_unittest.cc",
     "audio_device_metrics_handler_unittest.cc",
     "audio_device_selection_generated_unittest.cc",
     "audio_device_selection_test_base.cc",

@@ -1,0 +1,38 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/ash/components/audio/audio_device_id.h"
+
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/strings/string_number_conversions.h"
+
+namespace ash {
+
+std::string GetVersionedDeviceIdString(const AudioDevice& device, int version) {
+  CHECK(device.stable_device_id_version >= version);
+  DCHECK_GE(device.stable_device_id_version, 1);
+  DCHECK_LE(device.stable_device_id_version, 2);
+
+  bool use_deprecated_id = version == 1 && device.stable_device_id_version == 2;
+  uint64_t stable_device_id = use_deprecated_id
+                                  ? device.deprecated_stable_device_id
+                                  : device.stable_device_id;
+  std::string version_prefix = version == 2 ? "2 : " : "";
+  std::string device_id_string =
+      version_prefix +
+      base::NumberToString(stable_device_id &
+                           static_cast<uint64_t>(0xffffffff)) +
+      " : " + (device.is_input ? "1" : "0");
+  // Replace any periods from the device id string with a space, since setting
+  // names cannot contain periods.
+  std::replace(device_id_string.begin(), device_id_string.end(), '.', ' ');
+  return device_id_string;
+}
+
+std::string GetDeviceIdString(const AudioDevice& device) {
+  return GetVersionedDeviceIdString(device, device.stable_device_id_version);
+}
+
+}  // namespace ash

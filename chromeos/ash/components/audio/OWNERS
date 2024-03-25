@@ -15,3 +15,6 @@ per-file audio_device_encoding*=zhangwenyu@google.com
 
 # For audio_device_metrics_handler*:
 per-file audio_device_metrics_handler*=zhangwenyu@google.com
+
+# For audio_device_id*:
+per-file audio_device_id*=zhangwenyu@google.com
