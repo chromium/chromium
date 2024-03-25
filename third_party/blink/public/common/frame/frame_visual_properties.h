@@ -21,7 +21,7 @@ struct BLINK_COMMON_EXPORT FrameVisualProperties {
 
   FrameVisualProperties& operator=(const FrameVisualProperties& other);
 
-  static int MaxChildFrameScreenRectMovement();
+  static double MaxChildFrameScreenRectMovement();
   static int MinScreenRectStableTimeMs();
 
   // TODO(szager): These values override the above two values for frames that

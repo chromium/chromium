@@ -714,14 +714,27 @@ void RenderWidgetHostViewChildFrame::NotifyHitTestRegionUpdated(
   // Convert to DIP
   screen_rect->Scale(1. / screen_infos_.current().device_scale_factor);
 
+  // Movement as a proportion of frame size
+  double horizontal_movement =
+      screen_rect->width()
+          ? std::abs(last_stable_screen_rect_.x() - screen_rect->x()) /
+                screen_rect->width()
+          : 0.0;
+  double vertical_movement =
+      screen_rect->height()
+          ? std::abs(last_stable_screen_rect_.y() - screen_rect->y()) /
+                screen_rect->height()
+          : 0.0;
   if ((ToRoundedSize(screen_rect->size()) !=
        ToRoundedSize(last_stable_screen_rect_.size())) ||
-      (std::abs(last_stable_screen_rect_.x() - screen_rect->x()) +
-           std::abs(last_stable_screen_rect_.y() - screen_rect->y()) >
-       blink::FrameVisualProperties::MaxChildFrameScreenRectMovement())) {
+      horizontal_movement >
+          blink::FrameVisualProperties::MaxChildFrameScreenRectMovement() ||
+      vertical_movement >
+          blink::FrameVisualProperties::MaxChildFrameScreenRectMovement()) {
     last_stable_screen_rect_ = *screen_rect;
     screen_rect_stable_since_ = base::TimeTicks::Now();
   }
+  // The legacy logic is based on manhattan distance.
   if ((ToRoundedSize(screen_rect->size()) !=
        ToRoundedSize(last_stable_screen_rect_for_iov2_.size())) ||
       (std::abs(last_stable_screen_rect_for_iov2_.x() - screen_rect->x()) +

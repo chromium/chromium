@@ -121,11 +121,22 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
         frame.GetChromeClient().GetScreenInfo(*owner_document.GetFrame());
     new_rect_in_parent.Scale(1. / screen_info.device_scale_factor);
 
+    // Movement as a proportion of frame size
+    double horizontal_movement =
+        new_rect_in_parent.Width()
+            ? (new_rect_in_parent.X() - rect_in_parent_.X()).Abs() /
+                  new_rect_in_parent.Width()
+            : 0.0;
+    double vertical_movement =
+        new_rect_in_parent.Height()
+            ? (new_rect_in_parent.Y() - rect_in_parent_.Y()).Abs() /
+                  new_rect_in_parent.Height()
+            : 0.0;
     if (new_rect_in_parent.size != rect_in_parent_.size ||
-        ((new_rect_in_parent.X() - rect_in_parent_.X()).Abs() +
-             (new_rect_in_parent.Y() - rect_in_parent_.Y()).Abs() >
-         LayoutUnit(
-             FrameVisualProperties::MaxChildFrameScreenRectMovement()))) {
+        horizontal_movement >
+            FrameVisualProperties::MaxChildFrameScreenRectMovement() ||
+        vertical_movement >
+            FrameVisualProperties::MaxChildFrameScreenRectMovement()) {
       rect_in_parent_ = new_rect_in_parent;
       if (Page* page = GetFrame().GetPage()) {
         rect_in_parent_stable_since_ = page->Animator().Clock().CurrentTime();
