@@ -36,9 +36,14 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
   // `callback` is run once loading completes (on the main thread).
   // `local_or_syncable_file_path` must be non-empty and represents the
   // main (non-account) bookmarks, whereas `account_file_path` may be empty.
+  // `loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma`,
+  // used for metrics only, represents whether or not
+  // `local_or_syncable_file_path` actually contains account bookmarks (used on
+  // iOS only).
   static scoped_refptr<ModelLoader> Create(
       const base::FilePath& local_or_syncable_file_path,
       const base::FilePath& account_file_path,
+      bool loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma,
       LoadManagedNodeCallback load_managed_node_callback,
       LoadCallback callback);
 
@@ -71,6 +76,12 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
       const base::FilePath& local_or_syncable_file_path,
       const base::FilePath& account_file_path,
       LoadManagedNodeCallback load_managed_node_callback);
+
+  // Whether or not BookmarkModel loading was invoked via
+  // `LoadAccountBookmarksFileAsLocalOrSyncableBookmarks()`, remembered for the
+  // purpose of metrics. In practice, this is set to true on iOS only.
+  bool loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma_ =
+      false;
 
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 

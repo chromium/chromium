@@ -121,6 +121,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",
+    "//components/bookmarks/browser:unit_tests_bundle_data",
     "//components/bookmarks/test",
     "//components/sync/base:features",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

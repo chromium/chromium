@@ -47,6 +47,15 @@ enum class StorageStateForUma {
   kSyncEnabled,
 };
 
+// An enum class representing the two JSON files for storing bookmarks, used for
+// suffixing metrics.
+enum class StorageFileForUma {
+  // Represents `kLocalOrSyncableBookmarksFileName`.
+  kLocalOrSyncable,
+  // Represents `kAccountBookmarksFileName`.
+  kAccount,
+};
+
 // Records when a bookmark is added by the user.
 void RecordUrlBookmarkAdded(BookmarkFolderTypeForUMA parent,
                             StorageStateForUma storage_state);
@@ -94,6 +103,11 @@ void RecordCloneBookmarkNode(int num_cloned);
 
 // Records the approximate average node size at startup.
 void RecordAverageNodeSizeAtStartup(size_t size_in_bytes);
+
+// Records whether or not node IDs were reassigned as a result of loading the
+// JSON file representing local-or-syncable bookmarks.
+void RecordIdsReassignedOnProfileLoad(StorageFileForUma storage_file,
+                                      bool ids_reassigned);
 
 }  // namespace metrics
 

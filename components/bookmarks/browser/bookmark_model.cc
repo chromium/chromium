@@ -1192,6 +1192,7 @@ void BookmarkModel::LoadImpl(const base::FilePath& local_or_syncable_file_path,
   // Creating ModelLoader schedules the load on a backend task runner.
   model_loader_ = ModelLoader::Create(
       local_or_syncable_file_path, account_file_path,
+      loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_,
       client_->GetLoadManagedNodeCallback(),
       base::BindOnce(&BookmarkModel::DoneLoading, AsWeakPtr()));
 }

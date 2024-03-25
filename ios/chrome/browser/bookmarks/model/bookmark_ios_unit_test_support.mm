@@ -28,6 +28,7 @@ using bookmarks::BookmarkNode;
 BookmarkIOSUnitTestSupport::BookmarkIOSUnitTestSupport(
     bool wait_for_initialization)
     : wait_for_initialization_(wait_for_initialization) {}
+
 BookmarkIOSUnitTestSupport::~BookmarkIOSUnitTestSupport() = default;
 
 void BookmarkIOSUnitTestSupport::SetUp() {
@@ -50,6 +51,9 @@ void BookmarkIOSUnitTestSupport::SetUp() {
       ManagedBookmarkServiceFactory::GetDefaultFactory());
 
   chrome_browser_state_ = test_cbs_builder.Build();
+
+  SetUpBrowserStateBeforeCreatingServices();
+
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
       chrome_browser_state_.get(),
       std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -88,6 +92,8 @@ void BookmarkIOSUnitTestSupport::SetUp() {
 
   browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 }
+
+void BookmarkIOSUnitTestSupport::SetUpBrowserStateBeforeCreatingServices() {}
 
 const BookmarkNode* BookmarkIOSUnitTestSupport::AddBookmark(
     const BookmarkNode* parent,

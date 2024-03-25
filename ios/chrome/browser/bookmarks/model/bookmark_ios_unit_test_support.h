@@ -33,6 +33,11 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
 
  protected:
   void SetUp() override;
+
+  // Allows subclasses to add custom logic immediately following the creation
+  // of the BrowserState, before keyed services are created.
+  virtual void SetUpBrowserStateBeforeCreatingServices();
+
   const bookmarks::BookmarkNode* AddBookmark(
       const bookmarks::BookmarkNode* parent,
       const std::u16string& title);
