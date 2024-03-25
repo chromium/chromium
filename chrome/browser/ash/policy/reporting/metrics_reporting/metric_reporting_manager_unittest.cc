@@ -1103,16 +1103,17 @@ class KioskHeartbeatTelemetryTest : public MetricReportingManagerTest {
     // Mock app service unavailability to eliminate noise.
     ON_CALL(*mock_delegate_ptr, IsAppServiceAvailableForProfile)
         .WillByDefault(Return(false));
-    ON_CALL(*mock_delegate_ptr,
-            CreatePeriodicCollector(
-                /*sampler=*/_,
-                /*queue=*/heartbeat_queue_ptr_.get(),
-                /*report_settings=*/_,
-                /*enable_setting_path=*/::ash::kHeartbeatEnabled,
-                /*setting_enabled_default_value=*/
-                metrics::kHeartbeatTelemetryDefaultValue,
-                /*rate_setting_path=*/::ash::kHeartbeatFrequency, _, 1,
-                /*init_delay=*/base::TimeDelta()))
+    ON_CALL(
+        *mock_delegate_ptr,
+        CreatePeriodicCollector(
+            /*sampler=*/_,
+            /*queue=*/heartbeat_queue_ptr_.get(),
+            /*report_settings=*/_,
+            /*enable_setting_path=*/::ash::kHeartbeatEnabled,
+            /*setting_enabled_default_value=*/
+            metrics::kHeartbeatTelemetryDefaultValue,
+            /*rate_setting_path=*/::ash::kHeartbeatFrequency, _, 1,
+            /*init_delay=*/metrics::kDefaultHeartbeatTelemetryCollectionRate))
         .WillByDefault([&]() {
           return std::make_unique<FakeCollector>(&collector_count_);
         });
@@ -1181,16 +1182,17 @@ TEST_F(KioskHeartbeatTelemetryTest, Init) {
                               _, _, _, _, _))
       .Times(AnyNumber());
   // PeriodicCollector should be created here.
-  EXPECT_CALL(*mock_delegate_ptr,
-              CreatePeriodicCollector(
-                  /*sampler=*/_,
-                  /*queue=*/heartbeat_queue_ptr_.get(),
-                  /*report_settings=*/_,
-                  /*enable_setting_path=*/::ash::kHeartbeatEnabled,
-                  /*setting_enabled_default_value=*/
-                  metrics::kHeartbeatTelemetryDefaultValue,
-                  /*rate_setting_path=*/::ash::kHeartbeatFrequency, _, 1,
-                  /*init_delay=*/base::TimeDelta()))
+  EXPECT_CALL(
+      *mock_delegate_ptr,
+      CreatePeriodicCollector(
+          /*sampler=*/_,
+          /*queue=*/heartbeat_queue_ptr_.get(),
+          /*report_settings=*/_,
+          /*enable_setting_path=*/::ash::kHeartbeatEnabled,
+          /*setting_enabled_default_value=*/
+          metrics::kHeartbeatTelemetryDefaultValue,
+          /*rate_setting_path=*/::ash::kHeartbeatFrequency, _, 1,
+          /*init_delay=*/metrics::kDefaultHeartbeatTelemetryCollectionRate))
       .Times(1);
 
   metric_reporting_manager->OnLogin(profile());
