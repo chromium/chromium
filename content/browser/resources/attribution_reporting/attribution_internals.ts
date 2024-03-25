@@ -1137,6 +1137,7 @@ class AttributionInternals implements ObserverInterface {
     this.aggregatableReports.clear();
     this.debugReports.clear();
     this.osRegistrations.clear();
+    this.filters.clear();
     this.handler.clearStorage();
   }
 
