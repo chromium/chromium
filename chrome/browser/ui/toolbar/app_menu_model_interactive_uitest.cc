@@ -11,6 +11,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/dashboard_private.h"
 #include "chrome/common/webui_url_constants.h"
@@ -36,6 +38,7 @@
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
@@ -509,6 +512,30 @@ class UniversalInstallAppMenuModelInteractiveTest
     });
   }
 
+  bool InstallNonLocallyInstalledApp(const GURL& url) {
+    auto install_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(url);
+    install_info->title = u"Test App";
+    install_info->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
+    web_app::WebAppInstallParams params;
+    params.locally_installed = false;
+    params.add_to_applications_menu = false;
+    params.add_to_desktop = false;
+    params.add_to_quick_launch_bar = false;
+    params.add_to_search = false;
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        result;
+    auto* provider = web_app::WebAppProvider::GetForTest(browser()->profile());
+    provider->scheduler().InstallFromInfoWithParams(
+        std::move(install_info), /*overwrite_existing_manifest_fields=*/true,
+        webapps::WebappInstallSource::SYNC, result.GetCallback(), params);
+    bool success = result.Wait();
+    const webapps::AppId& app_id = result.Get<webapps::AppId>();
+    EXPECT_FALSE(provider->registrar_unsafe().IsLocallyInstalled(app_id));
+    return success;
+  }
+
  private:
   bool IsUniversalInstallEnabled() { return GetParam(); }
 
@@ -569,6 +596,22 @@ IN_PROC_BROWSER_TEST_P(UniversalInstallAppMenuModelInteractiveTest,
               IDS_INSTALL_TO_OS_LAUNCH_SURFACE,
               ui::EscapeMenuLabelAmpersands(u"Manifest test app"))),
       WithView(AppMenuModel::kInstallAppItem, CompareIcons()));
+}
+
+IN_PROC_BROWSER_TEST_P(UniversalInstallAppMenuModelInteractiveTest,
+                       InstallAppMenuShowsForNonLocallyInstalledApps) {
+  EXPECT_TRUE(InstallNonLocallyInstalledApp(GetInstallableAppUrl()));
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabPageElementId),
+      ObserveState(kAppBannerManagerState, GetManager()),
+      NavigateWebContents(kPrimaryTabPageElementId, GetInstallableAppUrl()),
+      WaitForWebContentsReady(kPrimaryTabPageElementId),
+      WaitForState(kAppBannerManagerState,
+                   InstallableWebAppCheckResult::kYes_Promotable),
+      PressButton(kToolbarAppMenuButtonElementId),
+      EnsurePresent(AppMenuModel::kSaveAndShareMenuItem),
+      SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
+      EnsurePresent(AppMenuModel::kInstallAppItem));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
