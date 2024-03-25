@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -205,13 +206,13 @@ TEST(SafeSPrintfTest, ASANFriendlyBufferTest) {
   // There is a more complicated test in PrintLongString() that covers a lot
   // more edge case, but it is also harder to debug in case of a failure.
   const char kTestString[] = "This is a test";
-  std::unique_ptr<char[]> buf(new char[sizeof(kTestString)]);
+  auto buf = base::HeapArray<char>::CopiedFrom(kTestString);
   EXPECT_EQ(static_cast<ssize_t>(sizeof(kTestString) - 1),
-            SafeSNPrintf(buf.get(), sizeof(kTestString), kTestString));
-  EXPECT_EQ(std::string(kTestString), std::string(buf.get()));
-  EXPECT_EQ(static_cast<ssize_t>(sizeof(kTestString) - 1),
-            SafeSNPrintf(buf.get(), sizeof(kTestString), "%s", kTestString));
-  EXPECT_EQ(std::string(kTestString), std::string(buf.get()));
+            SafeSNPrintf(buf.data(), buf.size(), kTestString));
+  EXPECT_EQ(std::string(kTestString), std::string(buf.data()));
+  EXPECT_EQ(static_cast<ssize_t>(buf.size() - 1),
+            SafeSNPrintf(buf.data(), buf.size(), "%s", kTestString));
+  EXPECT_EQ(std::string(kTestString), std::string(buf.data()));
 }
 
 TEST(SafeSPrintfTest, NArgs) {
