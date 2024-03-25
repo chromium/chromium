@@ -46,9 +46,8 @@ class basic_cstring_view {
   using const_reference = const Char&;
   using iterator = CheckedContiguousIterator<const Char>;
   using const_iterator = CheckedContiguousIterator<const Char>;
-  // TODO:
-  // using reverse_iterator = std::reverse_iterator<iterator>;
-  // using const_reverse_iterator = std::reverse_iterator<iterator>;
+  using reverse_iterator = std::reverse_iterator<iterator>;
+  using const_reverse_iterator = std::reverse_iterator<iterator>;
   using size_type = size_t;
   using difference_type = ptrdiff_t;
 
@@ -79,6 +78,32 @@ class basic_cstring_view {
     // SAFETY: lit is an array of size M, so M-1 is in bounds.
     DCHECK_EQ(UNSAFE_BUFFERS(lit[M - 1u]), Char{0});
   }
+
+  // Constructs a cstring view from a std::string (or other std::basic_string
+  // type). The string parameter must outlive the cstring view, including that
+  // it must not be moved-from or destroyed.
+  //
+  // # Interaction with SSO
+  // std::string stores its contents inline when they fit (which is an
+  // implementation defined length), instead of in a heap-allocated buffer. This
+  // is referred to as the Small String Optimization. This means that moving or
+  // destring a std::string will invalidate a cstring view and leave it with
+  // dangling pointers. This differs from the behaviour of std::vector and span,
+  // since pointers into a std::vector remain valid after moving the std::vector
+  // and destroying the original.
+  //
+  // # Preventing implicit temporaries
+  // Because std::string can be implicitly constructed, the string constructor
+  // may unintentionally be called with a temporary `std::string` when called
+  // with values that convert to `std::string`. We prevent this templating this
+  // constructor and requiring the incoming type to actually be a `std::string`
+  // (or other `std::basic_string`). This also improves compiler errors,
+  // compared to deleting a string&& overload, when passed an array that does
+  // not match the `ENABLE_IF_ATTR` constructor condition by not sending it to
+  // a deleted overload receiving `std::string`.
+  template <std::same_as<std::basic_string<Char>> String>
+  explicit constexpr basic_cstring_view(const String& s LIFETIME_BOUND) noexcept
+      : ptr_(s.c_str()), len_(s.size()) {}
 
   // Unsafe construction from a pointer and length. Prefer to construct cstring
   // view from a string literal, std::string, or another cstring view.
@@ -118,6 +143,22 @@ class basic_cstring_view {
   // Returns the number of characters in the string, not including the
   // terminating NUL.
   PURE_FUNCTION constexpr size_t size() const noexcept { return len_; }
+  // An alias for `size()`, returning the number of characters in the string.
+  PURE_FUNCTION constexpr size_t length() const noexcept { return len_; }
+
+  // Returns whether the cstring view is for an empty string. When empty, it is
+  // pointing to a cstring that contains only a NUL character.
+  PURE_FUNCTION constexpr bool empty() const noexcept { return len_ == 0u; }
+
+  // Returns the maximum number of characters that can be represented inside the
+  // cstring view for character type `Char`.
+  //
+  // This is the number of `Char` objects that can fit inside an addressable
+  // byte array. Since the number of bytes allowed is fixed, the number returned
+  // is smaller when the `Char` is a larger type.
+  PURE_FUNCTION constexpr size_t max_size() const noexcept {
+    return static_cast<size_t>(-1) / sizeof(Char);
+  }
 
   // Returns the number of bytes in the string, not including the terminating
   // NUL. To include the NUL, add `sizeof(Char)` where `Char` is the character
@@ -149,6 +190,28 @@ class basic_cstring_view {
     return end();
   }
 
+  // Produces a reverse iterator over the cstring view, excluding the
+  // terminating NUL.
+  PURE_FUNCTION constexpr const reverse_iterator rbegin() const noexcept {
+    return std::reverse_iterator(end());
+  }
+  // Produces a reverse iterator over the cstring view, excluding the
+  // terminating NUL.
+  PURE_FUNCTION constexpr const reverse_iterator rend() const noexcept {
+    return std::reverse_iterator(begin());
+  }
+  // Produces a reverse iterator over the cstring view, excluding the
+  // terminating NUL.
+  PURE_FUNCTION constexpr const const_reverse_iterator rcbegin()
+      const noexcept {
+    return std::reverse_iterator(cend());
+  }
+  // Produces a reverse iterator over the cstring view, excluding the
+  // terminating NUL.
+  PURE_FUNCTION constexpr const const_reverse_iterator rcend() const noexcept {
+    return std::reverse_iterator(cbegin());
+  }
+
   // Returns the character at offset `idx`.
   //
   // This can be used to access any character in the ctring, as well as the NUL
@@ -162,6 +225,35 @@ class basic_cstring_view {
     // SAFETY: `ptr_` points `len_` many elements plus a NUL terminator, and
     // `idx <= len_`, so `idx` is in range for `ptr_`.
     return UNSAFE_BUFFERS(ptr_[idx]);
+  }
+
+  // A named function that performs the same as `operator[]`.
+  PURE_FUNCTION constexpr const Char& at(size_t idx) const noexcept {
+    return (*this)[idx];
+  }
+
+  // Returns the first character in the cstring view.
+  //
+  // # Checks
+  // The function CHECKs that the string is non-empty, and will terminate
+  // otherwise.
+  PURE_FUNCTION constexpr const Char& front() const noexcept {
+    CHECK(len_);
+    // Since `len_ > 0`, 0 is a valid offset into the string contents.
+    return UNSAFE_BUFFERS(ptr_[0u]);
+  }
+
+  // Returns the last (non-NUL) character in the cstring view.
+  //
+  // # Checks
+  // The function CHECKs that the string is non-empty, and will terminate
+  // otherwise.
+  PURE_FUNCTION constexpr const Char& back() const noexcept {
+    CHECK(len_);
+    // Since `len_ > 0`, `len - 1` will not underflow. There are `len_` many
+    // chars in the string before a NUL, so `len_ - 1` is in range of the string
+    // contents.
+    return UNSAFE_BUFFERS(ptr_[len_ - 1u]);
   }
 
   // Compare two cstring views for equality, comparing the string contents.

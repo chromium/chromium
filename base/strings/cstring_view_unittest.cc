@@ -5,10 +5,12 @@
 #include "base/strings/cstring_view.h"
 
 #include "base/containers/span.h"
+#include "base/debug/alias.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include <concepts>
+#include <limits>
 #include <type_traits>
 
 namespace base {
@@ -65,6 +67,40 @@ TEST(CStringViewTest, PointerSizeConstructed) {
   EXPECT_EQ(stuff.size(), 5u);
 }
 
+TEST(CStringViewTest, StringConstructed) {
+  std::string empty;
+  {
+    auto c = cstring_view(empty);
+    EXPECT_EQ(c.size(), 0u);
+  }
+  std::string stuff = "stuff";
+  {
+    auto c = cstring_view(stuff);
+    EXPECT_EQ(c.c_str(), stuff.c_str());
+    EXPECT_EQ(c.size(), 5u);
+  }
+  std::u16string stuff16 = u"stuff";
+  {
+    auto c = u16cstring_view(stuff16);
+    EXPECT_EQ(c.c_str(), stuff16.c_str());
+    EXPECT_EQ(c.size(), 5u);
+  }
+  std::u32string stuff32 = U"stuff";
+  {
+    auto c = u32cstring_view(stuff32);
+    EXPECT_EQ(c.c_str(), stuff32.c_str());
+    EXPECT_EQ(c.size(), 5u);
+  }
+#if BUILDFLAG(IS_WIN)
+  std::wstring stuffw = L"stuff";
+  {
+    auto c = wcstring_view(stuffw);
+    EXPECT_EQ(c.c_str(), stuffw.c_str());
+    EXPECT_EQ(c.size(), 5u);
+  }
+#endif
+}
+
 TEST(CStringViewTest, Equality) {
   constexpr auto stuff = cstring_view("stuff");
 
@@ -110,16 +146,102 @@ TEST(CStringViewTest, Iterate) {
   }
 }
 
+TEST(CStringViewTest, IterateReverse) {
+  constexpr auto def = cstring_view();
+  static_assert(def.rbegin() == def.rend());
+  static_assert(def.rcbegin() == def.rcend());
+
+  constexpr auto stuff = cstring_view("stuff");
+  static_assert(stuff.rbegin() != stuff.rend());
+  static_assert(stuff.rcbegin() != stuff.rcend());
+  static_assert(std::same_as<const char&, decltype(*stuff.rbegin())>);
+
+  {
+    size_t i = 0u;
+    for (auto it = stuff.rbegin(); it != stuff.rend(); ++it) {
+      static_assert(std::same_as<const char&, decltype(*it)>);
+      EXPECT_EQ(&*it, &stuff[4u - i]);
+      ++i;
+    }
+    EXPECT_EQ(i, 5u);
+  }
+}
+
 TEST(CStringViewDeathTest, IterateBoundsChecked) {
+  auto use = [](auto x) { base::debug::Alias(&x); };
+
   constexpr auto stuff = cstring_view("stuff");
 
   // The NUL terminator is out of bounds for iterating (checked by indexing into
   // the iterator) since it's not included in the range that the iterator walks
   // (but is in bounds for indexing on the view).
-  BASE_EXPECT_DEATH((void)*stuff.end(), "");
-  BASE_EXPECT_DEATH((void)stuff.begin()[5], "");
-  BASE_EXPECT_DEATH((void)(stuff.begin() + 6), "");
-  BASE_EXPECT_DEATH((void)(stuff.begin() - 1), "");
+  BASE_EXPECT_DEATH(use(*stuff.end()), "");       // Can't deref end.
+  BASE_EXPECT_DEATH(use(stuff.begin()[5]), "");   // Can't index end.
+  BASE_EXPECT_DEATH(use(stuff.begin() + 6), "");  // Can't move past end.
+  BASE_EXPECT_DEATH(use(stuff.begin() - 1), "");  // Can't move past begin.
+
+  BASE_EXPECT_DEATH(use(*stuff.rend()), "");
+  BASE_EXPECT_DEATH(use(stuff.rbegin()[5]), "");
+  BASE_EXPECT_DEATH(use(stuff.rbegin() + 6), "");
+  BASE_EXPECT_DEATH(use(stuff.rbegin() - 1), "");
+}
+
+TEST(CStringViewTest, Index) {
+  constexpr auto empty = cstring_view();
+  static_assert(empty[0u] == '\0');
+
+  static_assert(empty.at(0u) == '\0');
+
+  constexpr auto stuff = cstring_view("stuff");
+  static_assert(stuff[0u] == 's');
+  static_assert(&stuff[0u] == stuff.data());
+  static_assert(stuff[5u] == '\0');
+  static_assert(&stuff[5u] == UNSAFE_BUFFERS(stuff.data() + 5u));
+
+  static_assert(stuff.at(0u) == 's');
+  static_assert(&stuff.at(0u) == stuff.data());
+  static_assert(stuff.at(5u) == '\0');
+  static_assert(&stuff.at(5u) == UNSAFE_BUFFERS(stuff.data() + 5u));
+}
+
+TEST(CStringViewDeathTest, IndexChecked) {
+  auto use = [](auto x) { base::debug::Alias(&x); };
+
+  constexpr auto empty = cstring_view();
+  BASE_EXPECT_DEATH(use(empty[1u]), "");
+  BASE_EXPECT_DEATH(use(empty[std::numeric_limits<size_t>::max()]), "");
+
+  BASE_EXPECT_DEATH(use(empty.at(1u)), "");
+  BASE_EXPECT_DEATH(use(empty.at(std::numeric_limits<size_t>::max())), "");
+
+  constexpr auto stuff = cstring_view("stuff");
+  BASE_EXPECT_DEATH(use(stuff[6u]), "");
+  BASE_EXPECT_DEATH(use(stuff[std::numeric_limits<size_t>::max()]), "");
+
+  BASE_EXPECT_DEATH(use(stuff.at(6u)), "");
+  BASE_EXPECT_DEATH(use(stuff.at(std::numeric_limits<size_t>::max())), "");
+}
+
+TEST(CStringViewTest, FrontBack) {
+  constexpr auto stuff = cstring_view("stuff");
+  static_assert(stuff.front() == 's');
+  static_assert(&stuff.front() == stuff.data());
+  static_assert(stuff.back() == 'f');
+  static_assert(&stuff.back() == UNSAFE_BUFFERS(stuff.data() + 4u));
+
+  constexpr auto one = cstring_view("1");
+  static_assert(one.front() == '1');
+  static_assert(&one.front() == one.data());
+  static_assert(one.back() == '1');
+  static_assert(&one.back() == one.data());
+}
+
+TEST(CStringViewDeathTest, FrontBackChecked) {
+  auto use = [](auto x) { base::debug::Alias(&x); };
+
+  constexpr auto empty = cstring_view();
+  BASE_EXPECT_DEATH(use(empty.front()), "");
+  BASE_EXPECT_DEATH(use(empty.back()), "");
 }
 
 TEST(CStringViewTest, Size) {
@@ -151,6 +273,45 @@ TEST(CStringViewTest, Size) {
   constexpr auto stuffw = wcstring_view(L"stuff");
   static_assert(stuffw.size() == 5u);
   static_assert(stuffw.size_bytes() == 10u);
+#endif
+}
+
+TEST(CStringViewTest, Empty) {
+  constexpr auto empty = cstring_view();
+  static_assert(empty.empty());
+  constexpr auto one = cstring_view("1");
+  static_assert(!one.empty());
+  constexpr auto stuff = cstring_view("stuff");
+  static_assert(!stuff.empty());
+
+  constexpr auto empty16 = u16cstring_view();
+  static_assert(empty16.empty());
+  constexpr auto stuff16 = u16cstring_view(u"stuff");
+  static_assert(!stuff16.empty());
+
+  constexpr auto empty32 = u32cstring_view();
+  static_assert(empty32.empty());
+  constexpr auto stuff32 = u32cstring_view(U"stuff");
+  static_assert(!stuff32.empty());
+
+#if BUILDFLAG(IS_WIN)
+  constexpr auto emptyw = wcstring_view();
+  static_assert(emptyw.empty());
+  constexpr auto stuffw = wcstring_view(L"stuff");
+  static_assert(!stuffw.empty());
+#endif
+}
+
+TEST(CStringViewTest, MaxSize) {
+  static_assert(cstring_view().max_size() ==
+                std::numeric_limits<size_t>::max());
+  static_assert(u16cstring_view().max_size() ==
+                std::numeric_limits<size_t>::max() / 2u);
+  static_assert(u32cstring_view().max_size() ==
+                std::numeric_limits<size_t>::max() / 4u);
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view().max_size() ==
+                std::numeric_limits<size_t>::max() / 2u);
 #endif
 }
 
@@ -197,6 +358,25 @@ TEST(CStringViewTest, Cstr) {
 
   EXPECT_STREQ(empty.c_str(), "");
   EXPECT_STREQ(stuff.c_str(), "stuff");
+}
+
+TEST(CStringViewTest, CopyConstuct) {
+  static_assert(std::is_trivially_copy_constructible_v<cstring_view>);
+
+  auto stuff = cstring_view("stuff");
+  auto other = stuff;
+  EXPECT_EQ(other.data(), stuff.data());
+  EXPECT_EQ(other.size(), stuff.size());
+}
+
+TEST(CStringViewTest, CopyAssign) {
+  static_assert(std::is_trivially_copy_assignable_v<cstring_view>);
+
+  auto empty = cstring_view();
+  auto stuff = cstring_view("stuff");
+  empty = stuff;
+  EXPECT_EQ(empty.data(), stuff.data());
+  EXPECT_EQ(empty.size(), stuff.size());
 }
 
 TEST(CStringViewTest, Example_CtorLiteral) {
