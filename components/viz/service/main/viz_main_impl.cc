@@ -118,37 +118,6 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
       gpu_init_->gpu_feature_info_for_hardware_gpu(),
       gpu_init_->gpu_extra_info(), std::move(init_params));
 
-  {
-    // Gather the thread IDs of display GPU, and IO for performance hint.
-    // These are the viz threads that are on the critical path of all frames.
-    base::flat_set<base::PlatformThreadId> gpu_process_thread_ids;
-
-    CompositorGpuThread* compositor_gpu_thread =
-        gpu_service_->compositor_gpu_thread();
-    gpu_process_thread_ids.insert(compositor_gpu_thread
-                                      ? compositor_gpu_thread->GetThreadId()
-                                      : base::PlatformThread::CurrentId());
-
-    base::WaitableEvent event;
-    base::PlatformThreadId io_thread_id = base::kInvalidThreadId;
-    io_task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](base::PlatformThreadId* io_thread_id,
-                          base::WaitableEvent* event) {
-                         *io_thread_id = base::PlatformThread::CurrentId();
-                         event->Signal();
-                       },
-                       &io_thread_id, &event));
-    event.Wait();
-    gpu_process_thread_ids.insert(io_thread_id);
-
-    base::RepeatingClosure wake_up_closure;
-    if (viz_compositor_thread_runner_->CreateHintSessionFactory(
-            std::move(gpu_process_thread_ids), &wake_up_closure)) {
-      gpu_service_->SetWakeUpGpuClosure(std::move(wake_up_closure));
-    }
-  }
-
   VizDebugger::GetInstance();
 }
 
@@ -221,6 +190,44 @@ void VizMainImpl::CreateGpuService(
       dependencies_.sync_point_manager, dependencies_.shared_image_manager,
       dependencies_.scheduler, dependencies_.shutdown_event);
   gpu_service_->Bind(std::move(pending_receiver));
+
+  {
+    // Gather the thread IDs of display GPU, and IO for performance hint.
+    // These are the viz threads that are on the critical path of all frames.
+    base::flat_set<base::PlatformThreadId> gpu_process_thread_ids;
+
+    // Add the current (GPU Main) thread or Compositor GPU thread ID.
+    CompositorGpuThread* compositor_gpu_thread =
+        gpu_service_->compositor_gpu_thread();
+
+    if (compositor_gpu_thread &&
+        base::FeatureList::IsEnabled(
+            ::features::kEnableADPFGpuCompositorThread)) {
+      gpu_process_thread_ids.insert(compositor_gpu_thread->GetThreadId());
+    } else {
+      gpu_process_thread_ids.insert(base::PlatformThread::CurrentId());
+    }
+
+    // Add IO thread ID.
+    base::WaitableEvent event;
+    base::PlatformThreadId io_thread_id = base::kInvalidThreadId;
+    io_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::PlatformThreadId* io_thread_id,
+                          base::WaitableEvent* event) {
+                         *io_thread_id = base::PlatformThread::CurrentId();
+                         event->Signal();
+                       },
+                       &io_thread_id, &event));
+    event.Wait();
+    gpu_process_thread_ids.insert(io_thread_id);
+
+    base::RepeatingClosure wake_up_closure;
+    if (viz_compositor_thread_runner_->CreateHintSessionFactory(
+            std::move(gpu_process_thread_ids), &wake_up_closure)) {
+      gpu_service_->SetWakeUpGpuClosure(std::move(wake_up_closure));
+    }
+  }
 
   if (!pending_frame_sink_manager_params_.is_null()) {
     CreateFrameSinkManagerInternal(

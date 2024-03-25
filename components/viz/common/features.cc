@@ -293,6 +293,13 @@ BASE_FEATURE(kEnableADPFRendererMain,
              "EnableADPFRendererMain",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, Chrome includes the Compositor GPU Thread into the
+// ADPF(Android Dynamic Performance Framework) hint session, instead
+// of the GPU Main Thread.
+BASE_FEATURE(kEnableADPFGpuCompositorThread,
+             "EnableADPFGpuCompositorThread",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, surface activation and draw do not block on dependencies.
 BASE_FEATURE(kDrawImmediatelyWhenInteractive,
              "DrawImmediatelyWhenInteractive",
