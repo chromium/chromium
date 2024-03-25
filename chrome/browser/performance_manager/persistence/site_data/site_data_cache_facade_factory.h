@@ -10,24 +10,14 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "components/performance_manager/persistence/site_data/site_data_cache_factory.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class Profile;
 
 namespace performance_manager {
 
 class SiteDataCacheFacade;
+class SiteDataCacheFactory;
 class SiteDataCacheFacadeTest;
-
-// Holds either a SiteDataCacheFactory living on the UI thread (when the
-// "RunPerformanceManagerOnMainThread" feature is enabled) or a SequenceBound
-// wrapper for a SiteDataCacheFactory living on the PM sequence. Will hold
-// absl::monostate (a null type) if no SiteDataCacheFactory exists.
-using SiteDataCacheFactoryVariant =
-    absl::variant<absl::monostate,
-                  SiteDataCacheFactory,
-                  base::SequenceBound<SiteDataCacheFactory>>;
 
 // BrowserContextKeyedServiceFactory that adorns each browser context with a
 // SiteDataCacheFacade.
@@ -56,13 +46,6 @@ using SiteDataCacheFactoryVariant =
 //   - At shutdown, when the last SiteDataCacheFacade is destroyed, a task is
 //     posted to ensure that the SiteDataCacheFactory is destroyed on its
 //     sequence.
-//
-// TODO(crbug.com/40755583): When PerformanceManager moves to the UI thread,
-// these facades will no longer be needed. During the transition, when the
-// "RunPerformanceManagerOnMainThread" feature is enabled
-// SiteDataCacheFacadeFactory holds a direct pointer to the SiteDataCacheFactory
-// that also lives on the UI thread, instead of a SequenceBound wrapper as
-// described above.
 class SiteDataCacheFacadeFactory : public ProfileKeyedServiceFactory {
  public:
   SiteDataCacheFacadeFactory(const SiteDataCacheFacadeFactory&) = delete;
@@ -87,7 +70,9 @@ class SiteDataCacheFacadeFactory : public ProfileKeyedServiceFactory {
 
   SiteDataCacheFacadeFactory();
 
-  SiteDataCacheFactoryVariant& cache_factory() { return cache_factory_; }
+  base::SequenceBound<SiteDataCacheFactory>* cache_factory() {
+    return &cache_factory_;
+  }
 
   // Should be called early in the creation of a SiteDataCacheFacade to make
   // sure that |cache_factory_| gets created.
@@ -105,7 +90,7 @@ class SiteDataCacheFacadeFactory : public ProfileKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
 
   // The counterpart of this factory living on the SiteDataCache's sequence.
-  SiteDataCacheFactoryVariant cache_factory_;
+  base::SequenceBound<SiteDataCacheFactory> cache_factory_;
 
   // The number of SiteDataCacheFacade currently in existence.
   size_t service_instance_count_ = 0;
