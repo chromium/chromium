@@ -5,6 +5,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -12,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/strong_alias.h"
@@ -72,7 +72,7 @@ class TestCase {
 };
 
 // The region code for variations service (any should work).
-constexpr base::StringPiece kRegionCode = "jp";
+constexpr std::string_view kRegionCode = "jp";
 
 // Tests custom filtering logic based on regions, for supervised users.
 class SupervisedUserRegionalURLFilterTest
@@ -91,7 +91,7 @@ class SupervisedUserRegionalURLFilterTest
  protected:
   MOCK_METHOD(void,
               ClassifyUrlRequestMonitor,
-              (base::StringPiece, base::StringPiece));
+              (std::string_view, std::string_view));
 
   static const TestCase GetTestCase() { return TestCase(GetParam()); }
 
