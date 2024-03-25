@@ -1094,6 +1094,7 @@ fyi_mac_builder(
     ),
     builderless = True,
     cores = None,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "perfetto",
         short_name = "mac",
