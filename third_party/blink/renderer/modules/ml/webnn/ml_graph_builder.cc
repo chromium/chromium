@@ -812,6 +812,11 @@ MLOperand* MLGraphBuilder::batchNormalization(
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
+  if (options->hasActivation()) {
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateActivation(options->activation()),
+                                   nullptr);
+  }
+
   const auto validated_output = webnn::ValidateBatchNormalizationAndInferOutput(
       ConvertToComponentOperand(input), ConvertToComponentOperand(mean),
       ConvertToComponentOperand(variance),
@@ -909,6 +914,11 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
+  if (options->hasActivation()) {
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateActivation(options->activation()),
+                                   nullptr);
+  }
+
   auto conv2d_attributes = ConvertToConv2dAttributes(options);
   if (!conv2d_attributes.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
@@ -952,6 +962,11 @@ MLOperand* MLGraphBuilder::convTranspose2d(
     inputs.push_back(options->bias());
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
+
+  if (options->hasActivation()) {
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateActivation(options->activation()),
+                                   nullptr);
+  }
 
   auto convTranspose2d_attributes = ConvertToConvTranspose2dAttributes(options);
   if (!convTranspose2d_attributes.has_value()) {
@@ -1238,6 +1253,11 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::gru(
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs),
                                  HeapVector<Member<const MLOperand>>());
 
+  if (options->hasActivations()) {
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateActivations(options->activations()),
+                                   HeapVector<Member<const MLOperand>>());
+  }
+
   auto validated_outputs = webnn::ValidateGruAndInferOutput(
       ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
       ConvertToComponentOperand(recurrent_weight), steps, hidden_size,
@@ -1481,6 +1501,11 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs),
                                  HeapVector<Member<const MLOperand>>());
+
+  if (options->hasActivations()) {
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateActivations(options->activations()),
+                                   HeapVector<Member<const MLOperand>>());
+  }
 
   // If the activations are not specified, create a default activation sequence
   // [sigmoid, tanh, tanh] as defined in the spec.
@@ -2148,9 +2173,7 @@ void MLGraphBuilder::SetBackendForTesting(
   g_backend_for_testing = backend_for_testing;
 }
 
-// As specified in https://www.w3.org/TR/webnn/#mloperand-validate-mloperand.
-// Note that checking the dimensions of `input` here would be redundant, since
-// otherwise the `MLOperand` would not have been created.
+// As specified in https://www.w3.org/TR/webnn/#mlgraphbuilder-validate-operand.
 base::expected<void, String> MLGraphBuilder::ValidateInput(
     const MLOperand* input) {
   CHECK(input);
@@ -2164,6 +2187,26 @@ base::expected<void, String> MLGraphBuilder::ValidateInputs(
     const HeapVector<Member<const MLOperand>>& inputs) {
   for (const MLOperand* input_to_validate : inputs) {
     RETURN_IF_ERROR(ValidateInput(input_to_validate));
+  }
+  return base::ok();
+}
+
+// As specified in
+// https://www.w3.org/TR/webnn/#mlgraphbuilder-validate-activation.
+base::expected<void, String> MLGraphBuilder::ValidateActivation(
+    const MLActivation* activation) {
+  CHECK(activation);
+  if (activation->Operator()->Builder() != this) {
+    return base::unexpected(
+        "Invalid activation: Created from another builder.");
+  }
+  return base::ok();
+}
+
+base::expected<void, String> MLGraphBuilder::ValidateActivations(
+    const HeapVector<Member<MLActivation>>& activations) {
+  for (const MLActivation* activation_to_validate : activations) {
+    RETURN_IF_ERROR(ValidateActivation(activation_to_validate));
   }
   return base::ok();
 }

@@ -384,6 +384,16 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   [[nodiscard]] base::expected<void, String> ValidateInputs(
       const HeapVector<Member<const MLOperand>>& inputs);
 
+  // Performs platform-agnostic and operand-agnostic validation checks which
+  // must be run for each MLActivation passed as an option to a builder method.
+  // Returns an error message which may be used to throw a TypeError if
+  // `activation` is not valid to use with this builder.
+  [[nodiscard]] base::expected<void, String> ValidateActivation(
+      const MLActivation* activation);
+  // Convenience method to validate several activations at once.
+  [[nodiscard]] base::expected<void, String> ValidateActivations(
+      const HeapVector<Member<MLActivation>>& activations);
+
   Member<MLContext> ml_context_;
 };
 

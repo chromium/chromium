@@ -454,3 +454,18 @@ multi_builder_test(async (t, builder, otherBuilder) => {
       () => builder.lstm(
           input, weight, recurrentWeight, steps, hiddenSize, options));
 }, '[lstm] throw if initialCellState option is from another builder');
+
+multi_builder_test(async (t, builder, otherBuilder) => {
+  const activation = builder.clamp();
+  const activationFromOtherBuilder = otherBuilder.clamp();
+  const options = {activations: [activation, activationFromOtherBuilder]};
+
+  const input = builder.input('input', kExampleInputDescriptor);
+  const weight = builder.input('weight', kExampleWeightDescriptor);
+  const recurrentWeight =
+      builder.input('recurrentWeight', kExampleRecurrentWeightDescriptor);
+  assert_throws_js(
+      TypeError,
+      () => builder.lstm(
+          input, weight, recurrentWeight, steps, hiddenSize, options));
+}, '[lstm] throw if any activation option is from another builder');

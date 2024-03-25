@@ -47,3 +47,13 @@ multi_builder_test(async (t, builder, otherBuilder) => {
   assert_throws_js(
       TypeError, () => builder.convTranspose2d(input, filter, options));
 }, '[convTranspose2d] throw if bias option is from another builder');
+
+multi_builder_test(async (t, builder, otherBuilder) => {
+  const activationFromOtherBuilder = otherBuilder.clamp();
+  const options = {activation: activationFromOtherBuilder};
+
+  const input = builder.input('input', kExampleInputDescriptor);
+  const filter = builder.input('filter', kExampleFilterDescriptor);
+  assert_throws_js(
+      TypeError, () => builder.convTranspose2d(input, filter, options));
+}, '[convTranspose2d] throw if activation option is from another builder');

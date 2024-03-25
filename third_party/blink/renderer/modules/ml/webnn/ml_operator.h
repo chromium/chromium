@@ -69,6 +69,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
   bool IsConnected() const;
   const HeapVector<Member<const MLOperand>>& Inputs() const;
   const HeapVector<Member<const MLOperand>>& Outputs() const;
+  MLGraphBuilder const* Builder() const { return builder_.Get(); }
 
   // According to WebNN programming model
   // https://www.w3.org/TR/webnn/#programming-model, neural networks are

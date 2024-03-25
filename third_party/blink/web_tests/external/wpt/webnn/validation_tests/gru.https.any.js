@@ -428,3 +428,18 @@ multi_builder_test(async (t, builder, otherBuilder) => {
       () => builder.gru(
           input, weight, recurrentWeight, steps, hiddenSize, options));
 }, '[gru] throw if initialHiddenState option is from another builder');
+
+multi_builder_test(async (t, builder, otherBuilder) => {
+  const activation = builder.clamp();
+  const activationFromOtherBuilder = otherBuilder.clamp();
+  const options = {activations: [activation, activationFromOtherBuilder]};
+
+  const input = builder.input('input', kExampleInputDescriptor);
+  const weight = builder.input('weight', kExampleWeightDescriptor);
+  const recurrentWeight =
+      builder.input('recurrentWeight', kExampleRecurrentWeightDescriptor);
+  assert_throws_js(
+      TypeError,
+      () => builder.gru(
+          input, weight, recurrentWeight, steps, hiddenSize, options));
+}, '[gru] throw if any activation option is from another builder');
