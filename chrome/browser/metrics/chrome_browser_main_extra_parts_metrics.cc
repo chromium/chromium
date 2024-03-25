@@ -365,7 +365,7 @@ enum class UmaLinuxDistro {
   kMaxValue = kZorin,
 };
 
-enum UMALinuxGlibcVersion {
+enum UMALinuxGlibcVersion : uint32_t {
   UMA_LINUX_GLIBC_NOT_PARSEABLE,
   UMA_LINUX_GLIBC_UNKNOWN,
   UMA_LINUX_GLIBC_2_11,
