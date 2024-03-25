@@ -95,6 +95,8 @@ source_set("start_host_common") {
   sources = [
     "host_starter.cc",
     "host_starter.h",
+    "host_starter_base.cc",
+    "host_starter_base.h",
     "host_starter_oauth_helper.cc",
     "host_starter_oauth_helper.h",
   ]
@@ -104,6 +106,7 @@ source_set("start_host_common") {
     "//google_apis",
     "//net",
     "//remoting/base:base",
+    "//remoting/host:common",
     "//services/network:network_service",
     "//services/network/public/cpp:cpp",
   ]

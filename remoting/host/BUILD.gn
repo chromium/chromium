@@ -898,6 +898,11 @@ source_set("unit_tests") {
     deps += [ "//remoting/host:ipc_constants" ]
   }
 
+  # start_host is only supported on Linux and Windows.
+  if (is_linux || is_win) {
+    sources += [ "setup/host_starter_base_unittest.cc" ]
+  }
+
   if (is_linux) {
     deps += [
       "//remoting/host/linux:wayland",
@@ -993,7 +998,7 @@ if (enable_remoting_host) {
       defines = host_predefines +
                 [ "REMOTING_HOST_BINARY=BINARY_REMOTING_START_HOST" ]
 
-      sources += [ "$root_gen_dir/remoting/version.rc", ]
+      sources += [ "$root_gen_dir/remoting/version.rc" ]
 
       deps += [
         "//remoting/host/win:elevated_exe_manifest",
