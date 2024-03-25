@@ -233,6 +233,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy,
   std::u16string expected_text =
       l10n_util::GetStringUTF16(IDS_ASH_SHELF_SHUTDOWN_BUTTON);
 
+  // Login shelf button's should be updated to the current locale.
   EXPECT_EQ(expected_text, actual_text);
 
   // Check if the shelf buttons are correctly aligned for RTL locale.

@@ -85,6 +85,15 @@ views::View* GetShutDownButton() {
   return shelf_view->GetViewByID(LoginShelfView::kShutdown);
 }
 
+views::View* GetShutDownButtonContainer() {
+  LoginShelfView* shelf_view = GetLoginShelfView();
+  if (!shelf_view) {
+    return nullptr;
+  }
+
+  return shelf_view->GetButtonContainerByID(LoginShelfView::kShutdown);
+}
+
 views::View* GetAppsButton() {
   LoginShelfView* shelf_view = GetLoginShelfView();
   if (!shelf_view) {
@@ -854,12 +863,17 @@ gfx::Rect LoginScreenTestApi::GetShutDownButtonTargetBounds() {
 
 // static
 gfx::Rect LoginScreenTestApi::GetShutDownButtonMirroredBounds() {
+  views::View* button_container = GetShutDownButtonContainer();
   views::View* button = GetShutDownButton();
   if (!button) {
     return gfx::Rect();
   }
-
-  return button->GetMirroredBounds();
+  gfx::Point button_container_origin =
+      button_container->GetMirroredBounds().origin();
+  gfx::Rect button_mirrored_bounds = button->GetMirroredBounds();
+  button_mirrored_bounds.set_origin(button_container_origin +
+                                    button_mirrored_bounds.OffsetFromOrigin());
+  return button_mirrored_bounds;
 }
 
 // static

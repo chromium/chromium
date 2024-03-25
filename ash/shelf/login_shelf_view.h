@@ -162,6 +162,9 @@ class ASH_EXPORT LoginShelfView : public views::View,
   // Returns scoped object to temporarily block Browse as Guest login button.
   std::unique_ptr<ScopedGuestButtonBlocker> GetScopedGuestButtonBlocker();
 
+  // Returns the button container.
+  views::View* GetButtonContainerByID(ButtonId button_id);
+
   // TrayActionObserver:
   void OnLockScreenNoteStateChanged(mojom::TrayActionState state) override;
 
@@ -236,6 +239,8 @@ class ASH_EXPORT LoginShelfView : public views::View,
   bool ShouldShowGuestAndAppsButtons() const;
 
   bool ShouldShowOsInstallButton() const;
+
+  void SetButtonVisible(ButtonId id, bool visible);
 
   // Helper function which calls `closure` when device display is on. Or if the
   // number of dropped calls exceeds 'kMaxDroppedCallsWhenDisplaysOff'

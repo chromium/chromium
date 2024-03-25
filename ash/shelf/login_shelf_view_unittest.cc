@@ -154,8 +154,14 @@ class LoginShelfViewTest : public LoginTestBase {
     auto* latter_button_view = login_shelf_view_->GetViewByID(latter);
     EXPECT_TRUE(former_button_view->GetVisible() &&
                 latter_button_view->GetVisible());
-    return login_shelf_view_->GetIndexOf(former_button_view) <
-           login_shelf_view_->GetIndexOf(latter_button_view);
+    auto* former_button_view_container =
+        login_shelf_view_->GetButtonContainerByID(former);
+    auto* latter_button_view_container =
+        login_shelf_view_->GetButtonContainerByID(latter);
+    EXPECT_TRUE(former_button_view_container->GetVisible() &&
+                latter_button_view_container->GetVisible());
+    return login_shelf_view_->GetIndexOf(former_button_view_container) <
+           login_shelf_view_->GetIndexOf(latter_button_view_container);
   }
 
   // Check whether the button is enabled.
