@@ -677,7 +677,7 @@ TEST_F(PickerSearchControllerTest, RecordsDriveMetricsAfterBurnIn) {
                                    kAfterBurnIn, 1);
 }
 
-TEST_F(PickerSearchControllerTest, DoesNotRecordDriveMetricsIfNoFileResponse) {
+TEST_F(PickerSearchControllerTest, DoesNotRecordDriveMetricsIfNoDriveResponse) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;

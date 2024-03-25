@@ -530,7 +530,7 @@ TEST_F(PickerSearchRequestTest, RecordsDriveMetrics) {
                                    kMetricMetricTime, 1);
 }
 
-TEST_F(PickerSearchRequestTest, DoesNotRecordDriveMetricsIfNoFileResponse) {
+TEST_F(PickerSearchRequestTest, DoesNotRecordDriveMetricsIfNoDriveResponse) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
