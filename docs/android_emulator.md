@@ -26,23 +26,28 @@ You can run this command to list them:
 tools/android/avd/avd.py list
 ```
 
-| Configurations | Android Version | AVD Target | Builder |
-|:-------------- |:--------------- |:---------- |:------- |
-| `generic_android19.textpb` | K | google_apis | N/A |
-| `generic_android22.textpb` | L | google_apis | N/A |
-| `generic_android23.textpb` | M | google_apis | [android-marshmallow-x86-rel][android-marshmallow-x86-rel] |
-| `generic_android27.textpb` | O | google_apis | N/A |
-| `generic_android28.textpb` | P | google_apis | [android-pie-x86-rel][android-pie-x86-rel] |
-| `generic_android29.textpb` | 10 (Q) | google_apis | N/A |
-| `generic_android30.textpb` | 11 (R) | google_apis | [android-11-x86-rel][android-11-x86-rel] |
-| `generic_android31.textpb` | 12 (S) | google_apis | [android-12-x64-rel][android-12-x64-rel] |
+| Configurations | Android Version | CPU Arch| AVD Target | Builder |
+|:-------------- |:--------------- |:------- |:---------- |:------- |
+| `generic_android19.textpb` | K | x86 | google_apis | N/A |
+| `generic_android22.textpb` | L | x86 | google_apis | N/A |
+| `generic_android23.textpb` | M | x86 | google_apis | N/A |
+| `generic_android27.textpb` | O | x86 | google_apis | N/A |
+| `android_28_google_apis_x86.textpb` | P | x86 | google_apis | [android-pie-x86-rel][android-pie-x86-rel] |
+| `android_29_google_apis_x86.textpb` | 10 (Q) | x86 | google_apis | N/A |
+| `android_30_google_apis_x86.textpb` | 11 (R) | x86 | google_apis | [android-11-x86-rel][android-11-x86-rel] |
+| `android_31_google_apis_x64.textpb` | 12 (S) | x86_64 | google_apis | [android-12-x64-rel][android-12-x64-rel] |
+| `android_32_google_apis_x64_foldable.textpb` | 12L (S_V2) | x86_64 | google_apis | [android-12l-x64-dbg-tests][android-12l-x64-dbg-tests] |
+| `android_33_google_apis_x64.textpb` | 13 (T) | x86_64 | google_apis | [android-13-x64-rel][android-13-x64-rel] |
+| `android_34_google_apis_x64.textpb` | 14 (U) | x86_64 | google_apis | [android-14-x64-rel][android-14-x64-rel] |
 
 You can use these configuration files to run the same emulator images locally.
 
-[android-marshmallow-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-marshmallow-x86-rel
 [android-pie-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-pie-x86-rel
 [android-11-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-11-x86-rel
 [android-12-x64-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-12-x64-rel
+[android-12l-x64-dbg-tests]: https://ci.chromium.org/p/chromium/builders/ci/android-12l-x64-dbg-tests
+[android-13-x64-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-13-x64-rel
+[android-14-x64-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-14-x64-rel
 
 #### Prerequisite
 
