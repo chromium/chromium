@@ -19,6 +19,10 @@
 #include "skia/buildflags.h"
 #include "ui/gfx/gpu_extra_info.h"
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#endif
+
 namespace base {
 class CommandLine;
 }
@@ -29,7 +33,6 @@ class GLSurface;
 
 namespace gpu {
 
-class DawnContextProvider;
 class VulkanImplementation;
 
 class GPU_IPC_SERVICE_EXPORT GpuSandboxHelper {
