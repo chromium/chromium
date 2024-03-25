@@ -63,4 +63,29 @@ void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("blocked", blocked());
 }
 
+std::unique_ptr<content::WebContents> TabModel::ReplaceContents(
+    std::unique_ptr<content::WebContents> contents) {
+  std::unique_ptr<content::WebContents> old_contents = RemoveContents();
+  SetContents(std::move(contents));
+  return old_contents;
+}
+
+std::unique_ptr<content::WebContents> TabModel::RemoveContents() {
+  for (auto& obs : observers_) {
+    obs.WillRemoveContents(this, contents_.get());
+  }
+  return std::move(contents_);
+}
+
+void TabModel::SetContents(std::unique_ptr<content::WebContents> contents) {
+  // TODO(https://crbug.com/331022416): Enable these checks once
+  // CacheWebContents feature is deleted.
+  // CHECK(!contents_);
+  // CHECK(contents);
+  contents_ = std::move(contents);
+  for (auto& obs : observers_) {
+    obs.DidAddContents(this, contents_.get());
+  }
+}
+
 }  // namespace tabs

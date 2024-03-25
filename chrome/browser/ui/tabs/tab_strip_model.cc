@@ -450,7 +450,7 @@ std::unique_ptr<content::WebContents>
 TabStripModel::DetachWebContentsAtForInsertion(int index) {
   auto dwc = DetachWebContentsWithReasonAt(
       index, TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip);
-  return dwc->tab->ReplaceContents(nullptr);
+  return dwc->tab->RemoveContents();
 }
 
 void TabStripModel::DetachAndDeleteWebContentsAt(int index) {

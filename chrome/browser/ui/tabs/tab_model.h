@@ -9,7 +9,9 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/supports_handles.h"
+#include "chrome/browser/ui/tabs/tab_model_observer.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -33,6 +35,10 @@ class TabModel final : public SupportsHandles<const TabModel> {
   void OnAddedToModel(TabStripModel* owning_model);
   void OnRemovedFromModel();
 
+  void AddObserver(TabModelObserver* obs) { observers_.AddObserver(obs); }
+
+  void RemoveObserver(TabModelObserver* obs) { observers_.RemoveObserver(obs); }
+
   content::WebContents* contents() const { return contents_.get(); }
   TabStripModel* owning_model() const { return owning_model_.get(); }
   content::WebContents* opener() const { return opener_; }
@@ -43,9 +49,6 @@ class TabModel final : public SupportsHandles<const TabModel> {
   bool blocked() const { return blocked_; }
   std::optional<tab_groups::TabGroupId> group() const { return group_; }
 
-  void set_contents(std::unique_ptr<content::WebContents> contents) {
-    contents_ = std::move(contents);
-  }
   void set_opener(content::WebContents* opener) { opener_ = opener; }
   void set_reset_opener_on_active_tab_change(
       bool reset_opener_on_active_tab_change) {
@@ -59,11 +62,17 @@ class TabModel final : public SupportsHandles<const TabModel> {
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
+  // https://crbug.com/331022416: Do not use this method. The signature of this
+  // method suggests that it's possible to replace the WebContents that
+  // represents a live, foregrounded tab with a different WebContents. This is
+  // never the case. Instead use RemoveContents() and AddContents().
   std::unique_ptr<content::WebContents> ReplaceContents(
-      std::unique_ptr<content::WebContents> contents) {
-    contents_.swap(contents);
-    return contents;
-  }
+      std::unique_ptr<content::WebContents> contents);
+
+  std::unique_ptr<content::WebContents> RemoveContents();
+
+  // The current contents of the tab must be |nullptr|.
+  void SetContents(std::unique_ptr<content::WebContents> contents);
 
   LensOverlayController* lens_overlay_controller() {
     return lens_overlay_controller_.get();
@@ -100,6 +109,8 @@ class TabModel final : public SupportsHandles<const TabModel> {
   bool blocked_ = false;
   std::optional<tab_groups::TabGroupId> group_ = std::nullopt;
   raw_ptr<TabCollection> parent_collection_ = nullptr;
+
+  base::ObserverList<TabModelObserver> observers_;
 
   // Features that are per-tab will each have a controller.
   std::unique_ptr<LensOverlayController> lens_overlay_controller_;

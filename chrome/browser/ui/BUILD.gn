@@ -1554,6 +1554,7 @@ static_library("ui") {
       "tabs/tab_menu_model_factory.h",
       "tabs/tab_model.cc",
       "tabs/tab_model.h",
+      "tabs/tab_model_observer.h",
       "tabs/tab_network_state.cc",
       "tabs/tab_network_state.h",
       "tabs/tab_renderer_data.cc",

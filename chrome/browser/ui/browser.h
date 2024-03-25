@@ -130,6 +130,9 @@ class Browser : public TabStripModelObserver,
   // SessionService::WindowType mirrors these values.  If you add to this
   // enum, look at SessionService::WindowType to see if it needs to be
   // updated.
+  // TODO(https://crbug.com/331031753): Several of these existing Window Types
+  // likely should not have been using Browser as a base to begin with and
+  // should be migrated. Please refrain from adding new types.
   enum Type {
     // Normal tabbed non-app browser (previously TYPE_TABBED).
     TYPE_NORMAL,
@@ -458,6 +461,16 @@ class Browser : public TabStripModelObserver,
 #endif
 
   // Never nullptr.
+  //
+  // When the last tab is removed, the browser attempts to close, see
+  // TabStripEmpty().
+  // TODO(https://crbug.com/331031753): Several existing Browser::Types never
+  // show a tab strip, yet are forced to work with the tab strip API to deal
+  // with the previous condition. This creates confusing control flow both for
+  // the tab strip and this class. One or both of the following should happen:
+  //  (1) tab_strip_model_ should become an optional member.
+  //  (2) Variations of Browser::Type that never show a tab strip should not use
+  //      this class.
   TabStripModel* tab_strip_model() const { return tab_strip_model_.get(); }
 
   // Never nullptr.
