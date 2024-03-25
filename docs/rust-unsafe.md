@@ -54,9 +54,4 @@ Additional notes:
   (e.g. Android, Fuchsia, etc.).  This means that adding a new crate does not
   necessarily require a new audit if the crate has already been audited by
   other projects.
-* For now we kindly ask you that audit updates in `audits.toml`
-  should be part of the submitted CL so that `run_cargo_vet.py check` will
-  continue to pass after the CL lands.
-    - TODO(https://crbug.com/326234536): Enforce `cargo vet` cleaniness via
-      `PRESUBMIT.py`.
 
