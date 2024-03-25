@@ -4,6 +4,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -11,7 +12,6 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -189,32 +189,30 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
   }
 
   constexpr auto kIdentifiers =
-      base::MakeFixedFlatMap<base::StringPiece, IBD::InfoBarIdentifier>({
-        {"dev_tools", IBD::DEV_TOOLS_INFOBAR_DELEGATE},
-            {"extension_dev_tools", IBD::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE},
-            {"incognito_connectability",
-             IBD::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE},
-            {"theme_installed", IBD::THEME_INSTALLED_INFOBAR_DELEGATE},
-            {"nacl", IBD::NACL_INFOBAR_DELEGATE},
-            {"file_access_disabled",
-             IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE},
-            {"keystone_promotion",
-             IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC},
-            {"collected_cookies", IBD::COLLECTED_COOKIES_INFOBAR_DELEGATE},
-            {"installation_error", IBD::INSTALLATION_ERROR_INFOBAR_DELEGATE},
-            {"bad_flags", IBD::BAD_FLAGS_INFOBAR_DELEGATE},
-            {"default_browser", IBD::DEFAULT_BROWSER_INFOBAR_DELEGATE},
-            {"google_api_keys", IBD::GOOGLE_API_KEYS_INFOBAR_DELEGATE},
-            {"obsolete_system", IBD::OBSOLETE_SYSTEM_INFOBAR_DELEGATE},
-            {"page_info", IBD::PAGE_INFO_INFOBAR_DELEGATE},
-            {"translate", IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA},
-            {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
-            {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
+      base::MakeFixedFlatMap<std::string_view, IBD::InfoBarIdentifier>({
+          {"dev_tools", IBD::DEV_TOOLS_INFOBAR_DELEGATE},
+          {"extension_dev_tools", IBD::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE},
+          {"incognito_connectability",
+           IBD::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE},
+          {"theme_installed", IBD::THEME_INSTALLED_INFOBAR_DELEGATE},
+          {"nacl", IBD::NACL_INFOBAR_DELEGATE},
+          {"file_access_disabled", IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE},
+          {"keystone_promotion", IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC},
+          {"collected_cookies", IBD::COLLECTED_COOKIES_INFOBAR_DELEGATE},
+          {"installation_error", IBD::INSTALLATION_ERROR_INFOBAR_DELEGATE},
+          {"bad_flags", IBD::BAD_FLAGS_INFOBAR_DELEGATE},
+          {"default_browser", IBD::DEFAULT_BROWSER_INFOBAR_DELEGATE},
+          {"google_api_keys", IBD::GOOGLE_API_KEYS_INFOBAR_DELEGATE},
+          {"obsolete_system", IBD::OBSOLETE_SYSTEM_INFOBAR_DELEGATE},
+          {"page_info", IBD::PAGE_INFO_INFOBAR_DELEGATE},
+          {"translate", IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA},
+          {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
+          {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-            {"hung_plugin", IBD::HUNG_PLUGIN_INFOBAR_DELEGATE},
-            {"reload_plugin", IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE},
-            {"plugin_observer", IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE},
+          {"hung_plugin", IBD::HUNG_PLUGIN_INFOBAR_DELEGATE},
+          {"reload_plugin", IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE},
+          {"plugin_observer", IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE},
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
       });
   const auto id_entry = kIdentifiers.find(name);
