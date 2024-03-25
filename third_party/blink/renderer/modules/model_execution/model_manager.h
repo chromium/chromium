@@ -48,6 +48,9 @@ class ModelManager final : public ScriptWrappable,
       ScriptState* script_state,
       ModelGenericSessionOptions* options,
       ExceptionState& exception_state);
+  ScriptPromiseTyped<ModelGenericSessionOptions> defaultGenericSessionOptions(
+      ScriptState* script_state,
+      ExceptionState& exception_state);
 
  private:
   HeapMojoRemote<mojom::blink::ModelManager>& GetModelManagerRemote();

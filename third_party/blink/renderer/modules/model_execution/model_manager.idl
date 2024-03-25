@@ -13,4 +13,5 @@ interface ModelManager {
   [Measure, CallWith=ScriptState, RaisesException] Promise<ModelGenericSession> createGenericSession(
     optional ModelGenericSessionOptions options = {}
   );
+  [Measure, CallWith=ScriptState, RaisesException] Promise<ModelGenericSessionOptions> defaultGenericSessionOptions();
 };

@@ -25,4 +25,8 @@ interface ModelManager {
     pending_receiver<blink.mojom.ModelGenericSession> session,
     ModelGenericSessionSamplingParams? sampling_params
   ) => (bool success);
+  // Returns the default configuration for `ModelGenericSessionSamplingParams`.
+  GetDefaultGenericSessionSamplingParams() => (
+    ModelGenericSessionSamplingParams default_sampling_params
+  );
 };

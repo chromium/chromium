@@ -21,8 +21,9 @@ class ModelExecutionMetrics {
     kModelCreateSession = 1,
     kSessionExecute = 2,
     kSessionExecuteStreaming = 3,
+    kModelDefaultGenericSessionOptions = 4,
 
-    kMaxValue = kSessionExecuteStreaming,
+    kMaxValue = kModelDefaultGenericSessionOptions,
   };
 
   static const char* GetModelExecutionAPIUsageMetricName(

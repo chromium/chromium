@@ -11387,6 +11387,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4924" label="V8ModelManager_CanCreateGenericSession_Method"/>
   <int value="4925" label="V8ModelManager_CreateGenericSession_Method"/>
   <int value="4926" label="V8Animation_Progress_AttributeGetter"/>
+  <int value="4927" label="V8ModelManager_DefaultGenericSessionOptions_Method"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

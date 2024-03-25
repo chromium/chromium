@@ -6344,6 +6344,7 @@ interface ModelManager
     method canCreateGenericSession
     method constructor
     method createGenericSession
+    method defaultGenericSessionOptions
 interface Mojo
     static method bindInterface
     static method createDataPipe

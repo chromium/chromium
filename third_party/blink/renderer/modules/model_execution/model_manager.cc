@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_generic_model_availability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_model_generic_session_options.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/model_execution/model_execution_metrics.h"
 #include "third_party/blink/renderer/modules/model_execution/model_generic_session.h"
@@ -156,6 +157,47 @@ ScriptPromiseTyped<ModelGenericSession> ModelManager::createGenericSession(
             }
           },
           WrapPersistent(resolver), WrapPersistent(generic_session)));
+
+  return promise;
+}
+
+ScriptPromiseTyped<ModelGenericSessionOptions>
+ModelManager::defaultGenericSessionOptions(ScriptState* script_state,
+                                           ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The execution context is not valid.");
+    return ScriptPromiseTyped<ModelGenericSessionOptions>();
+  }
+
+  base::UmaHistogramEnumeration(
+      ModelExecutionMetrics::GetModelExecutionAPIUsageMetricName(
+          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+      ModelExecutionMetrics::ModelExecutionAPI::
+          kModelDefaultGenericSessionOptions);
+
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<ModelGenericSessionOptions>>(script_state);
+  auto promise = resolver->Promise();
+
+  if (!GetModelManagerRemote().is_connected()) {
+    resolver->Reject(DOMException::Create(
+        "Unable to fetch default generic session options", "NotReadableError"));
+  } else {
+    GetModelManagerRemote()->GetDefaultGenericSessionSamplingParams(
+        WTF::BindOnce(
+            [](ScriptPromiseResolverTyped<ModelGenericSessionOptions>* resolver,
+               mojom::blink::ModelGenericSessionSamplingParamsPtr
+                   default_params) {
+              ModelGenericSessionOptions* options =
+                  ModelGenericSessionOptions::Create();
+              CHECK(default_params);
+              options->setTopK(default_params->top_k);
+              options->setTemperature(default_params->temperature);
+              resolver->Resolve(options);
+            },
+            WrapPersistent(resolver)));
+  }
 
   return promise;
 }

@@ -4267,11 +4267,11 @@ enum WebFeature {
   kTCPSocketConstructor = 4899,
   kTCPSocketOpenedAttribute = 4900,
   kTCPSocketClosedAttribute = 4901,
-  kTCPSocketCloseFunction= 4902,
+  kTCPSocketCloseFunction = 4902,
   kUDPSocketConstructor = 4903,
   kUDPSocketOpenedAttribute = 4904,
   kUDPSocketClosedAttribute = 4905,
-  kUDPSocketCloseFunction= 4906,
+  kUDPSocketCloseFunction = 4906,
   kTCPServerSocketConstructor = 4907,
   kTCPServerSocketOpenedAttribute = 4908,
   kTCPServerSocketClosedAttribute = 4909,
@@ -4296,7 +4296,11 @@ enum WebFeature {
   kV8ModelGenericSession_ExecuteStreaming_Method = 4923,
   kV8ModelManager_CanCreateGenericSession_Method = 4924,
   kV8ModelManager_CreateGenericSession_Method = 4925,
+
   kV8Animation_Progress_AttributeGetter = 4926,
+
+  kV8ModelManager_DefaultGenericSessionOptions_Method = 4927,
+
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

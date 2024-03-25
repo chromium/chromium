@@ -8,10 +8,12 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/mojom/model_execution/model_manager.mojom.h"
 
 DOCUMENT_USER_DATA_KEY_IMPL(ModelManagerImpl);
 
@@ -90,4 +92,11 @@ void ModelManagerImpl::CreateGenericSession(
       std::make_unique<ModelExecutionSession>(std::move(session)),
       std::move(receiver));
   std::move(callback).Run(/*success=*/true);
+}
+
+void ModelManagerImpl::GetDefaultGenericSessionSamplingParams(
+    GetDefaultGenericSessionSamplingParamsCallback callback) {
+  std::move(callback).Run(blink::mojom::ModelGenericSessionSamplingParams::New(
+      optimization_guide::features::GetOnDeviceModelDefaultTopK(),
+      optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
 }
