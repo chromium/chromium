@@ -1202,15 +1202,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   }
   session_manager::SessionManager::Get()->SetSessionState(session_state);
 
-  if (first_screen == AppLaunchSplashScreenView::kScreenId) {
-    auto app = KioskController::Get().GetAutoLaunchApp();
-    CHECK(app.has_value());
-
-    // Manages its own lifetime. See ShutdownDisplayHost().
-    auto* display_host = new LoginDisplayHostWebUI();
-    display_host->StartKiosk(app->id(), /*is_auto_launch=*/true);
-    return;
-  }
+  // Kiosk launch is handled inside `ChromeSessionManager` code.
+  CHECK(first_screen != AppLaunchSplashScreenView::kScreenId);
 
   // Check whether we need to execute OOBE flow.
   const policy::EnrollmentConfig enrollment_config =

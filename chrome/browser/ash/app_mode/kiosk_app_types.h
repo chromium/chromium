@@ -38,6 +38,7 @@ class KioskAppId {
 };
 
 std::ostream& operator<<(std::ostream& stream, const KioskAppId& app_id);
+bool operator==(const KioskAppId& first, const KioskAppId& second);
 
 }  // namespace ash
 

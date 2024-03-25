@@ -2372,6 +2372,16 @@ CrosNetworkConfig::CrosNetworkConfig(
       network_profile_handler_(network_profile_handler),
       technology_state_controller_(technology_state_controller) {
   CHECK(network_state_handler);
+
+  // Start observing the `network_state_handler_` so we know to unset our local
+  // pointer to it when it's destroyed.
+  network_state_handler_observer_.Observe(network_state_handler_.get());
+
+  // Start observing the `network_configuration_handler_` so we know to unset
+  // our local pointer to it when it's destroyed.
+  if (network_configuration_handler_) {
+    network_configuration_handler_->AddObserver(this);
+  }
   if (features::IsCellularCarrierLockEnabled()) {
     const std::optional<std::string_view> serial_number =
         system::StatisticsProvider::GetInstance()->GetMachineID();
@@ -2404,19 +2414,12 @@ void CrosNetworkConfig::BindReceiver(
 
 void CrosNetworkConfig::AddObserver(
     mojo::PendingRemote<mojom::CrosNetworkConfigObserver> observer) {
-  if (!network_state_handler_observer_.IsObserving()) {
-    network_state_handler_observer_.Observe(network_state_handler_.get());
-  }
   if (network_certificate_handler_ &&
       !network_certificate_handler_->HasObserver(this)) {
     network_certificate_handler_->AddObserver(this);
   }
   if (cellular_inhibitor_ && !cellular_inhibitor_->HasObserver(this))
     cellular_inhibitor_->AddObserver(this);
-  if (network_configuration_handler_ &&
-      !network_configuration_handler_->HasObserver(this)) {
-    network_configuration_handler_->AddObserver(this);
-  }
   observers_.Add(std::move(observer));
 }
 

@@ -639,6 +639,11 @@ void EmbeddedTestServer::StartAcceptingConnections() {
 bool EmbeddedTestServer::ShutdownAndWaitUntilComplete() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
+  if (!io_thread_) {
+    // Can't stop a server that never started.
+    return true;
+  }
+
   // Ensure that the AIA HTTP server is no longer Started().
   bool aia_http_server_not_started = true;
   if (aia_http_server_ && aia_http_server_->Started()) {

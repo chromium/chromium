@@ -81,4 +81,9 @@ std::ostream& operator<<(std::ostream& stream, const KioskAppId& id) {
   return stream << "}";
 }
 
+bool operator==(const KioskAppId& first, const KioskAppId& second) {
+  return (first.type == second.type) && (first.app_id == second.app_id) &&
+         (first.account_id == second.account_id);
+}
+
 }  // namespace ash

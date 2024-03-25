@@ -41,6 +41,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
 #include "chrome/browser/apps/platform_apps/platform_app_launch.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -1029,18 +1030,33 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   if (chrome::IsRunningInForcedAppMode()) {
     Profile* profile = profile_info.profile;
 
-    if (auto app_id = GetAppId(command_line, profile); app_id.has_value()) {
-      // Skip browser launch since app mode launches its app window.
-      silent_launch = true;
+    // Skip browser launch since app mode launches its app window.
+    silent_launch = true;
 
-      ash::LaunchAppOrDie(profile, app_id.value());
+    if (auto app_id = GetAppId(command_line, profile); app_id.has_value()) {
+      if (ash::BrowserDataMigratorImpl::IsFirstLaunchAfterMigration(
+              g_browser_process->local_state())) {
+        // After a lacros migration the kiosk app should not go through the
+        // crash recovery flow but instead use the full launch process, since
+        // the crash recovery flow does not wait for the force installed
+        // extensions to be installed.
+        // Force the full launch by going back to the login screen and remember
+        // the app to be launched in the local state.
+        LOG(INFO) << "Forcing the kiosk user to log out since it's the first "
+                     "launch after a migration";
+        ash::SetOneTimeAutoLaunchKioskAppId(*g_browser_process->local_state(),
+                                            app_id.value());
+        chrome::AttemptUserExit();
+        return false;
+      } else {
+        ash::LaunchAppOrDie(profile, app_id.value());
+      }
     } else {
       // If we are here, we are either in ARC kiosk session or the user is
       // invalid. We should terminate the session in such cases.
       chrome::AttemptUserExit();
       return false;
     }
-
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

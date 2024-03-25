@@ -19,12 +19,14 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -32,6 +34,7 @@
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/browser_process.h"
@@ -67,17 +70,30 @@ namespace ash {
 
 namespace {
 
-// Starts kiosk app auto launch and shows the splash screen.
-void StartKioskSession() {
+// Starts kiosk app launch and shows the splash screen.
+void StartKioskSession(KioskAppId app, bool is_auto_launch = false) {
   // Kiosk app launcher starts with login state.
-  session_manager::SessionManager::Get()->SetSessionState(
-      session_manager::SessionState::LOGIN_PRIMARY);
+  CHECK_DEREF(session_manager::SessionManager::Get())
+      .SetSessionState(session_manager::SessionState::LOGIN_PRIMARY);
 
-  ShowLoginWizard(AppLaunchSplashScreenView::kScreenId);
+  CHECK_DEREF(input_method::InputMethodManager::Get())
+      .GetActiveIMEState()
+      ->SetInputMethodLoginDefault();
+
+  // Manages its own lifetime. See ShutdownDisplayHost().
+  auto* display_host = new LoginDisplayHostWebUI();
+  display_host->StartKiosk(app, is_auto_launch);
 
   // Login screen is skipped but 'login-prompt-visible' signal is still needed.
   VLOG(1) << "Kiosk app auto launch >> login-prompt-visible";
   SessionManagerClient::Get()->EmitLoginPromptVisible();
+}
+
+void StartAutoLaunchKioskSession() {
+  auto app = KioskController::Get().GetAutoLaunchApp();
+  CHECK(app.has_value());
+
+  StartKioskSession(app.value().id(), /*is_auto_launch=*/true);
 }
 
 // Starts the login/oobe screen.
@@ -370,9 +386,13 @@ void ChromeSessionManager::Initialize(
 
   KioskCryptohomeRemover::RemoveObsoleteCryptohomes();
 
-  if (ShouldAutoLaunchKioskApp(parsed_command_line, local_state)) {
+  if (ShouldOneTimeAutoLaunchKioskApp(parsed_command_line, local_state)) {
+    VLOG(1) << "One time auto launching kiosk app";
+    KioskAppId app_id = ExtractOneTimeAutoLaunchKioskAppId(local_state);
+    StartKioskSession(app_id);
+  } else if (ShouldAutoLaunchKioskApp(parsed_command_line, local_state)) {
     VLOG(1) << "Starting Chrome with kiosk auto launch.";
-    StartKioskSession();
+    StartAutoLaunchKioskSession();
   } else if (parsed_command_line.HasSwitch(switches::kLoginManager)) {
     oobe_configuration_->CheckConfiguration();
     if (is_running_test && !force_login_screen_in_test) {

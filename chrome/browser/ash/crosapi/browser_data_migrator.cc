@@ -79,8 +79,9 @@ bool BrowserDataMigratorImpl::MaybeForceResumeMoveMigration(
     const AccountId& account_id,
     const std::string& user_id_hash,
     crosapi::browser_util::PolicyInitState policy_init_state) {
-  if (!MoveMigrator::ResumeRequired(local_state, user_id_hash))
+  if (!MoveMigrator::ResumeRequired(local_state, user_id_hash)) {
     return false;
+  }
 
   LOG(WARNING) << "Calling RestartToMigrate() to resume move migration.";
   return RestartToMigrate(account_id, user_id_hash, local_state,
@@ -206,8 +207,9 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
   const std::string force_migration_switch =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kForceBrowserDataMigrationForTesting);
-  if (force_migration_switch == kBrowserDataMigrationForceSkip)
+  if (force_migration_switch == kBrowserDataMigrationForceSkip) {
     return false;
+  }
   if (force_migration_switch == kBrowserDataMigrationForceMigration) {
     LOG(WARNING) << "`kBrowserDataMigrationForceMigration` switch is present.";
     return true;
@@ -216,8 +218,9 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
   // Check if user exists i.e. not a guest session.
-  if (!user)
+  if (!user) {
     return false;
+  }
 
   // Migration should not run for secondary users.
   const auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
@@ -459,8 +462,20 @@ void BrowserDataMigratorImpl::ClearMigrationStep(PrefService* local_state) {
 }
 
 // static
+bool BrowserDataMigratorImpl::IsFirstLaunchAfterMigration(
+    const PrefService* local_state) {
+  return GetMigrationStep(local_state) == MigrationStep::kEnded;
+}
+
+// static
+void BrowserDataMigratorImpl::SetFirstLaunchAfterMigrationForTesting(
+    PrefService* local_state) {
+  SetMigrationStep(local_state, MigrationStep::kEnded);
+}
+
+// static
 BrowserDataMigratorImpl::MigrationStep
-BrowserDataMigratorImpl::GetMigrationStep(PrefService* local_state) {
+BrowserDataMigratorImpl::GetMigrationStep(const PrefService* local_state) {
   return static_cast<MigrationStep>(local_state->GetInteger(kMigrationStep));
 }
 

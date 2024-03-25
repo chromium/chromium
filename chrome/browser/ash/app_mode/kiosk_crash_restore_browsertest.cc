@@ -10,8 +10,11 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
@@ -20,6 +23,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -37,6 +41,24 @@ namespace {
 PrefService& local_state() {
   return CHECK_DEREF(g_browser_process->local_state());
 }
+
+// Allows waiting for the Chrome session to be terminated.
+// Starts checking for session termination as soon as the instance is created.
+class SessionTerminationWaiter {
+ public:
+  SessionTerminationWaiter() = default;
+  SessionTerminationWaiter(const SessionTerminationWaiter&) = delete;
+  SessionTerminationWaiter& operator=(const SessionTerminationWaiter&) = delete;
+  ~SessionTerminationWaiter() = default;
+
+  bool Wait() { return terminate_waiter_.Wait(); }
+
+ private:
+  base::test::TestFuture<void> terminate_waiter_;
+  base::CallbackListSubscription subscription =
+      browser_shutdown::AddAppTerminatingCallback(
+          terminate_waiter_.GetCallback());
+};
 
 }  // namespace
 
@@ -117,6 +139,7 @@ class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
 };
 
 class ChromeKioskCrashRestoreTest : public KioskCrashRestoreTest {
+ public:
   const std::string GetTestAppUserId() const override {
     return policy::GenerateDeviceLocalAccountUserId(
         KioskAppsMixin::kEnterpriseKioskAccountId,
@@ -134,6 +157,7 @@ IN_PROC_BROWSER_TEST_F(ChromeKioskCrashRestoreTest,
 }
 
 class WebKioskCrashRestoreTest : public KioskCrashRestoreTest {
+ public:
   const std::string GetTestAppUserId() const override {
     return policy::GenerateDeviceLocalAccountUserId(
         KioskAppsMixin::kEnterpriseWebKioskAccountId,
@@ -146,6 +170,53 @@ IN_PROC_BROWSER_TEST_F(WebKioskCrashRestoreTest, ShouldRelaunchCrashedWebApp) {
   KioskSessionInitializedWaiter().Wait();
   // Check there was no launch error.
   EXPECT_EQ(KioskAppLaunchError::Error::kNone, KioskAppLaunchError::Get());
+}
+
+class KioskWebAppAfterMigration : public WebKioskCrashRestoreTest {
+ public:
+  void SetUpLocalState() override {
+    WebKioskCrashRestoreTest::SetUpLocalState();
+    BrowserDataMigratorImpl::SetFirstLaunchAfterMigrationForTesting(
+        &local_state());
+  }
+
+  AccountId GetTestAppAccountId() {
+    return AccountId::FromUserEmail(GetTestAppUserId());
+  }
+
+  SessionTerminationWaiter session_termination_waiter_;
+};
+
+IN_PROC_BROWSER_TEST_F(KioskWebAppAfterMigration,
+                       ShouldStoreAppIdAndTerminateSession) {
+  EXPECT_EQ(GetOneTimeAutoLaunchKioskAppId(local_state()),
+            KioskAppId::ForWebApp(GetTestAppAccountId()));
+
+  EXPECT_TRUE(session_termination_waiter_.Wait());
+}
+
+class ChromeKioskAfterMigration : public ChromeKioskCrashRestoreTest {
+ public:
+  void SetUpLocalState() override {
+    ChromeKioskCrashRestoreTest ::SetUpLocalState();
+    BrowserDataMigratorImpl::SetFirstLaunchAfterMigrationForTesting(
+        &local_state());
+  }
+
+  AccountId GetTestAppAccountId() {
+    return AccountId::FromUserEmail(GetTestAppUserId());
+  }
+
+  SessionTerminationWaiter session_termination_waiter_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeKioskAfterMigration,
+                       ShouldStoreAppIdAndTerminateSession) {
+  EXPECT_EQ(GetOneTimeAutoLaunchKioskAppId(local_state()),
+            KioskAppId::ForChromeApp(KioskAppsMixin::kKioskAppId,
+                                     GetTestAppAccountId()));
+
+  EXPECT_TRUE(session_termination_waiter_.Wait());
 }
 
 }  // namespace ash

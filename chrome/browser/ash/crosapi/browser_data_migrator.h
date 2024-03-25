@@ -177,6 +177,14 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // Clears the value of `kMigrationStep` in Local State.
   static void ClearMigrationStep(PrefService* local_state);
 
+  // Returns true IFF this is the first launch after a migration attempt.
+  // This does not guarantee the migration was successful.
+  static bool IsFirstLaunchAfterMigration(const PrefService* local_state);
+
+  // Sets the `kMigrationStep` value in the given `local_state` in such a way
+  // that `IsFirstLaunchAfterMigration()` will evaluate to `true`.
+  static void SetFirstLaunchAfterMigrationForTesting(PrefService* local_state);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, Migrate);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, MigrateCancelled);
@@ -208,7 +216,7 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   static void SetMigrationStep(PrefService* local_state, MigrationStep step);
 
   // Gets the value of `kMigrationStep` in Local State.
-  static MigrationStep GetMigrationStep(PrefService* local_state);
+  static MigrationStep GetMigrationStep(const PrefService* local_state);
 
   // Called from `MaybeRestartToMigrate()` to proceed with restarting to start
   // the migration. It returns true if D-Bus call was successful.
