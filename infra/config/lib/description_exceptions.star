@@ -393,7 +393,6 @@ exempted_from_description_builders = {
         "linux-arm64-rel-cft",
         "linux-ash-chromium-generator-rel",
         "linux-bfcache-rel",
-        "linux-blink-animation-use-time-delta",
         "linux-blink-heap-verification",
         "linux-blink-web-tests-force-accessibility-rel",
         "linux-blink-wpt-reset-rel",

@@ -9367,26 +9367,6 @@
           }
         ]
       },
-      "linux-blink-animation-use-time-delta": {
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "linux-blink-heap-verification": {
         "problem_specs": [
           {

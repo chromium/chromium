@@ -293,7 +293,6 @@
     "ios18-beta-simulator": "ci/ios18-beta-simulator/gn-args.json",
     "ios18-sdk-simulator": "ci/ios18-sdk-simulator/gn-args.json",
     "linux-annotator-rel": "ci/linux-annotator-rel/gn-args.json",
-    "linux-blink-animation-use-time-delta": "ci/linux-blink-animation-use-time-delta/gn-args.json",
     "linux-blink-heap-verification": "ci/linux-blink-heap-verification/gn-args.json",
     "linux-blink-wpt-reset-rel": "ci/linux-blink-wpt-reset-rel/gn-args.json",
     "linux-chromeos-annotator-rel": "ci/linux-chromeos-annotator-rel/gn-args.json",

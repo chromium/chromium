@@ -405,7 +405,6 @@ _exempted_from_contact_builders = {
         "linux-annotator-rel",
         "linux-ash-chromium-generator-rel",
         "linux-bfcache-rel",
-        "linux-blink-animation-use-time-delta",
         "linux-blink-heap-verification",
         "linux-blink-web-tests-force-accessibility-rel",
         "linux-blink-wpt-reset-rel",
