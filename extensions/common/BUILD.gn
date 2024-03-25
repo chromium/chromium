@@ -103,6 +103,7 @@ mojom("mojom") {
     "//extensions/common/api:mojom",
     "//mojo/public/mojom/base",
     "//services/accessibility/public/mojom:automation",
+    "//third_party/blink/public/mojom:mojom_core",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
@@ -202,7 +203,10 @@ mojom("mojom") {
           [ "//extensions/common/mojom/message_port_mojom_traits.cc" ]
     },
   ]
-  overridden_deps = [ "//content/public/common:interfaces" ]
+  overridden_deps = [
+    "//content/public/common:interfaces",
+    "//third_party/blink/public/mojom:mojom_core",
+  ]
 
   component_deps = [ "//content/public/common" ]
 }

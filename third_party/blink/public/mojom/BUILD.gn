@@ -1334,6 +1334,7 @@ mojom("mojom_core") {
     "frame/viewport_intersection_state.mojom",
     "page/browsing_context_group_info.mojom",
     "page/display_cutout.mojom",
+    "page/draggable_region.mojom",
     "page/page.mojom",
     "page/page_visibility_state.mojom",
     "page/widget.mojom",

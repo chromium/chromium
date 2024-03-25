@@ -5,6 +5,7 @@
 #include "extensions/shell/browser/shell_native_app_window.h"
 
 #include "extensions/shell/browser/desktop_controller.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
@@ -123,7 +124,7 @@ void ShellNativeAppWindow::UpdateWindowTitle() {
 }
 
 void ShellNativeAppWindow::UpdateDraggableRegions(
-    const std::vector<mojom::DraggableRegionPtr>& regions) {
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions) {
   NOTIMPLEMENTED();
 }
 

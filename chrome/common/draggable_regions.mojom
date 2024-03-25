@@ -4,12 +4,7 @@
 
 module chrome.mojom;
 
-import "ui/gfx/geometry/mojom/geometry.mojom";
-
-struct DraggableRegion {
-  gfx.mojom.Rect bounds;
-  bool draggable = false;
-};
+import "third_party/blink/public/mojom/page/draggable_region.mojom";
 
 // Messages sent from a local main frame in the renderer to browser about
 // draggable reggions and their size in the client area. This information
@@ -17,5 +12,5 @@ struct DraggableRegion {
 // can be enabled.
 interface DraggableRegions {
   // Notify the browser that the draggable regions have been updated.
-  UpdateDraggableRegions(array<DraggableRegion> draggable_region);
+  UpdateDraggableRegions(array<blink.mojom.DraggableRegion> draggable_region);
 };

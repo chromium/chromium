@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 
 namespace extensions {
 
@@ -54,7 +55,7 @@ class ShellNativeAppWindow : public NativeAppWindow {
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
   void UpdateDraggableRegions(
-      const std::vector<mojom::DraggableRegionPtr>& regions) override;
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions) override;
   SkRegion* GetDraggableRegion() override;
   void UpdateShape(std::unique_ptr<ShapeRects> rects) override;
   bool HandleKeyboardEvent(

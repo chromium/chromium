@@ -13,6 +13,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/mojom/app_window.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/webview/webview.h"
@@ -321,7 +322,7 @@ void NativeAppWindowViews::UpdateWindowTitle() {
 }
 
 void NativeAppWindowViews::UpdateDraggableRegions(
-    const std::vector<extensions::mojom::DraggableRegionPtr>& regions) {
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions) {
   // Draggable region is not supported for non-frameless window.
   if (!frameless_)
     return;

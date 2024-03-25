@@ -11,6 +11,7 @@
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 
 namespace content {
 class WebContents;
@@ -65,7 +66,7 @@ class ExtensionFrameHost : public mojom::LocalFrameHost {
   void IncrementLazyKeepaliveCount() override;
   void DecrementLazyKeepaliveCount() override;
   void UpdateDraggableRegions(
-      std::vector<mojom::DraggableRegionPtr> regions) override;
+      std::vector<blink::mojom::DraggableRegionPtr> regions) override;
   void AppWindowReady() override;
   void OpenChannelToExtension(
       extensions::mojom::ExternalConnectionInfoPtr info,

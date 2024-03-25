@@ -801,6 +801,7 @@ mojom("mojo_bindings") {
     "//components/no_state_prefetch/common:mojo_bindings",
     "//content/public/common:interfaces",
     "//mojo/public/mojom/base",
+    "//third_party/blink/public/mojom:mojom_core",
     "//third_party/blink/public/mojom:mojom_platform",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/image/mojom",
@@ -821,6 +822,7 @@ mojom("mojo_bindings") {
 
   overridden_deps = [
     "//content/public/common:interfaces",
+    "//third_party/blink/public/mojom:mojom_core",
     "//third_party/blink/public/mojom:mojom_platform",
   ]
 

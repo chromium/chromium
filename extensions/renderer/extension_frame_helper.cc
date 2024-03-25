@@ -27,6 +27,7 @@
 #include "extensions/renderer/script_context_set.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -574,13 +575,13 @@ void ExtensionFrameHelper::DraggableRegionsChanged() {
 
   blink::WebVector<blink::WebDraggableRegion> webregions =
       render_frame()->GetWebFrame()->GetDocument().DraggableRegions();
-  std::vector<mojom::DraggableRegionPtr> regions;
+  std::vector<blink::mojom::DraggableRegionPtr> regions;
   regions.reserve(webregions.size());
   for (blink::WebDraggableRegion& webregion : webregions) {
     render_frame()->ConvertViewportToWindow(&webregion.bounds);
 
-    regions.push_back(
-        mojom::DraggableRegion::New(webregion.draggable, webregion.bounds));
+    regions.push_back(blink::mojom::DraggableRegion::New(webregion.bounds,
+                                                         webregion.draggable));
   }
   GetLocalFrameHost()->UpdateDraggableRegions(std::move(regions));
 }

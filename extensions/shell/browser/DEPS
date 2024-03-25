@@ -36,6 +36,8 @@ include_rules = [
   "+services/network/public/mojom/url_loader.mojom.h",
   "+storage/browser/quota",
   "+third_party/skia/include",
+  "+third_party/blink/public/mojom/page/draggable_region.mojom-forward.h",
+  "+third_party/blink/public/mojom/page/draggable_region.mojom.h",
 
   # Additional UI dependencies for app_shell.
   "+ui/aura",

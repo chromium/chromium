@@ -19,6 +19,7 @@ import "mojo/public/mojom/base/values.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
+import "third_party/blink/public/mojom/page/draggable_region.mojom";
 
 // Allows an extension to execute code in a tab.
 struct ExecuteCodeParams {
@@ -71,13 +72,6 @@ struct RequestParams {
   // worker version id. Otherwise, this is set to
   // blink::mojom::kInvalidServiceWorkerVersionId.
   int64 service_worker_version_id;
-};
-
-// Region articulated from the renderer to the browser that is a draggable
-// hotspot.
-struct DraggableRegion{
-  bool draggable;
-  gfx.mojom.Rect bounds;
 };
 
 // Implemented in the renderer, this interface defines the local frame specific
@@ -200,7 +194,7 @@ interface LocalFrameHost {
   DecrementLazyKeepaliveCount();
 
   // Sent by the renderer when the draggable regions are updated.
-  UpdateDraggableRegions(array<DraggableRegion> regions);
+  UpdateDraggableRegions(array<blink.mojom.DraggableRegion> regions);
 
   // Notify the browser that an app window is ready and can resume resource
   // requests.

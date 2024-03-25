@@ -50,6 +50,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "ipc/ipc_message_macros.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/display/display.h"
@@ -584,7 +585,7 @@ void AppWindow::UpdateShape(std::unique_ptr<ShapeRects> rects) {
 }
 
 void AppWindow::UpdateDraggableRegions(
-    const std::vector<mojom::DraggableRegionPtr>& regions) {
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions) {
   native_app_window_->UpdateDraggableRegions(regions);
 
   if (on_update_draggable_regions_callback_for_testing_) {
@@ -1057,7 +1058,7 @@ AppWindow::CreateParams AppWindow::LoadDefaults(CreateParams params) const {
 
 // static
 SkRegion* AppWindow::RawDraggableRegionsToSkRegion(
-    const std::vector<mojom::DraggableRegionPtr>& regions) {
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions) {
   SkRegion* sk_region = new SkRegion;
   for (const auto& region : regions) {
     sk_region->op(

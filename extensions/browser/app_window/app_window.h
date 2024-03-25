@@ -23,6 +23,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/frame.mojom-forward.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "ui/base/ui_base_types.h"  // WindowShowState
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
@@ -216,7 +217,7 @@ class AppWindow : public content::WebContentsDelegate,
   // Convert draggable regions in raw format to SkRegion format. Caller is
   // responsible for deleting the returned SkRegion instance.
   static SkRegion* RawDraggableRegionsToSkRegion(
-      const std::vector<mojom::DraggableRegionPtr>& regions);
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions);
 
   // The constructor and Init methods are public for constructing a AppWindow
   // with a non-standard render interface (e.g.
@@ -290,7 +291,7 @@ class AppWindow : public content::WebContentsDelegate,
 
   // Called from the render interface to modify the draggable regions.
   void UpdateDraggableRegions(
-      const std::vector<mojom::DraggableRegionPtr>& regions);
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions);
 
   // Notify hat an app window is ready and can resume resource requests.
   void AppWindowReady();

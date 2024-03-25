@@ -20,6 +20,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/message_port.mojom.h"
 #include "extensions/common/trace_util.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 
 using perfetto::protos::pbzero::ChromeTrackEvent;
 
@@ -123,7 +124,7 @@ const Extension* ExtensionFrameHost::GetExtension(
 }
 
 void ExtensionFrameHost::UpdateDraggableRegions(
-    std::vector<mojom::DraggableRegionPtr> regions) {
+    std::vector<blink::mojom::DraggableRegionPtr> regions) {
   content::RenderFrameHost* render_frame_host =
       receivers_.GetCurrentTargetFrame();
 
