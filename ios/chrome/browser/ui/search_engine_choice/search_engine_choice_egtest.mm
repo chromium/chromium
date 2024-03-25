@@ -77,7 +77,8 @@
 // Tests that the Search Engine Choice screen is displayed, that the primary
 // button is correctly updated when the user selects a search engine then
 // scrolls down and that it correctly sets the default search engine.
-- (void)testSearchEngineChoiceScreenSelectThenScroll {
+// TODO(crbug.com/329210226): Re-enable the test.
+- (void)FLAKY_testSearchEngineChoiceScreenSelectThenScroll {
   // Checks that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
   id<GREYMatcher> moreButtonMatcher =
@@ -115,7 +116,8 @@
 // Tests that the Search Engine Choice screen is displayed, that the
 // primary button is correctly updated when the user scrolls down then selects a
 // search engine and that it correctly sets the default search engine.
-- (void)testSearchEngineChoiceScreenScrollThenSelect {
+// TODO(crbug.com/329210226): Re-enable the test.
+- (void)FLAKY_testSearchEngineChoiceScreenScrollThenSelect {
   // Checks that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
   id<GREYMatcher> moreButtonMatcher =
