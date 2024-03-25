@@ -231,11 +231,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Propagates the minimum size and maximum size to the ShellToplevel.
   void SetSizeConstraints();
 
-  // If current state is not PlatformWindowState::kNormal, stores the current
-  // size into restored_bounds_dip_ so that they can be restored when the
-  // window gets back to normal state.  Otherwise, resets the restored bounds.
-  void SetOrResetRestoredBounds();
-
   // Initializes additional shell integration, if the appropriate interfaces are
   // available.
   void SetUpShellIntegration();

@@ -644,10 +644,17 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   pending_configure_state_.size_px =
       delegate()->ConvertRectToPixels(bounds_dip).size();
 
-  // Store the restored bounds if current state differs from the normal state.
-  // It can be client or compositor side change from normal to something else.
-  // Thus, we must store previous bounds to restore later.
-  SetOrResetRestoredBounds();
+  // Update `restored_bounds_dip_` which is used when the window gets back to
+  // normal state after it went maximized or fullscreen. It can be client or
+  // compositor side change, so we must store previous bounds to restore later.
+  // We reset `restored_bounds_dip_` if the window is normal, snapped or floated
+  // state, or update it to the applied bounds if we don't have any meaningful
+  // value stored.
+  if (ShouldSetBounds(state_)) {
+    SetRestoredBoundsInDIP({});
+  } else if (GetRestoredBoundsInDIP().IsEmpty()) {
+    SetRestoredBoundsInDIP(GetBoundsInDIP());
+  }
 
   if (old_state != state_ && !skip_window_state_changed_notification) {
     previous_state_ = old_state;
@@ -1219,19 +1226,6 @@ void WaylandToplevelWindow::SetSizeConstraints() {
   shell_toplevel_->SetCanFullscreen(delegate()->CanFullscreen());
 
   connection()->Flush();
-}
-
-void WaylandToplevelWindow::SetOrResetRestoredBounds() {
-  // The |restored_size_in_dp_| are used when the window gets back to normal
-  // state after it went maximized or fullscreen.  So we reset these if the
-  // window has just become normal and store the current bounds if it is
-  // either going out of normal state or simply changes the state and we don't
-  // have any meaningful value stored.
-  if (ShouldSetBounds(GetPlatformWindowState())) {
-    SetRestoredBoundsInDIP({});
-  } else if (GetRestoredBoundsInDIP().IsEmpty()) {
-    SetRestoredBoundsInDIP(GetBoundsInDIP());
-  }
 }
 
 void WaylandToplevelWindow::SetUpShellIntegration() {
