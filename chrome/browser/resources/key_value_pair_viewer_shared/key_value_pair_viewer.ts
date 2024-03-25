@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import './key_value_pair_entry.js';
-import '.././strings.m.js';
 
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

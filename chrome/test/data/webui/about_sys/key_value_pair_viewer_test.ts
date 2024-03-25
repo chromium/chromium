@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://system/shared/key_value_pair_viewer.js';
+import 'chrome://system/shared/key_value_pair_viewer/key_value_pair_viewer.js';
+import 'chrome://system/strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {COLLAPSE_THRESHOLD} from 'chrome://system/shared/key_value_pair_entry.js';
-import type {KeyValuePairEntry, KeyValuePairEntryElement} from 'chrome://system/shared/key_value_pair_entry.js';
-import type {KeyValuePairViewerElement} from 'chrome://system/shared/key_value_pair_viewer.js';
+import {COLLAPSE_THRESHOLD} from 'chrome://system/shared/key_value_pair_viewer/key_value_pair_entry.js';
+import type {KeyValuePairEntry, KeyValuePairEntryElement} from 'chrome://system/shared/key_value_pair_viewer/key_value_pair_entry.js';
+import type {KeyValuePairViewerElement} from 'chrome://system/shared/key_value_pair_viewer/key_value_pair_viewer.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';

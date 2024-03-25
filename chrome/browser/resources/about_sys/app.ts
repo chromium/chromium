@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shared/key_value_pair_viewer.js';
+import '/shared/key_value_pair_viewer/key_value_pair_viewer.js';
 import './strings.m.js';
 
+import type {KeyValuePairEntry} from '/shared/key_value_pair_viewer/key_value_pair_entry.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 import type {SystemLog} from './browser_proxy.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
-import type {KeyValuePairEntry} from './shared/key_value_pair_entry.js';
 
 export interface SystemAppElement {
   $: {

@@ -162,6 +162,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/history_resources.pak",
         "$root_gen_dir/chrome/identity_internals_resources.pak",
         "$root_gen_dir/chrome/inline_login_resources.pak",
+        "$root_gen_dir/chrome/key_value_pair_viewer_shared_resources.pak",
         "$root_gen_dir/chrome/lens_untrusted_resources.pak",
         "$root_gen_dir/chrome/management_resources.pak",
         "$root_gen_dir/chrome/new_tab_page_instant_resources.pak",
