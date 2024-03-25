@@ -3020,6 +3020,15 @@
       'mac13-arm64-rel-tests',
     ],
   },
+  'gwp_asan_unittests': {
+    'modifications': {
+      'android-mte-arm64-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.gwp_asan_unittests.filter',
+        ],
+      },
+    },
+  },
   'hardware_accelerated_feature_tests': {
     'remove_from': [
       # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
