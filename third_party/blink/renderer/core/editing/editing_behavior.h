@@ -47,8 +47,7 @@ class CORE_EXPORT EditingBehavior {
   bool ShouldMoveCaretToHorizontalBoundaryWhenPastTopOrBottom() const {
     return type_ != mojom::blink::EditingBehavior::kEditingWindowsBehavior &&
            type_ != mojom::blink::EditingBehavior::kEditingAndroidBehavior &&
-           !(type_ == mojom::blink::EditingBehavior::kEditingChromeOSBehavior &&
-             RuntimeEnabledFeatures::TouchTextEditingRedesignEnabled());
+           type_ != mojom::blink::EditingBehavior::kEditingChromeOSBehavior;
   }
 
   bool ShouldSelectReplacement() const {
@@ -125,8 +124,7 @@ class CORE_EXPORT EditingBehavior {
   // On ChromeOS, tapping the caret should toggle showing/hiding the touch
   // selection quick menu.
   bool ShouldToggleMenuWhenCaretTapped() const {
-    return type_ == mojom::blink::EditingBehavior::kEditingChromeOSBehavior &&
-           RuntimeEnabledFeatures::TouchTextEditingRedesignEnabled();
+    return type_ == mojom::blink::EditingBehavior::kEditingChromeOSBehavior;
   }
 
   // Support for global selections, used on platforms like the X Window

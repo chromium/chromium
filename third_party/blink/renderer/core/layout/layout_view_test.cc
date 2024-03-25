@@ -160,11 +160,13 @@ class LayoutViewHitTestTest : public testing::WithParamInterface<HitTestConfig>,
       : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 
  protected:
-  bool IsAndroidOrWindowsEditingBehavior() {
+  bool IsAndroidOrWindowsOrChromeOSEditingBehavior() {
     return GetParam().editing_behavior ==
                mojom::EditingBehavior::kEditingAndroidBehavior ||
            GetParam().editing_behavior ==
-               mojom::EditingBehavior::kEditingWindowsBehavior;
+               mojom::EditingBehavior::kEditingWindowsBehavior ||
+           GetParam().editing_behavior ==
+               mojom::EditingBehavior::kEditingChromeOSBehavior;
   }
 
   void SetUp() override {
@@ -220,7 +222,7 @@ TEST_P(LayoutViewHitTestTest, BlockInInlineBelowBottom) {
   EXPECT_EQ(cd_2, HitTest(25, 20));
 
   // hit test below line 2
-  if (IsAndroidOrWindowsEditingBehavior()) {
+  if (IsAndroidOrWindowsOrChromeOSEditingBehavior()) {
     EXPECT_EQ(cd_0, HitTest(0, 50));
     EXPECT_EQ(cd_0, HitTest(5, 50));
     EXPECT_EQ(cd_1, HitTest(10, 50));
@@ -257,7 +259,7 @@ TEST_P(LayoutViewHitTestTest, BlockInInlineWithListItem) {
   //      LayoutInline {SPAN}
   EXPECT_EQ(PositionWithAffinity(Position(span, 0)), HitTest(0, 5));
   EXPECT_EQ(PositionWithAffinity(Position(span, 0)), HitTest(0, 10));
-  if (IsAndroidOrWindowsEditingBehavior()) {
+  if (IsAndroidOrWindowsOrChromeOSEditingBehavior()) {
     EXPECT_EQ(PositionWithAffinity(Position(abc, 1)), HitTest(10, 5));
     EXPECT_EQ(PositionWithAffinity(Position(abc, 1)), HitTest(10, 10));
     EXPECT_EQ(PositionWithAffinity(Position(abc, 3), TextAffinity::kUpstream),
@@ -682,7 +684,7 @@ TEST_P(LayoutViewHitTestTest, HitTestHorizontal) {
   EXPECT_EQ(GetDocument().documentElement(), result.InnerNode());
   EXPECT_EQ(PhysicalOffset(51, 181), result.LocalPoint());
   EXPECT_EQ(
-      IsAndroidOrWindowsEditingBehavior()
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
           ? PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream)
           : PositionWithAffinity(Position(text2, 3), TextAffinity::kDownstream),
       result.GetPosition());
@@ -693,7 +695,7 @@ TEST_P(LayoutViewHitTestTest, HitTestHorizontal) {
   EXPECT_EQ(div, result.InnerNode());
   EXPECT_EQ(PhysicalOffset(1, 79), result.LocalPoint());
   EXPECT_EQ(
-      IsAndroidOrWindowsEditingBehavior()
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
           ? PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream)
           : PositionWithAffinity(Position(text2, 3), TextAffinity::kDownstream),
       result.GetPosition());
@@ -704,7 +706,7 @@ TEST_P(LayoutViewHitTestTest, HitTestHorizontal) {
   EXPECT_EQ(div, result.InnerNode());
   EXPECT_EQ(PhysicalOffset(1, 11), result.LocalPoint());
   EXPECT_EQ(
-      IsAndroidOrWindowsEditingBehavior()
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
           ? PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream)
           : PositionWithAffinity(Position(text2, 3), TextAffinity::kDownstream),
       result.GetPosition());
@@ -768,7 +770,7 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalLR) {
   EXPECT_EQ(GetDocument().documentElement(), result.InnerNode());
   EXPECT_EQ(PhysicalOffset(251, 101), result.LocalPoint());
   EXPECT_EQ(
-      IsAndroidOrWindowsEditingBehavior()
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
           ? PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream)
           : PositionWithAffinity(Position(text2, 3), TextAffinity::kDownstream),
       result.GetPosition());
@@ -779,7 +781,7 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalLR) {
   EXPECT_EQ(div, result.InnerNode());
   EXPECT_EQ(PhysicalOffset(199, 1), result.LocalPoint());
   EXPECT_EQ(
-      IsAndroidOrWindowsEditingBehavior()
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
           ? PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream)
           : PositionWithAffinity(Position(text2, 3), TextAffinity::kDownstream),
       result.GetPosition());
@@ -798,7 +800,7 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalLR) {
   EXPECT_EQ(div, result.InnerNode());
   EXPECT_EQ(PhysicalOffset(11, 1), result.LocalPoint());
   EXPECT_EQ(
-      IsAndroidOrWindowsEditingBehavior()
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
           ? PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream)
           : PositionWithAffinity(Position(text2, 3), TextAffinity::kDownstream),
       result.GetPosition());
@@ -863,7 +865,7 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalRL) {
   EXPECT_EQ(GetDocument().body(), result.InnerNode());
   EXPECT_EQ(PhysicalOffset(1, 1), result.LocalPoint());
   EXPECT_EQ(
-      IsAndroidOrWindowsEditingBehavior()
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
           ? PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream)
           : PositionWithAffinity(Position(text2, 3), TextAffinity::kDownstream),
       result.GetPosition());
@@ -874,7 +876,7 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalRL) {
   EXPECT_EQ(div, result.InnerNode());
   EXPECT_EQ(PhysicalOffset(1, 1), result.LocalPoint());
   EXPECT_EQ(
-      IsAndroidOrWindowsEditingBehavior()
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
           ? PositionWithAffinity(Position(text1, 0), TextAffinity::kDownstream)
           : PositionWithAffinity(Position(text2, 3), TextAffinity::kDownstream),
       result.GetPosition());
@@ -918,7 +920,7 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalRL) {
   EXPECT_EQ(GetDocument().documentElement(), result.InnerNode());
   EXPECT_EQ(PhysicalOffset(51, 181), result.LocalPoint());
   EXPECT_EQ(
-      IsAndroidOrWindowsEditingBehavior()
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
           ? PositionWithAffinity(Position(text2, 3), TextAffinity::kUpstream)
           : PositionWithAffinity(Position(text2, 3), TextAffinity::kDownstream),
       result.GetPosition());
@@ -929,7 +931,7 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalRL) {
   EXPECT_EQ(div, result.InnerNode());
   EXPECT_EQ(PhysicalOffset(1, 79), result.LocalPoint());
   EXPECT_EQ(
-      IsAndroidOrWindowsEditingBehavior()
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
           ? PositionWithAffinity(Position(text2, 3), TextAffinity::kUpstream)
           : PositionWithAffinity(Position(text2, 3), TextAffinity::kDownstream),
       result.GetPosition());
@@ -985,7 +987,7 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalRLRoot) {
   EXPECT_EQ(GetDocument().documentElement(), result.InnerNode());
   EXPECT_EQ(PhysicalOffset(-599, 1), result.LocalPoint());
   EXPECT_EQ(
-      IsAndroidOrWindowsEditingBehavior()
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
           ? PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream)
           : PositionWithAffinity(Position(text, 5), TextAffinity::kDownstream),
       result.GetPosition());
@@ -996,7 +998,7 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalRLRoot) {
   EXPECT_EQ(div, result.InnerNode());
   EXPECT_EQ(PhysicalOffset(1, 1), result.LocalPoint());
   EXPECT_EQ(
-      IsAndroidOrWindowsEditingBehavior()
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
           ? PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream)
           : PositionWithAffinity(Position(text, 5), TextAffinity::kDownstream),
       result.GetPosition());
@@ -1007,7 +1009,7 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalRLRoot) {
   EXPECT_EQ(GetDocument().documentElement(), result.InnerNode());
   EXPECT_EQ(PhysicalOffset(201, 1), result.LocalPoint());
   EXPECT_EQ(
-      IsAndroidOrWindowsEditingBehavior()
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
           ? PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream)
           : PositionWithAffinity(Position(text, 0), TextAffinity::kDownstream),
       result.GetPosition());
@@ -1034,7 +1036,7 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalRLRoot) {
   EXPECT_EQ(GetDocument().documentElement(), result.InnerNode());
   EXPECT_EQ(PhysicalOffset(-1, 81), result.LocalPoint());
   EXPECT_EQ(
-      IsAndroidOrWindowsEditingBehavior()
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
           ? PositionWithAffinity(Position(text, 5), TextAffinity::kUpstream)
           : PositionWithAffinity(Position(text, 5), TextAffinity::kDownstream),
       result.GetPosition());
@@ -1049,12 +1051,14 @@ TEST_P(LayoutViewHitTestTest, PseudoElementAfterBlock) {
   SetBodyInnerHTML("<div><p id=target>ab</p></div>");
   const auto& text_ab = *To<Text>(GetElementById("target")->firstChild());
   // In legacy layout, this position comes from |LayoutBlock::PositionBox()|
-  // for mac/unix, or |LayoutObject::FindPosition()| on android/windows.
+  // for mac/unix, or |LayoutObject::FindPosition()| on
+  // android/windows/chromeos.
   const auto expected = PositionWithAffinity(
-      IsAndroidOrWindowsEditingBehavior() ? Position(text_ab, 2)
-                                          : Position(text_ab, 0),
-      IsAndroidOrWindowsEditingBehavior() ? TextAffinity::kUpstream
-                                          : TextAffinity::kDownstream);
+      IsAndroidOrWindowsOrChromeOSEditingBehavior() ? Position(text_ab, 2)
+                                                    : Position(text_ab, 0),
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
+          ? TextAffinity::kUpstream
+          : TextAffinity::kDownstream);
 
   EXPECT_EQ(expected, HitTest(20, 5)) << "after ab";
   EXPECT_EQ(expected, HitTest(25, 5)) << "at X";
@@ -1101,12 +1105,14 @@ TEST_P(LayoutViewHitTestTest, PseudoElementAfterBlockWithMargin) {
   SetBodyInnerHTML("<div><p id=target>ab</p></div>");
   const auto& text_ab = *To<Text>(GetElementById("target")->firstChild());
   // In legacy layout, this position comes from |LayoutBlock::PositionBox()|
-  // for mac/unix, or |LayoutObject::FindPosition()| on android/windows.
+  // for mac/unix, or |LayoutObject::FindPosition()| on
+  // android/windows/chromeos.
   const auto expected = PositionWithAffinity(
-      IsAndroidOrWindowsEditingBehavior() ? Position(text_ab, 2)
-                                          : Position(text_ab, 0),
-      IsAndroidOrWindowsEditingBehavior() ? TextAffinity::kUpstream
-                                          : TextAffinity::kDownstream);
+      IsAndroidOrWindowsOrChromeOSEditingBehavior() ? Position(text_ab, 2)
+                                                    : Position(text_ab, 0),
+      IsAndroidOrWindowsOrChromeOSEditingBehavior()
+          ? TextAffinity::kUpstream
+          : TextAffinity::kDownstream);
 
   EXPECT_EQ(expected, HitTest(20, 5)) << "after ab";
   EXPECT_EQ(expected, HitTest(25, 5)) << "at margin-left";
@@ -1179,7 +1185,7 @@ TEST_P(LayoutViewHitTestTest, ScrolledInlineChildren) {
 
   const auto& text = *To<Text>(sample.firstChild());
 
-  if (IsAndroidOrWindowsEditingBehavior()) {
+  if (IsAndroidOrWindowsOrChromeOSEditingBehavior()) {
     EXPECT_EQ(PositionWithAffinity(Position(text, 2)), HitTest(5, 5));
     EXPECT_EQ(PositionWithAffinity(Position(text, 2)), HitTest(5, 15));
     EXPECT_EQ(PositionWithAffinity(Position(text, 2)), HitTest(5, 25));
@@ -1296,7 +1302,7 @@ TEST_P(LayoutViewHitTestTest, TextAndInputsWithRtlDirection) {
                 HitTest(x, y));
     }
   }
-  if (IsAndroidOrWindowsEditingBehavior()) {
+  if (IsAndroidOrWindowsOrChromeOSEditingBehavior()) {
     for (int x : {0, 25, 50, 75, 99}) {
       EXPECT_EQ(PositionWithAffinity(Position::AfterNode(*input_2)),
                 HitTest(x, 100));
@@ -1357,7 +1363,7 @@ TEST_P(LayoutViewHitTestTest, TextCombineOneTextNode) {
       PositionWithAffinity(Position(text_01234, 5), TextAffinity::kUpstream),
       HitTest(100, 150));
   // TODO(yosin): should be text_01234@5
-  if (IsAndroidOrWindowsEditingBehavior()) {
+  if (IsAndroidOrWindowsOrChromeOSEditingBehavior()) {
     EXPECT_EQ(PositionWithAffinity(Position(text_b, 0)), HitTest(110, 150));
     EXPECT_EQ(PositionWithAffinity(Position(text_b, 0)), HitTest(120, 150));
   } else {
@@ -1411,7 +1417,7 @@ TEST_P(LayoutViewHitTestTest, TextCombineTwoTextNodes) {
   EXPECT_EQ(PositionWithAffinity(Position(text_34, 2), TextAffinity::kUpstream),
             HitTest(100, 150));
   // TODO(yosin): should be text_012@5
-  if (IsAndroidOrWindowsEditingBehavior()) {
+  if (IsAndroidOrWindowsOrChromeOSEditingBehavior()) {
     EXPECT_EQ(PositionWithAffinity(Position(text_b, 0)), HitTest(110, 150));
     EXPECT_EQ(PositionWithAffinity(Position(text_b, 0)), HitTest(120, 150));
   } else {
