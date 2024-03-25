@@ -101,14 +101,14 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
 
   const Entries& entries() const;
   std::vector<LiveTab*> RestoreMostRecentEntry(LiveTabContext* context);
-  void RemoveTabEntryById(SessionID id);
+  void RemoveEntryById(SessionID id);
   std::vector<LiveTab*> RestoreEntryById(LiveTabContext* context,
                                          SessionID id,
                                          WindowOpenDisposition disposition);
   bool IsRestoring() const;
 
-  // Notifies observers the tabs have changed.
-  void NotifyTabsChanged();
+  // Notifies observers the entries have changed.
+  void NotifyEntriesChanged();
 
   // Notifies observers the service has loaded.
   void NotifyLoaded();

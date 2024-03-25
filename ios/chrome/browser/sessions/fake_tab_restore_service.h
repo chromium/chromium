@@ -42,7 +42,7 @@ class FakeTabRestoreService : public sessions::TabRestoreService {
   const Entries& entries() const override;
   std::vector<sessions::LiveTab*> RestoreMostRecentEntry(
       sessions::LiveTabContext* context) override;
-  void RemoveTabEntryById(SessionID session_id) override;
+  void RemoveEntryById(SessionID session_id) override;
   std::vector<sessions::LiveTab*> RestoreEntryById(
       sessions::LiveTabContext* context,
       SessionID session_id,

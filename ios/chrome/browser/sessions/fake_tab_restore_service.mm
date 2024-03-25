@@ -86,7 +86,7 @@ std::vector<sessions::LiveTab*> FakeTabRestoreService::RestoreMostRecentEntry(
   return std::vector<sessions::LiveTab*>();
 }
 
-void FakeTabRestoreService::RemoveTabEntryById(SessionID session_id) {
+void FakeTabRestoreService::RemoveEntryById(SessionID session_id) {
   FakeTabRestoreService::Entries::iterator it =
       GetEntryIteratorById(session_id);
   if (it == entries_.end()) {
