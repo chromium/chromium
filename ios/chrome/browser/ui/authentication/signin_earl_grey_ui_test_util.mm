@@ -208,46 +208,6 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
   [SigninEarlGrey verifySignedOut];
 }
 
-+ (void)signOutWithConfirmationChoice:(SignOutConfirmationChoice)confirmation {
-  CHECK(![ChromeEarlGrey isReplaceSyncWithSigninEnabled]);
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
-
-  // Without ReplaceSyncWithSignin, we're now in the "accounts" view.
-  // Tap the "Sign out" button.
-  [ChromeEarlGreyUI tapAccountsMenuButton:SignOutAccountsButton()];
-  // Tap the appropriate confirmation button.
-  int confirmationLabelID = 0;
-  switch (confirmation) {
-    case SignOutConfirmationChoiceClearData:
-      confirmationLabelID = IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON;
-      break;
-    case SignOutConfirmationChoiceKeepData:
-      confirmationLabelID = IDS_IOS_SIGNOUT_DIALOG_KEEP_DATA_BUTTON;
-      break;
-    case SignOutConfirmationChoiceNotSyncing:
-      confirmationLabelID = IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON;
-      break;
-  }
-  id<GREYMatcher> confirmationButtonMatcher = [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:confirmationLabelID];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(confirmationButtonMatcher,
-                                          grey_not(SignOutAccountsButton()),
-                                          nil)] performAction:grey_tap()];
-
-  // Wait until the user is signed out. Use a longer timeout for cases where
-  // sign out also triggers a clear browsing data.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:SettingsDoneButton()
-                                  timeout:base::test::ios::
-                                              kWaitForClearBrowsingDataTimeout];
-
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
-  [SigninEarlGrey verifySignedOut];
-}
-
 + (void)tapSigninConfirmationDialog {
   // To confirm the dialog, the scroll view content has to be scrolled to the
   // bottom to transform "MORE" button into the validation button.

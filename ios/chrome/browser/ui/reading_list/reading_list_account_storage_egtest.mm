@@ -8,7 +8,6 @@
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
@@ -157,27 +156,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector
-            (testSignInWithSecondaryAccountInPromo_WithSnackbar)] ||
-      [self isRunningTest:@selector(testAddAccountItemThenUpgradeToFullSync)] ||
-      [self isRunningTest:@selector(testAddItemWithFullSync)] ||
-      [self isRunningTest:@selector(testUndoAddItemWithFullSync)] ||
-      [self isRunningTest:@selector(testPromoNotShownWhenSyncDataNotRemoved)]) {
-    config.features_disabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
   if ([self isRunningTest:@selector(testPromoNotShownWhenSyncDataNotRemoved)]) {
     config.features_disabled.push_back(kEnableBatchUploadFromBookmarksManager);
   }
   if ([self isRunningTest:@selector
             (testPromoShownWhenSyncDataNotRemovedWithBookmarksUpload)]) {
     config.features_enabled.push_back(kEnableBatchUploadFromBookmarksManager);
-  }
-
-  if ([self isRunningTest:@selector
-            (testSignInWithSecondaryAccountInPromo_NoSnackbar)]) {
-    config.features_enabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
   }
   return config;
 }
@@ -265,45 +249,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Test that when multiple identities exist on the device, the user can sign-in
-// with a secondary identity using the secondary button in the promo, and a
-// snackbar is shown after sign-in.
-// kReplaceSyncPromosWithSignInPromos is disabled.
-- (void)testSignInWithSecondaryAccountInPromo_WithSnackbar {
-  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
-  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
-  // Use sign-in with the second account using the promo's secondary button.
-  OpenReadingList();
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(SecondarySignInButton(),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
-                                          fakeIdentity2.userEmail)]
-      performAction:grey_tap()];
-  // Verify that the signed-in snackbar appears with the correct email.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:SignedInSnackbar(
-                                              fakeIdentity2.userEmail)];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:SignedInSnackbarUndoButton()];
-
-  // Dismiss the snackbar.
-  [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity2.userEmail)]
-      performAction:grey_tap()];
-
-  // Verify that the identity2 is signed-in without sync, and that the promo is
-  // hidden.
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity2.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
-  [SigninEarlGreyUI verifySigninPromoNotVisible];
-}
-
-// Test that when multiple identities exist on the device, the user can sign-in
 // with a secondary identity using the secondary button in the promo.
-// kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)testSignInWithSecondaryAccountInPromo_NoSnackbar {
+- (void)testSignInWithSecondaryAccountInPromo {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
@@ -324,21 +271,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
-// Test that if the identity is signed-in with full sync (sync feature) enabled,
-// the Reading List promo is hidden.
-- (void)testPromoHiddenAfterSignInWithFullSync {
-  // Sign-in with full sync.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  // Verify that the promo is hidden in the Reading List.
-  OpenReadingList();
-  [SigninEarlGreyUI verifySigninPromoNotVisible];
-}
-
-// Test that if the identity is signed-in with sync and account storage both
-// disabled, the Reading List promo is hidden.
-- (void)testPromoHiddenAfterSignInWithoutAccountStorageOrSync {
-  // Sign-in without full sync.
+// Test that if the identity is signed-in.
+- (void)testPromoHiddenAfterSignIn {
+  // Sign-in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   // Verify that the promo is hidden in the Reading List.
@@ -434,11 +369,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tests that the signin promo is not shown when last signed-in user did not
 // remove data during sign-out.
 - (void)testPromoNotShownWhenSyncDataNotRemoved {
-  // Sign-in with sync with `fakeIdentity1`.
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:YES];
-  // Sign-out without removing data.
-  [SigninEarlGrey signOut];
+  // Simulate data from a previous account being leftover by setting
+  // kGoogleServicesLastSyncingGaiaId.
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  [ChromeEarlGrey setStringValue:fakeIdentity1.gaiaID
+                     forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
 
   OpenReadingList();
   [SigninEarlGreyUI verifySigninPromoNotVisible];
@@ -521,65 +457,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Verify there's no cloud icon on the new item in the Reading List.
   OpenReadingList();
   [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage1Title)]
-      assertWithMatcher:grey_nil()];
-}
-
-// Add a page when signed-out and another after sign-in with full sync. Test
-// that both items do not have the cloud icon in the Reading List.
-- (void)testAddItemWithFullSync {
-  AddURLToReadingList(self.testServer->GetURL(kPage1URL));
-  // Dismiss the snackbar.
-  [[EarlGrey selectElementWithMatcher:AddedToLocalReadingListSnackbar()]
-      performAction:grey_tap()];
-
-  // Sign-in with full sync.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
-  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
-                                syncTimeout:kSyncInitializedTimeout];
-  // Add Page 2 to the Reading List and verify that the snackbar containing the
-  // user's email and an undo button appears.
-  AddURLToReadingList(self.testServer->GetURL(kPage2URL));
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:AddedToAccountReadingListSnackbar(
-                                              fakeIdentity.userEmail)];
-
-  // Dismiss the snackbar.
-  [[EarlGrey selectElementWithMatcher:AddedToAccountReadingListSnackbar(
-                                          fakeIdentity.userEmail)]
-      performAction:grey_tap()];
-
-  // Verify that the new items are shown, and there's no cloud icon on the them
-  // in the Reading List.
-  OpenReadingList();
-  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage2Title)]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage1Title)]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage2Title)]
-      assertWithMatcher:grey_nil()];
-}
-
-// When signed-in with full sync, test that tapping on "Undo" from the "item
-// added" snackbar removes the item from the Reading List.
-- (void)testUndoAddItemWithFullSync {
-  // Sign-in with full sync.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
-  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
-                                syncTimeout:kSyncInitializedTimeout];
-  // Add Page 1 to the Reading List.
-  AddURLToReadingList(self.testServer->GetURL(kPage1URL));
-  // Tap on undo when the snackbar appears.
-  [ChromeEarlGrey
-      waitForAndTapButton:grey_allOf(
-                              AddedToAccountReadingListSnackbarUndoButton(),
-                              grey_sufficientlyVisible(), nil)];
-  // Verify that Page 1 is not in the Reading List.
-  OpenReadingList();
-  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
       assertWithMatcher:grey_nil()];
 }
 
@@ -717,84 +594,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage1Title)]
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage2Title)]
-      assertWithMatcher:grey_nil()];
-}
-
-// Test that if an item is added before sign-in and another is added after
-// account storage sign-in, then the user upgrades to full sync, both items are
-// visible and do not have the cloud icon.
-- (void)testAddAccountItemThenUpgradeToFullSync {
-  AddURLToReadingList(self.testServer->GetURL(kPage1URL));
-  // Dismiss the snackbar.
-  [[EarlGrey selectElementWithMatcher:AddedToLocalReadingListSnackbar()]
-      performAction:grey_tap()];
-
-  // Sign-in with fakeIdentity in the Reading List.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  OpenReadingList();
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-  // Dismiss the sign-in snackbar.
-  [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity.userEmail)]
-      performAction:grey_tap()];
-
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncInitializedTimeout];
-  // Dismiss the Reading List.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kTableViewNavigationDismissButtonId)]
-      performAction:grey_tap()];
-  // Add Page 2 to the Reading List.
-  AddURLToReadingList(self.testServer->GetURL(kPage2URL));
-  // Dismiss the snackbar.
-  [[EarlGrey selectElementWithMatcher:AddedToAccountReadingListSnackbar(
-                                          fakeIdentity.userEmail)]
-      performAction:grey_tap()];
-
-  // Upgrade to full sync.
-  [ChromeEarlGreyUI openSettingsMenu];
-  id<GREYMatcher> syncCell =
-      grey_allOf(grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId),
-                 grey_sufficientlyVisible(), nil);
-  [[EarlGrey selectElementWithMatcher:syncCell] performAction:grey_tap()];
-  [ChromeEarlGreyUI waitForAppToIdle];
-  id<GREYMatcher> confirmSyncButton =
-      grey_allOf(grey_accessibilityID(kConfirmationAccessibilityIdentifier),
-                 grey_sufficientlyVisible(), nil);
-  [[EarlGrey selectElementWithMatcher:confirmSyncButton]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
-                                syncTimeout:kSyncInitializedTimeout];
-  // Dismiss Settings.
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
-  // Verify that both items are shown without cloud icon.
-  OpenReadingList();
-  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage2Title)]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage1Title)]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:VisibleLocalItemIcon(kPage2Title)]
-      assertWithMatcher:grey_nil()];
-  // Dismiss the Reading List.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kTableViewNavigationDismissButtonId)]
-      performAction:grey_tap()];
-  // Sign-out and clear data.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncInitializedTimeout];
-  // Verify that no item is in the Reading List.
-  OpenReadingList();
-  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage2Title)]
       assertWithMatcher:grey_nil()];
 }
 

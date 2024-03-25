@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -37,7 +38,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using chrome_test_util::ManageSyncSettingsButton;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsSignInRowMatcher;
@@ -48,9 +48,6 @@ NSString* const kPassphrase = @"hello";
 
 void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fake_identity,
                                         BOOL expect_history_sync) {
-  GREYAssertTrue(
-      [ChromeEarlGrey isReplaceSyncWithSigninEnabled],
-      @"Expected sign-in sheet to show but SyncToSignin flag is disabled");
   // Sign in with fake identity using the settings sign-in promo.
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::SettingsSignInRowMatcher()];
@@ -162,14 +159,6 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   if ([self
-          isRunningTest:@selector(testSignoutWhileManageSyncSettingsOpened)]) {
-    config.features_disabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  } else {
-    config.features_enabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-  if ([self
           isRunningTest:@selector(testRememberCustomPassphraseAfterSignout)]) {
     config.features_enabled.push_back(
         syncer::kSyncRememberCustomPassphraseAfterSignout);
@@ -183,13 +172,13 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   return config;
 }
 
-// Tests that Sync settings is dismissed when the primary account is removed and
-// kReplaceSyncPromosWithSignInPromos is disabled.
+// Tests that Sync settings is dismissed when the primary account is removed.
 - (void)testSignoutWhileManageSyncSettingsOpened {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:ManageSyncSettingsButton()];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:grey_accessibilityID(kSettingsAccountCellId)];
   id<GREYMatcher> scrollViewMatcher =
       grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
   [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
@@ -201,8 +190,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Tests that unified account settings row is showing, and the Sync row is not
-// showing when kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)testShowingUnifiedAccountSettings_SyncToSigninEnabled {
+// showing.
+- (void)testShowingUnifiedAccountSettings {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -219,9 +208,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests sign out from the unified account settings page when
-// kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)testSignOutFromUnifiedAccountSettings_SyncToSigninEnabled {
+// Tests sign out from the unified account settings page.
+- (void)testSignOutFromUnifiedAccountSettings {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -248,9 +236,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       assertWithMatcher:grey_notVisible()];
 }
 
-// Tests sign out from the manage accounts on device page when
-// kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)testSignOutFromManageAccountsSettings_SyncToSigninEnabled {
+// Tests sign out from the manage accounts on device page.
+- (void)testSignOutFromManageAccountsSettings {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -299,9 +286,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the unsynced data dialog shows when there are unsynced passwords. Also
 // verifies that the user is still signed in when the dialog Cancel button is
-// tapped. kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)
-    testUnsyncedDataDialogShowsInCaseOfUnsyncedPasswords_SyncToSigninEnabled {
+// tapped.
+- (void)testUnsyncedDataDialogShowsInCaseOfUnsyncedPasswords {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -335,9 +321,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the unsynced data dialog shows when there are unsynced readinglist
 // entries. Also verifies that the user is still signed in when the dialog
-// Cancel button is tapped. kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)
-    testUnsyncedDataDialogShowsInCaseOfUnsyncedReadingListEntry_SyncToSigninEnabled {
+// Cancel button is tapped.
+- (void)testUnsyncedDataDialogShowsInCaseOfUnsyncedReadingListEntry {
   // TODO(crbug.com/1521690): Test fails on iPhone device and simulator.
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPhone.");
@@ -374,9 +359,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the unsynced data dialog shows when there are unsynced bookmarks. Also
 // verifies that the user still signed in when the dialog Cancel button is
-// tapped. kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)
-    testCancelSigningOutFromUnsyncedDataDialogInCaseOfUnsyncedBookmarks_SyncToSigninEnabled {
+// tapped.
+- (void)testCancelSigningOutFromUnsyncedDataDialogInCaseOfUnsyncedBookmarks {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -408,9 +392,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the unsynced data dialog shows when there are unsynced bookmarks. Also
 // verifies that the user is signed out when the dialog Delete and Sign Out
-// button is tapped. kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)
-    testDeleteAndSignOutFromUnsyncedDataDialogInCaseOfUnsyncedBookmarks_SyncToSigninEnabled {
+// button is tapped.
+- (void)testDeleteAndSignOutFromUnsyncedDataDialogInCaseOfUnsyncedBookmarks {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -442,7 +425,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Tests that data type settings carry over signing out.
-- (void)testDataTypeSettingsCarryOverSignOut_SyncToSigninEnabled {
+- (void)testDataTypeSettingsCarryOverSignOut {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -482,8 +465,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Tests that data type settings do not carry over from one user to another.
-- (void)
-    testDataTypeSettingsDoNotCarryOverDifferentAccounts_SyncToSigninEnabled {
+- (void)testDataTypeSettingsDoNotCarryOverDifferentAccounts {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -526,7 +508,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Tests that removing account from device clears the data type settings.
-- (void)testDataTypeSettingsAreClearedOnAccountRemoval_SyncToSigninEnabled {
+- (void)testDataTypeSettingsAreClearedOnAccountRemoval {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -573,7 +555,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the account settings is reflecting the SyncTypesListDisabled
 // policy.
-- (void)testAccountSettingsWithSyncTypesListDisabled_SyncToSigninEnabled {
+- (void)testAccountSettingsWithSyncTypesListDisabled {
   base::Value::List list;
   list.Append("passwords");
   policy_test_utils::SetPolicy(base::Value(std::move(list)),
@@ -679,7 +661,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Tests the account settings is reflecting the SyncDisabled policy.
-- (void)testAccountSettingsWithSyncDisabled_SyncToSigninEnabled {
+- (void)testAccountSettingsWithSyncDisabled {
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -784,7 +766,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the account settings is with a user actionable error; enter
 // passphrase error.
-- (void)testAccountSettingsWithError_SyncToSigninEnabled {
+- (void)testAccountSettingsWithError {
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -823,8 +805,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the "History and Tabs" toggle manages both types. When both types
 // are disabled by policy their toggle should be off.
-- (void)
-    testAccountSettingsWithHistoryAndTabsDisabledByPolicy_SyncToSigninEnabled {
+- (void)testAccountSettingsWithHistoryAndTabsDisabledByPolicy {
   base::Value::List list;
   list.Append("typedUrls");
   list.Append("tabs");
@@ -847,7 +828,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the "History and Tabs" toggle manages both types. When History
 // is only disabled by policy their toggle should be active.
-- (void)testAccountSettingsWithHistoryDisabledByPolicy_SyncToSigninEnabled {
+- (void)testAccountSettingsWithHistoryDisabledByPolicy {
   base::Value::List list;
   list.Append("typedUrls");
   policy_test_utils::SetPolicy(base::Value(std::move(list)),
@@ -869,7 +850,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the "History and Tabs" toggle manages both types. When Tabs
 // is only disabled by policy their toggle should be active.
-- (void)testAccountSettingsWithTabsDisabledByPolicy_SyncToSigninEnabled {
+- (void)testAccountSettingsWithTabsDisabledByPolicy {
   base::Value::List list;
   list.Append("tabs");
   policy_test_utils::SetPolicy(base::Value(std::move(list)),
@@ -1441,7 +1422,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the account settings and the user actionable error view are dismissed
 // on account removal.
-- (void)testAccountSettingsWithErrorDismissed_SyncToSigninEnabled {
+- (void)testAccountSettingsWithErrorDismissed {
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -1509,7 +1490,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the account settings and the encryption view are dismissed
 // on account removal.
-- (void)testAccountSettingsAndEncryptionDismissed_SyncToSigninEnabled {
+- (void)testAccountSettingsAndEncryptionDismissed {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 

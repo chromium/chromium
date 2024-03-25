@@ -6,7 +6,6 @@
 
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
@@ -76,26 +75,6 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   config.features_enabled.push_back(
       policy::kUserPolicyForSigninAndNoSyncConsentLevel);
 
-  // With kReplaceSyncPromosWithSignInPromos enabled, several of the tests here
-  // don't apply anymore.
-  if (  // There is no signout confirmation anymore.
-      [self isRunningTest:@selector(testSignOutCancelled)] ||
-      [self isRunningTest:@selector
-            (testRemoveSecondaryAccountWhileSignOutConfirmation)] ||
-      [self isRunningTest:@selector(testInterruptDuringSignOutConfirmation)] ||
-      [self isRunningTest:@selector(testDismissSignOutConfirmationTwice)] ||
-      // Data (of a managed account) is not cleared on signout anymore.
-      [self isRunningTest:@selector
-            (testsManagedAccountRemovedFromAnotherGoogleApp)] ||
-      // Sync can't be turned on anymore.
-      [self isRunningTest:@selector(testSignOutFooterForSignInAndSyncUser)]) {
-    config.features_disabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  } else {
-    config.features_enabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-
   return config;
 }
 
@@ -103,24 +82,20 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
-  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    // If ReplaceSyncWithSignin is enabled, we're now on the unified settings
-    // page, and need to tap "Manage accounts on this device" to get to the
-    // accounts view.
-    // First scroll down so that the button is visible.
-    id<GREYMatcher> scrollViewMatcher =
-        grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
-    [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
-        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  // Tap "Manage accounts on this device" to get to the accounts view.
+  // First scroll down so that the button is visible.
+  id<GREYMatcher> scrollViewMatcher =
+      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
-    // Now tab the "Manage accounts on this device" button.
-    id<GREYMatcher> manageAccountsButtonMatcher =
-        grey_allOf(grey_text(l10n_util::GetNSString(
-                       IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM)),
-                   grey_sufficientlyVisible(), nil);
-    [[EarlGrey selectElementWithMatcher:manageAccountsButtonMatcher]
-        performAction:grey_tap()];
-  }
+  // Now tab the "Manage accounts on this device" button.
+  id<GREYMatcher> manageAccountsButtonMatcher =
+      grey_allOf(grey_text(l10n_util::GetNSString(
+                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM)),
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:manageAccountsButtonMatcher]
+      performAction:grey_tap()];
 }
 
 // Tests that the Sync and Account Settings screen are correctly popped if the
@@ -276,8 +251,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 }
 
 // Tests that selecting sign-out from a non-managed account keeps the user's
-// synced data.
-- (void)testSignOutFromNonManagedAccountKeepsData {
+// local data.
+- (void)testSignOutFromNonManagedAccountKeepsLocalData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`.
@@ -300,9 +275,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
 }
 
-// Tests that selecting sign-out and clear data from a non-managed user account
-// clears the user's synced data.
-- (void)testSignOutAndClearDataFromNonManagedAccount {
+// Tests that selecting sign-out from a non-managed user account clears the
+// user's account data.
+- (void)testSignOutFromNonManagedAccountClearsAccountData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`.
@@ -325,8 +300,33 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
 }
 
-// Tests that signing out from a managed user account clears the user's data.
-- (void)testsSignOutFromManagedAccount {
+// Tests that signing out from a managed user account keeps the user's local
+// data.
+- (void)testsSignOutFromManagedAccountKeepsLocalData {
+  // Sign In `fakeManagedIdentity`.
+  [SigninEarlGreyUI
+      signinWithFakeIdentity:[FakeSystemIdentity fakeManagedIdentity]];
+
+  // Add a bookmark after sync is initialized.
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:kSyncOperationTimeout];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+
+  [SigninEarlGreyUI signOut];
+
+  // Open the Bookmarks screen on the Tools menu.
+  [BookmarkEarlGreyUI openBookmarks];
+
+  // Assert that there are no bookmarks. The empty background appears in the
+  // root directory if the leaf folders are empty.
+  [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
+}
+
+// Tests that signing out from a managed user account clears the user's account
+// data.
+- (void)testsSignOutFromManagedAccountClearsAccountData {
   // Sign In `fakeManagedIdentity`.
   [SigninEarlGreyUI
       signinWithFakeIdentity:[FakeSystemIdentity fakeManagedIdentity]];
@@ -364,36 +364,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
 }
 
-// Tests that the user isn't signed out and the UI is correct when the
-// sign-out is cancelled in the Account Settings screen.
-- (void)testSignOutCancelled {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-
-  // Sign In `fakeIdentity`, then open the Account Settings.
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [self openAccountSettings];
-
-  // Open the SignOut dialog, then tap "Cancel".
-  [ChromeEarlGreyUI tapAccountsMenuButton:SignOutAccountsButton()];
-  // Note that the iPad does not provide a CANCEL button by design. Click
-  // anywhere on the screen to exit.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_anyOf(chrome_test_util::CancelButton(),
-                                          SignOutAccountsButton(), nil)]
-      atIndex:1] performAction:grey_tap()];
-
-  // Check that Account Settings screen is open and `fakeIdentity` is signed in.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          SettingsAccountsCollectionView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
-}
-
-// Tests that users data is cleared out when the signed in account disappear and
-// it is a managed account. Regression test for crbug.com/1208381.
+// Tests that users data is not cleared when the signed in account disappear and
+// it is a managed account.
 - (void)testsManagedAccountRemovedFromAnotherGoogleApp {
   // Sign In `fakeManagedIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
@@ -418,9 +390,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
 
-  // Assert that there are no bookmarks. The empty background appears in the
-  // root directory if the leaf folders are empty.
-  [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
+  // Assert that the bookmarks are still there.
+  [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
 }
 
 // Tests to open the sign-out confirmation dialog, and then remove the primary
@@ -447,92 +418,6 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
       assertWithMatcher:grey_notNil()];
   [SigninEarlGrey verifySignedOut];
-}
-
-// Tests to open the sign-out confirmation dialog, and then remove a secondary
-// account while the dialog is still opened.
-- (void)testRemoveSecondaryAccountWhileSignOutConfirmation {
-  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
-
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
-
-  [self openAccountSettings];
-
-  // Opens the sign out confirmation dialog.
-  [ChromeEarlGreyUI
-      tapAccountsMenuButton:chrome_test_util::SignOutAccountsButton()];
-  // Remove the primary accounts.
-  [SigninEarlGrey forgetFakeIdentity:fakeIdentity2];
-  [ChromeEarlGreyUI waitForAppToIdle];
-  [[[EarlGrey
-      selectElementWithMatcher:grey_anyOf(chrome_test_util::CancelButton(),
-                                          SignOutAccountsButton(), nil)]
-      atIndex:1] performAction:grey_tap()];
-
-  // Closes the settings.
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
-  // Verifies we are still signed in.
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
-}
-
-// Tests to open the sign-out confirmation dialog, and then open an external
-// URL.
-- (void)testInterruptDuringSignOutConfirmation {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-
-  [self openAccountSettings];
-
-  // Opens the sign out confirmation dialog.
-  [ChromeEarlGreyUI
-      tapAccountsMenuButton:chrome_test_util::SignOutAccountsButton()];
-  // Wait until the sheet is fully presented before to opening an external URL.
-  [ChromeEarlGreyUI waitForAppToIdle];
-  // Open the URL as if it was opened from another app.
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL expectedURL = self.testServer->GetURL("/echo");
-  [ChromeEarlGrey
-      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
-  // Verifies that the user is signed in and Settings have been dismissed.
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-}
-
-// Tests that opening and closing the sign-out confirmation dialog does
-// not affect the user's sign-in state.
-- (void)testDismissSignOutConfirmationTwice {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-
-  [self openAccountSettings];
-
-  // Opens the sign out confirmation dialog.
-  [ChromeEarlGreyUI
-      tapAccountsMenuButton:chrome_test_util::SignOutAccountsButton()];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Close the dialog.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_anyOf(chrome_test_util::CancelButton(),
-                                          SignOutAccountsButton(), nil)]
-      atIndex:1] performAction:grey_tap()];
-
-  // Opens the sign out confirmation dialog.
-  [ChromeEarlGreyUI
-      tapAccountsMenuButton:chrome_test_util::SignOutAccountsButton()];
-
-  // Close the dialog.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_anyOf(chrome_test_util::CancelButton(),
-                                          SignOutAccountsButton(), nil)]
-      atIndex:1] performAction:grey_tap()];
-
-  // Verify that the user is still signed in.
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Tests to sign out with a non managed account without syncing.
@@ -586,20 +471,6 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
                          IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE)),
                      grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
-}
-
-// Tests that the sign-out footer is shown when the user is syncing.
-- (void)testSignOutFooterForSignInAndSyncUser {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
-  [self openAccountSettings];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_text(l10n_util::GetNSString(
-                         IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE)),
-                     grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notNil()];
 }
 
 @end
