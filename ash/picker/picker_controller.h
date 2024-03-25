@@ -12,7 +12,6 @@
 #include "ash/ash_export.h"
 #include "ash/picker/metrics/picker_feature_usage_metrics.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
-#include "ash/picker/model/picker_model.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -32,6 +31,7 @@ namespace ash {
 class PickerAssetFetcher;
 class PickerClient;
 class PickerInsertMediaRequest;
+class PickerModel;
 class PickerPasteRequest;
 class PickerSearchController;
 class PickerSearchResult;
@@ -100,8 +100,8 @@ class ASH_EXPORT PickerController
   // Gets the SharedURLLoaderFactory to use for network requests.
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory();
 
-  PickerModel model_;
   raw_ptr<PickerClient> client_ = nullptr;
+  std::unique_ptr<PickerModel> model_;
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;

@@ -46,6 +46,7 @@
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -90,17 +91,23 @@ PickerFeatureKeyType MatchPickerFeatureKeyHash() {
   return PickerFeatureKeyType::kNone;
 }
 
+ui::TextInputClient* GetFocusedTextInputClient() {
+  const ui::InputMethod* input_method =
+      IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
+  if (!input_method || !input_method->GetTextInputClient()) {
+    return nullptr;
+  }
+  return input_method->GetTextInputClient();
+}
+
 // Gets the current caret bounds in universal screen coordinates in DIP. Returns
 // an empty rect if there is no active caret or the caret bounds can't be
 // determined (e.g. no focused input field).
 gfx::Rect GetCaretBounds() {
-  const ui::InputMethod* input_method =
-      IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
-  if (!input_method || !input_method->GetTextInputClient()) {
-    return gfx::Rect();
+  if (ui::TextInputClient* client = GetFocusedTextInputClient()) {
+    return client->GetCaretBounds();
   }
-
-  return input_method->GetTextInputClient()->GetCaretBounds();
+  return gfx::Rect();
 }
 
 // Gets the current cursor point in universal screen coordinates in DIP.
@@ -215,7 +222,9 @@ void PickerController::ToggleWidget(
     session_metrics_->RecordOutcome(
         PickerSessionMetrics::SessionOutcome::kAbandoned);
     widget_->Close();
+    model_.reset();
   } else {
+    model_ = std::make_unique<PickerModel>(GetFocusedTextInputClient());
     widget_ = PickerWidget::Create(
         this,
         GetPickerAnchorBounds(GetCaretBounds(), GetCursorPoint(),
@@ -230,7 +239,8 @@ void PickerController::ToggleWidget(
 }
 
 std::vector<PickerCategory> PickerController::GetAvailableCategories() {
-  return model_.GetAvailableCategories();
+  return model_ == nullptr ? std::vector<PickerCategory>{}
+                           : model_->GetAvailableCategories();
 }
 
 void PickerController::GetResultsForCategory(PickerCategory category,
