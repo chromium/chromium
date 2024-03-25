@@ -5,6 +5,7 @@
 #ifndef BASE_NUMERICS_BYTE_CONVERSIONS_H_
 #define BASE_NUMERICS_BYTE_CONVERSIONS_H_
 
+#include <array>
 #include <bit>
 #include <cstdint>
 #include <cstring>
