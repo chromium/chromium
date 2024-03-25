@@ -7,6 +7,7 @@
 #include <map>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -65,7 +66,7 @@ class NewTabPageTest : public InProcessBrowserTest,
   void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override {
     std::optional<base::Value> maybe_parsed_message =
-        base::JSONReader::Read(base::StringPiece(
+        base::JSONReader::Read(std::string_view(
             reinterpret_cast<const char*>(message.data()), message.size()));
     CHECK(maybe_parsed_message.has_value());
     base::Value::Dict parsed_message =
