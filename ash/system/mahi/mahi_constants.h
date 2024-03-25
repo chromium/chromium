@@ -34,6 +34,7 @@ enum ViewId {
   kQuestionAnswerTextBubbleLabel,
   // TODO(b/330643995): Remove this when outlines are shown by default.
   kOutlinesSectionContainer,
+  kBannerTitleLabel,
 };
 
 // The size of the icon that appears in the panel's source row.

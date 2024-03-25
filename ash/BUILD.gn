@@ -3836,6 +3836,7 @@ test("ash_unittests") {
     "system/lock_screen_notification_controller_unittest.cc",
     "system/mahi/mahi_panel_view_unittest.cc",
     "system/mahi/mahi_panel_widget_unittest.cc",
+    "system/mahi/refresh_banner_view_unittest.cc",
     "system/media/media_tray_unittest.cc",
     "system/media/quick_settings_media_view_container_unittest.cc",
     "system/media/quick_settings_media_view_controller_unittest.cc",

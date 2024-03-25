@@ -9,6 +9,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "base/check_is_test.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
@@ -19,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
@@ -35,7 +37,7 @@ constexpr int kRefreshBannerCornerRadius = 20;
 constexpr base::TimeDelta kRefreshBannerAnimationDurationMs =
     base::Milliseconds(100);
 constexpr gfx::Insets kRefreshBannerInteriorMargin =
-    gfx::Insets::TLBR(4, 28, mahi_constants::kRefreshBannerStackDepth + 4, 28);
+    gfx::Insets::TLBR(4, 20, mahi_constants::kRefreshBannerStackDepth + 4, 20);
 constexpr gfx::Insets kTitleLabelMargin = gfx::Insets::TLBR(0, 0, 0, 8);
 
 SkPath GetClipPath(gfx::Size size) {
@@ -85,7 +87,6 @@ RefreshBannerView::RefreshBannerView() {
       cros_tokens::kCrosSysSystemPrimaryContainer, /*radius=*/0));
 
   SetOrientation(views::LayoutOrientation::kHorizontal);
-  SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   SetInteriorMargin(kRefreshBannerInteriorMargin);
   SetID(mahi_constants::ViewId::kRefreshView);
 
@@ -95,6 +96,8 @@ RefreshBannerView::RefreshBannerView() {
 
   AddChildView(
       views::Builder<views::Label>()
+          .CopyAddressTo(&title_label_)
+          .SetID(mahi_constants::ViewId::kBannerTitleLabel)
           .SetText(l10n_util::GetStringFUTF16(
               IDS_ASH_MAHI_REFRESH_BANNER_LABEL_TEXT,
               manager ? manager->GetContentTitle() : base::EmptyString16()))
@@ -102,6 +105,11 @@ RefreshBannerView::RefreshBannerView() {
           .SetEnabledColorId(cros_tokens::kCrosSysSystemOnPrimaryContainer)
           .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
               TypographyToken::kCrosAnnotation2))
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetProperty(
+              views::kFlexBehaviorKey,
+              views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                       views::MaximumFlexSizeRule::kUnbounded))
           .SetProperty(views::kMarginsKey, kTitleLabelMargin)
           .Build());
   auto* icon_button =
@@ -115,6 +123,14 @@ RefreshBannerView::RefreshBannerView() {
 RefreshBannerView::~RefreshBannerView() = default;
 
 void RefreshBannerView::Show() {
+  auto* manager = chromeos::MahiManager::Get();
+  if (!manager) {
+    CHECK_IS_TEST();
+    return;
+  }
+
+  title_label_->SetText(l10n_util::GetStringFUTF16(
+      IDS_ASH_MAHI_REFRESH_BANNER_LABEL_TEXT, manager->GetContentTitle()));
   SetVisible(true);
   gfx::Transform transform;
   transform.Translate(

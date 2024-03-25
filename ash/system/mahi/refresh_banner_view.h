@@ -6,9 +6,14 @@
 #define ASH_SYSTEM_MAHI_REFRESH_BANNER_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
+
+namespace views {
+class Label;
+}
 
 namespace ash {
 
@@ -30,6 +35,9 @@ class ASH_EXPORT RefreshBannerView : public views::FlexLayoutView {
  private:
   // views::FlexLayoutView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+
+  // Owned by the views hierarchy.
+  raw_ptr<views::Label> title_label_;
 
   base::WeakPtrFactory<RefreshBannerView> weak_ptr_factory_{this};
 };
