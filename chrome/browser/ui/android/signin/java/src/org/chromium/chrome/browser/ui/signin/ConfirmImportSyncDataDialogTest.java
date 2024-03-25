@@ -146,7 +146,7 @@ public class ConfirmImportSyncDataDialogTest {
     @MediumTest
     public void testListenerOnCancelCalledWhenDialogDismissedByUser() {
         showConfirmImportSyncDataDialog(false);
-        onView(isRoot()).perform(pressBack());
+        onView(isRoot()).inRoot(isDialog()).perform(pressBack());
         verify(mListenerMock).onCancel();
     }
 
