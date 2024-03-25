@@ -8,6 +8,16 @@
  * types.
  */
 
+// Common data for displaying and filtering print destinations.
+export interface Destination {
+  // ID can be the printer name or ID depending on the originating type of
+  // printer.
+  id: string;
+
+  // Display name from printer.
+  displayName: string;
+}
+
 export interface PrintRequestOutcome {
   success: boolean;
   error?: string;

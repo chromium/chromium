@@ -4,12 +4,17 @@
 
 import 'chrome://os-print/js/data/destination_manager.js';
 
+import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
 import {DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {Destination} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
+import {assertEquals, assertFalse, assertNotEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 suite('DestinationManager', () => {
+  let instance: DestinationManager;
+
   setup(() => {
     DestinationManager.resetInstanceForTesting();
+    instance = DestinationManager.getInstance();
   });
 
   teardown(() => {
@@ -26,12 +31,20 @@ suite('DestinationManager', () => {
     const instance1 = DestinationManager.getInstance();
     DestinationManager.resetInstanceForTesting();
     const instance2 = DestinationManager.getInstance();
-    assertTrue(instance1 !== instance2);
+    assertNotEquals(instance1, instance2, 'Reset clears static instance');
   });
 
   // Verify `hasInitialDestinationsLoaded` returns false by default.
   test('on create hasInitialDestinationsLoaded is false', () => {
-    const instance = DestinationManager.getInstance();
     assertFalse(instance.hasInitialDestinationsLoaded());
+  });
+
+  // Verify PDF printer included in destinations.
+  test('getDestinations contains PDF printer', () => {
+    const destinations: Destination[] = instance.getDestinations();
+    const pdfIndex =
+        destinations.findIndex((d: Destination) => d.id === PDF_DESTINATION.id);
+    const notFoundIndex = -1;
+    assertNotEquals(notFoundIndex, pdfIndex, 'PDF destination available');
   });
 });
