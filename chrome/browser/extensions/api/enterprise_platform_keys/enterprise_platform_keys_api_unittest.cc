@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -12,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/fake_user_private_token_kpm_service.h"
@@ -199,7 +199,7 @@ class EPKChallengeMachineKeyTest : public EPKChallengeKeyTestBase {
 
   base::Value::List CreateArgsInternal(
       std::optional<base::Value> register_key) {
-    static constexpr base::StringPiece kData = "challenge";
+    static constexpr std::string_view kData = "challenge";
     base::Value::List args;
     args.Append(base::Value(base::as_bytes(base::make_span(kData))));
     if (register_key) {
@@ -282,7 +282,7 @@ class EPKChallengeUserKeyTest : public EPKChallengeKeyTestBase {
   base::Value::List CreateArgsNoRegister() { return CreateArgsInternal(false); }
 
   base::Value::List CreateArgsInternal(bool register_key) {
-    static constexpr base::StringPiece kData = "challenge";
+    static constexpr std::string_view kData = "challenge";
     base::Value::List args;
     args.Append(base::Value(base::as_bytes(base::make_span(kData))));
     args.Append(register_key);
