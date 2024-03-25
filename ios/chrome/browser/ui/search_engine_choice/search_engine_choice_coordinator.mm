@@ -23,6 +23,18 @@
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+namespace {
+
+// Preferred width and height of the Search Engine Choice screen on iPad.
+//
+// We prefer to set a prefferred content size to avoid cases when the view is
+// too big which leads to too much white space and unnecessary chevrons. This
+// may need to be adjusted if the layout of the choice screen changes.
+constexpr CGFloat kIPadSearchEngineChoiceScreenPreferredWidth = 540.;
+constexpr CGFloat kIPadSearchEngineChoiceScreenPreferredHeight = 820.;
+
+}  // namespace
+
 @interface SearchEngineChoiceCoordinator () <
     SearchEngineChoiceActionDelegate,
     SearchEngineChoiceLearnMoreCoordinatorDelegate>
@@ -100,6 +112,11 @@
       AppState* appState = self.browser->GetSceneState().appState;
       _scopedIphonePortraitOnly =
           std::make_unique<ScopedIphonePortraitOnly>(appState);
+    } else {
+      _viewController.modalPresentationStyle = UIModalPresentationFormSheet;
+      _viewController.preferredContentSize =
+          CGSizeMake(kIPadSearchEngineChoiceScreenPreferredWidth,
+                     kIPadSearchEngineChoiceScreenPreferredHeight);
     }
     [self.baseViewController presentViewController:_viewController
                                           animated:YES
