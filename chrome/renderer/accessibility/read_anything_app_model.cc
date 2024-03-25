@@ -211,9 +211,6 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
   DCHECK(end_node);
 
   if (!start_node || !end_node) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN()
-        << "Selection is invalid. Start node existed? " << !!start_node
-        << " End node existed? " << !!end_node;
     return;
   }
 
