@@ -1,0 +1,40 @@
+Test interception of post data that are streams
+{
+    hasPostData : true
+    headers : <object>
+    initialPriority : High
+    method : POST
+    postData : ------WebKitFormBoundary Content-Disposition: form-data; name="blob 1"; filename="blob" Content-Type: application/octet-stream  In Xanadu did Kubla Khan ------WebKitFormBoundary Content-Disposition: form-data; name="blob 2"; filename="blob" Content-Type: application/octet-stream   A stately pleasure-dome decree ------WebKitFormBoundary 
+    postDataEntries : [
+        [0] : {
+            bytes : ------WebKitFormBoundary Content-Disposition: form-data; name="blob 1"; filename="blob" Content-Type: application/octet-stream  
+        }
+        [1] : {
+            bytes : In Xanadu did Kubla Khan
+        }
+        [2] : {
+            bytes :  ------WebKitFormBoundary Content-Disposition: form-data; name="blob 2"; filename="blob" Content-Type: application/octet-stream  
+        }
+        [3] : {
+            bytes :  A stately pleasure-dome decree
+        }
+        [4] : {
+            bytes :  ------WebKitFormBoundary 
+        }
+    ]
+    referrerPolicy : strict-origin-when-cross-origin
+    url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/post-echo.pl
+}
+echoed request body: ------WebKitFormBoundary
+Content-Disposition: form-data; name="blob 1"; filename="blob"
+Content-Type: application/octet-stream
+
+In Xanadu did Kubla Khan
+------WebKitFormBoundary
+Content-Disposition: form-data; name="blob 2"; filename="blob"
+Content-Type: application/octet-stream
+
+ A stately pleasure-dome decree
+------WebKitFormBoundary
+
+

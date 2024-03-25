@@ -19,6 +19,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/network_handler.h"
+#include "content/browser/devtools/request_body_collector.h"
 #include "content/browser/loader/download_utils_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -427,12 +428,15 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   std::unique_ptr<InterceptedRequestInfo> BuildRequestInfo(
       const network::mojom::URLResponseHeadPtr& head);
   void NotifyClient(std::unique_ptr<InterceptedRequestInfo> request_info);
-  void FetchCookies(
-      network::mojom::CookieManager::GetCookieListCallback callback);
-  void NotifyClientWithCookies(
-      std::unique_ptr<InterceptedRequestInfo> request_info,
+  void FetchCookies(base::OnceClosure callback);
+  void OnGotCookies(
+      base::OnceClosure callback,
       const net::CookieAccessResultList& cookies_with_access_result,
       const net::CookieAccessResultList& excluded_cookies);
+  void OnGotRequestBodies(base::OnceClosure callback,
+                          std::vector<RequestBodyCollector::BodyEntry> bodies);
+  void CompleteNotifyingClient(
+      std::unique_ptr<InterceptedRequestInfo> request_info);
 
   void ResponseBodyComplete();
 
@@ -541,6 +545,15 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   // request paused event contains original headers. Previous headers
   // are used on resume to compute the difference for the network stack.
   std::unique_ptr<net::HttpRequestHeaders> headers_before_redirect_;
+
+  // These two are needed to build a Request and are prepared as needed when
+  // sending Request for the first time. Both need to be cleared upon redirect.
+  std::vector<RequestBodyCollector::BodyEntry> request_bodies_;
+  std::optional<std::string> request_cookies_;
+
+  // This is only for retaining the body collector for the duration of its
+  // work (and properly cancelling it if the job gets prematurely destroyed).
+  std::unique_ptr<RequestBodyCollector> request_body_collector_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -1151,6 +1164,7 @@ void InterceptionJob::ApplyModificationsToRequest(
     const auto& post_data = modifications->modified_post_data.value();
     request->request_body = network::ResourceRequestBody::CreateFromBytes(
         reinterpret_cast<const char*>(post_data.data()), post_data.size());
+    request_bodies_.clear();
   }
 
   if (modifications->modified_headers) {
@@ -1430,12 +1444,7 @@ std::unique_ptr<InterceptedRequestInfo> InterceptionJob::BuildRequestInfo(
   return result;
 }
 
-void InterceptionJob::FetchCookies(
-    network::mojom::CookieManager::GetCookieListCallback callback) {
-  if (!GetResourceRequestForCookies().SendsCookies()) {
-    std::move(callback).Run({}, {});
-    return;
-  }
+void InterceptionJob::FetchCookies(base::OnceClosure callback) {
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_do_not_update_access_time();
@@ -1459,34 +1468,75 @@ void InterceptionJob::FetchCookies(
           request.request_initiator, is_main_frame_navigation,
           should_treat_as_first_party));
 
-  cookie_manager_->GetCookieList(request.url, options,
-                                 net::CookiePartitionKeyCollection::Todo(),
-                                 std::move(callback));
+  cookie_manager_->GetCookieList(
+      request.url, options, net::CookiePartitionKeyCollection::Todo(),
+      base::BindOnce(&InterceptionJob::OnGotCookies, base::Unretained(this),
+                     std::move(callback)));
 }
 
 void InterceptionJob::NotifyClient(
     std::unique_ptr<InterceptedRequestInfo> request_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!waiting_for_resolution_);
-  FetchCookies(base::BindOnce(&InterceptionJob::NotifyClientWithCookies,
-                              base::Unretained(this), std::move(request_info)));
+
+  const network::ResourceRequest request = GetResourceRequestForCookies();
+
+  const bool have_cookies = !!request_cookies_;
+  const bool want_cookies = request.SendsCookies();
+  CHECK(!have_cookies || want_cookies);
+
+  const bool have_request_bodies = !request_bodies_.empty();
+  const bool want_request_bodies = !!request.request_body;
+  CHECK(!have_request_bodies || want_request_bodies);
+
+  const int pending_callback_count =
+      (have_cookies == want_cookies ? 0 : 1) +
+      (have_request_bodies == want_request_bodies ? 0 : 1);
+
+  base::RepeatingClosure closure = BarrierClosure(
+      pending_callback_count,
+      base::BindOnce(&InterceptionJob::CompleteNotifyingClient,
+                     base::Unretained(this), std::move(request_info)));
+  if (have_cookies != want_cookies) {
+    FetchCookies(closure);
+  }
+  if (have_request_bodies != want_request_bodies) {
+    CHECK(!request_body_collector_);
+    request_body_collector_ = RequestBodyCollector::Collect(
+        *request.request_body,
+        base::BindOnce(&InterceptionJob::OnGotRequestBodies,
+                       base::Unretained(this), closure));
+  }
 }
 
-void InterceptionJob::NotifyClientWithCookies(
-    std::unique_ptr<InterceptedRequestInfo> request_info,
+void InterceptionJob::OnGotCookies(
+    base::OnceClosure callback,
     const net::CookieAccessResultList& cookies_with_access_result,
     const net::CookieAccessResultList& excluded_cookies) {
+  request_cookies_.emplace(
+      cookies_with_access_result.empty()
+          ? std::string()
+          : net::CanonicalCookie::BuildCookieLine(cookies_with_access_result));
+  std::move(callback).Run();
+}
+
+void InterceptionJob::OnGotRequestBodies(
+    base::OnceClosure callback,
+    std::vector<RequestBodyCollector::BodyEntry> bodies) {
+  request_bodies_ = std::move(bodies);
+  request_body_collector_.reset();
+  std::move(callback).Run();
+}
+
+void InterceptionJob::CompleteNotifyingClient(
+    std::unique_ptr<InterceptedRequestInfo> request_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!interceptor_)
     return;
-  std::string cookie_line;
-  if (!cookies_with_access_result.empty()) {
-    cookie_line =
-        net::CanonicalCookie::BuildCookieLine(cookies_with_access_result);
-  }
   request_info->network_request =
       protocol::NetworkHandler::CreateRequestFromResourceRequest(
-          create_loader_params_->request, cookie_line);
+          create_loader_params_->request,
+          request_cookies_.value_or(std::string()), request_bodies_);
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("devtools", "Fetch.requestPaused", this);
   waiting_for_resolution_ = true;
@@ -1542,8 +1592,12 @@ void InterceptionJob::FollowRedirect(
   for (const std::string& name : removed_headers)
     request->cors_exempt_headers.RemoveHeader(name);
 
-  if (clear_body)
+  if (clear_body) {
     request->request_body = nullptr;
+    request_bodies_.clear();
+  }
+  request_cookies_.reset();
+
   request->method = info.new_method;
   request->url = info.new_url;
   request->site_for_cookies = info.new_site_for_cookies;

@@ -2946,7 +2946,9 @@ std::string NetworkHandler::ExtractFragment(const GURL& url,
 std::unique_ptr<Network::Request>
 NetworkHandler::CreateRequestFromResourceRequest(
     const network::ResourceRequest& request,
-    const std::string& cookie_line) {
+    const std::string& cookie_line,
+    std::vector<base::expected<std::vector<uint8_t>, std::string>>
+        request_bodies) {
   std::unique_ptr<base::Value::Dict> headers_dict =
       BuildRequestHeaders(request.headers, request.referrer);
   if (!cookie_line.empty())
@@ -2963,17 +2965,26 @@ NetworkHandler::CreateRequestFromResourceRequest(
           .Build();
   if (!url_fragment.empty())
     request_object->SetUrlFragment(url_fragment);
-  if (request.request_body) {
+  if (!request_bodies.empty()) {
     std::string post_data;
     auto data_entries =
         std::make_unique<protocol::Array<protocol::Network::PostDataEntry>>();
-    if (GetPostData(*request.request_body, data_entries.get(), &post_data)) {
-      if (!post_data.empty())
-        request_object->SetPostData(std::move(post_data));
-      if (data_entries->size())
-        request_object->SetPostDataEntries(std::move(data_entries));
-      request_object->SetHasPostData(true);
+
+    for (auto& body : request_bodies) {
+      // TODO(caseq): post_data is deprecated, remove.
+      auto entry = protocol::Network::PostDataEntry::Create().Build();
+      if (body.has_value()) {
+        post_data.append(reinterpret_cast<const char*>(body->data()),
+                         body->size());
+        entry->SetBytes(protocol::Binary::fromVector(*std::move(body)));
+      }
+      data_entries->push_back(std::move(entry));
     }
+    if (!post_data.empty()) {
+      request_object->SetPostData(std::move(post_data));
+    }
+    request_object->SetPostDataEntries(std::move(data_entries));
+    request_object->SetHasPostData(true);
   }
   return request_object;
 }

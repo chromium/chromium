@@ -889,6 +889,8 @@ source_set("browser") {
     "devtools/protocol/tracing_handler.h",
     "devtools/render_frame_devtools_agent_host.cc",
     "devtools/render_frame_devtools_agent_host.h",
+    "devtools/request_body_collector.cc",
+    "devtools/request_body_collector.h",
     "devtools/service_worker_devtools_agent_host.cc",
     "devtools/service_worker_devtools_agent_host.h",
     "devtools/service_worker_devtools_manager.cc",
