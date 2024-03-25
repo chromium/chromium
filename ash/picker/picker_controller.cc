@@ -254,6 +254,8 @@ void PickerController::GetResultsForCategory(PickerCategory category,
     case PickerCategory::kDriveFiles:
     case PickerCategory::kLocalFiles:
     case PickerCategory::kEditor:
+    case PickerCategory::kDatesTimes:
+    case PickerCategory::kUnitsMaths:
       break;
   }
   callback.Run({

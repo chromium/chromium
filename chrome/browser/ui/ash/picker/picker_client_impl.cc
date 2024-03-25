@@ -67,6 +67,8 @@ int GetAutocompleteProviderTypes(ash::PickerCategory category) {
     case ash::PickerCategory::kLocalFiles:
     case ash::PickerCategory::kDriveFiles:
     case ash::PickerCategory::kEditor:
+    case ash::PickerCategory::kDatesTimes:
+    case ash::PickerCategory::kUnitsMaths:
       DLOG(FATAL) << "Unexpected category for autocomplete: "
                   << static_cast<int>(category);
       return 0;
@@ -191,6 +193,8 @@ void PickerClientImpl::StartCrosSearch(
     case ash::PickerCategory::kEmoticons:
     case ash::PickerCategory::kGifs:
     case ash::PickerCategory::kEditor:
+    case ash::PickerCategory::kDatesTimes:
+    case ash::PickerCategory::kUnitsMaths:
       DLOG(FATAL) << "Unexpected category for StartCrosSearch: "
                   << static_cast<int>(*category);
       break;
@@ -345,6 +349,8 @@ PickerClientImpl::CreateSearchProviderForCategory(
     case ash::PickerCategory::kEmoticons:
     case ash::PickerCategory::kGifs:
     case ash::PickerCategory::kEditor:
+    case ash::PickerCategory::kDatesTimes:
+    case ash::PickerCategory::kUnitsMaths:
       DLOG(FATAL) << "Unexpected category for autocomplete: "
                   << static_cast<int>(category);
       return nullptr;

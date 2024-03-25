@@ -37,6 +37,12 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
     case PickerCategory::kEditor:
       // TODO: b/322926823 - Use correct icons.
       return kPencilIcon;
+    case PickerCategory::kDatesTimes:
+      // TODO: b/322926823 - Use correct icons.
+      return kCalendarEventIcon;
+    case PickerCategory::kUnitsMaths:
+      // TODO: b/322926823 - Use correct icons.
+      return kKsCalculatorIcon;
   }
 }
 

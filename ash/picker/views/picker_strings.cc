@@ -38,6 +38,10 @@ std::u16string GetLabelForPickerCategory(PickerCategory category) {
       return l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL);
     case PickerCategory::kEditor:
       return l10n_util::GetStringUTF16(IDS_PICKER_EDITOR_CATEGORY_LABEL);
+    case PickerCategory::kDatesTimes:
+      return l10n_util::GetStringUTF16(IDS_PICKER_DATES_TIMES_CATEGORY_LABEL);
+    case PickerCategory::kUnitsMaths:
+      return l10n_util::GetStringUTF16(IDS_PICKER_UNITS_MATHS_CATEGORY_LABEL);
   }
 }
 
@@ -73,6 +77,12 @@ std::u16string GetSearchFieldPlaceholderTextForPickerCategory(
           IDS_PICKER_LOCAL_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
     case PickerCategory::kEditor:
       NOTREACHED_NORETURN();
+    case PickerCategory::kDatesTimes:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_DATES_TIMES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
+    case PickerCategory::kUnitsMaths:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_UNITS_MATHS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
   }
 }
 
@@ -91,6 +101,9 @@ std::u16string GetSectionTitleForPickerCategoryType(
     case PickerCategoryType::kEditors:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_EDITOR_CATEGORY_TYPE_SECTION_TITLE);
+    case PickerCategoryType::kCalculations:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_CALCULATIONS_CATEGORY_TYPE_SECTION_TITLE);
   }
 }
 

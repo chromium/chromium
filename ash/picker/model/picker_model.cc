@@ -15,6 +15,7 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
       PickerCategory::kOpenTabs,   PickerCategory::kBrowsingHistory,
       PickerCategory::kBookmarks,  PickerCategory::kDriveFiles,
       PickerCategory::kLocalFiles, PickerCategory::kEditor,
+      PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths,
   };
 }
 

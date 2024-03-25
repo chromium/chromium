@@ -21,6 +21,8 @@ enum class ASH_PUBLIC_EXPORT PickerCategory {
   kDriveFiles,
   kLocalFiles,
   kEditor,
+  kDatesTimes,
+  kUnitsMaths,
 };
 
 }  // namespace ash

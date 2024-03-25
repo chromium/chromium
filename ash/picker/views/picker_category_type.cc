@@ -24,6 +24,9 @@ ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category) {
       return PickerCategoryType::kFiles;
     case PickerCategory::kEditor:
       return PickerCategoryType::kEditors;
+    case PickerCategory::kDatesTimes:
+    case PickerCategory::kUnitsMaths:
+      return PickerCategoryType::kCalculations;
   }
 }
 

@@ -21,7 +21,8 @@ TEST(PickerModel, AvailableCategories) {
                   PickerCategory::kEmoticons, PickerCategory::kGifs,
                   PickerCategory::kOpenTabs, PickerCategory::kBrowsingHistory,
                   PickerCategory::kBookmarks, PickerCategory::kDriveFiles,
-                  PickerCategory::kLocalFiles, PickerCategory::kEditor));
+                  PickerCategory::kLocalFiles, PickerCategory::kEditor,
+                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
 }
 
 }  // namespace
