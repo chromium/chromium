@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -280,7 +281,8 @@ void WebRtcLogUploader::UploadStoredLog(
             .AddExtension(FILE_PATH_LITERAL(".meta"));
     if (base::ReadFileToString(meta_path, &meta_data_contents) &&
         !meta_data_contents.empty()) {
-      base::Pickle pickle(&meta_data_contents[0], meta_data_contents.size());
+      base::Pickle pickle =
+          base::Pickle::WithData(base::as_byte_span(meta_data_contents));
       base::PickleIterator it(pickle);
       std::string key, value;
       while (it.ReadString(&key) && it.ReadString(&value))

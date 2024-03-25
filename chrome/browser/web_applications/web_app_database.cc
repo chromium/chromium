@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -331,7 +332,7 @@ std::string FilePathToProto(const base::FilePath& path) {
 }
 
 std::optional<base::FilePath> ProtoToFilePath(const std::string& bytes) {
-  const base::Pickle pickle(bytes.data(), bytes.size());
+  const base::Pickle pickle = base::Pickle::WithData(base::as_byte_span(bytes));
   base::PickleIterator pickle_iterator(pickle);
 
   base::FilePath path;
