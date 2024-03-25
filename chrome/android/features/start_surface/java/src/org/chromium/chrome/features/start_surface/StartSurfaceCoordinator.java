@@ -636,18 +636,20 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     private int getLogoInSurfaceHeight() {
+        Resources resources = mActivity.getResources();
+
+        if (StartSurfaceConfiguration.isLogoPolishEnabled(/* isTablet= */ false)) {
+            return LogoUtils.getLogoTotalHeightForLogoPolish(
+                    resources, StartSurfaceConfiguration.getLogoSizeForLogoPolish());
+        }
+
         if (mIsSurfacePolishEnabled
                 && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue()) {
-            Resources resources = mActivity.getResources();
             if (StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue()) {
-                return LogoUtils.getLogoHeightPolishedShort(resources)
-                        + LogoUtils.getTopMarginPolishedSmall(resources)
-                        + LogoUtils.getBottomMarginPolishedSmall(resources);
-            } else {
-                return LogoUtils.getLogoHeightPolished(resources)
-                        + LogoUtils.getTopMarginPolished(resources)
-                        + LogoUtils.getBottomMarginPolished(resources);
+                return LogoUtils.getLogoTotalHeightPolishedShort(resources);
             }
+
+            return LogoUtils.getLogoTotalHeightPolished(resources);
         }
 
         return getPixelSize(R.dimen.ntp_logo_height)

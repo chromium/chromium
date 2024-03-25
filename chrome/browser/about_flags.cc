@@ -2480,25 +2480,22 @@ const FeatureEntry::FeatureVariation kSurfacePolishVariations[] = {
 
 const FeatureEntry::FeatureParam kLogoPolish_large[] = {
     {"polish_logo_size_large", "true"},
-    {"polish_logo_size_medium", "false"},
-    {"polish_logo_size_small", "false"}};
+    {"polish_logo_size_medium", "false"}};
 
 const FeatureEntry::FeatureParam kLogoPolish_medium[] = {
     {"polish_logo_size_large", "false"},
-    {"polish_logo_size_medium", "true"},
-    {"polish_logo_size_small", "false"}};
+    {"polish_logo_size_medium", "true"}};
 
 const FeatureEntry::FeatureParam kLogoPolish_small[] = {
     {"polish_logo_size_large", "false"},
-    {"polish_logo_size_medium", "false"},
-    {"polish_logo_size_small", "true"}};
+    {"polish_logo_size_medium", "false"}};
 
 const FeatureEntry::FeatureVariation kLogoPolishVariations[] = {
-    {"Logo height is 84dp", kLogoPolish_large, std::size(kLogoPolish_large),
+    {"Logo height is large", kLogoPolish_large, std::size(kLogoPolish_large),
      nullptr},
-    {"Logo height is 76dp", kLogoPolish_medium, std::size(kLogoPolish_medium),
+    {"Logo height is medium", kLogoPolish_medium, std::size(kLogoPolish_medium),
      nullptr},
-    {"Logo height is 68dp", kLogoPolish_small, std::size(kLogoPolish_small),
+    {"Logo height is small", kLogoPolish_small, std::size(kLogoPolish_small),
      nullptr},
 };
 

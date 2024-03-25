@@ -499,20 +499,18 @@ public class StartSurfaceTestUtils {
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
 
         // Drag the Feed header title to scroll the toolbar to the top.
+        Resources resources = cta.getResources();
         int logoInSurfaceHeight = 0;
-        if (isSurfacePolishEnabled
+        if (StartSurfaceConfiguration.isLogoPolishEnabled(/* isTablet= */ false)) {
+            logoInSurfaceHeight =
+                    LogoUtils.getLogoTotalHeightForLogoPolish(
+                            resources, StartSurfaceConfiguration.getLogoSizeForLogoPolish());
+        } else if (isSurfacePolishEnabled
                 && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue()) {
-            Resources resources = cta.getResources();
             if (StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue()) {
-                logoInSurfaceHeight =
-                        LogoUtils.getLogoHeightPolishedShort(resources)
-                                + LogoUtils.getTopMarginPolishedSmall(resources)
-                                + LogoUtils.getBottomMarginPolishedSmall(resources);
+                logoInSurfaceHeight = LogoUtils.getLogoTotalHeightPolishedShort(resources);
             } else {
-                logoInSurfaceHeight =
-                        LogoUtils.getLogoHeightPolished(resources)
-                                + LogoUtils.getTopMarginPolished(resources)
-                                + LogoUtils.getBottomMarginPolished(resources);
+                logoInSurfaceHeight = LogoUtils.getLogoTotalHeightPolished(resources);
             }
         }
         float toY =

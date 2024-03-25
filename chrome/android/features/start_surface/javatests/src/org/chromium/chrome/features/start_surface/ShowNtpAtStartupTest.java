@@ -15,6 +15,7 @@ import static org.junit.Assert.fail;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.IMMEDIATE_RETURN_TEST_PARAMS;
+import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_BASE_PARAMS;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.pm.ActivityInfo;
@@ -477,14 +478,7 @@ public class ShowNtpAtStartupTest {
     @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testLogoSizeShrink() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
-        waitForNtpLoaded(cta.getActivityTab());
-
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        ViewGroup logoView = ntp.getView().findViewById(R.id.search_provider_logo);
-
-        Resources res = cta.getResources();
+        Resources res = mActivityTestRule.getActivity().getResources();
         int expectedLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height_shrink);
         int expectedTopMargin =
                 ChromeFeatureList.sSurfacePolish.isEnabled()
@@ -494,10 +488,7 @@ public class ShowNtpAtStartupTest {
                 res.getDimensionPixelSize(R.dimen.ntp_logo_vertical_bottom_margin_tablet);
 
         // Verifies the logo size is decreased, and top bottom margins are updated.
-        MarginLayoutParams marginLayoutParams = (MarginLayoutParams) logoView.getLayoutParams();
-        Assert.assertEquals(expectedLogoHeight, marginLayoutParams.height);
-        Assert.assertEquals(expectedTopMargin, marginLayoutParams.topMargin);
-        Assert.assertEquals(expectedBottomMargin, marginLayoutParams.bottomMargin);
+        testLogoSizeImpl(expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
     }
 
     @Test
@@ -507,14 +498,7 @@ public class ShowNtpAtStartupTest {
     @DisableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testDefaultLogoSize() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
-        waitForNtpLoaded(cta.getActivityTab());
-
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        ViewGroup logoView = ntp.getView().findViewById(R.id.search_provider_logo);
-
-        Resources res = cta.getResources();
+        Resources res = mActivityTestRule.getActivity().getResources();
         int expectedLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height);
         int expectedMarginTop = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
         int expectedMarginBottom = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
@@ -527,10 +511,57 @@ public class ShowNtpAtStartupTest {
         }
 
         // Verifies logo has its original size and margins.
-        MarginLayoutParams marginLayoutParams = (MarginLayoutParams) logoView.getLayoutParams();
-        Assert.assertEquals(expectedLogoHeight, marginLayoutParams.height);
-        Assert.assertEquals(expectedMarginTop, marginLayoutParams.topMargin);
-        Assert.assertEquals(expectedMarginBottom, marginLayoutParams.bottomMargin);
+        testLogoSizeImpl(expectedLogoHeight, expectedMarginTop, expectedMarginBottom);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @EnableFeatures({ChromeFeatureList.LOGO_POLISH + "<Study"})
+    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "polish_logo_size_large/true"})
+    public void testLogoSizeForLargeLogo_LogoPolish() {
+        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        Resources res = mActivityTestRule.getActivity().getResources();
+        int expectedLogoHeight = LogoUtils.getLogoHeightForLogoPolishWithLargeSize(res);
+        int expectedTopMargin = LogoUtils.getTopMarginForLogoPolish(res);
+        int expectedBottomMargin = LogoUtils.getBottomMarginForLogoPolish(res);
+
+        // Verifies the logo size is decreased, and top bottom margins are updated.
+        testLogoSizeImpl(expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @EnableFeatures({ChromeFeatureList.LOGO_POLISH + "<Study"})
+    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "polish_logo_size_medium/true"})
+    public void testLogoSizeForMediumLogo_LogoPolish() {
+        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        Resources res = mActivityTestRule.getActivity().getResources();
+        int expectedLogoHeight = LogoUtils.getLogoHeightForLogoPolishWithMediumSize(res);
+        int expectedTopMargin = LogoUtils.getTopMarginForLogoPolish(res);
+        int expectedBottomMargin = LogoUtils.getBottomMarginForLogoPolish(res);
+
+        // Verifies the logo size is decreased, and top bottom margins are updated.
+        testLogoSizeImpl(expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @EnableFeatures({ChromeFeatureList.LOGO_POLISH})
+    public void testLogoSizeForSmallLogo_LogoPolish() {
+        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        Resources res = mActivityTestRule.getActivity().getResources();
+        int expectedLogoHeight = LogoUtils.getLogoHeightForLogoPolishWithSmallSize(res);
+        int expectedTopMargin = LogoUtils.getTopMarginForLogoPolish(res);
+        int expectedBottomMargin = LogoUtils.getBottomMarginForLogoPolish(res);
+
+        // Verifies the logo size is decreased, and top bottom margins are updated.
+        testLogoSizeImpl(expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
     }
 
     @Test
@@ -706,6 +737,22 @@ public class ShowNtpAtStartupTest {
     @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
     public void testClickSingleTabCardCloseNtpHomeSurface_MagicStack() throws IOException {
         testClickSingleTabCardCloseNtpHomeSurfaceImpl(/* magicStackEnabled= */ true);
+    }
+
+    private void testLogoSizeImpl(
+            int expectedLogoHeight, int expectedTopMargin, int expectedBottomMargin) {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        waitForNtpLoaded(cta.getActivityTab());
+
+        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        ViewGroup logoView = ntp.getView().findViewById(R.id.search_provider_logo);
+
+        // Verifies the logo size and margins.
+        MarginLayoutParams marginLayoutParams = (MarginLayoutParams) logoView.getLayoutParams();
+        Assert.assertEquals(expectedLogoHeight, marginLayoutParams.height);
+        Assert.assertEquals(expectedTopMargin, marginLayoutParams.topMargin);
+        Assert.assertEquals(expectedBottomMargin, marginLayoutParams.bottomMargin);
     }
 
     private void testClickSingleTabCardCloseNtpHomeSurfaceImpl(boolean magicStackEnabled)

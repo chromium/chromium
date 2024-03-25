@@ -463,7 +463,9 @@ public class NewTabPageLayout extends LinearLayout {
                     logoView,
                     getResources(),
                     DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()),
-                    StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue());
+                    StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue(),
+                    StartSurfaceConfiguration.isLogoPolishEnabled(mIsTablet),
+                    StartSurfaceConfiguration.getLogoSizeForLogoPolish());
         } else if (mIsNtpAsHomeSurfaceOnTablet) {
             logoView.getLayoutParams().height =
                     mContext.getResources().getDimensionPixelSize(R.dimen.ntp_logo_height_shrink);
