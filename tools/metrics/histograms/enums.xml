@@ -25206,6 +25206,7 @@ from previous Chrome versions.
       label="EnableBluetoothVerboseLogsForGooglers:enabled"/>
   <int value="1930212531" label="ShowDiscountOnNavigation:enabled"/>
   <int value="1930901873" label="disable-sync-app-list"/>
+  <int value="1931013086" label="ContainerAppPreinstall:disabled"/>
   <int value="1931309368" label="fill-on-account-select:disabled"/>
   <int value="1932038907" label="CrosBatterySaverAlwaysOn:enabled"/>
   <int value="1932204471" label="SyncPseudoUSSThemes:disabled"/>
@@ -25595,6 +25596,7 @@ from previous Chrome versions.
   <int value="2106798283" label="SafetyTip:disabled"/>
   <int value="2106855416" label="HostWindowsInAppShimProcess:enabled"/>
   <int value="2107406401" label="UseDnsHttpsSvcb:disabled"/>
+  <int value="2107475197" label="ContainerAppPreinstall:enabled"/>
   <int value="2107520493" label="PolicyMergeMultiSource:enabled"/>
   <int value="2107942975" label="ApnRevamp:disabled"/>
   <int value="2108402242"

@@ -121,6 +121,13 @@ extern const char kComputePressureRateObfuscationMitigationDescription[];
 extern const char kComputePressureBreakCalibrationMitigationName[];
 extern const char kComputePressureBreakCalibrationMitigationDescription[];
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kContainerName[];
+extern const char kContainerDescription[];
+extern const char kContainerContentsName[];
+extern const char kContainerContentsDescription[];
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 extern const char kContentLanguagesInLanguagePickerName[];
 extern const char kContentLanguagesInLanguagePickerDescription[];
 

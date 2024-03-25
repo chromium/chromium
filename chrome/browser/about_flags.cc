@@ -285,6 +285,7 @@
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "components/app_restore/features.h"
 #include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
@@ -10963,6 +10964,14 @@ const FeatureEntry kFeatureEntries[] = {
     {kAssistantIphInternalName, flag_descriptions::kAssistantIphName,
      flag_descriptions::kAssistantIphDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(feature_engagement::kIPHLauncherSearchHelpUiFeature)},
+
+    {"container", flag_descriptions::kContainerName,
+     flag_descriptions::kContainerDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kContainerAppPreinstall)},
+
+    {"container-contents", flag_descriptions::kContainerContentsName,
+     flag_descriptions::kContainerContentsDescription, kOsCrOS,
+     STRING_VALUE_TYPE(chromeos::switches::kContainerAppPreinstallKey, "")},
 
     {"mahi", flag_descriptions::kMahiName, flag_descriptions::kMahiDescription,
      kOsCrOS, FEATURE_VALUE_TYPE(chromeos::features::kMahi)},
