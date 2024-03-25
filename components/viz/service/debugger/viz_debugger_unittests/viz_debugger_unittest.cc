@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/debugger/viz_debugger_unittests/viz_debugger_internal.h"
@@ -420,11 +421,10 @@ TEST_F(VisualDebuggerTest, MultipleBuffersAsync) {
       int id = i;
       DBG_DRAW_RECT_BUFF(kAnnoRect, kTestRect, &id);
       // Random numbers between 0-255 for BGRA values
-      uint8_t temp1 = (id + 15) * 11231;
-      uint8_t temp2 = (id + 24) * 32461231;
-      uint8_t temp3 = (id + 523) * 72321231;
-      uint8_t temp4 = (id + 52) * 321231;
-      const auto kFillColor = SkColorSetARGB(temp1, temp2, temp3, temp4);
+      uint8_t temp[4];
+      base::RandBytes(temp);
+      const auto kFillColor =
+          SkColorSetARGB(temp[0], temp[1], temp[2], temp[3]);
       test_buffers_color[id] = kFillColor;
     }
 

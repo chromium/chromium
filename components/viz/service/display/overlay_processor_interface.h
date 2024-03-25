@@ -73,7 +73,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
     OutputSurfaceOverlayPlane& operator=(const OutputSurfaceOverlayPlane&);
     ~OutputSurfaceOverlayPlane();
     // Display's rotation information.
-    gfx::OverlayTransform transform;
+    gfx::OverlayTransform transform = gfx::OVERLAY_TRANSFORM_NONE;
     // Rect on the display to position to. This takes in account of Display's
     // rotation.
     gfx::RectF display_rect;
@@ -83,18 +83,18 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
     // Size of output surface in pixels.
     gfx::Size resource_size;
     // Format of the buffer to scanout.
-    gfx::BufferFormat format;
+    gfx::BufferFormat format = gfx::BufferFormat::BGRA_8888;
     // ColorSpace of the buffer for scanout.
     gfx::ColorSpace color_space;
     // Enable blending when we have underlay.
-    bool enable_blending;
+    bool enable_blending = false;
     // Opacity of the overlay independent of buffer alpha. When rendered:
     // src-alpha = |opacity| * buffer-component-alpha.
-    float opacity;
+    float opacity = 1.0f;
     // Mailbox corresponding to the buffer backing the primary plane.
     gpu::Mailbox mailbox;
     // Hints for overlay prioritization.
-    gfx::OverlayPriorityHint priority_hint;
+    gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
     // Specifies the rounded corners.
     gfx::RRectF rounded_corners;
     // Optional damage rect. If none is provided the damage is assumed to be
