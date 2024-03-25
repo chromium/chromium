@@ -36,8 +36,8 @@ namespace {
 //
 // If |token| is not in |input|, return a pointer to the null-byte at the end
 // of |input|.
-auto StringFindInsensitiveASCII(base::StringPiece input,
-                                base::StringPiece token) {
+auto StringFindInsensitiveASCII(std::string_view input,
+                                std::string_view token) {
   return base::ranges::search(input, token, std::equal_to<>(),
                               &base::ToLowerASCII<char>,
                               &base::ToLowerASCII<char>);
@@ -45,7 +45,7 @@ auto StringFindInsensitiveASCII(base::StringPiece input,
 
 // Checks if the omitted prefix for a non-fully specific prefix is one of the
 // expected parts that are allowed to be omitted (e.g. "https://").
-bool IsValidPrefix(base::StringPiece prefix) {
+bool IsValidPrefix(std::string_view prefix) {
   static re2::LazyRE2 re = {"(https?|file):(//)?"};
   return prefix.empty() || re2::RE2::FullMatch(prefix, *re);
 }
@@ -91,7 +91,7 @@ class WildcardRule : public Rule {
 // string, then some simple string searches.
 class DefaultModeRule : public Rule {
  public:
-  explicit DefaultModeRule(base::StringPiece original_rule)
+  explicit DefaultModeRule(std::string_view original_rule)
       : Rule(original_rule) {
     canonical_ = std::string(original_rule);
 
@@ -136,7 +136,7 @@ class DefaultModeRule : public Rule {
     GURL base_url(placeholder);
 
     GURL relative_url = base_url.Resolve(canonical_);
-    base::StringPiece spec = relative_url.possibly_invalid_spec();
+    std::string_view spec = relative_url.possibly_invalid_spec();
 
     // The parsed URL might start with "ftp://XXX/" or "ftp://". Remove that
     // prefix.
@@ -200,7 +200,7 @@ class DefaultModeRule : public Rule {
 // with the URL to be matched.
 class IESiteListModeRule : public Rule {
  public:
-  explicit IESiteListModeRule(base::StringPiece original_rule)
+  explicit IESiteListModeRule(std::string_view original_rule)
       : Rule(original_rule) {
     // Parse the string as a URL and extract its parts.
     //
@@ -331,7 +331,7 @@ class IESiteListModeRule : public Rule {
 
 }  // namespace
 
-std::unique_ptr<Rule> CanonicalizeRule(base::StringPiece original_rule,
+std::unique_ptr<Rule> CanonicalizeRule(std::string_view original_rule,
                                        ParsingMode parsing_mode) {
   std::unique_ptr<Rule> rule;
 

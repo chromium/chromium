@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
+
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -141,7 +141,7 @@ void AppendCommandLineArguments(base::CommandLine* cmd_line,
     cmd_line->AppendArg(url.spec());
 }
 
-const BrowserVarMapping* FindBrowserMapping(base::StringPiece path) {
+const BrowserVarMapping* FindBrowserMapping(std::string_view path) {
 #if BUILDFLAG(IS_MAC)
   // Unlike most POSIX platforms, MacOS always has another browser than Chrome,
   // so admins don't have to explicitly configure one.
