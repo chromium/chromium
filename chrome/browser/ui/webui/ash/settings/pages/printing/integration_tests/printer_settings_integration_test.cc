@@ -13,12 +13,13 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "chromeos/ash/components/dbus/printscanmgr/fake_printscanmgr_client.h"
 #include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_client.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -110,9 +111,29 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
   const DeepQuery kEditButtonQuery =
       kPrinterSettingsPage + "#savedPrinters" + "#editButton";
 
+  const DeepQuery kRemoveButtonQuery =
+      kPrinterSettingsPage + "#savedPrinters" + "#removeButton";
+
   const DeepQuery kViewPpdButtonQuery = kPrinterSettingsPage +
                                         "#editPrinterDialog" +
                                         "#ppdLabel > div > cr-button";
+
+  const DeepQuery kEditNameInputQuery =
+      kPrinterSettingsPage + "#editPrinterDialog" + "#printerName";
+
+  const DeepQuery kEditSaveButtonQuery =
+      kPrinterSettingsPage + "#editPrinterDialog" +
+      "add-printer-dialog > div:nth-child(3) > div:nth-child(2) > "
+      "cr-button.action-button";
+
+  const DeepQuery kNearbyPrinterButton =
+      kPrinterSettingsPage + "#nearbyPrinterToggleButton";
+
+  const DeepQuery kSecondPrinterMoreActionsButtonQuery =
+      kPrinterSettingsPage + "#savedPrinters" + "#frb1" + "#moreActions";
+
+  const DeepQuery kNoSavedPrintersQuery =
+      kPrinterSettingsPage + "#noSavedPrinters";
 
   PrinterSettingsIntegrationTest() {
     // Keep test running after dismissing login screen.
@@ -213,6 +234,21 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
                 chromeos::settings::mojom::kPrintingDetailsSubpagePath)));
   }
 
+  auto ReloadOsPrinterSettings() {
+    return Steps(
+        Do([]() {
+          ASSERT_FALSE(BrowserList::GetInstance()->empty());
+          chrome::Reload(BrowserList::GetInstance()->GetLastActive(),
+                         WindowOpenDisposition::CURRENT_TAB);
+        }),
+        WaitForHide(kSettingsWebContentsId),
+        WaitForShow(kSettingsWebContentsId),
+        WaitForWebContentsReady(
+            kSettingsWebContentsId,
+            chrome::GetOSSettingsUrl(
+                chromeos::settings::mojom::kPrintingDetailsSubpagePath)));
+  }
+
   auto AddPrinterManually(std::string_view printer_name) {
     return Steps(
         Log("Opening the add printer dialog"),
@@ -254,6 +290,25 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
         Log("Saving the printer"),
         ClickElement(kSettingsWebContentsId, kAddPrinterButtonQuery));
   }
+
+  auto EditPrinterName(std::string_view printer_name) {
+    return Steps(
+        Log("Opening the edit printer dialog"),
+        WaitForElementExists(kSettingsWebContentsId, kMoreActionsButtonQuery),
+        WaitForElementToRender(kSettingsWebContentsId, kMoreActionsButtonQuery),
+        ClickElement(kSettingsWebContentsId, kMoreActionsButtonQuery),
+        WaitForElementToRender(kSettingsWebContentsId, kEditButtonQuery),
+        ClickElement(kSettingsWebContentsId, kEditButtonQuery),
+        Log("Editing the printer name"),
+        ExecuteJsAt(
+            kSettingsWebContentsId, kEditNameInputQuery,
+            base::StrCat({"(el) => { el.value = '", printer_name,
+                          "'; el.dispatchEvent(new Event('input')) }"})),
+        WaitForCrInputTextContains(kSettingsWebContentsId, kEditNameInputQuery,
+                                   printer_name),
+        Log("Saving the edited printer"),
+        ClickElement(kSettingsWebContentsId, kEditSaveButtonQuery));
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(PrinterSettingsIntegrationTest, ViewPpd) {
@@ -287,6 +342,43 @@ IN_PROC_BROWSER_TEST_F(PrinterSettingsIntegrationTest, ViewPpd) {
       WaitForShow(kChromeBrowserWebContentsId),
       CheckJsResult(kChromeBrowserWebContentsId,
                     "() => document.body.textContent", kDefaultPpd));
+}
+
+IN_PROC_BROWSER_TEST_F(PrinterSettingsIntegrationTest, AddAndEditPrinter) {
+  SetupContextWidget();
+
+  login_mixin().Login();
+
+  // Waits for the primary user session to start.
+  ash::test::WaitForPrimaryUserSessionStart();
+
+  InstallSystemApps();
+
+  // Set fake data for clicking "View PPD" to return.
+  PrintscanmgrClient::InitializeFakeForTest();
+
+  RunTestSequence(
+      Log("Launching printer settings"), LaunchOsPrinterSettings(),
+      Log("Adding the first printer"), AddPrinterManually("First Printer"),
+      EditPrinterName("New printer name"), ReloadOsPrinterSettings(),
+      WaitForElementExists(kSettingsWebContentsId, kNearbyPrinterButton),
+      WaitForElementToRender(kSettingsWebContentsId, kNearbyPrinterButton),
+      ClickElement(kSettingsWebContentsId, kNearbyPrinterButton),
+      Log("Adding the second printer"), AddPrinterManually("Second Printer"),
+      WaitForElementExists(kSettingsWebContentsId,
+                           kSecondPrinterMoreActionsButtonQuery),
+      Log("Removing the second printer"),
+      ClickElement(kSettingsWebContentsId,
+                   kSecondPrinterMoreActionsButtonQuery),
+      WaitForElementToRender(kSettingsWebContentsId, kRemoveButtonQuery),
+      ClickElement(kSettingsWebContentsId, kRemoveButtonQuery),
+      Log("Removing the first printer"),
+      ClickElement(kSettingsWebContentsId, kMoreActionsButtonQuery),
+      WaitForElementToRender(kSettingsWebContentsId, kRemoveButtonQuery),
+      ClickElement(kSettingsWebContentsId, kRemoveButtonQuery),
+      Log("Verify the 'No saved printers' section"),
+      WaitForElementTextContains(kSettingsWebContentsId, kNoSavedPrintersQuery,
+                                 "No saved printers"));
 }
 
 }  // namespace
