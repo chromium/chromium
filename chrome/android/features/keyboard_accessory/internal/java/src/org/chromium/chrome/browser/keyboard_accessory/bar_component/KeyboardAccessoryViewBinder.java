@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
-import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryIPHUtils.hasShownAnyAutofillIphBefore;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryIPHUtils.showHelpBubble;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
@@ -18,6 +17,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +27,6 @@ import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
@@ -36,7 +34,6 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SheetOpenerBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.PopupItemId;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -45,16 +42,22 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.RectProvider;
 
+import java.util.function.Function;
+
 /**
  * Observes {@link KeyboardAccessoryProperties} changes (like a newly available tab) and modifies
  * the view accordingly.
  */
 class KeyboardAccessoryViewBinder {
     static BarItemViewHolder create(
-            KeyboardAccessoryView keyboarAccessory, ViewGroup parent, @BarItem.Type int viewType) {
+            KeyboardAccessoryView keyboarAccessory,
+            UiConfiguration uiConfiguration,
+            ViewGroup parent,
+            @BarItem.Type int viewType) {
         switch (viewType) {
             case BarItem.Type.SUGGESTION:
-                return new BarItemChipViewHolder(parent, keyboarAccessory);
+                return new BarItemChipViewHolder(
+                        parent, keyboarAccessory, uiConfiguration.suggestionDrawableFunction);
             case BarItem.Type.TAB_LAYOUT:
                 return new SheetOpenerViewHolder(parent);
             case BarItem.Type.ACTION_BUTTON:
@@ -64,6 +67,12 @@ class KeyboardAccessoryViewBinder {
         }
         assert false : "Action type " + viewType + " was not handled!";
         return null;
+    }
+
+    /** Generic UI Configurations that help to transform specific model data. */
+    static class UiConfiguration {
+        /** Converts an {@link AutofillSuggestion} to the appropriate drawable. */
+        public Function<AutofillSuggestion, Drawable> suggestionDrawableFunction;
     }
 
     abstract static class BarItemViewHolder<T extends BarItem, V extends View>
@@ -94,11 +103,16 @@ class KeyboardAccessoryViewBinder {
     static class BarItemChipViewHolder extends BarItemViewHolder<AutofillBarItem, ChipView> {
         private final View mRootViewForIPH;
         private final KeyboardAccessoryView mKeyboardAccessory;
+        private final Function<AutofillSuggestion, Drawable> mSuggestionDrawableFunction;
 
-        BarItemChipViewHolder(ViewGroup parent, KeyboardAccessoryView keyboardAccessory) {
+        BarItemChipViewHolder(
+                ViewGroup parent,
+                KeyboardAccessoryView keyboardAccessory,
+                Function<AutofillSuggestion, Drawable> suggestionDrawableFunction) {
             super(parent, R.layout.keyboard_accessory_suggestion);
             mRootViewForIPH = parent.getRootView();
             mKeyboardAccessory = keyboardAccessory;
+            mSuggestionDrawableFunction = suggestionDrawableFunction;
         }
 
         @Override
@@ -192,14 +206,7 @@ class KeyboardAccessoryViewBinder {
                         });
             }
             chipView.setIcon(
-                    getCardIcon(
-                            chipView.getContext(),
-                            PersonalDataManagerFactory.getForProfile(
-                                    ProfileManager.getLastUsedRegularProfile()),
-                            item.getSuggestion().getCustomIconUrl(),
-                            iconId,
-                            AutofillUiUtils.CardIconSize.SMALL,
-                            /* showCustomIcon= */ true),
+                    mSuggestionDrawableFunction.apply(item.getSuggestion()),
                     /* tintWithTextColor= */ false);
             TraceEvent.end("BarItemChipViewHolder#bind");
         }
@@ -262,8 +269,7 @@ class KeyboardAccessoryViewBinder {
      */
     static void bind(PropertyModel model, KeyboardAccessoryView view, PropertyKey propertyKey) {
         if (propertyKey == BAR_ITEMS) {
-            view.setBarItemsAdapter(
-                    KeyboardAccessoryCoordinator.createBarItemsAdapter(model.get(BAR_ITEMS), view));
+            // Intentionally empty. The adapter will observe changes to BAR_ITEMS.
         } else if (propertyKey == DISABLE_ANIMATIONS_FOR_TESTING) {
             if (model.get(DISABLE_ANIMATIONS_FOR_TESTING)) view.disableAnimationsForTesting();
         } else if (propertyKey == VISIBLE) {

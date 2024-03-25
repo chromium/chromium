@@ -144,6 +144,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.selection.SelectionPopupBackPressHandler;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -1831,16 +1832,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         super.finishNativeInitialization();
 
-        mManualFillingComponentSupplier
-                .get()
-                .initialize(
-                        getWindowAndroid(),
-                        mRootUiCoordinator.getBottomSheetController(),
-                        (ChromeKeyboardVisibilityDelegate) getWindowAndroid().getKeyboardDelegate(),
-                        mBackPressManager,
-                        mEdgeToEdgeControllerSupplier,
-                        findViewById(R.id.keyboard_accessory_sheet_stub),
-                        findViewById(R.id.keyboard_accessory_stub));
+        getProfileProviderSupplier().onAvailable(this::initializeManualFillingComponent);
 
         mTabReparentingControllerSupplier.set(
                 new TabReparentingController(
@@ -1868,6 +1860,20 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     }
                 };
         display.addObserver(mDisplayAndroidObserver);
+    }
+
+    private void initializeManualFillingComponent(ProfileProvider profileProvider) {
+        mManualFillingComponentSupplier
+                .get()
+                .initialize(
+                        getWindowAndroid(),
+                        profileProvider.getOriginalProfile(),
+                        mRootUiCoordinator.getBottomSheetController(),
+                        (ChromeKeyboardVisibilityDelegate) getWindowAndroid().getKeyboardDelegate(),
+                        mBackPressManager,
+                        mEdgeToEdgeControllerSupplier,
+                        findViewById(R.id.keyboard_accessory_sheet_stub),
+                        findViewById(R.id.keyboard_accessory_stub));
     }
 
     private boolean maybeOnScreenSizeChange() {

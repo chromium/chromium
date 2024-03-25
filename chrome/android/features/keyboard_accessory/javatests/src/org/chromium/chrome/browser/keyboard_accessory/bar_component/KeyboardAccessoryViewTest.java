@@ -241,7 +241,17 @@ public class KeyboardAccessoryViewTest {
                             AsyncViewProvider.of(viewStub, R.id.keyboard_accessory);
                     LazyConstructionPropertyMcp.create(
                             mModel, VISIBLE, provider, KeyboardAccessoryViewBinder::bind);
-                    provider.whenLoaded(mKeyboardAccessoryView::add);
+                    provider.whenLoaded(
+                            (view) -> {
+                                KeyboardAccessoryViewBinder.UiConfiguration uiConfiguration =
+                                        KeyboardAccessoryCoordinator.createUiConfiguration(
+                                                mActivityTestRule.getActivity(),
+                                                mMockPersonalDataManager);
+                                view.setBarItemsAdapter(
+                                        KeyboardAccessoryCoordinator.createBarItemsAdapter(
+                                                mModel.get(BAR_ITEMS), view, uiConfiguration));
+                                mKeyboardAccessoryView.add(view);
+                            });
                 });
     }
 

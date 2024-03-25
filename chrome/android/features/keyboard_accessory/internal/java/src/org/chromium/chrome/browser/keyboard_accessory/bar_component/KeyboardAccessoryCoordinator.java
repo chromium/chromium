@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
+
+import android.content.Context;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -13,6 +16,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.viewpager.widget.ViewPager;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
@@ -21,6 +27,7 @@ import org.chromium.chrome.browser.keyboard_accessory.button_group_component.Key
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.ui.AsyncViewProvider;
@@ -32,9 +39,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 
 /**
- * Creates and owns all elements which are part of the keyboard accessory component.
- * It's part of the controller but will mainly forward events (like adding a tab,
- * or showing the accessory) to the {@link KeyboardAccessoryMediator}.
+ * Creates and owns all elements which are part of the keyboard accessory component. It's part of
+ * the controller but will mainly forward events (like adding a tab, or showing the accessory) to
+ * the {@link KeyboardAccessoryMediator}.
  */
 public class KeyboardAccessoryCoordinator {
     private final KeyboardAccessoryMediator mMediator;
@@ -106,17 +113,22 @@ public class KeyboardAccessoryCoordinator {
     /**
      * Initializes the component as soon as the native library is loaded by e.g. starting to listen
      * to keyboard visibility events.
+     *
+     * @param profile The {@link Profile} associated with the data.
      * @param barVisibilityDelegate A {@link BarVisibilityDelegate} for delegating the bar
-     *         visibility changes.
+     *     visibility changes.
      * @param sheetVisibilityDelegate A {@link AccessorySheetCoordinator.SheetVisibilityDelegate}
-     *         for delegating the sheet visibility changes.
+     *     for delegating the sheet visibility changes.
      * @param barStub A {@link AsyncViewStub} for the accessory bar layout.
      */
     public KeyboardAccessoryCoordinator(
+            Profile profile,
             BarVisibilityDelegate barVisibilityDelegate,
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
             AsyncViewStub barStub) {
         this(
+                barStub.getContext(),
+                profile,
                 new KeyboardAccessoryButtonGroupCoordinator(),
                 barVisibilityDelegate,
                 sheetVisibilityDelegate,
@@ -126,16 +138,21 @@ public class KeyboardAccessoryCoordinator {
     /**
      * Constructor that allows to mock the {@link AsyncViewProvider}.
      *
+     * @param context The {@link Context} associated with the current UI context.
+     * @param profile The {@link Profile} associated with the data.
      * @param viewProvider A provider for the accessory.
      */
     @VisibleForTesting
     public KeyboardAccessoryCoordinator(
+            Context context,
+            Profile profile,
             KeyboardAccessoryButtonGroupCoordinator buttonGroup,
             BarVisibilityDelegate barVisibilityDelegate,
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
             ViewProvider<KeyboardAccessoryView> viewProvider) {
         mButtonGroup = buttonGroup;
         mModel = KeyboardAccessoryProperties.defaultModelBuilder().build();
+
         mMediator =
                 new KeyboardAccessoryMediator(
                         mModel,
@@ -143,12 +160,39 @@ public class KeyboardAccessoryCoordinator {
                         sheetVisibilityDelegate,
                         mButtonGroup.getTabSwitchingDelegate(),
                         mButtonGroup.getSheetOpenerCallbacks());
-        viewProvider.whenLoaded(view -> mView = view);
+        viewProvider.whenLoaded(
+                view -> {
+                    mView = view;
+                    mView.setBarItemsAdapter(
+                            createBarItemsAdapter(
+                                    mModel.get(KeyboardAccessoryProperties.BAR_ITEMS),
+                                    mView,
+                                    createUiConfiguration(
+                                            context,
+                                            PersonalDataManagerFactory.getForProfile(profile))));
+                });
 
         mButtonGroup.setTabObserver(mMediator);
         LazyConstructionPropertyMcp.create(
                 mModel, VISIBLE, viewProvider, KeyboardAccessoryViewBinder::bind);
         KeyboardAccessoryMetricsRecorder.registerKeyboardAccessoryModelMetricsObserver(mModel);
+    }
+
+    @VisibleForTesting
+    static KeyboardAccessoryViewBinder.UiConfiguration createUiConfiguration(
+            Context context, PersonalDataManager personalDataManager) {
+        KeyboardAccessoryViewBinder.UiConfiguration uiConfiguration =
+                new KeyboardAccessoryViewBinder.UiConfiguration();
+        uiConfiguration.suggestionDrawableFunction =
+                (suggestion) ->
+                        getCardIcon(
+                                context,
+                                personalDataManager,
+                                suggestion.getCustomIconUrl(),
+                                suggestion.getIconId(),
+                                AutofillUiUtils.CardIconSize.SMALL,
+                                /* showCustomIcon= */ true);
+        return uiConfiguration;
     }
 
     /**
@@ -159,15 +203,20 @@ public class KeyboardAccessoryCoordinator {
      * @param view The keyboard accessory view that will display the bar items.
      * @return Returns a fully initialized and wired adapter to an BarItemViewHolder.
      */
+    @VisibleForTesting
     static RecyclerViewAdapter<BarItemViewHolder, Void> createBarItemsAdapter(
-            ListModel<BarItem> barItems, KeyboardAccessoryView view) {
+            ListModel<BarItem> barItems,
+            KeyboardAccessoryView view,
+            KeyboardAccessoryViewBinder.UiConfiguration uiConfiguration) {
         return new RecyclerViewAdapter<>(
                 new KeyboardAccessoryRecyclerViewMcp<>(
                         barItems,
                         BarItem::getViewType,
                         BarItemViewHolder::bind,
                         BarItemViewHolder::recycle),
-                (parent, viewType) -> KeyboardAccessoryViewBinder.create(view, parent, viewType));
+                (parent, viewType) ->
+                        KeyboardAccessoryViewBinder.create(
+                                view, uiConfiguration, parent, viewType));
     }
 
     public void closeActiveTab() {

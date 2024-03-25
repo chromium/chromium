@@ -15,6 +15,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -91,6 +92,7 @@ public interface ManualFillingComponent extends BackPressHandler {
      * called.
      *
      * @param windowAndroid The window needed to listen to the keyboard and to connect to activity.
+     * @param profile The {@link Profile} associated with the data.
      * @param sheetController A {@link BottomSheetController} to show the UI in.
      * @param keyboardDelegate A {@link SoftKeyboardDelegate} to control only the system keyboard.
      * @param backPressManager A {@link BackPressManager} to register {@link BackPressHandler}.
@@ -99,6 +101,7 @@ public interface ManualFillingComponent extends BackPressHandler {
      */
     void initialize(
             WindowAndroid windowAndroid,
+            Profile profile,
             BottomSheetController sheetController,
             SoftKeyboardDelegate keyboardDelegate,
             BackPressManager backPressManager,

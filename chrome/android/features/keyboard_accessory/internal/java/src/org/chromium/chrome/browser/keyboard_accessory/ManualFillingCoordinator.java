@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -44,6 +45,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     @Override
     public void initialize(
             WindowAndroid windowAndroid,
+            Profile profile,
             BottomSheetController sheetController,
             SoftKeyboardDelegate keyboardDelegate,
             BackPressManager backPressManager,
@@ -61,7 +63,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
         sheetStub.setShouldInflateOnBackgroundThread(true);
         initialize(
                 windowAndroid,
-                new KeyboardAccessoryCoordinator(mMediator, mMediator, barStub),
+                new KeyboardAccessoryCoordinator(profile, mMediator, mMediator, barStub),
                 new AccessorySheetCoordinator(sheetStub, mMediator),
                 sheetController,
                 backPressManager,
