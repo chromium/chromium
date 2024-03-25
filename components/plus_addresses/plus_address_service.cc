@@ -115,29 +115,19 @@ std::optional<std::string> PlusAddressService::GetPlusAddress(
 
 std::vector<PlusProfile> PlusAddressService::GetPlusProfiles() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<PlusProfile> profiles;
-  profiles.reserve(plus_address_by_site_.size());
-  for (const auto& [facet, plus_address] : plus_address_by_site_) {
-    profiles.push_back(PlusProfile(
-        {.facet = facet, .plus_address = plus_address, .is_confirmed = true}));
-  }
-  return profiles;
+  return std::vector<PlusProfile>(plus_profiles_.begin(), plus_profiles_.end());
 }
 
 std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
     const url::Origin& origin) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string etld_plus_one = GetEtldPlusOne(origin);
-  auto it = plus_address_by_site_.find(etld_plus_one);
-  if (it == plus_address_by_site_.end()) {
+  // `facet` is used as the comparator, so the other fields don't matter.
+  auto it = plus_profiles_.find({.facet = etld_plus_one});
+  if (it == plus_profiles_.end()) {
     return std::nullopt;
   }
-  // Assume that 'is_confirmed` = TRUE since this service only has a saved plus
-  // address if it was successfully confirmed via the dialog or retrieved via
-  // polling (which only returns confirmed plus addresses).
-  return PlusProfile({.facet = etld_plus_one,
-                      .plus_address = it->second,
-                      .is_confirmed = true});
+  return *it;
 }
 
 void PlusAddressService::SavePlusAddress(url::Origin origin,
@@ -152,8 +142,14 @@ void PlusAddressService::SavePlusAddress(url::Origin origin,
   // client is not receiving profile_ids from the backend yet, we can't insert
   // into the database here. Doing so without the correct profile_id would
   // create a duplicate once the address arrives via sync.
-  std::string etld_plus_one = GetEtldPlusOne(origin);
-  plus_address_by_site_[etld_plus_one] = plus_address;
+
+  // Update the in-memory cache `plus_profiles_` cache.
+  // TODO(b/322147254): Use profile_id, once available. For now, 0 works even in
+  // the sync case, since updates through sync replace the entire cache.
+  plus_profiles_.insert({.profile_id = 0,
+                         .facet = GetEtldPlusOne(origin),
+                         .plus_address = plus_address,
+                         .is_confirmed = true});
   plus_addresses_.insert(plus_address);
   for (Observer& o : observers_) {
     o.OnPlusAddressesChanged();
@@ -327,10 +323,16 @@ void PlusAddressService::SyncPlusAddressMapping() {
 
 void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  plus_address_by_site_ = map;
+  plus_profiles_.clear();
   plus_addresses_.clear();
-  for (const auto& [_, value] : map) {
-    plus_addresses_.insert(value);
+  for (const auto& [facet, address] : map) {
+    // `UpdatePlusAddressMap()` is only called when sync support is disabled.
+    // In this case, profile_ids don't matter.
+    plus_profiles_.insert({.profile_id = 0,
+                           .facet = facet,
+                           .plus_address = address,
+                           .is_confirmed = true});
+    plus_addresses_.insert(address);
   }
   for (Observer& o : observers_) {
     o.OnPlusAddressesChanged();
@@ -354,11 +356,10 @@ void PlusAddressService::OnWebDataServiceRequestDone(
 void PlusAddressService::ReplacePlusProfiles(
     const std::vector<PlusProfile>& profiles) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  plus_address_by_site_.clear();
+  plus_profiles_.clear();
   plus_addresses_.clear();
   for (const PlusProfile& plus_profile : profiles) {
-    plus_address_by_site_.insert(
-        {plus_profile.facet, plus_profile.plus_address});
+    plus_profiles_.insert(plus_profile);
     plus_addresses_.insert(plus_profile.plus_address);
   }
   for (Observer& o : observers_) {
@@ -410,7 +411,7 @@ void PlusAddressService::OnErrorStateOfRefreshTokenUpdatedForAccount(
 
 void PlusAddressService::HandleSignout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  plus_address_by_site_.clear();
+  plus_profiles_.clear();
   plus_addresses_.clear();
   polling_timer_.Stop();
   plus_address_http_client_->Reset();

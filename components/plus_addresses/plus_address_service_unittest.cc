@@ -778,12 +778,8 @@ TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
   table().AddOrUpdatePlusProfile(profile);
   EXPECT_THAT(service().GetPlusProfiles(), testing::IsEmpty());
   service().OnWebDataChangedBySync({profile});
-  // TODO(b/322147254): Once `PlusAddressService` stores profile_ids, use
-  // testing::UnorderedElementsAre().
-  const std::vector<PlusProfile> service_profiles = service().GetPlusProfiles();
-  ASSERT_EQ(service_profiles.size(), 1u);
-  EXPECT_EQ(service_profiles[0].facet, profile.facet);
-  EXPECT_EQ(service_profiles[0].plus_address, profile.plus_address);
+  EXPECT_THAT(service().GetPlusProfiles(),
+              testing::UnorderedElementsAre(profile));
 }
 
 class PlusAddressServiceDisabledTest : public PlusAddressServiceTest {

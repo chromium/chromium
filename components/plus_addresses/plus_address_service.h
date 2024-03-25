@@ -136,8 +136,8 @@ class PlusAddressService : public KeyedService,
   bool is_enabled() const;
 
  private:
-  // Creates and starts a timer to keep `plus_address_by_site_` and
-  // `plus_addresses` in sync with a remote plus address server.
+  // Creates and starts a timer to keep `plus_profiles_` and
+  // `plus_addresses_` in sync with a remote plus address server.
   // This has no effect if this service is not enabled or the timer is already
   // running.
   void CreateAndStartTimer();
@@ -175,19 +175,21 @@ class PlusAddressService : public KeyedService,
   // on `excluded_sites_` set, and scheme is http or https.
   bool IsSupportedOrigin(const url::Origin& origin) const;
 
-  // Replaces the data stored in `plus_address_by_site_` and `plus_addresses_`
+  // Replaces the data stored in `plus_profiles_` and `plus_addresses_`
   // with the contents of `profiles`, and notifies observers about this change.
   void ReplacePlusProfiles(const std::vector<PlusProfile>& profiles);
 
-  // Updates `plus_address_by_site_` and `plus_addresses_` using `map`.
+  // Updates `plus_profiles_` and `plus_addresses_` using `map`.
   // TODO(b/322147254): Remove once integration has finished.
   void UpdatePlusAddressMap(const PlusAddressMap& map);
 
-  // The user's existing set of plus addresses, scoped to sites.
-  PlusAddressMap plus_address_by_site_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // The user's existing set of `PlusProfile`s, ordered by facet. Since only a
+  // single address per facet is supported, this can be used as the comparator.
+  std::set<PlusProfile, PlusProfileFacetComparator> plus_profiles_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to drive the `IsPlusAddress` function, and derived from the values of
-  // `plus_profiles`.
+  // `plus_profiles_`.
   std::unordered_set<std::string> plus_addresses_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

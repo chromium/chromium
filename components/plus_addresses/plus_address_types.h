@@ -25,6 +25,12 @@ struct PlusProfile {
   friend bool operator==(const PlusProfile&, const PlusProfile&) = default;
 };
 
+struct PlusProfileFacetComparator {
+  bool operator()(const PlusProfile& a, const PlusProfile& b) const {
+    return a.facet < b.facet;
+  }
+};
+
 enum class PlusAddressRequestErrorType {
   kParsingError = 0,
   kNetworkError = 1,
