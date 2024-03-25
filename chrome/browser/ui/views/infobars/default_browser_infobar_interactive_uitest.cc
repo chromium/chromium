@@ -39,6 +39,7 @@
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
 constexpr char kInfoBarAcceptButton[] = "infobar_accept_button";
+constexpr char kInfoBarDismissButton[] = "infobar_dismiss_button";
 }  // namespace
 
 class DefaultBrowserInfobarInteractiveTest : public InteractiveBrowserTest {
@@ -56,6 +57,13 @@ class DefaultBrowserInfobarInteractiveTest : public InteractiveBrowserTest {
     return NameView(kInfoBarAcceptButton, base::BindLambdaForTesting([&]() {
                       return static_cast<views::View*>(
                           GetActiveInfoBar()->ok_button_for_testing());
+                    }));
+  }
+
+  auto NameDismissButton() {
+    return NameView(kInfoBarDismissButton, base::BindLambdaForTesting([&]() {
+                      return static_cast<views::View*>(
+                          GetActiveInfoBar()->dismiss_button_for_testing());
                     }));
   }
 };
@@ -131,6 +139,21 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
   ShowPromptForTesting();
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
                   NameAcceptButton(), PressButton(kInfoBarAcceptButton),
+                  FlushEvents(),
+                  WaitForHide(ConfirmInfoBar::kInfoBarElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
+                       HandlesDismissWithDisabledAnimation) {
+  // When animations are disabled, the info bar is destroyed sooner which can
+  // cause UAF if not handled properly. This test ensures it is handled
+  // properly.
+  const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+  ShowPromptForTesting();
+  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+                  NameDismissButton(), PressButton(kInfoBarDismissButton),
                   FlushEvents(),
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }
