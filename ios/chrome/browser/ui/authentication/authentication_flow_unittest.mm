@@ -20,7 +20,6 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/tribool.h"
-#import "components/sync/base/features.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
@@ -396,11 +395,8 @@ TEST_F(AuthenticationFlowTest, TestShowManagedConfirmationWithSyncConsent) {
 TEST_F(AuthenticationFlowTest,
        TestShowManagedConfirmationForSigninConsentLevelIfAllFeaturesEnabled) {
   // Enable user policy and sign-in promos.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {syncer::kReplaceSyncPromosWithSignInPromos,
-       policy::kUserPolicyForSigninAndNoSyncConsentLevel},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list(
+      policy::kUserPolicyForSigninAndNoSyncConsentLevel);
 
   CreateAuthenticationFlow(
       PostSignInAction::kNone, managed_identity_,
@@ -450,11 +446,8 @@ TEST_F(AuthenticationFlowTest,
 TEST_F(AuthenticationFlowTest,
        TestSkipManagedConfirmationWhenAlreadyManagedAtMachineLevel) {
   // Enable user policy and sign-in consent only.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {syncer::kReplaceSyncPromosWithSignInPromos,
-       policy::kUserPolicyForSigninAndNoSyncConsentLevel},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list(
+      policy::kUserPolicyForSigninAndNoSyncConsentLevel);
 
   // Set a machine level policy.
   base::ScopedTempDir state_directory;
@@ -543,52 +536,6 @@ TEST_F(AuthenticationFlowTest, TestSyncAfterSigninAndSync) {
   histogram_tester_.ExpectUniqueSample(
       "Signin.AccountType.SyncConsent",
       signin_metrics::SigninAccountType::kManaged, 1);
-}
-
-// Tests sign-in without sync flow with a managed account that is elible for
-// user policy. A managed account is eligible for user policy if it has the
-// corresponding user policy feature enabled.
-TEST_F(AuthenticationFlowTest,
-       TestUserPolicyForManagedAccountForSigninConsentLevelWhenEligible) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {policy::kUserPolicyForSigninAndNoSyncConsentLevel},
-      {syncer::kReplaceSyncPromosWithSignInPromos});
-
-  CreateAuthenticationFlow(
-      PostSignInAction::kNone, managed_identity_,
-      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
-
-  [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ didFetchManagedStatus:@"foo.com"];
-  }] fetchManagedStatus:browser_state_.get() forIdentity:managed_identity_];
-
-  SetSigninSuccessExpectations(
-      managed_identity_,
-      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
-
-  [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_
-        didRegisterForUserPolicyWithDMToken:kFakeDMToken
-                                   clientID:kFakeClientID
-                         userAffiliationIDs:@[ kFakeUserAffiliationID ]];
-  }] registerUserPolicy:browser_state_.get() forIdentity:managed_identity_];
-
-  [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ didFetchUserPolicyWithSuccess:YES];
-  }] fetchUserPolicy:browser_state_.get()
-             withDmToken:kFakeDMToken
-                clientID:kFakeClientID
-      userAffiliationIDs:@[ kFakeUserAffiliationID ]
-                identity:managed_identity_];
-
-  [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
-
-  CheckSignInCompletion(/*expected_signed_in=*/true);
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.AccountType.SigninConsent",
-      signin_metrics::SigninAccountType::kManaged, 1);
-  histogram_tester_.ExpectTotalCount("Signin.AccountType.SyncConsent", 0);
 }
 
 // Tests sign-in+sync flow with a managed account that is elible for user
