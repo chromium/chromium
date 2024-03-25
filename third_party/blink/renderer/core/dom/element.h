@@ -179,39 +179,6 @@ enum class NamedItemType {
   kNameOrIdWithName,
 };
 
-enum class InvokeAction {
-  // Action is neither custom, nor built-in (effectively invalid)
-  kNone,
-
-  // Custom actions include a `-`.
-  kCustom,
-
-  // The "auto" state (empty string or missing)
-  kAuto,
-  // Popover
-  kTogglePopover,
-  kHidePopover,
-  kShowPopover,
-  // Dialog
-  kShowModal,
-  kClose,
-  // Details
-  kToggle,
-  kOpen,
-  // kClose
-  // Input / Select
-  kShowPicker,
-  // Fullscreen
-  kToggleFullscreen,
-  kRequestFullscreen,
-  kExitFullscreen,
-  // Audio/Video
-  kPlaypause,
-  kPause,
-  kPlay,
-  kToggleMuted,
-};
-
 typedef HeapVector<Member<Attr>> AttrNodeList;
 
 typedef HashMap<AtomicString, SpecificTrustedType> AttrNameToTrustedType;
@@ -955,11 +922,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // This allows customization of how Invokes are handled, per element.
   // See: crbug.com/1490919, https://open-ui.org/components/invokers.explainer/
-  virtual bool IsValidInvokeAction(HTMLElement& invoker, InvokeAction action) {
-    return action == InvokeAction::kAuto;
-  }
-  virtual bool HandleInvokeInternal(HTMLElement& invoker, InvokeAction action) {
-    CHECK(action != InvokeAction::kCustom && action != InvokeAction::kNone);
+  virtual bool HandleInvokeInternal(HTMLElement& invoker,
+                                    AtomicString& action) {
     return false;
   }
 

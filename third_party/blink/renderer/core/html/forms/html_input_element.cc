@@ -2410,26 +2410,19 @@ void HTMLInputElement::showPicker(ExceptionState& exception_state) {
   input_type_view_->OpenPopupView();
 }
 
-bool HTMLInputElement::IsValidInvokeAction(HTMLElement& invoker,
-                                           InvokeAction action) {
-  bool parent_is_valid = HTMLElement::IsValidInvokeAction(invoker, action);
-  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
-    return parent_is_valid;
-  }
-  return parent_is_valid || action == InvokeAction::kShowPicker;
-}
-
 bool HTMLInputElement::HandleInvokeInternal(HTMLElement& invoker,
-                                            InvokeAction action) {
-  CHECK(IsValidInvokeAction(invoker, action));
-
+                                            AtomicString& action) {
   if (HTMLElement::HandleInvokeInternal(invoker, action)) {
     return true;
   }
 
+  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
+    return false;
+  }
+
   // Step 3. If action is an ASCII case-insensitive match for showPicker ...
   // Early return instead of doing this in step 3.
-  if (action != InvokeAction::kShowPicker) {
+  if (!EqualIgnoringASCIICase(action, keywords::kShowPicker)) {
     return false;
   }
 
