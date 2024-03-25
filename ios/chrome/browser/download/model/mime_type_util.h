@@ -139,6 +139,7 @@ extern char k3GPPVideoMimeType[];
 extern char k3GPPAudioMimeType[];
 extern char k3GPP2VideoMimeType[];
 extern char k3GPP2AudioMimeType[];
+extern char kAnimatedPortableNetworkGraphicsImageMimeType[];
 
 // Returns whether the content-type or the file extension match those of a USDZ
 // 3D model. The file extension is checked in addition to the content-type since

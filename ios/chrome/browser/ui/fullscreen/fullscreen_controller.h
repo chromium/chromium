@@ -12,6 +12,9 @@
 class Browser;
 @class ChromeBroadcaster;
 class FullscreenControllerObserver;
+namespace web {
+class WebState;
+}
 
 // An object that observes scrolling events in the main content area and
 // calculates how much of the toolbar should be visible as a result.  When the
@@ -94,6 +97,10 @@ class FullscreenController : public base::SupportsUserData::Data {
   // Force horizontal content resize, when content isn't tracking resize by
   // itself.
   virtual void ResizeHorizontalViewport() = 0;
+
+  // Records the type of the given website when the user exit fullscreen
+  // manually.
+  virtual void LogMimeTypeWhenExitFullscreen(web::WebState* webState) = 0;
 
  protected:
   // Returns the key used to store the UserData. Protected so it can be used in

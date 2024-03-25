@@ -130,7 +130,11 @@
 #pragma mark - AdaptiveToolbarViewControllerDelegate
 
 - (void)exitFullscreen {
-  FullscreenController::FromBrowser(self.browser)->ExitFullscreen();
+  FullscreenController* fullscreenController =
+      FullscreenController::FromBrowser(self.browser);
+  fullscreenController->LogMimeTypeWhenExitFullscreen(
+      self.browser->GetWebStateList()->GetActiveWebState());
+  fullscreenController->ExitFullscreen();
 }
 
 #pragma mark - NewTabPageControllerDelegate
