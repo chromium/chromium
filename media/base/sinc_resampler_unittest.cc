@@ -5,6 +5,7 @@
 #include <memory>
 #include <numbers>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
@@ -50,18 +51,18 @@ TEST(SincResamplerTest, ChunkedResample) {
 
   static const int kChunks = 2;
   int max_chunk_size = resampler.ChunkSize() * kChunks;
-  std::unique_ptr<float[]> resampled_destination(new float[max_chunk_size]);
+  auto resampled_destination = base::HeapArray<float>::Uninit(max_chunk_size);
 
   // Verify requesting ChunkSize() frames causes a single callback.
   EXPECT_CALL(mock_source, ProvideInput(_, _)).Times(1).WillOnce(ClearBuffer());
-  resampler.Resample(resampler.ChunkSize(), resampled_destination.get());
+  resampler.Resample(resampler.ChunkSize(), resampled_destination.data());
 
   // Verify requesting kChunks * ChunkSize() frames causes kChunks callbacks.
   testing::Mock::VerifyAndClear(&mock_source);
   EXPECT_CALL(mock_source, ProvideInput(_, _))
       .Times(kChunks)
       .WillRepeatedly(ClearBuffer());
-  resampler.Resample(max_chunk_size, resampled_destination.get());
+  resampler.Resample(max_chunk_size, resampled_destination.data());
 }
 
 // Verify priming the resampler avoids changes to ChunkSize() between calls.
@@ -93,11 +94,11 @@ TEST(SincResamplerTest, PrimedResample) {
 
   const int kChunks = 2;
   const int kMaxFrames = max_chunk_size * kChunks;
-  std::unique_ptr<float[]> resampled_destination(new float[kMaxFrames]);
+  auto resampled_destination = base::HeapArray<float>::Uninit(kMaxFrames);
 
   // Verify requesting ChunkSize() frames causes a single callback.
   EXPECT_CALL(mock_source, ProvideInput(_, _)).Times(1).WillOnce(ClearBuffer());
-  resampler.Resample(max_chunk_size, resampled_destination.get());
+  resampler.Resample(max_chunk_size, resampled_destination.data());
   EXPECT_EQ(max_chunk_size, resampler.ChunkSize());
 
   // Verify requesting kChunks * ChunkSize() frames causes kChunks callbacks.
@@ -105,7 +106,7 @@ TEST(SincResamplerTest, PrimedResample) {
   EXPECT_CALL(mock_source, ProvideInput(_, _))
       .Times(kChunks)
       .WillRepeatedly(ClearBuffer());
-  resampler.Resample(kMaxFrames, resampled_destination.get());
+  resampler.Resample(kMaxFrames, resampled_destination.data());
   EXPECT_EQ(max_chunk_size, resampler.ChunkSize());
 }
 
@@ -115,19 +116,19 @@ TEST(SincResamplerTest, Flush) {
   SincResampler resampler(kSampleRateRatio, SincResampler::kDefaultRequestSize,
                           base::BindRepeating(&MockSource::ProvideInput,
                                               base::Unretained(&mock_source)));
-  std::unique_ptr<float[]> resampled_destination(
-      new float[resampler.ChunkSize()]);
+  auto resampled_destination =
+      base::HeapArray<float>::Uninit(resampler.ChunkSize());
 
   // Fill the resampler with junk data.
   EXPECT_CALL(mock_source, ProvideInput(_, _)).Times(1).WillOnce(FillBuffer());
-  resampler.Resample(resampler.ChunkSize() / 2, resampled_destination.get());
+  resampler.Resample(resampler.ChunkSize() / 2, resampled_destination.data());
   ASSERT_NE(resampled_destination[0], 0);
 
   // Flush and request more data, which should all be zeros now.
   resampler.Flush();
   testing::Mock::VerifyAndClear(&mock_source);
   EXPECT_CALL(mock_source, ProvideInput(_, _)).Times(1).WillOnce(ClearBuffer());
-  resampler.Resample(resampler.ChunkSize() / 2, resampled_destination.get());
+  resampler.Resample(resampler.ChunkSize() / 2, resampled_destination.data());
   for (int i = 0; i < resampler.ChunkSize() / 2; ++i) {
     ASSERT_FLOAT_EQ(resampled_destination[i], 0);
   }
@@ -287,28 +288,28 @@ TEST_P(SincResamplerTest, Resample) {
 
   // Force an update to the sample rate ratio to ensure dynamic sample rate
   // changes are working correctly.
-  std::unique_ptr<float[]> kernel(new float[kernel_storage_size]);
-  memcpy(kernel.get(), resampler.get_kernel_for_testing(),
+  auto kernel = base::HeapArray<float>::Uninit(kernel_storage_size);
+  memcpy(kernel.data(), resampler.get_kernel_for_testing(),
          kernel_storage_size_in_bytes);
   resampler.SetRatio(std::numbers::pi);
-  ASSERT_NE(0, memcmp(kernel.get(), resampler.get_kernel_for_testing(),
+  ASSERT_NE(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
                       kernel_storage_size_in_bytes));
   resampler.SetRatio(io_ratio);
-  ASSERT_EQ(0, memcmp(kernel.get(), resampler.get_kernel_for_testing(),
+  ASSERT_EQ(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
                       kernel_storage_size_in_bytes));
 
   // TODO(dalecurtis): If we switch to AVX/SSE optimization, we'll need to
   // allocate these on 32-byte boundaries and ensure they're sized % 32 bytes.
-  std::unique_ptr<float[]> resampled_destination(new float[output_samples]);
-  std::unique_ptr<float[]> pure_destination(new float[output_samples]);
+  auto resampled_destination = base::HeapArray<float>::Uninit(output_samples);
+  auto pure_destination = base::HeapArray<float>::Uninit(output_samples);
 
   // Generate resampled signal.
-  resampler.Resample(output_samples, resampled_destination.get());
+  resampler.Resample(output_samples, resampled_destination.data());
 
   // Generate pure signal.
   SinusoidalLinearChirpSource pure_source(output_rate_, output_samples,
                                           input_nyquist_freq);
-  pure_source.ProvideInput(output_samples, pure_destination.get());
+  pure_source.ProvideInput(output_samples, pure_destination.data());
 
   // Range of the Nyquist frequency (0.5 * min(input rate, output_rate)) which
   // we refer to as low and high.
@@ -382,23 +383,22 @@ TEST_P(SincResamplerTest, Resample_SmallKernel) {
 
   // Force an update to the sample rate ratio to ensure dynamic sample rate
   // changes are working correctly.
-  std::unique_ptr<float[]> kernel(new float[kernel_storage_size]);
-  memcpy(kernel.get(), resampler.get_kernel_for_testing(),
+  auto kernel = base::HeapArray<float>::Uninit(kernel_storage_size);
+  memcpy(kernel.data(), resampler.get_kernel_for_testing(),
          kernel_storage_size_in_bytes);
   resampler.SetRatio(std::numbers::pi);
-  ASSERT_NE(0, memcmp(kernel.get(), resampler.get_kernel_for_testing(),
+  ASSERT_NE(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
                       kernel_storage_size_in_bytes));
   resampler.SetRatio(io_ratio);
-  ASSERT_EQ(0, memcmp(kernel.get(), resampler.get_kernel_for_testing(),
+  ASSERT_EQ(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
                       kernel_storage_size_in_bytes));
 
   // TODO(dalecurtis): If we switch to AVX/SSE optimization, we'll need to
   // allocate these on 32-byte boundaries and ensure they're sized % 32 bytes.
-  std::unique_ptr<float[]> resampled_destination(new float[output_samples]);
-  std::unique_ptr<float[]> pure_destination(new float[output_samples]);
+  auto resampled_destination = base::HeapArray<float>::Uninit(output_samples);
 
   // Generate resampled signal.
-  resampler.Resample(output_samples, resampled_destination.get());
+  resampler.Resample(output_samples, resampled_destination.data());
 
   // Do not check for the maximum error range for the small kernel size,
   // as there is already quite a bit of test data. This test is only meant to
