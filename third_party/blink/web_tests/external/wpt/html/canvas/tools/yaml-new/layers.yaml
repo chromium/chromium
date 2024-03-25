@@ -557,7 +557,7 @@
 - name: 2d.layer.flush-on-frame-presentation
   desc: Check that layers state stack is flushed and rebuilt on frame renders.
   size: [200, 200]
-  canvasType: ['HTMLCanvas']
+  canvas_types: ['HtmlCanvas']
   test_type: "promise"
   code: |
     ctx.fillStyle = 'purple';
@@ -631,10 +631,10 @@
       operation: |-
         ctx.putImageData(data, 0, 0)
     toDataURL:
-      canvasType: ['HTMLCanvas']
+      canvas_types: ['HtmlCanvas']
       operation: canvas.toDataURL()
     transferToImageBitmap:
-      canvasType: ['OffscreenCanvas', 'Worker']
+      canvas_types: ['OffscreenCanvas', 'Worker']
       operation: canvas.transferToImageBitmap()
 
 - name: 2d.layer.malformed-operations-with-promises
@@ -653,13 +653,13 @@
     await promise_rejects_dom(t, 'InvalidStateError', {{ operation }});
   variants:
   - convertToBlob:
-      canvasType: ['OffscreenCanvas', 'Worker']
+      canvas_types: ['OffscreenCanvas', 'Worker']
       operation: |-
         canvas.convertToBlob()
     createImageBitmap:
       operation: createImageBitmap(canvas)
     toBlob:
-      canvasType: ['HTMLCanvas']
+      canvas_types: ['HtmlCanvas']
       operation: |-
         new Promise(resolve => canvas.toBlob(resolve))
 
@@ -1057,7 +1057,7 @@
   desc: Checks that layer blending works inside opaque canvas
   size: [300, 300]
   code: |
-    {% if canvas_type == 'htmlcanvas' %}
+    {% if canvas_type == 'HtmlCanvas' %}
     const canvas2 = document.createElement('canvas');
     canvas2.width = 200;
     canvas2.height = 200;

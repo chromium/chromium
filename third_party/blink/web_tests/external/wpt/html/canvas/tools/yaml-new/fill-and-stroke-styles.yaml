@@ -1,6 +1,6 @@
 - name: 2d.fillStyle.parse.current.basic
   desc: currentColor is computed from the canvas element
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   code: |
     canvas.setAttribute('style', 'color: #0f0');
     ctx.fillStyle = '#f00';
@@ -11,7 +11,7 @@
 
 - name: 2d.fillStyle.parse.current.changed
   desc: currentColor is computed when the attribute is set, not when it is painted
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   code: |
     canvas.setAttribute('style', 'color: #0f0');
     ctx.fillStyle = '#f00';
@@ -23,7 +23,7 @@
 
 - name: 2d.fillStyle.parse.current.removed
   desc: currentColor is solid black when the canvas element is not in a document
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   code: |
     // Try not to let it undetectably incorrectly pick up opaque-black
     // from other parts of the document:
@@ -119,7 +119,7 @@
   desc: window.CanvasGradient exists and has the right properties
   notes: &bindings Defined in "Web IDL" (draft)
   code: |
-    {% set root = 'self' if canvas_type == 'worker' else 'window' %}
+    {% set root = 'self' if canvas_type == 'Worker' else 'window' %}
     @assert {{ root }}.CanvasGradient !== undefined;
     @assert {{ root }}.CanvasGradient.prototype.addColorStop !== undefined;
 
@@ -127,7 +127,7 @@
   desc: createLinearGradient() and createRadialGradient() returns objects implementing
     CanvasGradient
   code: |
-    {% set root = 'self' if canvas_type == 'worker' else 'window' %}
+    {% set root = 'self' if canvas_type == 'Worker' else 'window' %}
     {{ root }}.CanvasGradient.prototype.thisImplementsCanvasGradient = true;
 
     var g1 = ctx.createLinearGradient(0, 0, 100, 0);
@@ -485,14 +485,14 @@
   expected: green
   variants:
   - _HtmlCanvas:
-      canvasType: ['HtmlCanvas']
+      canvas_types: ['HtmlCanvas']
       create_canvas: document.createElement('canvas')
     _OffscreenCanvas:
-      canvasType: ['OffscreenCanvas', 'Worker']
+      canvas_types: ['OffscreenCanvas', 'Worker']
       create_canvas: new OffscreenCanvas(100, 50)
 
 - name: 2d.gradient.object.current
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   code: |
     canvas.setAttribute('style', 'color: #f00');
 
@@ -1126,7 +1126,7 @@
   images:
   - green.png
   code: |
-    {% set root = 'self' if canvas_type == 'worker' else 'window' %}
+    {% set root = 'self' if canvas_type == 'Worker' else 'window' %}
     @assert {{ root }}.CanvasPattern !== undefined;
 
     {{ root }}.CanvasPattern.prototype.thisImplementsCanvasPattern = true;
@@ -1136,10 +1136,10 @@
     @assert pattern.thisImplementsCanvasPattern;
   variants: &load-image-variant-definition
   - _HtmlCanvas:
-      canvasType: ['HtmlCanvas']
+      canvas_types: ['HtmlCanvas']
       load_image: var img = document.getElementById('{{ (images or svgimages)[0] }}');
     _OffscreenCanvas:
-      canvasType: ['OffscreenCanvas', 'Worker']
+      canvas_types: ['OffscreenCanvas', 'Worker']
       test_type: promise
       load_image: |-
         var response = await fetch('/images/{{ (images or svgimages)[0] }}')
@@ -1190,13 +1190,13 @@
   expected: green
   variants: &create-canvas2-variant-definition
   - _HtmlCanvas:
-      canvasType: ['HtmlCanvas']
+      canvas_types: ['HtmlCanvas']
       create_canvas2: |-
         var canvas2 = document.createElement('canvas');
         canvas2.width = 100;
         canvas2.height = 50;
     _OffscreenCanvas:
-      canvasType: ['OffscreenCanvas', 'Worker']
+      canvas_types: ['OffscreenCanvas', 'Worker']
       create_canvas2: |-
         var canvas2 = new OffscreenCanvas(100, 50);
 
@@ -1299,13 +1299,13 @@
     @assert throws TypeError ctx.createPattern('../images/red.png', 'repeat');
 
 - name: 2d.pattern.image.incomplete.nosrc
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   code: |
     var img = new Image();
     @assert ctx.createPattern(img, 'repeat') === null;
 
 - name: 2d.pattern.image.incomplete.immediate
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   images:
   - red.png
   code: |
@@ -1318,7 +1318,7 @@
     @assert ctx.createPattern(img, 'repeat') === null; @moz-todo
 
 - name: 2d.pattern.image.incomplete.reload
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   images:
   - yellow.png
   - red.png
@@ -1333,7 +1333,7 @@
     @assert ctx.createPattern(img, 'repeat') === null; @moz-todo
 
 - name: 2d.pattern.image.incomplete.emptysrc
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   images:
   - red.png
   mozilla: {throws: !!null ''}
@@ -1343,7 +1343,7 @@
     @assert ctx.createPattern(img, 'repeat') === null;
 
 - name: 2d.pattern.image.incomplete.removedsrc
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   images:
   - red.png
   mozilla: {throws: !!null ''}
@@ -1353,7 +1353,7 @@
     @assert ctx.createPattern(img, 'repeat') === null;
 
 - name: 2d.pattern.image.broken
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   images:
   - broken.png
   code: |
@@ -1361,7 +1361,7 @@
     @assert throws INVALID_STATE_ERR ctx.createPattern(img, 'repeat');
 
 - name: 2d.pattern.image.nonexistent
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   images:
   - no-such-image-really.png
   code: |
@@ -1369,7 +1369,7 @@
     @assert throws INVALID_STATE_ERR ctx.createPattern(img, 'repeat');
 
 - name: 2d.pattern.svgimage.nonexistent
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   svgimages:
   - no-such-image-really.png
   code: |
@@ -1377,7 +1377,7 @@
     @assert throws INVALID_STATE_ERR ctx.createPattern(img, 'repeat');
 
 - name: 2d.pattern.image.nonexistent-but-loading
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   code: |
     var img = document.createElement("img");
     img.src = "/images/no-such-image-really.png";
@@ -1387,7 +1387,7 @@
     @assert ctx.createPattern(img, 'repeat') === null;
 
 - name: 2d.pattern.image.nosrc
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   code: |
     var img = document.createElement("img");
     @assert ctx.createPattern(img, 'repeat') === null;
@@ -1395,7 +1395,7 @@
     @assert ctx.createPattern(img, 'repeat') === null;
 
 - name: 2d.pattern.image.zerowidth
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   images:
   - red-zerowidth.svg
   code: |
@@ -1403,7 +1403,7 @@
     @assert ctx.createPattern(img, 'repeat') === null;
 
 - name: 2d.pattern.image.zeroheight
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   images:
   - red-zeroheight.svg
   code: |
@@ -1411,7 +1411,7 @@
     @assert ctx.createPattern(img, 'repeat') === null;
 
 - name: 2d.pattern.svgimage.zerowidth
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   svgimages:
   - red-zerowidth.svg
   code: |
@@ -1419,7 +1419,7 @@
     @assert ctx.createPattern(img, 'repeat') === null;
 
 - name: 2d.pattern.svgimage.zeroheight
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   svgimages:
   - red-zeroheight.svg
   code: |
@@ -1469,7 +1469,7 @@
     @assert throws SYNTAX_ERR ctx.createPattern(canvas, "repeat\0");
 
 - name: 2d.pattern.modify.image1
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   images:
   - green.png
   code: |
@@ -1490,7 +1490,7 @@
   expected: green
 
 - name: 2d.pattern.modify.image2
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   images:
   - green.png
   code: |
@@ -1515,7 +1515,7 @@
   expected: green
 
 - name: 2d.pattern.modify.canvas1
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   code: |
     {{ create_canvas2 }}
     var ctx2 = canvas2.getContext('2d');
@@ -1579,11 +1579,11 @@
   expected: green
   variants:
   - _HtmlCanvas:
-      canvasType: ['HtmlCanvas']
+      canvas_types: ['HtmlCanvas']
       load_image: var img = document.getElementById('{{ images[0] }}');
       create_canvas: document.createElement('canvas')
     _OffscreenCanvas:
-      canvasType: ['OffscreenCanvas', 'Worker']
+      canvas_types: ['OffscreenCanvas', 'Worker']
       test_type: promise
       load_image: |-
         var response = await fetch('/images/{{ images[0] }}')
@@ -1987,7 +1987,7 @@
 
 - name: 2d.pattern.animated.gif
   desc: createPattern() of an animated GIF draws the first frame
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   images:
   - anim-gr.gif
   code: |
@@ -2006,7 +2006,7 @@
 
 - name: 2d.fillStyle.CSSRGB
   desc: CSSRGB works as color input
-  canvasType: ['HtmlCanvas', 'OffscreenCanvas']
+  canvas_types: ['HtmlCanvas', 'OffscreenCanvas']
   code: |
     ctx.fillStyle = new CSSRGB(1, 0, 1);
     @assert ctx.fillStyle === '#ff00ff';
@@ -2046,7 +2046,7 @@
 
 - name: 2d.fillStyle.CSSHSL
   desc: CSSHSL works as color input
-  canvasType: ['HtmlCanvas', 'OffscreenCanvas']
+  canvas_types: ['HtmlCanvas', 'OffscreenCanvas']
   code: |
     ctx.fillStyle = new CSSHSL(CSS.deg(180), 0.5, 0.5);
     ctx.fillRect(0, 0, 100, 50);
@@ -2077,7 +2077,7 @@
 
 - name: 2d.fillStyle.colormix
   desc: color-mix works as color input
-  canvasType: ['HtmlCanvas', 'OffscreenCanvas', 'Worker']
+  canvas_types: ['HtmlCanvas', 'OffscreenCanvas', 'Worker']
   code: |
     ctx.fillStyle = "color-mix(in srgb, red, blue)";
     @assert ctx.fillStyle === 'color(srgb 0.5 0 0.5)';
@@ -2086,7 +2086,7 @@
 
 - name: 2d.fillStyle.colormix.currentcolor
   desc: color-mix works as color input with currentcolor
-  canvasType: ['HtmlCanvas']
+  canvas_types: ['HtmlCanvas']
   code: |
     canvas.setAttribute('style', 'color: magenta');
     ctx.fillStyle = "color-mix(in srgb, black, currentcolor)";
@@ -2096,7 +2096,7 @@
 
 - name: 2d.strokeStyle.colormix
   desc: color-mix works as color input
-  canvasType: ['HtmlCanvas', 'OffscreenCanvas']
+  canvas_types: ['HtmlCanvas', 'OffscreenCanvas']
   code: |
     ctx.strokeStyle = "color-mix(in srgb, red, blue)";
     @assert ctx.strokeStyle === 'color(srgb 0.5 0 0.5)';

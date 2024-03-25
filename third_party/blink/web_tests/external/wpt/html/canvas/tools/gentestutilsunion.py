@@ -243,16 +243,13 @@ def _expand_test_code(code: str) -> str:
 
 
 class _CanvasType(str, enum.Enum):
-    HTML_CANVAS = 'htmlcanvas'
-    OFFSCREEN_CANVAS = 'offscreencanvas'
-    WORKER = 'worker'
+    HTML_CANVAS = 'HtmlCanvas'
+    OFFSCREEN_CANVAS = 'OffscreenCanvas'
+    WORKER = 'Worker'
 
 
 def _get_enabled_canvas_types(test: Mapping[str, Any]) -> Set[_CanvasType]:
-    return {
-        _CanvasType(t.lower())
-        for t in test.get('canvasType', _CanvasType)
-    }
+    return {_CanvasType(t) for t in test.get('canvas_types', _CanvasType)}
 
 
 @dataclasses.dataclass
