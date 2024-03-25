@@ -41,11 +41,6 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   void CalculateTotalIntrinsicBlockSize(bool use_empty_line_block_size);
 
-  Length GetUsedFlexBasis(const BlockNode& child) const;
-  // This has an optional out parameter so that callers can avoid a subsequent
-  // redundant call to GetUsedFlexBasis.
-  bool IsUsedFlexBasisDefinite(const BlockNode& child,
-                               Length* flex_basis) const;
   bool DoesItemCrossSizeComputeToAuto(const BlockNode& child) const;
   bool IsItemCrossAxisLengthDefinite(const BlockNode& child,
                                      const Length& length) const;

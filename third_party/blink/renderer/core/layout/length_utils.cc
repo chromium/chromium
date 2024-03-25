@@ -170,6 +170,7 @@ LayoutUnit ResolveInlineLengthInternal(
       return min_max_sizes.ShrinkToFit(fill_available);
     }
     case Length::kAuto:
+    case Length::kContent:
     case Length::kNone:
       return unresolvable_length_result;
     case Length::kDeviceWidth:
@@ -259,6 +260,7 @@ LayoutUnit ResolveBlockLengthInternal(
       return intrinsic_size;
     }
     case Length::kAuto:
+    case Length::kContent:
     case Length::kNone:
       return unresolvable_block_size_func();
     case Length::kDeviceWidth:

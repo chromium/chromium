@@ -403,22 +403,6 @@ bool FlexLayoutAlgorithm::DoesItemStretch(const BlockNode& child) const {
          ItemPosition::kStretch;
 }
 
-bool FlexLayoutAlgorithm::IsUsedFlexBasisDefinite(
-    const BlockNode& child,
-    Length* out_flex_basis = nullptr) const {
-  const Length& flex_basis = GetUsedFlexBasis(child);
-  if (out_flex_basis)
-    *out_flex_basis = flex_basis;
-  // TODO(https://crbug.com/313072): This (and surrounding) tests should
-  // be HasAuto rather than IsAuto to account for calc-size().
-  if (flex_basis.IsAuto() || flex_basis.IsContent())
-    return false;
-  const ConstraintSpace& space = BuildSpaceForFlexBasis(child);
-  if (MainAxisIsInlineAxis(child))
-    return !InlineLengthUnresolvable(space, flex_basis);
-  return !BlockLengthUnresolvable(space, flex_basis);
-}
-
 bool FlexLayoutAlgorithm::IsItemCrossAxisLengthDefinite(
     const BlockNode& child,
     const Length& length) const {
@@ -523,26 +507,6 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForFlexBasis(
   space_builder.SetPercentageResolutionSize(child_percentage_size_);
   space_builder.SetReplacedPercentageResolutionSize(child_percentage_size_);
   return space_builder.ToConstraintSpace();
-}
-
-// This can return an indefinite Length.
-Length FlexLayoutAlgorithm::GetUsedFlexBasis(const BlockNode& child) const {
-  const ComputedStyle& child_style = child.Style();
-  const Length& specified_length_in_main_axis =
-      is_horizontal_flow_ ? child_style.Width() : child_style.Height();
-  const Length& specified_flex_basis = child_style.FlexBasis();
-
-  if (specified_flex_basis.IsAuto()) {
-    if (specified_length_in_main_axis.IsAuto() &&
-        Style().IsDeprecatedWebkitBox() &&
-        (Style().BoxOrient() == EBoxOrient::kHorizontal ||
-         Style().BoxAlign() != EBoxAlignment::kStretch)) {
-      // 'auto' for items within a -webkit-box resolve as 'fit-content'.
-      return Length::FitContent();
-    }
-    return specified_length_in_main_axis;
-  }
-  return specified_flex_basis;
 }
 
 ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
@@ -794,60 +758,88 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       return IntrinsicBlockSizeFunc();
     };
 
-    if (is_column_ && child_style.FlexBasis().IsPercentOrCalc())
+    const Length& flex_basis = child_style.FlexBasis();
+    if (is_column_ && flex_basis.IsPercentOrCalc()) {
       has_column_percent_flex_basis_ = true;
+    }
 
-    LayoutUnit flex_base_border_box;
-    Length flex_basis_length;
-    const bool is_used_flex_basis_indefinite =
-        !IsUsedFlexBasisDefinite(child, &flex_basis_length);
+    // This bool is set to true while calculating the base size, the flex-basis
+    // is "content" based (e.g. dependent on the child's content).
+    bool is_used_flex_basis_indefinite = false;
 
-    if (is_used_flex_basis_indefinite) {
-      // This block means that the used flex-basis is 'content'. In here we
-      // implement parts B,C,D,E of 9.2.3
-      // https://drafts.csswg.org/css-flexbox/#algo-main-item
-      flex_base_border_box =
-          MainAxisIsInlineAxis(child)
-              ? MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.max_size
-              : ContentBlockSizeFunc();
-    } else {
-      // TODO(https://crbug.com/313072): Rewrite these (and related)
-      // tests for calc-size().
-      DCHECK(!flex_basis_length.IsAuto());
-      DCHECK(!flex_basis_length.IsContent());
-      // Part A of 9.2.3 https://drafts.csswg.org/css-flexbox/#algo-main-item
+    const LayoutUnit flex_base_border_box = ([&]() -> LayoutUnit {
+      const Length& specified_length_in_main_axis =
+          is_horizontal_flow_ ? child_style.Width() : child_style.Height();
+      const Length& used_flex_basis_length =
+          flex_basis.IsAuto() ? specified_length_in_main_axis : flex_basis;
+
+      // 'auto' for items within a -webkit-box resolve as 'fit-content'.
+      const Length& auto_flex_basis_length =
+          (Style().IsDeprecatedWebkitBox() &&
+           (Style().BoxOrient() == EBoxOrient::kHorizontal ||
+            Style().BoxAlign() != EBoxAlignment::kStretch))
+              ? Length::FitContent()
+              : Length::MaxContent();
+
       if (MainAxisIsInlineAxis(child)) {
-        flex_base_border_box = ResolveMainInlineLength(
+        const LayoutUnit inline_size = ResolveMainInlineLength(
             flex_basis_space, child_style, border_padding_in_child_writing_mode,
-            MinMaxSizesFunc, flex_basis_length, /* auto_length */ nullptr);
-      } else {
-        // Flex container's main axis is in child's block direction. Child's
-        // flex basis is in child's block direction.
-        flex_base_border_box = ResolveMainBlockLength(
-            flex_basis_space, child_style, border_padding_in_child_writing_mode,
-            flex_basis_length, /* auto_length */ nullptr,
-            IntrinsicBlockSizeFunc);
+            [&](MinMaxSizesType type) -> MinMaxSizesResult {
+              is_used_flex_basis_indefinite = true;
+              return MinMaxSizesFunc(type);
+            },
+            used_flex_basis_length, &auto_flex_basis_length);
+
+        if (inline_size != kIndefiniteSize) {
+          return inline_size;
+        }
+
+        // We weren't able to resolve the length (i.e. we were a unresolvable
+        // %-age or similar), fallback to the max-content size.
+        is_used_flex_basis_indefinite = true;
+        return MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.max_size;
+      }
+
+      // The block-axis is slightly different to the inline-axis - first
+      // attempt to resolve the length using an indefinite intrinsic-size.
+      //
+      // By doing this we can optionally add the caption block-size below.
+      // (Adding the caption to something content based would be incorrect).
+      const LayoutUnit block_size = ResolveMainBlockLength(
+          flex_basis_space, child_style, border_padding_in_child_writing_mode,
+          used_flex_basis_length, &auto_flex_basis_length,
+          /* intrinsic_size */ kIndefiniteSize);
+
+      if (block_size != kIndefiniteSize) {
+        // 1. A table interprets forced block-size as the block-size of its
+        //    captions and rows.
+        // 2. The specified block-size of a table only applies to its rows.
+        // 3. If the block-size resolved, add the caption block-size so that
+        //    the forced block-size works correctly.
+        LayoutUnit caption_block_size;
         if (const auto* table_child = DynamicTo<TableNode>(&child)) {
-          // (1) A table interprets forced block size as the height of its
-          // captions + rows.
-          // (2) The specified height of a table only applies to the rows.
-          // (3) So when we read the specified height here, we have to add the
-          // height of the captions before sending it through the flexing
-          // algorithm, which will eventually lead to a forced block size.
-          LayoutUnit caption_block_size = table_child->ComputeCaptionBlockSize(
+          caption_block_size = table_child->ComputeCaptionBlockSize(
               BuildSpaceForIntrinsicBlockSize(*table_child,
                                               max_content_contribution));
-          flex_base_border_box += caption_block_size;
         }
+        return block_size + caption_block_size;
       }
-    }
+
+      // We weren't able to resolve the length (i.e. it was content based), try
+      // to re-resolve passing the content block-size callback.
+      is_used_flex_basis_indefinite = true;
+      return ResolveMainBlockLength(
+          flex_basis_space, child_style, border_padding_in_child_writing_mode,
+          used_flex_basis_length, &auto_flex_basis_length,
+          ContentBlockSizeFunc);
+    })();
 
     // Spec calls this "flex base size"
     // https://www.w3.org/TR/css-flexbox-1/#algo-main-item
     // Blink's FlexibleBoxAlgorithm expects it to be content + scrollbar widths,
     // but no padding or border.
     DCHECK_GE(flex_base_border_box, main_axis_border_padding);
-    LayoutUnit flex_base_content_size =
+    const LayoutUnit flex_base_content_size =
         flex_base_border_box - main_axis_border_padding;
 
     const Length& min = is_horizontal_flow_ ? child.Style().MinWidth()
