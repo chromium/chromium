@@ -1586,6 +1586,8 @@ template <wtf_size_t otherCapacity>
 Vector<T, inlineCapacity, Allocator>::Vector(
     const Vector<T, otherCapacity, Allocator>& other)
     : Base(other.capacity()) {
+  CheckTypeConstraints();
+
   ANNOTATE_NEW_BUFFER(begin(), capacity(), other.size());
   size_ = other.size();
   TypeOperations::UninitializedCopy(other.begin(), other.end(), begin(),
@@ -1598,6 +1600,8 @@ Vector<T, inlineCapacity, Allocator>::Vector(
     const Vector<U, otherCapacity, Allocator>& other,
     Proj proj)
     : Base(other.capacity()) {
+  CheckTypeConstraints();
+
   ANNOTATE_NEW_BUFFER(begin(), capacity(), other.size());
   size_ = other.size();
   TypeOperations::UninitializedCopy(other.begin(), other.end(), begin(),
@@ -1712,6 +1716,8 @@ Vector<T, inlineCapacity, Allocator>::operator=(
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 Vector<T, inlineCapacity, Allocator>::Vector(std::initializer_list<T> elements)
     : Base(base::checked_cast<wtf_size_t>(elements.size())) {
+  CheckTypeConstraints();
+
   ANNOTATE_NEW_BUFFER(begin(), capacity(), elements.size());
   size_ = static_cast<wtf_size_t>(elements.size());
   TypeOperations::UninitializedCopy(elements.begin(), elements.end(), begin(),
