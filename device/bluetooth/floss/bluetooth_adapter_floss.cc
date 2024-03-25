@@ -198,7 +198,6 @@ void BluetoothAdapterFloss::AddAdapterObservers() {
   FlossDBusManager::Get()->GetAdapterClient()->AddObserver(this);
   FlossDBusManager::Get()->GetLEScanClient()->AddObserver(this);
   FlossDBusManager::Get()->GetBatteryManagerClient()->AddObserver(this);
-  FlossDBusManager::Get()->GetGattManagerClient()->AddServerObserver(this);
 #if BUILDFLAG(IS_CHROMEOS)
   FlossDBusManager::Get()->GetAdminClient()->AddObserver(this);
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -208,7 +207,6 @@ void BluetoothAdapterFloss::RemoveAdapterObservers() {
   // Clean up observers
   FlossDBusManager::Get()->GetAdapterClient()->RemoveObserver(this);
   FlossDBusManager::Get()->GetLEScanClient()->RemoveObserver(this);
-  FlossDBusManager::Get()->GetGattManagerClient()->RemoveServerObserver(this);
 #if BUILDFLAG(IS_CHROMEOS)
   FlossDBusManager::Get()->GetAdminClient()->RemoveObserver(this);
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -1490,11 +1488,6 @@ bool BluetoothAdapterFloss::SendValueChanged(
       /*confirm=*/false, value);
   // TODO(@sarveshkalwit) How to confirm success?
   return true;
-}
-
-void BluetoothAdapterFloss::GattServerNotificationSent(std::string address,
-                                                       GattStatus status) {
-  NOTIMPLEMENTED();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

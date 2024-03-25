@@ -269,8 +269,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattServerObserver
   virtual void GattServerRegistered(GattStatus status, int32_t server) {}
 
   // A server connection has changed state.
-  virtual void GattServerConnectionState(GattStatus status,
-                                         int32_t server_id,
+  virtual void GattServerConnectionState(int32_t server_id,
                                          bool connected,
                                          std::string address) {}
 
@@ -477,9 +476,6 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
                                           const uint16_t min_ce_len,
                                           const uint16_t max_ce_len);
 
-  // Unregister a GATT server.
-  virtual void UnregisterServer(ResponseCallback<Void> callback);
-
   // Create a GATT server connection to a remote device on given transport.
   virtual void ServerConnect(ResponseCallback<Void> callback,
                              const std::string& remote_device,
@@ -592,8 +588,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
 
   // FlossGattServerObserver overrides
   void GattServerRegistered(GattStatus status, int32_t server_id) override;
-  void GattServerConnectionState(GattStatus status,
-                                 int32_t server_id,
+  void GattServerConnectionState(int32_t server_id,
                                  bool connected,
                                  std::string address) override;
   void GattServerServiceAdded(GattStatus status, GattService service) override;

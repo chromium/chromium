@@ -86,7 +86,7 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const GattStatus& status) {
-  int32_t value = static_cast<int32_t>(status);
+  uint32_t value = static_cast<uint32_t>(status);
   WriteDBusParam(writer, value);
 }
 
@@ -278,6 +278,15 @@ FlossGattManagerClient::~FlossGattManagerClient() {
     gatt_server_exported_callback_manager_.UnexportCallback(
         dbus::ObjectPath(kExportedCallbacksPath));
   }
+
+  if (client_id_ != 0) {
+    CallGattMethod<Void>(base::DoNothing(), gatt::kUnregisterClient,
+                         client_id_);
+  }
+  if (server_id_ != 0) {
+    CallGattMethod<Void>(base::DoNothing(), gatt::kUnregisterServer,
+                         server_id_);
+  }
 }
 
 void FlossGattManagerClient::AddObserver(FlossGattClientObserver* observer) {
@@ -454,11 +463,6 @@ void FlossGattManagerClient::UpdateConnectionParameters(
   CallGattMethod<Void>(std::move(callback), gatt::kConnectionParameterUpdate,
                        client_id_, remote_device, min_interval, max_interval,
                        latency, timeout, min_ce_len, max_ce_len);
-}
-
-void FlossGattManagerClient::UnregisterServer(ResponseCallback<Void> callback) {
-  CallGattMethod<Void>(std::move(callback), gatt::kUnregisterServer,
-                       server_id_);
 }
 
 void FlossGattManagerClient::ServerConnect(
@@ -858,8 +862,7 @@ void FlossGattManagerClient::GattServerRegistered(GattStatus status,
   CompleteInit();
 }
 
-void FlossGattManagerClient::GattServerConnectionState(GattStatus status,
-                                                       int32_t server_id,
+void FlossGattManagerClient::GattServerConnectionState(int32_t server_id,
                                                        bool connected,
                                                        std::string address) {
   if (server_id != server_id_) {
@@ -867,7 +870,7 @@ void FlossGattManagerClient::GattServerConnectionState(GattStatus status,
   }
 
   for (auto& observer : gatt_server_observers_) {
-    observer.GattServerConnectionState(status, server_id, connected, address);
+    observer.GattServerConnectionState(server_id, connected, address);
   }
 }
 
