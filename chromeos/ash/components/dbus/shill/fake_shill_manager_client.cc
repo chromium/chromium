@@ -954,10 +954,8 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
   state = GetInitialStateForType(shill::kTypeEthernet, &enabled);
   if (state == shill::kStateOnline || state == shill::kStateIdle) {
     AddTechnology(shill::kTypeEthernet, enabled);
-    devices->AddDevice("/device/eth1", shill::kTypeEthernet,
-                       "stub_eth_device1");
-    SetInitialDeviceProperty("/device/eth1", shill::kAddressProperty,
-                             base::Value("0123456789ab"));
+    devices->AddDevice("/device/eth1", shill::kTypeEthernet, "stub_eth_device1",
+                       "0123456789ab");
     base::Value::List eth_ip_configs;
     eth_ip_configs.Append("ipconfig_v4_path");
     eth_ip_configs.Append("ipconfig_v6_path");
@@ -981,9 +979,8 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
       state = shill::kStateIdle;
     }
     AddTechnology(shill::kTypeWifi, enabled);
-    devices->AddDevice("/device/wifi1", shill::kTypeWifi, "stub_wifi_device1");
-    SetInitialDeviceProperty("/device/wifi1", shill::kAddressProperty,
-                             base::Value("23456789abcd"));
+    devices->AddDevice("/device/wifi1", shill::kTypeWifi, "stub_wifi_device1",
+                       "23456789abcd");
     base::Value::List wifi_ip_configs;
     wifi_ip_configs.Append("ipconfig_v4_path");
     wifi_ip_configs.Append("ipconfig_v6_path");
@@ -1071,7 +1068,7 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
     }
     AddTechnology(shill::kTypeCellular, enabled);
     devices->AddDevice("/device/cellular1", shill::kTypeCellular,
-                       "stub_cellular_device1");
+                       "stub_cellular_device1", "23456789abcd");
     if (roaming_state_ == kRoamingRequired) {
       SetInitialDeviceProperty("/device/cellular1",
                                shill::kProviderRequiresRoamingProperty,
