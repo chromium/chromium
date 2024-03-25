@@ -16,32 +16,109 @@
 
 namespace gl {
 namespace {
-Microsoft::WRL::ComPtr<IDXGIOutput> DXGIOutputFromMonitor(
-    HMONITOR monitor,
-    IDXGIDevice* dxgi_device) {
-  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-  if (FAILED(dxgi_device->GetAdapter(&dxgi_adapter))) {
-    DLOG(ERROR) << "Failed to retrieve DXGI adapter";
-    return nullptr;
-  }
 
-  size_t i = 0;
-  while (true) {
-    Microsoft::WRL::ComPtr<IDXGIOutput> output;
-    if (FAILED(dxgi_adapter->EnumOutputs(i++, &output)))
+// Check if a DXGI adapter is stale and needs to be replaced. This can happen
+// e.g. when detaching/reattaching remote desktop sessions and causes subsequent
+// WaitForVSyncs on the stale adapter/output to return instantly.
+bool DXGIFactoryIsCurrent(IDXGIAdapter* dxgi_adapter) {
+  CHECK(dxgi_adapter);
+
+  HRESULT hr = S_OK;
+  Microsoft::WRL::ComPtr<IDXGIFactory1> dxgi_factory;
+  hr = dxgi_adapter->GetParent(IID_PPV_ARGS(&dxgi_factory));
+  CHECK_EQ(S_OK, hr);
+  return dxgi_factory->IsCurrent();
+}
+
+// Create a new factory and find a DXGI adapter matching a LUID. This is useful
+// if we have a previous adapter whose factory has become stale.
+Microsoft::WRL::ComPtr<IDXGIAdapter> FindDXGIAdapterOnNewFactory(
+    const LUID luid) {
+  HRESULT hr = S_OK;
+
+  Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
+  hr = CreateDXGIFactory1(IID_PPV_ARGS(&factory));
+  CHECK_EQ(S_OK, hr);
+
+  Microsoft::WRL::ComPtr<IDXGIAdapter1> new_adapter;
+  for (uint32_t i = 0;; i++) {
+    hr = factory->EnumAdapters1(i, &new_adapter);
+    if (hr == DXGI_ERROR_NOT_FOUND) {
       break;
-
-    DXGI_OUTPUT_DESC desc = {};
-    if (FAILED(output->GetDesc(&desc))) {
-      DLOG(ERROR) << "DXGI output GetDesc failed";
+    }
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "EnumAdapters1 failed: "
+                  << logging::SystemErrorCodeToString(hr);
       return nullptr;
     }
 
-    if (desc.Monitor == monitor)
-      return output;
+    DXGI_ADAPTER_DESC1 new_adapter_desc;
+    hr = new_adapter->GetDesc1(&new_adapter_desc);
+    CHECK_EQ(S_OK, hr);
+
+    if (new_adapter_desc.AdapterLuid.HighPart == luid.HighPart &&
+        new_adapter_desc.AdapterLuid.LowPart == luid.LowPart) {
+      return new_adapter;
+    }
   }
 
+  DLOG(ERROR) << "Failed to find DXGI adapter with matching LUID";
   return nullptr;
+}
+
+// Return true if |output| is on |monitor|.
+bool DXGIOutputIsOnMonitor(IDXGIOutput* output, const HMONITOR monitor) {
+  CHECK(output);
+
+  DXGI_OUTPUT_DESC desc = {};
+  HRESULT hr = output->GetDesc(&desc);
+  CHECK_EQ(S_OK, hr);
+  return desc.Monitor == monitor;
+}
+
+Microsoft::WRL::ComPtr<IDXGIOutput> DXGIOutputFromMonitor(
+    HMONITOR monitor,
+    IDXGIAdapter* dxgi_adapter) {
+  CHECK(dxgi_adapter);
+
+  HRESULT hr = S_OK;
+
+  Microsoft::WRL::ComPtr<IDXGIOutput> output;
+  for (uint32_t i = 0;; i++) {
+    hr = dxgi_adapter->EnumOutputs(i, &output);
+    if (hr == DXGI_ERROR_NOT_FOUND) {
+      break;
+    }
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "EnumOutputs failed: "
+                  << logging::SystemErrorCodeToString(hr);
+      return nullptr;
+    }
+
+    if (DXGIOutputIsOnMonitor(output.Get(), monitor)) {
+      return output;
+    }
+  }
+
+  DLOG(ERROR) << "Failed to find DXGI output with matching monitor";
+  return nullptr;
+}
+
+Microsoft::WRL::ComPtr<IDXGIAdapter> GetAdapter(IDXGIDevice* device) {
+  CHECK(device);
+
+  Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
+  CHECK_EQ(S_OK, device->GetAdapter(&adapter));
+  return adapter;
+}
+
+LUID GetLuid(IDXGIAdapter* adapter) {
+  CHECK(adapter);
+
+  DXGI_ADAPTER_DESC desc;
+  HRESULT hr = adapter->GetDesc(&desc);
+  CHECK_EQ(S_OK, hr);
+  return desc.AdapterLuid;
 }
 }  // namespace
 
@@ -63,8 +140,8 @@ VSyncThreadWin* VSyncThreadWin::GetInstance() {
 VSyncThreadWin::VSyncThreadWin(Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device)
     : vsync_thread_("GpuVSyncThread"),
       vsync_provider_(gfx::kNullAcceleratedWidget),
-      dxgi_device_(std::move(dxgi_device)) {
-  CHECK(dxgi_device_);
+      dxgi_adapter_(GetAdapter(dxgi_device.Get())),
+      original_adapter_luid_(GetLuid(dxgi_adapter_.Get())) {
   is_suspended_ =
       base::PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(this);
   vsync_thread_.StartWithOptions(
@@ -146,12 +223,23 @@ void VSyncThreadWin::WaitForVSync() {
                                                           &vsync_interval);
   DCHECK(get_vsync_params_succeeded);
 
+  if (!dxgi_adapter_ || !DXGIFactoryIsCurrent(dxgi_adapter_.Get())) {
+    TRACE_EVENT("gpu", "DXGIFactoryIsCurrent non-current factory");
+    dxgi_adapter_ = FindDXGIAdapterOnNewFactory(original_adapter_luid_);
+    primary_output_.Reset();
+  }
+
   // From Raymond Chen's blog "How do I get a handle to the primary monitor?"
   // https://devblogs.microsoft.com/oldnewthing/20141106-00/?p=43683
   const HMONITOR monitor = MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
-  if (primary_monitor_ != monitor) {
-    primary_monitor_ = monitor;
-    primary_output_ = DXGIOutputFromMonitor(monitor, dxgi_device_.Get());
+  if (primary_output_ &&
+      !DXGIOutputIsOnMonitor(primary_output_.Get(), monitor)) {
+    TRACE_EVENT("gpu", "DXGIOutputIsOnMonitor primary monitor changed");
+    primary_output_.Reset();
+  }
+
+  if (!primary_output_ && dxgi_adapter_) {
+    primary_output_ = DXGIOutputFromMonitor(monitor, dxgi_adapter_.Get());
   }
 
   const base::TimeTicks wait_for_vblank_start_time = base::TimeTicks::Now();
@@ -168,7 +256,8 @@ void VSyncThreadWin::WaitForVSync() {
       base::TimeTicks::Now() - wait_for_vblank_start_time;
   if (!wait_for_vblank_succeeded ||
       wait_for_vblank_elapsed_time < kVBlankIntervalThreshold) {
-    TRACE_EVENT("gpu", "WaitForVSync Sleep");
+    TRACE_EVENT2("gpu", "WaitForVSync Sleep", "has adapter", !!dxgi_adapter_,
+                 "has output", !!primary_output_);
     base::Time::ActivateHighResolutionTimer(true);
     Sleep(static_cast<DWORD>(vsync_interval.InMillisecondsRoundedUp()));
     base::Time::ActivateHighResolutionTimer(false);

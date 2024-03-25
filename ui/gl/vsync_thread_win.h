@@ -60,9 +60,11 @@ class GL_EXPORT VSyncThreadWin final : public base::PowerSuspendObserver {
 
   // Used on vsync thread only after initialization.
   VSyncProviderWin vsync_provider_;
-  const Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device_;
-  HMONITOR primary_monitor_ = nullptr;
+  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter_;
   Microsoft::WRL::ComPtr<IDXGIOutput> primary_output_;
+
+  // The LUID of the adapter of the IDXGIDevice this instance was created with.
+  const LUID original_adapter_luid_;
 
   base::Lock lock_;
   bool GUARDED_BY(lock_) is_vsync_task_posted_ = false;
