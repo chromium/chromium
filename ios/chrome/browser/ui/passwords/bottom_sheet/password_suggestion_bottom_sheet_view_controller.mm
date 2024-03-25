@@ -363,13 +363,16 @@ CGFloat const kSpacingAfterTitle = 4;
                         handler:showDetailsButtonTapHandler];
 }
 
-// Returns the accessibility label for the given cell at the provided index
-// path.
-- (NSString*)cellAccessibilityLabel:(TableViewURLCell*)cell
-                        atIndexPath:(NSIndexPath*)indexPath {
+// Returns the accessibility label for the given cell.
+- (NSString*)cellAccessibilityLabel:(TableViewURLCell*)cell {
   return l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
                                  base::SysNSStringToUTF16(cell.titleLabel.text),
-                                 base::SysNSStringToUTF16(_domain),
+                                 base::SysNSStringToUTF16(_domain));
+}
+
+// Returns the accessibility value for the cell at the provided index path.
+- (NSString*)cellAccessibilityValueAtIndexPath:(NSIndexPath*)indexPath {
+  return l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,
                                  base::NumberToString16(indexPath.row + 1),
                                  base::NumberToString16([self rowCount]));
 }
@@ -392,8 +395,8 @@ CGFloat const kSpacingAfterTitle = 4;
   cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.URLLabel.numberOfLines = 1;
   cell.URLLabel.hidden = NO;
-  cell.accessibilityLabel = [self cellAccessibilityLabel:cell
-                                             atIndexPath:indexPath];
+  cell.accessibilityLabel = [self cellAccessibilityLabel:cell];
+  cell.accessibilityValue = [self cellAccessibilityValueAtIndexPath:indexPath];
   cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
                                                   atIndexPath:indexPath];
   cell.accessoryType = [self accessoryType:indexPath];

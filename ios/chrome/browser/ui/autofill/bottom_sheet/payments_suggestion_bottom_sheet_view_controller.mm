@@ -316,8 +316,15 @@ CGFloat const kTitleLogoHeight = 24;
 - (NSString*)accessibleCardNameAtRow:(NSInteger)row {
   return l10n_util::GetNSStringF(
       IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
-      base::SysNSStringToUTF16([_creditCardData[row] accessibleCardName]), u"",
-      base::NumberToString16(row + 1), base::NumberToString16([self rowCount]));
+      base::SysNSStringToUTF16([_creditCardData[row] accessibleCardName]), u"");
+}
+
+// Returns the accessibility value for the card at a given row in the table
+// view.
+- (NSString*)accessibilityValueForCardAtRow:(NSInteger)row {
+  return l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,
+                                 base::NumberToString16(row + 1),
+                                 base::NumberToString16([self rowCount]));
 }
 
 // Creates the UI action used to open the payment methods view.
@@ -372,6 +379,7 @@ CGFloat const kTitleLogoHeight = 24;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   cell.userInteractionEnabled = YES;
   cell.customAccessibilityLabel = [self accessibleCardNameAtRow:indexPath.row];
+  cell.accessibilityValue = [self accessibilityValueForCardAtRow:indexPath.row];
 
   cell.textLabel.text = [self suggestionAtRow:indexPath.row];
   cell.textLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;

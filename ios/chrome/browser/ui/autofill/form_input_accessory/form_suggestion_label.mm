@@ -166,7 +166,9 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
                                     IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
                                     base::SysNSStringToUTF16(suggestion.value),
                                     base::SysNSStringToUTF16(
-                                        suggestion.displayDescription),
+                                        suggestion.displayDescription))];
+    [self setAccessibilityValue:l10n_util::GetNSStringF(
+                                    IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,
                                     base::NumberToString16(index + 1),
                                     base::NumberToString16(numSuggestions))];
     [self

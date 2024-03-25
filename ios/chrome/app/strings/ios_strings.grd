@@ -300,7 +300,10 @@
         Addresses and more
       </message>
       <message name="IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION" desc="The accessible description of a suggestion shown in the Autofill keyboard acessory. [Length: unlimited] [iOS only]">
-        <ph name="VALUE">$1<ex>John Smith</ex></ph>, <ph name="ADDITIONAL_INFO">$2<ex>1234 Main St., Springfield, IL 62711</ex></ph>, <ph name="INDEX">$3<ex>1</ex></ph> of <ph name="NUM_SUGGESTIONS">$4<ex>5</ex></ph>
+        <ph name="VALUE">$1<ex>John Smith</ex></ph>, <ph name="ADDITIONAL_INFO">$2<ex>1234 Main St., Springfield, IL 62711</ex></ph>
+      </message>
+      <message name="IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE" desc="The accessibility value of a suggestion shown in the Autofill keyboard acessory to indicate the position of the focused suggestion in the list of suggestions. [Length: unlimited] [iOS only]">
+        <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="NUM_SUGGESTIONS">$2<ex>5</ex></ph>
       </message>
       <message name="IDS_IOS_AUTOFILL_ADDRESS1" desc="Title of the field of a profile address representing the first line of the address. [Length: 15em] [iOS only]">
         Address 1
