@@ -152,8 +152,7 @@ inline constexpr const char kGetActiveSourcesSql[] =
       "expiry_time>? LIMIT ?";
 
 inline constexpr const char kGetFiltersSql[] = 
-    "SELECT epoch, origin, initial_budget, consumed_budget "
-    "FROM per_origin_filters";
+    "SELECT * FROM per_origin_filters";
 
 #define ATTRIBUTION_SELECT_REPORT_AND_SOURCE_COLUMNS_SQL                      \
   "SELECT "                                                                   \

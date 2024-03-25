@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/logging.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -297,6 +298,7 @@ void AttributionInternalsHandlerImpl::GetActiveSources(
 
 void AttributionInternalsHandlerImpl::GetFilters(
     attribution_internals::mojom::Handler::GetFiltersCallback callback) {
+  LOG(INFO) << " #### #### content/browser/attribution_reporting/attribution_internals_handler_impl.cc: GetFilters";
   if (AttributionManager* manager =
           AttributionManager::FromWebContents(web_ui_->GetWebContents())) {
     manager->GetFiltersForWebUI(

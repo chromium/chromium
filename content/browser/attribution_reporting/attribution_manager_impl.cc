@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/logging.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -925,6 +926,7 @@ void AttributionManagerImpl::GetActiveSourcesForWebUI(
 // Called when a filter is applied to the sources, to notify observers.
 void AttributionManagerImpl::GetFiltersForWebUI(
     base::OnceCallback<void(std::vector<StoredFilter>)> callback) {
+      LOG(INFO) << "#### #### AttributionManagerImpl::GetFiltersForWebUI";
   attribution_storage_.AsyncCall(&AttributionStorage::GetFilters)
       .Then(std::move(callback));
 }

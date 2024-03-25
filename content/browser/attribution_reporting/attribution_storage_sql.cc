@@ -2463,21 +2463,33 @@ AttributionStorageSql::CapacityForStoringReport(
 }
 
 std::vector<StoredFilter> AttributionStorageSql::GetFilters() {
+  LOG(INFO) << "#### #### /content/browser/conversions/conversion_storage_sql.cc: GetFilters(): START";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LOG(INFO) << "#### #### /content/browser/conversions/conversion_storage_sql.cc: GetFilters(): AFTER SEQUENCE CHECKER";
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
     return {};
   }
-
+  LOG(INFO) << "#### #### /content/browser/conversions/conversion_storage_sql.cc: GetFilters(): BEFORE GET FILTERS SQL";
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, attribution_queries::kGetFiltersSql));
+  LOG(INFO) << "#### #### /content/browser/conversions/conversion_storage_sql.cc: GetFilters(): AFTER GET FILTERS SQL";
   std::vector<StoredFilter> filters;
+  
+  LOG(INFO) << "#### #### /content/browser/conversions/conversion_storage_sql.cc: GetFilters(): BEFORE WHILE LOOP";
   while(statement.Step()) {
+    LOG(INFO) << "#### #### /content/browser/conversions/conversion_storage_sql.cc: GetFilters(): INSIDE WHILE LOOP";
      base::expected<StoredFilterData, ReportCorruptionStatusSetAndIds>
         filter_data = ReadFilterFromStatement(statement);
     if (filter_data.has_value()) {
+      LOG(INFO) << "#### #### /content/browser/conversions/conversion_storage_sql.cc: GetFilters(): PUSH_BACK";
+      LOG(INFO) << "#### #### /content/browser/conversions/conversion_storage_sql.cc: GetFilters(): filter_data->filter: (e, cb)" << filter_data->filter.epoch() << " " << filter_data->filter.consumed_budget();
       filters.push_back(std::move(filter_data->filter));
+    } else {
+      LOG(INFO) << "#### #### /content/browser/conversions/conversion_storage_sql.cc: GetFilters(): FILTER_DATA HAS NO VALUE";
     }
   }    
+  LOG(INFO) << "#### #### /content/browser/conversions/conversion_storage_sql.cc: GetFilters(): AFTER WHILE LOOP";
+
   return filters;
 }
 

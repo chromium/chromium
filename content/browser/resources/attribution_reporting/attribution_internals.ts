@@ -1177,6 +1177,7 @@ class AttributionInternals implements ObserverInterface {
   }
 
   private updateFilters(): void {
+    console.log('Updating Filters');
     this.handler.getFilters().then(({filters}) => {
       this.filters.setRows(filters.map((mojo) => new Filter(mojo)));
     });

@@ -35,6 +35,7 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/attribution_reporting/stored_filter.h"
 #include "services/network/public/cpp/trigger_verification.h"
 
 namespace content {
