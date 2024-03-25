@@ -310,16 +310,6 @@ Exemption updated to 1.0.116 in Feb 2024.
 Exemption updated to 1.0.117 in Feb 2024.
 """
 
-[[exemptions.itoa]]
-version = "1.0.10"
-criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = """
-Grandparented-in when setting up `cargo vet` in Jan 2024.
-
-Delta audit of 1.0.9 -> 1.0.10 has been done in Jan 2024, but because of a lack
-of a fully-audited baseline nothing was recorded in audits.toml
-"""
-
 [[exemptions.libc]]
 version = "0.2.153"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]

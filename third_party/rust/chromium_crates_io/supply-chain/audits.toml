@@ -508,9 +508,17 @@ highlighted and paid attention to which imported functions are being called.
 
 [[audits.itoa]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "does-not-implement-crypto"
-delta = "1.0.9 -> 1.0.10"
-notes = 'Grepped for \"crypt\", \"cipher\" - there were no hits'
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "1.0.10"
+notes = '''
+I grepped for \"crypt\", \"cipher\", \"fs\", \"net\" - there were no hits.
+
+There are a few places where `unsafe` is used.  Unsafe review notes can be found
+in https://crrev.com/c/5350697.
+
+Version 1.0.1 of this crate has been added to Chromium in
+https://crrev.com/c/3321896.
+'''
 
 [[audits.lazy_static]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
