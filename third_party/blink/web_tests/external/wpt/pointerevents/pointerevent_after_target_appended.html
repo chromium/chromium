@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
 <title>Enter/leave events fired to parent after child is added</title>
+<link rel="help" href="https://w3c.github.io/pointerevents/#firing-events-using-the-pointerevent-interface">
 <meta name="variant" content="?mouse">
 <meta name="variant" content="?touch">
 <meta name="variant" content="?pen">
@@ -92,9 +93,6 @@
 
       let actions = new test_driver.Actions()
           .addPointer("TestPointer", pointer_type)
-          // The offset argument of pointerMove action is relative to the
-          // central point of the origin element. So this moves the pointer to
-          // the parent actually.
           .pointerMove(-30, -30, {origin: parent})
           .pointerDown()
           .pointerUp()
@@ -136,9 +134,6 @@
 
       let actions = new test_driver.Actions()
           .addPointer("TestPointer", pointer_type)
-          // The offset argument of pointerMove action is relative to the
-          // central point of the origin element. So this moves the pointer to
-          // the parent actually.
           .pointerMove(-30, -30, {origin: parent})
           .pointerDown()
           .pointerUp()
@@ -164,28 +159,14 @@
   setup();
 
   // Tests for dispatched pointer events.
-  addPromiseTestForNewChild(
-    "pointerdown",
-    "pointer",
-    pointer_type == "mouse"
-      // Pointer boundary events should be fired only when the hoverable pointer
-      // is actually moved and pointerup doesn't imply the pointer move.
-      ? [
-        "pointerover@parent", "pointerenter@parent",
-        "pointerdown@parent", "(child-attached)", "pointerup@child",
-        "pointerout@parent", "pointerover@child", "pointerenter@child",
-        "pointerdown@child", "pointerup@child",
-        "pointerout@child", "pointerleave@child", "pointerleave@parent"
-      ]
-      : [
-        "pointerover@parent", "pointerenter@parent",
-        "pointerdown@parent", "(child-attached)",
-        "pointerout@parent", "pointerover@child", "pointerenter@child",
-        "pointerup@child",
-        "pointerdown@child", "pointerup@child",
-        "pointerout@child", "pointerleave@child", "pointerleave@parent"
-      ]
-  );
+  addPromiseTestForNewChild("pointerdown", "pointer", [
+    "pointerover@parent", "pointerenter@parent",
+    "pointerdown@parent", "(child-attached)",
+    "pointerout@parent", "pointerover@child", "pointerenter@child",
+    "pointerup@child",
+    "pointerdown@child", "pointerup@child",
+    "pointerout@child", "pointerleave@child", "pointerleave@parent"
+  ]);
   addPromiseTestForNewChild("pointerup", "pointer", [
     "pointerover@parent", "pointerenter@parent",
     "pointerdown@parent", "pointerup@parent", "(child-attached)",
@@ -193,28 +174,14 @@
     "pointerdown@child", "pointerup@child",
     "pointerout@child", "pointerleave@child", "pointerleave@parent"
   ]);
-  addPromiseTestForMovedChild(
-    "pointerdown",
-    "pointer",
-    pointer_type == "mouse"
-      // Pointer boundary events should be fired only when the hoverable pointer
-      // is actually moved and pointerup doesn't imply the pointer move.
-      ? [
-        "pointerover@child", "pointerenter@parent", "pointerenter@child",
-        "pointerdown@child", "(child-moved)", "pointerup@child",
-        "pointerover@child", "pointerenter@child",
-        "pointerdown@child", "pointerup@child",
-        "pointerout@child", "pointerleave@child", "pointerleave@parent"
-      ]
-      : [
-        "pointerover@child", "pointerenter@parent", "pointerenter@child",
-        "pointerdown@child", "(child-moved)",
-        "pointerover@child", "pointerenter@child",
-        "pointerup@child",
-        "pointerdown@child", "pointerup@child",
-        "pointerout@child", "pointerleave@child", "pointerleave@parent"
-      ]
-  );
+  addPromiseTestForMovedChild("pointerdown", "pointer", [
+    "pointerover@child", "pointerenter@parent", "pointerenter@child",
+    "pointerdown@child", "(child-moved)",
+    "pointerover@child", "pointerenter@child",
+    "pointerup@child",
+    "pointerdown@child", "pointerup@child",
+    "pointerout@child", "pointerleave@child", "pointerleave@parent"
+  ]);
   addPromiseTestForMovedChild("pointerup", "pointer", [
     "pointerover@child", "pointerenter@parent", "pointerenter@child",
     "pointerdown@child", "pointerup@child", "(child-moved)",

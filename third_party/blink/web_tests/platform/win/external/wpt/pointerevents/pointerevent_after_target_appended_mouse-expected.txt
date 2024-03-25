@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] pointer events from mouse received before/after child attached at pointerdown
-  assert_equals: events received expected "pointerover@parent,pointerenter@parent,pointerdown@parent,(child-attached),pointerup@child,pointerout@parent,pointerover@child,pointerenter@child,pointerdown@child,pointerup@child,pointerout@child,pointerleave@child,pointerleave@parent" but got "pointerover@parent,pointerenter@parent,pointerdown@parent,(child-attached),pointerout@parent,pointerover@child,pointerenter@child,pointerup@child,pointerdown@child,pointerup@child,pointerout@child,pointerleave@child,pointerleave@parent"
-[FAIL] pointer events from mouse received before/after child moved at pointerdown
-  assert_equals: events received expected "pointerover@child,pointerenter@parent,pointerenter@child,pointerdown@child,(child-moved),pointerup@child,pointerover@child,pointerenter@child,pointerdown@child,pointerup@child,pointerout@child,pointerleave@child,pointerleave@parent" but got "pointerover@child,pointerenter@parent,pointerenter@child,pointerdown@child,(child-moved),pointerover@child,pointerenter@child,pointerup@child,pointerdown@child,pointerup@child,pointerout@child,pointerleave@child,pointerleave@parent"
-Harness: the test ran to completion.
-
