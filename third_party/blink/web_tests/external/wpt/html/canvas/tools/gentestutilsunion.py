@@ -242,13 +242,16 @@ def _expand_test_code(code: str) -> str:
     return code
 
 
+_TestParams = Mapping[str, Any]
+
+
 class _CanvasType(str, enum.Enum):
     HTML_CANVAS = 'HtmlCanvas'
     OFFSCREEN_CANVAS = 'OffscreenCanvas'
     WORKER = 'Worker'
 
 
-def _get_enabled_canvas_types(test: Mapping[str, Any]) -> Set[_CanvasType]:
+def _get_enabled_canvas_types(test: _TestParams) -> Set[_CanvasType]:
     return {_CanvasType(t) for t in test.get('canvas_types', _CanvasType)}
 
 
@@ -263,7 +266,7 @@ class _OutputPaths:
                             offscreen=os.path.join(self.offscreen, sub_dir))
 
 
-def _validate_test(test: Mapping[str, Any]):
+def _validate_test(test: _TestParams):
     if test.get('expected', '') == 'green' and re.search(
             r'@assert pixel .* 0,0,0,0;', test['code']):
         print(f'Probable incorrect pixel test in {test["name"]}')
@@ -286,9 +289,8 @@ def _validate_test(test: Mapping[str, Any]):
             'can\'t both be specified at the same time.')
 
 
-def _render_template(jinja_env: jinja2.Environment,
-                     template: jinja2.Template,
-                     params: Mapping[str, Any]) -> str:
+def _render_template(jinja_env: jinja2.Environment, template: jinja2.Template,
+                     params: _TestParams) -> str:
     """Renders the specified jinja template.
 
     The template is repetitively rendered until no more changes are observed.
@@ -304,7 +306,7 @@ def _render_template(jinja_env: jinja2.Environment,
 
 
 def _render(jinja_env: jinja2.Environment, template_name: str,
-            params: Mapping[str, Any]):
+            params: _TestParams):
     params = dict(params)
     params.update({
         # Render the code on its own, as it could contain templates expanding
@@ -319,8 +321,7 @@ def _render(jinja_env: jinja2.Environment, template_name: str,
                             params)
 
 
-def _write_reference_test(jinja_env: jinja2.Environment, params: Mapping[str,
-                                                                         Any],
+def _write_reference_test(jinja_env: jinja2.Environment, params: _TestParams,
                           enabled_tests: Set[_CanvasType],
                           output_files: _OutputPaths) -> None:
     if _CanvasType.HTML_CANVAS in enabled_tests:
@@ -357,8 +358,7 @@ def _write_reference_test(jinja_env: jinja2.Environment, params: Mapping[str,
             _render(jinja_env, ref_template_name, ref_params), 'utf-8')
 
 
-def _write_testharness_test(jinja_env: jinja2.Environment,
-                            params: Mapping[str, Any],
+def _write_testharness_test(jinja_env: jinja2.Environment, params: _TestParams,
                             enabled_tests: Set[_CanvasType],
                             output_files: _OutputPaths) -> None:
     # Create test cases for canvas and offscreencanvas.
@@ -419,7 +419,7 @@ def _generate_expected_image(expected: str, name: str,
     return f'{name}.png'
 
 
-def _generate_test(test: Mapping[str, Any], jinja_env: jinja2.Environment,
+def _generate_test(test: _TestParams, jinja_env: jinja2.Environment,
                    used_tests: DefaultDict[str, Set[_CanvasType]],
                    output_dirs: _OutputPaths) -> None:
     _validate_test(test)
@@ -470,10 +470,10 @@ def _generate_test(test: Mapping[str, Any], jinja_env: jinja2.Environment,
                                 output_files)
 
 
-def _recursive_expand_variant_matrix(original_test: Mapping[str, Any],
-                                     variant_matrix: List[Mapping[str, Any]],
+def _recursive_expand_variant_matrix(original_test: _TestParams,
+                                     variant_matrix: List[_TestParams],
                                      current_selection: List[Tuple[str, Any]],
-                                     test_variants: List[Mapping[str, Any]]):
+                                     test_variants: List[_TestParams]):
     if len(current_selection) == len(variant_matrix):
         # Selection for each variant is done, so add a new test to test_list.
         test = dict(original_test)
@@ -498,7 +498,7 @@ def _recursive_expand_variant_matrix(original_test: Mapping[str, Any],
             current_selection.pop()
 
 
-def _get_variants(test: Mapping[str, Any]) -> List[Mapping[str, Any]]:
+def _get_variants(test: _TestParams) -> List[_TestParams]:
     current_selection = []
     test_variants = []
     variants = test.get('variants', [])
