@@ -96,6 +96,10 @@ export function isQuickAnswersSupported(): boolean {
   return loadTimeData.getBoolean('isQuickAnswersSupported');
 }
 
+export function isMahiEnabled(): boolean {
+  return loadTimeData.getBoolean('isMahiEnabled');
+}
+
 // System preferences page
 export function shouldShowStartup(): boolean {
   return loadTimeData.getBoolean('shouldShowStartup');

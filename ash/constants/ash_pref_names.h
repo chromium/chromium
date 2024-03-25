@@ -42,6 +42,9 @@ inline constexpr char kOrcaEnabled[] = "assistive_input.orca_enabled";
 inline constexpr char kManagedOrcaEnabled[] =
     "assistive_input.managed.orca_enabled";
 
+// A boolean pref of whether mahi is enabled.
+inline constexpr char kMahiEnabled[] = "settings.mahi_enabled";
+
 // A boolean pref used by an admin policy to enable/disable particular
 // features on the physical keyboard. See the policy at
 // PhysicalKeyboardAutocorrect.yml.

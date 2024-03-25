@@ -45,4 +45,15 @@
         learn-more-url="$i18n{suggestedContentLearnMoreURL}">
     </settings-toggle-button>
   </template>
+
+  <template is="dom-if" if="[[isMahiEnabled_]]">
+    <settings-toggle-button id="mahiToggle"
+        class="hr"
+        pref="{{prefs.settings.mahi_enabled}}"
+        label="$i18n{enableMahi}"
+        sub-label="$i18n{enableMahiDesc}"
+        >
+    </settings-toggle-button>
+  </template>
+
 </settings-card>

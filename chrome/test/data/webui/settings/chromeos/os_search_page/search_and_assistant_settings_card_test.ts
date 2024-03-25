@@ -71,6 +71,57 @@ suite('<search-and-assistant-settings-card>', () => {
     });
   });
 
+  suite('Mahi setting toggle', () => {
+    test('should appear if isMahiEnabled flag is true.', () => {
+      loadTimeData.overrideValues({
+        isMahiEnabled: true,
+      });
+      createSearchAndAssistantCard();
+      assertTrue(
+          isVisible(searchAndAssistantSettingsCard.shadowRoot!.querySelector(
+              '#mahiToggle')));
+    });
+
+    test('should be hidden if isMahiEnabled flag is false.', () => {
+      loadTimeData.overrideValues({
+        isMahiEnabled: false,
+      });
+      createSearchAndAssistantCard();
+      assertNull(searchAndAssistantSettingsCard.shadowRoot!.querySelector(
+          '#mahiToggle'));
+    });
+    test('Mahi toggle reflects pref value', () => {
+      loadTimeData.overrideValues({
+        isMahiEnabled: true,
+      });
+      createSearchAndAssistantCard();
+      const fakePrefs = {
+        settings: {
+          mahi_enabled: {
+            value: true,
+          },
+        },
+      };
+      searchAndAssistantSettingsCard.prefs = fakePrefs;
+      flush();
+
+      const mahiToggle =
+          searchAndAssistantSettingsCard.shadowRoot!
+              .querySelector<SettingsToggleButtonElement>('#mahiToggle');
+      assertTrue(!!mahiToggle);
+
+      assertTrue(mahiToggle.checked);
+      assertTrue(searchAndAssistantSettingsCard.get(
+          'prefs.settings.mahi_enabled.value'));
+
+      // Click the toggle change the value of the pref
+      mahiToggle.click();
+      assertFalse(mahiToggle.checked);
+      assertFalse(searchAndAssistantSettingsCard.get(
+          'prefs.settings.mahi_enabled.value'));
+    });
+  });
+
   suite('when Quick Answers is not supported', () => {
     test('Search engine row should be visible', () => {
       createSearchAndAssistantCard();

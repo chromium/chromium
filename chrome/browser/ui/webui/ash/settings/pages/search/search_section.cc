@@ -23,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -299,6 +300,8 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       ash::features::IsOsSettingsRevampWayfindingEnabled();
 
   webui::LocalizedString kLocalizedStrings[] = {
+      {"enableMahi", IDS_OS_SETTINGS_ENABLE_MAHI},
+      {"enableMahiDesc", IDS_OS_SETTINGS_ENABLE_MAHI_DESCRIPTION},
       {"osSearchEngineLabel", kIsRevampEnabled
                                   ? IDS_OS_SETTINGS_REVAMP_SEARCH_ENGINE_LABEL
                                   : IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL},
@@ -316,6 +319,9 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("isQuickAnswersSupported", IsQuickAnswersSupported());
+  html_source->AddBoolean(
+      "isMahiEnabled", chromeos::MahiManager::IsEnabledWithCorrectFeatureKey());
+
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);
   html_source->AddLocalizedString("osSearchPageTitle",

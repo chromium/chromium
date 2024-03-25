@@ -557,6 +557,9 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kSuggestedContentEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+
+  registry->RegisterBooleanPref(prefs::kMahiEnabled, true);
+
   registry->RegisterBooleanPref(
       prefs::kLauncherResultEverLaunched, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
