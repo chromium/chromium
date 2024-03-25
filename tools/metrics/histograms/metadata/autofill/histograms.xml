@@ -2342,7 +2342,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.FormSubmission.PerProfileType"
     enum="BrowserProfileType" expires_after="2024-07-21">
-  <owner>rhalavati@chromium.org</owner>
+  <owner>arabm@google.com</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
     This histogram records the browser profile type when an autofill form is
@@ -4982,7 +4982,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.SuggestionAccepted.OffTheRecord" units="units"
     expires_after="2024-05-19">
-  <owner>rhalavati@chromium.org</owner>
+  <owner>arabm@google.com</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
     Records acceptance of autofill suggestions in regular and off-the-record
@@ -5023,7 +5023,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.SuggestionShown.OffTheRecord" units="units"
     expires_after="2024-09-01">
-  <owner>rhalavati@chromium.org</owner>
+  <owner>arabm@google.com</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
     Records showing of autofill suggestions in regular and off-the-record modes.
