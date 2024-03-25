@@ -70,7 +70,7 @@ apt install lsb-release sudo python pkg-config libgtk2.0-bin libdrm-dev nih-dbus
 Install library packages:
 
 ```shell
-third_party/instrumented_libraries/focal/scripts/install-build-deps.sh
+third_party/instrumented_libs/focal/scripts/install-build-deps.sh
 ```
 
 Change to a non-root user:
@@ -95,7 +95,7 @@ Now we're ready to build the libraries. A clean build takes a little over 8
 minutes on a 72-thread machine.
 
 ```shell
-third_party/instrumented_libraries/scripts/build_and_package.py --parallel -j $(nproc) all focal
+third_party/instrumented_libs/scripts/build_and_package.py --parallel -j $(nproc) all focal
 ```
 
 ## Uploading the libraries
@@ -109,10 +109,10 @@ to request access.
 exit
 
 # Move files into place.
-mv *.tgz third_party/instrumented_libraries/binaries
+mv *.tgz third_party/instrumented_libs/binaries
 
 # Upload.
-upload_to_google_storage.py -b chromium-instrumented-libraries third_party/instrumented_libraries/binaries/msan*.tgz
+upload_to_google_storage.py -b chromium-instrumented-libraries third_party/instrumented_libs/binaries/msan*.tgz
 ```
 
 ## Testing and uploading a CL
