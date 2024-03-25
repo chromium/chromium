@@ -270,15 +270,7 @@ id<GREYMatcher> mostlyNotVisible() {
 }
 
 // Tests that the collections shortcut are displayed and working.
-// TODO(crbug.com/1487974): Test fails on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_testCollectionShortcutsWithWhatsNew \
-  DISABLED_testCollectionShortcutsWithWhatsNew
-#else
-#define MAYBE_testCollectionShortcutsWithWhatsNew \
-  testCollectionShortcutsWithWhatsNew
-#endif
-- (void)MAYBE_testCollectionShortcutsWithWhatsNew {
+- (void)testCollectionShortcutsWithWhatsNew {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   // This ensures that the test will not fail when What's New has already been
