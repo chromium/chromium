@@ -797,6 +797,7 @@ void InlineLayoutAlgorithm::PlaceRelativePositionedItems(
 // Returns false if justification failed and should fall back to start-aligned.
 std::optional<LayoutUnit> InlineLayoutAlgorithm::ApplyJustify(
     LayoutUnit space,
+    JustificationTarget target,
     LineInfo* line_info) {
   // Empty lines should align to start.
   if (line_info->IsEmptyLine())
@@ -861,28 +862,27 @@ std::optional<LayoutUnit> InlineLayoutAlgorithm::ApplyJustify(
   String line_text = line_text_builder.ReleaseString();
   DCHECK_GT(line_text.length(), 0u);
 
-  ShapeResultSpacing<String> spacing(line_text, Node().IsSvgText());
+  ShapeResultSpacing<String> spacing(line_text,
+                                     target == JustificationTarget::kSvgText);
   spacing.SetExpansion(space, line_info->BaseDirection());
-  const LayoutObject* box = Node().GetLayoutBox();
+  const bool is_ruby = target == JustificationTarget::kRubyText ||
+                       target == JustificationTarget::kRubyBase;
   if (!spacing.HasExpansion()) {
-    // See AdjustInlineDirectionLineBounds() of LayoutRubyBase and
-    // LayoutRubyText.
-    if (box && (box->IsRubyText() || box->IsRubyBase()))
+    if (is_ruby) {
       return space / 2;
+    }
     return std::nullopt;
   }
 
   LayoutUnit inset;
-  // See AdjustInlineDirectionLineBounds() of LayoutRubyBase and
-  // LayoutRubyText.
-  if (box && (box->IsRubyText() || box->IsRubyBase())) {
+  if (is_ruby) {
     unsigned count = std::min(spacing.ExpansionOppotunityCount(),
                               static_cast<unsigned>(LayoutUnit::Max().Floor()));
     // Inset the ruby base/text by half the inter-ideograph expansion amount.
     inset = space / (count + 1);
     // For ruby text,  inset it by no more than a full-width ruby character on
     // each side.
-    if (box->IsRubyText()) {
+    if (target == JustificationTarget::kRubyText) {
       inset =
           std::min(LayoutUnit(2 * line_info->LineStyle().FontSize()), inset);
     }
@@ -939,7 +939,17 @@ LayoutUnit InlineLayoutAlgorithm::ApplyTextAlign(LineInfo* line_info) {
 
   ETextAlign text_align = line_info->TextAlign();
   if (text_align == ETextAlign::kJustify) {
-    std::optional<LayoutUnit> offset = ApplyJustify(space, line_info);
+    JustificationTarget target = JustificationTarget::kNormal;
+    if (Node().IsSvgText()) {
+      target = JustificationTarget::kSvgText;
+    } else if (const auto* box = Node().GetLayoutBox()) {
+      if (box->IsRubyBase()) {
+        target = JustificationTarget::kRubyBase;
+      } else if (box->IsRubyText()) {
+        target = JustificationTarget::kRubyText;
+      }
+    }
+    std::optional<LayoutUnit> offset = ApplyJustify(space, target, line_info);
     if (offset)
       return *offset;
 
