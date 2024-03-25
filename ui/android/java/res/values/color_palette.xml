@@ -99,13 +99,6 @@ found in the LICENSE file.
 
     <color name="google_green_300">@color/baseline_tertiary_80</color>
     <color name="google_green_600">@color/baseline_tertiary_40</color>
-    <color name="modern_grey_50" tools:ignore="UnusedResources">@color/baseline_neutral_95</color>
-    <color name="modern_grey_100">@color/baseline_neutral_90</color>
-    <color name="modern_grey_100_alpha_38">@color/baseline_neutral_90_alpha_38</color>
-    <color name="modern_grey_200">@color/baseline_neutral_80</color>
-    <color name="modern_grey_300">@color/baseline_neutral_70</color>
-    <color name="modern_grey_300_alpha_38">@color/baseline_neutral_70_alpha_38</color>
-    <color name="modern_grey_400" tools:ignore="UnusedResources">@color/baseline_neutral_60</color>
     <color name="modern_grey_500" tools:ignore="UnusedResources">@color/baseline_neutral_50</color>
     <color name="modern_grey_600">@color/baseline_neutral_40</color>
     <color name="modern_grey_700">@color/baseline_neutral_30</color>

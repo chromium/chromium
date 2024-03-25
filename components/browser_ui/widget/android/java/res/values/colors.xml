@@ -41,11 +41,11 @@ found in the LICENSE file.
     <color name="menu_chip_background_color_dark">@color/baseline_primary_40_alpha_6</color>
     <color name="menu_chip_background_color_light">@color/baseline_primary_80_alpha_10</color>
     <color name="menu_chip_background_color">@color/menu_chip_background_color_dark</color>
-    <color name="menu_chip_background_color_disabled_dark">@color/modern_grey_100_alpha_38</color>
+    <color name="menu_chip_background_color_disabled_dark">@color/baseline_neutral_90_alpha_38</color>
     <color name="menu_chip_background_color_disabled_light">@color/white_alpha_6</color>
     <color name="menu_chip_background_color_disabled">@color/menu_chip_background_color_disabled_dark</color>
     <color name="menu_footer_chip_background_color_dark">@color/baseline_primary_40_alpha_10</color>
     <color name="menu_footer_chip_background_color_light">@color/baseline_primary_80_alpha_10</color>
-    <color name="menu_footer_chip_background_color_disabled_dark">@color/modern_grey_100</color>
+    <color name="menu_footer_chip_background_color_disabled_dark">@color/baseline_neutral_90</color>
     <color name="menu_footer_chip_background_color_disabled_light">@color/white_alpha_6</color>
 </resources>

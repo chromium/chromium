@@ -443,7 +443,7 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
         // All colors use a single path if using the status bar color as the background.
         if (mUseStatusBarColorAsBackground) {
             if (isDefaultTheme) color = Color.BLACK;
-            setForegroundColor(getContext().getColor(R.color.modern_grey_400));
+            setForegroundColor(getContext().getColor(R.color.baseline_neutral_60));
             setBackgroundColor(ColorUtils.getDarkenedColorForStatusBar(color));
             return;
         }

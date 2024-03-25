@@ -10,7 +10,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="Overdraw"
-    android:background="@color/modern_grey_100"
+    android:background="@color/baseline_neutral_90"
     android:fillViewport="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"

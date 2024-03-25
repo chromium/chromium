@@ -700,7 +700,7 @@ public class AutofillUiUtils {
 
         // Add the grey border.
         Context context = ContextUtils.getApplicationContext();
-        int greyColor = ContextCompat.getColor(context, R.color.modern_grey_100);
+        int greyColor = ContextCompat.getColor(context, R.color.baseline_neutral_90);
         paint.setColor(greyColor);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(cardIconSpecs.getBorderWidth());

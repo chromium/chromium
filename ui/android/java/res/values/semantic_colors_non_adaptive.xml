@@ -114,7 +114,7 @@ found in the LICENSE file.
     <color name="filled_button_bg_color_disabled_light">@color/baseline_neutral_90_alpha_12</color>
 
     <!--  Dropdown divier  -->
-    <color name="dropdown_divider_color">@color/modern_grey_300</color>
+    <color name="dropdown_divider_color">@color/baseline_neutral_70</color>
     <color name="dropdown_dark_divider_color">@color/white_alpha_12</color>
 
     <!-- Ripple Colors -->
@@ -122,16 +122,16 @@ found in the LICENSE file.
     <color name="ripple_color_blue_light">@color/baseline_primary_80</color>
 
     <!-- Image loading colors -->
-    <color name="image_loading_color_dark">@color/modern_grey_300</color>
+    <color name="image_loading_color_dark">@color/baseline_neutral_70</color>
     <color name="image_loading_color_light">@color/white_alpha_12</color>
 
     <!-- Incognito icon colors -->
     <color name="incognito_icon_filled_bg_color_dark">@color/modern_grey_800</color>
-    <color name="incognito_icon_filled_bg_color_light">@color/modern_grey_300</color>
+    <color name="incognito_icon_filled_bg_color_light">@color/baseline_neutral_70</color>
     <color name="ntp_incognito_icon_color" tools:ignore="UnusedResources">@color/baseline_neutral_95</color>
 
     <!-- Illustration -->
-    <color name="promo_illustration_bg_color_light">@color/modern_grey_100_alpha_38</color>
+    <color name="promo_illustration_bg_color_light">@color/baseline_neutral_90_alpha_38</color>
     <color name="promo_illustration_bg_color_dark">@color/modern_grey_800_alpha_38</color>
 
     <!-- Omnibox bg color -->
@@ -157,7 +157,7 @@ found in the LICENSE file.
     <color name="adaptive_toolbar_preference_header_line_dark">@color/modern_white</color>
     <color name="adaptive_toolbar_preference_header_blue_light">@color/baseline_primary_40</color>
     <color name="adaptive_toolbar_preference_header_blue_dark">@color/baseline_primary_80</color>
-    <color name="adaptive_toolbar_preference_header_omnibox_light">@color/modern_grey_100</color>
+    <color name="adaptive_toolbar_preference_header_omnibox_light">@color/baseline_neutral_90</color>
     <color name="adaptive_toolbar_preference_header_omnibox_dark">@color/white_alpha_6</color>
 
     <!-- Price-tracking colors -->
@@ -168,5 +168,5 @@ found in the LICENSE file.
 
     <!-- NTP signed-out avatar colors-->
     <color name="signed_out_avatar_color_light">@color/modern_grey_900</color>
-    <color name="signed_out_avatar_color_dark">@color/modern_grey_100</color>
+    <color name="signed_out_avatar_color_dark">@color/baseline_neutral_90</color>
 </resources>

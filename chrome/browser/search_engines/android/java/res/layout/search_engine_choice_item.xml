@@ -20,7 +20,7 @@ found in the LICENSE file.
         android:id="@+id/search_engine_choice_icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:background="@color/modern_grey_100"/>
+        android:background="@color/baseline_neutral_90"/>
 
     <TextView
         android:id="@+id/search_engine_choice_name"

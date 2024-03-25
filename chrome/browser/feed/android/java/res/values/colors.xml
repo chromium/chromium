@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <color name="post_follow_illustration_device_outline">@color/modern_grey_300</color>
+    <color name="post_follow_illustration_device_outline">@color/baseline_neutral_70</color>
 
     <color name="feed_placeholder_color">@color/black_alpha_5</color>
 

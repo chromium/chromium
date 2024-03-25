@@ -19,7 +19,7 @@ found in the LICENSE file.
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="64dp"
         android:layout_marginBottom="20dp"
-        android:background="@color/modern_grey_50"/>
+        android:background="@color/baseline_neutral_95"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -40,7 +40,7 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/modern_grey_50"
+        android:background="@color/baseline_neutral_95"
         android:layout_marginHorizontal="24dp"/>
 
     <View
