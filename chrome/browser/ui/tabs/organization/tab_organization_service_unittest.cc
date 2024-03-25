@@ -361,6 +361,20 @@ TEST_F(TabOrganizationServiceTest, TabStripAddRemoveDestroysSession) {
   EXPECT_EQ(service()->GetSessionForBrowser(browser1), nullptr);
 }
 
+TEST_F(TabOrganizationServiceTest, TabGroupAddDestroysSession) {
+  Browser* browser1 = AddBrowser();
+  for (int i = 0; i < 4; i++) {
+    AddValidTabToBrowser(browser1, 0);
+  }
+
+  service()->CreateSessionForBrowser(browser1,
+                                     TabOrganizationEntryPoint::kNone);
+
+  browser1->tab_strip_model()->AddToNewGroup({1});
+
+  EXPECT_EQ(service()->GetSessionForBrowser(browser1), nullptr);
+}
+
 TEST_F(TabOrganizationServiceTest,
        RemoveAllTabsWhileMultiplePendingOrganizationsDoesntCrash) {
   // b/319272034

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/organization/request_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/organization/tab_sensitivity_cache.h"
@@ -193,17 +194,51 @@ void TabOrganizationService::OnTabStripModelChanged(
     // for that browser.
     case TabStripModelChange::kInserted:
     case TabStripModelChange::kRemoved: {
-      const auto find_result = std::find_if(
-          browser_session_map_.begin(), browser_session_map_.end(),
-
-          [&tab_strip_model](
-              std::pair<const Browser* const,
-                        std::unique_ptr<TabOrganizationSession>>& element) {
-            return element.first->tab_strip_model() == tab_strip_model;
-          });
-      if (find_result != browser_session_map_.end()) {
-        RemoveBrowserFromSessionMap(find_result->first);
+      const Browser* browser = GetBrowserForTabStripModel(tab_strip_model);
+      if (browser) {
+        RemoveBrowserFromSessionMap(browser);
       }
+      return;
+    }
+  }
+}
+
+void TabOrganizationService::OnTabGroupChanged(const TabGroupChange& change) {
+  const Browser* browser = GetBrowserForTabStripModel(change.model);
+  if (!browser) {
+    return;
+  }
+  TabOrganizationSession* session = GetSessionForBrowser(browser);
+  CHECK(session);
+  // Ignore changes when the session has already been accepted, to avoid acting
+  // on changes made by the session itself.
+  if (session->IsComplete()) {
+    return;
+  }
+
+  switch (change.type) {
+    case TabGroupChange::kMoved:
+    case TabGroupChange::kEditorOpened: {
+      return;
+    }
+    // When a tab group's name has changed, destroy the session for that
+    // browser. Ignore color changes, as they do not affect tab organization
+    // data.
+    case TabGroupChange::kVisualsChanged: {
+      const TabGroupChange::VisualsChange* visuals_change =
+          change.GetVisualsChange();
+      if (visuals_change->old_visuals->title() !=
+          visuals_change->new_visuals->title()) {
+        RemoveBrowserFromSessionMap(browser);
+      }
+      return;
+    }
+    // When a tab group is added or removed on the tabstrip, or its contents
+    // changes, destroy the session for that browser.
+    case TabGroupChange::kCreated:
+    case TabGroupChange::kContentsChanged:
+    case TabGroupChange::kClosed: {
+      RemoveBrowserFromSessionMap(browser);
       return;
     }
   }
@@ -258,4 +293,20 @@ void TabOrganizationService::RemoveBrowserFromSessionMap(
   CHECK(base::Contains(browser_session_map_, browser));
   browser->tab_strip_model()->RemoveObserver(this);
   browser_session_map_.erase(browser);
+}
+
+const Browser* TabOrganizationService::GetBrowserForTabStripModel(
+    const TabStripModel* tab_strip_model) {
+  const auto find_result = std::find_if(
+      browser_session_map_.begin(), browser_session_map_.end(),
+
+      [&tab_strip_model](
+          std::pair<const Browser* const,
+                    std::unique_ptr<TabOrganizationSession>>& element) {
+        return element.first->tab_strip_model() == tab_strip_model;
+      });
+  if (find_result == browser_session_map_.end()) {
+    return nullptr;
+  }
+  return find_result->first;
 }

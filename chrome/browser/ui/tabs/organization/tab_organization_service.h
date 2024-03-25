@@ -118,6 +118,7 @@ class TabOrganizationService
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void OnTabGroupChanged(const TabGroupChange& change) override;
 
   // Returns true if the profile that owns this service should be able to create
   // requests to the TabOrganizationRequest object, otherwise returns false.
@@ -125,6 +126,8 @@ class TabOrganizationService
 
  private:
   void RemoveBrowserFromSessionMap(const Browser* browser);
+  const Browser* GetBrowserForTabStripModel(
+      const TabStripModel* tab_strip_model);
 
   // mapping of browser to session.
   BrowserSessionMap browser_session_map_;
