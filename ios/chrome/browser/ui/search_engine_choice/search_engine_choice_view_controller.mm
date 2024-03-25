@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/search_engine_choice/snippet_search_engine_button.h"
 #import "ios/chrome/browser/ui/search_engine_choice/snippet_search_engine_element.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
@@ -148,7 +149,7 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   [_titleLabel
       setText:l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE)];
   [_titleLabel setTextColor:[UIColor colorNamed:kSolidBlackColor]];
-  _titleLabel.font = GetTitleFontWithTraitCollection(self.traitCollection);
+  _titleLabel.font = GetFRETitleFont(self);
   _titleLabel.adjustsFontForContentSizeCategory = YES;
   [_titleLabel setTextAlignment:NSTextAlignmentCenter];
   [_titleLabel setNumberOfLines:0];
@@ -320,7 +321,7 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   [super traitCollectionDidChange:previousTraitCollection];
   // Reset the title font to make sure that it is
   // properly scaled.
-  _titleLabel.font = GetTitleFontWithTraitCollection(self.traitCollection);
+  _titleLabel.font = GetFRETitleFont(self);
 }
 
 #pragma mark - Private

@@ -28,27 +28,6 @@ constexpr CGFloat kMoreArrowMargin = 4;
 
 }  // namespace
 
-UIFont* GetTitleFontWithTraitCollection(UITraitCollection* trait_collection) {
-  BOOL dynamic_type_enabled = UIContentSizeCategoryIsAccessibilityCategory(
-      trait_collection.preferredContentSizeCategory);
-
-  UIFontTextStyle text_style = nil;
-  if (!dynamic_type_enabled && IsRegularXRegularSizeClass(trait_collection)) {
-    text_style = UIFontTextStyleTitle1;
-  } else if (!dynamic_type_enabled && !IsSmallDevice()) {
-    text_style = UIFontTextStyleLargeTitle;
-  } else {
-    text_style = UIFontTextStyleTitle2;
-  }
-  CHECK(text_style);
-  UIFontDescriptor* descriptor =
-      [UIFontDescriptor preferredFontDescriptorWithTextStyle:text_style];
-  UIFont* font = [UIFont systemFontOfSize:descriptor.pointSize
-                                   weight:UIFontWeightBold];
-  UIFontMetrics* font_metrics = [UIFontMetrics metricsForTextStyle:text_style];
-  return [font_metrics scaledFontForFont:font];
-}
-
 UIButton* CreateDisabledPrimaryButton() {
   UIButton* button = PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
   SetConfigurationFont(
