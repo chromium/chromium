@@ -127,17 +127,18 @@ class WebGLConformanceIntegrationTestBase(
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
     super().AddCommandlineArgs(parser)
-    parser.add_option('--webgl-conformance-version',
-                      help='Version of the WebGL conformance tests to run.',
-                      default='1.0.4')
-    parser.add_option(
+    parser.add_argument('--webgl-conformance-version',
+                        help='Version of the WebGL conformance tests to run.',
+                        default='1.0.4')
+    parser.add_argument(
         '--webgl2-only',
-        help='Whether we include webgl 1 tests if version is 2.0.0 or above.',
-        default='false')
-    parser.add_option('--enable-metal-debug-layers',
-                      action='store_true',
-                      default=False,
-                      help='Whether to enable Metal debug layers')
+        action='store_true',
+        default=False,
+        help='Whether we include webgl 1 tests if version is 2.0.0 or above.')
+    parser.add_argument('--enable-metal-debug-layers',
+                        action='store_true',
+                        default=False,
+                        help='Whether to enable Metal debug layers')
 
   @classmethod
   def StartBrowser(cls) -> None:
@@ -178,7 +179,7 @@ class WebGLConformanceIntegrationTestBase(
     #
     test_paths = cls._ParseTests('00_test_list.txt',
                                  options.webgl_conformance_version,
-                                 (options.webgl2_only == 'true'), None)
+                                 options.webgl2_only, None)
     assert cls._webgl_version is not None
     for test_path in test_paths:
       test_path_with_args = test_path

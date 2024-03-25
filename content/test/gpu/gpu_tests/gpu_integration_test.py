@@ -213,39 +213,40 @@ class GpuIntegrationTest(
 
     Subclasses overriding this method must invoke the superclass's
     version!"""
-    parser.add_option(
-        '--disable-log-uploads',
-        dest='disable_log_uploads',
+    parser.add_argument('--disable-log-uploads',
+                        dest='disable_log_uploads',
+                        action='store_true',
+                        default=False,
+                        help='Disables uploads of logs to cloud storage')
+    parser.add_argument('--extra-overlay-config-json',
+                        help=('A path to a JSON file containing additional '
+                              'overlay configs to use. See '
+                              'overlay_support.ParseOverlayJsonFile() for more '
+                              'information on expected format.'))
+    parser.add_argument(
+        '--skip-post-test-cleanup-and-debug-info',
         action='store_true',
-        default=False,
-        help='Disables uploads of logs to cloud storage')
-    parser.add_option('--extra-overlay-config-json',
-                      help=('A path to a JSON file containing additional '
-                            'overlay configs to use. See '
-                            'overlay_support.ParseOverlayJsonFile() for more '
-                            'information on expected format.'))
-    parser.add_option('--skip-post-test-cleanup-and-debug-info',
-                      action='store_true',
-                      help=('Disables the automatic cleanup of minidumps after '
-                            'each test and prevents collection of debug '
-                            'information such as screenshots when a test '
-                            'fails. This can can speed up local testing at the '
-                            'cost of providing less actionable data when a '
-                            'test does fail.'))
-    parser.add_option('--no-browser-restart-on-failure',
-                      action='store_true',
-                      help=('Disables the automatic browser restarts after '
-                            'failing tests. This can speed up local testing at '
-                            'the cost of potentially leaving bad state around '
-                            'after a test fails.'))
-    parser.add_option('--enforce-browser-version',
-                      default=False,
-                      action='store_true',
-                      help=('Enforces that the started browser version is '
-                            'the same as what the current Chromium revision '
-                            'would build, i.e. that the browser being used '
-                            'is one that was built at the current Chromium '
-                            'revision.'))
+        help=('Disables the automatic cleanup of minidumps after '
+              'each test and prevents collection of debug '
+              'information such as screenshots when a test '
+              'fails. This can can speed up local testing at the '
+              'cost of providing less actionable data when a '
+              'test does fail.'))
+    parser.add_argument(
+        '--no-browser-restart-on-failure',
+        action='store_true',
+        help=('Disables the automatic browser restarts after '
+              'failing tests. This can speed up local testing at '
+              'the cost of potentially leaving bad state around '
+              'after a test fails.'))
+    parser.add_argument('--enforce-browser-version',
+                        default=False,
+                        action='store_true',
+                        help=('Enforces that the started browser version is '
+                              'the same as what the current Chromium revision '
+                              'would build, i.e. that the browser being used '
+                              'is one that was built at the current Chromium '
+                              'revision.'))
 
   @classmethod
   def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:

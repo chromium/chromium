@@ -36,13 +36,13 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
     super(InfoCollectionTest, cls).AddCommandlineArgs(parser)
-    parser.add_option(
+    parser.add_argument(
         '--expected-device-id',
         action='append',
         dest='expected_device_ids',
         default=[],
         help='The expected device id. Can be specified multiple times.')
-    parser.add_option('--expected-vendor-id', help='The expected vendor id')
+    parser.add_argument('--expected-vendor-id', help='The expected vendor id')
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:

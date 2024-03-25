@@ -141,30 +141,26 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
     super().AddCommandlineArgs(parser)
-    parser.add_option('--override-timeout',
-                      type=float,
-                      help='Override the test timeout in seconds')
-    parser.add_option(
+    parser.add_argument('--override-timeout',
+                        type=float,
+                        help='Override the test timeout in seconds')
+    parser.add_argument(
         '--enable-dawn-backend-validation',
         action='store_true',
         default=False,
-        help=('Runs the browser with Dawn backend validation enabled'))
-    parser.add_option(
+        help='Runs the browser with Dawn backend validation enabled')
+    parser.add_argument(
         '--use-webgpu-adapter',
-        type=str,
-        default=None,
-        help=('Runs the browser with a particular WebGPU adapter'))
-    parser.add_option(
+        help='Runs the browser with a particular WebGPU adapter')
+    parser.add_argument(
         '--use-webgpu-power-preference',
-        type=str,
-        default=None,
-        help=('Runs the browser with a particular WebGPU power preference'))
-    parser.add_option(
+        help='Runs the browser with a particular WebGPU power preference')
+    parser.add_argument(
         '--use-fxc',
         action='store_true',
         default=False,
-        help=(
-            'On Windows, pass --disable-dawn-features=use_dxc to the browser.'))
+        help=('On Windows, pass --disable-dawn-features=use_dxc to the '
+              'browser.'))
 
   @classmethod
   def StartBrowser(cls) -> None:
