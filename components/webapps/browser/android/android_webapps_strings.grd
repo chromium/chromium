@@ -206,6 +206,12 @@
       <message name="IDS_WEBAPK_INSTALL_FAILED" desc="Indicates that a WebAPK has not been added to Home screen.">
         Failed to install
       </message>
+      <message name="IDS_WEBAPK_EDIT_APP_NAME_HINT" desc="The hint string in the Add to Homescreen dialog, for when entering the web app name.">
+        Enter web app name
+      </message>
+      <message name="IDS_WEBAPK_EDIT_SHORTCUT_NAME_HINT" desc="The hint string in the Add to Homescreen dialog, for when entering the shortcut name.">
+        Enter shortcut name
+      </message>
 
       <!-- PWA Universal Install UI -->
       <message name="IDS_PWA_UNI_INSTALL_TITLE" desc="The title for the Universal Install sheet.">
