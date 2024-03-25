@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
 
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,7 +31,7 @@ class ScopedInitFeature {
 
 class ScopedInitCommandLine {
  public:
-  explicit ScopedInitCommandLine(base::StringPiece command_line_switch) {
+  explicit ScopedInitCommandLine(std::string_view command_line_switch) {
     if (!command_line_switch.empty()) {
       command_line_.GetProcessCommandLine()->AppendSwitch(command_line_switch);
     }
