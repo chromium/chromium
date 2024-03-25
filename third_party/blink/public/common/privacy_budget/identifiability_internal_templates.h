@@ -68,7 +68,7 @@ constexpr int64_t DigestOfObjectRepresentation(T in)
     // produce a different absolute output on BE and LE machines (though BE
     // machines are not supported by Chromium).
     std::array<uint8_t, 8u> bytes = {};
-    base::span(bytes).first<sizeof(T)>().copy_from(
+    base::span(bytes).template first<sizeof(T)>().copy_from(
         base::byte_span_from_ref(in));
     return static_cast<int64_t>(base::numerics::U64FromNativeEndian(bytes));
   }
