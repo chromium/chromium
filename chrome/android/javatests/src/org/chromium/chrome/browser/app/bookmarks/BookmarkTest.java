@@ -604,6 +604,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://issues.chromium.org/331232180")
     public void testSearchBookmarks_Delete_FromInitialQuery() throws Exception {
         // Inspired by https://crbug.com/1434600. Selected item deletion happens during the initial
         // query that's still showing the folder's children.
@@ -878,6 +879,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://issues.chromium.org/331232180")
     public void testEndIconVisibilityInSearchMode() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
         addFolder(TEST_TITLE_A);
@@ -1565,6 +1567,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://issues.chromium.org/331232180")
     public void testShowInFolder_OpenOtherFolder() throws Exception {
         BookmarkId testId = addFolder(TEST_FOLDER_TITLE);
         runOnUiThreadBlocking(() -> mBookmarkModel.addBookmark(testId, 0, TEST_TITLE_A, mTestUrlA));
@@ -1640,6 +1643,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://issues.chromium.org/331232180")
     public void testDeleteAllSelectedBookmarksInBackground() throws Exception {
         // Select one bookmark and then remove that in background.
         // In the meantime, the toolbar changes from selection mode to normal mode.
