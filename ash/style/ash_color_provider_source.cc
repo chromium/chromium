@@ -20,7 +20,7 @@ const ui::ColorProvider* AshColorProviderSource::GetColorProvider() const {
       GetColorProviderKey());
 }
 
-const ui::RendererColorMap AshColorProviderSource::GetRendererColorMap(
+ui::RendererColorMap AshColorProviderSource::GetRendererColorMap(
     ui::ColorProviderKey::ColorMode color_mode,
     ui::ColorProviderKey::ForcedColors forced_colors) const {
   auto key = GetColorProviderKey();

@@ -343,7 +343,7 @@ class TestColorProviderSource : public ui::ColorProviderSource {
     return &provider_;
   }
 
-  const ui::RendererColorMap GetRendererColorMap(
+  ui::RendererColorMap GetRendererColorMap(
       ui::ColorProviderKey::ColorMode color_mode,
       ui::ColorProviderKey::ForcedColors forced_colors) const override {
     if (forced_colors == ui::ColorProviderKey::ForcedColors::kActive) {

@@ -1177,7 +1177,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // ui::ColorProviderSource:
   const ui::ColorProvider* GetColorProvider() const override;
-  const ui::RendererColorMap GetRendererColorMap(
+  ui::RendererColorMap GetRendererColorMap(
       ui::ColorProviderKey::ColorMode color_mode,
       ui::ColorProviderKey::ForcedColors forced_colors) const override;
 

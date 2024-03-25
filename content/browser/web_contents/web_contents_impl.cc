@@ -564,7 +564,7 @@ class DefaultColorProviderSource : public ui::ColorProviderSource,
         GetColorProviderKey());
   }
 
-  const ui::RendererColorMap GetRendererColorMap(
+  ui::RendererColorMap GetRendererColorMap(
       ui::ColorProviderKey::ColorMode color_mode,
       ui::ColorProviderKey::ForcedColors forced_colors) const override {
     auto key = GetColorProviderKey();

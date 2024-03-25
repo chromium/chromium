@@ -19,7 +19,7 @@ class MockColorProviderSource : public ColorProviderSource {
  public:
   MOCK_METHOD(ColorProviderKey, GetColorProviderKey, (), (const, override));
   MOCK_METHOD(const ColorProvider*, GetColorProvider, (), (const, override));
-  MOCK_METHOD(const RendererColorMap,
+  MOCK_METHOD(RendererColorMap,
               GetRendererColorMap,
               (ColorProviderKey::ColorMode, ColorProviderKey::ForcedColors),
               (const, override));

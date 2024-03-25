@@ -2050,7 +2050,7 @@ const ui::ColorProvider* Widget::GetColorProvider() const {
       GetColorProviderKey());
 }
 
-const ui::RendererColorMap Widget::GetRendererColorMap(
+ui::RendererColorMap Widget::GetRendererColorMap(
     ui::ColorProviderKey::ColorMode color_mode,
     ui::ColorProviderKey::ForcedColors forced_colors) const {
   auto key = GetColorProviderKey();

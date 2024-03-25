@@ -74,7 +74,7 @@ class NoOpColorProviderSource : public ui::ColorProviderSource {
     return &color_provider_;
   }
 
-  const ui::RendererColorMap GetRendererColorMap(
+  ui::RendererColorMap GetRendererColorMap(
       ui::ColorProviderKey::ColorMode color_mode,
       ui::ColorProviderKey::ForcedColors forced_colors) const override {
     return ui::CreateRendererColorMap(color_provider_);

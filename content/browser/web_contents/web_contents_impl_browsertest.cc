@@ -6317,7 +6317,7 @@ class MockColorProviderSource : public ui::ColorProviderSource {
   const ui::ColorProvider* GetColorProvider() const override {
     return &provider_;
   }
-  const ui::RendererColorMap GetRendererColorMap(
+  ui::RendererColorMap GetRendererColorMap(
       ui::ColorProviderKey::ColorMode color_mode,
       ui::ColorProviderKey::ForcedColors forced_colors) const override {
     auto key = GetColorProviderKey();
