@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/growth/ui_action_performer.h"
 
+#include "chrome/browser/ash/growth/metrics.h"
+
 UiActionPerformer::UiActionPerformer() = default;
 
 UiActionPerformer::~UiActionPerformer() = default;
@@ -16,32 +18,21 @@ void UiActionPerformer::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void UiActionPerformer::NotifyReadyToLogImpression() {
+void UiActionPerformer::NotifyReadyToLogImpression(int campaign_id) {
   for (auto& observer : observers_) {
-    observer.OnReadyToLogImpression();
+    observer.OnReadyToLogImpression(campaign_id);
   }
 }
 
-void UiActionPerformer::NotifyUiDismissed() {
+void UiActionPerformer::NotifyDismissed(int campaign_id) {
   for (auto& observer : observers_) {
-    observer.OnUiDismissed();
+    observer.OnDismissed(campaign_id);
   }
 }
 
-void UiActionPerformer::NotifyPrimaryButtonPressed() {
+void UiActionPerformer::NotifyButtonPressed(int campaign_id,
+                                            CampaignButtonId button_id) {
   for (auto& observer : observers_) {
-    observer.OnPrimaryButtonPressed();
-  }
-}
-
-void UiActionPerformer::NotifySecondaryButtonPressed() {
-  for (auto& observer : observers_) {
-    observer.OnSecondaryButtonPressed();
-  }
-}
-
-void UiActionPerformer::NotifyCloseButtonPressed() {
-  for (auto& observer : observers_) {
-    observer.OnCloseButtonPressed();
+    observer.OnButtonPressed(campaign_id, button_id);
   }
 }

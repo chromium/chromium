@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/ash/growth/ui_action_performer.h"
 
 // Dictionary of supported nudge payload. For example:
@@ -37,7 +38,9 @@ class ShowNudgeActionPerformer : public UiActionPerformer {
                           ash::AnchoredNudgeData& nudge_data,
                           bool is_primary);
   void OnNudgeButtonClicked(int campaign_id,
+                            CampaignButtonId button_id,
                             const base::Value::Dict* action_dict);
+  void OnNudgeDismissed(int campaign_id);
 
   base::WeakPtrFactory<ShowNudgeActionPerformer> weak_ptr_factory_{this};
 };

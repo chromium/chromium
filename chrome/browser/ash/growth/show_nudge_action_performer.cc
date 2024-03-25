@@ -8,6 +8,7 @@
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/shell.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
+#include "chrome/browser/ash/growth/metrics.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -190,13 +191,18 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
       nudge_payload->FindInt(kArrowPath).value_or(int(Arrow::kBottomRight));
   nudge_data.arrow = ConvertArrow(static_cast<Arrow>(arrow_value));
 
+  // Set nudge dismiss callback.
+  nudge_data.dismiss_callback =
+      base::BindRepeating(&ShowNudgeActionPerformer::OnNudgeDismissed,
+                          weak_ptr_factory_.GetWeakPtr(), campaign_id);
+
   // Shell may not be initialized in test.
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
   }
 
-  // TODO: b/330933332 - Notify other events.
-  NotifyReadyToLogImpression();
+  // TODO: b/331045558 - Add close button callback.
+  NotifyReadyToLogImpression(campaign_id);
 
   return true;
 }
@@ -217,9 +223,11 @@ void ShowNudgeActionPerformer::MaybeSetButtonData(
   }
 
   auto button_text = base::UTF8ToUTF16(*button_text_value);
-  auto callback =
-      base::BindRepeating(&ShowNudgeActionPerformer::OnNudgeButtonClicked,
-                          weak_ptr_factory_.GetWeakPtr(), campaign_id, action);
+  auto callback = base::BindRepeating(
+      &ShowNudgeActionPerformer::OnNudgeButtonClicked,
+      weak_ptr_factory_.GetWeakPtr(), campaign_id,
+      is_primary ? CampaignButtonId::kPrimary : CampaignButtonId::kSecondary,
+      action);
   if (is_primary) {
     nudge_data.primary_button_text = button_text;
     nudge_data.primary_button_callback = callback;
@@ -231,7 +239,10 @@ void ShowNudgeActionPerformer::MaybeSetButtonData(
 
 void ShowNudgeActionPerformer::OnNudgeButtonClicked(
     int campaign_id,
+    CampaignButtonId button_id,
     const base::Value::Dict* action_dict) {
+  NotifyButtonPressed(campaign_id, button_id);
+
   if (!action_dict) {
     return;
   }
@@ -253,4 +264,8 @@ void ShowNudgeActionPerformer::OnNudgeButtonClicked(
   CHECK(campaigns_manager);
 
   campaigns_manager->PerformAction(campaign_id, &action);
+}
+
+void ShowNudgeActionPerformer::OnNudgeDismissed(int campaign_id) {
+  NotifyDismissed(campaign_id);
 }

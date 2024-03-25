@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/ash/growth/ui_action_performer.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
@@ -43,11 +44,9 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
                                    const int campaign_id) const override;
 
   // UiActionPerformer::Observer:
-  void OnReadyToLogImpression() override;
-  void OnUiDismissed() override;
-  void OnPrimaryButtonPressed() override;
-  void OnSecondaryButtonPressed() override;
-  void OnCloseButtonPressed() override;
+  void OnReadyToLogImpression(int campaign_id) override;
+  void OnDismissed(int campaign_id) override;
+  void OnButtonPressed(int campaign_id, CampaignButtonId button_id) override;
 
  private:
   void OnComponentDownloaded(

@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chrome/browser/ash/growth/metrics.h"
 #include "chromeos/ash/components/growth/action_performer.h"
 
 // Implements a base action performer to show visial elements, such a nudge and
@@ -17,23 +18,18 @@ class UiActionPerformer : public growth::ActionPerformer {
   class Observer : public base::CheckedObserver {
    public:
     // Trigger when calling to show the UI. The UI may or may not show.
-    virtual void OnReadyToLogImpression() = 0;
-
-    // Trigger when the primary button in the UI (if exists) is pressed.
-    virtual void OnPrimaryButtonPressed() = 0;
-
-    // Trigger when the secondary button in the UI (if exists) is pressed.
-    virtual void OnSecondaryButtonPressed() = 0;
-
-    // Trigger when the close button in the UI (if exists) is pressed.
-    virtual void OnCloseButtonPressed() = 0;
+    virtual void OnReadyToLogImpression(int campaign_id) = 0;
 
     // Trigger when the UI is pressed.
     // NOTE: Any button press could dismiss the UI. And the UI could auto
     // dismiss after some time.
     // TODO: b/330956316 - Log dismissal by reasons, e.g. the nudge is dismissed
     // automatically.
-    virtual void OnUiDismissed() = 0;
+    virtual void OnDismissed(int campaign_id) = 0;
+
+    // Trigger when the button in the UI (if exists) is pressed.
+    virtual void OnButtonPressed(int campaign_id,
+                                 CampaignButtonId button_id) = 0;
   };
 
   UiActionPerformer();
@@ -43,11 +39,9 @@ class UiActionPerformer : public growth::ActionPerformer {
   void RemoveObserver(Observer* observer);
 
  protected:
-  void NotifyReadyToLogImpression();
-  void NotifyUiDismissed();
-  void NotifyPrimaryButtonPressed();
-  void NotifySecondaryButtonPressed();
-  void NotifyCloseButtonPressed();
+  void NotifyReadyToLogImpression(int campaign_id);
+  void NotifyDismissed(int campaign_id);
+  void NotifyButtonPressed(int campaign_id, CampaignButtonId button_id);
 
  private:
   base::ObserverList<Observer> observers_;

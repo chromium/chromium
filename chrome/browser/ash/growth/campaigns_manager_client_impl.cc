@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/version.h"
 #include "chrome/browser/ash/growth/install_web_app_action_performer.h"
+#include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/ash/growth/open_url_action_performer.h"
 #include "chrome/browser/ash/growth/show_nudge_action_performer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
@@ -135,23 +136,16 @@ void CampaignsManagerClientImpl::RegisterSyntheticFieldTrial(
                                                             group_name);
 }
 
-void CampaignsManagerClientImpl::OnReadyToLogImpression() {
+void CampaignsManagerClientImpl::OnReadyToLogImpression(int campaign_id) {
   // TODO: b/329671682 - Record metrics.
 }
 
-void CampaignsManagerClientImpl::OnUiDismissed() {
+void CampaignsManagerClientImpl::OnDismissed(int campaign_id) {
   // TODO: b/329671682 - Record metrics.
 }
 
-void CampaignsManagerClientImpl::OnPrimaryButtonPressed() {
-  // TODO: b/329671682 - Record metrics.
-}
-
-void CampaignsManagerClientImpl::OnSecondaryButtonPressed() {
-  // TODO: b/329671682 - Record metrics.
-}
-
-void CampaignsManagerClientImpl::OnCloseButtonPressed() {
+void CampaignsManagerClientImpl::OnButtonPressed(int campaign_id,
+                                                 CampaignButtonId button_id) {
   // TODO: b/329671682 - Record metrics.
 }
 

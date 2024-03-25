@@ -1431,6 +1431,7 @@ source_set("ash") {
     "growth/campaigns_manager_session.h",
     "growth/install_web_app_action_performer.cc",
     "growth/install_web_app_action_performer.h",
+    "growth/metrics.h",
     "growth/open_url_action_performer.cc",
     "growth/open_url_action_performer.h",
     "growth/show_nudge_action_performer.cc",

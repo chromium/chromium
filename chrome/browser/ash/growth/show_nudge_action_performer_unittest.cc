@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/ash/growth/ui_action_performer.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,15 +29,11 @@ constexpr char kNudgePayloadTemplate[] = R"(
 class MockUiPerformerObserver : public UiActionPerformer::Observer {
  public:
   // UiActionPerformer::Observer:
-  MOCK_METHOD(void, OnReadyToLogImpression, (), (override));
+  MOCK_METHOD(void, OnReadyToLogImpression, (int), (override));
 
-  MOCK_METHOD(void, OnPrimaryButtonPressed, (), (override));
+  MOCK_METHOD(void, OnDismissed, (int), (override));
 
-  MOCK_METHOD(void, OnSecondaryButtonPressed, (), (override));
-
-  MOCK_METHOD(void, OnCloseButtonPressed, (), (override));
-
-  MOCK_METHOD(void, OnUiDismissed, (), (override));
+  MOCK_METHOD(void, OnButtonPressed, (int, CampaignButtonId), (override));
 };
 
 }  // namespace
@@ -140,10 +137,13 @@ TEST_F(ShowNudgeActionPerformerTest, ShouldCallOnReadyToLogImpression) {
       base::StringPrintf(kNudgePayloadTemplate, "body");
   auto value = base::JSONReader::Read(validPayloadParam);
   ASSERT_TRUE(value.has_value());
-  EXPECT_CALL(mock_observer_, OnReadyToLogImpression()).Times(1);
+
+  int campaign_id = 100;
+  EXPECT_CALL(mock_observer_, OnReadyToLogImpression(testing::Eq(campaign_id)))
+      .Times(1);
 
   action().Run(
-      /*campaign_id=*/1, &value->GetDict(),
+      campaign_id, &value->GetDict(),
       base::BindOnce(&ShowNudgeActionPerformerTest::RunActionPerformerCallback,
                      base::Unretained(this)));
 
