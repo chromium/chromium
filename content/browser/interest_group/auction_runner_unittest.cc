@@ -21230,6 +21230,7 @@ TEST_P(AuctionRunnerKAnonTest, CookieDeprecationFacilitatedTestingExcluded) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
       // bidding script tries to bid with ad that is not k-anonymous.
+      // The interest group name should still be available for reporting.
       std::string(R"(
         function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
@@ -21245,8 +21246,13 @@ TEST_P(AuctionRunnerKAnonTest, CookieDeprecationFacilitatedTestingExcluded) {
               bid: 1,
               render: "https://ad1.com",
               allowComponentAuction: true};
-        })") +
-          kReportWinNoUrl);
+        }
+
+        function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                       browserSignals) {
+          sendReportTo("https://buyer-reporting.example.com/" +
+            browserSignals.interestGroupName);
+        })"));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kSellerUrl,
       std::string(kMinimumDecisionScript) + kBasicReportResult);
@@ -21277,6 +21283,10 @@ TEST_P(AuctionRunnerKAnonTest, CookieDeprecationFacilitatedTestingExcluded) {
   ASSERT_TRUE(result_.ad_descriptor.has_value());
   EXPECT_EQ(GURL("https://ad1.com"), result_.ad_descriptor->url);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  "https://reporting.example.com/1",
+                  "https://buyer-reporting.example.com/Ad%20Platform"));
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(testing::Pair(

@@ -259,7 +259,7 @@ subsetTest(promise_test, async test => {
     // reportResultSuccessCondition:
     `browserSignals.interestGroupName === undefined`,
     // reportWinSuccessCondition:
-    `browserSignals.interestGroupName === ''`
+    `browserSignals.interestGroupName === 'default name'`
   );
 }, 'browserSignals.interestGroupName test.');
 
