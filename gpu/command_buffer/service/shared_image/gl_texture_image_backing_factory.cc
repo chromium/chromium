@@ -49,14 +49,12 @@ GLTextureImageBackingFactory::GLTextureImageBackingFactory(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
     const gles2::FeatureInfo* feature_info,
-    gl::ProgressReporter* progress_reporter,
-    bool supports_cpu_upload_usage)
+    gl::ProgressReporter* progress_reporter)
     : GLCommonImageBackingFactory(kSupportedUsage,
                                   gpu_preferences,
                                   workarounds,
                                   feature_info,
                                   progress_reporter),
-      supports_cpu_upload_usage_(supports_cpu_upload_usage),
       support_all_metal_usages_(false) {}
 
 GLTextureImageBackingFactory::~GLTextureImageBackingFactory() = default;
@@ -149,16 +147,23 @@ bool GLTextureImageBackingFactory::IsSupported(
   }
 
   if (usage & SHARED_IMAGE_USAGE_CPU_UPLOAD) {
-    if (!supports_cpu_upload_usage_) {
-      return false;
-    }
-
     if (!GLTextureImageBacking::SupportsPixelUploadWithFormat(format)) {
       return false;
     }
 
-    // Don't reject scanout usage for shared memory GMBs to match legacy
-    // behaviour from GLImageBackingFactory.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
+    // GLTextureImageBacking can't actually support scanout on any platform.
+    // Historically GLImageBacking did accept scanout usage for shared memory
+    // GpuMemoryBuffers which is still replied upon for the following:
+    // - Linux and Chrome OS on X11 have no real scanout support but clients add
+    //   the usage.
+    // - Windows can upload pixels directly from shared memory to a D3D swap
+    //   chain for overlays.
+    // TODO(kylechar): Stop allowing scanout usage here on all platforms.
+    if (usage & SHARED_IMAGE_USAGE_SCANOUT) {
+      return false;
+    }
+#endif
   } else {
     if (usage & SHARED_IMAGE_USAGE_SCANOUT) {
       return false;
@@ -172,7 +177,6 @@ bool GLTextureImageBackingFactory::IsSupported(
          gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) ||
         emulate_using_angle_metal_for_testing_) {
       uint32_t metal_invalid_usages = SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                      SHARED_IMAGE_USAGE_SCANOUT |
                                       SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
 
       // GLES2 usage is in general not allowed, as WebGL might be on a different

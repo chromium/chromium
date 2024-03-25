@@ -34,8 +34,7 @@ class GPU_GLES2_EXPORT GLTextureImageBackingFactory
   GLTextureImageBackingFactory(const GpuPreferences& gpu_preferences,
                                const GpuDriverBugWorkarounds& workarounds,
                                const gles2::FeatureInfo* feature_info,
-                               gl::ProgressReporter* progress_reporter,
-                               bool supports_cpu_upload_usage);
+                               gl::ProgressReporter* progress_reporter);
   ~GLTextureImageBackingFactory() override;
 
   // SharedImageBackingFactory implementation.
@@ -105,8 +104,6 @@ class GPU_GLES2_EXPORT GLTextureImageBackingFactory
       uint32_t usage,
       std::string debug_label,
       base::span<const uint8_t> pixel_data);
-
-  const bool supports_cpu_upload_usage_;
 
   // Many shared image usages are disabled on Metal so that they fall back to an
   // IOSurface backing. IOSurface backings are much better suited for cross-API
