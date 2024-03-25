@@ -114,9 +114,9 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
              << removed_storage_keys.size();
     for (const std::string& removed_storage_key : removed_storage_keys) {
       metadata_changes->ClearMetadata(removed_storage_key);
-      // TODO(b/325917757): Add a separate change type for removed
-      // collaborations.
-      entity_changes.push_back(EntityChange::CreateDelete(removed_storage_key));
+      entity_changes.push_back(
+          EntityChange::CreateDeletedCollaborationMembership(
+              removed_storage_key));
     }
   }
 

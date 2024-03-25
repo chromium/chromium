@@ -162,6 +162,12 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
   // invalid when IsEntityDataValid() is called.
   void TreatRemoteUpdateAsInvalid(const ClientTagHash& client_tag_hash);
 
+  // Storage keys for the entities with deleted collaboration membership.
+  const std::set<std::string>& deleted_collaboration_membership_storage_keys()
+      const {
+    return deleted_collaboration_membership_storage_keys_;
+  }
+
   const Store& db() const { return *db_; }
   Store* mutable_db() { return db_.get(); }
   size_t trimmed_specifics_change_count() const {
@@ -215,6 +221,8 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
   int last_generated_storage_key_ = 0;
 
   mutable size_t trimmed_specifics_change_count_ = 0;
+
+  std::set<std::string> deleted_collaboration_membership_storage_keys_;
 };
 
 }  // namespace syncer

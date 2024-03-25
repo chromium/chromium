@@ -25,6 +25,9 @@ namespace syncer {
 
 namespace {
 
+using testing::ElementsAre;
+using testing::IsEmpty;
+
 const char kKey1[] = "key1";
 const char kKey2[] = "key2";
 const char kValue1[] = "value1";
@@ -472,11 +475,14 @@ class ClientTagBasedRemoteUpdateHandlerForSharedTest
 
 TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
        ShouldClearEntitiesForInactiveCollaborations) {
+  const std::string kGuidInactiveCollaboration = "guid_inactive";
+
   ProcessSharedSingleUpdate(
       GenerateSharedTabGroupDataUpdate("guid_1", "active_collaboration"),
       {"active_collaboration"});
   ProcessSharedSingleUpdate(
-      GenerateSharedTabGroupDataUpdate("guid_2", "inactive_collaboration"),
+      GenerateSharedTabGroupDataUpdate(kGuidInactiveCollaboration,
+                                       "inactive_collaboration"),
       {"active_collaboration", "inactive_collaboration"});
   EXPECT_EQ(2U, ProcessorEntityCount());
   EXPECT_EQ(2U, db()->data_change_count());
@@ -484,7 +490,11 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
   EXPECT_EQ("active_collaboration",
             db()->GetMetadata("guid_1").collaboration().collaboration_id());
   EXPECT_EQ("inactive_collaboration",
-            db()->GetMetadata("guid_2").collaboration().collaboration_id());
+            db()->GetMetadata(kGuidInactiveCollaboration)
+                .collaboration()
+                .collaboration_id());
+  ASSERT_THAT(bridge()->deleted_collaboration_membership_storage_keys(),
+              IsEmpty());
 
   // Simulate another update to remove entities for the inactive collaboration
   // (only one collaboration remains active).
@@ -497,6 +507,33 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
   // 3 remote updates plus 1 change for inactive collaboration.
   EXPECT_EQ(4U, db()->metadata_change_count());
   EXPECT_EQ(1U, db()->metadata_count());
+
+  EXPECT_THAT(bridge()->deleted_collaboration_membership_storage_keys(),
+              ElementsAre(kGuidInactiveCollaboration));
+}
+
+TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
+       ShouldCreateDeletionForActiveCollaborationMembership) {
+  ProcessSharedSingleUpdate(
+      GenerateSharedTabGroupDataUpdate("guid", "active_collaboration"),
+      {"active_collaboration"});
+  ASSERT_EQ(1U, ProcessorEntityCount());
+  ASSERT_EQ(1U, db()->data_change_count());
+  ASSERT_EQ(1U, db()->metadata_change_count());
+  ASSERT_EQ("active_collaboration",
+            db()->GetMetadata("guid").collaboration().collaboration_id());
+  ASSERT_THAT(bridge()->deleted_collaboration_membership_storage_keys(),
+              IsEmpty());
+
+  // Normal deletion (tombstone) from the server while the collaboration is
+  // still active.
+  ProcessSingleUpdate(
+      worker()->GenerateTombstoneUpdateData(GetSharedTabGroupDataHash("guid")));
+  EXPECT_EQ(0U, ProcessorEntityCount());
+  EXPECT_EQ(0U, db()->metadata_count());
+  EXPECT_EQ(2U, db()->metadata_change_count());
+  EXPECT_THAT(bridge()->deleted_collaboration_membership_storage_keys(),
+              IsEmpty());
 }
 
 }  // namespace
