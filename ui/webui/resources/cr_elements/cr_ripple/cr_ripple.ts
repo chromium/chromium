@@ -30,14 +30,12 @@ export class CrRippleElement extends CrLitElement {
 
   static override get properties() {
     return {
-      center: {type: Boolean},
       holdDown: {type: Boolean},
       recenters: {type: Boolean},
       noink: {type: Boolean},
     };
   }
 
-  center: boolean = false;
   holdDown: boolean = false;
   recenters: boolean = false;
   noink: boolean = false;
@@ -106,11 +104,11 @@ export class CrRippleElement extends CrLitElement {
     }
 
     if (!this.noink) {
-      this.downAction(e);
+      this.downAction_(e);
     }
   }
 
-  downAction(e?: PointerEvent) {
+  private downAction_(e?: PointerEvent) {
     if (this.ripples_.length && this.holdDown) {
       return;
     }
@@ -143,7 +141,7 @@ export class CrRippleElement extends CrLitElement {
 
     let x = 0;
     let y = 0;
-    const centered = !e || this.center;
+    const centered = !e;
     if (centered) {
       x = roundedCenterX();
       y = roundedCenterY();
@@ -166,13 +164,11 @@ export class CrRippleElement extends CrLitElement {
     const radius =
         Math.min(MAX_RADIUS_PX, Math.max.apply(Math, cornerDistances));
 
-    const startTranslate = (x - radius) + 'px, ' + (y - radius) + 'px';
-    let endTranslate = '';
+    const startTranslate = `${x - radius}px, ${y - radius}px`;
+    let endTranslate = startTranslate;
     if (this.recenters && !centered) {
-      endTranslate = (roundedCenterX() - radius) + 'px, ' +
-          (roundedCenterY() - radius) + 'px';
-    } else {
-      endTranslate = startTranslate;
+      endTranslate =
+          `${roundedCenterX() - radius}px, ${roundedCenterY() - radius}px`;
     }
 
     const ripple = document.createElement('div');
@@ -184,10 +180,9 @@ export class CrRippleElement extends CrLitElement {
 
     ripple.animate(
         {
-          // TODO(dbeam): scale to 90% of radius at .75 offset?
           transform: [
-            'translate(' + startTranslate + ') scale(0)',
-            'translate(' + endTranslate + ') scale(1)',
+            `translate(${startTranslate}) scale(0)`,
+            `translate(${endTranslate}) scale(1)`,
           ],
         },
         {
@@ -199,11 +194,11 @@ export class CrRippleElement extends CrLitElement {
 
   uiUpAction() {
     if (!this.noink) {
-      this.upAction();
+      this.upAction_();
     }
   }
 
-  upAction() {
+  private upAction_() {
     if (!this.holdDown) {
       this.hideRipple_();
     }
@@ -258,9 +253,9 @@ export class CrRippleElement extends CrLitElement {
       return;
     }
     if (newHoldDown) {
-      this.downAction();
+      this.downAction_();
     } else {
-      this.upAction();
+      this.upAction_();
     }
   }
 }

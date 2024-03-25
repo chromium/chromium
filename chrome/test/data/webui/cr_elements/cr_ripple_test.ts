@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_ripple/cr_ripple.js';
 
 import type {CrRippleElement} from 'chrome://resources/cr_elements/cr_ripple/cr_ripple.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('CrRipple', function() {
   let ripple: CrRippleElement;
@@ -27,7 +27,8 @@ suite('CrRipple', function() {
   }
 
   function keydown(key: string) {
-    ripple.parentElement!.dispatchEvent(new KeyboardEvent('keydown', {key}));
+    ripple.parentElement!.dispatchEvent(
+        new KeyboardEvent('keydown', {key, cancelable: true}));
   }
 
   function keyup(key: string) {
@@ -64,10 +65,31 @@ suite('CrRipple', function() {
     });
   }
 
+  function assertRipplesNotShown(triggerFn: () => void) {
+    return new Promise<void>(resolve => {
+      const observer = new MutationObserver((records: MutationRecord[]) => {
+        for (const record of records) {
+          if (record.type !== 'childList') {
+            continue;
+          }
+
+          assertNotReached('Unexpected ripple shown');
+        }
+      });
+      observer.observe(ripple.shadowRoot!, {childList: true});
+
+      // Yield to ensure that any unexpected ripples have a chance to surface.
+      window.setTimeout(() => {
+        resolve();
+      }, 1);
+
+      triggerFn();
+    });
+  }
+
   test('DefaultState', function() {
     assertFalse(ripple.noink);
     assertFalse(ripple.holdDown);
-    assertFalse(ripple.center);
     assertFalse(ripple.recenters);
   });
 
@@ -91,7 +113,6 @@ suite('CrRipple', function() {
     });
   });
 
-
   test('uiDownAction_Single', function() {
     return assertRipplesShown(1, () => {
       ripple.uiDownAction();
@@ -110,8 +131,43 @@ suite('CrRipple', function() {
     });
   });
 
-  // TODO(crbug.com/330377196): Add tests for
-  //   - noink, holdDown, centers, recenter
-  //   - showAndHoldDown
-  //   - keydown/up with defaultPrevented=true
+  test('showAndHoldDown', function() {
+    return assertRipplesShown(1, async () => {
+      ripple.showAndHoldDown();
+      await ripple.updateComplete;
+      ripple.clear();
+    });
+  });
+
+  test('noink', async function() {
+    ripple.noink = true;
+    await assertRipplesNotShown(() => {
+      keydown('Enter');
+    });
+
+    await assertRipplesNotShown(() => {
+      keydown(' ');
+      keyup(' ');
+    });
+
+    await assertRipplesNotShown(() => {
+      pointerdown();
+      pointerup();
+    });
+
+    return assertRipplesNotShown(() => {
+      ripple.uiDownAction();
+      ripple.uiUpAction();
+    });
+  });
+
+  test('RippleNotShown_EnterKeyDefaultPrevenetd', function() {
+    ripple.parentElement!.addEventListener('keydown', e => {
+      e.preventDefault();
+    }, {once: true, capture: true});
+
+    return assertRipplesNotShown(() => {
+      keydown('Enter');
+    });
+  });
 });
