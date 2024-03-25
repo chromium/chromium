@@ -53,7 +53,7 @@ class TabDragControllerTest : public InProcessBrowserTest {
   void SetWindowFinderForTabStrip(TabStrip* tab_strip,
                                   std::unique_ptr<WindowFinder> window_finder);
 
-  raw_ptr<const BrowserList> browser_list;
+  const BrowserList* browser_list() const { return browser_list_; }
 
  protected:
   void HandleGestureEvent(TabStrip* tab_strip, ui::GestureEvent* event);
@@ -62,6 +62,9 @@ class TabDragControllerTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest:
   void SetUp() override;
+
+ private:
+  raw_ptr<const BrowserList> browser_list_;
 };
 
 namespace test {
