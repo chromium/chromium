@@ -7,7 +7,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
-#include "base/test/gmock_callback_support.h"
 
 namespace plus_addresses::test {
 
@@ -68,22 +67,6 @@ std::string MakePlusProfile(const PlusProfile& profile) {
       {profile.facet, profile.plus_address, mode}, nullptr);
   DCHECK(base::JSONReader::Read(json));
   return json;
-}
-
-PlusAddressesChangedWaiter::PlusAddressesChangedWaiter(
-    PlusAddressService* service) {
-  scoped_observation_.Observe(service);
-  ON_CALL(mock_observer_, OnPlusAddressesChanged())
-      .WillByDefault(base::test::RunClosure(run_loop_.QuitClosure()));
-}
-
-PlusAddressesChangedWaiter::~PlusAddressesChangedWaiter() = default;
-
-PlusAddressesChangedWaiter::MockObserver::MockObserver() = default;
-PlusAddressesChangedWaiter::MockObserver::~MockObserver() = default;
-
-void PlusAddressesChangedWaiter::Wait() && {
-  run_loop_.Run();
 }
 
 }  // namespace plus_addresses::test
