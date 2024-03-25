@@ -96,6 +96,10 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
   self.backgroundDimmerView.backgroundColor = [UIColor clearColor];
   [self.containerView addSubview:self.backgroundDimmerView];
   AddSameConstraints(self.containerView, self.backgroundDimmerView);
+  UITapGestureRecognizer* tapGesture = [[UITapGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(backgroundTapped:)];
+  [self.backgroundDimmerView addGestureRecognizer:tapGesture];
 
   // Add presented view controller.
   switch (self.navigationController.displayStyle) {
@@ -161,6 +165,12 @@ constexpr CGFloat kBackgroundDimmerViewAlpha = .4;
 
 - (void)preferredContentSizeDidChangeForAccountPickerScreenViewController {
   [self containerViewDidLayoutSubviews];
+}
+#pragma mark - Tap recogniser
+
+- (void)backgroundTapped:(UITapGestureRecognizer*)gestureRecognizer {
+  [self.actionDelegate
+      accountPickerScreenPresentationControllerBackgroundTapped:self];
 }
 
 #pragma mark - Private

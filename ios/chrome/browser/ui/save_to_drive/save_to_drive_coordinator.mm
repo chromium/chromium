@@ -86,6 +86,12 @@
 
   AccountPickerConfiguration* accountPickerConfiguration =
       drive::GetAccountPickerConfiguration(_downloadTask);
+
+  accountPickerConfiguration.dismissOnBackgroundTap =
+      self.baseViewController.traitCollection.horizontalSizeClass ==
+          UIUserInterfaceSizeClassRegular &&
+      self.baseViewController.traitCollection.verticalSizeClass ==
+          UIUserInterfaceSizeClassRegular;
   _accountPickerCoordinator = [[AccountPickerCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
