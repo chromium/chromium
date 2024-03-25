@@ -359,6 +359,7 @@ positionFallbackBounds
 positionTry
 positionTryOptions
 positionTryOrder
+positionVisibility
 prefix
 quotes
 r

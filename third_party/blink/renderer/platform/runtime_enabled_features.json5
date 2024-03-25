@@ -954,6 +954,15 @@
       name: "CSSPositionTryOrder",
       status: "test",
     },
+    {
+      // Support the position-visibility property for anchor positioning.
+      // https://github.com/w3c/csswg-drafts/issues/7758
+      // TODO(pdr,wangxianzhu): Once implementation is complete, switch this to:
+      //   implied_by: ["CSSAnchorPositioning"]
+      name: "CSSPositionVisibility",
+      status: "test",
+      depends_on: ["CSSAnchorPositioning"],
+    },
     // https://drafts.csswg.org/css-values-5/#progress
     // progress(), media-progress(), container-progress()
     {

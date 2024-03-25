@@ -1855,6 +1855,12 @@
     "flip-inline",
     "flip-start",
 
+    // position-visibility
+    // always
+    "anchors-valid",
+    "anchors-visible",
+    "no-overflow",
+
     // reading-order-items
     // normal
     "flex-visual",

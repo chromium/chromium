@@ -1959,6 +1959,24 @@ ScopedCSSName* StyleBuilderConverter::ConvertPositionAnchor(
   return ConvertCustomIdent(state, value);
 }
 
+PositionVisibility StyleBuilderConverter::ConvertPositionVisibility(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  PositionVisibility flags = PositionVisibility::kAlways;
+
+  auto process = [&flags](const CSSValue& identifier) {
+    flags |= To<CSSIdentifierValue>(identifier).ConvertTo<PositionVisibility>();
+  };
+  if (auto* value_list = DynamicTo<CSSValueList>(value)) {
+    for (auto& entry : *value_list) {
+      process(*entry);
+    }
+  } else {
+    process(value);
+  }
+  return flags;
+}
+
 ScopedCSSNameList* StyleBuilderConverter::ConvertAnchorName(
     StyleResolverState& state,
     const CSSValue& value) {

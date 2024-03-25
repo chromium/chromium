@@ -921,6 +921,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPositionTryOptions:
       return base::ValuesEquivalent(a.GetPositionTryOptions(),
                                     b.GetPositionTryOptions());
+    case CSSPropertyID::kPositionVisibility:
+      return a.GetPositionVisibility() == b.GetPositionVisibility();
 
     // These properties are not animateable, but perhaps equality should still
     // be defined for them.

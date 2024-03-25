@@ -190,6 +190,66 @@ const CSSValue* PositionAnchor::CSSValueFromComputedStyleInternal(
   return MakeGarbageCollected<CSSCustomIdentValue>(*style.PositionAnchor());
 }
 
+// https://github.com/w3c/csswg-drafts/issues/7758
+// position-visibility:
+//   always | [ anchors-valid | anchors-visible ] || no-overflow
+const CSSValue* PositionVisibility::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (range.Peek().Id() == CSSValueID::kAlways) {
+    return css_parsing_utils::ConsumeIdent(range);
+  }
+
+  CSSIdentifierValue* anchors_valid_or_visible =
+      css_parsing_utils::ConsumeIdent<CSSValueID::kAnchorsValid,
+                                      CSSValueID::kAnchorsVisible>(range);
+  CSSIdentifierValue* no_overflow =
+      css_parsing_utils::ConsumeIdent<CSSValueID::kNoOverflow>(range);
+  if (!anchors_valid_or_visible) {
+    anchors_valid_or_visible =
+        css_parsing_utils::ConsumeIdent<CSSValueID::kAnchorsValid,
+                                        CSSValueID::kAnchorsVisible>(range);
+  }
+
+  if (!anchors_valid_or_visible && !no_overflow) {
+    return nullptr;
+  }
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (anchors_valid_or_visible) {
+    list->Append(*anchors_valid_or_visible);
+  }
+  if (no_overflow) {
+    list->Append(*no_overflow);
+  }
+  return list;
+}
+
+const CSSValue* PositionVisibility::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  blink::PositionVisibility position_visibility = style.GetPositionVisibility();
+  if (position_visibility == blink::PositionVisibility::kAlways) {
+    return CSSIdentifierValue::Create(CSSValueID::kAlways);
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (EnumHasFlags(position_visibility,
+                   blink::PositionVisibility::kAnchorsValid)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kAnchorsValid));
+  } else if (EnumHasFlags(position_visibility,
+                          blink::PositionVisibility::kAnchorsVisible)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kAnchorsVisible));
+  }
+  if (EnumHasFlags(position_visibility,
+                   blink::PositionVisibility::kNoOverflow)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kNoOverflow));
+  }
+  return list;
+}
+
 // anchor-name: none | <dashed-ident>#
 const CSSValue* AnchorName::ParseSingleValue(
     CSSParserTokenRange& range,

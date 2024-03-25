@@ -499,6 +499,22 @@ enum class TryTactic : uint8_t {
   kFlipStart,
 };
 
+static const size_t kPositionVisibilityBits = 3;
+enum class PositionVisibility : uint8_t {
+  kAlways = 0x0,
+  kAnchorsValid = 0x1,
+  kAnchorsVisible = 0x2,
+  kNoOverflow = 0x4,
+};
+inline PositionVisibility operator|(PositionVisibility a,
+                                    PositionVisibility b) {
+  return PositionVisibility(int(a) | int(b));
+}
+inline PositionVisibility& operator|=(PositionVisibility& a,
+                                      PositionVisibility b) {
+  return a = a | b;
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_CONSTANTS_H_
