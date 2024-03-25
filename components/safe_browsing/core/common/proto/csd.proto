@@ -1156,6 +1156,10 @@ enum ClientSideDetectionType {
   TRIGGER_MODELS = 2;
   // A Notification prompt triggered.
   NOTIFICATION_PERMISSION_PROMPT = 3;
+  // Keyboard lock request triggered.
+  KEYBOARD_LOCK_REQUESTED = 4;
+  // Pointer lock request triggered.
+  POINTER_LOCK_REQUESTED = 5;
 }
 
 message ClientDownloadResponse {

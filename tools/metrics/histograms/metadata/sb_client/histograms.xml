@@ -728,8 +728,10 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="RequestType">
     <variant name="ForceRequest" summary="Force request"/>
+    <variant name="KeyboardLockRequested" summary="Keyboard lock requested"/>
     <variant name="NotificationPermissionPrompt"
         summary="Notification permission prompt"/>
+    <variant name="PointerLockRequested" summary="Pointer lock requested"/>
     <variant name="TriggerModel" summary="Trigger model"/>
     <variant name="Unknown" summary="Unknown"/>
   </token>
@@ -762,8 +764,10 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="RequestType">
     <variant name="ForceRequest" summary="Force request"/>
+    <variant name="KeyboardLockRequested" summary="Keyboard lock requested"/>
     <variant name="NotificationPermissionPrompt"
         summary="Notification permission prompt"/>
+    <variant name="PointerLockRequested" summary="Pointer lock requested"/>
     <variant name="TriggerModel" summary="Trigger model"/>
     <variant name="Unknown" summary="Unknown"/>
   </token>
@@ -808,17 +812,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.ServerModelDetectsPhishing"
-    enum="BooleanIsPhishing" expires_after="2024-09-01">
+<histogram name="SBClientPhishing.ServerModelDetectsPhishing.{RequestType}"
+    enum="BooleanIsPhishing" expires_after="2025-03-18">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Records whether the server-side phishing detection model detects phishing.
-    This histogram is logged each time we contact Safe Browsing to evaluate
-    whether a site is phishing.
-
-    This metric is used to populate a dashboard on go/crsb-site.
+    Records whether the server-side phishing detection model detects phishing
+    for a specific {RequestType}. This histogram is logged each time we contact
+    Safe Browsing to evaluate whether a site is phishing.
   </summary>
+  <token key="RequestType">
+    <variant name="" summary="all request types"/>
+    <variant name="ForceRequest" summary="force request"/>
+    <variant name="KeyboardLockRequested" summary="keyboard lock Request"/>
+    <variant name="NotificationPermissionPrompt"
+        summary="notification permission prompt"/>
+    <variant name="PointerLockRequested" summary="pointer lock request"/>
+    <variant name="TriggerModel" summary="trigger model"/>
+    <variant name="Unknown" summary="Unknown"/>
+  </token>
 </histogram>
 
 <histogram name="SBClientPhishing.VisualFeaturesClearReason"

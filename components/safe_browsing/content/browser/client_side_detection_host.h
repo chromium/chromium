@@ -94,8 +94,11 @@ class ClientSideDetectionHost
 
   // From content::WebContentsObserver.  If we navigate away we cancel all
   // pending callbacks that could show an interstitial, and check to see whether
-  // we should classify the new URL.
+  // we should classify the new URL. If a request to lock the keyboard or
+  // pointer has arrived, we will re-trigger classification.
   void PrimaryPageChanged(content::Page& page) override;
+  void KeyboardLockRequested() override;
+  void PointerLockRequested() override;
 
   // permissions::PermissionRequestManager::Observer methods:
   void OnPromptAdded() override;
@@ -125,6 +128,22 @@ class ClientSideDetectionHost
                            PrerenderShouldNotAffectClientSideDetection);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
                            ClassifyPrerenderedPageAfterActivation);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
+      KeyboardLockTriggersPreclassificationCheck);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
+      PointerLockTriggersPreClassificationCheck);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
+      PointerLockClassificationTriggersCSPPPing);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
+      KeyboardLockClassificationTriggersCSPPPing);
+
+  // Helper function to create preclassification check once requirements are
+  // met.
+  void MaybeStartPreClassification(ClientSideDetectionType request_type);
 
   // Called when pre-classification checks are done for the phishing
   // classifiers. |request_type| is passed in to specify the process that
@@ -159,6 +178,7 @@ class ClientSideDetectionHost
   // whether the warning is being shown due to a cached verdict or from an
   // actual server ping.
   void MaybeShowPhishingWarning(bool is_from_cache,
+                                ClientSideDetectionType request_type,
                                 GURL phishing_url,
                                 bool is_phishing);
 

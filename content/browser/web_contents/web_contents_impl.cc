@@ -4325,7 +4325,7 @@ void WebContentsImpl::RequestToLockPointer(
          current = current->GetOuterWebContents()) {
       current->pointer_lock_widget_ = render_widget_host;
     }
-
+    observers_.NotifyObservers(&WebContentsObserver::PointerLockRequested);
     delegate_->RequestPointerLock(this, user_gesture, last_unlocked_by_target);
   } else {
     render_widget_host->GotResponseToPointerLockRequest(
@@ -4395,6 +4395,7 @@ bool WebContentsImpl::RequestKeyboardLock(
   keyboard_lock_widget_ = render_widget_host;
 
   if (delegate_) {
+    observers_.NotifyObservers(&WebContentsObserver::KeyboardLockRequested);
     delegate_->RequestKeyboardLock(this, esc_key_locked_);
   }
   return true;

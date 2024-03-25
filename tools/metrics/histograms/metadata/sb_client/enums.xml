@@ -82,6 +82,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="FORCE_REQUEST"/>
   <int value="2" label="TRIGGER_MODELS"/>
   <int value="3" label="NOTIFICATION_PERMISSION_PROMPT"/>
+  <int value="4" label="KEYBOARD_LOCK_REQUESTED"/>
+  <int value="5" label="POINTER_LOCK_REQUESTED"/>
 </enum>
 
 <enum name="ClientSidePhishingImageEmbeddingResult">

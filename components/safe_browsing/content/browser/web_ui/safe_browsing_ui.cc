@@ -795,6 +795,10 @@ std::string SerializeClientSideDetectionType(ClientSideDetectionType csd_type) {
       return "TRIGGER_MODELS";
     case ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT:
       return "NOTIFICATION_PERMISSION_PROMPT";
+    case ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED:
+      return "KEYBOARD_LOCK_REQUESTED";
+    case ClientSideDetectionType::POINTER_LOCK_REQUESTED:
+      return "POINTER_LOCK_REQUESTED";
   }
   return "UNKNOWN_ENUM_SPECIFIED";
 }
