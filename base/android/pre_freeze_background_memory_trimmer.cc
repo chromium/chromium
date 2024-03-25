@@ -361,7 +361,9 @@ class OneShotDelayedBackgroundTimer::TaskImpl final
   void Start(const Location& from_here,
              TimeDelta delay,
              OnceClosure task) override {
-    DCHECK(!IsRunning());
+    if (IsRunning()) {
+      Stop();
+    }
     DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
     base::AutoLock locker(PreFreezeBackgroundMemoryTrimmer::Instance().lock_);
     task_ = PreFreezeBackgroundMemoryTrimmer::Instance()

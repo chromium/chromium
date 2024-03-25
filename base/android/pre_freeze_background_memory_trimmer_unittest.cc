@@ -23,6 +23,10 @@ void IncGlobalCounter() {
   s_counter++;
 }
 
+void DecGlobalCounter() {
+  s_counter--;
+}
+
 void PostDelayedIncGlobal() {
   PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(
       SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
@@ -321,6 +325,37 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerDestroyed) {
 
   ASSERT_EQ(pending_task_count(), 0u);
 
+  EXPECT_EQ(s_counter, 0);
+}
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerStartedWhileRunning) {
+  IncGlobalCounter();
+  ASSERT_EQ(s_counter, 1);
+
+  OneShotDelayedBackgroundTimer timer;
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_FALSE(timer.IsRunning());
+
+  timer.Start(FROM_HERE, base::Seconds(30), base::BindOnce(&IncGlobalCounter));
+
+  ASSERT_EQ(pending_task_count(), 1u);
+  ASSERT_TRUE(timer.IsRunning());
+
+  timer.Start(FROM_HERE, base::Seconds(10), base::BindOnce(&DecGlobalCounter));
+
+  // Previous task was cancelled, so s_counter should still be 1.
+  ASSERT_EQ(s_counter, 1);
+  ASSERT_EQ(pending_task_count(), 1u);
+  ASSERT_TRUE(timer.IsRunning());
+
+  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_FALSE(timer.IsRunning());
+
+  // Expect 0 here because we decremented it. The incrementing task was
+  // cancelled when we restarted the experiment.
   EXPECT_EQ(s_counter, 0);
 }
 
