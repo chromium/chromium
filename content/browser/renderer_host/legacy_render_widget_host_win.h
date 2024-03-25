@@ -5,10 +5,10 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_LEGACY_RENDER_WIDGET_HOST_WIN_H_
 #define CONTENT_BROWSER_RENDERER_HOST_LEGACY_RENDER_WIDGET_HOST_WIN_H_
 
-#include "base/memory/raw_ptr.h"
-
-// Must be included before <atlapp.h>.
-#include "base/win/atl.h"  // NOLINT(build/include_order)
+// clang-format off
+// This needs to be included before ATL headers.
+#include "base/win/atl.h"
+// clang-format on
 
 #include <atlapp.h>
 #include <atlcrack.h>
@@ -17,6 +17,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
@@ -212,4 +213,3 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_RENDERER_HOST_LEGACY_RENDER_WIDGET_HOST_WIN_H_
-
