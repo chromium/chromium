@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/permissions_test_util.h"
+#include "chrome/browser/extensions/permissions/permissions_test_util.h"
 
 #include "base/logging.h"
 #include "base/run_loop.h"
@@ -23,8 +23,9 @@ std::vector<std::string> GetPatternsAsStrings(const URLPatternSet& patterns) {
     // the extension to retrieve a favicon for a given URL). Just ignore it when
     // generating host sets.
     std::string pattern_string = pattern.GetAsString();
-    if (pattern_string != std::string(chrome::kChromeUIFaviconURL) + "*")
+    if (pattern_string != std::string(chrome::kChromeUIFaviconURL) + "*") {
       pattern_strings.push_back(pattern_string);
+    }
   }
 
   return pattern_strings;

@@ -16,13 +16,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/extensions/permissions_updater.h"
-#include "chrome/browser/extensions/scripting_permissions_modifier.h"
-#include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -94,8 +94,9 @@ ExtensionActionRunner::~ExtensionActionRunner() {
 // static
 ExtensionActionRunner* ExtensionActionRunner::GetForWebContents(
     content::WebContents* web_contents) {
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
   TabHelper* tab_helper = TabHelper::FromWebContents(web_contents);
   return tab_helper ? tab_helper->extension_action_runner() : nullptr;
 }
@@ -145,11 +146,13 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
           ->GetExtensionAction(*extension);
   DCHECK(extension_action);
 
-  if (!extension_action->GetIsVisible(tab_id))
+  if (!extension_action->GetIsVisible(tab_id)) {
     return ExtensionAction::ACTION_NONE;
+  }
 
-  if (extension_action->HasPopup(tab_id))
+  if (extension_action->HasPopup(tab_id)) {
     return ExtensionAction::ACTION_SHOW_POPUP;
+  }
 
   ExtensionActionAPI::Get(browser_context_)
       ->DispatchExtensionActionClicked(*extension_action, web_contents(),
@@ -201,8 +204,9 @@ void ExtensionActionRunner::GrantTabPermissions(
 
 void ExtensionActionRunner::OnActiveTabPermissionGranted(
     const Extension* extension) {
-  if (ignore_active_tab_granted_)
+  if (ignore_active_tab_granted_) {
     return;
+  }
 
   if (WantsToRun(extension)) {
     RunBlockedActions(extension);
@@ -219,18 +223,21 @@ void ExtensionActionRunner::OnWebRequestBlocked(const Extension* extension) {
   bool inserted = false;
   std::tie(std::ignore, inserted) =
       web_request_blocked_.insert(extension->id());
-  if (inserted)
+  if (inserted) {
     NotifyChange(extension);
+  }
 
-  if (test_observer_)
+  if (test_observer_) {
     test_observer_->OnBlockedActionAdded();
+  }
 }
 
 int ExtensionActionRunner::GetBlockedActions(
     const ExtensionId& extension_id) const {
   int blocked_actions = BLOCKED_ACTION_NONE;
-  if (web_request_blocked_.count(extension_id) != 0)
+  if (web_request_blocked_.count(extension_id) != 0) {
     blocked_actions |= BLOCKED_ACTION_WEB_REQUEST;
+  }
   auto iter = pending_scripts_.find(extension_id);
   if (iter != pending_scripts_.end()) {
     for (const auto& script : iter->second) {
@@ -260,8 +267,8 @@ bool ExtensionActionRunner::WantsToRun(const Extension* extension) {
 void ExtensionActionRunner::RunForTesting(const Extension* extension) {
   if (WantsToRun(extension)) {
     TabHelper::FromWebContents(web_contents())
-          ->active_tab_permission_granter()
-          ->GrantIfRequested(extension);
+        ->active_tab_permission_granter()
+        ->GrantIfRequested(extension);
   }
 }
 
@@ -272,8 +279,9 @@ ExtensionActionRunner::RequiresUserConsentForScriptInjection(
   CHECK(extension);
 
   // Allow the extension if it's been explicitly granted permission.
-  if (permitted_extensions_.count(extension->id()) > 0)
+  if (permitted_extensions_.count(extension->id()) > 0) {
     return PermissionsData::PageAccess::kAllowed;
+  }
 
   GURL url = web_contents()->GetVisibleURL();
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents()).id();
@@ -300,13 +308,15 @@ void ExtensionActionRunner::RequestScriptInjection(
 
   // If this was the first entry, we need to notify that a new extension wants
   // to run.
-  if (list.size() == 1u)
+  if (list.size() == 1u) {
     NotifyChange(extension);
+  }
 
   was_used_on_page_ = true;
 
-  if (test_observer_)
+  if (test_observer_) {
     test_observer_->OnBlockedActionAdded();
+  }
 }
 
 void ExtensionActionRunner::RunPendingScriptsForExtension(
@@ -318,8 +328,9 @@ void ExtensionActionRunner::RunPendingScriptsForExtension(
   // Refuse to run if the visible entry is the initial NavigationEntry, because
   // we have no way of determining if it's the proper page. This should rarely,
   // if ever, happen.
-  if (visible_entry->IsInitialEntry())
+  if (visible_entry->IsInitialEntry()) {
     return;
+  }
 
   // We add this to the list of permitted extensions and erase pending entries
   // *before* running them to guard against the crazy case where running the
@@ -327,8 +338,9 @@ void ExtensionActionRunner::RunPendingScriptsForExtension(
   permitted_extensions_.insert(extension->id());
 
   auto iter = pending_scripts_.find(extension->id());
-  if (iter == pending_scripts_.end())
+  if (iter == pending_scripts_.end()) {
     return;
+  }
 
   PendingScriptList scripts;
   iter->second.swap(scripts);
@@ -423,8 +435,9 @@ void ExtensionActionRunner::ShowReloadPageBubble(
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   ExtensionsContainer* const extensions_container =
       browser ? browser->window()->GetExtensionsContainer() : nullptr;
-  if (!extensions_container)
+  if (!extensions_container) {
     return;
+  }
 
   ShowReloadPageDialog(
       browser, extension_ids,
@@ -477,8 +490,9 @@ void ExtensionActionRunner::DidFinishNavigation(
   num_page_requests_ = 0;
   permitted_extensions_.clear();
   // Runs all pending callbacks before clearing them.
-  for (auto& scripts : pending_scripts_)
+  for (auto& scripts : pending_scripts_) {
     RunCallbackOnPendingScript(scripts.second, false);
+  }
   pending_scripts_.clear();
   web_request_blocked_.clear();
   was_used_on_page_ = false;
@@ -536,8 +550,9 @@ void ExtensionActionRunner::RunCallbackOnPendingScript(
     bool granted) {
   // Calls RequestScriptInjectionPermissionCallback stored in
   // |pending_scripts_|.
-  for (const auto& pending_script : list)
+  for (const auto& pending_script : list) {
     std::move(pending_script->permit_script).Run(granted);
+  }
 }
 
 }  // namespace extensions

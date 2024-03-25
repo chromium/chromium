@@ -168,7 +168,7 @@ include_rules = [
   "+chrome/browser/extensions/mixin_based_extension_apitest.h",
   "+chrome/browser/extensions/mock_crx_installer.h",
   "+chrome/browser/extensions/pending_extension_manager.h",
-  "+chrome/browser/extensions/permissions_updater.h",
+  "+chrome/browser/extensions/permissions/permissions_updater.h",
   "+chrome/browser/extensions/policy_handlers.h",
   "+chrome/browser/extensions/policy_test_utils.h",
   "+chrome/browser/extensions/test_extension_system.h",

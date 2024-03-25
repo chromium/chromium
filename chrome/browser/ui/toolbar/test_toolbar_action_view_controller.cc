@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "ui/base/models/image_model.h"
 

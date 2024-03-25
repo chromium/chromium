@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
-#include "chrome/browser/extensions/permissions_updater.h"
-#include "chrome/browser/extensions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -29,8 +29,9 @@ namespace {
 
 base::Value::List ToValueList(const std::vector<std::string>& permissions) {
   base::Value::List list;
-  for (const std::string& permission : permissions)
+  for (const std::string& permission : permissions) {
     list.Append(permission);
+  }
   return list;
 }
 
@@ -132,8 +133,9 @@ void SitePermissionsHelperUnitTest::SetUp() {
 void SitePermissionsHelperUnitTest::TearDown() {
   // Remove any tabs in the tab strip; else the test crashes.
   if (browser_) {
-    while (!browser_->tab_strip_model()->empty())
+    while (!browser_->tab_strip_model()->empty()) {
       browser_->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
+    }
   }
 
   ExtensionServiceTestBase::TearDown();

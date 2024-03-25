@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/active_tab_permission_granter.h"
+#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 
 #include <set>
 #include <vector>
@@ -11,8 +11,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
@@ -89,8 +89,9 @@ void SendRendererMessageToProcesses(
   }
   // If the tab wasn't one of those processes already updated (it likely
   // wasn't), update it. Tabs don't need to update the origin allowlist.
-  if (!base::Contains(sent_to_hosts, tab_process))
+  if (!base::Contains(sent_to_hosts, tab_process)) {
     renderer_message.Run(false, tab_process);
+  }
 }
 
 void SetCorsOriginAccessList(content::BrowserContext* browser_context,
@@ -123,8 +124,9 @@ ActiveTabPermissionGranter::ActiveTabPermissionGranter(
 ActiveTabPermissionGranter::~ActiveTabPermissionGranter() {}
 
 void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
-  if (granted_extensions_.Contains(extension->id()))
+  if (granted_extensions_.Contains(extension->id())) {
     return;
+  }
 
   APIPermissionSet new_apis;
   URLPatternSet new_hosts;
@@ -161,8 +163,9 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
     }
   }
 
-  if (permissions_data->HasAPIPermission(mojom::APIPermissionID::kTabCapture))
+  if (permissions_data->HasAPIPermission(mojom::APIPermissionID::kTabCapture)) {
     new_apis.insert(mojom::APIPermissionID::kTabCaptureForTab);
+  }
 
   if (!new_apis.empty() || !new_hosts.is_empty()) {
     granted_extensions_.Insert(extension);
@@ -215,8 +218,9 @@ void ActiveTabPermissionGranter::DidFinishNavigation(
   }
 
   // Only clear the granted permissions for cross-origin navigations.
-  if (navigation_handle->IsSameOrigin())
+  if (navigation_handle->IsSameOrigin()) {
     return;
+  }
 
   ClearGrantedExtensionsAndNotify();
 }

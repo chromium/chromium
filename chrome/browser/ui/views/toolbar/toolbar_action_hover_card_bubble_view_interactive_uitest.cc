@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
 
-#include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"

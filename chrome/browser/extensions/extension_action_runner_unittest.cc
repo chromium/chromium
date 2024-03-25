@@ -10,11 +10,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
-#include "chrome/browser/extensions/permissions_updater.h"
-#include "chrome/browser/extensions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -154,8 +154,9 @@ void ExtensionActionRunnerUnitTest::RequestInjection(
 size_t ExtensionActionRunnerUnitTest::GetExecutionCountForExtension(
     const ExtensionId& extension_id) const {
   auto iter = extension_executions_.find(extension_id);
-  if (iter != extension_executions_.end())
+  if (iter != extension_executions_.end()) {
     return iter->second;
+  }
   return 0u;
 }
 
@@ -171,8 +172,9 @@ ExtensionActionRunnerUnitTest::GetExecutionCallbackForExtension(
 void ExtensionActionRunnerUnitTest::IncrementExecutionCount(
     const ExtensionId& extension_id,
     bool granted) {
-  if (!granted)
+  if (!granted) {
     return;
+  }
   ++extension_executions_[extension_id];
 }
 
@@ -311,8 +313,9 @@ TEST_F(ExtensionActionRunnerUnitTest, MultiplePendingInjection) {
 
   const size_t kNumInjections = 3u;
   // Queue multiple pending injections.
-  for (size_t i = 0u; i < kNumInjections; ++i)
+  for (size_t i = 0u; i < kNumInjections; ++i) {
     RequestInjection(extension);
+  }
 
   EXPECT_EQ(0u, GetExecutionCountForExtension(extension->id()));
 

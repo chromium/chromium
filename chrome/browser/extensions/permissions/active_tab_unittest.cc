@@ -11,11 +11,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,10 +53,12 @@ scoped_refptr<const Extension> CreateTestExtension(
     bool has_active_tab_permission,
     bool has_tab_capture_permission) {
   ExtensionBuilder builder(name);
-  if (has_active_tab_permission)
+  if (has_active_tab_permission) {
     builder.AddPermission("activeTab");
-  if (has_tab_capture_permission)
+  }
+  if (has_tab_capture_permission) {
     builder.AddPermission("tabCapture");
+  }
 
   return builder.Build();
 }
@@ -74,12 +76,10 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
       : current_channel(version_info::Channel::DEV),
         extension(CreateTestExtension("deadbeef", true, false)),
         another_extension(CreateTestExtension("feedbeef", true, false)),
-        extension_without_active_tab(CreateTestExtension("badbeef",
-                                                         false,
-                                                         false)),
-        extension_with_tab_capture(CreateTestExtension("cafebeef",
-                                                       true,
-                                                       true)) {}
+        extension_without_active_tab(
+            CreateTestExtension("badbeef", false, false)),
+        extension_with_tab_capture(
+            CreateTestExtension("cafebeef", true, true)) {}
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -412,8 +412,8 @@ TEST_F(ActiveTabTest, ChromeUrlGrants) {
   active_tab_permission_granter()->GrantIfRequested(
       extension_with_tab_capture.get());
   // Do not grant tabs/hosts permissions for tab.
-  EXPECT_TRUE(IsAllowed(extension_with_tab_capture, internal,
-                        PERMITTED_CAPTURE_ONLY));
+  EXPECT_TRUE(
+      IsAllowed(extension_with_tab_capture, internal, PERMITTED_CAPTURE_ONLY));
   const PermissionsData* permissions_data =
       extension_with_tab_capture->permissions_data();
   EXPECT_TRUE(permissions_data->HasAPIPermissionForTab(

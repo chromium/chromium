@@ -50,8 +50,9 @@ class PermissionsBasedManagementPolicyProviderTest : public testing::Test {
   // they will be ignored by ExtensionManagementService.
   std::string GetAPIPermissionName(APIPermissionID id) {
     for (const auto& perm : chrome_api_permissions::GetPermissionInfos()) {
-      if (perm.id == id)
+      if (perm.id == id) {
         return perm.name;
+      }
     }
     ADD_FAILURE() << "Permission not found: " << id;
     return std::string();
