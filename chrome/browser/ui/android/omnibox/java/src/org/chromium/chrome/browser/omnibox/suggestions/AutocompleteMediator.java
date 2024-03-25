@@ -81,7 +81,6 @@ class AutocompleteMediator
                 OmniboxSuggestionsDropdownScrollListener,
                 TopResumedActivityChangedObserver,
                 SuggestionHost {
-    private static final int SUGGESTION_NOT_FOUND = -1;
     private static final int SCHEDULE_FOR_IMMEDIATE_EXECUTION = -1;
 
     // Delay triggering the omnibox results upon key press to allow the location bar to repaint
@@ -448,8 +447,9 @@ class AutocompleteMediator
     }
 
     /**
-     * @return The current native pointer to the autocomplete results. TODO(crbug.com/1138587):
-     *     Figure out how to remove this.
+     * TODO(crbug.com/1138587): Figure out how to remove this.
+     *
+     * @return The current native pointer to the autocomplete results.
      */
     long getCurrentNativeAutocompleteResult() {
         return mAutocompleteResult.getNativeObjectRef();
@@ -496,8 +496,9 @@ class AutocompleteMediator
             return;
         }
         mNumTouchDownEventForwardedInOmniboxSession++;
-        WebContents webContents =
-                mDataProvider.hasTab() ? mDataProvider.getTab().getWebContents() : null;
+
+        var tab = mDataProvider.getTab();
+        WebContents webContents = tab != null ? tab.getWebContents() : null;
         boolean wasPrefetchStarted =
                 mAutocomplete.onSuggestionTouchDown(suggestion, matchIndex, webContents);
         if (wasPrefetchStarted) {
@@ -518,7 +519,7 @@ class AutocompleteMediator
      * @param suggestion The suggestion selected.
      */
     @Override
-    public void onRefineSuggestion(AutocompleteMatch suggestion) {
+    public void onRefineSuggestion(@NonNull AutocompleteMatch suggestion) {
         stopAutocomplete(false);
         boolean isSearchSuggestion = suggestion.isSearchSuggestion();
         boolean isZeroPrefix =
@@ -541,7 +542,7 @@ class AutocompleteMediator
     }
 
     @Override
-    public void onSwitchToTab(AutocompleteMatch match, int matchIndex) {
+    public void onSwitchToTab(@NonNull AutocompleteMatch match, int matchIndex) {
         if (maybeSwitchToTab(match)) {
             recordMetrics(match, matchIndex, WindowOpenDisposition.SWITCH_TO_TAB);
         } else {
@@ -697,10 +698,9 @@ class AutocompleteMediator
      * @param cause The cause of dismiss.
      */
     private void dismissDeleteDialog(@DialogDismissalCause int cause) {
-        if (mDeleteDialogModel == null) return;
-
-        assert mModalDialogManagerSupplier.hasValue() : "Dialog shown with no registered manager";
-        mModalDialogManagerSupplier.get().dismissDialog(mDeleteDialogModel, cause);
+        var manager = mModalDialogManagerSupplier.get();
+        if (mDeleteDialogModel == null || manager == null) return;
+        manager.dismissDialog(mDeleteDialogModel, cause);
     }
 
     /**
@@ -709,7 +709,7 @@ class AutocompleteMediator
      * @param text The text to be displayed in the Omnibox.
      */
     @Override
-    public void setOmniboxEditingText(String text) {
+    public void setOmniboxEditingText(@NonNull String text) {
         if (mIgnoreOmniboxItemSelection) return;
         mIgnoreOmniboxItemSelection = true;
         mDelegate.setOmniboxEditingText(text);
@@ -725,7 +725,7 @@ class AutocompleteMediator
      * @param url The URL associated with the suggestion to navigate to.
      * @return The url to navigate to.
      */
-    private GURL updateSuggestionUrlIfNeeded(
+    private @NonNull GURL updateSuggestionUrlIfNeeded(
             @NonNull AutocompleteMatch suggestion, int matchIndex, @NonNull GURL url) {
         if (!mNativeInitialized || mAutocomplete == null) return url;
         // TODO(crbug/1474087): this should exclude TILE variants when horizontal render group is
@@ -745,7 +745,7 @@ class AutocompleteMediator
      * Notifies the autocomplete system that the text has changed that drives autocomplete and the
      * autocomplete suggestions should be updated.
      */
-    public void onTextChanged(String textWithoutAutocomplete) {
+    public void onTextChanged(@NonNull String textWithoutAutocomplete) {
         if (mShouldPreventOmniboxAutocomplete) return;
 
         mIgnoreOmniboxItemSelection = true;
@@ -857,7 +857,8 @@ class AutocompleteMediator
      * @param openInNewTab Whether the URL will be loaded in a new tab. If {@code true}, the URL
      *     will be loaded in a new tab. If {@code false}, The URL will be loaded in the current tab.
      */
-    private void findMatchAndLoadUrl(String urlText, long inputStart, boolean openInNewTab) {
+    private void findMatchAndLoadUrl(
+            @NonNull String urlText, long inputStart, boolean openInNewTab) {
         AutocompleteMatch suggestionMatch;
 
         if (getSuggestionCount() > 0
@@ -1076,7 +1077,7 @@ class AutocompleteMediator
     }
 
     /** Trigger autocomplete for the given query. */
-    void startAutocompleteForQuery(String query) {
+    void startAutocompleteForQuery(@NonNull String query) {
         if (!mNativeInitialized || mAutocomplete == null) return;
         stopAutocomplete(false);
         if (mDataProvider.hasTab()) {
@@ -1127,7 +1128,8 @@ class AutocompleteMediator
      * @param suggestionLine the index of the suggestion line that holds selected match
      * @param disposition the window open disposition
      */
-    private void recordMetrics(AutocompleteMatch match, int suggestionLine, int disposition) {
+    private void recordMetrics(
+            @NonNull AutocompleteMatch match, int suggestionLine, int disposition) {
         OmniboxMetrics.recordUsedSuggestionFromCache(mAutocompleteResult.isFromCachedResult());
         OmniboxMetrics.recordTouchDownPrefetchResult(match, mLastPrefetchStartedSuggestion);
 
@@ -1144,8 +1146,8 @@ class AutocompleteMediator
         int autocompleteLength =
                 mUrlBarEditingTextProvider.getTextWithAutocomplete().length()
                         - mUrlBarEditingTextProvider.getTextWithoutAutocomplete().length();
-        WebContents webContents =
-                mDataProvider.hasTab() ? mDataProvider.getTab().getWebContents() : null;
+        var tab = mDataProvider.getTab();
+        WebContents webContents = tab != null ? tab.getWebContents() : null;
 
         mAutocomplete.onSuggestionSelected(
                 match,

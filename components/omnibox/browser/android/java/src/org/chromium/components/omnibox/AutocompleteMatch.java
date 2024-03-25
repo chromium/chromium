@@ -349,7 +349,7 @@ public class AutocompleteMatch {
         return mFillIntoEdit;
     }
 
-    public GURL getUrl() {
+    public @NonNull GURL getUrl() {
         return mUrl;
     }
 

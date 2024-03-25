@@ -50,7 +50,7 @@ public class AutocompleteResult {
     }
 
     /** An empty, initialized AutocompleteResult object. */
-    public static final AutocompleteResult EMPTY_RESULT =
+    public static final @NonNull AutocompleteResult EMPTY_RESULT =
             new AutocompleteResult(0, Collections.emptyList(), null);
 
     /** A special value indicating that action has no particular index associated. */

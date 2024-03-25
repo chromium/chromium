@@ -46,7 +46,6 @@ public class AutocompleteController {
     // Maximum number of voice suggestions to show.
     private static final int MAX_VOICE_SUGGESTION_COUNT = 3;
 
-    private final @NonNull Profile mProfile;
     private final @NonNull Set<OnSuggestionsReceivedListener> mListeners = new HashSet<>();
     private long mNativeController;
     private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
@@ -77,7 +76,6 @@ public class AutocompleteController {
      */
     @CalledByNative
     private AutocompleteController(@NonNull Profile profile, long nativeController) {
-        mProfile = profile;
         mNativeController = nativeController;
     }
 
