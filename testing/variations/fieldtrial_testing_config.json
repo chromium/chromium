@@ -10009,6 +10009,23 @@
             ]
         }
     ],
+    "IsolatedWebApps": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IsolatedWebAppAutomaticUpdates",
+                        "IsolatedWebApps"
+                    ]
+                }
+            ]
+        }
+    ],
     "JourneysOnDeviceClusteringContentClustering": [
         {
             "platforms": [
