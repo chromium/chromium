@@ -22,11 +22,6 @@ namespace autofill {
 namespace {
 class AutofillFormDevtoolsProtocolTest : public DevToolsProtocolTestBase {
  public:
-  AutofillFormDevtoolsProtocolTest() {
-    scoped_features_.InitAndEnableFeature(
-        features::kAutofillEnableDevtoolsIssues);
-  }
-
   void NavigateToFormPageAndEnableAudits() {
     GURL test_url = content::GetTestUrl(
         "autofill", "autofill_form_devtools_issues_test.html");

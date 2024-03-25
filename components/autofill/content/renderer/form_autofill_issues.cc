@@ -315,10 +315,6 @@ void MaybeEmitFormIssuesToDevtools(blink::WebLocalFrame& web_local_frame,
                                    base::span<const FormData> forms) {
   // TODO(crbug.com/1399414): Only calculate and emit these issues if devtools
   // is open.
-  if (!base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
-    return;
-  }
-
   WebDocument document = web_local_frame.GetDocument();
   std::vector<FormIssue> form_issues;
   // Get issues from forms input elements.
