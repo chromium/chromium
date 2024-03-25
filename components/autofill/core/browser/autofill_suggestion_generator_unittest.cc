@@ -1122,6 +1122,33 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
               CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
 }
 
+// Checks that the category benefit description is not displayed for suggestions
+// where the webpage's category in the optimization guide is different from the
+// benefit's applicable category.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionLabelNotDisplayed_CategoryIsDifferent) {
+  if (!absl::holds_alternative<CreditCardCategoryBenefit>(GetBenefit())) {
+    GTEST_SKIP() << "This test should not run for non-category benefits.";
+  }
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client()->GetAutofillOptimizationGuide()),
+          AttemptToGetEligibleCreditCardBenefitCategory)
+      .WillByDefault(testing::Return(
+          CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory));
+
+  // Category benefit description is not returned.
+  EXPECT_THAT(
+      test_api(suggestion_generator())
+          .CreateCreditCardSuggestion(card(), CREDIT_CARD_NUMBER,
+                                      /*virtual_card_option=*/false,
+                                      /*card_linked_offer_available=*/false)
+          .labels,
+      testing::ElementsAre(
+          std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
+              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 class AutofillChildrenSuggestionGeneratorTest
