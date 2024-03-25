@@ -12,6 +12,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/event_rewriter.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
 
@@ -196,6 +197,10 @@ class ASH_EXPORT StickyKeysHandler {
   // Returns current internal state.
   StickyKeyState current_state() const { return current_state_; }
 
+  // Informs this StickyKeyHandler if altgr is active. When altgr is active,
+  // right-alt will active the altgr key and not the alt key.
+  void set_altgr_active(bool altgr_active) { altgr_active_ = altgr_active; }
+
  private:
   // Represents event type in Sticky Key context.
   enum KeyEventType {
@@ -208,7 +213,9 @@ class ASH_EXPORT StickyKeysHandler {
   };
 
   // Translates event type and key code to sticky keys event type.
-  KeyEventType TranslateKeyEvent(ui::EventType type, ui::KeyboardCode key_code);
+  KeyEventType TranslateKeyEvent(ui::EventType type,
+                                 ui::KeyboardCode key_code,
+                                 ui::DomCode code);
 
   // Handles key event in DISABLED state. Returns true if sticky keys
   // consumes the keyboard event.
@@ -245,6 +252,11 @@ class ASH_EXPORT StickyKeysHandler {
 
   // The modifier up key event to be sent on non modifier key on ENABLED state.
   std::unique_ptr<ui::KeyEvent> modifier_up_event_;
+
+  // Whether altgr is active for this StickyKeysHandler. This is relevant for
+  // alt and altgr StickyKeysHandlers, which must decide whether right-alt
+  // is normal alt or altgr depending on keyboard layout.
+  bool altgr_active_ = false;
 };
 
 }  // namespace ash

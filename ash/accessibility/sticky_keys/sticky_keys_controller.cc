@@ -12,6 +12,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/event.h"
 #include "ui/events/event_processor.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 
 namespace ash {
@@ -69,8 +70,10 @@ void StickyKeysController::Enable(bool enabled) {
       shift_sticky_key_ =
           std::make_unique<StickyKeysHandler>(ui::EF_SHIFT_DOWN);
       alt_sticky_key_ = std::make_unique<StickyKeysHandler>(ui::EF_ALT_DOWN);
+      alt_sticky_key_->set_altgr_active(altgr_enabled_);
       altgr_sticky_key_ =
           std::make_unique<StickyKeysHandler>(ui::EF_ALTGR_DOWN);
+      altgr_sticky_key_->set_altgr_active(altgr_enabled_);
       ctrl_sticky_key_ =
           std::make_unique<StickyKeysHandler>(ui::EF_CONTROL_DOWN);
       mod3_sticky_key_ = std::make_unique<StickyKeysHandler>(ui::EF_MOD3_DOWN);
@@ -93,6 +96,12 @@ void StickyKeysController::SetModifiersEnabled(bool mod3_enabled,
   if (overlay_) {
     overlay_->SetModifierVisible(ui::EF_ALTGR_DOWN, altgr_enabled_);
     overlay_->SetModifierVisible(ui::EF_MOD3_DOWN, mod3_enabled_);
+  }
+  if (altgr_sticky_key_) {
+    altgr_sticky_key_->set_altgr_active(altgr_enabled);
+  }
+  if (alt_sticky_key_) {
+    alt_sticky_key_->set_altgr_active(altgr_enabled);
   }
 }
 
@@ -320,10 +329,16 @@ int StickyKeysHandler::GetModifierUpEvent(
 
 StickyKeysHandler::KeyEventType StickyKeysHandler::TranslateKeyEvent(
     ui::EventType type,
-    ui::KeyboardCode key_code) {
+    ui::KeyboardCode key_code,
+    ui::DomCode dom_code) {
   bool is_target_key = false;
-  if (key_code == ui::VKEY_SHIFT || key_code == ui::VKEY_LSHIFT ||
-      key_code == ui::VKEY_RSHIFT) {
+  if (altgr_active_ && dom_code == ui::DomCode::ALT_RIGHT) {
+    // Must check dom_code before key_code for alt, as
+    // alt right has the same key_code as alt, but different
+    // dom_code.
+    is_target_key = (modifier_flag_ == ui::EF_ALTGR_DOWN);
+  } else if (key_code == ui::VKEY_SHIFT || key_code == ui::VKEY_LSHIFT ||
+             key_code == ui::VKEY_RSHIFT) {
     is_target_key = (modifier_flag_ == ui::EF_SHIFT_DOWN);
   } else if (key_code == ui::VKEY_CONTROL || key_code == ui::VKEY_LCONTROL ||
              key_code == ui::VKEY_RCONTROL) {
@@ -331,7 +346,7 @@ StickyKeysHandler::KeyEventType StickyKeysHandler::TranslateKeyEvent(
   } else if (key_code == ui::VKEY_MENU || key_code == ui::VKEY_LMENU ||
              key_code == ui::VKEY_RMENU) {
     is_target_key = (modifier_flag_ == ui::EF_ALT_DOWN);
-  } else if (key_code == ui::VKEY_ALTGR) {
+  } else if (altgr_active_ && key_code == ui::VKEY_ALTGR) {
     is_target_key = (modifier_flag_ == ui::EF_ALTGR_DOWN);
   } else if (key_code == ui::VKEY_OEM_8) {
     is_target_key = (modifier_flag_ == ui::EF_MOD3_DOWN);
@@ -349,7 +364,7 @@ StickyKeysHandler::KeyEventType StickyKeysHandler::TranslateKeyEvent(
 }
 
 bool StickyKeysHandler::HandleDisabledState(const ui::KeyEvent& event) {
-  switch (TranslateKeyEvent(event.type(), event.key_code())) {
+  switch (TranslateKeyEvent(event.type(), event.key_code(), event.code())) {
     case TARGET_MODIFIER_UP:
       if (preparing_to_enable_) {
         preparing_to_enable_ = false;
@@ -377,7 +392,7 @@ bool StickyKeysHandler::HandleDisabledState(const ui::KeyEvent& event) {
 bool StickyKeysHandler::HandleEnabledState(const ui::KeyEvent& event,
                                            int* mod_down_flags,
                                            bool* released) {
-  switch (TranslateKeyEvent(event.type(), event.key_code())) {
+  switch (TranslateKeyEvent(event.type(), event.key_code(), event.code())) {
     case NORMAL_KEY_UP:
     case TARGET_MODIFIER_DOWN:
       return false;
@@ -402,7 +417,7 @@ bool StickyKeysHandler::HandleEnabledState(const ui::KeyEvent& event,
 bool StickyKeysHandler::HandleLockedState(const ui::KeyEvent& event,
                                           int* mod_down_flags,
                                           bool* released) {
-  switch (TranslateKeyEvent(event.type(), event.key_code())) {
+  switch (TranslateKeyEvent(event.type(), event.key_code(), event.code())) {
     case TARGET_MODIFIER_DOWN:
       return true;
     case TARGET_MODIFIER_UP:
