@@ -101,6 +101,19 @@
 
     test(function(t) {
         myCE.elementInternals.states.add('--green');
+        myCE.elementInternals.states.add('--green');
+        myCE.elementInternals.states.add('--green');
+        t.add_cleanup(() => { myCE.elementInternals.states.delete('--green') });
+        assert_true(myCE.elementInternals.states.has('--green'));
+        assert_equals(getComputedStyle(myCE).getPropertyValue('color'), 'rgb(0, 255, 0)');
+        assert_true(myCE.elementInternals.states.delete('--green'));
+        assert_false(myCE.elementInternals.states.has('--green'));
+        assert_equals(getComputedStyle(myCE).getPropertyValue('color'), 'rgb(255, 0, 0)');
+        assert_false(myCE.elementInternals.states.delete('--green'));
+    }, "states added multiple times counts as one");
+
+    test(function(t) {
+        myCE.elementInternals.states.add('--green');
         myCE.elementInternals.states.add('--foo');
         t.add_cleanup(() => { myCE.elementInternals.states.clear() });
         assert_true(myCE.elementInternals.states.has('--green'));
