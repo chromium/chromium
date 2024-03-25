@@ -1996,7 +1996,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup.NotificationInteracted" units="count"
-    expires_after="2024-05-05">
+    expires_after="2025-03-25">
   <owner>pushi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2009,7 +2009,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup.NudgeActionDuration" units="ms"
-    expires_after="2024-05-05">
+    expires_after="2025-03-25">
   <owner>pushi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2019,7 +2019,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup.NudgeInteracted"
-    enum="MultideviceSetupNudgeInteraction" expires_after="2024-09-15">
+    enum="MultideviceSetupNudgeInteraction" expires_after="2025-03-25">
   <owner>pushi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2031,7 +2031,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup.NudgeShown" units="count"
-    expires_after="2024-09-15">
+    expires_after="2025-03-25">
   <owner>pushi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2041,7 +2041,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup.NudgeShownTimesBeforeActed" units="attempts"
-    expires_after="2024-09-15">
+    expires_after="2025-03-25">
   <owner>pushi@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2073,7 +2073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup_NotificationClicked"
-    enum="MultiDeviceSetupNotification" expires_after="2024-09-15">
+    enum="MultiDeviceSetupNotification" expires_after="2025-03-25">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2083,7 +2083,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup_NotificationDismissed"
-    enum="MultiDeviceSetupNotification" expires_after="2024-05-05">
+    enum="MultiDeviceSetupNotification" expires_after="2025-03-25">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2094,7 +2094,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup_NotificationShown"
-    enum="MultiDeviceSetupNotification" expires_after="2024-09-15">
+    enum="MultiDeviceSetupNotification" expires_after="2025-03-25">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
