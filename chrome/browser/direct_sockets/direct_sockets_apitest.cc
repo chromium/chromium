@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
 #include <type_traits>
 
 #include "base/command_line.h"
@@ -487,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest, TcpReadWrite) {
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   // Run the echo script.
-  constexpr base::StringPiece kTcpSendReceiveHttpScript = R"(
+  constexpr std::string_view kTcpSendReceiveHttpScript = R"(
     (async () => {
       try {
         const socket = new TCPSocket($1, $2);
@@ -559,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest, UdpReadWrite) {
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   // Run the echo script.
-  constexpr base::StringPiece kUdpSendReceiveEchoScript = R"(
+  constexpr std::string_view kUdpSendReceiveEchoScript = R"(
     (async () => {
       try {
         const socket = new UDPSocket({ remoteAddress: $1, remotePort: $2 });
@@ -603,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   // Run the echo script.
-  constexpr base::StringPiece kUdpServerSendReceiveEchoScript = R"(
+  constexpr std::string_view kUdpServerSendReceiveEchoScript = R"(
     (async () => {
       try {
         const socket = new UDPSocket({ localAddress: "127.0.0.1" });
