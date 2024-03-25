@@ -77,7 +77,7 @@ class MockNativePixmapDmaBuf : public gfx::NativePixmapDmaBuf {
                                 kFormatForDecodes,
                                 gfx::NativePixmapHandle()) {}
 
-  gfx::NativePixmapHandle ExportHandle() override {
+  gfx::NativePixmapHandle ExportHandle() const override {
     gfx::NativePixmapHandle handle{};
     DCHECK_EQ(gfx::BufferFormat::YVU_420, GetBufferFormat());
     handle.planes = std::vector<gfx::NativePixmapPlane>(3u);

@@ -64,7 +64,7 @@ class NativePixmap : public base::RefCountedThreadSafe<NativePixmap> {
 
   // Export the buffer for sharing across processes.
   // Any file descriptors in the exported handle are owned by the caller.
-  virtual gfx::NativePixmapHandle ExportHandle() = 0;
+  virtual gfx::NativePixmapHandle ExportHandle() const = 0;
 
  protected:
   virtual ~NativePixmap() {}

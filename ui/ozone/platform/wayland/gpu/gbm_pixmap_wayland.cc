@@ -194,7 +194,7 @@ bool GbmPixmapWayland::ScheduleOverlayPlane(
   return true;
 }
 
-gfx::NativePixmapHandle GbmPixmapWayland::ExportHandle() {
+gfx::NativePixmapHandle GbmPixmapWayland::ExportHandle() const {
   gfx::NativePixmapHandle handle;
 
   const size_t num_planes = gbm_bo_->GetNumPlanes();
