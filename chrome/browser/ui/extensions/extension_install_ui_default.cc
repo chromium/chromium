@@ -157,7 +157,7 @@ void ExtensionInstallUIDefault::OnInstallSuccess(
   if (!profile_) {
     // TODO(zelidrag): Figure out what exact conditions cause crash
     // http://crbug.com/159437 and write browser test to cover it.
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return;
   }
 
