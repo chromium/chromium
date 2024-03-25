@@ -31,7 +31,7 @@ public class PopupOnClickPageStation extends PageStation {
         Builder<PopupOnClickPageStation> builder = new Builder<>(PopupOnClickPageStation::new);
 
         String url = activityTestRule.getTestServer().getURL(PATH);
-        return currentPageStation.loadPageProgramatically(url, builder);
+        return currentPageStation.loadPageProgramatically(builder, url);
     }
 
     @Override

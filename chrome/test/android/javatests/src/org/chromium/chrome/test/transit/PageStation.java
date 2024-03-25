@@ -10,6 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.CallbackCondition;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Elements;
@@ -24,7 +25,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.base.PageTransition;
 
 import java.util.function.Function;
 
@@ -330,13 +333,28 @@ public class PageStation extends TransitStation {
 
     /** Loads a |url| in the same tab and waits to transition to the given |destination|. */
     public <T extends PageStation> T loadPageProgramatically(
-            String url, Builder<T> destinationBuilder) {
+            Builder<T> destinationBuilder, String url) {
         T destination =
                 destinationBuilder
                         .initFrom(this)
                         .withIsOpeningTab(false)
                         .withIsSelectingTab(false)
                         .build();
-        return Trip.travelSync(this, destination, () -> getTestRule().loadUrl(url));
+
+        return loadPageProgramatically(destination, url);
+    }
+
+    /** Loads a |url| in the same tab and waits to transition to the given |destination|. */
+    public <T extends PageStation> T loadPageProgramatically(T destination, String url) {
+        Runnable r =
+                () -> {
+                    @PageTransition
+                    int transitionType = PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
+                    getTestRule()
+                            .getActivity()
+                            .getActivityTab()
+                            .loadUrl(new LoadUrlParams(url, transitionType));
+                };
+        return Trip.travelSync(this, destination, () -> ThreadUtils.runOnUiThread(r));
     }
 }

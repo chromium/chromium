@@ -6,7 +6,6 @@ package org.chromium.chrome.test.transit.testhtmls;
 
 import android.util.Pair;
 
-import org.chromium.base.test.transit.Trip;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.PageStation;
 import org.chromium.chrome.test.transit.PopupBlockedMessageFacility;
@@ -41,7 +40,7 @@ public class PopupOnLoadPageStation extends PageStation {
         // TODO(crbug.com/329307093): Add condition that no new tabs were opened.
 
         String url = activityTestRule.getTestServer().getURL(PATH);
-        Trip.travelSync(currentPageStation, newPage, () -> activityTestRule.loadUrl(url));
+        currentPageStation.loadPageProgramatically(newPage, url);
 
         return Pair.create(newPage, popupBlockedMessage);
     }
@@ -63,7 +62,6 @@ public class PopupOnLoadPageStation extends PageStation {
         // TODO(crbug.com/329307093): Add condition that two new tabs were opened.
 
         String url = activityTestRule.getTestServer().getURL(PATH);
-        return Trip.travelSync(
-                currentPageStation, newPage, () -> currentPageStation.getTestRule().loadUrl(url));
+        return currentPageStation.loadPageProgramatically(newPage, url);
     }
 }
