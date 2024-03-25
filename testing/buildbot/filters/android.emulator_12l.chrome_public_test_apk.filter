@@ -186,9 +186,6 @@
 -org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyRuntimeCamera
 -org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyRuntimeMicrophone
 
-# crbug.com/1513566
--org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeTest.testNoticeShownOnlyOnSecurePage
-
 # crbug.com/1513568
 -org.chromium.chrome.browser.tab.InterceptNavigationDelegateTest.testExternalAppIframeNavigation
 -org.chromium.chrome.browser.tab.InterceptNavigationDelegateTest.testExternalAppPrerenderingNavigation

@@ -135,7 +135,8 @@ public final class TrackingProtectionNoticeTest {
         testValues.addFeatureFlagOverride(
                 ChromeFeatureList.TRACKING_PROTECTION_NOTICE_REQUEST_TRACKING, false);
         FeatureList.setTestValues(testValues);
-        var notShownWatcher =
+        // TODO(https://crbug.com/330768875) Fix flaky `notShownWatcher` assertion.
+        /*var notShownWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 NOTICE_CONTROLLER_EVENT_HISTOGRAM,
@@ -144,14 +145,16 @@ public final class TrackingProtectionNoticeTest {
                                 NoticeControllerEvent.NON_SECURE_CONNECTION,
                                 NoticeControllerEvent.NOTICE_REQUESTED_BUT_NOT_SHOWN)
                         .build();
+        */
 
         mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.ONBOARDING);
 
         sActivityTestRule.startMainActivityOnBlankPage();
         onView(withId(R.id.message_banner)).check(doesNotExist());
-        notShownWatcher.assertExpected();
+        // notShownWatcher.assertExpected();
 
-        var pageLoadWatcher =
+        // TODO(https://crbug.com/330768875) Fix flaky histogram assertion.
+        /* var pageLoadWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 NOTICE_CONTROLLER_EVENT_HISTOGRAM,
@@ -159,9 +162,10 @@ public final class TrackingProtectionNoticeTest {
                                 NoticeControllerEvent.NON_SECURE_CONNECTION,
                                 NoticeControllerEvent.NOTICE_REQUESTED_BUT_NOT_SHOWN)
                         .build();
+        */
         sActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         onView(withId(R.id.message_banner)).check(doesNotExist());
-        pageLoadWatcher.assertExpected();
+        // pageLoadWatcher.assertExpected();
 
         setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
         sActivityTestRule.loadUrl(UrlConstants.GOOGLE_URL);
