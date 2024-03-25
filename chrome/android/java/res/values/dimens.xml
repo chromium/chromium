@@ -124,9 +124,6 @@ found in the LICENSE file.
     <dimen name="control_container_height">56dp</dimen>
     <dimen name="custom_tabs_control_container_height">56dp</dimen>
 
-    <!-- The combined height of the tab strip and toolbar. -->
-    <dimen name="tab_strip_and_toolbar_height">56dp</dimen>
-
     <!-- Find in Page dimensions -->
     <dimen name="find_in_page_popup_width">375dp</dimen>
     <dimen name="find_in_page_popup_height">60dp</dimen>

@@ -17,9 +17,6 @@ found in the LICENSE file.
     <dimen name="control_container_height">96dp</dimen>
     <dimen name="custom_tabs_control_container_height">64dp</dimen>
 
-    <!-- The combined height of the tab strip and toolbar. -->
-    <dimen name="tab_strip_and_toolbar_height">96dp</dimen>
-
     <!-- NTP dimensions -->
     <dimen name="ntp_search_box_transition_length">60dp</dimen>
     <dimen name="ntp_wide_card_lateral_margins">48dp</dimen>

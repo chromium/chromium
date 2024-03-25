@@ -28,7 +28,7 @@ found in the LICENSE file.
             android:src="@drawable/toolbar_hairline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/tab_strip_and_toolbar_height"
+            android:layout_marginTop="@dimen/control_container_height"
             android:scaleType="fitXY"
             android:importantForAccessibility="no" />
 
