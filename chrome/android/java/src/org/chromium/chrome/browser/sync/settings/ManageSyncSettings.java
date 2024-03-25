@@ -103,6 +103,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     public static final String PREF_SYNC_PAYMENTS_INTEGRATION = "sync_payments_integration";
 
     @VisibleForTesting public static final String PREF_SYNC_HISTORY = "sync_history";
+
+    @VisibleForTesting
+    public static final String PREF_SYNC_HISTORY_AND_TABS = "sync_history_and_tabs";
+
     @VisibleForTesting public static final String PREF_SYNC_PASSWORDS = "sync_passwords";
     @VisibleForTesting public static final String PREF_SYNC_READING_LIST = "sync_reading_list";
     @VisibleForTesting public static final String PREF_SYNC_RECENT_TABS = "sync_recent_tabs";
@@ -135,8 +139,16 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     private PreferenceCategory mSyncingCategory;
 
     private ChromeSwitchPreference mSyncEverything;
-    // Maps {@link UserSelectableType} to the corresponding preference.
-    private Map<Integer, ChromeBaseCheckBoxPreference> mSyncTypePreferencesMap = new HashMap<>();
+
+    /**
+     * Maps {@link UserSelectableType} to the corresponding preference.
+     * `mSyncTypeCheckBoxPreferencesMap` is used for the sync settings, but
+     * `mSyncTypeSwitchPreferencesMap` is used for the new account settings panel when
+     * shouldReplaceSyncSettingsWithAccountSettings() returns true.
+     */
+    @Nullable private Map<Integer, ChromeBaseCheckBoxPreference> mSyncTypeCheckBoxPreferencesMap;
+
+    @Nullable private Map<Integer, ChromeSwitchPreference> mSyncTypeSwitchPreferencesMap;
 
     private Preference mGoogleActivityControls;
     private Preference mSyncEncryption;
@@ -169,8 +181,32 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         if (shouldReplaceSyncSettingsWithAccountSettings()) {
             SettingsUtils.addPreferencesFromResource(
                     this, R.xml.unified_account_settings_preferences);
+
+            mSyncTypeSwitchPreferencesMap = new HashMap<>();
+            mSyncTypeSwitchPreferencesMap.put(
+                    UserSelectableType.AUTOFILL, findPreference(PREF_SYNC_AUTOFILL));
+            mSyncTypeSwitchPreferencesMap.put(
+                    UserSelectableType.BOOKMARKS, findPreference(PREF_SYNC_BOOKMARKS));
+            // HISTORY and TABS are bundled in the same switch in the new settings panel.
+            mSyncTypeSwitchPreferencesMap.put(
+                    UserSelectableType.HISTORY, findPreference(PREF_SYNC_HISTORY_AND_TABS));
+            mSyncTypeSwitchPreferencesMap.put(
+                    UserSelectableType.TABS, findPreference(PREF_SYNC_HISTORY_AND_TABS));
+            mSyncTypeSwitchPreferencesMap.put(
+                    UserSelectableType.PASSWORDS, findPreference(PREF_SYNC_PASSWORDS));
+            mSyncTypeSwitchPreferencesMap.put(
+                    UserSelectableType.PAYMENTS, findPreference(PREF_SYNC_PAYMENTS_INTEGRATION));
+            mSyncTypeSwitchPreferencesMap.put(
+                    UserSelectableType.PREFERENCES, findPreference(PREF_SYNC_SETTINGS));
+            mSyncTypeSwitchPreferencesMap.put(
+                    UserSelectableType.READING_LIST, findPreference(PREF_SYNC_READING_LIST));
+
+            mSyncTypeSwitchPreferencesMap
+                    .values()
+                    .forEach(pref -> pref.setOnPreferenceChangeListener(this));
             return;
         }
+
         getActivity().setTitle(R.string.sync_category_title);
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.manage_sync_preferences);
@@ -227,29 +263,35 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 SyncSettingsUtils.toOnClickListener(
                         this, () -> SyncSettingsUtils.openSyncDashboard(getActivity())));
 
-        mSyncTypePreferencesMap.put(
+        mSyncTypeCheckBoxPreferencesMap = new HashMap<>();
+        mSyncTypeCheckBoxPreferencesMap.put(
                 UserSelectableType.AUTOFILL, findPreference(PREF_SYNC_AUTOFILL));
-        mSyncTypePreferencesMap.put(
+        mSyncTypeCheckBoxPreferencesMap.put(
                 UserSelectableType.BOOKMARKS, findPreference(PREF_SYNC_BOOKMARKS));
-        mSyncTypePreferencesMap.put(UserSelectableType.HISTORY, findPreference(PREF_SYNC_HISTORY));
-        mSyncTypePreferencesMap.put(
+        mSyncTypeCheckBoxPreferencesMap.put(
+                UserSelectableType.HISTORY, findPreference(PREF_SYNC_HISTORY));
+        mSyncTypeCheckBoxPreferencesMap.put(
                 UserSelectableType.PASSWORDS, findPreference(PREF_SYNC_PASSWORDS));
-        mSyncTypePreferencesMap.put(
+        mSyncTypeCheckBoxPreferencesMap.put(
                 UserSelectableType.PAYMENTS, findPreference(PREF_SYNC_PAYMENTS_INTEGRATION));
-        mSyncTypePreferencesMap.put(
+        mSyncTypeCheckBoxPreferencesMap.put(
                 UserSelectableType.PREFERENCES, findPreference(PREF_SYNC_SETTINGS));
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_BACKUP_AND_RESTORE_BACKEND)) {
-            mSyncTypePreferencesMap.put(UserSelectableType.APPS, findPreference(PREF_SYNC_APPS));
+            mSyncTypeCheckBoxPreferencesMap.put(
+                    UserSelectableType.APPS, findPreference(PREF_SYNC_APPS));
         } else {
             findPreference(PREF_SYNC_APPS).setVisible(false);
         }
 
-        mSyncTypePreferencesMap.put(
+        mSyncTypeCheckBoxPreferencesMap.put(
                 UserSelectableType.READING_LIST, findPreference(PREF_SYNC_READING_LIST));
-        mSyncTypePreferencesMap.put(UserSelectableType.TABS, findPreference(PREF_SYNC_RECENT_TABS));
+        mSyncTypeCheckBoxPreferencesMap.put(
+                UserSelectableType.TABS, findPreference(PREF_SYNC_RECENT_TABS));
 
-        mSyncTypePreferencesMap.values().forEach(pref -> pref.setOnPreferenceChangeListener(this));
+        mSyncTypeCheckBoxPreferencesMap
+                .values()
+                .forEach(pref -> pref.setOnPreferenceChangeListener(this));
 
         // Prevent sync settings changes from taking effect until the user leaves this screen.
         mSyncSetupInProgressHandle = mSyncService.getSetupInProgressHandle();
@@ -349,9 +391,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @Override
     public void onResume() {
         super.onResume();
-        if (!shouldReplaceSyncSettingsWithAccountSettings()) {
-            updateSyncPreferences();
-        }
+        updateSyncPreferences();
     }
 
     @Override
@@ -389,31 +429,44 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
      * this state.
      */
     private void updateSyncPreferences() {
-        if (shouldReplaceSyncSettingsWithAccountSettings()) {
-            return;
-        }
         String signedInAccountName =
                 CoreAccountInfo.getEmailFrom(
                         IdentityServicesProvider.get()
                                 .getIdentityManager(getProfile())
-                                .getPrimaryAccountInfo(ConsentLevel.SYNC));
+                                .getPrimaryAccountInfo(
+                                        shouldReplaceSyncSettingsWithAccountSettings()
+                                                ? ConsentLevel.SIGNIN
+                                                : ConsentLevel.SYNC));
         // May happen if account is removed from the device while this screen is shown.
         if (signedInAccountName == null) {
             if (getActivity() != null) getActivity().finish();
             return;
         }
 
-        mGoogleActivityControls.setOnPreferenceClickListener(
-                SyncSettingsUtils.toOnClickListener(
-                        this, () -> onGoogleActivityControlsClicked(signedInAccountName)));
+        // TODO(b/326574743): activity controls should be available with
+        // shouldReplaceSyncSettingsWithAccountSettings being enabled.
+        if (!shouldReplaceSyncSettingsWithAccountSettings()) {
+            mGoogleActivityControls.setOnPreferenceClickListener(
+                    SyncSettingsUtils.toOnClickListener(
+                            this, () -> onGoogleActivityControlsClicked(signedInAccountName)));
+        }
 
         updateDataTypeState();
-        updateEncryptionState();
+
+        // TODO(b/326574743): encryption state should be updated with
+        // shouldReplaceSyncSettingsWithAccountSettings being enabled.
+        if (!shouldReplaceSyncSettingsWithAccountSettings()) {
+            updateEncryptionState();
+        }
     }
 
     /** Gets the state from data type checkboxes and saves this state into {@link SyncService}. */
     private void updateSyncStateFromSelectedTypes() {
-        mSyncService.setSelectedTypes(mSyncEverything.isChecked(), getUserSelectedTypes());
+        mSyncService.setSelectedTypes(
+                shouldReplaceSyncSettingsWithAccountSettings()
+                        ? false
+                        : mSyncEverything.isChecked(),
+                getUserSelectedTypes());
 
         // Some calls to setSelectedTypes don't trigger syncStateChanged, so schedule update here.
         PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateSyncPreferences);
@@ -468,9 +521,13 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     private Set<Integer> getUserSelectedTypes() {
-        return mSyncTypePreferencesMap.keySet().stream()
-                .filter(type -> mSyncTypePreferencesMap.get(type).isChecked())
-                .collect(Collectors.toSet());
+        return (shouldReplaceSyncSettingsWithAccountSettings()
+                        ? mSyncTypeSwitchPreferencesMap
+                        : mSyncTypeCheckBoxPreferencesMap)
+                .entrySet().stream()
+                        .filter(e -> e.getValue().isChecked())
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toSet());
     }
 
     private void displayPassphraseTypeDialog() {
@@ -635,18 +692,59 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     /** Gets the current state of data types from {@link SyncService} and updates the UI. */
     private void updateDataTypeState() {
+        if (shouldReplaceSyncSettingsWithAccountSettings()) {
+            Set<Integer> selectedSyncTypes = mSyncService.getSelectedTypes();
+
+            for (Map.Entry<Integer, ChromeSwitchPreference> entry :
+                    mSyncTypeSwitchPreferencesMap.entrySet()) {
+                @UserSelectableType int type = entry.getKey();
+                boolean enabled = !mSyncService.isTypeManagedByCustodian(type);
+                boolean checked = selectedSyncTypes.contains(type);
+                boolean managed = mSyncService.isTypeManagedByPolicy(type);
+
+                if (type == UserSelectableType.TABS || type == UserSelectableType.HISTORY) {
+                    // PREF_SYNC_HISTORY_AND_TABS toggle represents both History and Tabs in this
+                    // case.
+                    // History and Tabs should usually have the same value, but in some
+                    // cases they may not, e.g. if one of them is disabled by policy. In that
+                    // case, show the toggle as on if at least one of them is enabled. The
+                    // toggle should reflect the value of the non-disabled type.
+                    enabled =
+                            !mSyncService.isTypeManagedByCustodian(UserSelectableType.TABS)
+                                    || !mSyncService.isTypeManagedByCustodian(
+                                            UserSelectableType.HISTORY);
+                    checked =
+                            selectedSyncTypes.contains(UserSelectableType.TABS)
+                                    || selectedSyncTypes.contains(UserSelectableType.HISTORY);
+                }
+
+                ChromeSwitchPreference pref = entry.getValue();
+                pref.setEnabled(enabled);
+                pref.setChecked(checked);
+                pref.setManagedPreferenceDelegate(
+                        new ChromeManagedPreferenceDelegate(getProfile()) {
+                            @Override
+                            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                                return managed;
+                            }
+                        });
+            }
+            return;
+        }
         boolean syncEverything = mSyncService.hasKeepEverythingSynced();
         mSyncEverything.setChecked(syncEverything);
 
         Set<Integer> selectedSyncTypes = mSyncService.getSelectedTypes();
 
         for (Map.Entry<Integer, ChromeBaseCheckBoxPreference> entry :
-                mSyncTypePreferencesMap.entrySet()) {
+                mSyncTypeCheckBoxPreferencesMap.entrySet()) {
             @UserSelectableType int type = entry.getKey();
             ChromeBaseCheckBoxPreference pref = entry.getValue();
             boolean managed = mSyncService.isTypeManagedByPolicy(type);
+
             pref.setEnabled(!syncEverything && !mSyncService.isTypeManagedByCustodian(type));
             pref.setChecked(selectedSyncTypes.contains(type));
+
             pref.setManagedPreferenceDelegate(
                     new ChromeManagedPreferenceDelegate(getProfile()) {
                         @Override

@@ -24,6 +24,8 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import static java.util.Map.entry;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Instrumentation.ActivityResult;
@@ -60,6 +62,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.AppHooks;
@@ -88,6 +91,7 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -107,6 +111,25 @@ public class ManageSyncSettingsTest {
 
     /** Maps selected types to their UI element IDs. */
     private Map<Integer, String> mUiDataTypes;
+
+    /** Maps selected types to their Account UI element IDs. */
+    private static final Map<Integer, String> ACCOUNT_UI_DATATYPES =
+            Map.ofEntries(
+                    entry(UserSelectableType.AUTOFILL, ManageSyncSettings.PREF_SYNC_AUTOFILL),
+                    entry(UserSelectableType.BOOKMARKS, ManageSyncSettings.PREF_SYNC_BOOKMARKS),
+                    entry(
+                            UserSelectableType.PAYMENTS,
+                            ManageSyncSettings.PREF_SYNC_PAYMENTS_INTEGRATION),
+                    // HISTORY and TABS are bundled in the same switch in the new settings panel.
+                    entry(
+                            UserSelectableType.HISTORY,
+                            ManageSyncSettings.PREF_SYNC_HISTORY_AND_TABS),
+                    entry(UserSelectableType.TABS, ManageSyncSettings.PREF_SYNC_HISTORY_AND_TABS),
+                    entry(UserSelectableType.PASSWORDS, ManageSyncSettings.PREF_SYNC_PASSWORDS),
+                    entry(
+                            UserSelectableType.READING_LIST,
+                            ManageSyncSettings.PREF_SYNC_READING_LIST),
+                    entry(UserSelectableType.PREFERENCES, ManageSyncSettings.PREF_SYNC_SETTINGS));
 
     private SettingsActivity mSettingsActivity;
 
@@ -195,6 +218,30 @@ public class ManageSyncSettingsTest {
         // User needs to manually uncheck to toggle sync off for data types.
         for (CheckBoxPreference dataType : dataTypes) {
             Assert.assertTrue(dataType.isChecked());
+            Assert.assertTrue(dataType.isEnabled());
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    // Disabling explicitly since it's included in fieldtrial_testing_config.json
+    @DisableFeatures({SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE})
+    public void testSyncAccountDataTypes() {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        ManageSyncSettings fragment = startManageSyncPreferences();
+        Collection<ChromeSwitchPreference> dataTypes = getAccountDataTypes(fragment).values();
+
+        for (ChromeSwitchPreference dataType : dataTypes) {
+            // Only settings and payments are available upon sign in without toggling more flags.
+            if (dataType.getKey().equals(ManageSyncSettings.PREF_SYNC_SETTINGS)
+                    || dataType.getKey()
+                            .equals(ManageSyncSettings.PREF_SYNC_PAYMENTS_INTEGRATION)) {
+                Assert.assertTrue(dataType.isChecked());
+            } else {
+                Assert.assertFalse(dataType.isChecked());
+            }
             Assert.assertTrue(dataType.isEnabled());
         }
     }
@@ -1214,6 +1261,19 @@ public class ManageSyncSettingsTest {
             Integer selectedType = uiDataType.getKey();
             String prefId = uiDataType.getValue();
             dataTypes.put(selectedType, (CheckBoxPreference) fragment.findPreference(prefId));
+        }
+        return dataTypes;
+    }
+
+    private Map<Integer, ChromeSwitchPreference> getAccountDataTypes(ManageSyncSettings fragment) {
+        Map<Integer, ChromeSwitchPreference> dataTypes = new HashMap<>();
+        for (Map.Entry<Integer, String> accountUiDataType : ACCOUNT_UI_DATATYPES.entrySet()) {
+            if (accountUiDataType.getKey() == UserSelectableType.TABS) {
+                continue;
+            }
+            Integer selectedType = accountUiDataType.getKey();
+            String prefId = accountUiDataType.getValue();
+            dataTypes.put(selectedType, (ChromeSwitchPreference) fragment.findPreference(prefId));
         }
         return dataTypes;
     }

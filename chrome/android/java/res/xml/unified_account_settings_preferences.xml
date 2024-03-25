@@ -9,6 +9,43 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<!-- TODO(b/326574743): Emptiness is temporary. -->
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="sync_history_and_tabs"
+        android:title="@string/sync_history_and_tabs"
+        android:persistent="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="sync_bookmarks"
+        android:title="@string/sync_bookmarks"
+        android:persistent="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="sync_reading_list"
+        android:title="@string/sync_reading_list"
+        android:persistent="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="sync_autofill"
+        android:title="@string/sync_autofill"
+        android:persistent="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="sync_passwords"
+        android:title="@string/sync_passwords"
+        android:persistent="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="sync_payments_integration"
+        android:title="@string/sync_payments_integration"
+        android:persistent="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="sync_settings"
+        android:title="@string/sync_settings"
+        android:persistent="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="google_activity_controls"
+        android:summary="@string/data_types_switches_summary"/>
 
 </PreferenceScreen>

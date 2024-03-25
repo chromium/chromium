@@ -2196,6 +2196,10 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_HISTORY" desc="Title for preference which enables sync'ing of history data. [CHAR_LIMIT=32]">
         History
       </message>
+      <!-- TODO(b/326574743): Revisit string and mark it as translatable.-->
+      <message name="IDS_SYNC_HISTORY_AND_TABS" desc="Title for preference which enables sync'ing of history data and open tabs. [CHAR_LIMIT=32]" translateable="false">
+        History and Tabs
+      </message>
       <message name="IDS_SYNC_PASSWORDS" desc="Title for preference which enables sync'ing of passwords. [CHAR_LIMIT=32]">
         Passwords
       </message>
@@ -2210,6 +2214,10 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_SYNC_APPS" desc="Title for preference which enables sync'ing of WebAPKs. [CHAR_LIMIT=32]">
         Apps
+      </message>
+      <!-- TODO(b/326574743): Revisit string and mark it as translatable.-->
+      <message name="IDS_DATA_TYPES_SWITCHES_SUMMARY" desc="Message of Google activity controls preference in signed in accounts settings screen" translateable="false">
+        When on, data is saved in your Google Account. When off, data is saved only to this device.
       </message>
       <message name="IDS_SYNC_PAYMENTS_INTEGRATION" desc="Title for preference which enables import of Google Pay data for Autofill. 'Google Pay' should not be translated as it is the product name.">
         Payment methods, offers, and addresses using Google Pay
