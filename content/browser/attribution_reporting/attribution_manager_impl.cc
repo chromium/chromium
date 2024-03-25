@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -1431,132 +1430,98 @@ void AttributionManagerImpl::PrepareNextOsEvent() {
   }
 
   OsRegistration& event = pending_os_events_.front();
-  event.registration_items.erase(
-      base::ranges::remove_if(
-          event.registration_items,
-          [&, now = base::Time::Now()](const OsRegistrationItem& item) {
-            const auto registration_origin = url::Origin::Create(item.url);
-            if (registration_origin.opaque()) {
-              NotifyOsRegistration(
-                  now, item, event.top_level_origin,
-                  /*is_debug_key_allowed=*/false, event.GetType(),
-                  OsRegistrationResult::kInvalidRegistrationUrl);
-              return true;
-            }
 
-            ContentBrowserClient::AttributionReportingOperation operation;
-            const url::Origin* source_origin;
-            const url::Origin* destination_origin;
-            switch (event.GetType()) {
-              case RegistrationType::kSource:
-                operation = ContentBrowserClient::
-                    AttributionReportingOperation::kOsSource;
-                source_origin = &event.top_level_origin;
-                destination_origin = nullptr;
-                break;
-              case RegistrationType::kTrigger:
-                operation = ContentBrowserClient::
-                    AttributionReportingOperation::kOsTrigger;
-                source_origin = nullptr;
-                destination_origin = &event.top_level_origin;
-                break;
-            }
-            if (!IsOperationAllowed(
-                    *storage_partition_, operation,
-                    RenderFrameHost::FromID(event.render_frame_id),
-                    source_origin, destination_origin, &registration_origin)) {
-              NotifyOsRegistration(
-                  now, item, event.top_level_origin,
-                  /*is_debug_key_allowed=*/false, event.GetType(),
-                  OsRegistrationResult::kProhibitedByBrowserPolicy);
-              return true;
-            }
+  ContentBrowserClient::AttributionReportingOperation operation;
+  const url::Origin* source_origin;
+  const url::Origin* destination_origin;
+  switch (event.GetType()) {
+    case RegistrationType::kSource:
+      operation =
+          ContentBrowserClient::AttributionReportingOperation::kOsSource;
+      source_origin = &event.top_level_origin;
+      destination_origin = nullptr;
+      break;
+    case RegistrationType::kTrigger:
+      operation =
+          ContentBrowserClient::AttributionReportingOperation::kOsTrigger;
+      source_origin = nullptr;
+      destination_origin = &event.top_level_origin;
+      break;
+  }
 
-            return false;
-          }),
-      event.registration_items.end());
+  std::erase_if(event.registration_items, [&, now = base::Time::Now()](
+                                              const OsRegistrationItem& item) {
+    const auto registration_origin = url::Origin::Create(item.url);
+    if (registration_origin.opaque()) {
+      NotifyOsRegistration(now, item, event.top_level_origin,
+                           /*is_debug_key_allowed=*/false, event.GetType(),
+                           OsRegistrationResult::kInvalidRegistrationUrl);
+      return true;
+    }
+
+    if (!IsOperationAllowed(*storage_partition_, operation,
+                            RenderFrameHost::FromID(event.render_frame_id),
+                            source_origin, destination_origin,
+                            &registration_origin)) {
+      NotifyOsRegistration(now, item, event.top_level_origin,
+                           /*is_debug_key_allowed=*/false, event.GetType(),
+                           OsRegistrationResult::kProhibitedByBrowserPolicy);
+      return true;
+    }
+
+    return false;
+  });
 
   if (event.registration_items.empty()) {
     pending_os_events_.pop_front();
     return PrepareNextOsEvent();
   }
 
-  std::vector<bool> allowed(event.registration_items.size());
+  switch (event.GetType()) {
+    case RegistrationType::kSource:
+      operation = ContentBrowserClient::AttributionReportingOperation::
+          kOsSourceTransitionalDebugReporting;
+      break;
+    case RegistrationType::kTrigger:
+      operation = ContentBrowserClient::AttributionReportingOperation::
+          kOsTriggerTransitionalDebugReporting;
+      break;
+  }
 
-  struct ToCheck {
-    url::Origin origin;
-    size_t i;
-  };
-  std::vector<ToCheck> need_to_check_cookie;
+  auto set_is_debug_cookie_set = base::BindRepeating(
+      [](base::WeakPtr<AttributionManagerImpl> manager,
+         std::vector<bool>& allowed, size_t& remaining, size_t i,
+         bool is_debug_cookie_set) {
+        if (!manager) {
+          return;
+        }
+
+        DCHECK_GT(remaining, 0u);
+        --remaining;
+
+        allowed.at(i) = is_debug_cookie_set;
+
+        if (remaining == 0) {
+          manager->ProcessNextOsEvent(allowed);
+        }
+      },
+      weak_factory_.GetWeakPtr(),
+      base::OwnedRef(std::vector<bool>(event.registration_items.size())),
+      base::OwnedRef(event.registration_items.size()));
+
   for (size_t i = 0; i < event.registration_items.size(); ++i) {
     const auto& item = event.registration_items.at(i);
-    auto reporting_origin = url::Origin::Create(item.url);
-    ContentBrowserClient::AttributionReportingOperation operation;
-    const url::Origin* source_origin;
-    const url::Origin* destination_origin;
-    switch (event.GetType()) {
-      case RegistrationType::kSource:
-        operation = ContentBrowserClient::AttributionReportingOperation::
-            kOsSourceTransitionalDebugReporting;
-        source_origin = &event.top_level_origin;
-        destination_origin = nullptr;
-        break;
-      case RegistrationType::kTrigger:
-        operation = ContentBrowserClient::AttributionReportingOperation::
-            kOsTriggerTransitionalDebugReporting;
-        source_origin = nullptr;
-        destination_origin = &event.top_level_origin;
-        break;
-    }
+    const auto reporting_origin = url::Origin::Create(item.url);
 
     bool can_bypass_cookie_check = false;
-    if (IsOperationAllowed(*storage_partition_, operation,
-                           /*rfh=*/nullptr, source_origin, destination_origin,
-                           &reporting_origin, &can_bypass_cookie_check)) {
-      need_to_check_cookie.emplace_back(std::move(reporting_origin), i);
+    if (IsOperationAllowed(*storage_partition_, operation, /*rfh=*/nullptr,
+                           source_origin, destination_origin, &reporting_origin,
+                           &can_bypass_cookie_check)) {
+      cookie_checker_->IsDebugCookieSet(
+          reporting_origin, base::BindOnce(set_is_debug_cookie_set, i));
     } else {
-      allowed.at(i) = can_bypass_cookie_check;
+      set_is_debug_cookie_set.Run(i, can_bypass_cookie_check);
     }
-  }
-  if (need_to_check_cookie.empty()) {
-    ProcessNextOsEvent(std::move(allowed));
-    return;
-  }
-
-  struct CookieSetResult {
-    size_t i;
-    bool is_debug_cookie_set;
-  };
-
-  auto merge = [](base::WeakPtr<AttributionManagerImpl> manager,
-                  std::vector<bool> allowed,
-                  const std::vector<CookieSetResult>& results) {
-    if (!manager) {
-      return;
-    }
-
-    for (const auto& result : results) {
-      allowed.at(result.i) = result.is_debug_cookie_set;
-    }
-
-    manager->ProcessNextOsEvent(std::move(allowed));
-  };
-
-  auto collect_and_merge = base::BarrierCallback<CookieSetResult>(
-      need_to_check_cookie.size(),
-      base::BindOnce(std::move(merge), weak_factory_.GetWeakPtr(),
-                     std::move(allowed)));
-
-  auto collect = [](base::OnceCallback<void(CookieSetResult)> collect_and_merge,
-                    size_t i, bool is_debug_cookie_set) {
-    std::move(collect_and_merge)
-        .Run({.i = i, .is_debug_cookie_set = is_debug_cookie_set});
-  };
-
-  for (const ToCheck& to_check : need_to_check_cookie) {
-    cookie_checker_->IsDebugCookieSet(
-        to_check.origin,
-        base::BindOnce(collect, collect_and_merge, to_check.i));
   }
 }
 
