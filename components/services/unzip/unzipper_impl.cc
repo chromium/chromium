@@ -48,7 +48,8 @@ class Writer : public zip::FileWriterDelegate {
         storage::mojom::FileReadAccess::kReadAllowed,
         storage::mojom::FileWriteAccess::kWriteAllowed, &error, &owned_file_);
     if (error != base::File::FILE_OK) {
-      LOG(ERROR) << "Cannot create extracted file " << zip::Redact(path_);
+      LOG(ERROR) << "Cannot create file to extract " << zip::Redact(path_)
+                 << ": " << base::File::ErrorToString(error);
       return false;
     }
 
@@ -76,8 +77,9 @@ class Writer : public zip::FileWriterDelegate {
 std::unique_ptr<zip::WriterDelegate> MakeFileWriterDelegate(
     storage::mojom::Directory* output_dir,
     const base::FilePath& path) {
-  if (path == path.BaseName())
+  if (path == path.BaseName()) {
     return std::make_unique<Writer>(output_dir, path);
+  }
 
   base::File::Error error = base::File::FILE_ERROR_IO;
   output_dir->CreateDirectory(path.DirName(), &error);
@@ -118,8 +120,9 @@ std::string GetRawFileNamesFromZip(const base::File& zip_file) {
     const std::string& path = entry->path_in_original_encoding;
 
     // Stop if we have enough data in |result|.
-    if (path.size() > (result.capacity() - result.size()))
+    if (path.size() > (result.capacity() - result.size())) {
       break;
+    }
 
     // Accumulate data in |result|.
     result += path;
