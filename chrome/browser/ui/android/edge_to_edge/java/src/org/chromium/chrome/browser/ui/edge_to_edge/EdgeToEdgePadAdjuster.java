@@ -10,8 +10,11 @@ public interface EdgeToEdgePadAdjuster {
     /**
      * Override the bottom inset of the adjuster with additional bottom padding.
      *
-     * @param inset The additional bottom inset in px to add to original view padding. Passing in an
-     *     inset of 0 will reset to the original padding.
+     * @param defaultInset The additional bottom inset in px to add to original view padding.
+     *     Passing in an inset of 0 will reset to the original padding.
+     * @param insetWithBrowserControls The additional bottom inset in px, adjusted to account for
+     *     browser controls. If browser controls are not visible, either due to not being present or
+     *     being scrolled of, this value will match defaultInset.
      */
-    void overrideBottomInset(int inset);
+    void overrideBottomInset(int defaultInset, int insetWithBrowserControls);
 }

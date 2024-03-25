@@ -53,8 +53,26 @@ public class EdgeToEdgeControllerFactory {
                 activity, windowAndroid, tabObservableSupplier, null, browserControlsStateProvider);
     }
 
+    /**
+     * Creates an adjuster for padding to the view to account for edge-to-edge. Note: this doesn't
+     * account for browser controls.
+     *
+     * @param view The view to be adjusted.
+     */
     public static EdgeToEdgePadAdjuster createForView(View view) {
-        return new SimpleEdgeToEdgePadAdjuster(view);
+        return new SimpleEdgeToEdgePadAdjuster(view, /* accountForBrowserControls= */ false);
+    }
+
+    /**
+     * Creates an adjuster for padding to the view to account for edge-to-edge.
+     *
+     * @param view The view to be adjusted.
+     * @param accountForBrowserControls Whether to account for browser controls when adjusting the
+     *     view.
+     */
+    public static EdgeToEdgePadAdjuster createForView(
+            View view, boolean accountForBrowserControls) {
+        return new SimpleEdgeToEdgePadAdjuster(view, accountForBrowserControls);
     }
 
     /**

@@ -16,7 +16,9 @@ public interface EdgeToEdgeSupplier {
     interface ChangeObserver {
 
         /**
-         * Notifies that a change has been made in the bottom inset and supplies the new inset.
+         * Notifies that a change has been made in the bottom inset and supplies the new inset. Note
+         * that this inset may differ from the bottom inset passed to {@link EdgeToEdgePadAdjuster}s
+         * (e.g. when browser controls are present but scrolled off).
          *
          * @param bottomInset The new bottom inset.
          */

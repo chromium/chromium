@@ -273,7 +273,7 @@ public class InfoBarContainerView extends SwipableOverlayView
         mLayout.addInfoBar(infoBar);
 
         if (mEdgeToEdgeSupplier != null && mEdgeToEdgeSupplier.get() != null) {
-            mEdgeToEdgePadAdjuster = EdgeToEdgeControllerFactory.createForView(infoBarView);
+            mEdgeToEdgePadAdjuster = EdgeToEdgeControllerFactory.createForView(infoBarView, true);
             mEdgeToEdgeSupplier.get().registerAdjuster(mEdgeToEdgePadAdjuster);
         }
     }

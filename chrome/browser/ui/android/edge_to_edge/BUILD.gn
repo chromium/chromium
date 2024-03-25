@@ -16,6 +16,7 @@ android_library("java") {
     "//base:base_cached_flags_java",
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//components/browser_ui/display_cutout/android:java",

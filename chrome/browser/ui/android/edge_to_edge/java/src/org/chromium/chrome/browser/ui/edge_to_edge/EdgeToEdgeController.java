@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
-
 import org.chromium.base.lifetime.Destroyable;
 
 /**
@@ -15,7 +14,8 @@ public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier {
     /**
      * @return the inset in DPs needed for the bottom UI to adjust views to draw below the Bottom
      *     Nav Bar. Returns 0 when Edge To Edge is not enabled or when the controller is drawing the
-     *     page ToNormal.
+     *     page ToNormal. Note that this inset may differ from the bottom inset passed to {@link
+     *     EdgeToEdgePadAdjuster}s (e.g. when browser controls are present but scrolled off).
      */
     int getBottomInset();
 
