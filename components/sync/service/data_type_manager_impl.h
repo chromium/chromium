@@ -15,17 +15,17 @@
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_manager.h"
 #include "components/sync/service/model_load_manager.h"
+#include "components/sync/service/model_type_controller.h"
 
 namespace syncer {
 
-class DataTypeController;
 class DataTypeEncryptionHandler;
 class DataTypeManagerObserver;
 
 class DataTypeManagerImpl : public DataTypeManager,
                             public ModelLoadManagerDelegate {
  public:
-  DataTypeManagerImpl(const DataTypeController::TypeMap* controllers,
+  DataTypeManagerImpl(const ModelTypeController::TypeMap* controllers,
                       const DataTypeEncryptionHandler* encryption_handler,
                       ModelTypeConfigurer* configurer,
                       DataTypeManagerObserver* observer);
@@ -90,11 +90,11 @@ class DataTypeManagerImpl : public DataTypeManager,
   ModelTypeConfigurer::ConfigureParams PrepareConfigureParams();
 
   // Update precondition state of types in `data_type_status_table_` to match
-  // value of DataTypeController::GetPreconditionState().
+  // value of ModelTypeController::GetPreconditionState().
   void UpdatePreconditionErrors();
 
   // Update precondition state for `type`, such that `data_type_status_table_`
-  // matches DataTypeController::GetPreconditionState(). Returns true if there
+  // matches ModelTypeController::GetPreconditionState(). Returns true if there
   // was an actual change.
   bool UpdatePreconditionError(ModelType type);
 
@@ -130,7 +130,7 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // Map of all data type controllers that are available for sync.
   // This list is determined at startup by various command line flags.
-  const raw_ptr<const DataTypeController::TypeMap> controllers_;
+  const raw_ptr<const ModelTypeController::TypeMap> controllers_;
 
   State state_ = DataTypeManager::STOPPED;
 

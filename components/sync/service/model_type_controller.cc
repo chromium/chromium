@@ -42,8 +42,27 @@ SyncStopMetadataFate TakeStrictestMetadataFate(SyncStopMetadataFate fate1,
 
 }  // namespace
 
-ModelTypeController::ModelTypeController(ModelType type)
-    : DataTypeController(type) {}
+// static
+std::string ModelTypeController::StateToString(State state) {
+  switch (state) {
+    case NOT_RUNNING:
+      return "Not Running";
+    case MODEL_STARTING:
+      return "Model Starting";
+    case MODEL_LOADED:
+      return "Model Loaded";
+    case RUNNING:
+      return "Running";
+    case STOPPING:
+      return "Stopping";
+    case FAILED:
+      return "Failed";
+  }
+  NOTREACHED();
+  return "Invalid";
+}
+
+ModelTypeController::ModelTypeController(ModelType type) : type_(type) {}
 
 ModelTypeController::ModelTypeController(
     ModelType type,
@@ -246,8 +265,13 @@ void ModelTypeController::Stop(SyncStopMetadataFate fate,
   }
 }
 
-DataTypeController::State ModelTypeController::state() const {
+ModelTypeController::State ModelTypeController::state() const {
   return state_;
+}
+
+ModelTypeController::PreconditionState
+ModelTypeController::GetPreconditionState() const {
+  return PreconditionState::kPreconditionsMet;
 }
 
 bool ModelTypeController::ShouldRunInTransportOnlyMode() const {
@@ -328,6 +352,10 @@ void ModelTypeController::ReportModelError(SyncError::ErrorType error_type,
 
   TriggerCompletionCallbacks(
       SyncError(error.location(), error_type, error.message(), type()));
+}
+
+bool ModelTypeController::CalledOnValidThread() const {
+  return sequence_checker_.CalledOnValidSequence();
 }
 
 void ModelTypeController::RecordStartFailure() const {
