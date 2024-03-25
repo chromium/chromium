@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -25,6 +26,7 @@
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -399,12 +401,27 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
 
   gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
 
+  uint32_t texture_target = GL_TEXTURE_2D;
+  // NOTE: The change to simplify logic for computing the texture target here is
+  // under the `kUseUniversalGetTextureTargetFunction` killswitch as it is
+  // following the same logic that ClientSharedImage::GetTextureTarget() is
+  // using, and thus it makes sense to roll out the changes together.
+  if (base::FeatureList::IsEnabled(
+          gpu::kUseUniversalGetTextureTargetFunction)) {
+    // The target should be GL_TEXTURE_2D unless external sampling is being
+    // used, which in this context is equivalent to the passed-in buffer format
+    // being multiplanar as we never use per-plane sampling in this context.
+    texture_target = gfx::BufferFormatIsMultiplanar(*buffer_format)
+                         ? GL_TEXTURE_EXTERNAL_OES
+                         : GL_TEXTURE_2D;
+  } else {
+    texture_target = gpu::NativeBufferNeedsPlatformSpecificTextureTarget(
+                         *buffer_format, gfx::BufferPlane::DEFAULT)
+                         ? gpu::GetPlatformSpecificTextureTarget()
+                         : GL_TEXTURE_2D;
+  }
   mailbox_holders[0] =
-      gpu::MailboxHolder(mailbox, gpu::SyncToken(),
-                         gpu::NativeBufferNeedsPlatformSpecificTextureTarget(
-                             *buffer_format, gfx::BufferPlane::DEFAULT)
-                             ? gpu::GetPlatformSpecificTextureTarget()
-                             : GL_TEXTURE_2D);
+      gpu::MailboxHolder(mailbox, gpu::SyncToken(), texture_target);
 
   VideoFrame::ReleaseMailboxCB release_mailbox_cb = base::BindOnce(
       [](scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
