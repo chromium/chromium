@@ -48,6 +48,8 @@
     "android-cronet-asan-arm-rel": "ci/android-cronet-asan-arm-rel/gn-args.json",
     "android-cronet-mainline-clang-arm64-dbg": "ci/android-cronet-mainline-clang-arm64-dbg/gn-args.json",
     "android-cronet-mainline-clang-arm64-rel": "ci/android-cronet-mainline-clang-arm64-rel/gn-args.json",
+    "android-cronet-mainline-clang-riscv64-dbg": "ci/android-cronet-mainline-clang-riscv64-dbg/gn-args.json",
+    "android-cronet-mainline-clang-riscv64-rel": "ci/android-cronet-mainline-clang-riscv64-rel/gn-args.json",
     "android-cronet-mainline-clang-x86-dbg": "ci/android-cronet-mainline-clang-x86-dbg/gn-args.json",
     "android-cronet-mainline-clang-x86-rel": "ci/android-cronet-mainline-clang-x86-rel/gn-args.json",
     "android-cronet-marshmallow-arm64-perf-rel": "ci/android-cronet-marshmallow-arm64-perf-rel/gn-args.json",

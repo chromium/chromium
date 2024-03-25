@@ -8,13 +8,13 @@
         "entries": [
           {
             "builder_id": {
-              "bucket": "try",
+              "bucket": "ci",
               "builder": "android-cronet-mainline-clang-riscv64-rel",
               "project": "chromium"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
-              "builder_group": "tryserver.chromium.android",
+              "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
                 "config": "main_builder"
@@ -41,7 +41,7 @@
       },
       "builder_ids": [
         {
-          "bucket": "try",
+          "bucket": "ci",
           "builder": "android-cronet-mainline-clang-riscv64-rel",
           "project": "chromium"
         }
