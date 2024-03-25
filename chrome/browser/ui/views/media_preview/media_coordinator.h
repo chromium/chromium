@@ -11,12 +11,9 @@
 #include <string>
 
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_coordinator.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/mic_preview/mic_coordinator.h"
 #include "components/prefs/pref_service.h"
-
-namespace media_preview_metrics {
-struct Context;
-}  // namespace media_preview_metrics
 
 namespace views {
 class View;
@@ -58,5 +55,12 @@ class MediaCoordinator {
   std::optional<CameraCoordinator> camera_coordinator_;
   std::optional<MicCoordinator> mic_coordinator_;
 };
+
+namespace media_coordinator {
+
+media_preview_metrics::PreviewType GetPreviewTypeFromMediaCoordinatorViewType(
+    MediaCoordinator::ViewType view_type);
+
+}  // namespace media_coordinator
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MEDIA_COORDINATOR_H_

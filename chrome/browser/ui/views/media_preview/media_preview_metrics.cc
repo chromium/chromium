@@ -56,6 +56,8 @@ std::optional<std::string> MapContextToString(
 namespace media_preview_metrics {
 
 Context::Context(UiLocation ui_location) : ui_location(ui_location) {}
+Context::Context(UiLocation ui_location, PreviewType preview_type)
+    : ui_location(ui_location), preview_type(preview_type) {}
 Context::~Context() = default;
 
 void RecordPageInfoCameraNumInUseDevices(int devices) {
