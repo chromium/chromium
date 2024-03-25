@@ -441,7 +441,7 @@ export class NetworkRequest {
       responseCode,
       responsePhrase,
       responseHeaders,
-      ...(body ? {body: btoa(body)} : {}), // TODO: Double-check if btoa usage is correct.
+      body,
     });
     this.#interceptPhase = undefined;
   }
