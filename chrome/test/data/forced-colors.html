@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<title>FAIL</title>
+<script>
+  if (window.matchMedia("(forced-colors: none)").matches) {
+    document.title = "none";
+  } else if (window.matchMedia("(forced-colors: active)").matches) {
+    document.title = "active";
+  }
+</script>

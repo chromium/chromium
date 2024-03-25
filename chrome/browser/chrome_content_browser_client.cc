@@ -3593,6 +3593,43 @@ bool ChromeContentBrowserClient::ShouldDenyRequestOnCertificateError(
 
 namespace {
 
+bool IsForcedColorsEnabledForWebContent(content::WebContents* contents,
+                                        const ui::NativeTheme* native_theme) {
+  if (!native_theme->InForcedColorsMode() || !contents) {
+    return false;
+  }
+
+  PrefService* prefs =
+      Profile::FromBrowserContext(contents->GetBrowserContext())->GetPrefs();
+  CHECK(prefs);
+
+  const base::Value::List& forced_colors_blocklist =
+      prefs->GetList(prefs::kPageColorsBlockList);
+
+  if (forced_colors_blocklist.empty()) {
+    return true;
+  }
+
+  GURL url = contents->GetLastCommittedURL();
+
+  // Forced Colors should be disabled for the current URL if it is in the block
+  // list.
+  for (auto const& value : forced_colors_blocklist) {
+    ContentSettingsPattern pattern =
+        ContentSettingsPattern::FromString(value.GetString());
+
+    if (pattern == ContentSettingsPattern::Wildcard() || !pattern.IsValid()) {
+      continue;
+    }
+
+    if (pattern.Matches(url)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 blink::mojom::PreferredColorScheme ToBlinkPreferredColorScheme(
     ui::NativeTheme::PreferredColorScheme native_theme_scheme) {
@@ -4217,7 +4254,8 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       break;
   }
 
-  web_prefs->in_forced_colors = GetWebTheme()->InForcedColorsMode();
+  web_prefs->in_forced_colors =
+      IsForcedColorsEnabledForWebContent(web_contents, GetWebTheme());
 
   UpdatePreferredColorScheme(
       web_prefs,
@@ -4320,7 +4358,10 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
         parts->OverrideWebPreferencesAfterNavigation(web_contents, web_prefs);
   }
 
-  prefs_changed |= GetWebTheme()->InForcedColorsMode();
+  const bool in_forced_colors =
+      IsForcedColorsEnabledForWebContent(web_contents, GetWebTheme());
+  prefs_changed |= (web_prefs->in_forced_colors != in_forced_colors);
+  web_prefs->in_forced_colors = in_forced_colors;
 
   prefs_changed |=
       UpdatePreferredColorScheme(web_prefs, web_contents->GetLastCommittedURL(),

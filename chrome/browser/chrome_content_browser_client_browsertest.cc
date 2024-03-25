@@ -357,6 +357,109 @@ IN_PROC_BROWSER_TEST_F(OpenWindowFromNTPBrowserTest,
       opened_tab->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
+// Test for the state of Forced Colors Mode for a given WebContents across
+// various scenarios.
+class ForcedColorsTest : public testing::WithParamInterface<bool>,
+                         public InProcessBrowserTest {
+ protected:
+  ForcedColorsTest() : theme_client_(&test_theme_) {}
+
+  ~ForcedColorsTest() override {
+    CHECK_EQ(&theme_client_, SetBrowserClientForTesting(original_client_));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "ForcedColors");
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    original_client_ = SetBrowserClientForTesting(&theme_client_);
+  }
+
+ protected:
+  ui::TestNativeTheme test_theme_;
+
+ private:
+  raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
+
+  class ChromeContentBrowserClientWithWebTheme
+      : public ChromeContentBrowserClient {
+   public:
+    explicit ChromeContentBrowserClientWithWebTheme(
+        const ui::NativeTheme* theme)
+        : theme_(theme) {}
+
+   protected:
+    const ui::NativeTheme* GetWebTheme() const override { return theme_; }
+
+   private:
+    const raw_ptr<const ui::NativeTheme> theme_;
+  };
+
+  ChromeContentBrowserClientWithWebTheme theme_client_;
+};
+
+IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColors) {
+  test_theme_.set_forced_colors(GetParam());
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->OnWebPreferencesChanged();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), ui_test_utils::GetTestUrl(
+                     base::FilePath(base::FilePath::kCurrentDirectory),
+                     base::FilePath(FILE_PATH_LITERAL("forced-colors.html")))));
+  std::u16string tab_title;
+  const char* expected = test_theme_.InForcedColorsMode() ? "active" : "none";
+  ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
+  EXPECT_EQ(base::ASCIIToUTF16(expected), tab_title);
+}
+
+IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColorsWithBlockList) {
+  test_theme_.set_forced_colors(GetParam());
+
+  // Add url to the page colors block list.
+  const char* url = "http://foo.com";
+  base::Value::List list;
+  list.Append(url);
+  Profile* profile = browser()->profile();
+  profile->GetPrefs()->SetList(prefs::kPageColorsBlockList, list.Clone());
+
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->OnWebPreferencesChanged();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
+
+  // Forced colors should be `none` when a site is added to the block list.
+  EXPECT_EQ(true, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                         base::StringPrintf(
+                             "window.matchMedia('(forced-colors: %s)').matches",
+                             "none")));
+
+  // Remove url from the page colors block list.
+  list.EraseValue(base::Value(url));
+  profile->GetPrefs()->SetList(prefs::kPageColorsBlockList, list.Clone());
+
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->OnWebPreferencesChanged();
+
+  // Forced colors should respect the NativeTheme when a site is removed from
+  // the block list.
+  const char* expected = test_theme_.InForcedColorsMode() ? "active" : "none";
+  EXPECT_EQ(true, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                         base::StringPrintf(
+                             "window.matchMedia('(forced-colors: %s)').matches",
+                             expected)));
+}
+
+INSTANTIATE_TEST_SUITE_P(All, ForcedColorsTest, testing::Bool());
+
 // Tests for the preferred color scheme for a given WebContents. The first param
 // controls whether the web NativeTheme is light or dark the second controls
 // whether the color mode on the associated color provider is light or dark.
