@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/big_endian.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/formats/mp4/es_descriptor.h"
 #include "media/muxers/box_byte_stream.h"
 #include "media/muxers/mp4_muxer_context.h"
@@ -38,7 +39,7 @@ constexpr int32_t kDisplayIdentityMatrix[9] = {
 
 void WriteIsoTime(BoxByteStream& writer, base::Time time) {
   uint64_t iso_time =
-      time.ToDeltaSinceWindowsEpoch().InSecondsF() - k1601To1904DeltaInSeconds;
+      base::saturated_cast<uint64_t>((time - kMP4Epoch).InSecondsF());
 
   writer.WriteU64(iso_time);
 }
