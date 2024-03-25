@@ -353,16 +353,13 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 CommandLine cl = CommandLine.getInstance();
                 cl.appendSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
             }
-            // Using concatenation rather than %s to allow values to be inlined by R8.
             Log.i(
                     TAG,
-                    "Loaded version="
-                            + VersionConstants.PRODUCT_VERSION
-                            + " minSdkVersion="
-                            + BuildConfig.MIN_SDK_VERSION
-                            + " isBundle="
-                            + ProductConfig.IS_BUNDLE
-                            + " multiprocess=%s packageId=%s",
+                    "version=%s (%s) minSdkVersion=%s isBundle=%s multiprocess=%s packageId=%s",
+                    VersionConstants.PRODUCT_VERSION,
+                    BuildConfig.VERSION_CODE,
+                    BuildConfig.MIN_SDK_VERSION,
+                    ProductConfig.IS_BUNDLE,
                     multiProcess,
                     packageId);
 

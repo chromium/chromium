@@ -63,6 +63,13 @@ public class BuildConfig {
     public static MAYBE_FINAL int MIN_SDK_VERSION = 1;
 #endif
 
+    // Value of android:versionCode.
+#if defined(_VERSION_CODE)
+    public static MAYBE_FINAL long VERSION_CODE = _VERSION_CODE;
+#else
+    public static MAYBE_FINAL long VERSION_CODE = 1;
+#endif
+
 #if defined(_BUNDLES_SUPPORTED)
     public static MAYBE_FINAL boolean BUNDLES_SUPPORTED = true;
 #else

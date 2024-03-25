@@ -64,7 +64,7 @@ public class BuildInfo {
     public final String packageName;
 
     /** The versionCode of the apk. */
-    public final long versionCode;
+    public final long versionCode = BuildConfig.VERSION_CODE;
 
     /** The versionName of Chrome/WebView. Use application context for host app versionName. */
     public final String versionName;
@@ -201,7 +201,6 @@ public class BuildInfo {
         String providedPackageName = null;
         String providedPackageVersionName = null;
         Long providedHostVersionCode = null;
-        Long providedPackageVersionCode = null;
 
         // The child processes are running in an isolated process so they can't grab a lot of
         // package information in the same way that we normally would retrieve them. To get around
@@ -218,12 +217,6 @@ public class BuildInfo {
                 providedHostVersionCode =
                         Long.parseLong(commandLine.getSwitchValue(BaseSwitches.HOST_VERSION_CODE));
             }
-
-            if (commandLine.hasSwitch(BaseSwitches.PACKAGE_VERSION_CODE)) {
-                providedPackageVersionCode =
-                        Long.parseLong(
-                                commandLine.getSwitchValue(BaseSwitches.PACKAGE_VERSION_CODE));
-            }
         }
 
         boolean hostInformationProvided =
@@ -231,8 +224,7 @@ public class BuildInfo {
                         && providedHostPackageLabel != null
                         && providedHostVersionCode != null
                         && providedPackageName != null
-                        && providedPackageVersionName != null
-                        && providedPackageVersionCode != null;
+                        && providedPackageVersionName != null;
 
         // We want to retrieve the original package installed to verify to host package name.
         // In the case of the SDK Runtime, we would like to retrieve the package name loading the
@@ -245,7 +237,6 @@ public class BuildInfo {
             hostVersionCode = providedHostVersionCode;
             versionName = providedPackageVersionName;
             packageName = providedPackageName;
-            versionCode = providedPackageVersionCode;
 
             sBrowserApplicationInfo = appContext.getApplicationInfo();
         } else {
@@ -280,13 +271,11 @@ public class BuildInfo {
 
             if (sBrowserPackageInfo != null) {
                 packageName = sBrowserPackageInfo.packageName;
-                versionCode = packageVersionCode(sBrowserPackageInfo);
                 versionName = nullToEmpty(sBrowserPackageInfo.versionName);
                 sBrowserApplicationInfo = sBrowserPackageInfo.applicationInfo;
                 sBrowserPackageInfo = null;
             } else {
                 packageName = appContextPackageName;
-                versionCode = hostVersionCode;
                 versionName = nullToEmpty(pi.versionName);
                 sBrowserApplicationInfo = appContext.getApplicationInfo();
             }

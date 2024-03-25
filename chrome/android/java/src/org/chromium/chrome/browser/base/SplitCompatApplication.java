@@ -129,16 +129,13 @@ public class SplitCompatApplication extends Application {
     protected void attachBaseContext(Context context) {
         boolean isIsolatedProcess = ContextUtils.isIsolatedProcess();
         boolean isBrowserProcess = isBrowserProcess();
-        // Using concatenation rather than %s to allow values to be inlined by R8.
         Log.i(
                 TAG,
-                "Launched version="
-                        + VersionConstants.PRODUCT_VERSION
-                        + " minSdkVersion="
-                        + BuildConfig.MIN_SDK_VERSION
-                        + " isBundle="
-                        + ProductConfig.IS_BUNDLE
-                        + " processName=%s isIsolated=%s",
+                "version=%s (%s) minSdkVersion=%s isBundle=%s processName=%s isIsolatedProcess=%s",
+                VersionConstants.PRODUCT_VERSION,
+                BuildConfig.VERSION_CODE,
+                BuildConfig.MIN_SDK_VERSION,
+                ProductConfig.IS_BUNDLE,
                 ContextUtils.getProcessName(),
                 isIsolatedProcess);
 

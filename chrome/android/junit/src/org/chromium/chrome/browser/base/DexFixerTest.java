@@ -31,9 +31,9 @@ import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowDexFile;
 import org.robolectric.util.ReflectionHelpers.ClassParameter;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -118,7 +118,7 @@ public class DexFixerTest {
         ChromeSharedPreferences.getInstance()
                 .writeLong(
                         ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION,
-                        BuildInfo.getInstance().versionCode);
+                        BuildConfig.VERSION_CODE);
 
         ShadowDexFile.setIsDexOptNeeded(true);
         @DexFixerReason int reason = DexFixer.fixDexIfNecessary(mMockRuntime);
@@ -135,7 +135,7 @@ public class DexFixerTest {
         ChromeSharedPreferences.getInstance()
                 .writeLong(
                         ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION,
-                        BuildInfo.getInstance().versionCode);
+                        BuildConfig.VERSION_CODE);
 
         @DexFixerReason int reason = DexFixer.fixDexIfNecessary(mMockRuntime);
         assertThat(reason).isEqualTo(DexFixerReason.NOT_READABLE);

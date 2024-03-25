@@ -58,16 +58,13 @@ public class WebViewApkApplication extends Application {
     @Override
     protected void attachBaseContext(Context context) {
         super.attachBaseContext(context);
-        // Using concatenation rather than %s to allow values to be inlined by R8.
         Log.i(
                 TAG,
-                "Launched version="
-                        + VersionConstants.PRODUCT_VERSION
-                        + " minSdkVersion="
-                        + BuildConfig.MIN_SDK_VERSION
-                        + " isBundle="
-                        + ProductConfig.IS_BUNDLE
-                        + " processName=%s",
+                "version=%s (%s) minSdkVersion=%s isBundle=%s processName=%s",
+                VersionConstants.PRODUCT_VERSION,
+                BuildConfig.VERSION_CODE,
+                BuildConfig.MIN_SDK_VERSION,
+                ProductConfig.IS_BUNDLE,
                 ContextUtils.getProcessName());
 
         ContextUtils.initApplicationContext(this);

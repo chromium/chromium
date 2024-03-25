@@ -1891,6 +1891,7 @@ if (enable_java_templates && is_android) {
   #   use_final_fields: True to use final fields. When false, all other
   #       variables must not be set.
   #   min_sdk_version: Value for MIN_SDK_VERSION.
+  #   version_code: Value for VERSION_CODE.
   #   bundles_supported: Whether or not this target can be treated as a bundle.
   #   resources_version_variable:
   #   is_incremental_install:
@@ -1932,9 +1933,8 @@ if (enable_java_templates && is_android) {
       if (invoker.use_final_fields) {
         forward_variables_from(invoker, [ "deps" ])
         defines += [ "USE_FINAL" ]
-        if (defined(invoker.min_sdk_version)) {
-          defines += [ "_MIN_SDK_VERSION=${invoker.min_sdk_version}" ]
-        }
+        defines += [ "_MIN_SDK_VERSION=${invoker.min_sdk_version}" ]
+        defines += [ "_VERSION_CODE=${invoker.version_code}" ]
         if (defined(invoker.resources_version_variable)) {
           defines += [
             "_RESOURCES_VERSION_VARIABLE=${invoker.resources_version_variable}",
@@ -2604,11 +2604,7 @@ if (enable_java_templates && is_android) {
     }
     if (_generate_buildconfig_java) {
       generate_build_config_srcjar("${_template_name}__build_config_srcjar") {
-        forward_variables_from(invoker,
-                               [
-                                 "min_sdk_version",
-                                 "isolated_splits_enabled",
-                               ])
+        forward_variables_from(invoker, [ "isolated_splits_enabled" ])
         _bundles_supported = _is_bundle_module
         if (defined(invoker.bundles_supported)) {
           _bundles_supported = invoker.bundles_supported
@@ -2617,6 +2613,8 @@ if (enable_java_templates && is_android) {
         use_final_fields = true
         assertions_implicitly_enabled = _assertions_implicitly_enabled
         is_incremental_install = _incremental_apk
+        version_code = _version_code
+        min_sdk_version = _min_sdk_version
         write_clang_profiling_data =
             use_clang_coverage && _generate_native_libraries_java
         if (defined(invoker.build_config_include_product_version_resource) &&

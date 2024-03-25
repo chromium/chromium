@@ -15,6 +15,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.BuildConfig;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 
 import java.io.File;
@@ -135,7 +136,7 @@ public abstract class PureJavaExceptionReporter
                 PACKAGE,
                 String.format(
                         "%s v%s (%s)",
-                        buildInfo.packageName, buildInfo.versionCode, buildInfo.versionName));
+                        buildInfo.packageName, BuildConfig.VERSION_CODE, buildInfo.versionName));
         mReportContent.put(CUSTOM_THEMES, buildInfo.customThemes);
         mReportContent.put(RESOURCES_VERSION, buildInfo.resourcesVersion);
 

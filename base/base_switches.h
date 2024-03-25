@@ -58,7 +58,6 @@ extern const char kHostPackageLabel[];
 extern const char kHostVersionCode[];
 extern const char kPackageName[];
 extern const char kPackageVersionName[];
-extern const char kPackageVersionCode[];
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

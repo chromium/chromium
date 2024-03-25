@@ -15,7 +15,6 @@ import androidx.annotation.WorkerThread;
 
 import dalvik.system.DexFile;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForM;
@@ -140,7 +139,7 @@ public class DexFixer {
             // now, then bg-dexopt-job won't mess up the splits, and we save the user a slow
             // startup.
             SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
-            long versionCode = BuildInfo.getInstance().versionCode;
+            long versionCode = BuildConfig.VERSION_CODE;
             // The default value is always lesser than any non-negative versionCode. This prevents
             // some tests from failing when application's versionCode is stuck at 0.
             if (prefManager.readLong(

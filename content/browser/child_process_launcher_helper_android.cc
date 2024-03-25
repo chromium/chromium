@@ -107,8 +107,6 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
                                     build_info->host_version_code());
   command_line()->AppendSwitchASCII(switches::kPackageVersionName,
                                     build_info->package_version_name());
-  command_line()->AppendSwitchASCII(switches::kPackageVersionCode,
-                                    build_info->package_version_code());
 
   return true;
 }

@@ -173,7 +173,6 @@ const char kHostPackageLabel[] = "host-package-label";
 const char kHostVersionCode[] = "host-version-code";
 const char kPackageName[] = "package-name";
 const char kPackageVersionName[] = "package-version-name";
-const char kPackageVersionCode[] = "package-version-code";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
