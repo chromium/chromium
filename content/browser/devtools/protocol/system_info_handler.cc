@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"

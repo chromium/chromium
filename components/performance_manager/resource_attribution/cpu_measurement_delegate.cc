@@ -9,6 +9,7 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_metrics.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/resource_attribution/cpu_measurement_monitor.h"
@@ -47,7 +48,8 @@ CPUMeasurementDelegateImpl::CPUMeasurementDelegateImpl(
 
 std::optional<base::TimeDelta>
 CPUMeasurementDelegateImpl::GetCumulativeCPUUsage() {
-  return process_metrics_->GetCumulativeCPUUsage();
+  // TODO(crbug.com/40285287): Return the error code to callers.
+  return base::OptionalFromExpected(process_metrics_->GetCumulativeCPUUsage());
 }
 
 // The default production factory for CPUMeasurementDelegateImpl objects.

@@ -16,6 +16,8 @@
 #include "base/process/process_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/metrics/power/power_metrics_constants.h"
@@ -58,7 +60,8 @@ std::unique_ptr<base::ProcessMetrics> CreateProcessMetrics(
 ProcessMonitor::Metrics SampleMetrics(base::ProcessMetrics& process_metrics) {
   ProcessMonitor::Metrics metrics;
 
-  metrics.cpu_usage = process_metrics.GetPlatformIndependentCPUUsage();
+  metrics.cpu_usage = base::OptionalFromExpected(
+      process_metrics.GetPlatformIndependentCPUUsage());
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)

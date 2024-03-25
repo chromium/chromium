@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <optional>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -30,10 +29,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
+#include "base/types/expected.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -66,11 +67,13 @@ namespace base::debug {
 
 namespace {
 
+using base::test::ErrorIs;
+using base::test::ValueIs;
+using ::testing::_;
 using ::testing::AssertionFailure;
 using ::testing::AssertionResult;
 using ::testing::AssertionSuccess;
 using ::testing::Ge;
-using ::testing::Optional;
 
 #if ENABLE_CPU_TESTS
 
@@ -88,10 +91,10 @@ void BusyWork(std::vector<std::string>* vec) {
 // returns an empty TimeDelta so that each test doesn't need to check for
 // nullopt repeatedly.
 TimeDelta TestCumulativeCPU(ProcessMetrics* metrics, TimeDelta prev_cpu_usage) {
-  const std::optional<TimeDelta> current_cpu_usage =
+  const base::expected<TimeDelta, ProcessCPUUsageError> current_cpu_usage =
       metrics->GetCumulativeCPUUsage();
-  EXPECT_THAT(current_cpu_usage, Optional(Ge(prev_cpu_usage)));
-  EXPECT_THAT(metrics->GetPlatformIndependentCPUUsage(), Optional(Ge(0.0)));
+  EXPECT_THAT(current_cpu_usage, ValueIs(Ge(prev_cpu_usage)));
+  EXPECT_THAT(metrics->GetPlatformIndependentCPUUsage(), ValueIs(Ge(0.0)));
   return current_cpu_usage.value_or(TimeDelta());
 }
 
@@ -634,7 +637,7 @@ TEST_F(SystemMetricsTest, TestNoNegativeCpuUsage) {
   std::unique_ptr<ProcessMetrics> metrics =
       ProcessMetrics::CreateCurrentProcessMetrics();
 
-  EXPECT_THAT(metrics->GetPlatformIndependentCPUUsage(), Optional(Ge(0.0)));
+  EXPECT_THAT(metrics->GetPlatformIndependentCPUUsage(), ValueIs(Ge(0.0)));
 
   Thread thread1("thread1");
   Thread thread2("thread2");
@@ -699,8 +702,8 @@ TEST_F(SystemMetricsTest, MeasureChildCpuUsage) {
   TestCumulativeCPU(metrics.get(), cpu_usage2);
 #else
   // All other platforms return an error.
-  EXPECT_EQ(metrics->GetCumulativeCPUUsage(), std::nullopt);
-  EXPECT_EQ(metrics->GetPlatformIndependentCPUUsage(), std::nullopt);
+  EXPECT_THAT(metrics->GetCumulativeCPUUsage(), ErrorIs(_));
+  EXPECT_THAT(metrics->GetPlatformIndependentCPUUsage(), ErrorIs(_));
 #endif
 }
 
@@ -714,8 +717,8 @@ TEST_F(SystemMetricsTest, InvalidProcessCpuUsage) {
   std::unique_ptr<ProcessMetrics> metrics =
       ProcessMetrics::CreateProcessMetrics(kNullProcessHandle);
 #endif
-  EXPECT_EQ(metrics->GetCumulativeCPUUsage(), std::nullopt);
-  EXPECT_EQ(metrics->GetPlatformIndependentCPUUsage(), std::nullopt);
+  EXPECT_THAT(metrics->GetCumulativeCPUUsage(), ErrorIs(_));
+  EXPECT_THAT(metrics->GetPlatformIndependentCPUUsage(), ErrorIs(_));
 }
 
 #endif  // ENABLE_CPU_TESTS

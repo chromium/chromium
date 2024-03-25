@@ -123,12 +123,11 @@ double ProcessMetrics::GetPlatformIndependentCPUUsage(
   return 100.0 * cpu_time_delta / time_delta;
 }
 
-std::optional<double> ProcessMetrics::GetPlatformIndependentCPUUsage() {
-  const std::optional<TimeDelta> cpu_usage = GetCumulativeCPUUsage();
-  if (!cpu_usage.has_value()) {
-    return std::nullopt;
-  }
-  return GetPlatformIndependentCPUUsage(cpu_usage.value());
+base::expected<double, ProcessCPUUsageError>
+ProcessMetrics::GetPlatformIndependentCPUUsage() {
+  return GetCumulativeCPUUsage().transform([this](base::TimeDelta cpu_usage) {
+    return GetPlatformIndependentCPUUsage(cpu_usage);
+  });
 }
 #endif
 

@@ -8,7 +8,6 @@
 
 #include <atomic>
 #include <memory>
-#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -32,6 +31,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_id_name_manager.h"
+#include "base/types/expected.h"
 #include "content/common/process_visibility_tracker.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/process_type.h"
@@ -224,8 +224,8 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
       return;
     }
 
-    const std::optional<base::TimeDelta> cumulative_cpu_time =
-        process_metrics_->GetCumulativeCPUUsage();
+    const base::expected<base::TimeDelta, base::ProcessCPUUsageError>
+        cumulative_cpu_time = process_metrics_->GetCumulativeCPUUsage();
     base::TimeDelta process_cpu_time_delta;
     if (cumulative_cpu_time.has_value()) {
       process_cpu_time_delta = cumulative_cpu_time.value() - reported_cpu_time_;
@@ -428,8 +428,8 @@ void ProcessCpuTimeMetrics::CollectHighLevelMetricsOnThreadPool() {
     return;
   }
 
-  const std::optional<base::TimeDelta> cumulative_cpu_usage =
-      process_metrics_->GetCumulativeCPUUsage();
+  const base::expected<base::TimeDelta, base::ProcessCPUUsageError>
+      cumulative_cpu_usage = process_metrics_->GetCumulativeCPUUsage();
   base::TimeDelta process_cpu_time_delta;
   if (cumulative_cpu_usage.has_value()) {
     process_cpu_time_delta = cumulative_cpu_usage.value() - reported_cpu_time_;

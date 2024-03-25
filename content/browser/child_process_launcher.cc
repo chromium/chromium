@@ -17,6 +17,8 @@
 #include "base/process/launch.h"
 #include "base/time/time.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "base/types/expected.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
@@ -47,7 +49,7 @@ std::optional<base::TimeDelta> GetCPUUsage(base::ProcessHandle process_handle) {
   std::unique_ptr<base::ProcessMetrics> process_metrics =
       base::ProcessMetrics::CreateProcessMetrics(process_handle);
 #endif
-  return process_metrics->GetCumulativeCPUUsage();
+  return base::OptionalFromExpected(process_metrics->GetCumulativeCPUUsage());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

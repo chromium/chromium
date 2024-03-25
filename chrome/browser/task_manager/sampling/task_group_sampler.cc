@@ -5,13 +5,13 @@
 #include "chrome/browser/task_manager/sampling/task_group_sampler.h"
 
 #include <limits>
-#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/process/process_metrics.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
@@ -119,7 +119,7 @@ TaskGroupSampler::~TaskGroupSampler() {
 
 double TaskGroupSampler::RefreshCpuUsage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_pool_sequenced_checker_);
-  const std::optional<double> cpu_usage =
+  const base::expected<double, base::ProcessCPUUsageError> cpu_usage =
       process_metrics_->GetPlatformIndependentCPUUsage();
   if (!cpu_usage.has_value()) {
     return std::numeric_limits<double>::quiet_NaN();

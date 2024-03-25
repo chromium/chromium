@@ -35,6 +35,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -59,26 +60,27 @@ uint64_t ReadFileToUint64(const FilePath& file) {
 }
 #endif
 
-// Get the total CPU from a proc stat buffer.  Return value is a TimeDelta
-// converted from a number of jiffies on success or nullopt if parsing failed.
-std::optional<TimeDelta> ParseTotalCPUTimeFromStats(
+// Get the total CPU from a proc stat buffer. Return value is a TimeDelta
+// converted from a number of jiffies on success or an error code if parsing
+// failed.
+base::expected<TimeDelta, ProcessCPUUsageError> ParseTotalCPUTimeFromStats(
     base::span<const std::string> proc_stats) {
   const std::optional<int64_t> utime =
       internal::GetProcStatsFieldAsOptionalInt64(proc_stats,
                                                  internal::VM_UTIME);
   if (utime.value_or(-1) < 0) {
-    return std::nullopt;
+    return base::unexpected(ProcessCPUUsageError::kSystemError);
   }
   const std::optional<int64_t> stime =
       internal::GetProcStatsFieldAsOptionalInt64(proc_stats,
                                                  internal::VM_UTIME);
   if (stime.value_or(-1) < 0) {
-    return std::nullopt;
+    return base::unexpected(ProcessCPUUsageError::kSystemError);
   }
   const TimeDelta cpu_time = internal::ClockTicksToTimeDelta(
       base::ClampAdd(utime.value(), stime.value()));
   CHECK(!cpu_time.is_negative());
-  return std::optional(cpu_time);
+  return base::ok(cpu_time);
 }
 
 }  // namespace
@@ -94,12 +96,13 @@ size_t ProcessMetrics::GetResidentSetSize() const {
          checked_cast<size_t>(getpagesize());
 }
 
-std::optional<TimeDelta> ProcessMetrics::GetCumulativeCPUUsage() {
+base::expected<TimeDelta, ProcessCPUUsageError>
+ProcessMetrics::GetCumulativeCPUUsage() {
   std::string buffer;
   std::vector<std::string> proc_stats;
   if (!internal::ReadProcStats(process_, &buffer) ||
       !internal::ParseProcStats(buffer, &proc_stats)) {
-    return std::nullopt;
+    return base::unexpected(ProcessCPUUsageError::kSystemError);
   }
 
   return ParseTotalCPUTimeFromStats(proc_stats);
@@ -121,7 +124,7 @@ bool ProcessMetrics::GetCumulativeCPUUsagePerThread(
           return;
         }
 
-        const std::optional<TimeDelta> thread_time =
+        const base::expected<TimeDelta, ProcessCPUUsageError> thread_time =
             ParseTotalCPUTimeFromStats(proc_stats);
         if (thread_time.has_value()) {
           cpu_per_thread.emplace_back(tid, thread_time.value());

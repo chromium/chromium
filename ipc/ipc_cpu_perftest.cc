@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <optional>
 #include <string_view>
 #include <tuple>
 
@@ -18,6 +17,7 @@
 #include "base/test/perf_log.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_perftest_messages.h"
 #include "ipc/ipc_perftest_util.h"

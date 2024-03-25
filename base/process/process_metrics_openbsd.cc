@@ -8,31 +8,31 @@
 #include <stdint.h>
 #include <sys/param.h>
 #include <sys/sysctl.h>
-#include <optional>
 
 #include "base/memory/ptr_util.h"
+#include "base/types/expected.h"
 
 namespace base {
 
 namespace {
 
-static std::optional<int> GetProcessCPU(pid_t pid) {
+base::expected<int, ProcessCPUUsageError> GetProcessCPU(pid_t pid) {
   struct kinfo_proc info;
   size_t length;
   int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, pid,
                 sizeof(struct kinfo_proc), 0 };
 
   if (sysctl(mib, std::size(mib), NULL, &length, NULL, 0) < 0) {
-    return std::nullopt;
+    return base::unexpected(ProcessCPUUsageError::kSystemError);
   }
 
   mib[5] = (length / sizeof(struct kinfo_proc));
 
   if (sysctl(mib, std::size(mib), &info, &length, NULL, 0) < 0) {
-    return std::nullopt;
+    return base::unexpected(ProcessCPUUsageError::kSystemError);
   }
 
-  return std::optional(info.p_pctcpu);
+  return base::ok(info.p_pctcpu);
 }
 
 }  // namespace
@@ -43,27 +43,29 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
   return WrapUnique(new ProcessMetrics(process));
 }
 
-std::optional<double> ProcessMetrics::GetPlatformIndependentCPUUsage() {
+base::expected<double, ProcessCPUUsageError>
+ProcessMetrics::GetPlatformIndependentCPUUsage() {
   TimeTicks time = TimeTicks::Now();
 
   if (last_cpu_time_.is_zero()) {
     // First call, just set the last values.
     last_cpu_time_ = time;
-    return std::optional(0.0);
+    return base::ok(0.0);
   }
 
-  const std::optional<int> cpu = GetProcessCPU(process_);
+  const base::expected<int, ProcessCPUUsageError> cpu = GetProcessCPU(process_);
   if (!cpu.has_value()) {
-    return std::nullopt;
+    return base::unexpected(cpu.error());
   }
 
   last_cpu_time_ = time;
-  return std::optional(double{cpu.value()} / FSCALE * 100.0);
+  return base::ok(double{cpu.value()} / FSCALE * 100.0);
 }
 
-std::optional<TimeDelta> ProcessMetrics::GetCumulativeCPUUsage() {
+base::expected<TimeDelta, ProcessCPUUsageError>
+ProcessMetrics::GetCumulativeCPUUsage() {
   NOTREACHED();
-  return std::nullopt;
+  return base::unexpected(ProcessCPUUsageError::kNotImplemented);
 }
 
 ProcessMetrics::ProcessMetrics(ProcessHandle process)

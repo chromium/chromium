@@ -23,20 +23,22 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
   return WrapUnique(new ProcessMetrics(process));
 }
 
-std::optional<double> ProcessMetrics::GetPlatformIndependentCPUUsage() {
+base::expected<double, ProcessCPUUsageError>
+ProcessMetrics::GetPlatformIndependentCPUUsage() {
   struct kinfo_proc info;
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, process_};
   size_t length = sizeof(info);
 
   if (sysctl(mib, std::size(mib), &info, &length, NULL, 0) < 0)
-    return std::nullopt;
+    return base::unexpected(ProcessCPUUsageError::kSystemError);
 
-  return std::optional(double{info.ki_pctcpu} / FSCALE * 100.0);
+  return base::ok(double{info.ki_pctcpu} / FSCALE * 100.0);
 }
 
-std::optional<TimeDelta> ProcessMetrics::GetCumulativeCPUUsage() {
+base::expected<TimeDelta, ProcessCPUUsageError>
+ProcessMetrics::GetCumulativeCPUUsage() {
   NOTREACHED();
-  return std::nullopt;
+  return base::unexpected(ProcessCPUUsageError::kNotImplemented);
 }
 
 size_t GetSystemCommitCharge() {

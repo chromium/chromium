@@ -12,7 +12,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <optional>
 
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
@@ -20,6 +19,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 
@@ -63,6 +63,19 @@ struct PageFaultCounts {
 
 // Convert a POSIX timeval to microseconds.
 BASE_EXPORT int64_t TimeValToMicroseconds(const struct timeval& tv);
+
+enum class ProcessCPUUsageError {
+  // The OS returned an error while measuring the CPU usage. The possible causes
+  // vary by platform.
+  kSystemError,
+
+  // Process CPU usage couldn't be measured because the process wasn't running.
+  // Some platforms may return kSystemError instead in this situation.
+  kProcessNotFound,
+
+  // CPU usage measurement isn't implemented on this platform.
+  kNotImplemented,
+};
 
 // Provides performance metrics for a specified process (CPU usage and IO
 // counters). Use CreateCurrentProcessMetrics() to get an instance for the
@@ -127,14 +140,16 @@ class BASE_EXPORT ProcessMetrics {
   // Same as the above, but automatically calls GetCumulativeCPUUsage() to
   // determine the current cumulative CPU. Returns nullopt if
   // GetCumulativeCPUUsage() fails.
-  [[nodiscard]] std::optional<double> GetPlatformIndependentCPUUsage();
+  [[nodiscard]] base::expected<double, ProcessCPUUsageError>
+  GetPlatformIndependentCPUUsage();
 
   // Returns the cumulative CPU usage across all threads of the process since
   // process start, or nullopt on error. In case of multi-core processors, a
   // process can consume CPU at a rate higher than wall-clock time, e.g. two
   // cores at full utilization will result in a time delta of 2 seconds/per 1
   // wall-clock second.
-  [[nodiscard]] std::optional<TimeDelta> GetCumulativeCPUUsage();
+  [[nodiscard]] base::expected<TimeDelta, ProcessCPUUsageError>
+  GetCumulativeCPUUsage();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_AIX)
