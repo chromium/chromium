@@ -322,27 +322,23 @@ class DeviceTrustCreateKeyBrowserTest : public DeviceTrustDesktopBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(DeviceTrustCreateKeyBrowserTest,
                        AttestationFullFlowKeyCreation) {
-  std::vector<uint8_t> wrapped_key =
-      device_trust_test_environment_win_->GetWrappedKey();
   TriggerUrlNavigation();
   VerifyAttestationFlowSuccessful();
   // Make sure DeviceTrustKeyManager successfully created a key in storage
   // via no-nonce key rotation.
   VerifyKeyRotationSuccess(/*with_nonce=*/false);
 
-  // Make sure key in storage remains unchanged.
-  EXPECT_EQ(device_trust_test_environment_win_->GetWrappedKey(), wrapped_key);
+  EXPECT_FALSE(device_trust_test_environment_win_->GetWrappedKey().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceTrustCreateKeyBrowserTest,
                        AttestationFullFlowKeyCreationV1) {
-  std::vector<uint8_t> wrapped_key =
-      device_trust_test_environment_win_->GetWrappedKey();
   SetChallengeValue(kChallengeV1);
   TriggerUrlNavigation();
   VerifyAttestationFlowFailure(test::kFailedToParseChallengeJsonResponse);
   VerifyKeyRotationSuccess(/*with_nonce=*/false);
-  EXPECT_EQ(device_trust_test_environment_win_->GetWrappedKey(), wrapped_key);
+
+  EXPECT_FALSE(device_trust_test_environment_win_->GetWrappedKey().empty());
 }
 
 // To test "create key" flows where the initial upload fails, the response code

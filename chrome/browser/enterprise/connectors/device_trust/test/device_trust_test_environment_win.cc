@@ -140,7 +140,7 @@ std::vector<uint8_t> DeviceTrustTestEnvironmentWin::GetWrappedKey() {
       wrapped_key = key_pointer->GetWrappedKey();
     }
   }
-  EXPECT_FALSE(wrapped_key.empty());
+
   return wrapped_key;
 }
 
