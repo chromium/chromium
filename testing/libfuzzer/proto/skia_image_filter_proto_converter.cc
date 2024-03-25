@@ -1377,7 +1377,12 @@ void Converter::Visit(const PathRef& path_ref) {
   }
 
   SkRect skrect;
-  skrect.setBoundsCheck(&points[0], points.size());
+  if (!points.empty()) {
+    // Calling `setBoundsCheck()` with an empty array would set `skrect` to the
+    // empty rectangle, which it already is after default construction.
+    skrect.setBoundsCheck(points.data(), points.size());
+  }
+
   WriteNum(skrect.fLeft);
   WriteNum(skrect.fTop);
   WriteNum(skrect.fRight);
