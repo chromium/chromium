@@ -56,8 +56,6 @@ class FakeAdapter : public mojom::Adapter {
   void SetAdvertisementDestroyedCallback(base::OnceClosure callback);
   const std::vector<uint8_t>* GetRegisteredAdvertisementServiceData(
       const device::BluetoothUUID& service_uuid);
-  void SetShouldAdvertisementRegistrationSucceed(
-      bool should_advertisement_registration_succeed);
   void SetShouldDiscoverySucceed(bool should_discovery_succeed);
   void SetCreateLocalGattServiceCallback(base::OnceClosure callback);
   void SetCreateLocalGattServiceResult(
