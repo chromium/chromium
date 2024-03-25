@@ -10315,9 +10315,23 @@ interface ViewTransition
     attribute @@toStringTag
     getter finished
     getter ready
+    getter types
     getter updateCallbackDone
     method constructor
     method skipTransition
+interface ViewTransitionTypeSet
+    attribute @@toStringTag
+    getter size
+    method @@iterator
+    method add
+    method clear
+    method constructor
+    method delete
+    method entries
+    method forEach
+    method has
+    method keys
+    method values
 interface VirtualKeyboard : EventTarget
     attribute @@toStringTag
     getter boundingRect

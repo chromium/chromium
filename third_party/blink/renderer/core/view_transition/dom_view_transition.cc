@@ -290,6 +290,10 @@ void DOMViewTransition::HandlePromise(ViewTransition::PromiseResponse response,
   }
 }
 
+ViewTransitionTypeSet* DOMViewTransition::types() const {
+  return view_transition_->Types();
+}
+
 // DOMChangeFinishedCallback implementation.
 DOMViewTransition::DOMChangeFinishedCallback::DOMChangeFinishedCallback(
     DOMViewTransition& dom_view_transition,

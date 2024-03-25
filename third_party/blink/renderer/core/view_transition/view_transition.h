@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_view_transition_type_set.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -256,6 +257,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // called only if a callback is provided.
   void NotifyDOMCallbackFinished(bool success);
 
+  ViewTransitionTypeSet* Types();
+
  private:
   friend class ViewTransitionTest;
   friend class AXViewTransitionTest;
@@ -380,12 +383,12 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // is cleared if the document is torn down.
   Member<DOMViewTransition> script_delegate_;
 
+  Member<ViewTransitionTypeSet> types_;
+
   bool in_main_lifecycle_update_ = false;
   bool dom_callback_succeeded_ = false;
   bool first_animating_frame_ = true;
   bool context_destroyed_ = false;
-
-  std::optional<Vector<String>> types_;
 };
 
 }  // namespace blink
