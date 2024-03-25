@@ -139,12 +139,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="IceconnectionClosed"/>
 </enum>
 
-<enum name="MediaStreamRequestState">
-  <int value="0" label="Explicitly Cancelled"/>
-  <int value="1" label="Stream Not Generated"/>
-  <int value="2" label="Pending Media Tracks"/>
-</enum>
-
 <enum name="PeerConnectionBundlePolicy">
   <int value="0" label="balanced"/>
   <int value="1" label="max-bundle"/>
@@ -170,11 +164,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="IPv6 BestConnection."/>
 </enum>
 
-<enum name="PeerConnectionKeyProtocol">
-  <int value="0" label="DTLS"/>
-  <int value="1" label="SDES"/>
-</enum>
-
 <enum name="PeerConnectionProvisionalAnswer">
   <int value="0" label="Not used"/>
   <int value="1" label="Local"/>
@@ -185,26 +174,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Disabled"/>
   <int value="1" label="Enabled"/>
   <int value="2" label="No media"/>
-</enum>
-
-<enum name="PeerConnectionSdpFormatReceived">
-  <int value="0" label="No tracks"/>
-  <int value="1" label="Simple"/>
-  <int value="2" label="Complex (Plan B)"/>
-  <int value="3" label="Complex (Unified Plan)"/>
-</enum>
-
-<enum name="PeerConnectionSdpSemanticNegotiated">
-  <int value="0" label="None"/>
-  <int value="1" label="Plan B"/>
-  <int value="2" label="Unified Plan"/>
-  <int value="3" label="Mixed"/>
-</enum>
-
-<enum name="PeerConnectionSdpUsageCategory">
-  <int value="0" label="Safe"/>
-  <int value="1" label="Unsafe"/>
-  <int value="2" label="Unknown"/>
 </enum>
 
 <enum name="RTCAPIName">
