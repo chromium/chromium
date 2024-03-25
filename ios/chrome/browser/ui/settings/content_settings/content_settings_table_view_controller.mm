@@ -508,6 +508,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   } else if (observableBoolean == self.detectAddressesEnabled) {
     self.detectAddressItem.on = [self.detectAddressesEnabled value];
     [self reconfigureCellsForItems:@[ self.detectAddressItem ]];
+  } else if (observableBoolean == self.detectUnitsEnabled) {
+    self.detectUnitsItem.on = [self.detectUnitsEnabled value];
+    [self reconfigureCellsForItems:@[ self.detectUnitsItem ]];
   } else {
     NOTREACHED();
   }
