@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
+#include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/paint/text_painter.h"
@@ -62,7 +63,7 @@ TEST_P(HighlightPainterTest, FastSpellingGrammarPaintCase) {
     GraphicsContext graphics_context{RootPaintController()};
     PaintInfo paint_info{graphics_context, cull_rect, PaintPhase::kForeground};
     TextPaintStyle text_style =
-        TextPainterBase::TextPaintingStyle(GetDocument(), style, paint_info);
+        TextPainter::TextPaintingStyle(GetDocument(), style, paint_info);
     if (selection) {
       selection->ComputeSelectionStyle(GetDocument(), style,
                                        text_item.GetLayoutObject()->GetNode(),

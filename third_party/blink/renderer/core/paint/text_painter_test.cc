@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/paint/text_painter_base.h"
+#include "third_party/blink/renderer/core/paint/text_painter.h"
 
 #include <memory>
 
@@ -18,14 +18,15 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
+#include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 
 namespace blink {
 namespace {
 
-class TextPainterBaseTest : public RenderingTest {
+class TextPainterTest : public RenderingTest {
  public:
-  TextPainterBaseTest()
+  TextPainterTest()
       : layout_text_(nullptr),
         paint_controller_(MakeGarbageCollected<PaintController>()) {}
 
@@ -57,13 +58,13 @@ class TextPainterBaseTest : public RenderingTest {
   Persistent<PaintController> paint_controller_;
 };
 
-TEST_F(TextPainterBaseTest, TextPaintingStyle_Simple) {
+TEST_F(TextPainterTest, TextPaintingStyle_Simple) {
   GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kColor,
                                                CSSValueID::kBlue);
   UpdateAllLifecyclePhasesForTest();
 
   GraphicsContext context(*paint_controller_);
-  TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
+  TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
       CreatePaintInfoForBackground(context));
   EXPECT_EQ(Color(0, 0, 255), text_style.fill_color);
@@ -73,7 +74,7 @@ TEST_F(TextPainterBaseTest, TextPaintingStyle_Simple) {
   EXPECT_EQ(nullptr, text_style.shadow);
 }
 
-TEST_F(TextPainterBaseTest, TextPaintingStyle_AllProperties) {
+TEST_F(TextPainterTest, TextPaintingStyle_AllProperties) {
   GetDocument().body()->SetInlineStyleProperty(
       CSSPropertyID::kWebkitTextFillColor, CSSValueID::kRed);
   GetDocument().body()->SetInlineStyleProperty(
@@ -88,7 +89,7 @@ TEST_F(TextPainterBaseTest, TextPaintingStyle_AllProperties) {
   UpdateAllLifecyclePhasesForTest();
 
   GraphicsContext context(*paint_controller_);
-  TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
+  TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
       CreatePaintInfoForBackground(context));
   EXPECT_EQ(Color(255, 0, 0), text_style.fill_color);
@@ -104,7 +105,7 @@ TEST_F(TextPainterBaseTest, TextPaintingStyle_AllProperties) {
             text_style.shadow->Shadows()[0].GetColor().GetColor());
 }
 
-TEST_F(TextPainterBaseTest, TextPaintingStyle_UsesTextAsClip) {
+TEST_F(TextPainterTest, TextPaintingStyle_UsesTextAsClip) {
   GetDocument().body()->SetInlineStyleProperty(
       CSSPropertyID::kWebkitTextFillColor, CSSValueID::kRed);
   GetDocument().body()->SetInlineStyleProperty(
@@ -119,7 +120,7 @@ TEST_F(TextPainterBaseTest, TextPaintingStyle_UsesTextAsClip) {
   UpdateAllLifecyclePhasesForTest();
 
   GraphicsContext context(*paint_controller_);
-  TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
+  TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
       CreatePaintInfoForTextClip(context));
   EXPECT_EQ(Color::kBlack, text_style.fill_color);
@@ -129,7 +130,7 @@ TEST_F(TextPainterBaseTest, TextPaintingStyle_UsesTextAsClip) {
   EXPECT_EQ(nullptr, text_style.shadow);
 }
 
-TEST_F(TextPainterBaseTest,
+TEST_F(TextPainterTest,
        TextPaintingStyle_ForceBackgroundToWhite_NoAdjustmentNeeded) {
   GetDocument().body()->SetInlineStyleProperty(
       CSSPropertyID::kWebkitTextFillColor, CSSValueID::kRed);
@@ -148,7 +149,7 @@ TEST_F(TextPainterBaseTest,
   UpdateLayoutText();
 
   GraphicsContext context(*paint_controller_);
-  TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
+  TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
       CreatePaintInfoForBackground(context));
   EXPECT_EQ(Color(255, 0, 0), text_style.fill_color);
@@ -156,7 +157,7 @@ TEST_F(TextPainterBaseTest,
   EXPECT_EQ(Color(0, 0, 255), text_style.emphasis_mark_color);
 }
 
-TEST_F(TextPainterBaseTest, TextPaintingStyle_ForceBackgroundToWhite_Darkened) {
+TEST_F(TextPainterTest, TextPaintingStyle_ForceBackgroundToWhite_Darkened) {
   GetDocument().body()->SetInlineStyleProperty(
       CSSPropertyID::kWebkitTextFillColor, "rgb(255, 220, 220)");
   GetDocument().body()->SetInlineStyleProperty(
@@ -174,7 +175,7 @@ TEST_F(TextPainterBaseTest, TextPaintingStyle_ForceBackgroundToWhite_Darkened) {
   UpdateLayoutText();
 
   GraphicsContext context(*paint_controller_);
-  TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
+  TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
       CreatePaintInfoForBackground(context));
   EXPECT_EQ(Color(255, 220, 220).Dark(), text_style.fill_color);
@@ -182,7 +183,7 @@ TEST_F(TextPainterBaseTest, TextPaintingStyle_ForceBackgroundToWhite_Darkened) {
   EXPECT_EQ(Color(220, 220, 255).Dark(), text_style.emphasis_mark_color);
 }
 
-TEST_F(TextPainterBaseTest, CachedTextBlob) {
+TEST_F(TextPainterTest, CachedTextBlob) {
   auto& paint_controller = GetDocument().View()->GetPaintControllerForTesting();
   auto* item =
       DynamicTo<DrawingDisplayItem>(paint_controller.GetDisplayItemList()[1]);

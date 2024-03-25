@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/paint/styleable_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/text_painter.h"
+#include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -853,7 +854,7 @@ void HighlightPainter::PaintHighlightOverlays(
         text_painter_.Paint(
             fragment_paint_info_.Slice(highlight.start, highlight.end),
             layer.text_style.style, node_id, foreground_auto_dark_mode_,
-            TextPainterBase::kShadowsOnly);
+            TextPainter::kShadowsOnly);
       }
     }
   }
@@ -870,7 +871,7 @@ void HighlightPainter::PaintHighlightOverlays(
     PaintDecorationsExceptLineThrough(part);
     text_painter_.Paint(
         fragment_paint_info_.Slice(part.range.from, part.range.to), part.style,
-        node_id, foreground_auto_dark_mode_, TextPainterBase::kTextProperOnly);
+        node_id, foreground_auto_dark_mode_, TextPainter::kTextProperOnly);
     PaintDecorationsOnlyLineThrough(part);
   }
 

@@ -74,7 +74,7 @@ void TextCombinePainter::Paint(const PaintInfo& paint_info,
                                   paint_info.GetSvgContextPaints(),
                                   text_combine.VisualRectForPaint(paint_offset),
                                   style, text_frame_rect.offset);
-  const TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
+  const TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       text_combine.GetDocument(), style, paint_info);
 
   // Setup arguments for painting text decorations
@@ -124,25 +124,25 @@ void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
   SetEmphasisMark(style_.TextEmphasisMarkString(),
                   style_.GetTextEmphasisPosition());
   DCHECK(emphasis_mark_font.GetFontDescription().IsVerticalBaseline());
-  DCHECK(emphasis_mark_);
-  const SimpleFontData* const font_data = font_.PrimaryFont();
+  DCHECK(emphasis_mark());
+  const SimpleFontData* const font_data = font().PrimaryFont();
   DCHECK(font_data);
   if (!font_data) {
     return;
   }
   if (text_style.emphasis_mark_color != text_style.fill_color) {
     // See virtual/text-antialias/emphasis-combined-text.html
-    graphics_context_.SetFillColor(text_style.emphasis_mark_color);
+    graphics_context().SetFillColor(text_style.emphasis_mark_color);
   }
 
   const int font_ascent = font_data->GetFontMetrics().Ascent();
   const TextRun placeholder_text_run(&kIdeographicFullStopCharacter, 1);
   const gfx::PointF emphasis_mark_text_origin =
-      gfx::PointF(text_origin_) +
-      gfx::Vector2dF(0, font_ascent + emphasis_mark_offset_);
+      gfx::PointF(text_origin()) +
+      gfx::Vector2dF(0, font_ascent + emphasis_mark_offset());
   const TextRunPaintInfo text_run_paint_info(placeholder_text_run);
-  graphics_context_.DrawEmphasisMarks(
-      emphasis_mark_font, text_run_paint_info, emphasis_mark_,
+  graphics_context().DrawEmphasisMarks(
+      emphasis_mark_font, text_run_paint_info, emphasis_mark(),
       emphasis_mark_text_origin,
       PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kForeground));
 }
