@@ -5,6 +5,7 @@
 
 import argparse
 import os
+import subprocess
 import sys
 import time
 
@@ -39,6 +40,8 @@ parser.add_argument('--device', default='iPhone 11 Pro', help='Device type')
 parser.add_argument('--asan-build', help='Use ASan-related libraries',
     dest='asan_build', action='store_true')
 parser.set_defaults(asan_build=False)
+parser.add_argument('--version', help='Get the version of current browser app.',
+    action='store_true')
 parser.add_argument('--enable-chrome-logs', action='store_true',
     help='No-op, recognized as an argument for compatiblity with ChromeDriver')
 parser.add_argument('--verbose', action='store_true',
@@ -51,6 +54,14 @@ test_app = os.path.join(
     args.build_dir, 'ios_cwt_chromedriver_tests_module-Runner.app')
 host_app = os.path.join(args.build_dir, 'ios_cwt_chromedriver_tests.app')
 destination = iossim_util.get_simulator(args.device, args.os)
+
+if args.version:
+    plist_path = os.path.join(host_app, 'Info.plist')
+    version_command = 'defaults read ' + plist_path + ' CFBundleVersion'
+    stdout = subprocess.check_output(version_command, shell=True)
+    current_version = stdout.decode('utf-8').strip()
+    print(current_version)
+    sys.exit(0)
 
 if not os.path.exists(args.out_dir):
   os.mkdir(args.out_dir)
