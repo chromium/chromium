@@ -512,8 +512,18 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverBrowserTest,
       WebFeature::kThirdPartyCookieDeprecation_AllowByExplicitSetting, 0);
 }
 
+// TODO(http://b/329652021): The expectation on
+// kThirdPartyCookieAllowMechanismHistogram fails on several Linux and ChromeOS
+// builders.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ThirdPartyJavaScriptCookieReadAndWrite \
+  DISABLED_ThirdPartyJavaScriptCookieReadAndWrite
+#else
+#define MAYBE_ThirdPartyJavaScriptCookieReadAndWrite \
+  ThirdPartyJavaScriptCookieReadAndWrite
+#endif
 IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverBrowserTest,
-                       ThirdPartyJavaScriptCookieReadAndWrite) {
+                       MAYBE_ThirdPartyJavaScriptCookieReadAndWrite) {
   SetUpThirdPartyCookieExperimentWithClientState();
   SetUpTrackingProtectionOnboardWith3PCAllow({GetURL(kHostB)});
 
