@@ -29,7 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_CONTEXT_STATE_SAVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_CONTEXT_STATE_SAVER_H_
 
-#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -37,14 +36,15 @@
 namespace blink {
 
 class PLATFORM_EXPORT GraphicsContextStateSaver final {
-  USING_FAST_MALLOC(GraphicsContextStateSaver);
+  STACK_ALLOCATED();
 
  public:
   GraphicsContextStateSaver(GraphicsContext& context,
                             bool save_and_restore = true)
       : context_(context), save_and_restore_(save_and_restore) {
-    if (save_and_restore_)
-      context_->Save();
+    if (save_and_restore_) {
+      context_.Save();
+    }
   }
 
   GraphicsContextStateSaver(const GraphicsContextStateSaver&) = delete;
@@ -52,13 +52,14 @@ class PLATFORM_EXPORT GraphicsContextStateSaver final {
       delete;
 
   ~GraphicsContextStateSaver() {
-    if (save_and_restore_)
-      context_->Restore();
+    if (save_and_restore_) {
+      context_.Restore();
+    }
   }
 
   void Save() {
     DCHECK(!save_and_restore_);
-    context_->Save();
+    context_.Save();
     save_and_restore_ = true;
   }
 
@@ -70,15 +71,15 @@ class PLATFORM_EXPORT GraphicsContextStateSaver final {
 
   void Restore() {
     DCHECK(save_and_restore_);
-    context_->Restore();
+    context_.Restore();
     save_and_restore_ = false;
   }
 
-  GraphicsContext& Context() const { return *context_; }
+  GraphicsContext& Context() const { return context_; }
   bool Saved() const { return save_and_restore_; }
 
  private:
-  const raw_ref<GraphicsContext> context_;
+  GraphicsContext& context_;
   bool save_and_restore_;
 };
 

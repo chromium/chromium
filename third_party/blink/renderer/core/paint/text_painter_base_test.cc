@@ -27,19 +27,17 @@ class TextPainterBaseTest : public RenderingTest {
  public:
   TextPainterBaseTest()
       : layout_text_(nullptr),
-        paint_controller_(MakeGarbageCollected<PaintController>()),
-        context_(*paint_controller_) {}
+        paint_controller_(MakeGarbageCollected<PaintController>()) {}
 
  protected:
   const LayoutText& GetLayoutText() { return *layout_text_; }
 
-  PaintInfo CreatePaintInfoForBackground() {
-    return PaintInfo(context_, CullRect(),
-                     PaintPhase::kSelfBlockBackgroundOnly);
+  PaintInfo CreatePaintInfoForBackground(GraphicsContext& context) {
+    return PaintInfo(context, CullRect(), PaintPhase::kSelfBlockBackgroundOnly);
   }
 
-  PaintInfo CreatePaintInfoForTextClip() {
-    return PaintInfo(context_, CullRect(), PaintPhase::kTextClip);
+  PaintInfo CreatePaintInfoForTextClip(GraphicsContext& context) {
+    return PaintInfo(context, CullRect(), PaintPhase::kTextClip);
   }
 
  protected:
@@ -57,7 +55,6 @@ class TextPainterBaseTest : public RenderingTest {
 
   Persistent<LayoutText> layout_text_;
   Persistent<PaintController> paint_controller_;
-  GraphicsContext context_;
 };
 
 TEST_F(TextPainterBaseTest, TextPaintingStyle_Simple) {
@@ -65,9 +62,10 @@ TEST_F(TextPainterBaseTest, TextPaintingStyle_Simple) {
                                                CSSValueID::kBlue);
   UpdateAllLifecyclePhasesForTest();
 
+  GraphicsContext context(*paint_controller_);
   TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
       GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
-      CreatePaintInfoForBackground());
+      CreatePaintInfoForBackground(context));
   EXPECT_EQ(Color(0, 0, 255), text_style.fill_color);
   EXPECT_EQ(Color(0, 0, 255), text_style.stroke_color);
   EXPECT_EQ(Color(0, 0, 255), text_style.emphasis_mark_color);
@@ -89,9 +87,10 @@ TEST_F(TextPainterBaseTest, TextPaintingStyle_AllProperties) {
                                                "1px 2px 3px yellow");
   UpdateAllLifecyclePhasesForTest();
 
+  GraphicsContext context(*paint_controller_);
   TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
       GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
-      CreatePaintInfoForBackground());
+      CreatePaintInfoForBackground(context));
   EXPECT_EQ(Color(255, 0, 0), text_style.fill_color);
   EXPECT_EQ(Color(0, 255, 0), text_style.stroke_color);
   EXPECT_EQ(Color(0, 0, 255), text_style.emphasis_mark_color);
@@ -119,9 +118,10 @@ TEST_F(TextPainterBaseTest, TextPaintingStyle_UsesTextAsClip) {
                                                "1px 2px 3px yellow");
   UpdateAllLifecyclePhasesForTest();
 
+  GraphicsContext context(*paint_controller_);
   TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
       GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
-      CreatePaintInfoForTextClip());
+      CreatePaintInfoForTextClip(context));
   EXPECT_EQ(Color::kBlack, text_style.fill_color);
   EXPECT_EQ(Color::kBlack, text_style.stroke_color);
   EXPECT_EQ(Color::kBlack, text_style.emphasis_mark_color);
@@ -147,9 +147,10 @@ TEST_F(TextPainterBaseTest,
   // so we need to re-get layout_text_.
   UpdateLayoutText();
 
+  GraphicsContext context(*paint_controller_);
   TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
       GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
-      CreatePaintInfoForBackground());
+      CreatePaintInfoForBackground(context));
   EXPECT_EQ(Color(255, 0, 0), text_style.fill_color);
   EXPECT_EQ(Color(0, 255, 0), text_style.stroke_color);
   EXPECT_EQ(Color(0, 0, 255), text_style.emphasis_mark_color);
@@ -172,9 +173,10 @@ TEST_F(TextPainterBaseTest, TextPaintingStyle_ForceBackgroundToWhite_Darkened) {
   // so we need to re-get layout_text_.
   UpdateLayoutText();
 
+  GraphicsContext context(*paint_controller_);
   TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
       GetLayoutText().GetDocument(), GetLayoutText().StyleRef(),
-      CreatePaintInfoForBackground());
+      CreatePaintInfoForBackground(context));
   EXPECT_EQ(Color(255, 220, 220).Dark(), text_style.fill_color);
   EXPECT_EQ(Color(220, 255, 220).Dark(), text_style.stroke_color);
   EXPECT_EQ(Color(220, 220, 255).Dark(), text_style.emphasis_mark_color);

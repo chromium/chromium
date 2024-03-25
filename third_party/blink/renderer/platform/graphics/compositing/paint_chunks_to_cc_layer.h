@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PAINT_CHUNKS_TO_CC_LAYER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PAINT_CHUNKS_TO_CC_LAYER_H_
 
-#include "base/memory/raw_ref.h"
-#include "base/memory/scoped_refptr.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
@@ -28,6 +26,9 @@ class PropertyTreeState;
 class RasterInvalidationTracking;
 
 struct RasterUnderInvalidationCheckingParams {
+  STACK_ALLOCATED();
+
+ public:
   RasterUnderInvalidationCheckingParams(RasterInvalidationTracking& tracking,
                                         const gfx::Rect& interest_rect,
                                         const String& debug_name)
@@ -35,7 +36,7 @@ struct RasterUnderInvalidationCheckingParams {
         interest_rect(interest_rect),
         debug_name(debug_name) {}
 
-  const raw_ref<RasterInvalidationTracking> tracking;
+  RasterInvalidationTracking& tracking;
   gfx::Rect interest_rect;
   String debug_name;
 };
