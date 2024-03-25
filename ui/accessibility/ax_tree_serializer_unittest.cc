@@ -380,17 +380,8 @@ TEST(AXTreeSerializerInvalidTest, InvalidChild) {
 
   BasicAXTreeSerializer serializer(&source);
   AXTreeUpdate update;
-  // TODO(crbug.com/1432184, crbug.com/1432126, crbug.com/1431535,
-  // crbug.com/1418319): Once the DCHECKs in BlinkAXTreeSource::ChildAt()
-  // are resolved, and CHECKs for ChildAt() return values are restored in
-  // AXTreeSerializer, turn this into a death expectation.
-  // EXPECT_DEATH_IF_SUPPORTED(serializer.SerializeChanges(tree.root(),
-  // &update),
-  //                           "");
-  ASSERT_TRUE(serializer.SerializeChanges(tree.root(), &update));
-  ASSERT_EQ(2U, update.nodes.size());
-  EXPECT_EQ(1, update.nodes[0].id);
-  EXPECT_EQ(2, update.nodes[1].id);
+  EXPECT_DEATH_IF_SUPPORTED(serializer.SerializeChanges(tree.root(), &update),
+                            "child");
 }
 
 // Test that we can set a maximum number of nodes to serialize.
