@@ -4,6 +4,9 @@
 
 #include "ash/webui/camera_app_ui/camera_app_window_state_controller.h"
 
+#include <utility>
+
+#include "base/containers/to_vector.h"
 #include "ui/display/screen.h"
 
 namespace ash {
@@ -17,12 +20,6 @@ bool IsRestored(views::Widget* widget) {
   }
   return !widget->IsMinimized() && !widget->IsMaximized() &&
          !widget->IsFullscreen();
-}
-
-std::vector<CameraAppWindowStateController::WindowStateType> ToVector(
-    const base::flat_set<CameraAppWindowStateController::WindowStateType>& s) {
-  return std::vector<CameraAppWindowStateController::WindowStateType>(s.begin(),
-                                                                      s.end());
 }
 
 }  // namespace
@@ -53,12 +50,12 @@ void CameraAppWindowStateController::AddMonitor(
   auto remote =
       mojo::Remote<camera_app::mojom::WindowStateMonitor>(std::move(monitor));
   monitors_.push_back(std::move(remote));
-  std::move(callback).Run(ToVector(window_states_));
+  std::move(callback).Run(base::ToVector(window_states_));
 }
 
 void CameraAppWindowStateController::GetWindowState(
     GetWindowStateCallback callback) {
-  std::move(callback).Run(ToVector(window_states_));
+  std::move(callback).Run(base::ToVector(window_states_));
 }
 
 void CameraAppWindowStateController::Minimize(MinimizeCallback callback) {
@@ -174,7 +171,7 @@ void CameraAppWindowStateController::OnWindowStateChanged() {
   window_states_ = GetCurrentWindowStates();
   if (prev_states != window_states_) {
     for (const auto& monitor : monitors_) {
-      monitor->OnWindowStateChanged(ToVector(window_states_));
+      monitor->OnWindowStateChanged(base::ToVector(window_states_));
     }
   }
 }
@@ -185,23 +182,23 @@ void CameraAppWindowStateController::OnWindowFocusChanged(bool is_focus) {
   }
 }
 
-base::flat_set<CameraAppWindowStateController::WindowStateType>
-CameraAppWindowStateController::GetCurrentWindowStates() {
+CameraAppWindowStateController::WindowStateTypeSet
+CameraAppWindowStateController::GetCurrentWindowStates() const {
   if (!widget_) {
     return window_states_;
   }
-  base::flat_set<CameraAppWindowStateController::WindowStateType> states;
+  WindowStateTypeSet states;
   if (widget_->IsMinimized()) {
-    states.insert(WindowStateType::kMinimized);
+    states.Put(WindowStateType::kMinimized);
   }
   if (widget_->IsMaximized()) {
-    states.insert(WindowStateType::kMaximized);
+    states.Put(WindowStateType::kMaximized);
   }
   if (widget_->IsFullscreen()) {
-    states.insert(WindowStateType::kFullscreen);
+    states.Put(WindowStateType::kFullscreen);
   }
   if (IsRestored(widget_)) {
-    states.insert(WindowStateType::kRegular);
+    states.Put(WindowStateType::kRegular);
   }
   return states;
 }
