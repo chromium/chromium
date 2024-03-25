@@ -192,6 +192,11 @@ function initStatusDumpButton() {
     data += 'Status\n';
     data += '======\n';
     data += JSON.stringify(aboutInfoCopy, null, 2) + '\n';
+    data += '\n';
+    data += '===\n';
+    data += 'Log\n';
+    data += '===\n';
+    data += JSON.stringify(protocolEvents, null, 2);
 
     const statusText =
         document.querySelector<HTMLTextAreaElement>('#status-text');
