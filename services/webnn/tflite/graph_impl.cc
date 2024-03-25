@@ -51,7 +51,7 @@ void GraphImpl::CreateAndBuild(
       GraphBuilder::CreateAndBuild(*graph_info);
   if (!conversion_result.has_value()) {
     std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-        mojom::Error::Code::kUnknownError, conversion_result.error()));
+        mojom::Error::Code::kNotSupportedError, conversion_result.error()));
     return;
   }
   flatbuffers::DetachedBuffer model_content =
