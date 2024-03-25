@@ -54,10 +54,9 @@ void AddProcessCreateMetrics(std::vector<const char*>& v) {
 
 // Verify that startup histograms are logged on browser startup.
 // TODO(crbug.com/1459364): Re-enable this test
-// TODO(b/321634178): Disable the test on Lacros branded builder
-// ci/linux-lacros-chrome due to flakiness.
+// TODO(b/321634178): Disable the test on Lacros due to flakiness.
 #if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)) || \
-    (BUILDFLAG(IS_CHROMEOS_LACROS) && BUILDFLAG(GOOGLE_CHROME_BRANDING))
+    BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ReportsValues DISABLED_ReportsValues
 #else
 #define MAYBE_ReportsValues ReportsValues
