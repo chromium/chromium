@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos)
@@ -82,8 +83,7 @@ source_set("implementation") {
 
   # Outside of //chrome/browser only tests should be depending on this target.
   visibility = [
-    ":browser_tests",
-    ":unit_tests",
+    ":*",
     "//chrome/browser",
     "//chrome/browser/ash/system_web_apps/apps:browser_tests",
   ]
@@ -190,4 +190,18 @@ source_set("browser_tests") {
       "//chrome/browser/web_applications:web_applications_test_support",
     ]
   }
+}
+
+test("app_install_fuzztests") {
+  sources = [ "app_install_navigation_throttle_fuzztests.cc" ]
+
+  fuzztests = [
+    "AppInstallNavigationThrottleFuzzTest.ExtractQueryParamsCanParseAnyString",
+  ]
+
+  deps = [
+    ":navigation_throttle",
+    "//chrome/test:test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
 }

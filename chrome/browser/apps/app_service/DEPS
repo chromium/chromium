@@ -3,7 +3,8 @@ include_rules = [
   "+components/app_constants",
   "+components/app_restore",
   "+components/webapk",
-  "+chrome/grit/app_icon_resources.h"
+  "+chrome/grit/app_icon_resources.h",
+  "+third_party/fuzztest"
 ]
 
 specific_include_rules = {
