@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/css/media_values.h"
 
 #include "third_party/blink/public/common/css/scripting.h"
-#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/media_feature_overrides.h"
@@ -29,7 +28,6 @@
 #include "third_party/blink/renderer/core/preferences/preference_overrides.h"
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
-#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "ui/display/screen_info.h"
 
@@ -497,7 +495,7 @@ ForcedColors MediaValues::CalculateForcedColors(LocalFrame* frame) {
   std::optional<ForcedColors> override_value =
       overrides ? overrides->GetForcedColors() : std::nullopt;
   return override_value.value_or(
-      WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors());
+      frame->GetDocument()->GetStyleEngine().GetForcedColors());
 }
 
 NavigationControls MediaValues::CalculateNavigationControls(LocalFrame* frame) {

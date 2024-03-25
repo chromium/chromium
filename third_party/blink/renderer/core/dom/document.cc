@@ -75,7 +75,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
-#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/web/web_link_preview_triggerer.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
@@ -366,7 +365,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
-#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/origin_access_entry.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -9420,11 +9418,10 @@ void Document::VisionDeficiencyChanged() {
 }
 
 void Document::UpdateForcedColors() {
-  ForcedColors forced_colors =
-      RuntimeEnabledFeatures::ForcedColorsEnabled()
-          ? WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors()
-          : ForcedColors::kNone;
-  in_forced_colors_mode_ = forced_colors != ForcedColors::kNone;
+  Settings* settings = GetSettings();
+  if (RuntimeEnabledFeatures::ForcedColorsEnabled() && settings) {
+    in_forced_colors_mode_ = settings->GetInForcedColors();
+  }
   if (in_forced_colors_mode_)
     GetStyleEngine().EnsureUAStyleForForcedColors();
 }
@@ -9445,12 +9442,8 @@ const ui::ColorProvider* Document::GetColorProviderForPainting(
     return nullptr;
   }
 
-  // TODO(crbug.com/1516529): This should be changed to use
-  // `in_forced_colors_mode_` once forced colors becomes a web setting in Blink.
-  return GetPage()->GetColorProviderForPainting(
-      color_scheme,
-      WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors() !=
-          ForcedColors::kNone);
+  return GetPage()->GetColorProviderForPainting(color_scheme,
+                                                in_forced_colors_mode_);
 }
 
 void Document::CountUse(mojom::WebFeature feature) const {

@@ -188,7 +188,7 @@ TextPaintStyle TextPaintStyleForTextMatch(const TextMatchMarker& marker,
   const mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   const Color platform_text_color =
       LayoutTheme::GetTheme().PlatformTextSearchColor(
-          marker.IsActiveMatch(), color_scheme,
+          marker.IsActiveMatch(), document.InForcedColorsMode(), color_scheme,
           document.GetColorProviderForPainting(color_scheme));
   // Comparing against the value of the 'color' property doesn't always make
   // sense (for example for SVG <text> which paints using 'fill' and 'stroke').
@@ -464,6 +464,7 @@ void HighlightPainter::Paint(Phase phase) {
           Color color =
               LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
                   text_match_marker.IsActiveMatch(),
+                  document.InForcedColorsMode(),
                   originating_style_.UsedColorScheme(),
                   document.GetColorProviderForPainting(
                       originating_style_.UsedColorScheme()));

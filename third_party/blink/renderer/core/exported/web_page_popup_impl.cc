@@ -140,6 +140,7 @@ Page* CreatePage(ChromeClient& chrome_client, WebViewImpl& opener_web_view) {
       main_settings.GetPreferredColorScheme());
   page->GetSettings().SetForceDarkModeEnabled(
       main_settings.GetForceDarkModeEnabled());
+  page->GetSettings().SetInForcedColors(main_settings.GetInForcedColors());
 
   const MediaFeatureOverrides* media_feature_overrides =
       opener_web_view.GetPage()->GetMediaFeatureOverrides();

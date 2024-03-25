@@ -776,6 +776,8 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
       // dark/light color schemes.
       page->GetSettings().SetPreferredColorScheme(
           default_settings.GetPreferredColorScheme());
+      page->GetSettings().SetInForcedColors(
+          default_settings.GetInForcedColors());
     }
     chrome_client_->InitAnimationTimer(page->GetPageScheduler()
                                            ->GetAgentGroupScheduler()

@@ -35,7 +35,6 @@
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
-#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
@@ -117,7 +116,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -242,11 +240,12 @@ StyleEngine::StyleEngine(Document& document)
         document.GetSettings()->GetForceDarkModeEnabled();
     UpdateColorSchemeMetrics();
 
+    forced_colors_ = document.GetSettings()->GetInForcedColors()
+                         ? ForcedColors::kActive
+                         : ForcedColors::kNone;
     UpdateForcedBackgroundColor();
   }
 
-  forced_colors_ =
-      WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors();
   UpdateColorScheme();
 
   // Mostly for the benefit of unit tests.
@@ -3941,13 +3940,13 @@ bool StyleEngine::SupportsDarkColorScheme() {
 
 void StyleEngine::UpdateColorScheme() {
   auto* settings = GetDocument().GetSettings();
-  auto* web_theme_engine = WebThemeEngineHelper::GetNativeThemeEngine();
-  if (!settings || !web_theme_engine) {
+  if (!settings) {
     return;
   }
 
   ForcedColors old_forced_colors = forced_colors_;
-  forced_colors_ = web_theme_engine->GetForcedColors();
+  forced_colors_ = settings->GetInForcedColors() ? ForcedColors::kActive
+                                                 : ForcedColors::kNone;
 
   mojom::blink::PreferredColorScheme old_preferred_color_scheme =
       preferred_color_scheme_;

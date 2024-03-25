@@ -147,7 +147,6 @@ LayoutTheme& LayoutTheme::GetTheme() {
 }
 
 LayoutTheme::LayoutTheme() : has_custom_focus_ring_color_(false) {
-  UpdateForcedColorsState();
 }
 
 ControlPart LayoutTheme::AdjustAppearanceWithAuthorStyle(
@@ -508,7 +507,6 @@ void LayoutTheme::AdjustSearchFieldCancelButtonStyle(
     ComputedStyleBuilder&) const {}
 
 void LayoutTheme::PlatformColorsDidChange() {
-  UpdateForcedColorsState();
   Page::PlatformColorsChanged();
 }
 
@@ -726,12 +724,14 @@ Color LayoutTheme::SystemColorFromColorProvider(
 
 Color LayoutTheme::PlatformTextSearchHighlightColor(
     bool active_match,
+    bool in_forced_colors,
     mojom::blink::ColorScheme color_scheme,
     const ui::ColorProvider* color_provider) const {
   if (active_match) {
-    if (InForcedColorsMode())
+    if (in_forced_colors) {
       return GetTheme().SystemColor(CSSValueID::kHighlight, color_scheme,
                                     color_provider);
+    }
     return Color(255, 150, 50);  // Orange.
   }
   return Color(255, 255, 0);  // Yellow.
@@ -739,11 +739,13 @@ Color LayoutTheme::PlatformTextSearchHighlightColor(
 
 Color LayoutTheme::PlatformTextSearchColor(
     bool active_match,
+    bool in_forced_colors,
     mojom::blink::ColorScheme color_scheme,
     const ui::ColorProvider* color_provider) const {
-  if (InForcedColorsMode() && active_match)
+  if (in_forced_colors && active_match) {
     return GetTheme().SystemColor(CSSValueID::kHighlighttext, color_scheme,
                                   color_provider);
+  }
   return Color::kBlack;
 }
 
@@ -811,12 +813,6 @@ bool LayoutTheme::HasCustomFocusRingColor() const {
 
 Color LayoutTheme::GetCustomFocusRingColor() const {
   return custom_focus_ring_color_;
-}
-
-void LayoutTheme::UpdateForcedColorsState() {
-  in_forced_colors_mode_ =
-      WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors() !=
-      ForcedColors::kNone;
 }
 
 bool LayoutTheme::IsAccentColorCustomized(
