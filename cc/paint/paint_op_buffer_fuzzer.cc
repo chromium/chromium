@@ -85,9 +85,12 @@ void Raster(scoped_refptr<viz::TestContextProvider> context_provider,
   cc::PlaybackParams params(nullptr, canvas->getLocalToDevice());
   cc::TransferCacheTestHelper transfer_cache_helper;
   std::vector<uint8_t> scratch_buffer;
-  cc::PaintOp::DeserializeOptions deserialize_options(
-      &transfer_cache_helper, paint_cache, strike_client, &scratch_buffer,
-      true /* is_privileged */, nullptr /* shared_image_provider */);
+  cc::PaintOp::DeserializeOptions deserialize_options{
+      .transfer_cache = &transfer_cache_helper,
+      .paint_cache = paint_cache,
+      .strike_client = strike_client,
+      .scratch_buffer = scratch_buffer,
+      .is_privileged = true};
 
   // Need kHeaderBytes bytes to be able to read the header.
   while (size >= cc::PaintOpWriter::kHeaderBytes) {

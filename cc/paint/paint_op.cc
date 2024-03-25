@@ -1091,8 +1091,9 @@ void ConcatOp::Raster(const ConcatOp* op,
 void CustomDataOp::Raster(const CustomDataOp* op,
                           SkCanvas* canvas,
                           const PlaybackParams& params) {
-  if (params.custom_callback)
-    params.custom_callback.Run(canvas, op->id);
+  if (params.callbacks.custom_callback) {
+    params.callbacks.custom_callback.Run(canvas, op->id);
+  }
 }
 
 void DrawColorOp::Raster(const DrawColorOp* op,

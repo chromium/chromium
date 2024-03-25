@@ -70,12 +70,11 @@ TestOptionsProvider::TestOptionsProvider()
                          can_use_lcd_text_,
                          context_supports_distance_field_text_,
                          max_texture_size_),
-      deserialize_options_(this,
-                           &service_paint_cache_,
-                           &strike_client_,
-                           &scratch_buffer_,
-                           true,
-                           nullptr) {}
+      deserialize_options_{.transfer_cache = this,
+                           .paint_cache = &service_paint_cache_,
+                           .strike_client = &strike_client_,
+                           .scratch_buffer = scratch_buffer_,
+                           .is_privileged = true} {}
 
 TestOptionsProvider::~TestOptionsProvider() = default;
 

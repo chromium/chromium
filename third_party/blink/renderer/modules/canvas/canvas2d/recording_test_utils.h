@@ -17,6 +17,8 @@ namespace blink_testing {
 // `cc::SaveOp` and `cc::RestoreOp` that are present in every single Canvas 2D
 // recordings.
 class RecordedOpsView {
+  STACK_ALLOCATED();
+
  public:
   explicit RecordedOpsView(cc::PaintRecord record);
 

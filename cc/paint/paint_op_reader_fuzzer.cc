@@ -16,12 +16,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
 
   std::vector<uint8_t> scratch_buffer;
-  cc::PaintOp::DeserializeOptions options(
-      /*transfer_cache=*/nullptr,
-      /*paint_cache=*/nullptr,
-      /*strike_client=*/nullptr, &scratch_buffer,
-      /*is_privileged=*/false,
-      /*shared_image_provider=*/nullptr);
+  cc::PaintOp::DeserializeOptions options{.scratch_buffer = scratch_buffer};
   cc::PaintOpReader reader(data, size, options,
                            /*enable_security_constraints=*/true);
   sk_sp<cc::PaintFilter> filter;

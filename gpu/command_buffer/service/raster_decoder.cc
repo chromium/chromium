@@ -3078,13 +3078,16 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
 
   cc::PlaybackParams playback_params(nullptr, SkM44());
   TransferCacheDeserializeHelperImpl impl(raster_decoder_id_, transfer_cache());
-  cc::PaintOp::DeserializeOptions options(
-      &impl, paint_cache_.get(), font_manager_->strike_client(),
-      shared_context_state_->scratch_deserialization_buffer(), is_privileged_,
-      paint_op_shared_image_provider_.get());
-  options.crash_dump_on_failure =
-      !gpu_preferences_.disable_oopr_debug_crash_dump;
-  options.hdr_headroom = sk_surface_hdr_headroom_;
+  cc::PaintOp::DeserializeOptions options{
+      .transfer_cache = &impl,
+      .paint_cache = paint_cache_.get(),
+      .strike_client = font_manager_->strike_client(),
+      .scratch_buffer =
+          *shared_context_state_->scratch_deserialization_buffer(),
+      .crash_dump_on_failure = !gpu_preferences_.disable_oopr_debug_crash_dump,
+      .is_privileged = is_privileged_,
+      .hdr_headroom = sk_surface_hdr_headroom_,
+      .shared_image_provider = paint_op_shared_image_provider_.get()};
 
   if (scoped_shared_image_raster_write_) {
     auto* paint_op_buffer =

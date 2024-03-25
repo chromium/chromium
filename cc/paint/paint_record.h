@@ -75,10 +75,7 @@ class CC_PAINT_EXPORT PaintRecord {
   sk_sp<SkPicture> ToSkPicture(
       const SkRect& bounds,
       ImageProvider* image_provider = nullptr,
-      PlaybackParams::CustomDataRasterCallback callback =
-          PlaybackParams::CustomDataRasterCallback(),
-      PlaybackParams::ConvertOpCallback convert_op_callback =
-          PlaybackParams::ConvertOpCallback()) const;
+      const PlaybackCallbacks& callbacks = PlaybackCallbacks()) const;
 
   // Replays the paint record into the canvas.
   void Playback(SkCanvas* canvas) const { buffer_->Playback(canvas); }

@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -18,6 +18,8 @@
 namespace cc {
 
 class CC_PAINT_EXPORT PaintOpBufferSerializer {
+  STACK_ALLOCATED();
+
  public:
   // As this code is performance sensitive, a raw function pointer is used.
   using SerializeCallback = size_t (*)(void*,
@@ -116,7 +118,7 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
                                 const PlaybackParams& params);
 
   SerializeCallback serialize_cb_;
-  raw_ptr<void> callback_data_;
+  void* callback_data_;
   PaintOp::SerializeOptions options_;
 
   size_t serialized_op_count_ = 0;
@@ -151,7 +153,7 @@ class CC_PAINT_EXPORT SimpleBufferSerializer : public PaintOpBufferSerializer {
                                 original_ctm);
   }
 
-  raw_ptr<void> memory_;
+  void* memory_;
   const size_t total_;
   size_t written_ = 0u;
 };

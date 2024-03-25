@@ -1282,6 +1282,8 @@ bool kIsSkottieSupported = false;
 // Writes as many ops in |buffer| as can fit in |output_size| to |output|.
 // Records the numbers of bytes written for each op.
 class SimpleSerializer {
+  STACK_ALLOCATED();
+
  public:
   SimpleSerializer(void* output, size_t output_size)
       : current_(static_cast<char*>(output)),
@@ -1333,7 +1335,7 @@ class SimpleSerializer {
   TestOptionsProvider* options_provider() { return &options_provider_; }
 
  private:
-  raw_ptr<char, AllowPtrArithmetic> current_ = nullptr;
+  char* current_ = nullptr;
   size_t output_size_ = 0u;
   size_t remaining_ = 0u;
   std::vector<size_t> bytes_written_;
@@ -1341,6 +1343,8 @@ class SimpleSerializer {
 };
 
 class DeserializerIterator {
+  STACK_ALLOCATED();
+
  public:
   DeserializerIterator(const void* input,
                        size_t input_size,
@@ -1350,9 +1354,6 @@ class DeserializerIterator {
                              input_size,
                              input_size,
                              options) {}
-
-  DeserializerIterator(DeserializerIterator&&) = default;
-  DeserializerIterator& operator=(DeserializerIterator&&) = default;
 
   ~DeserializerIterator() { DestroyDeserializedOp(); }
 
@@ -3614,10 +3615,10 @@ TEST(PaintOpBufferTest, CustomData) {
     buffer.push<CustomDataOp>(9999u);
     testing::StrictMock<MockCanvas> canvas;
     EXPECT_CALL(canvas, onCustomCallback(&canvas, 9999)).Times(1);
-    buffer.Playback(&canvas, PlaybackParams(nullptr, SkM44(),
-                                            base::BindRepeating(
-                                                &MockCanvas::onCustomCallback,
-                                                base::Unretained(&canvas))));
+    PlaybackCallbacks callbacks;
+    callbacks.custom_callback = base::BindRepeating(
+        &MockCanvas::onCustomCallback, base::Unretained(&canvas));
+    buffer.Playback(&canvas, PlaybackParams(nullptr, SkM44(), callbacks));
   }
 }
 
@@ -3750,9 +3751,12 @@ TEST(PaintOpBufferTest, RecordShadersCached) {
   sk_sp<PaintOpBuffer> buffers[5];
   SkPicture* last_shader = nullptr;
   std::vector<uint8_t> scratch_buffer;
-  PaintOp::DeserializeOptions deserialize_options(
-      transfer_cache, options_provider.service_paint_cache(),
-      options_provider.strike_client(), &scratch_buffer, true, nullptr);
+  PaintOp::DeserializeOptions deserialize_options{
+      .transfer_cache = transfer_cache,
+      .paint_cache = options_provider.service_paint_cache(),
+      .strike_client = options_provider.strike_client(),
+      .scratch_buffer = scratch_buffer,
+      .is_privileged = true};
 
   // Several deserialization test cases:
   // (0) deserialize once, verify cached is the same as deserialized version
@@ -3831,9 +3835,12 @@ TEST(PaintOpBufferTest, RecordShadersCachedSize) {
   serializer.Serialize(buffer);
 
   std::vector<uint8_t> scratch_buffer;
-  PaintOp::DeserializeOptions deserialize_options(
-      transfer_cache, options_provider.service_paint_cache(),
-      options_provider.strike_client(), &scratch_buffer, true, nullptr);
+  PaintOp::DeserializeOptions deserialize_options{
+      .transfer_cache = transfer_cache,
+      .paint_cache = options_provider.service_paint_cache(),
+      .strike_client = options_provider.strike_client(),
+      .scratch_buffer = scratch_buffer,
+      .is_privileged = true};
   auto deserialized = PaintOpBuffer::MakeFromMemory(
       memory.get(), serializer.written(), deserialize_options);
   auto* shader_entry =

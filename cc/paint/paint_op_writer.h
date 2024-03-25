@@ -11,7 +11,7 @@
 #include "base/bits.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/stack_allocated.h"
 #include "base/numerics/checked_math.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_export.h"
@@ -45,6 +45,8 @@ class DrawImage;
 class PaintShader;
 
 class CC_PAINT_EXPORT PaintOpWriter {
+  STACK_ALLOCATED();
+
  public:
   // The SerializeOptions passed to the writer must set the required fields
   // if it can be used for serializing images, paint records or text blobs.
@@ -75,7 +77,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
         static_cast<T*>(base::AlignedAlloc(size, kMaxAlignment)));
   }
 
-  const PaintOp::SerializeOptions& options() const { return *options_; }
+  const PaintOp::SerializeOptions& options() const { return options_; }
 
   // Type and serialized_size fit in kHeaderBytes, using 1 byte and 3 bytes,
   // respectively. Note that serialized_size in the header is different from
@@ -265,7 +267,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   }
   void AssertFieldAlignment() {
 #if DCHECK_IS_ON()
-    AssertAlignment(memory_.get(), kDefaultAlignment);
+    AssertAlignment(memory_, kDefaultAlignment);
 #endif
   }
 
@@ -319,7 +321,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
     // above (the comma followed by ... generates a fold expression).
     // Note that `vals` on the inside of the fold expression refers to
     // one specific value.
-    char* ptr = memory_.get();
+    char* ptr = memory_;
     (
         [&] {
           static_assert(std::is_trivially_copyable_v<decltype(vals)>);
@@ -350,7 +352,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
       return;
     }
 
-    reinterpret_cast<T*>(memory_.get())[0] = val;
+    reinterpret_cast<T*>(memory_)[0] = val;
 
     memory_ += size;
     AssertFieldAlignment();
@@ -419,8 +421,8 @@ class CC_PAINT_EXPORT PaintOpWriter {
     }
   }
   size_t remaining_bytes() const {
-    DCHECK_LE(memory_.get(), memory_end_);
-    return memory_end_ - memory_.get();
+    DCHECK_LE(memory_, memory_end_);
+    return memory_end_ - memory_;
   }
   sk_sp<PaintShader> TransformShaderIfNecessary(
       const PaintShader* original,
@@ -431,10 +433,10 @@ class CC_PAINT_EXPORT PaintOpWriter {
       bool* paint_image_needs_mips,
       gpu::Mailbox* mailbox_out);
 
-  raw_ptr<char, AllowPtrArithmetic> memory_ = nullptr;
+  char* memory_ = nullptr;
   const char* memory_end_ = nullptr;
   size_t size_ = 0u;
-  const raw_ref<const PaintOp::SerializeOptions> options_;
+  const PaintOp::SerializeOptions& options_;
   bool valid_ = true;
 
   // Indicates that the following security constraints must be applied during

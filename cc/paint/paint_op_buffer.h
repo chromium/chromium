@@ -15,8 +15,7 @@
 #include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/memory/aligned_memory.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "cc/paint/paint_export.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -44,7 +43,15 @@ class TransferCacheSerializeHelper;
 
 enum class PaintOpType : uint8_t;
 
-struct CC_PAINT_EXPORT PlaybackParams {
+struct CC_PAINT_EXPORT PlaybackCallbacks {
+  STACK_ALLOCATED();
+
+ public:
+  PlaybackCallbacks();
+  ~PlaybackCallbacks();
+  PlaybackCallbacks(const PlaybackCallbacks&);
+  PlaybackCallbacks& operator=(const PlaybackCallbacks&);
+
   using CustomDataRasterCallback =
       base::RepeatingCallback<void(SkCanvas* canvas, uint32_t id)>;
   using DidDrawOpCallback = base::RepeatingCallback<void()>;
@@ -55,26 +62,24 @@ struct CC_PAINT_EXPORT PlaybackParams {
   using ConvertOpCallback =
       base::RepeatingCallback<const PaintOp*(const PaintOp& op)>;
 
-  explicit PlaybackParams(ImageProvider* image_provider);
-  PlaybackParams(
-      ImageProvider* image_provider,
-      const SkM44& original_ctm,
-      CustomDataRasterCallback custom_callback = CustomDataRasterCallback(),
-      DidDrawOpCallback did_draw_op_callback = DidDrawOpCallback(),
-      ConvertOpCallback convert_op_callback = ConvertOpCallback());
-  ~PlaybackParams();
-
-  PlaybackParams(const PlaybackParams& other);
-  PlaybackParams& operator=(const PlaybackParams& other);
-
-  // `image_provider` is not a raw_ptr<...> for performance reasons (based on
-  // analysis of sampling profiler data and tab_search:top100:2020).
-  RAW_PTR_EXCLUSION ImageProvider* image_provider;
-
-  SkM44 original_ctm;
   CustomDataRasterCallback custom_callback;
   DidDrawOpCallback did_draw_op_callback;
   ConvertOpCallback convert_op_callback;
+};
+
+struct CC_PAINT_EXPORT PlaybackParams {
+  STACK_ALLOCATED();
+
+ public:
+  explicit PlaybackParams(
+      ImageProvider* image_provider = nullptr,
+      const SkM44& original_ctm = SkM44(),
+      const PlaybackCallbacks& callbacks = PlaybackCallbacks());
+  ~PlaybackParams();
+
+  ImageProvider* image_provider = nullptr;
+  SkM44 original_ctm;
+  PlaybackCallbacks callbacks;
   std::optional<bool> save_layer_alpha_should_preserve_lcd_text;
   bool is_analyzing = false;
 };
@@ -101,6 +106,9 @@ static constexpr int kMinNumberOfSlowPathsForMSAA = 6;
 class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
  public:
   struct CC_PAINT_EXPORT SerializeOptions {
+    STACK_ALLOCATED();
+
+   public:
     SerializeOptions();
     SerializeOptions(ImageProvider* image_provider,
                      TransferCacheSerializeHelper* transfer_cache,
@@ -116,13 +124,12 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     ~SerializeOptions();
 
     // Required.
-    raw_ptr<ImageProvider> image_provider = nullptr;
-    raw_ptr<TransferCacheSerializeHelper> transfer_cache = nullptr;
-    raw_ptr<ClientPaintCache> paint_cache = nullptr;
-    raw_ptr<SkStrikeServer> strike_server = nullptr;
+    ImageProvider* image_provider = nullptr;
+    TransferCacheSerializeHelper* transfer_cache = nullptr;
+    ClientPaintCache* paint_cache = nullptr;
+    SkStrikeServer* strike_server = nullptr;
     sk_sp<SkColorSpace> color_space;
-    raw_ptr<SkottieSerializationHistory> skottie_serialization_history =
-        nullptr;
+    SkottieSerializationHistory* skottie_serialization_history = nullptr;
     bool can_use_lcd_text = false;
     bool context_supports_distance_field_text = true;
     int max_texture_size = 0;
@@ -136,19 +143,16 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   };
 
   struct CC_PAINT_EXPORT DeserializeOptions {
-    DeserializeOptions(TransferCacheDeserializeHelper* transfer_cache,
-                       ServicePaintCache* paint_cache,
-                       SkStrikeClient* strike_client,
-                       std::vector<uint8_t>* scratch_buffer,
-                       bool is_privileged,
-                       SharedImageProvider* shared_image_provider);
-    raw_ptr<TransferCacheDeserializeHelper> transfer_cache = nullptr;
-    raw_ptr<ServicePaintCache> paint_cache = nullptr;
-    raw_ptr<SkStrikeClient> strike_client = nullptr;
+    STACK_ALLOCATED();
+
+   public:
+    TransferCacheDeserializeHelper* transfer_cache = nullptr;
+    ServicePaintCache* paint_cache = nullptr;
+    SkStrikeClient* strike_client = nullptr;
+    // Used to memcpy Skia flattenables into to avoid TOCTOU issues.
+    std::vector<uint8_t>& scratch_buffer;
     // Do a DumpWithoutCrashing when serialization fails.
     bool crash_dump_on_failure = false;
-    // Used to memcpy Skia flattenables into to avoid TOCTOU issues.
-    raw_ptr<std::vector<uint8_t>> scratch_buffer = nullptr;
     // True if the deserialization is happening on a privileged gpu channel.
     // e.g. in the case of UI.
     bool is_privileged = false;
@@ -156,7 +160,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     // TODO(https://crbug.com/1483235): Move this to playback instead of
     // deserialization.
     float hdr_headroom = 1.f;
-    raw_ptr<SharedImageProvider> shared_image_provider = nullptr;
+    SharedImageProvider* shared_image_provider = nullptr;
   };
 
   enum { kInitialBufferSize = 4096 };

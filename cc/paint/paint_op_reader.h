@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/bits.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/stack_allocated.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_writer.h"
@@ -39,6 +39,8 @@ class SkottieWrapper;
 // PaintOpReader takes garbage |memory| and clobbers it with successive
 // read functions.
 class CC_PAINT_EXPORT PaintOpReader {
+  STACK_ALLOCATED();
+
  public:
   // The DeserializeOptions passed to the reader must set all fields if it can
   // be used to for deserializing images, paint records or text blobs.
@@ -336,7 +338,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   const volatile char* memory_ = nullptr;
   size_t remaining_bytes_ = 0u;
   bool valid_ = true;
-  const raw_ref<const PaintOp::DeserializeOptions> options_;
+  const PaintOp::DeserializeOptions& options_;
 
   // Indicates that the data was serialized with the following constraints:
   // 1) PaintRecords and SkDrawLoopers are ignored.

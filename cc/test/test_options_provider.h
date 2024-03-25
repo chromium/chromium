@@ -20,6 +20,8 @@ namespace cc {
 
 class TestOptionsProvider : public ImageProvider,
                             public TransferCacheTestHelper {
+  STACK_ALLOCATED();
+
  public:
   TestOptionsProvider();
   ~TestOptionsProvider() override;

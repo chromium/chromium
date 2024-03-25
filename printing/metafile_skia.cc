@@ -200,7 +200,7 @@ bool MetafileSkia::FinishDocument() {
 
   SkDynamicMemoryWStream stream;
   sk_sp<SkDocument> doc;
-  cc::PlaybackParams::CustomDataRasterCallback custom_callback;
+  cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback;
   switch (data_->type) {
     case mojom::SkiaDocumentType::kPDF:
       doc = MakePdfDocument(printing::GetAgent(), title_, accessibility_tree_,
@@ -245,11 +245,11 @@ void MetafileSkia::FinishFrameContent() {
   DCHECK_EQ(data_->type, mojom::SkiaDocumentType::kMSKP);
   DCHECK(!data_->data_stream);
 
-  cc::PlaybackParams::CustomDataRasterCallback custom_callback =
-      base::BindRepeating(&MetafileSkia::CustomDataToSkPictureCallback,
-                          base::Unretained(this));
+  cc::PlaybackCallbacks callbacks;
+  callbacks.custom_callback = base::BindRepeating(
+      &MetafileSkia::CustomDataToSkPictureCallback, base::Unretained(this));
   sk_sp<SkPicture> pic = data_->pages[0].content.ToSkPicture(
-      SkRect::MakeSize(data_->pages[0].size), nullptr, custom_callback);
+      SkRect::MakeSize(data_->pages[0].size), nullptr, callbacks);
   SkSerialProcs procs = SerializationProcs(&data_->subframe_content_info,
                                            data_->typeface_content_info);
   SkDynamicMemoryWStream stream;
