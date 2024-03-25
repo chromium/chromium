@@ -32,3 +32,9 @@ export interface PrintPreviewPageHandler {
   // Cancel the print preview and close the window.
   cancel(): void;
 }
+
+// Placeholder for the DestinationProvider mojo interface.
+export interface DestinationProvider {
+  // Retrieve a list of local print destinations; usually provided by CUPS.
+  getLocalDestinations(): Promise<Destination[]>;
+}

@@ -63,6 +63,11 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest, EventUtilsTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest,
+                       FakeDestinationProviderTest) {
+  RunTestAtPath("fake_destination_provider_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest,
                        FakePrintPreviewPageHandlerTest) {
   RunTestAtPath("fake_print_preview_page_handler_test.js");
 }
