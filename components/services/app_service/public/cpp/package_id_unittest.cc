@@ -29,6 +29,15 @@ TEST_F(PackageIdTest, FromStringValidAndroid) {
   ASSERT_EQ(id->identifier(), "com.google.android.apps.photos");
 }
 
+TEST_F(PackageIdTest, FromStringValidChromeApp) {
+  std::optional<PackageId> id =
+      PackageId::FromString("chromeapp:mmfbcljfglbokpmkimbfghdkjmjhdgbg");
+
+  ASSERT_TRUE(id.has_value());
+  ASSERT_EQ(id->app_type(), AppType::kChromeApp);
+  ASSERT_EQ(id->identifier(), "mmfbcljfglbokpmkimbfghdkjmjhdgbg");
+}
+
 TEST_F(PackageIdTest, FromStringInvalidFormat) {
   ASSERT_FALSE(PackageId::FromString("foobar").has_value());
   ASSERT_FALSE(PackageId::FromString("web:").has_value());
@@ -58,6 +67,12 @@ TEST_F(PackageIdTest, ToStringAndroid) {
   PackageId id(AppType::kArc, "com.google.android.apps.photos");
 
   ASSERT_EQ(id.ToString(), "android:com.google.android.apps.photos");
+}
+
+TEST_F(PackageIdTest, ToStringChromeApp) {
+  PackageId id(AppType::kChromeApp, "mmfbcljfglbokpmkimbfghdkjmjhdgbg");
+
+  ASSERT_EQ(id.ToString(), "chromeapp:mmfbcljfglbokpmkimbfghdkjmjhdgbg");
 }
 
 TEST_F(PackageIdTest, ToStringUnknown) {

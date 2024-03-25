@@ -26,11 +26,12 @@ namespace apps {
 // Package IDs only support a subset of app types supported by App Service.
 // Currently, the supported types are:
 //
-// AppType   | Type name  | Identifier value      | Example Package ID string
-// ----------|------------|-----------------------|--------------------------
-// kArc      | "android"  | package name          | "android:com.foo.bar"
-// kBorealis | "steam"    | Steam Game ID         | "steam:123456"
-// kWeb      | "web"      | processed manifest ID | "web:https://app.com/id"
+// AppType    | Type name   | Identifier value      | Example Package ID string
+// -----------|-------------|-----------------------|--------------------------
+// kArc       | "android"   | package name          | "android:com.foo.bar"
+// kBorealis  | "steam"     | Steam Game ID         | "steam:123456"
+// kChromeApp | "chromeapp" | Extension ID          | "chromeapp:mmfbcljfglbok"
+// kWeb       | "web"       | processed manifest ID | "web:https://app.com/id"
 class COMPONENT_EXPORT(APP_TYPES) PackageId {
  public:
   // Creates a Package ID from App Type and opaque package identifier.
