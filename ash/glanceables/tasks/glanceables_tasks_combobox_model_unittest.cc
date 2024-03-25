@@ -6,8 +6,8 @@
 #include <string>
 
 #include "ash/api/tasks/tasks_types.h"
+#include "ash/glanceables/tasks/glanceables_tasks_combobox_model.h"
 #include "ash/shell.h"
-#include "ash/system/unified/tasks_combobox_model.h"
 #include "ash/test/ash_test_base.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -32,7 +32,7 @@ std::unique_ptr<ui::ListModel<api::TaskList>> CreateTaskListsModel() {
 
 }  // namespace
 
-class TasksComboboxModelTest : public AshTestBase {
+class GlanceablesTasksComboboxModelTest : public AshTestBase {
  public:
   ui::ListModel<api::TaskList>* task_list_model() const {
     return task_lists_model_.get();
@@ -50,8 +50,8 @@ class TasksComboboxModelTest : public AshTestBase {
       CreateTaskListsModel();
 };
 
-TEST_F(TasksComboboxModelTest, SavesLastSelectedTaskListToPrefs) {
-  auto combobox_model = TasksComboboxModel(task_list_model());
+TEST_F(GlanceablesTasksComboboxModelTest, SavesLastSelectedTaskListToPrefs) {
+  auto combobox_model = GlanceablesTasksComboboxModel(task_list_model());
   combobox_model.SaveLastSelectedTaskList("id3");
 
   const auto* const pref_service =
@@ -64,12 +64,13 @@ TEST_F(TasksComboboxModelTest, SavesLastSelectedTaskListToPrefs) {
             base::Time::Now());
 }
 
-TEST_F(TasksComboboxModelTest, SelectsMostRecentlyUpdatedTaskListByDefault) {
-  auto combobox_model = TasksComboboxModel(task_list_model());
+TEST_F(GlanceablesTasksComboboxModelTest,
+       SelectsMostRecentlyUpdatedTaskListByDefault) {
+  auto combobox_model = GlanceablesTasksComboboxModel(task_list_model());
   EXPECT_EQ(combobox_model.GetDefaultIndex().value(), 1u);
 }
 
-TEST_F(TasksComboboxModelTest,
+TEST_F(GlanceablesTasksComboboxModelTest,
        SelectsMostRecentlyUpdatedTaskListIfItIsNewerThanLastSelected) {
   auto* const pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
@@ -78,11 +79,12 @@ TEST_F(TasksComboboxModelTest,
   pref_service->SetTime("ash.glanceables.tasks.last_selected_task_list_time",
                         base::Time::Now() - base::Days(100));
 
-  auto combobox_model = TasksComboboxModel(task_list_model());
+  auto combobox_model = GlanceablesTasksComboboxModel(task_list_model());
   EXPECT_EQ(combobox_model.GetDefaultIndex().value(), 1u);
 }
 
-TEST_F(TasksComboboxModelTest, SelectsLastSelectedTaskListByDefault) {
+TEST_F(GlanceablesTasksComboboxModelTest,
+       SelectsLastSelectedTaskListByDefault) {
   auto* const pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
   pref_service->SetString("ash.glanceables.tasks.last_selected_task_list_id",
@@ -90,12 +92,12 @@ TEST_F(TasksComboboxModelTest, SelectsLastSelectedTaskListByDefault) {
   pref_service->SetTime("ash.glanceables.tasks.last_selected_task_list_time",
                         base::Time::Now() + base::Days(100));
 
-  auto combobox_model = TasksComboboxModel(task_list_model());
+  auto combobox_model = GlanceablesTasksComboboxModel(task_list_model());
   EXPECT_EQ(combobox_model.GetDefaultIndex().value(), 0u);
 }
 
 TEST_F(
-    TasksComboboxModelTest,
+    GlanceablesTasksComboboxModelTest,
     FallsBackToMostRecentlyUpdatedTaskListInCaseLastSelectedIdIsNoLongerValid) {
   auto* const pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
@@ -104,19 +106,19 @@ TEST_F(
   pref_service->SetTime("ash.glanceables.tasks.last_selected_task_list_time",
                         base::Time::Now() + base::Days(100));
 
-  auto combobox_model = TasksComboboxModel(task_list_model());
+  auto combobox_model = GlanceablesTasksComboboxModel(task_list_model());
   EXPECT_EQ(combobox_model.GetDefaultIndex().value(), 1u);
 }
 
 TEST_F(
-    TasksComboboxModelTest,
+    GlanceablesTasksComboboxModelTest,
     FallsBackToMostRecentlyUpdatedTaskListInCaseLastSelectedIdHasMissingTime) {
   auto* const pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
   pref_service->SetString("ash.glanceables.tasks.last_selected_task_list_id",
                           "id1");
 
-  auto combobox_model = TasksComboboxModel(task_list_model());
+  auto combobox_model = GlanceablesTasksComboboxModel(task_list_model());
   EXPECT_EQ(combobox_model.GetDefaultIndex().value(), 1u);
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/unified/tasks_combobox_model.h"
+#include "ash/glanceables/tasks/glanceables_tasks_combobox_model.h"
 
 #include <algorithm>
 #include <optional>
@@ -27,39 +27,40 @@ const char kLastSelectedTaskListTimePref[] =
 
 }  // namespace
 
-TasksComboboxModel::TasksComboboxModel(
+GlanceablesTasksComboboxModel::GlanceablesTasksComboboxModel(
     const ui::ListModel<api::TaskList>* task_lists)
     : task_lists_(task_lists) {}
 
-TasksComboboxModel::~TasksComboboxModel() = default;
+GlanceablesTasksComboboxModel::~GlanceablesTasksComboboxModel() = default;
 
 // static
-void TasksComboboxModel::RegisterUserProfilePrefs(
+void GlanceablesTasksComboboxModel::RegisterUserProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kLastSelectedTaskListIdPref, "");
   registry->RegisterTimePref(kLastSelectedTaskListTimePref, base::Time());
 }
 
 // static
-void TasksComboboxModel::ClearUserStatePrefs(PrefService* pref_service) {
+void GlanceablesTasksComboboxModel::ClearUserStatePrefs(
+    PrefService* pref_service) {
   pref_service->ClearPref(kLastSelectedTaskListIdPref);
   pref_service->ClearPref(kLastSelectedTaskListTimePref);
 }
 
-void TasksComboboxModel::UpdateTaskLists(
+void GlanceablesTasksComboboxModel::UpdateTaskLists(
     const ui::ListModel<api::TaskList>* task_lists) {
   task_lists_ = task_lists;
 }
 
-size_t TasksComboboxModel::GetItemCount() const {
+size_t GlanceablesTasksComboboxModel::GetItemCount() const {
   return task_lists_->item_count();
 }
 
-std::u16string TasksComboboxModel::GetItemAt(size_t index) const {
+std::u16string GlanceablesTasksComboboxModel::GetItemAt(size_t index) const {
   return base::UTF8ToUTF16(task_lists_->GetItemAt(index)->title);
 }
 
-std::optional<size_t> TasksComboboxModel::GetDefaultIndex() const {
+std::optional<size_t> GlanceablesTasksComboboxModel::GetDefaultIndex() const {
   const auto most_recently_updated_task_list_iter = std::max_element(
       task_lists_->begin(), task_lists_->end(),
       [](const auto& x1, const auto& x2) { return x1->updated < x2->updated; });
@@ -94,11 +95,12 @@ std::optional<size_t> TasksComboboxModel::GetDefaultIndex() const {
   return most_recently_updated_task_list_index;
 }
 
-const api::TaskList* TasksComboboxModel::GetTaskListAt(size_t index) const {
+const api::TaskList* GlanceablesTasksComboboxModel::GetTaskListAt(
+    size_t index) const {
   return task_lists_->GetItemAt(index);
 }
 
-void TasksComboboxModel::SaveLastSelectedTaskList(
+void GlanceablesTasksComboboxModel::SaveLastSelectedTaskList(
     const std::string& task_list_id) {
   CHECK(!task_list_id.empty());
 

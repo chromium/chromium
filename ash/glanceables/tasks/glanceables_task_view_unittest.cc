@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/glanceables/tasks/glanceables_task_view_v2.h"
+#include "ash/glanceables/tasks/glanceables_task_view.h"
 
 #include <memory>
 #include <optional>
@@ -36,9 +36,9 @@
 
 namespace ash {
 
-class GlanceablesTaskViewStableLaunchTest : public AshTestBase {
+class GlanceablesTaskViewTest : public AshTestBase {
  public:
-  GlanceablesTaskViewStableLaunchTest() {
+  GlanceablesTaskViewTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlanceablesTimeManagementTasksView},
         /*disabled_features=*/{});
@@ -49,7 +49,7 @@ class GlanceablesTaskViewStableLaunchTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(GlanceablesTaskViewStableLaunchTest, FormatsDueDate) {
+TEST_F(GlanceablesTaskViewTest, FormatsDueDate) {
   base::subtle::ScopedTimeClockOverrides time_override(
       []() {
         base::Time now;
@@ -82,7 +82,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, FormatsDueDate) {
                                 /*has_subtasks=*/false,
                                 /*has_email_link=*/false, /*has_notes=*/false,
                                 /*updated=*/due, /*web_view_link=*/GURL());
-    const auto view = GlanceablesTaskViewV2(
+    const auto view = GlanceablesTaskView(
         &task, /*mark_as_completed_callback=*/base::DoNothing(),
         /*save_callback=*/base::DoNothing(),
         /*edit_in_browser_callback=*/base::DoNothing(),
@@ -97,7 +97,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, FormatsDueDate) {
   }
 }
 
-TEST_F(GlanceablesTaskViewStableLaunchTest,
+TEST_F(GlanceablesTaskViewTest,
        AppliesStrikeThroughStyleAfterMarkingAsComplete) {
   const auto task = api::Task("task-id", "Task title",
                               /*due=*/std::nullopt, /*completed=*/false,
@@ -108,7 +108,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest,
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
   const auto* const view =
-      widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
+      widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
           &task, /*mark_as_completed_callback=*/base::DoNothing(),
           /*save_callback=*/base::DoNothing(),
           /*edit_in_browser_callback=*/base::DoNothing(),
@@ -136,8 +136,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest,
               gfx::Font::FontStyle::STRIKE_THROUGH);
 }
 
-TEST_F(GlanceablesTaskViewStableLaunchTest,
-       UpdatingTaskTriggersErrorMessageIfNoNetwork) {
+TEST_F(GlanceablesTaskViewTest, UpdatingTaskTriggersErrorMessageIfNoNetwork) {
   // Simulate that the network is disabled.
   glanceables_util::SetIsNetworkConnectedForTest(false);
 
@@ -154,7 +153,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest,
       error_future;
 
   const auto* const view =
-      widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
+      widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
           &task, /*mark_as_completed_callback=*/base::DoNothing(),
           /*save_callback=*/base::DoNothing(),
           /*edit_in_browser_callback=*/base::DoNothing(),
@@ -200,7 +199,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest,
   }
 }
 
-TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesMarkAsCompletedCallback) {
+TEST_F(GlanceablesTaskViewTest, InvokesMarkAsCompletedCallback) {
   const auto task = api::Task("task-id", "Task title",
                               /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
@@ -212,7 +211,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesMarkAsCompletedCallback) {
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
   const auto* const view =
-      widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
+      widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
           &task, /*mark_as_completed_callback=*/future.GetRepeatingCallback(),
           /*save_callback=*/base::DoNothing(),
           /*edit_in_browser_callback=*/base::DoNothing(),
@@ -243,7 +242,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesMarkAsCompletedCallback) {
   }
 }
 
-TEST_F(GlanceablesTaskViewStableLaunchTest, EntersAndExitsEditState) {
+TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
   const auto task = api::Task("task-id", "Task title",
                               /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
@@ -253,7 +252,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, EntersAndExitsEditState) {
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
   const auto* const view =
-      widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
+      widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
           &task, /*mark_as_completed_callback=*/base::DoNothing(),
           /*save_callback=*/base::DoNothing(),
           /*edit_in_browser_callback=*/base::DoNothing(),
@@ -309,16 +308,16 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, EntersAndExitsEditState) {
   }
 }
 
-TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesSaveCallbackAfterAdding) {
-  base::test::TestFuture<base::WeakPtr<GlanceablesTaskViewV2>,
-                         const std::string&, const std::string&,
+TEST_F(GlanceablesTaskViewTest, InvokesSaveCallbackAfterAdding) {
+  base::test::TestFuture<base::WeakPtr<GlanceablesTaskView>, const std::string&,
+                         const std::string&,
                          api::TasksClient::OnTaskSavedCallback>
       future;
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
   auto* const view =
-      widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
+      widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
           /*task=*/nullptr, /*mark_as_completed_callback=*/base::DoNothing(),
           /*save_callback=*/future.GetRepeatingCallback(),
           /*edit_in_browser_callback=*/base::DoNothing(),
@@ -326,7 +325,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesSaveCallbackAfterAdding) {
   ASSERT_TRUE(view);
 
   view->UpdateTaskTitleViewForState(
-      GlanceablesTaskViewV2::TaskTitleViewState::kEdit);
+      GlanceablesTaskView::TaskTitleViewState::kEdit);
   PressAndReleaseKey(ui::VKEY_N, ui::EF_SHIFT_DOWN);
   PressAndReleaseKey(ui::VKEY_E);
   PressAndReleaseKey(ui::VKEY_W);
@@ -337,22 +336,22 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesSaveCallbackAfterAdding) {
   EXPECT_EQ(title, "New");
 }
 
-TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesSaveCallbackAfterEditing) {
+TEST_F(GlanceablesTaskViewTest, InvokesSaveCallbackAfterEditing) {
   const auto task = api::Task("task-id", "Task title",
                               /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time(),
                               /*web_view_link=*/GURL());
 
-  base::test::TestFuture<base::WeakPtr<GlanceablesTaskViewV2>,
-                         const std::string&, const std::string&,
+  base::test::TestFuture<base::WeakPtr<GlanceablesTaskView>, const std::string&,
+                         const std::string&,
                          api::TasksClient::OnTaskSavedCallback>
       future;
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
   auto* const view =
-      widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
+      widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
           &task, /*mark_as_completed_callback=*/base::DoNothing(),
           /*save_callback=*/future.GetRepeatingCallback(),
           /*edit_in_browser_callback=*/base::DoNothing(),
@@ -360,7 +359,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesSaveCallbackAfterEditing) {
   ASSERT_TRUE(view);
 
   view->UpdateTaskTitleViewForState(
-      GlanceablesTaskViewV2::TaskTitleViewState::kEdit);
+      GlanceablesTaskView::TaskTitleViewState::kEdit);
   PressAndReleaseKey(ui::VKEY_SPACE);
   PressAndReleaseKey(ui::VKEY_U);
   PressAndReleaseKey(ui::VKEY_P);
@@ -373,22 +372,22 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesSaveCallbackAfterEditing) {
   EXPECT_EQ(title, "Task title upd");
 }
 
-TEST_F(GlanceablesTaskViewStableLaunchTest, CommitEditedTaskOnTab) {
+TEST_F(GlanceablesTaskViewTest, CommitEditedTaskOnTab) {
   const auto task = api::Task("task-id", "Task title",
                               /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time(),
                               /*web_view_link=*/GURL());
 
-  base::test::TestFuture<base::WeakPtr<GlanceablesTaskViewV2>,
-                         const std::string&, const std::string&,
+  base::test::TestFuture<base::WeakPtr<GlanceablesTaskView>, const std::string&,
+                         const std::string&,
                          api::TasksClient::OnTaskSavedCallback>
       future;
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
   auto* const view =
-      widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
+      widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
           &task, /*mark_as_completed_callback=*/base::DoNothing(),
           /*save_callback=*/future.GetRepeatingCallback(),
           /*edit_in_browser_callback=*/base::DoNothing(),
@@ -396,7 +395,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, CommitEditedTaskOnTab) {
   ASSERT_TRUE(view);
 
   view->UpdateTaskTitleViewForState(
-      GlanceablesTaskViewV2::TaskTitleViewState::kEdit);
+      GlanceablesTaskView::TaskTitleViewState::kEdit);
   PressAndReleaseKey(ui::VKEY_SPACE);
   PressAndReleaseKey(ui::VKEY_U);
   PressAndReleaseKey(ui::VKEY_P);
@@ -458,16 +457,16 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, CommitEditedTaskOnTab) {
       base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel))));
 }
 
-TEST_F(GlanceablesTaskViewStableLaunchTest, SupportsEditingRightAfterAdding) {
-  base::test::TestFuture<base::WeakPtr<GlanceablesTaskViewV2>,
-                         const std::string&, const std::string&,
+TEST_F(GlanceablesTaskViewTest, SupportsEditingRightAfterAdding) {
+  base::test::TestFuture<base::WeakPtr<GlanceablesTaskView>, const std::string&,
+                         const std::string&,
                          api::TasksClient::OnTaskSavedCallback>
       future;
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
   auto* const view =
-      widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
+      widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
           /*task=*/nullptr, /*mark_as_completed_callback=*/base::DoNothing(),
           /*save_callback=*/future.GetRepeatingCallback(),
           /*edit_in_browser_callback=*/base::DoNothing(),
@@ -476,7 +475,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, SupportsEditingRightAfterAdding) {
 
   {
     view->UpdateTaskTitleViewForState(
-        GlanceablesTaskViewV2::TaskTitleViewState::kEdit);
+        GlanceablesTaskView::TaskTitleViewState::kEdit);
     PressAndReleaseKey(ui::VKEY_N, ui::EF_SHIFT_DOWN);
     PressAndReleaseKey(ui::VKEY_E);
     PressAndReleaseKey(ui::VKEY_W);
@@ -499,7 +498,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, SupportsEditingRightAfterAdding) {
 
   {
     view->UpdateTaskTitleViewForState(
-        GlanceablesTaskViewV2::TaskTitleViewState::kEdit);
+        GlanceablesTaskView::TaskTitleViewState::kEdit);
     PressAndReleaseKey(ui::VKEY_SPACE);
     PressAndReleaseKey(ui::VKEY_1);
     PressAndReleaseKey(ui::VKEY_ESCAPE);
@@ -511,17 +510,16 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, SupportsEditingRightAfterAdding) {
   }
 }
 
-TEST_F(GlanceablesTaskViewStableLaunchTest,
-       HandlesPressingCheckButtonWhileAdding) {
-  base::test::TestFuture<base::WeakPtr<GlanceablesTaskViewV2>,
-                         const std::string&, const std::string&,
+TEST_F(GlanceablesTaskViewTest, HandlesPressingCheckButtonWhileAdding) {
+  base::test::TestFuture<base::WeakPtr<GlanceablesTaskView>, const std::string&,
+                         const std::string&,
                          api::TasksClient::OnTaskSavedCallback>
       future;
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
   auto* const view =
-      widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
+      widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
           /*task=*/nullptr, /*mark_as_completed_callback=*/base::DoNothing(),
           /*save_callback=*/future.GetRepeatingCallback(),
           /*edit_in_browser_callback=*/base::DoNothing(),
@@ -529,7 +527,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest,
   ASSERT_TRUE(view);
 
   view->UpdateTaskTitleViewForState(
-      GlanceablesTaskViewV2::TaskTitleViewState::kEdit);
+      GlanceablesTaskView::TaskTitleViewState::kEdit);
   EXPECT_FALSE(view->GetCompletedForTest());
 
   PressAndReleaseKey(ui::VKEY_N, ui::EF_SHIFT_DOWN);

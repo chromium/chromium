@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_UNIFIED_TASKS_COMBOBOX_MODEL_H_
-#define ASH_SYSTEM_UNIFIED_TASKS_COMBOBOX_MODEL_H_
+#ifndef ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_COMBOBOX_MODEL_H_
+#define ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_COMBOBOX_MODEL_H_
 
 #include <string>
 
@@ -26,12 +26,14 @@ struct TaskList;
 
 // A simple data model for the glanceables tasks combobox. This is used to
 // switch between different available tasks lists in the glanceable.
-class ASH_EXPORT TasksComboboxModel : public ui::ComboboxModel {
+class ASH_EXPORT GlanceablesTasksComboboxModel : public ui::ComboboxModel {
  public:
-  explicit TasksComboboxModel(const ui::ListModel<api::TaskList>* tasks_lists);
-  TasksComboboxModel(const TasksComboboxModel&) = delete;
-  TasksComboboxModel& operator=(const TasksComboboxModel&) = delete;
-  ~TasksComboboxModel() override;
+  explicit GlanceablesTasksComboboxModel(
+      const ui::ListModel<api::TaskList>* tasks_lists);
+  GlanceablesTasksComboboxModel(const GlanceablesTasksComboboxModel&) = delete;
+  GlanceablesTasksComboboxModel& operator=(
+      const GlanceablesTasksComboboxModel&) = delete;
+  ~GlanceablesTasksComboboxModel() override;
 
   // Registers syncable user profile prefs with the specified `registry`.
   static void RegisterUserProfilePrefs(PrefRegistrySimple* registry);
@@ -53,10 +55,10 @@ class ASH_EXPORT TasksComboboxModel : public ui::ComboboxModel {
   void SaveLastSelectedTaskList(const std::string& task_list_id);
 
  private:
-  // Owned by `GlanceableTasksClientImpl`.
+  // Owned by `TasksClientImpl`.
   raw_ptr<const ui::ListModel<api::TaskList>> task_lists_;
 };
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_UNIFIED_TASKS_COMBOBOX_MODEL_H_
+#endif  // ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_COMBOBOX_MODEL_H_

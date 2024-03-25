@@ -11,7 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_util.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
-#include "ash/glanceables/tasks/glanceables_task_view_v2.h"
+#include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
@@ -71,7 +71,7 @@ class GlanceablesTaskViewPixelTest
         widget_->SetContentsView(std::make_unique<views::BoxLayoutView>());
     container->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kStart);
-    view_ = container->AddChildView(std::make_unique<GlanceablesTaskViewV2>(
+    view_ = container->AddChildView(std::make_unique<GlanceablesTaskView>(
         task_.get(), /*mark_as_completed_callback=*/base::DoNothing(),
         /*save_callback=*/base::DoNothing(),
         /*edit_in_browser_callback=*/base::DoNothing(),
@@ -102,7 +102,7 @@ class GlanceablesTaskViewPixelTest
   }
 
   views::Widget* widget() const { return widget_.get(); }
-  GlanceablesTaskViewV2* view() const { return view_; }
+  GlanceablesTaskView* view() const { return view_; }
   bool use_rtl() const { return std::get<0>(GetParam()); }
   bool has_due_date() const { return std::get<1>(GetParam()); }
   bool has_subtasks() const { return std::get<2>(GetParam()); }
@@ -115,7 +115,7 @@ class GlanceablesTaskViewPixelTest
       features::kGlanceablesTimeManagementTasksView};
   std::unique_ptr<api::Task> task_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<GlanceablesTaskViewV2> view_;
+  raw_ptr<GlanceablesTaskView> view_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

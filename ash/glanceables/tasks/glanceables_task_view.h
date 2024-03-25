@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_V2_H_
-#define ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_V2_H_
+#ifndef ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_H_
+#define ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_H_
 
 #include <string>
 
@@ -32,10 +32,10 @@ namespace api {
 struct Task;
 }  // namespace api
 
-// GlanceablesTaskViewV2 uses `views::FlexLayout` to show tasks metadata within
-// the `GlanceablesTasksView` or `TasksBubbleView`.
+// `GlanceablesTaskView` uses `views::FlexLayout` to show tasks metadata within
+// the `GlanceablesTasksView`.
 // +---------------------------------------------------------------+
-// |`GlanceablesTaskViewV2`                                        |
+// |`GlanceablesTaskView`                                        |
 // |                                                               |
 // | +-----------------+ +---------------------------------------+ |
 // | |'check_button_'  | |'contents_view_'                       | |
@@ -47,15 +47,15 @@ struct Task;
 // | |                 | | +-----------------------------------+ | |
 // | +-----------------+ +---------------------------------------+ |
 // +---------------------------------------------------------------+
-class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView,
-                                         public views::ViewObserver {
-  METADATA_HEADER(GlanceablesTaskViewV2, views::FlexLayoutView)
+class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView,
+                                       public views::ViewObserver {
+  METADATA_HEADER(GlanceablesTaskView, views::FlexLayoutView)
 
  public:
   using MarkAsCompletedCallback =
       base::RepeatingCallback<void(const std::string& task_id, bool completed)>;
   using SaveCallback = base::RepeatingCallback<void(
-      base::WeakPtr<GlanceablesTaskViewV2> view,
+      base::WeakPtr<GlanceablesTaskView> view,
       const std::string& task_id,
       const std::string& title,
       api::TasksClient::OnTaskSavedCallback callback)>;
@@ -66,14 +66,14 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView,
   // Modes of `tasks_title_view_` (simple label or text field).
   enum class TaskTitleViewState { kNotInitialized, kView, kEdit };
 
-  GlanceablesTaskViewV2(const api::Task* task,
-                        MarkAsCompletedCallback mark_as_completed_callback,
-                        SaveCallback save_callback,
-                        base::RepeatingClosure edit_in_browser_callback,
-                        ShowErrorMessageCallback show_error_message_callback);
-  GlanceablesTaskViewV2(const GlanceablesTaskViewV2&) = delete;
-  GlanceablesTaskViewV2& operator=(const GlanceablesTaskViewV2&) = delete;
-  ~GlanceablesTaskViewV2() override;
+  GlanceablesTaskView(const api::Task* task,
+                      MarkAsCompletedCallback mark_as_completed_callback,
+                      SaveCallback save_callback,
+                      base::RepeatingClosure edit_in_browser_callback,
+                      ShowErrorMessageCallback show_error_message_callback);
+  GlanceablesTaskView(const GlanceablesTaskView&) = delete;
+  GlanceablesTaskView& operator=(const GlanceablesTaskView&) = delete;
+  ~GlanceablesTaskView() override;
 
   // views::ViewObserver:
   void OnViewBlurred(views::View* observed_view) override;
@@ -142,15 +142,15 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView,
   // Shows an error message in the parent `GlanceablesTasksView`.
   const ShowErrorMessageCallback show_error_message_callback_;
 
-  base::ScopedMultiSourceObservation<views::View, GlanceablesTaskViewV2>
+  base::ScopedMultiSourceObservation<views::View, GlanceablesTaskView>
       edit_exit_observer_{this};
 
-  base::WeakPtrFactory<GlanceablesTaskViewV2> state_change_weak_ptr_factory_{
+  base::WeakPtrFactory<GlanceablesTaskView> state_change_weak_ptr_factory_{
       this};
 
-  base::WeakPtrFactory<GlanceablesTaskViewV2> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GlanceablesTaskView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_V2_H_
+#endif  // ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_H_

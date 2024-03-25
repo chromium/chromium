@@ -8,9 +8,9 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/glanceables_metrics.h"
+#include "ash/glanceables/tasks/glanceables_tasks_combobox_model.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/system/unified/classroom_bubble_student_view.h"
-#include "ash/system/unified/tasks_combobox_model.h"
 #include "base/check.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
@@ -35,13 +35,13 @@ void GlanceablesController::RegisterUserProfilePrefs(
   registry->RegisterBooleanPref(prefs::kClassroomIntegrationEnabled, true);
   registry->RegisterBooleanPref(prefs::kTasksIntegrationEnabled, true);
   ClassroomBubbleStudentView::RegisterUserProfilePrefs(registry);
-  TasksComboboxModel::RegisterUserProfilePrefs(registry);
+  GlanceablesTasksComboboxModel::RegisterUserProfilePrefs(registry);
 }
 
 // static
 void GlanceablesController::ClearUserStatePrefs(PrefService* prefs) {
   ClassroomBubbleStudentView::ClearUserStatePrefs(prefs);
-  TasksComboboxModel::ClearUserStatePrefs(prefs);
+  GlanceablesTasksComboboxModel::ClearUserStatePrefs(prefs);
 }
 
 void GlanceablesController::OnActiveUserSessionChanged(

@@ -16,7 +16,8 @@
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_metrics.h"
-#include "ash/glanceables/tasks/glanceables_task_view_v2.h"
+#include "ash/glanceables/tasks/glanceables_task_view.h"
+#include "ash/glanceables/tasks/glanceables_tasks_combobox_model.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -25,7 +26,6 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
-#include "ash/system/unified/tasks_combobox_model.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -245,7 +245,8 @@ GlanceablesTasksView::GlanceablesTasksView(
   header_icon->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderIcon));
 
-  tasks_combobox_model_ = std::make_unique<TasksComboboxModel>(task_lists);
+  tasks_combobox_model_ =
+      std::make_unique<GlanceablesTasksComboboxModel>(task_lists);
   CreateComboBoxView();
 
   list_footer_view_ =
@@ -323,17 +324,17 @@ void GlanceablesTasksView::AddNewTaskButtonPressed() {
       CreateTaskView(GetActiveTaskList()->id, /*task=*/nullptr),
       /*index=*/0);
   pending_new_task->UpdateTaskTitleViewForState(
-      GlanceablesTaskViewV2::TaskTitleViewState::kEdit);
+      GlanceablesTaskView::TaskTitleViewState::kEdit);
 
   RecordUserStartedAddingTask();
 
   PreferredSizeChanged();
 }
 
-std::unique_ptr<GlanceablesTaskViewV2> GlanceablesTasksView::CreateTaskView(
+std::unique_ptr<GlanceablesTaskView> GlanceablesTasksView::CreateTaskView(
     const std::string& task_list_id,
     const api::Task* task) {
-  return std::make_unique<GlanceablesTaskViewV2>(
+  return std::make_unique<GlanceablesTaskView>(
       task,
       base::BindRepeating(&GlanceablesTasksView::MarkTaskAsCompleted,
                           base::Unretained(this), task_list_id),
@@ -544,7 +545,7 @@ void GlanceablesTasksView::ActionButtonPressed(TasksLaunchSource source,
 
 void GlanceablesTasksView::SaveTask(
     const std::string& task_list_id,
-    base::WeakPtr<GlanceablesTaskViewV2> view,
+    base::WeakPtr<GlanceablesTaskView> view,
     const std::string& task_id,
     const std::string& title,
     api::TasksClient::OnTaskSavedCallback callback) {
@@ -584,7 +585,7 @@ void GlanceablesTasksView::SaveTask(
 }
 
 void GlanceablesTasksView::OnTaskSaved(
-    base::WeakPtr<GlanceablesTaskViewV2> view,
+    base::WeakPtr<GlanceablesTaskView> view,
     const std::string& task_id,
     api::TasksClient::OnTaskSavedCallback callback,
     const api::Task* task) {
@@ -664,7 +665,7 @@ std::u16string GlanceablesTasksView::GetErrorString(
 }
 
 void GlanceablesTasksView::RemoveTaskView(
-    base::WeakPtr<GlanceablesTaskViewV2> task_view) {
+    base::WeakPtr<GlanceablesTaskView> task_view) {
   if (!task_view) {
     return;
   }

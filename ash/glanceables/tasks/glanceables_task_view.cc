@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/glanceables/tasks/glanceables_task_view_v2.h"
+#include "ash/glanceables/tasks/glanceables_task_view.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "ash/api/tasks/tasks_types.h"
-#include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_util.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_metrics.h"
@@ -209,7 +208,7 @@ END_METADATA
 
 }  // namespace
 
-class GlanceablesTaskViewV2::CheckButton : public views::ImageButton {
+class GlanceablesTaskView::CheckButton : public views::ImageButton {
   METADATA_HEADER(CheckButton, views::ImageButton)
 
  public:
@@ -257,10 +256,10 @@ class GlanceablesTaskViewV2::CheckButton : public views::ImageButton {
   bool checked_ = false;
 };
 
-BEGIN_METADATA(GlanceablesTaskViewV2, CheckButton)
+BEGIN_METADATA(GlanceablesTaskView, CheckButton)
 END_METADATA
 
-class GlanceablesTaskViewV2::TaskTitleButton : public views::LabelButton {
+class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
   METADATA_HEADER(TaskTitleButton, views::LabelButton)
 
  public:
@@ -287,10 +286,10 @@ class GlanceablesTaskViewV2::TaskTitleButton : public views::LabelButton {
   }
 };
 
-BEGIN_METADATA(GlanceablesTaskViewV2, TaskTitleButton)
+BEGIN_METADATA(GlanceablesTaskView, TaskTitleButton)
 END_METADATA
 
-GlanceablesTaskViewV2::GlanceablesTaskViewV2(
+GlanceablesTaskView::GlanceablesTaskView(
     const api::Task* task,
     MarkAsCompletedCallback mark_as_completed_callback,
     SaveCallback save_callback,
@@ -302,15 +301,13 @@ GlanceablesTaskViewV2::GlanceablesTaskViewV2(
       save_callback_(std::move(save_callback)),
       edit_in_browser_callback_(std::move(edit_in_browser_callback)),
       show_error_message_callback_(std::move(show_error_message_callback)) {
-  CHECK(features::IsGlanceablesTimeManagementTasksViewEnabled());
   SetAccessibleRole(ax::mojom::Role::kListItem);
-
   SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   SetOrientation(views::LayoutOrientation::kHorizontal);
 
   check_button_ =
       AddChildView(std::make_unique<CheckButton>(base::BindRepeating(
-          &GlanceablesTaskViewV2::CheckButtonPressed, base::Unretained(this))));
+          &GlanceablesTaskView::CheckButtonPressed, base::Unretained(this))));
   check_button_->SetProperty(views::kMarginsKey, kCheckButtonMargin);
 
   contents_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
@@ -391,9 +388,9 @@ GlanceablesTaskViewV2::GlanceablesTaskViewV2(
   check_button_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
-GlanceablesTaskViewV2::~GlanceablesTaskViewV2() = default;
+GlanceablesTaskView::~GlanceablesTaskView() = default;
 
-void GlanceablesTaskViewV2::OnViewBlurred(views::View* observed_view) {
+void GlanceablesTaskView::OnViewBlurred(views::View* observed_view) {
   if ((observed_view == edit_in_browser_button_ ||
        observed_view == task_title_textfield_) &&
       (!edit_in_browser_button_ || !edit_in_browser_button_->HasFocus()) &&
@@ -405,13 +402,13 @@ void GlanceablesTaskViewV2::OnViewBlurred(views::View* observed_view) {
     // b/324409607.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(&GlanceablesTaskViewV2::UpdateTaskTitleViewForState,
+        base::BindOnce(&GlanceablesTaskView::UpdateTaskTitleViewForState,
                        state_change_weak_ptr_factory_.GetWeakPtr(),
                        TaskTitleViewState::kView));
   }
 }
 
-void GlanceablesTaskViewV2::OnViewIsDeleting(views::View* observed_view) {
+void GlanceablesTaskView::OnViewIsDeleting(views::View* observed_view) {
   edit_exit_observer_.RemoveObservation(observed_view);
 
   if (!edit_exit_observer_.IsObservingAnySource()) {
@@ -419,15 +416,15 @@ void GlanceablesTaskViewV2::OnViewIsDeleting(views::View* observed_view) {
   }
 }
 
-const views::ImageButton* GlanceablesTaskViewV2::GetCheckButtonForTest() const {
+const views::ImageButton* GlanceablesTaskView::GetCheckButtonForTest() const {
   return check_button_;
 }
 
-bool GlanceablesTaskViewV2::GetCompletedForTest() const {
+bool GlanceablesTaskView::GetCompletedForTest() const {
   return check_button_->checked();
 }
 
-void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
+void GlanceablesTaskView::UpdateTaskTitleViewForState(
     TaskTitleViewState state) {
   state_change_weak_ptr_factory_.InvalidateWeakPtrs();
   edit_exit_observer_.RemoveAllObservations();
@@ -446,9 +443,9 @@ void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
       }
       task_title_button_ =
           tasks_title_view_->AddChildView(std::make_unique<TaskTitleButton>(
-              task_title_, base::BindRepeating(
-                               &GlanceablesTaskViewV2::TaskTitleButtonPressed,
-                               base::Unretained(this))));
+              task_title_,
+              base::BindRepeating(&GlanceablesTaskView::TaskTitleButtonPressed,
+                                  base::Unretained(this))));
       task_title_button_->SetEnabled(!saving_task_changes_);
       task_title_button_->UpdateLabelForState(
           /*completed=*/check_button_->checked());
@@ -458,7 +455,7 @@ void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
       task_title_textfield_ =
           tasks_title_view_->AddChildView(std::make_unique<TaskViewTextField>(
               task_title_,
-              base::BindRepeating(&GlanceablesTaskViewV2::OnFinishedEditing,
+              base::BindRepeating(&GlanceablesTaskView::OnFinishedEditing,
                                   base::Unretained(this))));
       GetWidget()->widget_delegate()->SetCanActivate(true);
       task_title_textfield_->RequestFocus();
@@ -473,7 +470,7 @@ void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
   UpdateContentsMargins(state);
 }
 
-void GlanceablesTaskViewV2::UpdateContentsMargins(TaskTitleViewState state) {
+void GlanceablesTaskView::UpdateContentsMargins(TaskTitleViewState state) {
   switch (state) {
     case TaskTitleViewState::kNotInitialized:
       NOTREACHED_NORETURN();
@@ -495,7 +492,7 @@ void GlanceablesTaskViewV2::UpdateContentsMargins(TaskTitleViewState state) {
   }
 }
 
-void GlanceablesTaskViewV2::CheckButtonPressed() {
+void GlanceablesTaskView::CheckButtonPressed() {
   if (!glanceables_util::IsNetworkConnected()) {
     show_error_message_callback_.Run(
         GlanceablesTasksErrorType::kCantMarkCompleteNoNetwork,
@@ -517,7 +514,7 @@ void GlanceablesTaskViewV2::CheckButtonPressed() {
   mark_as_completed_callback_.Run(task_id_, /*completed=*/target_state);
 }
 
-void GlanceablesTaskViewV2::TaskTitleButtonPressed() {
+void GlanceablesTaskView::TaskTitleButtonPressed() {
   if (!glanceables_util::IsNetworkConnected()) {
     show_error_message_callback_.Run(
         GlanceablesTasksErrorType::kCantUpdateTitleNoNetwork,
@@ -529,7 +526,7 @@ void GlanceablesTaskViewV2::TaskTitleButtonPressed() {
   UpdateTaskTitleViewForState(TaskTitleViewState::kEdit);
 }
 
-void GlanceablesTaskViewV2::OnFinishedEditing(const std::u16string& title) {
+void GlanceablesTaskView::OnFinishedEditing(const std::u16string& title) {
   if (!title.empty()) {
     task_title_ = title;
   }
@@ -553,7 +550,7 @@ void GlanceablesTaskViewV2::OnFinishedEditing(const std::u16string& title) {
     }
     save_callback_.Run(weak_ptr_factory_.GetWeakPtr(), task_id_,
                        base::UTF16ToUTF8(task_title_),
-                       base::BindOnce(&GlanceablesTaskViewV2::OnSaved,
+                       base::BindOnce(&GlanceablesTaskView::OnSaved,
                                       weak_ptr_factory_.GetWeakPtr()));
     // TODO(b/301253574): introduce "disabled" state for this view to prevent
     // editing / marking as complete while the task is not fully created yet and
@@ -567,7 +564,7 @@ void GlanceablesTaskViewV2::OnFinishedEditing(const std::u16string& title) {
   }
 }
 
-void GlanceablesTaskViewV2::OnSaved(const api::Task* task) {
+void GlanceablesTaskView::OnSaved(const api::Task* task) {
   saving_task_changes_ = false;
   if (task_title_button_) {
     task_title_button_->SetEnabled(true);
@@ -585,7 +582,7 @@ void GlanceablesTaskViewV2::OnSaved(const api::Task* task) {
   task_title_before_edit_ = u"";
 }
 
-BEGIN_METADATA(GlanceablesTaskViewV2)
+BEGIN_METADATA(GlanceablesTaskView)
 END_METADATA
 
 }  // namespace ash
