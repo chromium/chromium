@@ -109,10 +109,10 @@ to request access.
 exit
 
 # Move files into place.
-mv *.tgz third_party/instrumented_libs/binaries
+mv *.tar.gz third_party/instrumented_libs/binaries
 
 # Upload.
-upload_to_google_storage.py -b chromium-instrumented-libraries third_party/instrumented_libs/binaries/msan*.tgz
+upload_to_google_storage.py -b chromium-instrumented-libraries third_party/instrumented_libs/binaries/msan*.tar.gz
 ```
 
 ## Testing and uploading a CL
