@@ -43,7 +43,6 @@ class ASH_EXPORT PickerSearchAggregator {
 
   void PublishBurnInResults();
 
-  base::TimeDelta burn_in_period_;
   base::OneShotTimer burn_in_timer_;
 
   PickerViewDelegate::SearchResultsCallback current_callback_;

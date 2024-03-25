@@ -46,12 +46,11 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
 
 PickerSearchAggregator::PickerSearchAggregator(
     base::TimeDelta burn_in_period,
-    PickerViewDelegate::SearchResultsCallback callback)
-    : burn_in_period_(burn_in_period) {
+    PickerViewDelegate::SearchResultsCallback callback) {
   current_callback_ = std::move(callback);
 
   // TODO: b/324154537 - Show a loading animation while waiting for results.
-  burn_in_timer_.Start(FROM_HERE, burn_in_period_, this,
+  burn_in_timer_.Start(FROM_HERE, burn_in_period, this,
                        &PickerSearchAggregator::PublishBurnInResults);
 }
 
