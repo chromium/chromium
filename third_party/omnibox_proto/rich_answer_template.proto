@@ -1,0 +1,127 @@
+syntax = 'proto2';
+
+import "answer_data.proto";
+import "types.proto";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'RichAnswerTemplateProto';
+
+package omnibox;
+
+message RichAnswerTemplate {
+  // Although multiple answers can be represented, we can assume there will only
+  // be one answer.
+  repeated AnswerData answers = 6;
+  optional FormattedString attribution = 7;
+  optional SuggestionEnhancements enhancements = 5;
+  optional AnswerType answer_type = 10;
+
+  reserved 1 to 4;
+
+  enum AnswerType {
+    DICTIONARY = 1;
+    FINANCE = 2;
+    GENERIC_ANSWER = 3;
+    SPORTS = 5;
+    SUNRISE_SUNSET = 6;
+    TRANSLATION = 7;
+    WEATHER = 8;
+    WHEN_IS = 9;
+    CURRENCY = 10;
+    LOCAL_TIME = 11;
+    PLAY_INSTALL = 12;
+    FLIGHT_STATUS = 13;
+    WEB_ANSWER = 14;
+    reserved 4;
+  }
+}
+
+message Action {
+  // The type of action. Each type is associated to an action below which
+  // contains the actual data to perform the action.
+  optional ActionType action_type = 1;
+
+  oneof action {
+    // Basic action is used for ActionTypes:
+    // PHONE_CALL, TEXT, EMAIL, CALL, CHAT, VIDEO_CALL,
+    // NAVIGATE, SEARCH, WEBPAGE, and OSRP.
+    BasicAction basic_action = 2;
+  }
+  enum ActionType {
+    UNKNOWN_ACTION_TYPE = 0;
+    ACTION_PHONE_CALL = 1;
+    ACTION_TEXT = 2;
+    ACTION_EMAIL = 3;
+    ACTION_CALL = 4;
+    ACTION_CHAT = 5;
+    ACTION_VIDEO_CALL = 6;
+    ACTION_NAVIGATE = 7;
+    ACTION_SEARCH = 8;
+    ACTION_WEBPAGE = 9;
+    ACTION_OSRP = 10;
+    ACTION_SM = 11;
+    ACTION_AOG = 12;
+    ACTION_WATCH = 13;
+    ACTION_AUDIO = 14;
+    ACTION_SHARE = 15;
+  }
+}
+
+message BasicAction {
+  // Different depending on the action_type.
+  // e.g. 'https://www.google.com' for ACTION_WEBPAGE
+  // e.g. 'search for a recipe' for ACTION_SEARCH
+  optional string target = 1;
+
+  // For cases where additional data is needed.
+  map<string, string> params = 2;
+}
+
+message SuggestionEnhancements {
+  repeated SuggestionEnhancement enhancements = 1;
+
+  // Header text. For example, 'See also' & 'Similar words' for rich answers.
+  optional string header = 2;
+}
+
+message SuggestionEnhancement {
+  // Display text for this enhancement.
+  optional string display_text = 1;
+
+  // Query executed when this enhancement is selected. The query should be fully
+  // formed, and not rely on its parent suggestion's suggestion.
+  optional string query = 2;
+
+  // Associated suggestion subtypes to be attached to the assisted_query_info
+  // on click. Stored as the values of the SuggestSubtypes.
+  repeated int32 subtype_values = 4 [packed = true];
+
+  // Extra URL params that should accompany the query.
+  map<string, string> query_cgi_params = 5;
+
+  // Associated suggestion subtypes to be attached to the assisted_query_info
+  // on click.
+  repeated SuggestSubtype subtypes = 6;
+
+  // The entity id. Only set when the enhancement has entity icon.
+  optional string mid = 11;
+
+  // The second line text for this enhancement.
+  optional string annotation = 8;
+
+  // The image url. Only set when the enhancement has entity icon.
+  optional string image_url = 9;
+
+  // Only set when the enhancement has entity icon.
+  optional string dominant_color = 10;
+
+  // Only set when the enhancement has entity icon.
+  optional string search_parameters = 12 [deprecated = true];
+
+  // Represent the action to take when clicked.
+  optional Action action = 13;
+
+  // A11y label for enhancement.
+  optional string a11y_label = 14;
+}

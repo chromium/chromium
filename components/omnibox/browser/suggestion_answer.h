@@ -14,11 +14,49 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "third_party/omnibox_proto/answer_data.pb.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
+
+namespace omnibox::answer_data_parser {
+// These values are named and numbered to match a specification at go/ais_api.
+// The values are only used for answer results.
+//
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.omnibox
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: AnswerTextType
+enum TextType {
+  // Deprecated: ANSWER = 1,
+  // Deprecated: HEADLINE = 2,
+  TOP_ALIGNED = 3,
+  // Deprecated: DESCRIPTION = 4,
+  DESCRIPTION_NEGATIVE = 5,
+  DESCRIPTION_POSITIVE = 6,
+  // Deprecated: MORE_INFO = 7,
+  SUGGESTION = 8,
+  // Deprecated: SUGGESTION_POSITIVE = 9,
+  // Deprecated: SUGGESTION_NEGATIVE = 10,
+  // Deprecated: SUGGESTION_LINK = 11,
+  // Deprecated: STATUS = 12,
+  PERSONALIZED_SUGGESTION = 13,
+  // Deprecated: IMMERSIVE_DESCRIPTION_TEXT = 14,
+  // Deprecated: DATE_TEXT = 15,
+  // Deprecated: PREVIEW_TEXT = 16,
+  ANSWER_TEXT_MEDIUM = 17,
+  ANSWER_TEXT_LARGE = 18,
+  SUGGESTION_SECONDARY_TEXT_SMALL = 19,
+  SUGGESTION_SECONDARY_TEXT_MEDIUM = 20,
+};
+
+bool ParseJsonToAnswerData(const base::Value::Dict& answer_json,
+                           const std::u16string& answer_type_str,
+                           omnibox::RichAnswerTemplate* answer_template);
+
+}  // namespace omnibox::answer_data_parser
 
 // Structured representation of the JSON payload of a suggestion with an answer.
 // An answer has exactly two image lines, so called because they are a
@@ -65,35 +103,6 @@ class SuggestionAnswer {
   };
   static_assert(ANSWER_TYPE_TOTAL_COUNT == 13,
                 "Do not remove enums from AnswerType");
-
-  // These values are named and numbered to match a specification at go/ais_api.
-  // The values are only used for answer results.
-  //
-  // A Java counterpart will be generated for this enum.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.omnibox
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AnswerTextType
-  enum TextType {
-    // Deprecated: ANSWER = 1,
-    // Deprecated: HEADLINE = 2,
-    TOP_ALIGNED = 3,
-    // Deprecated: DESCRIPTION = 4,
-    DESCRIPTION_NEGATIVE = 5,
-    DESCRIPTION_POSITIVE = 6,
-    // Deprecated: MORE_INFO = 7,
-    SUGGESTION = 8,
-    // Deprecated: SUGGESTION_POSITIVE = 9,
-    // Deprecated: SUGGESTION_NEGATIVE = 10,
-    // Deprecated: SUGGESTION_LINK = 11,
-    // Deprecated: STATUS = 12,
-    PERSONALIZED_SUGGESTION = 13,
-    // Deprecated: IMMERSIVE_DESCRIPTION_TEXT = 14,
-    // Deprecated: DATE_TEXT = 15,
-    // Deprecated: PREVIEW_TEXT = 16,
-    ANSWER_TEXT_MEDIUM = 17,
-    ANSWER_TEXT_LARGE = 18,
-    SUGGESTION_SECONDARY_TEXT_SMALL = 19,
-    SUGGESTION_SECONDARY_TEXT_MEDIUM = 20,
-  };
 
   // The above TextType values match what is sent by server, but are not used
   // normally by new answers.  These enum values are used instead, styling
