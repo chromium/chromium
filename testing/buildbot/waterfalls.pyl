@@ -3049,11 +3049,6 @@
           'isolated_scripts': 'fuchsia_isolated_scripts',
         },
       },
-      'fuchsia-x64-dbg': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
     },
   },
   {

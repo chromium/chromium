@@ -334,13 +334,6 @@ builder.
   Location filters:
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
 
-* [fuchsia-compile-x64-dbg](https://ci.chromium.org/p/chromium/builders/try/fuchsia-compile-x64-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-compile-x64-dbg""))
-
-  Location filters:
-  * [`//base/fuchsia/.+`](https://cs.chromium.org/chromium/src/base/fuchsia/)
-  * [`//fuchsia/.+`](https://cs.chromium.org/chromium/src/fuchsia/)
-  * [`//media/fuchsia/.+`](https://cs.chromium.org/chromium/src/media/fuchsia/)
-
 * [fuchsia-x64-accessibility-rel](https://ci.chromium.org/p/chromium/builders/try/fuchsia-x64-accessibility-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-x64-accessibility-rel""))
 
   Location filters:

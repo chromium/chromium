@@ -92,29 +92,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "fuchsia-compile-x64-dbg",
-    mirrors = [
-        "ci/fuchsia-x64-dbg",
-    ],
-    builder_config_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
-        is_compile_only = True,
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "ci/fuchsia-x64-dbg",
-        ],
-    ),
-    tryjob = try_.job(
-        location_filters = [
-            "base/fuchsia/.+",
-            "fuchsia/.+",
-            "media/fuchsia/.+",
-        ],
-    ),
-)
-
-try_.builder(
     name = "fuchsia-x64-cast-receiver-dbg-compile",
     description_html = "A compile only replica of " + linkify_builder("ci", "fuchsia-x64-cast-receiver-dbg", "chromium"),
     mirrors = [

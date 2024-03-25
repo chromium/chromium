@@ -3692,10 +3692,5 @@
         "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
       }
     ]
-  },
-  "fuchsia-x64-dbg": {
-    "additional_compile_targets": [
-      "all"
-    ]
   }
 }

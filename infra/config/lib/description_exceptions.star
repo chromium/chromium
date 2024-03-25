@@ -352,7 +352,6 @@ exempted_from_description_builders = {
         "fuchsia-fyi-x64-dbg-persistent-emulator",
         "fuchsia-x64-accessibility-rel",
         "fuchsia-x64-cast-receiver-rel",
-        "fuchsia-x64-dbg",
         "ios-angle-builder",
         "ios-angle-intel",
         "ios-asan",
