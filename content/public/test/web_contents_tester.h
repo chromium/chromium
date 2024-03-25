@@ -197,6 +197,11 @@ class WebContentsTester {
       std::optional<blink::mojom::PictureInPictureWindowOptions> options) = 0;
 
   virtual bool GetOverscrollNavigationEnabled() = 0;
+
+  // Sets return value for GetMediaCaptureRawDeviceIdsOpened(), keyed by `type`.
+  virtual void SetMediaCaptureRawDeviceIdsOpened(
+      blink::mojom::MediaStreamType type,
+      std::vector<std::string> ids) = 0;
 };
 
 }  // namespace content

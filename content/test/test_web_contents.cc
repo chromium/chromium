@@ -552,4 +552,19 @@ void TestWebContents::SetSafeAreaInsetsHost(
   safe_area_insets_host_ = std::move(safe_area_insets_host);
 }
 
+void TestWebContents::GetMediaCaptureRawDeviceIdsOpened(
+    blink::mojom::MediaStreamType type,
+    base::OnceCallback<void(std::vector<std::string>)> callback) {
+  CHECK(media_capture_raw_device_ids_opened_.contains(type));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                media_capture_raw_device_ids_opened_.at(type)));
+}
+
+void TestWebContents::SetMediaCaptureRawDeviceIdsOpened(
+    blink::mojom::MediaStreamType type,
+    std::vector<std::string> ids) {
+  media_capture_raw_device_ids_opened_[type] = std::move(ids);
+}
+
 }  // namespace content

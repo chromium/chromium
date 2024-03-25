@@ -9935,6 +9935,7 @@ test("unit_tests") {
 
     if (is_linux || is_win || is_mac) {
       sources += [
+        "../browser/ui/views/media_preview/active_devices_media_coordinator_unittest.cc",
         "../browser/ui/views/media_preview/camera_preview/camera_coordinator_unittest.cc",
         "../browser/ui/views/media_preview/camera_preview/video_format_comparison_unittest.cc",
         "../browser/ui/views/media_preview/camera_preview/video_stream_coordinator_unittest.cc",

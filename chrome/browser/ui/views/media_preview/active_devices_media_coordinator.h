@@ -30,6 +30,14 @@ class ActiveDevicesMediaCoordinator
 
   void UpdateDevicePreferenceRanking();
 
+  std::vector<std::string> GetMediaCoordinatorKeys();
+
+  // MediaCaptureDevicesDispatcher::Observer impl.
+  void OnRequestUpdate(int render_process_id,
+                       int render_frame_id,
+                       blink::mojom::MediaStreamType stream_type,
+                       const content::MediaRequestState state) override;
+
  private:
   void UpdateMediaCoordinatorList();
 
@@ -39,14 +47,6 @@ class ActiveDevicesMediaCoordinator
   void AddMediaCoordinatorForDevice(
       const std::optional<std::string>& active_device_id);
 
-  // MediaCaptureDevicesDispatcher::Observer impl.
-  void OnRequestUpdate(int render_process_id,
-                       int render_frame_id,
-                       blink::mojom::MediaStreamType stream_type,
-                       const content::MediaRequestState state) override;
-
-  std::vector<std::string> GetMediaCoordinatorKeys();
-
   base::WeakPtr<content::WebContents> web_contents_;
   MediaCoordinator::ViewType view_type_;
   blink::mojom::MediaStreamType stream_type_;
@@ -54,6 +54,9 @@ class ActiveDevicesMediaCoordinator
   base::flat_map<std::string, std::unique_ptr<MediaCoordinator>>
       media_coordinators_;
   base::flat_map<std::string, raw_ptr<views::Separator>> separators_;
+  base::ScopedObservation<MediaCaptureDevicesDispatcher,
+                          ActiveDevicesMediaCoordinator>
+      media_devices_dispatcher_observer_{this};
 
   const media_preview_metrics::Context media_preview_metrics_context_;
   base::TimeTicks media_preview_start_time_;

@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
 #include "chrome/browser/ui/views/media_preview/scroll_media_preview.h"
 #include "components/user_prefs/user_prefs.h"
@@ -81,7 +82,8 @@ ActiveDevicesMediaCoordinator::ActiveDevicesMediaCoordinator(
   container_->SetProperty(views::kMarginsKey,
                           gfx::Insets::VH(distance_related_control, 0));
 
-  MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
+  media_devices_dispatcher_observer_.Observe(
+      MediaCaptureDevicesDispatcher::GetInstance());
   UpdateMediaCoordinatorList();
 
   media_preview_start_time_ = base::TimeTicks::Now();
@@ -213,6 +215,9 @@ void ActiveDevicesMediaCoordinator::OnRequestUpdate(
     return;
   }
 
+  // MEDIA_REQUEST_STATE_DONE, happens when a request is complete and the stream
+  // has started. MEDIA_REQUEST_STATE_CLOSING, happens when the stream is
+  // closing.
   if (state == content::MediaRequestState::MEDIA_REQUEST_STATE_DONE ||
       state == content::MediaRequestState::MEDIA_REQUEST_STATE_CLOSING) {
     UpdateMediaCoordinatorList();
