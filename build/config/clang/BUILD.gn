@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/rust.gni")
+import("//build/toolchain/goma.gni")
 import("clang.gni")
 
 if (is_ios) {
@@ -94,7 +95,8 @@ config("find_bad_constructs") {
 # See //build/config/unsafe_buffers_paths.txt for an example file, this it the
 # file used by Chromium.
 config("unsafe_buffers") {
-  if (clang_use_chrome_plugins && clang_unsafe_buffers_paths != "") {
+  if (clang_use_chrome_plugins && clang_unsafe_buffers_paths != "" &&
+      !use_goma) {
     cflags = [
       "-Xclang",
       "-add-plugin",
