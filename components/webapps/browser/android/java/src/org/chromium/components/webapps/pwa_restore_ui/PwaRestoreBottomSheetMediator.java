@@ -9,6 +9,9 @@ import android.text.TextUtils;
 import android.util.Pair;
 import android.view.View;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -17,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** The Mediator for the PWA Restore bottom sheet. */
+@JNINamespace("webapk")
 class PwaRestoreBottomSheetMediator {
     // The current activity.
     private final Activity mActivity;
@@ -99,7 +103,16 @@ class PwaRestoreBottomSheetMediator {
     }
 
     private void onRestoreButtonClicked() {
-        // TODO(finnur): Implement.
+        Pair<List<PwaRestoreProperties.AppInfo>, List<PwaRestoreProperties.AppInfo>> appLists =
+                mModel.get(PwaRestoreProperties.APPS);
+        List<String> selectedAppLists = new ArrayList();
+        for (PwaRestoreProperties.AppInfo app : appLists.first) {
+            if (app.isSelected()) {
+                selectedAppLists.add(app.getId());
+            }
+        }
+        PwaRestoreBottomSheetMediatorJni.get()
+                .onRestoreWebapps(selectedAppLists.toArray(new String[selectedAppLists.size()]));
     }
 
     private void onSelectionToggled(View view) {
@@ -125,5 +138,10 @@ class PwaRestoreBottomSheetMediator {
 
     PropertyModel getModel() {
         return mModel;
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onRestoreWebapps(String[] restoreAppsList);
     }
 }

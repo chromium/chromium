@@ -77,6 +77,7 @@ generate_jni("webapps_jni_headers") {
     "java/src/org/chromium/components/webapps/WebappsUtils.java",
     "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetController.java",
     "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetControllerProvider.java",
+    "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetMediator.java",
     "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetCoordinator.java",
   ]
 }

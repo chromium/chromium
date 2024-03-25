@@ -36,6 +36,7 @@ WebApkSyncService::WebApkSyncService(Profile* profile) {
   database_factory_ = std::make_unique<WebApkDatabaseFactory>(profile);
   sync_bridge_ = std::make_unique<WebApkSyncBridge>(database_factory_.get(),
                                                     base::DoNothing());
+  restore_manager_ = std::make_unique<WebApkRestoreManager>(profile);
 }
 
 WebApkSyncService::~WebApkSyncService() = default;
@@ -83,6 +84,17 @@ void WebApkSyncService::RemoveOldWebAPKsFromSync(
 std::vector<std::vector<std::string>> WebApkSyncService::GetRestorableAppsInfo()
     const {
   return sync_bridge_->GetRestorableAppsInfo();
+}
+
+void WebApkSyncService::RestoreAppList(
+    std::vector<std::string> app_ids_to_restore) {
+  for (auto app_id : app_ids_to_restore) {
+    const WebApkProto* webapk_proto = sync_bridge_->GetWebApkByAppId(app_id);
+    if (!webapk_proto || webapk_proto->is_locally_installed()) {
+      continue;
+    }
+    restore_manager_->ScheduleTask(webapk_proto->sync_data());
+  }
 }
 
 // static
