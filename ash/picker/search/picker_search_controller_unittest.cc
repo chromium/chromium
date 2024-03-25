@@ -76,6 +76,8 @@ MATCHER_P(LastElement, matcher, "") {
          ExplainMatchResult(matcher, arg.back(), result_listener);
 }
 
+// TODO: b/329756078 - Deduplicate this with the `MockPickerClient` in
+// `picker_search_request_unittest`.
 class MockPickerClient : public PickerClient {
  public:
   MockPickerClient() {
