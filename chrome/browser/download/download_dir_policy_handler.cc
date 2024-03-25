@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/policy/local_user_files/policy_utils.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/policy/policy_path_parser.h"
@@ -88,6 +89,8 @@ void DownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
 
   // If the policy is mandatory, prompt for download should be disabled.
   // Otherwise, it would enable a user to bypass the mandatory policy.
+  // Also check if the LocalUserFilesAllowed is set to False, in that case set
+  // the pref to control the default folder in the Files App.
   if (policies.Get(policy_name())->level == policy::POLICY_LEVEL_MANDATORY) {
     prefs->SetBoolean(prefs::kPromptForDownload, false);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -95,7 +98,16 @@ void DownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
     // Drive availability status in Ash automatically.
     if (download_dir_util::DownloadToDrive(string_value, parameters)) {
       prefs->SetBoolean(drive::prefs::kDisableDrive, false);
+
+      prefs->SetString(prefs::kFilesAppDefaultLocation,
+                       download_dir_util::kLocationGoogleDrive);
     }
+
+    if (download_dir_util::DownloadToOneDrive(string_value, parameters)) {
+      prefs->SetString(prefs::kFilesAppDefaultLocation,
+                       download_dir_util::kLocationOneDrive);
+    }
+
 #endif
   }
 }

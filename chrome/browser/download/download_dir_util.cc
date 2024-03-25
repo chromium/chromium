@@ -23,6 +23,11 @@
 
 namespace download_dir_util {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kLocationGoogleDrive[] = "google_drive";
+const char kLocationOneDrive[] = "microsoft_onedrive";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(IS_CHROMEOS)
 const char kDriveNamePolicyVariableName[] = "${google_drive}";
 const char kOneDriveNamePolicyVariableName[] = "${microsoft_onedrive}";
@@ -30,6 +35,13 @@ const char kOneDriveNamePolicyVariableName[] = "${microsoft_onedrive}";
 bool DownloadToDrive(const base::FilePath::StringType& string_value,
                      const policy::PolicyHandlerParameters& parameters) {
   const size_t position = string_value.find(kDriveNamePolicyVariableName);
+  return (position != base::FilePath::StringType::npos &&
+          !parameters.user_id_hash.empty());
+}
+
+bool DownloadToOneDrive(const base::FilePath::StringType& string_value,
+                        const policy::PolicyHandlerParameters& parameters) {
+  const size_t position = string_value.find(kOneDriveNamePolicyVariableName);
   return (position != base::FilePath::StringType::npos &&
           !parameters.user_id_hash.empty());
 }

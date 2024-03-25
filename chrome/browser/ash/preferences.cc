@@ -615,6 +615,9 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kStandaloneWindowMigrationNudgeShown,
                                 false);
+
+  registry->RegisterStringPref(::prefs::kFilesAppDefaultLocation,
+                               std::string());
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {

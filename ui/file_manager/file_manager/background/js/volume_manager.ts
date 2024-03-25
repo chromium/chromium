@@ -775,12 +775,12 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
 
   /**
    * Obtains the default display root entry.
-   * @param callback Callback passed the default display root.
+   * @returns Default display root promise, fulfilled when resolved
+   *     successfully.
    */
-  getDefaultDisplayRoot(
-      callback: ((arg0: DirectoryEntry|FilesAppDirEntry|null) => void)) {
+  async getDefaultDisplayRoot(): Promise<DirectoryEntry|FilesAppDirEntry|null> {
     console.warn('Unexpected call to VolumeManager.getDefaultDisplayRoot');
-    callback(null);
+    return null;
   }
 
   /**

@@ -48,6 +48,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -223,6 +224,30 @@ std::string Redact(const base::FilePath& path) {
   return Redact(path.value());
 }
 
+// Gets the default location/volume that the user should use, usually MyFiles,
+// based on `path`. When SkyVault is enabled the admin might choose between
+// Google Drive and OneDrive. If SkyVault is misconfigured, e.g. local files are
+// disabled but the download policy isn't set correctly defaults to MyFiles.
+api::file_manager_private::DefaultLocation GetDefaultLocation(
+    const std::string& pref) {
+  if (policy::local_user_files::LocalUserFilesAllowed()) {
+    // If local files are allowed, always default to MyFiles.
+    return api::file_manager_private::DefaultLocation::kMyFiles;
+  }
+
+  if (pref == download_dir_util::kLocationGoogleDrive) {
+    return api::file_manager_private::DefaultLocation::kGoogleDrive;
+  }
+  if (pref == download_dir_util::kLocationOneDrive) {
+    return api::file_manager_private::DefaultLocation::kOnedrive;
+  }
+  // SkyVault is misconfigured - local files are disabled but no cloud location
+  // is enforced as the download location.
+  LOG(ERROR) << "SkyVault is misconfigured: Invalid cloud pref: " << pref
+             << " defaulting to MyFiles.";
+  return api::file_manager_private::DefaultLocation::kMyFiles;
+}
+
 }  // namespace
 
 ExtensionFunction::ResponseAction
@@ -266,6 +291,8 @@ FileManagerPrivateGetPreferencesFunction::Run() {
           .InMillisecondsFSinceUnixEpoch();
   result.local_user_files_allowed =
       policy::local_user_files::LocalUserFilesAllowed();
+  result.default_location =
+      GetDefaultLocation(prefs->GetString(prefs::kFilesAppDefaultLocation));
 
   return RespondNow(WithArguments(result.ToValue()));
 }

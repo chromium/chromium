@@ -361,6 +361,12 @@ declare global {
         CANNOT_ENABLE_DOCS_OFFLINE = 'cannot_enable_docs_offline',
       }
 
+      export enum DefaultLocation {
+        MY_FILES = 'my_files',
+        GOOGLE_DRIVE = 'google_drive',
+        ONEDRIVE = 'onedrive',
+      }
+
       export interface FileTaskDescriptor {
         appId: string;
         taskType: string;
@@ -547,6 +553,7 @@ declare global {
         driveFsBulkPinningAvailable: boolean;
         driveFsBulkPinningEnabled: boolean;
         localUserFilesAllowed: boolean;
+        defaultLocation: DefaultLocation;
       }
 
       export interface PreferencesChange {

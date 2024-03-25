@@ -1129,6 +1129,7 @@ export class FileManager {
       return;
     }
 
+    // TODO(b/330866402): Extract into separate method.
     // Drive add/removes itself from directory tree in onPreferencesChanged_.
     // Setup a prefs change listener then call onPreferencesChanged_() to add
     // Drive to the directory tree if Drive is enabled by prefs.
@@ -1370,9 +1371,7 @@ export class FileManager {
     // If the directory to be changed to is still not resolved, then fallback to
     // the default display root.
     if (!nextCurrentDirEntry) {
-      nextCurrentDirEntry = await new Promise(resolve => {
-        this.volumeManager_!.getDefaultDisplayRoot(resolve);
-      });
+      nextCurrentDirEntry = await this.volumeManager_.getDefaultDisplayRoot();
     }
 
     // If selection failed to be resolved (eg. didn't exist, in case of saving a
@@ -1774,7 +1773,7 @@ export class FileManager {
     // The fake root item is being hidden so navigate away if it's the
     // current directory.
     if (this.directoryModel_.getCurrentDirEntry() === entry) {
-      this.volumeManager_.getDefaultDisplayRoot((displayRoot) => {
+      this.volumeManager_.getDefaultDisplayRoot().then((displayRoot) => {
         if (this.directoryModel_!.getCurrentDirEntry() === entry &&
             displayRoot) {
           this.directoryModel_!.changeDirectoryEntry(displayRoot);

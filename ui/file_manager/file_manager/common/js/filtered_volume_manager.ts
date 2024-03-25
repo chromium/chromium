@@ -8,8 +8,10 @@ import {VolumeInfoList} from '../../background/js/volume_info_list.js';
 import type {ArchiveOpenEvent, DeviceConnectionChangedEvent, ExternallyUnmountedEvent, VolumeAlreadyMountedEvent} from '../../background/js/volume_manager.js';
 import {VolumeManager} from '../../background/js/volume_manager.js';
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import {getStore, type Store} from '../../state/store.js';
 
 import {type SpliceEvent} from './array_data_model.js';
+import {isOneDrive} from './entry_utils.js';
 import {isFuseBoxDebugEnabled} from './flags.js';
 import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, isNative, VolumeType} from './volume_manager_types.js';
 
@@ -82,6 +84,8 @@ export class FilteredVolumeManager extends VolumeManager {
    */
   private readonly initialized_ = this.initialize_();
 
+  private store_: Store;
+
   private onVolumeInfoListUpdatedBound_ =
       this.onVolumeInfoListUpdated_.bind(this);
 
@@ -104,6 +108,7 @@ export class FilteredVolumeManager extends VolumeManager {
     super();
     this.isFuseBoxOnly_ = volumeFilter.includes('fusebox-only');
     this.isMediaStoreOnly_ = volumeFilter.includes('media-store-files-only');
+    this.store_ = getStore();
   }
 
   override getFuseBoxOnlyFilterEnabled() {
@@ -399,25 +404,50 @@ export class FilteredVolumeManager extends VolumeManager {
         this.volumeManager_.getCurrentProfileVolumeInfo(volumeType));
   }
 
-  // TODO(b/328030489): when local files are disabled, we should fall back
-  // to an available root, like OneDrive or Google Drive.
-  override getDefaultDisplayRoot(
-      callback: (entry: DirectoryEntry|null) => void) {
-    this.ensureInitialized(() => {
-      const defaultVolume =
-          this.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS);
-      if (!defaultVolume) {
-        console.warn('Cannot get default display root');
-        callback(null);
-        return;
-      }
+  override async getDefaultDisplayRoot(): Promise<DirectoryEntry|null> {
+    await this.initialized_;
 
-      defaultVolume.resolveDisplayRoot(callback, () => {
-        // defaultVolume is DOWNLOADS and resolveDisplayRoot should succeed.
-        console.error('Cannot resolve default display root');
-        callback(null);
-      });
-    });
+    // If SkyVault is disabled, this should always be set to MyFiles.
+    // If SkyVault is enabled, the default root might be MyFiles, Google
+    // Drive, or OneDrive. Fallback to MyFiles if not set, it won't be resolved
+    // if unavailable due to policy restrictions.
+    const location = this.store_.getState()?.preferences?.defaultLocation ??
+        chrome.fileManagerPrivate.DefaultLocation.MY_FILES;
+    let volumeInfo: VolumeInfo|null;
+    switch (location) {
+      case chrome.fileManagerPrivate.DefaultLocation.MY_FILES:
+        volumeInfo = this.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS);
+        break;
+      case chrome.fileManagerPrivate.DefaultLocation.GOOGLE_DRIVE:
+        volumeInfo = this.getCurrentProfileVolumeInfo(VolumeType.DRIVE);
+        break;
+      case chrome.fileManagerPrivate.DefaultLocation.ONEDRIVE:
+        volumeInfo = this.getOneDriveVolumeInfo_();
+        break;
+      default:
+        console.warn(`Invalid default location: ${location}`);
+        volumeInfo = null;
+        break;
+    }
+    if (!volumeInfo) {
+      console.warn(`Cannot get display root for ${location}`);
+      return null;
+    }
+    return volumeInfo.resolveDisplayRoot();
+  }
+
+  /**
+   * Obtains a Microsoft OneDrive volume information if available.
+   * @returns OneDrive volume info, or null if it cannot be found.
+   */
+  private getOneDriveVolumeInfo_(): VolumeInfo|null {
+    for (let i = 0; i < this.volumeInfoList.length; i++) {
+      const volumeInfo = this.volumeInfoList.item(i);
+      if (isOneDrive(volumeInfo)) {
+        return volumeInfo;
+      }
+    }
+    return null;
   }
 
   /**

@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 class Profile;
 
@@ -16,6 +17,11 @@ struct PolicyHandlerParameters;
 
 namespace download_dir_util {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kLocationGoogleDrive[];
+extern const char kLocationOneDrive[];
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kDriveNamePolicyVariableName[];
 extern const char kOneDriveNamePolicyVariableName[];
@@ -23,6 +29,10 @@ extern const char kOneDriveNamePolicyVariableName[];
 // Returns whether |string_value| points to a directory in Drive or not.
 bool DownloadToDrive(const base::FilePath::StringType& string_value,
                      const policy::PolicyHandlerParameters& parameters);
+
+// Returns whether |string_value| points to a directory in OneDrive or not.
+bool DownloadToOneDrive(const base::FilePath::StringType& string_value,
+                        const policy::PolicyHandlerParameters& parameters);
 
 // Expands the google drive policy variable to the drive root path. This cannot
 // be done in ExpandDownloadDirectoryPath() as that gets invoked in a policy

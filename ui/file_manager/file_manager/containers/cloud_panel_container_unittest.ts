@@ -44,6 +44,7 @@ const PREFERENCES = {
   driveFsBulkPinningAvailable: true,
   driveFsBulkPinningEnabled: true,
   localUserFilesAllowed: true,
+  defaultLocation: chrome.fileManagerPrivate.DefaultLocation.MY_FILES,
 };
 
 export function setUp() {

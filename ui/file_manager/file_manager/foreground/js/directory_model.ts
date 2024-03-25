@@ -1392,7 +1392,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     const spliceEventDetail = event.detail;
     // Fallback to the default volume's root if the current volume is unmounted.
     if (this.hasCurrentDirEntryBeenUnmounted_(spliceEventDetail.removed)) {
-      this.volumeManager_.getDefaultDisplayRoot((displayRoot) => {
+      this.volumeManager_.getDefaultDisplayRoot().then((displayRoot) => {
         if (displayRoot) {
           this.changeDirectoryEntry(displayRoot);
         }

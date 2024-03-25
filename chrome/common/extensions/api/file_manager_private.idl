@@ -416,6 +416,17 @@ enum BulkPinStage {
   cannot_enable_docs_offline
 };
 
+// The default location/volume that the user should use.
+// It's usually MyFiles. When SkyVault is enabled the admin might
+// choose between Google Drive and OneDrive.
+// NOTE: This is independent of the Downloads folder which is mostly used
+// in the browser (lacros or ash).
+enum DefaultLocation {
+  my_files,
+  google_drive,
+  onedrive
+};
+
 // These three fields together uniquely identify a task.
 dictionary FileTaskDescriptor {
   DOMString appId;
@@ -853,6 +864,7 @@ dictionary Preferences {
   boolean driveFsBulkPinningAvailable;
   boolean driveFsBulkPinningEnabled;
   boolean localUserFilesAllowed;
+  DefaultLocation defaultLocation;
 };
 
 dictionary PreferencesChange {
