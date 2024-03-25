@@ -137,7 +137,7 @@ class TabListViewBinder {
         View cardView = view.findViewById(R.id.content_view);
         cardView.getBackground().mutate();
         final @ColorInt int backgroundColor =
-                TabUiThemeProvider.getCardViewBackgroundColor(
+                TabUiThemeUtils.getCardViewBackgroundColor(
                         view.getContext(), isIncognito, /* isSelected= */ false);
         ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
 
@@ -155,7 +155,7 @@ class TabListViewBinder {
         }
         faviconView.getBackground().mutate();
         final @ColorInt int faviconBackgroundColor =
-                TabUiThemeProvider.getMiniThumbnailPlaceholderColor(
+                TabUiThemeUtils.getMiniThumbnailPlaceholderColor(
                         view.getContext(), isIncognito, /* isSelected= */ false);
         ViewCompat.setBackgroundTintList(
                 faviconView, ColorStateList.valueOf(faviconBackgroundColor));

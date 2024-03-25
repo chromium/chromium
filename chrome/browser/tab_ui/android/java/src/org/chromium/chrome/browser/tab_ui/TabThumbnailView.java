@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.tab_ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -21,12 +21,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.ImageView;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
-
-import org.chromium.chrome.tab_ui.R;
 
 /**
  * A specialized {@link ImageView} that clips a thumbnail to a card shape with varied corner
@@ -224,11 +221,11 @@ public class TabThumbnailView extends ImageView {
     public void updateThumbnailPlaceholder(boolean isIncognito, boolean isSelected) {
         // Step 1: Background color.
         mBackgroundDrawable.setColor(
-                TabUiThemeProvider.getMiniThumbnailPlaceholderColor(
+                TabUiThemeUtils.getMiniThumbnailPlaceholderColor(
                         getContext(), isIncognito, isSelected));
         final int oldColor = mPaint.getColor();
         final int newColor =
-                TabUiThemeProvider.getCardViewBackgroundColor(
+                TabUiThemeUtils.getCardViewBackgroundColor(
                         getContext(), isIncognito, isSelected);
         mPaint.setColor(newColor);
 

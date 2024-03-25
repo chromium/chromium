@@ -11,6 +11,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_ui/InvalidationAwareThumbnailProvider.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabContentManager.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabListFaviconProvider.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabThumbnailView.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabUiThemeUtils.java",
     "java/src/org/chromium/chrome/browser/tab_ui/ThumbnailProvider.java",
   ]
@@ -32,6 +33,7 @@ android_library("java") {
     "//content/public/android:content_full_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -44,10 +46,13 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/ic_group_icon_16dp.xml",
+    "java/res/drawable/ic_tab_placeholder.xml",
     "java/res/drawable/tab_strip_favicon_circle.xml",
     "java/res/drawable/tabstrip_favicon_background.xml",
+    "java/res/values/attrs.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
     "java/res/values/values.xml",
   ]
   deps = [

@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -364,11 +365,11 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         mEmptyThumbnailPaint.setStyle(Paint.Style.FILL);
         mEmptyThumbnailPaint.setAntiAlias(true);
         mEmptyThumbnailPaint.setColor(
-                TabUiThemeProvider.getMiniThumbnailPlaceholderColor(context, false, false));
+                TabUiThemeUtils.getMiniThumbnailPlaceholderColor(context, false, false));
 
         mSelectedEmptyThumbnailPaint = new Paint(mEmptyThumbnailPaint);
         mSelectedEmptyThumbnailPaint.setColor(
-                TabUiThemeProvider.getMiniThumbnailPlaceholderColor(context, false, true));
+                TabUiThemeUtils.getMiniThumbnailPlaceholderColor(context, false, true));
 
         // Paint used to set base for thumbnails, in case mEmptyThumbnailPaint has transparency.
         mThumbnailBasePaint = new Paint(mEmptyThumbnailPaint);
@@ -412,7 +413,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
     private void onTabModelFilterChanged(TabModelFilter filter) {
         boolean isIncognito = filter.isIncognito();
         mEmptyThumbnailPaint.setColor(
-                TabUiThemeProvider.getMiniThumbnailPlaceholderColor(mContext, isIncognito, false));
+                TabUiThemeUtils.getMiniThumbnailPlaceholderColor(mContext, isIncognito, false));
         mTextPaint.setColor(
                 TabUiThemeProvider.getTabGroupNumberTextColor(mContext, isIncognito, false));
         mThumbnailFramePaint.setColor(
@@ -421,7 +422,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 TabUiThemeProvider.getFaviconBackgroundColor(mContext, isIncognito));
 
         mSelectedEmptyThumbnailPaint.setColor(
-                TabUiThemeProvider.getMiniThumbnailPlaceholderColor(mContext, isIncognito, true));
+                TabUiThemeUtils.getMiniThumbnailPlaceholderColor(mContext, isIncognito, true));
         mSelectedTextPaint.setColor(
                 TabUiThemeProvider.getTabGroupNumberTextColor(mContext, isIncognito, true));
     }
