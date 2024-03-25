@@ -20,7 +20,7 @@
 #include "partition_alloc/partition_alloc_for_testing.h"
 #include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_root.h"
-#include "partition_alloc/starscan/stack/stack.h"
+#include "partition_alloc/stack/stack.h"
 #include "partition_alloc/tagging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -608,7 +608,7 @@ class PartitionAllocPCScanStackScanningTest : public PartitionAllocPCScanTest {
 
   PA_NOINLINE void SetupAndRunTest() {
     // Register the top of the stack to be the current pointer.
-    PCScan::NotifyThreadCreated(GetStackPointer());
+    StackTopRegistry::Get().NotifyThreadCreated();
     RunTest();
   }
 

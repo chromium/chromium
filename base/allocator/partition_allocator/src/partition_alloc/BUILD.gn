@@ -202,7 +202,8 @@ buildflag_header("partition_alloc_buildflags") {
     "USE_FREELIST_POOL_OFFSETS=$use_freelist_pool_offsets",
 
     "USE_STARSCAN=$use_starscan",
-    "PCSCAN_STACK_SUPPORTED=$pcscan_stack_supported",
+
+    "STACK_SCAN_SUPPORTED=$stack_scan_supported",
 
     "ENABLE_PKEYS=$enable_pkeys",
     "ENABLE_THREAD_ISOLATION=$enable_pkeys",
@@ -437,6 +438,8 @@ if (is_clang_or_gcc) {
       "reverse_bytes.h",
       "spinning_mutex.cc",
       "spinning_mutex.h",
+      "stack/stack.cc",
+      "stack/stack.h",
       "tagging.cc",
       "tagging.h",
       "thread_cache.cc",
@@ -462,8 +465,6 @@ if (is_clang_or_gcc) {
         "starscan/scan_loop.h",
         "starscan/snapshot.cc",
         "starscan/snapshot.h",
-        "starscan/stack/stack.cc",
-        "starscan/stack/stack.h",
         "starscan/starscan_fwd.h",
         "starscan/state_bitmap.h",
         "starscan/stats_collector.cc",
@@ -492,26 +493,24 @@ if (is_clang_or_gcc) {
       # The Android NDK supports PR_MTE_* macros as of NDK r23.
       defines += [ "HAS_PR_MTE_MACROS" ]
     }
-    if (use_starscan) {
-      if (current_cpu == "x64") {
-        assert(pcscan_stack_supported)
-        sources += [ "starscan/stack/asm/x64/push_registers_asm.cc" ]
-      } else if (current_cpu == "x86") {
-        assert(pcscan_stack_supported)
-        sources += [ "starscan/stack/asm/x86/push_registers_asm.cc" ]
-      } else if (current_cpu == "arm") {
-        assert(pcscan_stack_supported)
-        sources += [ "starscan/stack/asm/arm/push_registers_asm.cc" ]
-      } else if (current_cpu == "arm64") {
-        assert(pcscan_stack_supported)
-        sources += [ "starscan/stack/asm/arm64/push_registers_asm.cc" ]
-      } else if (current_cpu == "riscv64") {
-        assert(pcscan_stack_supported)
-        sources += [ "starscan/stack/asm/riscv64/push_registers_asm.cc" ]
-      } else {
-        # To support a trampoline for another arch, please refer to v8/src/heap/base.
-        assert(!pcscan_stack_supported)
-      }
+    if (current_cpu == "x64") {
+      assert(stack_scan_supported)
+      sources += [ "stack/asm/x64/push_registers_asm.cc" ]
+    } else if (current_cpu == "x86") {
+      assert(stack_scan_supported)
+      sources += [ "stack/asm/x86/push_registers_asm.cc" ]
+    } else if (current_cpu == "arm") {
+      assert(stack_scan_supported)
+      sources += [ "stack/asm/arm/push_registers_asm.cc" ]
+    } else if (current_cpu == "arm64") {
+      assert(stack_scan_supported)
+      sources += [ "stack/asm/arm64/push_registers_asm.cc" ]
+    } else if (current_cpu == "riscv64") {
+      assert(stack_scan_supported)
+      sources += [ "stack/asm/riscv64/push_registers_asm.cc" ]
+    } else {
+      # To support a trampoline for another arch, please refer to v8/src/heap/base.
+      assert(!stack_scan_supported)
     }
     if (use_freelist_pool_offsets) {
       sources += [ "pool_offset_freelist.h" ]

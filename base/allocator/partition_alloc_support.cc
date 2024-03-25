@@ -55,13 +55,13 @@
 #include "partition_alloc/pointers/raw_ptr.h"
 #include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "partition_alloc/stack/stack.h"
 #include "partition_alloc/thread_cache.h"
 
 #if BUILDFLAG(USE_STARSCAN)
 #include "partition_alloc/shim/nonscannable_allocator.h"
 #include "partition_alloc/starscan/pcscan.h"
 #include "partition_alloc/starscan/pcscan_scheduling.h"
-#include "partition_alloc/starscan/stack/stack.h"
 #include "partition_alloc/starscan/stats_collector.h"
 #include "partition_alloc/starscan/stats_reporter.h"
 #endif  // BUILDFLAG(USE_STARSCAN)
@@ -1228,9 +1228,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
               base::features::kPartitionAllocPCScanStackScanning)) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         partition_alloc::internal::PCScan::EnableStackScanning();
-        // Notify PCScan about the main thread.
-        partition_alloc::internal::PCScan::NotifyThreadCreated(
-            partition_alloc::internal::GetStackTop());
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
       }
       if (base::FeatureList::IsEnabled(
@@ -1248,6 +1245,9 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 #endif  // BUILDFLAG(USE_STARSCAN)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  partition_alloc::internal::StackTopRegistry::Get().NotifyThreadCreated(
+      partition_alloc::internal::GetStackTop());
+
 #if BUILDFLAG(USE_STARSCAN)
   // Non-quarantinable partition is dealing with hot V8's zone allocations.
   // In case PCScan is enabled in Renderer, enable thread cache on this

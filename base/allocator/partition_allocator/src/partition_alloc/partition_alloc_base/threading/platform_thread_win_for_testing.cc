@@ -14,8 +14,8 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
+#include "partition_alloc/stack/stack.h"
 #include "partition_alloc/starscan/pcscan.h"
-#include "partition_alloc/starscan/stack/stack.h"
 #endif
 
 namespace partition_alloc::internal::base {
@@ -64,7 +64,7 @@ DWORD __stdcall ThreadFunc(void* params) {
                                  FALSE, DUPLICATE_SAME_ACCESS);
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
-  PCScan::NotifyThreadCreated(GetStackPointer());
+  StackTopRegistry::Get().NotifyThreadCreated();
 #endif
 
   ScopedHandle scoped_platform_handle;
@@ -76,7 +76,7 @@ DWORD __stdcall ThreadFunc(void* params) {
   delegate->ThreadMain();
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
-  PCScan::NotifyThreadDestroyed();
+  StackTopRegistry::Get().NotifyThreadDestroyed();
 #endif
   return 0;
 }

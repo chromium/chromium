@@ -79,13 +79,6 @@ void PCScan::EnableImmediateFreeing() {
   PCScanInternal::Instance().EnableImmediateFreeing();
 }
 
-void PCScan::NotifyThreadCreated(void* stack_top) {
-  PCScanInternal::Instance().NotifyThreadCreated(stack_top);
-}
-void PCScan::NotifyThreadDestroyed() {
-  PCScanInternal::Instance().NotifyThreadDestroyed();
-}
-
 void PCScan::SetClearType(ClearType clear_type) {
   PCScan& instance = Instance();
   instance.clear_type_ = clear_type;

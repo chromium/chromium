@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/starscan/stack/stack.h"
+#include "partition_alloc/stack/stack.h"
 
 #include <cstdint>
 #include <limits>
@@ -136,12 +136,45 @@ namespace {
 }  // namespace
 
 void Stack::IteratePointers(StackVisitor* visitor) const {
-#if BUILDFLAG(PCSCAN_STACK_SUPPORTED)
+#if BUILDFLAG(STACK_SCAN_SUPPORTED)
   PAPushAllRegistersAndIterateStack(this, visitor, &IteratePointersImpl);
   // No need to deal with callee-saved registers as they will be kept alive by
   // the regular conservative stack iteration.
   IterateSafeStackIfNecessary(visitor);
-#endif  // BUILDFLAG(PCSCAN_STACK_SUPPORTED)
+#endif  // BUILDFLAG(STACK_SCAN_SUPPORTED)
+}
+
+StackTopRegistry::StackTopRegistry() = default;
+StackTopRegistry::~StackTopRegistry() = default;
+
+// static
+StackTopRegistry& StackTopRegistry::Get() {
+  static base::NoDestructor<StackTopRegistry> instance;
+  return *instance.get();
+}
+
+void StackTopRegistry::NotifyThreadCreated(void* stack_top) {
+  const auto tid = base::PlatformThread::CurrentId();
+  ScopedGuard guard(lock_);
+  stack_tops_.insert({tid, stack_top});
+  // Insertion may fail due to an existing entry
+  // (i.e. `insert(...).second == false`), but we allow it instead of `CHECK`ing
+  // it. Guaranteeing this function to be called exactly once is quite hard and
+  // we aim to guarantee "at least once".
+}
+
+void StackTopRegistry::NotifyThreadDestroyed() {
+  const auto tid = base::PlatformThread::CurrentId();
+  ScopedGuard guard(lock_);
+  PA_DCHECK(1 == stack_tops_.count(tid));
+  stack_tops_.erase(tid);
+}
+
+void* StackTopRegistry::GetCurrentThreadStackTop() const {
+  const auto tid = base::PlatformThread::CurrentId();
+  ScopedGuard guard(lock_);
+  auto it = stack_tops_.find(tid);
+  return it != stack_tops_.end() ? it->second : nullptr;
 }
 
 }  // namespace partition_alloc::internal

@@ -3973,10 +3973,10 @@ test("base_unittests") {
 
     if (use_starscan) {
       sources += [
+        "allocator/partition_allocator/src/partition_alloc/stack/stack_unittest.cc",
         "allocator/partition_allocator/src/partition_alloc/starscan/pcscan_scheduling_unittest.cc",
         "allocator/partition_allocator/src/partition_alloc/starscan/pcscan_unittest.cc",
         "allocator/partition_allocator/src/partition_alloc/starscan/scan_loop_unittest.cc",
-        "allocator/partition_allocator/src/partition_alloc/starscan/stack/stack_unittest.cc",
         "allocator/partition_allocator/src/partition_alloc/starscan/state_bitmap_unittest.cc",
       ]
     }

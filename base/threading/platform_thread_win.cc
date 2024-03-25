@@ -31,9 +31,8 @@
 
 #include <windows.h>
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
-#include "partition_alloc/starscan/pcscan.h"
-#include "partition_alloc/starscan/stack/stack.h"
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "partition_alloc/stack/stack.h"
 #endif
 
 namespace base {
@@ -123,9 +122,8 @@ DWORD __stdcall ThreadFunc(void* params) {
                                 FALSE,
                                 DUPLICATE_SAME_ACCESS);
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
-  partition_alloc::internal::PCScan::NotifyThreadCreated(
-      partition_alloc::internal::GetStackPointer());
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  partition_alloc::internal::StackTopRegistry::Get().NotifyThreadCreated();
 #endif
 
   win::ScopedHandle scoped_platform_handle;
@@ -144,8 +142,8 @@ DWORD __stdcall ThreadFunc(void* params) {
                                                    PlatformThread::CurrentId());
   }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
-  partition_alloc::internal::PCScan::NotifyThreadDestroyed();
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  partition_alloc::internal::StackTopRegistry::Get().NotifyThreadDestroyed();
 #endif
 
   // Ensure thread priority is at least NORMAL before initiating thread

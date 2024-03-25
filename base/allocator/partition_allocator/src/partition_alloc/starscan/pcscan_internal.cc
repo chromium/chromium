@@ -42,11 +42,11 @@
 #include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/reservation_offset_table.h"
+#include "partition_alloc/stack/stack.h"
 #include "partition_alloc/starscan/pcscan_scheduling.h"
 #include "partition_alloc/starscan/raceful_worklist.h"
 #include "partition_alloc/starscan/scan_loop.h"
 #include "partition_alloc/starscan/snapshot.h"
-#include "partition_alloc/starscan/stack/stack.h"
 #include "partition_alloc/starscan/stats_collector.h"
 #include "partition_alloc/starscan/stats_reporter.h"
 #include "partition_alloc/tagging.h"
@@ -846,7 +846,7 @@ void PCScanTask::ScanStack() {
   }
   // Check if the stack top was registered. It may happen that it's not if the
   // current allocation happens from pthread trampolines.
-  void* stack_top = pcscan.GetCurrentThreadStackTop();
+  void* stack_top = StackTopRegistry::Get().GetCurrentThreadStackTop();
   if (PA_UNLIKELY(!stack_top)) {
     return;
   }
@@ -1549,27 +1549,6 @@ void PCScanInternal::DisableStackScanning() {
 }
 bool PCScanInternal::IsStackScanningEnabled() const {
   return stack_scanning_enabled_;
-}
-
-void PCScanInternal::NotifyThreadCreated(void* stack_top) {
-  const auto tid = base::PlatformThread::CurrentId();
-  std::lock_guard<std::mutex> lock(stack_tops_mutex_);
-  const auto res = stack_tops_.insert({tid, stack_top});
-  PA_DCHECK(res.second);
-}
-
-void PCScanInternal::NotifyThreadDestroyed() {
-  const auto tid = base::PlatformThread::CurrentId();
-  std::lock_guard<std::mutex> lock(stack_tops_mutex_);
-  PA_DCHECK(1 == stack_tops_.count(tid));
-  stack_tops_.erase(tid);
-}
-
-void* PCScanInternal::GetCurrentThreadStackTop() const {
-  const auto tid = base::PlatformThread::CurrentId();
-  std::lock_guard<std::mutex> lock(stack_tops_mutex_);
-  auto it = stack_tops_.find(tid);
-  return it != stack_tops_.end() ? it->second : nullptr;
 }
 
 bool PCScanInternal::WriteProtectionEnabled() const {

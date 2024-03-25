@@ -10,6 +10,7 @@
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/no_destructor.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_direct_map_extent.h"
@@ -125,11 +126,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScan final {
   static bool IsStackScanningEnabled();
 
   static void EnableImmediateFreeing();
-
-  // Notify PCScan that a new thread was created/destroyed. Can be called for
-  // uninitialized PCScan (before Initialize()).
-  static void NotifyThreadCreated(void* stack_top);
-  static void NotifyThreadDestroyed();
 
   // Define when clearing should happen (on free() or in scanning task).
   static void SetClearType(ClearType);

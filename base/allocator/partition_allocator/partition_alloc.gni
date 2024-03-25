@@ -238,10 +238,9 @@ declare_args() {
 # *Scan is currently only used by Chromium, and supports only 64-bit.
 use_starscan = build_with_chromium && has_64_bit_pointers
 
-pcscan_stack_supported =
-    use_starscan &&
-    (current_cpu == "x64" || current_cpu == "x86" || current_cpu == "arm" ||
-     current_cpu == "arm64" || current_cpu == "riscv64")
+stack_scan_supported =
+    current_cpu == "x64" || current_cpu == "x86" || current_cpu == "arm" ||
+    current_cpu == "arm64" || current_cpu == "riscv64"
 
 # We want to provide assertions that guard against inconsistent build
 # args, but there is no point in having them fire if we're not building
