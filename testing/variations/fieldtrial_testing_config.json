@@ -14619,26 +14619,6 @@
             ]
         }
     ],
-    "ProtectedAudienceEnableWALForInterestGroupStorageStudy": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FledgeEnableWALForInterestGroupStorage"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProtectedAudienceStoreBandAKeysInDatabaseStudy": [
         {
             "platforms": [
@@ -17774,6 +17754,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "FledgeEnableWALForInterestGroupStorage",
                         "SharedStorageAPIEnableWALForDatabase",
                         "SqlWALModeOnDipsDatabase",
                         "SqlWALModeOnSegmentationDatabase"
