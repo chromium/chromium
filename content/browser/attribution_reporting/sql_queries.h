@@ -151,6 +151,10 @@ inline constexpr const char kGetActiveSourcesSql[] =
       "WHERE(event_level_active=1 OR aggregatable_active=1)AND "
       "expiry_time>? LIMIT ?";
 
+inline constexpr const char kGetFiltersSql[] = 
+    "SELECT epoch, origin, initial_budget, consumed_budget "
+    "FROM per_origin_filters";
+
 #define ATTRIBUTION_SELECT_REPORT_AND_SOURCE_COLUMNS_SQL                      \
   "SELECT "                                                                   \
   ATTRIBUTION_SOURCE_COLUMNS_SQL("I.")                                        \

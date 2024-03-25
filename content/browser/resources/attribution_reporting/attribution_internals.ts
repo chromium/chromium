@@ -1080,13 +1080,10 @@ class AttributionInternals implements ObserverInterface {
 
   onSourcesChanged(): void {
     this.updateSources();
-    //add an example filter
-    this.filters.addRow(new Filter({
-      epoch: 0n,
-      origin: {host: 'example.com', port: 443, scheme: 'https'},
-      initialBudget: 10,
-      consumedBudget: 2,
-    }));  
+  }
+
+  onFiltersChanged(): void {
+    this.updateFilters();
   }
 
   onReportsChanged(): void {
@@ -1174,6 +1171,12 @@ class AttributionInternals implements ObserverInterface {
   private updateSources(): void {
     this.handler.getActiveSources().then(({sources}) => {
       this.sources.setRows(sources.map((mojo) => new Source(mojo)));
+    });
+  }
+
+  private updateFilters(): void {
+    this.handler.getFilters().then(({filters}) => {
+      this.filters.setRows(filters.map((mojo) => new Filter(mojo)));
     });
   }
 

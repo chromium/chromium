@@ -34,6 +34,9 @@ class AttributionObserver : public base::CheckedObserver {
   // Called when sources in storage change.
   virtual void OnSourcesChanged() {}
 
+  // Called when filters in storage change.
+  virtual void OnFiltersChanged() {}
+
   // Called when reports in storage change.
   virtual void OnReportsChanged() {}
 

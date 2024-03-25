@@ -73,6 +73,7 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/attribution_reporting/stored_filter.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/features.h"
@@ -241,6 +242,9 @@ struct AttributionStorageSql::StoredSourceData {
   int num_aggregatable_reports;
 };
 
+struct AttributionStorageSql::StoredFilterData {
+  StoredFilter filter;
+};
 struct AttributionStorageSql::ReportCorruptionStatusSetAndIds {
   ReportCorruptionStatusSet status_set;
   absl::variant<absl::monostate, StoredSource::Id, AttributionReport::Id>
@@ -445,6 +449,43 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   return StoredSourceData{.source = std::move(*stored_source),
                           .num_conversions = num_conversions,
                           .num_aggregatable_reports = num_aggregatable_reports};
+}
+
+base::expected<AttributionStorageSql::StoredFilterData,
+               AttributionStorageSql::ReportCorruptionStatusSetAndIds>
+AttributionStorageSql::ReadFilterFromStatement(sql::Statement& statement) {
+
+  int col = 0;
+
+  uint64_t epoch = DeserializeUint64(statement.ColumnInt64(col++));
+   std::optional<SuitableOrigin> origin =
+      SuitableOrigin::Deserialize(statement.ColumnString(col++));
+  double initial_budget = statement.ColumnDouble(col++);
+  double consumed_budget = statement.ColumnDouble(col++);
+
+  //ReportCorruptionStatusSet corruption_causes;
+
+  // if (!origin) {
+  //   corruption_causes.Put(ReportCorruptionStatus::kStoredFilterConstructionFailed);
+  // }
+  
+  // if (!corruption_causes.Empty()) {
+  //   return base::unexpected(
+  //       ReportCorruptionStatusSetAndIds(corruption_causes, epoch));
+  // }
+  
+  std::optional<StoredFilter> stored_filter = StoredFilter::Create(
+      epoch, *origin, initial_budget, consumed_budget);
+
+  // if (!stored_filter.has_value()) {
+  //   // TODO(crbug.com/1498497): Consider enumerating errors from StoredSource.
+  //   return base::unexpected(ReportCorruptionStatusSetAndIds(
+  //       ReportCorruptionStatusSet{
+  //           ReportCorruptionStatus::kStoredFilterConstructionFailed},
+  //       epoch));
+  // }
+
+  return StoredFilterData{.filter = std::move(*stored_filter)};
 }
 
 std::optional<AttributionStorageSql::StoredSourceData>
@@ -2419,6 +2460,25 @@ AttributionStorageSql::CapacityForStoringReport(
   DCHECK_GT(max, 0);
   return count < max ? ConversionCapacityStatus::kHasCapacity
                      : ConversionCapacityStatus::kNoCapacity;
+}
+
+std::vector<StoredFilter> AttributionStorageSql::GetFilters() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
+    return {};
+  }
+
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, attribution_queries::kGetFiltersSql));
+  std::vector<StoredFilter> filters;
+  while(statement.Step()) {
+     base::expected<StoredFilterData, ReportCorruptionStatusSetAndIds>
+        filter_data = ReadFilterFromStatement(statement);
+    if (filter_data.has_value()) {
+      filters.push_back(std::move(filter_data->filter));
+    }
+  }    
+  return filters;
 }
 
 std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {

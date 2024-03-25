@@ -27,6 +27,7 @@ class CreateReportResult;
 class StorableSource;
 class StoreSourceResult;
 class StoredSource;
+class StoredFilter;
 
 // This class provides an interface for persisting attribution data to
 // disk, and performing queries on it. AttributionStorage should initialize
@@ -82,6 +83,8 @@ class AttributionStorage {
   // returned. |limit| limits the number of sources to return; use
   // a negative number for no limit.
   virtual std::vector<StoredSource> GetActiveSources(int limit = -1) = 0;
+  
+  virtual std::vector<StoredFilter> GetFilters() = 0;
 
   // Returns all distinct reporting origins for the
   // Browsing Data Model. Partial data will still be returned

@@ -66,6 +66,7 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/attribution_reporting/stored_filter.h"
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/attribution_data_model.h"
@@ -918,6 +919,13 @@ void AttributionManagerImpl::GetActiveSourcesForWebUI(
   const int kMaxSources = 1000;
   attribution_storage_.AsyncCall(&AttributionStorage::GetActiveSources)
       .WithArgs(kMaxSources)
+      .Then(std::move(callback));
+}
+
+// Called when a filter is applied to the sources, to notify observers.
+void AttributionManagerImpl::GetFiltersForWebUI(
+    base::OnceCallback<void(std::vector<StoredFilter>)> callback) {
+  attribution_storage_.AsyncCall(&AttributionStorage::GetFilters)
       .Then(std::move(callback));
 }
 

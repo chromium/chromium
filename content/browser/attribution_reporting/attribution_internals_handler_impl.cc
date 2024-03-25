@@ -44,6 +44,7 @@
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/attribution_reporting/stored_filter.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
@@ -94,6 +95,23 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
       source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
       source.trigger_data_matching(), source.event_level_epsilon(),
       source.debug_cookie_set(), attributability);
+}
+
+void ForwardFiltersToWebUI(
+    attribution_internals::mojom::Handler::GetFiltersCallback web_ui_callback,
+    std::vector<StoredFilter> filters) {
+  std::vector<attribution_internals::mojom::WebUIFilterPtr> web_ui_filters;
+  web_ui_filters.reserve(filters.size());
+
+  for (const StoredFilter& filter : filters) {
+    web_ui_filters.push_back(attribution_internals::mojom::WebUIFilter::New(
+        filter.epoch(),
+        filter.origin(),
+        filter.initial_budget(),
+        filter.consumed_budget()));
+  }
+
+  std::move(web_ui_callback).Run(std::move(web_ui_filters));
 }
 
 void ForwardSourcesToWebUI(
@@ -277,6 +295,17 @@ void AttributionInternalsHandlerImpl::GetActiveSources(
   }
 }
 
+void AttributionInternalsHandlerImpl::GetFilters(
+    attribution_internals::mojom::Handler::GetFiltersCallback callback) {
+  if (AttributionManager* manager =
+          AttributionManager::FromWebContents(web_ui_->GetWebContents())) {
+    manager->GetFiltersForWebUI(
+        base::BindOnce(&ForwardFiltersToWebUI, std::move(callback)));
+  } else {
+    std::move(callback).Run({});
+  }
+}
+
 void AttributionInternalsHandlerImpl::GetReports(
     attribution_internals::mojom::Handler::GetReportsCallback callback) {
   if (AttributionManager* manager =
@@ -315,6 +344,10 @@ void AttributionInternalsHandlerImpl::ClearStorage(
 
 void AttributionInternalsHandlerImpl::OnSourcesChanged() {
   observer_->OnSourcesChanged();
+}
+
+void AttributionInternalsHandlerImpl::OnFiltersChanged() {
+  observer_->OnFiltersChanged();
 }
 
 void AttributionInternalsHandlerImpl::OnReportsChanged() {

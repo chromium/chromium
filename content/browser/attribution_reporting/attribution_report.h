@@ -23,6 +23,7 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/attribution_reporting/stored_filter.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 

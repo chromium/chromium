@@ -24,6 +24,7 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/attribution_reporting/stored_filter.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
@@ -116,7 +117,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kSourceDestinationSitesQueryFailed = 26,
     kSourceInvalidDestinationSites = 27,
     kStoredSourceConstructionFailed = 28,
-    kMaxValue = kStoredSourceConstructionFailed,
+    kStoredFilterConstructionFailed = 29,
+    kMaxValue = kStoredFilterConstructionFailed,
   };
 
   struct DeletionCounts {
@@ -135,6 +137,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   struct ReportCorruptionStatusSetAndIds;
   struct StoredSourceData;
+  struct StoredFilterData;
 
   enum class DbStatus {
     // The database has never been created, i.e. there is no database file at
@@ -167,6 +170,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   std::vector<AttributionReport> GetReports(
       const std::vector<AttributionReport::Id>& ids) override;
   std::vector<StoredSource> GetActiveSources(int limit = -1) override;
+  std::vector<StoredFilter> GetFilters() override;
   std::set<AttributionDataModel::DataKey> GetAllDataKeys() override;
   void DeleteByDataKey(const AttributionDataModel::DataKey& datakey) override;
   bool DeleteReport(AttributionReport::Id report_id) override;
@@ -268,6 +272,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   base::expected<StoredSourceData, ReportCorruptionStatusSetAndIds>
   ReadSourceFromStatement(sql::Statement&)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  base::expected<StoredFilterData, ReportCorruptionStatusSetAndIds>
+  ReadFilterFromStatement(sql::Statement&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   std::optional<StoredSourceData> ReadSourceToAttribute(

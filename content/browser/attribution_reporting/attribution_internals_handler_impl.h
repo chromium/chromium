@@ -48,6 +48,8 @@ class AttributionInternalsHandlerImpl
   void GetActiveSources(
       attribution_internals::mojom::Handler::GetActiveSourcesCallback callback)
       override;
+  void GetFilters(attribution_internals::mojom::Handler::GetFiltersCallback 
+                      callback) override;
   void GetReports(attribution_internals::mojom::Handler::GetReportsCallback
                       callback) override;
   void SendReports(const std::vector<AttributionReport::Id>& ids,
@@ -59,6 +61,7 @@ class AttributionInternalsHandlerImpl
  private:
   // AttributionObserver:
   void OnSourcesChanged() override;
+  void OnFiltersChanged() override;
   void OnReportsChanged() override;
   void OnSourceHandled(
       const StorableSource& source,

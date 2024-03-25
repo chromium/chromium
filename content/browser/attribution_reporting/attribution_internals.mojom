@@ -177,6 +177,10 @@ interface Observer {
   // should call `Handler::GetActiveSources()`.
   OnSourcesChanged();
 
+  // Called when the filters in storage changed, indicating that the observer
+  // should call `Handler::GetFilters()`.
+  OnFiltersChanged();
+
   // Called when the reports in storage changed, indicating that the observer
   // should call `Handler::GetReports()`.
   OnReportsChanged();
@@ -214,6 +218,9 @@ interface Handler {
   // due to reaching policy limits.
   GetActiveSources() => (array<WebUISource> sources);
 
+  // Returns all filters contained in storage
+  GetFilters() => (array<WebUIFilter> filters);
+  
   // Returns all reports contained in storage, including those that are actively
   // being sent.
   GetReports() => (array<WebUIReport> reports);

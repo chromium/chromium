@@ -122,6 +122,8 @@ class CONTENT_EXPORT AttributionManagerImpl
                      GlobalRenderFrameHostId render_frame_id) override;
   void GetActiveSourcesForWebUI(
       base::OnceCallback<void(std::vector<StoredSource>)> callback) override;
+  void GetFiltersForWebUI(
+        base::OnceCallback<void(std::vector<StoredFilter>)> callback) override;
   void GetPendingReportsForInternalUse(
       int limit,
       base::OnceCallback<void(std::vector<AttributionReport>)> callback)

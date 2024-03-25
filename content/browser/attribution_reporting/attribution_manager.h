@@ -28,6 +28,7 @@ class BrowserContext;
 class BrowsingDataFilterBuilder;
 class StorableSource;
 class StoredSource;
+class StoredFilter;
 class WebContents;
 
 struct GlobalRenderFrameHostId;
@@ -69,6 +70,9 @@ class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
   // populating WebUI.
   virtual void GetActiveSourcesForWebUI(
       base::OnceCallback<void(std::vector<StoredSource>)> callback) = 0;
+
+  virtual void GetFiltersForWebUI(
+      base::OnceCallback<void(std::vector<StoredFilter>)> callback) = 0;
 
   // Get all pending reports that are currently stored in this partition. Used
   // for populating WebUI and simulator.

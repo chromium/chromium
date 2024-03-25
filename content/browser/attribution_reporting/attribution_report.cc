@@ -21,6 +21,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/attribution_reporting/stored_filter.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
