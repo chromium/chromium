@@ -233,7 +233,7 @@ PrinterStatus::PrinterReason ToPrinterReason(std::string_view reason) {
 
   size_t last_dash = reason.rfind('-');
   auto severity = PSeverity::kUnknownSeverity;
-  if (last_dash != base::StringPiece::npos) {
+  if (last_dash != std::string_view::npos) {
     // try to parse the last part of the string as the severity.
     severity = ToSeverity(reason.substr(last_dash + 1));
   }

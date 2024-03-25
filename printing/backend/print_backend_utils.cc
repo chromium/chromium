@@ -60,10 +60,10 @@ gfx::Size DimensionsToMicrons(std::string_view value) {
   Unit unit;
   std::string_view dims;
   size_t unit_position;
-  if ((unit_position = value.find("mm")) != base::StringPiece::npos) {
+  if ((unit_position = value.find("mm")) != std::string_view::npos) {
     unit = Unit::kMillimeters;
     dims = value.substr(0, unit_position);
-  } else if ((unit_position = value.find("in")) != base::StringPiece::npos) {
+  } else if ((unit_position = value.find("in")) != std::string_view::npos) {
     unit = Unit::kInches;
     dims = value.substr(0, unit_position);
   } else {
