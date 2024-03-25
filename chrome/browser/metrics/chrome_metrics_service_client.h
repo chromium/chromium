@@ -10,6 +10,7 @@
 #include <memory>
 #include <queue>
 #include <string>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
@@ -108,7 +109,7 @@ class ChromeMetricsServiceClient
   std::unique_ptr<metrics::MetricsLogUploader> CreateUploader(
       const GURL& server_url,
       const GURL& insecure_server_url,
-      base::StringPiece mime_type,
+      std::string_view mime_type,
       metrics::MetricsLogUploader::MetricServiceType service_type,
       const metrics::MetricsLogUploader::UploadCallback& on_upload_complete)
       override;
@@ -214,7 +215,7 @@ class ChromeMetricsServiceClient
 #endif
 
   // Check if an extension is installed via the Web Store.
-  static bool IsWebstoreExtension(base::StringPiece id);
+  static bool IsWebstoreExtension(std::string_view id);
 
   // Resets client state (i.e. client id) if MSBB or App-sync consent
   // is changed from on to off. For non-ChromeOS platforms, this will no-op.

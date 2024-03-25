@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 
+#include <string_view>
+
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -64,8 +66,8 @@ bool ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled(
 
 // static
 bool ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-    base::StringPiece trial_name,
-    base::StringPiece group_name,
+    std::string_view trial_name,
+    std::string_view group_name,
     variations::SyntheticTrialAnnotationMode annotation_mode) {
   return metrics::MetricsServiceAccessor::RegisterSyntheticFieldTrial(
       g_browser_process->metrics_service(), trial_name, group_name,

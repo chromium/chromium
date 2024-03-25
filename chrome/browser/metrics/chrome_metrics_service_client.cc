@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -264,7 +264,7 @@ void RegisterFileMetricsPreferences(PrefRegistrySimple* registry) {
 void RegisterOrRemovePreviousRunMetricsFile(
     bool metrics_reporting_enabled,
     const base::FilePath& dir,
-    base::StringPiece metrics_name,
+    std::string_view metrics_name,
     metrics::FileMetricsProvider::SourceAssociation association,
     metrics::FileMetricsProvider* file_metrics_provider) {
   base::FilePath metrics_file =
@@ -690,7 +690,7 @@ std::unique_ptr<metrics::MetricsLogUploader>
 ChromeMetricsServiceClient::CreateUploader(
     const GURL& server_url,
     const GURL& insecure_server_url,
-    base::StringPiece mime_type,
+    std::string_view mime_type,
     metrics::MetricsLogUploader::MetricServiceType service_type,
     const metrics::MetricsLogUploader::UploadCallback& on_upload_complete) {
   return std::make_unique<metrics::NetMetricsLogUploader>(
@@ -1308,7 +1308,7 @@ void ChromeMetricsServiceClient::AsyncInitSystemProfileProvider() {
 #endif
 
 // static
-bool ChromeMetricsServiceClient::IsWebstoreExtension(base::StringPiece id) {
+bool ChromeMetricsServiceClient::IsWebstoreExtension(std::string_view id) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Only acceptable if at least one profile knows the extension and all
   // profiles that know the extension say it was from the web-store.

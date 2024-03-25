@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/chromeos_system_profile_provider.h"
 
+#include <string_view>
+
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -222,7 +224,7 @@ void ChromeOSSystemProfileProvider::InitTaskGetCellularDeviceVariant(
 
 void ChromeOSSystemProfileProvider::OnMachineStatisticsLoaded(
     base::OnceClosure callback) {
-  if (const std::optional<base::StringPiece> full_hardware_class =
+  if (const std::optional<std::string_view> full_hardware_class =
           ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
               "hardware_class")) {
     full_hardware_class_ = std::string(full_hardware_class.value());

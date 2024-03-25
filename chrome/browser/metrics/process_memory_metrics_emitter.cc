@@ -6,6 +6,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/allocator/buildflags.h"
@@ -720,7 +721,7 @@ void EmitProcessUma(HistogramProcessType process_type,
 
   // Always use "Gpu" in process name for command buffers to be
   // consistent even in single process mode.
-  if (base::StringPiece(item.uma_name) == "CommandBuffer") {
+  if (std::string_view(item.uma_name) == "CommandBuffer") {
     uma_name =
         EXPERIMENTAL_UMA_PREFIX "Gpu" VERSION_SUFFIX_NORMAL "CommandBuffer";
     DCHECK(item.metric_size == MetricSize::kLarge);

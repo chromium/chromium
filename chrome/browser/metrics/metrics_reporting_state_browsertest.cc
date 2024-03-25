@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -190,11 +191,11 @@ void OnMetricsReportingStateChanged(bool* new_state_ptr,
   std::move(run_loop_closure).Run();
 }
 
-bool HistogramExists(base::StringPiece name) {
+bool HistogramExists(std::string_view name) {
   return base::StatisticsRecorder::FindHistogram(name) != nullptr;
 }
 
-base::HistogramBase::Count GetHistogramDeltaTotalCount(base::StringPiece name) {
+base::HistogramBase::Count GetHistogramDeltaTotalCount(std::string_view name) {
   return base::StatisticsRecorder::FindHistogram(name)
       ->SnapshotDelta()
       ->TotalCount();
