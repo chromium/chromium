@@ -28,11 +28,11 @@ class TabletModePageBehaviorTest : public ChromeOSBrowserUITest {
 
   ~TabletModePageBehaviorTest() override = default;
 
-  // InProcessBrowserTest:
+  // ChromeOSBrowserUITest:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         features::kDoubleTapToZoomInTabletMode);
-    InProcessBrowserTest::SetUp();
+    ChromeOSBrowserUITest::SetUp();
   }
 
   content::WebContents* GetActiveWebContents(Browser* browser) const {
