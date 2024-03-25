@@ -95,6 +95,26 @@ Take frames coming from various sources and check that:
         decoder_configs.length >= 2,
         'There should be 2 configs, for each configure()');
 
+
+      if (arg.codec.startsWith('avc1.')) {
+        // Check that h.264 in the config matches the codec string
+        for (const configs of decoder_configs) {
+          if (configs.description) {
+            const profile = readProfileFromAvcExtraData(
+                              new DataView(configs.description));
+            if (!profile) {
+              TEST.reportFailure("Invalid AVC extra data");
+              return;
+            }
+            const hex_profile = profile.toString(16);
+            TEST.assert_eq(arg.codec.substring(5, 7), hex_profile);
+          } else {
+            TEST.reportFailure("Missing AVC extra data");
+          }
+
+        }
+      }
+
       TEST.assert(
         chunks.length == frames_in_one_pass * 2,
         'Output count mismatch: ' + chunks.length);

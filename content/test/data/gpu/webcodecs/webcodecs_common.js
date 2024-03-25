@@ -487,3 +487,17 @@ function addManualTestButton(configs) {
     });
   }, true);
 }
+
+function readProfileFromAvcExtraData(view) {
+  if (view.byteLength < 6) {
+    // Too short to be a proper AVCDecoderConfigurationRecord
+    return null;
+  }
+  const version = view.getUint8(0);
+  if (version != 1) {
+    return null;
+  }
+
+  const profile = view.getUint8(1);
+  return profile;
+}
