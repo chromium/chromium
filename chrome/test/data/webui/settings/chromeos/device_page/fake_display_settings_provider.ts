@@ -16,6 +16,8 @@ type TabletModeObserverInterface =
     displaySettingsProviderMojom.TabletModeObserverInterface;
 type DisplayConfigurationObserverInterface =
     displaySettingsProviderMojom.DisplayConfigurationObserverInterface;
+type DisplayBrightnessSettingsObserverInterface =
+    displaySettingsProviderMojom.DisplayBrightnessSettingsObserverInterface;
 type DisplaySettingsType = displaySettingsProviderMojom.DisplaySettingsType;
 type DisplaySettingsValue = displaySettingsProviderMojom.DisplaySettingsValue;
 type DisplaySettingsOrientationOption =
@@ -28,7 +30,10 @@ export class FakeDisplaySettingsProvider implements
   private tabletModeObservers: TabletModeObserverInterface[] = [];
   private displayConfigurationObservers:
       DisplayConfigurationObserverInterface[] = [];
+  private displayBrightnessSettingsObservers:
+      DisplayBrightnessSettingsObserverInterface[] = [];
   private isTabletMode: boolean = false;
+  private brightnessPercent: number = 0;
   private performanceSettingEnabled: boolean = false;
   private internalDisplayHistogram = new Map<DisplaySettingsType, number>();
   private externalDisplayHistogram = new Map<DisplaySettingsType, number>();
@@ -81,6 +86,26 @@ export class FakeDisplaySettingsProvider implements
 
   getIsTabletMode(): boolean {
     return this.isTabletMode;
+  }
+
+  // Implement DisplaySettingsProviderInterface.
+  observeDisplayBrightnessSettings(
+      observer: DisplayBrightnessSettingsObserverInterface):
+      Promise<{brightnessPercent: number}> {
+    this.displayBrightnessSettingsObservers.push(observer);
+
+    return Promise.resolve({brightnessPercent: this.brightnessPercent});
+  }
+
+  notifyDisplayBrightnessChanged(): void {
+    for (const observer of this.displayBrightnessSettingsObservers) {
+      observer.onDisplayBrightnessChanged(this.brightnessPercent);
+    }
+  }
+
+  setBrightnessPercentForTesting(brightnessPercent: number): void {
+    this.brightnessPercent = brightnessPercent;
+    this.notifyDisplayBrightnessChanged();
   }
 
   // Implement DisplaySettingsProviderInterface.

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/types/id_type.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.mojom.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "ui/display/display.h"
@@ -26,7 +27,8 @@ using DisplayId = base::IdType64<display::Display>;
 class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
                                 public TabletModeObserver,
                                 public display::DisplayManagerObserver,
-                                public display::DisplayObserver {
+                                public display::DisplayObserver,
+                                public chromeos::PowerManagerClient::Observer {
  public:
   DisplaySettingsProvider();
   ~DisplaySettingsProvider() override;
@@ -61,6 +63,10 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
       mojo::PendingRemote<mojom::DisplayConfigurationObserver> observer)
       override;
 
+  void ObserveDisplayBrightnessSettings(
+      mojo::PendingRemote<mojom::DisplayBrightnessSettingsObserver> observer,
+      ObserveDisplayBrightnessSettingsCallback callback) override;
+
   void RecordChangingDisplaySettings(
       mojom::DisplaySettingsType type,
       mojom::DisplaySettingsValuePtr value) override;
@@ -77,11 +83,21 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& new_display) override;
 
+  // PowerManagerClient::Observer:
+  void ScreenBrightnessChanged(
+      const power_manager::BacklightBrightnessChange& change) override;
+
  private:
+  void OnGetInitialBrightness(ObserveDisplayBrightnessSettingsCallback callback,
+                              std::optional<double> percent);
+
   mojo::RemoteSet<mojom::TabletModeObserver> tablet_mode_observers_;
 
   mojo::RemoteSet<mojom::DisplayConfigurationObserver>
       display_configuration_observers_;
+
+  mojo::RemoteSet<mojom::DisplayBrightnessSettingsObserver>
+      display_brightness_settings_observers_;
 
   // A map between display id and the timestamp this display is connected. Only
   // add those displays that are connected for the first time. Used to record
@@ -90,6 +106,8 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
   std::map<DisplayId, base::TimeTicks> displays_connection_timestamp_map_;
 
   mojo::Receiver<mojom::DisplaySettingsProvider> receiver_{this};
+
+  base::WeakPtrFactory<DisplaySettingsProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::settings

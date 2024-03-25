@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrLinkRowElement, CrToggleElement, DevicePageBrowserProxyImpl, DisplayLayoutElement, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, DisplayLayoutElement, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -967,5 +967,58 @@ suite('<settings-display>', () => {
     // Display brightness slider should not be present on external displays.
     assertFalse(!!displayBrightness);
   });
+
+  test(
+      'Display brightness, slider updates when brightness changes',
+      async () => {
+        loadTimeData.overrideValues(
+            {enableDisplayBrightnessControlInSettings: true});
+        await initPage();
+
+        // Set up the internal display.
+        addDisplay(1);
+        fakeSystemDisplay.onDisplayChanged.callListeners();
+        await fakeSystemDisplay.getInfoCalled.promise;
+        await fakeSystemDisplay.getLayoutCalled.promise;
+        assertEquals(1, displayPage.displays.length);
+        flush();
+
+        // Display brightness slider should be present on the internal display.
+        const displayBrightness =
+            displayPage.shadowRoot!.querySelector<HTMLDivElement>(
+                '#brightnessSliderWrapper');
+        assertTrue(!!displayBrightness);
+
+        const initialBrightness = 22.2;
+        displaySettingsProvider.setBrightnessPercentForTesting(
+            initialBrightness);
+        await flushTasks();
+
+        // Before changing the screen brightness, the slider value should be
+        // equal to the current screen brightness.
+        const displayBrightnessSlider =
+            displayPage.shadowRoot!.querySelector<CrSliderElement>(
+                '#brightnessSlider');
+        assertTrue(!!displayBrightnessSlider);
+        assertEquals(displayBrightnessSlider.value, initialBrightness);
+
+        // Change the screen brightness.
+        let adjustedBrightness = 99.0;
+        displaySettingsProvider.setBrightnessPercentForTesting(
+            adjustedBrightness);
+        await flushTasks();
+
+        // The slider should update to the new brightness.
+        assertEquals(displayBrightnessSlider.value, adjustedBrightness);
+
+        // Change the screen brightness again.
+        adjustedBrightness = 5.5;
+        displaySettingsProvider.setBrightnessPercentForTesting(
+            adjustedBrightness);
+        await flushTasks();
+
+        // The slider should update to the new brightness.
+        assertEquals(displayBrightnessSlider.value, adjustedBrightness);
+      });
 
 });

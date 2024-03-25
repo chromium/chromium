@@ -10,8 +10,11 @@
 #include "ash/display/display_prefs.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
+#include "ash/system/brightness_control_delegate.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.mojom.h"
+#include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/util/display_util.h"
@@ -59,6 +62,13 @@ DisplaySettingsProvider::DisplaySettingsProvider() {
     Shell::Get()->display_manager()->AddObserver(
         static_cast<display::DisplayObserver*>(this));
   }
+  if (features::IsBrightnessControlInSettingsEnabled()) {
+    chromeos::PowerManagerClient* power_manager_client =
+        chromeos::PowerManagerClient::Get();
+    if (power_manager_client) {
+      power_manager_client->AddObserver(this);
+    }
+  }
 }
 
 DisplaySettingsProvider::~DisplaySettingsProvider() {
@@ -70,6 +80,13 @@ DisplaySettingsProvider::~DisplaySettingsProvider() {
         static_cast<display::DisplayManagerObserver*>(this));
     Shell::Get()->display_manager()->RemoveObserver(
         static_cast<display::DisplayObserver*>(this));
+  }
+  if (features::IsBrightnessControlInSettingsEnabled()) {
+    chromeos::PowerManagerClient* power_manager_client =
+        chromeos::PowerManagerClient::Get();
+    if (power_manager_client) {
+      power_manager_client->RemoveObserver(this);
+    }
   }
 }
 
@@ -99,6 +116,32 @@ void DisplaySettingsProvider::OnTabletModeEventsBlockingChanged() {
 void DisplaySettingsProvider::ObserveDisplayConfiguration(
     mojo::PendingRemote<mojom::DisplayConfigurationObserver> observer) {
   display_configuration_observers_.Add(std::move(observer));
+}
+
+void DisplaySettingsProvider::OnGetInitialBrightness(
+    ObserveDisplayBrightnessSettingsCallback callback,
+    std::optional<double> percent) {
+  if (!percent.has_value()) {
+    LOG(ERROR) << "GetBrightnessPercent returned nullopt.";
+    // In the rare case that GetInitialBrightness returns a nullopt, set the
+    // brightness slider to the middle.
+    std::move(callback).Run(50.0);
+    return;
+  }
+  std::move(callback).Run(percent.value());
+}
+
+void DisplaySettingsProvider::ObserveDisplayBrightnessSettings(
+    mojo::PendingRemote<mojom::DisplayBrightnessSettingsObserver> observer,
+    ObserveDisplayBrightnessSettingsCallback callback) {
+  display_brightness_settings_observers_.Add(std::move(observer));
+
+  BrightnessControlDelegate* brightness_control_delegate =
+      Shell::Get()->brightness_control_delegate();
+  // Get the current screen brightness and run the callback with that value.
+  brightness_control_delegate->GetBrightnessPercent(
+      base::BindOnce(&DisplaySettingsProvider::OnGetInitialBrightness,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DisplaySettingsProvider::OnDidProcessDisplayChanges(
@@ -207,6 +250,13 @@ void DisplaySettingsProvider::SetShinyPerformance(bool enabled) {
   Shell::Get()
       ->display_performance_mode_controller()
       ->SetHighPerformanceModeByUser(enabled);
+}
+
+void DisplaySettingsProvider::ScreenBrightnessChanged(
+    const power_manager::BacklightBrightnessChange& change) {
+  for (auto& observer : display_brightness_settings_observers_) {
+    observer->OnDisplayBrightnessChanged(change.percent());
+  }
 }
 
 }  // namespace ash::settings

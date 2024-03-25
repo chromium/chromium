@@ -94,6 +94,14 @@ interface DisplayConfigurationObserver {
   OnDisplayConfigurationChanged();
 };
 
+// Implemented by clients that wish to be notified when display brightness
+// settings change.
+interface DisplayBrightnessSettingsObserver {
+  // OnDisplayBrightnessChanged calls are triggered when the display brightness
+  // of the internal screen has changed.
+  OnDisplayBrightnessChanged(double brightness_percent);
+};
+
 // Interface display related OS settings.
 interface DisplaySettingsProvider {
   // Registers an observer for tablet mode changes and returns tablet mode
@@ -104,6 +112,11 @@ interface DisplaySettingsProvider {
   // Registers an observer for display configuration changes.
   ObserveDisplayConfiguration(
     pending_remote<DisplayConfigurationObserver> observer);
+
+  // Registers an observer for display brightness settings.
+  ObserveDisplayBrightnessSettings(
+    pending_remote<DisplayBrightnessSettingsObserver> observer) =>
+    (double brightness_percent);
 
   // Record metrics when clients request to change display settings.
   RecordChangingDisplaySettings(DisplaySettingsType type,

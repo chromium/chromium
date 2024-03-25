@@ -39,7 +39,7 @@ import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {SettingsSliderElement} from '../controls/settings_slider.js';
-import {DisplayConfigurationObserverReceiver, DisplaySettingsOrientationOption, DisplaySettingsProviderInterface, DisplaySettingsType, DisplaySettingsValue, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import {DisplayBrightnessSettingsObserverReceiver, DisplayConfigurationObserverReceiver, DisplaySettingsOrientationOption, DisplaySettingsProviderInterface, DisplaySettingsType, DisplaySettingsValue, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, routes} from '../router.js';
 
@@ -212,6 +212,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         value: false,
       },
 
+      currentInternalScreenBrightness_: {type: Number, value: 0},
+
       isDisplayPerformanceEnabled_: {
         type: Boolean,
         value: false,
@@ -282,6 +284,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   primaryDisplayId: string;
   selectedDisplay?: DisplayUnitInfo;
   private browserProxy_: DevicePageBrowserProxy;
+  private currentInternalScreenBrightness_: number;
   private currentRoute_: Route|null;
   private currentSelectedModeIndex_: number;
   private currentSelectedParentModeIndex_: number;
@@ -367,6 +370,12 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         new TabletModeObserverReceiver(this).$.bindNewPipeAndPassRemote());
     this.isTabletMode_ = isTabletMode;
 
+    const {brightnessPercent} =
+        await this.displaySettingsProvider.observeDisplayBrightnessSettings(
+            new DisplayBrightnessSettingsObserverReceiver(this)
+                .$.bindNewPipeAndPassRemote());
+    this.currentInternalScreenBrightness_ = brightnessPercent;
+
     this.displaySettingsProvider.observeDisplayConfiguration(
         new DisplayConfigurationObserverReceiver(this)
             .$.bindNewPipeAndPassRemote());
@@ -399,6 +408,13 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   onDisplayConfigurationChanged(): void {
     // Sync active display settings to avoid UI inconsistency.
     this.getDisplayInfo_();
+  }
+
+  /**
+   * Implements DisplayBrightnessSettingsObserver.OnDisplayBrightnessChanged.
+   */
+  onDisplayBrightnessChanged(brightnessPercent: number): void {
+    this.currentInternalScreenBrightness_ = brightnessPercent;
   }
 
   override beforeDeepLinkAttempt(_settingId: Setting): boolean {

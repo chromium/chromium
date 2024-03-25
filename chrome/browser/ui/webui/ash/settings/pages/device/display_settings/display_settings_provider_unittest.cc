@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
+#include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
@@ -83,6 +84,42 @@ class FakeDisplayConfigurationObserver
 
  private:
   uint32_t num_display_configuration_changed_calls_ = 0;
+  base::OnceClosure quit_callback_;
+};
+
+// A mock observer that counts when OnDisplayBrightnessChanged function is
+// called.
+class FakeDisplayBrightnessSettingsObserver
+    : public mojom::DisplayBrightnessSettingsObserver {
+ public:
+  uint32_t num_display_brightness_changed_calls() const {
+    return num_display_brightness_changed_calls_;
+  }
+
+  double current_brightness() { return current_brightness_; }
+
+  // mojom::DisplayBrightnessSettingsObserver:
+  void OnDisplayBrightnessChanged(double brightness_percent) override {
+    ++num_display_brightness_changed_calls_;
+    current_brightness_ = brightness_percent;
+
+    if (quit_callback_) {
+      std::move(quit_callback_).Run();
+    }
+  }
+
+  void WaitForDisplayBrightnessChanged() {
+    DCHECK(quit_callback_.is_null());
+    base::RunLoop loop;
+    quit_callback_ = loop.QuitClosure();
+    loop.Run();
+  }
+
+  mojo::Receiver<mojom::DisplayBrightnessSettingsObserver> receiver{this};
+
+ private:
+  uint32_t num_display_brightness_changed_calls_ = 0;
+  double current_brightness_ = 0;
   base::OnceClosure quit_callback_;
 };
 
@@ -363,6 +400,35 @@ TEST_F(DisplaySettingsProviderTest, UserToggleDisplayPerformance) {
                 ->display_performance_mode_controller()
                 ->GetCurrentStateForTesting(),
             DisplayPerformanceModeController::ModeState::kHighPerformance);
+}
+
+// Test the behavior when the display brightness is changed.
+TEST_F(DisplaySettingsProviderTest, DisplayBrightnessSettingsObservation) {
+  FakeDisplayBrightnessSettingsObserver fake_observer;
+  base::test::TestFuture<double> future;
+
+  // Attach a brightness settings observer.
+  provider_->ObserveDisplayBrightnessSettings(
+      fake_observer.receiver.BindNewPipeAndPassRemote(), future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+
+  // Observer should not have been called yet.
+  EXPECT_EQ(0u, fake_observer.num_display_brightness_changed_calls());
+
+  double brightness_percent = 55.5;
+  power_manager::BacklightBrightnessChange brightness_change;
+  brightness_change.set_percent(brightness_percent);
+  brightness_change.set_cause(
+      power_manager::BacklightBrightnessChange_Cause_USER_REQUEST);
+  provider_->ScreenBrightnessChanged(brightness_change);
+
+  fake_observer.WaitForDisplayBrightnessChanged();
+
+  // Observer should have been called.
+  EXPECT_EQ(1u, fake_observer.num_display_brightness_changed_calls());
+  // The brightness value that the observer received should match the brightness
+  // from the provider's observer.
+  EXPECT_EQ(brightness_percent, fake_observer.current_brightness());
 }
 
 }  // namespace ash::settings

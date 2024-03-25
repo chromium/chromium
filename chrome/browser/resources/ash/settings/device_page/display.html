@@ -181,12 +181,11 @@
       <div id="brightnessControlsTitle" class="start" aria-hidden="true">
         $i18n{displayBrightnessLabel}
       </div>
-      <!-- TODO(cambickel): Replace placeholder value with prefs + add an
-           onChange handler. -->
+      <!-- TODO(cambickel): Add an onChange handler to set the brightness. -->
       <div id="brightnessSliderWrapper">
-        <cr-slider min="5" max="100"
+        <cr-slider id="brightnessSlider" min="5" max="100"
             key-press-slider-increment="10"
-            value="50"
+            value="[[currentInternalScreenBrightness_]]"
             aria-labelledby="brightnessControlsTitle">
         </cr-slider>
       </div>
