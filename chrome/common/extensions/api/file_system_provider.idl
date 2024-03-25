@@ -61,6 +61,12 @@ namespace fileSystemProvider {
     DOMString id;
   };
 
+  // Information relating to files that are served by a cloud file system.
+  dictionary CloudFileInfo {
+    // A tag that represents the version of the file.
+    DOMString? versionTag;
+  };
+
   // Represents metadata of a file or a directory.
   dictionary EntryMetadata {
     // True if it is a directory. Must be provided if requested in
@@ -93,6 +99,11 @@ namespace fileSystemProvider {
     // local files not backed by cloud storage, it should be undefined when
     // requested.
     CloudIdentifier? cloudIdentifier;
+
+    // Information that identifies a specific file in the underlying cloud file
+    // system. Must be provided if requested in <code>options</code> and the
+    // file is backed by cloud storage.
+    CloudFileInfo? cloudFileInfo;
   };
 
   // Represents a watcher.
@@ -221,6 +232,10 @@ namespace fileSystemProvider {
     // Set to <code>true</code> if <code>cloudIdentifier</code> value is
     // requested.
     boolean cloudIdentifier;
+
+    // Set to <code>true</code> if <code>cloudFileInfo</code> value is
+    // requested.
+    boolean cloudFileInfo;
   };
 
   // Options for the $(ref:onGetActionsRequested) event.
@@ -493,6 +508,9 @@ namespace fileSystemProvider {
 
     // The type of the change which happened to the entry.
     ChangeType changeType;
+
+    // Information relating to the file if backed by a cloud file system.
+    CloudFileInfo? cloudFileInfo;
   };
 
   // Options for the $(ref:notify) method.
@@ -563,6 +581,10 @@ namespace fileSystemProvider {
   // available, then <code>hasMore</code> must be set to false.
   [nocompile] callback FileDataCallback = void(
       ArrayBuffer data, boolean hasMore);
+
+  // Success callback for the $(ref:onOpenFileRequested) event.
+  [nocompile] callback OpenFileSuccessCallback = void(
+      optional EntryMetadata metadata);
 
   // A generic result callback to indicate success or failure.
   callback ResultCallback = void();
@@ -683,7 +705,7 @@ namespace fileSystemProvider {
     // files opened at once can be specified with <code>MountOptions</code>.
     [maxListeners=1] static void onOpenFileRequested(
         OpenFileRequestedOptions options,
-        ProviderSuccessCallback successCallback,
+        OpenFileSuccessCallback successCallback,
         ProviderErrorCallback errorCallback);
 
     // Raised when opening a file previously opened with

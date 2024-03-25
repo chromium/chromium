@@ -110,6 +110,7 @@ struct FSPChange {
 
 [Stable, Extensible]
 enum FSPOperationResponse {
+  // Next MinVersion: 2
   [Default] kUnknown,
   kUnmountSuccess,
   kGetEntryMetadataSuccess,
@@ -118,6 +119,7 @@ enum FSPOperationResponse {
   kReadFileSuccess,
   kGenericSuccess,
   kGenericFailure,
+  [MinVersion=1] kOpenFileSuccess,
 };
 
 [Stable, Extensible]

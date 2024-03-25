@@ -55,6 +55,14 @@ namespace fileSystemProviderInternal {
         boolean hasMore,
         long executionTime);
 
+    // Internal. Success callback of the <code>onOpenFileRequested</code>
+    // event.
+    static void openFileRequestedSuccess(
+        DOMString fileSystemId,
+        long requestId,
+        long executionTime,
+        optional fileSystemProvider.EntryMetadata metadata);
+
     // Internal. Success callback of all of the operation requests, which do not
     // return any value. Must be called in case of a success.
     static void operationRequestedSuccess(

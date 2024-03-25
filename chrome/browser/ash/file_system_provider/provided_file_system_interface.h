@@ -45,6 +45,22 @@ struct CloudIdentifier {
   bool operator==(const CloudIdentifier&) const;
 };
 
+// Represents version information relating to a particular file in cloud
+// storage.
+struct CloudFileInfo {
+  std::string version_tag;
+
+  explicit CloudFileInfo(const std::string& version_tag);
+
+  CloudFileInfo(const CloudFileInfo&) = delete;
+  CloudFileInfo& operator=(const CloudFileInfo&) = delete;
+
+  ~CloudFileInfo();
+
+  // Enables comparison for unit tests.
+  bool operator==(const CloudFileInfo&) const;
+};
+
 // Represents metadata for either a file or a directory.
 struct EntryMetadata {
   EntryMetadata();
@@ -63,6 +79,7 @@ struct EntryMetadata {
   std::unique_ptr<std::string> mime_type;
   std::unique_ptr<std::string> thumbnail;
   std::unique_ptr<CloudIdentifier> cloud_identifier;
+  std::unique_ptr<CloudFileInfo> cloud_file_info;
 };
 
 // Represents actions for either a file or a directory.
@@ -118,7 +135,8 @@ class ProvidedFileSystemInterface {
     METADATA_FIELD_MODIFICATION_TIME = 1 << 3,
     METADATA_FIELD_MIME_TYPE = 1 << 4,
     METADATA_FIELD_THUMBNAIL = 1 << 5,
-    METADATA_FIELD_CLOUD_IDENTIFIER = 1 << 6
+    METADATA_FIELD_CLOUD_IDENTIFIER = 1 << 6,
+    METADATA_FIELD_CLOUD_FILE_INFO = 1 << 7
   };
 
   // Callback for OpenFile(). In case of an error, file_handle is equal to 0

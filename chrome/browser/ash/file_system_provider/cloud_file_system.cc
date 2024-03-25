@@ -152,6 +152,7 @@ AbortCallback CloudFileSystem::GetMetadata(const base::FilePath& entry_path,
                                             GetMetadataCallback callback) {
   VLOG(2) << "GetMetadata {fsid = '" << GetFileSystemId() << "', entry_path = '"
           << entry_path << "', fields = '" << fields << "'}";
+  fields |= METADATA_FIELD_CLOUD_FILE_INFO;
   return file_system_->GetMetadata(entry_path, fields, std::move(callback));
 }
 

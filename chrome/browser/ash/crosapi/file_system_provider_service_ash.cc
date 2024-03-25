@@ -572,6 +572,20 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
                                        value, has_more, profile);
       break;
     }
+    case mojom::FSPOperationResponse::kOpenFileSuccess: {
+      TRACE_EVENT0("file_system_provider", "OpenFileSuccessWithProfile");
+      using extensions::api::file_system_provider_internal::
+          OpenFileRequestedSuccess::Params;
+      std::optional<Params> params = Params::Create(std::move(args));
+      if (!params) {
+        error = kDeserializationError;
+        break;
+      }
+      auto value = RequestValue::CreateForOpenFileSuccess(std::move(*params));
+      error = ForwardOperationResponse(std::move(file_system_id), request_id,
+                                       value, /*has_more=*/false, profile);
+      break;
+    }
     case mojom::FSPOperationResponse::kGenericSuccess: {
       using extensions::api::file_system_provider_internal::
           OperationRequestedSuccess::Params;

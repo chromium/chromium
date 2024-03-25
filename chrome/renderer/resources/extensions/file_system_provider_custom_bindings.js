@@ -152,6 +152,8 @@ function annotateMetadata(metadata) {
     result.thumbnail = metadata.thumbnail;
   if(metadata.cloudIdentifier !== undefined)
     result.cloudIdentifier = metadata.cloudIdentifier;
+  if (metadata.cloudFileInfo !== undefined)
+    result.cloudFileInfo = metadata.cloudFileInfo;
   return result;
 }
 
@@ -275,8 +277,23 @@ bindingUtil.registerEventArgumentMassager(
     });
 
 bindingUtil.registerEventArgumentMassager(
-    'fileSystemProvider.onOpenFileRequested',
-    massageArgumentsDefault);
+    'fileSystemProvider.onOpenFileRequested', function(args, dispatch) {
+      var executionStart = Date.now();
+      var options = args[0];
+      var onSuccessCallback = function(metadata) {
+        fileSystemProviderInternal.openFileRequestedSuccess(
+            options.fileSystemId, options.requestId,
+            Date.now() - executionStart, metadata);
+      };
+      var onErrorCallback = function(error) {
+        if (!verifyErrorForFailure(error))
+          return;
+        fileSystemProviderInternal.operationRequestedError(
+            options.fileSystemId, options.requestId, error,
+            Date.now() - executionStart);
+      };
+      dispatch([options, onSuccessCallback, onErrorCallback]);
+    });
 
 bindingUtil.registerEventArgumentMassager(
     'fileSystemProvider.onCloseFileRequested',

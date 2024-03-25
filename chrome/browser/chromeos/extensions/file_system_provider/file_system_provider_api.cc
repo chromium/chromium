@@ -500,6 +500,23 @@ FileSystemProviderInternalReadFileRequestedSuccessFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
+FileSystemProviderInternalOpenFileRequestedSuccessFunction::Run() {
+  TRACE_EVENT0("file_system_provider", "OpenFileRequestedSuccess");
+  using api::file_system_provider_internal::OpenFileRequestedSuccess::Params;
+
+  // TODO(https://crbug.com/1314397): Improve performance by removing copy.
+  std::optional<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  bool result = ForwardOperationResult(
+      params, mutable_args(),
+      crosapi::mojom::FSPOperationResponse::kOpenFileSuccess);
+  if (!result) {
+    return RespondNow(Error(kInterfaceUnavailable));
+  }
+  return RespondLater();
+}
+
+ExtensionFunction::ResponseAction
 FileSystemProviderInternalOperationRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::OperationRequestedSuccess::Params;
   std::optional<Params> params(Params::Create(args()));

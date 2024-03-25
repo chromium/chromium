@@ -82,6 +82,13 @@ bool ConvertRequestValueToFileInfo(const RequestValue& value,
         params->metadata.cloud_identifier->id);
   }
 
+  if (fields & ProvidedFileSystemInterface::METADATA_FIELD_CLOUD_FILE_INFO &&
+      params->metadata.cloud_file_info &&
+      params->metadata.cloud_file_info->version_tag.has_value()) {
+    output->cloud_file_info = std::make_unique<CloudFileInfo>(
+        params->metadata.cloud_file_info->version_tag.value());
+  }
+
   return true;
 }
 

@@ -55,6 +55,9 @@ void OpenFile::OnSuccess(int request_id,
                          const RequestValue& result,
                          bool has_more) {
   // File handle is the same as request id of the OpenFile operation.
+  // TODO(b/330089398): Handle the `result` value when it gets returned with
+  // `EntryMetadata`. This is introduced as an optional field so not handling it
+  // here does not change the existing behaviour.
   DCHECK(callback_);
   std::move(callback_).Run(request_id, base::File::FILE_OK);
 }

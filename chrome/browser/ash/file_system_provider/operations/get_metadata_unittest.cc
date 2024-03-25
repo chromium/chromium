@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/operations/test_util.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
@@ -323,7 +324,8 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, OnSuccess) {
           ProvidedFileSystemInterface::METADATA_FIELD_MODIFICATION_TIME |
           ProvidedFileSystemInterface::METADATA_FIELD_MIME_TYPE |
           ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL |
-          ProvidedFileSystemInterface::METADATA_FIELD_CLOUD_IDENTIFIER,
+          ProvidedFileSystemInterface::METADATA_FIELD_CLOUD_IDENTIFIER |
+          ProvidedFileSystemInterface::METADATA_FIELD_CLOUD_FILE_INFO,
       base::BindOnce(&CallbackLogger::OnGetMetadata,
                      base::Unretained(&callback_logger)));
 
@@ -348,6 +350,9 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, OnSuccess) {
       "    \"cloudIdentifier\": {\n"
       "      \"providerName\": \"provider-name\",\n"
       "      \"id\": \"abc123\"\n"
+      "    },\n"
+      "    \"cloudFileInfo\": {\n"
+      "      \"versionTag\": \"aYzpFNjgwQ0QxNTg5QjI0NTAyITI0NC4yNTg\""
       "    }\n"
       "  },\n"
       "  0\n"  // execution_time
@@ -373,6 +378,8 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, OnSuccess) {
   EXPECT_EQ(kThumbnail, *metadata->thumbnail);
   EXPECT_EQ(CloudIdentifier("provider-name", "abc123"),
             *metadata->cloud_identifier);
+  EXPECT_EQ(CloudFileInfo("aYzpFNjgwQ0QxNTg5QjI0NTAyITI0NC4yNTg"),
+            *metadata->cloud_file_info);
 }
 
 TEST_F(FileSystemProviderOperationsGetMetadataTest, OnSuccess_InvalidMetadata) {
