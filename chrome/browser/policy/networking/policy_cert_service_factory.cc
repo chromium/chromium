@@ -17,7 +17,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
@@ -68,8 +67,7 @@ std::unique_ptr<KeyedService> BuildServiceInstanceAsh(
         /*may_use_profile_wide_trust_anchors=*/false);
   }
 
-  if (ash::ProfileHelper::Get()->IsLockScreenProfile(profile) &&
-      ash::features::ArePolicyProvidedTrustAnchorsAllowedAtLockScreen()) {
+  if (ash::ProfileHelper::Get()->IsLockScreenProfile(profile)) {
     return std::make_unique<PolicyCertService>(
         profile, policy_certificate_provider,
         /*may_use_profile_wide_trust_anchors=*/true);

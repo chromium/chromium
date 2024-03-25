@@ -4440,13 +4440,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"passpoint-settings", flag_descriptions::kPasspointSettingsName,
      flag_descriptions::kPasspointSettingsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPasspointSettings)},
-    {"policy-provided-trust-anchors-allowed-at-lock-screen",
-     flag_descriptions::kPolicyProvidedTrustAnchorsAllowedAtLockScreenName,
-     flag_descriptions::
-         kPolicyProvidedTrustAnchorsAllowedAtLockScreenDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         ash::features::kPolicyProvidedTrustAnchorsAllowedAtLockScreen)},
     {kTimeOfDayWallpaperForcedAutoScheduleInternalName,
      flag_descriptions::kTimeOfDayWallpaperForcedAutoScheduleName,
      flag_descriptions::kTimeOfDayWallpaperForcedAutoScheduleDescription,

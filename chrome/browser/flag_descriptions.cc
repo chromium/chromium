@@ -6960,11 +6960,6 @@ const char kPhoneHubOnboardingNotifierRevampName[] =
 const char kPhoneHubOnboardingNotifierRevampDescription[] =
     "Enables the revamp for Phone Hub onboarding notifier when eligible.";
 
-const char kPolicyProvidedTrustAnchorsAllowedAtLockScreenName[] =
-    "Policy-provided trust anchors at lock screen";
-const char kPolicyProvidedTrustAnchorsAllowedAtLockScreenDescription[] =
-    "Enables using the policy-provided trust anchors at lock screen";
-
 const char kPreferDcheckName[] = "Prefer DCHECK-enabled build";
 const char kPreferDcheckDescription[] =
     "Use a DCHECK-enabled build when available.";

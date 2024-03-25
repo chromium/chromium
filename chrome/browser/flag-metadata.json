@@ -6600,11 +6600,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "policy-provided-trust-anchors-allowed-at-lock-screen",
-    "owners": [ "acostinas@chromium.org", "suprnet@google.com" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "popout-omnibox-ipad",
     "owners": [ "stkhapugin@chromium.org", "christianxu@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 130

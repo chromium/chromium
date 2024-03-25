@@ -4013,9 +4013,6 @@ extern const char kPhoneHubCallNotificationDescription[];
 extern const char kPhoneHubOnboardingNotifierRevampName[];
 extern const char kPhoneHubOnboardingNotifierRevampDescription[];
 
-extern const char kPolicyProvidedTrustAnchorsAllowedAtLockScreenName[];
-extern const char kPolicyProvidedTrustAnchorsAllowedAtLockScreenDescription[];
-
 extern const char kPreferDcheckName[];
 extern const char kPreferDcheckDescription[];
 

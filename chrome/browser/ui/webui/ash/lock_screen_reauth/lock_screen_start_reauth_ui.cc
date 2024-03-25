@@ -125,12 +125,10 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
       "samlChangeProviderButton",
       l10n_util::GetStringUTF16(IDS_LOGIN_SAML_CHANGE_PROVIDER_BUTTON));
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  bool policy_ca_certs_present =
-      primary_profile
-          ? primary_profile->GetPrefs()->GetBoolean(
-                prefs::kUsedPolicyCertificates) &&
-                features::ArePolicyProvidedTrustAnchorsAllowedAtLockScreen()
-          : false;
+  bool policy_ca_certs_present = primary_profile
+                                     ? primary_profile->GetPrefs()->GetBoolean(
+                                           prefs::kUsedPolicyCertificates)
+                                     : false;
   source->AddBoolean("policyProvidedCaCertsPresent", policy_ca_certs_present);
   source->AddString(
       "policyProvidedCaCertsTooltipMessage",
