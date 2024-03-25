@@ -38,6 +38,7 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
       new ComposeUntrustedDialogCallbackRouter();
   remote = this.router_.$.bindNewPipeAndPassRemote();
   private undoResponse_: ComposeState|null = null;
+  private mostRecentOkResponse_: ComposeState|null = null;
 
   constructor() {
     super([
@@ -56,6 +57,7 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
       'setUserFeedback',
       'showUi',
       'undo',
+      'revertToMostRecentOkState',
     ]);
   }
 
@@ -93,6 +95,11 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
   undo(): Promise<(ComposeState | null)> {
     this.methodCalled('undo');
     return Promise.resolve(this.undoResponse_);
+  }
+
+  revertToMostRecentOkState(): Promise<(ComposeState | null)> {
+    this.methodCalled('revertToMostRecentOkState');
+    return Promise.resolve(this.mostRecentOkResponse_);
   }
 
   getRouter() {
@@ -141,6 +148,10 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
 
   setUndoResponse(state: ComposeState|null) {
     this.undoResponse_ = state;
+  }
+
+  setMostRecentOkResponse(state: ComposeState|null) {
+    this.mostRecentOkResponse_ = state;
   }
 
   showUi() {

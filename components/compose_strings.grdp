@@ -154,6 +154,9 @@
   <message name="IDS_COMPOSE_ERROR_FILTERED" desc="Error indicating that the request was filtered.">
     Couldn't help with that. Try again.
   </message>
+  <message name="IDS_COMPOSE_ERROR_FILTERED_BACK_BUTTON" desc="Button that navigates back to the last good result from a filtered error state.">
+    Go back
+  </message>
   <message name="IDS_COMPOSE_ERROR_UNSUPPORTED_LANGUAGE" desc="Error that the language is not yet supported.">
     This language is not yet supported.
     <ph name="BEGIN_LINK">&lt;a href="#" role="button"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>

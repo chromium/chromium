@@ -154,7 +154,6 @@
     display: grid;
     grid-template-areas: "textarea" "bodyContent";
     grid-auto-columns: 100%;
-    gap: 8px;
     max-height: 220px;
     overflow: auto;
     padding: 0 20px;
@@ -234,6 +233,7 @@
   #loading,
   .result-container {
     grid-area: bodyContent;
+    margin-top: 8px;
   }
 
   #loading {
@@ -357,7 +357,13 @@
   }
 
   #errorFooter {
+    flex-direction: column;
     user-select: text;
+  }
+
+  #errorGoBackButton {
+    margin-top: 20px;
+    align-self: end;
   }
 
   :host-context([is-editing-submitted-input_]) #body,
@@ -555,7 +561,6 @@
           <b id="onDeviceUsedFooter"
               hidden$="[[!showOnDeviceDogfoodFooter_(response_)]]"
               >$i18nRaw{onDeviceUsedFooter}
-
           </b>
           <span hidden="[[!showOnDeviceDogfoodFooter_(response_)]]"
               >$i18nRaw{dogfoodFooter}</span>
@@ -582,6 +587,15 @@
         <span hidden="[[!hasPermissionDeniedResponse_(response_)]]"
           >$i18nRaw{errorPermissionDenied}</span>
       </div>
+      <cr-button id="errorGoBackButton" class="action-button" 
+        on-click="onErrorGoBackButton_"
+        hidden="[[!isBackFromErrorAvailable_(response_)]]">
+        <iron-icon aria-hidden="true" slot="prefix-icon" icon="compose:undo">
+        </iron-icon>
+        <div aria-hidden="true">
+          $i18nRaw{errorFilteredGoBackButton}
+        </div>
+      </cr-button>
     </div>
 
     <div id="editContainer" hidden$="[[!isEditingSubmittedInput_]]">

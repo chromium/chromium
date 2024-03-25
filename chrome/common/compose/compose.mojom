@@ -37,7 +37,7 @@ union StyleModifiers {
   Length length;
 };
 
-// The response to compose requests. `response_text` is only valid if `status`
+// The response to compose requests. `result` is only valid if `status`
 // is kOk.
 struct ComposeResponse {
   ComposeStatus status;
@@ -46,6 +46,8 @@ struct ComposeResponse {
   bool undo_available;
   // Whether the response was generated on-device.
   bool on_device_evaluation_used;
+  // Whether the request producing this response came from a modifier action.
+  bool triggered_from_modifier;
 };
 
 // An intermediate compose response, which is available before the final
@@ -162,6 +164,11 @@ interface ComposeSessionUntrustedPageHandler {
   // reject/fail, which should not be confused with a null return. In that case,
   // an undoable state may exist, but the call failed due to the broken pipe.
   Undo() => (ComposeState? last_state);
+
+  // Asks the native handler to revert to and return the last state with a kOk
+  // status and valid response text. A null return means that there is no such
+  // valid state. No-op on rejected promise.
+  RevertToMostRecentOkState() => (ComposeState? most_recent_ok_state);
 
   // Asks the Browser to open a new tab navigated to the Compose bug report
   // Buganizer.

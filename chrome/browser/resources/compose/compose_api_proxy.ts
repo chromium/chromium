@@ -24,6 +24,7 @@ export interface ComposeApiProxy {
   requestInitialState(): Promise<OpenMetadata>;
   saveWebuiState(state: string): void;
   showUi(): void;
+  revertToMostRecentOkState(): Promise<(ComposeState | null)>;
   undo(): Promise<(ComposeState | null)>;
 }
 
@@ -124,5 +125,10 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
   undo(): Promise<(ComposeState | null)> {
     return this.composeSessionPageHandler.undo().then(
         composeState => composeState.lastState);
+  }
+
+  revertToMostRecentOkState(): Promise<(ComposeState | null)> {
+    return this.composeSessionPageHandler.revertToMostRecentOkState().then(
+        composeState => composeState.mostRecentOkState);
   }
 }

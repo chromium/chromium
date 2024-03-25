@@ -76,6 +76,7 @@ webui::SetupWebUIDataSource(
       {"errorTryAgain", IDS_COMPOSE_ERROR_TRY_AGAIN},
       {"errorTryAgainLater", IDS_COMPOSE_ERROR_TRY_AGAIN_LATER},
       {"errorFiltered", IDS_COMPOSE_ERROR_FILTERED},
+      {"errorFilteredGoBackButton", IDS_COMPOSE_ERROR_FILTERED_BACK_BUTTON},
       {"errorUnsupportedLanguage", IDS_COMPOSE_ERROR_UNSUPPORTED_LANGUAGE},
       {"errorPermissionDenied", IDS_COMPOSE_ERROR_PERMISSION_DENIED},
       {"errorRequestThrottled", IDS_COMPOSE_ERROR_REQUEST_THROTTLED},

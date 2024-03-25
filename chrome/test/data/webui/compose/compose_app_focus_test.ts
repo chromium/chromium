@@ -31,14 +31,13 @@ suite('ComposeApp', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  function mockResponse(
-      result: string = 'some response',
-      status: ComposeStatus = ComposeStatus.kOk): Promise<void> {
+  function mockResponse(triggeredFromModifier: boolean = false): Promise<void> {
     testProxy.remote.responseReceived({
-      status: status,
+      status: ComposeStatus.kOk,
       undoAvailable: false,
-      result,
+      result: 'some response',
       onDeviceEvaluationUsed: false,
+      triggeredFromModifier,
     });
     return testProxy.remote.$.flushForTesting();
   }
@@ -72,7 +71,7 @@ suite('ComposeApp', function() {
 
     app.$.refreshButton.click();
     await testProxy.whenCalled('rewrite');
-    await mockResponse('refreshed');
+    await mockResponse(true);
 
     assertEquals(app.$.refreshButton, app.shadowRoot!.activeElement);
   });
@@ -98,7 +97,7 @@ suite('ComposeApp', function() {
     app.$.lengthMenu.dispatchEvent(new CustomEvent('change'));
 
     await testProxy.whenCalled('rewrite');
-    await mockResponse();
+    await mockResponse(true);
 
     assertEquals(app.$.lengthMenu, app.shadowRoot!.activeElement);
   });
@@ -113,7 +112,7 @@ suite('ComposeApp', function() {
     app.$.toneMenu.dispatchEvent(new CustomEvent('change'));
 
     await testProxy.whenCalled('rewrite');
-    await mockResponse();
+    await mockResponse(true);
 
     assertEquals(app.$.toneMenu, app.shadowRoot!.activeElement);
   });
@@ -128,6 +127,7 @@ suite('ComposeApp', function() {
         undoAvailable: true,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
+        triggeredFromModifier: false,
       },
     });
     testProxy.setUndoResponse({
@@ -137,6 +137,7 @@ suite('ComposeApp', function() {
         undoAvailable: false,
         result: 'some undone result',
         onDeviceEvaluationUsed: false,
+        triggeredFromModifier: false,
       },
       webuiState: JSON.stringify({
         input: 'my old input',

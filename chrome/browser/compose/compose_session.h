@@ -115,7 +115,13 @@ class ComposeSession
   // disk or processed by the Browser Process at all.
   void SaveWebUIState(const std::string& webui_state) override;
 
-  // Undo to the last state with an kOk status and valid response text.
+  // Revert from a server error to the last state with a kOk status and valid
+  // response text.
+  void RevertToMostRecentOkState(
+      RevertToMostRecentOkStateCallback callback) override;
+
+  // Undo from the current valid results state to the previous state with a kOk
+  // status and valid response text.
   void Undo(UndoCallback callback) override;
 
   // Indicates that the compose result should be accepted by Autofill.
@@ -194,7 +200,8 @@ class ComposeSession
 
  private:
   void ProcessError(compose::EvalLocation eval_location,
-                    compose::mojom::ComposeStatus status);
+                    compose::mojom::ComposeStatus status,
+                    compose::ComposeRequestReason request_reason);
   void ModelExecutionCallback(
       const base::ElapsedTimer& request_start,
       int request_id,

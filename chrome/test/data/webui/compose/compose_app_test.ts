@@ -40,10 +40,15 @@ suite('ComposeApp', () => {
 
   function mockResponse(
       result: string = 'some response',
-      status: ComposeStatus = ComposeStatus.kOk,
-      onDeviceEvaluationUsed = false): Promise<void> {
-    testProxy.remote.responseReceived(
-        {status: status, undoAvailable: false, result, onDeviceEvaluationUsed});
+      status: ComposeStatus = ComposeStatus.kOk, onDeviceEvaluationUsed = false,
+      triggeredFromModifier = false): Promise<void> {
+    testProxy.remote.responseReceived({
+      status: status,
+      undoAvailable: false,
+      result,
+      onDeviceEvaluationUsed,
+      triggeredFromModifier,
+    });
     return testProxy.remote.$.flushForTesting();
   }
 
@@ -304,6 +309,7 @@ suite('ComposeApp', () => {
         undoAvailable: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
+        triggeredFromModifier: false,
       },
     });
     assertTrue(isVisible(appWithResult.$.resultContainer));
@@ -320,6 +326,7 @@ suite('ComposeApp', () => {
         undoAvailable: true,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
+        triggeredFromModifier: false,
       },
     });
     assertFalse(appWithUndo.$.undoButton.disabled);
@@ -343,6 +350,7 @@ suite('ComposeApp', () => {
         undoAvailable: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
+        triggeredFromModifier: false,
       },
     });
     assertTrue(isVisible(appWithResultAndLoading.$.loading));
@@ -361,6 +369,7 @@ suite('ComposeApp', () => {
         undoAvailable: false,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
+        triggeredFromModifier: false,
       },
     });
     assertTrue(isVisible(appEditingPrompt.$.editTextarea));
@@ -462,6 +471,46 @@ suite('ComposeApp', () => {
     // Close reason should match that given to the close button.
     const closeReason = await testProxy.whenCalled('closeUi');
     assertEquals(CloseReason.kCloseButton, closeReason);
+  });
+
+  test('GoBackFromError', async () => {
+    testProxy.setMostRecentOkResponse({
+      hasPendingRequest: false,
+      response: {
+        status: ComposeStatus.kOk,
+        undoAvailable: false,
+        result: 'initial result text',
+        onDeviceEvaluationUsed: false,
+        triggeredFromModifier: false,
+      },
+      webuiState: JSON.stringify({
+        input: 'initial input',
+        selectedLength: Number(Length.kUnset),
+        selectedTone: Number(Tone.kUnset),
+      }),
+      feedback: UserFeedback.kUserFeedbackPositive,
+    });
+
+    // Mock a filtered error response that enables the go back button.
+    mockInput('Initial input.');
+    app.$.submitButton.click();
+    const errorMessage = `filtered error message`;
+    loadTimeData.overrideValues({['errorFiltered']: errorMessage});
+    await mockResponse('', ComposeStatus.kFiltered, false, true);
+
+    assertTrue(isVisible(app.$.errorFooter));
+    assertStringContains(app.$.errorFooter.textContent!, errorMessage);
+    assertTrue(isVisible(app.$.errorGoBackButton));
+
+    app.$.errorGoBackButton.click();
+    await testProxy.whenCalled('revertToMostRecentOkState');
+    await flushTasks();
+
+    // UI is updated to the mocked last ok response.
+    assertEquals('initial input', app.$.textarea.value);
+    assertTrue(isVisible(app.$.resultContainer));
+    assertStringContains(
+        app.$.resultText.$.root.innerText, 'initial result text');
   });
 
   test('ErrorFooterShowsMessage', async () => {
@@ -621,6 +670,7 @@ suite('ComposeApp', () => {
         undoAvailable: true,
         result: 'here is a result',
         onDeviceEvaluationUsed: false,
+        triggeredFromModifier: false,
       },
     });
     testProxy.setUndoResponse({
@@ -630,6 +680,7 @@ suite('ComposeApp', () => {
         undoAvailable: false,
         result: 'some undone result',
         onDeviceEvaluationUsed: false,
+        triggeredFromModifier: false,
       },
       webuiState: JSON.stringify({
         input: 'my old input',

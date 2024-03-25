@@ -26,7 +26,7 @@ import {Debouncer, microTask, PolymerElement, timeOut} from '//resources/polymer
 
 import {ComposeAppAnimator} from './animations/app_animator.js';
 import {getTemplate} from './app.html.js';
-import type {ComposeResponse, ComposeUntrustedDialogCallbackRouter, ConfigurableParams, PartialComposeResponse, StyleModifiers} from './compose.mojom-webui.js';
+import type {ComposeResponse, ComposeState, ComposeUntrustedDialogCallbackRouter, ConfigurableParams, PartialComposeResponse, StyleModifiers} from './compose.mojom-webui.js';
 import {CloseReason, Length, Tone, UserFeedback} from './compose.mojom-webui.js';
 import type {ComposeApiProxy} from './compose_api_proxy.js';
 import {ComposeApiProxyImpl} from './compose_api_proxy.js';
@@ -59,6 +59,7 @@ export interface ComposeAppElement {
     closeButtonMSBB: HTMLElement,
     editTextarea: ComposeTextareaElement,
     errorFooter: HTMLElement,
+    errorGoBackButton: CrButtonElement,
     acceptButton: CrButtonElement,
     loading: HTMLElement,
     undoButton: CrButtonElement,
@@ -742,6 +743,14 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
+  private isBackFromErrorAvailable_(): boolean {
+    // True when the current response is a filtering error and resulted from
+    // applying a modifier.
+    return Boolean(
+        this.response_?.status === ComposeStatus.kFiltered &&
+        this.response_?.triggeredFromModifier);
+  }
+
   private saveComposeAppState_() {
     if (this.saveAppStateDebouncer_?.isActive()) {
       this.saveAppStateDebouncer_.flush();
@@ -775,26 +784,44 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.undoEnabled_ = false;
         return;
       }
-      // Restore state to the state returned by Undo.
-      this.response_ = state.response;
-      this.partialResponse_ = undefined;
-      this.undoEnabled_ = Boolean(state.response?.undoAvailable);
-      this.feedbackState_ = userFeedbackToFeedbackOption(state.feedback);
 
-      if (state.webuiState) {
-        const appState: ComposeAppState = JSON.parse(state.webuiState);
-        this.input_ = appState.input;
-        this.selectedLength_ = appState.selectedLength ?? Length.kUnset;
-        this.selectedTone_ = appState.selectedTone ?? Tone.kUnset;
-      }
+      this.updateWithNewState_(state);
       this.$.undoButton.focus();
     } catch (error) {
-      // Error (e.g., disconnected mojo pipe) from a rejected Promise.
-      // Previously, we received a true `undo_available` field in either
-      // RequestInitialState(), ComposeResponseReceived(), or a previous Undo().
-      // So we think it is possible to undo, but the Promise failed.
-      // Allow the user to try again. Leave the undo button enabled.
-      // TODO(b/301368162) Ask UX how to handle the edge case of multiple fails.
+      // Error (e.g., disconnected mojo pipe) from a rejected Promise. Allow the
+      // user to try again as there should be a valid state to restore.
+      // TODO(b/301368162): Ask UX how to handle the edge case of multiple
+      // fails.
+    }
+  }
+
+  private async onErrorGoBackButton_() {
+    try {
+      const state = await this.apiProxy_.revertToMostRecentOkState();
+      // This button should only be enabled following application of a modifier,
+      // which ensures a previous state to revert to.
+      assert(state);
+
+      this.updateWithNewState_(state);
+    } catch (error) {
+      // Error (e.g., disconnected mojo pipe) from a rejected Promise. Allow the
+      // user to try again as there should be a valid state to restore.
+      // TODO(b/301368162): Ask UX how to handle the edge case of multiple
+      // fails.
+    }
+  }
+
+  private updateWithNewState_(state: ComposeState) {
+    // Restore the dialog to the given state.
+    this.response_ = state.response;
+    this.partialResponse_ = undefined;
+    this.undoEnabled_ = Boolean(state.response?.undoAvailable);
+    this.feedbackState_ = userFeedbackToFeedbackOption(state.feedback);
+    if (state.webuiState) {
+      const appState: ComposeAppState = JSON.parse(state.webuiState);
+      this.input_ = appState.input;
+      this.selectedLength_ = appState.selectedLength ?? Length.kUnset;
+      this.selectedTone_ = appState.selectedTone ?? Tone.kUnset;
     }
   }
 

@@ -1026,6 +1026,41 @@ TEST_F(ChromeComposeClientTest, TestComposeGenericServerError) {
           .low());
 }
 
+TEST_F(ChromeComposeClientTest, TestComposeSetTriggeredFromModifierOnError) {
+  ShowDialogAndBindMojo();
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  BindComposeFutureToOnResponseReceived(test_future);
+  page_handler()->Compose("", false);
+  compose::mojom::ComposeResponsePtr result = test_future.Take();
+
+  // Simulate rewrite producing an error response.
+  EXPECT_CALL(session(), ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            std::move(callback).Run(
+                OptimizationGuideModelStreamingExecutionResult(
+                    base::unexpected(
+                        OptimizationGuideModelExecutionError::
+                            FromModelExecutionError(
+                                OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kGenericFailure)),
+                    false,
+                    std::make_unique<optimization_guide::ModelQualityLogEntry>(
+                        std::make_unique<
+                            optimization_guide::proto::LogAiDataRequest>(),
+                        nullptr)));
+          })));
+  page_handler()->Rewrite(nullptr);
+
+  result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kServerError, result->status);
+  EXPECT_TRUE(result->triggered_from_modifier);
+
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+}
+
 // Tests that we return an error if Optimization Guide is unable to parse the
 // response. In this case the response will be std::nullopt.
 TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {

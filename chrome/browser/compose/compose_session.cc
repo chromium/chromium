@@ -381,7 +381,8 @@ void ComposeSession::MakeRequest(
       !base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideModelExecution)) {
     ProcessError(compose::EvalLocation::kServer,
-                 compose::mojom::ComposeStatus::kMisconfiguration);
+                 compose::mojom::ComposeStatus::kMisconfiguration,
+                 request_reason);
     return;
   }
 
@@ -540,9 +541,10 @@ void ComposeSession::ModelExecutionComplete(
     compose::LogComposeRequestDuration(request_delta, eval_location,
                                        /* is_ok */ false);
     if (content::GetNetworkConnectionTracker()->IsOffline()) {
-      ProcessError(eval_location, compose::mojom::ComposeStatus::kOffline);
+      ProcessError(eval_location, compose::mojom::ComposeStatus::kOffline,
+                   request_reason);
     } else {
-      ProcessError(eval_location, status);
+      ProcessError(eval_location, status, request_reason);
     }
     SetQualityLogEntryUponError(std::move(result.log_entry), request_delta,
                                 was_input_edited);
@@ -556,7 +558,8 @@ void ComposeSession::ModelExecutionComplete(
   if (!response) {
     compose::LogComposeRequestDuration(request_delta, eval_location,
                                        /* is_ok */ false);
-    ProcessError(eval_location, compose::mojom::ComposeStatus::kNoResponse);
+    ProcessError(eval_location, compose::mojom::ComposeStatus::kNoResponse,
+                 request_reason);
     SetQualityLogEntryUponError(std::move(result.log_entry), request_delta,
                                 was_input_edited);
     return;
@@ -576,6 +579,7 @@ void ComposeSession::ModelExecutionComplete(
                                      /* is_ok */ true);
 
   SaveMostRecentOkStateToUndoStack();
+  current_state_->response->undo_available = !undo_states_.empty();
   most_recent_ok_state_->SetMojoState(current_state_->Clone());
 
   ui_response->undo_available = !undo_states_.empty();
@@ -608,8 +612,10 @@ void ComposeSession::ModelExecutionComplete(
   }
 }
 
-void ComposeSession::ProcessError(compose::EvalLocation eval_location,
-                                  compose::mojom::ComposeStatus error) {
+void ComposeSession::ProcessError(
+    compose::EvalLocation eval_location,
+    compose::mojom::ComposeStatus error,
+    compose::ComposeRequestReason request_reason) {
   compose::LogComposeRequestStatus(error);
   compose::LogComposeRequestStatus(eval_location, error);
 
@@ -620,6 +626,9 @@ void ComposeSession::ProcessError(compose::EvalLocation eval_location,
   current_state_->has_pending_request = false;
   current_state_->response = compose::mojom::ComposeResponse::New();
   current_state_->response->status = error;
+  current_state_->response->triggered_from_modifier =
+      request_reason != compose::ComposeRequestReason::kFirstRequest &&
+      request_reason != compose::ComposeRequestReason::kUpdateRequest;
 
   if (dialog_remote_.is_bound()) {
     dialog_remote_->ResponseReceived(current_state_->response->Clone());
@@ -627,9 +636,6 @@ void ComposeSession::ProcessError(compose::EvalLocation eval_location,
 }
 
 void ComposeSession::RequestInitialState(RequestInitialStateCallback callback) {
-  if (current_state_->response) {
-    current_state_->response->undo_available = !undo_states_.empty();
-  }
   auto compose_config = compose::GetComposeConfig();
 
   std::move(callback).Run(compose::mojom::OpenMetadata::New(
@@ -656,6 +662,19 @@ void ComposeSession::AcceptComposeResult(
   std::move(success_callback).Run(true);
 }
 
+void ComposeSession::RevertToMostRecentOkState(
+    RevertToMostRecentOkStateCallback callback) {
+  if (!most_recent_ok_state_->IsMojoValid()) {
+    // Gracefully fail if we find an invalid state.
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  current_state_ = most_recent_ok_state_->mojo_state()->Clone();
+
+  std::move(callback).Run(most_recent_ok_state_->mojo_state()->Clone());
+}
+
 void ComposeSession::Undo(UndoCallback callback) {
   if (undo_states_.empty()) {
     std::move(callback).Run(nullptr);
@@ -668,9 +687,8 @@ void ComposeSession::Undo(UndoCallback callback) {
   std::unique_ptr<ComposeState> undo_state = std::move(undo_states_.top());
   undo_states_.pop();
 
-  // upload the most recent modeling quality log entry before overwriting it
-  // with state from undo,
-
+  // Upload the most recent modeling quality log entry before overwriting it
+  // with state from undo.
   most_recent_ok_state_->UploadModelQualityLogs(model_quality_logs_uploader_);
 
   if (!undo_state->IsMojoValid()) {
@@ -681,8 +699,6 @@ void ComposeSession::Undo(UndoCallback callback) {
 
   // State returns to the last undo_state.
   current_state_ = undo_state->mojo_state()->Clone();
-
-  undo_state->mojo_state()->response->undo_available = !undo_states_.empty();
 
   std::move(callback).Run(undo_state->mojo_state()->Clone());
   // set recent state to the last undo modeling entry and last mojo state.
