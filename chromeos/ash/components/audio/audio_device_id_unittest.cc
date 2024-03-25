@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/audio/audio_device_id.h"
 
+#include <cstdint>
+
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_device_selection_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -98,6 +100,20 @@ TEST_F(AudioDeviceIdTest, AudioDeviceListToFlattenedDeviceIdString) {
   for (const auto& item : items) {
     EXPECT_EQ(AudioDeviceListToFlattenedDeviceIdString(item.audio_device_list),
               item.expected_id);
+  }
+}
+
+TEST_F(AudioDeviceIdTest, ParseDeviceId) {
+  struct {
+    const std::string id_string;
+    const std::optional<uint64_t> expected_id;
+  } items[] = {
+      {"", std::nullopt},           {"2", 2},         {"10003 : 1", 10003},
+      {"2 : 10220 : 1", 10220},     {"10220", 10220}, {"a120000", std::nullopt},
+      {"2 : a120000", std::nullopt}};
+
+  for (const auto& item : items) {
+    EXPECT_EQ(ParseDeviceId(item.id_string), item.expected_id);
   }
 }
 
