@@ -49,10 +49,11 @@ class DownloadBubbleAccessibleAlertsMap {
 
     std::u16string text;
 
-    // Whether `other` should overwrite `this`, based on urgency, assuming
-    // `this` is an existing alert in the map and `newer` is newly added.
-    // Note: The `added_time` of `newer` must be at least as recent as that of
-    // `this`.
+    // Whether `newer` should overwrite `this`, based on urgency and added time,
+    // assuming `this` is an existing alert in the map and `newer` is about to
+    // be newly added. The `added_time` of `newer` must be at least as recent as
+    // that of `this` (but this is not enforced as a CHECK because system clocks
+    // may jump backwards sometimes).
     bool ShouldBeReplacedBy(const Alert& newer) const;
 
     // Whether it has been too long since the alert was added, such that it

@@ -43,8 +43,7 @@ DownloadBubbleAccessibleAlertsMap::Alert::operator=(Alert&& other) = default;
 
 bool DownloadBubbleAccessibleAlertsMap::Alert::ShouldBeReplacedBy(
     const DownloadBubbleAccessibleAlertsMap::Alert& newer) const {
-  CHECK_GE(newer.added_time, added_time);
-  return newer.urgency <= urgency;
+  return newer.added_time >= added_time && newer.urgency <= urgency;
 }
 
 bool DownloadBubbleAccessibleAlertsMap::Alert::IsStale() const {

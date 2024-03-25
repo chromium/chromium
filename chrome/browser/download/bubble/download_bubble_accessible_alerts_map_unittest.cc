@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -186,6 +187,45 @@ TEST_F(DownloadBubbleAccessibleAlertsMapTest,
       map().last_alerted_times_for_testing(),
       UnorderedElementsAre(Pair(CreateTestContentId("download1"), now)));
   EXPECT_THAT(map().unannounced_alerts_for_testing(), IsEmpty());
+}
+
+TEST_F(DownloadBubbleAccessibleAlertsMapTest,
+       AddTwoAlertsForSameDownload_BackwardsTime) {
+  struct {
+    Alert::Urgency first_alert_urgency;
+    Alert::Urgency second_alert_urgency;
+  } kTestCases[] = {
+      {Urgency::kAlertSoon, Urgency::kAlertSoon},
+      {Urgency::kAlertSoon, Urgency::kAlertWhenAppropriate},
+      {Urgency::kAlertWhenAppropriate, Urgency::kAlertSoon},
+      {Urgency::kAlertWhenAppropriate, Urgency::kAlertWhenAppropriate},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(base::StringPrintf(
+        "first: %d second: %d", static_cast<int>(test_case.first_alert_urgency),
+        static_cast<int>(test_case.second_alert_urgency)));
+    // Make a new map so test cases are independent.
+    DownloadBubbleAccessibleAlertsMap map;
+
+    // Simulate system clock jumping backwards (base::Time is not guaranteed to
+    // be monotonic), by creating the second alert before creating the first.
+    Alert alert2{test_case.second_alert_urgency, u"alert2"};
+    FastForwardBy(base::Seconds(30));
+    Alert alert1{test_case.first_alert_urgency, u"alert1"};
+    EXPECT_TRUE(map.MaybeAddAccessibleAlert(CreateTestContentId("download1"),
+                                            std::move(alert1)));
+    EXPECT_FALSE(map.MaybeAddAccessibleAlert(CreateTestContentId("download1"),
+                                             std::move(alert2)));
+
+    // The first-added alert should be retained because it is "more recent" than
+    // the new one.
+    EXPECT_THAT(map.unannounced_alerts_for_testing(),
+                UnorderedElementsAre(Pair(
+                    CreateTestContentId("download1"),
+                    AllOf(Field(&Alert::urgency, test_case.first_alert_urgency),
+                          Field(&Alert::text, u"alert1")))));
+  }
 }
 
 TEST_F(DownloadBubbleAccessibleAlertsMapTest, DontAnnounceStaleAlert) {
