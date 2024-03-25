@@ -88,6 +88,11 @@ class GURL;
 // TODO(crbug.com/40067025): Remove this last remark when sync is disabled.
 - (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity;
 
+// TODO(crbug.com/40066949): Remove all tests invoking this when deleting the
+// MaybeMigrateSyncingUserToSignedIn() call on //ios (not right after launching
+// kMigrateSyncingUserToSignedIn).
+- (void)signinAndEnableLegacySyncFeature:(FakeSystemIdentity*)identity;
+
 // Triggers the web sign-in consistency dialog. This is done by calling
 // directly the current SceneController.
 // `url` that triggered the web sign-in/consistency dialog.

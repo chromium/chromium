@@ -86,6 +86,12 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [self verifySignedInWithFakeIdentity:identity];
 }
 
+- (void)signinAndEnableLegacySyncFeature:(FakeSystemIdentity*)identity {
+  [SigninEarlGreyAppInterface signinAndEnableLegacySyncFeature:identity];
+  [self verifyPrimaryAccountWithEmail:identity.userEmail
+                              consent:signin::ConsentLevel::kSync];
+}
+
 - (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {
   [SigninEarlGreyAppInterface triggerReauthDialogWithFakeIdentity:identity];
 }

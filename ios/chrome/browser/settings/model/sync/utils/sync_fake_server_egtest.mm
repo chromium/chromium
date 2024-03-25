@@ -160,10 +160,9 @@ void ClearRelevantData() {
              [self isRunningTest:@selector
                    (testMigrateSyncToSignin_ManagedAccount)] ||
              [self isRunningTest:@selector(testMigrateSyncToSignin_Undo)]) {
-    // The testMigrateSyncToSignin* tests start with SyncToSignin disabled, but
-    // later turn on the appropriate flags and restart Chrome.
-    config.features_disabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
+    // The testMigrateSyncToSignin* tests start with
+    // kMigrateSyncingUserToSignedIn disabled, but later turn on the flag and
+    // restart Chrome.
     config.features_disabled.push_back(switches::kMigrateSyncingUserToSignedIn);
   }
 
@@ -562,7 +561,7 @@ void ClearRelevantData() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Sign in and turn on Sync-the-feature.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
   [ChromeEarlGrey waitForSyncFeatureEnabled:YES
                                 syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey
@@ -583,31 +582,9 @@ void ClearRelevantData() {
   WaitForEntitiesOnFakeServer(1, syncer::READING_LIST);
   WaitForEntitiesOnFakeServer(1, syncer::PASSWORDS);
 
-  // Restart Chrome with UNO phase 2 enabled.
-  [self relaunchWithIdentity:fakeIdentity
-             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos}
-            disabledFeatures:{switches::kMigrateSyncingUserToSignedIn}];
-  // Sync-the-feature should still be enabled.
-  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
-                                syncTimeout:kSyncOperationTimeout];
-
-  // Verify that the bookmark still exists in the local-or-syncable storage.
-  [BookmarkEarlGrey
-      verifyExistenceOfBookmarkWithURL:kBookmarkUrl
-                                  name:kBookmarkTitle
-                             inStorage:BookmarkModelType::kLocalOrSyncable];
-  // Similarly the password.
-  GREYAssertEqual(
-      1, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
-      @"Password should be in the profile store");
-  GREYAssertEqual(
-      0, [PasswordSettingsAppInterface passwordAccountStoreResultsCount],
-      @"Password should NOT be in the account store");
-
   // Restart Chrome with UNO phase 3 (i.e. the migration) enabled.
   [self relaunchWithIdentity:fakeIdentity
-             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kMigrateSyncingUserToSignedIn}
+             enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
             disabledFeatures:{}];
   // Sync-the-feature should *not* be enabled anymore.
   [ChromeEarlGrey waitForSyncFeatureEnabled:NO
@@ -658,7 +635,7 @@ void ClearRelevantData() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Sign in and turn on Sync-the-feature.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
   [ChromeEarlGrey waitForSyncFeatureEnabled:YES
                                 syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey
@@ -677,12 +654,9 @@ void ClearRelevantData() {
   // Disable the Passwords data type.
   [self disableTypeForSyncTheFeature:kSyncPasswordsIdentifier];
 
-  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled. (Note that
-  // for simplicity, this test skips phase 2, which doesn't change anything
-  // relevant.)
+  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled.
   [self relaunchWithIdentity:fakeIdentity
-             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kMigrateSyncingUserToSignedIn}
+             enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
             disabledFeatures:{}];
   // Sync-the-feature should *not* be enabled anymore.
   [ChromeEarlGrey waitForSyncFeatureEnabled:NO
@@ -712,7 +686,7 @@ void ClearRelevantData() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Sign in and turn on Sync-the-feature.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
   [ChromeEarlGrey waitForSyncFeatureEnabled:YES
                                 syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey
@@ -731,12 +705,9 @@ void ClearRelevantData() {
   // Disable the Bookmarks data type.
   [self disableTypeForSyncTheFeature:kSyncBookmarksIdentifier];
 
-  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled. (Note that
-  // for simplicity, this test skips phase 2, which doesn't change anything
-  // relevant.)
+  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled.
   [self relaunchWithIdentity:fakeIdentity
-             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kMigrateSyncingUserToSignedIn}
+             enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
             disabledFeatures:{}];
   // Sync-the-feature should *not* be enabled anymore.
   [ChromeEarlGrey waitForSyncFeatureEnabled:NO
@@ -765,7 +736,7 @@ void ClearRelevantData() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Sign in and turn on Sync-the-feature.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
   [ChromeEarlGrey waitForSyncFeatureEnabled:YES
                                 syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey
@@ -785,12 +756,9 @@ void ClearRelevantData() {
   password_manager_test_utils::SavePasswordFormToProfileStore();
   WaitForEntitiesOnFakeServer(1, syncer::PASSWORDS);
 
-  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled. (Note that
-  // for simplicity, this test skips phase 2, which doesn't change anything
-  // relevant.)
+  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled.
   [self relaunchWithIdentity:fakeIdentity
-             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kMigrateSyncingUserToSignedIn}
+             enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
             disabledFeatures:{}];
   // Sync-the-feature should *not* be enabled anymore.
   [ChromeEarlGrey waitForSyncFeatureEnabled:NO
@@ -838,7 +806,7 @@ void ClearRelevantData() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Sign in and turn on Sync-the-feature.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
   [ChromeEarlGrey waitForSyncFeatureEnabled:YES
                                 syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey
@@ -859,11 +827,9 @@ void ClearRelevantData() {
   [self enableTypeForSyncTheFeature:kSyncReadingListIdentifier];
 
   // Now, while Sync is not active (it's reconfiguring), restart Chrome with UNO
-  // phase 3 (i.e. the migration) enabled. (Note that for simplicity, this test
-  // skips phase 2, which doesn't change anything relevant.)
+  // phase 3 (i.e. the migration) enabled.
   [self relaunchWithIdentity:fakeIdentity
-             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kMigrateSyncingUserToSignedIn}
+             enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
             disabledFeatures:{}];
 
   // Because Sync wasn't active at the time of the migration attempt, the
@@ -879,8 +845,7 @@ void ClearRelevantData() {
 
   // Relaunch again - this time the migration should trigger.
   [self relaunchWithIdentity:fakeIdentity
-             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kMigrateSyncingUserToSignedIn}
+             enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
             disabledFeatures:{}];
   // ...and Sync-the-feature should NOT be enabled anymore.
   [ChromeEarlGrey waitForSyncFeatureEnabled:NO
@@ -892,7 +857,7 @@ void ClearRelevantData() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Sign in and turn on Sync-the-feature.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
   [ChromeEarlGrey waitForSyncFeatureEnabled:YES
                                 syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey
@@ -927,12 +892,9 @@ void ClearRelevantData() {
   WaitForEntitiesOnFakeServer(2, syncer::BOOKMARKS);
   WaitForEntitiesOnFakeServer(1, syncer::PASSWORDS);
 
-  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled. (Note that
-  // for simplicity, this test skips phase 2, which doesn't change anything
-  // relevant.)
+  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled.
   [self relaunchWithIdentity:fakeIdentity
-             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kMigrateSyncingUserToSignedIn}
+             enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
             disabledFeatures:{}];
   // Sync-the-feature should *not* be enabled anymore.
   [ChromeEarlGrey waitForSyncFeatureEnabled:NO
@@ -961,7 +923,7 @@ void ClearRelevantData() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Sign in and turn on Sync-the-feature.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
   [ChromeEarlGrey waitForSyncFeatureEnabled:YES
                                 syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey
@@ -992,12 +954,9 @@ void ClearRelevantData() {
                                inStorage:BookmarkModelType::kLocalOrSyncable];
   password_manager_test_utils::SavePasswordFormToProfileStore();
 
-  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled. (Note that
-  // for simplicity, this test skips phase 2, which doesn't change anything
-  // relevant.)
+  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled.
   [self relaunchWithIdentity:fakeIdentity
-             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kMigrateSyncingUserToSignedIn}
+             enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
             disabledFeatures:{}];
   // Sync-the-feature should *not* be enabled anymore.
   [ChromeEarlGrey waitForSyncFeatureEnabled:NO
@@ -1026,7 +985,7 @@ void ClearRelevantData() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Sign in and turn on Sync-the-feature.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
   [ChromeEarlGrey waitForSyncFeatureEnabled:YES
                                 syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey
@@ -1045,12 +1004,9 @@ void ClearRelevantData() {
                                inStorage:BookmarkModelType::kLocalOrSyncable];
   WaitForEntitiesOnFakeServer(1, syncer::BOOKMARKS);
 
-  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled. (Note that
-  // for simplicity, this test skips phase 2, which doesn't change anything
-  // relevant.)
+  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled.
   [self relaunchWithIdentity:fakeIdentity
-             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kMigrateSyncingUserToSignedIn}
+             enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
             disabledFeatures:{}];
   // Sync-the-feature should *not* be enabled anymore.
   [ChromeEarlGrey waitForSyncFeatureEnabled:NO
@@ -1131,7 +1087,7 @@ void ClearRelevantData() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Sign in and turn on Sync-the-feature.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
   [ChromeEarlGrey waitForSyncFeatureEnabled:YES
                                 syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey
@@ -1148,8 +1104,7 @@ void ClearRelevantData() {
 
   // Restart Chrome with UNO phase 3 (i.e. the migration) enabled.
   [self relaunchWithIdentity:fakeIdentity
-             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kMigrateSyncingUserToSignedIn}
+             enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
             disabledFeatures:{}];
   // Sync-the-feature should *not* be enabled anymore.
   [ChromeEarlGrey waitForSyncFeatureEnabled:NO
@@ -1173,8 +1128,7 @@ void ClearRelevantData() {
 
   // Restart Chrome with the reverse migration (undo) enabled.
   [self relaunchWithIdentity:fakeIdentity
-             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kUndoMigrationOfSyncingUserToSignedIn}
+             enabledFeatures:{switches::kUndoMigrationOfSyncingUserToSignedIn}
             disabledFeatures:{}];
   // Sync-the-feature should be enabled again.
   [ChromeEarlGrey waitForSyncFeatureEnabled:YES

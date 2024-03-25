@@ -939,7 +939,8 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
       kActivityBucketLastReportedDateArrayKey, prefs, defaults);
 
   // Added 10/2023, but DO NOT REMOVE after the usual year!
-  // TODO(crbug.com/40282890): Remove ~one year after full launch.
+  // TODO(crbug.com/40282890): Remove ~one year after full launch. Also remove
+  // the signinAndEnableLegacySyncFeature test helper and corresponding tests.
   browser_sync::MaybeMigrateSyncingUserToSignedIn(state_path, prefs);
 
   // Added 12/2023.

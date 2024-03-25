@@ -18,7 +18,6 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/policy/policy_constants.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_prefs.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -706,11 +705,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
         password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
 
-  if ([self isRunningTest:@selector
-            (testSavePasswordsInAccountHiddenWhenSyncing)]) {
-    config.features_disabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
   if ([self isRunningTest:@selector(testClosingPasswordManagerWidgetPromo)] ||
       [self isRunningTest:@selector
             (testOpeningPasswordManagerWidgetPromoInstructions)] ||
@@ -2955,7 +2949,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
 
   OpenPasswordManager();
   OpenSettingsSubmenu();

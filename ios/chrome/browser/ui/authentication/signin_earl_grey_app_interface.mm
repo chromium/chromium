@@ -17,6 +17,7 @@
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/primary_account_mutator.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
@@ -116,6 +117,31 @@
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   authenticationService->SignIn(
       identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+}
+
++ (void)signinAndEnableLegacySyncFeature:(FakeSystemIdentity*)identity {
+  [self signinWithFakeIdentity:identity];
+
+  // "Upgrade" the account to ConsentLevel::kSync.
+  ChromeBrowserState* browserState =
+      chrome_test_util::GetOriginalBrowserState();
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(browserState);
+  CoreAccountId coreAccountId =
+      identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  CHECK(!coreAccountId.empty());
+  signin::PrimaryAccountMutator::PrimaryAccountError error =
+      identityManager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+          coreAccountId, signin::ConsentLevel::kSync,
+          signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  CHECK_EQ(error, signin::PrimaryAccountMutator::PrimaryAccountError::kNoError);
+
+  // Mark Sync-the-feature setup as complete, so it can start up.
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
+  syncService->SetSyncFeatureRequested();
+  syncService->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 }
 
 + (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {
