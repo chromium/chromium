@@ -172,8 +172,7 @@ std::vector<std::string_view> SplitByColon(std::string_view input) {
 // replaced with the output of |replacement_getter.Run(capture)|.
 std::string SearchAndReplace(
     const re2::RE2& regex,
-    base::RepeatingCallback<std::string(const std::string_view&)>
-        replacement_getter,
+    base::RepeatingCallback<std::string(std::string_view)> replacement_getter,
     std::string_view search_input) {
   std::vector<std::string> output;
   std::string_view capture;
@@ -231,7 +230,7 @@ void ReplaceVariables(const VariableResolver& resolver,
 
   // Callback to compute values of variable chains matched with |regex|.
   auto chain_resolver = base::BindRepeating(
-      [](const VariableResolver& resolver, const std::string_view& variable) {
+      [](const VariableResolver& resolver, std::string_view variable) {
         // Remove the "${" prefix and the "}" suffix from |variable|.
         DCHECK(variable.starts_with("${") && variable.ends_with("}"));
         const std::string_view chain = variable.substr(2, variable.size() - 3);
