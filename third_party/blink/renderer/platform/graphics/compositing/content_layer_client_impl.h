@@ -10,8 +10,8 @@
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/layers_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidator.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -19,17 +19,14 @@ class JSONArray;
 class JSONObject;
 class PendingLayer;
 
-class PLATFORM_EXPORT ContentLayerClientImpl
-    : public GarbageCollected<ContentLayerClientImpl>,
-      public cc::ContentLayerClient,
-      public RasterInvalidator::Callback {
+class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient {
+  USING_FAST_MALLOC(ContentLayerClientImpl);
+
  public:
   ContentLayerClientImpl();
   ContentLayerClientImpl(const ContentLayerClientImpl&) = delete;
   ContentLayerClientImpl& operator=(const ContentLayerClientImpl&) = delete;
   ~ContentLayerClientImpl() override;
-
-  void Trace(Visitor* visitor) const { visitor->Trace(raster_invalidator_); }
 
   // cc::ContentLayerClient
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() final {
@@ -46,17 +43,18 @@ class PLATFORM_EXPORT ContentLayerClientImpl
 
   void UpdateCcPictureLayer(const PendingLayer&);
 
-  RasterInvalidator& GetRasterInvalidator() { return *raster_invalidator_; }
+  RasterInvalidator& GetRasterInvalidator() { return raster_invalidator_; }
 
   size_t ApproximateUnsharedMemoryUsage() const;
 
  private:
   // Callback from raster_invalidator_.
-  void InvalidateRect(const gfx::Rect&) override;
+  void InvalidateRect(const gfx::Rect&);
 
   scoped_refptr<cc::PictureLayer> cc_picture_layer_;
   scoped_refptr<cc::DisplayItemList> cc_display_item_list_;
-  Member<RasterInvalidator> raster_invalidator_;
+  RasterInvalidator raster_invalidator_;
+  RasterInvalidator::RasterInvalidationFunction raster_invalidation_function_;
 
   String debug_name_;
 #if EXPENSIVE_DCHECKS_ARE_ON()

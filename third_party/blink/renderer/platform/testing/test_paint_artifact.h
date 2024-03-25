@@ -10,9 +10,9 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace cc {
 class Layer;
@@ -107,7 +107,10 @@ class TestPaintArtifact {
   TestPaintArtifact& Uncacheable();
   TestPaintArtifact& IsMovedFromCachedSubsequence();
 
-  const PaintArtifact& Build();
+  // Build the paint artifact. After that, if this object has automatically
+  // created any display item client, the caller must retain this object when
+  // using the returned paint artifact.
+  scoped_refptr<PaintArtifact> Build();
 
   // Create a new display item client.
   FakeDisplayItemClient& NewClient();
@@ -118,8 +121,8 @@ class TestPaintArtifact {
   void DidAddDisplayItem();
 
   HeapVector<Member<FakeDisplayItemClient>> clients_;
-  Persistent<PaintArtifact> paint_artifact_ =
-      MakeGarbageCollected<PaintArtifact>();
+  scoped_refptr<PaintArtifact> paint_artifact_ =
+      base::MakeRefCounted<PaintArtifact>();
 };
 
 }  // namespace blink

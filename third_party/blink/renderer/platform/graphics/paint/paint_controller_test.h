@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CONTROLLER_TEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CONTROLLER_TEST_H_
 
+#include <utility>
+
 #include "base/dcheck_is_on.h"
 #include "base/functional/function_ref.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -12,7 +14,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/hit_test_data.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 
@@ -69,7 +70,7 @@ class PaintControllerTestBase : public testing::Test {
             MakeGarbageCollected<FakeDisplayItemClient>("root")),
         root_paint_chunk_id_(root_paint_property_client_->Id(),
                              DisplayItem::kUninitializedType),
-        paint_controller_(MakeGarbageCollected<PaintController>()) {}
+        paint_controller_(std::make_unique<PaintController>()) {}
 
   void SetUp() override { GTEST_FLAG_SET(death_test_style, "threadsafe"); }
 
@@ -123,7 +124,7 @@ class PaintControllerTestBase : public testing::Test {
  private:
   Persistent<FakeDisplayItemClient> root_paint_property_client_;
   PaintChunk::Id root_paint_chunk_id_;
-  Persistent<PaintController> paint_controller_;
+  std::unique_ptr<PaintController> paint_controller_;
 };
 
 // Matcher for checking display item list. Sample usage:
@@ -141,7 +142,7 @@ MATCHER_P3(IsSameId, client_id, type, fragment, "") {
 }
 
 // Matcher for checking paint chunks. Sample usage:
-// EXPACT_THAT(paint_controller.GetPaintChunks(),
+// EXPACT_THAT(paint_controller.PaintChunks(),
 //             ELementsAre(IsPaintChunk(0, 1, id1, properties1),
 //                         IsPaintChunk(1, 3, id2, properties2)));
 inline bool CheckChunk(const PaintChunk& chunk,

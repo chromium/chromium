@@ -192,8 +192,6 @@ struct PLATFORM_EXPORT PaintChunk {
   bool effectively_invisible : 1;
 };
 
-using PaintChunks = Vector<PaintChunk>;
-
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const PaintChunk&);
 
 }  // namespace blink

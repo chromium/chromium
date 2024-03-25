@@ -52,7 +52,7 @@ TEST_F(HighlightOverlayTest, ComputeLayers) {
   auto* none = MakeGarbageCollected<DocumentMarkerVector>();
   const ComputedStyle& style = text->GetLayoutObject()->StyleRef();
   TextPaintStyle text_style;
-  PaintController* controller = MakeGarbageCollected<PaintController>();
+  auto controller = std::make_unique<PaintController>();
   GraphicsContext context(*controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
 
@@ -133,7 +133,7 @@ TEST_F(HighlightOverlayTest, ComputeEdges) {
   Node* br = GetDocument().body()->firstChild();
   Node* text = br->nextSibling();
   UpdateAllLifecyclePhasesForTest();
-  PaintController* controller = MakeGarbageCollected<PaintController>();
+  auto controller = std::make_unique<PaintController>();
   GraphicsContext context(*controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
 
@@ -301,7 +301,7 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   Node* node = GetDocument().body()->firstChild();
   UpdateAllLifecyclePhasesForTest();
 
-  PaintController* controller = MakeGarbageCollected<PaintController>();
+  auto controller = std::make_unique<PaintController>();
   GraphicsContext context(*controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
 

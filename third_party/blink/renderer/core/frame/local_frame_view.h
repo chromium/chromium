@@ -1151,8 +1151,8 @@ class CORE_EXPORT LocalFrameView final
   // Used by |PaintTree()| to collect the updated |PaintArtifact| which will be
   // passed to the compositor. It caches display items and subsequences across
   // frame updates and repaints.
-  Member<PaintController> paint_controller_;
-  Member<PaintArtifactCompositor> paint_artifact_compositor_;
+  std::unique_ptr<PaintController> paint_controller_;
+  std::unique_ptr<PaintArtifactCompositor> paint_artifact_compositor_;
 
   MainThreadScrollingReasons main_thread_scrolling_reasons_;
 

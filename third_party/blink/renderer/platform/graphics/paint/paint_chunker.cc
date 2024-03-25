@@ -10,7 +10,7 @@
 
 namespace blink {
 
-void PaintChunker::ResetChunks(PaintChunks* chunks) {
+void PaintChunker::ResetChunks(Vector<PaintChunk>* chunks) {
   if (chunks_) {
     FinalizeLastChunkProperties();
     SetWillForceNewChunk();

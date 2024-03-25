@@ -27,7 +27,7 @@ class TextPainterBaseTest : public RenderingTest {
  public:
   TextPainterBaseTest()
       : layout_text_(nullptr),
-        paint_controller_(MakeGarbageCollected<PaintController>()),
+        paint_controller_(std::make_unique<PaintController>()),
         context_(*paint_controller_) {}
 
  protected:
@@ -56,7 +56,7 @@ class TextPainterBaseTest : public RenderingTest {
   }
 
   Persistent<LayoutText> layout_text_;
-  Persistent<PaintController> paint_controller_;
+  std::unique_ptr<PaintController> paint_controller_;
   GraphicsContext context_;
 };
 

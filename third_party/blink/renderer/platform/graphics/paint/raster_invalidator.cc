@@ -16,17 +16,10 @@
 
 namespace blink {
 
-void RasterInvalidator::Trace(Visitor* visitor) const {
-  visitor->Trace(current_paint_artifact_);
-  visitor->Trace(old_paint_artifact_);
-  visitor->Trace(tracking_);
-}
-
 void RasterInvalidator::SetTracksRasterInvalidations(bool should_track) {
   if (should_track) {
-    if (!tracking_) {
-      tracking_ = MakeGarbageCollected<RasterInvalidationTracking>();
-    }
+    if (!tracking_)
+      tracking_ = std::make_unique<RasterInvalidationTracking>();
     tracking_->ClearInvalidations();
   } else if (!RasterInvalidationTracking::ShouldAlwaysTrack()) {
     tracking_ = nullptr;
@@ -40,7 +33,7 @@ const PaintChunk& RasterInvalidator::GetOldChunk(wtf_size_t index) const {
   const auto& old_chunk_info = old_paint_chunks_info_[index];
   const auto& old_chunk =
       old_paint_artifact_
-          ->GetPaintChunks()[old_chunk_info.index_in_paint_artifact];
+          ->PaintChunks()[old_chunk_info.index_in_paint_artifact];
 #if DCHECK_IS_ON()
   DCHECK_EQ(old_chunk.id, old_chunk_info.id);
 #endif
@@ -175,6 +168,7 @@ static bool ScrollbarNeedsUpdateDisplay(const PaintChunkIterator& chunk_it) {
 // common cases that most of the chunks can be matched in-order, the complexity
 // is slightly larger than O(n).
 void RasterInvalidator::GenerateRasterInvalidations(
+    RasterInvalidationFunction function,
     const PaintChunkSubset& new_chunks,
     bool layer_offset_or_state_changed,
     bool layer_effect_changed,
@@ -198,7 +192,7 @@ void RasterInvalidator::GenerateRasterInvalidations(
       mapper.SwitchToChunk(new_chunk);
       auto& new_chunk_info = new_chunks_info.emplace_back(*this, mapper, it);
       AddRasterInvalidation(
-          new_chunk_info.bounds_in_layer, new_chunk.id.client_id,
+          function, new_chunk_info.bounds_in_layer, new_chunk.id.client_id,
           new_chunk.is_cacheable ? PaintInvalidationReason::kChunkAppeared
                                  : PaintInvalidationReason::kChunkUncacheable,
           kClientIsNew);
@@ -248,10 +242,10 @@ void RasterInvalidator::GenerateRasterInvalidations(
         // Invalidate both old and new bounds of the chunk if the chunk's paint
         // properties changed, or is moved backward and may expose area that was
         // previously covered by it.
-        AddRasterInvalidation(old_chunk_info.bounds_in_layer,
+        AddRasterInvalidation(function, old_chunk_info.bounds_in_layer,
                               new_chunk.id.client_id, reason, kClientIsNew);
         if (old_chunk_info.bounds_in_layer != new_chunk_info.bounds_in_layer) {
-          AddRasterInvalidation(new_chunk_info.bounds_in_layer,
+          AddRasterInvalidation(function, new_chunk_info.bounds_in_layer,
                                 new_chunk.id.client_id, reason, kClientIsNew);
         }
         // Ignore the display item raster invalidations because we have fully
@@ -265,14 +259,14 @@ void RasterInvalidator::GenerateRasterInvalidations(
             old_chunk_info.chunk_to_layer_transform;
 
         if (reason == PaintInvalidationReason::kIncremental) {
-          IncrementallyInvalidateChunk(old_chunk_info, new_chunk_info,
+          IncrementallyInvalidateChunk(function, old_chunk_info, new_chunk_info,
                                        new_chunk.id.client_id);
         }
 
         if (&new_chunks.GetPaintArtifact() != old_paint_artifact_ &&
             !new_chunk.is_moved_from_cached_subsequence) {
           DisplayItemRasterInvalidator(
-              *this,
+              *this, function,
               old_paint_artifact_->DisplayItemsInChunk(
                   old_chunk_info.index_in_paint_artifact),
               it.DisplayItems(), mapper)
@@ -293,12 +287,13 @@ void RasterInvalidator::GenerateRasterInvalidations(
     auto reason = old_chunk.is_cacheable
                       ? PaintInvalidationReason::kChunkDisappeared
                       : PaintInvalidationReason::kChunkUncacheable;
-    AddRasterInvalidation(old_paint_chunks_info_[i].bounds_in_layer,
+    AddRasterInvalidation(function, old_paint_chunks_info_[i].bounds_in_layer,
                           old_chunk.id.client_id, reason, kClientIsOld);
   }
 }
 
 void RasterInvalidator::IncrementallyInvalidateChunk(
+    RasterInvalidationFunction function,
     const PaintChunkInfo& old_chunk_info,
     const PaintChunkInfo& new_chunk_info,
     DisplayItemClientId client_id) {
@@ -306,7 +301,7 @@ void RasterInvalidator::IncrementallyInvalidateChunk(
   diff.op(gfx::RectToSkIRect(new_chunk_info.bounds_in_layer),
           SkRegion::kXOR_Op);
   for (SkRegion::Iterator it(diff); !it.done(); it.next()) {
-    AddRasterInvalidation(gfx::SkIRectToRect(it.rect()), client_id,
+    AddRasterInvalidation(function, gfx::SkIRectToRect(it.rect()), client_id,
                           PaintInvalidationReason::kIncremental, kClientIsNew);
   }
 }
@@ -323,13 +318,13 @@ void RasterInvalidator::TrackRasterInvalidation(const gfx::Rect& rect,
 }
 
 RasterInvalidationTracking& RasterInvalidator::EnsureTracking() {
-  if (!tracking_) {
-    tracking_ = MakeGarbageCollected<RasterInvalidationTracking>();
-  }
+  if (!tracking_)
+    tracking_ = std::make_unique<RasterInvalidationTracking>();
   return *tracking_;
 }
 
 void RasterInvalidator::Generate(
+    RasterInvalidationFunction raster_invalidation_function,
     const PaintChunkSubset& new_chunks,
     const gfx::Vector2dF& layer_offset,
     const gfx::Size& layer_bounds,
@@ -361,12 +356,14 @@ void RasterInvalidator::Generate(
     }
 
     if (!layer_bounds.IsEmpty() && !new_chunks.IsEmpty()) {
-      AddRasterInvalidation(gfx::Rect(layer_bounds),
+      AddRasterInvalidation(raster_invalidation_function,
+                            gfx::Rect(layer_bounds),
                             new_chunks.begin()->id.client_id,
                             PaintInvalidationReason::kFullLayer, kClientIsNew);
     }
   } else {
-    GenerateRasterInvalidations(new_chunks, layer_offset_or_state_changed,
+    GenerateRasterInvalidations(raster_invalidation_function, new_chunks,
+                                layer_offset_or_state_changed,
                                 layer_effect_changed, new_chunks_info);
   }
 
@@ -376,8 +373,8 @@ void RasterInvalidator::Generate(
 }
 
 void RasterInvalidator::SetOldPaintArtifact(
-    const PaintArtifact& old_paint_artifact) {
-  old_paint_artifact_ = &old_paint_artifact;
+    scoped_refptr<const PaintArtifact> old_paint_artifact) {
+  old_paint_artifact_ = std::move(old_paint_artifact);
 }
 
 size_t RasterInvalidator::ApproximateUnsharedMemoryUsage() const {

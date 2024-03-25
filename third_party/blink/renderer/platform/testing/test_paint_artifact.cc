@@ -42,19 +42,19 @@ TestPaintArtifact& TestPaintArtifact::Chunk(int id) {
 TestPaintArtifact& TestPaintArtifact::Chunk(DisplayItemClient& client,
                                             DisplayItem::Type type) {
   auto& display_item_list = paint_artifact_->GetDisplayItemList();
-  paint_artifact_->GetPaintChunks().emplace_back(
+  paint_artifact_->PaintChunks().emplace_back(
       display_item_list.size(), display_item_list.size(), client,
       PaintChunk::Id(client.Id(), type), PropertyTreeState::Root());
   paint_artifact_->RecordDebugInfo(client.Id(), client.DebugName(),
                                    client.OwnerNodeId());
   // Assume PaintController has processed this chunk.
-  paint_artifact_->GetPaintChunks().back().client_is_just_created = false;
+  paint_artifact_->PaintChunks().back().client_is_just_created = false;
   return *this;
 }
 
 TestPaintArtifact& TestPaintArtifact::Properties(
     const PropertyTreeStateOrAlias& properties) {
-  paint_artifact_->GetPaintChunks().back().properties = properties;
+  paint_artifact_->PaintChunks().back().properties = properties;
   return *this;
 }
 
@@ -96,7 +96,7 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(DisplayItemClient& client,
           client.GetPaintInvalidationReason());
   paint_artifact_->RecordDebugInfo(client.Id(), client.DebugName(),
                                    client.OwnerNodeId());
-  auto& chunk = paint_artifact_->GetPaintChunks().back();
+  auto& chunk = paint_artifact_->PaintChunks().back();
   chunk.background_color.color = color.toSkColor4f();
   chunk.background_color.area = bounds.size().GetArea();
   // is_solid_color should be set explicitly with IsSolidColor().
@@ -108,7 +108,7 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(DisplayItemClient& client,
 TestPaintArtifact& TestPaintArtifact::ScrollHitTest(
     const gfx::Rect& rect,
     const TransformPaintPropertyNode* scroll_translation) {
-  auto& chunk = paint_artifact_->GetPaintChunks().back();
+  auto& chunk = paint_artifact_->PaintChunks().back();
   chunk.hit_test_opaqueness = cc::HitTestOpaqueness::kOpaque;
   auto& hit_test_data = chunk.EnsureHitTestData();
   hit_test_data.scroll_hit_test_rect = rect;
@@ -118,74 +118,70 @@ TestPaintArtifact& TestPaintArtifact::ScrollHitTest(
 
 TestPaintArtifact& TestPaintArtifact::SetRasterEffectOutset(
     RasterEffectOutset outset) {
-  paint_artifact_->GetPaintChunks().back().raster_effect_outset = outset;
+  paint_artifact_->PaintChunks().back().raster_effect_outset = outset;
   return *this;
 }
 
 TestPaintArtifact& TestPaintArtifact::RectKnownToBeOpaque(const gfx::Rect& r) {
-  auto& chunk = paint_artifact_->GetPaintChunks().back();
+  auto& chunk = paint_artifact_->PaintChunks().back();
   chunk.rect_known_to_be_opaque = r;
   DCHECK(chunk.bounds.Contains(r));
   return *this;
 }
 
 TestPaintArtifact& TestPaintArtifact::TextKnownToBeOnOpaqueBackground() {
-  auto& chunk = paint_artifact_->GetPaintChunks().back();
+  auto& chunk = paint_artifact_->PaintChunks().back();
   DCHECK(chunk.has_text);
-  paint_artifact_->GetPaintChunks()
-      .back()
-      .text_known_to_be_on_opaque_background = true;
+  paint_artifact_->PaintChunks().back().text_known_to_be_on_opaque_background =
+      true;
   return *this;
 }
 
 TestPaintArtifact& TestPaintArtifact::HasText() {
-  auto& chunk = paint_artifact_->GetPaintChunks().back();
+  auto& chunk = paint_artifact_->PaintChunks().back();
   chunk.has_text = true;
   chunk.text_known_to_be_on_opaque_background = false;
   return *this;
 }
 
 TestPaintArtifact& TestPaintArtifact::IsSolidColor() {
-  auto& chunk = paint_artifact_->GetPaintChunks().back();
+  auto& chunk = paint_artifact_->PaintChunks().back();
   DCHECK_EQ(chunk.size(), 1u);
   chunk.background_color.is_solid_color = true;
   return *this;
 }
 
 TestPaintArtifact& TestPaintArtifact::EffectivelyInvisible() {
-  paint_artifact_->GetPaintChunks().back().effectively_invisible = true;
+  paint_artifact_->PaintChunks().back().effectively_invisible = true;
   return *this;
 }
 
 TestPaintArtifact& TestPaintArtifact::Bounds(const gfx::Rect& bounds) {
-  auto& chunk = paint_artifact_->GetPaintChunks().back();
+  auto& chunk = paint_artifact_->PaintChunks().back();
   chunk.bounds = bounds;
   return *this;
 }
 
 TestPaintArtifact& TestPaintArtifact::DrawableBounds(
     const gfx::Rect& drawable_bounds) {
-  auto& chunk = paint_artifact_->GetPaintChunks().back();
+  auto& chunk = paint_artifact_->PaintChunks().back();
   chunk.drawable_bounds = drawable_bounds;
   DCHECK(chunk.bounds.Contains(drawable_bounds));
   return *this;
 }
 
 TestPaintArtifact& TestPaintArtifact::Uncacheable() {
-  paint_artifact_->GetPaintChunks().back().is_cacheable = false;
+  paint_artifact_->PaintChunks().back().is_cacheable = false;
   return *this;
 }
 
 TestPaintArtifact& TestPaintArtifact::IsMovedFromCachedSubsequence() {
-  paint_artifact_->GetPaintChunks().back().is_moved_from_cached_subsequence =
-      true;
+  paint_artifact_->PaintChunks().back().is_moved_from_cached_subsequence = true;
   return *this;
 }
 
-const PaintArtifact& TestPaintArtifact::Build() {
-  const PaintArtifact& result = *paint_artifact_;
-  paint_artifact_ = nullptr;
-  return result;
+scoped_refptr<PaintArtifact> TestPaintArtifact::Build() {
+  return std::move(paint_artifact_);
 }
 
 FakeDisplayItemClient& TestPaintArtifact::NewClient() {
@@ -198,7 +194,7 @@ FakeDisplayItemClient& TestPaintArtifact::Client(wtf_size_t i) const {
 }
 
 void TestPaintArtifact::DidAddDisplayItem() {
-  auto& chunk = paint_artifact_->GetPaintChunks().back();
+  auto& chunk = paint_artifact_->PaintChunks().back();
   DCHECK_EQ(chunk.end_index, paint_artifact_->GetDisplayItemList().size() - 1);
   const auto& item = paint_artifact_->GetDisplayItemList().back();
   chunk.bounds.Union(item.VisualRect());

@@ -331,8 +331,6 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(viewport_scrollable_area_);
   visitor->Trace(anchoring_adjustment_queue_);
   visitor->Trace(scroll_event_queue_);
-  visitor->Trace(paint_controller_);
-  visitor->Trace(paint_artifact_compositor_);
   visitor->Trace(layout_shift_tracker_);
   visitor->Trace(paint_timing_detector_);
   visitor->Trace(mobile_friendliness_checker_);
@@ -2658,7 +2656,7 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
             area->UpdateCompositorScrollAnimations();
         }
         frame_view.GetPage()->GetLinkHighlight().UpdateAfterPaint(
-            paint_artifact_compositor_.Get());
+            paint_artifact_compositor_.get());
         Document& document = frame_view.GetLayoutView()->GetDocument();
         {
           // Updating animations can notify ready promises which could mutate
@@ -2666,7 +2664,7 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
           // update. https://crbug.com/1196781
           ScriptForbiddenScope forbid_script;
           document.GetDocumentAnimations().UpdateAnimations(
-              DocumentLifecycle::kPaintClean, paint_artifact_compositor_.Get(),
+              DocumentLifecycle::kPaintClean, paint_artifact_compositor_.get(),
               needed_update);
         }
         total_animations_count +=
@@ -2811,8 +2809,8 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
   bool repainted = false;
   bool needs_clear_repaint_flags = false;
 
-  const PaintArtifact& previous_artifact =
-      paint_controller_->GetPaintArtifact();
+  scoped_refptr<const PaintArtifact> previous_artifact =
+      paint_controller_->GetPaintArtifactShared();
 
   PaintController::ScopedBenchmarkMode scoped_benchmark(*paint_controller_,
                                                         benchmark_mode);
@@ -2851,7 +2849,7 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
     repainted = true;
     if (paint_artifact_compositor_) {
       paint_artifact_compositor_->SetNeedsFullUpdateAfterPaintIfNeeded(
-          previous_artifact, paint_controller_->GetPaintArtifact());
+          *previous_artifact, paint_controller_->GetPaintArtifact());
     }
   }
 
@@ -2908,7 +2906,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
     return;
 
   if (!paint_artifact_compositor_) {
-    paint_artifact_compositor_ = MakeGarbageCollected<PaintArtifactCompositor>(
+    paint_artifact_compositor_ = std::make_unique<PaintArtifactCompositor>(
         page->GetScrollingCoordinator()->GetScrollCallbacks());
     page->GetChromeClient().AttachRootLayer(
         paint_artifact_compositor_->RootLayer(), &GetFrame());
@@ -2927,7 +2925,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   if (!paint_artifact_compositor_->NeedsUpdate()) {
     if (repainted) {
       paint_artifact_compositor_->UpdateRepaintedLayers(
-          paint_controller_->GetPaintArtifact());
+          paint_controller_->GetPaintArtifactShared());
       CreatePaintTimelineEvents();
     }
     // TODO(pdr): Should we clear the property tree state change bits (
@@ -2972,7 +2970,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   AppendViewTransitionRequests(view_transition_requests);
 
   paint_artifact_compositor_->Update(
-      paint_controller_->GetPaintArtifact(), viewport_properties,
+      paint_controller_->GetPaintArtifactShared(), viewport_properties,
       scroll_translation_nodes, std::move(view_transition_requests));
 
   CreatePaintTimelineEvents();
@@ -3847,9 +3845,8 @@ LocalFrameView::ForceThrottlingScope::ForceThrottlingScope(
              true) {}
 
 PaintController& LocalFrameView::EnsurePaintController() {
-  if (!paint_controller_) {
-    paint_controller_ = MakeGarbageCollected<PaintController>();
-  }
+  if (!paint_controller_)
+    paint_controller_ = std::make_unique<PaintController>();
   return *paint_controller_;
 }
 
@@ -4367,7 +4364,7 @@ void LocalFrameView::SetPaintArtifactCompositorNeedsUpdate() {
 
 PaintArtifactCompositor* LocalFrameView::GetPaintArtifactCompositor() const {
   LocalFrameView* root = GetFrame().LocalFrameRoot().View();
-  return root ? root->paint_artifact_compositor_.Get() : nullptr;
+  return root ? root->paint_artifact_compositor_.get() : nullptr;
 }
 
 unsigned LocalFrameView::GetIntersectionObservationFlags(
@@ -4538,7 +4535,7 @@ String LocalFrameView::MainThreadScrollingReasonsAsText() {
   const auto* properties = GetLayoutView()->FirstFragment().PaintProperties();
   if (properties && properties->Scroll()) {
     const auto* compositor =
-        GetFrame().LocalFrameRoot().View()->paint_artifact_compositor_.Get();
+        GetFrame().LocalFrameRoot().View()->paint_artifact_compositor_.get();
     CHECK(compositor);
     reasons = compositor->GetMainThreadScrollingReasons(*properties->Scroll());
   }

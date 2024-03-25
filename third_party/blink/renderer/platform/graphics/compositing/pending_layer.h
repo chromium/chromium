@@ -21,14 +21,9 @@ class LayerTreeHost;
 
 namespace blink {
 
-class PendingLayer;
-using PendingLayers = HeapVector<PendingLayer>;
-
 // A pending layer is a collection of paint chunks that will end up in the same
 // cc::Layer.
 class PLATFORM_EXPORT PendingLayer {
-  DISALLOW_NEW();
-
  public:
   enum CompositingType {
     kScrollHitTestLayer,
@@ -38,9 +33,8 @@ class PLATFORM_EXPORT PendingLayer {
     kOther,
   };
 
-  PendingLayer(const PaintArtifact&, const PaintChunk& first_chunk);
-
-  void Trace(Visitor*) const;
+  PendingLayer(scoped_refptr<const PaintArtifact>,
+               const PaintChunk& first_chunk);
 
   // Returns the offset/bounds for the final cc::Layer, rounded if needed.
   gfx::Vector2dF LayerOffset() const;
@@ -73,8 +67,8 @@ class PLATFORM_EXPORT PendingLayer {
     compositing_type_ = new_type;
   }
 
-  void SetPaintArtifact(const PaintArtifact& paint_artifact) {
-    chunks_.SetPaintArtifact(paint_artifact);
+  void SetPaintArtifact(scoped_refptr<const PaintArtifact> paint_artifact) {
+    chunks_.SetPaintArtifact(std::move(paint_artifact));
   }
 
   using IsCompositedScrollFunction =
@@ -132,7 +126,7 @@ class PLATFORM_EXPORT PendingLayer {
 
   bool MightOverlap(const PendingLayer& other) const;
 
-  static void DecompositeTransforms(PendingLayers& pending_layers);
+  static void DecompositeTransforms(Vector<PendingLayer>& pending_layers);
 
   // This is valid only when SetCclayer() or SetContentLayerClient() has been
   // called.
@@ -144,7 +138,7 @@ class PLATFORM_EXPORT PendingLayer {
   }
 
   ContentLayerClientImpl* GetContentLayerClient() const {
-    return content_layer_client_.Get();
+    return content_layer_client_.get();
   }
 
   void UpdateCcLayerHitTestOpaqueness() const;
@@ -159,8 +153,9 @@ class PLATFORM_EXPORT PendingLayer {
 
   // A lighter version of UpdateCompositedLayer(). Called when the existing
   // composited layer has only repainted since the last update.
-  void UpdateCompositedLayerForRepaint(const PaintArtifact& repainted_artifact,
-                                       cc::LayerSelection&);
+  void UpdateCompositedLayerForRepaint(
+      scoped_refptr<const PaintArtifact> repainted_artifact,
+      cc::LayerSelection&);
 
   SkColor4f ComputeBackgroundColor() const;
 
@@ -229,15 +224,13 @@ class PLATFORM_EXPORT PendingLayer {
   // This is set to non-null after layerization if ChunkRequiresOwnLayer() or
   // UsesSolidColorLayer() is true.
   scoped_refptr<cc::Layer> cc_layer_;
-  // This is set to non-null after layerization if ChunkRequiresOwnLayer() and
-  // UsesSolidColorLayer() are false.
-  Member<ContentLayerClientImpl> content_layer_client_;
+  // This is set to non-null after layerization if !ChunkRequiresOwnLayer() and
+  // UsesSolidColorLayer() is false.
+  std::unique_ptr<ContentLayerClientImpl> content_layer_client_;
 };
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const PendingLayer&);
 
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::PendingLayer)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PENDING_LAYER_H_

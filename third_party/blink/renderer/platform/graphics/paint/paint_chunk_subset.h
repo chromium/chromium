@@ -8,7 +8,6 @@
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -23,25 +22,25 @@ class PaintChunkSubset {
   PaintChunkSubset() = default;
 
   // A subset containing a single paint chunk initially.
-  PaintChunkSubset(const PaintArtifact& paint_artifact, const PaintChunk& chunk)
-      : paint_artifact_(&paint_artifact) {
+  PaintChunkSubset(scoped_refptr<const PaintArtifact> paint_artifact,
+                   const PaintChunk& chunk)
+      : paint_artifact_(std::move(paint_artifact)) {
+    DCHECK(paint_artifact_);
     wtf_size_t chunk_index = base::checked_cast<wtf_size_t>(
-        &chunk - &paint_artifact_->GetPaintChunks().front());
-    CHECK_LT(chunk_index, paint_artifact_->GetPaintChunks().size());
+        &chunk - &paint_artifact_->PaintChunks().front());
+    CHECK_LT(chunk_index, paint_artifact_->PaintChunks().size());
     subset_indices_.push_back(chunk_index);
   }
 
   // A subset containing the whole PaintArtifact. This is less efficient than
-  // directly iterating paint_artifact->GetPaintChunks(), so should be rarely
-  // used in production code.
-  explicit PaintChunkSubset(const PaintArtifact& paint_artifact)
-      : paint_artifact_(&paint_artifact) {
-    for (wtf_size_t i = 0; i < paint_artifact_->GetPaintChunks().size(); ++i) {
+  // directly iterating paint_artifact->PaintChunks(), so should be rarely used
+  // in production code.
+  explicit PaintChunkSubset(scoped_refptr<const PaintArtifact> paint_artifact)
+      : paint_artifact_(std::move(paint_artifact)) {
+    for (wtf_size_t i = 0; i < paint_artifact_->PaintChunks().size(); ++i) {
       subset_indices_.push_back(i);
     }
   }
-
-  void Trace(Visitor* visitor) const { visitor->Trace(paint_artifact_); }
 
   class Iterator {
     STACK_ALLOCATED();
@@ -91,7 +90,7 @@ class PaintChunkSubset {
 
     const PaintChunk& GetChunk() const {
       DCHECK_LT(subset_index_, subset_->end().subset_index_);
-      return subset_->paint_artifact_->GetPaintChunks()[IndexInPaintArtifact()];
+      return subset_->paint_artifact_->PaintChunks()[IndexInPaintArtifact()];
     }
 
     const PaintChunkSubset* subset_;
@@ -105,7 +104,7 @@ class PaintChunkSubset {
   Iterator end() const { return Iterator(*this, subset_indices_.size()); }
 
   const PaintChunk& operator[](wtf_size_t i) const {
-    return paint_artifact_->GetPaintChunks()[subset_indices_[i]];
+    return paint_artifact_->PaintChunks()[subset_indices_[i]];
   }
 
   bool IsEmpty() const { return subset_indices_.empty(); }
@@ -116,15 +115,15 @@ class PaintChunkSubset {
 
   // This can be used to swap in an updated artifact but care should be taken
   // because the PaintChunk indices into the new artifact must still be valid.
-  void SetPaintArtifact(const PaintArtifact& paint_artifact) {
+  void SetPaintArtifact(scoped_refptr<const PaintArtifact> paint_artifact) {
     // Existing paint chunk indices would be invalid if the sizes change.
-    DCHECK_EQ(paint_artifact.GetPaintChunks().size(),
-              paint_artifact_->GetPaintChunks().size());
-    paint_artifact_ = &paint_artifact;
+    DCHECK_EQ(paint_artifact->PaintChunks().size(),
+              paint_artifact_->PaintChunks().size());
+    paint_artifact_ = std::move(paint_artifact);
   }
 
   void Merge(const PaintChunkSubset& other) {
-    DCHECK_EQ(paint_artifact_, other.paint_artifact_);
+    DCHECK_EQ(paint_artifact_.get(), other.paint_artifact_.get());
     subset_indices_.AppendVector(other.subset_indices_);
   }
 
@@ -135,7 +134,7 @@ class PaintChunkSubset {
   std::unique_ptr<JSONArray> ToJSON() const;
 
  private:
-  Member<const PaintArtifact> paint_artifact_;
+  scoped_refptr<const PaintArtifact> paint_artifact_;
   Vector<wtf_size_t> subset_indices_;
 };
 

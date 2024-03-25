@@ -110,7 +110,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
   // hit test, visual viewport, overlays, etc. Includes LayoutView scrolling
   // background.
   PaintChunkSubset ContentPaintChunks() {
-    const auto& chunks = RootPaintController().GetPaintChunks();
+    const auto& chunks = RootPaintController().PaintChunks();
     wtf_size_t begin_index = 0;
     wtf_size_t end_index = chunks.size();
     while (begin_index < end_index) {
@@ -125,7 +125,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
            IsNotContentType(chunks[end_index - 1].id.type)) {
       end_index--;
     }
-    const auto& artifact = RootPaintController().GetPaintArtifact();
+    auto artifact = RootPaintController().GetPaintArtifactShared();
     PaintChunkSubset subset(artifact, chunks[begin_index]);
     for (wtf_size_t i = begin_index + 1; i < end_index; i++) {
       subset.Merge(PaintChunkSubset(artifact, chunks[i]));

@@ -83,7 +83,7 @@ class TestDisplayItemRequiringSeparateChunk : public ForeignLayerDisplayItem {
 };
 
 TEST_F(PaintChunkerTest, Empty) {
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   EXPECT_TRUE(chunks.empty());
 
@@ -92,7 +92,7 @@ TEST_F(PaintChunkerTest, Empty) {
 }
 
 TEST_F(PaintChunkerTest, SingleNonEmptyRange) {
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   PaintChunk::Id id(client_->Id(), DisplayItemType(1));
   chunker.UpdateCurrentPaintChunkProperties(id, *client_,
@@ -105,7 +105,7 @@ TEST_F(PaintChunkerTest, SingleNonEmptyRange) {
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 2, id,
                                                DefaultPaintChunkProperties())));
 
-  PaintChunks chunks1;
+  Vector<PaintChunk> chunks1;
   chunker.ResetChunks(&chunks1);
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 2, id,
                                                DefaultPaintChunkProperties())));
@@ -113,7 +113,7 @@ TEST_F(PaintChunkerTest, SingleNonEmptyRange) {
 }
 
 TEST_F(PaintChunkerTest, SamePropertiesTwiceCombineIntoOneChunk) {
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   PaintChunk::Id id(client_->Id(), DisplayItemType(1));
   chunker.UpdateCurrentPaintChunkProperties(id, *client_,
@@ -130,7 +130,7 @@ TEST_F(PaintChunkerTest, SamePropertiesTwiceCombineIntoOneChunk) {
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 3, id,
                                                DefaultPaintChunkProperties())));
 
-  PaintChunks chunks1;
+  Vector<PaintChunk> chunks1;
   chunker.ResetChunks(&chunks1);
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 3, id,
                                                DefaultPaintChunkProperties())));
@@ -138,7 +138,7 @@ TEST_F(PaintChunkerTest, SamePropertiesTwiceCombineIntoOneChunk) {
 }
 
 TEST_F(PaintChunkerTest, BuildMultipleChunksWithSinglePropertyChanging) {
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   PaintChunk::Id id1(client_->Id(), DisplayItemType(1));
   chunker.UpdateCurrentPaintChunkProperties(id1, *client_,
@@ -175,7 +175,7 @@ TEST_F(PaintChunkerTest, BuildMultipleChunksWithSinglePropertyChanging) {
 }
 
 TEST_F(PaintChunkerTest, BuildMultipleChunksWithDifferentPropertyChanges) {
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   PaintChunk::Id id1(client_->Id(), DisplayItemType(1));
   chunker.UpdateCurrentPaintChunkProperties(id1, *client_,
@@ -254,7 +254,7 @@ TEST_F(PaintChunkerTest, BuildChunksFromNestedTransforms) {
   //   </a xform>
   //   <paint>
   // </root xform>
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   PaintChunk::Id id1(client_->Id(), DisplayItemType(1));
   chunker.UpdateCurrentPaintChunkProperties(id1, *client_,
@@ -287,7 +287,7 @@ TEST_F(PaintChunkerTest, BuildChunksFromNestedTransforms) {
 
 TEST_F(PaintChunkerTest, ChangingPropertiesWithoutItems) {
   // Test that properties can change without display items being generated.
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   PaintChunk::Id id1(client_->Id(), DisplayItemType(1));
   chunker.UpdateCurrentPaintChunkProperties(id1, *client_,
@@ -321,7 +321,7 @@ TEST_F(PaintChunkerTest, ChangingPropertiesWithoutItems) {
 TEST_F(PaintChunkerTest, CreatesSeparateChunksWhenRequested) {
   // Tests that the chunker creates a separate chunks for display items which
   // require it.
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   FakeDisplayItemClient& client1 =
       *MakeGarbageCollected<FakeDisplayItemClient>();
@@ -360,7 +360,7 @@ TEST_F(PaintChunkerTest, CreatesSeparateChunksWhenRequested) {
 }
 
 TEST_F(PaintChunkerTest, ForceNewChunkWithNewId) {
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   PaintChunk::Id id0(client_->Id(), DisplayItemType(0));
   chunker.UpdateCurrentPaintChunkProperties(id0, *client_,
@@ -410,7 +410,7 @@ TEST_F(PaintChunkerTest, ForceNewChunkWithNewId) {
 }
 
 TEST_F(PaintChunkerTest, ForceNewChunkWithoutNewId) {
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   PaintChunk::Id id0(client_->Id(), DisplayItemType(0));
   chunker.UpdateCurrentPaintChunkProperties(DefaultPaintChunkProperties());
@@ -454,7 +454,7 @@ TEST_F(PaintChunkerTest, ForceNewChunkWithoutNewId) {
 }
 
 TEST_F(PaintChunkerTest, NoNewChunkForSamePropertyDifferentIds) {
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   PaintChunk::Id id0(client_->Id(), DisplayItemType(0));
   chunker.UpdateCurrentPaintChunkProperties(id0, *client_,
@@ -486,7 +486,7 @@ TEST_F(PaintChunkerTest, NoNewChunkForSamePropertyDifferentIds) {
 // Ensure that items following a forced chunk begin using the next display
 // item's id.
 TEST_F(PaintChunkerTest, ChunksFollowingForcedChunk) {
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   FakeDisplayItemClient& client =
       *MakeGarbageCollected<FakeDisplayItemClient>();
@@ -519,7 +519,7 @@ TEST_F(PaintChunkerTest, ChunksFollowingForcedChunk) {
 }
 
 TEST_F(PaintChunkerTest, ChunkIdsSkippingCache) {
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
 
   PaintChunk::Id id1(client_->Id(), DisplayItemType(1));
@@ -579,7 +579,7 @@ TEST_F(PaintChunkerTest, ChunkIdsSkippingCache) {
 }
 
 TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunk) {
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
 
   PaintChunk::Id id1(client_->Id(), DisplayItemType(1));
@@ -626,7 +626,7 @@ TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunk) {
 }
 
 TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunkWheelRegionsEnabled) {
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
 
   PaintChunk::Id id1(client_->Id(), DisplayItemType(1));
@@ -677,7 +677,7 @@ TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunkWheelRegionsEnabled) {
 }
 
 TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueAllOpaqueItems) {
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   FakeDisplayItemClient& client1 =
       *MakeGarbageCollected<FakeDisplayItemClient>("client1");
@@ -726,7 +726,7 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueAllOpaqueItems) {
 }
 
 TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueWithHitTest) {
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   FakeDisplayItemClient& client1 =
       *MakeGarbageCollected<FakeDisplayItemClient>("client1");
@@ -788,7 +788,7 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueWithHitTest) {
 }
 
 TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueMixedOpaquenessItems) {
-  PaintChunks chunks;
+  Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   FakeDisplayItemClient& client1 =
       *MakeGarbageCollected<FakeDisplayItemClient>("client1");

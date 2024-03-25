@@ -7,12 +7,13 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/callback.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/chunk_to_layer_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidation_tracking.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
@@ -21,35 +22,34 @@ namespace blink {
 
 class PaintArtifact;
 
-class PLATFORM_EXPORT RasterInvalidator
-    : public GarbageCollected<RasterInvalidator> {
+class PLATFORM_EXPORT RasterInvalidator {
+  USING_FAST_MALLOC(RasterInvalidator);
+
  public:
-  class PLATFORM_EXPORT Callback {
-   public:
-    virtual ~Callback() = default;
-    virtual void InvalidateRect(const gfx::Rect&) = 0;
-  };
+  using RasterInvalidationFunction =
+      base::RepeatingCallback<void(const gfx::Rect&)>;
 
-  explicit RasterInvalidator(Callback& callback) : callback_(callback) {}
-
-  void Trace(Visitor*) const;
+  RasterInvalidator() = default;
 
   void SetTracksRasterInvalidations(bool);
-  RasterInvalidationTracking* GetTracking() const { return tracking_.Get(); }
+  RasterInvalidationTracking* GetTracking() const { return tracking_.get(); }
 
   RasterInvalidationTracking& EnsureTracking();
 
   // Generate raster invalidations for a subset of the paint chunks in the
   // paint artifact.
-  void Generate(const PaintChunkSubset&,
+  void Generate(RasterInvalidationFunction,
+                const PaintChunkSubset&,
                 const gfx::Vector2dF& layer_offset,
                 const gfx::Size& layer_bounds,
                 const PropertyTreeState& layer_state);
 
   // Called when we repainted PaintArtifact but a ContentLayerClientImpl doesn't
   // have anything changed. We just need to let |old_paint_artifact_| point to
-  // the real old one.
-  void SetOldPaintArtifact(const PaintArtifact&);
+  // the real old one. TODO(wangxianzhu): When we remove pre-CAP code, we can
+  // avoid this function by storing the old paint artifact in
+  // PaintArtifactCompositor and pass it in Generate().
+  void SetOldPaintArtifact(scoped_refptr<const PaintArtifact>);
 
   const gfx::Size& LayerBounds() const { return layer_bounds_; }
 
@@ -106,7 +106,8 @@ class PLATFORM_EXPORT RasterInvalidator
     gfx::Transform chunk_to_layer_transform;
   };
 
-  void GenerateRasterInvalidations(const PaintChunkSubset&,
+  void GenerateRasterInvalidations(RasterInvalidationFunction,
+                                   const PaintChunkSubset&,
                                    bool layer_offset_or_state_changed,
                                    bool layer_effect_changed,
                                    Vector<PaintChunkInfo>& new_chunks_info);
@@ -116,6 +117,7 @@ class PLATFORM_EXPORT RasterInvalidator
                                                    wtf_size_t old_index) const;
 
   ALWAYS_INLINE void IncrementallyInvalidateChunk(
+      RasterInvalidationFunction,
       const PaintChunkInfo& old_chunk_info,
       const PaintChunkInfo& new_chunk_info,
       DisplayItemClientId);
@@ -123,13 +125,14 @@ class PLATFORM_EXPORT RasterInvalidator
   // |old_or_new| indicates whether |client| is from the old or new
   // PaintArtifact, so we know which one can provide the client's debug name.
   enum ClientIsOldOrNew { kClientIsOld, kClientIsNew };
-  void AddRasterInvalidation(const gfx::Rect& rect,
+  void AddRasterInvalidation(RasterInvalidationFunction function,
+                             const gfx::Rect& rect,
                              DisplayItemClientId client_id,
                              PaintInvalidationReason reason,
                              ClientIsOldOrNew old_or_new) {
     if (rect.IsEmpty())
       return;
-    callback_.InvalidateRect(rect);
+    function.Run(rect);
     if (tracking_)
       TrackRasterInvalidation(rect, client_id, reason, old_or_new);
   }
@@ -153,15 +156,14 @@ class PLATFORM_EXPORT RasterInvalidator
     return IntersectRects(r, Rect(gfx::Rect(layer_bounds_)));
   }
 
-  Callback& callback_;
   gfx::Vector2dF layer_offset_;
   gfx::Size layer_bounds_;
   PropertyTreeState layer_state_ = PropertyTreeState::Root();
   Vector<PaintChunkInfo> old_paint_chunks_info_;
-  Member<const PaintArtifact> current_paint_artifact_;
-  Member<const PaintArtifact> old_paint_artifact_;
+  scoped_refptr<const PaintArtifact> current_paint_artifact_;
+  scoped_refptr<const PaintArtifact> old_paint_artifact_;
 
-  Member<RasterInvalidationTracking> tracking_;
+  std::unique_ptr<RasterInvalidationTracking> tracking_;
 };
 
 }  // namespace blink

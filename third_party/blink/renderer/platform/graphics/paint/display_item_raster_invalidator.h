@@ -18,10 +18,12 @@ class DisplayItemRasterInvalidator {
  public:
   DisplayItemRasterInvalidator(
       RasterInvalidator& invalidator,
+      RasterInvalidator::RasterInvalidationFunction function,
       const DisplayItemRange& old_display_items,
       const DisplayItemRange& new_display_items,
       const ChunkToLayerMapper& mapper)
       : invalidator_(invalidator),
+        raster_invalidation_function_(function),
         old_display_items_(old_display_items),
         new_display_items_(new_display_items),
         mapper_(mapper) {}
@@ -55,6 +57,7 @@ class DisplayItemRasterInvalidator {
       PaintInvalidationReason reason);
 
   RasterInvalidator& invalidator_;
+  RasterInvalidator::RasterInvalidationFunction raster_invalidation_function_;
   const DisplayItemRange& old_display_items_;
   const DisplayItemRange& new_display_items_;
   const ChunkToLayerMapper& mapper_;
