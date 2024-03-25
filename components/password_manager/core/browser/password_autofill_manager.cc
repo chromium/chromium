@@ -87,6 +87,13 @@ bool HasLoadingSuggestion(base::span<const autofill::Suggestion> suggestions,
   });
 }
 
+std::string GetBackendId(const autofill::Suggestion& suggestion) {
+  return absl::holds_alternative<autofill::Suggestion::BackendId>(
+             suggestion.payload)
+             ? suggestion.GetBackendId<autofill::Suggestion::Guid>().value()
+             : std::string();
+}
+
 std::vector<autofill::Suggestion> SetUnlockLoadingState(
     std::vector<autofill::Suggestion> suggestions,
     autofill::PopupItemId unlock_item,
@@ -190,6 +197,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
     const autofill::Suggestion& suggestion,
     const SuggestionPosition& position) {
   using metrics_util::PasswordDropdownSelectedOption;
+  bool should_hide_popup = true;
   switch (suggestion.popup_item_id) {
     case autofill::PopupItemId::kGeneratePasswordEntry:
       password_client_->GeneratePassword(PasswordGenerationType::kAutomatic);
@@ -233,14 +241,12 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       metrics_util::LogPasswordDropdownItemSelected(
           PasswordDropdownSelectedOption::kWebAuthn,
           password_client_->IsOffTheRecord());
+      should_hide_popup = false;
       password_client_
           ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
-          ->SelectPasskey(
-              absl::holds_alternative<autofill::Suggestion::BackendId>(
-                  suggestion.payload)
-                  ? suggestion.GetBackendId<autofill::Suggestion::Guid>()
-                        .value()
-                  : std::string());
+          ->SelectPasskey(GetBackendId(suggestion),
+                          base::BindOnce(&PasswordAutofillManager::HidePopup,
+                                         weak_ptr_factory_.GetWeakPtr()));
       break;
     case autofill::PopupItemId::kWebauthnSignInWithAnotherDevice:
       metrics_util::LogPasswordDropdownItemSelected(
@@ -290,8 +296,10 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       break;
   }
 
-  autofill_client_->HideAutofillPopup(
-      autofill::PopupHidingReason::kAcceptSuggestion);
+  if (should_hide_popup) {
+    autofill_client_->HideAutofillPopup(
+        autofill::PopupHidingReason::kAcceptSuggestion);
+  }
 }
 
 void PasswordAutofillManager::DidPerformButtonActionForSuggestion(
@@ -646,6 +654,11 @@ void PasswordAutofillManager::CancelBiometricReauthIfOngoing() {
     return;
   authenticator_->Cancel();
   authenticator_.reset();
+}
+
+void PasswordAutofillManager::HidePopup() {
+  autofill_client_->HideAutofillPopup(
+      autofill::PopupHidingReason::kAcceptSuggestion);
 }
 
 }  //  namespace password_manager

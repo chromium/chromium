@@ -298,7 +298,8 @@ void PasswordAccessoryControllerImpl::OnPasskeySelected(
           driver_supplier_.Run((&GetWebContents()))) {
     if (password_manager::WebAuthnCredentialsDelegate* credentials_delegate =
             password_client_->GetWebAuthnCredentialsDelegateForDriver(driver)) {
-      credentials_delegate->SelectPasskey(base::Base64Encode(passkey_id));
+      credentials_delegate->SelectPasskey(base::Base64Encode(passkey_id),
+                                          base::DoNothing());
     }
   }
 }

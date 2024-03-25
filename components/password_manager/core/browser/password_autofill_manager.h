@@ -184,6 +184,9 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // the filling scope has changed or because |this| is being destroyed.
   void CancelBiometricReauthIfOngoing();
 
+  // Hides the popup.
+  void HidePopup();
+
   std::unique_ptr<autofill::PasswordFormFillData> fill_data_;
 
   password_manager::PasswordSuggestionGenerator suggestion_generator_;

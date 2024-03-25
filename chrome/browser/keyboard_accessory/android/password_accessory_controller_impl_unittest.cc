@@ -1306,7 +1306,7 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectPasskey) {
 
   EXPECT_CALL(
       *webauthn_credentials_delegate(),
-      SelectPasskey(Eq(base::Base64Encode(kTestPasskey.credential_id()))));
+      SelectPasskey(Eq(base::Base64Encode(kTestPasskey.credential_id())), _));
   controller()->OnPasskeySelected(kTestPasskey.credential_id());
 }
 

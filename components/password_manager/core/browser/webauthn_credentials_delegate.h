@@ -20,6 +20,7 @@ namespace password_manager {
 // WebAuthn. It is associated with a single frame.
 class WebAuthnCredentialsDelegate {
  public:
+  using OnPasskeySelectedCallback = base::OnceClosure;
   virtual ~WebAuthnCredentialsDelegate() = default;
 
   // Launches the normal WebAuthn flow that lets users use their phones or
@@ -28,8 +29,10 @@ class WebAuthnCredentialsDelegate {
 
   // Called when the user selects a passkey from the autofill suggestion list
   // The selected credential must be from the list returned by the last call to
-  // GetPasskeys().
-  virtual void SelectPasskey(const std::string& backend_id) = 0;
+  // GetPasskeys(). |callback| should be invoked when the selected passkey is
+  // consumed.
+  virtual void SelectPasskey(const std::string& backend_id,
+                             OnPasskeySelectedCallback callback) = 0;
 
   // Returns the list of eligible passkeys to fulfill an ongoing WebAuthn
   // request if one has been received and is active. Returns std::nullopt

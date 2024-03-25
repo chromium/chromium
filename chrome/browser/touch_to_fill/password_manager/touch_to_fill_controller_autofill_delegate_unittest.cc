@@ -741,7 +741,7 @@ TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {
       /*cred_man_delegate=*/nullptr, /*frame_driver=*/nullptr);
 
   EXPECT_CALL(webauthn_credentials_delegate(),
-              SelectPasskey(base::Base64Encode(credential.credential_id())));
+              SelectPasskey(base::Base64Encode(credential.credential_id()), _));
   EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(false)));
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword(_, _)).Times(0);
   touch_to_fill_controller().OnPasskeyCredentialSelected(credentials[0]);

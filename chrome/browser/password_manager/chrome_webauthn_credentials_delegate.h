@@ -36,7 +36,10 @@ class ChromeWebAuthnCredentialsDelegate final
 
   // password_manager::WebAuthnCredentialsDelegate:
   void LaunchWebAuthnFlow() override;
-  void SelectPasskey(const std::string& backend_id) override;
+  void SelectPasskey(
+      const std::string& backend_id,
+      password_manager::WebAuthnCredentialsDelegate::OnPasskeySelectedCallback
+          callback) override;
   const std::optional<std::vector<password_manager::PasskeyCredential>>&
   GetPasskeys() const override;
   bool OfferPasskeysFromAnotherDeviceOption() const override;

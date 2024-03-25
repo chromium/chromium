@@ -1831,10 +1831,10 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that selecting the credential reports back to the client.
-  EXPECT_CALL(webauthn_credentials_delegate, SelectPasskey(kIdBase64));
-  EXPECT_CALL(
-      autofill_client,
-      HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
+  EXPECT_CALL(webauthn_credentials_delegate, SelectPasskey(kIdBase64, _));
+  EXPECT_CALL(autofill_client,
+              HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion))
+      .Times(0);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Check that the button that triggers passkeys from a different devices uses

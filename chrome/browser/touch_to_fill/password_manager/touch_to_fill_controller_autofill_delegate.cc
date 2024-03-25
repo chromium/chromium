@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/pass_key.h"
@@ -141,7 +142,7 @@ void TouchToFillControllerAutofillDelegate::OnPasskeyCredentialSelected(
   }
 
   webauthn_delegate_->SelectPasskey(
-      base::Base64Encode(credential.credential_id()));
+      base::Base64Encode(credential.credential_id()), base::DoNothing());
 
   CleanUpFillerAndReportOutcome(TouchToFillOutcome::kPasskeyCredentialSelected,
                                 /*show_virtual_keyboard=*/false);

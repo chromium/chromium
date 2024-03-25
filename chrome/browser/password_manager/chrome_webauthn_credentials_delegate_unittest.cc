@@ -15,10 +15,12 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/web_contents_tester.h"
 #include "device/fido/discoverable_credential_metadata.h"
@@ -194,6 +196,9 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
 
 // Testing selection of a credential.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
+  base::MockCallback<
+      password_manager::WebAuthnCredentialsDelegate::OnPasskeySelectedCallback>
+      mock_callback;
   std::vector<device::DiscoverableCredentialMetadata> users;
   users.emplace_back(device::AuthenticatorType::kOther, kRpId,
                      device::fido_parsing_utils::Materialize(kCredId1),
@@ -226,7 +231,8 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
       }));
 #endif
 
-  credentials_delegate()->SelectPasskey(base::Base64Encode(kCredId2));
+  credentials_delegate()->SelectPasskey(base::Base64Encode(kCredId2),
+                                        mock_callback.Get());
 
 #if BUILDFLAG(IS_ANDROID)
   auto credential_id = GetSelectedId();
