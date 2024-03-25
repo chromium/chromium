@@ -149,6 +149,9 @@ class DummyFrameScheduler : public FrameScheduler {
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
     return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
+  base::TimeDelta UnreportedTaskTime() const override {
+    return base::TimeDelta();
+  }
 
  private:
   std::unique_ptr<PageScheduler> page_scheduler_;

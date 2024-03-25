@@ -132,6 +132,8 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   void OnFirstMeaningfulPaint(base::TimeTicks timestamp) override;
   void OnMainFrameInteractive() override;
   void OnDispatchLoadEvent() override;
+  base::TimeDelta UnreportedTaskTime() const override;
+
   bool IsWaitingForContentfulPaint() const;
   bool IsWaitingForMeaningfulPaint() const;
 
@@ -214,8 +216,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   void OnWebSchedulingTaskQueueDestroyed(MainThreadTaskQueue*);
 
   const base::UnguessableToken& GetAgentClusterId() const;
-
-  base::TimeDelta unreported_task_time() const { return unreported_task_time_; }
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
   void WriteIntoTrace(perfetto::TracedProto<

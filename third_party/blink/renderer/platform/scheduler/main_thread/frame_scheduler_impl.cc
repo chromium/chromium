@@ -1384,6 +1384,10 @@ const base::UnguessableToken& FrameSchedulerImpl::GetAgentClusterId() const {
   return delegate_->GetAgentClusterId();
 }
 
+base::TimeDelta FrameSchedulerImpl::UnreportedTaskTime() const {
+  return unreported_task_time_;
+}
+
 // static
 MainThreadTaskQueue::QueueTraits
 FrameSchedulerImpl::ThrottleableTaskQueueTraits() {

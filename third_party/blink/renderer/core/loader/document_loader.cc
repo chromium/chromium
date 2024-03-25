@@ -162,7 +162,6 @@
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
@@ -2065,12 +2064,11 @@ void DocumentLoader::DidCommitNavigation() {
     return;
 
   // When committing a new document, the FrameScheduler might need to carry over
-  // the previous document's FrameScheduler's `unreported_task_time()`, as that
+  // the previous document's FrameScheduler's `UnreportedTaskTime()`, as that
   // value should be aggregated across all documents that ever committed in the
   // same frame.
   base::TimeDelta previous_document_unreported_task_time =
-      static_cast<scheduler::FrameSchedulerImpl*>(frame_->GetFrameScheduler())
-          ->unreported_task_time();
+      frame_->GetFrameScheduler()->UnreportedTaskTime();
   if (OldDocumentInfoForCommit* old_document_info =
           ScopedOldDocumentInfoForCommitCapturer::CurrentInfo()) {
     previous_document_unreported_task_time =

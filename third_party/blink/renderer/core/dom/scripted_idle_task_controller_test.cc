@@ -174,6 +174,9 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
     return scripted_idle_scheduler_->TaskRunner();
   }
+  base::TimeDelta UnreportedTaskTime() const override {
+    return base::TimeDelta();
+  }
 
  private:
   MockScriptedIdleTaskControllerScheduler* scripted_idle_scheduler_;
