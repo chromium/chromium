@@ -112,20 +112,26 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
  private:
   friend class TestApi;
 
+  using FactorStatusCheckOperation =
+      base::OnceCallback<void(std::unique_ptr<UserContext>)>;
+  using FactorStatusCheckResultCallback = base::OnceCallback<void(bool)>;
+  using OnRefreshAuthFactorsConfiguration =
+      base::OnceCallback<void(std::unique_ptr<UserContext>)>;
+
   void ObtainContext(
       const std::string& auth_token,
       base::OnceCallback<void(std::unique_ptr<UserContext>)> callback);
   void IsSupportedWithContext(const std::string& auth_token,
                               mojom::AuthFactor factor,
-                              base::OnceCallback<void(bool)> callback,
+                              FactorStatusCheckResultCallback callback,
                               std::unique_ptr<UserContext> context);
   void IsConfiguredWithContext(const std::string& auth_token,
                                mojom::AuthFactor factor,
-                               base::OnceCallback<void(bool)>,
+                               FactorStatusCheckResultCallback,
                                std::unique_ptr<UserContext> context);
   void IsEditableWithContext(const std::string& auth_token,
                              mojom::AuthFactor factor,
-                             base::OnceCallback<void(bool)>,
+                             FactorStatusCheckResultCallback,
                              std::unique_ptr<UserContext> context);
   void OnGetAuthFactorsConfiguration(
       AuthFactorSet changed_factors,
@@ -136,6 +142,19 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
 
   void SetAddKnowledgeFactorCallbackForTesting(base::OnceClosure callback);
   void SetSkipUserIntegrityNotificationForTesting(bool skip_notification);
+
+  void RefreshAuthFactorsConfiguration(
+      std::unique_ptr<UserContext> context,
+      OnRefreshAuthFactorsConfiguration continuation);
+  void OnAuthFactorConfigurationRefreshed(
+      OnRefreshAuthFactorsConfiguration continuation,
+      std::unique_ptr<UserContext> context,
+      std::optional<AuthenticationError> error);
+  void MaybeRetryFactorStatusCheckOnConfigRefresh(
+      FactorStatusCheckOperation,
+      FactorStatusCheckResultCallback,
+      const std::string& auth_token,
+      std::unique_ptr<UserContext> context);
 
   raw_ptr<QuickUnlockStorageDelegate> quick_unlock_storage_;
   // This instance is held by browser process (see in_process_instances)

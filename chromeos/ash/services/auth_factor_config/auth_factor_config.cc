@@ -113,33 +113,49 @@ void AuthFactorConfig::IsSupportedWithContext(
     return;
   }
 
-  const cryptohome::AuthFactorsSet cryptohome_supported_factors =
-      context->GetAuthFactorsConfiguration().get_supported_factors();
+  if (context->HasAuthFactorsConfiguration()) {
+    const cryptohome::AuthFactorsSet cryptohome_supported_factors =
+        context->GetAuthFactorsConfiguration().get_supported_factors();
 
-  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
+    ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
 
-  switch (factor) {
-    case mojom::AuthFactor::kRecovery: {
-      std::move(callback).Run(cryptohome_supported_factors.Has(
-          cryptohome::AuthFactorType::kRecovery));
-      return;
+    switch (factor) {
+      case mojom::AuthFactor::kRecovery: {
+        std::move(callback).Run(cryptohome_supported_factors.Has(
+            cryptohome::AuthFactorType::kRecovery));
+        return;
+      }
+      case mojom::AuthFactor::kPin: {
+        std::move(callback).Run(
+            cryptohome_supported_factors.Has(cryptohome::AuthFactorType::kPin));
+        return;
+      }
+      case mojom::AuthFactor::kGaiaPassword: {
+        std::move(callback).Run(true);
+        return;
+      }
+      case mojom::AuthFactor::kLocalPassword: {
+        std::move(callback).Run(
+            features::AreLocalPasswordsEnabledForConsumers());
+        return;
+      }
     }
-    case mojom::AuthFactor::kPin: {
-      std::move(callback).Run(
-          cryptohome_supported_factors.Has(cryptohome::AuthFactorType::kPin));
-      return;
-    }
-    case mojom::AuthFactor::kGaiaPassword: {
-      std::move(callback).Run(true);
-      return;
-    }
-    case mojom::AuthFactor::kLocalPassword: {
-      std::move(callback).Run(features::AreLocalPasswordsEnabledForConsumers());
-      return;
-    }
+
+    NOTREACHED();
   }
 
-  NOTREACHED();
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+
+  FactorStatusCheckOperation retry = base::BindOnce(
+      &AuthFactorConfig::IsSupportedWithContext, weak_factory_.GetWeakPtr(),
+      auth_token, factor, std::move(split_callback.first));
+
+  RefreshAuthFactorsConfiguration(
+      std::move(context),
+      base::BindOnce(
+          &AuthFactorConfig::MaybeRetryFactorStatusCheckOnConfigRefresh,
+          weak_factory_.GetWeakPtr(), std::move(retry),
+          std::move(split_callback.second), auth_token));
 }
 
 void AuthFactorConfig::IsConfigured(const std::string& auth_token,
@@ -161,65 +177,81 @@ void AuthFactorConfig::IsConfiguredWithContext(
     std::move(callback).Run(false);
     return;
   }
-  const auto& config = context->GetAuthFactorsConfiguration();
-  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
 
-  switch (factor) {
-    case mojom::AuthFactor::kRecovery: {
-      std::move(callback).Run(
-          config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery));
-      return;
-    }
-    case mojom::AuthFactor::kPin: {
-      // We have to consider both cryptohome based PIN and legacy pref PIN.
-      if (config.HasConfiguredFactor(cryptohome::AuthFactorType::kPin)) {
-        std::move(callback).Run(true);
+  if (context->HasAuthFactorsConfiguration()) {
+    const auto& config = context->GetAuthFactorsConfiguration();
+    ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
+
+    switch (factor) {
+      case mojom::AuthFactor::kRecovery: {
+        std::move(callback).Run(
+            config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery));
         return;
       }
-      const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-      if (!user) {
-        LOG(ERROR) << "No logged in user";
-        std::move(callback).Run(false);
-      }
-      const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
-      if (!prefs) {
-        LOG(ERROR) << "No pref service for user";
-        std::move(callback).Run(false);
+      case mojom::AuthFactor::kPin: {
+        // We have to consider both cryptohome based PIN and legacy pref PIN.
+        if (config.HasConfiguredFactor(cryptohome::AuthFactorType::kPin)) {
+          std::move(callback).Run(true);
+          return;
+        }
+        const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+        if (!user) {
+          LOG(ERROR) << "No logged in user";
+          std::move(callback).Run(false);
+        }
+        const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
+        if (!prefs) {
+          LOG(ERROR) << "No pref service for user";
+          std::move(callback).Run(false);
+          return;
+        }
+
+        const bool has_prefs_pin =
+            !prefs->GetString(prefs::kQuickUnlockPinSecret).empty() &&
+            !prefs->GetString(prefs::kQuickUnlockPinSalt).empty();
+
+        std::move(callback).Run(has_prefs_pin);
         return;
       }
+      case mojom::AuthFactor::kGaiaPassword: {
+        const cryptohome::AuthFactor* password_factor =
+            config.FindFactorByType(cryptohome::AuthFactorType::kPassword);
+        if (!password_factor) {
+          std::move(callback).Run(false);
+          return;
+        }
 
-      const bool has_prefs_pin =
-          !prefs->GetString(prefs::kQuickUnlockPinSecret).empty() &&
-          !prefs->GetString(prefs::kQuickUnlockPinSalt).empty();
-
-      std::move(callback).Run(has_prefs_pin);
-      return;
-    }
-    case mojom::AuthFactor::kGaiaPassword: {
-      const cryptohome::AuthFactor* password_factor =
-          config.FindFactorByType(cryptohome::AuthFactorType::kPassword);
-      if (!password_factor) {
-        std::move(callback).Run(false);
+        std::move(callback).Run(IsGaiaPassword(*password_factor));
         return;
       }
+      case mojom::AuthFactor::kLocalPassword: {
+        const cryptohome::AuthFactor* password_factor =
+            config.FindFactorByType(cryptohome::AuthFactorType::kPassword);
+        if (!password_factor) {
+          std::move(callback).Run(false);
+          return;
+        }
 
-      std::move(callback).Run(IsGaiaPassword(*password_factor));
-      return;
-    }
-    case mojom::AuthFactor::kLocalPassword: {
-      const cryptohome::AuthFactor* password_factor =
-          config.FindFactorByType(cryptohome::AuthFactorType::kPassword);
-      if (!password_factor) {
-        std::move(callback).Run(false);
+        std::move(callback).Run(IsLocalPassword(*password_factor));
         return;
       }
-
-      std::move(callback).Run(IsLocalPassword(*password_factor));
-      return;
     }
+
+    NOTREACHED();
   }
 
-  NOTREACHED();
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+
+  FactorStatusCheckOperation retry = base::BindOnce(
+      &AuthFactorConfig::IsConfiguredWithContext, weak_factory_.GetWeakPtr(),
+      auth_token, factor, std::move(split_callback.first));
+
+  RefreshAuthFactorsConfiguration(
+      std::move(context),
+      base::BindOnce(
+          &AuthFactorConfig::MaybeRetryFactorStatusCheckOnConfigRefresh,
+          weak_factory_.GetWeakPtr(), std::move(retry),
+          std::move(split_callback.second), auth_token));
 }
 
 void AuthFactorConfig::GetManagementType(
@@ -283,78 +315,95 @@ void AuthFactorConfig::IsEditableWithContext(
     std::move(callback).Run(false);
     return;
   }
-  const auto& config = context->GetAuthFactorsConfiguration();
 
-  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
+  if (context->HasAuthFactorsConfiguration()) {
+    const auto& config = context->GetAuthFactorsConfiguration();
 
-  switch (factor) {
-    case mojom::AuthFactor::kRecovery: {
-      const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-      CHECK(user);
+    ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
 
-      const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
-      CHECK(prefs);
+    switch (factor) {
+      case mojom::AuthFactor::kRecovery: {
+        const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+        CHECK(user);
 
-      if (prefs->IsUserModifiablePreference(prefs::kRecoveryFactorBehavior)) {
-        std::move(callback).Run(true);
+        const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
+        CHECK(prefs);
+
+        if (prefs->IsUserModifiablePreference(prefs::kRecoveryFactorBehavior)) {
+          std::move(callback).Run(true);
+          return;
+        }
+
+        const bool is_configured =
+            config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
+
+        if (is_configured !=
+            prefs->GetBoolean(prefs::kRecoveryFactorBehavior)) {
+          std::move(callback).Run(true);
+          return;
+        }
+
+        std::move(callback).Run(false);
         return;
       }
+      case mojom::AuthFactor::kPin: {
+        const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+        CHECK(user);
+        const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
+        CHECK(prefs);
 
-      const bool is_configured =
-          config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
+        // Lists of factors that are allowed for some purpose.
+        const base::Value::List* pref_lists[] = {
+            &prefs->GetList(prefs::kQuickUnlockModeAllowlist),
+            &prefs->GetList(prefs::kWebAuthnFactors),
+        };
 
-      if (is_configured != prefs->GetBoolean(prefs::kRecoveryFactorBehavior)) {
-        std::move(callback).Run(true);
-        return;
-      }
+        // Values in factor lists that match PINs.
+        const base::Value pref_list_values[] = {
+            base::Value("all"),
+            base::Value("PIN"),
+        };
 
-      std::move(callback).Run(false);
-      return;
-    }
-    case mojom::AuthFactor::kPin: {
-      const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-      CHECK(user);
-      const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
-      CHECK(prefs);
-
-      // Lists of factors that are allowed for some purpose.
-      const base::Value::List* pref_lists[] = {
-          &prefs->GetList(prefs::kQuickUnlockModeAllowlist),
-          &prefs->GetList(prefs::kWebAuthnFactors),
-      };
-
-      // Values in factor lists that match PINs.
-      const base::Value pref_list_values[] = {
-          base::Value("all"),
-          base::Value("PIN"),
-      };
-
-      for (const auto* pref_list : pref_lists) {
-        for (const auto& pref_list_value : pref_list_values) {
-          if (base::Contains(*pref_list, pref_list_value)) {
-            std::move(callback).Run(true);
-            return;
+        for (const auto* pref_list : pref_lists) {
+          for (const auto& pref_list_value : pref_list_values) {
+            if (base::Contains(*pref_list, pref_list_value)) {
+              std::move(callback).Run(true);
+              return;
+            }
           }
         }
-      }
 
-      std::move(callback).Run(false);
-      return;
+        std::move(callback).Run(false);
+        return;
+      }
+      case mojom::AuthFactor::kGaiaPassword: {
+        // TODO(b/290916811): Decide upon when to return true here. For now we
+        // don't allow edits or removal of Gaia passwords once they're
+        // configured, so we always return false.
+        std::move(callback).Run(false);
+        return;
+      }
+      case mojom::AuthFactor::kLocalPassword: {
+        std::move(callback).Run(true);
+        return;
+      }
     }
-    case mojom::AuthFactor::kGaiaPassword: {
-      // TODO(b/290916811): Decide upon when to return true here. For now we
-      // don't allow edits or removal of Gaia passwords once they're
-      // configured, so we always return false.
-      std::move(callback).Run(false);
-      return;
-    }
-    case mojom::AuthFactor::kLocalPassword: {
-      std::move(callback).Run(true);
-      return;
-    }
+
+    NOTREACHED();
   }
 
-  NOTREACHED();
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+
+  FactorStatusCheckOperation retry = base::BindOnce(
+      &AuthFactorConfig::IsConfiguredWithContext, weak_factory_.GetWeakPtr(),
+      auth_token, factor, std::move(split_callback.first));
+
+  RefreshAuthFactorsConfiguration(
+      std::move(context),
+      base::BindOnce(
+          &AuthFactorConfig::MaybeRetryFactorStatusCheckOnConfigRefresh,
+          weak_factory_.GetWeakPtr(), std::move(retry),
+          std::move(split_callback.second), auth_token));
 }
 
 void AuthFactorConfig::ObtainContext(
@@ -410,6 +459,45 @@ void AuthFactorConfig::SetAddKnowledgeFactorCallbackForTesting(
 void AuthFactorConfig::SetSkipUserIntegrityNotificationForTesting(
     bool skip_notification) {
   skip_user_integrity_notification_ = skip_notification;
+}
+
+void AuthFactorConfig::RefreshAuthFactorsConfiguration(
+    std::unique_ptr<UserContext> context,
+    base::OnceCallback<void(std::unique_ptr<UserContext>)> continuation) {
+  auth_factor_editor_.GetAuthFactorsConfiguration(
+      std::move(context),
+      base::BindOnce(&AuthFactorConfig::OnAuthFactorConfigurationRefreshed,
+                     weak_factory_.GetWeakPtr(), std::move(continuation)));
+}
+
+void AuthFactorConfig::OnAuthFactorConfigurationRefreshed(
+    base::OnceCallback<void(std::unique_ptr<UserContext>)> continuation,
+    std::unique_ptr<UserContext> context,
+    std::optional<AuthenticationError> error) {
+  if (error.has_value()) {
+    LOG(ERROR) << "Refreshing list of configured auth factors failed, code "
+               << error->get_cryptohome_code();
+  }
+
+  std::move(continuation).Run(std::move(context));
+}
+
+void AuthFactorConfig::MaybeRetryFactorStatusCheckOnConfigRefresh(
+    FactorStatusCheckOperation retry_operation,
+    FactorStatusCheckResultCallback callback,
+    const std::string& auth_token,
+    std::unique_ptr<UserContext> context) {
+  if (context->HasAuthFactorsConfiguration()) {
+    std::move(retry_operation).Run(std::move(context));
+    return;
+  }
+
+  // We don't have `AuthFactorsConfiguration`, and we have already retried
+  // getting them, without success. Assume the factor is unavailable.
+  LOG(ERROR) << "Could not obtain auth factor configuration, assuming factor "
+                "unavailable";
+  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
+  std::move(callback).Run(false);
 }
 
 }  // namespace ash::auth
