@@ -192,7 +192,6 @@
 
   /* TODO(b/325664489): Update wallpaper search button's hover color. */
   .customize-button {
-    --hover-bg-color: var(--color-new-tab-page-button-background-hovered);
     border: none;
     border-radius: calc(.5 * var(--cr-button-height));
     box-shadow: 0 3px 6px rgba(0, 0, 0, .16), 0 1px 2px rgba(0, 0, 0, .23);
@@ -203,10 +202,12 @@
   }
 
   #wallpaperSearchButton {
+    --hover-bg-color: var(--color-new-tab-page-wallpaper-search-button-background-hovered);
     --text-color: var(--color-new-tab-page-wallpaper-search-button-foreground);
   }
 
   #customizeButton {
+    --hover-bg-color: var(--color-new-tab-page-button-background-hovered);
     --text-color: var(--color-new-tab-page-button-foreground);
   }
 
@@ -247,8 +248,13 @@
   }
 
   @media (forced-colors: active) {
-    .customize-icon {
+    #customizeIcon,
+    #wallpaperSearchIcon {
       background-color: ButtonText;
+    }
+
+    #wallpaperSearchButton {
+      --text-color: ButtonText;
     }
   }
 

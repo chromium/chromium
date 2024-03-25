@@ -246,6 +246,7 @@
   E_CPONLY(kColorNewTabPageTextUnthemed) \
   E_CPONLY(kColorNewTabPageTextLight) \
   E_CPONLY(kColorNewTabPageWallpaperSearchButtonBackground) \
+  E_CPONLY(kColorNewTabPageWallpaperSearchButtonBackgroundHovered) \
   E_CPONLY(kColorNewTabPageWallpaperSearchButtonForeground) \
   /* Omnibox colors. */ \
   E_CPONLY(kColorOmniboxAnswerIconBackground) \
