@@ -576,6 +576,12 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     if (Traversal<SVGSymbolElement>::FirstAncestorOrSelf(*node))
       return kIgnoreObject;
 
+    // Include non-empty SVG root as clients may want to treat it as an image.
+    if (IsA<SVGSVGElement>(node) && GetLayoutObject() &&
+        GetLayoutObject()->IsSVGRoot() && element->firstElementChild()) {
+      return kIncludeObject;
+    }
+
     // The SVG-AAM states that user agents MUST provide an accessible object
     // for rendered SVG elements that have at least one direct child title or
     // desc element that is not empty after trimming whitespace. But it also
@@ -908,17 +914,6 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
         return true;
       }
     }
-  }
-
-  // Layers are used on objects that have styles where Blink is likely to
-  // attempt to optimize them in for the GPU, such as animations, z-indexing and
-  // hidden overflow. Ensure SVG layered objects are unignored.
-  // We used to do this for any element, which caused extra divs to be added
-  // to the tree fo no clear reason. For now, we are limiting to only SVG.
-  // TODO(accessibility) Consider removal of this special case.
-  if (IsA<SVGElement>(node) && GetLayoutObject()->HasLayer() &&
-      node->hasChildren()) {
-    return false;
   }
 
   if (IsCanvas()) {
