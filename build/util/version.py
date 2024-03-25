@@ -212,7 +212,7 @@ def GenerateValues(options, evals):
 
   if options.os == 'android':
     android_chrome_version_codes = android_chrome_version.GenerateVersionCodes(
-        values, options.arch, options.next)
+        int(values['BUILD']), int(values['PATCH']), options.arch, options.next)
     values.update(android_chrome_version_codes)
 
   return values

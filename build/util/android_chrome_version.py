@@ -314,7 +314,7 @@ def TranslateVersionCode(version_code, is_webview=False):
                                is_next_build)
 
 
-def GenerateVersionCodes(version_values, arch, is_next_build):
+def GenerateVersionCodes(build_number, patch_number, arch, is_next_build):
   """Build dict of version codes for the specified build architecture. Eg:
 
   {
@@ -337,9 +337,6 @@ def GenerateVersionCodes(version_values, arch, is_next_build):
 
   Thus, this method is responsible for the final two digits of versionCode.
   """
-
-  build_number = int(version_values['BUILD'])
-  patch_number = int(version_values['PATCH'])
   base_version_code = (build_number * 1000 + patch_number) * 100
 
   if is_next_build:
@@ -365,12 +362,33 @@ def GenerateVersionCodes(version_values, arch, is_next_build):
 
 def main():
   parser = argparse.ArgumentParser(description='Parses version codes.')
-  parser.add_argument('version_code', help='Version code (e.g. 529700010).')
-  parser.add_argument('--webview',
-                      action='store_true',
-                      help='Whether this is a webview version code.')
+  g1 = parser.add_argument_group('To Generate Version Name')
+  g1.add_argument('--version-code', help='Version code (e.g. 529700010).')
+  g1.add_argument('--webview',
+                  action='store_true',
+                  help='Whether this is a webview version code.')
+  g2 = parser.add_argument_group('To Generate Version Code')
+  g2.add_argument('--version-name', help='Version name (e.g. 124.0.6355.0).')
+  g2.add_argument('--arch',
+                  choices=ARCH_CHOICES,
+                  help='Set which cpu architecture the build is for.')
+  g2.add_argument('--next',
+                  action='store_true',
+                  help='Whether the current build should be a "next" '
+                  'build, which targets pre-release versions of Android.')
   args = parser.parse_args()
-  print(TranslateVersionCode(args.version_code, is_webview=args.webview))
+  if args.version_code:
+    print(TranslateVersionCode(args.version_code, is_webview=args.webview))
+  elif args.version_name:
+    if not args.arch:
+      parser.error('Required --arch')
+    _, _, build, patch = args.version_name.split('.')
+    values = GenerateVersionCodes(int(build), int(patch), args.arch, args.next)
+    for k, v in values.items():
+      print(f'{k}={v}')
+  else:
+    parser.print_help()
+
 
 
 if __name__ == '__main__':
