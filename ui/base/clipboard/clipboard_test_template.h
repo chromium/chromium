@@ -1059,6 +1059,26 @@ TYPED_TEST(ClipboardTest, PrivacyMetadataTest) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+TYPED_TEST(ClipboardTest, PasswordTest) {
+  // We're testing platform-specific behavior, so use PlatformClipboardTest.
+  std::string test_suite_name = ::testing::UnitTest::GetInstance()
+                                    ->current_test_info()
+                                    ->test_suite_name();
+  if (test_suite_name != std::string("ClipboardTest/PlatformClipboardTest")) {
+    return;
+  }
+
+  {
+    ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteText(u"password");
+    clipboard_writer.MarkAsConfidential();
+  }
+
+  EXPECT_TRUE(this->clipboard().IsMarkedByOriginatorAsConfidential());
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 // Test writing all formats we have simultaneously.
 TYPED_TEST(ClipboardTest, WriteEverything) {
   {
