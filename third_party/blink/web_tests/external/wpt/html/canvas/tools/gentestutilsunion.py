@@ -40,6 +40,7 @@ import itertools
 import os
 import pathlib
 import sys
+import textwrap
 
 import jinja2
 
@@ -472,10 +473,10 @@ def _generate_test(test: Mapping[str, Any], jinja_env: jinja2.Environment,
                                 output_files)
 
 
-def _recursive_expand_variant_matrix(test_list: List[Mapping[str, Any]],
+def _recursive_expand_variant_matrix(original_test: Mapping[str, Any],
                                      variant_matrix: List[Mapping[str, Any]],
                                      current_selection: List[Tuple[str, Any]],
-                                     original_test: Mapping[str, Any]):
+                                     test_variants: List[Mapping[str, Any]]):
     if len(current_selection) == len(variant_matrix):
         # Selection for each variant is done, so add a new test to test_list.
         test = dict(original_test)
@@ -491,29 +492,41 @@ def _recursive_expand_variant_matrix(test_list: List[Mapping[str, Any]],
                     and not variant_name.startswith('_')):
                 test['name'] += '.' + variant_name
             test.update(variant_params)
-            # Expose variant names as a list so they can be used from the yaml
-            # files, which helps with better naming of tests.
-            test.update({'variant_names': variant_name_list})
-        test_list.append(test)
+        # Expose variant names as a list so they can be used from the yaml
+        # files, which helps with better naming of tests.
+        test.update({'variant_names': variant_name_list})
+        test_variants.append(test)
     else:
         # Continue the recursion with each possible selection for the current
         # variant.
         variant = variant_matrix[len(current_selection)]
         for variant_options in variant.items():
             current_selection.append(variant_options)
-            _recursive_expand_variant_matrix(test_list, variant_matrix,
-                                             current_selection, original_test)
+            _recursive_expand_variant_matrix(original_test, variant_matrix,
+                                             current_selection, test_variants)
             current_selection.pop()
 
 
-def _expand_variant_matrix(
-        variant_matrix: List[Mapping[str, Any]],
-        original_test: Mapping[str, Any]) -> List[Mapping[str, Any]]:
+def _get_variants(test: Mapping[str, Any]) -> List[Mapping[str, Any]]:
     current_selection = []
-    matrix_tests = []
-    _recursive_expand_variant_matrix(matrix_tests, variant_matrix,
-                                     current_selection, original_test)
-    return matrix_tests
+    test_variants = []
+    variants = test.get('variants', [])
+    if not isinstance(variants, list):
+        raise InvalidTestDefinitionError(
+            textwrap.dedent("""
+            Variants must be specified as a list of variant dimensions, e.g.:
+              variants:
+              - dimension1-variant1:
+                  param: ...
+                dimension1-variant2:
+                  param: ...
+              - dimension2-variant1:
+                  param: ...
+                dimension2-variant2:
+                  param: ..."""))
+    _recursive_expand_variant_matrix(test, variants, current_selection,
+                                     test_variants)
+    return test_variants
 
 
 def generate_test_files(name_to_dir_file: str) -> None:
@@ -568,15 +581,7 @@ def generate_test_files(name_to_dir_file: str) -> None:
 
     used_tests = collections.defaultdict(set)
     for test in tests:
-        if 'variant_matrix' in test:
-            variants = _expand_variant_matrix(test['variant_matrix'], test)
-        elif 'variants' in test:
-            variant_matrix = [test['variants']]
-            variants = _expand_variant_matrix(variant_matrix, test)
-        else:
-            variants = [test]
-
-        for variant in variants:
+        for variant in _get_variants(test):
             sub_dir = _get_test_sub_dir(variant['name'], name_to_sub_dir)
             _generate_test(variant, jinja_env, used_tests,
                            output_dirs.sub_path(sub_dir))

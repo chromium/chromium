@@ -484,7 +484,7 @@
     @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
   variants:
-    _HtmlCanvas:
+  - _HtmlCanvas:
       canvasType: ['HtmlCanvas']
       create_canvas: document.createElement('canvas')
     _OffscreenCanvas:
@@ -1135,7 +1135,7 @@
     var pattern = ctx.createPattern(img, 'no-repeat');
     @assert pattern.thisImplementsCanvasPattern;
   variants: &load-image-variant-definition
-    _HtmlCanvas:
+  - _HtmlCanvas:
       canvasType: ['HtmlCanvas']
       load_image: var img = document.getElementById('{{ (images or svgimages)[0] }}');
     _OffscreenCanvas:
@@ -1189,7 +1189,7 @@
     @assert pixel 98,48 == 0,255,0,255;
   expected: green
   variants: &create-canvas2-variant-definition
-    _HtmlCanvas:
+  - _HtmlCanvas:
       canvasType: ['HtmlCanvas']
       create_canvas2: |-
         var canvas2 = document.createElement('canvas');
@@ -1578,7 +1578,7 @@
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
   variants:
-    _HtmlCanvas:
+  - _HtmlCanvas:
       canvasType: ['HtmlCanvas']
       load_image: var img = document.getElementById('{{ images[0] }}');
       create_canvas: document.createElement('canvas')

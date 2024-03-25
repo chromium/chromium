@@ -236,7 +236,7 @@
     @assert pixel 95,45 ==~ 0,255,0,255;
   expected: green
   variants: &load-font-variant-definition
-    _HtmlCanvas:
+  - _HtmlCanvas:
       canvasType: ['HtmlCanvas']
       load_font: |-
         await document.fonts.ready;

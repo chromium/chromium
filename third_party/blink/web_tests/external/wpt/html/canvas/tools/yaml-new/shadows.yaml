@@ -518,7 +518,7 @@
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
   variants: &load-image-variant-definition
-    _HtmlCanvas:
+  - _HtmlCanvas:
       canvasType: ['HtmlCanvas']
       load_image: var img = document.getElementById('{{ images[0] }}');
     _OffscreenCanvas:
@@ -640,7 +640,7 @@
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
   variants: &create-canvas2-variant-definition
-    _HtmlCanvas:
+  - _HtmlCanvas:
       canvasType: ['HtmlCanvas']
       create_canvas2: |-
         var canvas2 = document.createElement('canvas');
