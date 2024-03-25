@@ -450,7 +450,7 @@
   {
     "name": "ash-faster-split-screen-setup",
     "owners": [ "michelefan@chromium.org", "sophiewen@chromium.org", "xdai@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 129
   },
   {
     "name": "ash-forest-feature",
