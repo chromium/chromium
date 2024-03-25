@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credential.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -21,6 +22,18 @@
 #import "url/gurl.h"
 
 NSString* const kMaskedPasswordTitle = @"••••••••";
+
+namespace {
+
+constexpr CGFloat kFaviconContainterViewSize = 30;
+
+// Returns the size that the favicon should have.
+CGFloat GetFaviconSize() {
+  return IsKeyboardAccessoryUpgradeEnabled() ? kFaviconContainterViewSize
+                                             : gfx::kFaviconSize;
+}
+
+}  // namespace
 
 @interface ManualFillCredentialItem ()
 
@@ -104,8 +117,9 @@ static const CGFloat NoMultiplier = 1.0;
 // The constraints for the visible favicon.
 @property(nonatomic, strong) NSArray<NSLayoutConstraint*>* faviconContraints;
 
-// The favicon for the credential.
-@property(nonatomic, strong) FaviconView* faviconView;
+// The favicon for the credential. Of type FaviconView when the Keyboard
+// Accessory Upgrade is disabled, and FaviconContainerView when enabled.
+@property(nonatomic, strong) UIView* faviconView;
 
 // The label with the site name and host.
 @property(nonatomic, strong) UILabel* siteNameLabel;
@@ -140,7 +154,7 @@ static const CGFloat NoMultiplier = 1.0;
   [self.dynamicConstraints removeAllObjects];
 
   self.siteNameLabel.text = @"";
-  [self.faviconView configureWithAttributes:nil];
+  [self configureFaviconWithAttributes:nil];
 
   [self.usernameButton setTitle:@"" forState:UIControlStateNormal];
   self.usernameButton.enabled = YES;
@@ -251,7 +265,7 @@ static const CGFloat NoMultiplier = 1.0;
   if (attributes.faviconImage) {
     self.faviconView.hidden = NO;
     [NSLayoutConstraint activateConstraints:self.faviconContraints];
-    [self.faviconView configureWithAttributes:attributes];
+    [self configureFaviconWithAttributes:attributes];
     return;
   }
   [NSLayoutConstraint deactivateConstraints:self.faviconContraints];
@@ -269,13 +283,15 @@ static const CGFloat NoMultiplier = 1.0;
   NSMutableArray<NSLayoutConstraint*>* staticConstraints =
       [[NSMutableArray alloc] init];
 
-  self.faviconView = [[FaviconView alloc] init];
+  self.faviconView = IsKeyboardAccessoryUpgradeEnabled()
+                         ? [[FaviconContainerView alloc] init]
+                         : [[FaviconView alloc] init];
   self.faviconView.translatesAutoresizingMaskIntoConstraints = NO;
   self.faviconView.clipsToBounds = YES;
   self.faviconView.hidden = YES;
   [self.contentView addSubview:self.faviconView];
   self.faviconContraints = @[
-    [self.faviconView.widthAnchor constraintEqualToConstant:gfx::kFaviconSize],
+    [self.faviconView.widthAnchor constraintEqualToConstant:GetFaviconSize()],
     [self.faviconView.heightAnchor
         constraintEqualToAnchor:self.faviconView.widthAnchor],
   ];
@@ -335,6 +351,19 @@ static const CGFloat NoMultiplier = 1.0;
   [self.contentInjector userDidPickContent:self.credential.password
                              passwordField:YES
                              requiresHTTPS:YES];
+}
+
+// Configure the favicon with the given `attributes`.
+- (void)configureFaviconWithAttributes:(FaviconAttributes*)attributes {
+  FaviconView* favicon;
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    FaviconContainerView* faviconContainerView =
+        static_cast<FaviconContainerView*>(self.faviconView);
+    favicon = faviconContainerView.faviconView;
+  } else {
+    favicon = static_cast<FaviconView*>(self.faviconView);
+  }
+  [favicon configureWithAttributes:attributes];
 }
 
 @end
