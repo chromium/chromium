@@ -1070,9 +1070,11 @@ TEST_P(SurfaceTest, SetAlpha) {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
     ASSERT_EQ(1u, frame.render_pass_list.size());
-    // No quad if alpha is 0.
+    // We always need to submit surface resources because we have created shared
+    // images that have release callbacks that will only fire when releasing a
+    // compositor frame.
+    ASSERT_EQ(1u, frame.resource_list.size());
     ASSERT_EQ(0u, frame.render_pass_list.back()->quad_list.size());
-    ASSERT_EQ(0u, frame.resource_list.size());
     EXPECT_EQ(gfx::Rect(buffer_size), ToTargetSpaceDamage(frame));
   }
 

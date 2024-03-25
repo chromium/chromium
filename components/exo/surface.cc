@@ -1802,8 +1802,8 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
             /* is_premultiplied=*/true,
             /* nearest_neighbor */ false, kForceAntiAliasingOff);
       }
-      frame->resource_list.push_back(current_resource_);
     }
+    frame->resource_list.push_back(current_resource_);
   } else {
     const viz::SharedQuadState* quad_state = AppendOrCreateSharedQuadState(
         viz::DrawQuad::Material::kSolidColor, state_.basic_state.alpha,
