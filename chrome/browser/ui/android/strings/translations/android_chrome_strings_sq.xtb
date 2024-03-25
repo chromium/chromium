@@ -124,6 +124,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="1641113438599504367">Shfletimi i sigurt</translation>
 <translation id="164269334534774161">Po shikon një kopje offline të kësaj faqeje nga <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historiku</translation>
+<translation id="1644969410150602449">Shiko historikun e uebit këtu</translation>
 <translation id="1657932388559784161">Fleta e poshtme e statistikave të faqes është mbyllur</translation>
 <translation id="1670399744444387456">Themeloret</translation>
 <translation id="1671236975893690980">Shkarkimi në pritje...</translation>
@@ -364,6 +365,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="2942036813789421260">Skeda e shikimit paraprak është e mbyllur</translation>
 <translation id="2946420957526726953">Chrome po përditësohet për t'u lidhur me pajisjet e tjera</translation>
 <translation id="2951071800649516099">Shto faqe në listën tënde të leximit për më vonë</translation>
+<translation id="2956070106555335453">Përmbledhja</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> faqe e palexuar}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> faqe të palexuara}}</translation>
 <translation id="296370266220139811">Kurse kohën dhe shkruaj më pak</translation>
 <translation id="2977350910003566746">Po renditen sipas hapjes së fundit</translation>
@@ -749,6 +751,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4950924971025849764">Kur je identifikuar në të njëjtën "Llogari të Google", pajisjet e tjera mund ta përdorin këtë telefon si një çelës sigurie.</translation>
 <translation id="4957722034734105353">Mëso më shumë...</translation>
 <translation id="4961107849584082341">Përktheje këtë faqe në çdo gjuhë</translation>
+<translation id="496607651705915226">Për të ruajtur dhe përdorur fjalëkalimet e reja në "Llogarinë tënde të Google", përditëso shërbimet e Google Play</translation>
 <translation id="4971735654804503942">Mbrojtje më e shpejtë dhe proaktive kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Të paralajmëron rreth nxjerrjeve të paautorizuara të fjalëkalimeve. Kërkon që të dhënat e shfletimit t'i dërgohen Google.</translation>
 <translation id="497421865427891073">Vazhdo përpara</translation>
 <translation id="4987271110129728827">Faqja nuk mund të gjendet. Kontrollo drejtshkrimin ose provo të kërkosh në ueb.</translation>

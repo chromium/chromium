@@ -124,6 +124,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="1641113438599504367">Ligtas na Pagba-browse</translation>
 <translation id="164269334534774161">Tinitingnan mo ang offline na kopya ng page na ito mula sa <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">History</translation>
+<translation id="1644969410150602449">Tingnan ang iyong history sa web dito</translation>
 <translation id="1657932388559784161">Nakasara ang bottom sheet ng mga insight ng page</translation>
 <translation id="1670399744444387456">Pangunahin</translation>
 <translation id="1671236975893690980">Nakabinbin ang pag-download...</translation>
@@ -250,6 +251,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="2364539095045928896">Button na Isara para isara ang notification ng privacy ng hub ng mga insight ng page.</translation>
 <translation id="2386938421315164605">Itago at i-unhide ang mga paksa</translation>
 <translation id="2390510615457643724">Gusto mo bang i-download ulit ang <ph name="FILE_NAME" /><ph name="FILE_SIZE" />?</translation>
+<translation id="2395004545133500011">Binuksan ang i-share gamit ang sheet ng buod</translation>
 <translation id="2410754283952462441">Pumili ng account</translation>
 <translation id="2414886740292270097">Madilim</translation>
 <translation id="2421705177906985956">Walang site na maipapakita sa ngayon</translation>
@@ -364,6 +366,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="2942036813789421260">Nakasara ang tab na preview</translation>
 <translation id="2946420957526726953">Ina-update ang Chrome para makakonekta sa ibang device</translation>
 <translation id="2951071800649516099">Magdagdag ng mga pahina sa iyong listahan ng babasahin para sa ibang pagkakataon</translation>
+<translation id="2956070106555335453">Buod</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page ang hindi pa nababasa}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page ang hindi pa nababasa}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> na page ang hindi pa nababasa}}</translation>
 <translation id="296370266220139811">Makatipid sa oras at pag-type</translation>
 <translation id="2977350910003566746">Ibinubukod-bukod ayon sa huling binuksan</translation>
@@ -643,6 +646,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Na-save ang bookmark sa "<ph name="FOLDER_NAME" />." Naka-save lang ito sa device na ito.}one{Na-save ang mga bookmark sa "<ph name="FOLDER_NAME" />." Naka-save lang ito sa device na ito.}other{Na-save ang mga bookmark sa "<ph name="FOLDER_NAME" />." Naka-save lang ito sa device na ito.}}</translation>
 <translation id="4484496141267039529">Walang koneksyon. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="4487967297491345095">Permanenteng ide-delete ang lahat ng data ng app ng Chrome. Kabilang dito ang lahat ng file, setting, account, database, atbp.</translation>
+<translation id="4489640160615759754">I-share gamit ang sheet ng buod</translation>
 <translation id="4494806687727322324">In-on ng iyong administrator ang pag-save ng password</translation>
 <translation id="4508528996305412043">Nakabukas ang menu ng feed card</translation>
 <translation id="4509501256689523862">Habang nagba-browse ka, posibleng naka-personalize ang isang ad na nakikita mo depende sa setting na ito, <ph name="BEGIN_LINK_1" />mga paksa ng Ad<ph name="END_LINK_1" />, iyong <ph name="BEGIN_LINK_2" />mga setting ng cookie<ph name="END_LINK_2" />, at kung nagpe-personalize ng mga ad ang site na tinitingnan mo</translation>
@@ -652,6 +656,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="4521489764227272523">Inalis ang napiling data sa Chrome at sa iyong mga naka-sync na device.
 
 Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad ng mga paghahanap at aktibidad mula sa iba pang serbisyo ng Google sa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Isinara ang i-share gamit ang sheet ng buod</translation>
 <translation id="4523326818319942067">nakalipas na oras</translation>
 <translation id="452750746583162491">Suriin ang iyong naka-sync na data</translation>
 <translation id="4532845899244822526">Pumili ng folder</translation>
@@ -749,6 +754,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4950924971025849764">Kapag naka-sign in ka sa iisang Google Account, puwedeng gamitin ng iba pang device ang teleponong ito bilang security key.</translation>
 <translation id="4957722034734105353">Matuto pa...</translation>
 <translation id="4961107849584082341">Isalin ang page na ito sa anumang wika</translation>
+<translation id="496607651705915226">Para mag-save at gumamit ng mga bagong password sa iyong Google Account, i-update ang mga serbisyo ng Google Play</translation>
 <translation id="4971735654804503942">Mas mabilis at proactive na proteksyon laban sa mga mapanganib na website, download, at extension. Binibigyan ka ng babala tungkol sa mga paglabag sa password. Kinakailangang magpadala ng data mula sa pag-browse sa Google.</translation>
 <translation id="497421865427891073">Sumulong</translation>
 <translation id="4987271110129728827">Hindi makita ang page na iyon. Suriin ang iyong spelling o sumubok ng paghahanap sa web.</translation>

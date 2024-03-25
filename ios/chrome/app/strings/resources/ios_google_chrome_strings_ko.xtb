@@ -140,7 +140,6 @@
 <translation id="4831642696589369971">Chrome 데이터 중 일부가 아직 Google 계정에 저장되지 않았습니다.
 
         잠시 기다렸다가 로그아웃하세요. 지금 로그아웃하면 이 데이터가 삭제됩니다.</translation>
-<translation id="4834499902900503484">Chrome에 로그인하면 저장한 비밀번호가 내 Google 계정에 저장됩니다. 이 기능을 사용 중지하려면 <ph name="BEGIN_LINK" />설정으로 이동하세요<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Chrome 베타에서는 지원되지 않습니다.</translation>
 <translation id="4840404732697892756">Google 계정으로 로그인하면 Google 비밀번호 관리자에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="4856636171409137183">최적의 맞춤 환경을 이용하려면 <ph name="FEATURE_NAME_1" /> 및 <ph name="FEATURE_NAME_2" />에 Chrome을 포함하세요</translation>

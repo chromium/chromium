@@ -1936,6 +1936,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2435248616906486374">S'ha desconnectat la xarxa</translation>
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
 <translation id="2436385001956947090">Copia l'&amp;enllaç</translation>
+<translation id="2436746748253887661">Això permet que els serveis del sistema amb permís utilitzin la teva ubicació. La ubicació pot utilitzar fonts com ara sensors, xarxes mòbils i Wi‑Fi per estimar la ubicació del dispositiu. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Sense connexió amb la impressora</translation>
 <translation id="2439152382014731627">Restableix la contrasenya del dispositiu (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="2439626940657133600">S'està carregant <ph name="WINDOW_TITLE" /></translation>
@@ -3505,12 +3506,14 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3660234220361471169">No és de confiança</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{S'ha trobat 1 contrasenya existent}other{S'han trobat {NUM_PASSWORDS} contrasenyes existents}}</translation>
 <translation id="3662207097851752847">Confirma el teu Compte de Google al telèfon</translation>
+<translation id="3663417513679360795">Més informació sobre com es pot activar la precàrrega estàndard</translation>
 <translation id="3664511988987167893">Icona de l'extensió</translation>
 <translation id="3665100783276035932">La majoria de llocs web haurien de funcionar de la manera prevista</translation>
 <translation id="3665301845536101715">Obre al tauler lateral</translation>
 <translation id="3665589677786828986">Chrome ha detectat que un altre programa ha malmès alguns dels paràmetres de configuració i els ha restablert als valors predeterminats originals.</translation>
 <translation id="3665919494326051362">La versió actual és <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Buidatge de depuració de NIC de Wi-Fi d'Intel</translation>
+<translation id="3666971425390608309">La baixada del fitxer <ph name="FILE_NAME" /> s'ha posat en pausa.</translation>
 <translation id="3670113805793654926">Dispositius de qualsevol proveïdor</translation>
 <translation id="3670229581627177274">Activa el Bluetooth</translation>
 <translation id="3670480940339182416">Els llocs web poden utilitzar l'optimitzador de V8</translation>
@@ -3593,6 +3596,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3720543739123045680">Altres pestanyes comparteixen un procés amb aquesta pestanya, cosa que pot provocar una experiència inesperada amb DevTools.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Tu i Google</translation>
+<translation id="3721178866505920080">Més informació sobre com es pot activar la precàrrega ampliada</translation>
 <translation id="3722108462506185496">S'ha produït un error en iniciar el servei de màquina virtual. Torna-ho a provar.</translation>
 <translation id="3722624153992426516">S'ha rebut la instrucció <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3724897774652282549">Emplena el formulari</translation>
@@ -3661,6 +3665,8 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3765055238058255342">Aquest tipus de targeta</translation>
 <translation id="3765246971671567135">No s'ha pogut llegir la política del mode de demostració sense connexió.</translation>
 <translation id="3765696567014520261">Els llocs web no poden fer servir les teves galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis. És possible que les funcions d'alguns llocs web no estiguin operatives.</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />El servei d'ubicació de Google utilitza fonts com ara sensors, xarxes mòbils i Wi-Fi per estimar la ubicació del dispositiu.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Pots desactivar la ubicació de ChromeOS i d'Android al dispositiu en qualsevol moment anant a Configuració &gt; Privadesa i seguretat &gt; Controls de privadesa &gt; Accés a la ubicació. També pots desactivar l'ús de sensors, xarxes mòbils i Wi-Fi per a la ubicació d'Android desactivant l'opció Millora la precisió de la ubicació, a Configuració d'ubicació avançada al mateix menú.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Més informació sobre El meu telèfon</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">De moment, només pots compartir les contrasenyes amb membres de la família. <ph name="BEGIN_LINK" />Convida membres de la família<ph name="END_LINK" /> a unir-se al teu grup i treu més profit dels teus productes i subscripcions de Google.</translation>
@@ -3708,6 +3714,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3798670284305777884">Altaveu (intern)</translation>
 <translation id="3799128412641261490">Configuració d'Accés amb interruptors</translation>
 <translation id="3800828618615365228">Condicions addicionals de Google Chrome i Chrome OS</translation>
+<translation id="3800898876950197674">Per permetre aquesta extensió, introdueix la contrasenya.</translation>
 <translation id="3802486193901166966">Aquesta extensió no requereix cap permís especial i no té accés a cap lloc web addicional</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803345858388753269">Qualitat de vídeo</translation>
@@ -4325,6 +4332,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4278779213160967034">Aquest procés pot tardar uns quants minuts. S'estan baixant fitxers.</translation>
 <translation id="4279129444466079448">Pots instal·lar <ph name="PROFILE_LIMIT" /> perfils d'eSIM com a màxim en aquest dispositiu. Per afegir-ne un altre, primer suprimeix-ne un.</translation>
 <translation id="4280325816108262082">El dispositiu es desconnectarà automàticament quan s'apagui o no s'estigui fent servir</translation>
+<translation id="4281637354026226955">Permet que les aplicacions i els serveis de ChromeOS i d'Android amb permís d'accés a la ubicació utilitzin la ubicació del dispositiu. Google pot recollir dades d'ubicació periòdicament i utilitzar-les de manera anònima per millorar la precisió de la ubicació i els serveis basats en la ubicació.</translation>
 <translation id="4281844954008187215">Condicions del servei</translation>
 <translation id="4281849573951338030">Personalitza els botons del bolígraf</translation>
 <translation id="4282196459431406533">Smart Lock està activat</translation>
@@ -4577,7 +4585,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4473996011558324141">S'està estimant el temps</translation>
 <translation id="4474155171896946103">Afegeix totes les pestanyes a les adreces d'interès...</translation>
 <translation id="4475299370877036544">És possible que aquesta acció infringeixi les polítiques de la teva organització</translation>
-<translation id="4475552974751346499">Cerca baixades</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Per escanejar aquest codi, pots fer servir una aplicació d'escaneig QR al telèfon o algunes aplicacions de la càmera.</translation>
 <translation id="4477015793815781985">Inclou la tecla Ctrl, Alt o ⌘</translation>
@@ -6205,6 +6212,8 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (valor predeterminat del sistema)</translation>
 <translation id="5776450228446082914">La llista de llocs web que poden obrir-se en qualsevol navegador.</translation>
 <translation id="5776571780337000608">Amb aquesta aplicació pots obrir i editar fitxers admesos des de l'examinador de fitxers o des d'altres aplicacions. Si vols controlar quins fitxers s'obren amb aquesta aplicació de manera predeterminada, <ph name="BEGIN_LINK" />obtén més informació sobre com pots establir aplicacions predeterminades al dispositiu<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">El servei d'ubicació de Google millora la precisió de la ubicació mitjançant sensors, xarxes mòbils i Wi‑Fi que ens ajuden a estimar la teva ubicació. Google pot recollir dades d'ubicació periòdicament i utilitzar-les de manera anònima per millorar la precisió de la ubicació i els serveis basats en la ubicació.
+    Si desactives aquesta opció, Android només farà servir l'adreça IP per detectar la ubicació. Això pot afectar la precisió de la ubicació que utilitzen aplicacions com ara Maps.</translation>
 <translation id="5778491106820461378">A <ph name="LINK_BEGIN" />Configuració<ph name="LINK_END" /> pots gestionar els Comptes de Google en què tens la sessió iniciada. És possible que els permisos que hagis concedit a llocs web i aplicacions s'apliquin a tots els comptes. Si no vols que els llocs web o les aplicacions accedeixin a la informació del teu compte, pots iniciar la sessió a <ph name="DEVICE_TYPE" /> com a convidat.</translation>
 <translation id="5780011244986845107">La carpeta que has seleccionat conté fitxers confidencials. Confirmes que vols concedir a "<ph name="APP_NAME" />" accés de lectura permanent en aquesta carpeta?</translation>
 <translation id="5780973441651030252">Prioritat del procés</translation>
@@ -6290,6 +6299,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5836999627049108525">Idioma de partida de la traducció</translation>
 <translation id="583756221537636748">Cas</translation>
 <translation id="5840680448799937675">Els fitxers es compartiran sempre sense connexió</translation>
+<translation id="5841167715783969407">Zona horària automàtica basada en la Wi‐Fi o les xarxes mòbils</translation>
 <translation id="5841270259333717135">Configura Ethernet</translation>
 <translation id="5842497610951477805">Activa el Bluetooth</translation>
 <translation id="5844284118433003733">Si tens la sessió iniciada, aquestes dades s'enllacen al teu Compte de Google per protegir-te als serveis de Google; per exemple, augmentant la protecció a Gmail després d'un incident de seguretat.</translation>
@@ -6738,6 +6748,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6180510783007738939">Eina de línia</translation>
 <translation id="6180550893222597997">Quina clau d'accés vols utilitzar per a <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">S'ha bloquejat la baixada</translation>
+<translation id="6183369864942961155">Tema clar/fosc automàtic</translation>
 <translation id="6184099524311454384">Cerca pestanyes</translation>
 <translation id="6184868291074982484">Chrome limita automàticament les galetes de tercers</translation>
 <translation id="6185132558746749656">Ubicació del dispositiu</translation>
@@ -7140,6 +7151,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6513247462497316522">Google Chrome utilitzarà dades mòbils si no esteu connectat a una altra xarxa.</translation>
 <translation id="6514010653036109809">Dispositiu disponible:</translation>
 <translation id="6517227424170598783">Vols suprimir la drecera <ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />?</translation>
+<translation id="6517382055541687102">El dispositiu seleccionat ha canviat a <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Els fitxers de La meva unitat se sincronitzaran automàticament amb el Chromebook perquè hi puguis accedir sense connexió a Internet. Aquesta acció utilitzarà aproximadament <ph name="REQUIRED_SPACE" />. Actualment tens <ph name="FREE_SPACE_AVAILABLE" /> disponibles.</translation>
 <translation id="6517709704288360414">És possible que el dispositiu ja no funcioni correctament i que tinguis problemes de seguretat i de rendiment. La desactivació de les actualitzacions pot afectar el teu dret de presentar reclamacions legals si tens cap problema.</translation>
 <translation id="6518014396551869914">Copia&amp; la imatge</translation>
@@ -7396,6 +7408,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6713441551032149301">Mantén premuda la tecla del menú d'aplicacions per canviar entre les tecles de funció i les tecles de la fila superior del sistema</translation>
 <translation id="6713668088933662563">No ofereixis mai traduir d'aquests idiomes</translation>
 <translation id="6715803357256707211">S'ha produït un error en instal·lar l'aplicació per a Linux. Fes clic a la notificació per veure'n els detalls.</translation>
+<translation id="6716049856796700977">Res no pot utilitzar la teva ubicació. Tanmateix, és possible que la teva ubicació continuï sent visible per a les aplicacions i per als llocs web a través de l'adreça IP. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">S'ha perdut la connexió a la xarxa. Comprova la connexió o prova una altra xarxa Wi-Fi.</translation>
 <translation id="6718849325281682232">Els colors del tema de Chrome s'han actualitzat per funcionar millor per a tothom, tant en mode fosc com en mode clar</translation>
 <translation id="671928215901716392">Pantalla de bloqueig</translation>
@@ -7444,6 +7457,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6758056191028427665">Digue'ns si ho estem fent bé.</translation>
 <translation id="6759193508432371551">Restabliment de fàbrica</translation>
 <translation id="6760354150216532978">Advertiment: aquest lloc web pot veure els canvis que fas</translation>
+<translation id="6761209758867628753">Eina: Ajuda'm a escriure</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">No es permeten dades del lloc web al dispositiu</translation>
 <translation id="6762833852331690540">Activat</translation>
@@ -7982,6 +7996,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7180865173735832675">Personalitza</translation>
 <translation id="7181117767881540376">Amaga la barra d'adreces d'interès</translation>
+<translation id="7181329571386134105">Per permetre que <ph name="CHILD_NAME" /> instal·li extensions sense la teva aprovació en un futur, obre l'aplicació Family Link al teu dispositiu i actualitza la configuració de Google Chrome per a <ph name="CHILD_NAME" />.</translation>
 <translation id="7182063559013288142">Punt d'accés Wi‑Fi instantani</translation>
 <translation id="7182791023900310535">Mou la contrasenya</translation>
 <translation id="718427252411067142">Per evitar que altres persones utilitzin la teva contrasenya, obre l'aplicació i canvia la contrasenya</translation>
@@ -8378,6 +8393,8 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7478658909253570368">No permetis que els llocs web es connectin a ports en sèrie</translation>
 <translation id="7479221278376295180">Informació general sobre l'ús de l'emmagatzematge</translation>
 <translation id="747981547666531654">Connectat a dispositius Bluetooth anomenats <ph name="FIRST_DEVICE" /> i <ph name="SECOND_DEVICE" /></translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />El servei d'ubicació de Google utilitza fonts com ara sensors, xarxes mòbils i Wi-Fi per estimar la ubicació d'aquest dispositiu.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Pots desactivar la ubicació de ChromeOS i d'Android en aquest dispositiu en qualsevol moment anant a Configuració &gt; Privadesa i seguretat &gt; Controls de privadesa &gt; Accés a la ubicació. També pots desactivar l'ús de sensors, xarxes mòbils i Wi-Fi per a la ubicació d'Android desactivant l'opció Millora la precisió de la ubicació, a Configuració d'ubicació avançada al mateix menú.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Endavant</translation>
 <translation id="7481358317100446445">A punt</translation>
 <translation id="748138892655239008">Restriccions bàsiques de certificats</translation>
@@ -8469,6 +8486,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7552846755917812628">Prova els consells següents:</translation>
 <translation id="7553012839257224005">S'està comprovant el contenidor de Linux</translation>
 <translation id="7553242001898162573">Introduïu la contrasenya</translation>
+<translation id="7553487223484420820">Les aplicacions, els llocs web i els serveis del sistema amb permís d'accés a la ubicació poden utilitzar la teva ubicació. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">El teu administrador no permet aquest idioma</translation>
 <translation id="7554791636758816595">Pestanya nova</translation>
 <translation id="7556033326131260574">Smart Lock no ha pogut verificar el vostre compte. Escriviu la contrasenya per accedir-hi.</translation>
@@ -9386,6 +9404,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8224427620313426549">El teu compte de <ph name="DOMAIN_LINK" /> no se suprimirà</translation>
 <translation id="8225046344534779393">Comprova la connexió a Internet</translation>
 <translation id="8225265270453771718">Comparteix la finestra d'una aplicació</translation>
+<translation id="8225516926291976401">Només els serveis del sistema poden utilitzar la teva ubicació. Tanmateix, és possible que la teva ubicació continuï sent visible per a les aplicacions i per als llocs web a través de l'adreça IP. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Prohibit</translation>
 <translation id="8226619461731305576">Cua</translation>
 <translation id="8227119283605456246">Adjunta un fitxer</translation>
@@ -9823,6 +9842,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8552102814346875916">Desa a la llista Mantén aquests llocs web sempre actius</translation>
 <translation id="8553342806078037065">Gestiona altres usuaris</translation>
 <translation id="8554899698005018844">Cap idioma</translation>
+<translation id="8555444629041783356">Programació automàtica per a la posta de sol</translation>
 <translation id="855604308879080518">Permet que les aplicacions d'Android accedeixin als dispositius USB en aquest Chromebook. El permís se sol·licitarà cada cop que endollis un dispositiu USB. Cada aplicació d'Android demanarà permisos addicionals.</translation>
 <translation id="8557022314818157177">Continua tocant la clau de seguretat fins que es capturi l'empremta digital</translation>
 <translation id="8557180006508471423">Activa Google Chrome als serveis d'ubicació del Mac.</translation>
@@ -10773,6 +10793,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="973558314812359997">Mida del ratolí</translation>
 <translation id="975893173032473675">Idioma d'arribada de la traducció</translation>
 <translation id="976499800099896273">Es mostra el quadre de diàleg Desfés de la correcció automàtica per a la paraula <ph name="TYPED_WORD" />, que s'ha corregit com a <ph name="CORRECTED_WORD" />.  Prem la fletxa amunt per accedir i la tecla d'escapada per ignorar.</translation>
+<translation id="976572010712028687">Verifica que ets el pare o la mare</translation>
 <translation id="978146274692397928">L'amplada inicial de la puntuació és completa</translation>
 <translation id="978978324795544535">Fes doble toc sobre un element, mantén-lo premut en el segon toc i arrossega'l per moure'l</translation>
 <translation id="97905529126098460">Aquesta finestra es tancarà un cop hagi finalitzat la cancel·lació.</translation>

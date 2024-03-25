@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">세이프 브라우징</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" />에 작성된 이 페이지의 오프라인 사본을 보는 중입니다.</translation>
 <translation id="1644574205037202324">방문 기록</translation>
+<translation id="1644969410150602449">여기에서 웹 기록 보기</translation>
 <translation id="1657932388559784161">페이지 통계 하단 시트가 닫힘</translation>
 <translation id="1670399744444387456">기본</translation>
 <translation id="1671236975893690980">다운로드 대기 중...</translation>
@@ -250,6 +251,7 @@
 <translation id="2364539095045928896">페이지 인사이트 허브의 개인정보처리방침을 닫는 닫기 버튼입니다.</translation>
 <translation id="2386938421315164605">주제 숨기기 및 숨기기 해제</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" />(<ph name="FILE_SIZE" />) 파일을 다시 다운로드하시겠습니까?</translation>
+<translation id="2395004545133500011">요약 시트로 공유 열림</translation>
 <translation id="2410754283952462441">계정 선택</translation>
 <translation id="2414886740292270097">어둡게</translation>
 <translation id="2421705177906985956">지금 표시할 사이트가 없습니다.</translation>
@@ -364,6 +366,7 @@
 <translation id="2942036813789421260">미리보기 탭 닫힘</translation>
 <translation id="2946420957526726953">다른 기기에 연결하기 위해 Chrome을 업데이트하는 중</translation>
 <translation id="2951071800649516099">나중에 읽을 수 있도록 읽기 목록에 페이지를 추가합니다.</translation>
+<translation id="2956070106555335453">요약</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />개}other{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />개}}</translation>
 <translation id="296370266220139811">적게 입력하고 시간 절약하기</translation>
 <translation id="2977350910003566746">마지막으로 연 시간순으로 정렬</translation>
@@ -643,6 +646,7 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{"<ph name="FOLDER_NAME" />"에 북마크가 저장되었습니다. 이 기기에만 저장됩니다.}other{"<ph name="FOLDER_NAME" />"에 북마크가 저장되었습니다. 이 기기에만 저장됩니다.}}</translation>
 <translation id="4484496141267039529">연결되지 않았습니다. 나중에 다시 시도하세요.</translation>
 <translation id="4487967297491345095">모든 파일, 설정, 계정, 데이터베이스 등을 포함한 Chrome의 모든 앱 데이터가 완전히 삭제됩니다.</translation>
+<translation id="4489640160615759754">요약 시트로 공유</translation>
 <translation id="4494806687727322324">관리자가 비밀번호 저장을 사용 설정했습니다</translation>
 <translation id="4508528996305412043">피드 카드 메뉴가 열림</translation>
 <translation id="4509501256689523862">인터넷을 탐색할 때 이 설정, <ph name="BEGIN_LINK_1" />광고 주제<ph name="END_LINK_1" />, 나의 <ph name="BEGIN_LINK_2" />쿠키 설정<ph name="END_LINK_2" />, 시청 중인 사이트에서 광고를 맞춤설정하는지 여부에 따라 나에게 표시되는 광고의 맞춤설정 여부가 달라집니다.</translation>
@@ -652,6 +656,7 @@
 <translation id="4521489764227272523">선택한 데이터가 Chrome 및 동기화된 기기에서 삭제되었습니다.
 
 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />에서 검색이나 기타 Google 서비스에서의 활동 등 내 Google 계정에 있는 다른 형식의 탐색 기록을 확인할 수 있습니다.</translation>
+<translation id="452279259461584111">요약 시트로 공유 닫힘</translation>
 <translation id="4523326818319942067">지난 1시간</translation>
 <translation id="452750746583162491">동기화된 데이터 검토</translation>
 <translation id="4532845899244822526">폴더 선택</translation>
@@ -749,6 +754,7 @@
 <translation id="4950924971025849764">같은 Google 계정으로 로그인되어 있으면 다른 기기에서 이 휴대전화를 보안 키로 사용할 수 있습니다.</translation>
 <translation id="4957722034734105353">자세히 알아보기...</translation>
 <translation id="4961107849584082341">이 페이지를 원하는 언어로 번역하세요.</translation>
+<translation id="496607651705915226">Google 계정에서 새 비밀번호를 저장하고 사용하려면 Google Play 서비스를 업데이트하세요.</translation>
 <translation id="4971735654804503942">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다. 비밀번호 유출에 관해 알립니다. Google에 인터넷 사용 기록을 전송해야 합니다.</translation>
 <translation id="497421865427891073">앞으로 이동</translation>
 <translation id="4987271110129728827">페이지를 찾을 수 없습니다. 철자를 확인하거나 웹 검색을 이용해 보세요.</translation>

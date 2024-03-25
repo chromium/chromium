@@ -286,6 +286,7 @@
 <translation id="2531772459602846206">hortensia</translation>
 <translation id="2533048460510040082">Ehdotettu ohjesisältö</translation>
 <translation id="2536159006530886390">Ei internetyhteyttä.</translation>
+<translation id="2538719227433767804">+ <ph name="NUM_HIDDEN_OPTIONS" /> muuta</translation>
 <translation id="2561093647892030937">sitruunat</translation>
 <translation id="2570743873672969996">Tehdään testiä <ph name="TEST_NAME" />…</translation>
 <translation id="2584547424703650812">Hohtavat maisemat</translation>
@@ -810,6 +811,7 @@
 <translation id="5939518447894949180">Tyhjennä</translation>
 <translation id="594552776027197022">Luo satunnainen avainpari</translation>
 <translation id="5946538341867151940">Yhteyttä ei vielä ole. Jos mobiilioperaattorisi suosittelee muokattua APN:ää, lisää APN-tiedot valitsemalla + Uusi APN.</translation>
+<translation id="5947266287934282605">Jos kuukauden viimeinen päivä on ennen tätä päivää, data nollataan kuukauden viimeisenä päivänä</translation>
 <translation id="5948460390109837040">koirat</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">koralli</translation>

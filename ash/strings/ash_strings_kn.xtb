@@ -259,7 +259,6 @@
 <translation id="2017998995161831444">ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಆ್ಯಪ್‌ನಲ್ಲಿ "ಸಹಾಯ" ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2018630726571919839">ನನಗೊಂದು ಜೋಕ್ ಹೇಳಿ</translation>
 <translation id="2021864487439853900">ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
-<translation id="2023558322300866873">ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ಪ್ಯಾಕೆಟ್ ಕ್ಯಾಪ್ಚರ್ ಅನ್ನು ನಿಲ್ಲಸಬಹುದು</translation>
 <translation id="2034971124472263449">ಹೇಗಾದರೂ ಉಳಿಸಿ</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> ಶಾರ್ಟ್‌ಕಟ್ ಪ್ರಸ್ತುತ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="2049240716062114887">ಡೆಸ್ಕ್ ಹೆಸರನ್ನು <ph name="DESK_NAME" /> ಗೆ ಬದಲಿಸಲಾಗಿದೆ</translation>
@@ -357,6 +356,7 @@
 <translation id="2482878487686419369">ಸೂಚನೆಗಳು</translation>
 <translation id="2484513351006226581">ಕೀಬೋರ್ಡ್ ಲೇಔಟ್ ಬದಲಾಯಿಸಲು <ph name="KEYBOARD_SHORTCUT" /> ಒತ್ತಿರಿ.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> ಪೂರ್ವವೀಕ್ಷಣೆ. ಸಕ್ರಿಯ ಡೆಸ್ಕ್.</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" ಅನ್ನು <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ರೆಸಲ್ಯೂಷನ್‌ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ. ಖಚಿತಪಡಿಸದೆಯೇ, ಈ ಹಿಂದಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು <ph name="TIMEOUT_SECONDS" /> ನಲ್ಲಿ ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="2487915095798731898">ಸೇರ್ಪಡೆಗೊಳ್ಳು</translation>
 <translation id="2499445554382787206">ಡೆಸ್ಕ್ ಪ್ರೊಫೈಲ್ ಮೆನು. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ಸ್ಟಿಕಿ ಕೀಗಳು</translation>
@@ -700,7 +700,6 @@
 <translation id="380165613292957338">ಹಾಯ್, ನಾನು ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?</translation>
 <translation id="3804737937830804242">ಕ್ಯಾಮರಾ ಕುಗ್ಗಿಸಿ</translation>
 <translation id="3824784079442479685">ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಅನುಮತಿ ಹೊಂದಿರುವ <ph name="APP_NAME" />, ಮತ್ತು ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಹಾಗೂ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಇದು ಕ್ಯಾಮರಾಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ. ನೀವು ವೆಬ್ ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಬೇಕಾಗಬಹುದು ಅಥವಾ ಆ್ಯಪ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕಾಗಬಹುದು.</translation>
-<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ರಲ್ಲಿ <ph name="NUM_TURNED_IN" /> ಸಲ್ಲಿಕೆಗಳನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ, <ph name="NUM_GRADED" /> ಗ್ರೇಡ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3826099427150913765">ಪಾಸ್‌ವರ್ಡ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="383058930331066723">ಬ್ಯಾಟರಿ ಸೇವರ್‌ ಮೋಡ್‌ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="383629559565718788">ಕೀಬೋರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
@@ -764,7 +763,6 @@
 <translation id="4066027111132117168">ಪ್ರಕ್ರಿಯೆಯಲ್ಲಿದೆ, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">ಡೌನ್‌ಲೋಡ್‌ಗಳ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4072264167173457037">ಮಧ್ಯಮ ಸಿಗ್ನಲ್</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ಸ್ವೀಕರಿಸಲಾಗಿದೆ • <ph name="NUM_GRADED" /> ಗ್ರೇಡ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4086921558679520050">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿನ ಭೌತಿಕ ಮೈಕ್ ಸ್ವಿಚ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="4101772068965291327">ಹೋಮ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4112140312785995938">ಹಿಂದಕ್ಕೆ ಸೀಕ್ ಮಾಡಿ</translation>
@@ -1030,6 +1028,7 @@
 <translation id="5062496344832867502">ರ್‍ಯಾಮ್</translation>
 <translation id="5068762093486106012">ಮ್ಯೂಟ್ ಮಾಡಿದ್ದಾಗ ನೀವು ಮಾತನಾಡಿದರೆ ನೀವು ನೋಟಿಫಿಕೇಶನ್ ಅನ್ನು ಪಡೆಯುವಿರಿ. ಆಡಿಯೋ ಎಂದಿಗೂ ನಿಮ್ಮ ಸಾಧನವನ್ನು ತೊರೆಯುವುದಿಲ್ಲ.</translation>
 <translation id="5077416371682039027">ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮಾಧ್ಯಮ, ನೋಟಿಫಿಕೇಶನ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸುವುದಕ್ಕಾಗಿ ಸೆಟಪ್ ಮಾಡಿ</translation>
+<translation id="5077936103761694531">ರೆಸಲ್ಯೂಷನ್ ಖಚಿತಪಡಿಸಬೇಕೆ?</translation>
 <translation id="5078796286268621944">ತಪ್ಪಾದ PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + ಅಪ್ ಆ್ಯರೋ</translation>
 <translation id="5083553833479578423">ಇನ್ನಷ್ಟು ಅಸಿಸ್ಟೆಂಟ್ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಅನ್‌ಲಾಕ್‌ ಮಾಡಿ.</translation>
@@ -1679,6 +1678,7 @@
 <translation id="7647488630410863958">ನಿಮ್ಮ ಅಧಿಸೂಚನೆಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="7649070708921625228">ಸಹಾಯ</translation>
 <translation id="7654687942625752712">ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು, ಎರಡೂ ವಾಲ್ಯೂಮ್ ಕೀಗಳನ್ನು ಐದು ಸೆಕೆಂಡ್‌ಗಳ ಕಾಲ ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ.</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" ಅನ್ನು <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) ರೆಸಲ್ಯೂಷನ್‌ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ. ಪೋರ್ಟ್ ಬ್ಯಾಂಡ್‌ವಿಡ್ತ್ ಮಿತಿಗಳ ಕಾರಣ, ನಿಮ್ಮ ಡಿಸ್‌ಪ್ಲೇ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ರೆಸಲ್ಯೂಷನ್‌‌ ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಖಚಿತಪಡಿಸದೆಯೇ, ಈ ಹಿಂದಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು <ph name="TIMEOUT_SECONDS" /> ನಲ್ಲಿ ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
 <translation id="7659861092419699379">ಡೆಸ್ಕ್ ಮತ್ತು ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" /> ಜೊತೆ ಲಿಂಕ್ ಆಗಿರುವ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ <ph name="NAME" /> ಗೋಚರಿಸುತ್ತದೆ</translation>
@@ -1769,6 +1769,7 @@
 <translation id="7945357288295809525">ಆ್ಯಕ್ಸೆಸ್ಸಿಬಿಲಿಟಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ, "<ph name="ENABLED_FEATURES" />" ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" />, ನಿಮ್ಮ <ph name="DEVICE_NAME" /> ಬಳಸಲು ಬಯಸುತ್ತಿದೆ</translation>
 <translation id="7951630946012935453">ಕೀಬೋರ್ಡ್ ಡಿಮ್ ಮಾಡಿ</translation>
+<translation id="7953994493035617347">ಹೊಸ ರೆಸಲ್ಯೂಷನ್ ಅನ್ನು ಖಚಿತಪಡಿಸಬೇಕೆ?</translation>
 <translation id="7963689218131240420">ಅಡಚಣೆ ಮಾಡಬೇಡಿ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> ನಿಂದ</translation>
 <translation id="7968693143708939792">ಫೋಲ್ಡರ್ ಆಯ್ಕೆಮಾಡಿ...</translation>

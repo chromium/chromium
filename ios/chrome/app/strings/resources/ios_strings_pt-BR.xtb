@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17h30</translation>
 <translation id="1209206284964581585">Ocultar por enquanto</translation>
 <translation id="1219674500290482172">Não foi possível se conectar à Internet.</translation>
-<translation id="1226238226094914652">Senhas em todos os seus dispositivos</translation>
 <translation id="122699739164161391">Fechar todas as guias</translation>
 <translation id="1227866575467023566">{count,plural, =1{Página adicionada à Lista de leitura na sua conta ({email})}one{{count} página adicionada à Lista de leitura na sua conta ({email})}other{{count} páginas adicionadas à Lista de leitura na sua conta ({email})}}</translation>
 <translation id="1242044645101871359">Fazer login novamente</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Seguir</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="164673457281113247">{count,plural, =1{Favorito salvo}one{Favorito salvo}other{Favoritos salvos}}</translation>
-<translation id="165008673352427892">Novo recurso</translation>
 <translation id="1650222530560417226">Toque no botão "Iniciar registro" para coletar erros e registros futuros do Console JavaScript em todas as guias. Os registros serão coletados (e armazenados apenas na memória) até que a página seja fechada ou que o botão "Parar de registrar" seja pressionado.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} senha salva disponível acima do teclado.}one{{count} senha salva disponível acima do teclado.}other{{count} senhas salvas disponíveis acima do teclado.}}</translation>
 <translation id="1657011748321897393">O compartilhamento falhou porque não há conexão de rede.</translation>
@@ -302,7 +300,6 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2556092377360758201">Sem proteção (não recomendado)</translation>
 <translation id="2561375093019333908">ABRIR</translation>
 <translation id="2562041823070056534">Enviando para <ph name="DEVICE_NAME" />…</translation>
-<translation id="2576499762020411840">Usar e salvar senhas na Conta do Google</translation>
 <translation id="2577522251608256362">Bairro</translation>
 <translation id="2578571896248130439">Enviar página da Web</translation>
 <translation id="2584132361465095047">Adicionar conta…</translation>
@@ -948,7 +945,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5850913622988109693">Opções para rastrear encomendas</translation>
 <translation id="5854790677617711513">Com mais de 30 dias</translation>
 <translation id="5857090052475505287">Nova pasta</translation>
-<translation id="5857361196621230935">Adicionar guia ao grupo</translation>
 <translation id="5857770089550859117">É necessário ter uma senha longa para iniciar a sincronização.</translation>
 <translation id="5859715514067755465">Avançar</translation>
 <translation id="5860033963881614850">Desativada</translation>
@@ -1159,7 +1155,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6800349425672670802">É possível acessar todas as guias abertas no Seletor de guias.</translation>
 <translation id="6807889908376551050">Mostrar todos...</translation>
 <translation id="681368974849482173">Item criado</translation>
-<translation id="6822587385560699678">Quando essa configuração está ativada, as senhas são salvas em <ph name="ACCOUNT" />. Quando está desativada, elas são salvas apenas neste dispositivo.</translation>
 <translation id="6824350924364057989">Configurações</translation>
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6842136130964845393">Para garantir o acesso às suas senhas salvas, confirme sua identidade</translation>

@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">Veiligblaai</translation>
 <translation id="164269334534774161">Jy bekyk tans 'n vanlyn kopie van hierdie program vanaf <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
+<translation id="1644969410150602449">Bekyk jou webgeskiedenis hier</translation>
 <translation id="1657932388559784161">Bladinsigte se onderste blad is toegemaak</translation>
 <translation id="1670399744444387456">Basies</translation>
 <translation id="1671236975893690980">Aflaai hangende …</translation>
@@ -250,6 +251,7 @@
 <translation id="2364539095045928896">Maak Toe-knoppie om privaatheidkennisgewing van bladsyinsigtesentrum toe te maak.</translation>
 <translation id="2386938421315164605">Versteek en wys onderwerpe</translation>
 <translation id="2390510615457643724">Wil jy <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> weer aflaai?</translation>
+<translation id="2395004545133500011">Deel met opsommingblad oop</translation>
 <translation id="2410754283952462441">Kies 'n rekening</translation>
 <translation id="2414886740292270097">Donker</translation>
 <translation id="2421705177906985956">Geen werwe om op die oomblik te wys nie</translation>
@@ -364,6 +366,7 @@
 <translation id="2942036813789421260">Voorskou-oortjie is toegemaak</translation>
 <translation id="2946420957526726953">Dateer tans Chrome op om aan ander toestelle te koppel</translation>
 <translation id="2951071800649516099">Voeg bladsye by jou leeslys vir later</translation>
+<translation id="2956070106555335453">Opsomming</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ongeleesde bladsy}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ongeleesde bladsye}}</translation>
 <translation id="296370266220139811">Bespaar tyd en tik minder</translation>
 <translation id="2977350910003566746">Sorteer volgens laas oopgemaak</translation>
@@ -643,6 +646,7 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Boekmerk is in “<ph name="FOLDER_NAME" />” gestoor. Dit is net op hierdie toestel gestoor.}other{Boekmerke is in “<ph name="FOLDER_NAME" />” gestoor. Dit is net op hierdie toestel gestoor.}}</translation>
 <translation id="4484496141267039529">Geen verbinding nie. Probeer later weer.</translation>
 <translation id="4487967297491345095">Al Chrome se programdata sal permanent uitgevee word. Dit sluit in alle lêers, instellings, rekeninge, databasisse, ens.</translation>
+<translation id="4489640160615759754">Deel met opsommingblad</translation>
 <translation id="4494806687727322324">Die stoor van wagwoorde is deur jou administrateur aangeskakel</translation>
 <translation id="4508528996305412043">Stroomkaartkieslys is oop</translation>
 <translation id="4509501256689523862">Terwyl jy blaai, sal hierdie instelling, <ph name="BEGIN_LINK_1" />Advertensie-onderwerpe<ph name="END_LINK_1" />, jou <ph name="BEGIN_LINK_2" />webkoekie-instellings<ph name="END_LINK_2" />, en óf die werf wat jy tans bekyk advertensies personaliseer, bepaal of ’n advertensie wat jy sien, gepersonaliseer word</translation>
@@ -652,6 +656,7 @@
 <translation id="4521489764227272523">Die gekose data is van Chrome en jou gesinkroniseerde toestelle verwyder.
 
 Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en aktiwiteit van ander Google-dienste af, by <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Deel met opsommingblad toe</translation>
 <translation id="4523326818319942067">laaste uur</translation>
 <translation id="452750746583162491">Gaan jou gesinkroniseerde data na</translation>
 <translation id="4532845899244822526">Kies vouer</translation>
@@ -749,6 +754,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4950924971025849764">As jy by dieselfde Google-rekening aangemeld is, kan ander toestelle hierdie foon as 'n sekuriteitsleutel gebruik.</translation>
 <translation id="4957722034734105353">Kom meer te wete …</translation>
 <translation id="4961107849584082341">Vertaal hierdie bladsy in enige taal</translation>
+<translation id="496607651705915226">Dateer Google Play-dienste op om nuwe wagwoorde in jou Google-rekening te stoor en te gebruik</translation>
 <translation id="4971735654804503942">Vinniger, proaktiewe beskerming teen gevaarlike webwerwe, aflaaie en uitbreidings. Waarsku jou oor wagwoordskendings. Vereis dat blaaierdata na Google toe gestuur word.</translation>
 <translation id="497421865427891073">Gaan vorentoe</translation>
 <translation id="4987271110129728827">Kan nie daardie bladsy kry nie. Gaan jou spelling na of probeer ’n websoektog.</translation>

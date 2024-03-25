@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">मोबाइल नेटवर्क नाही</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> वर मिरर करत आहे</translation>
 <translation id="1885785240814121742">फिंगरप्रिंटने अनलॉक करा</translation>
+<translation id="1904997243703671177">तुम्ही ब्लूटूथ बंद कराल, तेव्हा पुढील गोष्टींच्या समावेशासह <ph name="DEVICE_COUNT" /> बाह्य डिव्हाइस तुमच्या <ph name="DEVICE_TYPE" /> वरून डिस्कनेक्ट होतील:</translation>
 <translation id="1908992311423394684">नवीन इंस्टॉल केले आहे</translation>
 <translation id="1915307458270490472">बंद करा</translation>
 <translation id="1918022425394817322">कॅमेरा सर्वात वरच्या उजव्या कोपर्‍यात स्नॅप केला आहे</translation>
@@ -258,7 +259,6 @@
 <translation id="2017998995161831444">Explore अ‍ॅपमध्ये "मदत" उघडा</translation>
 <translation id="2018630726571919839">मला एक विनोद सांगा</translation>
 <translation id="2021864487439853900">अनलॉक करण्यासाठी क्लिक करा</translation>
-<translation id="2023558322300866873">तुम्ही पॅकेट कॅप्चर कधीही थांबवू शकता</translation>
 <translation id="2034971124472263449">तरीही सेव्ह करा</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> शॉर्टकट सध्या बंद आहे</translation>
 <translation id="2049240716062114887">डेस्कचे नाव <ph name="DESK_NAME" /> वर बदलले होते</translation>
@@ -356,6 +356,7 @@
 <translation id="2482878487686419369">सूचना</translation>
 <translation id="2484513351006226581">कीबोर्डचा लेआउट स्विच करण्यासाठी <ph name="KEYBOARD_SHORTCUT" /> प्रेस करा.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> चे पूर्वावलोकन करा. अ‍ॅक्टिव्ह डेस्क.</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" हे <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) रेझोल्यूशनवर वर बदलले गेले आहे. कन्फर्म केल्याशिवाय, मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
 <translation id="2487915095798731898">सामील व्हा</translation>
 <translation id="2499445554382787206">डेस्‍क प्रोफाइल मेनू. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">स्टिकी की</translation>
@@ -699,7 +700,6 @@
 <translation id="380165613292957338">हाय, मला तुमची कशी मदत करता येईल?</translation>
 <translation id="3804737937830804242">कॅमेरा कोलॅप्स करा</translation>
 <translation id="3824784079442479685">हे कॅमेरा वापरण्याची परवानगी असलेल्या <ph name="APP_NAME" /> आणि सर्व अ‍ॅप्स व वेबसाइटना कॅमेराच्या अ‍ॅक्सेसची अनुमती देते. तुम्हाला वेब पेज रिफ्रेश करावे लागू शकते किंवा ॲप रीस्टार्ट करावे लागू शकते.</translation>
-<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" />पैकी <ph name="NUM_TURNED_IN" /> सबमिट केले, <ph name="NUM_GRADED" /> ना श्रेणी दिली</translation>
 <translation id="3826099427150913765">पासवर्ड वर स्विच करा</translation>
 <translation id="383058930331066723">बॅटरी सेव्हर मोड सुरू आहे</translation>
 <translation id="383629559565718788">कीबोर्ड सेटिंग्ज दाखवा</translation>
@@ -763,7 +763,6 @@
 <translation id="4066027111132117168">सुरू आहे, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">डाउनलोड पेज उघडा</translation>
 <translation id="4072264167173457037">मध्यम सिग्नल</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> सबमिट केली आहेत • <ph name="NUM_GRADED" /> ना श्रेणी दिली आहे</translation>
 <translation id="4086921558679520050">तुमच्या डिव्हाइसवर प्रत्यक्ष माइक स्विच सुरू करा</translation>
 <translation id="4101772068965291327">होमपेज उघडा</translation>
 <translation id="4112140312785995938">मागे शोधा</translation>
@@ -959,6 +958,7 @@
 <translation id="4813311884204119883">टॅब स्ट्रिपवरील रिक्त भागावर लिंक ड्रॅग करा</translation>
 <translation id="4814539958450445987">लॉगिन स्क्रीन</translation>
 <translation id="481455355267255546">पुढील</translation>
+<translation id="481749895090480684">टास्क सूची: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">कॅमेरा आणि मायक्रोफोन</translation>
 <translation id="482908187605862807">Play Store वर उपलब्ध असलेली ॲप्स</translation>
 <translation id="4831034276697007977">तुम्हाला ऑटोमेटिक क्लिक नक्की बंद करायचे आहे का?</translation>
@@ -1000,6 +1000,7 @@
 <translation id="4952936045814352993">अलार्मचे आवाज बंद केले असताना फोन शोधा उपलब्ध नाही</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> नुसार तुम्ही तुमचे <ph name="DEVICE_TYPE" /> हे मागील आवृत्तीवर स्विच करणे आवश्यक आहे. तुमचे डिव्हाइस रीसेट केले जाईल आणि सर्व डेटा हटवला जाईल.</translation>
 <translation id="4961318399572185831">स्क्रीन कास्ट करा</translation>
+<translation id="4964188651935955085">तुम्ही ब्लूटूथ बंद कराल, तेव्हा हे बाह्य डिव्हाइस तुमच्या <ph name="DEVICE_TYPE" /> वरून डिस्कनेक्ट होईल:</translation>
 <translation id="4966431234408005599">व्‍हॉल्‍यूम वाढवा</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ता <ph name="MINUTES" />मि <ph name="SECONDS" />से</translation>
 <translation id="4975771730019223894">अ‍ॅप बॅजिंग</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">म्यूट केलेले असताना तुम्ही बोलल्यास, तुम्हाला सूचित केले जाईल. ऑडिओ तुमच्या डिव्हाइसमध्ये कायम राहतो.</translation>
 <translation id="5077416371682039027">तुमच्या फोनमधील अलीकडील फोटो, मीडिया, सूचना आणि ॲप्स पाहणे सेट करा</translation>
+<translation id="5077936103761694531">रेझोल्यूशन कन्फर्म करायचे आहे का?</translation>
 <translation id="5078796286268621944">चुकीचा पिन</translation>
 <translation id="5083035541015925118">ctrl + alt + up arrow</translation>
 <translation id="5083553833479578423">असिस्टंटची आणखी वैशिष्ट्ये अनलॉक करा.</translation>
@@ -1676,6 +1678,7 @@
 <translation id="7647488630410863958">आपल्या सूचना पाहण्यासाठी डिव्हाइस अनलॉक करा</translation>
 <translation id="7649070708921625228">मदत</translation>
 <translation id="7654687942625752712">वाचिक फीडबॅक बंद करण्यासाठी दोन्ही व्हॉल्युम की पाच सेकंदांसाठी प्रेस करून धरून ठेवा.</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" हे <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) रेझोल्यूशनवर वर बदलले गेले आहे. पोर्ट बँडविड्थ मर्यादांमुळे, तुमचा डिस्प्ले <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) रेझोल्यूशनला सपोर्ट करू शकत नाही. कन्फर्म केल्याशिवाय, मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7659861092419699379">डेस्‍क आणि विंडो बंद केल्या आहेत</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" /> शी लिंक केलेल्या डिव्हाइसवर तुमचे <ph name="NAME" /> दिसेल</translation>
@@ -1766,6 +1769,7 @@
 <translation id="7945357288295809525">अ‍ॅक्सेसिबिलिटी सेटिंग्ज दाखवा, "<ph name="ENABLED_FEATURES" />" सुरू केले आहे.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ला तुमचे <ph name="DEVICE_NAME" /> वापरायचे आहे</translation>
 <translation id="7951630946012935453">कीबोर्ड डिम करा</translation>
+<translation id="7953994493035617347">नवीन रेझोल्यूशन कन्फर्म करायचे आहे का?</translation>
 <translation id="7963689218131240420">व्यत्यय आणू नका बंद आहे.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> कडून</translation>
 <translation id="7968693143708939792">फोल्डर निवडा…</translation>
@@ -1824,6 +1828,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> साठी माहिती डायलॉग उघडा</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> वापरत आहे</translation>
 <translation id="8185090165691050712">लॉक मोडचा आकार बदलण्यासाठी मेनू सुरू/बंद करा</translation>
+<translation id="8192727139462702395">तुम्ही ब्लूटूथ बंद कराल, तेव्हा ही बाह्य डिव्हाइस तुमच्या <ph name="DEVICE_TYPE" /> वरून डिस्कनेक्ट होतील:</translation>
 <translation id="8198456017687137612">टॅब कास्‍ट करत आहे</translation>
 <translation id="8200772114523450471">रेझ्युमे</translation>
 <translation id="8203795194971602413">राइट क्लिक</translation>

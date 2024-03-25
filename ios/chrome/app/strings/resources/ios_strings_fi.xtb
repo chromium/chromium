@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17.30</translation>
 <translation id="1209206284964581585">Piilota toistaiseksi</translation>
 <translation id="1219674500290482172">Internetyhteyttä ei voi muodostaa.</translation>
-<translation id="1226238226094914652">Salasanat kaikilla laitteillasi</translation>
 <translation id="122699739164161391">Sulje kaikki välilehdet</translation>
 <translation id="1227866575467023566">{count,plural, =1{Sivu lisätty lukulistalle tililläsi: {email}}other{{count} sivua lisätty lukulistalle tililläsi: {email}}}</translation>
 <translation id="1242044645101871359">Kirjaudu uudelleen</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Seuraa</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="164673457281113247">{count,plural, =1{Kirjanmerkki tallennettu}other{Kirjanmerkit tallennettu}}</translation>
-<translation id="165008673352427892">Uusi ominaisuus</translation>
 <translation id="1650222530560417226">Aloita JavaScript-konsolilokien ja kaikilla välilehdillä havaittujen virheiden kerääminen valitsemalla Kirjausten käynnistys. Lokeja kerätään (niitä säilytetään vain muistissa), kunnes suljet tämän sivun tai valitset Kirjauksen lopetus.</translation>
 <translation id="1653432787084483144">{count,plural, =1{Näppäimistön yläpuolella on saatavilla {count} tallennettu salasana.}other{Näppäimistön yläpuolella on saatavilla {count} tallennettua salasanaa.}}</translation>
 <translation id="1657011748321897393">Jakaminen epäonnistui, koska verkkoyhteyttä ei ole.</translation>
@@ -302,7 +300,6 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2556092377360758201">Ei suojausta (ei suositella)</translation>
 <translation id="2561375093019333908">AVAA</translation>
 <translation id="2562041823070056534">Lähetetään: <ph name="DEVICE_NAME" />…</translation>
-<translation id="2576499762020411840">Käytä ja tallenna Google-tilisi salasanoja</translation>
 <translation id="2577522251608256362">Naapurusto</translation>
 <translation id="2578571896248130439">Lähetä verkkosivu</translation>
 <translation id="2584132361465095047">Lisää tili…</translation>
@@ -948,7 +945,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5850913622988109693">Pakettien seurantavaihtoehdot</translation>
 <translation id="5854790677617711513">Yli 30 päivää vanhat</translation>
 <translation id="5857090052475505287">Uusi kansio</translation>
-<translation id="5857361196621230935">Lisää välilehti ryhmään</translation>
 <translation id="5857770089550859117">Synkronointi edellyttää tunnuslausetta.</translation>
 <translation id="5859715514067755465">Eteenpäin</translation>
 <translation id="5860033963881614850">Pois päältä</translation>
@@ -1159,7 +1155,6 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="6800349425672670802">Voit käyttää kaikkia avoimia välilehtiä Välilehtien vaihtajasta.</translation>
 <translation id="6807889908376551050">Näytä kaikki...</translation>
 <translation id="681368974849482173">Kohde luotiin</translation>
-<translation id="6822587385560699678">Kun asetus on päällä, salasanat tallennetaan tänne: <ph name="ACCOUNT" />. Kun asetus on pois päältä, salasanat tallennetaan vain tälle laitteelle.</translation>
 <translation id="6824350924364057989">Asetukset</translation>
 <translation id="6831043979455480757">Käännä</translation>
 <translation id="6842136130964845393">Todenna henkilöllisyytesi varmistaaksesi, että sinulla on aina pääsy tallennettuihin salasanoihisi</translation>

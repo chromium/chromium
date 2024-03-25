@@ -259,7 +259,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2017998995161831444">Abrir Ayuda en la aplicación Explorar</translation>
 <translation id="2018630726571919839">Cuéntame un chiste</translation>
 <translation id="2021864487439853900">Haz clic para desbloquear</translation>
-<translation id="2023558322300866873">Puedes detener la captura de paquetes en cualquier momento</translation>
 <translation id="2034971124472263449">Guardar de todos modos</translation>
 <translation id="204259843076055848">La combinación de teclas <ph name="SIX_PACK_KEY_NAME" /> está desactivada en este momento</translation>
 <translation id="2049240716062114887">Se ha cambiado el nombre del escritorio a <ph name="DESK_NAME" /></translation>
@@ -357,6 +356,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2484513351006226581">Pulsa <ph name="KEYBOARD_SHORTCUT" /> para cambiar el diseño del teclado.</translation>
 <translation id="2486214324139475545">Vista previa de <ph name="DESK_NAME" />. Escritorio activo.</translation>
+<translation id="2486405091093637109">Se ha cambiado la resolución de "<ph name="DISPLAY_NAME" />" a <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Si no confirmas, se restaurará la configuración anterior en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Unirse</translation>
 <translation id="2499445554382787206">Menú de perfil de escritorio (<ph name="DESK_NAME" />).</translation>
 <translation id="2501920221385095727">Teclas persistentes</translation>
@@ -701,7 +701,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="380165613292957338">Hola, ¿cómo puedo ayudarte?</translation>
 <translation id="3804737937830804242">Contraer cámara</translation>
 <translation id="3824784079442479685">Esto permite que accedan a la cámara <ph name="APP_NAME" /> y todas aplicaciones y sitios web con el permiso de cámara. Es posible que tengas que actualizar la página web o reiniciar la aplicación.</translation>
-<translation id="3825680296690914697">Se han entregado <ph name="NUM_TURNED_IN" /> de <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> y se han calificado <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Cambiar a contraseña</translation>
 <translation id="383058930331066723">Modo de ahorro de batería activado</translation>
 <translation id="383629559565718788">Mostrar configuración de teclado</translation>
@@ -765,7 +764,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4066027111132117168">Activado; <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Abrir la página Descargas</translation>
 <translation id="4072264167173457037">Señal media</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> presentadas • <ph name="NUM_GRADED" /> calificadas</translation>
 <translation id="4086921558679520050">Activa el interruptor físico del micrófono en tu dispositivo</translation>
 <translation id="4101772068965291327">Abrir página de inicio</translation>
 <translation id="4112140312785995938">Ir hacia atrás</translation>
@@ -1031,6 +1029,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Se te avisará si hablas y el micrófono está silenciado. El audio no saldrá de tu dispositivo.</translation>
 <translation id="5077416371682039027">Configurar la visualización de las fotos, el contenido multimedia, las notificaciones y las aplicaciones recientes de tu teléfono</translation>
+<translation id="5077936103761694531">¿Confirmar resolución?</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083035541015925118">Ctrl + Alt + flecha hacia arriba</translation>
 <translation id="5083553833479578423">Descubre más funciones del Asistente.</translation>
@@ -1680,6 +1679,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7647488630410863958">Desbloquear el dispositivo para ver las notificaciones</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7654687942625752712">Mantén pulsadas ambas teclas de volumen durante cinco segundos para inhabilitar los mensajes de voz.</translation>
+<translation id="7654916369822103315">Se ha cambiado la resolución de "<ph name="DISPLAY_NAME" />" a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Debido a las limitaciones del ancho de banda del puerto, tu pantalla no puede admitir una resolución de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Si no confirmas, se restaurará la configuración anterior en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659861092419699379">El escritorio y las ventanas se han cerrado</translation>
 <translation id="7660160718439869192">Tu dispositivo <ph name="NAME" /> aparecerá en los dispositivos vinculados con <ph name="EMAIL" /></translation>
@@ -1770,6 +1770,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7945357288295809525">Mostrar configuración de accesibilidad, "<ph name="ENABLED_FEATURES" />" habilitado.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> quiere usar tu <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Atenuar la luz del teclado</translation>
+<translation id="7953994493035617347">¿Confirmar la nueva resolución?</translation>
 <translation id="7963689218131240420">No molestar está desactivado.</translation>
 <translation id="7963992254934562106">Desde <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Seleccionar carpeta...</translation>

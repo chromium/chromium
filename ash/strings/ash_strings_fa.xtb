@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">عدم وجود شبکه تلفن همراه</translation>
 <translation id="1882897271359938046">بازتاب به <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">قفل‌گشایی با اثر انگشت</translation>
+<translation id="1904997243703671177">هرگاه بلوتوث را خاموش کنید، اتصال<ph name="DEVICE_COUNT" /> دستگاه خارجی از <ph name="DEVICE_TYPE" /> قطع خواهد شد:</translation>
 <translation id="1908992311423394684">نصب جدید</translation>
 <translation id="1915307458270490472">قطع تماس</translation>
 <translation id="1918022425394817322">دوربین به گوشه بالا سمت راست چسبید</translation>
@@ -258,7 +259,6 @@
 <translation id="2017998995161831444">باز کردن «راهنما» در برنامه «کاوش»</translation>
 <translation id="2018630726571919839">‏Tell me a joke (لطیفه‌ای بگو)</translation>
 <translation id="2021864487439853900">قفل‌گشایی با کلیک کردن</translation>
-<translation id="2023558322300866873">هرزمان خواستید می‌توانید ضبط بسته را متوقف کنید</translation>
 <translation id="2034971124472263449">درهرصورت ذخیره شود</translation>
 <translation id="204259843076055848">میان‌بر <ph name="SIX_PACK_KEY_NAME" /> درحال‌حاضر خاموش است</translation>
 <translation id="2049240716062114887">نام میزکار به <ph name="DESK_NAME" /> تغییر کرد</translation>
@@ -356,6 +356,7 @@
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="2484513351006226581">برای تغییر جانمایی صفحه‌کلید، <ph name="KEYBOARD_SHORTCUT" /> را فشار دهید.</translation>
 <translation id="2486214324139475545">پیش‌نمایش <ph name="DESK_NAME" />. میزکار فعال.</translation>
+<translation id="2486405091093637109">‫«<ph name="DISPLAY_NAME" />» به وضوح <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> هرتز) تغییر کرد. بدون تأیید کردن، تنظیمات قبلی <ph name="TIMEOUT_SECONDS" /> دیگر بازیابی خواهد شد.</translation>
 <translation id="2487915095798731898">پیوستن</translation>
 <translation id="2499445554382787206">منو نمایه میزکار. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">کلیدهای چسبان</translation>
@@ -699,7 +700,6 @@
 <translation id="380165613292957338">سلام، چه کمکی می‌توانم بکنم؟</translation>
 <translation id="3804737937830804242">جمع کردن دوربین</translation>
 <translation id="3824784079442479685">با این کار، دسترسی به دوربین برای <ph name="APP_NAME" /> و همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین مجاز می‌شود. ممکن است لازم باشد صفحه وب را بازآوری کنید یا برنامه را دوباره راه‌اندازی کنید.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> از <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> تحویل داده‌شده، <ph name="NUM_GRADED" /> نمرده داده‌شده</translation>
 <translation id="3826099427150913765">رفتن به گذرواژه</translation>
 <translation id="383058930331066723">حالت «بهینه‌سازی باتری» روشن است</translation>
 <translation id="383629559565718788">نمایش تنظیمات صفحه‌کلید</translation>
@@ -763,7 +763,6 @@
 <translation id="4066027111132117168">در، <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">باز کردن صفحه «بارگیری‌ها»</translation>
 <translation id="4072264167173457037">سیگنال متوسط</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> تحویل داده شده است • <ph name="NUM_GRADED" /> نمره داده شده است</translation>
 <translation id="4086921558679520050">کلید فیزیکی میکروفون را روی دستگاهتان روشن کنید</translation>
 <translation id="4101772068965291327">باز کردن صفحهٔ اصلی</translation>
 <translation id="4112140312785995938">رفتن به عقب</translation>
@@ -959,6 +958,7 @@
 <translation id="4813311884204119883">کشیدن پیوند به قسمتی خالی در نوار برگه</translation>
 <translation id="4814539958450445987">صفحه ورود به سیستم</translation>
 <translation id="481455355267255546">بعدی</translation>
+<translation id="481749895090480684">فهرست کارها: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">دوربین و میکروفون</translation>
 <translation id="482908187605862807">‏برنامه‌های موجود از «فروشگاه Play»</translation>
 <translation id="4831034276697007977">مطمئنید می‌خواهید کلیک‌های خودکار را خاموش کنید؟</translation>
@@ -1000,6 +1000,7 @@
 <translation id="4952936045814352993">وقتی صداهای هشدار غیرفعال هستند، «پیدا کردن تلفن» دردسترس نیست</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> از شما می‌خواهد <ph name="DEVICE_TYPE" /> را تنزل دهید. دستگاهتان بازنشانی و همه داده‌ها حذف خواهد شد.</translation>
 <translation id="4961318399572185831">فرستادن محتوای صفحه</translation>
+<translation id="4964188651935955085">هرگاه بلوتوث را خاموش کنید، اتصال این دستگاه خارجی به <ph name="DEVICE_TYPE" /> قطع خواهد شد:</translation>
 <translation id="4966431234408005599">افزایش صدا</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> س <ph name="MINUTES" /> د <ph name="SECONDS" /> ث</translation>
 <translation id="4975771730019223894">نشان‌گذاری برنامه</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">اگر هنگام بی‌صدا بودن صحبت کنید به شما اطلاع داده می‌شود. صدا هرگز از دستگاهتان خارج نمی‌شود.</translation>
 <translation id="5077416371682039027">راه‌اندازی مشاهده عکس‌ها، رسانه‌ها، اعلان‌ها، و برنامه‌های جدید تلفن</translation>
+<translation id="5077936103761694531">وضوح را تأیید می‌کنید؟</translation>
 <translation id="5078796286268621944">پین اشتباه</translation>
 <translation id="5083035541015925118">مهار + دگرساز + بالابر</translation>
 <translation id="5083553833479578423">باز کردن قفل ویژگی‌های بیشتری از «دستیار».</translation>
@@ -1676,6 +1678,7 @@
 <translation id="7647488630410863958">برای مشاهده اعلان‌هایتان، قفل دستگاه را باز کنید</translation>
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7654687942625752712">برای غیرفعال کردن بازخورد گفتاری، هردو کلید تنظیم صدا را پنج ثانیه فشار دهید و نگه‌دارید.</translation>
+<translation id="7654916369822103315">‫«<ph name="DISPLAY_NAME" />» به وضوح <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> هرتز) تغییر کرد. به‌دلیل محدودیت‌های پهنای باند درگاه، نمایشگرتان نمی‌تواند از وضوح <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> هرتز) پشتیبانی کند. بدون تأیید کردن، تنظیمات قبلی <ph name="TIMEOUT_SECONDS" /> دیگر بازیابی خواهد شد.</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7659861092419699379">میزکار و پنجره‌ها بسته شدند</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> شما در دستگاه‌های پیوندشده با <ph name="EMAIL" /> نشان داده خواهد شد</translation>
@@ -1766,6 +1769,7 @@
 <translation id="7945357288295809525">نمایش تنظیمات دسترس‌پذیری، «<ph name="ENABLED_FEATURES" />» فعال است.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> می‌خواهد از <ph name="DEVICE_NAME" /> شما استفاده کند</translation>
 <translation id="7951630946012935453">کم کردن نور صفحه‌کلید</translation>
+<translation id="7953994493035617347">وضوح جدید را تأیید می‌کنید؟</translation>
 <translation id="7963689218131240420">«مزاحم نشوید» خاموش است.</translation>
 <translation id="7963992254934562106">از <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">انتخاب پوشه…</translation>
@@ -1824,6 +1828,7 @@
 <translation id="8155628902202578800">باز کردن کادر گفتگوی اطلاعات برای <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">درحال استفاده از <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">روشن/ خاموش کردن منو برای تغییر اندازه ‏حالت قفل</translation>
+<translation id="8192727139462702395">هرگاه بلوتوث را خاموش کنید، اتصال این دستگاه‌های خارجی از <ph name="DEVICE_TYPE" /> قطع خواهد شد:</translation>
 <translation id="8198456017687137612">فرستادن برگه</translation>
 <translation id="8200772114523450471">ازسرگیری</translation>
 <translation id="8203795194971602413">کلیک راست</translation>

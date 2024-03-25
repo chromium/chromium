@@ -3524,6 +3524,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3660234220361471169">Nepatikima</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Rastas vienas esamas slaptažodis}one{Rastas {NUM_PASSWORDS} esamas slaptažodis}few{Rasti {NUM_PASSWORDS} esami slaptažodžiai}many{Rasta {NUM_PASSWORDS} esamo slaptažodžio}other{Rasta {NUM_PASSWORDS} esamų slaptažodžių}}</translation>
 <translation id="3662207097851752847">Patvirtinkite „Google“ paskyrą telefone</translation>
+<translation id="3663417513679360795">Daugiau informacijos apie įprasto išankstinio įkėlimo įjungimą</translation>
 <translation id="3664511988987167893">Plėtinio piktograma</translation>
 <translation id="3665100783276035932">Dauguma svetainių turėtų veikti, kaip numatyta</translation>
 <translation id="3665301845536101715">Atidaryti šoniniame skydelyje</translation>
@@ -3613,6 +3614,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3720543739123045680">Kituose skirtukuose procesas bendrai naudojamas su šiuo skirtuku, todėl kūrėjo įrankiai gali veikti ne taip, kaip tikimasi.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Jūs ir „Google“</translation>
+<translation id="3721178866505920080">Daugiau informacijos apie išplėstinio išankstinio įkėlimo įjungimą</translation>
 <translation id="3722108462506185496">Paleidžiant virtualaus įrenginio paslaugą įvyko klaida. Bandykite dar kartą.</translation>
 <translation id="3722624153992426516">Instrukcija „<ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />“ gauta</translation>
 <translation id="3724897774652282549">Formos pildymas</translation>
@@ -3730,6 +3732,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3798670284305777884">Garsiakalbis (vidinis)</translation>
 <translation id="3799128412641261490">Prieigos jungikliu nustatymai</translation>
 <translation id="3800828618615365228">„Google Chrome“ ir „Chrome“ OS papildomos sąlygos</translation>
+<translation id="3800898876950197674">Jei leidžiate įdiegti šį plėtinį, įveskite slaptažodį.</translation>
 <translation id="3802486193901166966">Šiam plėtiniui nereikia specialių leidimų ir jam nesuteikta papildoma svetainės prieiga</translation>
 <translation id="380329542618494757">Vardas ir pavardė</translation>
 <translation id="3803345858388753269">Vaizdo įrašo kokybė</translation>
@@ -4601,7 +4604,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4473996011558324141">numatytas laikas</translation>
 <translation id="4474155171896946103">Pažymėti visus skirtukus...</translation>
 <translation id="4475299370877036544">Šis veiksmas gali pažeisti jūsų organizacijos politiką</translation>
-<translation id="4475552974751346499">Ieškoti tarp atsisiustų elementų</translation>
 <translation id="4476590490540813026">Sportininkas</translation>
 <translation id="4476659815936224889">Jei norite nuskaityti šį kodą, galite naudoti QR skaitytuvo programą telefone arba tam tikras fotoaparato programas.</translation>
 <translation id="4477015793815781985">Naudokite „Ctrl“, „Alt“ arba ⌘</translation>
@@ -8022,6 +8024,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7180611975245234373">Atnaujinti</translation>
 <translation id="7180865173735832675">Tinkinti</translation>
 <translation id="7181117767881540376">&amp;Slėpti žymių juostą</translation>
+<translation id="7181329571386134105">Jei leidžiate vaikui (<ph name="CHILD_NAME" />) įdiegti būsimus plėtinius be jūsų patvirtinimo, atidarykite „Family Link“ programą įrenginyje ir atnaujinkite vaiko (<ph name="CHILD_NAME" />) „Google Chrome“ nustatymus.</translation>
 <translation id="7182063559013288142">Spartusis viešosios interneto prieigos taškas</translation>
 <translation id="7182791023900310535">Perkelti slaptažodį</translation>
 <translation id="718427252411067142">Jei nenorite, kad kiti asmenys naudotų jūsų slaptažodį, atidarykite programą ir pakeiskite slaptažodį</translation>
@@ -10820,6 +10823,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="973558314812359997">Pelės žymeklio dydis</translation>
 <translation id="975893173032473675">Kalba, į kurią verčiama</translation>
 <translation id="976499800099896273">Rodomas žodžio „<ph name="TYPED_WORD" />“, ištaisyto į žodį „<ph name="CORRECTED_WORD" />“, automatinio taisymo anuliavimo dialogo langas.  Paspauskite rodyklę aukštyn, kad pasiektumėte, arba „Escape“, jei norite nepaisyti.</translation>
+<translation id="976572010712028687">Patvirtinkite, kad esate vienas iš tėvų</translation>
 <translation id="978146274692397928">Pradinis skyrybos plotis yra „Viso dydžio“</translation>
 <translation id="978978324795544535">Dukart palieskite elementą, laikykite jį palietę antrą kartą ir vilkite, kad perkeltumėte</translation>
 <translation id="97905529126098460">Atšaukus šis langas užsidarys.</translation>

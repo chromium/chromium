@@ -228,6 +228,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1882814835921407042">Intet mobilnetværk</translation>
 <translation id="1882897271359938046">Spejler mod <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås op med fingeraftryk</translation>
+<translation id="1904997243703671177">Når du deaktiverer Bluetooth, afbryder <ph name="DEVICE_COUNT" /> eksterne enheder forbindelsen til din <ph name="DEVICE_TYPE" />, herunder:</translation>
 <translation id="1908992311423394684">Installeret for nylig</translation>
 <translation id="1915307458270490472">Læg på</translation>
 <translation id="1918022425394817322">Kameraet er fastgjort til hjørnet øverst til højre</translation>
@@ -258,7 +259,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2017998995161831444">Åbn "Hjælp" i appen Udforsk</translation>
 <translation id="2018630726571919839">Fortæl en vittighed</translation>
 <translation id="2021864487439853900">Klik for at låse op</translation>
-<translation id="2023558322300866873">Du kan til enhver tid afbryde registrering af pakker</translation>
 <translation id="2034971124472263449">Gem alligevel</translation>
 <translation id="204259843076055848">Genvejen for <ph name="SIX_PACK_KEY_NAME" /> er deaktiveret i øjeblikket</translation>
 <translation id="2049240716062114887">Navnet på skrivebordet blev ændret til <ph name="DESK_NAME" /></translation>
@@ -700,7 +700,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="380165613292957338">Hej, hvad kan jeg hjælpe med?</translation>
 <translation id="3804737937830804242">Minimer kameraet</translation>
 <translation id="3824784079442479685">Dette giver <ph name="APP_NAME" /> og alle apps og websites, der har kameratilladelsen, adgang til kameraet. Du skal muligvis opdatere websiden eller genstarte appen.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> ud af <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> er blevet afleveret, <ph name="NUM_GRADED" /> er blevet bedømt</translation>
 <translation id="3826099427150913765">Skift til adgangskode</translation>
 <translation id="383058930331066723">Tilstanden Batterisparefunktion er aktiveret</translation>
 <translation id="383629559565718788">Vis tastaturindstillinger</translation>
@@ -764,7 +763,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4066027111132117168">Til, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Åbn siden Downloads</translation>
 <translation id="4072264167173457037">Middel signal</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> er afleveret • <ph name="NUM_GRADED" /> er bedømt</translation>
 <translation id="4086921558679520050">Aktivér den fysiske mikrofonkontakt på din enhed</translation>
 <translation id="4101772068965291327">Åbn startsiden</translation>
 <translation id="4112140312785995938">Spol tilbage</translation>
@@ -960,6 +958,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4813311884204119883">Træk linket til et tomt område på fanelinjen</translation>
 <translation id="4814539958450445987">Loginskærm</translation>
 <translation id="481455355267255546">Næste</translation>
+<translation id="481749895090480684">Opgaveliste: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kameraet og mikrofonen</translation>
 <translation id="482908187605862807">Tilgængelige apps fra Play Butik</translation>
 <translation id="4831034276697007977">Er du sikker på, at du vil deaktivere automatiske klik?</translation>
@@ -1001,6 +1000,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4952936045814352993">Funktionen "Find telefon" er ikke tilgængelig, når alarmlyde er deaktiveret</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> kræver, at du skifter tilbage til en tidligere version af din <ph name="DEVICE_TYPE" />. Din enhed nulstilles, og alle data slettes.</translation>
 <translation id="4961318399572185831">Cast skærm</translation>
+<translation id="4964188651935955085">Når du deaktiverer Bluetooth, afbryder denne eksterne enhed forbindelsen til din <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Skru op for lyden</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> t., <ph name="MINUTES" /> min. og <ph name="SECONDS" /> sek.</translation>
 <translation id="4975771730019223894">Appbadges</translation>
@@ -1828,6 +1828,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8155628902202578800">Åbn dialogboks med oplysninger om <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Bruger <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Aktivér/deaktiver menuen til justering af størrelse i låst tilstand</translation>
+<translation id="8192727139462702395">Når du deaktiverer Bluetooth, afbryder disse eksterne enheder forbindelsen til din <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Caster fane</translation>
 <translation id="8200772114523450471">Genoptag</translation>
 <translation id="8203795194971602413">Højreklik</translation>

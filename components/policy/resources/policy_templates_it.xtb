@@ -177,6 +177,7 @@ Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="
 <translation id="1117535567637097036">I gestori di protocollo impostati tramite questa norma non sono utilizzati durante la gestione degli intent di Android.</translation>
 <translation id="1118093128235245168">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo USB collegato</translation>
 <translation id="111910763555783249">Impostazioni di notifica</translation>
+<translation id="1122068467107743258">Lavoro</translation>
 <translation id="1122089575901325963">L'impostazione di questo criterio consente di configurare il controller DTC (Diagnostics and Telemetry Controller) <ph name="WILCO_NAME" />, se disponibile sul dispositivo. Le dimensioni della configurazione non possono superare 1 MB (1.000.000 di byte) e il formato deve essere JSON. Il controller DTC <ph name="WILCO_NAME" /> è responsabile della gestione della configurazione. L'hash di crittografia consente di verificare l'integrità del download. La configurazione viene scaricata e memorizzata nella cache. Viene scaricata nuovamente ogni volta che l'URL o l'hash cambiano.
 
       Se il criterio viene configurato, gli utenti non possono modificarlo.</translation>
@@ -657,6 +658,7 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 <translation id="152657506688053119">Elenco di URL alternativi per il fornitore del servizio di ricerca predefinito</translation>
 <translation id="1530812829012954197">Visualizza sempre i seguenti schemi URL nel browser host</translation>
 <translation id="1534007181698071943">Consenti la disattivazione per impostazione predefinita dei gestori di eventi unload durante il ritiro</translation>
+<translation id="1539343118617844331">Scuola</translation>
 <translation id="1542491165152947087">Consenti agli utenti di attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci.</translation>
 <translation id="1542958897137600427">Attiva il provisioning dei certificati client</translation>
 <translation id="1550295162561011575">L'impostazione di questo criterio consente agli amministratori di configurare l'automazione per il lancio di app sui dispositivi <ph name="PRODUCT_NAME" />. Queste app possono essere lanciate al momento dell'accesso dell'utente oppure insieme da Avvio app.</translation>
@@ -1920,6 +1922,16 @@ Se il criterio non viene configurato, <ph name="POLICY_VALUE_VISIBLE" /> è la s
 <translation id="2489558694350871332">Consenti al dispositivo di eseguire macchine virtuali</translation>
 <translation id="2492240920793040106">Attiva la segnalazione di informazioni di sistema e contenuti della pagina per migliorare Navigazione sicura</translation>
 <translation id="2496180316473517155">Cronologia di navigazione</translation>
+<translation id="2497530682475109135">Questo criterio controlla un'etichetta utilizzata per identificare un profilo a cui è stato eseguito l'accesso. Questa etichetta verrà visualizzata in varie posizioni per aiutare gli utenti a identificare il profilo, ad esempio accanto all'icona del profilo nella barra degli strumenti.
+Questa etichetta verrà utilizzata anche come nome predefinito per i nuovi profili che possono essere modificati dagli utenti.
+
+Se questo criterio non viene configurato, verrà usata l'etichetta predefinita "Lavoro" o "Scuola".
+
+Se questo criterio viene impostato su "Etichetta il profilo come Lavoro (1)", verrà utilizzata l'etichetta "Lavoro".
+
+Se questo criterio viene impostato su "Etichetta il profilo come Scuola (2)", verrà usata l'etichetta "Scuola".
+
+Se configurato, il criterio <ph name="CUSTOM_PROFILE_LABEL_POLICY_NAME" /> sostituirà questo criterio.</translation>
 <translation id="2497751676088107779">Script utente</translation>
 <translation id="2497965601277442929">Non consentire agli utenti di attivare la Modalità solo HTTPS</translation>
 <translation id="249798396824949930"> Consente di stabilire se il browser può rilevare l'ambito dei criteri obbligatori su <ph name="MAC_OS_NAME" /> o meno.
@@ -2178,6 +2190,13 @@ precedentemente per chiamare questa API.</translation>
       Questo criterio si applica alla schermata di accesso. Vedi anche il criterio <ph name="SITE_PER_PROCESS_POLICY_NAME" /> che viene applicato alla sessione utente. È consigliabile impostare lo stesso valore per entrambi i criteri. Se i valori non corrispondono, può verificarsi un ritardo quando si accede a una sessione utente mentre viene applicato il valore specificato dai criteri relativi agli utenti.
       </translation>
 <translation id="2697717608663878828">Attiva l'esperimento TLS Encrypted ClientHello</translation>
+<translation id="2698555428858508691">Questo criterio controlla un'etichetta personalizzata utilizzata per identificare un profilo a cui è stato eseguito l'accesso.
+
+Se questo criterio non viene configurato e deve essere visualizzata un'etichetta, verrà utilizzata l'etichetta predefinita "Lavoro" o "Scuola".
+
+Questo criterio sostituirà il criterio <ph name="PROFILE_LABEL_POLICY_NAME" />.
+
+L'etichetta personalizzata non verrà tradotta.</translation>
 <translation id="2699836109975228367">Attiva l'audio in formato mono sulla schermata di accesso</translation>
 <translation id="2702023190395322609">Attiva consigli di contenuti multimediali</translation>
 <translation id="2702682139813393777">Forza l'avvio degli host di messaggistica nativi di Windows tramite cmd.exe</translation>
@@ -2521,6 +2540,7 @@ Il criterio <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> h
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
 <translation id="2987155890997901449">Attiva ARC</translation>
 <translation id="2987227569419001736">Controlla l'utilizzo dell'API Web Bluetooth</translation>
+<translation id="2989259649530222762">Disattiva la funzionalità di protezione dal fingerprinting.</translation>
 <translation id="2989404644164421834">Ricarica pagine</translation>
 <translation id="299446489108785864">Elenco di URL che specifica a quali URL verrà applicato il criterio <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Questo criterio non influisce sui valori di apertura automatica impostati dagli utenti.
 
@@ -4178,6 +4198,13 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
 Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agli utenti di connettersi esclusivamente ai servizi Bluetooth specificati, a meno che l'elenco non sia vuoto, nel qual caso è possibile utilizzare tutti i servizi. Gli ID univoci universali prenotati da Bluetooth SIG possono essere rappresentati come <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> o <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Gli ID univoci universali personalizzati possono essere rappresentati come <ph name="BLUETOOTH_CUSTOM_UUID" />. Gli ID univoci universali non distinguono tra maiuscole e minuscole. Se questo criterio non viene configurato, gli utenti possono connettersi a qualsiasi servizio Bluetooth.</translation>
 <translation id="4332177773549877617">Registra eventi per le installazioni di app Android</translation>
 <translation id="4333940819293342439">Frequenza di raccolta della telemetria di utilizzo delle app in millisecondi.</translation>
+<translation id="4340121900958123942">Imposta il livello di disponibilità del sistema di geolocalizzazione per <ph name="PRODUCT_OS_NAME" />.
+
+Si tratta di un livello di controllo aggiuntivo, che si trova sotto il livello di autorizzazione per le app e i siti web. Ad esempio, se questo criterio viene impostato su <ph name="GLS_BLOCKED" /> o <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, nessuna app o nessun sito web può risolvere la posizione, indipendentemente dalla rispettiva autorizzazione di accesso alla posizione. Tuttavia, se viene impostato su <ph name="GLS_ALLOWED" />, le app e i siti web possono rilevare singolarmente la posizione se dispongono dell'autorizzazione.
+
+Gli utenti non possono eseguire l'override della selezione dell'amministratore. Se il criterio non viene configurato, gli utenti possono personalizzare l'esperienza, ovvero possono modificare liberamente le impostazioni di geolocalizzazione del sistema e se il valore predefinito è <ph name="GLS_ALLOWED" />.
+
+Nota: questo criterio comporta il ritiro del criterio <ph name="ARC_GLS_POLICY_NAME" />. Inoltre, se questo criterio viene configurato, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> non influirà più sulla preferenza di posizione <ph name="ANDROID_NAME" /> su <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4341199399451274159">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> consente di specificare le codifiche dei caratteri supportate dal provider di ricerca. Le codifiche sono nomi di pagine codificati come UTF-8, GB2312 e ISO-8859-1. Vengono provate nell'ordine indicato.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> non viene configurato, viene utilizzato il valore UTF-8.</translation>
@@ -4650,21 +4677,6 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="DEVICE_SCREENSA
 <translation id="4726228171190098009">Non consentire al dispositivo di richiedere il Powerwash</translation>
 <translation id="4726895359147376813">Mappatura di ID permanenti a configurazioni delle VM</translation>
 <translation id="4733471537137819387">Norme relative all'autenticazione HTTP integrata.</translation>
-<translation id="4736591493257545761">Il modello URI del resolver DNS over HTTPS desiderato. Per specificare diversi resolver DNS over HTTPS, separa i modelli URI corrispondenti con gli spazi. Questo criterio è molto simile a <ph name="DOH_TEMPLATES_POLICY_NAME" /> e lo sostituirà se verrà specificato.
-A differenza del criterio <ph name="DOH_TEMPLATES_POLICY_NAME" />, questo criterio consente di specificare le informazioni sull'identità.
-Gli identificatori vengono specificati mediante segnaposto di variabili che vengono sostituiti con informazioni sull'utente o sul dispositivo in <ph name="PRODUCT_NAME" />. Gli identificatori non vengono inviati al server DNS come testo normale; vengono invece sottoposti ad hashing con l'algoritmo <ph name="SHA256" /> e con codifica esadecimale maiuscola.
-
-Gli identificatori vengono specificati tra parentesi graffe, precedute dal simbolo del dollaro. Per l'identificazione degli utenti, usa i seguenti segnaposto <ph name="USER_EMAIL" />, <ph name="USER_EMAIL_DOMAIN" /> e <ph name="USER_EMAIL_NAME" />. Per l'identificazione del dispositivo, usa i seguenti segnaposto <ph name="DEVICE_DIRECTORY_ID" />, <ph name="DEVICE_SERIAL_NUMBER" />, <ph name="DEVICE_ASSET_ID" /> e <ph name="DEVICE_ANNOTATED_LOCATION" />.
-
-Prima della versione 122, gli identificatori dei dispositivi non venivano sostituiti per gli utenti non affiliati. A partire dalla versione 122, i segnaposto dei dispositivi vengono sostituiti con il valore <ph name="DEVICE_NOT_MANAGED" />, che viene sottoposto ad hashing e con codifica esadecimale.
-
-Se il criterio <ph name="DOH_MODE_POLICY_NAME" /> viene impostato su <ph name="SECURE_DNS_MODE_SECURE" />, è necessario configurare questo criterio o il criterio <ph name="DOH_TEMPLATES_POLICY_NAME" /> e il campo non può essere lasciato vuoto.
-
-Se il criterio <ph name="DOH_MODE_POLICY_NAME" /> viene impostato su <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e questo criterio viene configurato, verranno usati i modelli URI specificati; se questo criterio non viene configurato, verranno usate le mappature impostate come hardcoded per cercare di eseguire l'upgrade del resolver DNS attuale dell'utente a un resolver DoH gestito dallo stesso fornitore.
-
-Se il modello URI contiene una variabile <ph name="HTTP_VARIABLE_DNS" />, per le richieste al resolver verrà usato il metodo <ph name="HTTP_METHOD_GET" />; in caso contrario verrà usato il metodo <ph name="HTTP_METHOD_POST" /> per le richieste.
-
-Dalla versione 114 in poi, il criterio <ph name="DOH_SALT_POLICY_NAME" /> è facoltativo se viene configurato questo criterio.</translation>
 <translation id="473673197014866318">Questo criterio consente di stabilire le impostazioni di gestione delle estensioni per <ph name="PRODUCT_NAME" />, incluse quelle controllate da criteri relativi alle estensioni esistenti. Il criterio prevale su tutti i criteri precedenti che potrebbero essere stati impostati.
 
 Questo criterio consente di mappare un ID estensione o un URL di aggiornamento soltanto alla relativa impostazione specifica. È possibile impostare una configurazione predefinita per l'ID speciale <ph name="DEFAULT_SCOPE" />, che verrà applicata a tutte le estensioni senza una configurazione personalizzata in questo criterio. Con un URL di aggiornamento, la configurazione verrà applicata alle estensioni con l'esatto URL di aggiornamento indicato nel file manifest dell'estensione (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Se il flag "override_update_url" viene impostato su true, l'estensione verrà installata e aggiornata usando l'URL di aggiornamento ("update") specificato nel criterio <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o nel campo "update_url" di questo criterio. Il flag "override_update_url" viene ignorato se il valore "update_url" è un URL del Chrome Web Store.
@@ -6113,6 +6125,7 @@ gli utenti non potranno modificarlo o eseguirne l'override.</translation>
       Se viene impostato su Disattivato, gli utenti non possono inviare dei feedback a Google.</translation>
 <translation id="5976636832661103220">Le impostazioni di F11 usano la scorciatoia che contiene il tasto di modifica Maiusc</translation>
 <translation id="5979376378555121803">Applicazione in hosting</translation>
+<translation id="5981932073854958705">Scegli se attivare o meno la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="5983274643567559194">L'impostazione di una scorciatoia per l'azione "Elimina" è disattivata.</translation>
 <translation id="5984099692320899605">Non utilizzare l'autenticazione NTLM</translation>
 <translation id="5984237109586500246">Accetta i contenuti web pubblicati con la tecnologia Signed HTTP Exchange</translation>
@@ -6336,6 +6349,13 @@ Il salvaschermo del dispositivo mostra le immagini a cui fa riferimento il crite
 <translation id="6181783961196084973">Il valore dell'opzione di attivazione/disattivazione della raccolta di attività nelle app. Se il criterio viene impostato su vero, l'attività nelle app dell'utente verrà segnalata al server per poter essere visualizzata nell'app <ph name="PRODUCT_NAME" /> del figlio e del genitore. Se il criterio viene impostato su falso, la funzionalità Limiti di utilizzo per app rimarrà disponibile, ma non verranno segnalati dati al server, che quindi non verranno visualizzati in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182206125906000651">Disattiva gli upgrade a HTTPS.</translation>
 <translation id="6182563940865917569">Consenti a Chrome di riprodurre automaticamente i contenuti multimediali</translation>
+<translation id="6187573347027372072">Avviso. Questo criterio è deprecato. Usa il criterio <ph name="CROS_GLS_POLICY_NAME" />. Ora in <ph name="PRODUCT_OS_NAME" /> è disponibile l'opzione di attivazione/disattivazione della posizione del sistema, che regola l'intero sistema, tra cui <ph name="ANDROID_NAME" />. Il pulsante di attivazione/disattivazione di <ph name="ANDROID_NAME" /> è ora in formato di sola lettura e riflette lo stato della posizione di <ph name="PRODUCT_OS_NAME" />.
+
+A meno che il criterio <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> sia impostato su <ph name="BLOCK_GEOLOCATION_SETTING" />, l'impostazione <ph name="GLS_ENABLED" /> attiva i Servizi di geolocalizzazione di Google durante la configurazione iniziale. Se il criterio è impostato su <ph name="GLS_DISABLED" /> o se non è configurato, i servizi di geolocalizzazione rimangono disattivati durante la configurazione.
+
+Se il criterio è impostato su <ph name="GLS_UNDER_USER_CONTROL" />, agli utenti viene chiesto se utilizzare o meno i Servizi di geolocalizzazione di Google. Se vengono attivati, le app <ph name="ANDROID_NAME" /> e <ph name="PRODUCT_OS_NAME" />, siti web e servizi di sistema utilizzano i servizi per cercare la posizione del dispositivo e inviare dati anonimi sulla posizione a Google.
+
+Dopo la configurazione iniziale, gli utenti possono attivare o disattivare i Servizi di geolocalizzazione di Google.</translation>
 <translation id="6187632100458475876">Impostazione dell'etichetta per l'avatar della barra degli strumenti gestita</translation>
 <translation id="6190367314942602985">Segnala informazioni di identificazione degli utenti</translation>
 <translation id="6191963383731098056">Questo criterio consente agli amministratori di configurare il colore del tema di <ph name="PRODUCT_NAME" />. La stringa di input deve essere una stringa di colore esadecimale valido corrispondente al formato "#RRGGBB".
@@ -6744,6 +6764,11 @@ Vedi anche il criterio <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 <translation id="6440051664870270040">Consenti ai siti di navigare e aprire popup contemporaneamente</translation>
 <translation id="6441781723322254041">Consenti cookie troncati</translation>
 <translation id="6446366416439249472">Disattiva la sincronizzazione Google Drive tramite reti cellulari</translation>
+<translation id="6447628816682315403">Un criterio per stabilire se i tuoi utenti possono attivare o disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla protezione dal fingerprinting.
+
+Se imposti questo criterio su Disattivato, l'impostazione della funzionalità di protezione dal fingerprinting verrà disattivata per i tuoi utenti.
+Se imposti questo criterio su Attivato, l'impostazione della funzionalità di protezione dal fingerprinting verrà attivata per i tuoi utenti.
+Se il criterio non viene configurato, gli utenti potranno attivare o disattivare la funzionalità di protezione dal fingerprinting tramite le impostazioni della UI. Lo stato predefinito sarà false o disattivato, il che significa che la funzionalità di protezione dal fingerprinting verrà disattivata.</translation>
 <translation id="6447948611083700881">Backup e ripristino disabilitati</translation>
 <translation id="6449476513004303784">Non consentire agli utenti di gestire i certificati
 </translation>
@@ -7614,6 +7639,7 @@ Se questo criterio viene impostato su <ph name="PROVISION_MANAGED_CLIENT_CERTIFI
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>
 <translation id="7045221780834308118">Se il criterio viene impostato su Enabled, le applicazioni web di terze parti possono usare l'API Desk per controllare le scrivanie di <ph name="PRODUCT_OS_NAME" />. Se il criterio non viene configurato o se viene disattivato, <ph name="DESK_API_NAME" /> non sarà disponibile. Il criterio verrà applicato soltanto sui dispositivi registrati.</translation>
 <translation id="7046113122884041950">Non consentire Smart Lock</translation>
+<translation id="7046226611117346112">Attiva la funzionalità di protezione dal fingerprinting.</translation>
 <translation id="7046997898355294677">Mostra le notifiche sulla privacy finché non vengono ignorate dagli utenti</translation>
 <translation id="7047495632846973438">Specifica se i criteri relativi alle autorizzazioni dell'acquisizione del display vengono controllati o saltati.</translation>
 <translation id="7055022222176591388">Non consentire il plug-in <ph name="FLASH_PLUGIN_NAME" /> obsoleto</translation>
@@ -7792,6 +7818,17 @@ certificato con un SPKI (SubjectPublicKeyInfo) corrispondente sarà ritenuto att
 
       Nota: il criterio non interessa Google Drive e la memoria interna. Gli utenti possono comunque accedere ai file salvati nella cartella Download.</translation>
 <translation id="7177857088692019405">Sblocco rapido</translation>
+<translation id="7179157174254421614">Se il criterio <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> non disattiva il rilevamento automatico del fuso orario, questo criterio consente di definire il metodo di rilevamento automatico del fuso orario, che non può essere cambiato dagli utenti.
+
+Se il criterio viene impostato su:
+ * <ph name="TIMEZONE_AUTOMATIC_DETECTION_DISABLED" />, il rilevamento automatico del fuso orario è sempre disattivato.
+ * <ph name="TTIMEZON_AUTOMATIC_DETECTION_IP_ONLY" />, il rilevamento automatico del fuso orario è sempre attivato usando il metodo Solo IP.
+ *<ph name="TIMEZONE_AUTOMATIC_DETECTION_SEND_WIFI_ACCESS_POINTS" />, il rilevamento automatico del fuso orario è sempre attivato tramite l'invio continuo dell'elenco dei punti di accesso Wi-Fi visibili al server dell'API Geolocation per rilevare il fuso orario con precisione.
+ *<ph name="TIMEZONE_AUTOMATIC_DETECTION_SEND_ALL_LOCATION_INFO" />, il rilevamento automatico del fuso orario è sempre attivato tramite l'invio continuo di dati sulla posizione (ad esempio, punti di accesso Wi-Fi, torri cellulari raggiungibili) a un server per rilevare il fuso orario con precisione.
+
+Se il criterio non viene configurato, viene impostato su Consenti agli utenti di decidere o su Nessuno, gli utenti possono gestire il rilevamento automatico del fuso orario usando i normali controlli in <ph name="OS_SETTINGS_URL" />.
+
+Nota: se utilizzi questo criterio per risolvere automaticamente il fuso orario, non dimenticare di impostare il criterio <ph name="CROS_GLS_POLICY_NAME" /> su <ph name="GLS_ALLOWED" /> o <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />.</translation>
 <translation id="7179187054027029272">Se il criterio è impostato su True o se non viene configurato, con le autorizzazioni adeguate, gli utenti, le app e le estensioni possono utilizzare la modalità a schermo intero (in cui vengono visualizzati solo i contenuti web).
 
       Se il criterio è impostato su False, gli utenti, le app e le estensioni non possono utilizzare la modalità a schermo intero.</translation>
@@ -8951,6 +8988,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy viene inizial
       Nota: se il componente aggiuntivo Supporto dei browser precedenti per <ph name="IE_PRODUCT_NAME" /> non è installato, questo criterio non ha effetto.</translation>
 <translation id="8179161412673077784">Impedisci ai siti con esperienze intrusive di aprirsi in nuove schede o finestre</translation>
 <translation id="8183108371184777472">Impedisci l'avvio della finestra del browser</translation>
+<translation id="8185312100223853315">Etichetta del profilo</translation>
 <translation id="8186911565834244165">Consenti il feedback degli utenti</translation>
 <translation id="8195133650230097559">Ignora richieste di wakelock per la gestione dell'alimentazione</translation>
 <translation id="8196558469954193908">Questo criterio consente la coalescenza di connessioni HTTP/2 quando sono in uso i certificati client. Per ottenere la coalescenza delle connessioni, il nome host della nuova potenziale connessione e il nome host della connessione esistente devono corrispondere a uno o più schemi descritti da questo criterio. Il criterio è un elenco di host che utilizzano il formato del filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />: "example.com" corrisponde a "example.com" e a tutti i sottodomini (ad esempio "sub.example.com"), mentre ".example.net" corrisponde esattamente a "example.net".
@@ -9989,6 +10027,7 @@ Nota: al momento verrà presa in considerazione solo la prima voce. Le estension
 <translation id="9020630127193895800">Colore della retroilluminazione della tastiera blu indaco</translation>
 <translation id="9031831501689819108">Attiva Supporto dei browser precedenti</translation>
 <translation id="9032595854515551464">Attiva il servizio <ph name="PRODUCT_NAME" /> V2 e avvia la scrivania remota all'accesso</translation>
+<translation id="903334067190374761">Imposta un'etichetta del profilo personalizzata</translation>
 <translation id="9034285085962866065">Consenti la personalizzazione delle scorciatoie di sistema</translation>
 <translation id="9035086760683255833">Consente di attivare la funzione di accessibilità di evidenziazione dell'elemento attivo tramite tastiera.
 

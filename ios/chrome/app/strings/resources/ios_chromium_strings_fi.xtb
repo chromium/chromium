@@ -248,7 +248,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="78025249032851484">Chromium on vanhentunut.</translation>
 <translation id="7859018312476869945">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chromium lähettää kirjoittamasi tekstin oletushakukoneellesi, niin saat parempia ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
 <translation id="786327964234957808">Muutoksen jälkeen synkronointi käyttää tilin <ph name="USER_EMAIL1" /> sijaan tiliä <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> hallitsee olemassa olevia Chromium-tietojasi. Tiedot poistetaan tältä laitteelta, mutta ne säilyvät tilillä <ph name="USER_EMAIL1" />.</translation>
-<translation id="7865408467687426957">Kun olet kirjautuneena Chromiumiin, tallennetut salasanat tallennetaan Google-tilillesi. Voit laittaa tämän pois päältä <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="7890287942691234100">Aloita Chromium-lukijan käyttö</translation>
 <translation id="7905064834449738336">Kun käytät salasanaa, Chromium varoittaa, jos se on julkaistu verkossa. Tätä varten salasanat ja käyttäjänimet salataan, joten kukaan (myöskään Google) ei voi lukea niitä.</translation>
 <translation id="7911732829884437264">Käytä Chromiumia oletuksena</translation>

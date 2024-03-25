@@ -344,6 +344,7 @@
 <translation id="677276454032249905">Закрыть Chrome?</translation>
 <translation id="6794858689789885890">Всегда удалять с устройства данные сайтов при закрытии Chrome</translation>
 <translation id="683440813066116847">Разрешить в Google Chrome Canary передачу входящего трафика по протоколу mDNS</translation>
+<translation id="684888714667046800">Не удалось подключиться к интернету. Если вы используете брандмауэр, убедитесь, что в белом списке есть файл <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="6851981911629679515">Включить дополнительную защиту движка JavaScript и WebAssembly в Chrome</translation>
 <translation id="6881299373831449287">Обновление Chrome</translation>
 <translation id="6885412569789873916">Приложения Chrome (бета)</translation>

@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="164269334534774161">您正在查看此網頁的離線版本 (建立時間：<ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">記錄</translation>
+<translation id="1644969410150602449">你可以在這裡查看網頁歷史記錄</translation>
 <translation id="1657932388559784161">閂咗頁面分析資料頁底面板</translation>
 <translation id="1670399744444387456">基本設定</translation>
 <translation id="1671236975893690980">正在等待下載…</translation>
@@ -250,6 +251,7 @@
 <translation id="2364539095045928896">關閉按鈕用於關閉頁面數據分析中心的私隱聲明。</translation>
 <translation id="2386938421315164605">隱藏和取消隱藏主題</translation>
 <translation id="2390510615457643724">要再次下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
+<translation id="2395004545133500011">打開咗分享摘要工作表</translation>
 <translation id="2410754283952462441">選擇帳戶</translation>
 <translation id="2414886740292270097">灰暗</translation>
 <translation id="2421705177906985956">目前沒有可顯示的網站</translation>
@@ -364,6 +366,7 @@
 <translation id="2942036813789421260">預覽分頁閂咗</translation>
 <translation id="2946420957526726953">正在更新 Chrome 以連接其他裝置</translation>
 <translation id="2951071800649516099">將網頁新增至閱讀清單，以便稍後瀏覽</translation>
+<translation id="2956070106555335453">摘要</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 個未讀網頁}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 個未讀網頁}}</translation>
 <translation id="296370266220139811">無需重複輸入網址，節省寶貴時間</translation>
 <translation id="2977350910003566746">根據上次打開嘅日期排序</translation>
@@ -643,6 +646,7 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{已將書籤儲存至「<ph name="FOLDER_NAME" />」，且只會儲存至此裝置。}other{已將書籤儲存至「<ph name="FOLDER_NAME" />」，且只會儲存至此裝置。}}</translation>
 <translation id="4484496141267039529">沒有連線，請稍後再試。</translation>
 <translation id="4487967297491345095">所有 Chrome 的應用程式資料將會永久刪除，包括所有檔案、設定、帳戶、資料庫等。</translation>
+<translation id="4489640160615759754">分享摘要工作表</translation>
 <translation id="4494806687727322324">管理員已開啟密碼儲存功能</translation>
 <translation id="4508528996305412043">資訊提供卡選單開咗</translation>
 <translation id="4509501256689523862">瀏覽時是否看到個人化廣告，取決於此設定、<ph name="BEGIN_LINK_1" />廣告主題<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie 設定<ph name="END_LINK_2" />、網站是否顯示個人化廣告</translation>
@@ -652,6 +656,7 @@
 <translation id="4521489764227272523">所選資料已從 Chrome 和已同步的裝置中移除。
 
 不過，您仍可前往 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 存取 Google 帳戶中保存的其他各種瀏覽紀錄，例如在其他 Google 服務中的搜尋和活動紀錄。</translation>
+<translation id="452279259461584111">閂咗分享摘要工作表</translation>
 <translation id="4523326818319942067">過去 1 小時</translation>
 <translation id="452750746583162491">查看您已同步的資料</translation>
 <translation id="4532845899244822526">選擇資料夾</translation>
@@ -749,6 +754,7 @@
 <translation id="4950924971025849764">登入同一個 Google 帳戶後，其他裝置便可使用此手機作為安全密鑰。</translation>
 <translation id="4957722034734105353">瞭解詳情…</translation>
 <translation id="4961107849584082341">將此網頁翻譯成任何語言</translation>
+<translation id="496607651705915226">如要在 Google 帳戶中儲存及使用新密碼，請更新 Google Play 服務。</translation>
 <translation id="4971735654804503942">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能。密碼外洩時系統會發出警告。需要將瀏覽資料傳送給 Google。</translation>
 <translation id="497421865427891073">往前</translation>
 <translation id="4987271110129728827">找不到該頁面。請檢查拼字，或嘗試執行網絡搜尋。</translation>

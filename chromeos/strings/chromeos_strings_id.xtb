@@ -587,6 +587,7 @@
 <translation id="458794348635939462">Gagal me-resolve semua host</translation>
 <translation id="4593212453765072419">Autentikasi Proxy dibutuhkan</translation>
 <translation id="4609350030397390689">Kurangi kecerahan keyboard</translation>
+<translation id="4617553623719764431">Cuaca tidak ditampilkan karena layanan tidak mengetahui lokasi Anda. Untuk menampilkan cuaca lokal, <ph name="BEGIN_LINK" />aktifkan Akses lokasi<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> dari <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas pencetakan.</translation>
 <translation id="463791356324567266">Membatalkan pemindaian ...</translation>
 <translation id="4646949265910132906">Koneksi Wi-Fi aman</translation>
@@ -809,6 +810,7 @@
 <translation id="5939518447894949180">Reset</translation>
 <translation id="594552776027197022">Buat pasangan kunci acak</translation>
 <translation id="5946538341867151940">Anda belum terhubung. Jika operator seluler Anda merekomendasikan APN khusus, masukkan informasi APN dengan memilih "+ APN Baru"</translation>
+<translation id="5947266287934282605">Jika hari terakhir suatu bulan jatuh sebelum hari ini, data akan direset pada hari terakhir bulan tersebut</translation>
 <translation id="5948460390109837040">anjing</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">koral</translation>
@@ -896,6 +898,7 @@
 <translation id="6412715219990689313">Keyboard bawaan</translation>
 <translation id="6417265370957905582">Asisten Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Tindakan ini memungkinkan layanan sistem yang memiliki izin untuk menggunakan lokasi Anda. Lokasi dapat menggunakan sumber seperti Wi-Fi, jaringan seluler, dan sensor untuk membantu memperkirakan lokasi perangkat Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Lemah (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Buka setelan akun</translation>
 <translation id="6462978824459367242">Tombol Tambahkan APN kini diaktifkan</translation>
@@ -934,6 +937,7 @@
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="6647510110698214773">Algoritme enkripsi</translation>
 <translation id="6650062777702288430">Beralih kana/alfanumerik</translation>
+<translation id="6657240842932274095">Izinkan layanan sistem menggunakan lokasi Anda?</translation>
 <translation id="6657585470893396449">Sandi</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="66621959568103627">merah muda koral</translation>

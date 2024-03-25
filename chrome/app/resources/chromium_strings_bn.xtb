@@ -330,6 +330,7 @@
 <translation id="67706546131546258">ফাইলটি বিপজ্জনক হতে পারে বলে Chromium এটি স্ক্যান করার সাজেশন দেয়।</translation>
 <translation id="6779406956731413166">ChromeOS সম্ভবত অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" /> দিয়ে তৈরি।</translation>
 <translation id="6847869444787758381">আপনার পাসওয়ার্ড কখনও চুরি হলে তা Chromium আপনাকে জানিয়ে দেবে</translation>
+<translation id="684888714667046800">ইন্টারনেটের সাথে কানেক্ট করা যায়নি। আপনি ফায়ারওয়াল ব্যবহার করলে, <ph name="PRODUCT_EXE_NAME" /> সাদাতালিকায় আছে কিনা দেখে নিন।</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium "<ph name="EXTENSION_NAME" />"-এ ম্যালওয়্যার আছে বলে খুঁজে পেয়েছে</translation>
 <translation id="6893813176749746474"> Chromium আপডেট করা হয়েছে৷ কিন্তু আপনি এটি অন্ততঃপক্ষে 30 দিন ব্যবহার করতে পারবেন না৷</translation>

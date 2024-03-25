@@ -3507,12 +3507,14 @@ Quer pará-lo?</translation>
 <translation id="3660234220361471169">Não fidedigno</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 palavra-passe existente encontrada}other{{NUM_PASSWORDS} palavras-passe existentes encontradas}}</translation>
 <translation id="3662207097851752847">Confirme a sua Conta Google no telemóvel</translation>
+<translation id="3663417513679360795">Mais informações sobre a ativação do pré-carregamento padrão</translation>
 <translation id="3664511988987167893">Ícone da extensão</translation>
 <translation id="3665100783276035932">A maioria dos sites deve funcionar conforme esperado</translation>
 <translation id="3665301845536101715">Abrir no painel lateral</translation>
 <translation id="3665589677786828986">O Chrome detetou que algumas das suas definições foram danificadas por outro programa e repôs as respetivas predefinições originais.</translation>
 <translation id="3665919494326051362">A versão atual é <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Descarregamento de depuração de NICs Intel WiFi</translation>
+<translation id="3666971425390608309">Transferência pausada: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Dispositivos de qualquer fornecedor</translation>
 <translation id="3670229581627177274">Ativar o Bluetooth</translation>
 <translation id="3670480940339182416">Os sites podem usar o otimizador do V8</translation>
@@ -3595,6 +3597,7 @@ Quer pará-lo?</translation>
 <translation id="3720543739123045680">Outros separadores partilham um processo com este separador, o que pode resultar numa experiência inesperada das DevTools.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Eu e a Google</translation>
+<translation id="3721178866505920080">Mais informações sobre a ativação do pré-carregamento alargado</translation>
 <translation id="3722108462506185496">Não foi possível iniciar o serviço da máquina virtual. Tente mais tarde.</translation>
 <translation id="3722624153992426516">Instrução <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> recebida</translation>
 <translation id="3724897774652282549">Preencha o formulário</translation>
@@ -3712,6 +3715,7 @@ Quer pará-lo?</translation>
 <translation id="3798670284305777884">Altifalante (interno)</translation>
 <translation id="3799128412641261490">Definições do acesso por comutador</translation>
 <translation id="3800828618615365228">Termos Adicionais do Google Chrome e Chrome OS</translation>
+<translation id="3800898876950197674">Para permitir esta extensão, introduza a palavra-passe.</translation>
 <translation id="3802486193901166966">Esta extensão não requer autorizações especiais e não tem acesso adicional a sites</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803345858388753269">Qualidade de vídeo</translation>
@@ -4583,7 +4587,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4473996011558324141">tempo estimado</translation>
 <translation id="4474155171896946103">Adicionar todos os separadores aos marcadores...</translation>
 <translation id="4475299370877036544">Esta ação pode violar as políticas da sua organização</translation>
-<translation id="4475552974751346499">Pesquisar transferências</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Para ler este código, pode utilizar uma aplicação de leitura de códigos QR no telemóvel ou algumas aplicações de câmara.</translation>
 <translation id="4477015793815781985">Inclua Ctrl, Alt ou ⌘.</translation>
@@ -7458,6 +7461,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6758056191028427665">Dê-nos a sua opinião acerca do nosso desempenho.</translation>
 <translation id="6759193508432371551">Reposição de dados de fábrica</translation>
 <translation id="6760354150216532978">Aviso: este site pode ver as edições que fez</translation>
+<translation id="6761209758867628753">Ferramenta: Ajuda-me a escrever</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Não são permitidos dados de sites no dispositivo</translation>
 <translation id="6762833852331690540">Ativado</translation>
@@ -7996,6 +8000,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7181117767881540376">Ocultar barra de marcadores</translation>
+<translation id="7181329571386134105">Para permitir que <ph name="CHILD_NAME" /> instale extensões futuras sem a sua aprovação, abra a app Family Link no seu dispositivo e atualize as definições do Google Chrome de <ph name="CHILD_NAME" />.</translation>
 <translation id="7182063559013288142">Zona Wi-Fi instantânea</translation>
 <translation id="7182791023900310535">Mova a sua palavra-passe</translation>
 <translation id="718427252411067142">Para impedir que outras pessoas usem a sua palavra-passe, abra a app para alterar a palavra-passe</translation>
@@ -10791,6 +10796,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="973558314812359997">Tamanho do rato</translation>
 <translation id="975893173032473675">Idioma de destino da tradução</translation>
 <translation id="976499800099896273">A caixa de diálogo de anulação da correção automática é apresentada para a palavra <ph name="TYPED_WORD" /> corrigida para <ph name="CORRECTED_WORD" />.  Prima a seta para cima para aceder, Esc para ignorar.</translation>
+<translation id="976572010712028687">Valide que é um dos pais</translation>
 <translation id="978146274692397928">A largura de pontuação inicial está completa</translation>
 <translation id="978978324795544535">Toque duas vezes num item, mantenha premido após o segundo toque e arraste o item para o mover</translation>
 <translation id="97905529126098460">Esta janela fecha-se depois de concluído o cancelamento.</translation>

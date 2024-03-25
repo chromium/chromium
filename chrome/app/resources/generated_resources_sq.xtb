@@ -1934,6 +1934,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2435248616906486374">Rrjeti u shkëput</translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
 <translation id="2436385001956947090">Kopjo &amp;lidhjen</translation>
+<translation id="2436746748253887661">Kjo i lejon shërbimet e sistemit që kanë leje që të përdorin vendndodhjen tënde. Vendndodhja mund të përdorë burime si Wi-Fi, rrjetet celulare dhe sensorët për të ndihmuar në përllogaritjen e vendndodhjes së pajisjes sate. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Nuk është lidhur me printerin</translation>
 <translation id="2439152382014731627">Rivendos fjalëkalimin e pajisjes <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> po ngarkohet</translation>
@@ -3509,6 +3510,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3665589677786828986">Chrome zbuloi se disa prej cilësimeve të tua ishin të dëmtuara nga një program tjetër dhe i rivendosi ato në vlerat fillestare.</translation>
 <translation id="3665919494326051362">Versioni aktual është <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Hedhja e të dhënave të korrigjimit për kontrolluesit NIC të WiFi të Intel</translation>
+<translation id="3666971425390608309">Shkarkimi u vendos në pauzë: <ph name="FILE_NAME" /></translation>
 <translation id="3670113805793654926">Pajisjet nga çdo shitës</translation>
 <translation id="3670229581627177274">Aktivizo Bluetooth-in</translation>
 <translation id="3670480940339182416">Sajtet mund të përdorin optimizuesin e V8</translation>
@@ -3659,6 +3661,8 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3765055238058255342">këtë lloj karte</translation>
 <translation id="3765246971671567135">Politika offline e modalitetit të demonstrimit nuk mund të lexohej.</translation>
 <translation id="3765696567014520261">Sajtet nuk mund të përdorin kukit e tua për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, p.sh. për të personalizuar reklamat. Veçoritë në disa sajte mund të mos funksionojnë</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Shërbimi i vendndodhjes i Google përdor burime të tilla si Wi-Fi, rrjetet celulare dhe sensorët për të ndihmuar në përllogaritjen e vendndodhjes së pajisjes sate.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Mund ta çaktivizosh vendndodhjen e ChromeOS dhe Android në pajisjen tënde në çdo kohë duke shkuar te "Cilësimet &gt; Privatësia dhe siguria &gt; Kontrollet e privatësisë &gt; Qasja te vendndodhja". Mund të çaktivizosh gjithashtu përdorimin e Wi-Fi, rrjeteve celulare dhe sensorëve për vendndodhjen e Android duke çaktivizuar "Përmirëso saktësinë e vendndodhjes" te "Cilësimet e përparuara të vendndodhjes" në të njëjtën meny.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Mëso më shumë rreth Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Për momentin, mund t'i ndash fjalëkalimet vetëm me anëtarët e familjes. <ph name="BEGIN_LINK" />Fto anëtarët e familjes<ph name="END_LINK" /> për t'u bashkuar në grupin tënd dhe për të përfituar më shumë nga produktet dhe abonimet e tua nëpër Google.</translation>
@@ -3706,6 +3710,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3798670284305777884">Altoparlanti (i brendshëm)</translation>
 <translation id="3799128412641261490">Cilësimet e qasjes me çelës</translation>
 <translation id="3800828618615365228">Kushtet shtesë të Google Chrome dhe ChromeOS</translation>
+<translation id="3800898876950197674">Për ta lejuar këtë shtesë, fut fjalëkalimin.</translation>
 <translation id="3802486193901166966">Kjo shtesë nuk kërkon leje të veçanta dhe nuk ka nuk ka qasje shtesë në sajt</translation>
 <translation id="380329542618494757">Emri</translation>
 <translation id="3803345858388753269">Cilësia e videos</translation>
@@ -4324,6 +4329,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4278779213160967034">Ky proces mund të zgjasë disa minuta. Skedarët po shkarkohen.</translation>
 <translation id="4279129444466079448">Mund të instalosh deri në <ph name="PROFILE_LIMIT" /> profile të kartës eSIM në këtë pajisje. Për të shtuar një profil tjetër, në fillim hiq një profil ekzistues.</translation>
 <translation id="4280325816108262082">Pajisja shkëputet automatikisht kur fiket ose kur nuk përdoret</translation>
+<translation id="4281637354026226955">Jepu aplikacioneve dhe shërbimeve të ChromeOS dhe Android leje për të përdorur vendndodhjen e pajisjes sate. Google mund të mbledhë të dhëna të vendndodhjes në mënyrë periodike dhe t'i përdorë ato në mënyrë anonime për të përmirësuar saktësinë e vendndodhjes dhe shërbimet e bazuara te vendndodhja.</translation>
 <translation id="4281844954008187215">Kushtet e shërbimit</translation>
 <translation id="4281849573951338030">Personalizo butonat e stiloilapsit</translation>
 <translation id="4282196459431406533">Smart Lock është i aktivizuar</translation>
@@ -4576,7 +4582,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4473996011558324141">po përllogaritet koha</translation>
 <translation id="4474155171896946103">Regjistroji të gjithë skedat në faqeshënues...</translation>
 <translation id="4475299370877036544">Ky veprim mund të shkelë politikat e organizatës sate</translation>
-<translation id="4475552974751346499">Kërko për shkarkimet</translation>
 <translation id="4476590490540813026">Atlete</translation>
 <translation id="4476659815936224889">Për ta skanuar këtë kod, mund të përdorësh një aplikacion skaneri të kodeve QR në telefon ose disa aplikacione për kamera.</translation>
 <translation id="4477015793815781985">Përfshi Ctrl, Alt ose ⌘</translation>
@@ -6204,6 +6209,8 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (parazgjedhja e sistemit)</translation>
 <translation id="5776450228446082914">Lista e sajteve që mund të hapen në secilindo shfletues.</translation>
 <translation id="5776571780337000608">Tani mund të hapësh dhe të modifikosh skedarët e mbështetur me këtë aplikacion nga shfletuesi yt i skedarëve ose aplikacione të tjera. Për të kontrolluar se cilët skedarë hapin këtë aplikacion si parazgjedhje, <ph name="BEGIN_LINK" />mëso se si të caktosh aplikacionet e parazgjedhura në pajisjen tënde<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">Shërbimi i vendndodhjes i Google e përmirëson saktësinë e vendndodhjes duke përdorur Wi‑Fi, rrjetet celulare dhe sensorët për të ndihmuar në përllogaritjen e vendndodhjes sate. Google mund të mbledhë në mënyrë periodike të dhëna të vendndodhjes dhe t'i përdorë këto të dhëna në mënyrë anonime për të përmirësuar saktësinë e vendndodhjes dhe shërbimet e bazuara te vendndodhja.
+    Çaktivizimi i kësaj do të sjellë si rezultat që Android të përdorë vetëm adresën IP për vendndodhjen. Kjo mund të ketë ndikim te saktësia e vendndodhjes së përdorur nga aplikacionet si Maps.</translation>
 <translation id="5778491106820461378">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar nga <ph name="LINK_BEGIN" />Cilësimet<ph name="LINK_END" />. Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen për të gjitha llogaritë. Nëse nuk dëshiron që sajtet ose aplikacionet të kenë qasje tek informacionet e llogarisë sate, mund të identifikohesh në <ph name="DEVICE_TYPE" /> si vizitor</translation>
 <translation id="5780011244986845107">Dosja që zgjodhe përmban skedarë delikatë. Je i sigurt që dëshiron t'i japësh "<ph name="APP_NAME" />" qasje të përhershme leximi në këtë dosje?</translation>
 <translation id="5780973441651030252">Përparësia e procesit</translation>
@@ -6289,6 +6296,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5836999627049108525">Gjuha nga e cila do të përkthesh</translation>
 <translation id="583756221537636748">Kasa</translation>
 <translation id="5840680448799937675">Skedarët do të ndahen gjithmonë offline</translation>
+<translation id="5841167715783969407">Brezi orar automatik i bazuar në Wi-Fi ose në rrjetet celulare</translation>
 <translation id="5841270259333717135">Konfiguro eternetin</translation>
 <translation id="5842497610951477805">Aktivizo Bluetooth-in</translation>
 <translation id="5844284118433003733">Kur je i identifikuar, këto të dhëna lidhen me "Llogarinë tënde të Google" për të të mbrojtur nëpër shërbimet e Google, p.sh. duke rritur mbrojtjen në Gmail pas një incidenti sigurie.</translation>
@@ -6738,6 +6746,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6180510783007738939">Vegla e vijës</translation>
 <translation id="6180550893222597997">Cilin çelës kalimi dëshiron të përdorësh për <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Shkarkimi u bllokua</translation>
+<translation id="6183369864942961155">Tema automatike e ndriçuar/errët</translation>
 <translation id="6184099524311454384">Kërko skedat</translation>
 <translation id="6184868291074982484">Chrome i kufizon automatikisht kukit e palëve të treta</translation>
 <translation id="6185132558746749656">Vendndodhja e pajisjes</translation>
@@ -7140,6 +7149,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6513247462497316522">Google Chrome do të përdorë të dhënat celulare nëse nuk je i lidhur me një rrjet tjetër.</translation>
 <translation id="6514010653036109809">Pajisja e disponueshme:</translation>
 <translation id="6517227424170598783">Të hiqet shkurtorja "<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />"?</translation>
+<translation id="6517382055541687102">Pajisja e zgjedhur u ndryshua në <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Skedarët e tu te "Disku im" sinkronizohen automatikisht te Chromebook, kështu që mund të qasesh tek ata pa një lidhje interneti. Kjo do të përdorë rreth <ph name="REQUIRED_SPACE" />. Aktualisht ke <ph name="FREE_SPACE_AVAILABLE" /> në dispozicion.</translation>
 <translation id="6517709704288360414">Pajisja jote mund të mos funksionojë siç duhet dhe mund të kesh probleme me sigurinë dhe performancën. Çaktivizimi i përditësimeve mund të ketë ndikim edhe në të drejtën tënde për të ngritur pretendime ligjore nëse ke ndonjë problem.</translation>
 <translation id="6518014396551869914">Kopj&amp;o imazhin</translation>
@@ -7396,6 +7406,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6713441551032149301">Mbaj shtypur tastin e nisësit për të ndryshuar mes tasteve të funksioneve dhe tasteve të rreshtit të sipërm të sistemit</translation>
 <translation id="6713668088933662563">Mos ofro asnjëherë përkthimin nga këto gjuhë</translation>
 <translation id="6715803357256707211">Ndodhi një gabim gjatë instalimit të aplikacionit tënd në Linux. Kliko mbi njoftim për detaje.</translation>
+<translation id="6716049856796700977">Asgjë nuk mund ta përdorë vendndodhjen tënde. Megjithatë, vendndodhja jote mund të jetë ende e dukshme për aplikacionet dhe uebsajtet nëpërmjet adresës sate IP. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Lidhja e rrjetit humbi. Kontrollo lidhjen e rrjetit ose provo një rrjet tjetër Wi-Fi.</translation>
 <translation id="6718849325281682232">Ngjyrat e temës të Chrome janë rifreskuar për të funksionuar më mirë për të gjithë, pavarësisht nëse je në modalitetin e errët ose të ndriçuar</translation>
 <translation id="671928215901716392">Ekrani i kyçjes</translation>
@@ -7444,6 +7455,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6758056191028427665">Na trego se si po ecim.</translation>
 <translation id="6759193508432371551">Rivendosje në gjendje fabrike</translation>
 <translation id="6760354150216532978">Paralajmërim: ky sajt mund të shikojë modifikimet që ti bën</translation>
+<translation id="6761209758867628753">Vegla: Më ndihmo të shkruaj</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Të dhënat e sajtit në pajisje nuk lejohen</translation>
 <translation id="6762833852331690540">Aktiv</translation>
@@ -7981,6 +7993,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7180611975245234373">Rifresko</translation>
 <translation id="7180865173735832675">Personalizo</translation>
 <translation id="7181117767881540376">&amp;Fshih shiritin e faqeshënuesve</translation>
+<translation id="7181329571386134105">Për të lejuar që <ph name="CHILD_NAME" /> të instalojë shtesat në të ardhmen pa miratimin tënd, hap aplikacionin Family Link në pajisjen tënde dhe përditëso cilësimet e Google Chrome për <ph name="CHILD_NAME" />.</translation>
 <translation id="7182063559013288142">Zona e qasjes për internet në çast</translation>
 <translation id="7182791023900310535">Lëviz fjalëkalimin</translation>
 <translation id="718427252411067142">Për t'i ndaluar të tjerët që të mos përdorin fjalëkalimin tënd, hap aplikacionin për të ndryshuar fjalëkalimin</translation>
@@ -8377,6 +8390,8 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7478658909253570368">Mos lejo që sajtet të lidhen me portat seriale</translation>
 <translation id="7479221278376295180">Përmbledhja e përdorimit të hapësirës ruajtëse</translation>
 <translation id="747981547666531654">Lidhur me pajisjet me Bluetooth të emërtuara <ph name="FIRST_DEVICE" /> dhe <ph name="SECOND_DEVICE" /></translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Shërbimi i vendndodhjes i Google përdor burime të tilla si Wi-Fi, rrjetet celulare dhe sensorët për të ndihmuar në përllogaritjen e vendndodhjes së kësaj pajisjeje.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Mund ta çaktivizosh vendndodhjen e ChromeOS dhe Android në këtë pajisje në çdo kohë duke shkuar te "Cilësimet &gt; Privatësia dhe siguria &gt; Kontrollet e privatësisë &gt; Qasja te vendndodhja". Mund të çaktivizosh gjithashtu përdorimin e Wi-Fi, rrjeteve celulare dhe sensorëve për vendndodhjen e Android duke çaktivizuar "Përmirëso saktësinë e vendndodhjes" te "Cilësimet e përparuara të vendndodhjes" në të njëjtën meny.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Përpara</translation>
 <translation id="7481358317100446445">Gati</translation>
 <translation id="748138892655239008">Kufizimet bazë të certifikatës</translation>
@@ -8468,6 +8483,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7552846755917812628">Provo këshillat e mëposhtme:</translation>
 <translation id="7553012839257224005">Po kontrollon kontejnerin e Linux</translation>
 <translation id="7553242001898162573">Fut fjalëkalimin</translation>
+<translation id="7553487223484420820">Aplikacionet, uebsajtet dhe shërbimet e sistemit me lejen për vendndodhjen mund të përdorin vendndodhjen tënde. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">Administratori yt nuk e lejon këtë gjuhë</translation>
 <translation id="7554791636758816595">Skedë e re</translation>
 <translation id="7556033326131260574">Smart Lock nuk mund ta verifikonte llogarinë. Shkruaj fjalëkalimin tënd për të hyrë.</translation>
@@ -9383,6 +9399,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8224427620313426549">Llogaria jote e <ph name="DOMAIN_LINK" /> nuk do të fshihet</translation>
 <translation id="8225046344534779393">Kontrollo lidhjen me internetin</translation>
 <translation id="8225265270453771718">Ndaj një dritare të aplikacionit</translation>
+<translation id="8225516926291976401">Vetëm shërbimet e sistemit mund ta përdorin vendndodhjen tënde. Megjithatë, vendndodhja jote mund të jetë ende e dukshme për aplikacionet dhe uebsajtet nëpërmjet adresës sate IP. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Ndalohet</translation>
 <translation id="8226619461731305576">Vendos në radhë</translation>
 <translation id="8227119283605456246">Bashkëngjit skedarin</translation>
@@ -9819,6 +9836,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8552102814346875916">Ruaj te lista "Mbaji gjithmonë aktive këto sajte"</translation>
 <translation id="8553342806078037065">Menaxho kontaktet e tjera</translation>
 <translation id="8554899698005018844">Nuk ka gjuhë</translation>
+<translation id="8555444629041783356">Programi automatik i perëndimit të diellit</translation>
 <translation id="855604308879080518">Lejo që aplikacionet për Android të kenë qasje në pajisjet USB në këtë Chromebook. Do të kërkohet leje sa herë që lidh një pajisje USB. Aplikacionet individuale për Android do të kërkojnë leje shtesë.</translation>
 <translation id="8557022314818157177">Vazhdo të prekësh çelësin e sigurisë deri sa gjurma e gishtit tënd të regjistrohet</translation>
 <translation id="8557180006508471423">Aktivizo "Google Chrome" te "Shërbimet e vendndodhjes" në kompjuterin tënd Mac</translation>
@@ -10769,6 +10787,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="973558314812359997">Madhësia e kursorit të miut</translation>
 <translation id="975893173032473675">Gjuha në të cilën do të përkthehet</translation>
 <translation id="976499800099896273">Dialogu i zhbërjes së korrigjimit automatik shfaqet për <ph name="TYPED_WORD" /> të korrigjuar në <ph name="CORRECTED_WORD" />.  Shtyp shigjetën lart për t'iu qasur, Escape për ta shpërfillur.</translation>
+<translation id="976572010712028687">Verifiko që je prind</translation>
 <translation id="978146274692397928">Gjerësia fillestare e pikësimit është e plotë</translation>
 <translation id="978978324795544535">Trokit dy herë te një artikull, mbaje shtypur në trokitjen e dytë dhe më pas zvarrite artikullin për ta zhvendosur</translation>
 <translation id="97905529126098460">Kjo dritare do të mbyllet pas përfundimit të anulimit.</translation>

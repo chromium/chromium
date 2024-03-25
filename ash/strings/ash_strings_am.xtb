@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">ምንም ተንቀሳቃሽ ስልክ አውታረ መረብ የለም</translation>
 <translation id="1882897271359938046">ወደ <ph name="DISPLAY_NAME" /> በማንጸባረቅ ላይ</translation>
 <translation id="1885785240814121742">በጣት አሻራ ይክፈቱ</translation>
+<translation id="1904997243703671177">የሚከተሉትን ጨምሮ ብሉቱዝን ሲያጠፉ <ph name="DEVICE_COUNT" /> ውጫዊ መሣሪያዎች ከእርስዎ <ph name="DEVICE_TYPE" /> ጋር ያላቸውን ግንኙነት ያቋርጣሉ፦</translation>
 <translation id="1908992311423394684">አዲስ ጭነት</translation>
 <translation id="1915307458270490472">ዝጋ</translation>
 <translation id="1918022425394817322">ካሜራ ላይኛው ቀኝ ጥግ ላይ ገጥሟል</translation>
@@ -258,7 +259,6 @@
 <translation id="2017998995161831444">በአሰሳ መተግበሪያው ውስጥ «እገዛ» ይክፈቱ</translation>
 <translation id="2018630726571919839">ቀልድ ንገረኝ</translation>
 <translation id="2021864487439853900">ለመክፈት ጠቅ ያድርጉ</translation>
-<translation id="2023558322300866873">በማንኛውም ጊዜ የፓኬት ቀረጻን ማቆም ይችላሉ</translation>
 <translation id="2034971124472263449">ቢሆንም አስቀምጥ</translation>
 <translation id="204259843076055848">አሁን ላይ የ<ph name="SIX_PACK_KEY_NAME" /> አቋራጭ ጠፍቷል</translation>
 <translation id="2049240716062114887">የዴስክ ስም ወደ <ph name="DESK_NAME" /> ተለውጧል</translation>
@@ -356,6 +356,7 @@
 <translation id="2482878487686419369">ማስታወቂያዎች</translation>
 <translation id="2484513351006226581">የቁልፍ ሰሌዳ አቀማመጥን ለመቀየር <ph name="KEYBOARD_SHORTCUT" />ን ይጫኑ</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> ቅድመ ዕይታ። ገቢር ዴስክ።</translation>
+<translation id="2486405091093637109">«<ph name="DISPLAY_NAME" />» ወደ የ<ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ጥራት ተቀይሯል። ሳይረጋገጥ ቀዳሚዎቹ ቅንብሮች በ<ph name="TIMEOUT_SECONDS" /> ውስጥ ወደነበሩበት ይመለሳሉ</translation>
 <translation id="2487915095798731898">ተቀላቀል</translation>
 <translation id="2499445554382787206">የዴስክ መገለጫ ምናሌ። <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ተጣባቂ ቁልፎች</translation>
@@ -699,7 +700,6 @@
 <translation id="380165613292957338">ጤና ይስጥልኝ፣ እንዴት ልርዳዎት?</translation>
 <translation id="3804737937830804242">ካሜራ ሰብስብ</translation>
 <translation id="3824784079442479685">ይህ ለ<ph name="APP_NAME" /> እና የካሜራ ፈቃድ ላላቸው ሁሉም መተግበሪያዎች እና ድር ጣቢያዎች የካሜራ መዳረሻ ይፈቅዳል። ድረ-ገጹን ማደስ ወይም መተግበሪያውን እንደገና ማስጀመር ሊኖርብዎት ይችላል።</translation>
-<translation id="3825680296690914697">ከ<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ውስጥ<ph name="NUM_TURNED_IN" /> ገብተዋል፣ <ph name="NUM_GRADED" /> ደረጃ ተሰጥቷቸዋል</translation>
 <translation id="3826099427150913765">ወደ የይለፍ ቃል ቀይር</translation>
 <translation id="383058930331066723">የባትሪ ኃይል ቆጣቢ ሁነታ በርቷል</translation>
 <translation id="383629559565718788">የቁልፍ ሰሌዳ ቅንብሮችን አሳይ</translation>
@@ -763,7 +763,6 @@
 <translation id="4066027111132117168">በ<ph name="REMAINING_TIME" /> ላይ</translation>
 <translation id="4069532248403319695">የውርዶች ገጽን ይክፈቱ</translation>
 <translation id="4072264167173457037">መካከለኛ ሲግናል</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ገብተዋል • <ph name="NUM_GRADED" /> ውጤት ተሰጥቷቸዋል</translation>
 <translation id="4086921558679520050">በመሣሪያዎ ላይ አካላዊ ማይክሮፎን መቀየርን ያብሩ</translation>
 <translation id="4101772068965291327">መነሻ ገጽን ይክፈቱ</translation>
 <translation id="4112140312785995938">ወደኋላ ፈልግ</translation>
@@ -959,6 +958,7 @@
 <translation id="4813311884204119883">አገናኝን በትሩ ድርድር ላይ ወደ ባዶ ቦታ ይጎትቱ</translation>
 <translation id="4814539958450445987">በመለያ መግቢያ ማያ ገፅ</translation>
 <translation id="481455355267255546">ቀጥሎ የሚመጣው</translation>
+<translation id="481749895090480684">የተግባር ዝርዝር፦ <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">ካሜራ እና ማይክሮፎን</translation>
 <translation id="482908187605862807">ከPlay መደብር የሚገኙ መተግበሪያዎች</translation>
 <translation id="4831034276697007977">ራስሰር ጠቅ ማድረጎችን ማጥፋት እንደሚፈልጉ እርግጠኛ ነዎት?</translation>
@@ -1000,6 +1000,7 @@
 <translation id="4952936045814352993">የማንቂያ ድምጾች ሲሰናከሉ ስልክን ማስቀመጥ አይገኝም</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> የእርስዎን <ph name="DEVICE_TYPE" /> እንዲመልሱ ይፈልግብዎታል። መሣሪያዎ ዳግም ይጀመራል እና ሁሉም ውሂብ ይሰረዛል።</translation>
 <translation id="4961318399572185831">የCast ማያ ገፅ</translation>
+<translation id="4964188651935955085">ብሉቱዝን ሲያጠፉ ይህ ውጫዊ መሣሪያ ከእርስዎ <ph name="DEVICE_TYPE" /> ጋር ያለውን ግንኙነት ያቋርጣል፦</translation>
 <translation id="4966431234408005599">ድምፅ ጨምር</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ሰ <ph name="MINUTES" /> ደ <ph name="SECONDS" /> ሴ</translation>
 <translation id="4975771730019223894">የመተግበሪያ ባጅ አሰጣጥ</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5062496344832867502">ራም</translation>
 <translation id="5068762093486106012">ድምፀ-ከል ሆነው ሳለ ካወሩ ማሳወቂያ ይደርስዎታል። ኦዲዮ ከመሣሪያዎ በጭራሽ አይወጣም።</translation>
 <translation id="5077416371682039027">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ፣ ማሳወቂያዎች እና መተግበሪያዎች ዕይታን ያዋቅሩ</translation>
+<translation id="5077936103761694531">ጥራቱ ይረጋገጥ?</translation>
 <translation id="5078796286268621944">የተሳሳተ ፒን</translation>
 <translation id="5083035541015925118">ctrl + alt + የላይ ቀስት</translation>
 <translation id="5083553833479578423">ተጨማሪ የረዳት ባህሪያትን ያስከፍቱ።</translation>
@@ -1677,6 +1679,7 @@
 <translation id="7647488630410863958">የእርስዎን ማሳወቂያዎች ለማየት መሣሪያውን ይክፈቱ</translation>
 <translation id="7649070708921625228">እገዛ</translation>
 <translation id="7654687942625752712">የሚነገር ግብረመልስን ለማሰናከል ለአምስት ሰከንዶች ሁለቱንም የድምፅ ቁልፎች ተጭነው ያይዙ።</translation>
+<translation id="7654916369822103315">«<ph name="DISPLAY_NAME" />» ወደ የ<ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) ጥራት ተቀይሯል። በወደብ መተላለፊያ ይዘት ገደቦች ምክንያት ማሳያዎ የ<ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ጥራትን አይደግፍም። ሳይረጋገጥ ቀዳሚዎቹ ቅንብሮች በ<ph name="TIMEOUT_SECONDS" /> ውስጥ ወደነበሩበት ይመለሳሉ</translation>
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7659861092419699379">ዴስክ እና መስኮቶች ተዘግተዋል</translation>
 <translation id="7660160718439869192">የእርስዎ <ph name="NAME" /> ከ<ph name="EMAIL" /> ጋር በተገናኙ መሣሪያዎች ላይ ይታያል</translation>
@@ -1767,6 +1770,7 @@
 <translation id="7945357288295809525">የተደራሽነት ቅንብሮችን አሳይ፣ «<ph name="ENABLED_FEATURES" />» ነቅቷል።</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> የእርስዎን <ph name="DEVICE_NAME" /> መጠቀም ይፈልጋል</translation>
 <translation id="7951630946012935453">የቁልፍ ሰሌዳን አደብዝዝ</translation>
+<translation id="7953994493035617347">አዲሱ ጥራት ይረጋገጥ?</translation>
 <translation id="7963689218131240420">አትረብሽ ጠፍቷል</translation>
 <translation id="7963992254934562106">ከ<ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">አቃፊ ምረጥ...</translation>
@@ -1825,6 +1829,7 @@
 <translation id="8155628902202578800">የ<ph name="USER_EMAIL_ADDRESS" /> የመረጃ መገናኛን ክፈት</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />ን በመጠቀም ላይ</translation>
 <translation id="8185090165691050712">መጠን ለማሳነስ የመቆለፊያ ሁኔታን አብራ/አጥፋ</translation>
+<translation id="8192727139462702395">ብሉቱዝን ሲያጠፉ እነዚህ ውጫዊ መሣሪያዎች ከእርስዎ <ph name="DEVICE_TYPE" /> ጋር ያላቸውን ግንኙነት ያቋርጣሉ፦</translation>
 <translation id="8198456017687137612">የCast ማድረጊያ ትር</translation>
 <translation id="8200772114523450471">ከቆመበት ቀጥል</translation>
 <translation id="8203795194971602413">የቀኝ ጠቅታ</translation>

@@ -1951,6 +1951,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2435248616906486374">Netwerk ontkoppel</translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
 <translation id="2436385001956947090">Kopieer &amp;skakel</translation>
+<translation id="2436746748253887661">Dit laat stelseldienste met toestemming toe om jou ligging te gebruik. Ligging kan bronne soos wi-fi, selnetwerke en sensors gebruik om te help om jou toestel se ligging te skat. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Nie aan drukker gekoppel nie</translation>
 <translation id="2439152382014731627">Stel <ph name="DEVICE_TYPE" />-wagwoord terug</translation>
 <translation id="2439626940657133600">Laai tans <ph name="WINDOW_TITLE" /></translation>
@@ -3520,12 +3521,14 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3660234220361471169">Onvertroude</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 bestaande wagwoord gekry}other{{NUM_PASSWORDS} bestaande wagwoorde gekry}}</translation>
 <translation id="3662207097851752847">Bevestig jou Google-rekening op jou foon</translation>
+<translation id="3663417513679360795">Meer inligting oor die aanskakel van standaardvooraflaai</translation>
 <translation id="3664511988987167893">Uitbreidingikoon</translation>
 <translation id="3665100783276035932">Die meeste werwe behoort te werk soos verwag</translation>
 <translation id="3665301845536101715">Maak in kantpaneel oop</translation>
 <translation id="3665589677786828986">Chrome het bespeur dat sommige van jou instellings deur 'n ander program korrup gemaak is en het hulle na hul oorspronklike verstekwaardes teruggestel.</translation>
 <translation id="3665919494326051362">Huidige weergawe is <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi NIC se ontfoutstorting</translation>
+<translation id="3666971425390608309">Aflaai is onderbreek: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Toestelle van enige verkoper af</translation>
 <translation id="3670229581627177274">Skakel Bluetooth aan</translation>
 <translation id="3670480940339182416">Werwe kan die V8-optimeerder gebruik</translation>
@@ -3608,6 +3611,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3720543739123045680">Ander oortjies deel ’n proses met hierdie oortjie, wat kan lei tot ’n onverwagte ervaring met Ontwikkelaarnutsgoed.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Jy en Google</translation>
+<translation id="3721178866505920080">Meer inligting oor die aanskakel van uitgebreide vooraflaai</translation>
 <translation id="3722108462506185496">Kon nie die virtuelemasjiendiens begin nie. Probeer asseblief weer.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />-instruksie is ontvang</translation>
 <translation id="3724897774652282549">Vul die vorm in</translation>
@@ -3676,6 +3680,8 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3765055238058255342">hierdie tipe kaart</translation>
 <translation id="3765246971671567135">Kon nie vanlyn demonstrasiemodus-beleid lees nie.</translation>
 <translation id="3765696567014520261">Werwe kan nie jou webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien nie, byvoorbeeld om advertensies te publiseer. Kenmerke op sommige webwerwe sal dalk nie werk nie</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Google se liggingdienste gebruik bronne soos wi-fi, selnetwerke en sensors om jou toestel se ligging te help skat.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Jy kan enige tyd ChromeOS- en Android-ligging op jou toestel afskakel deur na Instellings &gt; Privaatheid en sekuriteit &gt; Privaatheidkontroles &gt; Liggingtoegang te gaan. Jy kan ook die gebruik van wi-fi, selnetwerke en sensors vir Android-ligging afskakel deur “Verbeter liggingakkuraatheid” onder “Gevorderde ligginginstellings” op dieselfde kieslys af te skakel.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Kom meer te wete in Foonsentrum</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Vir eers kan jy wagwoorde slegs met gesinslede deel. <ph name="BEGIN_LINK" />Nooi gesinslede<ph name="END_LINK" /> om by jou groep aan te sluit, en kry meer uit jou produkte en intekeninge regoor Google.</translation>
@@ -3723,6 +3729,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3798670284305777884">Luidspreker (intern)</translation>
 <translation id="3799128412641261490">Skakelaartoegang-instellings</translation>
 <translation id="3800828618615365228">Google Chrome en Chrome-bedryfstelsel se bykomende bepalings</translation>
+<translation id="3800898876950197674">Voer jou wagwoord in om hierdie uitbreiding toe te laat.</translation>
 <translation id="3802486193901166966">Hierdie uitbreiding vereis geen spesiale toestemmings nie, en dit het geen bykomende werftoegang nie</translation>
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803345858388753269">Videogehalte</translation>
@@ -4341,6 +4348,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4278779213160967034">Hierdie proses kan ’n paar minute neem. Laai tans lêers af.</translation>
 <translation id="4279129444466079448">Jy kan tot <ph name="PROFILE_LIMIT" /> e-SIM-profiele op hierdie toestel installeer. Om nog 'n profiel by te voeg, moet jy eers 'n bestaande profiel verwyder.</translation>
 <translation id="4280325816108262082">Die toestel word outomaties ontkoppel wanneer dit afgeskakel of nie gebruik word nie</translation>
+<translation id="4281637354026226955">Laat ChromeOS en Android-apps en -dienste met liggingtoestemming toe om jou toestel se ligging te gebruik. Google kan van tyd tot tyd liggingdata insamel en hierdie data op ’n anonieme wyse gebruik om liggingakkuraatheid en ligginggegronde dienste te verbeter.</translation>
 <translation id="4281844954008187215">Diensbepalings</translation>
 <translation id="4281849573951338030">Pasmaak penknoppies</translation>
 <translation id="4282196459431406533">Smart Lock is aangeskakel</translation>
@@ -4593,7 +4601,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4473996011558324141">geskatte tyd</translation>
 <translation id="4474155171896946103">Boekmerk alle oortjies …</translation>
 <translation id="4475299370877036544">Hierdie handeling kan jou organisasie se beleide oortree</translation>
-<translation id="4475552974751346499">Deursoek aflaaie</translation>
 <translation id="4476590490540813026">Atleet</translation>
 <translation id="4476659815936224889">Om hierdie kode te skandeer, moet jy 'n QR-skandeerderprogram op jou foon of sommige kameraprogramme gebruik.</translation>
 <translation id="4477015793815781985">Sluit Ctrl, Alt of ⌘ in</translation>
@@ -6223,6 +6230,8 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (Stelselverstek)</translation>
 <translation id="5776450228446082914">Die lys webwerwe wat in enige van die blaaiers kan oopmaak.</translation>
 <translation id="5776571780337000608">Jy kan met hierdie program gesteunde lêers uit jou lêerblaaier of ander programme oopmaak en wysig. <ph name="BEGIN_LINK" />Vind uit hoe om verstekprogramme op jou toestel te stel<ph name="END_LINK" /> om te beheer watter lêers hierdie program by verstek oopmaak.</translation>
+<translation id="5776884611062957102">Google se liggingdiens verbeter liggingakkuraatheid deur wi-fi, selnetwerke en sensors te gebruik om te help om jou ligging te skat. Google kan van tyd tot tyd liggingdata insamel en hierdie data op ’n anonieme wyse gebruik om liggingakkuraatheid en ligginggegronde dienste te verbeter.
+    As jy dit afskakel, sal dit veroorsaak dat Android net IP-adres vir ligging gebruik. Dit kan die akkuraatheid van ligging wat deur apps soos Maps gebruik word, beïnvloed.</translation>
 <translation id="5778491106820461378">Jy kan aangemelde Google-rekeninge in <ph name="LINK_BEGIN" />Instellings<ph name="LINK_END" /> bestuur. Toestemmings wat jy vir webwerwe en apps gegee het, kan op alle rekeninge van toepassing wees. As jy nie wil hê dat werwe of programme toegang tot jou rekeninginligting moet hê nie, kan jy as 'n gas by jou <ph name="DEVICE_TYPE" /> aanmeld.</translation>
 <translation id="5780011244986845107">Die vouer wat jy gekies het, bevat sensitiewe lêers. Is jy seker jy wil permanente skryftoegang tot hierdie vouer aan "<ph name="APP_NAME" />" verleen?</translation>
 <translation id="5780973441651030252">Verwerkingsprioriteit</translation>
@@ -6308,6 +6317,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5836999627049108525">Taal waaruit vertaal moet word</translation>
 <translation id="583756221537636748">Houer</translation>
 <translation id="5840680448799937675">Lêers sal altyd vanlyn gedeel word</translation>
+<translation id="5841167715783969407">Outomatiese tydsone op grond van wi-fi of selnetwerke</translation>
 <translation id="5841270259333717135">Stel Ethernet op</translation>
 <translation id="5842497610951477805">Aktiveer Bluetooth</translation>
 <translation id="5844284118433003733">Wanneer jy aangemeld is, word hierdie data aan jou Google-rekening gekoppel om jou oral in Google-dienste te beskerm, byvoorbeeld deur beskerming in Gmail te verhoog ná ’n sekuriteitvoorval.</translation>
@@ -6757,6 +6767,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6180510783007738939">Lynnutsding</translation>
 <translation id="6180550893222597997">Watter toegangsleutel wil jy vir <ph name="APP_NAME" /> gebruik?</translation>
 <translation id="6181431612547969857">Aflaai geblokkeer</translation>
+<translation id="6183369864942961155">Outomatiese lig-/donkertema</translation>
 <translation id="6184099524311454384">Soek oortjies</translation>
 <translation id="6184868291074982484">Chrome beperk outomaties derdepartywebkoekies</translation>
 <translation id="6185132558746749656">Toestelligging</translation>
@@ -7159,6 +7170,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6513247462497316522">Google Chrome sal mobiele data gebruik as jy nie aan 'n ander netwerk gekoppel is nie.</translation>
 <translation id="6514010653036109809">Beskikbare toestel:</translation>
 <translation id="6517227424170598783">Verwyder “<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />”-kortpad?</translation>
+<translation id="6517382055541687102">Die gekose toestel het verander na <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Jou lêers in My Drive sinkroniseer outomaties met jou Chromebook sodat jy hulle sonder ’n internetverbinding kan kry. Dit sal ongeveer <ph name="REQUIRED_SPACE" /> gebruik. Jy het tans <ph name="FREE_SPACE_AVAILABLE" /> beskikbaar.</translation>
 <translation id="6517709704288360414">Jou toestel sal dalk nie meer reg werk nie en jy kan veiligheid- en werkverrigtingkwessies ervaar. As jy opdaterings afskakel, kan dit jou reg beïnvloed om wetlike eise in te dien as jy enige kwessies ervaar.</translation>
 <translation id="6518014396551869914">Kopieer prent</translation>
@@ -7415,6 +7427,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6713441551032149301">Hou die lanseerdersleutel in om tussen funksiesleutels en die stelsel se boonste ry sleutels te wissel</translation>
 <translation id="6713668088933662563">Moet nooit aanbied om hierdie tale te vertaal nie</translation>
 <translation id="6715803357256707211">Kon nie jou Linux-program installeer nie. Klik op kennisgewing vir besonderhede.</translation>
+<translation id="6716049856796700977">Niks kan jou ligging gebruik nie. Jou ligging kan egter steeds via jou IP-adres sigbaar wees vir apps en webwerwe. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Netwerkverbinding is onderbreek. Gaan jou netwerkverbinding na of probeer 'n ander wi-fi-netwerk.</translation>
 <translation id="6718849325281682232">Chrome-temakleure is opgeknap om beter vir almal te werk, of jy nou in donker- of ligmodus is</translation>
 <translation id="671928215901716392">Sluit skerm</translation>
@@ -7463,6 +7476,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6758056191028427665">Sê vir ons hoe ons vaar.</translation>
 <translation id="6759193508432371551">Fabriekterugstelling</translation>
 <translation id="6760354150216532978">Waarskuwing: hierdie werf kan wysigings sien wat jy maak</translation>
+<translation id="6761209758867628753">Nutsding: Help my skryf</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Optoestelwerfdata word nie toegelaat nie</translation>
 <translation id="6762833852331690540">Aan</translation>
@@ -8000,6 +8014,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7180611975245234373">Herlaai</translation>
 <translation id="7180865173735832675">Pasmaak</translation>
 <translation id="7181117767881540376">&amp;Versteek boekmerkbalk</translation>
+<translation id="7181329571386134105">Maak die Family Link-app op jou toestel oop en dateer <ph name="CHILD_NAME" /> se Google Chrome-instellings op om <ph name="CHILD_NAME" /> toe te laat om in die toekoms uitbreidings sonder jou goedkeuring te installeer.</translation>
 <translation id="7182063559013288142">Kitswarmkol</translation>
 <translation id="7182791023900310535">Skuif jou wagwoord</translation>
 <translation id="718427252411067142">Maak die app oop om jou wagwoord te verander om ander te keer om jou wagwoord te gebruik</translation>
@@ -8396,6 +8411,8 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7478658909253570368">Moenie werwe toelaat om aan reekspoorte te koppel nie</translation>
 <translation id="7479221278376295180">Oorsig van berginggebruik</translation>
 <translation id="747981547666531654">Gekoppel aan Bluetooth-toestelle genaamd <ph name="FIRST_DEVICE" /> en <ph name="SECOND_DEVICE" /></translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Google se liggingdienste gebruik bronne soos wi-fi, selnetwerke en sensors om te help om hierdie toestel se ligging te skat.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Jy kan enige tyd ChromeOS- en Android-ligging op hierdie toestel afskakel deur na Instellings &gt; Privaatheid en sekuriteit &gt; Privaatheidkontroles &gt; Liggingtoegang te gaan. Jy kan ook die gebruik van wi-fi, selnetwerke en sensors vir Android-ligging afskakel deur “Verbeter liggingakkuraatheid” onder “Gevorderde ligginginstellings” op dieselfde kieslys af te skakel.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Vorentoe</translation>
 <translation id="7481358317100446445">Gereed</translation>
 <translation id="748138892655239008">Sertifikaat se basiese beperkings</translation>
@@ -8487,6 +8504,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7552846755917812628">Probeer die volgende wenke:</translation>
 <translation id="7553012839257224005">Gaan tans die Linux-houer na</translation>
 <translation id="7553242001898162573">Voer jou wagwoord in</translation>
+<translation id="7553487223484420820">Apps, webwerwe en stelseldienste met die liggingtoestemming kan jou ligging gebruik. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">Jou administrateur laat nie hierdie taal toe nie</translation>
 <translation id="7554791636758816595">Nuwe oortjie</translation>
 <translation id="7556033326131260574">Smart Lock kon nie jou rekening verifieer nie. Voer jou wagwoord in om in te gaan.</translation>
@@ -9403,6 +9421,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8224427620313426549">Jou <ph name="DOMAIN_LINK" />-rekening sal nie uitgevee word nie</translation>
 <translation id="8225046344534779393">Gaan internetverbinding na</translation>
 <translation id="8225265270453771718">Deel 'n programvenster</translation>
+<translation id="8225516926291976401">Net stelseldienste kan jou ligging gebruik. Jou ligging kan egter steeds via jou IP-adres sigbaar wees vir apps en webwerwe. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Verbode</translation>
 <translation id="8226619461731305576">Waglys</translation>
 <translation id="8227119283605456246">Heg lêer aan</translation>
@@ -9839,6 +9858,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8552102814346875916">Stoor op die "hou hierdie werwe altyd aktief"-lys</translation>
 <translation id="8553342806078037065">Bestuur ander mense</translation>
 <translation id="8554899698005018844">Geen taal nie</translation>
+<translation id="8555444629041783356">Outomatiese sonsondergangskedule</translation>
 <translation id="855604308879080518">Gee Android-programme toegang tot USB-toestelle op hierdie Chromebook. Toestemming sal versoek word elke keer wanneer jy by 'n USB-toestel inprop. Individuele Android-programme sal vir bykomende toestemmings vra.</translation>
 <translation id="8557022314818157177">Hou aan om jou sekuriteitsleutel te raak totdat jou vingerafdruk vasgevang is</translation>
 <translation id="8557180006508471423">Skakel "Google Chrome" in Liggingdienste op jou Mac aan</translation>
@@ -10789,6 +10809,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="973558314812359997">Muisgrootte</translation>
 <translation id="975893173032473675">Taal om in te vertaal</translation>
 <translation id="976499800099896273">Ontdoendialoog vir outokorrigeer word gewys vir <ph name="TYPED_WORD" />, wat gekorrigeer is na <ph name="CORRECTED_WORD" />.  Druk oppyl om daarheen te gaan, Escape om te ignoreer.</translation>
+<translation id="976572010712028687">Verifieer dat jy 'n ouer is</translation>
 <translation id="978146274692397928">Aanvanklike leestekenbreedte is vol</translation>
 <translation id="978978324795544535">Dubbeltik ’n item, hou met die tweede tik in en sleep dan die item om dit te skuif</translation>
 <translation id="97905529126098460">Hierdie venster sal toemaak sodra kansellasie voltooi is.</translation>

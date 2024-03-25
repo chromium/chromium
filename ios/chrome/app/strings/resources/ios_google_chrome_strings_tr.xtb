@@ -140,7 +140,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4831642696589369971">Chrome verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi.
 
         Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
-<translation id="4834499902900503484">Chrome'da oturum açtığınızda, kaydettiğiniz şifreler Google Hesabınızda saklanır. Bu özelliği devre dışı bırakmak için <ph name="BEGIN_LINK" />ayarlara gidin<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Chrome Beta'da desteklenmiyor</translation>
 <translation id="4840404732697892756">Google Şifre Yöneticisi, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir.</translation>
 <translation id="4856636171409137183">En iyi şekilde kişiselleştirilmiş bir deneyim için Chrome'u <ph name="FEATURE_NAME_1" /> ve <ph name="FEATURE_NAME_2" /> özelliklerine ekleyin</translation>

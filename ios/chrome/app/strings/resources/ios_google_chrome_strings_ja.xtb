@@ -140,7 +140,6 @@
 <translation id="4831642696589369971">Chrome データの一部が Google アカウントにまだ保存されていません。
 
         数分待ってからログアウトしてください。今すぐログアウトすると、このデータは削除されます。</translation>
-<translation id="4834499902900503484">Chrome にログインすると、保存したパスワードが Google アカウントに保存されます。この機能をオフにするには、<ph name="BEGIN_LINK" />[設定] に移動<ph name="END_LINK" />します。</translation>
 <translation id="484033449593719797">Chrome ベータ版ではサポートされていません</translation>
 <translation id="4840404732697892756">Google アカウントでログインすると、Google パスワード マネージャーでパスワードを確認できるようになります。</translation>
 <translation id="4856636171409137183">よりパーソナライズされたサービスを利用するには、<ph name="FEATURE_NAME_1" /> と <ph name="FEATURE_NAME_2" /> に Chrome を追加してください</translation>

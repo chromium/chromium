@@ -259,7 +259,6 @@
 <translation id="2017998995161831444">Отворете „Помош“ во апликацијата Explore</translation>
 <translation id="2018630726571919839">Кажи ми шега</translation>
 <translation id="2021864487439853900">Кликнете за да отклучите</translation>
-<translation id="2023558322300866873">Може да го прекинете евидентирањето на пресретнатиот пакет во секое време</translation>
 <translation id="2034971124472263449">Сепак зачувај</translation>
 <translation id="204259843076055848">Кратенката <ph name="SIX_PACK_KEY_NAME" /> во моментов е исклучена</translation>
 <translation id="2049240716062114887">Името на работната површина е променето во <ph name="DESK_NAME" /></translation>
@@ -357,6 +356,7 @@
 <translation id="2482878487686419369">Известувања</translation>
 <translation id="2484513351006226581">Притиснете <ph name="KEYBOARD_SHORTCUT" /> за да го префрлите распоредот на тастатурата.</translation>
 <translation id="2486214324139475545">Преглед на <ph name="DESK_NAME" />. Активна работна површина.</translation>
+<translation id="2486405091093637109">Резолуцијата на „<ph name="DISPLAY_NAME" />“ се промени во резолуција од <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Без потврдување, претходните поставки ќе се вратат за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Приклучи се</translation>
 <translation id="2499445554382787206">Мени за профилот на работната површина. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Лепливи копчиња</translation>
@@ -701,7 +701,6 @@
 <translation id="380165613292957338">Здраво. Како може да помогнам?</translation>
 <translation id="3804737937830804242">Собери ја камерата</translation>
 <translation id="3824784079442479685">Ова овозможува пристап до камерата за <ph name="APP_NAME" /> и сите апликации и веб-сајтови со дозвола за камерата. Можеби ќе треба да ја освежите веб-страницата или да ја рестартирате апликацијата.</translation>
-<translation id="3825680296690914697">Предадени: <ph name="NUM_TURNED_IN" /> од <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, оценети: <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Префрли на лозинка</translation>
 <translation id="383058930331066723">Режимот „Штедач на батерија“ е вклучен</translation>
 <translation id="383629559565718788">Прикажи ги поставките за тастатура</translation>
@@ -765,7 +764,6 @@
 <translation id="4066027111132117168">Вклучено, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Ја отвора страницата „Преземања“</translation>
 <translation id="4072264167173457037">Среден сигнал</translation>
-<translation id="4076455981957565732">Предадени: <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • оценети: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Вклучете физички прекинувач за микрофонот на вашиот уред</translation>
 <translation id="4101772068965291327">Ја отвора почетната страница</translation>
 <translation id="4112140312785995938">Премотај наназад</translation>
@@ -1031,6 +1029,7 @@
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Ќе добиете известување ако зборувате додека е исклучен звукот. Аудиото никогаш не излегува од вашиот уред.</translation>
 <translation id="5077416371682039027">Поставете прегледување на неодамнешните фотографии, аудиовизуелни содржини, известувања и апликации на телефонот</translation>
+<translation id="5077936103761694531">Да се потврди резолуцијата?</translation>
 <translation id="5078796286268621944">Неточен PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + стрелка нагоре</translation>
 <translation id="5083553833479578423">Отклучете повеќе функции на „Помошникот“.</translation>
@@ -1680,6 +1679,7 @@
 <translation id="7647488630410863958">Отклучете го уредот за приказ на известувањата</translation>
 <translation id="7649070708921625228">Помош</translation>
 <translation id="7654687942625752712">Притиснете ги и задржете ги двете копчиња за јачина на звук пет секунди за да оневозможите говорни повратни информации.</translation>
+<translation id="7654916369822103315">Резолуцијата на „<ph name="DISPLAY_NAME" />“ се промени во резолуција од <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Поради ограничувањата за брзината на пренос на портите, вашиот екран не поддржува резолуција од <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Без потврдување, претходните поставки ќе се вратат за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7659861092419699379">Работната површина и прозорците се затворени</translation>
 <translation id="7660160718439869192">Вашиот уред <ph name="NAME" /> ќе се појави на уредите поврзани со <ph name="EMAIL" />.</translation>
@@ -1770,6 +1770,7 @@
 <translation id="7945357288295809525">Прикажи ги поставките за пристапност, овозможено: „<ph name="ENABLED_FEATURES" />“.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> сака да користи <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Затемнување тастатура</translation>
+<translation id="7953994493035617347">Да се потврди новата резолуција?</translation>
 <translation id="7963689218131240420">„Не вознемирувај“ е исклучено.</translation>
 <translation id="7963992254934562106">Од <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Изберете папка…</translation>

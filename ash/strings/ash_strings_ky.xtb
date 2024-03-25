@@ -259,7 +259,6 @@
 <translation id="2017998995161831444">Мүмкүнчүлүктөр колдонмосунан "Жардам" бөлүмүн ачыңыз</translation>
 <translation id="2018630726571919839">Мага тамаша айтып бер</translation>
 <translation id="2021864487439853900">Кулпусун ачуу үчүн басыңыз</translation>
-<translation id="2023558322300866873">Пакетти алууну каалаган убакта токтото аласыз</translation>
 <translation id="2034971124472263449">Баары бир сакталсын</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> ыкчам баскычы учурда өчүк</translation>
 <translation id="2049240716062114887">Иш тактанын аталышы <ph name="DESK_NAME" /> болуп өзгөрдү</translation>
@@ -357,6 +356,7 @@
 <translation id="2482878487686419369">Билдирмелер</translation>
 <translation id="2484513351006226581">Баскычтоптун калыбын которуу үчүн <ph name="KEYBOARD_SHORTCUT" /> басып коюңуз.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> алдын ала көрүү. Жигердүү иш такта.</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Герц) дааналыгына өзгөрдү. Ырасталбаса, мурунку параметрлер <ph name="TIMEOUT_SECONDS" /> кийин калыбына келтирилет.</translation>
 <translation id="2487915095798731898">Кошулуу</translation>
 <translation id="2499445554382787206">Иш тактанын профиль менюсу. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Жабышчаак баскычтар функциясы</translation>
@@ -700,7 +700,6 @@
 <translation id="380165613292957338">Салам, кандай жардам керек?</translation>
 <translation id="3804737937830804242">Камераны жыйыштыруу</translation>
 <translation id="3824784079442479685">Камерага уруксаты бар колдонмолордун жана вебсайттардын баарына жана <ph name="APP_NAME" /> колдонмосуна камераны пайдалануу мүмкүнчүлүгү берилет. Веб бетти жаңыртуу же колдонмону өчүрүп күйгүзүү керектелиши мүмкүн.</translation>
-<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ичинен <ph name="NUM_TURNED_IN" /> тапшырылды. <ph name="NUM_GRADED" /> тапшырмага баа коюлду</translation>
 <translation id="3826099427150913765">Сырсөзгө которулуу</translation>
 <translation id="383058930331066723">Батареяны үнөмдөгүч режими күйүк</translation>
 <translation id="383629559565718788">Баскычтоптун параметрлерин көрсөтүү</translation>
@@ -764,7 +763,6 @@
 <translation id="4066027111132117168">Күйүк, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Жүктөлүп алынгандар барагын ачуу</translation>
 <translation id="4072264167173457037">Орточо сигнал</translation>
-<translation id="4076455981957565732"><ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ичинен <ph name="NUM_TURNED_IN" /> тапшырылды • <ph name="NUM_GRADED" /> тапшырмага баа коюлду</translation>
 <translation id="4086921558679520050">Түзмөгүңүздөгү микрофонду өчүргүчтү күйгүзүңүз</translation>
 <translation id="4101772068965291327">Башкы бетти ачуу</translation>
 <translation id="4112140312785995938">Артка түрдүрүү</translation>
@@ -1030,6 +1028,7 @@
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Үнү басылган режимде сүйлөсөңүз, билдирме аласыз. Аудио түзмөктө гана сакталат.</translation>
 <translation id="5077416371682039027">Телефонуңуздагы соңку сүрөттөрдү, медиа файлдарды, билдирмелерди жана колдонмолорду көрүү параметрин тууралоо</translation>
+<translation id="5077936103761694531">Дааналыкты ырастайсызбы?</translation>
 <translation id="5078796286268621944">Туура эмес PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + өйдө жебе</translation>
 <translation id="5083553833479578423">Жардамчынын башка функцияларын иштетиңиз.</translation>
@@ -1679,6 +1678,7 @@
 <translation id="7647488630410863958">Эскертмелериңизди көрүү үчүн түзмөгүңүздү бөгөттөн чыгарыңыз</translation>
 <translation id="7649070708921625228">Жардам</translation>
 <translation id="7654687942625752712">Экрандагы текстти окуп берүү функциясын өчүрүү үчүн үндү катуулатуу/акырындатуу баскычтарынын экөөн тең беш секунд коё бербей басып туруңуз.</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Герц) дааналыгына өзгөрдү. Өткөрүү жөндөмдүүлүгү чектелгендиктен, дисплей <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Герц) дааналыгын колдоого албайт. Ырасталбаса, мурунку параметрлер <ph name="TIMEOUT_SECONDS" /> кийин калыбына келтирилет.</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7659861092419699379">Иш такта жана терезелер жабылды</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> түзмөгү <ph name="EMAIL" /> менен байланыштырылган түзмөктөрдө көрүнөт</translation>
@@ -1769,6 +1769,7 @@
 <translation id="7945357288295809525">Атайын мүмкүнчүлүктөрдү тууралоону көрсөтүү, "<ph name="ENABLED_FEATURES" />" иштетилди.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> төмөнкүнү колдонгону жатат: <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Баскычтопту караңгылатуу</translation>
+<translation id="7953994493035617347">Жаңы дааналыкты ырастайсызбы?</translation>
 <translation id="7963689218131240420">"Тынчымды алба" режими өчүк.</translation>
 <translation id="7963992254934562106">Кайдан: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Папка тандоо…</translation>

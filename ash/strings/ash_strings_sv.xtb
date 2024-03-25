@@ -228,6 +228,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1882814835921407042">Inget mobilnätverk</translation>
 <translation id="1882897271359938046">Spegling av <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås upp med fingeravtryck</translation>
+<translation id="1904997243703671177">När du inaktiverar Bluetooth kopplas <ph name="DEVICE_COUNT" /> externa enheter från din <ph name="DEVICE_TYPE" />, inklusive följande:</translation>
 <translation id="1908992311423394684">Nyligen installerad</translation>
 <translation id="1915307458270490472">Lägg på</translation>
 <translation id="1918022425394817322">Kameran har fästs i det övre högra hörnet</translation>
@@ -258,7 +259,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2017998995161831444">Öppna Hjälp i appen Utforska</translation>
 <translation id="2018630726571919839">Dra ett skämt</translation>
 <translation id="2021864487439853900">Klicka för att låsa upp</translation>
-<translation id="2023558322300866873">Du kan avsluta paketanalysen när som helst</translation>
 <translation id="2034971124472263449">Spara ändå</translation>
 <translation id="204259843076055848">Kortkommandot <ph name="SIX_PACK_KEY_NAME" /> är inaktiverat</translation>
 <translation id="2049240716062114887">Skrivbordsnamnet ändrades till <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
 <translation id="2484513351006226581">Tryck på <ph name="KEYBOARD_SHORTCUT" /> om du vill byta tangentbordslayout.</translation>
 <translation id="2486214324139475545">Förhandsgranskning av <ph name="DESK_NAME" />. Aktivt skrivbord.</translation>
+<translation id="2486405091093637109"><ph name="DISPLAY_NAME" /> har ändrats till upplösningen <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Om du inte bekräftar återställs de tidigare inställningarna om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Delta</translation>
 <translation id="2499445554382787206">Meny för skrivbordsprofilen. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tröga tangenter</translation>
@@ -699,7 +700,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="380165613292957338">Hej. Hur kan jag hjälpa dig?</translation>
 <translation id="3804737937830804242">Komprimera kameran</translation>
 <translation id="3824784079442479685">Detta ger kameraåtkomst för <ph name="APP_NAME" /> och alla appar och webbplatser med kamerabehörighet. Du kan behöva uppdatera webbsidan eller starta om appen.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> av <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> inlämnade, <ph name="NUM_GRADED" /> betygsatta</translation>
 <translation id="3826099427150913765">Byt till lösenord</translation>
 <translation id="383058930331066723">Batterisparläget är aktiverat</translation>
 <translation id="383629559565718788">Visa tangentbordsinställningar</translation>
@@ -763,7 +763,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4066027111132117168">På, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Öppna sidan Nedladdningar</translation>
 <translation id="4072264167173457037">medelstark signal</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> inlämnade • <ph name="NUM_GRADED" /> betygsatta</translation>
 <translation id="4086921558679520050">Aktivera det fysiska mikrofonreglaget på enheten</translation>
 <translation id="4101772068965291327">Öppna startsidan</translation>
 <translation id="4112140312785995938">Sök bakåt</translation>
@@ -959,6 +958,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4813311884204119883">Dra länken till ett tomt område på flikhuvudet</translation>
 <translation id="4814539958450445987">Inloggningsskärm</translation>
 <translation id="481455355267255546">Kommande</translation>
+<translation id="481749895090480684">Uppgiftslista: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera och mikrofon</translation>
 <translation id="482908187605862807">Tillgängliga appar i Play Butik</translation>
 <translation id="4831034276697007977">Vill du inaktivera automatiska klick?</translation>
@@ -1000,6 +1000,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4952936045814352993">Funktionen Hitta telefonen är inte tillgänglig när ljudet är avstängt för alarmet</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> kräver att du byter till en tidigare version av <ph name="DEVICE_TYPE" />. Enheten återställs och all data raderas.</translation>
 <translation id="4961318399572185831">Casta skärmen</translation>
+<translation id="4964188651935955085">När du inaktiverar Bluetooth kopplas den här externa enheten från din <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Höj volymen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> tim. <ph name="MINUTES" /> min. <ph name="SECONDS" /> sek.</translation>
 <translation id="4975771730019223894">Appmärkning</translation>
@@ -1027,6 +1028,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Du får en avisering om du pratar när ljudet är av. Ljudet lämnar aldrig enheten.</translation>
 <translation id="5077416371682039027">Ställ in visning av de senaste bilderna, mediefilerna, aviseringarna och apparna på telefonen</translation>
+<translation id="5077936103761694531">Vill du bekräfta upplösningen?</translation>
 <translation id="5078796286268621944">Fel pinkod</translation>
 <translation id="5083035541015925118">ctrl + alt + uppåtpil</translation>
 <translation id="5083553833479578423">Lås upp fler funktioner för Assistent</translation>
@@ -1676,6 +1678,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7647488630410863958">Lås upp enheten om du vill visa aviseringarna</translation>
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7654687942625752712">Inaktivera talad feedback genom att hålla båda volymknapparna nedtryckta i fem sekunder.</translation>
+<translation id="7654916369822103315"><ph name="DISPLAY_NAME" /> har ändrats till upplösningen <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). På grund av begränsningar i portens bandbredd har skärmen inte stöd för upplösningen <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Om du inte bekräftar återställs de tidigare inställningarna om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7659861092419699379">Skrivbordet och dess fönster har stängts</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> visas på enheter som har länkats till <ph name="EMAIL" /></translation>
@@ -1766,6 +1769,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7945357288295809525">Visa tillgänglighetsinställningar. <ph name="ENABLED_FEATURES" /> har aktiverats.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vill använda din <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Gör tangentbordets belysning svagare</translation>
+<translation id="7953994493035617347">Vill du bekräfta den nya upplösningen?</translation>
 <translation id="7963689218131240420">Stör ej är inaktiverat.</translation>
 <translation id="7963992254934562106">Från <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Välj mapp …</translation>
@@ -1824,6 +1828,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8155628902202578800">Öppna informationsdialogrutan för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Använder <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Aktivera/inaktivera menyn för att ändra storlek på låst läge</translation>
+<translation id="8192727139462702395">När du inaktiverar Bluetooth kopplas dessa externa enheter från din <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Castar flik</translation>
 <translation id="8200772114523450471">Återuppta</translation>
 <translation id="8203795194971602413">Högerklicka</translation>

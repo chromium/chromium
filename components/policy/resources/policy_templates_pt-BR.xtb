@@ -187,6 +187,7 @@ Se a política não for definida, nenhuma exceção a <ph name="DEVICE_AUTHENTIC
 <translation id="1117535567637097036">Os gerenciadores de protocolo definidos por esta política não são usados na manipulação de intents do Android.</translation>
 <translation id="1118093128235245168">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configurações de notificação</translation>
+<translation id="1122068467107743258">Trabalho</translation>
 <translation id="1122089575901325963">A definição da política configura o controlador de diagnósticos e telemetria (DTC, na sigla em inglês) <ph name="WILCO_NAME" />, se disponível no dispositivo. O tamanho da configuração não pode exceder 1 MB (1.000.000 de bytes) e precisa estar no formato JSON. O DTC <ph name="WILCO_NAME" /> é responsável pelo processamento dela. O hash criptográfico verifica a integridade do download. A configuração é baixada e armazenada em cache. O download é refeito sempre que o URL ou o hash mudam.
 
       Se você definir a política, os usuários não poderão mudá-la.</translation>
@@ -666,6 +667,7 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 <translation id="152657506688053119">Lista de URLs alternativos para o provedor de pesquisa padrão</translation>
 <translation id="1530812829012954197">Sempre renderizar os seguintes padrões de URL no navegador do host</translation>
 <translation id="1534007181698071943">Permitir que manipuladores de eventos de descarregamento sejam desativados por padrão durante a suspensão de uso</translation>
+<translation id="1539343118617844331">Escola</translation>
 <translation id="1542491165152947087">Permitir que os usuários ativem ou desativem a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para temas de anúncios no dispositivo.</translation>
 <translation id="1542958897137600427">Ativar o provisionamento de certificado do cliente</translation>
 <translation id="1550295162561011575">Se a política for definida, os administradores poderão configurar a automação para iniciar apps em dispositivos <ph name="PRODUCT_NAME" />. Esses apps podem ser iniciados no login ou pelo usuário na tela de início.</translation>
@@ -1970,6 +1972,16 @@ seleção padrão.</translation>
 <translation id="2489558694350871332">Permitir que o dispositivo execute máquinas virtuais</translation>
 <translation id="2492240920793040106">Ativar relatórios de informações do sistema e conteúdo da página para ajudar a melhorar o recurso Navegação segura</translation>
 <translation id="2496180316473517155">Histórico de navegação</translation>
+<translation id="2497530682475109135">Esta política controla um rótulo usado para identificar um perfil conectado. Este rótulo será mostrado em vários locais para ajudar os usuários a identificar o perfil, como ao lado do ícone de perfil na barra de ferramentas.
+Ele também será usado como nome padrão para perfis recém-criados, que podem ser modificados pelos usuários.
+
+Se esta política não for definida, será usado o rótulo padrão "Trabalho" ou "Escola".
+
+Se a política for definida como "Marcar o perfil como Trabalho (1)", será usado o rótulo "Trabalho".
+
+Se a política for definida como "Marcar o perfil como Escola (2)", o rótulo "Escola" será usado.
+
+Essa política será substituída pela <ph name="CUSTOM_PROFILE_LABEL_POLICY_NAME" />, se ela estiver definida.</translation>
 <translation id="2497751676088107779">Script de usuário</translation>
 <translation id="2497965601277442929">Não permitir que os usuários ativem o HTTPS-Only Mode</translation>
 <translation id="249798396824949930"> Controla se o navegador pode detectar o escopo obrigatório da política em <ph name="MAC_OS_NAME" /> ou não.
@@ -2241,6 +2253,13 @@ do usuário para chamar a API.</translation>
       Ela se aplica à tela de login. Consulte também a política <ph name="SITE_PER_PROCESS_POLICY_NAME" />, que se aplica à sessão do usuário. É recomendado definir as duas com o mesmo valor. Se os valores não forem iguais, poderá haver um atraso ao entrar em uma sessão enquanto o valor especificado pela política do usuário estiver sendo aplicado.
       </translation>
 <translation id="2697717608663878828">Ativar o experimento Encrypted ClientHello do TLS</translation>
+<translation id="2698555428858508691">Esta política controla um rótulo personalizado usado para identificar um perfil conectado.
+
+Se esta política não for definida e for necessário mostrar um rótulo, o padrão "Trabalho" ou "Escola" será usado.
+
+Esta política vai substituir a <ph name="PROFILE_LABEL_POLICY_NAME" />.
+
+O rótulo personalizado não será traduzido.</translation>
 <translation id="2699836109975228367">Ativar o áudio mono na tela de login</translation>
 <translation id="2702023190395322609">Ativar recomendações de mídia</translation>
 <translation id="2702682139813393777">Forçar os hosts de mensagens nativas do Windows a iniciar via cmd.exe</translation>
@@ -2583,6 +2602,7 @@ A política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> t
 <translation id="2985927503455169394">Usa o modo padrão da experiência de integração do Assistente</translation>
 <translation id="2987155890997901449">Ativar ARC</translation>
 <translation id="2987227569419001736">Controla o uso da API Web Bluetooth</translation>
+<translation id="2989259649530222762">Desativar a Proteção contra técnicas de impressão digital.</translation>
 <translation id="2989404644164421834">Atualizar páginas</translation>
 <translation id="299446489108785864">A lista de URLs especificando para quais URLs a <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> é válida. Esta política não tem impacto em valores de abertura automática definidos pelo usuário.
 
@@ -4279,6 +4299,13 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que os usuários se conectem apenas aos serviços Bluetooth especificados com uma exceção quando a lista estiver vazia, ou seja, quando qualquer serviço tiver permissão para ser usado. UUIDs reservados pela Bluetooth SIG podem ser representados como <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> ou <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. UUIDs personalizados podem ser representados como <ph name="BLUETOOTH_CUSTOM_UUID" />. UUIDs não diferenciam maiúsculas e minúsculas. Se esta política não for definida, os usuários poderão se conectar a qualquer serviço Bluetooth.</translation>
 <translation id="4332177773549877617">Registra eventos de instalações do app Android</translation>
 <translation id="4333940819293342439">Frequência (em milissegundos) de coleta da telemetria de uso do app.</translation>
+<translation id="4340121900958123942">Defina o nível de disponibilidade do sistema de geolocalização do <ph name="PRODUCT_OS_NAME" />.
+
+Essa é uma camada extra de controle, localizada abaixo das permissões para apps e sites. Por exemplo, se esta política for definida como <ph name="GLS_BLOCKED" /> ou <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, nenhum app ou site poderá determinar o local, seja qual for a permissão de localização. No entanto, se ela estiver definida como <ph name="GLS_ALLOWED" />, apps e sites poderão receber a localização individualmente se tiverem permissão.
+
+Os usuários não poderão substituir a seleção do administrador. Se a política não for definida, os usuários terão a experiência do consumidor, ou seja, poderão modificar livremente a configuração de localização do sistema e o local onde o padrão é <ph name="GLS_ALLOWED" />.
+
+Observação: esta política substituiu a política <ph name="ARC_GLS_POLICY_NAME" /> descontinuada. Além disso, quando esta política for definida, a <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> não vai mais afetar a preferência de local do <ph name="ANDROID_NAME" /> no <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4341199399451274159">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> especificará as codificações de caracteres compatíveis com o provedor de pesquisa. As codificações são nomes de páginas de código como UTF-8, GB2312 e ISO-8859-1. Elas são testadas na ordem fornecida.
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> não for definida, UTF-8 será usada.</translation>
@@ -4782,21 +4809,6 @@ Esta política não terá efeito quando a <ph name="DEVICE_SCREENSAVER_LOGIN_SCR
 <translation id="4726228171190098009">Não permitir que o dispositivo solicite a execução de um Powerwash</translation>
 <translation id="4726895359147376813">Mapeamento de IDs persistentes para as configurações da VM</translation>
 <translation id="4733471537137819387">Políticas relacionadas à autenticação integrada de HTTP.</translation>
-<translation id="4736591493257545761">O modelo de URI do resolvedor de DNS sobre HTTPS desejado. Para especificar vários resolvedores de DNS sobre HTTPS, separe os modelos de URI correspondentes com espaços. Esta política é muito semelhante à <ph name="DOH_TEMPLATES_POLICY_NAME" />, que vai ser substituída por esta, se for especificada.
-Diferente da política <ph name="DOH_TEMPLATES_POLICY_NAME" />, esta política permite especificar informações de identidade.
-Os identificadores são especificados usando marcadores de posição de variáveis, que são substituídos por informações do usuário ou do dispositivo em <ph name="PRODUCT_NAME" />. Os identificadores não são enviados ao servidor DNS em texto simples, em vez disso, são criptografadas com hash com o algoritmo <ph name="SHA256" /> e codificação hexadecimal em letras maiúsculas.
-
-Os identificadores são especificados entre chaves e precedidos pelo cifrão. Para identificação do usuário, use os marcadores <ph name="USER_EMAIL" />, <ph name="USER_EMAIL_DOMAIN" /> e <ph name="USER_EMAIL_NAME" />. Para a identificação do dispositivo, use os marcadores <ph name="DEVICE_DIRECTORY_ID" />, <ph name="DEVICE_SERIAL_NUMBER" />, <ph name="DEVICE_ASSET_ID" /> e <ph name="DEVICE_ANNOTATED_LOCATION" />.
-
-Antes da versão 122, os identificadores de dispositivo não eram substituídos para usuários não afiliados. Na versão 122 e mais recentes, os marcadores de posição dos dispositivos são substituídos pelo valor <ph name="DEVICE_NOT_MANAGED" />, que tem hash e codificação hexadecimal.
-
-Se a política <ph name="DOH_MODE_POLICY_NAME" /> for definida como <ph name="SECURE_DNS_MODE_SECURE" />, esta política ou a <ph name="DOH_TEMPLATES_POLICY_NAME" /> precisará ser definida e não poderá estar vazia.
-
-Se a <ph name="DOH_MODE_POLICY_NAME" /> for definida como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e se esta política for definida, os modelos de URI especificados serão usados. Se esta política for deixada sem definição, os mapeamentos fixados no código serão usados para tentar fazer upgrade do resolvedor de DNS atual do usuário para um resolvedor de DoH operado pelo mesmo provedor.
-
-Se o modelo de URI tiver uma variável <ph name="HTTP_VARIABLE_DNS" />, as solicitações para o resolvedor vão usar <ph name="HTTP_METHOD_GET" />. Caso contrário, as solicitações usarão <ph name="HTTP_METHOD_POST" />.
-
-Na versão 114 e mais recentes, o <ph name="DOH_SALT_POLICY_NAME" /> é opcional quando a política está definida.</translation>
 <translation id="473673197014866318">Se definida, a política controlará as configurações de gerenciamento de extensões do <ph name="PRODUCT_NAME" />, inclusive aquelas controladas pelas políticas existentes relacionadas a extensões. A política substitui todas as políticas legadas que possam estar definidas.
 
 Esta política mapeia um ID de extensão ou um URL de atualização apenas para a própria configuração específica. Uma configuração padrão pode ser definida para o ID especial <ph name="DEFAULT_SCOPE" />, que será aplicada a todas as extensões que não tiverem uma configuração personalizada definida nesta política. Com um URL de atualização, a configuração será aplicada a todas as extensões com o URL de atualização exato indicado no manifesto da extensão (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Se a sinalização "override_update_url" for definida como "true", a extensão será instalada e atualizada usando o URL de atualização especificado na política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ou no campo "update_url" desta política. A sinalização "override_update_url" será ignorada se o campo "update_url" for um URL da Chrome Web Store.
@@ -6266,6 +6278,7 @@ e serão desativadas por padrão se a política não for definida. Se você defi
       Se a política for definida como "Desativada", os usuários não poderão enviar feedback ao Google.</translation>
 <translation id="5976636832661103220">As configurações F11 usam o atalho que contém a tecla modificadora Shift</translation>
 <translation id="5979376378555121803">App hospedado</translation>
+<translation id="5981932073854958705">Escolha se a Proteção contra técnicas de impressão digital do <ph name="PRIVACY_SANDBOX_NAME" /> será ativada.</translation>
 <translation id="5983274643567559194">Não é possível definir um atalho para a ação "Delete".</translation>
 <translation id="5984099692320899605">Não usar a autenticação do NTLM</translation>
 <translation id="5984237109586500246">Aceitar conteúdos da Web exibidos como Signed HTTP Exchanges</translation>
@@ -6496,6 +6509,13 @@ O tempo limite de inatividade para iniciar o protetor de tela e o intervalo de e
 <translation id="6181783961196084973">O valor da alternância da coleta de atividade em apps. Se ele for definido como verdadeiro, a atividade em apps será enviada ao servidor para ser exibida no app <ph name="PRODUCT_NAME" /> da criança e do familiar responsável. Se definido como falso o recurso de limites de tempo por app ainda funcionará, mas nenhum dado será enviado ao servidor ou exibido no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182206125906000651">Desativar upgrades do HTTPS.</translation>
 <translation id="6182563940865917569">Permitir que o Chrome inicie mídia automaticamente</translation>
+<translation id="6187573347027372072">Aviso: esta política foi descontinuada. Use a <ph name="CROS_GLS_POLICY_NAME" />. O <ph name="PRODUCT_OS_NAME" /> agora tem uma opção de ativação/desativação do local do sistema, que controla todo o sistema, incluindo o <ph name="ANDROID_NAME" />. O botão de ativação/desativação do <ph name="ANDROID_NAME" /> agora é somente leitura e reflete o estado do local do <ph name="PRODUCT_OS_NAME" />.
+
+A não ser que a política <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> seja definida como <ph name="BLOCK_GEOLOCATION_SETTING" />, a definição de <ph name="GLS_ENABLED" /> vai ativar os Serviços de localização do Google durante a configuração inicial. Se a política for definida como <ph name="GLS_DISABLED" /> ou não for definida, os Serviços de localização continuarão desativados durante a configuração.
+
+Se a política for definida como <ph name="GLS_UNDER_USER_CONTROL" />, os usuários vão receber solicitações para escolher usar ou não os Serviços de localização do Google. Caso os serviços sejam ativados, os apps do <ph name="ANDROID_NAME" /> e do <ph name="PRODUCT_OS_NAME" />, sites e serviços do sistema vão usar os serviços para pesquisar o local do dispositivo e enviar dados de local anônimos ao Google.
+
+Após a configuração inicial, os usuários poderão ativar ou desativar os Serviços de localização do Google.</translation>
 <translation id="6187632100458475876">Configuração do identificador do avatar na barra de ferramentas gerenciada</translation>
 <translation id="6190367314942602985">Reportar informações de identificação do usuário</translation>
 <translation id="6191963383731098056">Esta política permite que os administradores configurem a cor do tema do <ph name="PRODUCT_NAME" />. Para isso, a string de entrada precisa ser de uma cor hexadecimal válida compatível com o formato "#RRGGBB".
@@ -6929,6 +6949,11 @@ Consulte também a política <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</transla
 <translation id="6440051664870270040">Permitir que sites naveguem e abram pop-ups simultaneamente</translation>
 <translation id="6441781723322254041">Permitir cookies truncados</translation>
 <translation id="6446366416439249472">Desativar a sincronização do Google Drive em conexões de celular</translation>
+<translation id="6447628816682315403">Uma política para controlar se a configuração "Proteção contra técnicas de impressão digital" do <ph name="PRIVACY_SANDBOX_NAME" /> será ativada ou desativada para os usuários.
+
+Se ela for desativada, a configuração da Proteção contra técnicas de impressão digital será desativada para os usuários.
+Se a política for ativada, a configuração da Proteção contra técnicas de impressão digital será ativada para os usuários.
+Se a política for deixada sem definição, os usuários poderão ativar ou desativar a Proteção contra técnicas de impressão digital nas configurações da interface. O estado padrão será "falso" ou "desativado", o que significa que a Proteção contra técnicas de impressão digital será desativada.</translation>
 <translation id="6447948611083700881">Backup e restauração desativados</translation>
 <translation id="6449476513004303784">Não permitir que os usuários gerenciem certificados</translation>
 <translation id="6449541189334851559">Ative a integração com o <ph name="GOOGLE_CALENDAR_NAME" />, que permite que os usuários do <ph name="PRODUCT_OS_NAME" /> busquem eventos do <ph name="GOOGLE_CALENDAR_NAME" /> para preencher o widget de agenda do <ph name="PRODUCT_OS_NAME" /> na barra de status do sistema.
@@ -7809,6 +7834,7 @@ Se a política for definida como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_
 <translation id="7044883996351280650">Controlar o serviço de backup e restauração do Android</translation>
 <translation id="7045221780834308118">Se a política for ativada, os aplicativos da Web de terceiros poderão usar a API Desk para controlar os espaços de trabalho do <ph name="PRODUCT_OS_NAME" />. Se a política for desativada ou deixada sem definição, o <ph name="DESK_API_NAME" /> vai ficar indisponível. A política só será aplicada em dispositivos registrados.</translation>
 <translation id="7046113122884041950">Não permitir o Smart Lock</translation>
+<translation id="7046226611117346112">Ativar a Proteção contra técnicas de impressão digital.</translation>
 <translation id="7046997898355294677">Mostrar notificações de privacidade até que elas sejam dispensadas pelo usuário</translation>
 <translation id="7047495632846973438">Especifica se a política de permissões de captura de tela foi marcada ou ignorada.</translation>
 <translation id="7055022222176591388">Não permitir o <ph name="FLASH_PLUGIN_NAME" /> desatualizado</translation>
@@ -7987,6 +8013,17 @@ certificados com SPKI (SubjectPublicKeyInfo) correspondentes não serão conside
 
       Observação: a política não afeta o Google Drive e o armazenamento interno. Os usuários ainda podem acessar arquivos salvos na pasta "Downloads".</translation>
 <translation id="7177857088692019405">Desbloqueio rápido</translation>
+<translation id="7179157174254421614">A menos que a política <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> desative a detecção automática de fuso horário, a definição da política especificará o método de detecção automática, que não poderá ser modificado pelos usuários.
+
+Se a política for definida como:
+ * <ph name="TIMEZONE_AUTOMATIC_DETECTION_DISABLED" />, a detecção automática do fuso horário será desativada.
+ * <ph name="TTIMEZON_AUTOMATIC_DETECTION_IP_ONLY" />, a detecção automática do fuso horário ficará ativada e usará o método de apenas IP.
+ * <ph name="TIMEZONE_AUTOMATIC_DETECTION_SEND_WIFI_ACCESS_POINTS" />, a detecção automática de fuso horário ficará ativada, enviando continuamente a lista de pontos de acesso Wi-Fi visíveis ao servidor da API Geolocation para uma detecção automática mais precisa.
+ * <ph name="TIMEZONE_AUTOMATIC_DETECTION_SEND_ALL_LOCATION_INFO" />, a detecção automática de fuso horário ficará ativada, enviando continuamente informações de localização (como pontos de acesso Wi-Fi e torres de celular próximas) a um servidor para uma detecção de fuso horário mais precisa.
+
+Se a política não for definida, especifique a opção "Deixar os usuários decidirem" ou defina como "Nenhuma". Assim, os usuários controlarão a detecção automática de fuso horário usando os controles normais em <ph name="OS_SETTINGS_URL" />.
+
+Observação: se você estiver usando esta política para resolver o fuso horário automaticamente, não se esqueça de definir a política <ph name="CROS_GLS_POLICY_NAME" /> como <ph name="GLS_ALLOWED" /> ou <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />.</translation>
 <translation id="7179187054027029272">Se a política for definida como verdadeira ou não for definida, com as permissões adequadas, os usuários, apps e extensões poderão entrar no modo de tela cheia para que só o conteúdo da Web seja exibido.
 
       Se ela for definida como falsa, os usuários, apps e extensões não poderão entrar no modo de tela cheia.</translation>
@@ -9179,6 +9216,7 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
       Observação: se o suplemento Suporte a navegadores legados para <ph name="IE_PRODUCT_NAME" /> não estiver instalado, esta política não terá efeito.</translation>
 <translation id="8179161412673077784">Impedir que sites com experiências abusivas abram novas janelas ou guias</translation>
 <translation id="8183108371184777472">Suprimir a inicialização da janela do navegador</translation>
+<translation id="8185312100223853315">Rótulo do perfil</translation>
 <translation id="8186911565834244165">Permitir feedback do usuário</translation>
 <translation id="8195133650230097559">Ignorar solicitações de wake locks para gerenciamento de energia</translation>
 <translation id="8196558469954193908">Esta política permite a união da conexão HTTP/2 quando os certificados do cliente estão em uso. Para fazer a união, o nome do host da possível nova conexão e o nome do host de uma conexão já existente precisam corresponder a um ou mais padrões descritos nesta política. A política é uma lista de hosts que utilizam o formato de filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />: "example.com" corresponde a "example.com" e a todos os subdomínios (por exemplo, "sub.example.com"), enquanto ".example.net" corresponde exatamente a "example.net".
@@ -10240,6 +10278,7 @@ Observação: no momento, apenas a primeira entrada será considerada. Extensõe
 <translation id="9020630127193895800">Luz de fundo índigo do teclado</translation>
 <translation id="9031831501689819108">Ativar o Suporte a navegadores legados</translation>
 <translation id="9032595854515551464">Ativar o serviço <ph name="PRODUCT_NAME" /> V2 e iniciar o espaço de trabalho remoto após o login</translation>
+<translation id="903334067190374761">Definir um rótulo de perfil personalizado</translation>
 <translation id="9034285085962866065">Permitir a personalização de atalhos do sistema</translation>
 <translation id="9035086760683255833">Ativar o recurso de acessibilidade que destaca o objeto em foco por meio do teclado.
 

@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">የጥንቃቄ አሰሳ</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" /> ላይ የነበረ የዚህን ገፅ የመስመር ውጭ ቅጂ በመመልከት ላይ ነዎት</translation>
 <translation id="1644574205037202324">ታሪክ</translation>
+<translation id="1644969410150602449">የእርስዎን የድር ታሪክ እዚህ ይመልከቱ</translation>
 <translation id="1657932388559784161">የገጽ ግንዛቤዎች የግርጌ ሉህ ተዘግቷል</translation>
 <translation id="1670399744444387456">መሠረታዊ</translation>
 <translation id="1671236975893690980">ውርድ በመጠባበቅ ላይ...</translation>
@@ -250,6 +251,7 @@
 <translation id="2364539095045928896">የግንዛቤዎች ማዕከል ገፅን የግላዊነት ማስታወቂያ ለመዝጋት መዝጊያ አዝራር።</translation>
 <translation id="2386938421315164605">ርዕሶችን ደብቅ እና አትደብቅ</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" />ን <ph name="FILE_SIZE" /> እንደገና ማውረድ ይፈልጋሉ?</translation>
+<translation id="2395004545133500011">ከተከፈተ የማጠቃለያ ሉህ ጋር አጋራ</translation>
 <translation id="2410754283952462441">አንድ መለያ ይምረጡ</translation>
 <translation id="2414886740292270097">ጨለማ</translation>
 <translation id="2421705177906985956">አሁን ምንም የሚታዩ ጣቢያዎች የሉም</translation>
@@ -364,6 +366,7 @@
 <translation id="2942036813789421260">የቅድመ-ዕይታ ትር ተዘግቷል</translation>
 <translation id="2946420957526726953">ከሌሎች መሣሪያዎች ጋር ለመገናኘት Chromeን በማዘመን ላይ።</translation>
 <translation id="2951071800649516099">ለበኋላ ወደ ንባብ ዝርዝርዎ ገጾችን ያክሉ</translation>
+<translation id="2956070106555335453">ማጠቃለያ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ያልተነበበ ገፅ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ያልተነበቡ ገጾች}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ያልተነበቡ ገጾች}}</translation>
 <translation id="296370266220139811">ጊዜ ይቆጥቡ እና ያነሰ ይተይቡ</translation>
 <translation id="2977350910003566746">መጨረሻ ላይ በተከፈተው በመደርደር ላይ</translation>
@@ -643,6 +646,7 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{ዕልባት «<ph name="FOLDER_NAME" />» ውስጥ ተቀምጧል። የተቀመጠው በዚህ መሣሪያ ላይ ብቻ ነው።}one{ዕልባት «<ph name="FOLDER_NAME" />» ውስጥ ተቀምጧል። የተቀመጠው በዚህ መሣሪያ ላይ ብቻ ነው።}other{ዕልባቶች «<ph name="FOLDER_NAME" />» ውስጥ ተቀምጠዋል። የተቀመጡት በዚህ መሣሪያ ላይ ብቻ ነው።}}</translation>
 <translation id="4484496141267039529">ምንም ግንኙነት የለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="4487967297491345095">ሁሉንም የChrome መተግበሪያ ውሂብ እስከመጨረሻው ይሰረዛል። ይሄ ሁሉንም ፋይሎች፣ ቅንብሮች፣ መለያዎች፣ የውሂብ ጎታዎች፣ ወዘተ. ያካትታል።</translation>
+<translation id="4489640160615759754">ከማጠቃለያ ሉህ ጋር አጋራ</translation>
 <translation id="4494806687727322324">የይለፍ ቃል ማስቀመጥ በእርስዎ አስተዳዳሪ በርቷል</translation>
 <translation id="4508528996305412043">የምግብ ካርድ ምናሌ ተከፍቷል</translation>
 <translation id="4509501256689523862">በሚያስሱበት ጊዜ የሚያዩት ማስታወቂያ ግላዊነት የተላበሰ መሆን አለመሆኑ በዚህ ቅንብር <ph name="BEGIN_LINK_1" />የማስታወቂያ ርዕሶች<ph name="END_LINK_1" />፣ በእርስዎ <ph name="BEGIN_LINK_2" />የኩኪ ቅንብሮች<ph name="END_LINK_2" /> ላይ እና እየተመለከቱት ያለው ጣቢያ ማስታወቂያዎችን ግላዊነት የሚያላብስ ከሆነ ይወሰናል</translation>
@@ -652,6 +656,7 @@
 <translation id="4521489764227272523">የተመረጠው ውሂብ ከChrome እና የሰመሩ መሣሪያዎችዎ ተወግዷል።
 
 የእርስዎ Google መለያ በ<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ላይ እንደ ፍለጋዎች እና የሌሎች Google አገልግሎቶች እንቅስቃሴ ያሉ ሌሎች የአሰሳ ታሪክ ዓይነቶች ሊኖሩት ይችላል።</translation>
+<translation id="452279259461584111">ከተዘጋ የማጠቃለያ ሉህ ጋር አጋራ</translation>
 <translation id="4523326818319942067">ካለፈው ሰዓት</translation>
 <translation id="452750746583162491">የሰመረ ውሂብዎን ይገምግሙ</translation>
 <translation id="4532845899244822526">አቃፊ ይምረጡ</translation>
@@ -749,6 +754,7 @@
 <translation id="4950924971025849764">ወደ ተመሳሳዩ Google መለያ ሲገቡ ሌሎች መሳሪያዎች ይህን ስልክ እንደ የደህንነት ቁልፍ ሊጠቀሙበት ይችላሉ።</translation>
 <translation id="4957722034734105353">ተጨማሪ ለመረዳት...</translation>
 <translation id="4961107849584082341">ይህን ገፅ ወደ ማንኛውም ቋንቋ ያስተርጉሙ</translation>
+<translation id="496607651705915226">በGoogle መለያዎ ውስጥ አዲስ የይለፍ ቃላትን ለማስቀመጥ እና ለመጠቀም Google Play አገልግሎቶችን ያዘምኑ</translation>
 <translation id="4971735654804503942">ይበልጥ ፈጣን፣ ከአደገኛ ድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች አስቀድሞ የሚደረግ ጥበቃ። ስለይለፍ ቃል ጥሰቶች ያስጠነቅቅዎታል። ወደ Google የአሰሳ ውሂብን መላክ ያስፈልጋል።</translation>
 <translation id="497421865427891073">ወደ ፊት ሂድ</translation>
 <translation id="4987271110129728827">ያንን ገፅ ማግኘት አልተቻለም። የፊደል አጻጻፍዎን ይመልከቱ ወይም የድር ፍለጋ ይሞክሩ።</translation>

@@ -3506,12 +3506,14 @@
 <translation id="3660234220361471169">არასანდო</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{მოიძებნა 1 არსებული პაროლი}other{მოიძებნა {NUM_PASSWORDS} არსებული პაროლი}}</translation>
 <translation id="3662207097851752847">დაადასტურეთ Google ანგარიში თქვენს ტელეფონში</translation>
+<translation id="3663417513679360795">დამატებითი ინფორმაცია სტანდარტული წინასწარი ჩატვირთვის ჩართვის შესახებ</translation>
 <translation id="3664511988987167893">გაფართოების ხატულა</translation>
 <translation id="3665100783276035932">საიტების უმეტესობამ მოლოდინისამებრ უნდა იმუშაოს</translation>
 <translation id="3665301845536101715">გვერდით პანელში გახსნა</translation>
 <translation id="3665589677786828986">Chrome-მა აღმოაჩინა, რომ თქვენი ბრაუზერის ზოგიერთი პარამეტრი დაზიანდა სხვა პროგრამის მიერ და აღდგენილ იქნა ორიგინალი ნაგულისხმევი პარამეტრები.</translation>
 <translation id="3665919494326051362">მიმდინარე ვერსიაა <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi NIC-ების გამართვის მონაცემების გროვა</translation>
+<translation id="3666971425390608309">ჩამოტვირთვა დაპაუზდა: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">ნებისმიერი მომწოდებლის მოწყობილობები</translation>
 <translation id="3670229581627177274">Bluetooth-ის ჩართვა</translation>
 <translation id="3670480940339182416">საიტებს შეუძლია V8 ოპტიმიზატორის გამოყენება</translation>
@@ -3594,6 +3596,7 @@
 <translation id="3720543739123045680">სხვა ჩანართები ამ ჩანართთან ერთად იყენებს პროცესს, რამაც, შესაძლოა, DevTools-ის მოულოდნელი ქცევა გამოიწვიოს.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">თქვენ და Google</translation>
+<translation id="3721178866505920080">დამატებითი ინფორმაცია გაფართოებული წინასწარი ჩატვირთვის ჩართვის შესახებ</translation>
 <translation id="3722108462506185496">ვირტუალური მოწყობილობის სერვისის გაშვება ვერ მოხერხდა. გთხოვთ, ცადოთ ხელახლა.</translation>
 <translation id="3722624153992426516">მიღებულია <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> ინსტრუქცია</translation>
 <translation id="3724897774652282549">ფორმის შევსება</translation>
@@ -3711,6 +3714,7 @@
 <translation id="3798670284305777884">დინამიკი (შიდა)</translation>
 <translation id="3799128412641261490">გადამრთველით წვდომის პარამეტრები</translation>
 <translation id="3800828618615365228">Google Chrome-ისა და ChromeOS-ის დამატებითი პირობები</translation>
+<translation id="3800898876950197674">ეს გაფართოება რომ ჩართოთ, შეიყვანეთ თქვენი პაროლი.</translation>
 <translation id="3802486193901166966">ეს გაფართოება არ საჭიროებს სპეციალურ ნებართვებს და მას არ აქვს რაიმე სახის დამატებითი წვდომა საიტზე</translation>
 <translation id="380329542618494757">სახელი</translation>
 <translation id="3803345858388753269">ვიდეოს ხარისხი</translation>
@@ -4582,7 +4586,6 @@
 <translation id="4473996011558324141">სავარაუდო დრო</translation>
 <translation id="4474155171896946103">ყველა ჩანართის სანიშნეებში დამატება…</translation>
 <translation id="4475299370877036544">ეს მოქმედება, შესაძლოა, არღვევდეს თქვენი ორგანიზაციის წესებს</translation>
-<translation id="4475552974751346499">ჩამოტვირთვების ძიება</translation>
 <translation id="4476590490540813026">სპორტსმენი</translation>
 <translation id="4476659815936224889">ამ კოდის სკანირებისთვის შეგიძლიათ გამოიყენოთ კამერის ზოგიერთი აპი ან QR კოდების სკანირების აპი თქვენს ტელეფონზე.</translation>
 <translation id="4477015793815781985">დაურთეთ Ctrl, Alt ან ⌘</translation>
@@ -7456,6 +7459,7 @@
 <translation id="6758056191028427665">შეგვატყობინეთ, როგორ ვმუშაობთ.</translation>
 <translation id="6759193508432371551">ქარხნული პარამეტრების დაბრუნება</translation>
 <translation id="6760354150216532978">ყურადღება: ამ საიტს შეუძლია თქვენ მიერ განხორციელებული რედაქტირებების ნახვა</translation>
+<translation id="6761209758867628753">ხელსაწყო: დაწერაში დახმარება</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6761623907967804682">მოწყობილობაზე შენახული საიტების მონაცემები დაუშვებელია</translation>
 <translation id="6762833852331690540">ჩართული</translation>
@@ -7993,6 +7997,7 @@
 <translation id="7180611975245234373">განახლება</translation>
 <translation id="7180865173735832675">მორგება</translation>
 <translation id="7181117767881540376">სანიშნეების ზოლის &amp;დამალვა</translation>
+<translation id="7181329571386134105"><ph name="CHILD_NAME" />-მა მომავალში გაფართოებები თქვენი დასტურის გარეშე რომ დააინსტალიროს, გახსენით Family Link აპი თქვენს მოწყობილობაზე და განაახლეთ <ph name="CHILD_NAME" />-ის პარამეტრები Google Chrome-ისთვის.</translation>
 <translation id="7182063559013288142">მყისიერი უსადენო ქსელი</translation>
 <translation id="7182791023900310535">პაროლის გადატანა</translation>
 <translation id="718427252411067142">სხვებმა თქვენი პაროლი რომ ვეღარ გამოიყენონ, გახსენით აპი პაროლის შესაცვლელად</translation>
@@ -10786,6 +10791,7 @@
 <translation id="973558314812359997">მაუსის ზომა</translation>
 <translation id="975893173032473675">ენა, რომელზეც უნდა ითარგმნოს</translation>
 <translation id="976499800099896273">ნაჩვენებია ავტოკორექციის გაუქმების დიალოგი. <ph name="TYPED_WORD" /> შესწორდა და გახდა <ph name="CORRECTED_WORD" />.  წვდომისთვის დააჭირეთ ზემოთ მიმართულ ისარზე, იგნორირებისთვის კი escape კლავიშს.</translation>
+<translation id="976572010712028687">დაადასტურეთ, რომ მშობელი ხართ</translation>
 <translation id="978146274692397928">საწყისი პუნქტუაციის სიგანე სავსეა</translation>
 <translation id="978978324795544535">ერთეულის გადასატანად საჭიროა მასზე ორმაგად შეხება, მეორე შეხებაზე შეყოვნება, შემდეგ კი ერთეულის ჩავლებით გადატანა</translation>
 <translation id="97905529126098460">გაუქმების დასრულების შემდეგ ეს ფანჯარა დაიხურება.</translation>

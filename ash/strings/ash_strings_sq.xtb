@@ -228,6 +228,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1882814835921407042">Nuk ka rrjet celular</translation>
 <translation id="1882897271359938046">Po pasqyron në <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Shkyçe me gjurmën e gishtit</translation>
+<translation id="1904997243703671177">Kur të çaktivizosh Bluetooth-in, <ph name="DEVICE_COUNT" /> pajisje të jashtme do të shkëputen nga <ph name="DEVICE_TYPE" />, duke përfshirë:</translation>
 <translation id="1908992311423394684">Instalim i ri</translation>
 <translation id="1915307458270490472">Mbyll</translation>
 <translation id="1918022425394817322">Pamja paraprake e kamerës ka kaluar në këndin e sipërm djathtas</translation>
@@ -258,7 +259,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2017998995161831444">Hap "Ndihmën" në aplikacionin "Eksploro"</translation>
 <translation id="2018630726571919839">Më trego një barsoletë</translation>
 <translation id="2021864487439853900">Kliko për ta shkyçur</translation>
-<translation id="2023558322300866873">Mund ta ndalosh regjistrimin e paketave në çdo kohë.</translation>
 <translation id="2034971124472263449">Ruaje gjithsesi</translation>
 <translation id="204259843076055848">Shkurtorja <ph name="SIX_PACK_KEY_NAME" /> është aktualisht joaktive</translation>
 <translation id="2049240716062114887">Emri i tryezës u ndryshua në "<ph name="DESK_NAME" />"</translation>
@@ -356,6 +356,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="2484513351006226581">Shtyp <ph name="KEYBOARD_SHORTCUT" /> për të ndryshuar planin e tastierës.</translation>
 <translation id="2486214324139475545">Pamja paraprake e "<ph name="DESK_NAME" />". Tavolina e punës aktive.</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" u kalua në rezolucionin <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Nëse nuk konfirmohet, cilësimet e mëparshme do të restaurohen pas <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Bashkohu</translation>
 <translation id="2499445554382787206">Menyja e profilit të tavolinës së punës. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tastet e përhershme</translation>
@@ -699,7 +700,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="380165613292957338">Përshëndetje, si mund të të ndihmoj?</translation>
 <translation id="3804737937830804242">Palos kamerën</translation>
 <translation id="3824784079442479685">Kjo lejon qasjen te kamera për <ph name="APP_NAME" /> dhe të gjitha aplikacionet dhe uebsajtet me lejen e kamerës. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
-<translation id="3825680296690914697">Të dorëzuara: <ph name="NUM_TURNED_IN" /> nga <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, të vlerësuara me nota: <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Kalo te fjalëkalimi</translation>
 <translation id="383058930331066723">Modaliteti i kursimit të baterisë është aktiv</translation>
 <translation id="383629559565718788">Shfaq cilësimet e tastierës</translation>
@@ -763,7 +763,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4066027111132117168">Aktive, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Hap faqen e "Shkarkimeve"</translation>
 <translation id="4072264167173457037">Sinjal mesatar</translation>
-<translation id="4076455981957565732">Të dorëzuara: <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Të vlerësuara: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Aktivizo çelësin fizik të mikrofonit në pajisjen tënde</translation>
 <translation id="4101772068965291327">Hap faqen kryesore</translation>
 <translation id="4112140312785995938">Kërko prapa</translation>
@@ -959,6 +958,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4813311884204119883">Zvarrit lidhjen në një zonë boshe në shiritin e skedave</translation>
 <translation id="4814539958450445987">Ekrani i identifikimit</translation>
 <translation id="481455355267255546">Në vijim</translation>
+<translation id="481749895090480684">Lista e detyrave: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamerën dhe mikrofonin</translation>
 <translation id="482908187605862807">Aplikacionet e disponueshme nga "Dyqani i Play"</translation>
 <translation id="4831034276697007977">Je i sigurt që dëshiron të çaktivizosh klikimet automatike?</translation>
@@ -1000,6 +1000,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4952936045814352993">"Gjej telefonin" nuk ofrohet kur tingujt e alarmeve janë çaktivizuar</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> kërkon që ta kthesh pas pajisjen tënde <ph name="DEVICE_TYPE" />. Pajisja do të rivendoset dhe të gjitha të dhënat do të fshihen.</translation>
 <translation id="4961318399572185831">Ekrani i transmetimit</translation>
+<translation id="4964188651935955085">Kur të çaktivizosh Bluetooth-in, kjo pajisje e jashtme do të shkëputet nga <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Ngri volumin</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> orë e <ph name="MINUTES" /> min. e <ph name="SECONDS" /> sek.</translation>
 <translation id="4975771730019223894">Distinktivi i aplikacionit</translation>
@@ -1027,6 +1028,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Do të marrësh njoftime nëse flet kur është në heshtje. Audioja nuk largohet asnjëherë nga pajisja jote.</translation>
 <translation id="5077416371682039027">Konfiguro shikimin e njoftimeve, aplikacioneve, medias dhe fotografive më të fundit të telefonit tënd</translation>
+<translation id="5077936103761694531">Të konfirmohet rezolucioni?</translation>
 <translation id="5078796286268621944">Kod i pasaktë PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + shigjeta lart</translation>
 <translation id="5083553833479578423">Shkyç më shumë funksione të "Asistentit".</translation>
@@ -1676,6 +1678,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7647488630410863958">Shkyçe pajisjen për të parë njoftimet e tua</translation>
 <translation id="7649070708921625228">Ndihma</translation>
 <translation id="7654687942625752712">Shtyp dhe mbaj shtypur të dyja tastet e volumit për pesë sekonda për të çaktivizuar komentet me zë.</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" u kalua në rezolucionin <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Për shkak të kufizimeve të gjerësisë së brezit, ekrani yt nuk mund të mbështesë rezolucionin <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Nëse nuk konfirmohet, cilësimet e mëparshme do të restaurohen pas <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7659861092419699379">Tavolina e punës dhe dritaret janë mbyllur</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> do të shfaqet në pajisjet e lidhura me <ph name="EMAIL" /></translation>
@@ -1766,6 +1769,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7945357288295809525">Shfaq cilësimet e qasshmërisë, "<ph name="ENABLED_FEATURES" />" u aktivizua.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> dëshiron të përdorë <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Errëso tastierën</translation>
+<translation id="7953994493035617347">Të konfirmohet rezolucioni i ri?</translation>
 <translation id="7963689218131240420">Modaliteti "Mos shqetëso" është joaktiv.</translation>
 <translation id="7963992254934562106">Nga <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Zgjidh dosje...</translation>
@@ -1824,6 +1828,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8155628902202578800">Hap dialogun e informacioneve për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Po përdor <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Aktivizo/çaktivizo menynë për të ndryshuar përmasat e modalitetit të kyçjes</translation>
+<translation id="8192727139462702395">Kur të çaktivizosh Bluetooth-in, këto pajisje të jashtme do të shkëputen nga <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Skeda e transmetimit</translation>
 <translation id="8200772114523450471">Vazhdo</translation>
 <translation id="8203795194971602413">Klikimi me butonin djathtas</translation>

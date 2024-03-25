@@ -228,6 +228,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1882814835921407042">Nu este disponibilă nicio rețea mobilă</translation>
 <translation id="1882897271359938046">Se oglindește pe <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Deblochează cu amprenta</translation>
+<translation id="1904997243703671177">Când dezactivezi Bluetooth, <ph name="DEVICE_COUNT" /> dispozitive externe se vor deconecta de la <ph name="DEVICE_TYPE" />, inclusiv:</translation>
 <translation id="1908992311423394684">Instalare nouă</translation>
 <translation id="1915307458270490472">Încheie apelul</translation>
 <translation id="1918022425394817322">Camera foto este aliniată cu colțul din dreapta sus</translation>
@@ -258,7 +259,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2017998995161831444">Deschide Ajutor în aplicația Explorare</translation>
 <translation id="2018630726571919839">Spune-mi o glumă</translation>
 <translation id="2021864487439853900">Dă clic pentru deblocare</translation>
-<translation id="2023558322300866873">Poți opri oricând capturarea pachetelor</translation>
 <translation id="2034971124472263449">Salvează oricum</translation>
 <translation id="204259843076055848">Comanda rapidă <ph name="SIX_PACK_KEY_NAME" /> este dezactivată momentan</translation>
 <translation id="2049240716062114887">Numele desktopului a fost schimbat în <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2482878487686419369">Notificări</translation>
 <translation id="2484513351006226581">Apasă <ph name="KEYBOARD_SHORTCUT" /> pentru a schimba aspectul tastaturii.</translation>
 <translation id="2486214324139475545">Previzualizare pentru <ph name="DESK_NAME" />. Desktop activ.</translation>
+<translation id="2486405091093637109">Rezoluția pentru <ph name="DISPLAY_NAME" /> a fost modificată la <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Dacă nu confirmi, vor fi restabilite setările anterioare în <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Urmează</translation>
 <translation id="2499445554382787206">Meniul profilului de desktop: <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Taste adezive</translation>
@@ -699,7 +700,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="380165613292957338">Bună ziua, cu ce vă pot ajuta?</translation>
 <translation id="3804737937830804242">Restrânge camera</translation>
 <translation id="3824784079442479685">Astfel, se permite accesul la cameră pentru <ph name="APP_NAME" /> și pentru toate aplicațiile și site-urile care au permisiunea adecvată Poate fi necesar să actualizezi pagina web sau să repornești aplicația.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> din <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> predate, <ph name="NUM_GRADED" /> notate</translation>
 <translation id="3826099427150913765">Comută la parolă</translation>
 <translation id="383058930331066723">Modul Economisirea bateriei este activat</translation>
 <translation id="383629559565718788">Afișează setările pentru tastatură</translation>
@@ -763,7 +763,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4066027111132117168">Activată, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Deschide pagina Descărcări</translation>
 <translation id="4072264167173457037">Semnal mediu</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> predate • <ph name="NUM_GRADED" /> evaluate</translation>
 <translation id="4086921558679520050">Activează comutatorul pentru microfonul fizic al dispozitivului</translation>
 <translation id="4101772068965291327">Deschideți pagina de pornire</translation>
 <translation id="4112140312785995938">Derulează înapoi</translation>
@@ -959,6 +958,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4813311884204119883">Trage linkul în zona liberă din bara de file</translation>
 <translation id="4814539958450445987">Ecranul de conectare</translation>
 <translation id="481455355267255546">Urmează</translation>
+<translation id="481749895090480684">Lista de sarcini: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">cameră și microfon</translation>
 <translation id="482908187605862807">Aplicații disponibile din Magazinul Play</translation>
 <translation id="4831034276697007977">Sigur vrei să dezactivezi clicurile automate?</translation>
@@ -1000,6 +1000,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4952936045814352993">Funcția de găsire a telefonului nu este disponibilă atunci când sunetul alarmei este dezactivat</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> solicită să revii la starea anterioară a dispozitivului <ph name="DEVICE_TYPE" />. Dispozitivul va fi resetat și toate datele vor fi șterse.</translation>
 <translation id="4961318399572185831">Proiectează ecranul</translation>
+<translation id="4964188651935955085">Când dezactivezi Bluetooth, acest dispozitiv extern se va deconecta de la <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Crește volumul</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min. <ph name="SECONDS" /> sec.</translation>
 <translation id="4975771730019223894">Marcarea cu insignă a aplicațiilor</translation>
@@ -1027,6 +1028,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="5062496344832867502">memorie ram</translation>
 <translation id="5068762093486106012">Vei primi o notificare dacă vorbești cu sunetul dezactivat. Conținutul audio nu părăsește niciodată dispozitivul.</translation>
 <translation id="5077416371682039027">Configurează afișarea fotografiilor, a elementelor media, a notificărilor și a aplicațiilor recente ale telefonului</translation>
+<translation id="5077936103761694531">Confirmi rezoluția?</translation>
 <translation id="5078796286268621944">Cod PIN incorect</translation>
 <translation id="5083035541015925118">ctrl + alt + săgeată în sus</translation>
 <translation id="5083553833479578423">Deblochează mai multe funcții ale Asistentului.</translation>
@@ -1676,6 +1678,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7647488630410863958">Deblochează dispozitivul pentru a vedea notificările</translation>
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7654687942625752712">Apasă lung ambele taste de volum timp de cinci secunde ca să dezactivezi feedbackul rostit.</translation>
+<translation id="7654916369822103315">Rezoluția pentru <ph name="DISPLAY_NAME" /> a fost modificată la <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Din cauza limitărilor lățimii de bandă a portului, ecranul nu acceptă rezoluția de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Dacă nu confirmi, vor fi restabilite setările anterioare în <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7659861092419699379">Desktopul și ferestrele au fost închise</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> va apărea pe dispozitivele conectate cu <ph name="EMAIL" /></translation>
@@ -1766,6 +1769,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7945357288295809525">Afișează setările de accesibilitate, <ph name="ENABLED_FEATURES" /> este activată.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vrea să folosească <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Redu luminozitatea tastaturii</translation>
+<translation id="7953994493035617347">Confirmi noua rezoluție?</translation>
 <translation id="7963689218131240420">Funcția Nu deranja este dezactivată.</translation>
 <translation id="7963992254934562106">De la <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Selectează dosarul...</translation>
@@ -1824,6 +1828,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8155628902202578800">Deschide fereastra de dialog cu informații pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Se folosește <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Activează / dezactivează meniul pentru a redimensiona modul de blocare</translation>
+<translation id="8192727139462702395">Când dezactivezi Bluetooth, următoarele dispozitive externe se vor deconecta de la <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Se proiectează fila</translation>
 <translation id="8200772114523450471">Reia</translation>
 <translation id="8203795194971602413">Clic dreapta</translation>

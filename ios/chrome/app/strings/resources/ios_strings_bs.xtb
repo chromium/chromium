@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Sakrij za sada</translation>
 <translation id="1219674500290482172">Nije moguće povezati se s internetom.</translation>
-<translation id="1226238226094914652">Lozinke na svim vašim uređajima</translation>
 <translation id="122699739164161391">Zatvori sve kartice</translation>
 <translation id="1227866575467023566">{count,plural, =1{Stranica je dodana na listu za čitanje na računu {email}}one{{count} stranica je dodana na listu za čitanje na računu {email}}few{{count} stranice su dodane na listu za čitanje na računu {email}}other{{count} stranica je dodano na listu za čitanje na računu {email}}}</translation>
 <translation id="1242044645101871359">Prijavite se ponovo</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Prati</translation>
 <translation id="1644574205037202324">Historija</translation>
 <translation id="164673457281113247">{count,plural, =1{Oznaka je sačuvana}one{Oznake su sačuvane}few{Oznake su sačuvane}other{Oznake su sačuvane}}</translation>
-<translation id="165008673352427892">Nova funkcija</translation>
 <translation id="1650222530560417226">Dodirnite dugme "Započni zapisivanje" da prikupljate buduće zapisnike i greške konzole za JavaScript sa svih kartica. Zapisnici će se prikupljati (i isključivo pohranjivati u memoriju) dok se ova stranica ne zatvori ili dok ne dodirnete "Zaustavi zapisivanje".</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} sačuvana lozinka je dostupna iznad tastature.}one{{count} sačuvana lozinka je dostupna iznad tastature.}few{{count} sačuvane lozinke su dostupne iznad tastature.}other{{count} sačuvanih lozinki je dostupno iznad tastature.}}</translation>
 <translation id="1657011748321897393">Dijeljenje nije uspjelo jer niste povezani na mrežu.</translation>
@@ -302,7 +300,6 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2556092377360758201">Bez zaštite (ne preporučuje se)</translation>
 <translation id="2561375093019333908">OTVORI</translation>
 <translation id="2562041823070056534">Slanje na uređaj <ph name="DEVICE_NAME" />...</translation>
-<translation id="2576499762020411840">Koristite lozinke s Google računa i pohranjujte ih na njemu</translation>
 <translation id="2577522251608256362">Naselje</translation>
 <translation id="2578571896248130439">Pošalji web stranicu</translation>
 <translation id="2584132361465095047">Dodaj račun…</translation>
@@ -948,7 +945,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5850913622988109693">Opcije za praćenje paketa</translation>
 <translation id="5854790677617711513">Starije od 30 dana</translation>
 <translation id="5857090052475505287">Novi folder</translation>
-<translation id="5857361196621230935">Dodaj karticu u grupu</translation>
 <translation id="5857770089550859117">Potreban je pristupni izraz za pokretanje sinhronizacije.</translation>
 <translation id="5859715514067755465">Naprijed</translation>
 <translation id="5860033963881614850">Isklj.</translation>
@@ -1159,7 +1155,6 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="6800349425672670802">Možete pristupiti svim otvorenim karticama putem Prebacivača kartica.</translation>
 <translation id="6807889908376551050">Prikaži sve…</translation>
 <translation id="681368974849482173">Stavka je kreirana</translation>
-<translation id="6822587385560699678">Kada je uključeno, lozinke se pohranjuju na računu <ph name="ACCOUNT" />. Kada je isključeno, lozinke se pohranjuju samo na ovom uređaju.</translation>
 <translation id="6824350924364057989">Postavke</translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6842136130964845393">Potvrdite svoj identitet da uvijek možete pristupati sačuvanim lozinkama</translation>

@@ -117,6 +117,7 @@ Data Anda dienkripsi dengan frasa sandi. Masukkan frasa sandi untuk menggunakan 
 <translation id="4195557071150719219">Lihat Tab Terbaru Chromium</translation>
 <translation id="4200712796753248893">Gunakan Tindakan Chromium di iOS</translation>
 <translation id="420541179527342563">Untuk menonaktifkan Mode Kunci Total di Chromium, nonaktifkan di iPad Anda.</translation>
+<translation id="427331839909790668">Tautkan Chromium dan layanan Google lainnya jika Anda ingin layanan tersebut mempersonalisasi pengalaman Anda menggunakan data dari satu sama lain</translation>
 <translation id="4408912345039114853">Jalankan Pemeriksaan Keamanan Chromium</translation>
 <translation id="4432744876818348753">Login untuk mengoptimalkan penggunaan Chromium.</translation>
 <translation id="4445228361214254027">Organisasi Anda menonaktifkan kemampuan untuk menggunakan dan menyimpan data Chromium di Akun Google Anda. Bookmark, sandi, dan data baru lainnya hanya akan disimpan ke perangkat ini.</translation>
@@ -218,6 +219,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="6852799557929001644">Akses sandi Chromium dan data lainnya di berbagai aplikasi lain pada perangkat ini.</translation>
 <translation id="6887138405044152640">Untuk mengirim tab ini ke perangkat lain, login ke Chromium di perangkat tersebut.</translation>
 <translation id="6911341667534646387">Tetap gunakan data Chromium di Akun Google Anda</translation>
+<translation id="7002548535535009764">Untuk mendapatkan pengalaman yang paling dipersonalisasi, sertakan Chromium di <ph name="FEATURE_NAME_1" /> dan <ph name="FEATURE_NAME_2" /></translation>
 <translation id="7006920032187763988">Anda dapat menggunakan sandi yang Anda simpan ke Pengelola Sandi di aplikasi lain pada iPad.</translation>
 <translation id="7018284295775193585">Chromium tidak dapat diupdate</translation>
 <translation id="7045244423563602563">Sesuaikan Chromium dengan Selera Anda</translation>
@@ -246,7 +248,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="78025249032851484">Chromium Anda belum diupdate.</translation>
 <translation id="7859018312476869945">Saat Anda mengetik di kolom URL atau kotak penelusuran, Chromium akan mengirimkan hal yang Anda ketik ke mesin telusur default untuk mendapatkan saran yang lebih baik. Fitur ini nonaktif dalam mode Samaran.</translation>
 <translation id="786327964234957808">Anda berganti akun sinkronisasi dari <ph name="USER_EMAIL1" /> ke <ph name="USER_EMAIL2" />. Data Chromium Anda yang sudah ada dikelola oleh <ph name="DOMAIN" />. Tindakan ini akan menghapus data dari perangkat, namun data Anda akan tetap tersedia di <ph name="USER_EMAIL1" />.</translation>
-<translation id="7865408467687426957">Saat Anda login ke Chromium, sandi yang Anda simpan akan disimpan di Akun Google Anda. Untuk menonaktifkannya, <ph name="BEGIN_LINK" />buka setelan<ph name="END_LINK" />.</translation>
 <translation id="7890287942691234100">Mulai menggunakan pemindai Chromium</translation>
 <translation id="7905064834449738336">Jika Anda menggunakan sandi, Chromium akan memperingatkan Anda jika sandi telah dipublikasikan secara online. Saat pemeriksaan dilakukan, sandi dan nama pengguna Anda dienkripsi, sehingga tidak dapat dibaca oleh siapa pun, termasuk Google.</translation>
 <translation id="7911732829884437264">Gunakan Chromium Secara Default</translation>

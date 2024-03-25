@@ -248,7 +248,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="78025249032851484">Chromium no està actualitzat.</translation>
 <translation id="7859018312476869945">Quan escrius a la barra d'adreces o al quadre de cerca, Chromium envia el que escrius al teu motor de cerca predeterminat per obtenir millors suggeriments. Aquesta opció està desactivada en el mode d'incògnit.</translation>
 <translation id="786327964234957808">Estàs canviant el compte de sincronització de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> gestiona les teves dades de Chromium. Se suprimiran les teves dades d'aquest dispositiu, però continuaran estant disponibles a <ph name="USER_EMAIL1" />.</translation>
-<translation id="7865408467687426957">Quan tinguis la sessió iniciada a Chromium, les contrasenyes que desis aniran al teu Compte de Google. Per desactivar-ho, <ph name="BEGIN_LINK" />ves a la configuració<ph name="END_LINK" />.</translation>
 <translation id="7890287942691234100">Comença a utilitzar l'escàner de Chromium</translation>
 <translation id="7905064834449738336">Quan utilitzes una contrasenya, Chromium t'avisa si s'ha publicat en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten perquè ningú no els pugui llegir (ni tan sols Google).</translation>
 <translation id="7911732829884437264">Utilitza Chromium de manera predeterminada</translation>

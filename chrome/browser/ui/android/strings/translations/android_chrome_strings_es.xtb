@@ -365,6 +365,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="2942036813789421260">La pestaña de vista previa está cerrada</translation>
 <translation id="2946420957526726953">Actualizando Chrome para establecer conexión con otros dispositivos</translation>
 <translation id="2951071800649516099">Añade páginas a tu lista de lectura para más tarde</translation>
+<translation id="2956070106555335453">Resumen</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página no leída}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas no leídas}}</translation>
 <translation id="296370266220139811">Ahorra tiempo y escribe menos</translation>
 <translation id="2977350910003566746">Ordenados por última apertura</translation>
@@ -750,6 +751,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4950924971025849764">Cuando inicies sesión con la misma cuenta de Google, otros dispositivos podrán usar este teléfono como llave de seguridad.</translation>
 <translation id="4957722034734105353">Más información...</translation>
 <translation id="4961107849584082341">Traduce esta página a cualquier idioma</translation>
+<translation id="496607651705915226">Para guardar y usar nuevas contraseñas en tu cuenta de Google, actualiza Servicios de Google Play</translation>
 <translation id="4971735654804503942">Protección más rápida y proactiva frente a descargas, extensiones y sitios web peligrosos. Te advierte sobre quiebras de seguridad de contraseñas. Requiere enviar datos de navegación a Google.</translation>
 <translation id="497421865427891073">Avanzar</translation>
 <translation id="4987271110129728827">No se puede encontrar la página. Comprueba que la hayas escrito bien o prueba a hacer una búsqueda web.</translation>

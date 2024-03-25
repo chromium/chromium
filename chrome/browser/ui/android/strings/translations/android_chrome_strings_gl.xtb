@@ -124,6 +124,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="164269334534774161">Estás vendo unha copia sen conexión desta páxina creada o <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historial</translation>
+<translation id="1644969410150602449">Consulta o teu historial web aquí</translation>
 <translation id="1657932388559784161">O panel inferior de estatísticas da páxina está pechado</translation>
 <translation id="1670399744444387456">Opcións básicas</translation>
 <translation id="1671236975893690980">Descarga pendente…</translation>
@@ -181,6 +182,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="197288927597451399">Continuar</translation>
 <translation id="1973912524893600642">Conservar datos</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
+<translation id="1974251558382034745">Historial web</translation>
 <translation id="1984417487208496350">Sen protección (non recomendado)</translation>
 <translation id="1986685561493779662">O nome xa existe</translation>
 <translation id="1995884366040846621">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> deste sitio.</translation>
@@ -249,6 +251,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="2364539095045928896">Botón para pechar o aviso de privacidade do centro de estatísticas da páxina.</translation>
 <translation id="2386938421315164605">Ocultar e mostrar temas</translation>
 <translation id="2390510615457643724">Queres descargar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de novo?</translation>
+<translation id="2395004545133500011">A opción Compartir coa folla de resumo está aberta</translation>
 <translation id="2410754283952462441">Escolle unha conta</translation>
 <translation id="2414886740292270097">Escuro</translation>
 <translation id="2421705177906985956">Neste momento non hai ningún sitio para mostrar</translation>
@@ -363,6 +366,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="2942036813789421260">A pestana de vista previa está pechada</translation>
 <translation id="2946420957526726953">Actualizando Chrome para conectarse a outros dispositivos</translation>
 <translation id="2951071800649516099">Engade páxinas á lista de lectura para consultalas noutro momento</translation>
+<translation id="2956070106555335453">Resumo</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> páxina sen ler}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páxinas sen ler}}</translation>
 <translation id="296370266220139811">Aforra tempo escribindo menos</translation>
 <translation id="2977350910003566746">Ordenando pola data de última apertura</translation>
@@ -402,6 +406,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="3098745985164956033">Algunhas imaxes envíanse a Google coa finalidade de mellorar as descricións para ti</translation>
 <translation id="3114507951000454849">Le as noticias do día <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Avisos</translation>
+<translation id="3146775326699342508">Inicia sesión para acceder aos teus marcadores, entre outras cousas, desde outros dispositivos</translation>
 <translation id="314939179385989105">Páxina de inicio de Chrome</translation>
 <translation id="3158667104057012316">Ordenando de maneira manual</translation>
 <translation id="3166827708714933426">Atallos da ventá e da pestana</translation>
@@ -641,6 +646,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{O marcador gardouse en <ph name="FOLDER_NAME" />. Só se garda neste dispositivo.}other{Os marcadores gardáronse en <ph name="FOLDER_NAME" />. Só se gardan neste dispositivo.}}</translation>
 <translation id="4484496141267039529">Sen conexión. Téntao de novo máis tarde.</translation>
 <translation id="4487967297491345095">Eliminaranse permanentemente todos os datos da aplicación Chrome, mesmo os ficheiros, a configuración, as contas, as bases de datos  etc.</translation>
+<translation id="4489640160615759754">Compartir coa folla de resumo</translation>
 <translation id="4494806687727322324">A persoa administradora activou a opción de gardar contrasinais</translation>
 <translation id="4508528996305412043">Menú da tarxeta do feed aberto</translation>
 <translation id="4509501256689523862">A medida que navegues pola Web, os anuncios que vexas personalizaranse en función desta opción de configuración, da opción <ph name="BEGIN_LINK_1" />Temas de anuncios<ph name="END_LINK_1" />, da <ph name="BEGIN_LINK_2" />configuración de cookies<ph name="END_LINK_2" /> e de se o sitio que esteas visitando personaliza os anuncios</translation>
@@ -650,6 +656,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="4521489764227272523">Os datos seleccionados elimináronse de Chrome e dos dispositivos sincronizados.
 
 É posible que a túa conta de Google teña outras formas do historial de navegación, como buscas e actividade doutros servizos de Google, en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">A opción Compartir coa folla de resumo está pechada</translation>
 <translation id="4523326818319942067">última hora</translation>
 <translation id="452750746583162491">Revisar os datos sincronizados</translation>
 <translation id="4532845899244822526">Selecciona cartafol</translation>
@@ -747,6 +754,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="4950924971025849764">Se tes a sesión iniciada na mesma Conta de Google, outros dispositivos poden utilizar este teléfono como chave de seguranza.</translation>
 <translation id="4957722034734105353">Máis información...</translation>
 <translation id="4961107849584082341">Traduce esta páxina a calquera idioma</translation>
+<translation id="496607651705915226">Para gardar e usar contrasinais novos na túa Conta de Google, actualiza os servizos de Google Play</translation>
 <translation id="4971735654804503942">Unha protección máis rápida e proactiva contra sitios web, descargas e extensións perigosos. Móstrache unha advertencia en caso de violacións da seguranza do contrasinal. Para utilizar este modo débenselle enviar a Google os datos de navegación.</translation>
 <translation id="497421865427891073">Avanzar</translation>
 <translation id="4987271110129728827">Non se puido atopar esa páxina. Comproba que escribises ben a consulta ou proba a realizar unha busca web.</translation>

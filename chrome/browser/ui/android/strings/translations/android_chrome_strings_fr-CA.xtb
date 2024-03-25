@@ -250,6 +250,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="2364539095045928896">Bouton Fermer pour fermer l'avis de confidentialité du Centre des statistiques de la page.</translation>
 <translation id="2386938421315164605">Masquer et afficher les sujets</translation>
 <translation id="2390510615457643724">Voulez-vous télécharger <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de nouveau?</translation>
+<translation id="2395004545133500011">Partager avec la feuille récapitulative ouverte</translation>
 <translation id="2410754283952462441">Choisir un compte</translation>
 <translation id="2414886740292270097">Foncé</translation>
 <translation id="2421705177906985956">Aucun site à afficher pour le moment</translation>
@@ -364,6 +365,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="2942036813789421260">L'onglet d'aperçu est fermé</translation>
 <translation id="2946420957526726953">Mise à jour de Chrome pour se connecter à d'autres appareils en cours…</translation>
 <translation id="2951071800649516099">Ajouter des pages à votre liste de lecture pour plus tard</translation>
+<translation id="2956070106555335453">Résumé</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page non lue}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page non lue}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pages non lues}}</translation>
 <translation id="296370266220139811">Gagnez du temps, moins d'entrée</translation>
 <translation id="2977350910003566746">Tri par dernière ouverture</translation>
@@ -643,6 +645,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Favori enregistré dans « <ph name="FOLDER_NAME" /> ». Il n'est enregistré que sur cet appareil.}one{Favori enregistré dans « <ph name="FOLDER_NAME" /> ». Il n'est enregistré que sur cet appareil.}other{Favoris enregistrés dans « <ph name="FOLDER_NAME" /> ». Ils ne sont enregistrés que sur cet appareil.}}</translation>
 <translation id="4484496141267039529">Aucune connexion. Réessayez plus tard.</translation>
 <translation id="4487967297491345095">Toutes les données des applications de Chrome seront supprimées de façon définitive. Cela comprend tous les fichiers, les paramètres, les comptes, les bases de données, etc.</translation>
+<translation id="4489640160615759754">Partager avec la feuille récapitulative</translation>
 <translation id="4494806687727322324">L'enregistrement des mots de passe est activé par votre administrateur</translation>
 <translation id="4508528996305412043">Le menu de la carte du flux est ouvert</translation>
 <translation id="4509501256689523862">Lorsque vous naviguez, la personnalisation d’une annonce dépend de ce paramètre, du <ph name="BEGIN_LINK_1" />sujet des annonces<ph name="END_LINK_1" />, des <ph name="BEGIN_LINK_2" />paramètres de vos témoins<ph name="END_LINK_2" />, et du fait que le site que vous consultez personnalise les annonces</translation>
@@ -652,6 +655,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="4521489764227272523">Les données sélectionnées ont été supprimées de Chrome et de vos appareils synchronisés.
 
 D'autres formes d'historique de navigation, telles que les recherches et l'activité d'autres services Google, peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Partager avec la feuille récapitulative fermée</translation>
 <translation id="4523326818319942067">dernière heure</translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4532845899244822526">Sélectionner un dossier</translation>
@@ -749,6 +753,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4950924971025849764">Lorsque vous êtes connecté au même compte Google, d'autres appareils peuvent utiliser ce téléphone en tant que clé de sécurité.</translation>
 <translation id="4957722034734105353">En savoir plus...</translation>
 <translation id="4961107849584082341">Traduire cette page vers n'importe quelle langue</translation>
+<translation id="496607651705915226">Pour enregistrer et utiliser de nouveaux mots de passe dans votre compte Google, mettez à jour les services Google Play</translation>
 <translation id="4971735654804503942">Ce mode offre une protection proactive et plus rapide contre les téléchargements, les extensions et les sites Web dangereux. Il vous permet d'être averti en cas de piratage de mots de passe. Pour ce faire, les données de navigation doivent être envoyées à Google.</translation>
 <translation id="497421865427891073">Avancer</translation>
 <translation id="4987271110129728827">Impossible de trouver cette page. Vérifiez votre orthographe ou essayez une recherche sur le Web.</translation>

@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">ไม่มีเครือข่ายมือถือ</translation>
 <translation id="1882897271359938046">กำลังแสดงผลไปที่ <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">ปลดล็อกด้วยลายนิ้วมือ</translation>
+<translation id="1904997243703671177">เมื่อปิดบลูทูธ อุปกรณ์ภายนอก <ph name="DEVICE_COUNT" /> เครื่องจะยกเลิกการเชื่อมต่อกับ <ph name="DEVICE_TYPE" /> ของคุณ ได้แก่</translation>
 <translation id="1908992311423394684">ติดตั้งใหม่</translation>
 <translation id="1915307458270490472">วางซ้อนไว้ด้านบน</translation>
 <translation id="1918022425394817322">จัดกล้องพอดีกับมุมขวาบนแล้ว</translation>
@@ -258,7 +259,6 @@
 <translation id="2017998995161831444">เปิด "ความช่วยเหลือ" ในแอปสำรวจ</translation>
 <translation id="2018630726571919839">เล่าเรื่องตลกให้ฟังหน่อย</translation>
 <translation id="2021864487439853900">คลิกเพื่อปลดล็อก</translation>
-<translation id="2023558322300866873">คุณหยุดการบันทึกแพ็กเก็ตได้ทุกเมื่อ</translation>
 <translation id="2034971124472263449">บันทึกเลย</translation>
 <translation id="204259843076055848">แป้นพิมพ์ลัดสำหรับการ<ph name="SIX_PACK_KEY_NAME" />ปิดอยู่</translation>
 <translation id="2049240716062114887">เปลี่ยนชื่อเดสก์ท็อปเป็น <ph name="DESK_NAME" /> แล้ว</translation>
@@ -356,6 +356,7 @@
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="2484513351006226581">กด <ph name="KEYBOARD_SHORTCUT" /> เพื่อสลับรูปแบบแป้นพิมพ์</translation>
 <translation id="2486214324139475545">ตัวอย่าง <ph name="DESK_NAME" /> เดสก์ที่ใช้งานอยู่</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" เปลี่ยนเป็นความละเอียด <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) หากไม่ยืนยัน ระบบจะคืนค่าการตั้งค่าก่อนหน้านี้ใน <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="2487915095798731898">เข้าร่วม</translation>
 <translation id="2499445554382787206">เมนูโปรไฟล์เดสก์ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">คีย์ติดหนึบ</translation>
@@ -695,7 +696,6 @@
 <translation id="380165613292957338">สวัสดี มีอะไรให้ฉันช่วยไหม</translation>
 <translation id="3804737937830804242">ย่อขนาดกล้อง</translation>
 <translation id="3824784079442479685">การดำเนินการนี้ช่วยให้ <ph name="APP_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องได้ คุณอาจต้องรีเฟรชหน้าเว็บหรือรีสตาร์ทแอป</translation>
-<translation id="3825680296690914697">ส่งแล้ว <ph name="NUM_TURNED_IN" /> จาก <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> รายการ ให้คะแนนแล้ว <ph name="NUM_GRADED" /> รายการ</translation>
 <translation id="3826099427150913765">เปลี่ยนไปใช้รหัสผ่าน</translation>
 <translation id="383058930331066723">โหมดประหยัดแบตเตอรี่เปิดอยู่</translation>
 <translation id="383629559565718788">แสดงการตั้งค่าแป้นพิมพ์</translation>
@@ -759,7 +759,6 @@
 <translation id="4066027111132117168">เปิดอยู่ <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">เปิดหน้าดาวน์โหลด</translation>
 <translation id="4072264167173457037">สัญญาณแรงปานกลาง</translation>
-<translation id="4076455981957565732">ส่งแล้ว <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> รายการ • ให้คะแนนแล้ว <ph name="NUM_GRADED" /> รายการ</translation>
 <translation id="4086921558679520050">เปิดสวิตช์ไมค์ในอุปกรณ์</translation>
 <translation id="4101772068965291327">เปิดหน้าแรก</translation>
 <translation id="4112140312785995938">ย้อนกลับ</translation>
@@ -954,6 +953,7 @@
 <translation id="4813311884204119883">ลากลิงก์ไปยังพื้นที่ว่างบนแนวแท็บ</translation>
 <translation id="4814539958450445987">หน้าจอการเข้าสู่ระบบ</translation>
 <translation id="481455355267255546">กิจกรรมถัดไป</translation>
+<translation id="481749895090480684">รายการงาน: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">กล้องและไมโครโฟน</translation>
 <translation id="482908187605862807">แอปที่พร้อมใช้งานจาก Play Store</translation>
 <translation id="4831034276697007977">แน่ใจไหมว่าต้องการปิดการคลิกอัตโนมัติ</translation>
@@ -995,6 +995,7 @@
 <translation id="4952936045814352993">ระบุตำแหน่งของโทรศัพท์ไม่ได้เมื่อปิดเสียงการปลุกไว้</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> กำหนดให้คุณต้องย้อนกลับเวอร์ชันของ <ph name="DEVICE_TYPE" /> อุปกรณ์จะรีเซ็ตและระบบจะลบข้อมูลทั้งหมด</translation>
 <translation id="4961318399572185831">แคสต์หน้าจอ</translation>
+<translation id="4964188651935955085">เมื่อปิดบลูทูธ อุปกรณ์ภายนอกนี้จะยกเลิกการเชื่อมต่อกับ <ph name="DEVICE_TYPE" /> ของคุณ</translation>
 <translation id="4966431234408005599">เพิ่มระดับเสียง</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ชม. <ph name="MINUTES" /> นาที <ph name="SECONDS" /> วินาที</translation>
 <translation id="4975771730019223894">การติดป้ายแอป</translation>
@@ -1022,6 +1023,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">คุณจะได้รับการแจ้งเตือนเมื่อพูดขณะที่ปิดเสียงอยู่ โดยระบบจะไม่ส่งเสียงของคุณออกไปที่อื่น</translation>
 <translation id="5077416371682039027">ตั้งค่าการดูรูปภาพ สื่อ การแจ้งเตือน และแอปล่าสุดของโทรศัพท์</translation>
+<translation id="5077936103761694531">ยืนยันความละเอียดไหม</translation>
 <translation id="5078796286268621944">PIN ไม่ถูกต้อง</translation>
 <translation id="5083035541015925118">Ctrl + Alt + ลูกศรขึ้น</translation>
 <translation id="5083553833479578423">ใช้ฟีเจอร์จาก Assistant ได้มากขึ้น</translation>
@@ -1671,6 +1673,7 @@
 <translation id="7647488630410863958">ปลดล็อกอุปกรณ์เพื่อดูการแจ้งเตือน</translation>
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
 <translation id="7654687942625752712">กดแป้นปรับระดับเสียงค้างไว้ 5 วินาทีเพื่อปิดใช้การอธิบายและอ่านออกเสียง</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" เปลี่ยนเป็นความละเอียด <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) จอแสดงผลของคุณไม่รองรับความละเอียด <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) เนื่องจากข้อจำกัดด้านแบนด์วิดท์ของพอร์ต หากไม่ยืนยัน ระบบจะคืนค่าการตั้งค่าก่อนหน้านี้ใน <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7659861092419699379">ปิดเดสก์และหน้าต่างแล้ว</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> ของคุณจะปรากฏในอุปกรณ์ที่ลิงก์กับ <ph name="EMAIL" /></translation>
@@ -1761,6 +1764,7 @@
 <translation id="7945357288295809525">แสดงการตั้งค่าการช่วยเหลือพิเศษที่เปิดใช้ "<ph name="ENABLED_FEATURES" />"</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ต้องการใช้ <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">หรี่แสงแป้นพิมพ์</translation>
+<translation id="7953994493035617347">ยืนยันความละเอียดใหม่ไหม</translation>
 <translation id="7963689218131240420">โหมดห้ามรบกวนปิดอยู่</translation>
 <translation id="7963992254934562106">จาก <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">เลือกโฟลเดอร์...</translation>
@@ -1819,6 +1823,7 @@
 <translation id="8155628902202578800">เปิดกล่องโต้ตอบข้อมูลของ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">กำลังใช้<ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">เปิด/ปิดเมนูเพื่อปรับขนาดโหมดล็อก</translation>
+<translation id="8192727139462702395">เมื่อปิดบลูทูธ อุปกรณ์ภายนอกเหล่านี้จะยกเลิกการเชื่อมต่อกับ <ph name="DEVICE_TYPE" /> ของคุณ</translation>
 <translation id="8198456017687137612">กำลังแคสต์แท็บ</translation>
 <translation id="8200772114523450471">ทำต่อ</translation>
 <translation id="8203795194971602413">คลิกขวา</translation>

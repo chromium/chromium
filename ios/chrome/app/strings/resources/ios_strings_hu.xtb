@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Elrejtés ideiglenesen</translation>
 <translation id="1219674500290482172">Nem lehet kapcsolódni az internethez.</translation>
-<translation id="1226238226094914652">Jelszavak az összes eszközén</translation>
 <translation id="122699739164161391">Összes lap bezárása</translation>
 <translation id="1227866575467023566">{count,plural, =1{Oldal hozzáadva az Ön fiókjában ({email}) található olvasólistához}other{{count} oldal hozzáadva az Ön fiókjában ({email}) található olvasólistához}}</translation>
 <translation id="1242044645101871359">Bejelentkezés újra</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Követés</translation>
 <translation id="1644574205037202324">Előzmények</translation>
 <translation id="164673457281113247">{count,plural, =1{Könyvjelző mentve}other{Könyvjelzők mentve}}</translation>
-<translation id="165008673352427892">Új funkció</translation>
 <translation id="1650222530560417226">A „Naplózás indítása” gombra koppintva kezdheti meg a jövőbeli JavaScript-konzolnaplók és -hibák gyűjtését az összes lapról. A böngésző addig gyűjti (és tárolja kizárólag a memóriában) a naplókat, amíg Ön be nem zárja az oldalt, vagy rá nem koppint a „Naplózás leállítása” gombra.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} mentett jelszó áll rendelkezésre a billentyűzet felett.}other{{count} mentett jelszó áll rendelkezésre a billentyűzet felett.}}</translation>
 <translation id="1657011748321897393">A megosztás nem sikerült, mert nem csatlakozik a hálózathoz.</translation>
@@ -302,7 +300,6 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2556092377360758201">Nincs védelem (nem javasolt)</translation>
 <translation id="2561375093019333908">MEGNYITÁS</translation>
 <translation id="2562041823070056534">Küldés a következőre: <ph name="DEVICE_NAME" />…</translation>
-<translation id="2576499762020411840">Jelszavak mentése és használata a Google-fiókban</translation>
 <translation id="2577522251608256362">Környék</translation>
 <translation id="2578571896248130439">Weboldal küldése</translation>
 <translation id="2584132361465095047">Fiók hozzáadása...</translation>
@@ -948,7 +945,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5850913622988109693">Csomagok nyomon követésére vonatkozó beállítások</translation>
 <translation id="5854790677617711513">30 napnál régebbi</translation>
 <translation id="5857090052475505287">Új mappa</translation>
-<translation id="5857361196621230935">Lap hozzáadása csoporthoz</translation>
 <translation id="5857770089550859117">A szinkronizálás megkezdéséhez összetett jelszó megadása szükséges.</translation>
 <translation id="5859715514067755465">Előre</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
@@ -1159,7 +1155,6 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="6800349425672670802">A Lapváltóból az összes megnyitott laphoz hozzáférhet.</translation>
 <translation id="6807889908376551050">Összes megjelenítése...</translation>
 <translation id="681368974849482173">Elem létrehozva</translation>
-<translation id="6822587385560699678">Ha be van kapcsolva, a jelszavakat a rendszer a következő fiókba menti: <ph name="ACCOUNT" />. Ha ki van kapcsolva, a rendszer csak ezen az eszközön menti a jelszavakat.</translation>
 <translation id="6824350924364057989">Beállítások</translation>
 <translation id="6831043979455480757">Fordítás</translation>
 <translation id="6842136130964845393">Igazolja személyazonosságát, hogy mindig hozzá tudjon férni mentett jelszavaihoz</translation>

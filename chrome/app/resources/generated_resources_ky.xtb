@@ -3521,6 +3521,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3660234220361471169">Ишенимсиз</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 учурдагы сырсөз табылды}other{{NUM_PASSWORDS} учурдагы сырсөз табылды}}</translation>
 <translation id="3662207097851752847">Google аккаунтуңузду телефонуңузда ырастаңыз</translation>
+<translation id="3663417513679360795">Стандарттуу алдын ала жүктөөнү күйгүзүү тууралуу кеңири маалымат</translation>
 <translation id="3664511988987167893">Кеңейтүү сүрөтчөсү</translation>
 <translation id="3665100783276035932">Көпчүлүк сайттар ойдогулай иштеши керек</translation>
 <translation id="3665301845536101715">Капталдагы тилкеде ачуу</translation>
@@ -3610,6 +3611,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3720543739123045680">Башка өтмөктөр процессти ушул өтмөк менен бөлүшүп, натыйжада Иштеп чыгуучунун куралдары күтүлгөндөй иштебеши мүмкүн.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Сиз жана Google</translation>
+<translation id="3721178866505920080">Кеңейтилген алдын ала жүктөөнү күйгүзүү тууралуу кеңири маалымат</translation>
 <translation id="3722108462506185496">Виртуалдык машина кызматы иштеп баштабай калды. Кайталап көрүңүз.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> нускамасы алынды</translation>
 <translation id="3724897774652282549">Форманы толтуруу</translation>
@@ -3727,6 +3729,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3798670284305777884">Катуу сүйлөткүч (ички)</translation>
 <translation id="3799128412641261490">Switch Access параметрлери</translation>
 <translation id="3800828618615365228">Google Chrome жана ChromeOS'тун кошумча шарттары</translation>
+<translation id="3800898876950197674">Бул кеңейтүүгө уруксат берүү үчүн сырсөзүңүздү териңиз.</translation>
 <translation id="3802486193901166966">Бул кеңейтүү атайын уруксаттарды талап кылбайт жана кошумча сайтка кирүүнүн кереги жок</translation>
 <translation id="380329542618494757">Ата-жөнү</translation>
 <translation id="3803345858388753269">Видеонун сапаты</translation>
@@ -4598,7 +4601,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4473996011558324141">болжолдуу убакыт</translation>
 <translation id="4474155171896946103">Бардык өтмөктөрдү кыстарып коюу…</translation>
 <translation id="4475299370877036544">Бул аракет уюмуңуздун эрежелерин бузушу мүмкүн</translation>
-<translation id="4475552974751346499">Жүктөлүп алынгандарды издөө</translation>
 <translation id="4476590490540813026">Спортчу айым</translation>
 <translation id="4476659815936224889">Бул кодду телефонуңуздагы QR сканери же камера колдонмолорунун бирөө менен скандаңыз.</translation>
 <translation id="4477015793815781985">Ctrl, Alt же ⌘ камтылсын</translation>
@@ -8011,6 +8013,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7180611975245234373">Жаңылоо</translation>
 <translation id="7180865173735832675">Өзгөчөлөштүрүү</translation>
 <translation id="7181117767881540376">&amp;Кыстармалар тилкесин жашыруу</translation>
+<translation id="7181329571386134105"><ph name="CHILD_NAME" /> уруксатыңызды сурабастан кеңейтүүлөрдү орнотуп алышы үчүн түзмөгүңүздө Family Link колдонмосун ачып, <ph name="CHILD_NAME" /> үчүн Google Chrome параметрлерин жаңыртыңыз.</translation>
 <translation id="7182063559013288142">Ыкчам хотспот</translation>
 <translation id="7182791023900310535">Сырсөздү жылдыруу</translation>
 <translation id="718427252411067142">Башкаларга сырсөзүңүздү колдонууга тыюу салуу үчүн колдонмону ачып, сырсөзүңүздү өзгөртүңүз</translation>
@@ -10805,6 +10808,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="973558314812359997">Курсордун өлчөмү</translation>
 <translation id="975893173032473675">Которула турган тил</translation>
 <translation id="976499800099896273"><ph name="CORRECTED_WORD" /> деп оңдолгон <ph name="TYPED_WORD" /> сөзү үчүн автоматтык түрдө оңдоону кайтаруу диалогу көрсөтүлдү.  Көрүү үчүн өйдө жебени, этибарга албоо үчүн escape баскычын басыңыз.</translation>
+<translation id="976572010712028687">Ата-эне экениңизди ырастаңыз</translation>
 <translation id="978146274692397928">Баштапкы тыныш белги эни Толук</translation>
 <translation id="978978324795544535">Нерсени эки жолу басып, экинчи жолу басканда коё бербей сүйрөңүз</translation>
 <translation id="97905529126098460">Жокко чыгаруу процесси аяктаганда, бул терезе жабылат.</translation>

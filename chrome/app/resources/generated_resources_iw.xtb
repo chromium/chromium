@@ -1950,6 +1950,7 @@
 <translation id="2435248616906486374">הרשת מנותקת</translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
 <translation id="2436385001956947090">העתקת &amp;הקישור</translation>
+<translation id="2436746748253887661">‏הפעולה הזו מאפשרת לשירותי מערכת שקיבלו הרשאה להשתמש במיקום שלך. שירות המיקום משתמש במקורות כמו Wi‑Fi, רשתות סלולריות וחיישנים כדי לעזור בהערכת המיקום של המכשיר שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">אין מדפסת מחוברת</translation>
 <translation id="2439152382014731627">איפוס הסיסמה ל-<ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> בטעינה</translation>
@@ -3520,12 +3521,14 @@
 <translation id="3660234220361471169">לא אמין</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{נמצאה סיסמה אחת קיימת}one{נמצאו {NUM_PASSWORDS} סיסמאות קיימות}two{נמצאו {NUM_PASSWORDS} סיסמאות קיימות}other{נמצאו {NUM_PASSWORDS} סיסמאות קיימות}}</translation>
 <translation id="3662207097851752847">‏צריך לאשר את חשבון Google בטלפון</translation>
+<translation id="3663417513679360795">מידע נוסף על הפעלת האפשרות 'טעינה רגילה מראש'</translation>
 <translation id="3664511988987167893">סמל התוסף</translation>
 <translation id="3665100783276035932">רוב האתרים אמורים לפעול כצפוי</translation>
 <translation id="3665301845536101715">פתיחה בחלונית צדדית</translation>
 <translation id="3665589677786828986">‏Chrome זיהה שחלק מההגדרות שלך נפגמו על ידי תכנית אחרת ואיפס אותן לברירות המחדל המקוריות.</translation>
 <translation id="3665919494326051362">הגרסה הנוכחית היא <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel WiFi NICs Debug Dump</translation>
+<translation id="3666971425390608309">ההורדה של <ph name="FILE_NAME" /> הושהתה.</translation>
 <translation id="3670113805793654926">מכשירים של כל ספק</translation>
 <translation id="3670229581627177274">‏הפעלת Bluetooth</translation>
 <translation id="3670480940339182416">‏אתרים יכולים להשתמש בכלי האופטימיזציה של V8</translation>
@@ -3608,6 +3611,7 @@
 <translation id="3720543739123045680">בכרטיסייה הזו פועל תהליך שפועל גם בכרטיסיות אחרות. כתוצאה מכך, חוויית השימוש בכלי הפיתוח עשויה להיות לא צפויה.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">‏ההגדרות שלך ב-Google</translation>
+<translation id="3721178866505920080">מידע נוסף על הפעלת האפשרות 'טעינה מורחבת מראש'</translation>
 <translation id="3722108462506185496">קרתה שגיאה בהפעלת שירות המכונה הווירטואלית. צריך לנסות שוב.</translation>
 <translation id="3722624153992426516">התקבלה הוראה של <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3724897774652282549">מילוי הטופס</translation>
@@ -3676,6 +3680,8 @@
 <translation id="3765055238058255342">סוג הכרטיס הזה</translation>
 <translation id="3765246971671567135">לא ניתן לקרוא מדיניות של מצב הדגמה לא מקוון.</translation>
 <translation id="3765696567014520261">‏אתרים לא יכולים להשתמש בקובצי Cookie כדי לקבל מידע על פעילות הגלישה שלך באתרים שונים, למשל כדי להציג מודעות בהתאמה אישית. יכול להיות שתכונות באתרים מסוימים לא יפעלו.</translation>
+<translation id="3766265338450715550">‏<ph name="BEGIN_PARAGRAPH1" />כדי להעריך את המיקום של המכשיר שלך, שירותי המיקום של Google משתמשים במקורות כמו Wi-Fi, רשתות סלולריות וחיישנים.<ph name="END_PARAGRAPH1" />
+    ‫<ph name="BEGIN_PARAGRAPH2" />אפשר להשבית את הרשאות המיקום ב-ChromeOS וב-Android במכשיר בכל שלב: עוברים אל 'הגדרות' &gt; 'פרטיות ואבטחה' &gt; 'אמצעי בקרה על פרטיות' &gt; 'גישה למיקום'. ניתן גם להשבית את השימוש ב-Wi-Fi, ברשתות סלולריות ובחיישנים כדי לקבוע את המיקום של Android על ידי השבתת ההגדרה 'קביעת מיקום יותר מדויקת' בקטע 'הגדרות מיקום מתקדמות' באותו תפריט.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">‏מידע נוסף על Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> הרץ</translation>
 <translation id="3767835232661747729">‏בשלב הזה אפשר לשתף סיסמאות רק עם חברים בקבוצה המשפחתית. עליך <ph name="BEGIN_LINK" />להזמין בני משפחה<ph name="END_LINK" /> להצטרף לקבוצה, וכך ניתן יהיה להפיק יותר ממוצרי Google ומהמינויים לשירותי Google.</translation>
@@ -3723,6 +3729,7 @@
 <translation id="3798670284305777884">רמקול (פנימי)</translation>
 <translation id="3799128412641261490">הגדרות גישה באמצעות מתג</translation>
 <translation id="3800828618615365228">‏תנאים נוספים של Google Chrome ו-ChromeOS</translation>
+<translation id="3800898876950197674">כדי לאשר את ההתקנה של התוסף הזה, עליך להזין את הסיסמה שלך.</translation>
 <translation id="3802486193901166966">אין צורך בהרשאות מיוחדות או הרשאות גישה נוספות לאתרים כדי להשתמש בתוסף הזה</translation>
 <translation id="380329542618494757">שם</translation>
 <translation id="3803345858388753269">איכות הווידאו</translation>
@@ -4341,6 +4348,7 @@
 <translation id="4278779213160967034">התהליך הזה עשוי להימשך כמה דקות. הקבצים בתהליך הורדה.</translation>
 <translation id="4279129444466079448">‏ניתן להתקין עד <ph name="PROFILE_LIMIT" /> פרופילים של eSIM במכשיר הזה. כדי להוסיף פרופיל נוסף, קודם צריך להסיר פרופיל קיים.</translation>
 <translation id="4280325816108262082">אם המכשיר מושבת או שאינו בשימוש, הוא ינותק באופן אוטומטי</translation>
+<translation id="4281637354026226955">‏מתן הרשאה לשירותים של ChromeOS ו-Android ולאפליקציות מבוססות מיקום להשתמש במיקום של המכשיר שלך. Google עשויה לאסוף נתוני מיקום מדי פעם, ולהשתמש בנתונים האלה בצורה אנונימית כדי לשפר את קביעת המיקום ואת האיכות של השירותים מבוססי-המיקום.</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
 <translation id="4281849573951338030">התאמה אישית של לחצני העט</translation>
 <translation id="4282196459431406533">‏Smart Lock מופעל</translation>
@@ -4594,7 +4602,6 @@
 <translation id="4473996011558324141">ממש עוד רגע נציג לך הערכת זמן</translation>
 <translation id="4474155171896946103">יצירת סימנייה לכל הכרטיסיות...</translation>
 <translation id="4475299370877036544">הפעולה הזו עלולה להפר את מדיניות הארגון</translation>
-<translation id="4475552974751346499">חיפוש בהורדות</translation>
 <translation id="4476590490540813026">ספורטאית</translation>
 <translation id="4476659815936224889">‏כדי לסרוק את הקוד הזה, ניתן להשתמש באפליקציה של סורק קודי ה-QR בטלפון או באפליקציות מצלמה מתאימות.</translation>
 <translation id="4477015793815781985">‏צריך לכלול Ctrl, ‏Alt או ⌘</translation>
@@ -6223,6 +6230,8 @@
 <translation id="5776415697119024904">‫<ph name="DEVICE_NAME" /> (ברירת המחדל של המערכת)</translation>
 <translation id="5776450228446082914">רשימת האתרים שניתן לפתוח בכל דפדפן.</translation>
 <translation id="5776571780337000608">יש לך אפשרות לפתוח ולערוך קבצים נתמכים באמצעות האפליקציה הזו מתוך מנהל הקבצים והתיקיות או באמצעות אפליקציות אחרות. כדי לקבוע אילו קבצים יפתחו את האפליקציה הזו כברירת מחדל, <ph name="BEGIN_LINK" />כאן אפשר לקרוא איך להגדיר אפליקציות כברירת מחדל במכשיר שלך<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">‏השימוש ב-Wi‑Fi, ברשתות סלולריות ובחיישנים משפר את שירותי המיקום של Google ובעזרתו אפשר להעריך את המיקום שלך. כדי לשפר את קביעת המיקום ושירותים מבוססי-מיקום, Google עשויה לאסוף את נתוני המיקום מדי פעם ולהשתמש בהם באופן אנונימי.
+    השבתה של השירות הזה תגרום לכך ש-Android ישתמש רק בכתובת IP כדי לקבוע את המיקום שלך. המצב הזה עשוי להשפיע על הדיוק של המיקום באפליקציות שמשתמשות בנתוני מיקום, כמו מפות Google.</translation>
 <translation id="5778491106820461378">‏ב<ph name="LINK_BEGIN" />הגדרות<ph name="LINK_END" /> אפשר לנהל את חשבונות Google המחוברים. ייתכן שהרשאות שנתת לאתרים ולאפליקציות יחולו על כל החשבונות. אם אינך רוצה שלאתרים או לאפליקציות תהיה גישה לפרטי החשבון שלך, ניתן להיכנס אל <ph name="DEVICE_TYPE" /> כאורח/ת.</translation>
 <translation id="5780011244986845107">התיקייה שבחרת מכילה קבצים רגישים. האפליקציה <ph name="APP_NAME" /> תקבל הרשאת קריאה קבועה לתיקייה הזו. להמשיך?</translation>
 <translation id="5780973441651030252">עדיפות תהליך</translation>
@@ -6308,6 +6317,7 @@
 <translation id="5836999627049108525">שפת המקור לתרגום</translation>
 <translation id="583756221537636748">כיסוי</translation>
 <translation id="5840680448799937675">קבצים ישותפו תמיד במצב אופליין</translation>
+<translation id="5841167715783969407">‏אזור זמן אוטומטי בהתאם ל-Wi-Fi או לרשתות סלולריות</translation>
 <translation id="5841270259333717135">‏הגדרת Ethernet</translation>
 <translation id="5842497610951477805">‏הפעלה של Bluetooth</translation>
 <translation id="5844284118433003733">‏אחרי שנכנסת לחשבון, הנתונים האלה מקושרים לחשבון Google כדי להגן עליך בשירותי Google. לדוגמה, במקרה של אירוע אבטחה, ההגנה ב-Gmail מוגברת.</translation>
@@ -6757,6 +6767,7 @@
 <translation id="6180510783007738939">כלי השורה</translation>
 <translation id="6180550893222597997">באיזה מפתח גישה ברצונך להשתמש עבור <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">ההורדה נחסמה</translation>
+<translation id="6183369864942961155">הפעלה אוטומטית של עיצוב בהיר או כהה</translation>
 <translation id="6184099524311454384">חיפוש כרטיסיות</translation>
 <translation id="6184868291074982484">‏Chrome מגביל באופן אוטומטי קובצי cookie של צד שלישי</translation>
 <translation id="6185132558746749656">מיקום מכשיר</translation>
@@ -7159,6 +7170,7 @@
 <translation id="6513247462497316522">‏Google Chrome ישתמש בחבילת הגלישה אם אין לך חיבור לרשת אחרת.</translation>
 <translation id="6514010653036109809">מכשיר זמין:</translation>
 <translation id="6517227424170598783">להסיר את קיצור הדרך '<ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" />'?</translation>
+<translation id="6517382055541687102">המכשיר שנבחר הוחלף במכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">‏הקבצים בתיקייה 'האחסון שלי' יסונכרנו באופן אוטומטי ב-Chromebook כדי שאפשר יהיה לגשת אליהם בלי חיבור לאינטרנט. הפעולה הזו תנצל כ-<ph name="REQUIRED_SPACE" /> מנפח האחסון. עכשיו יש מקום פנוי בנפח <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">יכול להיות שהמכשיר שלך לא יעבוד כמו שצריך ושיהיו בעיות באבטחה ובביצועים. להשבתת העדכונים עשויה להיות גם השפעה על זכותך להגיש תביעות משפטיות במקרה שתהיה בעיה.</translation>
 <translation id="6518014396551869914">הע&amp;תקת תמונה</translation>
@@ -7419,6 +7431,7 @@
 <translation id="6713441551032149301">צריך ללחוץ לחיצה ארוכה על מקש מרכז האפליקציות כדי לעבור בין מקשי הפונקציות למקשי המערכת שבשורה העליונה</translation>
 <translation id="6713668088933662563">אין להציע לתרגם את השפות האלה אף פעם</translation>
 <translation id="6715803357256707211">‏התרחשה שגיאה במהלך ההתקנה של אפליקציית Linux. ניתן ללחוץ על ההתראה כדי לקבל פרטים נוספים.</translation>
+<translation id="6716049856796700977">‏אי אפשר להשתמש במיקום שלך, אבל יכול להיות שהמיקום עדיין יהיה גלוי לאפליקציות ולאתרים באמצעות כתובת ה-IP שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">‏החיבור לרשת נותק. צריך לבדוק את החיבור לרשת או לנסות רשת Wi-Fi אחרת.</translation>
 <translation id="6718849325281682232">‏צבעי העיצוב של Chrome עברו רענון כדי להתאים טוב יותר לכולם, במצב כהה או במצב בהיר</translation>
 <translation id="671928215901716392">מסך נעילה</translation>
@@ -7467,6 +7480,7 @@
 <translation id="6758056191028427665">נשמח לקבל ממך משוב.</translation>
 <translation id="6759193508432371551">איפוס להגדרות היצרן</translation>
 <translation id="6760354150216532978">אזהרה: לאתר הזה יש הרשאה לראות את העריכות שלך</translation>
+<translation id="6761209758867628753">כלי: עזרה בכתיבה</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">אין הרשאה לשמירת נתונים מאתרים במכשיר</translation>
 <translation id="6762833852331690540">מופעל</translation>
@@ -8005,6 +8019,7 @@
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7180865173735832675">התאמה אישית</translation>
 <translation id="7181117767881540376">הסתרת סרגל הסימניות</translation>
+<translation id="7181329571386134105">‏כדי לאשר ל<ph name="CHILD_NAME" /> להתקין תוספים בעתיד בלי אישור ממך, עליך לפתוח את אפליקציית Family Link במכשיר שלך ולעדכן את הגדרות Google Chrome של <ph name="CHILD_NAME" />.</translation>
 <translation id="7182063559013288142">נקודת אינטרנט מיידית</translation>
 <translation id="7182791023900310535">העברת הסיסמה שלך</translation>
 <translation id="718427252411067142">כדי למנוע מאנשים אחרים להשתמש בסיסמה שלך, עליך לפתוח את האפליקציה ולשנות את הסיסמה</translation>
@@ -8401,6 +8416,8 @@
 <translation id="7478658909253570368">אין לאפשר לאתרים להתחבר ליציאות טוריות</translation>
 <translation id="7479221278376295180">סקירה כללית של השימוש בשטח אחסון</translation>
 <translation id="747981547666531654">‏יש חיבור למכשירי Bluetooth בשם <ph name="FIRST_DEVICE" /> ו-<ph name="SECOND_DEVICE" /></translation>
+<translation id="7480299112230998727">‏<ph name="BEGIN_PARAGRAPH1" />כדי להעריך את המיקום של המכשיר הזה, השירותים מבוססי-המיקום של Google מסתמכים על מקורות כמו Wi-Fi, רשתות סלולריות וחיישנים.<ph name="END_PARAGRAPH1" />
+    ‫<ph name="BEGIN_PARAGRAPH2" />אפשר להשבית את הרשאות המיקום ב-ChromeOS וב-Android במכשיר בכל שלב: עוברים אל 'הגדרות' &gt; 'פרטיות ואבטחה' &gt; 'אמצעי בקרה על פרטיות' &gt; 'גישה למיקום'. ניתן גם להשבית את השימוש ב-Wi-Fi, ברשתות סלולריות ובחיישנים כדי לקבוע את המיקום של Android על ידי השבתת ההגדרה 'קביעת מיקום יותר מדויקת' בקטע 'הגדרות מיקום מתקדמות' באותו תפריט.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">קדימה</translation>
 <translation id="7481358317100446445">מוכן</translation>
 <translation id="748138892655239008">מגבלות בסיסיות של אישור </translation>
@@ -8492,6 +8509,7 @@
 <translation id="7552846755917812628">אולי הטיפים האלו יעזרו לך:</translation>
 <translation id="7553012839257224005">‏המערכת בודקת את הקונטיינר של Linux</translation>
 <translation id="7553242001898162573">הזנת הסיסמה</translation>
+<translation id="7553487223484420820">אפליקציות, אתרים ושירותי מערכת שקיבלו הרשאת מיקום יכולים להשתמש במיקום שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">השפה הזו לא מאושרת על ידי מנהל המערכת</translation>
 <translation id="7554791636758816595">כרטיסייה חדשה</translation>
 <translation id="7556033326131260574">‏מערכת Smart Lock לא הצליחה לאמת את חשבונך. כדי להיכנס, יש להזין את הסיסמה.</translation>
@@ -9410,6 +9428,7 @@
 <translation id="8224427620313426549">החשבון שלך ב-<ph name="DOMAIN_LINK" /> לא יימחק</translation>
 <translation id="8225046344534779393">צריך לבדוק את החיבור לאינטרנט</translation>
 <translation id="8225265270453771718">שיתוף חלון של אפליקציה</translation>
+<translation id="8225516926291976401">‏רק שירותי המערכת יכולים להשתמש במיקום שלך, אבל יכול להיות שהמיקום עדיין יהיה גלוי לאפליקציות ולאתרים באמצעות כתובת ה-IP שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">אסור</translation>
 <translation id="8226619461731305576">תור</translation>
 <translation id="8227119283605456246">צירוף קובץ</translation>
@@ -9846,6 +9865,7 @@
 <translation id="8552102814346875916">שמירה ברשימה 'יש להשאיר תמיד את האתרים האלה פעילים'</translation>
 <translation id="8553342806078037065">ניהול אנשים אחרים</translation>
 <translation id="8554899698005018844">לא הוגדרה שפה</translation>
+<translation id="8555444629041783356">שינוי אוטומטי של המראה לפי זמני זריחה ושקיעה</translation>
 <translation id="855604308879080518">‏אפליקציות ל-Android יוכלו לקבל גישה להתקני USB ב-Chromebook הזה. בכל פעם שיחובר התקן USB, תישלח בקשה להרשאה. אפליקציות נפרדות ל-Android ישלחו בקשות להרשאות נוספות.</translation>
 <translation id="8557022314818157177">צריך להמשיך לגעת במפתח האבטחה עד לתיעוד טביעת האצבע</translation>
 <translation id="8557180006508471423">‏הפעלת "Google Chrome" בשירותי המיקום של מכשיר ה-Mac</translation>
@@ -10798,6 +10818,7 @@
 <translation id="973558314812359997">גודל סמן העכבר</translation>
 <translation id="975893173032473675">שפת היעד של התרגום</translation>
 <translation id="976499800099896273">תיבת הדו-שיח של התיקון האוטומטי עם הפעולה 'ביטול' מוצגת עבור המילה <ph name="TYPED_WORD" /> שתוקנה למילה <ph name="CORRECTED_WORD" />.  יש ללחוץ על החצים למעלה כדי לגשת, לצאת או להתעלם.</translation>
+<translation id="976572010712028687">אימות היותך הורה</translation>
 <translation id="978146274692397928">רוחב סימן הפיסוק הראשוני הוא מלא</translation>
 <translation id="978978324795544535">הקשה כפולה על פריט, לחיצה ארוכה בהקשה השנייה וגרירת הפריט כדי להזיז אותו</translation>
 <translation id="97905529126098460">החלון הזה ייסגר לאחר השלמת הביטול.</translation>

@@ -330,6 +330,7 @@
 <translation id="67706546131546258">‏ينصح متصفِّح Chromium بفحص هذا الملف لأنّه قد يكون خطيرًا.</translation>
 <translation id="6779406956731413166">‏أصبح نظام التشغيل Chromium متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6847869444787758381">‏يتم إعلامك من خلال Chromium في حال تم اختراق كلمات المرور في أي وقت.</translation>
+<translation id="684888714667046800">يتعذّر الاتصال بالإنترنت. في حال استخدام جدار حماية، يُرجى التأكّد من إدراج <ph name="PRODUCT_EXE_NAME" /> في القائمة المسموح بها.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">‏رصد Chromium أنّ الإضافة "<ph name="EXTENSION_NAME" />" تحتوي على برامج ضارة.</translation>
 <translation id="6893813176749746474">‏تم تحديث متصفح Chromium، ولكنك لم تستخدمه منذ أكثر من 30 يومًا.</translation>

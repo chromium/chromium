@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
 <translation id="164269334534774161">Bạn đang xem bản sao ngoại tuyến của trang này từ <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Nhật ký</translation>
+<translation id="1644969410150602449">Xem nhật ký duyệt web của bạn tại đây</translation>
 <translation id="1657932388559784161">Đã đóng bảng thông tin chi tiết về trang ở dưới cùng</translation>
 <translation id="1670399744444387456">Cơ bản</translation>
 <translation id="1671236975893690980">Đang chờ tải xuống...</translation>
@@ -250,6 +251,7 @@
 <translation id="2364539095045928896">Nút Đóng để đóng thông báo về quyền riêng tư của trung tâm thông tin chi tiết về trang.</translation>
 <translation id="2386938421315164605">Ẩn và hiện chủ đề</translation>
 <translation id="2390510615457643724">Bạn có muốn tải <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) xuống lần nữa?</translation>
+<translation id="2395004545133500011">Đã mở trang tính chia sẻ cùng nội dung tóm tắt</translation>
 <translation id="2410754283952462441">Chọn một tài khoản</translation>
 <translation id="2414886740292270097">Tối</translation>
 <translation id="2421705177906985956">Hiện không có trang web nào để hiển thị</translation>
@@ -364,6 +366,7 @@
 <translation id="2942036813789421260">Thẻ xem trước đang đóng</translation>
 <translation id="2946420957526726953">Đang cập nhật Chrome để kết nối với các thiết bị khác</translation>
 <translation id="2951071800649516099">Thêm các trang vào danh sách đọc để đọc sau</translation>
+<translation id="2956070106555335453">Tổng hợp</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> trang chưa đọc}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> trang chưa đọc}}</translation>
 <translation id="296370266220139811">Tiết kiệm thời gian, công sức nhập</translation>
 <translation id="2977350910003566746">Sắp xếp theo lần mở gần nhất</translation>
@@ -643,6 +646,7 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Đã lưu dấu trang vào "<ph name="FOLDER_NAME" />". Dấu trang chỉ được lưu vào thiết bị này.}other{Đã lưu dấu trang vào "<ph name="FOLDER_NAME" />". Dấu trang chỉ được lưu vào thiết bị này.}}</translation>
 <translation id="4484496141267039529">Không có kết nối. Hãy thử lại sau.</translation>
 <translation id="4487967297491345095">Tất cả dữ liệu của ứng dụng Chrome sẽ bị xóa vĩnh viễn, bao gồm tất cả các tệp, các tùy chọn cài đặt, tài khoản, cơ sở dữ liệu, v.v.</translation>
+<translation id="4489640160615759754">Trang tính chia sẻ cùng nội dung tóm tắt</translation>
 <translation id="4494806687727322324">Quản trị viên đã bật tính năng lưu mật khẩu</translation>
 <translation id="4508528996305412043">Đã mở trình đơn thẻ nguồn cấp dữ liệu</translation>
 <translation id="4509501256689523862">Khi bạn duyệt web, chế độ cài đặt này, <ph name="BEGIN_LINK_1" />Chủ đề quảng cáo<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />chế độ cài đặt cookie<ph name="END_LINK_2" /> và khả năng cá nhân hoá quảng cáo của trang web bạn đang xem sẽ quyết định liệu quảng cáo bạn thấy có được cá nhân hoá không</translation>
@@ -652,6 +656,7 @@
 <translation id="4521489764227272523">Dữ liệu được chọn đã bị xóa khỏi Chrome và các thiết bị đã đồng bộ hóa của bạn.
 
 Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác, chẳng hạn như tìm kiếm và hoạt động từ các dịch vụ khác của Google tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Đã đóng trang tính chia sẻ cùng nội dung tóm tắt</translation>
 <translation id="4523326818319942067">một giờ qua</translation>
 <translation id="452750746583162491">Xem lại các dữ liệu đã đồng bộ hóa của bạn</translation>
 <translation id="4532845899244822526">Chọn thư mục</translation>
@@ -749,6 +754,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4950924971025849764">Khi bạn đăng nhập vào cùng một Tài khoản Google, các thiết bị khác có thể dùng điện thoại này làm khoá bảo mật.</translation>
 <translation id="4957722034734105353">Tìm hiểu thêm...</translation>
 <translation id="4961107849584082341">Dịch trang này sang ngôn ngữ bất kỳ</translation>
+<translation id="496607651705915226">Cập nhật Dịch vụ Google Play để lưu và sử dụng mật khẩu mới trong Tài khoản Google</translation>
 <translation id="4971735654804503942">Chủ động và nhanh chóng bảo vệ bạn khỏi các trang web, tệp đã tải xuống và tiện ích nguy hiểm. Cảnh báo bạn những mật khẩu đã bị lộ. Yêu cầu gửi dữ liệu duyệt web cho Google.</translation>
 <translation id="497421865427891073">Đi về phía trước</translation>
 <translation id="4987271110129728827">Không tìm được trang đó. Hãy kiểm tra lỗi chính tả hoặc thử tìm kiếm trên web.</translation>

@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">모바일 네트워크 없음</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />에 미러링</translation>
 <translation id="1885785240814121742">지문으로 잠금 해제</translation>
+<translation id="1904997243703671177">블루투스를 사용 중지하면 다음 <ph name="DEVICE_COUNT" />개의 외부 기기와 <ph name="DEVICE_TYPE" />의 연결이 해제됩니다.</translation>
 <translation id="1908992311423394684">새로 설치됨</translation>
 <translation id="1915307458270490472">종료</translation>
 <translation id="1918022425394817322">카메라 미리보기가 오른쪽 상단으로 맞춰졌습니다</translation>
@@ -258,7 +259,6 @@
 <translation id="2017998995161831444">살펴보기 앱에서 '도움말' 열기</translation>
 <translation id="2018630726571919839">재미있는 이야기 듣기</translation>
 <translation id="2021864487439853900">잠금 해제하려면 클릭</translation>
-<translation id="2023558322300866873">언제든지 패킷 캡처를 중단할 수 있습니다.</translation>
 <translation id="2034971124472263449">무시하고 저장</translation>
 <translation id="204259843076055848">현재 <ph name="SIX_PACK_KEY_NAME" /> 단축키가 사용 중지되어 있습니다.</translation>
 <translation id="2049240716062114887">데스크 이름이 <ph name="DESK_NAME" />(으)로 변경되었습니다.</translation>
@@ -356,6 +356,7 @@
 <translation id="2482878487686419369">알림</translation>
 <translation id="2484513351006226581">키보드 레이아웃을 전환하려면 <ph name="KEYBOARD_SHORTCUT" />을(를) 누르세요.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> 미리보기입니다. 활성 데스크입니다.</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" 디스플레이가 <ph name="RESOLUTION" />(<ph name="REFRESH_RATE" />Hz) 해상도로 변경되었습니다. 확인하지 않으면 <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
 <translation id="2487915095798731898">가입</translation>
 <translation id="2499445554382787206">데스크 프로필 메뉴. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">고정키</translation>
@@ -699,7 +700,6 @@
 <translation id="380165613292957338">안녕하세요, 무엇을 도와드릴까요?</translation>
 <translation id="3804737937830804242">카메라 접기</translation>
 <translation id="3824784079442479685">카메라 액세스 권한이 있는 <ph name="APP_NAME" /> 앱을 포함한 모든 앱과 웹사이트에서 카메라에 액세스할 수 있게 됩니다. 웹페이지를 새로고침하거나 앱을 다시 시작해야 할 수도 있습니다.</translation>
-<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" />개 중 <ph name="NUM_TURNED_IN" />개 제출됨, <ph name="NUM_GRADED" />개 채점됨</translation>
 <translation id="3826099427150913765">비밀번호로 전환</translation>
 <translation id="383058930331066723">절전 모드 사용</translation>
 <translation id="383629559565718788">키보드 설정 표시</translation>
@@ -763,7 +763,6 @@
 <translation id="4066027111132117168">사용, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">다운로드 페이지 열기</translation>
 <translation id="4072264167173457037">신호 보통</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" />개 제출됨 • <ph name="NUM_GRADED" />개 채점됨</translation>
 <translation id="4086921558679520050">기기의 마이크 스위치를 켜세요</translation>
 <translation id="4101772068965291327">홈페이지</translation>
 <translation id="4112140312785995938">뒤로 탐색</translation>
@@ -959,6 +958,7 @@
 <translation id="4813311884204119883">링크를 탭 표시줄의 빈 영역으로 드래그</translation>
 <translation id="4814539958450445987">로그인 화면</translation>
 <translation id="481455355267255546">다음 일정</translation>
+<translation id="481749895090480684">할 일 목록: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">카메라 및 마이크</translation>
 <translation id="482908187605862807">Play 스토어에서 사용 가능한 앱</translation>
 <translation id="4831034276697007977">자동 클릭을 사용 중지하시겠습니까?</translation>
@@ -1000,6 +1000,7 @@
 <translation id="4952936045814352993">알람 소리가 사용 중지되어 있는 상태에서는 휴대전화 찾기를 사용할 수 없습니다.</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기를 롤백할 것을 요구합니다. 기기가 재설정되고 모든 데이터가 삭제됩니다.</translation>
 <translation id="4961318399572185831">화면 전송</translation>
+<translation id="4964188651935955085">블루투스를 사용 중지하면 다음의 외부 기기와 <ph name="DEVICE_TYPE" />의 연결이 해제됩니다.</translation>
 <translation id="4966431234408005599">볼륨 높이기</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />시간 <ph name="MINUTES" />분 <ph name="SECONDS" />초</translation>
 <translation id="4975771730019223894">앱 배지 설정</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">음소거 상태에서 말하면 알림을 받습니다. 오디오는 기기 외부로 유출되지 않습니다.</translation>
 <translation id="5077416371682039027">휴대전화의 최근 사진, 미디어, 알림, 앱 보기 설정</translation>
+<translation id="5077936103761694531">해상도를 확인하시겠습니까?</translation>
 <translation id="5078796286268621944">잘못된 PIN</translation>
 <translation id="5083035541015925118">Ctrl + Alt + 위쪽 화살표</translation>
 <translation id="5083553833479578423">더 많은 어시스턴트 기능을 사용해 보세요.</translation>
@@ -1676,6 +1678,7 @@
 <translation id="7647488630410863958">기기를 잠금 해제하여 알림 보기</translation>
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7654687942625752712">음성 피드백을 사용 중지하려면 두 볼륨 키를 5초 동안 길게 누르세요.</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" 디스플레이가 <ph name="FALLBACK_RESOLUTION" />(<ph name="FALLBACK_REFRESH_RATE" />Hz) 해상도로 변경되었습니다. 포트 대역폭 제한으로 인해 디스플레이가 <ph name="SPECIFIED_RESOLUTION" />(<ph name="SPECIFIED_REFRESH_RATE" />Hz) 해상도를 지원할 수 없습니다. 확인하지 않으면 <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7659861092419699379">데스크와 창을 닫았습니다.</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" />에 연결된 기기에 <ph name="NAME" /> 기기가 표시됩니다.</translation>
@@ -1766,6 +1769,7 @@
 <translation id="7945357288295809525">접근성 설정 표시, "<ph name="ENABLED_FEATURES" />" 사용 설정됨</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" />에서 <ph name="DEVICE_NAME" /> 사용할 권한 요청함</translation>
 <translation id="7951630946012935453">키보드 어둡게</translation>
+<translation id="7953994493035617347">새 해상도를 확인하시겠습니까?</translation>
 <translation id="7963689218131240420">방해 금지 모드가 사용 중지되어 있습니다.</translation>
 <translation id="7963992254934562106">출처: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">폴더 선택...</translation>
@@ -1824,6 +1828,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> 정보 대화상자 열기</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> 사용 중</translation>
 <translation id="8185090165691050712">잠금 모드의 크기를 조절할 수 있는 메뉴 사용 설정/사용 중지</translation>
+<translation id="8192727139462702395">블루투스를 사용 중지하면 다음의 외부 기기와 <ph name="DEVICE_TYPE" />의 연결이 해제됩니다.</translation>
 <translation id="8198456017687137612">탭 전송 중</translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8203795194971602413">오른쪽 클릭</translation>

@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">ସେଫ୍ ବ୍ରାଉଜିଂ</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" />ରୁ ଆପଣ ଏହି ପୃଷ୍ଠାର ଏକ ଅଫ୍‍ଲାଇନ୍‍ କପି ଦେଖୁଛନ୍ତି</translation>
 <translation id="1644574205037202324">ଇତିହାସ</translation>
+<translation id="1644969410150602449">ଏଠାରେ ଆପଣଙ୍କ ୱେବ ଇତିହାସ ଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="1657932388559784161">ପୃଷ୍ଠା ଇନସାଇଟ୍ସ ବଟମ ସିଟ ବନ୍ଦ ଅଛି</translation>
 <translation id="1670399744444387456">ମୌଳିକ</translation>
 <translation id="1671236975893690980">ଡାଉନ୍‌ଲୋଡ୍ ବାକି ଅଛି…</translation>
@@ -250,6 +251,7 @@
 <translation id="2364539095045928896">ପୃଷ୍ଠା ଇନସାଇଟ ହବର ଗୋପନୀୟତା ନୋଟିସକୁ ବନ୍ଦ କରିବା ପାଇଁ 'ବନ୍ଦ କରନ୍ତୁ' ବଟନ।</translation>
 <translation id="2386938421315164605">ବିଷୟଗୁଡ଼ିକୁ ଲୁଚାନ୍ତୁ ଏବଂ ଦେଖାନ୍ତୁ</translation>
 <translation id="2390510615457643724">ଆପଣ <ph name="FILE_NAME" /> <ph name="FILE_SIZE" />କୁ ପୁଣି ଡାଉନଲୋଡ୍ କରିବା ପାଇଁ ଚାହୁଁଛନ୍ତି କି?</translation>
+<translation id="2395004545133500011">ସାରାଂଶ ସିଟ ସହିତ ସେୟାର କରିବା ଖୋଲା ଅଛି</translation>
 <translation id="2410754283952462441">ଗୋଟିଏ ଆକାଉଣ୍ଟ ବାଛନ୍ତୁ</translation>
 <translation id="2414886740292270097">ଗାଢ଼</translation>
 <translation id="2421705177906985956">ବର୍ତ୍ତମାନ ଦେଖାଇବା ପାଇଁ କୌଣସି ସାଇଟ ନାହିଁ</translation>
@@ -364,6 +366,7 @@
 <translation id="2942036813789421260">ପ୍ରିଭ୍ୟୁ ଟାବ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="2946420957526726953">ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବା ପାଇଁ Chromeକୁ ଅପଡେଟ୍ କରାଯାଉଛି</translation>
 <translation id="2951071800649516099">ପରବର୍ତ୍ତୀ ସମୟ ପାଇଁ ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକାରେ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="2956070106555335453">ସାରାଂଶ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />ଟି ପଢ଼ାଯାଇନଥିବା ପୃଷ୍ଠା}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />ଟି ପଢ଼ାଯାଇନଥିବା ପୃଷ୍ଠା}}</translation>
 <translation id="296370266220139811">ସମୟ ବଞ୍ଚାନ୍ତୁ ଏବଂ କମ ଟାଇପ କରନ୍ତୁ</translation>
 <translation id="2977350910003566746">ଗତଥର ଖୋଲାଯିବା ଅନୁସାରେ ସର୍ଟ କରାଯାଉଛି</translation>
@@ -643,6 +646,7 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{"<ph name="FOLDER_NAME" />"ରେ ବୁକମାର୍କ ସେଭ କରାଯାଇଛି। ଏହାକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ।}other{"<ph name="FOLDER_NAME" />"ରେ ବୁକମାର୍କଗୁଡ଼ିକ ସେଭ କରାଯାଇଛି। ସେଗୁଡ଼ିକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ।}}</translation>
 <translation id="4484496141267039529">କୌଣସି ସଂଯୋଗ ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4487967297491345095">Chromeର ସମସ୍ତ ଆପ୍ ଡାଟା ସ୍ଥାୟୀ ଭାବରେ ଡିଲିଟ୍ ହୋଇଯିବ। ଏଥିରେ ସମସ୍ତ ଫାଇଲ୍, ସେଟିଂସ୍, ଡାଟାବେସ୍, ଇତ୍ୟାଦି ଅନ୍ତର୍ଭୁକ୍ତ ଅଛି।</translation>
+<translation id="4489640160615759754">ସାରାଂଶ ସିଟ ସହିତ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="4494806687727322324">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପାସୱାର୍ଡ ସେଭ କରିବା ଚାଲୁ କରାଯାଇଛି</translation>
 <translation id="4508528996305412043">ଫିଡ୍ କାର୍ଡ ମେନୁ ଖୋଲା ଅଛି</translation>
 <translation id="4509501256689523862">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ, ଆପଣ ଦେଖୁଥିବା ଏକ ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରାଯାଇଛି ନା ନାହିଁ ତାହା ଏହି ସେଟିଂ, <ph name="BEGIN_LINK_1" />ବିଜ୍ଞାପନ ବିଷୟ<ph name="END_LINK_1" />, ଆପଣଙ୍କ <ph name="BEGIN_LINK_2" />କୁକୀ ସେଟିଂସ<ph name="END_LINK_2" />ଏବଂ ଆପଣ ଦେଖୁଥିବା ସାଇଟ ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରେ ନା ନାହିଁ, ତାହା ଉପରେ ନିର୍ଭର କରେ</translation>
@@ -652,6 +656,7 @@
 <translation id="4521489764227272523">ଚୟନିତ ଡାଟାକୁ Chrome ଓ ସିଙ୍କ୍ ହୋଇଥିବା ଆପଣଙ୍କ ଡିଭାଇସ୍‌ଗୁଡ଼ିକରୁ କାଢ଼ିଦିଆଯାଇଛି।
 
 ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସର୍ଚ୍ଚ ଭଳି ଅନ୍ୟାନ୍ୟ ପ୍ରକାର ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି ଏବଂ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ରେ ଅନ୍ୟ Google ସେବାଗୁଡ଼ିକରେ କରାଯାଇଥିବା କାର୍ଯ୍ୟକଳାପ ଥାଇପାରେ।</translation>
+<translation id="452279259461584111">ସାରାଂଶ ସିଟ ସହିତ ସେୟାର କରିବା ବନ୍ଦ ଅଛି</translation>
 <translation id="4523326818319942067">ଗତ ଘଣ୍ଟା</translation>
 <translation id="452750746583162491">ଆପଣଙ୍କ ସିଙ୍କ୍ କରାଯାଇଥିବା ଡାଟାର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="4532845899244822526">ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ</translation>
@@ -749,6 +754,7 @@
 <translation id="4950924971025849764">ଆପଣ ସମାନ Google ଆକାଉଣ୍ଟରେ ସାଇନ ଇନ କଲେ, ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ଏହି ଫୋନକୁ ଏକ ସୁରକ୍ଷା କୀ ଭାବେ ବ୍ୟବହାର କରିପାରିବ।</translation>
 <translation id="4957722034734105353">ଅଧିକ ଜାଣନ୍ତୁ...</translation>
 <translation id="4961107849584082341">ଏହି ପୃଷ୍ଠାକୁ ଯେକୌଣସି ଭାଷାରେ ଅନୁବାଦ କରନ୍ତୁ</translation>
+<translation id="496607651705915226">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ନୂଆ ପାସୱାର୍ଡଗୁଡ଼ିକ ସେଭ ଏବଂ ବ୍ୟବହାର କରିବା ପାଇଁ Google Play ସେବାଗୁଡ଼ିକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="4971735654804503942">ବିପଦଜନକ ୱେବସାଇଟ୍, ଡାଉନଲୋଡ୍ ଏବଂ ଏକ୍ସଟେନ୍ସନଗୁଡ଼ିକ ବିରୁଦ୍ଧରେ ଦ୍ରୁତ, ସକ୍ରିୟ ସୁରକ୍ଷା। ପାସୱାର୍ଡ ଚୋରି ବିଷୟରେ ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ। Googleକୁ ବ୍ରାଉଜିଂ ଡାଟା ପଠାଇବା ଆବଶ୍ୟକ କରେ।</translation>
 <translation id="497421865427891073">ଆଗକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="4987271110129728827">ସେହି ପୃଷ୍ଠାଟି ମିଳୁନାହିଁ। ଆପଣଙ୍କର ବନାନ ଯାଞ୍ଚ କରନ୍ତୁ କିମ୍ବା ଏକ ୱେବ ସର୍ଚ୍ଚ ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>

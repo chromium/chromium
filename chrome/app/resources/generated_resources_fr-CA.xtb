@@ -1805,7 +1805,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2332515770639153015">Navigation sécurisée améliorée activée</translation>
 <translation id="2332742915001411729">Rétablir la valeur par défaut</translation>
 <translation id="2333166365943957309">Hiérarchie de l'IU</translation>
-<translation id="233471714539944337">Contenu confidentiel</translation>
+<translation id="233471714539944337">Contenu de nature délicate</translation>
 <translation id="2335111415680198280">{0,plural, =1{Fermer # fenêtre}one{Fermer # fenêtre}other{Fermer # fenêtres}}</translation>
 <translation id="2336228925368920074">Ajouter tous les onglets aux favoris…</translation>
 <translation id="2336258397628212480">Impression par <ph name="APP_NAME" /> de 1 page sur <ph name="PRINTER_NAME" /></translation>
@@ -3508,12 +3508,14 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3660234220361471169">Non fiable</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{un ancien mot de passe trouvé}one{{NUM_PASSWORDS} mots de passe existants trouvés}other{{NUM_PASSWORDS} mots de passe existants trouvés}}</translation>
 <translation id="3662207097851752847">Confirmez votre compte Google sur votre téléphone</translation>
+<translation id="3663417513679360795">Plus de renseignements sur l'activation du préchargement standard</translation>
 <translation id="3664511988987167893">Icône de l'extension</translation>
 <translation id="3665100783276035932">La plupart des sites devraient fonctionner comme prévu</translation>
 <translation id="3665301845536101715">Ouvrir dans le panneau latéral</translation>
 <translation id="3665589677786828986">Chrome a détecté que certains paramètres de votre navigateur ont été corrompus par un autre programme, et les a réinitialisé à leurs valeurs par défaut.</translation>
 <translation id="3665919494326051362">Version actuelle : <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Vidage de débogage des CIR Wi-Fi Intel</translation>
+<translation id="3666971425390608309">Téléchargement de <ph name="FILE_NAME" /> interrompu</translation>
 <translation id="3670113805793654926">Appareils de n'importe quel fournisseur</translation>
 <translation id="3670229581627177274">Activer le Bluetooth</translation>
 <translation id="3670480940339182416">Les sites peuvent utiliser l'optimiseur V8</translation>
@@ -3596,6 +3598,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3720543739123045680">D'autres onglets partagent un processus avec cet onglet, ce qui peut entraîner une utilisation inattendue des outils pour les développeurs.</translation>
 <translation id="372062398998492895">Imprimantes CUPS</translation>
 <translation id="3721119614952978349">Vous et Google</translation>
+<translation id="3721178866505920080">Plus de renseignements sur l'activation du préchargement étendu</translation>
 <translation id="3722108462506185496">Erreur lors du démarrage du service de machine virtuelle. Veuillez réessayer.</translation>
 <translation id="3722624153992426516">Instruction <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> reçue</translation>
 <translation id="3724897774652282549">Remplir le formulaire</translation>
@@ -3711,6 +3714,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3798670284305777884">Haut-parleur (interne)</translation>
 <translation id="3799128412641261490">Paramètres de Switch Access</translation>
 <translation id="3800828618615365228">Conditions supplémentaires pour Google Chrome et Chrome OS</translation>
+<translation id="3800898876950197674">Entrez votre mot de passe pour autoriser cette extension.</translation>
 <translation id="3802486193901166966">Cette extension ne nécessite pas d'autorisation spéciale et n'a pas d'accès de site supplémentaire</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803345858388753269">Qualité de la vidéo</translation>
@@ -4581,7 +4585,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4473996011558324141">Estimation du temps en cours…</translation>
 <translation id="4474155171896946103">Ajouter tous les onglets aux favoris...</translation>
 <translation id="4475299370877036544">Cette action pourrait enfreindre les politiques de votre organisation</translation>
-<translation id="4475552974751346499">Rechercher dans les téléchargements</translation>
 <translation id="4476590490540813026">Athlète</translation>
 <translation id="4476659815936224889">Pour numériser ce code, vous pouvez utiliser une application de numérisation de code QR sur votre téléphone ou certaines applications d'appareil photo.</translation>
 <translation id="4477015793815781985">Incluez la touche Ctrl, Alt ou ⌘</translation>
@@ -7451,6 +7454,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6758056191028427665">Donnez-nous votre avis sur nos services.</translation>
 <translation id="6759193508432371551">Rétablir les paramètres par défaut</translation>
 <translation id="6760354150216532978">Attention : Ce site peut voir les modifications que vous apportez</translation>
+<translation id="6761209758867628753">Outil : Aide à la rédaction</translation>
 <translation id="676158322851696513">« <ph name="EXTENSION_NAME" /> »</translation>
 <translation id="6761623907967804682">Données relatives aux sites sur l'appareil non autorisées</translation>
 <translation id="6762833852331690540">Activé</translation>
@@ -7988,6 +7992,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7180865173735832675">Personnaliser</translation>
 <translation id="7181117767881540376">Masquer la barre de favoris</translation>
+<translation id="7181329571386134105">Pour autoriser <ph name="CHILD_NAME" /> à installer des extensions sans votre approbation à l'avenir, ouvrez l'application Family Link sur votre appareil, puis mettez à jour les paramètres Google Chrome de <ph name="CHILD_NAME" />.</translation>
 <translation id="7182063559013288142">Point d'accès sans fil immédiat</translation>
 <translation id="7182791023900310535">Déplacer votre mot de passe</translation>
 <translation id="718427252411067142">Pour empêcher d'autres personnes d'utiliser votre mot de passe, ouvrez l'application pour le modifier</translation>
@@ -10777,6 +10782,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="973558314812359997">Taille du curseur de souris</translation>
 <translation id="975893173032473675">Langue cible</translation>
 <translation id="976499800099896273">Boîte de dialogue d'annulation de la correction automatique affichée pour la correction de <ph name="TYPED_WORD" /> en <ph name="CORRECTED_WORD" />.  Appuyez sur la flèche vers le haut pour y accéder, ou sur Échap pour l'ignorer.</translation>
+<translation id="976572010712028687">Confirmer que vous êtes un parent</translation>
 <translation id="978146274692397928">La largeur de ponctuation initiale est « Complète »</translation>
 <translation id="978978324795544535">Touchez deux fois sur un élément, maintenez le deuxième toucher enfoncé, puis faites glisser l'élément pour le déplacer</translation>
 <translation id="97905529126098460">Cette fenêtre sera automatiquement fermée une fois l'annulation terminée.</translation>

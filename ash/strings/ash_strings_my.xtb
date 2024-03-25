@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">မိုဘိုင်းကွန်ရက် မရှိပါ</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> သို့ ပုံတူပွားနေ</translation>
 <translation id="1885785240814121742">လက်ဗွေရာသုံး၍ လော့ခ်ဖွင့်ခြင်း</translation>
+<translation id="1904997243703671177">ဘလူးတုသ် ပိတ်လိုက်သောအခါ အောက်ပါတို့ပါဝင်သော ပြင်ပစက် <ph name="DEVICE_COUNT" /> ခုကို သင့် <ph name="DEVICE_TYPE" /> နှင့် ချိတ်ဆက်မှုဖြုတ်ပါမည်-</translation>
 <translation id="1908992311423394684">အသစ်ထည့်သွင်းမှု</translation>
 <translation id="1915307458270490472">ဖုန်းချရန်</translation>
 <translation id="1918022425394817322">ကင်မရာကို အပေါ်ညာဘက်ထောင့်သို့ ကပ်ထားသည်</translation>
@@ -258,7 +259,6 @@
 <translation id="2017998995161831444">‘စူးစမ်းလေ့လာခြင်းအက်ပ်’ တွင် “အကူအညီ” ကို ဖွင့်ရန်</translation>
 <translation id="2018630726571919839">ဟာသတစ်ခု ပြောပါ</translation>
 <translation id="2021864487439853900">ဖွင့်ရန် နှိပ်ပါ</translation>
-<translation id="2023558322300866873">အပိုင်းငယ်ဖမ်းယူမှုကို အချိန်မရွေးရပ်နိုင်သည်</translation>
 <translation id="2034971124472263449">မည်သို့ပင်ဖြစ်စေ သိမ်းရန်</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> ဖြတ်လမ်းလင့်ခ်ကို လောလောဆယ် ပိတ်ထားသည်</translation>
 <translation id="2049240716062114887">မျက်နှာပြင်နေရာအမည်ကို <ph name="DESK_NAME" /> သို့ ပြောင်းထားသည်</translation>
@@ -356,6 +356,7 @@
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
 <translation id="2484513351006226581">ကီးဘုတ်လက်ကွက် ပြောင်းရန် <ph name="KEYBOARD_SHORTCUT" /> ကို နှိပ်ပါ။</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> အစမ်းပြကွက်။ သုံးနေသည့် မျက်နှာပြင်။</translation>
+<translation id="2486405091093637109">“<ph name="DISPLAY_NAME" />” ကို <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ပုံရိပ်ပြတ်သားကိန်းသို့ ပြောင်းလိုက်သည်။ အတည်မပြုဘဲ ယခင်ဆက်တင်များကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ပြောင်းပါမည်။</translation>
 <translation id="2487915095798731898">ချိတ်ဆက်ပါ</translation>
 <translation id="2499445554382787206">မျက်နှာပြင် ပရိုဖိုင်မီနူး။ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Sticky keys</translation>
@@ -699,7 +700,6 @@
 <translation id="380165613292957338">မင်္ဂလာပါ၊ ဘာကူညီပေးရပါမလဲ။</translation>
 <translation id="3804737937830804242">ကင်မရာခလုတ် လျှော့ပြရန်</translation>
 <translation id="3824784079442479685">၎င်းက <ph name="APP_NAME" /> နှင့် ကင်မရာခွင့်ပြုချက်တောင်းသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို ကင်မရာသုံးခွင့်ပြုသည်။ အင်တာနက်စာမျက်နှာကို ပြန်လည်စတင်ရမည် (သို့) အက်ပ်ကို ပြန်စရမည်။</translation>
-<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ခုအနက် <ph name="NUM_TURNED_IN" /> ခု ထပ်ထားသည်။ <ph name="NUM_GRADED" /> ခုကို အဆင့်ပေးထားသည်</translation>
 <translation id="3826099427150913765">စကားဝှက်သို့ ပြောင်းရန်</translation>
 <translation id="383058930331066723">ဘက်ထရီအားထိန်းမုဒ် ဖွင့်ထားသည်</translation>
 <translation id="383629559565718788">ကီးဘုတ်ဆက်တင်များကို ပြရန်</translation>
@@ -763,7 +763,6 @@
 <translation id="4066027111132117168">ဖွင့်ထားသည်၊ <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">ဒေါင်းလုဒ်များစာမျက်နှာ ဖွင့်ရန်</translation>
 <translation id="4072264167173457037">လိုင်းအား အတင့်သင့်သာရှိသည်</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ပေးထားသည် • အဆင့် <ph name="NUM_GRADED" /> သတ်မှတ်ထားသည်</translation>
 <translation id="4086921558679520050">သင့်စက်ပေါ်ရှိ ပကတိမိုက်ခလုတ် ဖွင့်ပါ</translation>
 <translation id="4101772068965291327">ပင်မစာမျက်နှာကို ဖွင့်ရန်</translation>
 <translation id="4112140312785995938">နောက်သို့ ပြန်ရစ်ရန်</translation>
@@ -959,6 +958,7 @@
 <translation id="4813311884204119883">လင့်ခ်ကို တဘ်ဘားတန်းပေါ်ရှိ နေရာလွတ်သို့ ဖိဆွဲပါ</translation>
 <translation id="4814539958450445987">အကောင့်ဝင်ရန် ဖန်သားပြင်</translation>
 <translation id="481455355267255546">နောက်တစ်ခု</translation>
+<translation id="481749895090480684">လုပ်ဆောင်ရန်စာရင်း- <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">ကင်မရာနှင့် မိုက်ခရိုဖုန်း</translation>
 <translation id="482908187605862807">Play Store မှ ရနိုင်သောအက်ပ်များ</translation>
 <translation id="4831034276697007977">အလိုအလျောက်နှိပ်ခြင်းကို ပိတ်လိုသည်မှာ သေချာပါသလား။</translation>
@@ -1000,6 +1000,7 @@
 <translation id="4952936045814352993">သတိပေးချက်အသံများ ပိတ်ထားပါက ဖုန်းရှာဖွေခြင်းကို အသုံးပြု၍မရပါ</translation>
 <translation id="4960324571663582548">သင့် <ph name="DEVICE_TYPE" /> ကိုနောက်ပြန်ဆုတ်ရန် <ph name="MANAGER" /> ကသတ်မှတ်ထားသည်။ စက်ပြင်ဆင်သတ်မှတ်မည်ဖြစ်ပြီး ဒေတာအားလုံးကို ဖျက်ပါမည်။</translation>
 <translation id="4961318399572185831">Cast ဖန်မျက်နှာပြင်</translation>
+<translation id="4964188651935955085">ဘလူးတုသ် ပိတ်လိုက်သောအခါ ဤပြင်ပစက်ကို သင့် <ph name="DEVICE_TYPE" /> နှင့် ချိတ်ဆက်မှုဖြုတ်ပါမည်-</translation>
 <translation id="4966431234408005599">အသံချဲ့ရန်</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
 <translation id="4975771730019223894">အက်ပ်သင်္ကေတ</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">အသံပိတ်ထားစဉ် စကားပြောဆိုပါက သင့်ကိုအကြောင်းကြားပါမည်။ စက်မှ သင့်အသံထွက်မည်မဟုတ်ပါ။</translation>
 <translation id="5077416371682039027">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံ၊ မီဒီယာ၊ အကြောင်းကြားချက်နှင့် အက်ပ်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းရန်</translation>
+<translation id="5077936103761694531">ပုံရိပ်ပြတ်သားကိန်း အတည်ပြုမလား။</translation>
 <translation id="5078796286268621944">မမှန်ကန်သည့် ပင်ကုဒ်</translation>
 <translation id="5083035541015925118">Ctrl + Alt + အပေါ်ညွှန်မြား</translation>
 <translation id="5083553833479578423">နောက်ထပ် Assistant ဝန်ဆောင်မှုများကို ဖွင့်ပါ</translation>
@@ -1676,6 +1678,7 @@
 <translation id="7647488630410863958">အကြောင်းကြားချက်များကို ကြည့်ရန် စက်ပစ္စည်းကို လော့ခ်ဖွင့်ပါ</translation>
 <translation id="7649070708921625228">အကူအညီ</translation>
 <translation id="7654687942625752712">စကားပြော အကြံပြုချက်ကို ပိတ်ရန် အသံအတိုးအလျှော့ခလုတ် နှစ်ခုလုံးကို ၅ စက္ကန့်ကြာ ဖိထားပါ။</translation>
+<translation id="7654916369822103315">“<ph name="DISPLAY_NAME" />” ကို <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) ပုံရိပ်ပြတ်သားကိန်းသို့ ပြောင်းလိုက်သည်။ ပို့တ်မြန်နှုန်း ကန့်သတ်ချက်များကြောင့် သင့်ဖန်သားပြင်သည် <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ပုံရိပ်ပြတ်သားကိန်းကို မပံ့ပိုးနိုင်ပါ။ အတည်မပြုဘဲ ယခင်ဆက်တင်များကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ပြောင်းပါမည်။</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7659861092419699379">မျက်နှာပြင်နှင့် ဝင်းဒိုးများ ပိတ်ပြီးပြီ</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" /> နှင့် လင့်ခ်ချိတ်ထားသည့် စက်များတွင် သင့် <ph name="NAME" /> ကို မြင်ရမည်</translation>
@@ -1766,6 +1769,7 @@
 <translation id="7945357288295809525">သုံးနိုင်မှု ဆက်တင်များ ပြရန်၊ “<ph name="ENABLED_FEATURES" />” ဖွင့်ထားသည်။</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> က သင့် <ph name="DEVICE_NAME" /> ကို သုံးလိုပါသည်</translation>
 <translation id="7951630946012935453">keyboard အလင်းမှိန်ရန်</translation>
+<translation id="7953994493035617347">ပုံရိပ်ပြတ်သားကိန်းအသစ် အတည်ပြုမလား။</translation>
 <translation id="7963689218131240420">‘မနှောင့်ယှက်ရ’ ကို ပိတ်ထားသည်။</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> မှ</translation>
 <translation id="7968693143708939792">ဖိုင်တွဲရွေးရန်...</translation>
@@ -1824,6 +1828,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> အတွက် အချက်အလက်ဒိုင်ယာလော့ခ် ဖွင့်ပါ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> အသုံးပြုခြင်း</translation>
 <translation id="8185090165691050712">လော့ခ်မုဒ် အရွယ်အစားပြန်ပြုပြင်ရန်အတွက် မီနူးဖွင့်/ပိတ်ရန်</translation>
+<translation id="8192727139462702395">ဘလူးတုသ် ပိတ်လိုက်သောအခါ ဤပြင်ပစက်များကို သင့် <ph name="DEVICE_TYPE" /> နှင့် ချိတ်ဆက်မှုဖြုတ်ပါမည်-</translation>
 <translation id="8198456017687137612">တဘ်ကို ကာစ်လုပ်နေသည်</translation>
 <translation id="8200772114523450471">ပြန်ဆက်ရန်</translation>
 <translation id="8203795194971602413">ညာဘက်ခလုတ်ကို နှိပ်ရန်</translation>

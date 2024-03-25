@@ -124,6 +124,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="1641113438599504367">Bezpieczne przeglądanie</translation>
 <translation id="164269334534774161">Oglądasz kopię offline tej strony z <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historia</translation>
+<translation id="1644969410150602449">Wyświetl swoją historię online tutaj</translation>
 <translation id="1657932388559784161">Plansza dolna ze statystykami strony jest zamknięta</translation>
 <translation id="1670399744444387456">Podstawowe</translation>
 <translation id="1671236975893690980">Oczekuję na pobranie…</translation>
@@ -250,6 +251,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="2364539095045928896">Przycisk Zamknij służący do zamykania informacji na temat ochrony prywatności w centrum statystyk strony.</translation>
 <translation id="2386938421315164605">Ukrywaj i odkrywaj tematy</translation>
 <translation id="2390510615457643724">Czy chcesz ponownie pobrać plik <ph name="FILE_NAME" /> <ph name="FILE_SIZE" />?</translation>
+<translation id="2395004545133500011">Udostępnij z otwartym arkuszem podsumowania</translation>
 <translation id="2410754283952462441">Wybierz konto</translation>
 <translation id="2414886740292270097">Ciemny</translation>
 <translation id="2421705177906985956">Obecnie nie ma witryn do wyświetlenia</translation>
@@ -364,6 +366,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="2942036813789421260">Karta podglądu jest zamknięta</translation>
 <translation id="2946420957526726953">Aktualizuję Chrome, aby umożliwić nawiązywanie połączeń z innymi urządzeniami</translation>
 <translation id="2951071800649516099">Dodaj strony do listy Do przeczytania, aby przeczytać je później</translation>
+<translation id="2956070106555335453">Podsumowanie</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> nieprzeczytana strona}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nieprzeczytane strony}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nieprzeczytanych stron}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nieprzeczytanej strony}}</translation>
 <translation id="296370266220139811">Więcej czasu, mniej pisania</translation>
 <translation id="2977350910003566746">Sortowanie według ostatniego otwarcia</translation>
@@ -643,6 +646,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Zakładka została zapisana w folderze „<ph name="FOLDER_NAME" />”. Jest on zapisany tylko na tym urządzeniu.}few{Zakładki zostały zapisane w folderze „<ph name="FOLDER_NAME" />”. Jest on zapisany tylko na tym urządzeniu.}many{Zakładki zostały zapisane w folderze „<ph name="FOLDER_NAME" />”. Jest on zapisany tylko na tym urządzeniu.}other{Zakładki zostały zapisane w folderze „<ph name="FOLDER_NAME" />”. Jest on zapisany tylko na tym urządzeniu.}}</translation>
 <translation id="4484496141267039529">Brak połączenia. Spróbuj ponownie później.</translation>
 <translation id="4487967297491345095">Wszystkie dane aplikacji Chrome zostaną trwale usunięte. Dotyczy to wszystkich plików, ustawień, kont, baz danych itp.</translation>
+<translation id="4489640160615759754">Udostępnij z arkuszem podsumowania</translation>
 <translation id="4494806687727322324">Zapisywanie haseł zostało włączone przez administratora</translation>
 <translation id="4508528996305412043">Menu karty kanału jest otwarte</translation>
 <translation id="4509501256689523862">Personalizacja reklam wyświetlanych podczas przeglądania internetu zależy od tego ustawienia, od opcji <ph name="BEGIN_LINK_1" />Tematy reklam<ph name="END_LINK_1" />, od <ph name="BEGIN_LINK_2" />ustawień plików cookie<ph name="END_LINK_2" /> oraz od tego, czy odwiedzana witryna wyświetla reklamy spersonalizowane</translation>
@@ -652,6 +656,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="4521489764227272523">Wybrane dane zostały usunięte z Chrome i ze zsynchronizowanych urządzeń.
 
 Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> na Twoim koncie Google mogą być zapisane inne rodzaje historii przeglądania, takie jak wyszukiwania lub aktywność z innych usług Google.</translation>
+<translation id="452279259461584111">Udostępnij z zamkniętym arkuszem podsumowania</translation>
 <translation id="4523326818319942067">ostatniej godziny</translation>
 <translation id="452750746583162491">Przejrzyj synchronizowane dane</translation>
 <translation id="4532845899244822526">Wybierz folder</translation>
@@ -749,6 +754,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4950924971025849764">Gdy zalogujesz się na to samo konto Google, inne urządzenia będą mogły używać tego telefonu jako klucza bezpieczeństwa.</translation>
 <translation id="4957722034734105353">Więcej informacji...</translation>
 <translation id="4961107849584082341">Możesz przetłumaczyć tę stronę na dowolny język</translation>
+<translation id="496607651705915226">Aby zapisywać nowe hasła i używać ich na koncie Google, zaktualizuj Usługi Google Play</translation>
 <translation id="4971735654804503942">Szybsza proaktywna ochrona przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami. Będziesz otrzymywać ostrzeżenia o kradzieżach haseł. Wymaga wysyłania danych przeglądania do Google.</translation>
 <translation id="497421865427891073">Dalej</translation>
 <translation id="4987271110129728827">Nie można znaleźć tej strony. Sprawdź pisownię lub spróbuj wyszukać w internecie.</translation>

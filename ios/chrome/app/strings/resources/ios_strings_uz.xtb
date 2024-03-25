@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Berkitish</translation>
 <translation id="1219674500290482172">Internetga ulanib bo‘lmadi.</translation>
-<translation id="1226238226094914652">Barcha qurlimalaringizdagi parollar</translation>
 <translation id="122699739164161391">Barcha varaqlarni yopish</translation>
 <translation id="1227866575467023566">{count,plural, =1{Hisobingizdagi ({email}) mutolaa roʻyxatiga sahifa kiritildi.}other{Hisobingizdagi ({email}) mutolaa roʻyxatiga {count} ta sahifa kiritildi.}}</translation>
 <translation id="1242044645101871359">Qaytadan kiring</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Kuzatish</translation>
 <translation id="1644574205037202324">Tarix</translation>
 <translation id="164673457281113247">{count,plural, =1{Bukmark saqlandi}other{Bukmarklar saqlandi}}</translation>
-<translation id="165008673352427892">Yangi funksiya</translation>
 <translation id="1650222530560417226">Barcha varaqlardagi JavaScript konsoli jurnali va xatolari yigʻilishi uchun “Jurnalga yozishni boshlash” ustiga bosing. Jurnallar sahifa yopilmaguncha yoki “Jurnalga yozishni toʻxtatish” bosilmaguncha yigʻiladi (va faqat xotirada saqlanadi).</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} ta saqlangan parol klaviatura ustida chiqadi.}other{{count} ta saqlangan parol klaviatura ustida chiqadi.}}</translation>
 <translation id="1657011748321897393">Yozuv tarmoq xatoligi sababli joylanmadi.</translation>
@@ -302,7 +300,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2556092377360758201">Himoyasiz (tavsiya etilmaydi)</translation>
 <translation id="2561375093019333908">OCHISH</translation>
 <translation id="2562041823070056534">Bunga yuborilmoqda: <ph name="DEVICE_NAME" />...</translation>
-<translation id="2576499762020411840">Parollarni Google hisobiga saqlash va ishlatish</translation>
 <translation id="2577522251608256362">Mahalla</translation>
 <translation id="2578571896248130439">Bu sahifani yuborish</translation>
 <translation id="2584132361465095047">Hisob kiritish…</translation>
@@ -948,7 +945,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5850913622988109693">Pochta paketlarini kuzatish parametrlari</translation>
 <translation id="5854790677617711513">30 kundan oldin saqlanganlar</translation>
 <translation id="5857090052475505287">Yangi jild</translation>
-<translation id="5857361196621230935">Varaqni guruhga kiritish</translation>
 <translation id="5857770089550859117">Sinxronizatsiyani boshlash uchun kodli ibora zarur.</translation>
 <translation id="5859715514067755465">Oldinga oʻtkazish</translation>
 <translation id="5860033963881614850">O‘chiq</translation>
@@ -1159,7 +1155,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6800349425672670802">Barcha ochiq varaqlarni Varaqlar orasida almashish funksiyasi orqali ochish mumkin</translation>
 <translation id="6807889908376551050">Hammasini ochish...</translation>
 <translation id="681368974849482173">Saqlandi</translation>
-<translation id="6822587385560699678">Yoniqligida parollar <ph name="ACCOUNT" /> hisobiga saqlanadi. Oʻchiq boʻlsa, parollar faqat bu qurilmaga saqlanadi.</translation>
 <translation id="6824350924364057989">Sozlamalar</translation>
 <translation id="6831043979455480757">Tarjima</translation>
 <translation id="6842136130964845393">Parollarni istalgan vaqt ochish uchun shaxsingizni tasdiqlang</translation>

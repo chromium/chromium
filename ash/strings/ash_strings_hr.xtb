@@ -259,7 +259,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2017998995161831444">Otvaranje opcije Pomoć u aplikaciji Istražite</translation>
 <translation id="2018630726571919839">Ispričaj mi vic</translation>
 <translation id="2021864487439853900">Kliknite da biste otključali</translation>
-<translation id="2023558322300866873">Snimanje paketa uvijek možete zaustaviti</translation>
 <translation id="2034971124472263449">Svejedno spremi</translation>
 <translation id="204259843076055848">Prečac <ph name="SIX_PACK_KEY_NAME" /> trenutačno je isključen</translation>
 <translation id="2049240716062114887">Naziv radne površine promijenjen je u <ph name="DESK_NAME" /></translation>
@@ -357,6 +356,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2482878487686419369">Obavijesti</translation>
 <translation id="2484513351006226581">Pritisnite <ph name="KEYBOARD_SHORTCUT" /> da biste promijenili raspored tipkovnice.</translation>
 <translation id="2486214324139475545">Pregled za <ph name="DESK_NAME" /> Aktivna radna površina.</translation>
+<translation id="2486405091093637109">Zaslon <ph name="DISPLAY_NAME" /> promijenjen je na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Bez potvrđivanja, prethodne postavke vratit će se za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Pridruži se</translation>
 <translation id="2499445554382787206">Izbornik profila radne površine. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Ljepljive tipke</translation>
@@ -700,7 +700,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="380165613292957338">Pozdrav, kako mogu pomoći?</translation>
 <translation id="3804737937830804242">Zažmi fotoaparat</translation>
 <translation id="3824784079442479685">To omogućuje pristup kameri za aplikaciju <ph name="APP_NAME" /> te sve aplikacije i web-lokacije s dopuštenjem za kameru. Možda ćete morati osvježiti web-stranicu ili ponovo pokrenuti aplikaciju.</translation>
-<translation id="3825680296690914697">Predano <ph name="NUM_TURNED_IN" /> od <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, ocijenjeno <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Prelazak na zaporku</translation>
 <translation id="383058930331066723">Uključen je način štednje baterije</translation>
 <translation id="383629559565718788">Prikaz postavki tipkovnice</translation>
@@ -764,7 +763,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4066027111132117168">Uključeno, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Otvaranje stranice preuzimanja</translation>
 <translation id="4072264167173457037">Signal srednje jačine</translation>
-<translation id="4076455981957565732">Predano: <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Ocijenjeno: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Uključite fizički prekidač za mikrofone na uređaju</translation>
 <translation id="4101772068965291327">Otvori početnu stranicu</translation>
 <translation id="4112140312785995938">Traži unatrag</translation>
@@ -1030,6 +1028,7 @@ Neke su značajke ograničene radi produljenja trajanja baterije.</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Primit ćete obavijest ako govorite, a zvuk je isključen. Zvuk se nikad ne šalje s uređaja.</translation>
 <translation id="5077416371682039027">Postavite prikaz nedavnih fotografija, medijskih sadržaja, obavijesti i aplikacija telefona</translation>
+<translation id="5077936103761694531">Želite li potvrditi razlučivost?</translation>
 <translation id="5078796286268621944">Netočan PIN</translation>
 <translation id="5083035541015925118">Ctrl + Alt + strelica prema gore</translation>
 <translation id="5083553833479578423">Otključajte više značajki Asistenta.</translation>
@@ -1679,6 +1678,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7647488630410863958">Otključajte uređaj da biste vidjeli obavijesti</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7654687942625752712">Pritisnite i zadržite tipke za glasnoću pet sekundi da biste onemogućili govorne povratne informacije.</translation>
+<translation id="7654916369822103315">Zaslon <ph name="DISPLAY_NAME" /> promijenjen je na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Zbog ograničenja propusnosti priključka vaš zaslon ne podržava razlučivost <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Bez potvrđivanja, prethodne postavke vratit će se za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7659861092419699379">Zatvoreni su radna površina i prozori</translation>
 <translation id="7660160718439869192">Uređaj <ph name="NAME" /> pojavit će se na uređajima povezanima s računom <ph name="EMAIL" /></translation>
@@ -1769,6 +1769,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7945357288295809525">Prikaži postavke pristupačnosti, omogućeno: <ph name="ENABLED_FEATURES" />.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> želi upotrijebiti vaš uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Zatamnjenje tipkovnice</translation>
+<translation id="7953994493035617347">Želite li potvrditi novu razlučivost?</translation>
 <translation id="7963689218131240420">Isključena je značajka Ne uznemiravaj.</translation>
 <translation id="7963992254934562106">Izvor: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Odabir mape...</translation>

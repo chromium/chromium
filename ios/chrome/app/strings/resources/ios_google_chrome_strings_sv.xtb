@@ -140,7 +140,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4831642696589369971">Viss Chrome-data har inte sparats i ditt Google-konto ännu.
 
         Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
-<translation id="4834499902900503484">När du är inloggad i Chrome lagras lösenord du sparar i ditt Google-konto. <ph name="BEGIN_LINK" />Öppna inställningarna<ph name="END_LINK" /> om du vill inaktivera detta.</translation>
 <translation id="484033449593719797">Stöds inte på Chrome Beta</translation>
 <translation id="4840404732697892756">Google Lösenordshantering kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
 <translation id="4856636171409137183">Om du inkluderar Chrome i <ph name="FEATURE_NAME_1" /> och <ph name="FEATURE_NAME_2" /> får du en så anpassad upplevelse som möjligt</translation>

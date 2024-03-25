@@ -228,6 +228,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1882814835921407042">Mobiilsidevõrku pole</translation>
 <translation id="1882897271359938046">Peegeldamine asukohta <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Sõrmejäljega avamine</translation>
+<translation id="1904997243703671177">Kui lülitate Bluetoothi välja, katkestatakse <ph name="DEVICE_COUNT" /> välisseadme ühendus teie seadmega <ph name="DEVICE_TYPE" />, sealhulgas:</translation>
 <translation id="1908992311423394684">Uus installimine</translation>
 <translation id="1915307458270490472">Lõpeta kõne</translation>
 <translation id="1918022425394817322">Kaamera kinnitati paremasse ülanurka</translation>
@@ -258,7 +259,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2017998995161831444">Jaotise „Abi“ avamine rakenduses Avastamine</translation>
 <translation id="2018630726571919839">Räägi mõni nali</translation>
 <translation id="2021864487439853900">Klõpsake avamiseks</translation>
-<translation id="2023558322300866873">Võite pakettide jäädvustamise igal ajal peatada</translation>
 <translation id="2034971124472263449">Salvesta ikkagi</translation>
 <translation id="204259843076055848">Otsetee <ph name="SIX_PACK_KEY_NAME" /> on praegu välja lülitatud</translation>
 <translation id="2049240716062114887">Töölaua nimeks määrati <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2484513351006226581">Klaviatuuripaigutuse muutmiseks vajutage klahvikombinatsiooni <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2486214324139475545">Töölaua <ph name="DESK_NAME" /> eelvaade. Aktiivne töölaud.</translation>
+<translation id="2486405091093637109">Seadme „<ph name="DISPLAY_NAME" />” puhul muudeti eraldusvõimeks <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Ilma kinnitamiseta taastatakse eelmised seaded pärast <ph name="TIMEOUT_SECONDS" /> sekundi möödumist.</translation>
 <translation id="2487915095798731898">Liitu</translation>
 <translation id="2499445554382787206">Töölauaprofiili menüü. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Nakkeklahvid</translation>
@@ -700,7 +701,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="380165613292957338">Tere! Kuidas saan aidata?</translation>
 <translation id="3804737937830804242">Kaamera ahendamine</translation>
 <translation id="3824784079442479685">See lubab rakendusel <ph name="APP_NAME" /> ning kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda. Võimalik, et peate veebilehte värskendama või rakenduse taaskäivitama.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> ülesannet <ph name="TOTAL_NUM_OF_SUBMISSIONS" />-st on esitatud, <ph name="NUM_GRADED" /> on hinnatud</translation>
 <translation id="3826099427150913765">Kasuta parooli</translation>
 <translation id="383058930331066723">Akusäästja režiim on sisse lülitatud</translation>
 <translation id="383629559565718788">Kuvab klaviatuuriseaded</translation>
@@ -764,7 +764,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4066027111132117168">Sees, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Lehe Allalaadimised avamine</translation>
 <translation id="4072264167173457037">Keskmine signaal</translation>
-<translation id="4076455981957565732">Esitatud: <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Hinnatud: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Lülitage oma seadme füüsiline mikrofonilüliti sisse</translation>
 <translation id="4101772068965291327">Ava avaleht</translation>
 <translation id="4112140312785995938">Keri tagasi</translation>
@@ -960,6 +959,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4813311884204119883">Lohistage link vahelehtede ribal tühjale alale</translation>
 <translation id="4814539958450445987">Sisselogimiskuva</translation>
 <translation id="481455355267255546">Järgmisena</translation>
+<translation id="481749895090480684">Ülesannete loend: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kaamerat ja mikrofoni</translation>
 <translation id="482908187605862807">Saadaolevad rakendused Play poest</translation>
 <translation id="4831034276697007977">Kas soovite automaatsed klikid kindlasti välja lülitada?</translation>
@@ -1001,6 +1001,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4952936045814352993">Telefoni asukoha määramine pole saadaval, kui alarmi helid on keelatud</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> nõuab seadme <ph name="DEVICE_TYPE" /> operatsioonisüsteemi varasemale versioonile üleminekut. Seade lähtestatakse ja kõik andmed kustutatakse.</translation>
 <translation id="4961318399572185831">Ekraani ülekandmine</translation>
+<translation id="4964188651935955085">Kui lülitate Bluetoothi välja, katkestatakse selle välisseadme ühendus teie seadmega <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Suurenda helitugevust</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Rakenduse ikooni märguandetäpp</translation>
@@ -1028,6 +1029,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Teid teavitatakse, kui räägite vaigistatuna. Heli ei saadeta kunagi teie seadmest välja.</translation>
 <translation id="5077416371682039027">Teie telefoni hiljutiste fotode, meediafailide, märguannete ja rakenduste kuvamise seadistamine</translation>
+<translation id="5077936103761694531">Kas kinnitada eraldusvõime?</translation>
 <translation id="5078796286268621944">Vale PIN-kood</translation>
 <translation id="5083035541015925118">ctrl + alt + ülesnool</translation>
 <translation id="5083553833479578423">Avage rohkem assistendi funktsioone.</translation>
@@ -1677,6 +1679,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7647488630410863958">Märguannete vaatamiseks avage seade</translation>
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7654687942625752712">Suulise tagasiside keelamiseks hoidke mõlemat helitugevuse klahvi viis sekundit all.</translation>
+<translation id="7654916369822103315">Seadme „<ph name="DISPLAY_NAME" />” puhul muudeti eraldusvõimeks <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Pordi ribalaiuse piirangute tõttu ei saa teie ekraan toetada eraldusvõimet <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Ilma kinnitamiseta taastatakse eelmised seaded pärast <ph name="TIMEOUT_SECONDS" /> sekundi möödumist.</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7659861092419699379">Töölaud ja aknad on suletud</translation>
 <translation id="7660160718439869192">Seade <ph name="NAME" /> kuvatakse kontoga <ph name="EMAIL" /> lingitud seadmetes</translation>
@@ -1767,6 +1770,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7945357288295809525">Kuvatakse juurdepääsetavuse seaded, „<ph name="ENABLED_FEATURES" />“ on lubatud.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> soovib kasutada teie seadet <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Hämarda klaviatuur</translation>
+<translation id="7953994493035617347">Kas kinnitada uus eraldusvõime?</translation>
 <translation id="7963689218131240420">Režiim Mitte segada on väljas.</translation>
 <translation id="7963992254934562106">Telefonist <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Kausta valimine …</translation>
@@ -1825,6 +1829,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8155628902202578800">Avage konto <ph name="USER_EMAIL_ADDRESS" /> teabedialoog</translation>
 <translation id="8167567890448493835">Kasutusel: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Lülita lukurežiimi suuruse muutmise menüü sisse/välja</translation>
+<translation id="8192727139462702395">Kui lülitate Bluetoothi välja, katkestatakse nende välisseadmete ühendus teie seadmega <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Vahelehe ülekandmine</translation>
 <translation id="8200772114523450471">Taasta</translation>
 <translation id="8203795194971602413">Paremklikk</translation>

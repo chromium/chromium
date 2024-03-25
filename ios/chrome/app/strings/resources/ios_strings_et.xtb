@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17.30</translation>
 <translation id="1209206284964581585">Peida praeguseks</translation>
 <translation id="1219674500290482172">Internetiga ei saa ühendust.</translation>
-<translation id="1226238226094914652">Paroolid kõigis teie seadmetes</translation>
 <translation id="122699739164161391">Sule kõik vahelehed</translation>
 <translation id="1227866575467023566">{count,plural, =1{Teie kontol {email} lisati lugemisloendisse üks leht}other{Teie kontol {email} lisati lugemisloendisse {count} lehte}}</translation>
 <translation id="1242044645101871359">Logige uuesti sisse</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Jälgi</translation>
 <translation id="1644574205037202324">Ajalugu</translation>
 <translation id="164673457281113247">{count,plural, =1{Järjehoidja salvestati}other{Järjehoidjad salvestati}}</translation>
-<translation id="165008673352427892">Uus funktsioon</translation>
 <translation id="1650222530560417226">Puudutage nuppu „Alusta logimist”, et koguda edaspidi JavaScripti konsooli logisid ja vigu kõikidelt vahelehtedelt. Logisid kogutakse (ja salvestatakse ainult mällu) seni, kuni leht suletakse või kasutaja puudutab nuppu „Katkesta logimine”.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} salvestatud parool on klaviatuuri kohal saadaval.}other{{count} salvestatud parooli on klaviatuuri kohal saadaval.}}</translation>
 <translation id="1657011748321897393">Jagamine ebaõnnestus võrguühenduse puudumise tõttu.</translation>
@@ -302,7 +300,6 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2556092377360758201">Kaitseta (ei ole soovitatav)</translation>
 <translation id="2561375093019333908">AVA</translation>
 <translation id="2562041823070056534">Saatmine seadmesse <ph name="DEVICE_NAME" /> …</translation>
-<translation id="2576499762020411840">Paroolide kasutamine ja salvestamine Google'i kontol</translation>
 <translation id="2577522251608256362">Naabruskond</translation>
 <translation id="2578571896248130439">Veebilehe saatmine</translation>
 <translation id="2584132361465095047">Lisa konto …</translation>
@@ -948,7 +945,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5850913622988109693">Pakkide jälgimise valikud</translation>
 <translation id="5854790677617711513">Vanemad kui 30 päeva</translation>
 <translation id="5857090052475505287">Uus kaust</translation>
-<translation id="5857361196621230935">Vahelehe lisamine gruppi</translation>
 <translation id="5857770089550859117">Sünkroonimise alustamiseks on vaja parooli.</translation>
 <translation id="5859715514067755465">Edasi</translation>
 <translation id="5860033963881614850">Väljas</translation>
@@ -1159,7 +1155,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6800349425672670802">Kõikide avatud vahelehtede juurde pääsete funktsiooniga Vahelehtede vaheti.</translation>
 <translation id="6807889908376551050">Kuva kõik ...</translation>
 <translation id="681368974849482173">Üksus on loodud</translation>
-<translation id="6822587385560699678">Pärast sisselülitamist salvestatakse paroolid kontole <ph name="ACCOUNT" />. Kui see on välja lülitatud, salvestatakse paroolid ainult sellesse seadmesse.</translation>
 <translation id="6824350924364057989">Seaded</translation>
 <translation id="6831043979455480757">Tõlgi</translation>
 <translation id="6842136130964845393">Selleks, et saaksite alati oma salvesatud paroolidele juurde pääseda, kinnitage oma isik</translation>

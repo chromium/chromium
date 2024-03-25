@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">ਕੋਈ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਨਹੀਂ ਹੈ</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> ਲਈ ਪ੍ਰਤਿਬਿੰਬੀਕਰਨ</translation>
 <translation id="1885785240814121742">ਫਿੰਗਰਪ੍ਰਿੰਟ ਨਾਲ ਅਣਲਾਕ ਕਰੋ</translation>
+<translation id="1904997243703671177">ਬਲੂਟੁੱਥ ਬੰਦ ਕਰਨ 'ਤੇ, <ph name="DEVICE_COUNT" /> ਬਾਹਰੀ ਡੀਵਾਈਸ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਤੋਂ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਣਗੇ, ਇਸ ਵਿੱਚ ਸ਼ਾਮਲ ਹੈ:</translation>
 <translation id="1908992311423394684">ਨਵੀਂ ਸਥਾਪਤ ਕੀਤੀ ਗਈ</translation>
 <translation id="1915307458270490472">ਸਮਾਪਤ ਕਰੋ</translation>
 <translation id="1918022425394817322">ਕੈਮਰੇ ਨੂੰ ਉੱਪਰਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ</translation>
@@ -258,7 +259,6 @@
 <translation id="2017998995161831444">Explore ਐਪ ਵਿੱਚ "ਮਦਦ" ਖੋਲ੍ਹੋ</translation>
 <translation id="2018630726571919839">ਮੈਨੂੰ ਕੋਈ ਚੁਟਕਲਾ ਸੁਣਾਓ</translation>
 <translation id="2021864487439853900">ਅਣਲਾਕ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
-<translation id="2023558322300866873">ਤੁਸੀਂ ਕਿਸੇ ਵੇਲੇ ਵੀ ਪੈਕੇਟ ਕੈਪਚਰ ਨੂੰ ਰੋਕ ਸਕਦੇ ਹੋ</translation>
 <translation id="2034971124472263449">ਫਿਰ ਵੀ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="204259843076055848">ਫ਼ਿਲਹਾਲ <ph name="SIX_PACK_KEY_NAME" /> ਸ਼ਾਰਟਕੱਟ ਦੀ ਸੁਵਿਧਾ ਬੰਦ ਹੈ</translation>
 <translation id="2049240716062114887">ਡੈਸਕ ਦਾ ਨਾਮ ਬਦਲ ਕੇ <ph name="DESK_NAME" /> ਕਰ ਦਿੱਤਾ ਗਿਆ</translation>
@@ -356,6 +356,7 @@
 <translation id="2482878487686419369">ਸੂਚਨਾਵਾਂ</translation>
 <translation id="2484513351006226581">ਕੀ-ਬੋਰਡ ਖਾਕਾ ਬਦਲਣ ਲਈ <ph name="KEYBOARD_SHORTCUT" /> ਦਬਾਓ।</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> ਦੀ ਪੂਰਵ-ਝਲਕ। ਕਿਰਿਆਸ਼ੀਲ ਡੈਸਕ।</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" ਨੂੰ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ਰੈਜ਼ੋਲਿਊਸ਼ਨ 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ। ਤਸਦੀਕ ਕਰਨ ਤੋਂ ਬਿਨਾਂ, ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="2487915095798731898">ਸ਼ਾਮਲ ਹੋਵੋ</translation>
 <translation id="2499445554382787206">ਡੈਸਕ ਪ੍ਰੋਫਾਈਲ ਮੀਨੂ। <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ਸਟਿਕੀ ਕੁੰਜੀਆਂ</translation>
@@ -699,7 +700,6 @@
 <translation id="380165613292957338">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ, ਮੈਂ ਤੁਹਾਡੀ ਮਦਦ ਕਿਵੇਂ ਕਰਾਂ?</translation>
 <translation id="3804737937830804242">ਕੈਮਰੇ ਨੂੰ ਸਮੇਟੋ</translation>
 <translation id="3824784079442479685">ਇਸ ਨਾਲ <ph name="APP_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ। ਤੁਹਾਨੂੰ ਵੈੱਬ ਪੰਨੇ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰਨ ਜਾਂ ਐਪ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ।</translation>
-<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ਵਿੱਚੋਂ <ph name="NUM_TURNED_IN" /> ਸਪੁਰਦ ਕੀਤੇ ਗਏ, <ph name="NUM_GRADED" /> ਨੂੰ ਗ੍ਰੇਡ ਦਿੱਤੇ ਗਏ</translation>
 <translation id="3826099427150913765">ਪਾਸਵਰਡ 'ਤੇ ਬਦਲੀ ਕਰੋ</translation>
 <translation id="383058930331066723">ਬੈਟਰੀ ਸੇਵਰ ਮੋਡ ਚਾਲੂ ਹੈ</translation>
 <translation id="383629559565718788">ਕੀ-ਬੋਰਡ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
@@ -763,7 +763,6 @@
 <translation id="4066027111132117168">ਚਾਲੂ ਹੈ, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">'ਡਾਊਨਲੋਡ' ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="4072264167173457037">ਮੱਧਮ ਸਿਗਨਲ</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ਨੂੰ ਪੂਰਾ ਕੀਤਾ ਗਿਆ • <ph name="NUM_GRADED" /> ਗ੍ਰੇਡ ਦਿੱਤਾ ਗਿਆ</translation>
 <translation id="4086921558679520050">ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਭੌਤਿਕ ਮਾਈਕ ਸਵਿੱਚ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4101772068965291327">ਮੁੱਖ ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="4112140312785995938">ਪਿੱਛੇ ਕਰੋ</translation>
@@ -959,6 +958,7 @@
 <translation id="4813311884204119883">ਟੈਬ ਪੱਟੀ 'ਤੇ ਲਿੰਕ ਨੂੰ ਕਿਸੇ ਖਾਲੀ ਖੇਤਰ ਵੱਲ ਘਸੀਟੋ</translation>
 <translation id="4814539958450445987">ਲੌਗ-ਇਨ ਸਕ੍ਰੀਨ</translation>
 <translation id="481455355267255546">ਇਸ ਤੋਂ ਬਾਅਦ</translation>
+<translation id="481749895090480684">ਕਾਰਜ ਸੂਚੀ: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ</translation>
 <translation id="482908187605862807">Play Store 'ਤੇ ਉਪਲਬਧ ਐਪਾਂ</translation>
 <translation id="4831034276697007977">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਸਵੈਚਲਿਤ ਕਲਿੱਕਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
@@ -1001,6 +1001,7 @@
 <translation id="4952936045814352993">ਅਲਾਰਮ ਧੁਨੀਆਂ ਬੰਦ ਹੋਣ 'ਤੇ ਫ਼ੋਨ ਦਾ ਪਤਾ ਲਗਾਉਣ ਦੀ ਵਿਸ਼ੇਸ਼ਤਾ ਉਪਲਬਧ ਨਹੀਂ ਹੁੰਦੀ</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> ਮੁਤਾਬਕ ਤੁਹਾਨੂੰ ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਵਾਪਸ ਆਉਣ ਦੀ ਲੋੜ ਹੈ। ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗਾ ਅਤੇ ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="4961318399572185831">ਸਕ੍ਰੀਨ ਕਾਸਟ ਕਰੋ</translation>
+<translation id="4964188651935955085">ਬਲੂਟੁੱਥ ਬੰਦ ਕਰਨ 'ਤੇ, ਇਹ ਬਾਹਰੀ ਡੀਵਾਈਸ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਤੋਂ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਵੇਗਾ:</translation>
 <translation id="4966431234408005599">ਅਵਾਜ਼ ਵਧਾਓ</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ਘੰ <ph name="MINUTES" />ਮਿੰ <ph name="SECONDS" />ਸਕਿੰ</translation>
 <translation id="4975771730019223894">ਐਪ ਬੈਜਿੰਗ</translation>
@@ -1028,6 +1029,7 @@
 <translation id="5062496344832867502">ਰੈਮ</translation>
 <translation id="5068762093486106012">ਮਿਊਟ ਹੋਣ ਦੌਰਾਨ ਬੋਲਣ 'ਤੇ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕੀਤਾ ਜਾਵੇਗਾ। ਆਡੀਓ ਕਦੇ ਵੀ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਤੋਂ ਬਾਹਰ ਨਹੀਂ ਜਾਵੇਗੀ।</translation>
 <translation id="5077416371682039027">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ, ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
+<translation id="5077936103761694531">ਕੀ ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਦੀ ਤਸਦੀਕੀ ਕਰਨੀ ਹੈ?</translation>
 <translation id="5078796286268621944">ਗ਼ਲਤ PIN</translation>
 <translation id="5083035541015925118">Ctrl + alt + ਉੱਪਰ ਤੀਰ</translation>
 <translation id="5083553833479578423">Assistant ਦੀਆਂ ਹੋਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਅਣਲਾਕ ਕਰੋ।</translation>
@@ -1677,6 +1679,7 @@
 <translation id="7647488630410863958">ਆਪਣੀਆਂ ਸੂਚਨਾਵਾਂ ਦੇਖਣ ਲਈ ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="7649070708921625228">ਸਹਾਇਤਾ</translation>
 <translation id="7654687942625752712">ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ ਬੰਦ ਕਰਨ ਲਈ ਦੋਵੇਂ ਅਵਾਜ਼ ਕੁੰਜੀਆਂ ਨੂੰ 5 ਸਕਿੰਟ ਤੱਕ ਦਬਾਈ ਰੱਖੋ।</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" ਨੂੰ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) ਰੈਜ਼ੋਲਿਊਸ਼ਨ 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ। ਪੋਰਟ ਬੈਂਡਵਿਡਥ ਦੀਆਂ ਸੀਮਾਵਾਂ ਕਰਕੇ, ਤੁਹਾਡੀ ਡਿਸਪਲੇ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰ ਸਕਦੀ। ਤਸਦੀਕ ਕਰਨ ਤੋਂ ਬਿਨਾਂ, ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7659861092419699379">ਡੈਸਕ ਅਤੇ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="7660160718439869192">ਤੁਹਾਡਾ <ph name="NAME" /> <ph name="EMAIL" /> ਨਾਲ ਲਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਦਿਸੇਗਾ</translation>
@@ -1767,6 +1770,7 @@
 <translation id="7945357288295809525">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਦਿਖਾਓ ਕਿ "<ph name="ENABLED_FEATURES" />" ਚਾਲੂ ਹੈ।</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ਐਪ <ph name="DEVICE_NAME" /> ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="7951630946012935453">ਕੀ-ਬੋਰਡ ਦੀ ਚਮਕ ਘਟਾਓ</translation>
+<translation id="7953994493035617347">ਕੀ ਨਵੇਂ ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਦੀ ਤਸਦੀਕ ਕਰਨੀ ਹੈ?</translation>
 <translation id="7963689218131240420">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਮੋਡ ਬੰਦ ਹੈ।</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> ਤੋਂ</translation>
 <translation id="7968693143708939792">ਫੋਲਡਰ ਚੁਣੋ...</translation>
@@ -1825,6 +1829,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> ਲਈ ਜਾਣਕਾਰੀ ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="8185090165691050712">ਲਾਕ ਮੋਡ ਦਾ ਆਕਾਰ ਬਦਲਣ ਲਈ ਮੀਨੂ ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ</translation>
+<translation id="8192727139462702395">ਬਲੂਟੁੱਥ ਬੰਦ ਕਰਨ 'ਤੇ, ਇਹ ਬਾਹਰੀ ਡੀਵਾਈਸ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਤੋਂ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਣਗੇ:</translation>
 <translation id="8198456017687137612">ਟੈਬ ਕਾਸਟ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="8200772114523450471">ਦੁਬਾਰਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8203795194971602413">ਸੱਜਾ ਕਲਿੱਕ ਕਰੋ</translation>

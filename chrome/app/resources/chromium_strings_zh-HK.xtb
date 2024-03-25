@@ -334,6 +334,7 @@
 <translation id="67706546131546258">此檔案可能不安全，因此 Chromium 建議掃瞄檔案。</translation>
 <translation id="6779406956731413166">Chromium 作業系統得以面世，有賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />。</translation>
 <translation id="6847869444787758381">Chromium 會通知您密碼是否曾被盜用</translation>
+<translation id="684888714667046800">無法連上網際網路。如果你使用防火牆，請確認 <ph name="PRODUCT_EXE_NAME" /> 已加入許可清單。</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium 發現「<ph name="EXTENSION_NAME" />」含有惡意軟件</translation>
 <translation id="6893813176749746474">Chromium 已更新，但您已至少超過 30 天沒有使用 Chromium。</translation>

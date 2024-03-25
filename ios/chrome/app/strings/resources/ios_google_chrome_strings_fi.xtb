@@ -140,7 +140,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4831642696589369971">Osaa Chrome-datastasi ei ole vielä tallennettu Google-tilillesi.
 
         Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
-<translation id="4834499902900503484">Kun olet kirjautuneena Chromeen, tallennetut salasanat tallennetaan Google-tilillesi. Voit laittaa tämän pois päältä <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Ei tueta Chrome Betassa</translation>
 <translation id="4840404732697892756">Google Salasanat voi tarkistaa salasanasi, kun kirjaudut sisään Google-tililläsi.</translation>
 <translation id="4856636171409137183">Saat henkilökohtaisemman käyttökokemuksen, kun käytät Chromea näiden kanssa: <ph name="FEATURE_NAME_1" /> ja <ph name="FEATURE_NAME_2" /></translation>

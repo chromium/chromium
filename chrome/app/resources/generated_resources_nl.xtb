@@ -3506,12 +3506,14 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3660234220361471169">Niet vertrouwd</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 bestaand wachtwoord gevonden}other{{NUM_PASSWORDS} bestaande wachtwoorden gevonden}}</translation>
 <translation id="3662207097851752847">Je Google-account bevestigen op je telefoon</translation>
+<translation id="3663417513679360795">Meer informatie over hoe je standaard vooraf laden aanzet</translation>
 <translation id="3664511988987167893">Extensiepictogram</translation>
 <translation id="3665100783276035932">De meeste sites werken zoals verwacht</translation>
 <translation id="3665301845536101715">Openen in zijvenster</translation>
 <translation id="3665589677786828986">Chrome heeft gedetecteerd dat sommige van je instellingen zijn beschadigd door een ander programma en heeft de instellingen teruggezet naar de oorspronkelijke standaardwaarden.</translation>
 <translation id="3665919494326051362">Huidige versie is <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Dump van foutopsporing voor Intel wifi-NIC's</translation>
+<translation id="3666971425390608309">Download onderbroken: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Apparaten van elke leverancier</translation>
 <translation id="3670229581627177274">Bluetooth aanzetten</translation>
 <translation id="3670480940339182416">Sites kunnen V8-optimalisatie gebruiken</translation>
@@ -3594,6 +3596,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3720543739123045680">Andere tabbladen delen een proces met dit tabblad, wat kan leiden tot onverwachte DevTools-functionaliteit.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Jij en Google</translation>
+<translation id="3721178866505920080">Meer informatie over hoe je uitgebreid vooraf laden aanzet</translation>
 <translation id="3722108462506185496">Fout bij starten van service voor virtuele machines. Probeer het opnieuw.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />-instructie ontvangen</translation>
 <translation id="3724897774652282549">Formulier invullen</translation>
@@ -4582,7 +4585,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4473996011558324141">tijd wordt geschat</translation>
 <translation id="4474155171896946103">Bookmark toevoegen aan alle tabbladen...</translation>
 <translation id="4475299370877036544">Deze actie schendt misschien het beleid van je organisatie</translation>
-<translation id="4475552974751346499">Zoek in downloads</translation>
 <translation id="4476590490540813026">Atlete</translation>
 <translation id="4476659815936224889">Je kunt een QR-scanner-app op je telefoon of sommige camera-apps gebruiken om deze code te scannen.</translation>
 <translation id="4477015793815781985">Neem Ctrl, Alt of ⌘ op</translation>
@@ -7451,6 +7453,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6758056191028427665">Laat ons weten of we goed bezig zijn.</translation>
 <translation id="6759193508432371551">Terugzetten op fabrieksinstellingen</translation>
 <translation id="6760354150216532978">Waarschuwing: Deze site kan bewerkingen zien die je aanbrengt</translation>
+<translation id="6761209758867628753">Tool: Help me met schrijven</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6761623907967804682">Sitegegevens op het apparaat niet toegestaan</translation>
 <translation id="6762833852331690540">Aan</translation>

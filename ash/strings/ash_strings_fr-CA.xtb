@@ -258,7 +258,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2017998995161831444">Ouvrir « Aide » dans l'application Explorer</translation>
 <translation id="2018630726571919839">Raconte-moi une blague</translation>
 <translation id="2021864487439853900">Cliquez pour le déverrouiller</translation>
-<translation id="2023558322300866873">Vous pouvez arrêter la capture des paquets en tout temps</translation>
 <translation id="2034971124472263449">Enregistrer quand même</translation>
 <translation id="204259843076055848">Le raccourci <ph name="SIX_PACK_KEY_NAME" /> est actuellement désactivé</translation>
 <translation id="2049240716062114887">Le bureau a été renommé : <ph name="DESK_NAME" /></translation>
@@ -356,6 +355,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484513351006226581">Appuyez sur <ph name="KEYBOARD_SHORTCUT" /> pour changer la disposition du clavier.</translation>
 <translation id="2486214324139475545">Aperçu du bureau <ph name="DESK_NAME" />. Bureau actif.</translation>
+<translation id="2486405091093637109">La résolution de « <ph name="DISPLAY_NAME" /> » a été remplacée par une résolution de <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Sans confirmation, les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Joindre</translation>
 <translation id="2499445554382787206">Menu de profil du bureau. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Touches rémanentes</translation>
@@ -699,7 +699,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="380165613292957338">Bonjour, comment puis-je vous aider?</translation>
 <translation id="3804737937830804242">Réduire le bouton caméra</translation>
 <translation id="3824784079442479685">Cela autorise l'accès à l'appareil photo pour <ph name="APP_NAME" /> et pour toutes les applications et tous les sites Web disposant de l'autorisation d'accès à l'appareil photo. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> sur <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> rendus, <ph name="NUM_GRADED" /> notés</translation>
 <translation id="3826099427150913765">Passer au mot de passe</translation>
 <translation id="383058930331066723">Le mode Économiseur de pile est activé</translation>
 <translation id="383629559565718788">Afficher les paramètres du clavier</translation>
@@ -763,7 +762,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4066027111132117168">Activé, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Ouvrir la page de téléchargements</translation>
 <translation id="4072264167173457037">Signal moyen</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> rendus • <ph name="NUM_GRADED" /> notés</translation>
 <translation id="4086921558679520050">Activer le commutateur du micro physique sur votre appareil</translation>
 <translation id="4101772068965291327">Ouvrir la page d'accueil</translation>
 <translation id="4112140312785995938">Rechercher vers l'arrière</translation>
@@ -1026,6 +1024,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5062496344832867502">mémoire vive</translation>
 <translation id="5068762093486106012">Vous serez averti si vous parlez en sourdine. Les données audio ne quittent jamais votre appareil.</translation>
 <translation id="5077416371682039027">Configurer l'affichage des photos, des notifications, des applications et du contenu multimédia récents de votre téléphone</translation>
+<translation id="5077936103761694531">Confirmer la résolution?</translation>
 <translation id="5078796286268621944">NIP incorrect</translation>
 <translation id="5083035541015925118">ctrl+alt+flèche vers le haut</translation>
 <translation id="5083553833479578423">Déverrouillez davantage de fonctionnalités de l'Assistant Google.</translation>
@@ -1675,6 +1674,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7647488630410863958">Déverrouillez l'appareil pour voir vos notifications</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7654687942625752712">Maintenez les deux touches de volume enfoncées cinq secondes pour désactiver la rétroaction vocale.</translation>
+<translation id="7654916369822103315">La résolution de « <ph name="DISPLAY_NAME" /> » a été remplacée par une résolution de <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). En raison des limitations de la bande passante du port, votre écran ne peut pas prendre en charge une résolution de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Sans confirmation, les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7659861092419699379">Le bureau et les fenêtres ont été fermés</translation>
 <translation id="7660160718439869192">Votre appareil <ph name="NAME" /> s'affichera sur les appareils associés à <ph name="EMAIL" /></translation>
@@ -1765,6 +1765,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7945357288295809525">Afficher les paramètres d'accessibilité, « <ph name="ENABLED_FEATURES" /> » activé.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> souhaite utiliser votre <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Assombrir le clavier</translation>
+<translation id="7953994493035617347">Confirmer la nouvelle résolution?</translation>
 <translation id="7963689218131240420">Le mode Ne pas déranger est désactivé.</translation>
 <translation id="7963992254934562106">À partir de <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Sélectionner le dossier…</translation>

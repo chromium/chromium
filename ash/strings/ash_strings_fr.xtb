@@ -228,6 +228,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1882814835921407042">Pas de réseau mobile</translation>
 <translation id="1882897271359938046">Mise en miroir pour <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Déverrouillage avec empreinte</translation>
+<translation id="1904997243703671177">Les <ph name="DEVICE_COUNT" /> appareils externes suivants seront alors déconnectés de votre <ph name="DEVICE_TYPE" /> :</translation>
 <translation id="1908992311423394684">Nouvelle installation</translation>
 <translation id="1915307458270490472">Raccrocher</translation>
 <translation id="1918022425394817322">Appareil photo aligné sur l'angle supérieur droit</translation>
@@ -258,7 +259,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2017998995161831444">Ouvrir "Aide" dans l'appli Explorer</translation>
 <translation id="2018630726571919839">Raconte-moi une blague</translation>
 <translation id="2021864487439853900">Cliquez pour le déverrouiller</translation>
-<translation id="2023558322300866873">Vous pouvez interrompre la capture de paquets à tout moment</translation>
 <translation id="2034971124472263449">Enregistrer quand même</translation>
 <translation id="204259843076055848">Le raccourci <ph name="SIX_PACK_KEY_NAME" /> est actuellement désactivé</translation>
 <translation id="2049240716062114887">Le nom du bureau a été remplacé par <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484513351006226581">Appuyez sur <ph name="KEYBOARD_SHORTCUT" /> pour changer la disposition du clavier.</translation>
 <translation id="2486214324139475545">Aperçu du <ph name="DESK_NAME" />. Bureau actif.</translation>
+<translation id="2486405091093637109">La résolution de <ph name="DISPLAY_NAME" /> a été remplacée par <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Si vous ne confirmez pas, les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Rejoindre</translation>
 <translation id="2499445554382787206">Menu du profil du bureau. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Touches rémanentes</translation>
@@ -699,7 +700,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="380165613292957338">Bonjour, comment puis-je vous aider ?</translation>
 <translation id="3804737937830804242">Réduire la caméra</translation>
 <translation id="3824784079442479685">L'accès à l'appareil photo est accordé à <ph name="APP_NAME" />, ainsi qu'à l'ensemble des applis et sites Web ayant l'autorisation d'y accéder. Vous devrez peut-être actualiser la page Web ou redémarrer l'appli.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> devoir(s) sur <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> rendu(s), <ph name="NUM_GRADED" /> noté(s)</translation>
 <translation id="3826099427150913765">Authentification par mot de passe</translation>
 <translation id="383058930331066723">Économiseur de batterie activé</translation>
 <translation id="383629559565718788">Afficher les paramètres du clavier</translation>
@@ -763,7 +763,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4066027111132117168">Activé, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Ouvrir la page des téléchargements</translation>
 <translation id="4072264167173457037">Signal de moyenne intensité</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> rendu(s) • <ph name="NUM_GRADED" /> noté(s)</translation>
 <translation id="4086921558679520050">Activer le bouton physique du micro sur votre appareil</translation>
 <translation id="4101772068965291327">Ouvrir la page d'accueil</translation>
 <translation id="4112140312785995938">Retour rapide</translation>
@@ -959,6 +958,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4813311884204119883">Faire glisser un lien vers une zone vide de la barre d'onglets</translation>
 <translation id="4814539958450445987">Écran de connexion</translation>
 <translation id="481455355267255546">Événement suivant</translation>
+<translation id="481749895090480684">Liste de tâches : <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">votre caméra et votre micro</translation>
 <translation id="482908187605862807">Applis disponibles sur le Play Store</translation>
 <translation id="4831034276697007977">Voulez-vous vraiment désactiver les clics automatiques ?</translation>
@@ -1000,6 +1000,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4952936045814352993">Impossible de localiser le téléphone lorsque les sons de l'alarme sont désactivés</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> exige un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
 <translation id="4961318399572185831">Caster l'écran</translation>
+<translation id="4964188651935955085">L'appareil externe suivant sera alors déconnecté de votre <ph name="DEVICE_TYPE" /> :</translation>
 <translation id="4966431234408005599">Augmenter le volume</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Afficher un badge sur l'application</translation>
@@ -1027,6 +1028,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Vous recevrez une notification si vous parlez lorsque le son est coupé. Les données audio ne quittent jamais votre appareil.</translation>
 <translation id="5077416371682039027">Configurer l'affichage des photos, notifications, applis et contenus multimédias récents de votre téléphone</translation>
+<translation id="5077936103761694531">Confirmer la résolution ?</translation>
 <translation id="5078796286268621944">Code PIN incorrect</translation>
 <translation id="5083035541015925118">Ctrl+Alt+Flèche vers le haut</translation>
 <translation id="5083553833479578423">Déverrouiller plus de fonctionnalités de l'Assistant.</translation>
@@ -1677,6 +1679,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7647488630410863958">Déverrouiller l'appareil pour consulter vos notifications</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7654687942625752712">Appuyez pendant cinq secondes sur les deux touches de volume pour désactiver les commentaires audio.</translation>
+<translation id="7654916369822103315">La résolution de <ph name="DISPLAY_NAME" /> a été remplacée par <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). En raison de limitations de bande passante du port, votre écran n'est pas compatible avec une résolution de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Si vous ne confirmez pas, les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7659861092419699379">Le bureau et les fenêtres ont été fermés</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> sera visible sur les appareils associés à <ph name="EMAIL" /></translation>
@@ -1767,6 +1770,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7945357288295809525">Afficher les paramètres d'accessibilité, "<ph name="ENABLED_FEATURES" />" activé(e).</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> souhaite utiliser votre <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Réduire la luminosité du clavier</translation>
+<translation id="7953994493035617347">Confirmer la nouvelle résolution ?</translation>
 <translation id="7963689218131240420">Ne pas déranger désactivé.</translation>
 <translation id="7963992254934562106">À partir du <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Sélectionner un dossier…</translation>
@@ -1825,6 +1829,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8155628902202578800">Ouvrir la boîte de dialogue d'informations pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> en cours d'utilisation</translation>
 <translation id="8185090165691050712">Activer/Désactiver le menu pour redimensionner le mode verrouillé</translation>
+<translation id="8192727139462702395">Les appareils externes suivants seront alors déconnectés de votre <ph name="DEVICE_TYPE" /> :</translation>
 <translation id="8198456017687137612">Diffusion de l'onglet</translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8203795194971602413">Clic droit</translation>

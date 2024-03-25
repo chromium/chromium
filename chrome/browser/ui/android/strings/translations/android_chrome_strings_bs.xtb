@@ -251,6 +251,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea n
 <translation id="2364539095045928896">Dugme za zatvaranje obavještenja o privatnosti središta za uvide u stranice.</translation>
 <translation id="2386938421315164605">Sakrijte i otkrijte teme</translation>
 <translation id="2390510615457643724">Želite li ponovo preuzeti fajl <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
+<translation id="2395004545133500011">Dijeljenje s otvorenom tabelom sažetka</translation>
 <translation id="2410754283952462441">Odaberite račun</translation>
 <translation id="2414886740292270097">Tamno</translation>
 <translation id="2421705177906985956">Trenutno nema nijedne web lokacije za prikaz</translation>
@@ -365,6 +366,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea n
 <translation id="2942036813789421260">Kartica za pregled je zatvorena</translation>
 <translation id="2946420957526726953">Ažuriranje Chromea radi povezivanja s drugim uređajima</translation>
 <translation id="2951071800649516099">Dodajte stranice na listu za čitanje za kasnije</translation>
+<translation id="2956070106555335453">Sažetak</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> nepročitana stranica}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitana stranica}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitane stranice}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitanih stranica}}</translation>
 <translation id="296370266220139811">Uštedite vrijeme i pišite manje</translation>
 <translation id="2977350910003566746">Sortiranje prema posljednjem otvorenom</translation>
@@ -644,6 +646,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea n
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Oznaka je sačuvana u folder "<ph name="FOLDER_NAME" />". Sačuvana je samo na ovom uređaju.}one{Oznake su sačuvane u folder "<ph name="FOLDER_NAME" />". Sačuvane su samo na ovom uređaju.}few{Oznake su sačuvane u folder "<ph name="FOLDER_NAME" />". Sačuvane su samo na ovom uređaju.}other{Oznake su sačuvane u folder "<ph name="FOLDER_NAME" />". Sačuvane su samo na ovom uređaju.}}</translation>
 <translation id="4484496141267039529">Niste povezani s mrežom. Pokušajte ponovo kasnije.</translation>
 <translation id="4487967297491345095">Svi podaci aplikacije Chrome bit će trajno izbrisani. To uključuje sve fajlove, postavke, račune, baze podataka, itd.</translation>
+<translation id="4489640160615759754">Dijeljenje s tabelom sažetka</translation>
 <translation id="4494806687727322324">Pohranjivanje lozinki je uključio administrator</translation>
 <translation id="4508528996305412043">Meni kartice za sažetak sadržaja je otvoren</translation>
 <translation id="4509501256689523862">Dok pregledate, hoće li oglas koji vidite biti personaliziran ovisi o ovoj postavci, <ph name="BEGIN_LINK_1" />temama oglasa<ph name="END_LINK_1" />, vašim <ph name="BEGIN_LINK_2" />postavkama kolačića<ph name="END_LINK_2" /> i o tome personalizira li oglase web lokacija koju pregledate</translation>
@@ -653,6 +656,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea n
 <translation id="4521489764227272523">Odabrani podaci su uklonjeni iz Chromea i vaših sinhroniziranih uređaja.
 
 Vaš Google račun može imati druge oblike historije pregledanja kao što su pretraživanja i aktivnosti s drugih Googleovih usluga na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Dijeljenje sa zatvorenom tabelom sažetka</translation>
 <translation id="4523326818319942067">posljednjih sat vremena</translation>
 <translation id="452750746583162491">Pregledajte sinhronizirane podatke</translation>
 <translation id="4532845899244822526">Izaberite folder</translation>
@@ -750,6 +754,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4950924971025849764">Kada ste prijavljeni na isti Google račun, drugi uređaji mogu koristiti ovaj telefon kao sigurnosni ključ.</translation>
 <translation id="4957722034734105353">Saznajte više...</translation>
 <translation id="4961107849584082341">Prevedite ovu stranicu na bilo koji jezik</translation>
+<translation id="496607651705915226">Da sačuvate i koristite nove lozinke na Google računu, ažurirajte Google Play usluge</translation>
 <translation id="4971735654804503942">Brža, proaktivna zaštita od opasnih web lokacija, preuzimanja i ekstenzija. Upozorava vas na narušavanje lozinki. Zahtijeva da se podaci o pregledanju šalju Googleu.</translation>
 <translation id="497421865427891073">Idi naprijed</translation>
 <translation id="4987271110129728827">Nije moguće pronaći tu stranicu. Provjerite pravopis ili pokušajte pretražiti internet.</translation>

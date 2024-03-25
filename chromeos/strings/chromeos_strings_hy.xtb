@@ -286,6 +286,7 @@
 <translation id="2531772459602846206">հորտենզիա</translation>
 <translation id="2533048460510040082">Առաջարկվող տեղեկատվական բովանդակություն</translation>
 <translation id="2536159006530886390">Չհաջողվեց միանալ ինտերնետին։</translation>
+<translation id="2538719227433767804">ու ևս <ph name="NUM_HIDDEN_OPTIONS" /></translation>
 <translation id="2561093647892030937">կիտրոններ</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" />ը ստուգվում է…</translation>
 <translation id="2584547424703650812">Լուսապատկերներ</translation>
@@ -810,6 +811,7 @@
 <translation id="5939518447894949180">Վերակայել</translation>
 <translation id="594552776027197022">Ստեղծել պատահական բանալիների զույգ</translation>
 <translation id="5946538341867151940">Դուք դեռ չեք միացել։ Եթե ձեր բջջային օպերատորը որոշակի APN է խորհուրդ տալիս, մուտքագրեք այդ APN-ի տվյալները՝ ընտրելով «+ Նոր APN»</translation>
+<translation id="5947266287934282605">Եթե ամսվա վերջին օրը նախորդում է նշված ամսաթվին, տվյալները կզրոյացվեն ամսվա վերջին օրը</translation>
 <translation id="5948460390109837040">շներ</translation>
 <translation id="5972388717451707488">UpdateEngine</translation>
 <translation id="5975130252842127517">կորալ</translation>

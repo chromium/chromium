@@ -247,7 +247,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="78025249032851484">Votre version de Chromium est obsolète.</translation>
 <translation id="7859018312476869945">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chromium envoie le contenu saisi à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en navigation privée.</translation>
 <translation id="786327964234957808">Vous changez de compte synchronisé pour passer de <ph name="USER_EMAIL1" /> à <ph name="USER_EMAIL2" />. Vos données Chromium actuelles sont gérées par <ph name="DOMAIN" />. Cette opération entraînera la suppression de vos données de cet appareil, mais celles-ci seront conservées dans le compte <ph name="USER_EMAIL1" />.</translation>
-<translation id="7865408467687426957">Lorsque vous êtes connecté à Chromium, les mots de passe que vous enregistrez le sont dans votre compte Google. Pour désactiver cette option, <ph name="BEGIN_LINK" />accédez aux paramètres<ph name="END_LINK" />.</translation>
 <translation id="7890287942691234100">Commencer à utiliser le lecteur Chromium</translation>
 <translation id="7905064834449738336">Lorsque vous utilisez un mot de passe, Chromium vous avertit s'il a été publié en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés afin que personne ne puisse les consulter, y compris Google.</translation>
 <translation id="7911732829884437264">Utiliser Chromium par défaut</translation>

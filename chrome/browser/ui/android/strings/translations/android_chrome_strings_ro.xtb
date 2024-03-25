@@ -124,6 +124,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="1641113438599504367">Navigare sigură</translation>
 <translation id="164269334534774161">Se afișează o versiune offline a acestei pagini de pe <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Istoric</translation>
+<translation id="1644969410150602449">Afișează-ți istoricul web aici</translation>
 <translation id="1657932388559784161">Foaia paginii Statistici din partea de jos este închisă</translation>
 <translation id="1670399744444387456">De bază</translation>
 <translation id="1671236975893690980">Descărcare în așteptare…</translation>
@@ -250,6 +251,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="2364539095045928896">Butonul Închide pentru a închide notificarea privind confidențialitatea din hubul Statistici privind paginile.</translation>
 <translation id="2386938421315164605">Ascunde și reafișează subiecte</translation>
 <translation id="2390510615457643724">Vrei să descarci din nou <ph name="FILE_NAME" /> de <ph name="FILE_SIZE" />?</translation>
+<translation id="2395004545133500011">Distribuie cu foaia de rezumat deschisă</translation>
 <translation id="2410754283952462441">Alege un cont</translation>
 <translation id="2414886740292270097">Întunecat</translation>
 <translation id="2421705177906985956">Momentan, nu există site-uri de afișat</translation>
@@ -364,6 +366,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="2942036813789421260">Fila de previzualizare este închisă</translation>
 <translation id="2946420957526726953">Se actualizează Chrome pentru a se conecta la alte dispozitive</translation>
 <translation id="2951071800649516099">Adaugă pagini la lista de lecturi pentru mai târziu</translation>
+<translation id="2956070106555335453">Rezumat</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pagină necitită}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pagini necitite}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> de pagini necitite}}</translation>
 <translation id="296370266220139811">Economisește timp și tastează mai puțin</translation>
 <translation id="2977350910003566746">Se sortează după data ultimei deschideri</translation>
@@ -643,6 +646,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Marcaj salvat în <ph name="FOLDER_NAME" />. Se salvează numai pe acest dispozitiv.}few{Marcaje salvate în <ph name="FOLDER_NAME" />. Se salvează numai pe acest dispozitiv.}other{Marcaje salvate în <ph name="FOLDER_NAME" />. Se salvează numai pe acest dispozitiv.}}</translation>
 <translation id="4484496141267039529">Nu există conexiune. Încearcă din nou mai târziu.</translation>
 <translation id="4487967297491345095">Toate datele aplicației Chrome vor fi șterse definitiv. Sunt incluse toate fișierele, setările, conturile, bazele de date etc.</translation>
+<translation id="4489640160615759754">Distribuie cu foaia de rezumat</translation>
 <translation id="4494806687727322324">Salvarea parolelor a fost activată de administrator</translation>
 <translation id="4508528996305412043">Meniul cardului din feed este deschis</translation>
 <translation id="4509501256689523862">În timp ce navighezi, personalizarea anunțurilor se bazează pe această setare, pe <ph name="BEGIN_LINK_1" />Subiectele anunțurilor<ph name="END_LINK_1" />, pe <ph name="BEGIN_LINK_2" />setările pentru cookie-uri<ph name="END_LINK_2" /> și pe capacitatea site-ului pe care îl accesezi de a personaliza anunțurile</translation>
@@ -652,6 +656,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="4521489764227272523">Datele selectate au fost eliminate din Chrome și de pe dispozitivele sincronizate.
 
 Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi căutările și activitatea din alte servicii Google, la <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Distribuie cu foaia de rezumat închisă</translation>
 <translation id="4523326818319942067">ultima oră</translation>
 <translation id="452750746583162491">Examinează datele sincronizate</translation>
 <translation id="4532845899244822526">Alege dosarul</translation>
@@ -749,6 +754,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4950924971025849764">După ce te conectezi la același Cont Google, alte dispozitive pot să folosească acest telefon drept cheie de securitate.</translation>
 <translation id="4957722034734105353">Aflați mai multe...</translation>
 <translation id="4961107849584082341">Tradu această pagină în orice limbă</translation>
+<translation id="496607651705915226">Pentru a salva și a folosi parole noi în Contul Google, actualizează serviciile Google Play</translation>
 <translation id="4971735654804503942">Protecție proactivă mai rapidă împotriva site-urilor, descărcărilor și extensiilor periculoase. Te avertizează cu privire la compromiterea parolelor. Necesită trimiterea datelor de navigare la Google.</translation>
 <translation id="497421865427891073">Înainte</translation>
 <translation id="4987271110129728827">Pagina nu a fost găsită. Verifică ortografierea sau încearcă o căutare pe internet.</translation>

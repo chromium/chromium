@@ -228,6 +228,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1882814835921407042">Mobil tarmoq topilmadi</translation>
 <translation id="1882897271359938046">Nusxa tasvir <ph name="DISPLAY_NAME" /> ekraniga uzatilmoqda</translation>
 <translation id="1885785240814121742">Barmoq izi orqali qulfdan chiqarish</translation>
+<translation id="1904997243703671177">Bluetooth sozlamasi oʻchganda <ph name="DEVICE_COUNT" /> ta tashqi qurilma <ph name="DEVICE_TYPE" /> qurilmangizdan uziladi, jumladan:</translation>
 <translation id="1908992311423394684">Yangi oʻrnatilgan</translation>
 <translation id="1915307458270490472">Tugatish</translation>
 <translation id="1918022425394817322">Kamera yuqori oʻng burchakka joylandi</translation>
@@ -258,7 +259,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2017998995161831444">Tanishuv ilovasida “Yordam” sahifasini oching</translation>
 <translation id="2018630726571919839">Bitta latifa aytib ber</translation>
 <translation id="2021864487439853900">Ochish uchun bosing</translation>
-<translation id="2023558322300866873">Tarmoq paketlarini olish jarayonini istalgan vaqtda toʻxtatish mumkin</translation>
 <translation id="2034971124472263449">Baribir saqlansin</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> tugmasi hozir oʻchiq</translation>
 <translation id="2049240716062114887">Ish stoli nomi yangilandi: <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2482878487686419369">Bildirishnomalar</translation>
 <translation id="2484513351006226581">Klaviatura terilmasini almashtirish uchun <ph name="KEYBOARD_SHORTCUT" /> tugmalarini bosing.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> – razm solish. Faol ish stoli.</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" aniqlik darajasi oʻzgartirildi: <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Hech qanday amal bajarilmasa, eski sozlamalar qaytariladi, qolgan vaqt: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Qo‘shilish</translation>
 <translation id="2499445554382787206">Ish stoli profili menyusi. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Yopishqoq tugmalar</translation>
@@ -699,7 +700,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="380165613292957338">Salom, qanday yordamim tegishi mumkin?</translation>
 <translation id="3804737937830804242">Kamera tugmasini berkitish</translation>
 <translation id="3824784079442479685">Bunda kameraga ruxsat beriladi. <ph name="APP_NAME" /> va barcha ilovalar va saytlar kameradan foydalana oladi Sayt yoki sahifani yangilash yoki ilovani qayta ochish talab etilishi mumkin.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> / <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ta vazifa topshirildi, <ph name="NUM_GRADED" /> tasi baholandi</translation>
 <translation id="3826099427150913765">Parol kiritish</translation>
 <translation id="383058930331066723">Quvvat tejash rejimi yoniq</translation>
 <translation id="383629559565718788">Klaviatura sozlamalarini ochish</translation>
@@ -763,7 +763,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4066027111132117168">Yoniq, <ph name="REMAINING_TIME" /> qoldi</translation>
 <translation id="4069532248403319695">Yuklanmalar sahifasini ochish</translation>
 <translation id="4072264167173457037">Signal o‘rtacha</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ta vazifa topshirildi • <ph name="NUM_GRADED" />-sinf bitirildi</translation>
 <translation id="4086921558679520050">Qurilmadagi mikrofon tashqi tugmasini bosing</translation>
 <translation id="4101772068965291327">Bosh sahifani ochish</translation>
 <translation id="4112140312785995938">Orqaga qaytarish</translation>
@@ -959,6 +958,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4813311884204119883">Havolani varaqlar panelidagi boʻsh joyga sudrang</translation>
 <translation id="4814539958450445987">Kirish ekrani</translation>
 <translation id="481455355267255546">Keyingisi</translation>
+<translation id="481749895090480684">Vazifalar roʻyxati: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera va mikrofon</translation>
 <translation id="482908187605862807">Play Marketdan mavjud ilovalar</translation>
 <translation id="4831034276697007977">Avtomatik kliklar bekor qilinsinmi?</translation>
@@ -1000,6 +1000,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4952936045814352993">Telefonni topish funksiyasi signallar oʻchiqligida ishlamaydi</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> tizimini eski versiyaga qaytarishni talab qilmoqda. Qurilma asliga qaytariladi va barcha maʼlumotlar butunlay tozalanadi.</translation>
 <translation id="4961318399572185831">Ekranni translatsiya qilish</translation>
+<translation id="4964188651935955085">Bluetooth sozlamasi oʻchganda ushbu tashqi qurilma <ph name="DEVICE_TYPE" /> qurilmangizdan uziladi:</translation>
 <translation id="4966431234408005599">Tovushni balandlatish</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />s <ph name="MINUTES" />d <ph name="SECONDS" />s</translation>
 <translation id="4975771730019223894">Ilova nishonchasi</translation>
@@ -1027,6 +1028,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Ovozsiz rejimda gapirsangiz ham bildirishnoma olasiz. Audio faqat qurilmada saqlanadi.</translation>
 <translation id="5077416371682039027">Telefondagi oxirgi suratlar, media fayllar, bildirishnomalar va ilovalarni koʻrishni sozlash</translation>
+<translation id="5077936103761694531">Ekran aniqlik darajasi oʻzgardi</translation>
 <translation id="5078796286268621944">Noto‘g‘ri PIN-kod</translation>
 <translation id="5083035541015925118">ctrl + alt + yuqoriga strelka</translation>
 <translation id="5083553833479578423">Assistentning boshqa imkoniyatlarini oching.</translation>
@@ -1676,6 +1678,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7647488630410863958">Bildirishnomalarni ko‘rish uchun qurilmangizni qulfdan chiqaring</translation>
 <translation id="7649070708921625228">Yordam</translation>
 <translation id="7654687942625752712">Ekrandagi matn talaffuz qilinishi funksiyasini faolsizlantirish uchun 5 soniya har ikki tovush tugmasini bosib turing.</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" aniqlik darajasi oʻzgartirildi: <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Portdagi oʻtkazuvchanlik cheklovi sababli ekran <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) aniqlik darajasida ishlamaydi. Hech qanday amal bajarilmasa, eski sozlamalar qaytariladi, qolgan vaqt: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7659861092419699379">Ish stoli va oynalar yopildi</translation>
 <translation id="7660160718439869192">Sizning <ph name="NAME" /> <ph name="EMAIL" /> hisobiga biriktirilgan qurilmalarda chiqadi</translation>
@@ -1766,6 +1769,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7945357288295809525">Maxsus imkoniyatlar sozlamalarini koʻrsatish, “<ph name="ENABLED_FEATURES" />” yoqildi.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ilovasi <ph name="DEVICE_NAME" /> ishlatmoqchi</translation>
 <translation id="7951630946012935453">Klaviaturani xiralashtirish</translation>
+<translation id="7953994493035617347">Ekran aniqlik darajasi oʻzgardi</translation>
 <translation id="7963689218131240420">Bezovta qilinmasin rejimi oʻchiq.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> qurilmasidan</translation>
 <translation id="7968693143708939792">Jildni tanlang...</translation>
@@ -1824,6 +1828,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> axborot oynasini ochish</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ishlatilmoqda</translation>
 <translation id="8185090165691050712">Qulflash rejimi oʻlchamini oʻzgartirish uchun menyuni koʻrsatish yoki yashirish</translation>
+<translation id="8192727139462702395">Bluetooth sozlamasi oʻchganda ushbu tashqi qurilmalar <ph name="DEVICE_TYPE" /> qurilmangizdan uziladi:</translation>
 <translation id="8198456017687137612">Translatsiya varagʻi</translation>
 <translation id="8200772114523450471">Davom ettirish</translation>
 <translation id="8203795194971602413">Oʻng klik</translation>

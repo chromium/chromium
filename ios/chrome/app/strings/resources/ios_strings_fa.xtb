@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">۵:۳۰ ب.ظ.</translation>
 <translation id="1209206284964581585">فعلاً پنهان شود</translation>
 <translation id="1219674500290482172">اتصال به اینترنت امکان‌پذیر نیست.</translation>
-<translation id="1226238226094914652">گذرواژه‌ها در همه دستگاه‌ها دردسترس است</translation>
 <translation id="122699739164161391">بستن همه برگه‌ها</translation>
 <translation id="1227866575467023566">{count,plural, =1{صفحه به «فهرست خواندن» شما در حسابتان ({email}) اضافه شد}one{{count} صفحه به «فهرست خواندن» شما در حسابتان ({email}) اضافه شد}other{{count} صفحه به «فهرست خواندن» شما در حسابتان ({email}) اضافه شد}}</translation>
 <translation id="1242044645101871359">دوباره به سیستم وارد شوید</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">دنبال کردن</translation>
 <translation id="1644574205037202324">سابقه</translation>
 <translation id="164673457281113247">{count,plural, =1{نشانک ذخیره شد}one{نشانک‌ها ذخیره شد}other{نشانک‌ها ذخیره شد}}</translation>
-<translation id="165008673352427892">ویژگی جدید</translation>
 <translation id="1650222530560417226">برای جمع‌آوری گزارش‌ها و خطاهای آتی کنسول جاوا اسکریپت در همه برگه‌ها، روی دکمه «شروع گزارش‌گیری» ضربه بزنید. گزارش‌ها تا زمان بسته شدن این صفحه یا ضربه زدن روی «توقف گزارش‌گیری» جمع‌آوری می‌شود (و فقط در حافظه ذخیره می‌شود).</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} گذرواژه ذخیره‌شده در بالای صفحه‌کلید موجود است.}one{{count} گذرواژه ذخیره‌شده در بالای صفحه‌کلید موجود است.}other{{count} گذرواژه ذخیره‌شده در بالای صفحه‌کلید موجود است.}}</translation>
 <translation id="1657011748321897393">اشتراک‌گذاری انجام نشد چون به شبکه وصل نیستید.</translation>
@@ -302,7 +300,6 @@
 <translation id="2556092377360758201">بدون محافظت (توصیه نمی‌شود)</translation>
 <translation id="2561375093019333908">باز کردن</translation>
 <translation id="2562041823070056534">درحال ارسال به <ph name="DEVICE_NAME" />...</translation>
-<translation id="2576499762020411840">‏استفاده و ذخیره گذرواژه‌ها در «حساب Google» شما</translation>
 <translation id="2577522251608256362">محله</translation>
 <translation id="2578571896248130439">ارسال صفحه وب</translation>
 <translation id="2584132361465095047">افزودن حساب…</translation>
@@ -387,7 +384,7 @@
 <translation id="2923448633003185837">جای‌گذاری و رفتن</translation>
 <translation id="292639812446257861">علامت‌گذاری به‌‌عنوان خوانده‌نشده</translation>
 <translation id="2931440415625410757">نمایش دستورالعمل‌ها</translation>
-<translation id="2952246431280799028">نشانی‌ای را لمس کنید و نگه دارید.</translation>
+<translation id="2952246431280799028">یک نشانی را لمس کنید و نگه دارید.</translation>
 <translation id="2952278131021475699">جستجوی دوربینی با «لنز»</translation>
 <translation id="2956733177489514605">‏به سیستم «حساب Google» وارد شوید تا گذرواژه‌ها و موارد دیگر همگام‌سازی شود.</translation>
 <translation id="2958718410589002129">گذرواژه‌ها</translation>
@@ -948,7 +945,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5850913622988109693">گزینه‌های پیگیری بسته</translation>
 <translation id="5854790677617711513">قدیمی‌تر از ۳۰ روز</translation>
 <translation id="5857090052475505287">پوشهٔ جدید</translation>
-<translation id="5857361196621230935">افزودن برگه به گروه</translation>
 <translation id="5857770089550859117">برای شروع همگام‌سازی به گذرعبارت نیاز است.</translation>
 <translation id="5859715514067755465">بازارسال</translation>
 <translation id="5860033963881614850">خاموش</translation>
@@ -1159,7 +1155,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6800349425672670802">از «تعویض‌کننده برگه» می‌توانید به همه برگه‌های باز خود دسترسی داشته باشید.</translation>
 <translation id="6807889908376551050">نمایش همه...</translation>
 <translation id="681368974849482173">مورد ایجاد شد</translation>
-<translation id="6822587385560699678">وقتی روشن باشد، گذرواژه‌ها در <ph name="ACCOUNT" /> ذخیره می‌شوند. وقتی خاموش باشد، گذرواژه‌ها فقط در این دستگاه ذخیره می‌شوند.</translation>
 <translation id="6824350924364057989">تنظیمات</translation>
 <translation id="6831043979455480757">ترجمه</translation>
 <translation id="6842136130964845393">برای اینکه مطمئن شوید همیشه می‌توانید به گذرواژه‌های ذخیره‌شده دسترسی داشته باشید، هویتتان را به‌تأیید برسانید</translation>

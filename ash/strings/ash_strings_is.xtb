@@ -259,7 +259,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2017998995161831444">Opnaðu „Hjálp“ í forritinu Kanna</translation>
 <translation id="2018630726571919839">Segðu mér brandara</translation>
 <translation id="2021864487439853900">Smelltu til að opna</translation>
-<translation id="2023558322300866873">Þú getur stöðvað pakkaupptöku hvenær sem er</translation>
 <translation id="2034971124472263449">Vista samt</translation>
 <translation id="204259843076055848">Slökkt er á flýtileiðinni <ph name="SIX_PACK_KEY_NAME" /></translation>
 <translation id="2049240716062114887">Skrifborðsheiti var breytt í <ph name="DESK_NAME" /></translation>
@@ -357,6 +356,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2482878487686419369">Tilkynningar</translation>
 <translation id="2484513351006226581">Ýttu á <ph name="KEYBOARD_SHORTCUT" /> til að skipta um lyklaskipan.</translation>
 <translation id="2486214324139475545">Forskoðun <ph name="DESK_NAME" />. Virkt skrifborð.</translation>
+<translation id="2486405091093637109">„<ph name="DISPLAY_NAME" />“ var breytt í <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) upplausn. Án staðfestingar verða fyrri stillingar endurheimtar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Tengjast</translation>
 <translation id="2499445554382787206">Valmynd skrifborðsprófíls. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Festilyklar</translation>
@@ -700,7 +700,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="380165613292957338">Hæ, hvernig get ég aðstoðað?</translation>
 <translation id="3804737937830804242">Minnka myndavél</translation>
 <translation id="3824784079442479685">Þetta veitir <ph name="APP_NAME" /> og öllum forritum og vefsvæðum með myndavélarheimild aðgang að myndavél. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> af <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> skilað inn, <ph name="NUM_GRADED" /> með einkunn</translation>
 <translation id="3826099427150913765">Skipta yfir í aðgangsorð</translation>
 <translation id="383058930331066723">Kveikt er á rafhlöðusparnaði</translation>
 <translation id="383629559565718788">Sýna lyklaborðsstillingar</translation>
@@ -764,7 +763,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4066027111132117168">Kveikt, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Opna niðurhalssíðuna</translation>
 <translation id="4072264167173457037">Miðlungssendistyrkur</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> skilað inn • <ph name="NUM_GRADED" /> með einkunn</translation>
 <translation id="4086921558679520050">Kveiktu á áþreifanlega hljóðnemarofanum á tækinu</translation>
 <translation id="4101772068965291327">Opna heimasíðu</translation>
 <translation id="4112140312785995938">Spóla til baka</translation>
@@ -1030,6 +1028,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5062496344832867502">vinnsluminni</translation>
 <translation id="5068762093486106012">Þú færð tilkynningu ef þú talar á meðan slökkt er á hljóðinu. Ekkert hljóð er sent úr tækinu.</translation>
 <translation id="5077416371682039027">Setja upp skoðun nýlegra mynda, efnis, tilkynninga og forrita í símanum</translation>
+<translation id="5077936103761694531">Staðfesta upplausn?</translation>
 <translation id="5078796286268621944">Rangt PIN-númer</translation>
 <translation id="5083035541015925118">ctrl + alt + ör upp</translation>
 <translation id="5083553833479578423">Opnaðu fyrir fleiri eiginleika hjálparans.</translation>
@@ -1679,6 +1678,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7647488630410863958">Opnaðu tækið til að skoða tilkynningarnar</translation>
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7654687942625752712">Haltu báðum hljóðstyrkshnöppunum inni í fimm sekúndur til að slökkva á raddsvörun.</translation>
+<translation id="7654916369822103315">„<ph name="DISPLAY_NAME" />“ var breytt í <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) upplausn. Vegna takmarkana á tengisbandvídd getur skjárinn þinn ekki stutt <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) upplausn. Án staðfestingar verða fyrri stillingar endurheimtar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7659861092419699379">Skrifborði og gluggum hefur verið lokað</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> birtast í tækjum sem tengd eru <ph name="EMAIL" /></translation>
@@ -1769,6 +1769,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7945357288295809525">Sýna aðgengisstillingar, kveikt er á „<ph name="ENABLED_FEATURES" />“.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vill nota <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Myrkva lyklaborð</translation>
+<translation id="7953994493035617347">Staðfesta nýja upplausn?</translation>
 <translation id="7963689218131240420">Slökkt er á „Ónáðið ekki“.</translation>
 <translation id="7963992254934562106">Frá <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Veldu möppu...</translation>

@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">আবেলি ৫:৩০</translation>
 <translation id="1209206284964581585">এতিয়াৰ বাবে লুকুৱাওক</translation>
 <translation id="1219674500290482172">ইণ্টাৰনেটৰ লগত সংযোগ কৰিব পৰা নাই।</translation>
-<translation id="1226238226094914652">আপোনাৰ আটাইবোৰ ডিভাইচত পাছৱৰ্ড</translation>
 <translation id="122699739164161391">সকলো টেব বন্ধ কৰক</translation>
 <translation id="1227866575467023566">{count,plural, =1{আপোনাৰ একাউণ্ট {email}ত আপোনাৰ পঢ়াৰ সূচীত পৃষ্ঠা যোগ দিয়া হৈছে}one{আপোনাৰ একাউণ্ট {email}ত আপোনাৰ পঢ়াৰ সূচীত {count} খন পৃষ্ঠা যোগ দিয়া হৈছে}other{আপোনাৰ একাউণ্ট {email}ত আপোনাৰ পঢ়াৰ সূচীত {count} খন পৃষ্ঠা যোগ দিয়া হৈছে}}</translation>
 <translation id="1242044645101871359">আকৌ ছাইন ইন কৰক</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">ফ’ল’ কৰক</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="164673457281113247">{count,plural, =1{বুকমাৰ্ক ছেভ কৰা হৈছে}one{বুকমাৰ্কসমূহ ছেভ কৰা হৈছে}other{বুকমাৰ্কসমূহ ছেভ কৰা হৈছে}}</translation>
-<translation id="165008673352427892">নতুন সুবিধা</translation>
 <translation id="1650222530560417226">সকলো টেবৰ পৰা ভৱিষ্যতৰ JavaScriptৰ কনছ'লৰ লগ আৰু আসোঁৱাহ সংগ্ৰহ কৰিবলৈ "লগ কৰা আৰম্ভ কৰক" বুটামটো টিপক। এই পৃষ্ঠাটো বন্ধ নকৰা বা "লগ কৰা বন্ধ কৰক" বুটামটো নিটিপা পর্যন্ত লগসমূহ সংগ্ৰহ কৰা হ'ব (আৰু কেৱল মেম'ৰীত ষ্ট'ৰ কৰা হ'ব)।</translation>
 <translation id="1653432787084483144">{count,plural, =1{আপোনাৰ কীব’ৰ্ডৰ ওপৰত {count} টা ছেভ কৰি থোৱা পাছৱৰ্ড উপলব্ধ।}one{আপোনাৰ কীব’ৰ্ডৰ ওপৰত {count} টা ছেভ কৰি থোৱা পাছৱৰ্ড উপলব্ধ।}other{আপোনাৰ কীব’ৰ্ডৰ ওপৰত {count} টা ছেভ কৰি থোৱা পাছৱৰ্ড উপলব্ধ।}}</translation>
 <translation id="1657011748321897393">আপুনি বৰ্তমান নেটৱৰ্কটো সৈতে সংযোজিত হৈ থকা নাই বাবে শ্বেয়াৰ কৰিব পৰা নগ’ল।</translation>
@@ -302,7 +300,6 @@
 <translation id="2556092377360758201">কোনো সুৰক্ষা নাই (চুপাৰিছ কৰা নহয়)</translation>
 <translation id="2561375093019333908">খোলক</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" />লৈ পঠিয়াই থকা হৈছে...</translation>
-<translation id="2576499762020411840">আপোনাৰ Google একাউণ্টত পাছৱৰ্ড ব্যৱহাৰ কৰক আৰু ছেভ কৰক</translation>
 <translation id="2577522251608256362">চুবুৰীয়া অঞ্চল</translation>
 <translation id="2578571896248130439">ৱেবপৃষ্ঠা পঠিয়াওক</translation>
 <translation id="2584132361465095047">একাউণ্ট যোগ দিয়ক…</translation>
@@ -948,7 +945,6 @@
 <translation id="5850913622988109693">পেকেজ ট্ৰেক কৰাৰ বিকল্প</translation>
 <translation id="5854790677617711513">৩০ দিনতকৈ পুৰণি</translation>
 <translation id="5857090052475505287">নতুন ফ’ল্ডাৰ</translation>
-<translation id="5857361196621230935">গোটত টেব যোগ দিয়ক</translation>
 <translation id="5857770089550859117">ছিংক আৰম্ভ কৰিবলৈ পাছফ্রেজৰ আৱশ্যক।</translation>
 <translation id="5859715514067755465">ফৰৱাৰ্ড কৰক</translation>
 <translation id="5860033963881614850">অফ আছে</translation>
@@ -1159,7 +1155,6 @@
 <translation id="6800349425672670802">আপুনি টেব সলনি কৰোঁতাৰ পৰা আপোনাৰ আটাইবোৰ খোলা টেব এক্সেছ কৰিব পাৰে।</translation>
 <translation id="6807889908376551050">সকলো দেখুৱাওক...</translation>
 <translation id="681368974849482173">বস্তু সৃষ্টি কৰা হ’ল</translation>
-<translation id="6822587385560699678">অন থাকিলে, পাছৱৰ্ডসমূহ <ph name="ACCOUNT" />ত ছেভ কৰা হয়। অফ থাকিলে, পাছৱৰ্ডসমূহ কেৱল এই ডিভাইচটোত ছেভ কৰা হয়।</translation>
 <translation id="6824350924364057989">ছেটিং</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">আপুনি নিজৰ ছেভ কৰি ৰখা পাছৱৰ্ডসমূহ যিকোনো সময়তে এক্সেছ কৰিব পৰাটো নিশ্চিত কৰিবলৈ, এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰক</translation>

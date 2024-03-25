@@ -3498,12 +3498,14 @@
 <translation id="3660234220361471169">信頼されていない</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 件の既存のパスワードが見つかりました}other{{NUM_PASSWORDS} 件の既存のパスワードが見つかりました}}</translation>
 <translation id="3662207097851752847">スマートフォンで Google アカウントを確認してください</translation>
+<translation id="3663417513679360795">標準プリロードの有効化の詳細</translation>
 <translation id="3664511988987167893">拡張機能アイコン</translation>
 <translation id="3665100783276035932">ほとんどのサイトは適切に機能します</translation>
 <translation id="3665301845536101715">サイドパネルで開く</translation>
 <translation id="3665589677786828986">設定の一部が別のプログラムによって変更されていたため、元のデフォルト設定に戻しました。</translation>
 <translation id="3665919494326051362">現在のバージョンは <ph name="CURRENT_VERSION" /> です</translation>
 <translation id="3666196264870170605">Intel WiFi NIC のデバッグダンプ</translation>
+<translation id="3666971425390608309">ダウンロードを一時停止しました: <ph name="FILE_NAME" />。</translation>
 <translation id="3670113805793654926">任意のベンダーのデバイス</translation>
 <translation id="3670229581627177274">Bluetooth を ON にする</translation>
 <translation id="3670480940339182416">サイトでの V8 オプティマイザーの使用を許可する</translation>
@@ -3586,6 +3588,7 @@
 <translation id="3720543739123045680">他のタブがこのタブとプロセスを共有しているため、DevTools で予期しない動作が発生する可能性があります。</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Google の設定</translation>
+<translation id="3721178866505920080">拡張プリロードの有効化の詳細</translation>
 <translation id="3722108462506185496">仮想マシンサービスの起動中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> の指示を受信しました</translation>
 <translation id="3724897774652282549">フォームに入力</translation>
@@ -3701,6 +3704,7 @@
 <translation id="3798670284305777884">スピーカー（内蔵）</translation>
 <translation id="3799128412641261490">スイッチ アクセスの設定</translation>
 <translation id="3800828618615365228">Google Chrome および Chrome OS 追加利用規約</translation>
+<translation id="3800898876950197674">この拡張機能を許可するには、パスワードを入力してください。</translation>
 <translation id="3802486193901166966">この拡張機能では、特別な権限は必要なく、追加のサイトアクセスは行われません</translation>
 <translation id="380329542618494757">名前</translation>
 <translation id="3803345858388753269">画質</translation>
@@ -4570,7 +4574,6 @@
 <translation id="4473996011558324141">所要時間の目安</translation>
 <translation id="4474155171896946103">すべてのタブをブックマークに追加...</translation>
 <translation id="4475299370877036544">このアクションは組織のポリシーに違反している可能性があります</translation>
-<translation id="4475552974751346499">ダウンロード検索</translation>
 <translation id="4476590490540813026">競技選手</translation>
 <translation id="4476659815936224889">このコードをスキャンするには、スマートフォンの QR スキャンアプリまたはカメラアプリを使用してください。</translation>
 <translation id="4477015793815781985">Ctrl キー、Alt キー、⌘ キーのいずれかが必要です</translation>
@@ -6479,7 +6482,7 @@
 <translation id="5990386583461751448">翻訳済み</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{今後もウェブ ブラウジングを続けられるように、管理者にこのアプリケーションの削除を依頼してください。}other{今後もウェブ ブラウジングを続けられるように、管理者にこれらのアプリケーションの削除を依頼してください。}}</translation>
 <translation id="5992225669837656567">すべてのマウスの接続を解除しました</translation>
-<translation id="5992652489368666106">枠線なし</translation>
+<translation id="5992652489368666106">余白なし</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 件のサイトの確認が完了しました}other{{NUM_SITES} 件のサイトの確認が完了しました}}</translation>
 <translation id="5997337190805127100">サイトアクセスの詳細</translation>
 <translation id="5998458948782718639">自動入力の改善にご協力ください</translation>
@@ -7435,6 +7438,7 @@
 <translation id="6758056191028427665">アンケートにご協力ください。</translation>
 <translation id="6759193508432371551">初期状態へのリセット</translation>
 <translation id="6760354150216532978">警告: このサイトはあなたが行った編集内容を参照できます</translation>
+<translation id="6761209758867628753">ツール: 文書作成サポート</translation>
 <translation id="676158322851696513">「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="6761623907967804682">デバイス上のサイトデータは許可されていません</translation>
 <translation id="6762833852331690540">オン</translation>
@@ -7972,6 +7976,7 @@
 <translation id="7180611975245234373">更新</translation>
 <translation id="7180865173735832675">カスタマイズ</translation>
 <translation id="7181117767881540376">ブックマーク バーを非表示(&amp;H)</translation>
+<translation id="7181329571386134105">今後、保護者の承認を得ずに <ph name="CHILD_NAME" /> さんが拡張機能をインストールできるようにするには、保護者のデバイスでファミリー リンク アプリを開いて、<ph name="CHILD_NAME" /> さんの Google Chrome の設定を更新してください。</translation>
 <translation id="7182063559013288142">インスタント アクセス ポイント</translation>
 <translation id="7182791023900310535">パスワードを移動</translation>
 <translation id="718427252411067142">他のユーザーがパスワードを使用できないようにするには、アプリを開いてパスワードを変更します</translation>
@@ -10760,6 +10765,7 @@
 <translation id="973558314812359997">マウスのサイズ</translation>
 <translation id="975893173032473675">翻訳先の言語</translation>
 <translation id="976499800099896273">「<ph name="TYPED_WORD" />」から「<ph name="CORRECTED_WORD" />」への自動修正について、元に戻すかどうかを確認するダイアログが表示されました。ダイアログに移動する場合は上矢印キー、無視する場合は Esc キーを押してください。</translation>
+<translation id="976572010712028687">保護者であることをご確認ください</translation>
 <translation id="978146274692397928">初期の句読点幅を全角にする</translation>
 <translation id="978978324795544535">アイテムをダブルタップして 2 回目のタップで長押しし、ドラッグしてアイテムを移動します</translation>
 <translation id="97905529126098460">このウィンドウはキャンセル処理の完了後に閉じられます。</translation>

@@ -259,7 +259,6 @@
 <translation id="2017998995161831444">అన్వేషణ యాప్‌లో ఉన్న "సహాయ" విభాగాన్ని తెరవండి</translation>
 <translation id="2018630726571919839">ఒక జోక్ చెప్పు</translation>
 <translation id="2021864487439853900">అన్‌లాక్ కోసం క్లిక్ చేయండి</translation>
-<translation id="2023558322300866873">మీరు ఎప్పుడైనా ప్యాకెట్ క్యాప్చర్ ఆపరేషన్‌ను ఆపివేయవచ్చు</translation>
 <translation id="2034971124472263449">ఏదేమైనా సేవ్ చేయండి</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> షార్ట్‌కట్ ప్రస్తుతం ఆఫ్‌లో ఉంది</translation>
 <translation id="2049240716062114887">డెస్క్ పేరు <ph name="DESK_NAME" />గా మార్చబడింది</translation>
@@ -357,6 +356,7 @@
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="2484513351006226581">కీబోర్డ్ లేఅవుట్‌ను మార్చడానికి <ph name="KEYBOARD_SHORTCUT" />ని నొక్కండి.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> ప్రివ్యూ. యాక్టివ్ డెస్క్.</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) రిజల్యూషన్‌కు మార్చబడింది. నిర్ధారించకుండా, మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />‌లో రీస్టోర్ చేయబడతాయి.</translation>
 <translation id="2487915095798731898">చేర్చు</translation>
 <translation id="2499445554382787206">డెస్క్ ప్రొఫైల్ మెనూ. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">స్టిక్కీ కీలు</translation>
@@ -701,7 +701,6 @@
 <translation id="380165613292957338">హాయ్, నేను ఎలా సహాయపడగలను?</translation>
 <translation id="3804737937830804242">కెమెరాను కుదించండి</translation>
 <translation id="3824784079442479685">ఇది కెమెరా అనుమతితో <ph name="APP_NAME" />, అన్ని యాప్‌లు, వెబ్‌సైట్‌లకు యాక్సెస్‌ను అనుమతిస్తుంది. మీరు వెబ్ పేజీని రిఫ్రెష్ చేయాల్సి రావచ్చు లేదా యాప్‌ను రీస్టార్ట్ చేయాల్సి రావచ్చు.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" />లో <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> అసైన్‌మెంట్‌లు సబ్మిట్ అయ్యాయి,<ph name="NUM_GRADED" /> అసైన్‌మెంట్‌లకు గ్రేడింగ్ ఇవ్వబడింది</translation>
 <translation id="3826099427150913765">పాస్‌వర్డ్‌కు స్విచ్ చేయి</translation>
 <translation id="383058930331066723">బ్యాటరీ సేవర్ మోడ్ ఆన్‌లో ఉంది</translation>
 <translation id="383629559565718788">కీబోర్డ్ సెట్టింగ్‌లను చూపుతుంది</translation>
@@ -765,7 +764,6 @@
 <translation id="4066027111132117168">ఆన్‌లో ఉంది, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">డౌన్‌లోడ్‌ల పేజీని తెరవండి</translation>
 <translation id="4072264167173457037">సిగ్నల్ ఓ మోస్తరుగా ఉంది</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> అసైన్‌మెంట్‌లు సబ్మిట్ అయ్యాయి • <ph name="NUM_GRADED" /> అసైన్‌మెంట్‌లకు గ్రేడింగ్ ఇవ్వబడింది</translation>
 <translation id="4086921558679520050">మీ పరికరంలో ఫిజికల్ మైక్ స్విచ్‌ని ఆన్ చేయండి</translation>
 <translation id="4101772068965291327">హోమ్ పేజీని తెరువు</translation>
 <translation id="4112140312785995938">వెనుకకు జరుపు</translation>
@@ -1031,6 +1029,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">మ్యూట్‌లో ఉన్నప్పుడు మీరు మాట్లాడితే, మీకు నోటిఫికేషన్ అందుతుంది. ఆడియో మీ పరికరం నుండి ఎప్పుడూ బయటకు వెళ్లదు.</translation>
 <translation id="5077416371682039027">మీ ఫోన్‌లోని తాజా ఫోటోలను, మీడియాను, నోటిఫికేషన్‌లను, యాప్‌లను చూసే సదుపాయాన్ని సెటప్ చేయండి</translation>
+<translation id="5077936103761694531">రిజల్యూషన్‌ను నిర్ధారించాలా?</translation>
 <translation id="5078796286268621944"> సరి కానటువంటి PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + పై వైపు బాణం గుర్తు</translation>
 <translation id="5083553833479578423">మరిన్ని Assistant ఫీచర్‌లను అన్‌లాక్ చేయండి.</translation>
@@ -1680,6 +1679,7 @@
 <translation id="7647488630410863958">మీ నోటిఫికేషన్‌లను చూడటానికి పరికరాన్ని అన్‌లాక్ చేయండి</translation>
 <translation id="7649070708921625228">సహాయం</translation>
 <translation id="7654687942625752712">ప్రసంగ రూప ప్రతిస్పందనను నిలిపివేయడానికి ఒకేసారి రెండు వాల్యూమ్ కీలను ఐదు సెకన్ల పాటు నొక్కి, పట్టుకోండి.</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) రిజల్యూషన్‌కు మార్చబడింది. పోర్ట్ బ్యాండ్‌విడ్త్ పరిమితుల కారణంగా, మీ డిస్‌ప్లే <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) రిజల్యూషన్‌కు సపోర్ట్ చేయదు. నిర్ధారించకుండా, మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />‌లో రీస్టోర్ చేయబడతాయి.</translation>
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
 <translation id="7659861092419699379">డెస్క్, విండోలు మూసివేయబడ్డాయి</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" /> తో లింక్ చేయబడిన పరికరాలలో మీ <ph name="NAME" /> కనిపిస్తుంది</translation>
@@ -1770,6 +1770,7 @@
 <translation id="7945357288295809525">యాక్సెసిబిలిటీ సెట్టింగ్‌లను చూపించండి, "<ph name="ENABLED_FEATURES" />" ఎనేబుల్ చేయబడింది.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> యాప్ మీ <ph name="DEVICE_NAME" />‌ను ఉపయోగించాలనుకుంటుంది</translation>
 <translation id="7951630946012935453">కీబోర్డ్ బ్రైట్‌నెస్ కాంతిని తగ్గించండి</translation>
+<translation id="7953994493035617347">కొత్త రిజల్యూషన్‌ను నిర్ధారించాలా?</translation>
 <translation id="7963689218131240420">'అంతరాయం కలిగించవద్దు' ఆఫ్‌లో ఉంది.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> నుండి</translation>
 <translation id="7968693143708939792">ఫోల్డర్‌ను ఎంచుకోండి...</translation>

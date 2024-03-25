@@ -124,6 +124,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="1641113438599504367">Navegació segura</translation>
 <translation id="164269334534774161">Es mostra una còpia sense connexió d'aquesta pàgina creada el dia <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historial</translation>
+<translation id="1644969410150602449">Consulta el teu historial web aquí</translation>
 <translation id="1657932388559784161">El full inferior d'estadístiques de la pàgina està tancat</translation>
 <translation id="1670399744444387456">Configuració bàsica</translation>
 <translation id="1671236975893690980">Baixada pendent…</translation>
@@ -250,6 +251,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="2364539095045928896">Botó Tanca per tancar l'avís de privadesa del Centre d'estadístiques de la pàgina.</translation>
 <translation id="2386938421315164605">Amaga i deixa d'amagar els temes</translation>
 <translation id="2390510615457643724">Vols tornar a baixar <ph name="FILE_NAME" /> <ph name="FILE_SIZE" />?</translation>
+<translation id="2395004545133500011">Compartir amb el full de resum obert</translation>
 <translation id="2410754283952462441">Tria un compte</translation>
 <translation id="2414886740292270097">Fosc</translation>
 <translation id="2421705177906985956">No hi ha cap lloc web per mostrar en aquest moment</translation>
@@ -364,6 +366,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="2942036813789421260">La pestanya de previsualització està tancada</translation>
 <translation id="2946420957526726953">Chrome s'està actualitzant per connectar-se a altres dispositius</translation>
 <translation id="2951071800649516099">Afegeix pàgines a la llista de lectura per a més tard</translation>
+<translation id="2956070106555335453">Resum</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pàgina no llegida}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pàgines no llegides}}</translation>
 <translation id="296370266220139811">Estalvia temps i escriu menys</translation>
 <translation id="2977350910003566746">S'ordena per última obertura</translation>
@@ -643,6 +646,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{L'adreça d'interès s'ha desat a <ph name="FOLDER_NAME" />. Només es desa en aquest dispositiu.}other{Les adreces d'interès s'han desat a <ph name="FOLDER_NAME" />. Només es desen en aquest dispositiu.}}</translation>
 <translation id="4484496141267039529">No hi ha connexió. Torna-ho a provar més tard.</translation>
 <translation id="4487967297491345095">Totes les dades de les aplicacions de Chrome, com ara els fitxers, la configuració, els comptes o les bases de dades, entre d'altres, se suprimiran permanentment.</translation>
+<translation id="4489640160615759754">Compartir amb el full de resum</translation>
 <translation id="4494806687727322324">L'administrador ha activat l'opció de desar contrasenyes</translation>
 <translation id="4508528996305412043">El menú de la targeta del tauler està obert</translation>
 <translation id="4509501256689523862">El fet que els anuncis que veus mentre navegues es personalitzin o no dependrà d'aquesta opció de configuració, dels <ph name="BEGIN_LINK_1" />temes dels anuncis<ph name="END_LINK_1" />, de la <ph name="BEGIN_LINK_2" />configuració de les galetes<ph name="END_LINK_2" /> i de si el lloc web que estàs visitant personalitza els anuncis</translation>
@@ -652,6 +656,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="4521489764227272523">Les dades seleccionades s'han suprimit de Chrome i dels dispositius sincronitzats.
 
 És possible que el teu compte de Google tingui altres formes de l'historial de navegació, com ara les cerques i l'activitat d'altres serveis de Google a <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Compartir amb el full de resum tancat</translation>
 <translation id="4523326818319942067">darrera hora</translation>
 <translation id="452750746583162491">Revisa les teves dades sincronitzades</translation>
 <translation id="4532845899244822526">Tria la carpeta</translation>
@@ -749,6 +754,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="4950924971025849764">Quan tens la sessió iniciada al mateix Compte de Google, els altres dispositius poden utilitzar aquest telèfon com a clau de seguretat.</translation>
 <translation id="4957722034734105353">Més informació...</translation>
 <translation id="4961107849584082341">Tradueix aquesta pàgina a qualsevol idioma</translation>
+<translation id="496607651705915226">Per desar i utilitzar contrasenyes noves al teu Compte de Google, actualitza Serveis de Google Play</translation>
 <translation id="4971735654804503942">Protecció més ràpida i proactiva contra llocs web, baixades i extensions perillosos. T'avisa sobre violacions de les contrasenyes. Requereix que les dades de navegació s'enviïn a Google.</translation>
 <translation id="497421865427891073">Ves endavant</translation>
 <translation id="4987271110129728827">No es troba aquesta pàgina. Comprova'n l'ortografia o prova de fer una cerca web.</translation>

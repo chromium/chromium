@@ -352,6 +352,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="677276454032249905">Quitter Chrome quand même ?</translation>
 <translation id="6794858689789885890">Toujours supprimer les données des sites de votre appareil lorsque vous fermez Chrome</translation>
 <translation id="683440813066116847">Règle de trafic entrant pour Google Chrome Canary autorisant le trafic mDNS</translation>
+<translation id="684888714667046800">Impossible de se connecter à Internet. Si vous utilisez un pare-feu, assurez-vous que <ph name="PRODUCT_EXE_NAME" /> figure dans la liste d'autorisation.</translation>
 <translation id="6851981911629679515">Activer la protection supplémentaire dans le moteur JavaScript et WebAssembly de Chrome</translation>
 <translation id="6881299373831449287">Mise à jour de Chrome</translation>
 <translation id="6885412569789873916">Applications pour la version bêta de Chrome</translation>

@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">5:30 PM</translation>
 <translation id="1209206284964581585">Cuddio am nawr</translation>
 <translation id="1219674500290482172">Methu â chysylltu â'r Rhyngrwyd.</translation>
-<translation id="1226238226094914652">Cyfrineiriau ar Eich Holl Ddyfeisiau</translation>
 <translation id="122699739164161391">Cau Pob Tab</translation>
 <translation id="1227866575467023566">{count,plural, =1{Mae Tudalen wedi'i hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}zero{Mae {count} Tudalen wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}two{Mae {count} Dudalen wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}few{Mae {count} Tudalen wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}many{Mae {count} Tudalen wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}other{Mae {count} Tudalen wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}}</translation>
 <translation id="1242044645101871359">Mewngofnodwch Eto</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Dilyn</translation>
 <translation id="1644574205037202324">Hanes</translation>
 <translation id="164673457281113247">{count,plural, =1{Mae'r Nod tudalen wedi'i gadw}zero{Mae'r Nodau tudalen wedi'u cadw}two{Mae'r Nodau tudalen wedi'u cadw}few{Mae'r Nodau tudalen wedi'u cadw}many{Mae'r Nodau tudalen wedi'u cadw}other{Mae'r Nodau tudalen wedi'u cadw}}</translation>
-<translation id="165008673352427892">Nodwedd newydd</translation>
 <translation id="1650222530560417226">Tapiwch y botwm "Dechrau Cofnodi" i gasglu cofnodion a gwallau panel JavaScript yn y dyfodol ar bob tab. Bydd y cofnodion yn cael eu casglu (a'u cadw yn y cof yn unig) tan i chi gau'r dudalen hon neu tan i chi dapio'r botwm "Stopio Cofnodi".</translation>
 <translation id="1653432787084483144">{count,plural, =1{Mae {count} cyfrinair sydd wedi'i gadw ar gael uwchben eich bysellfwrdd.}zero{Mae {count} cyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}two{Mae {count} gyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}few{Mae {count} chyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}many{Mae {count} chyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}other{Mae {count} cyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}}</translation>
 <translation id="1657011748321897393">Wedi methu â rhannu oherwydd nad ydych wedi'ch cysylltu â'r rhwydwaith.</translation>
@@ -302,7 +300,6 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2556092377360758201">Dim Amddiffyniad (ni argymhellir)</translation>
 <translation id="2561375093019333908">AGOR</translation>
 <translation id="2562041823070056534">Anfon at <ph name="DEVICE_NAME" />...</translation>
-<translation id="2576499762020411840">Defnyddio a Chadw Cyfrineiriau yn eich Cyfrif Google</translation>
 <translation id="2577522251608256362">Cymdogaeth</translation>
 <translation id="2578571896248130439">Anfon Tudalen We</translation>
 <translation id="2584132361465095047">Ychwanegu cyfrif…</translation>
@@ -948,7 +945,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5850913622988109693">Dewisiadau i Olrhain Pecynnau</translation>
 <translation id="5854790677617711513">Hŷn na 30 diwrnod</translation>
 <translation id="5857090052475505287">Ffolder Newydd</translation>
-<translation id="5857361196621230935">Ychwanegu Tab at Grŵp</translation>
 <translation id="5857770089550859117">Mae angen cyfrinymadrodd i ddechrau cysoni.</translation>
 <translation id="5859715514067755465">Ymlaen</translation>
 <translation id="5860033963881614850">Diffodd</translation>
@@ -1159,7 +1155,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="6800349425672670802">Gallwch gael mynediad at eich holl dabiau agored o'r Newidiwr Tabiau.</translation>
 <translation id="6807889908376551050">Dangos y Cyfan…</translation>
 <translation id="681368974849482173">Wedi creu'r eitem</translation>
-<translation id="6822587385560699678">Pan fydd ymlaen, caiff cyfrineiriau eu cadw yn <ph name="ACCOUNT" />. Pan fydd wedi'i ddiffodd, dim ond ar y ddyfais hon y caiff cyfrineiriau eu cadw.</translation>
 <translation id="6824350924364057989">Gosodiadau</translation>
 <translation id="6831043979455480757">Cyfieithu</translation>
 <translation id="6842136130964845393">I wneud yn siŵr eich bod bob amser yn gallu cael mynediad at eich cyfrineiriau, cadarnhewch mai chi sydd yno</translation>

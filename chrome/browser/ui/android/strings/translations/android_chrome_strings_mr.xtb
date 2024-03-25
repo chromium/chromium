@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">सुरक्षित ब्राउझिंग</translation>
 <translation id="164269334534774161">तुम्ही <ph name="CREATION_TIME" /> पासून या पेजची ऑफलाइन प्रत पाहत आहात</translation>
 <translation id="1644574205037202324">इतिहास</translation>
+<translation id="1644969410150602449">तुमचा वेब इतिहास इथे पहा</translation>
 <translation id="1657932388559784161">तळाशी असलेल्या शीटमध्ये पेज इनसाइट बंद केल्या आहेत</translation>
 <translation id="1670399744444387456">मूलभूत</translation>
 <translation id="1671236975893690980">डाउनलोड प्रलंबित आहे</translation>
@@ -250,6 +251,7 @@
 <translation id="2364539095045928896">पेज इनसाइट हबची गोपनीयता सूचना बंद करण्यासाठी बंद करा बटण.</translation>
 <translation id="2386938421315164605">विषय लपवा आणि दाखवा</translation>
 <translation id="2390510615457643724">तुम्हाला <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> पुन्हा डाउनलोड करायची आहे का?</translation>
+<translation id="2395004545133500011">उघड्या असलेल्या सारांश शीटसह शेअर करा</translation>
 <translation id="2410754283952462441">एक खाते निवडा</translation>
 <translation id="2414886740292270097">गडद</translation>
 <translation id="2421705177906985956">याक्षणी दाखवण्यासाठी कोणत्याही साइट नाहीत</translation>
@@ -364,6 +366,7 @@
 <translation id="2942036813789421260">पूर्वावलोकन टॅब बंद आहे</translation>
 <translation id="2946420957526726953">इतर डिव्हाइसशी कनेक्ट करण्यासाठी Chrome अपडेट करत आहे</translation>
 <translation id="2951071800649516099">नंतर वाचण्यासाठी तुमच्या वाचन सूचीमध्ये पेज जोडा</translation>
+<translation id="2956070106555335453">सारांश</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> न वाचलेले पेज}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> न वाचलेली पेज}}</translation>
 <translation id="296370266220139811">वेळ वाचवा आणि कमी टाइप करा</translation>
 <translation id="2977350910003566746">शेवटचा उघडलेला यानुसार क्रमाने लावत आहे</translation>
@@ -643,6 +646,7 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{बुकमार्क "<ph name="FOLDER_NAME" />" वर सेव्ह केला आहे. तो फक्त या डिव्हाइसवर सेव्ह केला आहे.}other{बुकमार्क "<ph name="FOLDER_NAME" />" वर सेव्ह केले आहेत. ते फक्त या डिव्हाइसवर सेव्ह केले आहेत.}}</translation>
 <translation id="4484496141267039529">कनेक्शन नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="4487967297491345095">Chrome चा सर्व ॲप डेटा कायमचा हटवला जाईल. यामध्ये सर्व फाइल, सेटिंग्ज, खाती, डेटाबेस, इ. चा समावेश होतो.</translation>
+<translation id="4489640160615759754">सारांश शीटसह शेअर करा</translation>
 <translation id="4494806687727322324">तुमच्या अ‍ॅडमिनिस्ट्रेटरने पासवर्ड सेव्ह करणे सुरू केले आहे</translation>
 <translation id="4508528996305412043">फीड कार्ड मेनू उघडला गेला आहे</translation>
 <translation id="4509501256689523862">तुम्ही ब्राउझ करत असताना, तुम्ही पाहत असलेली जाहिरात पर्सनलाइझ केलेली आहे की नाही हे या सेटिंगवर, <ph name="BEGIN_LINK_1" />जाहिरातीचे विषय<ph name="END_LINK_1" />, तुमची <ph name="BEGIN_LINK_2" />कुकी सेटिंग्ज<ph name="END_LINK_2" /> आणि तुम्ही पाहत असलेली साइट जाहिराती पर्सनलाइझ करते की नाही त्यावर अवलंबून असते</translation>
@@ -652,6 +656,7 @@
 <translation id="4521489764227272523">निवडलेला डेटा Chrome वरून आणि तुमच्या सिंक केलेल्या डिव्हाइसवरून काढला गेला आहे.
 
 तुमच्या Google खात्यात <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> येथील इतर Google सेवांवरील शोध आणि अ‍ॅक्टिव्हिटी यांसारखा इतर स्वरूपातील ब्राउझिंग इतिहास असू शकतो.</translation>
+<translation id="452279259461584111">बंद केलेल्या सारांश शीटसह शेअर करा</translation>
 <translation id="4523326818319942067">मागील तासामधील</translation>
 <translation id="452750746583162491">तुमच्या सिंक केलेल्या डेटाचे पुनरावलोकन करा</translation>
 <translation id="4532845899244822526">फोल्डर निवडा</translation>
@@ -749,6 +754,7 @@
 <translation id="4950924971025849764">तुम्ही त्याच Google खाते मध्ये साइन इन केलेले असल्यास, इतर डिव्हाइस हा फोन सिक्युरिटी की म्हणून वापरू शकतात.</translation>
 <translation id="4957722034734105353">अधिक जाणून घ्या...</translation>
 <translation id="4961107849584082341">या पेजचे कोणत्याही भाषेत भाषांतर करा</translation>
+<translation id="496607651705915226">तुमच्या Google खाते मध्ये नवीन पासवर्ड सेव्ह करून ते वापरण्यासाठी, Google Play सेवा अपडेट करा</translation>
 <translation id="4971735654804503942">धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून अधिक जलद, प्रोअ‍ॅक्टिव्ह संरक्षण. पासवर्ड भंगांबद्दल तुम्हाला चेतावणी देतो. Google ला पाठवला जाण्यासाठी ब्राउझिंग डेटा आवश्यक आहे.</translation>
 <translation id="497421865427891073">पुढे जा</translation>
 <translation id="4987271110129728827">ते पेज सापडले नाही. तुमचे शब्दलेखन तपासा किंवा वेब शोध वापरून पहा.</translation>

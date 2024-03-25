@@ -251,6 +251,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="2364539095045928896">Mygtukas „Uždaryti“, kad būtų uždarytas puslapio įžvalgų centro privatumo pranešimas.</translation>
 <translation id="2386938421315164605">Slėpti temas ir jų nebeslėpti</translation>
 <translation id="2390510615457643724">Ar norite dar kartą atsisiųsti „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />)?</translation>
+<translation id="2395004545133500011">Bendrinti su atidarytu suvestinės lapu</translation>
 <translation id="2410754283952462441">Pasirinkite paskyrą</translation>
 <translation id="2414886740292270097">Tamsi</translation>
 <translation id="2421705177906985956">Šiuo metu nėra rodytinų svetainių</translation>
@@ -365,6 +366,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="2942036813789421260">Peržiūros skirtukas uždarytas</translation>
 <translation id="2946420957526726953">Atnaujinama „Chrome“, kad galėtumėte prisijungti prie kitų įrenginių</translation>
 <translation id="2951071800649516099">Pridėkite puslapių prie skaitymo sąrašo, kad galėtumėte perskaityti juos vėliau</translation>
+<translation id="2956070106555335453">Suvestinė</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> neskaitytas puslapis}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaitytas puslapis}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaityti puslapiai}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaityto puslapio}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaitytų puslapių}}</translation>
 <translation id="296370266220139811">Taupykite laiką vesdami mažiau teksto</translation>
 <translation id="2977350910003566746">Rūšiuojama pagal paskutinį atidarymą</translation>
@@ -644,6 +646,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Žymė išsaugota aplanke „<ph name="FOLDER_NAME" />“. Ji išsaugoma tik šiame įrenginyje.}one{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Jos išsaugomos tik šiame įrenginyje.}few{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Jos išsaugomos tik šiame įrenginyje.}many{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Jos išsaugomos tik šiame įrenginyje.}other{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Jos išsaugomos tik šiame įrenginyje.}}</translation>
 <translation id="4484496141267039529">Nėra ryšio. Vėliau bandykite dar kartą.</translation>
 <translation id="4487967297491345095">Visi „Chrome“ duomenys bus ištrinti visam laikui. Tai apima visus failus, nustatymus, paskyras, duomenų bazes ir kt.</translation>
+<translation id="4489640160615759754">Bendrinti su suvestinės lapu</translation>
 <translation id="4494806687727322324">Administratorius įjungė slaptažodžių išsaugojimo funkciją</translation>
 <translation id="4508528996305412043">Sklaidos kanalo kortelės meniu atidarytas</translation>
 <translation id="4509501256689523862">Tai, ar naršant rodomi suasmeninti skelbimai, priklauso nuo šio nustatymo, <ph name="BEGIN_LINK_1" />skelbimų temų<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />slapukų nustatymų<ph name="END_LINK_2" /> ir nuo to, ar svetainė, kurioje lankotės, teikia suasmenintus skelbimus</translation>
@@ -653,6 +656,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="4521489764227272523">Pasirinkti duomenys pašalinti iš „Chrome“ ir sinchronizuojamų įrenginių.
 
 Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali būti pateikta kitų formų jūsų „Google“ paskyros naršymo istorija, pvz., paieškos ir veikla kitose „Google“ paslaugose.</translation>
+<translation id="452279259461584111">Bendrinti su uždarytu suvestinės lapu</translation>
 <translation id="4523326818319942067">pastaroji valanda</translation>
 <translation id="452750746583162491">Peržiūrėti sinchronizuotus duomenis</translation>
 <translation id="4532845899244822526">Pasirinkti aplanką</translation>
@@ -750,6 +754,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4950924971025849764">Kai esate prisijungę prie tos pačios „Google“ paskyros, kiti įrenginiai gali naudoti šį telefoną kaip saugos raktą.</translation>
 <translation id="4957722034734105353">Sužinokite daugiau...</translation>
 <translation id="4961107849584082341">Išverskite šį puslapį į bet kokią kalbą</translation>
+<translation id="496607651705915226">Jei norite išsaugoti ir naudoti naujus slaptažodžius „Google“ paskyroje, atnaujinkite „Google Play“ paslaugas</translation>
 <translation id="4971735654804503942">Spartesnė, veiksni apsauga nuo pavojingų svetainių, atsisiuntimų ir plėtinių. Įspėjama apie slaptažodžių pažeidimus. Naršymo duomenys turi būti siunčiami į sistemą „Google“.</translation>
 <translation id="497421865427891073">Eiti pirmyn</translation>
 <translation id="4987271110129728827">Nepavyko rasti šio puslapio. Patikrinkite rašybą arba pabandykite naudoti žiniatinklio paiešką.</translation>

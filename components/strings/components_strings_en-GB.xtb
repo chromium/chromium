@@ -121,6 +121,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1219129156119358924">System Security</translation>
 <translation id="1222060260947439312">Right tray</translation>
 <translation id="1224330468394120478">A3 x 6</translation>
+<translation id="1225240795350945817">Card number:</translation>
 <translation id="1225570101506606926">Billiards</translation>
 <translation id="1225607422885279949">Google will find discounts for you</translation>
 <translation id="1227224963052638717">Unknown policy.</translation>
@@ -4159,6 +4160,7 @@ Additional details:
 <translation id="9036306139374661733">Allow microphone?</translation>
 <translation id="9038649477754266430">Use a prediction service to load pages more quickly</translation>
 <translation id="9039213469156557790">Furthermore, this page includes other resources which are not secure. These resources can be viewed by others while in transit, and can be modified by an attacker to change the behaviour of the page.</translation>
+<translation id="9040341831873780534">See terms here</translation>
 <translation id="9042617223719777575">Large capacity</translation>
 <translation id="9042827002460091668">Please check your Internet connection and try again</translation>
 <translation id="9044359186343685026">Use Touch ID</translation>

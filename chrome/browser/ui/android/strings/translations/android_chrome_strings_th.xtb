@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">คุณกำลังดูสำเนาออฟไลน์ของหน้านี้จากวันที่ <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
+<translation id="1644969410150602449">ดูประวัติการเข้าชมเว็บที่นี่</translation>
 <translation id="1657932388559784161">Bottom Sheet ข้อมูลเชิงลึกของหน้าปิดอยู่</translation>
 <translation id="1670399744444387456">พื้นฐาน</translation>
 <translation id="1671236975893690980">การดาวน์โหลดรอดำเนินการ…</translation>
@@ -250,6 +251,7 @@
 <translation id="2364539095045928896">ปุ่มปิดเพื่อปิดประกาศเกี่ยวกับนโยบายความเป็นส่วนตัวของศูนย์รวมข้อมูลเชิงลึกเกี่ยวกับหน้าเว็บ</translation>
 <translation id="2386938421315164605">ซ่อนและเลิกซ่อนหัวข้อ</translation>
 <translation id="2390510615457643724">คุณต้องการดาวน์โหลด <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> อีกครั้งใช่ไหม</translation>
+<translation id="2395004545133500011">แชร์พร้อมกับชีตข้อมูลสรุปที่เปิดอยู่</translation>
 <translation id="2410754283952462441">เลือกบัญชี</translation>
 <translation id="2414886740292270097">มืด</translation>
 <translation id="2421705177906985956">ไม่มีเว็บไซต์ที่จะแสดงในขณะนี้</translation>
@@ -364,6 +366,7 @@
 <translation id="2942036813789421260">แท็บแสดงตัวอย่างปิดอยู่</translation>
 <translation id="2946420957526726953">กำลังอัปเดต Chrome เพื่อเชื่อมต่อกับอุปกรณ์อื่นๆ</translation>
 <translation id="2951071800649516099">เพิ่มหน้าเว็บลงในเรื่องรออ่านไว้อ่านภายหลัง</translation>
+<translation id="2956070106555335453">สรุป</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{ยังไม่อ่าน <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> หน้า}other{ยังไม่อ่าน <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> หน้า}}</translation>
 <translation id="296370266220139811">ประหยัดเวลาและพิมพ์น้อยลง</translation>
 <translation id="2977350910003566746">จัดเรียงตามที่เปิดล่าสุด</translation>
@@ -643,6 +646,7 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{บันทึกบุ๊กมาร์กไปยัง "<ph name="FOLDER_NAME" />" แล้ว ระบบจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}other{บันทึกบุ๊กมาร์กไปยัง "<ph name="FOLDER_NAME" />" แล้ว ระบบจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}}</translation>
 <translation id="4484496141267039529">ไม่มีการเชื่อมต่อ ลองอีกครั้งในภายหลัง</translation>
 <translation id="4487967297491345095">ระบบจะลบข้อมูลแอปทั้งหมดของ Chrome อย่างถาวร ซึ่งรวมถึงไฟล์ทั้งหมด การตั้งค่า บัญชี ฐานข้อมูล และอื่นๆ</translation>
+<translation id="4489640160615759754">แชร์พร้อมกับชีตข้อมูลสรุป</translation>
 <translation id="4494806687727322324">ผู้ดูแลระบบของคุณเปิดการบันทึกรหัสผ่าน</translation>
 <translation id="4508528996305412043">เมนูของการ์ดฟีดเปิดอยู่</translation>
 <translation id="4509501256689523862">ขณะที่คุณท่องเว็บ จะมีการปรับโฆษณาที่แสดงให้เหมาะกับคุณหรือไม่นั้นขึ้นอยู่กับการตั้งค่านี้ รวมถึง<ph name="BEGIN_LINK_1" />หัวข้อโฆษณา<ph name="END_LINK_1" /> <ph name="BEGIN_LINK_2" />การตั้งค่าคุกกี้<ph name="END_LINK_2" /> และการปรับโฆษณาตามโปรไฟล์ผู้ใช้ของเว็บไซต์ที่คุณดู</translation>
@@ -652,6 +656,7 @@
 <translation id="4521489764227272523">ระบบได้นำข้อมูลที่เลือกออกจาก Chrome และอุปกรณ์ที่ซิงค์แล้ว
 
 บัญชี Google ของคุณอาจมีประวัติการท่องเว็บในรูปแบบอื่นๆ เช่น การค้นหาและกิจกรรมจากบริการอื่นๆ ของ Google ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
+<translation id="452279259461584111">แชร์พร้อมกับชีตข้อมูลสรุปที่ปิดอยู่</translation>
 <translation id="4523326818319942067">ชั่วโมงที่ผ่านมา</translation>
 <translation id="452750746583162491">ตรวจสอบข้อมูลที่ซิงค์</translation>
 <translation id="4532845899244822526">เลือกโฟลเดอร์</translation>
@@ -749,6 +754,7 @@
 <translation id="4950924971025849764">เมื่อคุณลงชื่อเข้าใช้บัญชี Google เดียวกัน อุปกรณ์อื่นๆ จะใช้โทรศัพท์เครื่องนี้เป็นคีย์ความปลอดภัยได้</translation>
 <translation id="4957722034734105353">ดูข้อมูลเพิ่มเติม...</translation>
 <translation id="4961107849584082341">แปลหน้านี้เป็นภาษาใดก็ได้</translation>
+<translation id="496607651705915226">หากต้องการบันทึกและใช้รหัสผ่านใหม่ในบัญชี Google โปรดอัปเดตบริการ Google Play</translation>
 <translation id="4971735654804503942">การปกป้องเชิงรุกอย่างรวดเร็วขึ้นจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย เตือนคุณเรื่องการละเมิดรหัสผ่าน ต้องส่งข้อมูลการท่องเว็บให้ Google</translation>
 <translation id="497421865427891073">ไปข้างหน้า</translation>
 <translation id="4987271110129728827">ไม่พบหน้านั้น โปรดตรวจสอบตัวสะกดหรือลองค้นเว็บ</translation>

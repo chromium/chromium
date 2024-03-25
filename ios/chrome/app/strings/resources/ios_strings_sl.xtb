@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17.30</translation>
 <translation id="1209206284964581585">Zaenkrat skrij</translation>
 <translation id="1219674500290482172">Internetne povezave ni mogoče vzpostaviti.</translation>
-<translation id="1226238226094914652">Gesla v vseh napravah</translation>
 <translation id="122699739164161391">Zapri vse zavihke</translation>
 <translation id="1227866575467023566">{count,plural, =1{Stran je bila dodana na bralni seznam v računu {email}}one{{count} stran je bila dodana na bralni seznam v računu {email}}two{{count} strani sta bili dodani na bralni seznam v računu {email}}few{{count} strani so bile dodane na bralni seznam v računu {email}}other{{count} strani je bilo dodanih na bralni seznam v računu {email}}}</translation>
 <translation id="1242044645101871359">Prijavite se znova</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Spremljaj</translation>
 <translation id="1644574205037202324">Zgodovina</translation>
 <translation id="164673457281113247">{count,plural, =1{Zaznamek je shranjen}one{Zaznamki so shranjeni}two{Zaznamka sta shranjena}few{Zaznamki so shranjeni}other{Zaznamki so shranjeni}}</translation>
-<translation id="165008673352427892">Nova funkcija</translation>
 <translation id="1650222530560417226">Dotaknite se gumba »Začni zapisovanje dnevnikov«, če želite zbirati prihodnje dnevnike konzole za JavaScript in napake z vseh zavihkov. Dnevniki se bodo zbirali (in shranjevali samo v pomnilniku), dokler ta stran ne bo zaprta ali dokler se ne dotaknete »Ustavi zapisovanje dnevnikov«.</translation>
 <translation id="1653432787084483144">{count,plural, =1{Nad tipkovnico je na voljo {count} shranjeno geslo.}one{Nad tipkovnico je na voljo {count} shranjeno geslo.}two{Nad tipkovnico sta na voljo {count} shranjeni gesli.}few{Nad tipkovnico so na voljo {count} shranjena gesla.}other{Nad tipkovnico je na voljo {count} shranjenih gesel.}}</translation>
 <translation id="1657011748321897393">Deljenje z drugimi ni uspelo, ker niste povezani v omrežje.</translation>
@@ -302,7 +300,6 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2556092377360758201">Brez zaščite (ni priporočljivo)</translation>
 <translation id="2561375093019333908">ODPRI</translation>
 <translation id="2562041823070056534">Pošiljanje v napravo <ph name="DEVICE_NAME" /> …</translation>
-<translation id="2576499762020411840">Uporaba in shranjevanje gesel v računu Google</translation>
 <translation id="2577522251608256362">Soseska</translation>
 <translation id="2578571896248130439">Pošlji spletno stran</translation>
 <translation id="2584132361465095047">Dodajanje računa ...</translation>
@@ -948,7 +945,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5850913622988109693">Možnosti za sledenje paketom</translation>
 <translation id="5854790677617711513">Starejše od 30 dni</translation>
 <translation id="5857090052475505287">Nova mapa</translation>
-<translation id="5857361196621230935">Dodaj zavihek skupini</translation>
 <translation id="5857770089550859117">Passphrase required to start sync.</translation>
 <translation id="5859715514067755465">Naprej</translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
@@ -1159,7 +1155,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="6800349425672670802">Do vseh odprtih zavihkov lahko dostopate s preklopom med zavihki.</translation>
 <translation id="6807889908376551050">Pokaži vse ...</translation>
 <translation id="681368974849482173">Item created</translation>
-<translation id="6822587385560699678">Če je vklopljeno, se gesla shranjujejo v računu <ph name="ACCOUNT" />. Če je izklopljeno, se gesla shranjujejo samo v tej napravi.</translation>
 <translation id="6824350924364057989">Nastavitve</translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6842136130964845393">Če želite poskrbeti, da boste vedno lahko dostopali do shranjenih gesel, potrdite, da ste to vi.</translation>

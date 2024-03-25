@@ -3522,12 +3522,14 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3660234220361471169">Ótraust</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 fyrirliggjandi aðgangsorð fannst}one{{NUM_PASSWORDS} fyrirliggjandi aðgangsorð fannst}other{{NUM_PASSWORDS} fyrirliggjandi aðgangsorð fundust}}</translation>
 <translation id="3662207097851752847">Staðfestu Google-reikninginn þinn í símanum</translation>
+<translation id="3663417513679360795">Nánari upplýsingar um að kveikja á hefðbundinni forhleðslu</translation>
 <translation id="3664511988987167893">Tákn viðbótar</translation>
 <translation id="3665100783276035932">Flest vefsvæði ættu að virka sem skyldi</translation>
 <translation id="3665301845536101715">Opna í hliðarglugga</translation>
 <translation id="3665589677786828986">Chrome greindi að annað forrit hefur nýlega spillt einhverjum stillingum hjá þér og endurstillti þær því í sjálfgildi.</translation>
 <translation id="3665919494326051362">Núverandi útgáfa er <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Villuleitargögn fyrir WiFi-netkort frá Intel</translation>
+<translation id="3666971425390608309">Hlé gert á niðurhali: <ph name="FILE_NAME" /></translation>
 <translation id="3670113805793654926">Tæki frá hvaða framleiðanda sem er</translation>
 <translation id="3670229581627177274">Kveikja á Bluetooth</translation>
 <translation id="3670480940339182416">Vefsvæðum er heimilt að nota fínstillingu V8</translation>
@@ -3610,6 +3612,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3720543739123045680">Aðrir flipar deila vinnslu með þessum flipa, sem getur leitt til óvæntrar DevTools-upplifunar.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Þú og Google</translation>
+<translation id="3721178866505920080">Nánari upplýsingar um að kveikja á aukinni forhleðslu</translation>
 <translation id="3722108462506185496">Villa við að ræsa þjónustu sýndarvélar. Reyndu aftur.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />: leiðbeiningar mótteknar</translation>
 <translation id="3724897774652282549">Fylla út eyðublað</translation>
@@ -3727,6 +3730,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3798670284305777884">Hátalari (innbyggður)</translation>
 <translation id="3799128412641261490">Stillingar rofaaðgangs</translation>
 <translation id="3800828618615365228">Viðbótarskilmálar Google Chrome og ChromeOS</translation>
+<translation id="3800898876950197674">Sláðu inn aðgangsorðið þitt til að leyfa þessa viðbót.</translation>
 <translation id="3802486193901166966">Þessi viðbót þarf engar sérstakar heimildir og hún hefur engan viðbótaraðgang að vefsvæðum</translation>
 <translation id="380329542618494757">Nafn</translation>
 <translation id="3803345858388753269">Myndgæði</translation>
@@ -4598,7 +4602,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4473996011558324141">áætlar tíma</translation>
 <translation id="4474155171896946103">Bókamerkja alla flipa...</translation>
 <translation id="4475299370877036544">Þessi aðgerð gæti falið í sér brot á reglum fyrirtækisins/stofnunarinnar þinnar</translation>
-<translation id="4475552974751346499">Leita í niðurhali</translation>
 <translation id="4476590490540813026">Íþróttamaður</translation>
 <translation id="4476659815936224889">Þú getur notað QR-skönnunarforrit í símanum þínum eða ýmis myndavélaforrit til að skanna þennan kóða.</translation>
 <translation id="4477015793815781985">Notaðu Ctrl, Alt eða ⌘</translation>
@@ -7475,6 +7478,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6758056191028427665">Láttu okkur vita hvernig við stöndum okkur.</translation>
 <translation id="6759193508432371551">Núllstilling</translation>
 <translation id="6760354150216532978">Viðvörun: Þetta vefsvæði sér breytingar sem þú gerir</translation>
+<translation id="6761209758867628753">Verkfæri: Rithjálp</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6761623907967804682">Vefsvæðagögn í tæki ekki leyfð</translation>
 <translation id="6762833852331690540">Kveikt</translation>
@@ -8012,6 +8016,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7180865173735832675">Sérsníða</translation>
 <translation id="7181117767881540376">Fela bókamerkjastiku</translation>
+<translation id="7181329571386134105">Til að leyfa að <ph name="CHILD_NAME" /> geti sett upp viðbætur seinna meir án þíns samþykkis skaltu opna Family Link-forritið í tækinu þínu og uppfæra Google Chrome-stillingar sem <ph name="CHILD_NAME" /> hefur aðgang að.</translation>
 <translation id="7182063559013288142">Heitur reitur í skyndi</translation>
 <translation id="7182791023900310535">Færðu aðgangsorðið</translation>
 <translation id="718427252411067142">Til að koma í veg fyrir að aðrir noti aðgangsorðið þitt skaltu opna forritið til að breyta aðgangsorðinu</translation>
@@ -10807,6 +10812,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="973558314812359997">Stærð músar</translation>
 <translation id="975893173032473675">Tungumál sem þýða á yfir á</translation>
 <translation id="976499800099896273">Afturköllunargluggi sjálfvirkrar leiðréttingar er sýndur fyrir <ph name="TYPED_WORD" /> leiðrétt í <ph name="CORRECTED_WORD" />.  Ýttu á ör upp til að nota eða Escape til að hunsa.</translation>
+<translation id="976572010712028687">Staðfestu að þú sért foreldri</translation>
 <translation id="978146274692397928">Greinarmerki eru upprunalega í fullri breidd</translation>
 <translation id="978978324795544535">Ýttu tvisvar á atriði og haltu inni í seinna skiptið. Dragðu síðan atriðið til að færa það</translation>
 <translation id="97905529126098460">Þessi gluggi lokast þegar búið er að hætta við.</translation>

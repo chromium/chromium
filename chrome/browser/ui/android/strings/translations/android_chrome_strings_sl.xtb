@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">Varno brskanje</translation>
 <translation id="164269334534774161">Ogledujete si kopijo te strani brez povezave z dne <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Zgodovina</translation>
+<translation id="1644969410150602449">Tukaj si lahko ogledate spletno zgodovino</translation>
 <translation id="1657932388559784161">Razdelek na dnu zaslona s podrobnimi podatki o strani je zaprt</translation>
 <translation id="1670399744444387456">Osnovno</translation>
 <translation id="1671236975893690980">Čakanje na prenos …</translation>
@@ -250,6 +251,7 @@
 <translation id="2364539095045928896">Gumb za zapiranje obvestila o zasebnosti središča za vpoglede na straneh.</translation>
 <translation id="2386938421315164605">Skrivanje in razkrivanje tem.</translation>
 <translation id="2390510615457643724">Ali želite znova prenesti datoteko <ph name="FILE_NAME" /><ph name="FILE_SIZE" />?</translation>
+<translation id="2395004545133500011">Deljenje z odprtim listom s povzetkom</translation>
 <translation id="2410754283952462441">Izbira računa</translation>
 <translation id="2414886740292270097">Temno</translation>
 <translation id="2421705177906985956">Trenutno ni spletnih mest, ki bi jih lahko prikazali</translation>
@@ -364,6 +366,7 @@
 <translation id="2942036813789421260">Zavihek za predogled je zaprt</translation>
 <translation id="2946420957526726953">Updating Chroma za povezovanje z drugimi napravami</translation>
 <translation id="2951071800649516099">Dodajte strani na bralni seznam za pozneje.</translation>
+<translation id="2956070106555335453">Povzetek</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> neprebrana stran}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebrana stran}two{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebrani strani}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebrane strani}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebranih strani}}</translation>
 <translation id="296370266220139811">Prihranite čas in tipkajte manj</translation>
 <translation id="2977350910003566746">Razvrščanje po nazadnje odprtih</translation>
@@ -643,6 +646,7 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Zaznamek je shranjen v mapi »<ph name="FOLDER_NAME" />«. Shranjen je samo v tej napravi.}one{Zaznamki so shranjeni v mapi »<ph name="FOLDER_NAME" />«. Shranjeni so samo v tej napravi.}two{Zaznamki so shranjeni v mapi »<ph name="FOLDER_NAME" />«. Shranjeni so samo v tej napravi.}few{Zaznamki so shranjeni v mapi »<ph name="FOLDER_NAME" />«. Shranjeni so samo v tej napravi.}other{Zaznamki so shranjeni v mapi »<ph name="FOLDER_NAME" />«. Shranjeni so samo v tej napravi.}}</translation>
 <translation id="4484496141267039529">Ni povezave. Poskusite pozneje.</translation>
 <translation id="4487967297491345095">Vsi podatki aplikacije Chrome bodo trajno izbrisani, vključno z vsemi datotekami, nastavitvami, računi, zbirkami podatkov ipd.</translation>
+<translation id="4489640160615759754">Deljenje z listom s povzetkom</translation>
 <translation id="4494806687727322324">Skrbnik je vklopil shranjevanje gesel</translation>
 <translation id="4508528996305412043">Meni kartice vira je odprt</translation>
 <translation id="4509501256689523862">Ali je med brskanjem oglas, ki je prikazan, osebno prilagojen, je odvisno od te nastavitve, nastavitve <ph name="BEGIN_LINK_1" />tem oglasov<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />nastavitve piškotkov<ph name="END_LINK_2" /> in od tega, ali spletno mesto, ki si ga ogledujete, osebno prilagaja oglase.</translation>
@@ -652,6 +656,7 @@
 <translation id="4521489764227272523">Izbrani podatki so bili odstranjeni iz Chroma in sinhroniziranih naprav.
 
 V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in dejavnosti iz drugih Googlovih storitev, na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Deljenje z zaprtim listom s povzetkom</translation>
 <translation id="4523326818319942067">zadnja ura</translation>
 <translation id="452750746583162491">Pregled sinhroniziranih podatkov</translation>
 <translation id="4532845899244822526">Izbira mape</translation>
@@ -749,6 +754,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4950924971025849764">Če ste prijavljeni v isti račun Google, lahko druge naprave uporabljajo ta telefon kot varnostni ključ.</translation>
 <translation id="4957722034734105353">Več o tem ...</translation>
 <translation id="4961107849584082341">Prevedite to stran v kateri koli jezik</translation>
+<translation id="496607651705915226">Če želite v računu Google shraniti in uporabljati nova gesla, posodobite storitve Google Play</translation>
 <translation id="4971735654804503942">Hitrejša, še boljša zaščita proti nevarnim spletnim mestom, prenosom in razširitvam. Opozori vas glede kršitev gesel. Zahteva pošiljanje podatkov brskanja Googlu.</translation>
 <translation id="497421865427891073">Pojdi naprej</translation>
 <translation id="4987271110129728827">Te strani ni mogoče najti. Preverite črkovanje ali poskusite spletno iskanje.</translation>

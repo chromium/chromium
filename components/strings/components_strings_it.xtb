@@ -121,6 +121,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1219129156119358924">Sicurezza del sistema</translation>
 <translation id="1222060260947439312">Vassoio destro</translation>
 <translation id="1224330468394120478">A3x6</translation>
+<translation id="1225240795350945817">Numero carta:</translation>
 <translation id="1225570101506606926">Biliardi</translation>
 <translation id="1225607422885279949">Google troverà sconti per te</translation>
 <translation id="1227224963052638717">Norma sconosciuta.</translation>
@@ -1010,7 +1011,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2938225289965773019">Aprire i link <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Busta 9 x 12 pollici</translation>
 <translation id="2941952326391522266">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza proviene da <ph name="DOMAIN2" />. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
-<translation id="2942492342931589800">Casuale</translation>
+<translation id="2942492342931589800">Informale</translation>
 <translation id="2942515540157583425">Offerte di lavoro nel settore tecnico e IT</translation>
 <translation id="2943895734390379394">Ora di caricamento:</translation>
 <translation id="2948083400971632585">Puoi disattivare tutti i proxy configurati per una connessione dalla pagina delle impostazioni.</translation>
@@ -4156,6 +4157,7 @@ Ulteriori dettagli:
 <translation id="9036306139374661733">Vuoi consentire l'accesso al microfono?</translation>
 <translation id="9038649477754266430">Utilizza un servizio di previsione per velocizzare il caricamento delle pagine</translation>
 <translation id="9039213469156557790">Inoltre, questa pagina include altre risorse che non sono sicure. Tali risorse possono essere visualizzate da altri durante il transito dei dati e possono essere modificate da un utente malintenzionato al fine di modificare il comportamento della pagina.</translation>
+<translation id="9040341831873780534">Leggi i termini qui</translation>
 <translation id="9042617223719777575">Capacità elevata</translation>
 <translation id="9042827002460091668">Controlla la connessione a Internet e riprova</translation>
 <translation id="9044359186343685026">Usa Touch ID</translation>

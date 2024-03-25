@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">5:30 PM</translation>
 <translation id="1209206284964581585">今は表示しない</translation>
 <translation id="1219674500290482172">インターネットに接続できません。</translation>
-<translation id="1226238226094914652">すべてのデバイスでパスワードを使用</translation>
 <translation id="122699739164161391">すべてのタブを閉じる</translation>
 <translation id="1227866575467023566">{count,plural, =1{アカウント「{email}」のリーディング リストにページを追加しました}other{アカウント「{email}」のリーディング リストに {count} 件のページを追加しました}}</translation>
 <translation id="1242044645101871359">もう一度ログインしてください</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">フォロー</translation>
 <translation id="1644574205037202324">履歴</translation>
 <translation id="164673457281113247">{count,plural, =1{ブックマークを保存しました}other{ブックマークを保存しました}}</translation>
-<translation id="165008673352427892">新機能</translation>
 <translation id="1650222530560417226">[ログ記録を開始] をタップすると、今後 JavaScript コンソールに表示されるすべてのタブのログやエラーが収集されます。ログは、このページを閉じるか [ログ記録を停止] をタップするまで収集（およびメモリにのみ保存）されます。</translation>
 <translation id="1653432787084483144">{count,plural, =1{キーボードの上部に保存済みのパスワードが {count} 件表示されています。}other{キーボードの上部に保存済みのパスワードが {count} 件表示されています。}}</translation>
 <translation id="1657011748321897393">ネットワークに接続されていないため共有できませんでした。</translation>
@@ -302,7 +300,6 @@
 <translation id="2556092377360758201">保護なし（推奨されません）</translation>
 <translation id="2561375093019333908">開く</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> にタブを送信しています...</translation>
-<translation id="2576499762020411840">Google アカウントのパスワードの使用と保存</translation>
 <translation id="2577522251608256362">近隣住区（neighborhood）</translation>
 <translation id="2578571896248130439">ウェブページの送信</translation>
 <translation id="2584132361465095047">アカウントを追加...</translation>
@@ -948,7 +945,6 @@
 <translation id="5850913622988109693">荷物を追跡するオプション</translation>
 <translation id="5854790677617711513">30 日以上経過</translation>
 <translation id="5857090052475505287">新しいフォルダ</translation>
-<translation id="5857361196621230935">タブをグループに追加</translation>
 <translation id="5857770089550859117">同期を開始するにはパスフレーズが必要です。</translation>
 <translation id="5859715514067755465">進む</translation>
 <translation id="5860033963881614850">OFF</translation>
@@ -1159,7 +1155,6 @@
 <translation id="6800349425672670802">開いているすべてのタブにタブ切り替え機能からアクセスできます。</translation>
 <translation id="6807889908376551050">すべて表示...</translation>
 <translation id="681368974849482173">作成済みのアイテム</translation>
-<translation id="6822587385560699678">オンにすると、パスワードは <ph name="ACCOUNT" /> に保存されます。オフにすると、パスワードはこのデバイスのみに保存されます。</translation>
 <translation id="6824350924364057989">設定</translation>
 <translation id="6831043979455480757">翻訳</translation>
 <translation id="6842136130964845393">保存したパスワードに常にアクセスできるようにするには、本人確認を行ってください</translation>

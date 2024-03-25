@@ -124,6 +124,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1641113438599504367">Navigation sécurisée</translation>
 <translation id="164269334534774161">Vous regardez une copie hors connexion de cette page depuis le <ph name="CREATION_TIME" />.</translation>
 <translation id="1644574205037202324">Historique</translation>
+<translation id="1644969410150602449">Afficher votre historique Web ici</translation>
 <translation id="1657932388559784161">La bottom sheet des insights sur la page est fermée</translation>
 <translation id="1670399744444387456">Général</translation>
 <translation id="1671236975893690980">Téléchargement en attente…</translation>
@@ -250,6 +251,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="2364539095045928896">Bouton "Fermer" pour fermer l'avis de confidentialité du centre des insights sur la page.</translation>
 <translation id="2386938421315164605">Masquer et afficher les thèmes</translation>
 <translation id="2390510615457643724">Voulez-vous retélécharger <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ?</translation>
+<translation id="2395004545133500011">Partager avec la fiche récapitulative ouverte</translation>
 <translation id="2410754283952462441">Sélectionner un compte</translation>
 <translation id="2414886740292270097">Sombre</translation>
 <translation id="2421705177906985956">Aucun site à afficher pour l'instant</translation>
@@ -364,6 +366,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="2942036813789421260">L'onglet "Aperçu" est fermé</translation>
 <translation id="2946420957526726953">Mise à jour de Chrome pour la connexion à d'autres appareils…</translation>
 <translation id="2951071800649516099">Ajoutez des pages à votre liste de lecture pour plus tard</translation>
+<translation id="2956070106555335453">Résumé</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page non lue}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page non lue}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pages non lues}}</translation>
 <translation id="296370266220139811">Saisissez vos recherches plus rapidement</translation>
 <translation id="2977350910003566746">Tri par les derniers ouverts</translation>
@@ -643,6 +646,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Favori enregistré dans "<ph name="FOLDER_NAME" />". Il n'est enregistré que sur cet appareil.}one{Favori enregistré dans "<ph name="FOLDER_NAME" />". Il n'est enregistré que sur cet appareil.}other{Favoris enregistrés dans "<ph name="FOLDER_NAME" />". Ils ne sont enregistrés que sur cet appareil.}}</translation>
 <translation id="4484496141267039529">Aucune connexion. Réessayez plus tard.</translation>
 <translation id="4487967297491345095">Toutes les données de l'application Chrome seront supprimées de façon définitive, y compris les fichiers, paramètres, comptes, bases de données, etc.</translation>
+<translation id="4489640160615759754">Partager avec la fiche récapitulative</translation>
 <translation id="4494806687727322324">Votre administrateur a activé l'enregistrement des mots de passe</translation>
 <translation id="4508528996305412043">Le menu de la carte de flux est ouvert</translation>
 <translation id="4509501256689523862">Le fait que vous voyiez ou non des annonces personnalisées lorsque vous naviguez sur Internet dépend de ce paramètre, des <ph name="BEGIN_LINK_1" />thèmes des annonces<ph name="END_LINK_1" />, de vos <ph name="BEGIN_LINK_2" />paramètres relatifs aux cookies<ph name="END_LINK_2" /> et du comportement du site que vous consultez en matière de personnalisation</translation>
@@ -652,6 +656,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="4521489764227272523">Les données sélectionnées ont été supprimées de Chrome et des appareils synchronisés.
 
 Votre compte Google conserve peut-être d'autres contenus d'historique de navigation sur la page <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> concernant, par exemple, vos recherches ou vos activités via d'autres services Google.</translation>
+<translation id="452279259461584111">Partager avec la fiche récapitulative fermée</translation>
 <translation id="4523326818319942067">dernière heure</translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4532845899244822526">Sélectionner un dossier</translation>
@@ -749,6 +754,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4950924971025849764">Lorsque vous êtes connecté au même compte Google, d'autres appareils peuvent utiliser ce téléphone comme clé de sécurité.</translation>
 <translation id="4957722034734105353">En savoir plus…</translation>
 <translation id="4961107849584082341">Traduire cette page dans n'importe quelle langue</translation>
+<translation id="496607651705915226">Pour enregistrer et utiliser de nouveaux mots de passe dans votre compte Google, mettez à jour les services Google Play</translation>
 <translation id="4971735654804503942">Ce mode offre une protection proactive et plus rapide contre les téléchargements, les extensions et les sites Web dangereux. Il vous permet d'être averti en cas de piratage de mots de passe et nécessite d'envoyer les données de navigation à Google.</translation>
 <translation id="497421865427891073">Avancer</translation>
 <translation id="4987271110129728827">Page introuvable. Vérifiez l'orthographe ou effectuez une recherche sur le Web.</translation>

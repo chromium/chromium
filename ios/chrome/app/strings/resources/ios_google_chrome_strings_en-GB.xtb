@@ -140,7 +140,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4831642696589369971">Some of your Chrome data hasn't been saved in your Google Account yet.
 
         Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
-<translation id="4834499902900503484">When you're signed in to Chrome, passwords that you save will go in your Google Account. To turn this off, <ph name="BEGIN_LINK" />go to settings<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Not supported on Chrome beta</translation>
 <translation id="4840404732697892756">Google Password Manager can check your passwords when you sign in with your Google Account.</translation>
 <translation id="4856636171409137183">To get the most personalised experience, include Chrome in <ph name="FEATURE_NAME_1" /> and <ph name="FEATURE_NAME_2" /></translation>

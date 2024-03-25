@@ -140,7 +140,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4831642696589369971">Teatud Chrome’i andmeid pole veel teie Google’i kontole salvestatud.
 
         Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andmed kustutatakse.</translation>
-<translation id="4834499902900503484">Kui olete Chrome’i sisse logitud, salvestatakse paroolid teie Google’i kontole. Selle väljalülitamiseks <ph name="BEGIN_LINK" />avage seaded<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Ei toetata Chrome'i beetaversioonis</translation>
 <translation id="4840404732697892756">Google'i paroolihaldur saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga.</translation>
 <translation id="4856636171409137183">Kõige isikupärastatud kasutuskogemuse saamiseks lisage Chrome funktsioonidesse <ph name="FEATURE_NAME_1" /> ja <ph name="FEATURE_NAME_2" /></translation>

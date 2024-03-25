@@ -140,7 +140,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="4831642696589369971">Niektoré údaje Chromu zatiaľ neboli uložené vo vašom účte Google.
 
         Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tieto údaje budú odstránené.</translation>
-<translation id="4834499902900503484">Keď sa prihlásite do Chromu, heslá sa budú ukladať do vášho účtu Google. Ak chcete túto možnosť vypnúť, <ph name="BEGIN_LINK" />prejdite do nastavení<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Nepodporované vo verzii Chrome Beta</translation>
 <translation id="4840404732697892756">Správca hesiel môže kontrolovať heslá, keď sa prihlásite účtom Google.</translation>
 <translation id="4856636171409137183">Ak chcete mať k dispozícii najprispôsobenejšie prostredie, zahrňte Chrome do funkcií <ph name="FEATURE_NAME_1" /> a <ph name="FEATURE_NAME_2" /></translation>

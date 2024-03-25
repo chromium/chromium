@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Ocultar por ahora</translation>
 <translation id="1219674500290482172">No se ha podido establecer conexión a Internet.</translation>
-<translation id="1226238226094914652">Contraseñas en todos tus dispositivos</translation>
 <translation id="122699739164161391">Cerrar todas las pestañas</translation>
 <translation id="1227866575467023566">{count,plural, =1{Página añadida a la lista de lectura de tu cuenta ({email})}other{{count} páginas añadidas a la lista de lectura de tu cuenta ({email})}}</translation>
 <translation id="1242044645101871359">Vuelve a iniciar sesión</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Seguir</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="164673457281113247">{count,plural, =1{Marcador guardado}other{Marcadores guardados}}</translation>
-<translation id="165008673352427892">Nueva función</translation>
 <translation id="1650222530560417226">Toca el botón Iniciar registro para recopilar futuros registros y errores de la consola de JavaScript en todas las pestañas. Los registros se recopilarán (y solo se almacenarán en la memoria) hasta que cierres la página o toques el botón Detener registro.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} contraseña guardada disponible encima del teclado.}other{{count} contraseñas guardadas disponibles encima del teclado.}}</translation>
 <translation id="1657011748321897393">Error al compartir contenido porque no estás conectado a la red</translation>
@@ -302,7 +300,6 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2556092377360758201">Sin protección (no recomendado)</translation>
 <translation id="2561375093019333908">ABRIR</translation>
 <translation id="2562041823070056534">Enviando a <ph name="DEVICE_NAME" />...</translation>
-<translation id="2576499762020411840">Usar y guardar contraseñas en tu cuenta de Google</translation>
 <translation id="2577522251608256362">Barrio</translation>
 <translation id="2578571896248130439">Enviar página web</translation>
 <translation id="2584132361465095047">Añadir cuenta…</translation>
@@ -948,7 +945,6 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5850913622988109693">Opciones para hacer el seguimiento de paquetes</translation>
 <translation id="5854790677617711513">Más de 30 días</translation>
 <translation id="5857090052475505287">Nueva carpeta</translation>
-<translation id="5857361196621230935">Añadir pestaña al grupo</translation>
 <translation id="5857770089550859117">Se requiere una frase de contraseña para iniciar la sincronización.</translation>
 <translation id="5859715514067755465">Avanzar</translation>
 <translation id="5860033963881614850">Desactivado</translation>
@@ -1159,7 +1155,6 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="6800349425672670802">Puedes acceder a todas las pestañas abiertas desde la Función de cambio de pestaña.</translation>
 <translation id="6807889908376551050">Mostrar todo...</translation>
 <translation id="681368974849482173">Elemento creado</translation>
-<translation id="6822587385560699678">Si esta opción está activada, las contraseñas se guardan en <ph name="ACCOUNT" />. Si está desactivada, las contraseñas solo se guardan en este dispositivo.</translation>
 <translation id="6824350924364057989">Ajustes</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6842136130964845393">Verifica tu identidad para asegurarte de que siempre tengas acceso a tus contraseñas guardadas</translation>

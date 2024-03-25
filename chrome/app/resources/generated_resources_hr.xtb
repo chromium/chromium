@@ -3509,6 +3509,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3660234220361471169">Nepouzdano</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Pronađena je 1 postojeća zaporka}one{Pronađena je {NUM_PASSWORDS} postojeća zaporka}few{Pronađene su {NUM_PASSWORDS} postojeće zaporke}other{Pronađeno je {NUM_PASSWORDS} postojećih zaporki}}</translation>
 <translation id="3662207097851752847">Potvrdite Google račun na telefonu</translation>
+<translation id="3663417513679360795">Više informacija o uključivanju standardnog predučitavanja</translation>
 <translation id="3664511988987167893">Ikona proširenja</translation>
 <translation id="3665100783276035932">Većina web-lokacija trebala bi funkcionirati u skladu s očekivanjima</translation>
 <translation id="3665301845536101715">Otvori na bočnoj ploči</translation>
@@ -3598,6 +3599,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3720543739123045680">Ostale kartice dijele postupak s ovom karticom, što može rezultirati neočekivanim doživljajem razvojnih alata.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Vi i Google</translation>
+<translation id="3721178866505920080">Više informacija o uključivanju proširenog predučitavanja</translation>
 <translation id="3722108462506185496">Došlo je do pogreške prilikom pokretanja usluge virtualnog računala. Pokušajte ponovo.</translation>
 <translation id="3722624153992426516">Primljena je uputa <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3724897774652282549">Ispunjavanje obrasca</translation>
@@ -3715,6 +3717,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3798670284305777884">Zvučnik (ugrađeni)</translation>
 <translation id="3799128412641261490">Postavke navigacije prekidačima</translation>
 <translation id="3800828618615365228">Dodatni uvjeti za Google Chrome i OS Chrome</translation>
+<translation id="3800898876950197674">Da biste dopustili to proširenje, unesite zaporku.</translation>
 <translation id="3802486193901166966">To proširenje ne zahtijeva nikakva posebna dopuštenja i nema dodatni pristup web-lokaciji</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803345858388753269">Kvaliteta videoreprodukcije</translation>
@@ -4586,7 +4589,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4473996011558324141">procjena vremena</translation>
 <translation id="4474155171896946103">Označi sve kartice...</translation>
 <translation id="4475299370877036544">Ova radnja možda krši pravila vaše organizacije</translation>
-<translation id="4475552974751346499">Pretraži preuzimanja</translation>
 <translation id="4476590490540813026">Sportaš</translation>
 <translation id="4476659815936224889">Taj kôd možete skenirati pomoću aplikacije za skeniranje QR kodova na svojem telefonu ili pomoću nekih aplikacija za kamere.</translation>
 <translation id="4477015793815781985">Mora sadržavati Ctrl, Alt ili ⌘</translation>
@@ -8000,6 +8002,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7180611975245234373">Osvježi</translation>
 <translation id="7180865173735832675">Prilagodi</translation>
 <translation id="7181117767881540376">&amp;Sakrij traku oznaka</translation>
+<translation id="7181329571386134105">Da biste djetetu <ph name="CHILD_NAME" /> dopustili da instalira buduća proširenja bez vašeg odobrenja, otvorite aplikaciju Family Link na uređaju i ažurirajte postavke Google Chromea za dijete <ph name="CHILD_NAME" />.</translation>
 <translation id="7182063559013288142">Instant žarišna točka</translation>
 <translation id="7182791023900310535">Premjestite zaporku</translation>
 <translation id="718427252411067142">Da biste drugima onemogućili da upotrebljavaju vašu zaporku, otvorite aplikaciju i promijenite zaporku</translation>
@@ -10556,7 +10559,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="9082750838489080452">Aplikacija: <ph name="APP_NAME" /></translation>
 <translation id="9084064520949870008">Otvori kao prozor</translation>
 <translation id="9085256200913095638">Dupliciraj odabranu karticu</translation>
-<translation id="9085446486797400519">Pristup fotoaparatu</translation>
+<translation id="9085446486797400519">Pristup kameri</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> nije odabran. Za odabir pritisnite Pretraži i razmaknicu.</translation>
 <translation id="9087183943157874068">Prijedloge grupa kartica možete provjeriti kad god želite</translation>
 <translation id="9087949559523851360">Dodavanje ograničenog korisnika</translation>
@@ -10797,6 +10800,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="973558314812359997">Veličina miša</translation>
 <translation id="975893173032473675">Jezik na koji se prevodi</translation>
 <translation id="976499800099896273">Dijaloški okvir za poništavanje automatskog ispravka prikazuje se za riječ <ph name="TYPED_WORD" /> ispravljenu u <ph name="CORRECTED_WORD" />.  Pritisnite strelicu prema gore da biste joj pristupili, Esc da biste je zanemarili.</translation>
+<translation id="976572010712028687">Potvrdite da ste roditelj</translation>
 <translation id="978146274692397928">Početna širina interpunkcije je "puna"</translation>
 <translation id="978978324795544535">Dvaput dodirnite stavku, zadržite pritisak prilikom drugog dodira, a zatim je povucite kako biste je premjestili</translation>
 <translation id="97905529126098460">Ovaj će se prozor zatvoriti nakon što otkazivanje završi.</translation>

@@ -3511,6 +3511,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3665589677786828986">Chrome ayarlarınızdan bəzilərinin digər proqram tərəfindən xarab edildiyini aşkarladı və onları defolt vəziyyətinə sıfırladı.</translation>
 <translation id="3665919494326051362">Cari versiya: <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel WiFi NIC sazlama dampı</translation>
+<translation id="3666971425390608309"><ph name="FILE_NAME" /> endirilməsi durdurulub.</translation>
 <translation id="3670113805793654926">Hər hansı vendordan olan cihazlar</translation>
 <translation id="3670229581627177274">Bluetooth aktivləşdirilsin?</translation>
 <translation id="3670480940339182416">Saytlar V8 optimallaşdırıcısından istifadə edə bilər</translation>
@@ -3710,6 +3711,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3798670284305777884">Spiker (daxili)</translation>
 <translation id="3799128412641261490">Düymə ilə giriş ayarları</translation>
 <translation id="3800828618615365228">Google Chrome və ChromeOS üzrə Əlavə Şərtlər</translation>
+<translation id="3800898876950197674">Bu artırmaya icazə vermək üçün parolunuzu daxil edin.</translation>
 <translation id="3802486193901166966">Bu artırma xüsusi icazələr tələb etmir və əlavə sayt girişi yoxdur</translation>
 <translation id="380329542618494757">Ad</translation>
 <translation id="3803345858388753269">Video Keyfiyyəti</translation>
@@ -4579,7 +4581,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4473996011558324141">vaxt hesablanır</translation>
 <translation id="4474155171896946103">Bütün panelləri əlfəcinləyin...</translation>
 <translation id="4475299370877036544">Bu əməliyyat təşkilatın siyasətini poza bilər</translation>
-<translation id="4475552974751346499">Endirmələri axtarın</translation>
 <translation id="4476590490540813026">Atlet</translation>
 <translation id="4476659815936224889">Bu kodu skan etmək üçün telefonunuzdakı QR skaner tətbiqini və ya bəzi kamera tətbiqlərini istifadə edə bilərsiniz.</translation>
 <translation id="4477015793815781985">Ctrl, Alt və ya ⌘ daxil edin</translation>
@@ -7451,6 +7452,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6758056191028427665">Necə işlədiyimizi bizə bildirin.</translation>
 <translation id="6759193508432371551">Zavod Sıfırlaması</translation>
 <translation id="6760354150216532978">Xəbərdarlıq: bu sayt redaktələri görə bilər</translation>
+<translation id="6761209758867628753">Alət: Yazmağa kömək et</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Cihazda sayt datasına icazə verilməyib</translation>
 <translation id="6762833852331690540">Aktiv</translation>
@@ -7988,6 +7990,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7180611975245234373">Yeniləyin</translation>
 <translation id="7180865173735832675">Fərdiləşdirin</translation>
 <translation id="7181117767881540376">&amp;Əlfəcin panelini gizlədin</translation>
+<translation id="7181329571386134105">Təsdiqiniz olmadan <ph name="CHILD_NAME" /> tərəfindən gələcək artırmaların quraşdırılmasına icazə vermək üçün cihazınızda Family Link tətbiqini açın və <ph name="CHILD_NAME" /> Google Chrome ayarlarını güncəlləyin.</translation>
 <translation id="7182063559013288142">Ani hotspot</translation>
 <translation id="7182791023900310535">Parolunuzu daşıyın</translation>
 <translation id="718427252411067142">Digərlərinin parolunuzdan istifadə etməməsi üçün tətbiqi açaraq parolu dəyişin</translation>
@@ -10780,6 +10783,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="973558314812359997">Maus ölçüsü</translation>
 <translation id="975893173032473675">Tərcümə ediləcək dil</translation>
 <translation id="976499800099896273">Avtodüzəlişin geri qaytarılması dialoqu <ph name="TYPED_WORD" /> sözünün <ph name="CORRECTED_WORD" /> şəklində düzəlişi üçün göstərilir.  Giriş üçün yuxarı oxu, imtina etmək üçün escape düyməsini basın.</translation>
+<translation id="976572010712028687">Valideyn olduğunuzu doğrulayın</translation>
 <translation id="978146274692397928">İnisial punktuasiyası Tamdır</translation>
 <translation id="978978324795544535">Elementi köçürmək üçün ona iki dəfə toxunub saxlayın və sürüşdürün</translation>
 <translation id="97905529126098460">Ləğvetmə tamamlandıqdan sonra bu pəncərə bağlanacaq.</translation>

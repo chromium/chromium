@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">নিরাপদ ব্রাউজিং</translation>
 <translation id="164269334534774161">আপনি <ph name="CREATION_TIME" /> তারিখের এই পৃষ্ঠার একটি অফলাইন কপি দেখছেন</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
+<translation id="1644969410150602449">আপনার ওয়েব ইতিহাস এখানে দেখুন</translation>
 <translation id="1657932388559784161">পেজ ইনসাইট স্ক্রিনের নিচে অ্যাটাচ করা শিট বন্ধ আছে</translation>
 <translation id="1670399744444387456">প্রাথমিক</translation>
 <translation id="1671236975893690980">ডাউনলোড মুলতবি হয়ে আছে...</translation>
@@ -364,6 +365,7 @@
 <translation id="2942036813789421260">প্রিভিউ ট্যাব বন্ধ করা আছে</translation>
 <translation id="2946420957526726953">অন্য ডিভাইসে কানেক্ট করার জন্য Chrome আপডেট করা হচ্ছে</translation>
 <translation id="2951071800649516099">পরে পড়ার জন্য পড়ার তালিকায় পৃষ্ঠা যোগ করুন</translation>
+<translation id="2956070106555335453">সারাংশ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />টি পৃষ্ঠা পড়া হয়নি}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />টি পৃষ্ঠা পড়া হয়নি}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />টি পৃষ্ঠা পড়া হয়নি}}</translation>
 <translation id="296370266220139811">সময় সাশ্রয় ও কম টাইপ করা</translation>
 <translation id="2977350910003566746">শেষবার খোলা হয়েছে অনুযায়ী সাজানো হচ্ছে</translation>
@@ -749,6 +751,7 @@
 <translation id="4950924971025849764">আপনি একই Google অ্যাকাউন্টে সাইন-ইন করলে, অন্যান্য ডিভাইস এই ফোনটিকে নিরাপত্তা কী হিসেবে ব্যবহার করতে পারে।</translation>
 <translation id="4957722034734105353">আরও জানুন...</translation>
 <translation id="4961107849584082341">এই পৃষ্ঠাটি যেকোনও ভাষায় অনুবাদ করুন</translation>
+<translation id="496607651705915226">আপনার Google অ্যাকাউন্টে নতুন পাসওয়ার্ড সেভ ও ব্যবহার করতে, Google Play পরিষেবা আপডেট করুন</translation>
 <translation id="4971735654804503942">ঝুঁকিপূর্ণ ওয়েবসাইট, ডাউনলোড এবং এক্সটেনশনের জন্য আরও দ্রুত, সক্রিয় সুরক্ষা ব্যবস্থা। পাসওয়ার্ড সুরক্ষিত নেই সেই সম্পর্কে আপনাকে জানায়। Google-কে পাঠানোর জন্য ব্রাউজ করা ডেটা প্রয়োজন।</translation>
 <translation id="497421865427891073">অগ্রবর্তী করুন</translation>
 <translation id="4987271110129728827">এই পৃষ্ঠাটি খুঁজে পাওয়া যাচ্ছে না। আপনার লেখা বানান চেক করুন বা ওয়েব সার্চ করুন।</translation>

@@ -3521,12 +3521,14 @@
 <translation id="3660234220361471169">अविश्वसनीय</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 मौजूदा पासवर्ड मिला}one{{NUM_PASSWORDS} मौजूदा पासवर्ड मिला}other{{NUM_PASSWORDS} मौजूदा पासवर्ड मिले}}</translation>
 <translation id="3662207097851752847">अपने फ़ोन पर Google खाते की पुष्टि करें</translation>
+<translation id="3663417513679360795">पहले से लोड करने की स्टैंडर्ड सुविधा को चालू करने के बारे में ज़्यादा जानकारी</translation>
 <translation id="3664511988987167893">एक्सटेंशन आइकॉन</translation>
 <translation id="3665100783276035932">ज़्यादातर साइटों को उम्मीद के मुताबिक काम करना चाहिए</translation>
 <translation id="3665301845536101715">साइड पैनल में खोलें</translation>
 <translation id="3665589677786828986">Chrome को पता चला है कि आपकी कुछ सेटिंग किसी दूसरे प्रोग्राम के द्वारा दूषित कर दी गई हैं और उन्हें उनके मूल डिफ़ॉल्ट पर रीसेट कर दिया गया है.</translation>
 <translation id="3665919494326051362">मौजूदा वर्शन <ph name="CURRENT_VERSION" /> है</translation>
 <translation id="3666196264870170605">Intel के वाई-फ़ाई एनआईसी का डीबग डंप</translation>
+<translation id="3666971425390608309">डाउनलोड रोका गया: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">किसी भी विक्रेता के डिवाइस</translation>
 <translation id="3670229581627177274">ब्लूटूथ चालू करें</translation>
 <translation id="3670480940339182416">साइटें, V8 ऑप्टिमाइज़र का इस्तेमाल कर सकती हैं</translation>
@@ -3609,6 +3611,7 @@
 <translation id="3720543739123045680">इस टैब के साथ अन्य टैब कोई प्रोसेस शेयर करते हैं. इस वजह से, DevTools में आपको अचानक समस्या आ सकती है.</translation>
 <translation id="372062398998492895">CUPS प्रिंटर</translation>
 <translation id="3721119614952978349">आप और Google</translation>
+<translation id="3721178866505920080">पहले से लोड करने की एक्सटेंडेड सुविधा को चालू करने के बारे में ज़्यादा जानकारी</translation>
 <translation id="3722108462506185496">वर्चुअल मशीन सेवा शुरू करने में गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> निर्देश मिला</translation>
 <translation id="3724897774652282549">फ़ॉर्म भरें</translation>
@@ -3724,6 +3727,7 @@
 <translation id="3798670284305777884">स्पीकर (आंतरिक)</translation>
 <translation id="3799128412641261490">ऐक्सेस करने का तरीका बदलने की सेटिंग</translation>
 <translation id="3800828618615365228">Google Chrome और ChromeOS की दूसरी शर्तें</translation>
+<translation id="3800898876950197674">इस एक्सटेंशन को अनुमति देने के लिए, अपना पासवर्ड डालें.</translation>
 <translation id="3802486193901166966">इस एक्सटेंशन के लिए खास अनुमतियों की ज़रूरत नहीं है. साथ ही, इसमें किसी दूसरी साइट का ऐक्सेस भी नहीं है.</translation>
 <translation id="380329542618494757">नाम</translation>
 <translation id="3803345858388753269">वीडियो की क्वालिटी</translation>
@@ -4593,7 +4597,6 @@
 <translation id="4473996011558324141">लगने वाला अनुमानित समय</translation>
 <translation id="4474155171896946103">सभी टैब बुकमार्क करें...</translation>
 <translation id="4475299370877036544">इस कार्रवाई से आपके संगठन की नीतियों का उल्लंघन हो सकता है</translation>
-<translation id="4475552974751346499">डाउनलोड खोजें</translation>
 <translation id="4476590490540813026">एथलीट</translation>
 <translation id="4476659815936224889">इस कोड को स्कैन करने के लिए, आप अपने फ़ोन पर क्यूआर स्कैनर या कुछ कैमरा ऐप्लिकेशन का इस्तेमाल कर सकते हैं.</translation>
 <translation id="4477015793815781985">Ctrl, Alt या ⌘ को शामिल करें</translation>
@@ -7464,6 +7467,7 @@
 <translation id="6758056191028427665">हमें बताएं कि हम कैसा प्रदर्शन कर रहे हैं.</translation>
 <translation id="6759193508432371551">फैक्टरी रीसेट करें</translation>
 <translation id="6760354150216532978">चेतावनी: यह साइट आपके किए गए बदलाव देख सकती है</translation>
+<translation id="6761209758867628753">टूल: लिखने में मेरी मदद करो</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">डिवाइस पर मौजूद साइट डेटा को सेव करने की अनुमति नहीं है</translation>
 <translation id="6762833852331690540">चालू है</translation>
@@ -8002,6 +8006,7 @@
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7180865173735832675">पसंद के मुताबिक बनाएं</translation>
 <translation id="7181117767881540376">बुकमार्क बार छिपाएं</translation>
+<translation id="7181329571386134105">आने वाले समय में, <ph name="CHILD_NAME" /> को आपकी अनुमति के बिना एक्सटेंशन इंस्टॉल करने की अनुमति देने के लिए, अपने डिवाइस पर Family Link ऐप्लिकेशन खोलें और <ph name="CHILD_NAME" /> के लिए Google Chrome की सेटिंग अपडेट करें.</translation>
 <translation id="7182063559013288142">इंस्टैंट हॉटस्पॉट</translation>
 <translation id="7182791023900310535">अपने पासवर्ड को खाते में ले जाएं</translation>
 <translation id="718427252411067142">आपका पासवर्ड अन्य लोग इस्तेमाल न कर सकें, इसके लिए ऐप्लिकेशन खोलें और अपना पासवर्ड बदलें</translation>
@@ -10791,6 +10796,7 @@
 <translation id="973558314812359997">कर्सर को बड़ा करने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="975893173032473675">वह भाषा जिसमें अनुवाद करना है</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" /> को सही करके <ph name="CORRECTED_WORD" /> किया गया, जिसके लिए 'ऑटो करेक्ट को पहले जैसा करें' डायलॉग दिखाया गया.  ऐक्सेस करने के लिए 'अप ऐरो', अनदेखा करने के लिए escape दबाएं.</translation>
+<translation id="976572010712028687">पुष्टि करें कि आप माता, पिता या अभिभावक हैं</translation>
 <translation id="978146274692397928">आरंभिक विराम-चिह्न चौड़ाई पूर्ण है</translation>
 <translation id="978978324795544535">किसी आइटम पर दो बार टैप करें और दूसरे टैप पर दबाकर रखें. इसके बाद, आइटम को खींचकर दूसरी जगह ले जाएं</translation>
 <translation id="97905529126098460">रद्द किए जाने के बाद यह विंडो बंद हो जाएगी.</translation>

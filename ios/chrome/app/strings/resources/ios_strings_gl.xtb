@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Ocultar por agora</translation>
 <translation id="1219674500290482172">Non se puido conectar a Internet.</translation>
-<translation id="1226238226094914652">Contrasinais en todos os teus dispositivos</translation>
 <translation id="122699739164161391">Pechar todas as pestanas</translation>
 <translation id="1227866575467023566">{count,plural, =1{Engadiuse a páxina á túa lista de lectura da conta {email}}other{Engadíronse {count} páxinas á túa lista de lectura da conta {email}}}</translation>
 <translation id="1242044645101871359">Inicia sesión de novo</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Seguir</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="164673457281113247">{count,plural, =1{Gardouse o marcador}other{Gardáronse os marcadores}}</translation>
-<translation id="165008673352427892">Nova función</translation>
 <translation id="1650222530560417226">Toca o botón Iniciar o rexistro; obterás rexistros e erros futuros da consola de JavaScript procedentes de todas as pestanas. Os rexistros compilaranse (e almacenaranse só na memoria) ata que se peche a páxina ou se toque o botón Deter rexistro.</translation>
 <translation id="1653432787084483144">{count,plural, =1{Hai {count} contrasinal gardado dispoñible sobre o teclado.}other{Hai {count} contrasinais gardados dispoñibles sobre o teclado.}}</translation>
 <translation id="1657011748321897393">Non se puido compartir porque non tes conexión á rede.</translation>
@@ -302,7 +300,6 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2556092377360758201">Sen protección (non recomendado)</translation>
 <translation id="2561375093019333908">ABRIR</translation>
 <translation id="2562041823070056534">Enviando pestana a <ph name="DEVICE_NAME" />…</translation>
-<translation id="2576499762020411840">Usar e gardar contrasinais da túa Conta de Google</translation>
 <translation id="2577522251608256362">Barrio</translation>
 <translation id="2578571896248130439">Enviar páxina web</translation>
 <translation id="2584132361465095047">Engadir conta...</translation>
@@ -948,7 +945,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5850913622988109693">Opcións para facer un seguimento dos paquetes</translation>
 <translation id="5854790677617711513">Con máis de 30 días</translation>
 <translation id="5857090052475505287">Novo cartafol</translation>
-<translation id="5857361196621230935">Engadir pestana ao grupo</translation>
 <translation id="5857770089550859117">Introduce a frase de acceso para iniciar a sincronización.</translation>
 <translation id="5859715514067755465">Avanzar</translation>
 <translation id="5860033963881614850">Non</translation>
@@ -1159,7 +1155,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6800349425672670802">Podes acceder todas as pestanas abertas desde o selector de pestanas.</translation>
 <translation id="6807889908376551050">Mostrar todas...</translation>
 <translation id="681368974849482173">Creouse o elemento</translation>
-<translation id="6822587385560699678">Cando a opción estea activada, os contrasinais gardaranse en <ph name="ACCOUNT" />. Se está desactivada, gardaranse só neste dispositivo.</translation>
 <translation id="6824350924364057989">Configuración</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6842136130964845393">Para asegurarte de poder acceder sempre aos contrasinais que teñas gardados, verifica a túa identidade</translation>

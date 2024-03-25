@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">Мабільная сетка адсутнічае</translation>
 <translation id="1882897271359938046">Выконваецца адлюстраванне на дысплэй <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Разблакіроўка па адбітку пальца</translation>
+<translation id="1904997243703671177">Пасля гэтага ад вашай прылады <ph name="DEVICE_TYPE" /> будуць адключаны знешнія прылады (<ph name="DEVICE_COUNT" />), у тым ліку:</translation>
 <translation id="1908992311423394684">Усталявана нядаўна</translation>
 <translation id="1915307458270490472">Закрыць</translation>
 <translation id="1918022425394817322">Акно перадпрагляду камеры прывязана да правага верхняга вугла</translation>
@@ -258,7 +259,6 @@
 <translation id="2017998995161831444">Адкрыць даведку ў праграме "Агляд"</translation>
 <translation id="2018630726571919839">Раскажы мне жарт</translation>
 <translation id="2021864487439853900">Націсніце, каб разблакіраваць</translation>
-<translation id="2023558322300866873">Спыніць захоп пакетаў можна ў любы момант</translation>
 <translation id="2034971124472263449">Усё роўна захаваць</translation>
 <translation id="204259843076055848">Зараз спалучэнне клавіш для дзеяння "<ph name="SIX_PACK_KEY_NAME" />" выключана</translation>
 <translation id="2049240716062114887">Назва працоўнага стала зменена на наступную: <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="2484513351006226581">Каб пераключыць раскладку клавіятуры, націсніце <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2486214324139475545">Перадпрагляд працоўнага стала "<ph name="DESK_NAME" />". Актыўны працоўны стол.</translation>
+<translation id="2486405091093637109">Вы змянілі раздзяляльнасць дысплэя "<ph name="DISPLAY_NAME" />" на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Калі вы не пацвердзіце змяненне, будуць адноўлены папярэднія налады. Засталося часу: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Далучыцца</translation>
 <translation id="2499445554382787206">Меню профілю працоўнага стала. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Заліпанне клавіш</translation>
@@ -699,7 +700,6 @@
 <translation id="380165613292957338">Вітаю! Чым магу дапамагчы?</translation>
 <translation id="3804737937830804242">Згарнуць кнопку камеры</translation>
 <translation id="3824784079442479685">Доступ да камеры атрымае праграма "<ph name="APP_NAME" />" і ўсе праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць камеру. Магчыма, трэба будзе абнавіць вэб-старонку або перазапусціць праграму.</translation>
-<translation id="3825680296690914697">Здадзена: <ph name="NUM_TURNED_IN" /> з <ph name="TOTAL_NUM_OF_SUBMISSIONS" />. Праверана: <ph name="NUM_GRADED" />.</translation>
 <translation id="3826099427150913765">Пераключыцца на пароль</translation>
 <translation id="383058930331066723">Рэжым энергазберажэння ўключаны</translation>
 <translation id="383629559565718788">Паказаць налады клавіятуры</translation>
@@ -763,7 +763,6 @@
 <translation id="4066027111132117168">Уключана, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Адкрыць старонку "Спампоўкі"</translation>
 <translation id="4072264167173457037">Умераны сігнал</translation>
-<translation id="4076455981957565732">Здадзена: <ph name="NUM_TURNED_IN" /> з <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Атрымала ацэнку: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Пераключыце фізічны выключальнік мікрафона на прыладзе</translation>
 <translation id="4101772068965291327">Адкрыць галоўную старонку</translation>
 <translation id="4112140312785995938">Перайсці назад</translation>
@@ -959,6 +958,7 @@
 <translation id="4813311884204119883">Перацягніце спасылку на пустое месца на панэлі ўкладак</translation>
 <translation id="4814539958450445987">Экран уваходу</translation>
 <translation id="481455355267255546">Будучыя падзеі</translation>
+<translation id="481749895090480684">Спіс задач: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">камеру і мікрафон</translation>
 <translation id="482908187605862807">Даступныя праграмы з Крамы Play</translation>
 <translation id="4831034276697007977">Сапраўды выключыць аўтаматычныя націсканні?</translation>
@@ -1000,6 +1000,7 @@
 <translation id="4952936045814352993">Функцыя "Знайсці тэлефон" недаступная, бо вы адключылі гукі будзільніка</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> патрабуе, каб выканалі адкат на прыладзе <ph name="DEVICE_TYPE" />. Налады прылады будуць скінуты, а ўсе даныя выдалены.</translation>
 <translation id="4961318399572185831">Трансляцыя экрана</translation>
+<translation id="4964188651935955085">Пасля гэтага ад вашай прылады <ph name="DEVICE_TYPE" /> будзе адключана наступная знешняя прылада:</translation>
 <translation id="4966431234408005599">Павялічыць гучнасць</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> гадз <ph name="MINUTES" /> хв <ph name="SECONDS" /> с</translation>
 <translation id="4975771730019223894">Значкі колькасці апавяшчэнняў у праграмах</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5062496344832867502">аператыўная памяць</translation>
 <translation id="5068762093486106012">Вы атрымаеце апавяшчэнне, калі будзеце размаўляць з выключаным гукам. Аўдыязапісы захоўваюцца толькі на вашай прыладзе і нікуды не адпраўляюцца.</translation>
 <translation id="5077416371682039027">Наладзіць прагляд нядаўніх фота, медыяфайлаў, апавяшчэнняў і праграм з тэлефона</translation>
+<translation id="5077936103761694531">Пацвердзіць раздзяляльнасць?</translation>
 <translation id="5078796286268621944">Няправільны PIN-код</translation>
 <translation id="5083035541015925118">Ctrl + Alt + стрэлка ўверх</translation>
 <translation id="5083553833479578423">Адкрыйце больш функцый Памочніка.</translation>
@@ -1676,6 +1678,7 @@
 <translation id="7647488630410863958">Каб прагледзець апавяшчэнні, разблакіруйце прыладу</translation>
 <translation id="7649070708921625228">Даведка</translation>
 <translation id="7654687942625752712">Каб выключыць галасавую зваротную сувязь, націсніце і ўтрымлівайце на працягу пяці секунд абедзве клавішы гучнасці.</translation>
+<translation id="7654916369822103315">Вы змянілі раздзяляльнасць дысплэя "<ph name="DISPLAY_NAME" />" на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц). З-за абмежаванай паласы прапускання порта дысплэй не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц). Калі вы не пацвердзіце змяненне, будуць адноўлены папярэднія налады. Засталося часу: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7659861092419699379">Працоўны стол і вокны закрыты</translation>
 <translation id="7660160718439869192">Прылада "<ph name="NAME" />" з'явіцца ў спісе прылад, звязаных з адрасам <ph name="EMAIL" /></translation>
@@ -1766,6 +1769,7 @@
 <translation id="7945357288295809525">Паказаць налады спецыяльных магчымасцей, уключана: "<ph name="ENABLED_FEATURES" />".</translation>
 <translation id="7947798320695032612">Праграма "<ph name="APP_NAME" />" спрабуе выкарыстаць наступную прыладу: <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Паменшыць яркасць клавіятуры</translation>
+<translation id="7953994493035617347">Пацвердзіць новую раздзяляльнасць?</translation>
 <translation id="7963689218131240420">Рэжым "Не турбаваць" выключаны.</translation>
 <translation id="7963992254934562106">Крыніца: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Выбраць папку...</translation>
@@ -1824,6 +1828,7 @@
 <translation id="8155628902202578800">Адкрыць дыялогавае акно інфармацыі аб уліковым запісе <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Выкарыстоўваецца <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Уключыць або выключыць меню рэжыму блакіроўкі змянення памеру</translation>
+<translation id="8192727139462702395">Пасля гэтага ад вашай прылады <ph name="DEVICE_TYPE" /> будуць адключаны наступныя знешнія прылады:</translation>
 <translation id="8198456017687137612">Ідзе трансляцыя ўкладкі</translation>
 <translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8203795194971602413">Націсканне правай клавішай мышы</translation>

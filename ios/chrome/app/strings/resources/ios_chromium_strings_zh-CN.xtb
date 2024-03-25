@@ -248,7 +248,6 @@
 <translation id="78025249032851484">您的 Chromium 版本过旧。</translation>
 <translation id="7859018312476869945">当您在地址栏或搜索框中输入内容时，Chromium 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="786327964234957808">您正要将同步账号从 <ph name="USER_EMAIL1" /> 切换到 <ph name="USER_EMAIL2" />。您现有的 Chromium 数据由 <ph name="DOMAIN" /> 管理。切换同步账号后，您的数据将从这台设备上删除，但仍会保留在 <ph name="USER_EMAIL1" /> 中。</translation>
-<translation id="7865408467687426957">登录 Chromium 后，您保存的密码会保存到您的 Google 账号中。如需关闭此设置，请<ph name="BEGIN_LINK" />前往“设置”<ph name="END_LINK" />。</translation>
 <translation id="7890287942691234100">开始使用 Chromium 扫描器</translation>
 <translation id="7905064834449738336">当您使用某个密码时，如果 Chromium 发现它已被在线发布，就会向您发出警告。当 Chromium 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
 <translation id="7911732829884437264">默认使用 Chromium</translation>

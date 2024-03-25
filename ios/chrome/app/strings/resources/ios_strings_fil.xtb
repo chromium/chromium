@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">5:30 PM</translation>
 <translation id="1209206284964581585">Itago sa ngayon</translation>
 <translation id="1219674500290482172">Hindi makakonekta sa Internet.</translation>
-<translation id="1226238226094914652">Mga Password sa Lahat ng Iyong Device</translation>
 <translation id="122699739164161391">Isara ang Lahat ng Tab</translation>
 <translation id="1227866575467023566">{count,plural, =1{Naidagdag ang page sa iyong listahan ng babasahin sa account mo na {email}}one{Naidagdag ang {count} Page sa iyong listahan ng babasahin sa account mo na {email}}other{Naidagdag ang {count} na Page sa iyong listahan ng babasahin sa account mo na {email}}}</translation>
 <translation id="1242044645101871359">Mag-sign In Ulit</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Subaybayan</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="164673457281113247">{count,plural, =1{Na-save ang bookmark}one{Bookmark ang na-save}other{na Bookmark ang na-save}}</translation>
-<translation id="165008673352427892">Bagong feature</translation>
 <translation id="1650222530560417226">I-tap ang button na "Simulang Mag-log" para kolektahin ang mga log ng JavaScript console at error mula sa lahat ng tab sa hinaharap. Kokolektahin (at iso-store lang sa memory) ang mga log hanggang sa isara ang page na ito o i-tap ang "Huminto sa Pag-log."</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} na-save na password ang available sa itaas ng iyong keyboard.}one{{count} na-save na password ang available sa itaas ng iyong keyboard.}other{{count} na na-save na password ang available sa itaas ng iyong keyboard.}}</translation>
 <translation id="1657011748321897393">Nabigo ang pagbabahagi dahil hindi ka nakakonekta sa network.</translation>
@@ -302,7 +300,6 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2556092377360758201">Walang Proteksyon (hindi inirerekomenda)</translation>
 <translation id="2561375093019333908">BUKSAN</translation>
 <translation id="2562041823070056534">Ipinapadala sa <ph name="DEVICE_NAME" />...</translation>
-<translation id="2576499762020411840">Gumamit at Mag-save ng Mga Password sa Iyong Google Account</translation>
 <translation id="2577522251608256362">Kapitbahayan</translation>
 <translation id="2578571896248130439">Magpadala ng Webpage</translation>
 <translation id="2584132361465095047">Magdagdag ng Account…</translation>
@@ -948,7 +945,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5850913622988109693">Mga Opsyon para Masubaybayan ang Mga Package</translation>
 <translation id="5854790677617711513">Mas matagal sa 30 araw</translation>
 <translation id="5857090052475505287">Bagong Folder</translation>
-<translation id="5857361196621230935">Magdagdag ng Tab sa Grupo</translation>
 <translation id="5857770089550859117">Kinakailangan ang passphrase upang masimulan ang pag-sync.</translation>
 <translation id="5859715514067755465">I-forward</translation>
 <translation id="5860033963881614850">Naka-off</translation>
@@ -1159,7 +1155,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="6800349425672670802">Maa-access mo ang lahat ng iyong nakabukas na tab sa Tab Switcher.</translation>
 <translation id="6807889908376551050">Ipakita Lahat...</translation>
 <translation id="681368974849482173">Nagawa ang item</translation>
-<translation id="6822587385560699678">Kapag naka-on, mase-save ang mga password sa <ph name="ACCOUNT" />. Kapag naka-off, mase-save lang ang mga password sa device na ito.</translation>
 <translation id="6824350924364057989">Mga Setting</translation>
 <translation id="6831043979455480757">Isalin</translation>
 <translation id="6842136130964845393">Para matiyak na maa-access mo anumang oras ang iyong mga naka-save na password, i-verify na ikaw ito</translation>

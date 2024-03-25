@@ -3522,12 +3522,14 @@
 <translation id="3660234220361471169">Недоверливи</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Најдена е 1 постојна лозинка}one{Најдени се {NUM_PASSWORDS} постојна лозинка}other{Најдени се {NUM_PASSWORDS} постојни лозинки}}</translation>
 <translation id="3662207097851752847">Потврдете ја вашата сметка на Google на телефонот</translation>
+<translation id="3663417513679360795">Повеќе детали за вклучувањето „Стандардно вчитување однапред“</translation>
 <translation id="3664511988987167893">Икона за екстензијата</translation>
 <translation id="3665100783276035932">Повеќето сајтови би требало да функционираат според очекувањата</translation>
 <translation id="3665301845536101715">Отвори во страничната табла</translation>
 <translation id="3665589677786828986">Chrome откри дека некои од поставките на прелистувачот ги оштетила друга програма и ги ресетирала на првичните стандардни вредности.</translation>
 <translation id="3665919494326051362">Тековната верзија е <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Меморија за отстранување грешки на NICs на Wi-Fi на Intel</translation>
+<translation id="3666971425390608309">Преземањето е паузирано: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Уреди од кој било продавач</translation>
 <translation id="3670229581627177274">Вклучете Bluetooth</translation>
 <translation id="3670480940339182416">Сајтовите може да го користат оптимизаторот на V8</translation>
@@ -3610,6 +3612,7 @@
 <translation id="3720543739123045680">Другите картички споделуваат процес со оваа картичка, што може да доведе до неочекувано доживување со „Алатките за програмери“.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Вие и Google</translation>
+<translation id="3721178866505920080">Повеќе детали за вклучувањето „Проширено вчитување однапред“</translation>
 <translation id="3722108462506185496">Грешка при стартувањето на услугата за виртуелна машина. Обидете се повторно.</translation>
 <translation id="3722624153992426516">Примени се упатства од <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3724897774652282549">Пополнување формулар</translation>
@@ -3727,6 +3730,7 @@
 <translation id="3798670284305777884">Звучник (внатрешен)</translation>
 <translation id="3799128412641261490">Поставки за „Пристап со прекинувачи“</translation>
 <translation id="3800828618615365228">Дополнителни услови на Google Chrome и ChromeOS</translation>
+<translation id="3800898876950197674">За да ја дозволите екстензијава, внесете ја вашата лозинка.</translation>
 <translation id="3802486193901166966">Екстензијава не бара специјални дозволи и нема пристап до дополнителен сајт</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803345858388753269">Квалитет на видеото</translation>
@@ -4598,7 +4602,6 @@
 <translation id="4473996011558324141">се пресметува времетраењето</translation>
 <translation id="4474155171896946103">Обележи ги сите картички</translation>
 <translation id="4475299370877036544">Дејствово можеби ќе ги прекрши правилата на вашата организација</translation>
-<translation id="4475552974751346499">Барај преземања</translation>
 <translation id="4476590490540813026">Атлетичарка</translation>
 <translation id="4476659815936224889">За да го скенирате кодов, може да користите апликација за QR-скенер на вашиот телефон или некои апликации за камера.</translation>
 <translation id="4477015793815781985">Опфатете Ctrl, Alt или ⌘</translation>
@@ -7475,6 +7478,7 @@
 <translation id="6758056191028427665">Оценете ја нашата работа.</translation>
 <translation id="6759193508432371551">Ресетирање до фабрички вредности</translation>
 <translation id="6760354150216532978">Предупредување: сајтов може да гледа измените што ги вршите</translation>
+<translation id="6761209758867628753">Алатка: Помогни ми да напишам</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6761623907967804682">Не се дозволени податоци од сајт на уредот</translation>
 <translation id="6762833852331690540">Вклучено</translation>
@@ -8012,6 +8016,7 @@
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7180865173735832675">Приспособи</translation>
 <translation id="7181117767881540376">Скриј ја лентата со обележувачи</translation>
+<translation id="7181329571386134105">За да дозволите <ph name="CHILD_NAME" /> да инсталира екстензии без ваше одобрување во иднина, отворете ја апликацијата Family Link на вашиот уред и променете ги поставките за Google Chrome на <ph name="CHILD_NAME" />.</translation>
 <translation id="7182063559013288142">Инстант точка на пристап</translation>
 <translation id="7182791023900310535">Преместете ја лозинката</translation>
 <translation id="718427252411067142">За да сопрете други да ја користат вашата лозинка, отворете ја апликацијата за да ја промените лозинката</translation>
@@ -10810,6 +10815,7 @@
 <translation id="973558314812359997">Големина на глувчето</translation>
 <translation id="975893173032473675">Јазик на кој треба да се преведе</translation>
 <translation id="976499800099896273">Прикажан е дијалогот за враќање на автокорекцијата за <ph name="TYPED_WORD" /> коригиран во <ph name="CORRECTED_WORD" />.  Притиснете ја стрелката за нагоре за да пристапите или копчето Escape за да игнорирате.</translation>
+<translation id="976572010712028687">Потврдете дека сте родител</translation>
 <translation id="978146274692397928">Почетната ширина на интерпункцијата е Полна</translation>
 <translation id="978978324795544535">Допрете двапати конкретна ставка, задржете при вториот допир, па повлечете ја ставката за да ја преместите</translation>
 <translation id="97905529126098460">Прозорецов ќе се затвори откако ќе заврши откажувањето.</translation>

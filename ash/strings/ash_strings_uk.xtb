@@ -259,7 +259,6 @@
 <translation id="2017998995161831444">Відкрити довідку в додатку Можливості</translation>
 <translation id="2018630726571919839">Розкажи жарт</translation>
 <translation id="2021864487439853900">Натисніть, щоб розблокувати</translation>
-<translation id="2023558322300866873">Ви можете будь-коли зупинити захоплення пакетів</translation>
 <translation id="2034971124472263449">Усе одно зберегти</translation>
 <translation id="204259843076055848">Комбінацію клавіш для дії "<ph name="SIX_PACK_KEY_NAME" />" зараз вимкнено</translation>
 <translation id="2049240716062114887">Назву робочого столу змінено на "<ph name="DESK_NAME" />"</translation>
@@ -357,6 +356,7 @@
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="2484513351006226581">Натисніть комбінацію клавіш <ph name="KEYBOARD_SHORTCUT" />, щоб змінити розкладку клавіатури.</translation>
 <translation id="2486214324139475545">Попередній огляд робочого столу "<ph name="DESK_NAME" />". Він активний.</translation>
+<translation id="2486405091093637109">Роздільну здатність дисплея "<ph name="DISPLAY_NAME" />" змінено на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Якщо не підтвердити цю зміну, попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Приєднатися</translation>
 <translation id="2499445554382787206">Меню профілю робочого столу (<ph name="DESK_NAME" />).</translation>
 <translation id="2501920221385095727">Залипання клавіш</translation>
@@ -365,6 +365,7 @@
 <translation id="2509468283778169019">Режим CAPS LOCK увімкнено</translation>
 <translation id="2514415433888497495">Вимкнути функцію "<ph name="CAPTURE_MEDIUM" />". Функція "<ph name="CAPTURE_MEDIUM" />" <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">Змінити елементи керування іграми</translation>
 <translation id="2526581474998477112">Розблокувати вікна</translation>
 <translation id="2528111225373402384">Налаштування точки доступу</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -699,7 +700,6 @@
 <translation id="380165613292957338">Вітаю! Чим я можу допомогти?</translation>
 <translation id="3804737937830804242">Згорнути вікно камери</translation>
 <translation id="3824784079442479685">Буде надано доступ до камери для додатка <ph name="APP_NAME" /> і всіх додатків та веб-сайтів, які мають відповідний дозвіл. Можливо, вам також доведеться оновити веб-сторінку або перезапустити додаток.</translation>
-<translation id="3825680296690914697">Здано <ph name="NUM_TURNED_IN" /> з <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, оцінено <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Ввести пароль</translation>
 <translation id="383058930331066723">Режим енергозбереження ввімкнено</translation>
 <translation id="383629559565718788">Показати налаштування клавіатури</translation>
@@ -763,7 +763,6 @@
 <translation id="4066027111132117168">Увімкнено, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Відкрити сторінку "Завантаження"</translation>
 <translation id="4072264167173457037">середній сигнал</translation>
-<translation id="4076455981957565732">Здано: <ph name="NUM_TURNED_IN" /> з <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Оцінено: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Увімкніть фізичний перемикач мікрофона на пристрої</translation>
 <translation id="4101772068965291327">Відкривати домашню сторінку</translation>
 <translation id="4112140312785995938">Перейти назад</translation>
@@ -1029,6 +1028,7 @@
 <translation id="5062496344832867502">оперативна пам’ять</translation>
 <translation id="5068762093486106012">Якщо ви говоритимете в режимі "Без звуку", то отримаєте сповіщення. Звук не передаватиметься з вашого пристрою.</translation>
 <translation id="5077416371682039027">Налаштувати перегляд нещодавніх фотографій, медіафайлів, сповіщень і додатків на телефоні</translation>
+<translation id="5077936103761694531">Підтвердити роздільну здатність?</translation>
 <translation id="5078796286268621944">Неправильний PIN-код</translation>
 <translation id="5083035541015925118">ctrl + alt + стрілка вгору</translation>
 <translation id="5083553833479578423">Розблокуйте інші функції Асистента.</translation>
@@ -1265,6 +1265,7 @@
 <translation id="5983567367406220847">Точку доступу вимкнено, оскільки ви нею не користувалися.</translation>
 <translation id="598407983968395253">Використати шаблон</translation>
 <translation id="598882571027504733">Щоб завантажити оновлення, перезапустіть Chromebook із під’єднаною клавіатурою.</translation>
+<translation id="5998374579424866922">Вимкнути елементи керування іграми</translation>
 <translation id="6000279412553873020">Клавіші, кнопки тощо</translation>
 <translation id="6002122790816966947">Ваші пристрої</translation>
 <translation id="6012623610530968780">Сторінка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1666,6 +1667,7 @@
 <translation id="7607002721634913082">Призупинено</translation>
 <translation id="7609951632080598826">Запис у календарі, <ph name="DATE" /> о <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камеру знову підключено.</translation>
+<translation id="7613620083300976559">Увімкнути елементи керування іграми</translation>
 <translation id="761736749114493194">Увімкнути або вимкнути режим слідкування. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Зображення з камери закріплено в нижньому правому куті</translation>
@@ -1676,6 +1678,7 @@
 <translation id="7647488630410863958">Розблокуйте пристрій, щоб переглянути сповіщення</translation>
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7654687942625752712">Утримуйте обидві клавіші гучності впродовж п’яти секунд, щоб вимкнути голосові підказки.</translation>
+<translation id="7654916369822103315">Роздільну здатність дисплея "<ph name="DISPLAY_NAME" />" змінено на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц). Ваш дисплей не підтримує роздільну здатність <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц) через обмежену пропускну спроможність порту. Якщо не підтвердити цю зміну, попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7659861092419699379">Робочий стіл і вікна закрито</translation>
 <translation id="7660160718439869192">Пристрій <ph name="NAME" /> з’явиться в списку зв’язаних з обліковим записом <ph name="EMAIL" /></translation>
@@ -1766,6 +1769,7 @@
 <translation id="7945357288295809525">Показати налаштування функцій доступності; функцію "<ph name="ENABLED_FEATURES" />" увімкнено.</translation>
 <translation id="7947798320695032612">Додаток <ph name="APP_NAME" /> хоче використовувати цей пристрій: <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Зменшити яскравість клавіатури</translation>
+<translation id="7953994493035617347">Підтвердити нову роздільну здатність?</translation>
 <translation id="7963689218131240420">Режим "Не турбувати" вимкнено.</translation>
 <translation id="7963992254934562106">З телефона <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Вибрати папку…</translation>

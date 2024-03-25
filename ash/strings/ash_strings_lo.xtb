@@ -259,7 +259,6 @@
 <translation id="2017998995161831444">ເປີດ "ຊ່ວຍເຫຼືອ" ໃນແອັບສຳຫຼວດ</translation>
 <translation id="2018630726571919839">ເລົ່າເລື່ອງຕະຫຼົກໃຫ້ຂ້ອຍຟັງ</translation>
 <translation id="2021864487439853900">ຄລິກເພື່ອປົດລັອກ</translation>
-<translation id="2023558322300866873">ທ່ານສາມາດຢຸດການບັນທຶກແພັກເກັດຕອນໃດກໍໄດ້</translation>
 <translation id="2034971124472263449">ຢືນຢັນການບັນທຶກ</translation>
 <translation id="204259843076055848">ທາງລັດສຳລັບການ <ph name="SIX_PACK_KEY_NAME" /> ປິດຢູ່</translation>
 <translation id="2049240716062114887">ຊື່ໂຕະໄດ້ຖືກປ່ຽນເປັນ <ph name="DESK_NAME" /> ແລ້ວ</translation>
@@ -357,6 +356,7 @@
 <translation id="2482878487686419369">ການແຈ້ງເຕືອນ</translation>
 <translation id="2484513351006226581">ແຕະ <ph name="KEYBOARD_SHORTCUT" /> ເພື່ອປ່ຽນໂຄງຮ່າງແປ້ນພິມ.</translation>
 <translation id="2486214324139475545">ຕົວຢ່າງ <ph name="DESK_NAME" />. ໂຕະທີ່ໃຊ້ຢູ່.</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" ໄດ້ປ່ຽນຄວາມລະອຽດເປັນ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ແລ້ວ. ຫາກບໍ່ມີການຢືນຢັນ, ການຕັ້ງຄ່າກ່ອນໜ້າຈະຖືກກູ້ຄືນໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">ເຂົ້າຮ່ວມ</translation>
 <translation id="2499445554382787206">ເມນູໂປຣໄຟລ໌ໂຕະ. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ປຸ່ມສະຕິກກີ້</translation>
@@ -700,7 +700,6 @@
 <translation id="380165613292957338">ສະບາຍດີ, ຂ້ອຍຊ່ວຍຫຍັງໄດ້ແດ່?</translation>
 <translation id="3804737937830804242">ຫຍໍ້ກ້ອງຖ່າຍຮູບລົງ</translation>
 <translation id="3824784079442479685">ການດຳເນີນການນີ້ອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ຮວມທັງແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີສິດສາມາດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບໄດ້. ທ່ານອາດຕ້ອງໂຫຼດຂໍ້ມູນໜ້າເວັບຄືນໃໝ່ ຫຼື ຣີສະຕາດແອັບ.</translation>
-<translation id="3825680296690914697">ສົ່ງ <ph name="NUM_TURNED_IN" /> ຈາກທັງໝົດ <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ລາຍການ, ໃຫ້ຄະແນນໄປແລ້ວ <ph name="NUM_GRADED" /> ລາຍການ</translation>
 <translation id="3826099427150913765">ປ່ຽນໄປໃຊ້ລະຫັດຜ່ານ</translation>
 <translation id="383058930331066723">ໂໝດປະຢັດແບັດເຕີຣີເປີດຢູ່</translation>
 <translation id="383629559565718788">ສະແດງການຕັ້ງຄ່າແປ້ນພິມ</translation>
@@ -764,7 +763,6 @@
 <translation id="4066027111132117168">ເປີດ, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">ເປີດໜ້າດາວໂຫຼດ</translation>
 <translation id="4072264167173457037">ສັນຍານປານກາງ</translation>
-<translation id="4076455981957565732">ສົ່ງແລ້ວ <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ລາຍການ • ໃຫ້ຄະແນນແລ້ວ <ph name="NUM_GRADED" /> ລາຍການ</translation>
 <translation id="4086921558679520050">ເປີດປຸ່ມໄມຢູ່ໃນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="4101772068965291327">ເປີດໜ້າຫຼັກ</translation>
 <translation id="4112140312785995938">ເລື່ອນກັບຫຼັງ</translation>
@@ -1030,6 +1028,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">ທ່ານຈະໄດ້ຮັບການແຈ້ງເຕືອນຫາກທ່ານເວົ້າໃນລະຫວ່າງທີ່ປິດສຽງຢູ່. ໂດຍຈະບໍ່ມີການສົ່ງສຽງຜ່ານອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="5077416371682039027">ຕັ້ງຄ່າການເບິ່ງຮູບພາບຫຼ້າສຸດ, ມີເດຍ, ການແຈ້ງເຕືອນ ແລະ ແອັບຂອງໂທລະສັບທ່ານ</translation>
+<translation id="5077936103761694531">ຢືນຢັນຄວາມລະອຽດບໍ?</translation>
 <translation id="5078796286268621944">PIN ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="5083035541015925118">Ctrl + Alt + ລູກສອນຂຶ້ນ</translation>
 <translation id="5083553833479578423">ປົດລັອກຄຸນສົມບັດເພີ່ມເຕີມຂອງຜູ້ຊ່ວຍ.</translation>
@@ -1679,6 +1678,7 @@
 <translation id="7647488630410863958">ປົດລັອກອຸປະກອນເພື່ອເບິ່ງການແຈ້ງເຕືອນ</translation>
 <translation id="7649070708921625228">ຊ່ວຍ​ເຫຼືອ</translation>
 <translation id="7654687942625752712">ກົດປຸ່ມທັງສອງລະດັບສຽງເປັນເວລາຫ້າວິນາທີເພື່ອປິດນຳໃຊ້ການຕອບສະໜອງແບບສຽງເວົ້າ.</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" ໄດ້ປ່ຽນຄວາມລະອຽດເປັນ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) ແລ້ວ. ເນື່ອງຈາກການຈໍາກັດແບນວິດຂອງຜອດ, ການສະແດງຜົນຂອງທ່ານບໍ່ສາມາດຮອງຮັບຄວາມລະອຽດ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ໄດ້. ຫາກບໍ່ມີການຢືນຢັນ, ການຕັ້ງຄ່າກ່ອນໜ້າຈະຖືກກູ້ຄືນໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7659861092419699379">ປິດໂຕະ ແລະ ໜ້າຈໍແລ້ວ</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> ຂອງທ່ານຈະປາກົດຢູ່ອຸປະກອນທີ່ລິ້ງກັບ <ph name="EMAIL" /></translation>
@@ -1769,6 +1769,7 @@
 <translation id="7945357288295809525">ສະແດງການຕັ້ງຄ່າການຊ່ວຍເຂົ້າເຖິງ, ເປີດການນຳໃຊ້ "<ph name="ENABLED_FEATURES" />" ແລ້ວ.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ຕ້ອງການໃຊ້ <ph name="DEVICE_NAME" /> ຂອງທ່ານ</translation>
 <translation id="7951630946012935453">ຫຼຸດແສງໄຟແປ້ນພິມ</translation>
+<translation id="7953994493035617347">ຢືນຢັນຄວາມລະອຽດໃໝ່ບໍ?</translation>
 <translation id="7963689218131240420">ໂໝດຫ້າມລົບກວນປິດຢູ່.</translation>
 <translation id="7963992254934562106">ຈາກ <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">ເລືອກໂຟນເດີ...</translation>

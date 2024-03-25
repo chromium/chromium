@@ -1938,6 +1938,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2435248616906486374">Tika pārtraukts tīkla savienojums.</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
 <translation id="2436385001956947090">Kopēt &amp;saiti</translation>
+<translation id="2436746748253887661">Tādējādi sistēmas pakalpojumi, kuriem ir piešķirta atļauja, var izmantot jūsu atrašanās vietas datus. Lai noteiktu jūsu ierīces atrašanās vietu, var tikt izmantoti tādi avoti kā Wi-Fi, mobilie tīkli un sensori. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="2438853563451647815">Nav izveidots savienojums ar printeri</translation>
 <translation id="2439152382014731627">Ierīces (<ph name="DEVICE_TYPE" />) paroles atiestatīšana</translation>
 <translation id="2439626940657133600">Notiek produkta <ph name="WINDOW_TITLE" /> ielāde</translation>
@@ -3513,6 +3514,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3665589677786828986">Pārlūkā Chrome tika konstatēts, ka daži jūsu iestatījumi tika bojāti citā programmā, tāpēc šie iestatījumi tika atiestatīti uz sākotnējiem noklusējuma iestatījumiem.</translation>
 <translation id="3665919494326051362">Pašreizējā versija ir <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi NIC atkļūdošanas izmete</translation>
+<translation id="3666971425390608309">Lejupielāde pārtraukta: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Ierīces no jebkura pakalpojumu sniedzēja</translation>
 <translation id="3670229581627177274">Ieslēgt Bluetooth</translation>
 <translation id="3670480940339182416">Vietnēs drīkst izmantot V8 optimizētāju</translation>
@@ -3663,6 +3665,8 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3765055238058255342">šāda veida kartītes</translation>
 <translation id="3765246971671567135">Neizdevās nolasīt bezsaistes demonstrācijas režīma politiku.</translation>
 <translation id="3765696567014520261">Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, reklāmu personalizēšanai. Noteiktās vietnēs funkcijas var nedarboties.</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Google vietsaistītajā pakalpojumā tiek izmantoti tādi avoti kā Wi-Fi, mobilais tīkls un sensori, lai palīdzētu noteikt jūsu ierīces atrašanās vietu.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Jūs jebkurā brīdī varat izslēgt ChromeOS un Android atrašanās vietas noteikšanu savā ierīcē, pārejot uz sadaļu Iestatījumi &gt; Konfidencialitāte un drošība &gt; Konfidencialitātes vadīklas &gt; Piekļuve atrašanās vietai. Varat arī izslēgt Wi‐Fi, mobilo tīklu un sensoru izmantošanu Android ierīces atrašanās vietas noteikšanai, izslēdzot iestatījumu “Uzlabot atrašanās vietas precizitāti” tās pašas izvēlnes sadaļā “Atrašanās vietas papildu iestatījumi”.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Uzzināt vairāk par tālruņa centrmezglu</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Šobrīd paroles varat kopīgot tikai ar ģimenes locekļiem. <ph name="BEGIN_LINK" />Uzaiciniet ģimenes locekļus<ph name="END_LINK" /> pievienoties savai grupai un pilnvērtīgāk izmantojiet Google produktu un abonementu iespējas.</translation>
@@ -3710,6 +3714,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3798670284305777884">Skaļrunis (iebūvētais)</translation>
 <translation id="3799128412641261490">Slēdžu piekļuves iestatījumi</translation>
 <translation id="3800828618615365228">Google Chrome un Chrome OS papildu noteikumi</translation>
+<translation id="3800898876950197674">Lai atļautu šo paplašinājumu, ievadiet savu paroli.</translation>
 <translation id="3802486193901166966">Šim paplašinājumam nav nepieciešamas īpašas atļaujas, un tam nav papildu piekļuves vietnēm.</translation>
 <translation id="380329542618494757">Vārds, uzvārds</translation>
 <translation id="3803345858388753269">Video kvalitāte</translation>
@@ -4328,6 +4333,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4278779213160967034">Šis process var ilgt dažas minūtes. Notiek failu lejupielāde…</translation>
 <translation id="4279129444466079448">Šajā ierīcē varat izmantot līdz pat <ph name="PROFILE_LIMIT" /> eSIM profiliem. Lai pievienotu vēl kādu profilu, vispirms noņemiet kādu no esošajiem profiliem.</translation>
 <translation id="4280325816108262082">Ierīcē tiks automātiski pārtraukts savienojums, kad tā būs izslēgta vai netiks izmantota.</translation>
+<translation id="4281637354026226955">Atļaujiet ChromeOS un Android lietotnēm un pakalpojumiem ar atrašanās vietas atļauju izmantot jūsu ierīces atrašanās vietas datus. Google var periodiski vākt atrašanās vietas datus un tos izmantot anonīmā veidā, lai uzlabotu atrašanās vietas precizitāti un pakalpojumus pēc atrašanās vietas.</translation>
 <translation id="4281844954008187215">Google pakalpojumu noteikumi</translation>
 <translation id="4281849573951338030">Pildspalvas pogu pielāgošana</translation>
 <translation id="4282196459431406533">Smart Lock ir ieslēgta</translation>
@@ -4580,7 +4586,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4473996011558324141">Notiek laika aprēķināšana</translation>
 <translation id="4474155171896946103">Saglabāt visas cilnes kā grāmatzīmes...</translation>
 <translation id="4475299370877036544">Ar šo darbību, iespējams, tiktu pārkāptas jūsu organizācijas politikas.</translation>
-<translation id="4475552974751346499">Meklēt lejupielādes</translation>
 <translation id="4476590490540813026">Sportiste</translation>
 <translation id="4476659815936224889">Lai skenētu šo kodu, varat izmantot kvadrātkodu skenēšanas lietotni tālrunī vai noteiktas kameras lietotnes.</translation>
 <translation id="4477015793815781985">Iekļaujiet taustiņu Ctrl, Alt vai ⌘</translation>
@@ -6206,6 +6211,8 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (sistēmas noklusējums)</translation>
 <translation id="5776450228446082914">To tīmekļa vietņu saraksts, kuras var atvērt abos pārlūkos.</translation>
 <translation id="5776571780337000608">Izmantojot šo lietotni, varat atvērt un rediģēt atbalstītus failus no failu pārlūka vai citām lietotnēm. Lai pārvaldītu, kurus failus pēc noklusējuma atvērt šajā lietotnē, <ph name="BEGIN_LINK" />uzziniet, kā ierīcē iestatīt noklusējuma lietotnes<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">Google vietsaistītajā pakalpojumā atrašanās vietas precizitāte tiek uzlabota, atrašanās vietas noteikšanai izmantojot Wi‑Fi, mobilos tīklus un sensorus. Google var periodiski vākt atrašanās vietas datus un tos izmantot anonīmā veidā, lai uzlabotu atrašanās vietas precizitāti un pakalpojumus pēc atrašanās vietas.
+Ja šī funkcija tiks izslēgta, Android ierīce atrašanās vietas noteikšanai izmantos tikai IP adresi. Tas var ietekmēt lietotnēm, piemēram, Maps, nepieciešamo atrašanās vietu noteikšanas precizitāti.</translation>
 <translation id="5778491106820461378">Varat pārvaldīt Google kontus, kuros esat pierakstījies, sadaļā <ph name="LINK_BEGIN" />Iestatījumi<ph name="LINK_END" />. Jūsu piešķirtās atļaujas vietnēm un lietotnēm var būt spēkā visos kontos. Ja nevēlaties atļaut vietnēm vai lietotnēm piekļūt jūsu konta informācijai, varat pierakstīties savā <ph name="DEVICE_TYPE" /> ierīcē kā viesis.</translation>
 <translation id="5780011244986845107">Atlasītajā mapē ir iekļauti sensitīvi faili. Vai tiešām vēlaties piešķirt lietotnei <ph name="APP_NAME" /> pastāvīgu lasīšanas piekļuvi šai mapei?</translation>
 <translation id="5780973441651030252">Procesa prioritāte</translation>
@@ -6291,6 +6298,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5836999627049108525">Valoda, no kuras tulkot</translation>
 <translation id="583756221537636748">Futrālis</translation>
 <translation id="5840680448799937675">Faili vienmēr tiks kopīgoti bezsaistē.</translation>
+<translation id="5841167715783969407">Automātiska laika josla, pamatojoties uz Wi-Fi vai mobilajiem tīkliem</translation>
 <translation id="5841270259333717135">Konfigurēt tīklu Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth iespējošana</translation>
 <translation id="5844284118433003733">Kad esat pierakstījies, šie dati tiek saistīti ar jūsu Google kontu, lai aizsargātu jūs dažādos Google pakalpojumos, piemēram, palielinot aizsardzību pakalpojumā Gmail pēc drošības incidenta.</translation>
@@ -6739,6 +6747,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="6180510783007738939">Līniju rīks</translation>
 <translation id="6180550893222597997">Kuru piekļuves atslēgu vēlaties izmantot vietnei <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Lejupielāde ir bloķēta.</translation>
+<translation id="6183369864942961155">Automātisks gaišais/tumšais motīvs</translation>
 <translation id="6184099524311454384">Meklēt cilnēs</translation>
 <translation id="6184868291074982484">Pārlūkā Chrome tiek automātiski ierobežoti trešo pušu sīkfaili</translation>
 <translation id="6185132558746749656">Ierīces atrašanās vieta</translation>
@@ -7141,6 +7150,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6513247462497316522">Ja jums nebūs pieejams savienojums ar tīklu, Google Chrome izmantos mobilos datus.</translation>
 <translation id="6514010653036109809">Pieejamā ierīce:</translation>
 <translation id="6517227424170598783">Vai noņemt saīsni “<ph name="SHORTCUT_NAME" /> — <ph name="APP_NAME" />”?</translation>
+<translation id="6517382055541687102">Atlasītā ierīce tika mainīta uz šādu ierīci: <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Jūsu faili, kas atrodas mapē “Mans disks”, tiek automātiski sinhronizēti ar jūsu Chromebook datoru, lai jūs varētu tiem piekļūt bez interneta savienojuma. Nepieciešamā vieta ir aptuveni <ph name="REQUIRED_SPACE" />. Pašlaik pieejamā vieta ir <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Iespējams, jūsu ierīce vairs nedarbosies pareizi un jūs saskarsieties ar drošības un veiktspējas problēmām. Atjauninājumu izslēgšana var arī ietekmēt jūsu tiesības izvirzīt juridiskas prasības, ja būs radušās problēmas.</translation>
 <translation id="6518014396551869914">Kopēt attēlu</translation>
@@ -7401,6 +7411,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6713441551032149301">Turiet palaidēja taustiņu, lai pārslēgtu funkciju taustiņus un sistēmas augšējās rindas taustiņus.</translation>
 <translation id="6713668088933662563">Nekad nepiedāvāt tulkot no šīm valodām</translation>
 <translation id="6715803357256707211">Linux lietojumprogrammas instalēšanas laikā radās kļūda. Noklikšķiniet uz paziņojuma, lai iegūtu detalizētu informāciju.</translation>
+<translation id="6716049856796700977">Jūsu atrašanās vietas datus nevar izmantot. Tomēr jūsu atrašanās vieta joprojām var būt redzama lietotnēm un vietnēm, izmantojot jūsu IP adresi. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="6716798148881908873">Tīkla savienojums tika zaudēts. Pārbaudiet tīkla savienojumu vai mēģiniet izveidot savienojumu ar citu Wi-Fi tīklu.</translation>
 <translation id="6718849325281682232">Chrome motīvu krāsas ir atjauninātas labākais darbībai ikvienam lietotājam gan tumšajā, gan gaišajā režīmā</translation>
 <translation id="671928215901716392">Bloķēt ekrānu</translation>
@@ -7449,6 +7460,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6758056191028427665">Sniedziet atsauksmes par pakalpojuma darbību.</translation>
 <translation id="6759193508432371551">Rūpnīcas datu atiestatīšana</translation>
 <translation id="6760354150216532978">Brīdinājums: šī vietne var skatīt jūsu veiktos labojumus</translation>
+<translation id="6761209758867628753">Rīks: “Palīdzība rakstīšanā”</translation>
 <translation id="676158322851696513">“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6761623907967804682">Nav atļauts ierīcē saglabāt vietnes datus</translation>
 <translation id="6762833852331690540">Ieslēgts</translation>
@@ -7987,6 +7999,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="7180865173735832675">Pielāgot</translation>
 <translation id="7181117767881540376">&amp;Slēpt grāmatzīmju joslu</translation>
+<translation id="7181329571386134105">Lai atļautu bērnam (<ph name="CHILD_NAME" />) turpmāk instalēt paplašinājumus bez jūsu apstiprinājuma, atveriet lietotni Family Link savā ierīcē un atjauniniet bērna (<ph name="CHILD_NAME" />) Google Chrome iestatījumus.</translation>
 <translation id="7182063559013288142">Tūlītējais tīklājs</translation>
 <translation id="7182791023900310535">Pārvietot paroli</translation>
 <translation id="718427252411067142">Lai citi nevarētu izmantot jūsu paroli, pārejiet uz lietotni un nomainiet paroli</translation>
@@ -8383,6 +8396,8 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7478658909253570368">Neļaut vietnēm veidot savienojumu ar seriālajiem portiem</translation>
 <translation id="7479221278376295180">Krātuves lietojuma kopsavilkums</translation>
 <translation id="747981547666531654">Izveidots savienojums ar Bluetooth ierīcēm “<ph name="FIRST_DEVICE" />” un “<ph name="SECOND_DEVICE" />”.</translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Google vietsaistītajā pakalpojumā tiek izmantoti tādi avoti kā Wi-Fi, mobilais tīkls un sensori, lai palīdzētu noteikt šīs ierīces atrašanās vietu.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Jūs jebkurā brīdī varat izslēgt ChromeOS un Android atrašanās vietas noteikšanu šajā ierīcē, pārejot uz sadaļu Iestatījumi &gt; Konfidencialitāte un drošība &gt; Konfidencialitātes vadīklas &gt; Piekļuve atrašanās vietai. Varat arī izslēgt Wi‐Fi, mobilo tīklu un sensoru izmantošanu Android ierīces atrašanās vietas noteikšanai, izslēdzot iestatījumu “Uzlabot atrašanās vietas precizitāti” tās pašas izvēlnes sadaļā “Atrašanās vietas papildu iestatījumi”.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Pārsūtīt</translation>
 <translation id="7481358317100446445">Gatavs</translation>
 <translation id="748138892655239008">Sertifikāta pamatierobežojumi</translation>
@@ -8474,6 +8489,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7552846755917812628">Izmantojiet tālāk sniegtos padomus.</translation>
 <translation id="7553012839257224005">Linux konteinera pārbaude</translation>
 <translation id="7553242001898162573">Ievadiet paroli.</translation>
+<translation id="7553487223484420820">Jūsu atrašanās vietas datus var izmantot lietotnes, vietnes un sistēmas pakalpojumi ar atrašanās vietas atļauju. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="755472745191515939">Jūsu administrators neļauj izmantot šo valodu.</translation>
 <translation id="7554791636758816595">Jauna cilne</translation>
 <translation id="7556033326131260574">Smart Lock nevarēja verificēt jūsu kontu. Lai ieietu, ievadiet savu paroli.</translation>
@@ -9390,6 +9406,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8224427620313426549">Jūsu <ph name="DOMAIN_LINK" /> konts netiks dzēsts.</translation>
 <translation id="8225046344534779393">Pārbaudiet interneta savienojumu</translation>
 <translation id="8225265270453771718">Lietojumprogrammas loga kopīgošana</translation>
+<translation id="8225516926291976401">Jūsu atrašanās vietas datus var izmantot tikai sistēmas pakalpojumi. Tomēr jūsu atrašanās vieta joprojām var būt redzama lietotnēm un vietnēm, izmantojot jūsu IP adresi. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="8226222018808695353">Aizliegts</translation>
 <translation id="8226619461731305576">Rinda</translation>
 <translation id="8227119283605456246">Pievienot failu</translation>
@@ -9826,6 +9843,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8552102814346875916">Saglabāt sarakstā “Vienmēr saglabāt šīs vietnes aktīvas”</translation>
 <translation id="8553342806078037065">Pārvaldīt citas personas</translation>
 <translation id="8554899698005018844">Nav valodas</translation>
+<translation id="8555444629041783356">Automātisks saulrieta grafiks</translation>
 <translation id="855604308879080518">Atļaujiet Android lietotnēm piekļūt USB ierīcēm šajā Chromebook datorā. Atļauja tiks pieprasīta ikreiz, kad pievienosiet USB ierīci. Noteiktas Android lietotnes pieprasīs papildu atļaujas.</translation>
 <translation id="8557022314818157177">Turpiniet pieskarties drošības atslēgai, līdz tiek reģistrēts jūsu pirksta nospiedums.</translation>
 <translation id="8557180006508471423">Mac datora sadaļā Location Services (Atrašanās vietu pakalpojumi) ieslēdziet opciju “Google Chrome”</translation>
@@ -10254,7 +10272,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="8875736897340638404">Izvēlieties redzamības iestatījumu.</translation>
 <translation id="8876307312329369159">Demonstrācijas sesijā šo iestatījumu nevar mainīt.</translation>
 <translation id="8876965259056847565">Funkcija <ph name="FEATURE_NAME" /> izmanto Bluetooth meklēšanu, lai atrastu tuvumā esošas ierīces.</translation>
-<translation id="8877448029301136595">[vecāku direktorija]</translation>
+<translation id="8877448029301136595">[vecāku katalogs]</translation>
 <translation id="8879284080359814990">Rādīt kā &amp;cilni</translation>
 <translation id="8879921471468674457">Atcerēties pierakstīšanās informāciju</translation>
 <translation id="8880009256105053174">Meklēt šajā lapā, izmantojot Google…</translation>
@@ -10778,6 +10796,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="973558314812359997">Peles kursora lielums</translation>
 <translation id="975893173032473675">Valoda, kurā jātulko saturs</translation>
 <translation id="976499800099896273">Tiek rādīts automātiskās pareizrakstības pārbaudes atsaukšanas dialoglodziņš par vārdu <ph name="TYPED_WORD" />, kas tika labots uz <ph name="CORRECTED_WORD" />.  Lai piekļūtu, nospiediet augšupvērsto bultiņu. Lai ignorētu, nospiediet taustiņu Esc.</translation>
+<translation id="976572010712028687">Apstipriniet, ka esat viens no vecākiem</translation>
 <translation id="978146274692397928">Sākotnējais interpunkcijas platums ir pilns</translation>
 <translation id="978978324795544535">Veiciet dubultskārienu uz vienuma, tad turiet to nospiestu un velciet vienumu, lai to pārvietotu</translation>
 <translation id="97905529126098460">Šis logs tiks aizvērts pēc atcelšanas pabeigšanas.</translation>

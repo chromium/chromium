@@ -228,6 +228,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1882814835921407042">Dim rhwydwaith symudol</translation>
 <translation id="1882897271359938046">Wrthi'n adlewyrchu i <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Gallwch ddatgloi gyda'ch olion bysedd</translation>
+<translation id="1904997243703671177">Pan fyddwch yn diffodd Bluetooth, bydd <ph name="DEVICE_COUNT" /> o ddyfeisiau allanol yn datgysylltu o'ch <ph name="DEVICE_TYPE" />, gan gynnwys:</translation>
 <translation id="1908992311423394684">Gosodiad newydd</translation>
 <translation id="1915307458270490472">Dod â'r sgwrs i ben</translation>
 <translation id="1918022425394817322">Mae'r camera wedi'i snapio i'r gornel dde uchaf</translation>
@@ -258,7 +259,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2017998995161831444">Agor 'Help' yn ap Explore</translation>
 <translation id="2018630726571919839">Dywedwch jôc wrthyf</translation>
 <translation id="2021864487439853900">Cliciwch i ddatgloi</translation>
-<translation id="2023558322300866873">Gallwch stopio cipio pecynnau ar unrhyw bryd</translation>
 <translation id="2034971124472263449">Cadw beth bynnag</translation>
 <translation id="204259843076055848">Mae'r llwybr byr <ph name="SIX_PACK_KEY_NAME" /> wedi'i ddiffodd ar hyn o bryd</translation>
 <translation id="2049240716062114887">Newidiwyd enw'r ddesg i <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2482878487686419369">Hysbysiadau</translation>
 <translation id="2484513351006226581">Pwyswch <ph name="KEYBOARD_SHORTCUT" /> i newid cynllun y bysellfwrdd.</translation>
 <translation id="2486214324139475545">Rhagolwg <ph name="DESK_NAME" />. Desg weithredol.</translation>
+<translation id="2486405091093637109">Cafodd '<ph name="DISPLAY_NAME" />' ei newid i eglurdeb <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Heb gadarnhau, bydd y gosodiadau blaenorol yn cael eu hadfer mewn <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Ymuno</translation>
 <translation id="2499445554382787206">Dewislen proffil desg. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Bysellau gludiog</translation>
@@ -699,7 +700,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="380165613292957338">Shw'mae, sut alla i helpu?</translation>
 <translation id="3804737937830804242">Crebachu'r camera</translation>
 <translation id="3824784079442479685">Mae hyn yn caniatáu mynediad camera ar gyfer <ph name="APP_NAME" />, a phob ap a gwefan sydd â'r caniatâd camera. Mae'n bosib y bydd angen i chi ail-lwytho'r dudalen gwe neu ailddechrau'r ap.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> o <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> wedi'u cyflwyno, <ph name="NUM_GRADED" /> wedi'u graddio</translation>
 <translation id="3826099427150913765">Newid i gyfrinair</translation>
 <translation id="383058930331066723">Mae'r modd arbed pŵer y batri wedi'i droi ymlaen</translation>
 <translation id="383629559565718788">Dangos y gosodiadau bysellfwrdd</translation>
@@ -763,7 +763,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4066027111132117168">Ymlaen, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Agor y dudalen Lawrlwythiadau</translation>
 <translation id="4072264167173457037">Signal canolig</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> wedi'u cyflwyno • <ph name="NUM_GRADED" /> wedi'u graddio</translation>
 <translation id="4086921558679520050">Trowch switsh meic ffisegol ymlaen ar eich dyfais</translation>
 <translation id="4101772068965291327">Agor y dudalen hafan</translation>
 <translation id="4112140312785995938">Mynd yn ôl</translation>
@@ -959,6 +958,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4813311884204119883">Llusgwch y ddolen i fan gwag ar y stribed tabiau</translation>
 <translation id="4814539958450445987">Sgrîn Mewngofnodi</translation>
 <translation id="481455355267255546">Nesaf</translation>
+<translation id="481749895090480684">Rhestr tasgau: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">camera a meicroffon</translation>
 <translation id="482908187605862807">Apiau sydd ar gael o'r Play Store</translation>
 <translation id="4831034276697007977">Ydych chi'n siŵr eich bod am ddiffodd cliciau awtomatig?</translation>
@@ -1000,6 +1000,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4952936045814352993">Nid yw lleoli ffôn ar gael pan fydd synau larwm wedi'u hanalluogi</translation>
 <translation id="4960324571663582548">Mae <ph name="MANAGER" /> yn gofyn i chi rholio eich <ph name="DEVICE_TYPE" /> yn ôl. Bydd eich dyfais yn ailosod a bydd eich data yn cael eu dileu.</translation>
 <translation id="4961318399572185831">Castio'r sgrîn</translation>
+<translation id="4964188651935955085">Pan fyddwch yn diffodd Bluetooth, bydd y ddyfais allanol hon yn datgysylltu o'ch <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Troi'r sain i fyny</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />a <ph name="MINUTES" />m <ph name="SECONDS" />e</translation>
 <translation id="4975771730019223894">Rhoi bathodynnau i apiau</translation>
@@ -1027,6 +1028,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Byddwch yn cael gwybod os byddwch yn siarad tra byddwch wedi'ch distewi. Nid yw sain byth yn gadael eich dyfais.</translation>
 <translation id="5077416371682039027">Gosod gweld lluniau, cyfryngau, hysbysiadau ac apiau diweddar eich ffôn</translation>
+<translation id="5077936103761694531">Cadarnhau'r eglurdeb?</translation>
 <translation id="5078796286268621944">PIN anghywir</translation>
 <translation id="5083035541015925118">ctrl + alt + saeth i fyny</translation>
 <translation id="5083553833479578423">Datgloi rhagor o nodweddion Assistant.</translation>
@@ -1676,6 +1678,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7647488630410863958">Datglowch y ddyfais i weld eich hysbysiadau</translation>
 <translation id="7649070708921625228">Cymorth</translation>
 <translation id="7654687942625752712">Pwyswch a dal y ddwy fysell sain am bum eiliad i ddiffodd adborth ar lafar.</translation>
+<translation id="7654916369822103315">Cafodd '<ph name="DISPLAY_NAME" />' ei newid i eglurdeb <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Oherwydd cyfyngiadau lled band porth, ni all eich sgrîn gefnogi eglurdeb <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Heb gadarnhau, bydd y gosodiadau blaenorol yn cael eu hadfer mewn <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Canslo</translation>
 <translation id="7659861092419699379">Mae desg a ffenestri wedi'u cau</translation>
 <translation id="7660160718439869192">Bydd eich <ph name="NAME" /> yn ymddangos ar ddyfeisiau sy'n gysylltiedig ag <ph name="EMAIL" /></translation>
@@ -1766,6 +1769,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7945357288295809525">Dangos gosodiadau hygyrchedd, '<ph name="ENABLED_FEATURES" />' wedi'i alluogi.</translation>
 <translation id="7947798320695032612">Mae <ph name="APP_NAME" /> am ddefnyddio eich <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Bysellfwrdd pylu</translation>
+<translation id="7953994493035617347">Cadarnhau'r eglurdeb newydd?</translation>
 <translation id="7963689218131240420">Mae Peidiwch ag Aflonyddu wedi'i ddiffodd.</translation>
 <translation id="7963992254934562106">Gan <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Dewis ffolder…</translation>
@@ -1824,6 +1828,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8155628902202578800">Agor y deialog gwybodaeth ar gyfer <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Yn defnyddio <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Troi'r ddewislen ymlaen/ei diffodd i newid maint y modd clo</translation>
+<translation id="8192727139462702395">Pan fyddwch yn diffodd Bluetooth, bydd y dyfeisiau allanol hyn yn datgysylltu o'ch <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Wrthi'n castio tab</translation>
 <translation id="8200772114523450471">Parhau</translation>
 <translation id="8203795194971602413">De-glicio</translation>

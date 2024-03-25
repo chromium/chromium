@@ -3520,13 +3520,14 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3660234220361471169">Nepouzdan</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Pronađena je 1 postojeća lozinka}one{Pronađena je {NUM_PASSWORDS} postojeća lozinka}few{Pronađene su {NUM_PASSWORDS} postojeće lozinke}other{Pronađeno je {NUM_PASSWORDS} postojećih lozinki}}</translation>
 <translation id="3662207097851752847">Potvrdite Google račun na telefonu</translation>
+<translation id="3663417513679360795">Više informacija o uključivanju standardnog predučitavanja</translation>
 <translation id="3664511988987167893">Ikona ekstenzije</translation>
 <translation id="3665100783276035932">Većina web lokacija bi trebala funkcionirati u skladu s očekivanjima</translation>
 <translation id="3665301845536101715">Otvori na bočnoj ploči</translation>
 <translation id="3665589677786828986">Chrome je otkrio da je drugi program oštetio neke vaše postavke i vratio ih na zadano.</translation>
 <translation id="3665919494326051362">Trenutna verzija je <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Izbacivanje podataka o greškama za Intel WiFi NIC</translation>
-<translation id="3666971425390608309">Pauzirano je preuzimanje datoteke <ph name="FILE_NAME" />.</translation>
+<translation id="3666971425390608309">Pauzirano je preuzimanje fajla <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Uređaji bilo kojeg dobavljača</translation>
 <translation id="3670229581627177274">Uključite Bluetooth</translation>
 <translation id="3670480940339182416">Web lokacije mogu koristiti V8 optimizator</translation>
@@ -3609,6 +3610,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3720543739123045680">Druge kartice dijele postupak s ovom karticom, što može dovesti do neočekivanog iskustva s alatima za programere.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Vi i Google</translation>
+<translation id="3721178866505920080">Više informacija o uključivanju proširenog predučitavanja</translation>
 <translation id="3722108462506185496">Greška prilikom pokretanja usluge virtuelne mašine. Pokušajte ponovo.</translation>
 <translation id="3722624153992426516">Primljeno uputstvo: <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3724897774652282549">Popunite obrazac</translation>
@@ -3726,6 +3728,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3798670284305777884">Zvučnik (interni)</translation>
 <translation id="3799128412641261490">Postavke Pristupa pomoću prekidača</translation>
 <translation id="3800828618615365228">Dodatni uslovi za Google Chrome i ChromeOS</translation>
+<translation id="3800898876950197674">Da dozvolite ekstenziju, unesite lozinku.</translation>
 <translation id="3802486193901166966">Za ovu ekstenziju nisu potrebna posebna odobrenja i ne sadržava pristup za dodatnu web lokaciju</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803345858388753269">Kvalitet videozapisa</translation>
@@ -4597,7 +4600,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4473996011558324141">procjenjivanje vremena</translation>
 <translation id="4474155171896946103">Označi sve kartice...</translation>
 <translation id="4475299370877036544">Radnja može prekršiti pravila organizacije</translation>
-<translation id="4475552974751346499">Pretražite preuzimanja</translation>
 <translation id="4476590490540813026">Sportistkinja</translation>
 <translation id="4476659815936224889">Da skenirate ovaj kôd, možete koristiti aplikaciju za skeniranje QR kodova na telefonu ili neke aplikacije s kamerom.</translation>
 <translation id="4477015793815781985">Uključite Ctrl, Alt, ili ⌘</translation>
@@ -7476,7 +7478,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6758056191028427665">Recite nam koliko ste zadovoljni nama.</translation>
 <translation id="6759193508432371551">Vraćanje na fabričke postavke</translation>
 <translation id="6760354150216532978">Upozorenje: web lokacija može vidjeti izmjene koje unesete</translation>
-<translation id="6761209758867628753">Alat: pomoć pri pisanju</translation>
+<translation id="6761209758867628753">Alat: Pomoć za pisanje</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Pohranjivanje podataka web lokacije na uređaj nije dozvoljeno</translation>
 <translation id="6762833852331690540">Uključeno</translation>
@@ -8015,6 +8017,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7180611975245234373">Osvježi</translation>
 <translation id="7180865173735832675">Prilagodi</translation>
 <translation id="7181117767881540376">&amp;Sakrij traku oznaka</translation>
+<translation id="7181329571386134105">Da dozvolite da <ph name="CHILD_NAME" /> instalira buduće ekstenzije bez vašeg odobrenja, otvorite aplikaciju Family Link na svom uređaju i ažurirajte postavke Google Chromea koji koristi <ph name="CHILD_NAME" />.</translation>
 <translation id="7182063559013288142">Instant pristupna tačka</translation>
 <translation id="7182791023900310535">Premjestite lozinku</translation>
 <translation id="718427252411067142">Da spriječite druge da koriste vašu lozinku, otvorite aplikaciju da promijenite lozinku</translation>
@@ -10812,6 +10815,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="973558314812359997">Veličina miša</translation>
 <translation id="975893173032473675">Jezik na koji se prevodi</translation>
 <translation id="976499800099896273">Dijaloški okvir za poništavanje automatskog ispravljanja je prikazan za riječ <ph name="TYPED_WORD" /> koja je ispravljena u <ph name="CORRECTED_WORD" />.  Pritisnite strelicu nagore da pristupite, a tipku Esc da zanemarite.</translation>
+<translation id="976572010712028687">Potvrdite da ste roditelj</translation>
 <translation id="978146274692397928">Interpunkcija je u punoj širini</translation>
 <translation id="978978324795544535">Dvaput dodirnite stavku, zadržite prilikom drugog dodira i zatim prevucite da je premjestite</translation>
 <translation id="97905529126098460">Ovaj prozor će se zatvoriti nakon završetka otkazivanja.</translation>

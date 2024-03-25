@@ -258,7 +258,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2017998995161831444">Buka "Bantuan" di aplikasi Jelajahi</translation>
 <translation id="2018630726571919839">Ceritakan lelucon</translation>
 <translation id="2021864487439853900">Klik untuk membuka kunci</translation>
-<translation id="2023558322300866873">Anda dapat menghentikan penangkapan paket kapan saja</translation>
 <translation id="2034971124472263449">Simpan saja</translation>
 <translation id="204259843076055848">Pintasan <ph name="SIX_PACK_KEY_NAME" /> saat ini nonaktif</translation>
 <translation id="2049240716062114887">Nama desktop diubah menjadi <ph name="DESK_NAME" /></translation>
@@ -356,13 +355,16 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2482878487686419369">Notifikasi</translation>
 <translation id="2484513351006226581">Tekan <ph name="KEYBOARD_SHORTCUT" /> untuk mengganti tata letak keyboard.</translation>
 <translation id="2486214324139475545">Pratinjau <ph name="DESK_NAME" />. Desktop virtual aktif.</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" diubah ke resolusi <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Tanpa mengonfirmasi, setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Gabung</translation>
 <translation id="2499445554382787206">Menu profil desktop virtual. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tombol lekat</translation>
 <translation id="2504454902900101003">Tutup penyiapan untuk melihat foto, media, dan notifikasi terbaru ponsel Anda</translation>
+<translation id="2505378917951323738">Tidak dapat mengedit tugas. Coba lagi saat online.</translation>
 <translation id="2509468283778169019">CAPS LOCK aktif</translation>
 <translation id="2514415433888497495">Hentikan <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">Edit kontrol game</translation>
 <translation id="2526581474998477112">Buka kunci jendela</translation>
 <translation id="2528111225373402384">Setelan hotspot</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -679,6 +681,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="371370241367527062">Mikrofon depan</translation>
 <translation id="3713734891607377840">Buka saat selesai</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, dan <ph name="UNAVAILABLE_APPS_COUNT" /> lainnya tidak ada di perangkat ini.</translation>
+<translation id="3727231512028252576">Tidak dapat memuat item. Coba lagi saat online.</translation>
 <translation id="3735740477244556633">Urutkan menurut</translation>
 <translation id="3738664582935948253">Anda kini dapat menampilkan klik dan pintasan keyboard di rekaman layar</translation>
 <translation id="3742055079367172538">Screenshot telah diambil</translation>
@@ -696,7 +699,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="380165613292957338">Hai, ada yang bisa dibantu?</translation>
 <translation id="3804737937830804242">Ciutkan kamera</translation>
 <translation id="3824784079442479685">Tindakan ini akan mengizinkan akses kamera untuk <ph name="APP_NAME" /> dan semua aplikasi serta situs yang memiliki izin kamera. Anda mungkin perlu memuat ulang halaman web atau memulai ulang aplikasi.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> dari <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> diserahkan, <ph name="NUM_GRADED" /> dinilai</translation>
 <translation id="3826099427150913765">Ganti ke sandi</translation>
 <translation id="383058930331066723">Mode penghemat baterai aktif</translation>
 <translation id="383629559565718788">Tampilkan setelan keyboard</translation>
@@ -760,7 +762,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4066027111132117168">Aktif, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Buka halaman Download</translation>
 <translation id="4072264167173457037">Sinyal sedang</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> diserahkan • <ph name="NUM_GRADED" /> dinilai</translation>
 <translation id="4086921558679520050">Aktifkan tombol mikrofon fisik di perangkat</translation>
 <translation id="4101772068965291327">Buka beranda</translation>
 <translation id="4112140312785995938">Cari Mundur</translation>
@@ -909,6 +910,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4642092649622328492">Mengambil screenshot sebagian</translation>
 <translation id="4644727592819780893">Wilayah terlalu kecil untuk ditampilkan di pratinjau kamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Rekomendasi aplikasi</translation>
+<translation id="4649019912155580914">Diedit oleh Anda</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Kotak centang dicentang.</translation>
 <translation id="4657775630156561295">Saran berikut akan dihapus secara permanen dari histori saran akun Anda:
 
@@ -1023,6 +1025,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Anda akan mendapatkan notifikasi jika berbicara saat mikrofon dibisukan. Audio tidak pernah dikirim keluar perangkat.</translation>
 <translation id="5077416371682039027">Siapkan untuk melihat foto, media, notifikasi, dan aplikasi terbaru ponsel Anda</translation>
+<translation id="5077936103761694531">Konfirmasi resolusi?</translation>
 <translation id="5078796286268621944">PIN salah</translation>
 <translation id="5083035541015925118">ctrl + alt + panah atas</translation>
 <translation id="5083553833479578423">Dapatkan lebih banyak fitur Asisten.</translation>
@@ -1259,6 +1262,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5983567367406220847">Karena tidak ada aktivitas, hotspot telah dinonaktifkan.</translation>
 <translation id="598407983968395253">Gunakan template</translation>
 <translation id="598882571027504733">Untuk mendapatkan update, nyalakan ulang Chromebook dengan keyboard dalam keadaan terhubung.</translation>
+<translation id="5998374579424866922">Nonaktifkan kontrol game</translation>
 <translation id="6000279412553873020">Kunci, tombol, dan lainnya</translation>
 <translation id="6002122790816966947">Perangkat Anda</translation>
 <translation id="6012623610530968780">Halaman <ph name="SELECTED_PAGE" /> dari <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1429,6 +1433,7 @@ Baru diinstal</translation>
 <translation id="6643169293433369663">Urungkan tata urutan menurut nama</translation>
 <translation id="6649641931981131786">Sesuaikan kamera untuk memfokuskan Anda di tengah layar.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ingin mengonfirmasi bahwa ini benar-benar Anda</translation>
+<translation id="6650742588569439432">Tidak dapat memuat item.</translation>
 <translation id="6650933572246256093">Perangkat Bluetooth "<ph name="DEVICE_NAME" />" meminta izin untuk bersanding. Masukkan kunci sandi ini pada perangkat tersebut: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Sandi</translation>
 <translation id="666343722268997814">Membuka menu klik kanan untuk item yang ditandai</translation>
@@ -1659,6 +1664,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7607002721634913082">Dijeda</translation>
 <translation id="7609951632080598826">Tampilan kalender, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera dihubungkan kembali.</translation>
+<translation id="7613620083300976559">Aktifkan kontrol game</translation>
 <translation id="761736749114493194">Aktifkan/nonaktifkan framing kamera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7634648064048557203">Kamera dipaskan ke pojok kanan bawah</translation>
@@ -1669,6 +1675,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7647488630410863958">Buka kunci perangkat untuk melihat notifikasi</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7654687942625752712">Tekan dan tahan kedua tombol volume selama 5 detik untuk menonaktifkan respons lisan.</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" diubah ke resolusi <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Karena keterbatasan bandwidth port, layar Anda tidak dapat mendukung resolusi <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Tanpa mengonfirmasi, setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7659861092419699379">Desktop dan jendela telah ditutup</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> Anda akan muncul di perangkat yang ditautkan dengan <ph name="EMAIL" /></translation>
@@ -1678,6 +1685,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7672095158465655885">Terhubung ke <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Tempelkan konten dari papan klip dalam bentuk teks biasa</translation>
 <translation id="7684531502177797067">Input kamera disetel ke <ph name="CAMERA_NAME" />.</translation>
+<translation id="7687172143976244806">Dibuka oleh Anda</translation>
 <translation id="7689817529363080918">Tindakan ini akan mengizinkan akses mikrofon untuk <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, dan semua aplikasi serta situs yang memiliki izin mikrofon</translation>
 <translation id="7704000866383261579">Ulangi tindakan terakhir</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1758,6 +1766,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7945357288295809525">Tampilkan setelan aksesibilitas, "<ph name="ENABLED_FEATURES" />" diaktifkan.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ingin menggunakan <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Redupkan keyboard</translation>
+<translation id="7953994493035617347">Konfirmasi resolusi baru?</translation>
 <translation id="7963689218131240420">Mode Jangan Ganggu nonaktif.</translation>
 <translation id="7963992254934562106">Dari <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Pilih folder ...</translation>
@@ -1773,6 +1782,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8000066093800657092">Tidak ada jaringan</translation>
 <translation id="8001755249288974029">Pilih teks dari kursor ke awal baris</translation>
 <translation id="8004512796067398576">Penambahan</translation>
+<translation id="8015361438441228492">Tidak dapat mengedit tugas.</translation>
 <translation id="8026334261755873520">Hapus data penjelajahan</translation>
 <translation id="802782383769312836">Desktop virtual sebelumnya: <ph name="DESK_NAME" />. Desktop virtual <ph name="DESK_INDEX" /> dari <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Koneksi hotspot gagal</translation>
@@ -1897,6 +1907,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8551588720239073785">Setelan tanggal dan waktu</translation>
 <translation id="8553395910833293175">Telah ditetapkan ke semua desktop.</translation>
 <translation id="8555757996376137129">Hapus desktop saat ini</translation>
+<translation id="8559845965695780508">Diedit oleh <ph name="USER" /></translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> menyarankan Anda mengupdate <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Berikut beberapa saran untuk dicoba</translation>
 <translation id="857201607579416096">Menu dipindahkan ke pojok kanan bawah layar.</translation>

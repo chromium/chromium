@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">କୌଣସି ମୋବାଇଲ ନେଟୱାର୍କ ନାହିଁ</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />ର ପ୍ରତିଫଳନ</translation>
 <translation id="1885785240814121742">ଟିପଚିହ୍ନ ସାହାଯ୍ୟରେ ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
+<translation id="1904997243703671177">ଆପଣ ବ୍ଲୁଟୁଥ ବନ୍ଦ କଲେ, ଏଗୁଡ଼ିକ ସମେତ <ph name="DEVICE_COUNT" /> ଏକ୍ସଟର୍ନଲ ଡିଭାଇସ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରୁ ଡିସକନେକ୍ଟ ହୋଇଯିବ:</translation>
 <translation id="1908992311423394684">ଏହାକୁ ନୂଆ ଇନଷ୍ଟଲ କରାଯାଇଛି</translation>
 <translation id="1915307458270490472">ସମାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="1918022425394817322">କ୍ୟାମେରାକୁ ଉପର ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
@@ -258,7 +259,6 @@
 <translation id="2017998995161831444">Explore ଆପରେ "ସାହାଯ୍ୟ କରନ୍ତୁ" ଖୋଲନ୍ତୁ</translation>
 <translation id="2018630726571919839">ମୋତେ ଏକ ଜୋକ୍ କୁହନ୍ତୁ</translation>
 <translation id="2021864487439853900">ଅନଲକ୍ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
-<translation id="2023558322300866873">ଆପଣ ଯେ କୌଣସି ସମୟରେ ପ୍ୟାକେଟ୍ କ୍ୟାପଚର୍ କରିବା ବନ୍ଦ କରିପାରିବେ</translation>
 <translation id="2034971124472263449">ଯେ କୌଣସି ମତେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> ସର୍ଟକଟ ବର୍ତ୍ତମାନ ବନ୍ଦ ଅଛି</translation>
 <translation id="2049240716062114887">ଡେସ୍କ ନାମକୁ <ph name="DESK_NAME" />ରେ ବଦଳା ଯାଇଥିଲା</translation>
@@ -356,6 +356,7 @@
 <translation id="2482878487686419369">ବିଜ୍ଞପ୍ତି</translation>
 <translation id="2484513351006226581">କୀ'ବୋର୍ଡ ଲେଆଉଟ୍‌କୁ ସ୍ଵିଚ୍ କରିବା ପାଇଁ <ph name="KEYBOARD_SHORTCUT" /> ଦବାନ୍ତୁ।</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> ପ୍ରିଭ୍ୟୁ। ସକ୍ରିୟ ଡେସ୍କ।</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />"କୁ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ରିଜୋଲ୍ୟୁସନରେ ପରିବର୍ତ୍ତନ କରାଯାଇଛି। ସୁନିଶ୍ଚିତ ନକରି, ପୂର୍ବବର୍ତ୍ତୀ ସେଟିଂସକୁ <ph name="TIMEOUT_SECONDS" />ରେ ରିଷ୍ଟୋର କରାଯିବ।</translation>
 <translation id="2487915095798731898">ଯୋଗ ଦିଅନ୍ତୁ</translation>
 <translation id="2499445554382787206">ଡେସ୍କ ପ୍ରୋଫାଇଲ ମେନୁ। <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ଷ୍ଟିକି କୀ'ଗୁଡ଼ିକ</translation>
@@ -699,7 +700,6 @@
 <translation id="380165613292957338">ନମସ୍କାର, ମୁଁ କିପରି ଭାବେ ସାହାଯ୍ୟ କରିପାରିବି?</translation>
 <translation id="3804737937830804242">କ୍ୟାମେରା ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
 <translation id="3824784079442479685">ଏହା କେମେରା ଅନୁମତି ଥିବା <ph name="APP_NAME" />, ଏବଂ ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ କେମେରା ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ। ଆପଣଙ୍କୁ ୱେବ ପୃଷ୍ଠାକୁ ରିଫ୍ରେସ କରିବା କିମ୍ବା ଆପକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ ହୋଇପାରେ।</translation>
-<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" />ରୁ <ph name="NUM_TURNED_IN" /> ଦାଖଲ କରିଛନ୍ତି, <ph name="NUM_GRADED" />କୁ ଗ୍ରେଡ କରାଯାଇଛି</translation>
 <translation id="3826099427150913765">ପାସୱାର୍ଡକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="383058930331066723">ବ୍ୟାଟେରୀ ସେଭର୍ ମୋଡ୍ ଚାଲୁ ଅଛି</translation>
 <translation id="383629559565718788">କୀବୋର୍ଡ୍ ସେଟିଂ‌ସ୍ ଦେଖାନ୍ତୁ।</translation>
@@ -763,7 +763,6 @@
 <translation id="4066027111132117168"><ph name="REMAINING_TIME" />ରେ</translation>
 <translation id="4069532248403319695">ଡାଉନଲୋଡ ପୃଷ୍ଠା ଖୋଲନ୍ତୁ</translation>
 <translation id="4072264167173457037">ମଧ୍ୟମ ସିଗ୍ନାଲ୍</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • <ph name="NUM_GRADED" /> ଗ୍ରେଡ କରାଯାଇଛି</translation>
 <translation id="4086921558679520050">ଆପଣଙ୍କ ଡିଭାଇସରେ ଫିଜିକାଲ ମାଇକ ସ୍ୱିଚକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="4101772068965291327">ମୂଳପୃଷ୍ଠା ଖୋଲନ୍ତୁ</translation>
 <translation id="4112140312785995938">ପଛକୁ ଆଣନ୍ତୁ</translation>
@@ -959,6 +958,7 @@
 <translation id="4813311884204119883">ଟାବ ଷ୍ଟ୍ରିପରେ ଥିବା ଖାଲି ଏରିଆକୁ ଲିଙ୍କ ଡ୍ରାଗ କରନ୍ତୁ</translation>
 <translation id="4814539958450445987">ଲଗ୍‍ଇନ୍ ସ୍କ୍ରିନ୍</translation>
 <translation id="481455355267255546">ପରବର୍ତ୍ତୀ</translation>
+<translation id="481749895090480684">ଟାସ୍କ ତାଲିକା: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">କେମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ</translation>
 <translation id="482908187605862807">Play Storeରେ ଉପଲବ୍ଧ ଥିବା ଆପ୍ସ</translation>
 <translation id="4831034276697007977">ଆପଣ ସ୍ୱଚାଳିତ କ୍ଲିକ୍‌ଗୁଡ଼ିକୁ ବନ୍ଦ କରିବାକୁ ଚାହୁଁଥିବା ସୁନିଶ୍ଚିତ କି?</translation>
@@ -1000,6 +1000,7 @@
 <translation id="4952936045814352993">ଆଲାରାମର ସାଉଣ୍ଡକୁ ଅକ୍ଷମ କରାଯାଇଥିବା ସମୟରେ ଲୋକେଟ୍ ଫୋନ୍ ଉପଲବ୍ଧ ହୁଏ ନାହିଁ</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> ପାଇଁ ଆପଣ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ପ୍ରତ୍ୟାହାର କରିବା ଆବଶ୍ୟକ। ଆପଣଙ୍କ ଡିଭାଇସ ରିସେଟ ହେବ ଏବଂ ସମସ୍ତ ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="4961318399572185831">କାଷ୍ଟ ସ୍କ୍ରିନ୍‌</translation>
+<translation id="4964188651935955085">ଆପଣ ବ୍ଲୁଟୁଥ ବନ୍ଦ କଲେ, ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରୁ ଡିସକନେକ୍ଟ ହୋଇଯିବ:</translation>
 <translation id="4966431234408005599">ଭଲ୍ୟୁମ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ଘ <ph name="MINUTES" />ମି <ph name="SECONDS" />ସେ</translation>
 <translation id="4975771730019223894">ଆପ୍ ବ୍ୟାଜିଂ</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">ଯଦି ଆପଣ ମ୍ୟୁଟ ଥିବା ସମୟରେ କୁହନ୍ତି ତେବେ ଆପଣଙ୍କୁ ସୂଚିତ କରାଯିବ। ଅଡିଓକୁ ଆପଣଙ୍କ ଡିଭାଇସରୁ କେବେ ବି ବାହାର କରାଯାଏ ନାହିଁ।</translation>
 <translation id="5077416371682039027">ଆପଣଙ୍କ ଫୋନର ବର୍ତ୍ତମାନର ଫଟୋ, ମିଡିଆ, ବିଜ୍ଞପ୍ତି ଏବଂ ଆପ୍ସକୁ ଭ୍ୟୁ କରିବା ସେଟ ଅପ କରନ୍ତୁ</translation>
+<translation id="5077936103761694531">ରିଜୋଲ୍ୟୁସନକୁ ସୁନିଶ୍ଚିତ କରିବେ?</translation>
 <translation id="5078796286268621944">ଭୁଲ ପିନ୍</translation>
 <translation id="5083035541015925118">ctrl + alt + ଅପ ତୀର</translation>
 <translation id="5083553833479578423">ଆହୁରି ଆସିଷ୍ଟାଣ୍ଟ ବୈଶିଷ୍ଟ୍ୟଗୁଡ଼ିକ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
@@ -1675,6 +1677,7 @@
 <translation id="7647488630410863958">ଆପଣଙ୍କର ବିଜ୍ଞପ୍ତି ଦେଖିବାକୁ ଡିଭାଇସ୍‌ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
 <translation id="7649070708921625228">ସହାୟତା</translation>
 <translation id="7654687942625752712">କୁହାଯାଇଥିବା ମତାମତ ଅକ୍ଷମ କରିବାକୁ ଉଭୟ ଭଲ୍ୟୁମ୍‍ କୀ ଦବାଇ ରଖନ୍ତୁ।</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />"କୁ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) ରିଜୋଲ୍ୟୁସନରେ ପରିବର୍ତ୍ତନ କରାଯାଇଛି। ପୋର୍ଟ ବେଣ୍ଡୱିଡଥ ସୀମିତତା ଯୋଗୁଁ ଆପଣଙ୍କ ଡିସପ୍ଲେ ଏକ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ରିଜୋଲ୍ୟୁସନକୁ ସମର୍ଥନ କରିପାରିବ ନାହିଁ। ସୁନିଶ୍ଚିତ ନକରି, ପୂର୍ବବର୍ତ୍ତୀ ସେଟିଂସକୁ <ph name="TIMEOUT_SECONDS" />ରେ ରିଷ୍ଟୋର କରାଯିବ।</translation>
 <translation id="7658239707568436148">ବାତିଲ</translation>
 <translation id="7659861092419699379">ଡେସ୍କ ଏବଂ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" /> ସହିତ ଲିଙ୍କ ହୋଇଥିବା ଡିଭାଇସଗୁଡ଼ିକରେ ଆପଣଙ୍କ <ph name="NAME" /> ଦେଖାଯିବ</translation>
@@ -1765,6 +1768,7 @@
 <translation id="7945357288295809525">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ ଦେଖାନ୍ତୁ, "<ph name="ENABLED_FEATURES" />" ସକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ଆପଣଙ୍କ <ph name="DEVICE_NAME" /> ବ୍ୟବହାର କରିବାକୁ ଚାହେଁ</translation>
 <translation id="7951630946012935453">କୀବୋର୍ଡକୁ ଡିମ କରନ୍ତୁ</translation>
+<translation id="7953994493035617347">ନୂଆ ରିଜୋଲ୍ୟୁସନକୁ ସୁନିଶ୍ଚିତ କରିବେ?</translation>
 <translation id="7963689218131240420">'ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ' ବନ୍ଦ ଅଛି।</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />ରୁ</translation>
 <translation id="7968693143708939792">ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ...</translation>
@@ -1823,6 +1827,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ସୂଚନା ଡାଏଲଗ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />କୁ ବ୍ୟବହାର କରାଯାଉଛି</translation>
 <translation id="8185090165691050712">ଲକ ମୋଡକୁ ରିସାଇଜ କରିବା ପାଇଁ ମେନୁକୁ ଚାଲୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="8192727139462702395">ଆପଣ ବ୍ଲୁଟୁଥ ବନ୍ଦ କଲେ, ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସଗୁଡ଼ିକ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରୁ ଡିସକନେକ୍ଟ ହୋଇଯିବ:</translation>
 <translation id="8198456017687137612">କାଷ୍ଟିଂ ଟାବ୍</translation>
 <translation id="8200772114523450471">ସାରାଶଂ</translation>
 <translation id="8203795194971602413">ଡାହାଣ କ୍ଲିକ୍</translation>

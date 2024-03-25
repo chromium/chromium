@@ -248,7 +248,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="78025249032851484">Tu Chromium no está actualizado.</translation>
 <translation id="7859018312476869945">Al escribir en la barra de direcciones o en el cuadro de búsqueda, Chromium envía lo que escribes al buscador predeterminado para que obtengas mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="786327964234957808">Estás cambiando las cuentas de sincronización de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. Tus datos actuales de Chromium están administrados por <ph name="DOMAIN" />. Tus datos se eliminarán de este dispositivo, pero permanecerán en <ph name="USER_EMAIL1" />.</translation>
-<translation id="7865408467687426957">Si has iniciado sesión en Chromium, las contraseñas que guardes se añadirán a tu cuenta de Google. Para desactivar esta opción, <ph name="BEGIN_LINK" />ve a la configuración<ph name="END_LINK" />.</translation>
 <translation id="7890287942691234100">Empezar a usar el escáner de Chromium</translation>
 <translation id="7905064834449738336">Cuando usas una contraseña, Chromium te avisa si se ha publicado online. Al hacerlo, tus contraseñas y nombres de usuario se cifran para que nadie pueda leerlos, ni siquiera Google.</translation>
 <translation id="7911732829884437264">Usa Chromium de forma predeterminada</translation>

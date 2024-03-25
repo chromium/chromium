@@ -228,6 +228,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1882814835921407042">Nessuna rete mobile</translation>
 <translation id="1882897271359938046">Mirroring su <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Sblocca con l'impronta digitale</translation>
+<translation id="1904997243703671177">Se disattivi il Bluetooth, <ph name="DEVICE_COUNT" /> dispositivi esterni verranno scollegati da <ph name="DEVICE_TYPE" />, tra cui:</translation>
 <translation id="1908992311423394684">Nuova installazione</translation>
 <translation id="1915307458270490472">Chiudi</translation>
 <translation id="1918022425394817322">Fotocamera allineata all'angolo in alto a destra</translation>
@@ -258,7 +259,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2017998995161831444">Apri "Guida" nell'app Esplora</translation>
 <translation id="2018630726571919839">Raccontami una barzelletta</translation>
 <translation id="2021864487439853900">Fai clic per sbloccare</translation>
-<translation id="2023558322300866873">Puoi interrompere l'acquisizione del pacchetto in qualsiasi momento</translation>
 <translation id="2034971124472263449">Salva comunque</translation>
 <translation id="204259843076055848">La scorciatoia <ph name="SIX_PACK_KEY_NAME" /> è attualmente disattivata</translation>
 <translation id="2049240716062114887">Il nome della scrivania è stato modificato in <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2482878487686419369">Notifiche</translation>
 <translation id="2484513351006226581">Premi <ph name="KEYBOARD_SHORTCUT" /> per cambiare il layout della tastiera.</translation>
 <translation id="2486214324139475545">Anteprima di <ph name="DESK_NAME" />. Scrivania attiva.</translation>
+<translation id="2486405091093637109">La risoluzione "<ph name="DISPLAY_NAME" />" è stata modificata in <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Se non confermi, le impostazioni precedenti verranno ripristinate in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Partecipa</translation>
 <translation id="2499445554382787206">Menu profilo scrivania. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tasti permanenti</translation>
@@ -696,7 +697,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="380165613292957338">Ciao, come posso aiutarti?</translation>
 <translation id="3804737937830804242">Comprimi fotocamera</translation>
 <translation id="3824784079442479685">Consente l'accesso alla fotocamera per <ph name="APP_NAME" />, tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera. Potresti dover aggiornare la pagina web o riavviare l'app.</translation>
-<translation id="3825680296690914697">Compiti consegnati: <ph name="NUM_TURNED_IN" /> su <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, valutati: <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Passa alla password</translation>
 <translation id="383058930331066723">La modalità Risparmio energetico è attiva</translation>
 <translation id="383629559565718788">Mostra impostazioni tastiera</translation>
@@ -760,7 +760,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4066027111132117168">On, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Apri la pagina Download</translation>
 <translation id="4072264167173457037">Segnale medio</translation>
-<translation id="4076455981957565732">Compiti consegnati: <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Compiti valutati: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Attiva l'interruttore fisico del microfono sul dispositivo</translation>
 <translation id="4101772068965291327">Apre pagina iniziale</translation>
 <translation id="4112140312785995938">Vai indietro</translation>
@@ -956,6 +955,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4813311884204119883">Trascina il link in un'area vuota della tabstrip</translation>
 <translation id="4814539958450445987">Schermata di accesso</translation>
 <translation id="481455355267255546">Prossimi eventi</translation>
+<translation id="481749895090480684">Elenco di attività: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">fotocamera e microfono</translation>
 <translation id="482908187605862807">App disponibili dal Play Store</translation>
 <translation id="4831034276697007977">Vuoi disattivare i clic automatici?</translation>
@@ -997,6 +997,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4952936045814352993">Localizza telefono non è disponibile quando i suoni di avviso sono disattivati</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> richiede il rollback di <ph name="DEVICE_TYPE" />. Il dispositivo verrà reimpostato e tutti i dati verranno eliminati.</translation>
 <translation id="4961318399572185831">Trasmetti schermo</translation>
+<translation id="4964188651935955085">Se disattivi il Bluetooth, questo dispositivo esterno verrà scollegato da <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Alza il volume</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> m <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Badge dell'app</translation>
@@ -1024,6 +1025,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Se parli mentre l'audio è disattivato, riceverai una notifica. I dati audio non vengono mai inoltrati dal tuo dispositivo.</translation>
 <translation id="5077416371682039027">Configura la visualizzazione di app, notifiche, contenuti multimediali e foto recenti dello smartphone</translation>
+<translation id="5077936103761694531">Confermare la risoluzione?</translation>
 <translation id="5078796286268621944">PIN errato</translation>
 <translation id="5083035541015925118">Ctrl + Alt + Freccia su</translation>
 <translation id="5083553833479578423">Sblocca altre funzioni dell'assistente.</translation>
@@ -1673,6 +1675,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7647488630410863958">Sblocca il dispositivo per visualizzare le notifiche</translation>
 <translation id="7649070708921625228">Guida</translation>
 <translation id="7654687942625752712">Tieni premuti entrambi i tasti del volume per cinque secondi per disattivare la funzione di lettura vocale.</translation>
+<translation id="7654916369822103315">La risoluzione "<ph name="DISPLAY_NAME" />" è stata modificata in <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). A causa delle limitazioni della larghezza di banda della porta, il display non può supportare la risoluzione <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Se non confermi, le impostazioni precedenti verranno ripristinate in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7659861092419699379">La scrivania e le finestre sono state chiuse</translation>
 <translation id="7660160718439869192">Il dispositivo <ph name="NAME" /> verrà mostrato sui dispositivi collegati all'account <ph name="EMAIL" /></translation>
@@ -1763,6 +1766,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7945357288295809525">Mostra impostazioni di accessibilità, funzionalità "<ph name="ENABLED_FEATURES" />" attivata.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vuole usare <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Attenua la luminosità della tastiera</translation>
+<translation id="7953994493035617347">Confermare la nuova risoluzione?</translation>
 <translation id="7963689218131240420">Modalità Non disturbare non attiva.</translation>
 <translation id="7963992254934562106">Da <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Seleziona cartella…</translation>
@@ -1821,6 +1825,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8155628902202578800">Apri la finestra di dialogo delle informazioni per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">In uso: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Attiva/disattiva il menu per la modalità di blocco del ridimensionamento</translation>
+<translation id="8192727139462702395">Se disattivi il Bluetooth, questi dispositivi esterni verranno scollegati da <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Trasmissione della scheda in corso…</translation>
 <translation id="8200772114523450471">Riprendi</translation>
 <translation id="8203795194971602413">Clic con il pulsante destro</translation>

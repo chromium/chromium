@@ -248,7 +248,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="78025249032851484">Chromium je zastareo.</translation>
 <translation id="7859018312476869945">Kada kucate u traci za adresu ili u okviru za pretragu, Chromium šalje tekst koji unosite podrazumevanom pretraživaču da biste dobijali bolje predloge. Ovo je isključeno u režimu bez arhiviranja.</translation>
 <translation id="786327964234957808">Menjate nalog za sinhronizaciju iz <ph name="USER_EMAIL1" /> u <ph name="USER_EMAIL2" />. Postojećim Chromium podacima upravlja <ph name="DOMAIN" />. Na ovaj način brišete podatke sa ovog uređaja, ali podaci ostaju na <ph name="USER_EMAIL1" />.</translation>
-<translation id="7865408467687426957">Kada ste prijavljeni u Chromium, lozinke koje sačuvate idu na Google nalog. Da biste to isključili, <ph name="BEGIN_LINK" />idite u podešavanja<ph name="END_LINK" />.</translation>
 <translation id="7890287942691234100">Počnite da koristite Chromium skener</translation>
 <translation id="7905064834449738336">Kada koristite lozinku, Chromium vas upozorava ako je ona objavljena onlajn. Dok to radi, vaše lozinke i korisnička imena su šifrovani, pa niko ne može da ih pročita, uključujući Google.</translation>
 <translation id="7911732829884437264">Podrazumevano koristi Chromium</translation>

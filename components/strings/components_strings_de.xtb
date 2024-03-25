@@ -121,6 +121,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1219129156119358924">Systemsicherheit</translation>
 <translation id="1222060260947439312">Rechtes Fach</translation>
 <translation id="1224330468394120478">A3x6</translation>
+<translation id="1225240795350945817">Kartennummer:</translation>
 <translation id="1225570101506606926">Billard</translation>
 <translation id="1225607422885279949">Google findet Rabatte für dich</translation>
 <translation id="1227224963052638717">Unbekannte Richtlinie</translation>
@@ -616,7 +617,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2126374524350484896">PDF-Erstellungsprogramm:</translation>
 <translation id="2130448033692577677">Die von dir angegebenen Vorlagen können nicht angewendet werden, weil die Richtlinie "DnsOverHttpsMode" nicht konfiguriert ist.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">Die Suchmaschinen werden in zufälliger Reihenfolge angezeigt. Du kannst die Standardsuchmaschine jederzeit ändern.</translation>
+<translation id="2132825047782982803">Die Reihenfolge ist zufällig. Du kannst deine Einstellung jederzeit ändern.</translation>
 <translation id="2137891579555018930">Berechtigung steht aus…</translation>
 <translation id="213826338245044447">Mobile Lesezeichen</translation>
 <translation id="2141000681034340397">Eingabe bearbeiten</translation>
@@ -4159,6 +4160,7 @@ Weitere Details:
 <translation id="9038649477754266430">Vorhersagefunktion zum schnelleren Laden von Seiten verwenden
 </translation>
 <translation id="9039213469156557790">Außerdem enthält diese Seite andere, nicht sichere Ressourcen. Diese Ressourcen können während der Übertragung von anderen Nutzern angezeigt und von Angreifern bearbeitet werden, die das Verhalten der Seite verändern.</translation>
+<translation id="9040341831873780534">Bedingungen ansehen</translation>
 <translation id="9042617223719777575">Hohe Kapazität</translation>
 <translation id="9042827002460091668">Prüfe deine Internetverbindung und versuch es noch einmal</translation>
 <translation id="9044359186343685026">Touch ID verwenden</translation>

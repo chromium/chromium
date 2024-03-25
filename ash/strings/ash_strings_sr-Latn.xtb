@@ -228,6 +228,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1882814835921407042">Nema mobilne mreže</translation>
 <translation id="1882897271359938046">Preslikavanje u <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Otključajte otiskom prsta</translation>
+<translation id="1904997243703671177">Kada isključite Bluetooth, broj spoljnih uređaja koji će prekinuti vezu sa uređajem <ph name="DEVICE_TYPE" /> je <ph name="DEVICE_COUNT" />, uključujući:</translation>
 <translation id="1908992311423394684">Novo instaliranje</translation>
 <translation id="1915307458270490472">Prekini vezu</translation>
 <translation id="1918022425394817322">Kamera je uklopljena u gornji desni ugao</translation>
@@ -258,7 +259,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2017998995161831444">Otvorite Pomoć u aplikaciji Istražite</translation>
 <translation id="2018630726571919839">Ispričaj mi vic.</translation>
 <translation id="2021864487439853900">Kliknite da biste otključali</translation>
-<translation id="2023558322300866873">Snimanje paketa možete da zaustavite u svakom trenutku</translation>
 <translation id="2034971124472263449">Ipak sačuvaj</translation>
 <translation id="204259843076055848">Prečica <ph name="SIX_PACK_KEY_NAME" /> je trenutno isključena</translation>
 <translation id="2049240716062114887">Ime radne površine je promenjeno u <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2482878487686419369">Obaveštenja</translation>
 <translation id="2484513351006226581">Pritisnite <ph name="KEYBOARD_SHORTCUT" /> da biste promenili raspored tastature.</translation>
 <translation id="2486214324139475545">Pregled radne površine <ph name="DESK_NAME" />. Aktivna radna površina.</translation>
+<translation id="2486405091093637109">Rezolucija „<ph name="DISPLAY_NAME" />“ je promenjena u <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) rezoluciju. Ako ne potvrdite, prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Pridruži me</translation>
 <translation id="2499445554382787206">Meni za profil na radnoj površini. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Lepljivi tasteri</translation>
@@ -699,7 +700,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="380165613292957338">Zdravo, kako mogu da pomognem?</translation>
 <translation id="3804737937830804242">Skupite kameru</translation>
 <translation id="3824784079442479685">Ovo omogućava pristup kameri za aplikaciju <ph name="APP_NAME" />, kao i sve aplikacije i veb-sajtove sa dozvolom za kameru. Možda ćete morati da osvežite veb-stranicu ili restartujete aplikaciju.</translation>
-<translation id="3825680296690914697">Predato: <ph name="NUM_TURNED_IN" /> od <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, ocenjeno: <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Pređi na lozinku</translation>
 <translation id="383058930331066723">Režim uštede baterije je uključen</translation>
 <translation id="383629559565718788">Pregledajte podešavanja tastature</translation>
@@ -763,7 +763,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4066027111132117168">Uključeno, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Otvori stranicu Preuzimanja</translation>
 <translation id="4072264167173457037">Signal srednje jačine</translation>
-<translation id="4076455981957565732">Predato: <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Ocenjeno: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Uključite fizički prekidač za mikrofon na uređaju</translation>
 <translation id="4101772068965291327">Otvori početnu stranicu</translation>
 <translation id="4112140312785995938">Premotaj unazad</translation>
@@ -960,6 +959,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4813311884204119883">Prevucite link u praznu oblast na traci sa karticama</translation>
 <translation id="4814539958450445987">Ekran za prijavljivanje</translation>
 <translation id="481455355267255546">Sledeće</translation>
+<translation id="481749895090480684">Lista zadataka: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera i mikrofon</translation>
 <translation id="482908187605862807">Dostupne aplikacije iz Play prodavnice</translation>
 <translation id="4831034276697007977">Želite li stvarno da isključite automatske klikove?</translation>
@@ -1001,6 +1001,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4952936045814352993">Funkcija Pronađi telefon nije dostupna kada su zvukovi alarma onemogućeni</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> zahteva da vratite <ph name="DEVICE_TYPE" /> na prethodnu verziju. Uređaj će se resetovati i svi podaci će biti izbrisani.</translation>
 <translation id="4961318399572185831">Prebacivanje ekrana</translation>
+<translation id="4964188651935955085">Kada isključite Bluetooth, ovaj spoljni uređaj će prekinuti vezu sa uređajem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Povećaj jačinu zvuka</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> s <ph name="MINUTES" /> min <ph name="SECONDS" /> sek</translation>
 <translation id="4975771730019223894">Dodavanje znački na aplikacije</translation>
@@ -1028,6 +1029,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Dobićete obaveštenje ako govorite dok je zvuk isključen. Zvuk ostaje na uređaju.</translation>
 <translation id="5077416371682039027">Podesite pregled nedavnih slika, medija, obaveštenja i aplikacija na telefonu</translation>
+<translation id="5077936103761694531">Želite da potvrdite rezoluciju?</translation>
 <translation id="5078796286268621944">Netačan PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + strelica nagore</translation>
 <translation id="5083553833479578423">Otključajte još funkcija Pomoćnika.</translation>
@@ -1678,6 +1680,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7647488630410863958">Otključajte uređaj da biste pregledali obaveštenja</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7654687942625752712">Pritisnite oba tastera za jačinu zvuka i zadržite ih pet sekundi da biste onemogućili povratni govor.</translation>
+<translation id="7654916369822103315">Rezolucija „<ph name="DISPLAY_NAME" />“ je promenjena u <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) rezoluciju. Zbog ograničenja propusnog opsega porta, ekran ne podržava rezoluciju od <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Ako ne potvrdite, prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7659861092419699379">Radna površina i prozori su zatvoreni</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> će se prikazivati među uređajima povezanim sa nalogom <ph name="EMAIL" /></translation>
@@ -1768,6 +1771,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7945357288295809525">Prikažite podešavanja pristupačnosti, „<ph name="ENABLED_FEATURES" />“ je omogućeno.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> želi da koristi uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Zatamni tastaturu</translation>
+<translation id="7953994493035617347">Želite da potvrdite novu rezoluciju?</translation>
 <translation id="7963689218131240420">Režim Ne uznemiravaj je isključen.</translation>
 <translation id="7963992254934562106">Izvor: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Izaberite folder…</translation>
@@ -1826,6 +1830,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8155628902202578800">Otvara dijalog sa informacijama za korisnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Koristi se <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Uključite ili isključite meni za promenu veličine zaključanog režima</translation>
+<translation id="8192727139462702395">Kada isključite Bluetooth, ovi spoljni uređaji će prekinuti vezu sa uređajem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Prebacuje se kartica</translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8203795194971602413">Desni klik</translation>

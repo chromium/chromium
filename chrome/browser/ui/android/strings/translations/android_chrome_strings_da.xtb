@@ -124,6 +124,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="1641113438599504367">Beskyttet browsing</translation>
 <translation id="164269334534774161">Du ser en offlinekopi af denne side fra <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historik</translation>
+<translation id="1644969410150602449">Se din webhistorik her</translation>
 <translation id="1657932388559784161">Det nederste ark med sideindsigt er lukket</translation>
 <translation id="1670399744444387456">Grundlæggende</translation>
 <translation id="1671236975893690980">Download afventer…</translation>
@@ -250,6 +251,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="2364539095045928896">Knap til at lukke privatlivsmeddelelsen for platform med sideindsigt.</translation>
 <translation id="2386938421315164605">Skjul og vis emner</translation>
 <translation id="2390510615457643724">Vil du downloade <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> igen?</translation>
+<translation id="2395004545133500011">Oversigtsarket til deling er åbent</translation>
 <translation id="2410754283952462441">Vælg en konto</translation>
 <translation id="2414886740292270097">Mørk</translation>
 <translation id="2421705177906985956">Der er ingen websites at vise lige nu</translation>
@@ -364,6 +366,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="2942036813789421260">Fanen forhåndsvisning er lukket</translation>
 <translation id="2946420957526726953">Chrome opdateres for at oprette forbindelse til andre enheder</translation>
 <translation id="2951071800649516099">Føj sider til din læseliste, så du kan læse dem senere</translation>
+<translation id="2956070106555335453">Oversigt</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ulæst side}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæst side}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæste sider}}</translation>
 <translation id="296370266220139811">Spar tid, og skriv mindre</translation>
 <translation id="2977350910003566746">Sorteres efter sidst åbnet</translation>
@@ -643,6 +646,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Bogmærket er gemt i "<ph name="FOLDER_NAME" />". Det gemmes kun på denne enhed.}one{Bogmærket er gemt i "<ph name="FOLDER_NAME" />". Det gemmes kun på denne enhed.}other{Bogmærkerne er gemt i "<ph name="FOLDER_NAME" />". De gemmes kun på denne enhed.}}</translation>
 <translation id="4484496141267039529">Der er ingen forbindelse. Prøv igen senere.</translation>
 <translation id="4487967297491345095">Alle Chromes appdata slettes permanent. Dette omfatter alle filer, indstillinger, konti, databaser osv.</translation>
+<translation id="4489640160615759754">Oversigtsark til deling</translation>
 <translation id="4494806687727322324">Din administrator har aktiveret lagring af adgangskoder</translation>
 <translation id="4508528996305412043">Feedkortmenuen er åbnet</translation>
 <translation id="4509501256689523862">Om de annoncer, du ser på nettet, er personligt tilpasset, afhænger af denne indstilling for <ph name="BEGIN_LINK_1" />Annonceemner<ph name="END_LINK_1" />, dine <ph name="BEGIN_LINK_2" />cookieindstillinger<ph name="END_LINK_2" />, og om det website, du besøger, tilpasser annoncer.</translation>
@@ -652,6 +656,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="4521489764227272523">De valgte data er fjernet fra Chrome og synkroniserede enheder.
 
 Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og aktivitet fra andre Google-tjenester, på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Oversigtsarket til deling er lukket</translation>
 <translation id="4523326818319942067">den seneste time</translation>
 <translation id="452750746583162491">Gennemgå dine synkroniserede data</translation>
 <translation id="4532845899244822526">Vælg mappe</translation>

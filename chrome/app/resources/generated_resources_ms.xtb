@@ -3521,6 +3521,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3660234220361471169">Tidak Dipercayai</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 kata laluan sedia ada ditemukan}other{{NUM_PASSWORDS} kata laluan sedia ada ditemukan}}</translation>
 <translation id="3662207097851752847">Sahkan Google Account anda pada telefon anda</translation>
+<translation id="3663417513679360795">Maklumat lanjut tentang menghidupkan prapemuatan standard</translation>
 <translation id="3664511988987167893">Ikon Sambungan</translation>
 <translation id="3665100783276035932">Kebanyakan laman harus berfungsi seperti yang dijangkakan</translation>
 <translation id="3665301845536101715">Buka dalam panel sisi</translation>
@@ -3610,6 +3611,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3720543739123045680">Tab lain berkongsi proses dengan tab ini, yang mungkin menghasilkan pengalaman Alatan Pembangun yang tidak dijangka.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Anda dan Google</translation>
+<translation id="3721178866505920080">Maklumat lanjut tentang menghidupkan prapemuatan lanjutan</translation>
 <translation id="3722108462506185496">Ralat semasa memulakan perkhidmatan mesin maya. Sila cuba lagi.</translation>
 <translation id="3722624153992426516">Arahan <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> diterima</translation>
 <translation id="3724897774652282549">Isi borang</translation>
@@ -3727,6 +3729,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3798670284305777884">Pembesar suara (dalaman)</translation>
 <translation id="3799128412641261490">Tetapan akses suis</translation>
 <translation id="3800828618615365228">Syarat Tambahan Google Chrome dan OS Chrome</translation>
+<translation id="3800898876950197674">Untuk membenarkan sambungan ini, masukkan kata laluan anda.</translation>
 <translation id="3802486193901166966">Sambungan ini tidak memerlukan kebenaran khas dan tiada akses laman tambahan</translation>
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803345858388753269">Kualiti Video</translation>
@@ -4598,7 +4601,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4473996011558324141">anggaran masa</translation>
 <translation id="4474155171896946103">Tanda halaman semua tab...</translation>
 <translation id="4475299370877036544">Tindakan ini mungkin melanggar dasar organisasi anda</translation>
-<translation id="4475552974751346499">Cari muat turun</translation>
 <translation id="4476590490540813026">Atlet</translation>
 <translation id="4476659815936224889">Untuk mengimbas kos ini, anda boleh menggunakan apl pengimbas QR pada telefon anda atau pada sesetengah apl kamera.</translation>
 <translation id="4477015793815781985">Sertakan Ctrl, Alt atau ⌘</translation>
@@ -8012,6 +8014,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7180611975245234373">Muat semula</translation>
 <translation id="7180865173735832675">Peribadikan</translation>
 <translation id="7181117767881540376">&amp;Sembunyikan bar penanda halaman</translation>
+<translation id="7181329571386134105">Untuk membenarkan <ph name="CHILD_NAME" /> memasang sambungan pada masa hadapan tanpa kelulusan anda, buka apl Family Link pada peranti anda dan kemas kinikan tetapan Google Chrome <ph name="CHILD_NAME" />.</translation>
 <translation id="7182063559013288142">Tempat liputan segera</translation>
 <translation id="7182791023900310535">Alihkan kata laluan anda</translation>
 <translation id="718427252411067142">Untuk menghalang orang lain daripada menggunakan kata laluan anda, buka apl untuk menukar kata laluan anda</translation>
@@ -10808,6 +10811,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="973558314812359997">Saiz tetikus</translation>
 <translation id="975893173032473675">Bahasa Sasaran Terjemahan</translation>
 <translation id="976499800099896273">Dialog buat asal autopembetulan ditunjukkan untuk <ph name="TYPED_WORD" /> dibetulkan kepada <ph name="CORRECTED_WORD" />.  Tekan anak panah ke atas untuk mengakses atau kekunci Escape untuk mengabaikan perkataan ini.</translation>
+<translation id="976572010712028687">Sahkan bahawa anda seorang ibu/bapa</translation>
 <translation id="978146274692397928">Lebar tanda baca permulaan adalah Penuh</translation>
 <translation id="978978324795544535">Ketik dua kali pada item, tahan pada ketikan kedua, kemudian leret item untuk menggerakkan item tersebut</translation>
 <translation id="97905529126098460">Tetingkap ini akan ditutup selepas pembatalan selesai.</translation>

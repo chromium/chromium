@@ -140,7 +140,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4831642696589369971">Noen av Chrome-dataene dine er ikke lagret i Google-kontoen din ennå.
 
         Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
-<translation id="4834499902900503484">Passord som du lagrer når du er logget på Chrome, lagres i Google-kontoen din. <ph name="BEGIN_LINK" />Gå til innstillingene<ph name="END_LINK" /> for å slå dette av.</translation>
 <translation id="484033449593719797">Støttes ikke i Chrome Beta</translation>
 <translation id="4840404732697892756">Google Passordlagring kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
 <translation id="4856636171409137183">For å få en mest mulig personlig tilpasset opplevelse, inkluder Chrome i <ph name="FEATURE_NAME_1" /> og <ph name="FEATURE_NAME_2" /></translation>

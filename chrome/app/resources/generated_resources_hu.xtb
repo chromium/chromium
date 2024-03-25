@@ -3526,6 +3526,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3665589677786828986">A Chrome azt észlelte, hogy egy másik program miatt megsérült néhány beállítás, ezért visszaállítja őket az eredeti alapértelmezett értékekre.</translation>
 <translation id="3665919494326051362">Jelenlegi verzió: <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi hálózati interfészkártyák hibakeresési memóriaképfájlja</translation>
+<translation id="3666971425390608309">A következő letöltése szünetel: <ph name="FILE_NAME" /></translation>
 <translation id="3670113805793654926">Bármely gyártó eszközei</translation>
 <translation id="3670229581627177274">Bluetooth bekapcsolása</translation>
 <translation id="3670480940339182416">A webhelyek használhatják a V8 optimalizálót</translation>
@@ -3725,6 +3726,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3798670284305777884">Hangszóró (belső)</translation>
 <translation id="3799128412641261490">A kapcsolóalapú hozzáférés beállításai</translation>
 <translation id="3800828618615365228">A Google Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételei</translation>
+<translation id="3800898876950197674">A bővítmény engedélyezéséhez írja be a jelszavát.</translation>
 <translation id="3802486193901166966">A bővítmény nem igényel különleges engedélyeket, és nem rendelkezik további webhelyhozzáféréssel</translation>
 <translation id="380329542618494757">Név</translation>
 <translation id="3803345858388753269">Videóminőség</translation>
@@ -4595,7 +4597,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4473996011558324141">szükséges idő becslése</translation>
 <translation id="4474155171896946103">Összes lap hozzáadása a könyvjelzőkhöz...</translation>
 <translation id="4475299370877036544">Ez a művelet sértheti a szervezete irányelveit</translation>
-<translation id="4475552974751346499">Letöltések keresése</translation>
 <translation id="4476590490540813026">Atléta</translation>
 <translation id="4476659815936224889">A kód beolvasásához használhat a telefonján QR-kódok olvasására szolgáló alkalmazást, illetve bizonyos kameraalkalmazásokat.</translation>
 <translation id="4477015793815781985">Használja a Ctrl, az Alt vagy a ⌘ billentyűk egyikét</translation>
@@ -7471,6 +7472,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6758056191028427665">Ossza meg velünk, mennyire van megelégedve munkánkkal.</translation>
 <translation id="6759193508432371551">Gyári beállítások visszaállítása</translation>
 <translation id="6760354150216532978">Figyelmeztetés: a webhely láthatja az Ön által végzett módosításokat</translation>
+<translation id="6761209758867628753">Eszköz: Segítség az íráshoz</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6761623907967804682">Az eszközalapú webhelyadatok nem engedélyezettek</translation>
 <translation id="6762833852331690540">Be</translation>
@@ -8009,6 +8011,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7180611975245234373">Frissítés</translation>
 <translation id="7180865173735832675">Testreszabás</translation>
 <translation id="7181117767881540376">&amp;Könyvjelzősáv elrejtése</translation>
+<translation id="7181329571386134105">Ha engedélyezni szeretné <ph name="CHILD_NAME" /> számára, hogy az Ön jóváhagyása nélkül telepíthessen a továbbiakban bővítményeket, nyissa meg a Family Link alkalmazást saját eszközén, és frissítse <ph name="CHILD_NAME" /> Google Chrome-beállításait.</translation>
 <translation id="7182063559013288142">Azonnali hotspot</translation>
 <translation id="7182791023900310535">Jelszó áthelyezése</translation>
 <translation id="718427252411067142">Ha nem szeretné, hogy mások használhassák az Ön jelszavát, nyissa meg az alkalmazást a jelszó módosításához</translation>
@@ -10803,6 +10806,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="973558314812359997">Egér mérete</translation>
 <translation id="975893173032473675">Fordítás célnyelve</translation>
 <translation id="976499800099896273">Az automatikus javítás visszavonási párbeszédpanelje látható. Javítandó szó: <ph name="TYPED_WORD" />, javítási javaslat: <ph name="CORRECTED_WORD" />.  A javított szóhoz való hozzáféréshez nyomja meg a felfelé mutató nyilat, a figyelmen kívül hagyáshoz pedig az Escape gombot.</translation>
+<translation id="976572010712028687">Igazolja, hogy Ön szülő</translation>
 <translation id="978146274692397928">Az alapértelmezett központozás teljes szélességű</translation>
 <translation id="978978324795544535">Koppintson duplán az elemre, tartsa lenyomva a második koppintás után, majd húzza át az elemet a mozgatáshoz</translation>
 <translation id="97905529126098460">Ez az ablak bezáródik a megszakítási folyamat befejezése után.</translation>

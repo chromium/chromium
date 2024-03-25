@@ -124,6 +124,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="1641113438599504367">Selaussuoja</translation>
 <translation id="164269334534774161">Katselet sivun offline-kopiota, joka luotiin <ph name="CREATION_TIME" />.</translation>
 <translation id="1644574205037202324">Historia</translation>
+<translation id="1644969410150602449">Tarkista verkkohistoriasi täältä</translation>
 <translation id="1657932388559784161">Sivun tietojen alapaneeli on suljettu</translation>
 <translation id="1670399744444387456">Perusasetukset</translation>
 <translation id="1671236975893690980">Lataus odottaa…</translation>
@@ -250,6 +251,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="2364539095045928896">Sulje-painike, jolla voit sulkea tietosuojailmoituksen sivun Insights-hubissa.</translation>
 <translation id="2386938421315164605">Piilota ja näytä aiheita</translation>
 <translation id="2390510615457643724">Haluatko, että <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ladataan uudelleen?</translation>
+<translation id="2395004545133500011">Jaa yhteenvetotaulukko avattuna</translation>
 <translation id="2410754283952462441">Valitse tili</translation>
 <translation id="2414886740292270097">Tumma</translation>
 <translation id="2421705177906985956">Näytettäviä sivustoja ei juuri nyt ole</translation>
@@ -364,6 +366,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="2942036813789421260">Esikatseluvälilehti on suljettu</translation>
 <translation id="2946420957526726953">Päivitetään Chrome, jotta voit yhdistää muihin laitteisiin</translation>
 <translation id="2951071800649516099">Lisää sivuja lukulistalle myöhempää käyttöä varten</translation>
+<translation id="2956070106555335453">Yhteenveto</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> sivu lukematta}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> sivua lukematta}}</translation>
 <translation id="296370266220139811">Säästä aikaa ja kirjoita vähemmän</translation>
 <translation id="2977350910003566746">Lajitellaan avaamisajan mukaan</translation>
@@ -643,6 +646,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Kirjanmerkki tallennettu kansioon "<ph name="FOLDER_NAME" />". Se tallennetaan vain tälle laitteelle.}other{Kirjanmerkit tallennettu kansioon "<ph name="FOLDER_NAME" />". Se tallennetaan vain tälle laitteelle.}}</translation>
 <translation id="4484496141267039529">Ei yhteyttä. Yritä myöhemmin uudelleen.</translation>
 <translation id="4487967297491345095">Kaikki Chromen sovellustiedot, mukaan lukien tiedostot, asetukset, tilit ja tietokannat, poistetaan pysyvästi.</translation>
+<translation id="4489640160615759754">Jaa yhteenvetotaulukon kanssa</translation>
 <translation id="4494806687727322324">Järjestelmänvalvoja on laittanut salasanojen tallennuksen päälle</translation>
 <translation id="4508528996305412043">Fiidikorttien valikko on avattu</translation>
 <translation id="4509501256689523862">Selaamisen aikana näkemiesi mainosten personointi riippuu tästä asetuksesta, <ph name="BEGIN_LINK_1" />Mainosten aiheet<ph name="END_LINK_1" /> ‑asetuksesta, <ph name="BEGIN_LINK_2" />evästeasetuksista<ph name="END_LINK_2" /> ja siitä, personoiko katsomasi sivusto mainoksia</translation>
@@ -652,6 +656,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="4521489764227272523">Valitut tiedot on poistettu Chromesta ja synkronoiduilta laitteilta.
 
 Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toimintaa muista Google-palveluista. Voit katsella tietoja osoitteessa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Jaa yhteenvetotaulukko suljettuna</translation>
 <translation id="4523326818319942067">viime tunti</translation>
 <translation id="452750746583162491">Tarkista synkronoitu datasi</translation>
 <translation id="4532845899244822526">Valitse kansio</translation>
@@ -749,6 +754,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4950924971025849764">Muut laitteet voivat käyttää tätä puhelinta suojausavaimena, kun olet kirjautuneena samalle Google-tilille.</translation>
 <translation id="4957722034734105353">Lisätietoja...</translation>
 <translation id="4961107849584082341">Käännä sivu mille tahansa kielelle</translation>
+<translation id="496607651705915226">Jos haluat tallentaa ja käyttää uusia salasanoja Google-tilillä, päivitä Google Play Palvelut</translation>
 <translation id="4971735654804503942">Nopeampi, proaktiivinen suojaus vaarallisia sivustoja, latauksia ja laajennuksia vastaan. Varoittaa sinua salasanarikkomuksista. Edellyttää selaustietojen lähettämistä Googlelle.</translation>
 <translation id="497421865427891073">Siirry eteenpäin</translation>
 <translation id="4987271110129728827">Sivua ei löydy. Tarkista oikeinkirjoitus tai kokeile verkkohakua.</translation>

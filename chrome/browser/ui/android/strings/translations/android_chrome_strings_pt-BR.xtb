@@ -124,6 +124,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="1641113438599504367">Navegação segura</translation>
 <translation id="164269334534774161">Você está vendo uma cópia off-line desta página de <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Histórico</translation>
+<translation id="1644969410150602449">Confira seu histórico da Web aqui</translation>
 <translation id="1657932388559784161">A página inferior de insights está fechada</translation>
 <translation id="1670399744444387456">Básico</translation>
 <translation id="1671236975893690980">Download pendente…</translation>
@@ -250,6 +251,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="2364539095045928896">Botão "Fechar" para fechar o Aviso de privacidade do Hub de insights da página.</translation>
 <translation id="2386938421315164605">Ocultar e exibir temas</translation>
 <translation id="2390510615457643724">Quer fazer o download de <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) novamente?</translation>
+<translation id="2395004545133500011">Compartilhar com a planilha de resumo aberta</translation>
 <translation id="2410754283952462441">Escolher uma conta</translation>
 <translation id="2414886740292270097">Escuro</translation>
 <translation id="2421705177906985956">Nenhum site para mostrar no momento</translation>
@@ -364,6 +366,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="2942036813789421260">A guia "Visualizar" está fechada</translation>
 <translation id="2946420957526726953">Atualizando o Chrome para se conectar a outros dispositivos</translation>
 <translation id="2951071800649516099">Adicionar páginas à lista de leitura para mais tarde</translation>
+<translation id="2956070106555335453">Resumo</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página não lida}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> página não lida}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas não lidas}}</translation>
 <translation id="296370266220139811">Ganhe tempo e digite menos</translation>
 <translation id="2977350910003566746">Ordenar por último aberto</translation>
@@ -643,6 +646,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Favorito salvo em "<ph name="FOLDER_NAME" />". Ele fica salvo apenas neste dispositivo.}one{Favorito salvo em "<ph name="FOLDER_NAME" />". Ele fica salvo apenas neste dispositivo.}other{Favoritos salvos em "<ph name="FOLDER_NAME" />". Eles ficam salvos apenas neste dispositivo.}}</translation>
 <translation id="4484496141267039529">Sem conexão. Tente novamente mais tarde.</translation>
 <translation id="4487967297491345095">Todos os dados de app Chrome serão excluídos permanentemente. Isso inclui todos os arquivos, configurações, contas, bancos de dados etc.</translation>
+<translation id="4489640160615759754">Compartilhar com a planilha de resumo</translation>
 <translation id="4494806687727322324">O salvamento de senhas foi ativado pelo administrador</translation>
 <translation id="4508528996305412043">O menu do card do feed está aberto</translation>
 <translation id="4509501256689523862">Enquanto você navega, a personalização de um anúncio depende desta configuração, dos <ph name="BEGIN_LINK_1" />tópicos de anúncios<ph name="END_LINK_1" />, das <ph name="BEGIN_LINK_2" />configurações de cookies<ph name="END_LINK_2" /> e se o site aberto personaliza os anúncios</translation>
@@ -653,6 +657,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 
 É possível que sua Conta do Google tenha outras formas de histórico de navegação, como pesquisas e atividades de outros serviços do Google em 
  <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Compartilhar com a planilha de resumo fechada</translation>
 <translation id="4523326818319942067">na última hora</translation>
 <translation id="452750746583162491">Revisar dados sincronizados</translation>
 <translation id="4532845899244822526">Escolher pasta</translation>
@@ -750,6 +755,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="4950924971025849764">Quando você se conecta à mesma Conta do Google, outros dispositivos podem usar este smartphone como uma chave de segurança.</translation>
 <translation id="4957722034734105353">Saiba mais...</translation>
 <translation id="4961107849584082341">Traduza esta página para qualquer idioma</translation>
+<translation id="496607651705915226">Para salvar e usar novas senhas na sua Conta do Google, atualize o Google Play Services</translation>
 <translation id="4971735654804503942">Proteção mais rápida e proativa contra sites, downloads e extensões perigosos. Envia um alerta de violação de senha. Requer que dados de navegação sejam enviados ao Google.</translation>
 <translation id="497421865427891073">Avançar</translation>
 <translation id="4987271110129728827">Não foi possível encontrar a página. Verifique se há erros de ortografia ou faça uma pesquisa na Web.</translation>

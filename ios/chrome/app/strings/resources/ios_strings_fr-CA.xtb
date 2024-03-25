@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17 h 30</translation>
 <translation id="1209206284964581585">Masquer pour l'instant</translation>
 <translation id="1219674500290482172">Échec de connexion à Internet.</translation>
-<translation id="1226238226094914652">Mots de passe sur tous vos appareils</translation>
 <translation id="122699739164161391">Fermer tous les onglets</translation>
 <translation id="1227866575467023566">{count,plural, =1{Page ajoutée à votre Liste de lecture dans votre compte, {email}}one{{count} page ajoutée à votre Liste de lecture dans votre compte, {email}}other{{count} pages ajoutées à votre Liste de lecture dans votre compte, {email}}}</translation>
 <translation id="1242044645101871359">Reconnectez-vous</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Suivre</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="164673457281113247">{count,plural, =1{Favori enregistré}one{Favori enregistré}other{Favoris enregistrés}}</translation>
-<translation id="165008673352427892">Nouvelle fonctionnalité</translation>
 <translation id="1650222530560417226">Touchez le bouton « Démarrer la journalisation » pour collecter les éventuels journaux et erreurs de la console JavaScript sur tous les onglets. Les journaux seront collectés (et stockés dans la mémoire uniquement) jusqu'à ce que cette page soit fermée ou que le bouton « Arrêter la journalisation » soit touché.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} mot de passe enregistré proposé en haut du clavier.}one{{count} mot de passe enregistré proposé en haut du clavier.}other{{count} mots de passe enregistrés proposés en haut du clavier.}}</translation>
 <translation id="1657011748321897393">Échec du partage, car vous n'êtes pas connecté(e) au réseau.</translation>
@@ -302,7 +300,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2556092377360758201">Aucune protection (non recommandé)</translation>
 <translation id="2561375093019333908">OUVRIR</translation>
 <translation id="2562041823070056534">Envoi à <ph name="DEVICE_NAME" /> en cours…</translation>
-<translation id="2576499762020411840">Utiliser et enregistrer les mots de passe dans votre compte Google</translation>
 <translation id="2577522251608256362">Quartier</translation>
 <translation id="2578571896248130439">Envoyer la page Web</translation>
 <translation id="2584132361465095047">Ajouter un compte…</translation>
@@ -948,7 +945,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5850913622988109693">Options pour suivre les colis</translation>
 <translation id="5854790677617711513">Datant de plus de 30 jours</translation>
 <translation id="5857090052475505287">Nouveau dossier</translation>
-<translation id="5857361196621230935">Ajouter un onglet au groupe</translation>
 <translation id="5857770089550859117">Une phrase de passe est requise pour commencer la synchronisation.</translation>
 <translation id="5859715514067755465">Avancer</translation>
 <translation id="5860033963881614850">Désactivé</translation>
@@ -1159,7 +1155,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6800349425672670802">Vous pouvez accéder à tous vos onglets ouverts à partir du Gestionnaire d'onglets.</translation>
 <translation id="6807889908376551050">Tout afficher…</translation>
 <translation id="681368974849482173">Élément créé</translation>
-<translation id="6822587385560699678">Lorsque cette option est activée, les mots de passe sont enregistrés dans <ph name="ACCOUNT" />. Si cette option est désactivée, les mots de passe sont enregistrés uniquement sur cet appareil.</translation>
 <translation id="6824350924364057989">Paramètres</translation>
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6842136130964845393">Pour vous assurer de toujours pouvoir accéder à vos mots de passe enregistrés, vérifiez qu'il s'agit bien de vous</translation>

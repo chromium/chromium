@@ -251,6 +251,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="2364539095045928896">Tlačidlo zatvorenia na zavretie oznámenia o ochrane súkromia v Centre štatistík stránky</translation>
 <translation id="2386938421315164605">Skryte a zobrazte témy</translation>
 <translation id="2390510615457643724">Chcete znova stiahnuť <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
+<translation id="2395004545133500011">Zdieľanie s otvoreným hárkom súhrnu</translation>
 <translation id="2410754283952462441">Výber účtu</translation>
 <translation id="2414886740292270097">Tmavý režim</translation>
 <translation id="2421705177906985956">Momentálne nie sú k dispozícii žiadne weby na zobrazenie</translation>
@@ -365,6 +366,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="2942036813789421260">Karta ukážky je zatvorená</translation>
 <translation id="2946420957526726953">Aktualizuje sa Chrome, aby sa dalo pripojiť k iným zariadeniam</translation>
 <translation id="2951071800649516099">Pridajte si do čitateľského zoznamu strany na neskôr</translation>
+<translation id="2956070106555335453">Súhrn</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> neprečítaná stránka}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprečítané stránky}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprečítanej stránky}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprečítaných stránok}}</translation>
 <translation id="296370266220139811">Šetrite čas a píšte menej</translation>
 <translation id="2977350910003566746">Zoraďuje sa podľa posledného otvorenia</translation>
@@ -644,6 +646,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Záložka bola uložená do priečinka <ph name="FOLDER_NAME" />. Je uložená iba v tomto zariadení.}few{Záložky boli uložené do priečinka <ph name="FOLDER_NAME" />. Sú uložené iba v tomto zariadení.}many{Bookmarks saved to "<ph name="FOLDER_NAME" />". It is only saved to this device.}other{Záložky boli uložené do priečinka <ph name="FOLDER_NAME" />. Sú uložené iba v tomto zariadení.}}</translation>
 <translation id="4484496141267039529">Žiadne pripojenie. Skúste to neskôr.</translation>
 <translation id="4487967297491345095">Všetky dáta aplikácií v Chrome budú natrvalo odstránené. Platí to aj pre všetky súbory, nastavenia, účty, databázy atď.</translation>
+<translation id="4489640160615759754">Zdieľanie s hárkom súhrnu</translation>
 <translation id="4494806687727322324">Ukladanie hesiel zapol váš správca</translation>
 <translation id="4508528996305412043">Ponuka karty feedu je otvorená</translation>
 <translation id="4509501256689523862">To, či je reklama zobrazená pri prehliadaní prispôsobená, závisí od <ph name="BEGIN_LINK_1" />tém reklamy<ph name="END_LINK_1" />, vašich <ph name="BEGIN_LINK_2" />nastavení súborov cookie<ph name="END_LINK_2" /> a od toho, či prehliadaný web prispôsobuje reklamy.</translation>
@@ -653,6 +656,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="4521489764227272523">Vybrané údaje boli odstránené z Chromu a vašich synchronizovaných zariadení.
 
 Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ďalšie formy histórie prehliadania, ako napríklad vyhľadávania a aktivity v iných službách Googlu.</translation>
+<translation id="452279259461584111">Zdieľanie so zavretým hárkom súhrnu</translation>
 <translation id="4523326818319942067">posledná hodina</translation>
 <translation id="452750746583162491">Skontrolovať synchronizované údaje</translation>
 <translation id="4532845899244822526">Vyberte priečinok</translation>
@@ -750,6 +754,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4950924971025849764">Keď sa prihlásite do rovnakého účtu Google, ostatné zariadenia budú môcť tento telefón používať ako bezpečnostný kľúč.</translation>
 <translation id="4957722034734105353">Ďalšie informácie...</translation>
 <translation id="4961107849584082341">Preložte si túto stránku do ľubovoľného jazyka</translation>
+<translation id="496607651705915226">Ak chcete vo svojom účte Google ukladať a používať nové heslá, aktualizujte Služby Google Play</translation>
 <translation id="4971735654804503942">Rýchlejšia a proaktívna ochrana pred nebezpečnými webmi, stiahnutým súbormi a rozšíreniami. Upozorní vás na porušenie ochrany hesla. Vyžaduje odoslanie dát prehliadania do Googlu.</translation>
 <translation id="497421865427891073">Ďalej</translation>
 <translation id="4987271110129728827">Danú stránku sa nepodarilo nájsť. Skontrolujte pravopis alebo vyskúšajte internetové vyhľadávanie.</translation>

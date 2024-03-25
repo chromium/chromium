@@ -228,6 +228,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1882814835921407042">No hi ha cap xarxa mòbil</translation>
 <translation id="1882897271359938046">S'està replicant <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloqueja amb l'empremta digital</translation>
+<translation id="1904997243703671177">En desactivar el Bluetooth, <ph name="DEVICE_COUNT" /> dispositius externs es desconnectaran del teu dispositiu <ph name="DEVICE_TYPE" />, inclosos:</translation>
 <translation id="1908992311423394684">Instal·lació nova</translation>
 <translation id="1915307458270490472">Penja</translation>
 <translation id="1918022425394817322">La càmera s'ha ajustat a l'extrem superior dret</translation>
@@ -258,7 +259,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2017998995161831444">Obre Ajuda a l'aplicació Explora</translation>
 <translation id="2018630726571919839">Explica'm un acudit</translation>
 <translation id="2021864487439853900">Fes clic per desbloquejar</translation>
-<translation id="2023558322300866873">Pots aturar la captura de paquets en qualsevol moment</translation>
 <translation id="2034971124472263449">Desa igualment</translation>
 <translation id="204259843076055848">La drecera <ph name="SIX_PACK_KEY_NAME" /> està desactivada en aquest moment</translation>
 <translation id="2049240716062114887">El nom de l'escriptori s'ha canviat a <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2482878487686419369">Notificacions</translation>
 <translation id="2484513351006226581">Prem <ph name="KEYBOARD_SHORTCUT" /> per canviar la disposició del teclat.</translation>
 <translation id="2486214324139475545">Previsualització de <ph name="DESK_NAME" />. Escriptori actiu.</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" ha canviat a una resolució de <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Si no ho confirmes, la configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Vull entrar-hi</translation>
 <translation id="2499445554382787206">Menú del perfil de l'escriptori. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tecles permanents</translation>
@@ -699,7 +700,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="380165613292957338">Hola, en què et puc ajudar?</translation>
 <translation id="3804737937830804242">Replega la càmera</translation>
 <translation id="3824784079442479685">Permet l'accés a la càmera a <ph name="APP_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir a la càmera. És possible que hagis d'actualitzar la pàgina web o reiniciar l'aplicació.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> de <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> s'han entregat, i s'han puntuat <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Canvia a contrasenya</translation>
 <translation id="383058930331066723">El mode d'estalvi de bateria està activat</translation>
 <translation id="383629559565718788">Mostra la configuració del teclat</translation>
@@ -763,7 +763,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4066027111132117168">Activada (<ph name="REMAINING_TIME" />)</translation>
 <translation id="4069532248403319695">Obre la pàgina Baixades</translation>
 <translation id="4072264167173457037">Senyal mitjà</translation>
-<translation id="4076455981957565732">Entregades: <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Amb nota: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Activa l'interruptor del micròfon físic al dispositiu</translation>
 <translation id="4101772068965291327">Obre la pàgina d'inici</translation>
 <translation id="4112140312785995938">Retrocedeix</translation>
@@ -959,6 +958,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4813311884204119883">Arrossega l'enllaç a l'àrea en blanc de la barra de pestanyes</translation>
 <translation id="4814539958450445987">Pantalla d'inici de sessió</translation>
 <translation id="481455355267255546">A continuació</translation>
+<translation id="481749895090480684">Llista de tasques: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">la càmera i el micròfon</translation>
 <translation id="482908187605862807">Aplicacions disponibles a Play Store</translation>
 <translation id="4831034276697007977">Confirmes que vols desactivar els clics automàtics?</translation>
@@ -1000,6 +1000,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4952936045814352993">La funció Localitza el telèfon no està disponible quan els sons d'alarma estan desactivats</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requereix que el dispositiu <ph name="DEVICE_TYPE" /> torni a una versió anterior. El dispositiu es restablirà i totes les dades se suprimiran.</translation>
 <translation id="4961318399572185831">Emet la pantalla</translation>
+<translation id="4964188651935955085">Quan desactivis el Bluetooth, aquest dispositiu extern es desconnectarà del teu dispositiu <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Apuja el volum</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Cercles a les aplicacions</translation>
@@ -1027,6 +1028,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Si parles mentre el micròfon està silenciat, rebràs una notificació. No s'emetrà àudio des del dispositiu.</translation>
 <translation id="5077416371682039027">Configura la visualització de les aplicacions, de les notificacions, dels fitxers multimèdia i de les fotos recents del telèfon</translation>
+<translation id="5077936103761694531">Vols confirmar la resolució?</translation>
 <translation id="5078796286268621944">PIN incorrecte</translation>
 <translation id="5083035541015925118">Ctrl+Alt+fletxa amunt</translation>
 <translation id="5083553833479578423">Desbloqueja més funcions de l'Assistent.</translation>
@@ -1676,6 +1678,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7647488630410863958">Desbloqueja el dispositiu per veure les notificacions</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7654687942625752712">Mantén premudes les dues tecles de volum durant cinc segons per desactivar els avisos de veu.</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" ha canviat a una resolució de <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). A causa de les limitacions d'amplada de banda dels ports, la pantalla no admet una resolució de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Si no ho confirmes, la configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7659861092419699379">S'han tancat l'escriptori i les finestres</translation>
 <translation id="7660160718439869192">Veuràs <ph name="NAME" /> als dispositius vinculats a <ph name="EMAIL" /></translation>
@@ -1766,6 +1769,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7945357288295809525">Mostra la configuració d'accessibilitat, "<ph name="ENABLED_FEATURES" />" activada.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vol utilitzar <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Atenua el teclat</translation>
+<translation id="7953994493035617347">Vols confirmar la nova resolució?</translation>
 <translation id="7963689218131240420">El mode No molestis està desactivat.</translation>
 <translation id="7963992254934562106">De: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Selecciona una carpeta...</translation>
@@ -1824,6 +1828,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8155628902202578800">Obre el quadre de diàleg d'informació per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">S'està utilitzant <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Activa/Desactiva el menú per canviar la mida del mode de bloqueig</translation>
+<translation id="8192727139462702395">Quan desactivis el Bluetooth, aquests dispositius externs es desconnectaran del teu dispositiu <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">S'està emetent la pestanya</translation>
 <translation id="8200772114523450471">Reprèn</translation>
 <translation id="8203795194971602413">Fes clic amb el botó dret</translation>

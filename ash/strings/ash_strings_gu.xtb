@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">કોઈ મોબાઇલ નેટવર્ક નથી</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> પર પ્રતિબિંબિત થઈ રહ્યું છે</translation>
 <translation id="1885785240814121742">ફિંગરપ્રિન્ટથી અનલૉક કરો</translation>
+<translation id="1904997243703671177">જ્યારે તમે બ્લૂટૂથ બંધ કરો, ત્યારે <ph name="DEVICE_COUNT" /> બાહ્ય ડિવાઇસ તમારા <ph name="DEVICE_TYPE" />થી ડિસ્કનેક્ટ થઈ જશે, જેમાં શામેલ છે:</translation>
 <translation id="1908992311423394684">નવી ઇન્સ્ટૉલ કરી છે</translation>
 <translation id="1915307458270490472">સમાપ્ત કરો</translation>
 <translation id="1918022425394817322">કૅમેરાને ઉપરના જમણા ખૂણામાં સ્નેપ કર્યો</translation>
@@ -258,7 +259,6 @@
 <translation id="2017998995161831444">Explore ઍપમાં "સહાય" ખોલો</translation>
 <translation id="2018630726571919839">મને કોઈ જોક સંભળાવો</translation>
 <translation id="2021864487439853900">અનલૉક કરવા માટે ક્લિક કરો</translation>
-<translation id="2023558322300866873">તમે કોઈપણ સમયે પૅકેટ કૅપ્ચર બંધ કરી શકો છો</translation>
 <translation id="2034971124472263449">કોઈપણ રીતે સાચવો</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> શૉર્ટકટ હાલમાં બંધ છે</translation>
 <translation id="2049240716062114887">ડેસ્કનું નામ બદલીને <ph name="DESK_NAME" /> કરવામાં આવ્યું હતું</translation>
@@ -356,6 +356,7 @@
 <translation id="2482878487686419369">નોટિફિકેશનો</translation>
 <translation id="2484513351006226581">કીબોર્ડ લેઆઉટ સ્વિચ કરવા માટે <ph name="KEYBOARD_SHORTCUT" />ને દબાવો.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" />નો પ્રીવ્યૂ કરો. સક્રિય ડેસ્ક.</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />"ને બદલીને <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) રિઝોલ્યુશન કરવામાં આવ્યું હતું. કન્ફર્મ કર્યા વિના, <ph name="TIMEOUT_SECONDS" />માં અગાઉના સેટિંગ રિસ્ટોર કરવામાં આવશે.</translation>
 <translation id="2487915095798731898">જોડાઓ</translation>
 <translation id="2499445554382787206">ડેસ્ક પ્રોફાઇલનું મેનૂ. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">સ્ટિકી કી</translation>
@@ -699,7 +700,6 @@
 <translation id="380165613292957338">નમસ્કાર, હું કેવી રીતે સહાય કરી શકું?</translation>
 <translation id="3804737937830804242">કૅમેરાને નાનો કરો</translation>
 <translation id="3824784079442479685">આમ કરવાથી કૅમેરાની પરવાનગી ધરાવતી <ph name="APP_NAME" /> તથા બધી ઍપ અને વેબસાઇટ માટે, કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવે છે. તમારે વેેબપેજ રિફ્રેશ કરવાની અથવા ઍપ ફરી શરૂ કરવાની જરૂર પડી શકે છે.</translation>
-<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" />માંથી <ph name="NUM_TURNED_IN" /> સબમિટ કરવામાં આવ્યા, <ph name="NUM_GRADED" />ને ગ્રેડ આપવામાં આવ્યો</translation>
 <translation id="3826099427150913765">પાસવર્ડ પર સ્વિચ કરો</translation>
 <translation id="383058930331066723">બૅટરી સેવર મોડ ચાલુ છે</translation>
 <translation id="383629559565718788">કીબોર્ડ સેટિંગ બતાવો</translation>
@@ -763,7 +763,6 @@
 <translation id="4066027111132117168">ચાલુ છે, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">ડાઉનલોડનું પેજ ખોલો</translation>
 <translation id="4072264167173457037">મધ્યમ સિગ્નલ</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> સબમિટ થઈ ગયા • <ph name="NUM_GRADED" />ને ગ્રેડ આપવામાં આવ્યો</translation>
 <translation id="4086921558679520050">તમારા ડિવાઇસ પર વાસ્તવિક માઇકની સ્વિચ ચાલુ કરો</translation>
 <translation id="4101772068965291327">હોમ પેજ ખોલો</translation>
 <translation id="4112140312785995938">પાછળ કરો</translation>
@@ -959,6 +958,7 @@
 <translation id="4813311884204119883">લિંકને ટૅબ સ્ટ્રિપ પરના ખાલી વિસ્તારમાં ખેંચો</translation>
 <translation id="4814539958450445987">લૉગ ઇન સ્ક્રીન</translation>
 <translation id="481455355267255546">આગામી ઇવેન્ટ</translation>
+<translation id="481749895090480684">કાર્ય સૂચિ: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">કૅમેરા અને માઇક્રોફોન</translation>
 <translation id="482908187605862807">Play Storeમાંથી ઉપલબ્ધ હોય તેવી ઍપ</translation>
 <translation id="4831034276697007977">શું તમારે ખરેખર ઑટોમૅટિક ક્લિક બંધ કરવા છે?</translation>
@@ -1000,6 +1000,7 @@
 <translation id="4952936045814352993">અલાર્મના સાઉન્ડ બંધ હોય ત્યારે ફોન શોધવાની સુવિધા ઉપલબ્ધ હોતી નથી</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારું <ph name="DEVICE_TYPE" /> અગાઉના વર્ઝન પર પાછું વાળો. તમારું ડિવાઇસ રીસેટ થશે અને બધો ડેટા ડિલીટ કરાશે.</translation>
 <translation id="4961318399572185831">સ્ક્રીનને કાસ્ટ કરો</translation>
+<translation id="4964188651935955085">જ્યારે તમે બ્લૂટૂથ બંધ કરો, ત્યારે આ બાહ્ય ડિવાઇસ તમારા <ph name="DEVICE_TYPE" />થી ડિસ્કનેક્ટ થઈ જશે:</translation>
 <translation id="4966431234408005599">વૉલ્યૂમ વધારો</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> કલાક <ph name="MINUTES" /> મિનિટ <ph name="SECONDS" /> સેકન્ડ</translation>
 <translation id="4975771730019223894">ઍપ બૅજિંગ</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">મ્યૂટ કરેલું હોય ત્યારે જો તમે વાત કરો તો તમને સૂચિત કરવામાં આવશે. ઑડિયો તમારા ડિવાઇસમાં જ રહે છે.</translation>
 <translation id="5077416371682039027">તમારા ફોનના તાજેતરના ફોટા, મીડિયા, નોટિફિકેશન અને ઍપ જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા કરો</translation>
+<translation id="5077936103761694531">રિઝોલ્યુશન કન્ફર્મ કરીએ?</translation>
 <translation id="5078796286268621944">ખોટો PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + ઉપરની ઍરો કી</translation>
 <translation id="5083553833479578423">Assistantની વધુ સુવિધાઓને અનલૉક કરો.</translation>
@@ -1676,6 +1678,7 @@
 <translation id="7647488630410863958">તમારી સૂચનાઓ જોવા માટે ડિવાઇસને અનલૉક કરો</translation>
 <translation id="7649070708921625228">સહાય</translation>
 <translation id="7654687942625752712">બોલાયેલો પ્રતિસાદ બંધ કરવા પાંચ સેકન્ડ માટે બન્ને વૉલ્યૂમ કીને દબાવી રાખો.</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />"ને બદલીને <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) રિઝોલ્યુશન કરવામાં આવ્યું હતું. પોર્ટ બૅન્ડવિડ્થની મર્યાદાઓને કારણે, તમારું ડિસ્પ્લે <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) રિઝોલ્યુશનને સપોર્ટ કરી શકતું નથી. કન્ફર્મ કર્યા વિના, <ph name="TIMEOUT_SECONDS" />માં અગાઉના સેટિંગ રિસ્ટોર કરવામાં આવશે.</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7659861092419699379">ડેસ્ક અને વિન્ડો બંધ કરવામાં આવી છે</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" />ની સાથે લિંક કરેલાં ડિવાઇસ પર તમારું <ph name="NAME" /> દેખાશે</translation>
@@ -1766,6 +1769,7 @@
 <translation id="7945357288295809525">ઍક્સેસિબિલિટી સેટિંગ બતાવો, "<ph name="ENABLED_FEATURES" />" ચાલુ કર્યું.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> તમારા <ph name="DEVICE_NAME" />નો ઉપયોગ કરવા માગે છે</translation>
 <translation id="7951630946012935453">ડિમ કીબોર્ડ</translation>
+<translation id="7953994493035617347">નવું રિઝોલ્યુશન કન્ફર્મ કરીએ?</translation>
 <translation id="7963689218131240420">'ખલેલ પાડશો નહીં' મોડ બંધ છે.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> તરફથી</translation>
 <translation id="7968693143708939792">ફોલ્ડર પસંદ કરો...</translation>
@@ -1824,6 +1828,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> માટે માહિતી સંવાદ ખોલો</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />નો ઉપયોગ કરી રહ્યા છે</translation>
 <translation id="8185090165691050712">લૉક મોડનું કદ બદલવા માટે મેનૂ ચાલુ/બંધ કરો</translation>
+<translation id="8192727139462702395">જ્યારે તમે બ્લૂટૂથ બંધ કરો, ત્યારે આ બાહ્ય ડિવાઇસ તમારા <ph name="DEVICE_TYPE" />થી ડિસ્કનેક્ટ થઈ જશે:</translation>
 <translation id="8198456017687137612">ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
 <translation id="8203795194971602413">રાઇટ ક્લિક કરો</translation>

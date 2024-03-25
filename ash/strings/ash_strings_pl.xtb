@@ -228,6 +228,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1882814835921407042">Brak sieci komórkowej</translation>
 <translation id="1882897271359938046">Kopia na <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Odblokuj odciskiem palca</translation>
+<translation id="1904997243703671177">Gdy wyłączysz Bluetooth, urządzenia zewnętrzne (<ph name="DEVICE_COUNT" />) rozłączą się z urządzeniem <ph name="DEVICE_TYPE" />. Będą to:</translation>
 <translation id="1908992311423394684">Nowa instalacja</translation>
 <translation id="1915307458270490472">Rozłącz</translation>
 <translation id="1918022425394817322">Podgląd z kamery został przyciągnięty do prawego górnego rogu</translation>
@@ -258,7 +259,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2017998995161831444">Otwórz „Pomoc” w aplikacji Odkrywaj</translation>
 <translation id="2018630726571919839">Opowiedz mi kawał</translation>
 <translation id="2021864487439853900">Kliknij, aby odblokować</translation>
-<translation id="2023558322300866873">Przechwytywanie pakietów możesz zatrzymać w dowolnym momencie</translation>
 <translation id="2034971124472263449">Zapisz mimo to</translation>
 <translation id="204259843076055848">Skrót symulujący działanie klawisza <ph name="SIX_PACK_KEY_NAME" /> jest obecnie wyłączony</translation>
 <translation id="2049240716062114887">Nazwa biurka została zmieniona na <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2484513351006226581">Naciśnij <ph name="KEYBOARD_SHORTCUT" />, by przełączyć układ klawiatury.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> – podgląd. Biurko aktywne.</translation>
+<translation id="2486405091093637109">Rozdzielczość wyświetlacza „<ph name="DISPLAY_NAME" />” została zmieniona na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Jeśli tego nie potwierdzisz, za <ph name="TIMEOUT_SECONDS" /> zostaną przywrócone poprzednie ustawienia.</translation>
 <translation id="2487915095798731898">Dołącz</translation>
 <translation id="2499445554382787206">Menu profilu biurka. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Klawisze trwałe</translation>
@@ -699,7 +700,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="380165613292957338">Cześć, w czym mogę pomóc?</translation>
 <translation id="3804737937830804242">Zamknij aparat</translation>
 <translation id="3824784079442479685">Zezwala na dostęp do kamery aplikacji <ph name="APP_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
-<translation id="3825680296690914697">Oddane: <ph name="NUM_TURNED_IN" /> z <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, ocenione: <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Zmień na hasło</translation>
 <translation id="383058930331066723">Włączone jest oszczędzanie baterii.</translation>
 <translation id="383629559565718788">Pokaż ustawienia klawiatury</translation>
@@ -763,7 +763,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4066027111132117168">Włączone. Pozostały czas: <ph name="REMAINING_TIME" />.</translation>
 <translation id="4069532248403319695">Otwórz stronę Pobrane</translation>
 <translation id="4072264167173457037">średni sygnał</translation>
-<translation id="4076455981957565732">Oddane: <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Ocenione: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Włącz fizyczny przełącznik mikrofonu na urządzeniu</translation>
 <translation id="4101772068965291327">Otwórz stronę główną</translation>
 <translation id="4112140312785995938">Przewiń do tyłu</translation>
@@ -959,6 +958,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4813311884204119883">Przeciągnij link na pusty obszar na pasku kart</translation>
 <translation id="4814539958450445987">Ekran logowania</translation>
 <translation id="481455355267255546">Następne</translation>
+<translation id="481749895090480684">Lista zadań: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamery i mikrofonu</translation>
 <translation id="482908187605862807">Aplikacje dostępne w Sklepie Play</translation>
 <translation id="4831034276697007977">Czy na pewno chcesz wyłączyć automatyczne kliknięcia?</translation>
@@ -1000,6 +1000,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4952936045814352993">Funkcja Znajdź telefon jest niedostępna, kiedy dźwięki alarmu są wyłączone</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> wymaga przywrócenia wcześniejszej wersji systemu operacyjnego na urządzeniu <ph name="DEVICE_TYPE" />. Urządzenie zostanie zresetowane, a wszystkie dane – usunięte.</translation>
 <translation id="4961318399572185831">Przesyłanie ekranu</translation>
+<translation id="4964188651935955085">Gdy wyłączysz Bluetooth, to urządzenie zewnętrzne rozłączy się z urządzeniem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Zwiększ głośność</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> godz. <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Plakietki aplikacji</translation>
@@ -1027,6 +1028,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Powiadomimy Cię, gdy będziesz mówić, a mikrofon będzie wyciszony. Dźwięk nigdy nie jest wysyłany poza Twoje urządzenie.</translation>
 <translation id="5077416371682039027">Skonfiguruj wyświetlanie najnowszych zdjęć, plików multimedialnych, powiadomień i aplikacji z telefonu</translation>
+<translation id="5077936103761694531">Potwierdzić rozdzielczość?</translation>
 <translation id="5078796286268621944">Błędny kod PIN</translation>
 <translation id="5083035541015925118">Ctrl + Alt + strzałka w górę</translation>
 <translation id="5083553833479578423">Poznaj więcej funkcji Asystenta.</translation>
@@ -1675,6 +1677,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7647488630410863958">Odblokuj urządzenie, by zobaczyć swoje powiadomienia</translation>
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7654687942625752712">Naciśnij i przytrzymaj przez pięć sekund oba klawisze głośności, by wyłączyć komunikaty głosowe.</translation>
+<translation id="7654916369822103315">Rozdzielczość wyświetlacza „<ph name="DISPLAY_NAME" />” została zmieniona na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Ze względu na ograniczenia przepustowości portów Twój wyświetlacz nie obsługuje rozdzielczości <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Jeśli nie potwierdzisz tej zmiany, za <ph name="TIMEOUT_SECONDS" /> zostaną przywrócone poprzednie ustawienia.</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7659861092419699379">Biurko i okna zostały zamknięte</translation>
 <translation id="7660160718439869192">Urządzenie <ph name="NAME" /> będzie widoczne na urządzeniach połączonych z kontem <ph name="EMAIL" /></translation>
@@ -1765,6 +1768,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7945357288295809525">Pokaż ustawienia ułatwień dostępu, włączono „<ph name="ENABLED_FEATURES" />”.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> chce użyć urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Przyciemnij klawiaturę</translation>
+<translation id="7953994493035617347">Potwierdzić nową rozdzielczość?</translation>
 <translation id="7963689218131240420">Tryb Nie przeszkadzać jest wyłączony.</translation>
 <translation id="7963992254934562106">Źródło: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Wybierz folder...</translation>
@@ -1823,6 +1827,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8155628902202578800">Otwórz okno informacyjne dla konta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">W użyciu jest: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Włącz/wyłącz menu, aby zmienić rozmiar trybu blokady</translation>
+<translation id="8192727139462702395">Gdy wyłączysz Bluetooth, te urządzenia zewnętrzne rozłączą się z urządzeniem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Przesyłam kartę</translation>
 <translation id="8200772114523450471">Wznów</translation>
 <translation id="8203795194971602413">Kliknięcie prawym przyciskiem</translation>

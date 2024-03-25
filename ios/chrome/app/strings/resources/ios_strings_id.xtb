@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17.30</translation>
 <translation id="1209206284964581585">Sembunyikan untuk saat ini</translation>
 <translation id="1219674500290482172">Tidak dapat terhubung ke internet.</translation>
-<translation id="1226238226094914652">Sandi di Semua Perangkat Anda</translation>
 <translation id="122699739164161391">Tutup Semua Tab</translation>
 <translation id="1227866575467023566">{count,plural, =1{Halaman ditambahkan ke daftar bacaan di akun Anda, {email}}other{{count} Halaman ditambahkan ke daftar bacaan di akun Anda, {email}}}</translation>
 <translation id="1242044645101871359">Login Lagi</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Ikuti</translation>
 <translation id="1644574205037202324">Histori</translation>
 <translation id="164673457281113247">{count,plural, =1{Bookmark disimpan}other{Bookmark disimpan}}</translation>
-<translation id="165008673352427892">Fitur baru</translation>
 <translation id="1650222530560417226">Ketuk tombol "Mulai Logging" untuk mengumpulkan log dan error konsol JavaScript mendatang dari semua tab. Log akan dikumpulkan (dan disimpan hanya dalam memori) hingga halaman ini ditutup atau "Hentikan Logging" diketuk.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} sandi tersimpan tersedia di atas keyboard Anda.}other{{count} sandi tersimpan tersedia di atas keyboard Anda.}}</translation>
 <translation id="1657011748321897393">Gagal berbagi karena tidak terhubung ke jaringan.</translation>
@@ -302,7 +300,6 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2556092377360758201">Tidak Ada Perlindungan (tidak direkomendasikan)</translation>
 <translation id="2561375093019333908">BUKA</translation>
 <translation id="2562041823070056534">Mengirim ke <ph name="DEVICE_NAME" />...</translation>
-<translation id="2576499762020411840">Simpan dan Gunakan Sandi di Akun Google Anda</translation>
 <translation id="2577522251608256362">Kawasan</translation>
 <translation id="2578571896248130439">Kirim Halaman</translation>
 <translation id="2584132361465095047">Tambahkan Akun…</translation>
@@ -948,7 +945,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5850913622988109693">Opsi untuk Melacak Paket</translation>
 <translation id="5854790677617711513">Lebih dari 30 hari</translation>
 <translation id="5857090052475505287">Folder Baru</translation>
-<translation id="5857361196621230935">Tambahkan Tab ke Grup</translation>
 <translation id="5857770089550859117">Perlu frasa sandi untuk memulai sinkronisasi.</translation>
 <translation id="5859715514067755465">Maju</translation>
 <translation id="5860033963881614850">Nonaktif</translation>
@@ -1064,6 +1060,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6383719166112032471">Buka Lokasi …</translation>
 <translation id="6387994324662817823">Sandi hanya disimpan ke Pengelola Sandi Google di perangkat ini.</translation>
 <translation id="6389470377220713856">Nama di Kartu</translation>
+<translation id="6404422529625928907">Buka di Google Drive</translation>
 <translation id="6406506848690869874">Sinkronisasi</translation>
 <translation id="6410390304316730527">Safe Browsing akan melindungi Anda dari penyerang yang dapat mengelabui Anda agar melakukan sesuatu yang berbahaya, misalnya menginstal software berbahaya atau mengungkap informasi pribadi seperti sandi, nomor telepon, atau kartu kredit. Jika dinonaktifkan, harap berhati-hati saat mengakses situs tidak dikenal atau tidak tepercaya.</translation>
 <translation id="6410883413783534063">Buka tab untuk mengunjungi halaman yang berbeda secara bersamaan</translation>
@@ -1158,7 +1155,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6800349425672670802">Anda dapat mengakses semua tab yang terbuka dari Pengalih Tab.</translation>
 <translation id="6807889908376551050">Tampilkan Semua...</translation>
 <translation id="681368974849482173">Item dibuat</translation>
-<translation id="6822587385560699678">Jika diaktifkan, sandi akan disimpan di <ph name="ACCOUNT" />. Jika dinonaktifkan, sandi hanya akan disimpan ke perangkat ini.</translation>
 <translation id="6824350924364057989">Setelan</translation>
 <translation id="6831043979455480757">Terjemahkan</translation>
 <translation id="6842136130964845393">Untuk memastikan Anda selalu dapat mengakses sandi tersimpan, verifikasi diri Anda</translation>
@@ -1446,6 +1442,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8299417921174340354">Untuk menggunakan sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="8299613349954694191">Buka tab Samaran untuk menjelajahi web secara pribadi.</translation>
 <translation id="8311853334103696030">Sembunyikan Pantau Harga</translation>
+<translation id="8313645224014086262">Simpan file</translation>
 <translation id="8319076807703933069">Penelusuran Baru</translation>
 <translation id="8328777765163860529">Tutup Semua</translation>
 <translation id="8343993175958086504">Cadangkan data Anda dan gunakan di perangkat mana pun.</translation>
@@ -1559,6 +1556,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8868471676553493380">{count,plural, =1{{count} Tab}other{{count} Tab}}</translation>
 <translation id="8870413625673593573">Baru Saja Ditutup</translation>
 <translation id="8876882697946675716">Jaga Perangkat Anda Tetap Sinkron</translation>
+<translation id="8879604564928138696">Ketuk dua kali untuk mencoba</translation>
 <translation id="8879984884633913185">Sembunyikan Hapus Data Penjelajahan</translation>
 <translation id="8881801611828450202">Telusuri Gambar Ini di <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Kirim URL beberapa halaman yang Anda kunjungi, informasi sistem terbatas, dan beberapa konten halaman ke Google untuk membantu menemukan ancaman baru dan melindungi semua orang di web.</translation>

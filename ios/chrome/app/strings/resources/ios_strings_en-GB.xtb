@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">5.30 p.m.</translation>
 <translation id="1209206284964581585">Hide for now</translation>
 <translation id="1219674500290482172">Unable to connect to the Internet.</translation>
-<translation id="1226238226094914652">Passwords on all of your devices</translation>
 <translation id="122699739164161391">Close All Tabs</translation>
 <translation id="1227866575467023566">{count,plural, =1{Page added to your reading list in your account, {email}}other{{count} Pages added to your reading list in your account, {email}}}</translation>
 <translation id="1242044645101871359">Sign in again</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Follow</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="164673457281113247">{count,plural, =1{Bookmark saved}other{Bookmarks saved}}</translation>
-<translation id="165008673352427892">New feature</translation>
 <translation id="1650222530560417226">Tap the 'Start Logging' button to collect future JavaScript console logs and errors from all tabs. Logs will be collected (and stored only in memory) until this page is closed or 'Stop Logging' is tapped.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} saved password available above your keyboard.}other{{count} saved passwords available above your keyboard.}}</translation>
 <translation id="1657011748321897393">Sharing failed because you are not connected to the network.</translation>
@@ -302,7 +300,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2556092377360758201">No protection (not recommended)</translation>
 <translation id="2561375093019333908">OPEN</translation>
 <translation id="2562041823070056534">Sending to <ph name="DEVICE_NAME" />...</translation>
-<translation id="2576499762020411840">Use and save passwords in Your Google Account</translation>
 <translation id="2577522251608256362">Neighbourhood</translation>
 <translation id="2578571896248130439">Send Web Page</translation>
 <translation id="2584132361465095047">Add Account…</translation>
@@ -948,7 +945,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5850913622988109693">Options to track packages</translation>
 <translation id="5854790677617711513">Older than 30 days</translation>
 <translation id="5857090052475505287">New Folder</translation>
-<translation id="5857361196621230935">Add tab to group</translation>
 <translation id="5857770089550859117">Passphrase required to start sync.</translation>
 <translation id="5859715514067755465">Forward</translation>
 <translation id="5860033963881614850">Off</translation>
@@ -1159,7 +1155,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6800349425672670802">You can access all your open tabs from the Tab Switcher.</translation>
 <translation id="6807889908376551050">Show All...</translation>
 <translation id="681368974849482173">Item created</translation>
-<translation id="6822587385560699678">When on, passwords are saved in <ph name="ACCOUNT" />. When off, passwords are saved only to this device.</translation>
 <translation id="6824350924364057989">Settings</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">To make sure that you can always access your saved passwords, verify that it's you</translation>

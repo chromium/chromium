@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Amaga per ara</translation>
 <translation id="1219674500290482172">No es pot connectar a Internet.</translation>
-<translation id="1226238226094914652">Contrasenyes en tots els teus dispositius</translation>
 <translation id="122699739164161391">Tanca totes les pestanyes</translation>
 <translation id="1227866575467023566">{count,plural, =1{Una pàgina s'ha afegit a la llista de lectura del teu compte, {email}}other{{count} pàgines s'han afegit a la llista de lectura del teu compte, {email}}}</translation>
 <translation id="1242044645101871359">Torna a iniciar la sessió</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Segueix</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="164673457281113247">{count,plural, =1{S'ha desat l'adreça d'interès}other{S'han desat les adreces d'interès}}</translation>
-<translation id="165008673352427892">Funció nova</translation>
 <translation id="1650222530560417226">Toca el botó Inicia el registre per recopilar els futurs registres i errors de la consola de JavaScript de totes les pestanyes. Els registres es recopilaran (i s'emmagatzemaran només a la memòria) fins que es tanqui aquesta pàgina o es toqui Atura el registre.</translation>
 <translation id="1653432787084483144">{count,plural, =1{Hi ha {count} contrasenya desada disponible a sobre del teclat.}other{Hi ha {count} contrasenyes desades disponibles a sobre del teclat.}}</translation>
 <translation id="1657011748321897393">No s'ha pogut compartir perquè no esteu connectat a la xarxa.</translation>
@@ -302,7 +300,6 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2556092377360758201">Sense protecció (opció no recomanada)</translation>
 <translation id="2561375093019333908">OBRE</translation>
 <translation id="2562041823070056534">S'està enviant a <ph name="DEVICE_NAME" />...</translation>
-<translation id="2576499762020411840">Utilitza i desa contrasenyes al teu Compte de Google</translation>
 <translation id="2577522251608256362">Veïnat</translation>
 <translation id="2578571896248130439">Envia la pàgina web</translation>
 <translation id="2584132361465095047">Afegeix un compte…</translation>
@@ -948,7 +945,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5850913622988109693">Opcions per fer el seguiment de paquets</translation>
 <translation id="5854790677617711513">Anterior a 30 dies</translation>
 <translation id="5857090052475505287">Carpeta nova</translation>
-<translation id="5857361196621230935">Afegeix una pestanya al grup</translation>
 <translation id="5857770089550859117">Cal una frase de contrasenya per iniciar la sincronització.</translation>
 <translation id="5859715514067755465">Endavant</translation>
 <translation id="5860033963881614850">Desactivat</translation>
@@ -1159,7 +1155,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6800349425672670802">Pots accedir a totes les pestanyes obertes des del selector de pestanyes.</translation>
 <translation id="6807889908376551050">Mostra-ho tot...</translation>
 <translation id="681368974849482173">S'ha creat un element.</translation>
-<translation id="6822587385560699678">Quan aquesta opció està activada, les contrasenyes es desen a <ph name="ACCOUNT" />. Quan està desactivada, es desen només en aquest dispositiu.</translation>
 <translation id="6824350924364057989">Configuració</translation>
 <translation id="6831043979455480757">Tradueix</translation>
 <translation id="6842136130964845393">Per assegurar-te de poder accedir a les contrasenyes desades en qualsevol moment, verifica la teva identitat</translation>

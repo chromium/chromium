@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Fshih për momentin</translation>
 <translation id="1219674500290482172">Është e pamundur lidhja me internetin.</translation>
-<translation id="1226238226094914652">Fjalëkalimet në të gjitha pajisjet e tua</translation>
 <translation id="122699739164161391">Mbyll të gjitha skedat</translation>
 <translation id="1227866575467023566">{count,plural, =1{Faqja u shtua në listën e leximit në llogarinë tënde, {email}}other{{count} faqe u shtuan në listën e leximit në llogarinë tënde, {email}}}</translation>
 <translation id="1242044645101871359">Identifikohu përsëri</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Ndiq</translation>
 <translation id="1644574205037202324">Historiku</translation>
 <translation id="164673457281113247">{count,plural, =1{Faqeshënuesi u ruajt}other{Faqeshënuesit u ruajtën}}</translation>
-<translation id="165008673352427892">Veçori e re</translation>
 <translation id="1650222530560417226">Trokit butonin "Nis regjistrimin" për të grumbulluar regjistrime dhe gabime të ardhshme të panelit komandues të JavaScript nga të gjitha skedat. Regjistrimet do të grumbullohen (dhe ruhen vetëm në memorie) derisa kjo faqe të mbyllet ose të trokitet mbi "Ndalo regjistrimin".</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} fjalëkalim i ruajtur i disponueshëm mbi tastierën tënde.}other{{count} fjalëkalime të ruajtura të disponueshme mbi tastierën tënde.}}</translation>
 <translation id="1657011748321897393">Ndarja dështoi për shkak se nuk je i lidhur në rrjet.</translation>
@@ -302,7 +300,6 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2556092377360758201">Asnjë mbrojtje (nuk rekomandohet)</translation>
 <translation id="2561375093019333908">HAP</translation>
 <translation id="2562041823070056534">Po dërgohet te <ph name="DEVICE_NAME" />...</translation>
-<translation id="2576499762020411840">Përdor dhe ruaj fjalëkalimet në "Llogarinë tënde të Google"</translation>
 <translation id="2577522251608256362">Lagjja</translation>
 <translation id="2578571896248130439">Dërgo faqen e uebit</translation>
 <translation id="2584132361465095047">Shto një llogari…</translation>
@@ -948,7 +945,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5850913622988109693">Opsionet për gjurmimin e paketave</translation>
 <translation id="5854790677617711513">Më të vjetra se 30 ditë</translation>
 <translation id="5857090052475505287">Skedar i ri</translation>
-<translation id="5857361196621230935">Shto skedën te grupi</translation>
 <translation id="5857770089550859117">Kërkohet shprehja e kalimit për të nisur sinkronizimin.</translation>
 <translation id="5859715514067755465">Shko përpara</translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
@@ -1159,7 +1155,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6800349425672670802">Mund të kesh qasje te të gjitha skedat e hapura nga "Ndërruesi i skedave".</translation>
 <translation id="6807889908376551050">Shfaqi të gjitha...</translation>
 <translation id="681368974849482173">Elementi u krijua</translation>
-<translation id="6822587385560699678">Kur kjo është aktive, fjalëkalimet ruhen te <ph name="ACCOUNT" />. Kur kjo është joaktive, fjalëkalimet ruhen vetëm në këtë pajisje.</translation>
 <translation id="6824350924364057989">Cilësimet</translation>
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="6842136130964845393">Për t'u siguruar që mund të qasesh gjithmonë në fjalëkalimet e tua të ruajtura, verifiko që je ti</translation>

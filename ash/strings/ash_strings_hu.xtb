@@ -259,7 +259,6 @@
 <translation id="2017998995161831444">A „Súgó” megnyitása a Felfedezés alkalmazásban</translation>
 <translation id="2018630726571919839">Mondj egy viccet</translation>
 <translation id="2021864487439853900">Kattintson a feloldáshoz</translation>
-<translation id="2023558322300866873">A csomagok elfogását bármikor leállíthatja</translation>
 <translation id="2034971124472263449">Mentés mindenképp</translation>
 <translation id="204259843076055848">A(z) <ph name="SIX_PACK_KEY_NAME" /> billentyűparancsa jelenleg ki van kapcsolva</translation>
 <translation id="2049240716062114887">Az asztal neve a következőre változott: <ph name="DESK_NAME" /></translation>
@@ -357,6 +356,7 @@
 <translation id="2482878487686419369">Értesítések</translation>
 <translation id="2484513351006226581">A billentyűzetkiosztás átváltásához nyomja meg a(z) <ph name="KEYBOARD_SHORTCUT" /> billentyűparancsot.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> előnézete. Aktív asztal.</translation>
+<translation id="2486405091093637109">A(z) „<ph name="DISPLAY_NAME" />” felbontása <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) értékre módosult. Megerősítés nélkül a rendszer visszaállítja a korábbi beállításokat <ph name="TIMEOUT_SECONDS" /> múlva.</translation>
 <translation id="2487915095798731898">Csatlakozás</translation>
 <translation id="2499445554382787206">Asztali profil menüje. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Beragadó billentyűk</translation>
@@ -701,7 +701,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="380165613292957338">Üdvözlöm. Miben segíthetek?</translation>
 <translation id="3804737937830804242">Kamera összecsukása</translation>
 <translation id="3824784079442479685">Ezzel engedélyezi a kamerához való hozzáférést a(z) <ph name="APP_NAME" />, valamint a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára. Előfordulhat, hogy frissítenie kell a weboldalt, vagy újra kell indítania az alkalmazást.</translation>
-<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" />/<ph name="NUM_TURNED_IN" /> beadva, <ph name="NUM_GRADED" /> osztályozva</translation>
 <translation id="3826099427150913765">Váltás jelszóra</translation>
 <translation id="383058930331066723">Az Akkumulátorkímélő mód be van kapcsolva</translation>
 <translation id="383629559565718788">Billentyűzetbeállítások megjelenítése</translation>
@@ -765,7 +764,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4066027111132117168">Bekapcsolva, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Letöltések oldal megnyitása</translation>
 <translation id="4072264167173457037">Közepes jel</translation>
-<translation id="4076455981957565732"><ph name="TOTAL_NUM_OF_SUBMISSIONS" />/<ph name="NUM_TURNED_IN" /> leadva • <ph name="NUM_GRADED" /> osztályozva</translation>
 <translation id="4086921558679520050">A fizikai mikrofon kapcsolójának bekapcsolása az eszközön</translation>
 <translation id="4101772068965291327"> megnyitása</translation>
 <translation id="4112140312785995938">Ugrás visszafelé</translation>
@@ -1031,6 +1029,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Értesítést kap, ha némított állapotban beszél. A hanganyag sosem kerül ki az eszközről.</translation>
 <translation id="5077416371682039027">A telefonján lévő legutóbbi fotók, médiatartalmak, értesítések és alkalmazások megtekintésének beállítása</translation>
+<translation id="5077936103761694531">Megerősíti a felbontást?</translation>
 <translation id="5078796286268621944">Helytelen PIN-kód</translation>
 <translation id="5083035541015925118">ctrl + alt + felfelé nyíl</translation>
 <translation id="5083553833479578423">Hozzáférés a Segéd további funkcióihoz</translation>
@@ -1680,6 +1679,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7647488630410863958">Az eszköz zárolásának feloldása az értesítések megtekintéséhez</translation>
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7654687942625752712">A hangos visszajelzés kikapcsolásához öt másodpercig tartsa lenyomva mindkét hangerőgombot.</translation>
+<translation id="7654916369822103315">A(z) „<ph name="DISPLAY_NAME" />” felbontása <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) értékre módosult. A port sávszélességének korlátozásai miatt a kijelző nem támogatja a(z) <ph name="SPECIFIED_RESOLUTION" /> felbontást (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Megerősítés nélkül a rendszer visszaállítja a korábbi beállításokat <ph name="TIMEOUT_SECONDS" /> múlva.</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7659861092419699379">Az asztal és az ablakok be vannak zárva</translation>
 <translation id="7660160718439869192">A(z) <ph name="NAME" /> a következőkkel társított eszközökön jelenik meg: <ph name="EMAIL" /></translation>
@@ -1770,6 +1770,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7945357288295809525">Kisegítő beállítások megjelenítése, „<ph name="ENABLED_FEATURES" />” engedélyezve.</translation>
 <translation id="7947798320695032612">A(z) <ph name="APP_NAME" /> használni szeretné a következőt: <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">A billentyűzet fényerejének csökkentése</translation>
+<translation id="7953994493035617347">Megerősíti az új felbontást?</translation>
 <translation id="7963689218131240420">A Ne zavarjanak mód ki van kapcsolva.</translation>
 <translation id="7963992254934562106">Innen: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Mappa választása…</translation>

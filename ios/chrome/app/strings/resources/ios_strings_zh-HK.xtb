@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">下午 5 時 30 分</translation>
 <translation id="1209206284964581585">暫時隱藏</translation>
 <translation id="1219674500290482172">無法連線至互聯網。</translation>
-<translation id="1226238226094914652">在所有裝置上都能使用自己的密碼</translation>
 <translation id="122699739164161391">關閉所有分頁</translation>
 <translation id="1227866575467023566">{count,plural, =1{已將網頁新增至帳戶 {email} 的閱讀清單}other{已將 {count} 個網頁新增至帳戶 {email} 的閱讀清單}}</translation>
 <translation id="1242044645101871359">再次登入</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">追蹤</translation>
 <translation id="1644574205037202324">記錄</translation>
 <translation id="164673457281113247">{count,plural, =1{已儲存書籤}other{已儲存書籤}}</translation>
-<translation id="165008673352427892">新功能</translation>
 <translation id="1650222530560417226">輕按 [開始記錄] 按鈕即可收集之後的 JavaScript 控制台記錄和所有分頁錯誤。系統會持續收集記錄 (且僅會儲存於記憶體中)，直到網頁關閉或使用者輕按 [停止記錄] 為止。</translation>
 <translation id="1653432787084483144">{count,plural, =1{有 {count} 個可以用嘅密碼儲存咗喺鍵盤上面。}other{有 {count} 個可以用嘅密碼儲存咗喺鍵盤上面。}}</translation>
 <translation id="1657011748321897393">由於您並未連線至網絡，因此無法分享。</translation>
@@ -302,7 +300,6 @@
 <translation id="2556092377360758201">無保護功能 (不建議)</translation>
 <translation id="2561375093019333908">開啟</translation>
 <translation id="2562041823070056534">正在傳送至 <ph name="DEVICE_NAME" />…</translation>
-<translation id="2576499762020411840">將密碼儲存至 Google 帳戶中並自動填入</translation>
 <translation id="2577522251608256362">社區</translation>
 <translation id="2578571896248130439">傳送網頁</translation>
 <translation id="2584132361465095047">新增帳戶…</translation>
@@ -948,7 +945,6 @@
 <translation id="5850913622988109693">追蹤包裹選項</translation>
 <translation id="5854790677617711513">超過 30 天</translation>
 <translation id="5857090052475505287">新資料夾</translation>
-<translation id="5857361196621230935">在群組中加入分頁</translation>
 <translation id="5857770089550859117">必須輸入密碼短語，才能開始同步資料。</translation>
 <translation id="5859715514067755465">繼續</translation>
 <translation id="5860033963881614850">關閉</translation>
@@ -1159,7 +1155,6 @@
 <translation id="6800349425672670802">你可以用分頁切換工具存取所有開咗嘅分頁。</translation>
 <translation id="6807889908376551050">全部顯示…</translation>
 <translation id="681368974849482173">已建立項目</translation>
-<translation id="6822587385560699678">開啟時，密碼將會儲存在 <ph name="ACCOUNT" /> 中。關閉後，密碼只會儲存在此裝置上。</translation>
 <translation id="6824350924364057989">設定</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6842136130964845393">為確保您可隨時存取已儲存的密碼，請驗證您的身分</translation>

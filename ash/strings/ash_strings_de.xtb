@@ -228,6 +228,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1882814835921407042">Kein Mobilfunknetz</translation>
 <translation id="1882897271359938046">Wird auf <ph name="DISPLAY_NAME" /> gespiegelt...</translation>
 <translation id="1885785240814121742">Mit Fingerabdruck entsperren</translation>
+<translation id="1904997243703671177">Wenn du Bluetooth deaktivierst, wird die Verbindung von <ph name="DEVICE_COUNT" /> externen Geräten mit deiner/m <ph name="DEVICE_TYPE" /> getrennt, darunter:</translation>
 <translation id="1908992311423394684">Neuinstallation</translation>
 <translation id="1915307458270490472">Auflegen</translation>
 <translation id="1918022425394817322">Kamera ist an der oberen rechten Ecke angepinnt</translation>
@@ -258,7 +259,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2017998995161831444">„Hilfe“ in der App „Entdecken“ öffnen</translation>
 <translation id="2018630726571919839">Erzähl mir einen Witz</translation>
 <translation id="2021864487439853900">Zum Entsperren klicken</translation>
-<translation id="2023558322300866873">Du kannst die Paketaufnahme jederzeit beenden</translation>
 <translation id="2034971124472263449">Trotzdem speichern</translation>
 <translation id="204259843076055848">Die Tastenkombination für <ph name="SIX_PACK_KEY_NAME" /> ist derzeit deaktiviert</translation>
 <translation id="2049240716062114887">Der Name des Desktops wurde zu "<ph name="DESK_NAME" />" geändert</translation>
@@ -356,6 +356,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2484513351006226581">Drücke <ph name="KEYBOARD_SHORTCUT" />, um das Tastaturlayout zu ändern.</translation>
 <translation id="2486214324139475545">Vorschau für <ph name="DESK_NAME" />. Aktiver Desktop.</translation>
+<translation id="2486405091093637109">Die Auflösung von „<ph name="DISPLAY_NAME" />“ wurde in <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) geändert. Wenn du nicht bestätigst, werden in <ph name="TIMEOUT_SECONDS" /> die vorherigen Einstellungen wiederhergestellt.</translation>
 <translation id="2487915095798731898">Teilnehmen</translation>
 <translation id="2499445554382787206">Menü „Desktop-Profil“. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Sticky Keys</translation>
@@ -699,7 +700,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="380165613292957338">Hallo, wie kann ich dir helfen?</translation>
 <translation id="3804737937830804242">Kamera minimieren</translation>
 <translation id="3824784079442479685">Dadurch erhalten „<ph name="APP_NAME" />“ sowie alle Apps und Websites mit Kameraberechtigung Zugriff auf die Kamera. Möglicherweise musst du die Webseite aktualisieren oder die App neu starten.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> von <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> abgegeben, <ph name="NUM_GRADED" /> benotet</translation>
 <translation id="3826099427150913765">Zu Passwort wechseln</translation>
 <translation id="383058930331066723">Energiesparmodus ist aktiviert</translation>
 <translation id="383629559565718788">Tastatureinstellungen anzeigen</translation>
@@ -763,7 +763,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4066027111132117168">An, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Downloadseite öffnen</translation>
 <translation id="4072264167173457037">Durchschnittliches Signal</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> abgegeben • <ph name="NUM_GRADED" /> benotet</translation>
 <translation id="4086921558679520050">Physischen Mikrofonschalter auf deinem Gerät aktivieren</translation>
 <translation id="4101772068965291327">Startseite öffnen</translation>
 <translation id="4112140312785995938">Zurück springen</translation>
@@ -959,6 +958,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4813311884204119883">Link in den leeren Bereich der Tableiste ziehen</translation>
 <translation id="4814539958450445987">Anmeldebildschirm</translation>
 <translation id="481455355267255546">Als Nächstes</translation>
+<translation id="481749895090480684">Aufgabenliste: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">Kamera und Mikrofon</translation>
 <translation id="482908187605862807">Im Play Store verfügbare Apps</translation>
 <translation id="4831034276697007977">Möchtest du automatische Klicks wirklich deaktivieren?</translation>
@@ -1000,6 +1000,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4952936045814352993">„Smartphone suchen“ ist nicht verfügbar, wenn Wecktöne deaktiviert sind</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> erfordert, dass ein Rollback für dein Gerät (<ph name="DEVICE_TYPE" />) durchgeführt wird. Das Gerät wird zurückgesetzt und alle Daten werden gelöscht.</translation>
 <translation id="4961318399572185831">Bildschirm streamen</translation>
+<translation id="4964188651935955085">Wenn du Bluetooth deaktivierst, wird die Verbindung dieses externen Geräts von deiner/m <ph name="DEVICE_TYPE" /> getrennt:</translation>
 <translation id="4966431234408005599">Lautstärke erhöhen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">App-Benachrichtigungssymbol</translation>
@@ -1027,6 +1028,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Du wirst benachrichtigt, wenn du zu sprechen anfängst, während das Mikrofon stummgeschaltet ist. Das Audio verbleibt dabei auf deinem Gerät.</translation>
 <translation id="5077416371682039027">Anzeige der letzten Fotos, Medien, Benachrichtigungen und Apps auf deinem Smartphone einrichten</translation>
+<translation id="5077936103761694531">Auflösung bestätigen?</translation>
 <translation id="5078796286268621944">Falsche PIN</translation>
 <translation id="5083035541015925118">Strg + Alt + Aufwärtspfeil</translation>
 <translation id="5083553833479578423">Möchtest du weitere Assistant-Funktionen freischalten?</translation>
@@ -1676,6 +1678,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7647488630410863958">Gerät entsperren, um Benachrichtigungen zu sehen</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7654687942625752712">Du kannst gesprochenes Feedback deaktivieren, indem du die beiden Lautstärketasten fünf Sekunden lang gedrückt hältst.</translation>
+<translation id="7654916369822103315">Die Auflösung von „<ph name="DISPLAY_NAME" />“ wurde in <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) geändert. Aufgrund der begrenzten Bandbreite des Ports kann dein Bildschirm eine Auflösung von <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) nicht unterstützen. Wenn du nicht bestätigst, werden in <ph name="TIMEOUT_SECONDS" /> die vorherigen Einstellungen wiederhergestellt.</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7659861092419699379">Desktop und Fenster wurden geschlossen</translation>
 <translation id="7660160718439869192">Dein Gerät (<ph name="NAME" />) wird auf anderen Geräten angezeigt, die mit <ph name="EMAIL" /> verknüpft sind</translation>
@@ -1766,6 +1769,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7945357288295809525">Einstellungen für Bedienungshilfen anzeigen, „<ph name="ENABLED_FEATURES" />“ aktiviert.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> möchte dein Gerät „<ph name="DEVICE_NAME" />“ verwenden.</translation>
 <translation id="7951630946012935453">Tastatur dimmen</translation>
+<translation id="7953994493035617347">Neue Auflösung bestätigen?</translation>
 <translation id="7963689218131240420">„Bitte nicht stören“ ist deaktiviert.</translation>
 <translation id="7963992254934562106">Von <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Ordner auswählen...</translation>
@@ -1824,6 +1828,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8155628902202578800">Infodialog für <ph name="USER_EMAIL_ADDRESS" /> öffnen</translation>
 <translation id="8167567890448493835">"<ph name="LOCALE_NAME" />" wird verwendet</translation>
 <translation id="8185090165691050712">Menü für die Größenänderungssperre öffnen/schließen</translation>
+<translation id="8192727139462702395">Wenn du Bluetooth deaktivierst, wird die Verbindung dieser externen Geräte mit deiner/m <ph name="DEVICE_TYPE" /> getrennt:</translation>
 <translation id="8198456017687137612">Tab wird gestreamt</translation>
 <translation id="8200772114523450471">Fortsetzen</translation>
 <translation id="8203795194971602413">Rechtsklick</translation>

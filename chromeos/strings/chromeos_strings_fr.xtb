@@ -286,6 +286,7 @@
 <translation id="2531772459602846206">hortensia</translation>
 <translation id="2533048460510040082">Contenu d'aide suggéré</translation>
 <translation id="2536159006530886390">Impossible de se connecter à Internet.</translation>
+<translation id="2538719227433767804">+ <ph name="NUM_HIDDEN_OPTIONS" /> autres</translation>
 <translation id="2561093647892030937">citrons</translation>
 <translation id="2570743873672969996">Exécution du test <ph name="TEST_NAME" />…</translation>
 <translation id="2584547424703650812">Paysages lumineux</translation>
@@ -810,6 +811,7 @@
 <translation id="5939518447894949180">Réinitialiser</translation>
 <translation id="594552776027197022">Générer une paire de clés aléatoire</translation>
 <translation id="5946538341867151940">Vous n'êtes pas encore connecté. Si votre opérateur mobile vous recommande un APN personnalisé, saisissez les informations de l'APN en sélectionnant "Nouvel APN".</translation>
+<translation id="5947266287934282605">Si le dernier jour du mois est antérieur à ce jour, les données seront réinitialisées le dernier jour du mois.</translation>
 <translation id="5948460390109837040">chiens</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">corail</translation>

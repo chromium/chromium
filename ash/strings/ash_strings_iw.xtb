@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">אין רשת סלולרית</translation>
 <translation id="1882897271359938046">משקף אל <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">ביטול נעילה עם טביעת אצבע</translation>
+<translation id="1904997243703671177">‏אם משביתים את Bluetooth, <ph name="DEVICE_COUNT" /> מכשירים חיצוניים יתנתקו מ-<ph name="DEVICE_TYPE" />, כולל:</translation>
 <translation id="1908992311423394684">התקנה חדשה</translation>
 <translation id="1915307458270490472">ניתוק</translation>
 <translation id="1918022425394817322">המצלמה מוצמדת לפינה השמאלית העליונה</translation>
@@ -258,7 +259,6 @@
 <translation id="2017998995161831444">‏פתיחה של 'עזרה' באפליקציה 'מה חדש ב-Chromebook'</translation>
 <translation id="2018630726571919839">אני רוצה לשמוע בדיחה</translation>
 <translation id="2021864487439853900">יש ללחוץ כדי לבטל את הנעילה</translation>
-<translation id="2023558322300866873">תמיד אפשר להפסיק את תיעוד החבילות</translation>
 <translation id="2034971124472263449">אני בכל זאת רוצה לשמור</translation>
 <translation id="204259843076055848">מקשי הקיצור של <ph name="SIX_PACK_KEY_NAME" /> מושבתים כרגע</translation>
 <translation id="2049240716062114887">שמו של שולחן העבודה הווירטואלי שונה לשם <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@
 <translation id="2482878487686419369">התראות</translation>
 <translation id="2484513351006226581">צריך להקיש על <ph name="KEYBOARD_SHORTCUT" /> כדי להחליף פריסת מקלדת.</translation>
 <translation id="2486214324139475545">תצוגה מקדימה של <ph name="DESK_NAME" />. שולחן העבודה הווירטואלי פעיל.</translation>
+<translation id="2486405091093637109">‏‫<ph name="DISPLAY_NAME" /> השתנה לרזולוציה של <ph name="RESOLUTION" /> (‎<ph name="REFRESH_RATE" /> Hz). בלי אישור, ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">הצטרפות</translation>
 <translation id="2499445554382787206">תפריט הפרופיל של שולחן העבודה הווירטואלי. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">מקשים דביקים</translation>
@@ -699,7 +700,6 @@
 <translation id="380165613292957338">היי, איך אפשר לעזור?</translation>
 <translation id="3804737937830804242">כיווץ המצלמה</translation>
 <translation id="3824784079442479685">הפעולה הזו תאפשר גישה למצלמה לאפליקציה <ph name="APP_NAME" /> ולכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה. יכול להיות שיהיה צורך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
-<translation id="3825680296690914697">הוגשו <ph name="NUM_TURNED_IN" /> מתוך <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, ניתן ציון ל-<ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">מעבר לסיסמה</translation>
 <translation id="383058930331066723">מצב חיסכון בסוללה מופעל</translation>
 <translation id="383629559565718788">צפייה בהגדרות המקלדת</translation>
@@ -763,7 +763,6 @@
 <translation id="4066027111132117168">פועל, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">פתיחת דף ההורדות</translation>
 <translation id="4072264167173457037">אות בינוני</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" /> מתוך <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> הגישו • <ph name="NUM_GRADED" /> קיבלו ציון</translation>
 <translation id="4086921558679520050">הפעלת מתג המיקרופון הפיזי במכשיר</translation>
 <translation id="4101772068965291327">פתיחה של דף הבית</translation>
 <translation id="4112140312785995938">הרצה לאחור</translation>
@@ -959,6 +958,7 @@
 <translation id="4813311884204119883">גרירת הקישור לאזור ריק בשורת הכרטיסיות</translation>
 <translation id="4814539958450445987">מסך הכניסה</translation>
 <translation id="481455355267255546">האירועים הבאים</translation>
+<translation id="481749895090480684">רשימת משימות: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">מצלמה ומיקרופון</translation>
 <translation id="482908187605862807">‏אפליקציות שזמינות בחנות Play</translation>
 <translation id="4831034276697007977">הקליקים האוטומטיים יושבתו. האם להמשיך?</translation>
@@ -1000,6 +1000,7 @@
 <translation id="4952936045814352993">איתור הטלפון לא זמין כשצלילי ההתראות מושבתים</translation>
 <translation id="4960324571663582548">בהתאם לבקשה של <ph name="MANAGER" />, עליך להחזיר את ה-<ph name="DEVICE_TYPE" /> לגרסה קודמת. המכשיר יעבור איפוס וכל הנתונים שבו יימחקו.</translation>
 <translation id="4961318399572185831">העברת המסך</translation>
+<translation id="4964188651935955085">‏אם משביתים את Bluetooth, המכשיר החיצוני הבא יתנתק מ-<ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">הגברת עוצמת הקול</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> שעות <ph name="MINUTES" /> דקות <ph name="SECONDS" /> שניות</translation>
 <translation id="4975771730019223894">תיוג אפליקציות</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">תתקבל הודעה במקרים של דיבור כשההשתקה פועלת. האודיו אף פעם לא נשלח מהמכשיר.</translation>
 <translation id="5077416371682039027">הגדרת ההצגה של התמונות, המדיה, ההתראות והאפליקציות שבטלפון מהזמן האחרון</translation>
+<translation id="5077936103761694531">לאשר את הרזולוציה?</translation>
 <translation id="5078796286268621944">‏PIN שגוי</translation>
 <translation id="5083035541015925118">‏Ctrl +‏ Alt + חץ למעלה</translation>
 <translation id="5083553833479578423">‏אפשר להפעיל תכונות Assistant נוספות.</translation>
@@ -1678,6 +1680,7 @@
 <translation id="7647488630410863958">יש לבטל את נעילת המכשיר כדי להציג את ההודעות</translation>
 <translation id="7649070708921625228">עזרה</translation>
 <translation id="7654687942625752712">כדי להשבית את קורא המסך הקולי, צריך ללחוץ על שני לחצני עוצמת הקול למשך חמש שניות.</translation>
+<translation id="7654916369822103315">‏‫<ph name="DISPLAY_NAME" /> השתנה לרזולוציה של <ph name="FALLBACK_RESOLUTION" /> (‎<ph name="FALLBACK_REFRESH_RATE" /> Hz). בגלל מגבלות רוחב הפס של היציאה, המסך לא יכול לתמוך ברזולוציה של <ph name="SPECIFIED_RESOLUTION" /> (‎<ph name="SPECIFIED_REFRESH_RATE" /> Hz). בלי אישור, ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7659861092419699379">שולחן העבודה הווירטואלי והחלונות שלו נסגרו</translation>
 <translation id="7660160718439869192">המכשיר <ph name="NAME" /> יופיע ברשימת המכשירים המקושרים אל <ph name="EMAIL" /></translation>
@@ -1768,6 +1771,7 @@
 <translation id="7945357288295809525">הצגת ההגדרות בנושא נגישות, התכונה '<ph name="ENABLED_FEATURES" />' מופעלת.</translation>
 <translation id="7947798320695032612">האפליקציה <ph name="APP_NAME" /> מבקשת להשתמש ב<ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">עמעום המקלדת</translation>
+<translation id="7953994493035617347">לאשר את הרזולוציה החדשה?</translation>
 <translation id="7963689218131240420">המצב 'נא לא להפריע' מושבת.</translation>
 <translation id="7963992254934562106">מ-<ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">בחירת תיקייה…</translation>
@@ -1826,6 +1830,7 @@
 <translation id="8155628902202578800">פתיחת תיבת דו-שיח עם מידע על <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">המיקום הנוכחי הוא<ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">הפעלה/השבתה של התפריט לשינוי הגודל במצב הנעילה</translation>
+<translation id="8192727139462702395">‏אם משביתים את Bluetooth, המכשירים החיצוניים הבאים יתנתקו מ-<ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">העברת הכרטיסייה</translation>
 <translation id="8200772114523450471">חידוש</translation>
 <translation id="8203795194971602413">לחיצה ימנית</translation>

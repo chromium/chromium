@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">மொபைலில் நெட்வொர்க் இல்லை</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> ஐப் பிரதிபலிக்கிறது</translation>
 <translation id="1885785240814121742">கைரேகை மூலம் அன்லாக் செய்யலாம்</translation>
+<translation id="1904997243703671177">புளூடூத்தை முடக்கினால் இவை உட்பட <ph name="DEVICE_COUNT" /> வெளிப்புறச் சாதனங்கள் உங்கள் <ph name="DEVICE_TYPE" /> இல் இருந்து துண்டிக்கப்படும்:</translation>
 <translation id="1908992311423394684">புதிதாக நிறுவப்பட்டது</translation>
 <translation id="1915307458270490472">மூடுக</translation>
 <translation id="1918022425394817322">கேமரா மாதிரிக்காட்சி மேல் வலது மூலையில் பொருத்தப்பட்டது</translation>
@@ -258,7 +259,6 @@
 <translation id="2017998995161831444">Explore ஆப்ஸில் "உதவி" என்பதைத் திற</translation>
 <translation id="2018630726571919839">ஒரு ஜோக் சொல்லு</translation>
 <translation id="2021864487439853900">அன்லாக் செய்யக் கிளிக் செய்க</translation>
-<translation id="2023558322300866873">எப்போது வேண்டுமானாலும் பேக்கெட் கேப்ச்சரை நிறுத்தலாம்</translation>
 <translation id="2034971124472263449">பரவாயில்லை, சேமி</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> ஷார்ட்கட் தற்போது முடக்கப்பட்டுள்ளது</translation>
 <translation id="2049240716062114887">டெஸ்க் பெயர் <ph name="DESK_NAME" /> என மாற்றப்பட்டது</translation>
@@ -356,6 +356,7 @@
 <translation id="2482878487686419369">அறிவிப்புகள்</translation>
 <translation id="2484513351006226581">கீபோர்டைத் தளவமைப்பை மாற்ற, <ph name="KEYBOARD_SHORTCUT" /> விசையை அழுத்தவும்.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> மாதிரிக்காட்சி. செயலில் உள்ள டெஸ்க்.</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" காட்சியின் தெளிவுத்திறன் <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) என்று மாற்றப்பட்டது. இதை உறுதிப்படுத்தவில்லை என்றால், இன்னும் <ph name="TIMEOUT_SECONDS" /> முந்தைய அமைப்புகள் மீட்டெடுக்கப்படும்.</translation>
 <translation id="2487915095798731898">சேர்</translation>
 <translation id="2499445554382787206">டெஸ்க் சுயவிவர மெனு. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ஸ்டிக்கி விசைகள்</translation>
@@ -699,7 +700,6 @@
 <translation id="380165613292957338">வணக்கம், நான் எவ்வாறு உதவலாம்?</translation>
 <translation id="3804737937830804242">கேமராவைச் சுருக்கும்</translation>
 <translation id="3824784079442479685">இது <ph name="APP_NAME" /> ஆப்ஸுக்கும், கேமராவைப் பயன்படுத்த அனுமதி உள்ள பிற ஆப்ஸ், இணையதளங்கள் ஆகியவற்றுக்கும் கேமராவிற்கான அணுகலை வழங்கும். இணையப் பக்கத்தை ரெஃப்ரெஷ் செய்ய வேண்டியிருக்கலாம் அல்லது ஆப்ஸை மீண்டும் தொடங்க வேண்டியிருக்கலாம்.</translation>
-<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" /> இல் <ph name="NUM_TURNED_IN" /> கிடைத்துள்ளன, <ph name="NUM_GRADED" /> மதிப்பிடப்பட்டுள்ளன</translation>
 <translation id="3826099427150913765">கடவுச்சொல்லிற்கு மாற்று</translation>
 <translation id="383058930331066723">பேட்டரி சேமிப்பான் பயன்முறை இயக்கத்தில் உள்ளது</translation>
 <translation id="383629559565718788">கீபோர்டு அமைப்புகளைக் காண்பிக்கும்</translation>
@@ -763,7 +763,6 @@
 <translation id="4066027111132117168">இயக்கத்தில் உள்ளது, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">பதிவிறக்கங்கள் பக்கத்தைத் திற</translation>
 <translation id="4072264167173457037">நடுத்தரமான சிக்னல்</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> சமர்ப்பிக்கப்பட்டுள்ளன • கிரேடு வழங்கப்பட்டவை: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">சாதனத்தின் மைக் சுவிட்ச்சை இயக்குங்கள்</translation>
 <translation id="4101772068965291327">முகப்புப் பக்கத்தைத் திற</translation>
 <translation id="4112140312785995938">பின்செல்</translation>
@@ -959,6 +958,7 @@
 <translation id="4813311884204119883">உலாவிப்பக்கப் பட்டியில் உள்ள வெற்றுப் பகுதியில் இணைப்பை இழுக்கவும்</translation>
 <translation id="4814539958450445987">உள்நுழைவுத் திரை</translation>
 <translation id="481455355267255546">அடுத்து</translation>
+<translation id="481749895090480684">பணிப் பட்டியல்: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">கேமராவையும் மைக்ரோஃபோனையும்</translation>
 <translation id="482908187605862807">Play Storeரில் உள்ள கிடைக்கக்கூடிய ஆப்ஸ்</translation>
 <translation id="4831034276697007977">தானாகக் கிளிக் செய்யும் அம்சத்தை ஆஃப் செய்ய விரும்புகிறீர்களா?</translation>
@@ -1000,6 +1000,7 @@
 <translation id="4952936045814352993">அலாரத்தின் ஒலி முடக்கப்பட்டிருக்கும்போது ’மொபைல் இருக்குமிடத்தைக் கண்டறிதல்’ அம்சத்தைப் பயன்படுத்த முடியாது</translation>
 <translation id="4960324571663582548">உங்கள் <ph name="DEVICE_TYPE" /> ஐ முந்தைய பதிப்பிற்கு மாற்றுமாறு <ph name="MANAGER" /> கோருகிறது. சாதனம் மீட்டமைக்கப்பட்டு, அனைத்துத் தரவும் நீக்கப்படும்.</translation>
 <translation id="4961318399572185831">திரையை அலைபரப்பு</translation>
+<translation id="4964188651935955085">புளூடூத்தை முடக்கினால் இந்த வெளிப்புறச் சாதனம் உங்கள் <ph name="DEVICE_TYPE" /> இல் இருந்து துண்டிக்கப்படும்:</translation>
 <translation id="4966431234408005599">ஒலியளவை அதிகரி</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ம <ph name="MINUTES" />நி <ph name="SECONDS" />வி</translation>
 <translation id="4975771730019223894">ஆப்ஸ் பேட்ஜிங்</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">ஒலியடக்கப்பட்டிருக்கும்போது நீங்கள் பேசினால் அது குறித்த அறிவிப்பு காட்டப்படும். உங்கள் குரல் யாருக்கும் கேட்காது.</translation>
 <translation id="5077416371682039027">மொபைலில் உள்ள சமீபத்திய படங்கள், மீடியா, அறிவிப்புகள், ஆப்ஸ் ஆகியவற்றைப் பார்க்கும்படி அமைக்கும்</translation>
+<translation id="5077936103761694531">தெளிவுத்திறனை உறுதிப்படுத்தவா?</translation>
 <translation id="5078796286268621944">தவறான PIN</translation>
 <translation id="5083035541015925118">Ctrl + Alt + மேல்நோக்கிய அம்புக்குறி</translation>
 <translation id="5083553833479578423">மேலும் பல அசிஸ்டண்ட் அம்சங்களைப் பெறுக.</translation>
@@ -1676,6 +1678,7 @@
 <translation id="7647488630410863958">அறிவிப்புகளைப் பார்க்க, சாதனத்தை அன்லாக் செய்யவும்</translation>
 <translation id="7649070708921625228">உதவி</translation>
 <translation id="7654687942625752712">பேச்சுவடிவ கருத்தை முடக்க, ஐந்து வினாடிகளுக்கு இரண்டு ஒலியளவு விசைகளையும் அழுத்திப் பிடித்திருக்கவும்.</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" காட்சியின் தெளிவுத்திறன் <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) என்று மாற்றப்பட்டது. போர்ட்டின் இணைய வேக வரம்புகள் காரணமாக, உங்கள் காட்சி <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) தெளிவுத்திறனை ஆதரிக்கவில்லை. இதை உறுதிப்படுத்தவில்லை என்றால், இன்னும் <ph name="TIMEOUT_SECONDS" /> முந்தைய அமைப்புகள் மீட்டெடுக்கப்படும்.</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7659861092419699379">டெஸ்க் மற்றும் சாளரங்கள் மூடப்பட்டன</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" /> என்ற முகவரியுடன் இணைக்கப்பட்டுள்ள சாதனங்களில் உங்கள் <ph name="NAME" /> காட்டப்படும்</translation>
@@ -1766,6 +1769,7 @@
 <translation id="7945357288295809525">அணுகல்தன்மை அமைப்புகளைக் காட்டும், "<ph name="ENABLED_FEATURES" />" இயக்கப்பட்டுள்ளது.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ஆப்ஸ் உங்கள் <ph name="DEVICE_NAME" /> ஐப் பயன்படுத்த விரும்புகிறது</translation>
 <translation id="7951630946012935453">கீபோர்டு வெளிச்சத்தைக் குறை</translation>
+<translation id="7953994493035617347">புதிய தெளிவுத்திறனை உறுதிப்படுத்தவா?</translation>
 <translation id="7963689218131240420">'தொந்தரவு செய்ய வேண்டாம்' அம்சம் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> இலிருந்து</translation>
 <translation id="7968693143708939792">ஃபோல்டரைத் தேர்ந்தெடு...</translation>
@@ -1824,6 +1828,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> என்ற கணக்கிற்கான தகவலைக் காட்டும் உரையாடலைத் திறக்கும்</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />ஐப் பயன்படுத்துகிறது</translation>
 <translation id="8185090165691050712">அளவு மாற்றத்தை லாக் செய்யும் பயன்முறைக்கான மெனுவை இயக்கு/முடக்கு</translation>
+<translation id="8192727139462702395">புளூடூத்தை முடக்கினால் இந்த வெளிப்புறச் சாதனங்கள் உங்கள் <ph name="DEVICE_TYPE" /> இல் இருந்து துண்டிக்கப்படும்:</translation>
 <translation id="8198456017687137612">தாவலை அலைபரப்புகிறது</translation>
 <translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>
 <translation id="8203795194971602413">வலது கிளிக் செய்யும்</translation>

@@ -228,6 +228,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1882814835921407042">Žádná mobilní síť</translation>
 <translation id="1882897271359938046">Zrcadlení na displej <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Odemknutí otiskem prstu</translation>
+<translation id="1904997243703671177">Když vypnete Bluetooth, od zařízení <ph name="DEVICE_TYPE" /> se odpojí tento počet externích zařízení: <ph name="DEVICE_COUNT" />.</translation>
 <translation id="1908992311423394684">Nová instalace</translation>
 <translation id="1915307458270490472">Zavěsit</translation>
 <translation id="1918022425394817322">Kamera byla připnuta do pravého horního rohu</translation>
@@ -258,7 +259,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2017998995161831444">Otevřít nápovědu v aplikaci Explore</translation>
 <translation id="2018630726571919839">Řekni mi vtip</translation>
 <translation id="2021864487439853900">Odemknete kliknutím</translation>
-<translation id="2023558322300866873">Záznam paketů lze kdykoli ukončit</translation>
 <translation id="2034971124472263449">Přesto uložit</translation>
 <translation id="204259843076055848">Zkratka ke stisknutí klávesy <ph name="SIX_PACK_KEY_NAME" /> je momentálně vypnutá</translation>
 <translation id="2049240716062114887">Název plochy byl změněn na <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2482878487686419369">Oznámení</translation>
 <translation id="2484513351006226581">Rozložení klávesnice změníte stisknutím kláves <ph name="KEYBOARD_SHORTCUT" /></translation>
 <translation id="2486214324139475545">Náhled plochy <ph name="DESK_NAME" />. Aktivní plocha.</translation>
+<translation id="2486405091093637109">Rozlišení „<ph name="DISPLAY_NAME" />“ bylo změněno na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Pokud nové rozlišení nepotvrdíte, za <ph name="TIMEOUT_SECONDS" /> se obnoví předchozí nastavení.</translation>
 <translation id="2487915095798731898">Připojit se</translation>
 <translation id="2499445554382787206">Nabídka profilu plochy. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Jedním prstem</translation>
@@ -699,7 +700,6 @@ Připojte zařízení k napájení.</translation>
 <translation id="380165613292957338">Jak vám mohu pomoci?</translation>
 <translation id="3804737937830804242">Sbalit fotoaparát</translation>
 <translation id="3824784079442479685">Toto umožňuje přístup ke kameře aplikaci <ph name="APP_NAME" /> a všem aplikacím a webům s příslušným oprávněním. Možná budete muset obnovit webovou stránku nebo restartovat aplikaci.</translation>
-<translation id="3825680296690914697">Odevzdáno: <ph name="NUM_TURNED_IN" /> z <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, ohodnoceno: <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Přepnout na heslo</translation>
 <translation id="383058930331066723">Režim spořiče baterie je zapnutý</translation>
 <translation id="383629559565718788">Zobrazit nastavení klávesnice</translation>
@@ -763,7 +763,6 @@ Připojte zařízení k napájení.</translation>
 <translation id="4066027111132117168">Zapnuto, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Otevřete stránku Stažené soubory</translation>
 <translation id="4072264167173457037">Střední signál</translation>
-<translation id="4076455981957565732">Odevzdáno: <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Ohodnoceno: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Zapnutí fyzického mikrofonu na zařízení</translation>
 <translation id="4101772068965291327">Otevřít domovskou stránku</translation>
 <translation id="4112140312785995938">Přetočit dozadu</translation>
@@ -959,6 +958,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4813311884204119883">Přetáhněte odkaz do prázdné oblasti na liště karet</translation>
 <translation id="4814539958450445987">Přihlašovací obrazovka</translation>
 <translation id="481455355267255546">Další v pořadí</translation>
+<translation id="481749895090480684">Seznam úkolů: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">fotoaparát a mikrofon</translation>
 <translation id="482908187605862807">Dostupné aplikace z Obchodu Play</translation>
 <translation id="4831034276697007977">Opravdu chcete automatická kliknutí vypnout?</translation>
@@ -1000,6 +1000,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4952936045814352993">Když jsou vypnuté zvuky budíků, funkce Najít telefon není k dispozici</translation>
 <translation id="4960324571663582548">Organizace <ph name="MANAGER" /> vyžaduje, abyste toto zařízení <ph name="DEVICE_TYPE" /> převedli na starší verzi. Zařízení se resetuje a všechna data se vymažou.</translation>
 <translation id="4961318399572185831">Odesílání obrazovky</translation>
+<translation id="4964188651935955085">Když vypnete Bluetooth, od zařízení <ph name="DEVICE_TYPE" /> se odpojí toto externí zařízení:</translation>
 <translation id="4966431234408005599">Zvýšit hlasitost</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Označování aplikací odznakem</translation>
@@ -1027,6 +1028,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Pokud budete mluvit s vypnutým zvukem, zobrazí se vám oznámení. Zvuk nikdy neopustí vaše zařízení.</translation>
 <translation id="5077416371682039027">Nastavit zobrazování nedávných fotek, médií, oznámení a aplikací z telefonu</translation>
+<translation id="5077936103761694531">Potvrdit rozlišení?</translation>
 <translation id="5078796286268621944">Nesprávný kód PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + šipka nahoru</translation>
 <translation id="5083553833479578423">Odemkněte další funkce Asistenta.</translation>
@@ -1675,6 +1677,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7647488630410863958">Chcete-li zobrazit oznámení, odemkněte zařízení</translation>
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7654687942625752712">Hlasovou odezvu vypnete podržením obou tlačítek hlasitosti po dobu pěti sekund.</translation>
+<translation id="7654916369822103315">Rozlišení displeje <ph name="DISPLAY_NAME" /> bylo změněno na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Rozlišení <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) displej kvůli omezení rychlosti připojení portu nepodporuje. Pokud nové rozlišení nepotvrdíte, za <ph name="TIMEOUT_SECONDS" /> se obnoví předchozí nastavení.</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7659861092419699379">Plocha a okna byly zavřeny</translation>
 <translation id="7660160718439869192">Zařízení <ph name="NAME" /> se zobrazí u zařízení propojených s účtem <ph name="EMAIL" /></translation>
@@ -1765,6 +1768,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7945357288295809525">Zobrazit nastavení přístupnosti. Zapnuté funkce: <ph name="ENABLED_FEATURES" />.</translation>
 <translation id="7947798320695032612">Aplikace <ph name="APP_NAME" /> chce použít tuto hardwarovou komponentu: <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Ztlumit klávesnici</translation>
+<translation id="7953994493035617347">Potvrdit nové rozlišení?</translation>
 <translation id="7963689218131240420">Režim Nerušit je vypnutý.</translation>
 <translation id="7963992254934562106">Zdroj: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Vybrat složku…</translation>
@@ -1823,6 +1827,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8155628902202578800">Otevřít dialogové okno s informacemi o účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Používá se <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Zapnout/vypnout nabídku změny velikosti zamknutého režimu</translation>
+<translation id="8192727139462702395">Když vypnete Bluetooth, od zařízení <ph name="DEVICE_TYPE" /> se odpojí tato externí zařízení:</translation>
 <translation id="8198456017687137612">Odesílání karty</translation>
 <translation id="8200772114523450471">Pokračovat</translation>
 <translation id="8203795194971602413">Kliknutí pravým tlačítkem</translation>

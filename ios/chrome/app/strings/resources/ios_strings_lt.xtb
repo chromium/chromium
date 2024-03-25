@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17.30 val.</translation>
 <translation id="1209206284964581585">Slėpti dabar</translation>
 <translation id="1219674500290482172">Nepavyksta prisijungti prie interneto.</translation>
-<translation id="1226238226094914652">Slaptažodžiai visuose jūsų įrenginiuose</translation>
 <translation id="122699739164161391">Uždaryti visus skirtukus</translation>
 <translation id="1227866575467023566">{count,plural, =1{Puslapis pridėtas prie skaitymo sąrašo paskyroje ({email})}one{{count} puslapis pridėtas prie skaitymo sąrašo paskyroje ({email})}few{{count} puslapiai pridėti prie skaitymo sąrašo paskyroje ({email})}many{{count} puslapio pridėta prie skaitymo sąrašo paskyroje ({email})}other{{count} puslapių pridėta prie skaitymo sąrašo paskyroje ({email})}}</translation>
 <translation id="1242044645101871359">Prisijungimas dar kartą</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Stebėti</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="164673457281113247">{count,plural, =1{Žymė išsaugota}one{Žymės išsaugotos}few{Žymės išsaugotos}many{Žymės išsaugotos}other{Žymės išsaugotos}}</translation>
-<translation id="165008673352427892">Nauja funkcija</translation>
 <translation id="1650222530560417226">Palieskite mygtuką „Pradėi registravimą“, kad rinktumėte būsimus „JavaScript“ pulto žurnalus ir klaidas iš visų skirtukų. Žurnalai bus renkami (ir saugomi tik atmintyje), kol šis puslapis bus uždarytas arba kol paliesite „Stabdyti registravimą“.</translation>
 <translation id="1653432787084483144">{count,plural, =1{Virš klaviatūros pasiekiamas {count} išsaugotas slaptažodis.}one{Virš klaviatūros pasiekiamas {count} išsaugotas slaptažodis.}few{Virš klaviatūros pasiekiami {count} išsaugoti slaptažodžiai.}many{Virš klaviatūros pasiekiama {count} išsaugoto slaptažodžio.}other{Virš klaviatūros pasiekiama {count} išsaugotų slaptažodžių.}}</translation>
 <translation id="1657011748321897393">Bendrinant įvyko klaida, nes nesate prisijungę prie tinklo.</translation>
@@ -302,7 +300,6 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2556092377360758201">Apsaugos nėra (nerekomenduojama)</translation>
 <translation id="2561375093019333908">ATIDARYTI</translation>
 <translation id="2562041823070056534">Siunčiama į „<ph name="DEVICE_NAME" />“...</translation>
-<translation id="2576499762020411840">Naudoti ir išsaugoti slaptažodžius „Google“ paskyroje</translation>
 <translation id="2577522251608256362">Kaimynystė</translation>
 <translation id="2578571896248130439">Siųsti tinklalapį</translation>
 <translation id="2584132361465095047">Pridėti paskyrą...</translation>
@@ -948,7 +945,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5850913622988109693">Paketų stebėjimo parinktys</translation>
 <translation id="5854790677617711513">Senesni nei 30 dienų</translation>
 <translation id="5857090052475505287">Naujas aplankas</translation>
-<translation id="5857361196621230935">Pridėti skirtuką prie grupės</translation>
 <translation id="5857770089550859117">Norint pradėti sinchronizuoti reikalinga slaptafrazė.</translation>
 <translation id="5859715514067755465">Pirmyn</translation>
 <translation id="5860033963881614850">Išjungta</translation>
@@ -1159,7 +1155,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6800349425672670802">Visus atidarytus skirtukus galite pasiekti naudodami skirtukų perjungiklį.</translation>
 <translation id="6807889908376551050">Rodyti viską...</translation>
 <translation id="681368974849482173">Elementas sukurtas</translation>
-<translation id="6822587385560699678">Įjungus slaptažodžiai išsaugomi paskyroje <ph name="ACCOUNT" />. Išjungus slaptažodžiai išsaugomi tik šiame įrenginyje.</translation>
 <translation id="6824350924364057989">Nustatymai</translation>
 <translation id="6831043979455480757">Vertėjas</translation>
 <translation id="6842136130964845393">Kad užtikrintumėte galimybę visada pasiekti išsaugotus slaptažodžius, patvirtinkite savo tapatybę</translation>

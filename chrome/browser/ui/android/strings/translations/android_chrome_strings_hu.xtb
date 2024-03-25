@@ -365,6 +365,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="2942036813789421260">Az előnézeti lap zárva van</translation>
 <translation id="2946420957526726953">A Chrome frissítése az egyéb eszközökhöz való csatlakozás érdekében</translation>
 <translation id="2951071800649516099">Oldalak felvétele az olvasólistára, hogy később elolvashassa őket</translation>
+<translation id="2956070106555335453">Összegzés</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> olvasatlan oldal}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> olvasatlan oldal}}</translation>
 <translation id="296370266220139811">Időmegtakarítás és kevesebb gépelés</translation>
 <translation id="2977350910003566746">Rendezés folyamatban: legutóbb megnyitottak szerint</translation>
@@ -750,6 +751,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4950924971025849764">Ha ugyanabba a Google-fiókba van bejelentkezve, akkor a többi eszköze használhatja ezt a telefont biztonsági kulcsként.</translation>
 <translation id="4957722034734105353">További információ...</translation>
 <translation id="4961107849584082341">Bármely nyelvre lefordíthatja ezt az oldalt</translation>
+<translation id="496607651705915226">Ha új jelszavakat szeretne menteni és használni Google-fiókjában, frissítse a Google Play-szolgáltatásokat.</translation>
 <translation id="4971735654804503942">Gyorsabb, proaktív védelem a veszélyes webhelyek, letöltések és bővítmények ellen. Figyelmezteti Önt a jelszavakkal kapcsolatos problémákra. Igénybevételéhez el kell küldeni a böngészési adatokat a Google-nak.</translation>
 <translation id="497421865427891073">Előrelépés</translation>
 <translation id="4987271110129728827">A keresett oldal nem található. Ellenőrizze, hogy helyesen írta-e be, vagy próbáljon rákeresni az interneten.</translation>

@@ -259,7 +259,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2017998995161831444">Buka "Bantuan" pada apl Teroka</translation>
 <translation id="2018630726571919839">Beritahu saya jenaka</translation>
 <translation id="2021864487439853900">Klik untuk membuka kunci</translation>
-<translation id="2023558322300866873">Anda boleh menghentikan tangkapan paket pada bila-bila masa</translation>
 <translation id="2034971124472263449">Simpan juga</translation>
 <translation id="204259843076055848">Pintasan <ph name="SIX_PACK_KEY_NAME" /> dimatikan pada masa ini</translation>
 <translation id="2049240716062114887">Nama meja telah ditukar kepada <ph name="DESK_NAME" /></translation>
@@ -357,6 +356,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2482878487686419369">Pemberitahuan</translation>
 <translation id="2484513351006226581">Tekan <ph name="KEYBOARD_SHORTCUT" /> untuk menukar atur letak papan kekunci.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> pratonton. Meja aktif.</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" diubah kepada peleraian <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Tetapan terdahulu akan dipulihkan dalam masa <ph name="TIMEOUT_SECONDS" /> tanpa pengesahan.</translation>
 <translation id="2487915095798731898">Sertai</translation>
 <translation id="2499445554382787206">Menu profil meja. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Kekunci lekit</translation>
@@ -701,7 +701,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="380165613292957338">Hai, bagaimanakah saya boleh membantu?</translation>
 <translation id="3804737937830804242">Kuncupkan kamera</translation>
 <translation id="3824784079442479685">Tindakan ini akan membenarkan akses kamera untuk <ph name="APP_NAME" /> dan semua apl serta laman web dengan kebenaran kamera. Anda mungkin perlu menyegarkan semula halaman web atau memulakan semula apl.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> daripada <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> telah diserahkan, <ph name="NUM_GRADED" /> telah digred</translation>
 <translation id="3826099427150913765">Tukar kepada kata laluan</translation>
 <translation id="383058930331066723">Mod penjimat bateri dihidupkan</translation>
 <translation id="383629559565718788">Tunjukkan tetapan papan kekunci</translation>
@@ -765,7 +764,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4066027111132117168">Hidup, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Buka halaman Muat turun</translation>
 <translation id="4072264167173457037">Isyarat sederhana</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> telah diserahkan • <ph name="NUM_GRADED" /> telah digred</translation>
 <translation id="4086921558679520050">Hidupkan suis mikrofon fizikal pada peranti anda</translation>
 <translation id="4101772068965291327">Buka halaman utama</translation>
 <translation id="4112140312785995938">Cari Ke Belakang</translation>
@@ -1030,6 +1028,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Anda akan diberitahu jika anda bercakap semasa diredam. Peranti anda tidak menghasilkan audio.</translation>
 <translation id="5077416371682039027">Menyediakan pemaparan foto, media, pemberitahuan dan apl terbaharu telefon anda</translation>
+<translation id="5077936103761694531">Sahkan peleraian?</translation>
 <translation id="5078796286268621944">PIN salah</translation>
 <translation id="5083035541015925118">ctrl + alt + anak panah ke atas</translation>
 <translation id="5083553833479578423">Buka kunci pelbagai lagi ciri Assistant.</translation>
@@ -1679,6 +1678,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7647488630410863958">Buka kunci peranti untuk melihat pemberitahuan anda</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7654687942625752712">Tekan dan tahan kedua-dua kekunci kelantangan selama lima saat untuk melumpuhkan maklum balas yang dituturkan.</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" diubah kepada peleraian <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Oleh sebab pengehadan lebar jalur port, paparan anda tidak menyokong peleraian <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Tetapan terdahulu akan dipulihkan dalam masa <ph name="TIMEOUT_SECONDS" /> tanpa pengesahan.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7659861092419699379">Meja dan tetingkap telah ditutup</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> anda akan dipaparkan pada peranti yang dipaut dengan <ph name="EMAIL" /></translation>
@@ -1769,6 +1769,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7945357288295809525">Memaparkan tetapan kebolehaksesan, "<ph name="ENABLED_FEATURES" />" didayakan.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> mahu menggunakan <ph name="DEVICE_NAME" /> anda</translation>
 <translation id="7951630946012935453">Malapkan papan kekunci</translation>
+<translation id="7953994493035617347">Sahkan peleraian baharu?</translation>
 <translation id="7963689218131240420">Jangan Ganggu dimatikan.</translation>
 <translation id="7963992254934562106">Daripada <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Pilih folder...</translation>

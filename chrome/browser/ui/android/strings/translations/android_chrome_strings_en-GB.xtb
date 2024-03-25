@@ -124,6 +124,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="164269334534774161">You are viewing an offline copy of this page from <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">History</translation>
+<translation id="1644969410150602449">View your web history here</translation>
 <translation id="1657932388559784161">Page insights bottom sheet is closed</translation>
 <translation id="1670399744444387456">Basic</translation>
 <translation id="1671236975893690980">Download pending...</translation>
@@ -250,6 +251,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="2364539095045928896">Close button to close privacy notice of Page Insights Hub.</translation>
 <translation id="2386938421315164605">Hide and unhide topics</translation>
 <translation id="2390510615457643724">Do you want to download <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> again?</translation>
+<translation id="2395004545133500011">Share with summary sheet opened</translation>
 <translation id="2410754283952462441">Choose an account</translation>
 <translation id="2414886740292270097">Dark</translation>
 <translation id="2421705177906985956">No sites to show right now</translation>
@@ -364,6 +366,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="2942036813789421260">Preview tab is closed</translation>
 <translation id="2946420957526726953">Updating Chrome to connect to other devices</translation>
 <translation id="2951071800649516099">Add pages to your reading list for later</translation>
+<translation id="2956070106555335453">Summary</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> unread page}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> unread pages}}</translation>
 <translation id="296370266220139811">Save time and type less</translation>
 <translation id="2977350910003566746">Sorting by last opened</translation>
@@ -643,6 +646,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Bookmark saved to ‘<ph name="FOLDER_NAME" />’. It is only saved to this device.}other{Bookmarks saved to ‘<ph name="FOLDER_NAME" />’. They are only saved to this device.}}</translation>
 <translation id="4484496141267039529">No connection. Try again later.</translation>
 <translation id="4487967297491345095">All Chrome’s app data will be deleted permanently. This includes all files, settings, accounts, databases, etc.</translation>
+<translation id="4489640160615759754">Share with summary sheet</translation>
 <translation id="4494806687727322324">Password saving has been turned on by your administrator</translation>
 <translation id="4508528996305412043">Feed card menu is opened</translation>
 <translation id="4509501256689523862">As you browse, whether an ad that you see is personalised depends on this setting, <ph name="BEGIN_LINK_1" />ad topics<ph name="END_LINK_1" />, your <ph name="BEGIN_LINK_2" />cookie settings<ph name="END_LINK_2" /> and if the site that you’re viewing personalises ads</translation>
@@ -652,6 +656,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="4521489764227272523">The selected data has been removed from Chrome and your synced devices.
 
 Your Google Account may have other forms of browsing history such as searches and activity from other Google services at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Share with summary sheet closed</translation>
 <translation id="4523326818319942067">last hour</translation>
 <translation id="452750746583162491">Review your synced data</translation>
 <translation id="4532845899244822526">Choose folder</translation>
@@ -749,6 +754,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4950924971025849764">When you’re signed into the same Google Account, other devices can use this phone as a security key.</translation>
 <translation id="4957722034734105353">Learn more...</translation>
 <translation id="4961107849584082341">Translate this page to any language</translation>
+<translation id="496607651705915226">To save and use new passwords in your Google Account, update Google Play services</translation>
 <translation id="4971735654804503942">Faster, proactive protection against dangerous websites, downloads and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.</translation>
 <translation id="497421865427891073">go forward</translation>
 <translation id="4987271110129728827">Can’t find that page. Check your spelling or try a web search.</translation>

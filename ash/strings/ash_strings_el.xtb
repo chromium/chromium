@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">Δεν υπάρχει δίκτυο κινητής τηλεφωνίας</translation>
 <translation id="1882897271359938046">Κατοπτρισμός σε <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Ξεκλείδωμα με δακτυλικό αποτύπωμα</translation>
+<translation id="1904997243703671177">Όταν απενεργοποιήσετε το Bluetooth, <ph name="DEVICE_COUNT" /> εξωτερικές συσκευές θα αποσυνδεθούν από τη συσκευή <ph name="DEVICE_TYPE" />, συμπεριλαμβανομένων των εξής:</translation>
 <translation id="1908992311423394684">Νέα εγκατάσταση</translation>
 <translation id="1915307458270490472">Τερματισμός κλήσης</translation>
 <translation id="1918022425394817322">Η προεπισκόπηση κάμερας τοποθετήθηκε στην επάνω δεξιά γωνία</translation>
@@ -258,7 +259,6 @@
 <translation id="2017998995161831444">Άνοιγμα Βοήθειας στην εφαρμογή Εξερεύνηση</translation>
 <translation id="2018630726571919839">Πες μου ένα ανέκδοτο</translation>
 <translation id="2021864487439853900">Κάντε κλικ για ξεκλείδωμα</translation>
-<translation id="2023558322300866873">Μπορείτε να διακόψετε τη λήψη πακέτων οποιαδήποτε στιγμή.</translation>
 <translation id="2034971124472263449">Αποθήκευση ούτως ή άλλως</translation>
 <translation id="204259843076055848">Η συντόμευση <ph name="SIX_PACK_KEY_NAME" /> είναι απενεργοποιημένη αυτήν τη στιγμή</translation>
 <translation id="2049240716062114887">Το όνομα γραφείου άλλαξε σε <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@
 <translation id="2482878487686419369">Ειδοποιήσεις</translation>
 <translation id="2484513351006226581">Πατήστε <ph name="KEYBOARD_SHORTCUT" />, για να αλλάξετε διάταξη πληκτρολογίου.</translation>
 <translation id="2486214324139475545">Προεπισκόπηση του <ph name="DESK_NAME" />. Ενεργό γραφείο.</translation>
+<translation id="2486405091093637109">Η ανάλυση "<ph name="DISPLAY_NAME" />" άλλαξε σε ανάλυση <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Χωρίς επιβεβαίωση, θα γίνει επαναφορά των προηγούμενων ρυθμίσεων σε <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Συμμετοχή</translation>
 <translation id="2499445554382787206">Μενού προφίλ γραφείου. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Σταθερά πλήκτρα</translation>
@@ -699,7 +700,6 @@
 <translation id="380165613292957338">Γεια, πώς μπορώ να βοηθήσω;</translation>
 <translation id="3804737937830804242">Σύμπτυξη κάμερας</translation>
 <translation id="3824784079442479685">Αυτό επιτρέπει την πρόσβαση στην κάμερα για την εφαρμογή <ph name="APP_NAME" /> και όλες τις εφαρμογές και τους ιστοτόπους με άδεια κάμερας. Ίσως χρειαστεί να ανανεώσετε την ιστοσελίδα ή να επανεκκινήσετε την εφαρμογή.</translation>
-<translation id="3825680296690914697">Παραδόθηκαν <ph name="NUM_TURNED_IN" /> από <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, βαθμολογήθηκαν <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Αλλαγή σε κωδικό πρόσβασης</translation>
 <translation id="383058930331066723">Η λειτουργία εξοικονόμησης μπαταρίας είναι ενεργοποιημένη</translation>
 <translation id="383629559565718788">Εμφάνιση ρυθμίσεων πληκτρολογίου</translation>
@@ -763,7 +763,6 @@
 <translation id="4066027111132117168">Ενεργό, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Άνοιγμα σελίδας Λήψεις</translation>
 <translation id="4072264167173457037">Μεσαίο σήμα</translation>
-<translation id="4076455981957565732">Παραδόθηκαν <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Βαθμολογήθηκαν <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Ενεργοποιήστε τον φυσικό διακόπτη μικροφώνου στη συσκευή σας</translation>
 <translation id="4101772068965291327">Άνοιγμα αρχικής σελίδας</translation>
 <translation id="4112140312785995938">Αναζήτηση προς τα πίσω</translation>
@@ -959,6 +958,7 @@
 <translation id="4813311884204119883">Μεταφορά συνδέσμου σε κενή περιοχή της γραμμής καρτελών</translation>
 <translation id="4814539958450445987">Οθόνη σύνδεσης</translation>
 <translation id="481455355267255546">Ακολουθούν</translation>
+<translation id="481749895090480684">Λίστα εργασιών: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">κάμερα και μικρόφωνο</translation>
 <translation id="482908187605862807">Διαθέσιμες εφαρμογές από το Play Store</translation>
 <translation id="4831034276697007977">Είστε βέβαιοι ότι θέλετε να απενεργοποιήσετε τα αυτόματα κλικ;</translation>
@@ -1000,6 +1000,7 @@
 <translation id="4952936045814352993">Ο Εντοπισμός τηλεφώνου δεν είναι διαθέσιμος όταν οι ήχοι ξυπνητηριού είναι απενεργοποιημένοι</translation>
 <translation id="4960324571663582548">Ο τομέας <ph name="MANAGER" /> απαιτεί την επαναφορά της συσκευής <ph name="DEVICE_TYPE" /> σε προηγούμενη έκδοση. Θα γίνει επαναφορά της συσκευής σας και όλα τα δεδομένα θα διαγραφούν.</translation>
 <translation id="4961318399572185831">Μετάδοση οθόνης</translation>
+<translation id="4964188651935955085">Όταν απενεργοποιήσετε το Bluetooth, αυτή η εξωτερική συσκευή θα αποσυνδεθεί από τη συσκευή <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Αύξηση έντασης ήχου</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ώ. <ph name="MINUTES" />λ. <ph name="SECONDS" />δ.</translation>
 <translation id="4975771730019223894">Προσθήκη σήματος σε εφαρμογές</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Θα ειδοποιηθείτε εάν μιλήσετε ενώ είστε σε σίγαση. Ο ήχος παραμένει πάντα στη συσκευή σας.</translation>
 <translation id="5077416371682039027">Ρύθμιση προβολής των πρόσφατων φωτογραφιών, μέσων, ειδοποιήσεων και εφαρμογών του τηλεφώνου σας</translation>
+<translation id="5077936103761694531">Επιβεβαίωση ανάλυσης;</translation>
 <translation id="5078796286268621944">Εσφαλμένο PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + πάνω βέλος</translation>
 <translation id="5083553833479578423">Ξεκλειδώστε περισσότερες λειτουργίες του Βοηθού.</translation>
@@ -1676,6 +1678,7 @@
 <translation id="7647488630410863958">Ξεκλειδώστε τη συσκευή για να δείτε τις ειδοποιήσεις σας</translation>
 <translation id="7649070708921625228">Βοήθεια</translation>
 <translation id="7654687942625752712">Πατήστε παρατεταμένα και τα δύο πλήκτρα έντασης ήχου για πέντε δευτερόλεπτα, για να απενεργοποιήσετε τα εκφωνημένα σχόλια.</translation>
+<translation id="7654916369822103315">Η ανάλυση "<ph name="DISPLAY_NAME" />" άλλαξε σε ανάλυση <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Λόγω περιορισμών εύρους ζώνης θύρας, η οθόνη σας δεν υποστηρίζει ανάλυση <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Χωρίς επιβεβαίωση, θα γίνει επαναφορά των προηγούμενων ρυθμίσεων σε <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7659861092419699379">Το γραφείο και τα παράθυρα έκλεισαν</translation>
 <translation id="7660160718439869192">Η συσκευή <ph name="NAME" /> θα εμφανίζεται σε συσκευές που είναι συνδεδεμένες με τον λογαριασμό <ph name="EMAIL" /></translation>
@@ -1766,6 +1769,7 @@
 <translation id="7945357288295809525">Εμφάνιση ρυθμίσεων προσβασιμότητας, η λειτουργία <ph name="ENABLED_FEATURES" /> είναι ενεργοποιημένη.</translation>
 <translation id="7947798320695032612">Η εφαρμογή <ph name="APP_NAME" /> θέλει να χρησιμοποιήσει τη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Μείωση φωτεινότητας πληκτρολογίου</translation>
+<translation id="7953994493035617347">Επιβεβαίωση νέας ανάλυσης;</translation>
 <translation id="7963689218131240420">Η λειτουργία Μην ενοχλείτε είναι ανενεργή.</translation>
 <translation id="7963992254934562106">Από <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Επιλογή φακέλου…</translation>
@@ -1824,6 +1828,7 @@
 <translation id="8155628902202578800">Άνοιγμα παραθύρου διαλόγου πληροφοριών για <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Χρησιμοποιείτε <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Ενεργοποίηση/απενεργοποίηση μενού για λειτουργία κλειδώματος αλλαγής μεγέθους</translation>
+<translation id="8192727139462702395">Όταν απενεργοποιήσετε το Bluetooth, αυτές οι εξωτερικές συσκευές θα αποσυνδεθούν από τη συσκευή <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Καρτέλα μετάδοσης</translation>
 <translation id="8200772114523450471">Συνέχιση</translation>
 <translation id="8203795194971602413">Δεξί κλικ</translation>

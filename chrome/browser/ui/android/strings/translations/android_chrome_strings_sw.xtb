@@ -124,6 +124,7 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="1641113438599504367">Kuvinjari Salama</translation>
 <translation id="164269334534774161">Hii ni nakala ya nje ya mtandao ya ukurasa huu ya terehe <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historia</translation>
+<translation id="1644969410150602449">Angalia historia yako ya wavuti hapa</translation>
 <translation id="1657932388559784161">Safu ya chini ya maarifa ya ukurasa imefungwa</translation>
 <translation id="1670399744444387456">Msingi</translation>
 <translation id="1671236975893690980">Inasubiri kupakua...</translation>
@@ -250,6 +251,7 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="2364539095045928896">Kitufe cha kufunga ilani ya faragha ya kituo cha maarifa ya ukurasa.</translation>
 <translation id="2386938421315164605">Ficha na uonyeshe mada</translation>
 <translation id="2390510615457643724">Je, ungependa kupakua <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> tena?</translation>
+<translation id="2395004545133500011">Tuma laha ya muhtasari ikiwa imefunguliwa</translation>
 <translation id="2410754283952462441">Chagua akaunti</translation>
 <translation id="2414886740292270097">Giza</translation>
 <translation id="2421705177906985956">Hakuna tovuti za kuonyesha sasa hivi</translation>
@@ -364,6 +366,7 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="2942036813789421260">Kichupo cha kukagua kwanza kimefungwa</translation>
 <translation id="2946420957526726953">Inasasisha Chrome ili iweze kuunganisha kwenye vifaa vingine</translation>
 <translation id="2951071800649516099">Weka kurasa kwenye orodha yako ya kusoma ili uzisome baadaye</translation>
+<translation id="2956070106555335453">Muhtasari</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{Ukurasa <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ambao hujausoma}other{Kurasa <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ambazo hujazisoma}}</translation>
 <translation id="296370266220139811">Okoa muda na uandike kidogo</translation>
 <translation id="2977350910003566746">Inapanga kulingana na mara ya mwisho kufunguliwa</translation>
@@ -643,6 +646,7 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Alamisho imehifadhiwa kwenye "<ph name="FOLDER_NAME" />". Imehifadhiwa kwenye kifaa hiki pekee.}other{Alamisho zimehifadhiwa kwenye "<ph name="FOLDER_NAME" />". Zimehifadhiwa kwenye kifaa hiki pekee.}}</translation>
 <translation id="4484496141267039529">Hakuna muunganisho. Jaribu tena baadaye.</translation>
 <translation id="4487967297491345095">Data yote ya programu ya Chrome itafutwa kabisa. Hii ni pamoja na faili, mipangilio, akaunti, hifadhidata zote, n.k.</translation>
+<translation id="4489640160615759754">Tuma ukijumuisha laha ya muhtasari</translation>
 <translation id="4494806687727322324">Msimamizi wako amewasha kipengee cha kuhifadhi nenosiri</translation>
 <translation id="4508528996305412043">Menyu ya kadi ya mipasho imefunguliwa</translation>
 <translation id="4509501256689523862">Unapovinjari, unaweza kuona iwapo tangazo unaloona limewekewa mapendeleo na ikiwa tovuti unayotazama inawekea matangazo mapendeleo kwenye mipangilio hii, <ph name="BEGIN_LINK_1" />mada za Matangazo<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />mipangilio yako ya vidakuzi<ph name="END_LINK_2" /></translation>
@@ -652,6 +656,7 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="4521489764227272523">Data uliyochagua imeondolewa kwenye Chrome na kwenye vifaa vyako vilivyosawazishwa. 
 
 Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vile mambo uliyotafuta na shughuli kutoka huduma nyingine za Google katika <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Tuma laha ya muhtasari ikiwa imefungwa</translation>
 <translation id="4523326818319942067">saa moja iliyopita</translation>
 <translation id="452750746583162491">Kagua data yako iliyosawazishwa</translation>
 <translation id="4532845899244822526">Chagua folda</translation>
@@ -749,6 +754,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4950924971025849764">Unapoingia katika Akaunti moja ya Google, vifaa vingine vinaweza kutumia simu hii kama ufunguo wa usalama.</translation>
 <translation id="4957722034734105353">Pata maelezo zaidi...</translation>
 <translation id="4961107849584082341">Tafsiri ukurasa huu katika lugha yoyote</translation>
+<translation id="496607651705915226">Ili uhifadhi na utumie manenosiri mapya katika Akaunti yako ya Google, sasisha huduma za Google Play</translation>
 <translation id="4971735654804503942">Ulinzi wa haraka na wa mapema dhidi ya tovuti, vipakuliwa na viendelezi hatari. Hukuonya kuhusu matukio ya ufichuzi haramu wa manenosiri yako. Inahitaji data ya kuvinjari itumwe kwa Google.</translation>
 <translation id="497421865427891073">Nenda mbele</translation>
 <translation id="4987271110129728827">Imeshindwa kupata ukurasa huo. Kagua tahajia zako au jaribu kutafuta kwenye wavuti.</translation>

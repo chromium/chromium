@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">التصفح الآمن</translation>
 <translation id="164269334534774161">أنت تعرض نسخة بلا اتصال لهذه الصفحة من <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">السجل</translation>
+<translation id="1644969410150602449">عرض سجلّ الويب هنا</translation>
 <translation id="1657932388559784161">تم إغلاق البطاقة السفلية لإحصاءات الصفحة.</translation>
 <translation id="1670399744444387456">الإعدادات الأساسية</translation>
 <translation id="1671236975893690980">التنزيل معلّق...</translation>
@@ -365,6 +366,7 @@
 <translation id="2942036813789421260">علامة تبويب المعاينة مغلقة</translation>
 <translation id="2946420957526726953">‏جارٍ تحديث متصفِّح Chrome لربط الهاتف بالأجهزة الأخرى</translation>
 <translation id="2951071800649516099">يمكنك إضافة صفحات إلى قائمة القراءة للاطّلاع عليها لاحقًا</translation>
+<translation id="2956070106555335453">ملخّص</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{صفحة واحدة (<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />) غير مقروءة}zero{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}two{صفحتان (<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />) غير مقروءتَين}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحات غير مقروءة}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}}</translation>
 <translation id="296370266220139811">توفير الوقت والانتقال سريعًا</translation>
 <translation id="2977350910003566746">جارٍ الترتيب حسب آخِر استخدام</translation>
@@ -751,6 +753,7 @@
 <translation id="4950924971025849764">‏عند تسجيل الدخول إلى حساب Google نفسه على أجهزة أخرى، يمكن لهذه الأجهزة استخدام هذا الهاتف كمفتاح أمان.</translation>
 <translation id="4957722034734105353">مزيد من المعلومات...</translation>
 <translation id="4961107849584082341">ترجمة هذه الصفحة إلى أي لغة</translation>
+<translation id="496607651705915226">‏لحفظ كلمات المرور الجديدة واستخدامها في حسابك على Google، يجب تحديث "خدمات Google Play".</translation>
 <translation id="4971735654804503942">‏يوفّر حماية استباقية وسريعة من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة، ويُحذّرك من عمليات اختراق كلمة المرور. يتطلّب إرسال بيانات التصفّح إلى Google.</translation>
 <translation id="497421865427891073">انتقال للأمام</translation>
 <translation id="4987271110129728827">لم نتمكّن من العثور على تلك الصفحة. تحقّق من تهجئة الكلمات أو جرِّب البحث على الويب.</translation>

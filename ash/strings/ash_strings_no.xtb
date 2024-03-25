@@ -228,6 +228,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1882814835921407042">Ingen mobilnettverk</translation>
 <translation id="1882897271359938046">Speiler <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Lås opp med fingeravtrykk</translation>
+<translation id="1904997243703671177">Når du slår av Bluetooth, blir <ph name="DEVICE_COUNT" /> eksterne enheter koblet fra <ph name="DEVICE_TYPE" />, inkludert disse:</translation>
 <translation id="1908992311423394684">Nylig installert</translation>
 <translation id="1915307458270490472">Legg på</translation>
 <translation id="1918022425394817322">Kameraet er festet til øvre høyre hjørne</translation>
@@ -258,7 +259,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2017998995161831444">Åpne «Hjelp» i Utforsk-appen</translation>
 <translation id="2018630726571919839">Fortell meg en vits</translation>
 <translation id="2021864487439853900">Klikk for å låse opp</translation>
-<translation id="2023558322300866873">Du kan stoppe pakkeregistreringen når som helst</translation>
 <translation id="2034971124472263449">Lagre likevel</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" />-hurtigtasten er avslått</translation>
 <translation id="2049240716062114887">Skrivebordsnavnet ble endret til <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="2484513351006226581">Trykk på <ph name="KEYBOARD_SHORTCUT" /> for å bytte tastaturoppsett.</translation>
 <translation id="2486214324139475545">Forhåndsvisning av <ph name="DESK_NAME" />. Aktivt skrivebord.</translation>
+<translation id="2486405091093637109">Oppløsningen for «<ph name="DISPLAY_NAME" />» ble endret til <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). De gamle innstillingene gjenopprettes om <ph name="TIMEOUT_SECONDS" /> hvis du ikke bekrefter dette.</translation>
 <translation id="2487915095798731898">Bli med</translation>
 <translation id="2499445554382787206">Meny for skrivebordsprofil. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Trege taster</translation>
@@ -699,7 +700,6 @@ Koble enheten til strøm.</translation>
 <translation id="380165613292957338">Hei! Hva kan jeg hjelpe deg med?</translation>
 <translation id="3804737937830804242">Skjul kameraet</translation>
 <translation id="3824784079442479685">Dette gir <ph name="APP_NAME" /> og alle apper og nettsteder som har kameratillatelsen, tilgang til kameraet. Det kan hende du må laste inn nettsiden på nytt eller starte appen på nytt.</translation>
-<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> av <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> er levert, <ph name="NUM_GRADED" /> er karaktersatt</translation>
 <translation id="3826099427150913765">Bytt til passord</translation>
 <translation id="383058930331066723">Batterisparing er på</translation>
 <translation id="383629559565718788">Vis tastaturinnstillinger</translation>
@@ -763,7 +763,6 @@ Koble enheten til strøm.</translation>
 <translation id="4066027111132117168">På, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Åpne Nedlastinger-siden</translation>
 <translation id="4072264167173457037">Middels sterkt signal</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> er levert • <ph name="NUM_GRADED" /> er vurdert</translation>
 <translation id="4086921558679520050">Slå på den fysiske mikrofonbryteren på enheten</translation>
 <translation id="4101772068965291327">Åpne startsiden</translation>
 <translation id="4112140312785995938">Spol bakover</translation>
@@ -959,6 +958,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4813311884204119883">Dra en link til et tomt område på faneraden</translation>
 <translation id="4814539958450445987">Påloggingsskjerm</translation>
 <translation id="481455355267255546">Neste</translation>
+<translation id="481749895090480684">Huskeliste: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera og mikrofon</translation>
 <translation id="482908187605862807">Tilgjengelige apper fra Play-butikken</translation>
 <translation id="4831034276697007977">Er du sikker på at du vil slå av automatiske klikk?</translation>
@@ -1000,6 +1000,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4952936045814352993">Finn telefonen er ikke tilgjengelig når alarmlyder er slått av</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> krever rollback av <ph name="DEVICE_TYPE" />. Enheten blir tilbakestilt, og alle data blir slettet.</translation>
 <translation id="4961318399572185831">Cast skjermen</translation>
+<translation id="4964188651935955085">Når du slår av Bluetooth, blir denne eksterne enheten koblet fra <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Skru opp volumet</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> t <ph name="MINUTES" /> m <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Appmerking</translation>
@@ -1027,6 +1028,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Du blir varslet hvis du snakker mens mikrofonen er avslått. Lyden forlater aldri enheten.</translation>
 <translation id="5077416371682039027">Konfigurer visning av nylige bilder, medier, varsler og apper fra telefonen din</translation>
+<translation id="5077936103761694531">Vil du bekrefte oppløsningen?</translation>
 <translation id="5078796286268621944">Feil personlig kode</translation>
 <translation id="5083035541015925118">ctrl + alt + oppoverpil</translation>
 <translation id="5083553833479578423">Lås opp flere Assistent-funksjoner.</translation>
@@ -1676,6 +1678,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7647488630410863958">Lås opp enheten for å se varslene dine</translation>
 <translation id="7649070708921625228">Hjelp</translation>
 <translation id="7654687942625752712">Trykk og hold på begge volumknappene i fem sekunder for å slå av taletilbakemelding.</translation>
+<translation id="7654916369822103315">Oppløsningen for «<ph name="DISPLAY_NAME" />» ble endret til <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). På grunn av begrensninger på portens båndbredde kan ikke skjermen brukes med en oppløsning på <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). De gamle innstillingene gjenopprettes om <ph name="TIMEOUT_SECONDS" /> hvis du ikke bekrefter dette.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7659861092419699379">Skrivebordet og vinduene er lukket</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> vises på enheter som er tilknyttet <ph name="EMAIL" /></translation>
@@ -1766,6 +1769,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7945357288295809525">Vis tilgjengelighetsinnstillinger. «<ph name="ENABLED_FEATURES" />» er aktivert.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vil bruke <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Gjør tastaturet mørkere</translation>
+<translation id="7953994493035617347">Vil du bekrefte den nye oppløsningen?</translation>
 <translation id="7963689218131240420">Ikke forstyrr er av.</translation>
 <translation id="7963992254934562106">Fra <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Velg mappe…</translation>
@@ -1824,6 +1828,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8155628902202578800">Åpne dialogboksen for informasjon om <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Bruker <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Slå menyen på/av for å endre størrelsen på låsemodusen</translation>
+<translation id="8192727139462702395">Når du slår av Bluetooth, blir disse eksterne enhetene koblet fra <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Casting-fanen</translation>
 <translation id="8200772114523450471">Fortsett</translation>
 <translation id="8203795194971602413">Høyreklikk</translation>

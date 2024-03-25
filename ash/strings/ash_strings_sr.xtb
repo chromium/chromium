@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">Нема мобилне мреже</translation>
 <translation id="1882897271359938046">Пресликавање у <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Откључајте отиском прста</translation>
+<translation id="1904997243703671177">Када искључите Bluetooth, број спољних уређаја који ће прекинути везу са уређајем <ph name="DEVICE_TYPE" /> је <ph name="DEVICE_COUNT" />, укључујући:</translation>
 <translation id="1908992311423394684">Ново инсталирање</translation>
 <translation id="1915307458270490472">Прекини везу</translation>
 <translation id="1918022425394817322">Камера је уклопљена у горњи десни угао</translation>
@@ -258,7 +259,6 @@
 <translation id="2017998995161831444">Отворите Помоћ у апликацији Истражите</translation>
 <translation id="2018630726571919839">Испричај ми виц.</translation>
 <translation id="2021864487439853900">Кликните да бисте откључали</translation>
-<translation id="2023558322300866873">Снимање пакета можете да зауставите у сваком тренутку</translation>
 <translation id="2034971124472263449">Ипак сачувај</translation>
 <translation id="204259843076055848">Пречица <ph name="SIX_PACK_KEY_NAME" /> је тренутно искључена</translation>
 <translation id="2049240716062114887">Име радне површине је промењено у <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@
 <translation id="2482878487686419369">Обавештења</translation>
 <translation id="2484513351006226581">Притисните <ph name="KEYBOARD_SHORTCUT" /> да бисте променили распоред тастатуре.</translation>
 <translation id="2486214324139475545">Преглед радне површине <ph name="DESK_NAME" />. Активна радна површина.</translation>
+<translation id="2486405091093637109">Резолуција „<ph name="DISPLAY_NAME" />“ је промењена у <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) резолуцију. Ако не потврдите, претходна подешавања ће бити враћена за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Придружи ме</translation>
 <translation id="2499445554382787206">Мени за профил на радној површини. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Лепљиви тастери</translation>
@@ -699,7 +700,6 @@
 <translation id="380165613292957338">Здраво, како могу да помогнем?</translation>
 <translation id="3804737937830804242">Скупите камеру</translation>
 <translation id="3824784079442479685">Ово омогућава приступ камери за апликацију <ph name="APP_NAME" />, као и све апликације и веб-сајтове са дозволом за камеру. Можда ћете морати да освежите веб-страницу или рестартујете апликацију.</translation>
-<translation id="3825680296690914697">Предато: <ph name="NUM_TURNED_IN" /> од <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, оцењено: <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Пређи на лозинку</translation>
 <translation id="383058930331066723">Режим уштеде батерије је укључен</translation>
 <translation id="383629559565718788">Прегледајте подешавања тастатуре</translation>
@@ -763,7 +763,6 @@
 <translation id="4066027111132117168">Укључено, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Отвори страницу Преузимања</translation>
 <translation id="4072264167173457037">Сигнал средње јачине</translation>
-<translation id="4076455981957565732">Предато: <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Оцењено: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Укључите физички прекидач за микрофон на уређају</translation>
 <translation id="4101772068965291327">Отвори почетну страницу</translation>
 <translation id="4112140312785995938">Премотај уназад</translation>
@@ -960,6 +959,7 @@
 <translation id="4813311884204119883">Превуците линк у празну област на траци са картицама</translation>
 <translation id="4814539958450445987">Екран за пријављивање</translation>
 <translation id="481455355267255546">Следеће</translation>
+<translation id="481749895090480684">Листа задатака: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">камера и микрофон</translation>
 <translation id="482908187605862807">Доступне апликације из Play продавнице</translation>
 <translation id="4831034276697007977">Желите ли стварно да искључите аутоматске кликове?</translation>
@@ -1001,6 +1001,7 @@
 <translation id="4952936045814352993">Функција Пронађи телефон није доступна када су звукови аларма онемогућени</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> захтева да вратите <ph name="DEVICE_TYPE" /> на претходну верзију. Уређај ће се ресетовати и сви подаци ће бити избрисани.</translation>
 <translation id="4961318399572185831">Пребацивање екрана</translation>
+<translation id="4964188651935955085">Када искључите Bluetooth, овај спољни уређај ће прекинути везу са уређајем <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Повећај јачину звука</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> с <ph name="MINUTES" /> мин <ph name="SECONDS" /> сек</translation>
 <translation id="4975771730019223894">Додавање значки на апликације</translation>
@@ -1028,6 +1029,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">Добићете обавештење ако говорите док је звук искључен. Звук остаје на уређају.</translation>
 <translation id="5077416371682039027">Подесите преглед недавних слика, медија, обавештења и апликација на телефону</translation>
+<translation id="5077936103761694531">Желите да потврдите резолуцију?</translation>
 <translation id="5078796286268621944">Нетачан PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + стрелица нагоре</translation>
 <translation id="5083553833479578423">Откључајте још функција Помоћника.</translation>
@@ -1678,6 +1680,7 @@
 <translation id="7647488630410863958">Откључајте уређај да бисте прегледали обавештења</translation>
 <translation id="7649070708921625228">Помоћ</translation>
 <translation id="7654687942625752712">Притисните оба тастера за јачину звука и задржите их пет секунди да бисте онемогућили повратни говор.</translation>
+<translation id="7654916369822103315">Резолуција „<ph name="DISPLAY_NAME" />“ је промењена у <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) резолуцију. Због ограничења пропусног опсега порта, екран не подржава резолуцију од <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Ако не потврдите, претходна подешавања ће бити враћена за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7659861092419699379">Радна површина и прозори су затворени</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> ће се приказивати међу уређајима повезаним са налогом <ph name="EMAIL" /></translation>
@@ -1768,6 +1771,7 @@
 <translation id="7945357288295809525">Прикажите подешавања приступачности, „<ph name="ENABLED_FEATURES" />“ је омогућено.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> жели да користи уређај <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Затамни тастатуру</translation>
+<translation id="7953994493035617347">Желите да потврдите нову резолуцију?</translation>
 <translation id="7963689218131240420">Режим Не узнемиравај је искључен.</translation>
 <translation id="7963992254934562106">Извор: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Изаберите фолдер…</translation>
@@ -1826,6 +1830,7 @@
 <translation id="8155628902202578800">Отвара дијалог са информацијама за корисника <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Користи се <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Укључите или искључите мени за промену величине закључаног режима</translation>
+<translation id="8192727139462702395">Када искључите Bluetooth, ови спољни уређаји ће прекинути везу са уређајем <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Пребацује се картица</translation>
 <translation id="8200772114523450471">Настави</translation>
 <translation id="8203795194971602413">Десни клик</translation>

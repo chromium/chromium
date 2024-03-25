@@ -248,7 +248,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="78025249032851484">Chromium non è aggiornato.</translation>
 <translation id="7859018312476869945">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chromium invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità di navigazione in incognito.</translation>
 <translation id="786327964234957808">Stai cambiando account di sincronizzazione, passando dall'account <ph name="USER_EMAIL1" /> all'account <ph name="USER_EMAIL2" />. I dati di Chromium esistenti sono gestiti da <ph name="DOMAIN" />. I dati verranno cancellati dal dispositivo, ma rimarranno memorizzati nell'account <ph name="USER_EMAIL1" />.</translation>
-<translation id="7865408467687426957">Se accedi a Chromium, le password salvate verranno memorizzate nel tuo Account Google. Per disattivare questa preferenza, <ph name="BEGIN_LINK" />vai alle impostazioni<ph name="END_LINK" />.</translation>
 <translation id="7890287942691234100">Inizia a usare lo scanner di Chromium</translation>
 <translation id="7905064834449738336">Quando utilizzi una password, Chromium ti avvisa se è stata pubblicata online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>
 <translation id="7911732829884437264">Usa Chromium per impostazione predefinita</translation>

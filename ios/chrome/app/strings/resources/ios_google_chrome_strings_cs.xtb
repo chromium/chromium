@@ -140,7 +140,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4831642696589369971">Některá data prohlížeče Chrome ještě nebyla uložena do vašeho účtu Google.
 
         Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data budou smazána.</translation>
-<translation id="4834499902900503484">Když jste v Chromu přihlášeni, uložená hesla se ukládají do vašeho účtu Google. Tuto funkci můžete vypnout v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">V beta verzi prohlížeče Chrome není podporováno</translation>
 <translation id="4840404732697892756">Pokud chcete, aby Správce hesel Google zkontroloval vaše hesla, přihlaste se pomocí účtu Google.</translation>
 <translation id="4856636171409137183">Pokud chcete získat maximálně přizpůsobené prostředí, zahrňte Chrome do těchto funkcí: <ph name="FEATURE_NAME_1" /> a <ph name="FEATURE_NAME_2" /></translation>

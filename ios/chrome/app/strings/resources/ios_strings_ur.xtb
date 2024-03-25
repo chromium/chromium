@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">شام 5:30 بجے</translation>
 <translation id="1209206284964581585">ابھی کیلئے چھپائیں</translation>
 <translation id="1219674500290482172">انٹرنیٹ سے منسلک ہونے سے قاصر ہے۔</translation>
-<translation id="1226238226094914652">آپ کے تمام آلات پر پاس ورڈز</translation>
 <translation id="122699739164161391">سبھی ٹیبز بند کریں</translation>
 <translation id="1227866575467023566">{count,plural, =1{صفحہ آپ کے اکاؤنٹ میں آپ کی پڑھنے کی فہرست میں شامل کیا گیا، {email}}other{{count} صفحات کو آپ کے اکاؤنٹ میں آپ کی پڑھنے کی فہرست میں شامل کیا گیا، {email}}}</translation>
 <translation id="1242044645101871359">دوبارہ سائن ان کریں</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">پیروی کریں</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
 <translation id="164673457281113247">{count,plural, =1{بُک مارک محفوظ ہو گیا}other{بُک مارکس محفوظ ہو گئے}}</translation>
-<translation id="165008673352427892">نئی خصوصیت</translation>
 <translation id="1650222530560417226">‏مستقبل کے JavaScript کونسول لاگز اور تمام ٹیبز کی خرابیاں جمع کرنے کیلئے، "لاگنگ شروع کریں" بٹن پر تھپتھپائیں۔ لاگز اس وقت تک جمع (اور صرف میموری میں اسٹور) کئے جائیں گے جب تک یہ صفحہ بند نہ ہو جائے یا "لاگنگ بند کریں" پر نہ تھپتھپایا جائے۔</translation>
 <translation id="1653432787084483144">{count,plural, =1{آپ کے کی بورڈ کے اوپر {count} محفوظ کردہ پاس ورڈ دستیاب ہے۔}other{آپ کے کی بورڈ کے اوپر {count} محفوظ کردہ پاس ورڈز دستیاب ہیں۔}}</translation>
 <translation id="1657011748321897393">اشتراک ناکام ہوگیا کیونکہ آپ نیٹ ورک سے منسلک نہیں ہیں۔</translation>
@@ -302,7 +300,6 @@
 <translation id="2556092377360758201">کوئی تحفظ نہیں (تجویز نہیں کی جاتی ہے)</translation>
 <translation id="2561375093019333908">کھولیں</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> پر بھیجا جا رہا ہے…</translation>
-<translation id="2576499762020411840">‏اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کریں اور انہیں محفوظ کریں</translation>
 <translation id="2577522251608256362">نواحی علاقہ</translation>
 <translation id="2578571896248130439">ویب صفحہ بھیجیں</translation>
 <translation id="2584132361465095047">اکاؤنٹ شامل کریں…</translation>
@@ -948,7 +945,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5850913622988109693">پیکیجز کو ٹریک کرنے کے اختیارات</translation>
 <translation id="5854790677617711513">30 دن سے زیادہ پرانا</translation>
 <translation id="5857090052475505287">نیا فولڈر</translation>
-<translation id="5857361196621230935">گروپ میں ٹیب شامل کریں</translation>
 <translation id="5857770089550859117">مطابقت پذیری شروع کرنے کیلئے پاس فریز درکار ہے۔</translation>
 <translation id="5859715514067755465">فارورڈ کریں</translation>
 <translation id="5860033963881614850">آف</translation>
@@ -1159,7 +1155,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6800349425672670802">آپ ٹیب سوئچر سے اپنے تمام کھلے ہوئے ٹیبز تک رسائی حاصل کر سکتے ہیں۔</translation>
 <translation id="6807889908376551050">سبھی دکھائیں…</translation>
 <translation id="681368974849482173">آئٹم بنایا گیا</translation>
-<translation id="6822587385560699678">آن ہونے پر پاس ورڈز <ph name="ACCOUNT" /> میں محفوظ ہوتے ہیں۔ آف ہونے پر پاس ورڈز صرف اس آلے پر محفوظ ہوتے ہیں۔</translation>
 <translation id="6824350924364057989">ترتیبات</translation>
 <translation id="6831043979455480757">ترجمہ کریں</translation>
 <translation id="6842136130964845393">اس بات کو یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے محفوظ کردہ پاس ورڈز تک رسائی حاصل کر سکتے ہیں، توثیق کریں کہ یہ آپ ہیں</translation>

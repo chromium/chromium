@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Hələlik gizlədin</translation>
 <translation id="1219674500290482172">İnternetə qoşulmaq mümkün deyil.</translation>
-<translation id="1226238226094914652">Parollar Bütün Cihazlarınızda</translation>
 <translation id="122699739164161391">Bütün Tabları bağlayın</translation>
 <translation id="1227866575467023566">{count,plural, =1{Səhifə hesabdakı ({email}) oxu siyahısına əlavə edildi}other{{count} səhifə hesabdakı ({email}) oxu siyahısına əlavə edildi}}</translation>
 <translation id="1242044645101871359">Yenidən daxil olun</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">İzləyin</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="164673457281113247">{count,plural, =1{Əlfəcin yadda saxlandı}other{Əlfəcinlər yadda saxlandı}}</translation>
-<translation id="165008673352427892">Yeni funksiya</translation>
 <translation id="1650222530560417226">Gələcək JavaScript konsolunun qeyd və xətalarını bütün tablardan toplamaq üçün "Qeydlərə Başlayın" düyməsinə klikləyin. Qeydlər bu səhifə bağlanana və ya "Qeydləri Dayandırın" seçimi edilənədək toplanacaq (və yalnız yaddaşda saxlanacaq).</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} yaddaşda saxlanılmış parol klaviaturanızın yuxarısında əlçatandır.}other{{count} yaddaşda saxlanılmış parol klaviaturanızın yuxarısında əlçatandır.}}</translation>
 <translation id="1657011748321897393">Paylaşım uğursuz oldu, çünki Siz şəbəkəyə qoşulmamısınız.</translation>
@@ -302,7 +300,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2556092377360758201">Qoruma yoxdur (tövsiyə edilmir)</translation>
 <translation id="2561375093019333908">AÇIN</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> cihazına göndərilir...</translation>
-<translation id="2576499762020411840">Google Hesabında Parolları İstifadə Edin və Yadda Saxlayın</translation>
 <translation id="2577522251608256362">Yaxın yerlər</translation>
 <translation id="2578571896248130439">Veb səhifəni göndərin</translation>
 <translation id="2584132361465095047">Hesab əlavə edin...</translation>
@@ -948,7 +945,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5850913622988109693">Paket izləmə seçimləri</translation>
 <translation id="5854790677617711513">30 gündən çox</translation>
 <translation id="5857090052475505287">Yeni Qovluq</translation>
-<translation id="5857361196621230935">Qrupa tab əlavə edin</translation>
 <translation id="5857770089550859117">Sinxronizasiyanı başlamaq üçün parol söz tələb olunur.</translation>
 <translation id="5859715514067755465">Yönləndirin</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
@@ -1159,7 +1155,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6800349425672670802">Tab Keçiricisində bütün açıq tablara daxil ola bilərsiniz.</translation>
 <translation id="6807889908376551050">Hamısını göstərin...</translation>
 <translation id="681368974849482173">Element yaradılmışdır</translation>
-<translation id="6822587385560699678">Aktiv olduqda parollar <ph name="ACCOUNT" /> hesabında yadda saxlanır. Deaktiv olduqda parollar yalnız bu cihazda yadda saxlanır.</translation>
 <translation id="6824350924364057989">Ayarlar</translation>
 <translation id="6831043979455480757">Tərcümə et</translation>
 <translation id="6842136130964845393">Həmişə yadda saxlanmış parollarınıza girişinizin olduğuna əmin olmaq üçün kimliyinizi doğrulayın</translation>

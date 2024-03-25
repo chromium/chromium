@@ -248,7 +248,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="78025249032851484">Teie Chromium on aegunud.</translation>
 <translation id="7859018312476869945">Kui sisestate teksti aadressiribale või otsingukasti, saadab Chromium teie sisestatud teksti teie vaikeotsingumootorisse, et saada paremaid soovitusi. See on inkognito režiimis välja lülitatud.</translation>
 <translation id="786327964234957808">Vahetate sünkroonitavad kontod aadressilt <ph name="USER_EMAIL1" /> aadressile <ph name="USER_EMAIL2" />. Teie olemasolevaid Chromiumi andmeid haldab domeen <ph name="DOMAIN" />. Teie andmed kustutatakse sellest seadmest, kuid need jäävad alles kontole <ph name="USER_EMAIL1" />.</translation>
-<translation id="7865408467687426957">Kui olete Chromiumi sisse logitud, salvestatakse paroolid teie Google’i kontole. Selle väljalülitamiseks <ph name="BEGIN_LINK" />avage seaded<ph name="END_LINK" />.</translation>
 <translation id="7890287942691234100">Alustage Chromiumi skanneri kasutamist</translation>
 <translation id="7905064834449738336">Kui kasutate parooli, hoiatab Chromium teid, kui see on veebis avalikustatud. Selle käigus on teie paroolid ja kasutajanimed krüpteeritud, et mitte keegi (sh Google) ei saaks neid lugeda.</translation>
 <translation id="7911732829884437264">Chromiumi vaikimisi kasutamine</translation>

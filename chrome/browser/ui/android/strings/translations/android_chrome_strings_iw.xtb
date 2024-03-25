@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">גלישה בטוחה</translation>
 <translation id="164269334534774161">זהו עותק אופליין של הדף הזה מ-<ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">היסטוריה</translation>
+<translation id="1644969410150602449">כאן אפשר לראות את היסטוריית האתרים שלך</translation>
 <translation id="1657932388559784161">הגיליון התחתון של התובנות לגבי הדף סגור</translation>
 <translation id="1670399744444387456">בסיסי</translation>
 <translation id="1671236975893690980">ההורדה תיכף תתחיל…</translation>
@@ -250,6 +251,7 @@
 <translation id="2364539095045928896">לחצן לסגירה של הודעת הפרטיות במרכז התובנות לגבי הדף.</translation>
 <translation id="2386938421315164605">הסתרה וביטול הסתרה של נושאים</translation>
 <translation id="2390510615457643724">רוצה להוריד שוב את <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
+<translation id="2395004545133500011">שיתוף עם גיליון הסיכום במצב פתוח</translation>
 <translation id="2410754283952462441">בחירת חשבון</translation>
 <translation id="2414886740292270097">כהה</translation>
 <translation id="2421705177906985956">אין כרגע אתרים שאפשר להציג</translation>
@@ -364,6 +366,7 @@
 <translation id="2942036813789421260">כרטיסיית התצוגה המקדימה סגורה</translation>
 <translation id="2946420957526726953">‏מתבצע עדכון של Chrome כדי להתחבר למכשירים אחרים</translation>
 <translation id="2951071800649516099">מוסיפים דפים לרשימת הקריאה לשלב מאוחר יותר</translation>
+<translation id="2956070106555335453">סיכום</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{דף אחד (<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />) שלא נקרא}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}two{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}}</translation>
 <translation id="296370266220139811">חוסכים זמן ומקלידים פחות</translation>
 <translation id="2977350910003566746">בתהליך מיון לפי מועד הפתיחה האחרונה</translation>
@@ -643,6 +646,7 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{הסימנייה נשמרה בתיקייה ’<ph name="FOLDER_NAME" />‘. היא שמורה רק במכשיר הזה.}one{הסימניות נשמרו בתיקייה ’<ph name="FOLDER_NAME" />‘. הן שמורות רק במכשיר הזה.}two{הסימניות נשמרו בתיקייה ’<ph name="FOLDER_NAME" />‘. הן שמורות רק במכשיר הזה.}other{הסימניות נשמרו בתיקייה ’<ph name="FOLDER_NAME" />‘. הן שמורות רק במכשיר הזה.}}</translation>
 <translation id="4484496141267039529">אין חיבור. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="4487967297491345095">‏כל נתוני היישומים של Chrome יימחקו לצמיתות, כולל כל הקבצים, ההגדרות, החשבונות, מסדי הנתונים וכו'</translation>
+<translation id="4489640160615759754">שיתוף עם גיליון הסיכום</translation>
 <translation id="4494806687727322324">האפשרות לשמור סיסמאות הופעלה על ידי האדמין</translation>
 <translation id="4508528996305412043">תפריט כרטיס הפיד נפתח</translation>
 <translation id="4509501256689523862">‏במהלך הגלישה, יוצגו מודעות עם או בלי התאמה אישית בהתאם להגדרה הזו, ל<ph name="BEGIN_LINK_1" />נושאי המודעות<ph name="END_LINK_1" />, ל<ph name="BEGIN_LINK_2" />הגדרות קובצי ה-cookie<ph name="END_LINK_2" /> ולמצב ההתאמה האישית של מודעות באתר (פעילה או מושבתת).</translation>
@@ -652,6 +656,7 @@
 <translation id="4521489764227272523">‏הנתונים שבחרת הוסרו מ-Chrome ומהמכשירים המסונכרנים.
 
 ייתכן שבכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> יש סוגים אחרים של היסטוריית גלישה בחשבון Google, כמו חיפושים ופעילות משירותי Google אחרים.</translation>
+<translation id="452279259461584111">שיתוף עם גיליון הסיכום במצב סגור</translation>
 <translation id="4523326818319942067">בשעה האחרונה</translation>
 <translation id="452750746583162491">סקירת הנתונים המסונכרנים</translation>
 <translation id="4532845899244822526">בחירת תיקייה</translation>
@@ -749,6 +754,7 @@
 <translation id="4950924971025849764">‏אם נכנסת לאותו חשבון Google במכשירים אחרים, הטלפון הזה יכול לשמש בהם כמפתח אבטחה.</translation>
 <translation id="4957722034734105353">למידע נוסף...</translation>
 <translation id="4961107849584082341">אפשר לתרגם את הדף הזה לשפה כלשהי</translation>
+<translation id="496607651705915226">‏כדי לשמור סיסמאות חדשות ולהשתמש בהן בחשבון Google, צריך לעדכן את Google Play Services</translation>
 <translation id="4971735654804503942">‏הגנה מהירה יותר ואקטיבית מפני אתרים, הורדות ותוספים מסוכנים. המערכת מזהירה אותך בנוגע לחשיפה של סיסמאות. כשמצב ההגנה הזה בשימוש, נתוני גלישה נשלחים אל Google.</translation>
 <translation id="497421865427891073">ניווט קדימה</translation>
 <translation id="4987271110129728827">לא ניתן למצוא את הדף הזה. צריך לוודא שהאיות נכון או לנסות לבצע חיפוש באינטרנט.</translation>

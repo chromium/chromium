@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">Բջջային կապ չկա</translation>
 <translation id="1882897271359938046">Հայելապատճենվում է <ph name="DISPLAY_NAME" />-ին</translation>
 <translation id="1885785240814121742">Ապակողպում մատնահետքով</translation>
+<translation id="1904997243703671177">Եթե անջատեք Bluetooth-ը, <ph name="DEVICE_TYPE" /> արտաքին սարք կանջատվի ձեր <ph name="DEVICE_COUNT" />-ից, այդ թվում՝</translation>
 <translation id="1908992311423394684">Նոր տեղադրում</translation>
 <translation id="1915307458270490472">Փակել</translation>
 <translation id="1918022425394817322">Տեսախցիկի պատկերն ամրացված է վերևի աջ անկյունում</translation>
@@ -258,7 +259,6 @@
 <translation id="2017998995161831444">Բացել «Օգնությունը» «Հնարավորություններ» հավելվածում</translation>
 <translation id="2018630726571919839">Անեկդոտ պատմիր</translation>
 <translation id="2021864487439853900">Սեղմեք՝ ապակողպելու համար</translation>
-<translation id="2023558322300866873">Փաթեթների գրանցումը կարող եք ցանկացած ժամանակ կանգնեցնել</translation>
 <translation id="2034971124472263449">Պահել</translation>
 <translation id="204259843076055848">«<ph name="SIX_PACK_KEY_NAME" />» գործողության դյուրանցումը ներկայումս անջատված է</translation>
 <translation id="2049240716062114887">Աշխատասեղանի անունը փոխվել է հետևյալի՝ <ph name="DESK_NAME" /></translation>
@@ -356,6 +356,7 @@
 <translation id="2482878487686419369">Ծանուցումներ</translation>
 <translation id="2484513351006226581">Ստեղնաշարի դասավորությունը փոխելու համար սեղմեք <ph name="KEYBOARD_SHORTCUT" />։</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" />-ի նախադիտում։ Աշխատասեղանն ակտիվ է։</translation>
+<translation id="2486405091093637109">«<ph name="DISPLAY_NAME" />» էկրանի լուծաչափը դարձել է <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Հց)։ Նախորդ կարգավորումներն առանց հաստատվելու <ph name="TIMEOUT_SECONDS" /> անց կվերականգնվեն։</translation>
 <translation id="2487915095798731898">Միանալ</translation>
 <translation id="2499445554382787206">Աշխատասեղանի պրոֆիլի ընտրացանկ։ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Կպչուն ստեղներ</translation>
@@ -699,7 +700,6 @@
 <translation id="380165613292957338">Ողջույն: Ինչո՞վ կարող եմ օգնել:</translation>
 <translation id="3804737937830804242">Ծալել տեսախցիկը</translation>
 <translation id="3824784079442479685">Սա հասանելի է դարձնում տեսախցիկը <ph name="APP_NAME" /> հավելվածին, ինչպես նաև բոլոր հավելվածներին և կայքերին, որոնք ունեն տեսախցիկի օգտագործման թույլտվություն։ Հնարավոր է՝ անհրաժեշտ լինի թարմացնել վեբ էջը կամ վերագործարկել հավելվածը։</translation>
-<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" />-ից <ph name="NUM_TURNED_IN" />-ը հանձնված է, <ph name="NUM_GRADED" />-ը գնահատված է</translation>
 <translation id="3826099427150913765">Անցնել գաղտնաբառով նույնականացմանը</translation>
 <translation id="383058930331066723">Մարտկոցի տնտեսման ռեժիմը միացված է</translation>
 <translation id="383629559565718788">Ցուցադրել ստեղնաշարի կարգավորումները</translation>
@@ -763,7 +763,6 @@
 <translation id="4066027111132117168">Միացված է, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Բացել «Ներբեռնումներ» էջը</translation>
 <translation id="4072264167173457037">Միջին ուժգնության ազդանշան</translation>
-<translation id="4076455981957565732">Հանձնված է՝ <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Գնահատված է՝ <ph name="NUM_GRADED" />-ը</translation>
 <translation id="4086921558679520050">Միացրեք խոսափողի ֆիզիկական անջատիչը ձեր սարքում</translation>
 <translation id="4101772068965291327">Բացել գլխավոր էջը</translation>
 <translation id="4112140312785995938">Հետ գնալ</translation>
@@ -959,6 +958,7 @@
 <translation id="4813311884204119883">Ներդիրների հատվածում քաշեք հղումը դեպի դատարկ տարածք</translation>
 <translation id="4814539958450445987">Մուտքի էկրան</translation>
 <translation id="481455355267255546">Հաջորդիվ</translation>
+<translation id="481749895090480684">Առաջադրանքների ցուցակ՝ <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">տեսախցիկն ու խոսափողը</translation>
 <translation id="482908187605862807">Play Խանութում հասանելի հավելվածներ</translation>
 <translation id="4831034276697007977">Իսկապե՞ս ուզում եք անջատել ավտոմատ սեղմումները:</translation>
@@ -1000,6 +1000,7 @@
 <translation id="4952936045814352993">«Հեռախոսի տեղորոշում» գործառույթն անհասանելի է, երբ ծանուցումների ազդանշաններն անջատված են</translation>
 <translation id="4960324571663582548">Կառավարիչը (<ph name="MANAGER" />) պահանջում է, որ վերադառնաք <ph name="DEVICE_TYPE" /> սարքի օպերացիոն համակարգի նախորդ տարբերակին։ Սարքը կվերակայվի, և բոլոր տվյալները կջնջվեն։</translation>
 <translation id="4961318399572185831">Էկրանի հեռարձակում</translation>
+<translation id="4964188651935955085">Եթե անջատեք Bluetooth-ը, այս արտաքին սարքը կանջատվի ձեր <ph name="DEVICE_TYPE" />-ից՝</translation>
 <translation id="4966431234408005599">Բարձրացնել ձայնը</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ժ <ph name="MINUTES" /> ր <ph name="SECONDS" /> վ</translation>
 <translation id="4975771730019223894">Նշանակների ավելացում հավելվածներին</translation>
@@ -1027,6 +1028,7 @@
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Դուք ծանուցում կստանաք, եթե խոսեք ձայնն անջատված ժամանակ։ Ձայնը մնում է ձեր սարքում։</translation>
 <translation id="5077416371682039027">Կարգավորել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի, ծանուցումների և հավելվածների դիտումը</translation>
+<translation id="5077936103761694531">Հաստատե՞լ լուծաչափը</translation>
 <translation id="5078796286268621944">Սխալ PIN կոդ</translation>
 <translation id="5083035541015925118">ctrl + alt + վերև սլաք</translation>
 <translation id="5083553833479578423">Օգտվեք Օգնականի այլ գործառույթներից</translation>
@@ -1676,6 +1678,7 @@
 <translation id="7647488630410863958">Ծանուցումները դիտելու համար ապակողպեք սարքը</translation>
 <translation id="7649070708921625228">Օգնություն</translation>
 <translation id="7654687942625752712">Ձայնային ուղեկցումն անջատելու համար սեղմեք և պահեք ձայնի երկու կոճակները հինգ վայրկյան:</translation>
+<translation id="7654916369822103315">«<ph name="DISPLAY_NAME" />» էկրանի լուծաչափը դարձել է <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Հց)։ Միացքի թողունակության սահմանափակումների պատճառով ձեր էկրանը չի կարող աջակցել <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Հց) լուծաչափ։ Նախորդ կարգավորումներն առանց հաստատվելու <ph name="TIMEOUT_SECONDS" /> անց կվերականգնվեն։</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7659861092419699379">Աշխատասեղանն ու պատուհանները փակվեցին</translation>
 <translation id="7660160718439869192">Ձեր <ph name="NAME" /> սարքը կզուգակցվի <ph name="EMAIL" /> հաշվին կցված սարքերի հետ</translation>
@@ -1766,6 +1769,7 @@
 <translation id="7945357288295809525">Ցույց տալ հատուկ գործառույթների կարգավորումները, միացված գործառույթներ՝ «<ph name="ENABLED_FEATURES" />»։</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> հավելվածն ուզում է օգտագործել ձեր <ph name="DEVICE_NAME" />ը</translation>
 <translation id="7951630946012935453">Նվազեցնել ստեղնաշարի հետնալույսի պայծառությունը</translation>
+<translation id="7953994493035617347">Հաստատե՞լ նոր լուծաչափը</translation>
 <translation id="7963689218131240420">«Չանհանգստացնել» ռեժիմն անջատված է։</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />-ից</translation>
 <translation id="7968693143708939792">Ընտրել պանակ</translation>
@@ -1824,6 +1828,7 @@
 <translation id="8155628902202578800">Բացել <ph name="USER_EMAIL_ADDRESS" /> հաշվի տեղեկությունների երկխոսության պատուհանը</translation>
 <translation id="8167567890448493835">Օգտագործվում է՝ <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Միացնել/անջատել ընտրացանկը՝ կողպման ռեժիմի չափը փոխելու համար</translation>
+<translation id="8192727139462702395">Եթե անջատեք Bluetooth-ը, այս արտաքին սարքերը կանջատվեն ձեր <ph name="DEVICE_TYPE" />-ից՝</translation>
 <translation id="8198456017687137612">Ներդիրի հեռարձակում</translation>
 <translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8203795194971602413">Աջ սեղմում</translation>

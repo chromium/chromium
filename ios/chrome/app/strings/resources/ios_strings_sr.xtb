@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Сакриј за сада</translation>
 <translation id="1219674500290482172">Повезивање са интернетом није могуће.</translation>
-<translation id="1226238226094914652">Лозинке на свим уређајима</translation>
 <translation id="122699739164161391">Затвори све картице</translation>
 <translation id="1227866575467023566">{count,plural, =1{Страница је додата на листу за читање на налогу, {email}}one{{count} страница је додата на листу за читање на налогу, {email}}few{{count} странице су додате на листу за читање на налогу, {email}}other{{count} страница је додато на листу за читање на налогу, {email}}}</translation>
 <translation id="1242044645101871359">Пријавите се поново</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Прати</translation>
 <translation id="1644574205037202324">Историја</translation>
 <translation id="164673457281113247">{count,plural, =1{Обележивач је сачуван}one{Обележивачи су сачувани}few{Обележивачи су сачувани}other{Обележивачи су сачувани}}</translation>
-<translation id="165008673352427892">Нова функција</translation>
 <translation id="1650222530560417226">Додирните дугме „Покрени евидентирање“ да бисте прикупљали будуће евиденције JavaScript конзоле и грешке са свих картица. Евиденција ће се прикупљати (и чувати само у меморији) све док се та станица не затвори или не додирнете дугме „Заустави евидентирање“.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} сачувана лозинка је доступна изнад тастатуре.}one{{count} сачувана лозинка је доступна изнад тастатуре.}few{{count} сачуване лозинке су доступне изнад тастатуре.}other{{count} сачуваних лозинки је доступно изнад тастатуре.}}</translation>
 <translation id="1657011748321897393">Дељење није успело зато што нисте повезани са мрежом.</translation>
@@ -302,7 +300,6 @@
 <translation id="2556092377360758201">Без заштите (не препоручује се)</translation>
 <translation id="2561375093019333908">ОТВОРИ</translation>
 <translation id="2562041823070056534">Шаље се на уређај <ph name="DEVICE_NAME" />...</translation>
-<translation id="2576499762020411840">Користите и сачувајте лозинке на Google налогу</translation>
 <translation id="2577522251608256362">Део града</translation>
 <translation id="2578571896248130439">Пошаљите веб-страницу</translation>
 <translation id="2584132361465095047">Додај налог…</translation>
@@ -639,6 +636,7 @@
 <translation id="4282944936010261425">Не постоје безбедносни проблеми које треба да решите.</translation>
 <translation id="4286718549648564014">Адреса је премештена на налог <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Шта је ново</translation>
+<translation id="429074084062258019">{count,plural, =1{Додај картицу у групу}one{Додај картице у групу}few{Додај картице у групу}other{Додај картице у групу}}</translation>
 <translation id="4293080268407233932">Претражи</translation>
 <translation id="4302248187517737842">Нема корисничког имена ••••••••</translation>
 <translation id="4302415908542657649">Лозинка се дели</translation>
@@ -948,7 +946,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5850913622988109693">Опције за праћење пакета</translation>
 <translation id="5854790677617711513">Старије од 30 дана</translation>
 <translation id="5857090052475505287">Нови фолдер</translation>
-<translation id="5857361196621230935">Додај картицу у групу</translation>
 <translation id="5857770089550859117">За почетак синхронизације потребна је приступна фраза.</translation>
 <translation id="5859715514067755465">Напред</translation>
 <translation id="5860033963881614850">Искључено</translation>
@@ -1159,7 +1156,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6800349425672670802">Свим отвореним картицама можете да приступате из Пребацивача картица.</translation>
 <translation id="6807889908376551050">Прикажи све...</translation>
 <translation id="681368974849482173">Ставка је направљена</translation>
-<translation id="6822587385560699678">Када је укључено, лозинке се чувају на налогу <ph name="ACCOUNT" />. Када је искључено, лозинке се чувају само на овом уређају.</translation>
 <translation id="6824350924364057989">Подешавања</translation>
 <translation id="6831043979455480757">Преведи</translation>
 <translation id="6842136130964845393">Да бисте били сигурни да увек можете да приступате сачуваним лозинкама, потврдите да сте то ви</translation>
@@ -1283,6 +1279,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7524055474074101597">Приступајте лозинкама и другим ставкама у апликацијама.</translation>
 <translation id="7527917367892640435">Пакет се већ прати</translation>
 <translation id="7531345132340165516">Тренутни сајт</translation>
+<translation id="75362970626182391">Нова група картица</translation>
 <translation id="7537586195939242955">Жао нам је, приступна реч сада не може да се инсталира у Passbook.</translation>
 <translation id="754655535278952384">Проверено је <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Последња картица је коришћена на уређају <ph name="SOURCE_DEVICE" /></translation>

@@ -40,7 +40,6 @@
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Ocultar para já</translation>
 <translation id="1219674500290482172">Não é possível estabelecer ligação à Internet.</translation>
-<translation id="1226238226094914652">Palavras-passe em todos os dispositivos</translation>
 <translation id="122699739164161391">Fechar todos os separadores</translation>
 <translation id="1227866575467023566">{count,plural, =1{Página adicionada à Lista de leitura na sua conta, {email}}other{{count} páginas adicionadas à Lista de leitura na sua conta {email}}}</translation>
 <translation id="1242044645101871359">Inicie sessão novamente</translation>
@@ -131,7 +130,6 @@
 <translation id="1641316430523156212">Seguir</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="164673457281113247">{count,plural, =1{Marcador guardado}other{Marcadores guardados}}</translation>
-<translation id="165008673352427892">Nova funcionalidade</translation>
 <translation id="1650222530560417226">Toque no botão "Iniciar o registo" para recolher futuros registos da consola de JavaScript e erros de todos os separadores. Os registos serão recolhidos (e armazenados apenas na memória) até fechar esta página ou tocar em "Parar o registo".</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} palavra-passe guardada disponível acima do teclado.}other{{count} palavras-passe guardadas disponíveis acima do teclado.}}</translation>
 <translation id="1657011748321897393">A partilha falhou porque não está ligado à rede.</translation>
@@ -302,7 +300,6 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2556092377360758201">Sem proteção (não recomendado)</translation>
 <translation id="2561375093019333908">ABRIR</translation>
 <translation id="2562041823070056534">A enviar para o dispositivo <ph name="DEVICE_NAME" />…</translation>
-<translation id="2576499762020411840">Usar e guardar palavras-passe na sua Conta Google</translation>
 <translation id="2577522251608256362">Bairro</translation>
 <translation id="2578571896248130439">Envie a página Web</translation>
 <translation id="2584132361465095047">Adicionar conta...</translation>
@@ -948,7 +945,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5850913622988109693">Opções para acompanhar encomendas</translation>
 <translation id="5854790677617711513">Com mais de 30 dias</translation>
 <translation id="5857090052475505287">Nova pasta</translation>
-<translation id="5857361196621230935">Adicionar separador a grupo</translation>
 <translation id="5857770089550859117">A frase de acesso é necessária para iniciar a sincronização.</translation>
 <translation id="5859715514067755465">Avançar</translation>
 <translation id="5860033963881614850">Desativado</translation>
@@ -1159,7 +1155,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6800349425672670802">Pode aceder a todos os separadores abertos a partir do Comutador de separadores.</translation>
 <translation id="6807889908376551050">Mostrar todos...</translation>
 <translation id="681368974849482173">Item criado</translation>
-<translation id="6822587385560699678">Quando esta opção está ativada, as palavras-passe são guardadas na conta <ph name="ACCOUNT" />. Quando esta opção está desativada, as palavras-passe são guardadas apenas neste dispositivo.</translation>
 <translation id="6824350924364057989">Definições</translation>
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6842136130964845393">Para se certificar de que pode sempre aceder às suas palavras-passe guardadas, valide a sua identidade</translation>

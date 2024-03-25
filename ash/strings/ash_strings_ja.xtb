@@ -258,7 +258,6 @@
 <translation id="2017998995161831444">「使い方・ヒント」アプリで「ヘルプ」を開く</translation>
 <translation id="2018630726571919839">面白いこと言って</translation>
 <translation id="2021864487439853900">クリックしてロックを解除</translation>
-<translation id="2023558322300866873">パケット キャプチャはいつでも停止できます</translation>
 <translation id="2034971124472263449">このまま保存</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> のショートカットは現在無効になっています</translation>
 <translation id="2049240716062114887">デスクの名前を <ph name="DESK_NAME" /> に変更しました</translation>
@@ -356,6 +355,7 @@
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484513351006226581">キーボード レイアウトを切り替えるには <ph name="KEYBOARD_SHORTCUT" /> キーを押します。</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> のプレビュー。使用中のデスクです。</translation>
+<translation id="2486405091093637109">「<ph name="DISPLAY_NAME" />」の解像度を <ph name="RESOLUTION" />（<ph name="REFRESH_RATE" /> Hz）に変更しました。確定しない場合、<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="2487915095798731898">参加</translation>
 <translation id="2499445554382787206">デスクのプロファイル メニュー: <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">固定キー</translation>
@@ -699,7 +699,6 @@
 <translation id="380165613292957338">はい、どんなご用でしょう？</translation>
 <translation id="3804737937830804242">カメラをたたむ</translation>
 <translation id="3824784079442479685">カメラへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
-<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" /> 件中 <ph name="NUM_TURNED_IN" /> 件提出済み、<ph name="NUM_GRADED" /> 件評価済み</translation>
 <translation id="3826099427150913765">パスワードに切り替える</translation>
 <translation id="383058930331066723">バッテリー セーバー モードがオンです</translation>
 <translation id="383629559565718788">キーボード設定を表示</translation>
@@ -763,7 +762,6 @@
 <translation id="4066027111132117168">オン（<ph name="REMAINING_TIME" />）</translation>
 <translation id="4069532248403319695">[ダウンロード] ページを開く</translation>
 <translation id="4072264167173457037">電波: 中程度</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> 件提出済み • <ph name="NUM_GRADED" /> 件評価済み</translation>
 <translation id="4086921558679520050">デバイスの物理的なマイクスイッチをオンにする</translation>
 <translation id="4101772068965291327">ホームページを開く</translation>
 <translation id="4112140312785995938">後方に移動</translation>
@@ -1027,6 +1025,7 @@
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">ミュートしているときに話すと、通知されます。音声がデバイスの外部に送信されることはありません。</translation>
 <translation id="5077416371682039027">スマートフォンの最近の写真、メディア、通知、アプリの表示を設定</translation>
+<translation id="5077936103761694531">解像度を確定しますか？</translation>
 <translation id="5078796286268621944">PIN が正しくありません</translation>
 <translation id="5083035541015925118">Ctrl+Alt+上矢印</translation>
 <translation id="5083553833479578423">さらに多くのアシスタント機能をぜひご活用ください。</translation>
@@ -1677,6 +1676,7 @@
 <translation id="7647488630410863958">デバイスのロックを解除して通知を確認してください</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7654687942625752712">音声フィードバックを無効にするには、音量大と音量小の両方のボタンを 5 秒間押し続けてください。</translation>
+<translation id="7654916369822103315">「<ph name="DISPLAY_NAME" />」の解像度を <ph name="FALLBACK_RESOLUTION" />（<ph name="FALLBACK_REFRESH_RATE" /> Hz）に変更しました。ポートの帯域幅の制限により、ディスプレイは解像度 <ph name="SPECIFIED_RESOLUTION" />（<ph name="SPECIFIED_REFRESH_RATE" /> Hz）に対応していません。確定しない場合、<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7659861092419699379">デスクとウィンドウを閉じました</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> は、<ph name="EMAIL" /> と関連付けられているデバイスに表示されます</translation>
@@ -1767,6 +1767,7 @@
 <translation id="7945357288295809525">ユーザー補助設定を表示します。「<ph name="ENABLED_FEATURES" />」が有効になっています。</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> が <ph name="DEVICE_NAME" /> の使用をリクエストしています</translation>
 <translation id="7951630946012935453">キーボードを暗くする</translation>
+<translation id="7953994493035617347">新しい解像度を確定しますか？</translation>
 <translation id="7963689218131240420">サイレント モードはオフになっています。</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> から</translation>
 <translation id="7968693143708939792">フォルダを選択...</translation>

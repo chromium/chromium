@@ -3520,12 +3520,14 @@
 <translation id="3660234220361471169">ບໍ່ເຊື່ອຖືໄດ້</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{ພົບ 1 ລະຫັດຜ່ານທີ່ມີຢູ່ແລ້ວ}other{ພົບ {NUM_PASSWORDS} ລະຫັດຜ່ານທີ່ມີຢູ່ແລ້ວ}}</translation>
 <translation id="3662207097851752847">ຢືນຢັນບັນຊີ Google ຂອງທ່ານຢູ່ໂທລະສັບຂອງທ່ານ</translation>
+<translation id="3663417513679360795">ຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບການເປີດການໂຫຼດກ່ອນລ່ວງໜ້າແບບມາດຕະຖານ</translation>
 <translation id="3664511988987167893">ໄອຄອນສ່ວນຂະຫຍາຍ</translation>
 <translation id="3665100783276035932">ເວັບໄຊສ່ວນໃຫຍ່ຄວນຈະເຮັດວຽກໄດ້ຕາມທີ່ຄາດໄວ້</translation>
 <translation id="3665301845536101715">ເປີດໃນແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="3665589677786828986">Chrome ກວດພົບວ່າ ການຕັ້ງຄ່າຂອງທ່ານບາງຕົວໄດ້ຮັບຄວາມເສຍຫາຍໂດຍໂປຣແກຼມອື່ນ ແລະໄດ້ຕັ້ງຄ່າພວກມັນໄປເປັນຄ່າມາດຕະຖານເດີມຂອງພວກມັນແລ້ວ.</translation>
 <translation id="3665919494326051362">ເວີຊັນປັດຈຸບັນແມ່ນ <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">ໄຟລ໌ Dump ການດີບັກສຳລັບ Intel Wi-Fi NIC</translation>
+<translation id="3666971425390608309">ຢຸດດາວໂຫຼດຊົ່ວຄາວແລ້ວ: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">ອຸປະກອນຈາກຜູ້ຂາຍໃດໆກໍຕາມ</translation>
 <translation id="3670229581627177274">ເປີດໃຊ້ Bluetooth</translation>
 <translation id="3670480940339182416">ເວັບໄຊສາມາດໃຊ້ຕົວເພີ່ມປະສິດທິພາບ V8 ໄດ້</translation>
@@ -3608,6 +3610,7 @@
 <translation id="3720543739123045680">ແຖບອື່ນໆຈະໃຊ້ຂະບວນການຮ່ວມກັບແຖບນີ້, ເຊິ່ງອາດສົ່ງຜົນໃຫ້ເກີດປະສົບການໃນການນຳໃຊ້ DevTools ແບບບໍ່ຄາດຄິດ.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">ທ່ານ ແລະ Google</translation>
+<translation id="3721178866505920080">ຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບການເປີດການໂຫຼດກ່ອນລ່ວງໜ້າແບບຂະຫຍາຍ</translation>
 <translation id="3722108462506185496">ເກີດຄວາມຜິດພາດໃນການເລີ່ມການບໍລິການເຄື່ອງຈຳລອງສະເໝືອນຈິງ. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="3722624153992426516">ໄດ້ຮັບຄຳສັ່ງ <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> ລາຍການແລ້ວ</translation>
 <translation id="3724897774652282549">ຕື່ມຂໍ້ມູນໃສ່ແບບຟອມ</translation>
@@ -3725,6 +3728,7 @@
 <translation id="3798670284305777884">ລໍາໂພງ (ພາຍໃນ)</translation>
 <translation id="3799128412641261490">ການຕັ້ງຄ່າການເຂົ້າເຖິງດ້ວຍປຸ່ມກົດ</translation>
 <translation id="3800828618615365228">ຂໍ້ກຳນົດເພີ່ມເຕີມຂອງ Google Chrome ແລະ ChromeOS</translation>
+<translation id="3800898876950197674">ເພື່ອອະນຸຍາດສ່ວນຂະຫຍາຍນີ້, ໃຫ້ໃສ່ລະຫັດຜ່ານຂອງທ່ານ.</translation>
 <translation id="3802486193901166966">ສ່ວນຂະຫຍາຍນີ້ບໍ່ຈຳເປັນຕ້ອງໃຊ້ການອະນຸຍາດພິເສດ ແລະ ບໍ່ມີສິດເຂົ້າເຖິງເວັບໄຊເພີ່ມເຕີມ</translation>
 <translation id="380329542618494757">ຊື່</translation>
 <translation id="3803345858388753269">ຄຸນ​ນະ​ພາບວິ​ດີ​ໂອ​</translation>
@@ -4596,7 +4600,6 @@
 <translation id="4473996011558324141">ກຳລັງປະເມີນເວລາ</translation>
 <translation id="4474155171896946103">ໃສ່ບຸກມາກຄ໌ທຸກແຖບ...</translation>
 <translation id="4475299370877036544">ຄຳສັ່ງນີ້ອາດລະເມີດນະໂຍາຍຂອງອົງການທ່ານ</translation>
-<translation id="4475552974751346499">ຄົ້ນ​ຫາການດາວ​ໂຫຼດ​</translation>
 <translation id="4476590490540813026">ນັກກິລາ</translation>
 <translation id="4476659815936224889">ເພື່ອສະແກນລະຫັດນີ້, ທ່ານສາມາດໃຊ້ແອັບໂປຣແກຣມສະແກນ QR ໃນໂທລະສບຂອງທ່ານ ຫຼື ບາງແອັບກ້ອງຖ່າຍຮູບອື່ນ.</translation>
 <translation id="4477015793815781985">ລວມມີ Ctrl, Alt ຫຼື ⌘</translation>
@@ -7470,6 +7473,7 @@
 <translation id="6758056191028427665">ໃຫ້ພວກເຮົາຮູ້ວ່າພວກເຮົາກຳລັງເຮັດໄດ້ດີສໍ່າໃດ.</translation>
 <translation id="6759193508432371551">ຕັ້ງຄ່າຄືນເປັນຄ່າໂຮງ​ງານ</translation>
 <translation id="6760354150216532978">ຄຳເຕືອນ: ເວັບໄຊນີ້ຈະເຫັນການແກ້ໄຂທີ່ທ່ານເຮັດ</translation>
+<translation id="6761209758867628753">ເຄື່ອງມື: ຊ່ວຍຂ້ອຍຂຽນ</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">ບໍ່ອະນຸຍາດຂໍ້ມູນເວັບໄຊຢູ່ອຸປະກອນ</translation>
 <translation id="6762833852331690540">ເປີດ</translation>
@@ -8007,6 +8011,7 @@
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7180865173735832675">ກໍານົດເອງ</translation>
 <translation id="7181117767881540376">&amp;ເຊື່ອງແຖບບຸກມາກ</translation>
+<translation id="7181329571386134105">ເພື່ອອະນຸຍາດໃຫ້ <ph name="CHILD_NAME" /> ຕິດຕັ້ງສ່ວນຂະຫຍາຍໃນອະນາຄົດໂດຍບໍ່ມີການອະນຸມັດຈາກທ່ານ, ໃຫ້ເປີດແອັບ Family Link ຢູ່ອຸປະກອນຂອງທ່ານ ແລະ ອັບເດດການຕັ້ງຄ່າ Google Chrome ຂອງ <ph name="CHILD_NAME" />.</translation>
 <translation id="7182063559013288142">ຮັອດສະປອດດ່ວນ</translation>
 <translation id="7182791023900310535">ຍ້າຍລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="718427252411067142">ເພື່ອຢຸດຄົນອື່ນບໍ່ໃຫ້ໃຊ້ລະຫັດຜ່ານຂອງທ່ານ, ໃຫ້ເປີດແອັບຂຶ້ນມາເພື່ອປ່ຽນລະຫັດຜ່ານຂອງທ່ານ</translation>
@@ -10799,6 +10804,7 @@
 <translation id="973558314812359997">ຂະໜາດເມົ້າ</translation>
 <translation id="975893173032473675">ພາສາທີ່ຈະແປເປັນ</translation>
 <translation id="976499800099896273">ກ່ອງໂຕ້ຕອບຍົກເລີກການແກ້ໄຂອັດຕະໂນມັດສະແດງຂຶ້ນສຳລັບ <ph name="TYPED_WORD" /> ທີ່ແກ້ໄຂເປັນ <ph name="CORRECTED_WORD" />.  ກົດລູກສອນຂຶ້ນເພື່ອເຂົ້າເຖິງ, Escape ເພື່ອລະເລີຍ.</translation>
+<translation id="976572010712028687">ຢັ້ງຢືນວ່າທ່ານເປັນຜູ້ປົກຄອງ</translation>
 <translation id="978146274692397928">ຄວາມກ້ວາງເຄື່ອງໝາຍວັກຕອນ​ເບື້ອງ​ຕົ້ນເຕັມ</translation>
 <translation id="978978324795544535">ແຕະໃສ່ລາຍການໃດໜຶ່ງສອງເທື່ອ, ກົດຄ້າງໄວ້ໃນການແຕະເທື່ອທີສອງ, ແລ້ວຈາກນັ້ນລາກລາຍການເພື່ອຍ້າຍມັນ</translation>
 <translation id="97905529126098460">ໜ້າຈໍນີ້ຈະປິດຫຼັງຈາກສຳເລັດການຍົກເລີກແລ້ວ.</translation>

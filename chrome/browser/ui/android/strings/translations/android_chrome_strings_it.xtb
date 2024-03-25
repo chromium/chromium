@@ -124,6 +124,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1641113438599504367">Navigazione sicura</translation>
 <translation id="164269334534774161">È visualizzata una copia offline di questa pagina del giorno <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Cronologia</translation>
+<translation id="1644969410150602449">Visualizza qui la tua cronologia web</translation>
 <translation id="1657932388559784161">Il riquadro inferiore Statistiche pagine è chiuso</translation>
 <translation id="1670399744444387456">Base</translation>
 <translation id="1671236975893690980">Download in attesa...</translation>
@@ -250,6 +251,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="2364539095045928896">Pulsante Chiudi per chiudere l'Informativa sulla privacy dell'hub Approfondimenti sulle pagine.</translation>
 <translation id="2386938421315164605">Nascondi e mostra argomenti</translation>
 <translation id="2390510615457643724">Vuoi scaricare di nuovo <ph name="FILE_NAME" /> <ph name="FILE_SIZE" />?</translation>
+<translation id="2395004545133500011">Condividi con il foglio di riepilogo aperto</translation>
 <translation id="2410754283952462441">Scegli un account</translation>
 <translation id="2414886740292270097">Scuro</translation>
 <translation id="2421705177906985956">Nessun sito da mostrare al momento</translation>
@@ -364,6 +366,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="2942036813789421260">La scheda di anteprima è chiusa</translation>
 <translation id="2946420957526726953">Aggiornamento di Chrome per la connessione ad altri dispositivi</translation>
 <translation id="2951071800649516099">Aggiungi pagine al tuo Elenco di lettura per consultarle in un secondo momento</translation>
+<translation id="2956070106555335453">Riepilogo</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pagina da leggere}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pagine da leggere}}</translation>
 <translation id="296370266220139811">Risparmia tempo e digita meno</translation>
 <translation id="2977350910003566746">Ordinamento per ultimo aperto</translation>
@@ -643,6 +646,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Preferito salvato in "<ph name="FOLDER_NAME" />". Viene salvato solo su questo dispositivo.}other{Preferiti salvati in "<ph name="FOLDER_NAME" />". Vengono salvati solo su questo dispositivo.}}</translation>
 <translation id="4484496141267039529">Nessuna connessione. Riprova più tardi.</translation>
 <translation id="4487967297491345095">Tutti i dati delle app di Chrome saranno eliminati definitivamente. Sono inclusi tutti i file, le impostazioni, gli account, i database e così via.</translation>
+<translation id="4489640160615759754">Condividi con il foglio di riepilogo</translation>
 <translation id="4494806687727322324">Il salvataggio delle password è stato attivato dall'amministratore</translation>
 <translation id="4508528996305412043">Menu scheda feed aperto</translation>
 <translation id="4509501256689523862">Mentre navighi, l'eventuale visualizzazione di un annuncio personalizzato dipende da questa impostazione, dagli <ph name="BEGIN_LINK_1" />argomenti degli annunci<ph name="END_LINK_1" />, dalle <ph name="BEGIN_LINK_2" />impostazioni dei cookie<ph name="END_LINK_2" /> e dal fatto che il sito che stai visualizzando possa personalizzare gli annunci</translation>
@@ -652,6 +656,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="4521489764227272523">I dati selezionati sono stati rimossi da Chrome e dai dispositivi sincronizzati.
 
 Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, ad esempio ricerche e attività, di altri servizi Google alla pagina <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Condividi con il foglio di riepilogo chiuso</translation>
 <translation id="4523326818319942067">ultima ora</translation>
 <translation id="452750746583162491">Verifica i tuoi dati sincronizzati</translation>
 <translation id="4532845899244822526">Scegli cartella</translation>
@@ -749,6 +754,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4950924971025849764">Quando hai eseguito l'accesso allo stesso Account Google, gli altri dispositivi possono utilizzare questo telefono come token di sicurezza.</translation>
 <translation id="4957722034734105353">Scopri di più...</translation>
 <translation id="4961107849584082341">Traduci questa pagina in qualsiasi lingua</translation>
+<translation id="496607651705915226">Per salvare e usare nuove password nel tuo Account Google, aggiorna Google Play Services</translation>
 <translation id="4971735654804503942">Sistemi di protezione proattivi e più rapidi da estensioni, siti web e download pericolosi. Ricevi un avviso in caso di violazioni della password. Richiede l'invio dei dati di navigazione a Google.</translation>
 <translation id="497421865427891073">Avanti</translation>
 <translation id="4987271110129728827">Impossibile trovare la pagina. Controlla l'ortografia o prova a effettuare una ricerca web.</translation>

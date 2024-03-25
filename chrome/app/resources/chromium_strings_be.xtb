@@ -334,6 +334,7 @@
 <translation id="67706546131546258">Chromium рэкамендуе праверыць гэты файл, бо ён можа быць небяспечным.</translation>
 <translation id="6779406956731413166">Chromium OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6847869444787758381">Chromium апавяшчае вас у выпадку ўзлому вашых пароляў</translation>
+<translation id="684888714667046800">Не ўдалося падключыцца да інтэрнэту. Калі вы выкарыстоўваеце брандмаўар, упэўніцеся, што <ph name="PRODUCT_EXE_NAME" /> знаходзіцца ў белым спісе.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Браўзер Chromium выявіў, што пашырэнне "<ph name="EXTENSION_NAME" />" змяшчае шкоднае ПЗ</translation>
 <translation id="6893813176749746474">Chromium быў абноўлены, але вы не выкарыстоўвалі яго на працягу як мінімум 30 дзён.</translation>

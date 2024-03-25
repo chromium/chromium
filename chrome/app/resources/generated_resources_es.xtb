@@ -3513,6 +3513,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3665589677786828986">Chrome ha detectado que otro programa ha dañado algunas opciones de configuración y ha restablecido la configuración predeterminada original.</translation>
 <translation id="3665919494326051362">La versión actual es <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Volcado de depuración de NICs de Wi-Fi de Intel</translation>
+<translation id="3666971425390608309">Descarga en pausa: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Dispositivos de cualquier proveedor</translation>
 <translation id="3670229581627177274">Activar Bluetooth</translation>
 <translation id="3670480940339182416">Los sitios pueden usar el optimizador de V8</translation>
@@ -3712,6 +3713,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3798670284305777884">Altavoz (interno)</translation>
 <translation id="3799128412641261490">Ajustes de accesibilidad con interruptores</translation>
 <translation id="3800828618615365228">Términos Adicionales de Google Chrome y Chrome OS</translation>
+<translation id="3800898876950197674">Para permitir esta extensión, introduce tu contraseña.</translation>
 <translation id="3802486193901166966">Esta extensión no requiere permisos especiales y no tiene acceso adicional al sitio</translation>
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803345858388753269">Calidad de vídeo</translation>
@@ -4582,7 +4584,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4473996011558324141">Calculando tiempo</translation>
 <translation id="4474155171896946103">Añadir todas las pestañas a marcadores...</translation>
 <translation id="4475299370877036544">Es posible que esta acción infrinja las políticas de tu organización</translation>
-<translation id="4475552974751346499">Buscar descargas</translation>
 <translation id="4476590490540813026">Deportista</translation>
 <translation id="4476659815936224889">Para escanear este código, puedes usar una aplicación de escaneo de QR de tu teléfono o algunas aplicaciones de cámara.</translation>
 <translation id="4477015793815781985">Incluye Ctrl, Alt o ⌘</translation>
@@ -7456,6 +7457,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6758056191028427665">Envíanos tu opinión sobre nuestro servicio.</translation>
 <translation id="6759193508432371551">Restablecer estado de fábrica</translation>
 <translation id="6760354150216532978">Advertencia: Este sitio puede ver los cambios que hagas</translation>
+<translation id="6761209758867628753">Herramienta: Ayúdame a escribir</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Datos de sitios en el dispositivo no permitidos</translation>
 <translation id="6762833852331690540">Activado</translation>
@@ -7994,6 +7996,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7181117767881540376">&amp;Ocultar barra de marcadores</translation>
+<translation id="7181329571386134105">Para permitir que <ph name="CHILD_NAME" /> instale extensiones sin tu aprobación en el futuro, abre la aplicación Family Link en tu dispositivo y actualiza los ajustes de Google Chrome de <ph name="CHILD_NAME" />.</translation>
 <translation id="7182063559013288142">Punto de acceso instantáneo</translation>
 <translation id="7182791023900310535">Mover tu contraseña</translation>
 <translation id="718427252411067142">Para impedir que otros usuarios usen tu contraseña, abre la aplicación para cambiarla</translation>
@@ -10789,6 +10792,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="973558314812359997">Tamaño del ratón</translation>
 <translation id="975893173032473675">Idioma al que se va a traducir</translation>
 <translation id="976499800099896273">Se muestra el cuadro de diálogo para deshacer la autocorrección de <ph name="TYPED_WORD" /> a <ph name="CORRECTED_WORD" />.  Pulsa la flecha hacia arriba para acceder a la palabra y Escape para ignorar.</translation>
+<translation id="976572010712028687">Verifica que eres padre o madre</translation>
 <translation id="978146274692397928">La puntuación inicial de los caracteres es de ancho completo.</translation>
 <translation id="978978324795544535">Para mover un elemento, tócalo dos veces, mantenlo pulsado la segunda vez que lo toques y arrástralo</translation>
 <translation id="97905529126098460">Esta ventana se cerrará cuando la cancelación se haya completado.</translation>
