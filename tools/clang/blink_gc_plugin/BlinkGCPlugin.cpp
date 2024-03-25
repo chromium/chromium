@@ -49,6 +49,8 @@ class BlinkGCPluginAction : public PluginASTAction {
         options_.enable_optional_of_traceable_check = true;
       } else if (arg == "enable-raw-ptr-of-gced-or-traceable-check") {
         options_.enable_raw_ptr_of_gced_or_traceable_check = true;
+      } else if (arg == "enable-raw-ref-of-gced-or-traceable-check") {
+        options_.enable_raw_ref_of_gced_or_traceable_check = true;
       } else if (arg == "enable-ptrs-to-traceable-check") {
         options_.enable_ptrs_to_traceable_check = true;
       } else {

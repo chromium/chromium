@@ -29,6 +29,9 @@ class WeakPtrFactory {
 template <typename T, typename Traits = void>
 class raw_ptr {};
 
+template <typename T, typename Traits = void>
+class raw_ref {};
+
 }  // namespace base
 namespace WTF {
 

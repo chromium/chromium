@@ -93,12 +93,12 @@ class DiagnosticsReporter {
   void OptionalNewExprUsedWithGC(const clang::Expr* expr,
                                  const clang::CXXRecordDecl* optional,
                                  const clang::CXXRecordDecl* gc_type);
-  void RawPtrFieldUsedWithGC(const clang::FieldDecl* decl,
-                             const clang::CXXRecordDecl* optional,
-                             const clang::CXXRecordDecl* gc_type);
-  void RawPtrNewExprUsedWithGC(const clang::Expr* expr,
-                               const clang::CXXRecordDecl* optional,
-                               const clang::CXXRecordDecl* gc_type);
+  void RawPtrOrRefFieldUsedWithGC(const clang::FieldDecl* decl,
+                                  const clang::CXXRecordDecl* optional,
+                                  const clang::CXXRecordDecl* gc_type);
+  void RawPtrOrRefNewExprUsedWithGC(const clang::Expr* expr,
+                                    const clang::CXXRecordDecl* optional,
+                                    const clang::CXXRecordDecl* gc_type);
   void VariantUsedWithGC(const clang::Expr* expr,
                          const clang::CXXRecordDecl* variant,
                          const clang::CXXRecordDecl* gc_type);
@@ -194,8 +194,8 @@ class DiagnosticsReporter {
   unsigned diag_unique_ptr_used_with_gc_;
   unsigned diag_optional_field_used_with_gc_;
   unsigned diag_optional_new_expr_used_with_gc_;
-  unsigned diag_raw_ptr_field_used_with_gc_;
-  unsigned diag_raw_ptr_new_expr_used_with_gc_;
+  unsigned diag_raw_ptr_or_ref_field_used_with_gc_;
+  unsigned diag_raw_ptr_or_ref_new_expr_used_with_gc_;
   unsigned diag_variant_used_with_gc_;
   unsigned diag_collection_of_gced_;
   unsigned diag_collection_of_members_;

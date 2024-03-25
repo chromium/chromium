@@ -51,6 +51,9 @@ struct BlinkGCPluginOptions {
   // Enables checks for base::raw_ptr of GCed and traceable types.
   bool enable_raw_ptr_of_gced_or_traceable_check = true;
 
+  // Enables checks for base::raw_ref of GCed and traceable types.
+  bool enable_raw_ref_of_gced_or_traceable_check = false;
+
   // Enables checks for raw pointers, refs and unique_ptr of traceable types.
   bool enable_ptrs_to_traceable_check = false;
 

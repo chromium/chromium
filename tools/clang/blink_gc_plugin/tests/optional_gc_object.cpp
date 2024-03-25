@@ -18,6 +18,8 @@ class WithOpt : public GarbageCollected<WithOpt> {
   std::optional<Traceable> optional_field4_;
   base::raw_ptr<Base> raw_ptr_field_;
   base::raw_ptr<Traceable> raw_ptr_field2_;
+  base::raw_ref<Base> raw_ref_field_;
+  base::raw_ref<Traceable> raw_ref_field2_;
 };
 
 void DisallowedUseOfOptional() {
@@ -71,6 +73,23 @@ void DisallowedUseOfOptional() {
     new base::raw_ptr<Traceable>;  // New expression with traceable raw_ptrs
                                    // are not allowed.
   }
+
+  {
+    base::raw_ref<Base> raw_ref_base;  // Must be okay.
+    (void)raw_ref_base;
+
+    base::raw_ref<Derived> raw_ref_derived;  // Must also be okay.
+    (void)raw_ref_derived;
+
+    base::raw_ref<Traceable> raw_ref_traceable;  // Must also be okay.
+    (void)raw_ref_traceable;
+
+    new base::raw_ref<Base>;  // New expression with gced raw_refs are not
+                              // allowed.
+
+    new base::raw_ref<Traceable>;  // New expression with traceable raw_refs
+                                   // are not allowed.
+  }
 }
 
 class OnStack {
@@ -84,6 +103,8 @@ class OnStack {
     (void)optional_field4_;
     (void)raw_ptr_field_;
     (void)raw_ptr_field2_;
+    (void)raw_ref_field_;
+    (void)raw_ref_field2_;
   }
 
  private:
@@ -94,6 +115,8 @@ class OnStack {
   std::optional<Traceable> optional_field4_;
   base::raw_ptr<Base> raw_ptr_field_;
   base::raw_ptr<Traceable> raw_ptr_field2_;
+  base::raw_ref<Base> raw_ref_field_;
+  base::raw_ref<Traceable> raw_ref_field2_;
 };
 
 }  // namespace blink
