@@ -19,12 +19,6 @@ class RenderFrameHostImpl;
 class RenderFrameProxyHost;
 class RenderViewHostImpl;
 
-// Comparator for RenderViewHostImpl SafeRefs.
-struct RenderViewHostImplSafeRefComparator {
-  bool operator()(const base::SafeRef<RenderViewHostImpl>& a,
-                  const base::SafeRef<RenderViewHostImpl>& b) const;
-};
-
 // StoredPage contains a page which is not tied to a FrameTree. It holds the
 // main RenderFrameHost together with RenderViewHosts and main document's
 // proxies. It's used for storing pages in back/forward cache or when preparing
@@ -41,8 +35,7 @@ class StoredPage : public SiteInstanceGroup::Observer {
                          SiteInstanceGroupId::Hasher>;
 
   using RenderViewHostImplSafeRefSet =
-      std::set<base::SafeRef<RenderViewHostImpl>,
-               RenderViewHostImplSafeRefComparator>;
+      std::set<base::SafeRef<RenderViewHostImpl>>;
 
   // A delegate class for various state change callbacks.
   class Delegate {
