@@ -268,7 +268,7 @@ TEST_F(CalendarApiRequestsTest, GetEventListRequestWithAttachments) {
       "%2ChtmlLink%2Cattendees(responseStatus%2Cself)%2CattendeesOmitted"
       "%2CconferenceData(conferenceId%2CentryPoints(entryPointType%2Curi))"
       "%2Ccreator(self)"
-      "%2Cattachments(title%2CfileUrl%2CiconLink))",
+      "%2Cattachments(title%2CfileUrl%2CiconLink%2CfileId))",
       http_request_.relative_url);
 }
 

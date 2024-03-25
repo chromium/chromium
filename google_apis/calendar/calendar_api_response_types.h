@@ -153,10 +153,15 @@ class Attachment {
   const GURL& icon_link() const { return icon_link_; }
   void set_icon_link(const GURL& icon_link) { icon_link_ = icon_link; }
 
+  // The file ID of the attachment.
+  const std::string& file_id() const { return file_id_; }
+  void set_file_id(const std::string& file_id) { file_id_ = file_id; }
+
  private:
   std::string title_;
   GURL file_url_;
   GURL icon_link_;
+  std::string file_id_;
 };
 
 // Parses the event item from the response. Not every field is parsed. If you

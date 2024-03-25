@@ -125,10 +125,12 @@ TEST_F(BirchCalendarProviderTest, GetCalendarEvents_WithAttachments) {
   attachment0.set_title("attachment0");
   attachment0.set_file_url(GURL("http://file0.com/"));
   attachment0.set_icon_link(GURL("http://icon0.com/"));
+  attachment0.set_file_id("file_id_0");
   google_apis::calendar::Attachment attachment1;
   attachment1.set_title("attachment1");
   attachment1.set_file_url(GURL("http://file1.com/"));
   attachment1.set_icon_link(GURL("http://icon1.com/"));
+  attachment1.set_file_id("file_id_1");
   event->set_attachments({attachment0, attachment1});
   events->InjectItemForTesting(std::move(event));
   fetcher->events_ = std::move(events);
@@ -151,9 +153,11 @@ TEST_F(BirchCalendarProviderTest, GetCalendarEvents_WithAttachments) {
   EXPECT_EQ(attachments[0].title(), u"attachment0");
   EXPECT_EQ(attachments[0].file_url().spec(), "http://file0.com/");
   EXPECT_EQ(attachments[0].icon_url().spec(), "http://icon0.com/");
+  EXPECT_EQ(attachments[0].file_id(), "file_id_0");
   EXPECT_EQ(attachments[1].title(), u"attachment1");
   EXPECT_EQ(attachments[1].file_url().spec(), "http://file1.com/");
   EXPECT_EQ(attachments[1].icon_url().spec(), "http://icon1.com/");
+  EXPECT_EQ(attachments[1].file_id(), "file_id_1");
 }
 
 TEST_F(BirchCalendarProviderTest, GetCalendarEvents_HttpError) {

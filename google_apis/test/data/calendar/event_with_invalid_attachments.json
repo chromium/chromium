@@ -106,12 +106,14 @@
                 {
                     "fileUrl": "http:://docs.google.com/document/d/1yeRZ9Je4i9XvbnnOygitkXgJQpLvR98_TrfWRec84Bw/edit?tab=t.0&resourcekey=0-yNQRr67lHMYKNFyrXmvwBw",
                     "title": "Google Docs Attachment",
-                    "iconLink": "https://www.gstatic.com/images/branding/product/1x/docs_2020q4_48dp.png"
+                    "iconLink": "https://www.gstatic.com/images/branding/product/1x/docs_2020q4_48dp.png",
+                    "fileId": "1yeRZ9Je4i9XvbnnOygitkXgJQpLvR98_TrfWRec84Bw"
                 },
                 {
                     "fileUrl": "https://docs.google.com/presentation/d/17tkfUouD4CjwnW7cFWww4lk5__7parQy_eJBAwPIC-Q/edit#slide=id.p",
                     "title": "Google Slides Attachment",
-                    "iconLink": "www.gstatic.com/images/branding/product/1x/slides_2020q4_48dp.png"
+                    "iconLink": "www.gstatic.com/images/branding/product/1x/slides_2020q4_48dp.png",
+                    "fileId": "17tkfUouD4CjwnW7cFWww4lk5__7parQy_eJBAwPIC-Q"
                 }
             ],
             "eventType": "default"

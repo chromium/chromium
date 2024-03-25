@@ -93,7 +93,7 @@ void BirchCalendarProvider::OnEventsFetched(
       BirchAttachmentItem birch_attachment(
           base::UTF8ToUTF16(attachment.title()), attachment.file_url(),
           attachment.icon_link(), item->start_time().date_time(),
-          item->end_time().date_time());
+          item->end_time().date_time(), attachment.file_id());
       attachment_items.push_back(std::move(birch_attachment));
     }
   }

@@ -56,6 +56,20 @@ std::vector<BirchCalendarItem> MakeCalendarItemList(int event_count) {
   return calendar_item_list;
 }
 
+std::vector<BirchAttachmentItem> MakeAttachmentItemList(int item_count) {
+  std::vector<BirchAttachmentItem> attachment_item_list;
+  for (int i = 0; i < item_count; i++) {
+    attachment_item_list.emplace_back(
+        u"Attachment " + base::NumberToString16(i),
+        /*file_url=*/GURL(),
+        /*icon_url=*/GURL(),
+        /*start_time=*/base::Time(),
+        /*end_time=*/base::Time(),
+        /*file_id=*/"");
+  }
+  return attachment_item_list;
+}
+
 // A data provider that does nothing.
 class StubBirchDataProvider : public BirchDataProvider {
  public:
@@ -348,12 +362,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
 
   // Populate the model with every data type.
   model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
-  std::vector<BirchAttachmentItem> attachment_item_list;
-  attachment_item_list.emplace_back(u"Attachment 1", /*file_url=*/GURL(),
-                                    /*icon_url=*/GURL(),
-                                    /*start_time=*/base::Time(),
-                                    /*end_time=*/base::Time());
-  model->SetAttachmentItems(std::move(attachment_item_list));
+  model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   std::vector<BirchTabItem> tab_item_list;
   tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
@@ -672,12 +681,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
                              BirchTabItem::DeviceFormFactor::kDesktop);
   model->SetRecentTabItems(std::move(tab_item_list));
   model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
-  std::vector<BirchAttachmentItem> attachment_item_list;
-  attachment_item_list.emplace_back(u"Attachment 1", /*file_url=*/GURL(),
-                                    /*icon_url=*/GURL(),
-                                    /*start_time=*/base::Time(),
-                                    /*end_time=*/base::Time());
-  model->SetAttachmentItems(std::move(attachment_item_list));
+  model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
   std::vector<BirchReleaseNotesItem> release_notes_item_list;
   release_notes_item_list.emplace_back(u"note", u"explore", GURL("foo.bar"),
                                        base::Time());
@@ -721,12 +725,7 @@ TEST_F(BirchModelTest, GetAllItems) {
                                        base::Time());
   model->SetReleaseNotesItems(std::move(release_notes_item_list));
   model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
-  std::vector<BirchAttachmentItem> attachment_item_list;
-  attachment_item_list.emplace_back(u"Attachment 1", /*file_url=*/GURL(),
-                                    /*icon_url=*/GURL(),
-                                    /*start_time=*/base::Time(),
-                                    /*end_time=*/base::Time());
-  model->SetAttachmentItems(std::move(attachment_item_list));
+  model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
   std::vector<BirchTabItem> tab_item_list;
   tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
                              GURL("favicon"), "session",
@@ -752,12 +751,7 @@ TEST_F(BirchModelTest, SetItemListRecordsHistogram) {
 
   // Insert one item of each type.
   model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
-  std::vector<BirchAttachmentItem> attachment_item_list;
-  attachment_item_list.emplace_back(u"Attachment 1", /*file_url=*/GURL(),
-                                    /*icon_url=*/GURL(),
-                                    /*start_time=*/base::Time(),
-                                    /*end_time=*/base::Time());
-  model->SetAttachmentItems(std::move(attachment_item_list));
+  model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
   std::vector<BirchTabItem> tab_item_list;
   tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
                              GURL("favicon"), "session",
@@ -794,11 +788,8 @@ TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {
   model->SetCalendarItems(std::move(calendar_item_list));
 
   // Insert one item for other types.
-  std::vector<BirchAttachmentItem> attachment_item_list;
-  attachment_item_list.emplace_back(u"Attachment 1", /*file_url=*/GURL(),
-                                    /*icon_url=*/GURL(),
-                                    /*start_time=*/base::Time(),
-                                    /*end_time=*/base::Time());
+  std::vector<BirchAttachmentItem> attachment_item_list =
+      MakeAttachmentItemList(/*item_count=*/1);
 
   attachment_item_list.back().set_ranking(3.f);
   model->SetAttachmentItems(std::move(attachment_item_list));
@@ -842,11 +833,8 @@ TEST_F(BirchModelTest, GetItemsForDisplay_IncludesDuplicateTypes) {
   model->SetCalendarItems(std::move(calendar_item_list));
 
   // Then insert 3 other items with lower priority.
-  std::vector<BirchAttachmentItem> attachment_item_list;
-  attachment_item_list.emplace_back(u"Attachment 1", /*file_url=*/GURL(),
-                                    /*icon_url=*/GURL(),
-                                    /*start_time=*/base::Time(),
-                                    /*end_time=*/base::Time());
+  std::vector<BirchAttachmentItem> attachment_item_list =
+      MakeAttachmentItemList(/*item_count=*/1);
   attachment_item_list.back().set_ranking(3.f);
   model->SetAttachmentItems(std::move(attachment_item_list));
 
@@ -888,16 +876,9 @@ TEST_F(BirchModelTest, GetItemsForDisplay_TwoDuplicateTypes) {
   model->SetCalendarItems(std::move(calendar_item_list));
 
   // Insert 2 more items of a different type.
-  std::vector<BirchAttachmentItem> attachment_item_list;
-  attachment_item_list.emplace_back(u"Attachment 1", /*file_url=*/GURL(),
-                                    /*icon_url=*/GURL(),
-                                    /*start_time=*/base::Time(),
-                                    /*end_time=*/base::Time());
-  attachment_item_list.back().set_ranking(3.f);
-  attachment_item_list.emplace_back(u"Attachment 2", /*file_url=*/GURL(),
-                                    /*icon_url=*/GURL(),
-                                    /*start_time=*/base::Time(),
-                                    /*end_time=*/base::Time());
+  std::vector<BirchAttachmentItem> attachment_item_list =
+      MakeAttachmentItemList(/*item_count=*/2);
+  attachment_item_list.front().set_ranking(3.f);
   attachment_item_list.back().set_ranking(4.f);
   model->SetAttachmentItems(std::move(attachment_item_list));
 

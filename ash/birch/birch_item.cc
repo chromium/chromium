@@ -169,12 +169,14 @@ BirchAttachmentItem::BirchAttachmentItem(const std::u16string& title,
                                          const GURL& file_url,
                                          const GURL& icon_url,
                                          const base::Time& start_time,
-                                         const base::Time& end_time)
+                                         const base::Time& end_time,
+                                         const std::string& file_id)
     : BirchItem(title, GetSubtitle()),
       file_url_(file_url),
       icon_url_(icon_url),
       start_time_(start_time),
-      end_time_(end_time) {}
+      end_time_(end_time),
+      file_id_(file_id) {}
 
 BirchAttachmentItem::BirchAttachmentItem(BirchAttachmentItem&&) = default;
 
@@ -201,7 +203,7 @@ std::string BirchAttachmentItem::ToString() const {
      << ", start: "
      << UTF16ToUTF8(base::TimeFormatShortDateAndTime(start_time_))
      << ", end: " << UTF16ToUTF8(base::TimeFormatShortDateAndTime(end_time_))
-     << "}";
+     << ", file_id: " << file_id_ << "}";
   return ss.str();
 }
 
