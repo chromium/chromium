@@ -105,6 +105,10 @@ UIImage* DefaultFavicon() {
 
   // whether the view is hovered.
   BOOL _hovered;
+
+  // View used to provide accessibility labels/values while letting the close
+  // button selectable by VoiceOver.
+  UIView* _accessibilityContainerView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -128,21 +132,27 @@ UIImage* DefaultFavicon() {
     contentView.layer.cornerRadius = kCornerSize;
     contentView.translatesAutoresizingMaskIntoConstraints = NO;
 
+    _accessibilityContainerView = [[UIView alloc] init];
+    _accessibilityContainerView.isAccessibilityElement = YES;
+    _accessibilityContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+    [contentView addSubview:_accessibilityContainerView];
+    AddSameConstraints(contentView, _accessibilityContainerView);
+
     // Needed for the drop animation.
     self.layer.cornerRadius = kCornerSize;
     self.backgroundColor = [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 
     _faviconView = [self createFaviconView];
-    [contentView addSubview:_faviconView];
+    [_accessibilityContainerView addSubview:_faviconView];
 
     _activityIndicator = [self createActivityIndicatior];
-    [contentView addSubview:_activityIndicator];
+    [_accessibilityContainerView addSubview:_activityIndicator];
 
     _closeButton = [self createCloseButton];
     [contentView addSubview:_closeButton];
 
     _titleContainer = [self createTitleContainer];
-    [contentView addSubview:_titleContainer];
+    [_accessibilityContainerView addSubview:_titleContainer];
 
     _leftSelectedBorderBackgroundView =
         [self createSelectedBorderBackgroundView];
@@ -206,7 +216,7 @@ UIImage* DefaultFavicon() {
 
 - (void)setTitle:(NSString*)title {
   [super setTitle:title];
-  self.accessibilityLabel = title;
+  _accessibilityContainerView.accessibilityLabel = title;
   NSTextAlignment titleTextAligment = DetermineBestAlignmentForText(title);
   _titleLabel.text = [title copy];
   _titleLabel.textAlignment = titleTextAligment;
@@ -289,9 +299,11 @@ UIImage* DefaultFavicon() {
   [super setSelected:selected];
 
   if (selected) {
-    self.accessibilityTraits |= UIAccessibilityTraitSelected;
+    _accessibilityContainerView.accessibilityTraits |=
+        UIAccessibilityTraitSelected;
   } else {
-    self.accessibilityTraits &= ~UIAccessibilityTraitSelected;
+    _accessibilityContainerView.accessibilityTraits &=
+        ~UIAccessibilityTraitSelected;
   }
 
   if (selected) {
@@ -369,7 +381,7 @@ UIImage* DefaultFavicon() {
   self.item = nil;
   self.numberOfTabs = 0;
   self.tabIndex = 0;
-  self.accessibilityValue = nil;
+  _accessibilityContainerView.accessibilityValue = nil;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -914,7 +926,7 @@ UIImage* DefaultFavicon() {
 - (void)updateAccessibilityValue {
   // Use the accessibility Value as there is a pause when using the
   // accessibility hint.
-  self.accessibilityValue =
+  _accessibilityContainerView.accessibilityValue =
       l10n_util::GetNSStringF(IDS_IOS_TAB_STRIP_TAB_CELL_VOICE_OVER_VALUE,
                               base::NumberToString16(self.tabIndex),
                               base::NumberToString16(self.numberOfTabs));

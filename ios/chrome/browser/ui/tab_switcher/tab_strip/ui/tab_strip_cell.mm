@@ -6,16 +6,6 @@
 
 @implementation TabStripCell
 
-#pragma mark - Initialization
-
-- (instancetype)initWithFrame:(CGRect)frame {
-  self = [super initWithFrame:frame];
-  if (self) {
-    self.isAccessibilityElement = YES;
-  }
-  return self;
-}
-
 #pragma mark - Public
 
 - (void)setGroupStrokeColor:(UIColor*)color {

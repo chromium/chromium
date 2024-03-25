@@ -26,6 +26,7 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    self.isAccessibilityElement = YES;
     _titleContainer = [self createTitleContainer];
     [self.contentView addSubview:_titleContainer];
     _groupStrokeView = [[TabStripGroupStrokeView alloc] init];
