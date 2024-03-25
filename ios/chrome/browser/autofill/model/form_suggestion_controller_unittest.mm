@@ -211,7 +211,8 @@ class FormSuggestionControllerTest : public PlatformTest {
                                         profilePasswordStore:nullptr
                                         accountPasswordStore:nullptr
                                         securityAlertHandler:nil
-                                      reauthenticationModule:nil];
+                                      reauthenticationModule:nil
+                                           engagementTracker:nil];
 
     [accessory_mediator_ injectWebState:&fake_web_state_];
     [accessory_mediator_ injectProvider:suggestion_controller_];

@@ -201,7 +201,10 @@ const CGFloat kIPHVerticalOffset = -5;
         profilePasswordStore:profilePasswordStore
         accountPasswordStore:accountPasswordStore
         securityAlertHandler:securityAlertHandler
-      reauthenticationModule:self.reauthenticationModule];
+      reauthenticationModule:self.reauthenticationModule
+           engagementTracker:feature_engagement::TrackerFactory::
+                                 GetForBrowserState(
+                                     self.browser->GetBrowserState())];
   self.formInputAccessoryViewController.formSuggestionClient =
       self.formInputAccessoryMediator;
   if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {

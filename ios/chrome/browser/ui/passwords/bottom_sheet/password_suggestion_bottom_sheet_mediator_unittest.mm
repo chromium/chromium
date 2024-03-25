@@ -260,7 +260,8 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
                            URL:URL()
           profilePasswordStore:store_
           accountPasswordStore:nullptr
-        sharedURLLoaderFactory:nullptr];
+        sharedURLLoaderFactory:nullptr
+             engagementTracker:nil];
   }
 
   // Creates the bottom sheet mediator with custom suggestions `providers`.

@@ -15,6 +15,10 @@ namespace autofill {
 struct FormActivityParams;
 }  // namespace autofill
 
+namespace feature_engagement {
+class Tracker;
+}  // namespace feature_engagement
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -40,21 +44,22 @@ class GURL;
 @interface PasswordSuggestionBottomSheetMediator
     : NSObject <PasswordSuggestionBottomSheetDelegate>
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                       faviconLoader:(FaviconLoader*)faviconLoader
-                         prefService:(PrefService*)prefService
-                              params:(const autofill::FormActivityParams&)params
-                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
-                                 URL:(const GURL&)URL
-                profilePasswordStore:
-                    (scoped_refptr<password_manager::PasswordStoreInterface>)
-                        profilePasswordStore
-                accountPasswordStore:
-                    (scoped_refptr<password_manager::PasswordStoreInterface>)
-                        accountPasswordStore
-              sharedURLLoaderFactory:
-                  (scoped_refptr<network::SharedURLLoaderFactory>)
-                      sharedURLLoaderFactory;
+- (instancetype)
+      initWithWebStateList:(WebStateList*)webStateList
+             faviconLoader:(FaviconLoader*)faviconLoader
+               prefService:(PrefService*)prefService
+                    params:(const autofill::FormActivityParams&)params
+              reauthModule:(id<ReauthenticationProtocol>)reauthModule
+                       URL:(const GURL&)URL
+      profilePasswordStore:
+          (scoped_refptr<password_manager::PasswordStoreInterface>)
+              profilePasswordStore
+      accountPasswordStore:
+          (scoped_refptr<password_manager::PasswordStoreInterface>)
+              accountPasswordStore
+    sharedURLLoaderFactory:
+        (scoped_refptr<network::SharedURLLoaderFactory>)sharedURLLoaderFactory
+         engagementTracker:(feature_engagement::Tracker*)engagementTracker;
 
 // Disconnects the mediator.
 - (void)disconnect;

@@ -19,6 +19,7 @@
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -122,6 +123,9 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 // which will realistically never happen, but just in case.
 @property(nonatomic, assign) uint latestQueryId;
 
+// Feature engagement tracker for notifying promo events.
+@property(nonatomic, assign) feature_engagement::Tracker* engagementTracker;
+
 @end
 
 @implementation FormInputAccessoryMediator {
@@ -182,7 +186,8 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
           (scoped_refptr<password_manager::PasswordStoreInterface>)
               accountPasswordStore
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
-    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule {
+    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
+         engagementTracker:(feature_engagement::Tracker*)engagementTracker {
   self = [super init];
   if (self) {
     _consumer = consumer;
@@ -266,6 +271,8 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
     _validActivityForAccessoryView = YES;
 
     _latestQueryId = 0;
+
+    _engagementTracker = engagementTracker;
   }
   return self;
 }
@@ -698,7 +705,7 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   [self.consumer showAccessorySuggestions:suggestions];
   if (suggestions.count) {
     if (provider.type == SuggestionProviderTypeAutofill) {
-      default_browser::NotifyAutofillSuggestionsShown();
+      default_browser::NotifyAutofillSuggestionsShown(self.engagementTracker);
     }
 
     if (suggestions.firstObject.featureForIPH.length > 0) {
@@ -738,7 +745,8 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 // Handles the selection of a suggestion.
 - (void)handleSuggestion:(FormSuggestion*)formSuggestion {
   if (self.currentProvider.type == SuggestionProviderTypePassword) {
-    default_browser::NotifyPasswordAutofillSuggestionUsed();
+    default_browser::NotifyPasswordAutofillSuggestionUsed(
+        self.engagementTracker);
   }
 
   if (formSuggestion.featureForIPH.length) {

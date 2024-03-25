@@ -10,6 +10,7 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
@@ -86,7 +87,10 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
                            URL:URL
           profilePasswordStore:profilePasswordStore
           accountPasswordStore:accountPasswordStore
-        sharedURLLoaderFactory:browserState->GetSharedURLLoaderFactory()];
+        sharedURLLoaderFactory:browserState->GetSharedURLLoaderFactory()
+             engagementTracker:feature_engagement::TrackerFactory::
+                                   GetForBrowserState(
+                                       self.browser->GetBrowserState())];
     self.viewController.delegate = self.mediator;
     self.mediator.consumer = self.viewController;
   }

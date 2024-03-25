@@ -24,10 +24,10 @@ void NotifyCredentialExtensionUsed();
 
 // Records all necessary information when autofill suggestions were shown to the
 // user. Except passwords.
-void NotifyAutofillSuggestionsShown();
+void NotifyAutofillSuggestionsShown(feature_engagement::Tracker* tracker);
 
 // Records all necessary information when password suggestion is used.
-void NotifyPasswordAutofillSuggestionUsed();
+void NotifyPasswordAutofillSuggestionUsed(feature_engagement::Tracker* tracker);
 
 // Records all necessary information when password is saved or updated through
 // infobar.

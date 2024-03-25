@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/image_fetcher/core/image_fetcher_impl.h"
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
 #import "components/password_manager/core/browser/features/password_features.h"
@@ -137,25 +138,29 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
   // Fetches profile pictures.
   std::unique_ptr<image_fetcher::ImageFetcher> _imageFetcher;
+
+  // Feature engagement tracker for notifying promo events.
+  raw_ptr<feature_engagement::Tracker> _engagementTracker;
 }
 
 @synthesize defaultGlobeIconAttributes = _defaultGlobeIconAttributes;
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                       faviconLoader:(FaviconLoader*)faviconLoader
-                         prefService:(PrefService*)prefService
-                              params:(const autofill::FormActivityParams&)params
-                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
-                                 URL:(const GURL&)URL
-                profilePasswordStore:
-                    (scoped_refptr<password_manager::PasswordStoreInterface>)
-                        profilePasswordStore
-                accountPasswordStore:
-                    (scoped_refptr<password_manager::PasswordStoreInterface>)
-                        accountPasswordStore
-              sharedURLLoaderFactory:
-                  (scoped_refptr<network::SharedURLLoaderFactory>)
-                      sharedURLLoaderFactory {
+- (instancetype)
+      initWithWebStateList:(WebStateList*)webStateList
+             faviconLoader:(FaviconLoader*)faviconLoader
+               prefService:(PrefService*)prefService
+                    params:(const autofill::FormActivityParams&)params
+              reauthModule:(id<ReauthenticationProtocol>)reauthModule
+                       URL:(const GURL&)URL
+      profilePasswordStore:
+          (scoped_refptr<password_manager::PasswordStoreInterface>)
+              profilePasswordStore
+      accountPasswordStore:
+          (scoped_refptr<password_manager::PasswordStoreInterface>)
+              accountPasswordStore
+    sharedURLLoaderFactory:
+        (scoped_refptr<network::SharedURLLoaderFactory>)sharedURLLoaderFactory
+         engagementTracker:(feature_engagement::Tracker*)engagementTracker {
   if (self = [super init]) {
     _needsRefocus = true;
     _suggestionSelected = false;
@@ -204,6 +209,8 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
                                      webFrameId:params.frame_id];
             }];
     }
+
+    _engagementTracker = engagementTracker;
   }
   return self;
 }
@@ -424,7 +431,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
 // Perform suggestion selection
 - (void)selectSuggestion:(FormSuggestion*)suggestion {
-  default_browser::NotifyPasswordAutofillSuggestionUsed();
+  default_browser::NotifyPasswordAutofillSuggestionUsed(_engagementTracker);
   [self.suggestionsProvider didSelectSuggestion:suggestion];
   [self disconnect];
 }

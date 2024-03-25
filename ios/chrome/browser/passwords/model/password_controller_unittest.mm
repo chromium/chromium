@@ -282,7 +282,8 @@ class PasswordControllerTest : public PlatformTest {
                                           profilePasswordStore:nullptr
                                           accountPasswordStore:nullptr
                                           securityAlertHandler:nil
-                                        reauthenticationModule:nil];
+                                        reauthenticationModule:nil
+                                             engagementTracker:nil];
       [accessoryMediator_ injectWebState:web_state()];
       [accessoryMediator_ injectProvider:suggestionController_];
     }
