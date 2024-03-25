@@ -333,12 +333,6 @@
     "win11-wpt-content-shell-fyi-rel": "ci/win11-wpt-content-shell-fyi-rel/gn-args.json",
     "win32-arm64-rel": "ci/win32-arm64-rel/gn-args.json"
   },
-  "chromium.goma": {
-    "chromeos-amd64-generic-rel-goma-rbe-staging": "goma/chromeos-amd64-generic-rel-goma-rbe-staging/gn-args.json"
-  },
-  "chromium.goma.fyi": {
-    "chromeos-amd64-generic-rel-goma-rbe-canary": "goma/chromeos-amd64-generic-rel-goma-rbe-canary/gn-args.json"
-  },
   "chromium.gpu": {
     "Android Release (Nexus 5X)": "ci/Android Release (Nexus 5X)/gn-args.json",
     "GPU Linux Builder": "ci/GPU Linux Builder/gn-args.json",

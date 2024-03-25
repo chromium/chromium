@@ -561,10 +561,6 @@ exempted_from_description_builders = {
     "flaky-reproducer": set([
         "runner",
     ]),
-    "goma": set([
-        "chromeos-amd64-generic-rel-goma-rbe-canary",
-        "chromeos-amd64-generic-rel-goma-rbe-staging",
-    ]),
     "infra": set([
         "autosharder",
     ]),

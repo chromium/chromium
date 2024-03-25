@@ -632,13 +632,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "goma",
-    args = {
-        "use_goma": True,
-    },
-)
-
-gn_args.config(
     name = "gpu_fyi_tests",
     configs = [
         "gpu_tests",
