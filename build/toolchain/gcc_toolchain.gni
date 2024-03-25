@@ -219,9 +219,6 @@ template("single_gcc_toolchain") {
                (!defined(invoker.needs_gomacc_path_arg) ||
                 !invoker.needs_gomacc_path_arg)) {
       compiler_prefix = "${goma_path} "
-      if (use_goma_rust) {
-        rust_compiler_prefix = compiler_prefix
-      }
     } else {
       compiler_prefix = "${toolchain_cc_wrapper} "
 

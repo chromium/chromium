@@ -89,11 +89,6 @@ declare_args() {
   # e.g. the Android Rust Toolchain provides a libunwind.a that rustc expects.
   extra_sysroot_libs = []
 
-  # Use goma for Rust builds. Experimental. The only known problem is
-  # b/193072381, but then again, we don't expect a build speedup before much
-  # more work is done.
-  use_goma_rust = false
-
   # Force-enable `--color=always` for rustc, even when it would be disabled for
   # a platform. Mostly applicable to Windows, where new versions can handle ANSI
   # escape sequences but it's not reliable in general.
