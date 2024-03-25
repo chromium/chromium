@@ -63,20 +63,20 @@ bool PickerSearchAggregator::IsPostBurnIn() const {
 void PickerSearchAggregator::PublishBurnInResults() {
   std::vector<PickerSearchResultsSection> sections;
   if (!suggested_results_.empty()) {
-    sections.push_back(PickerSearchResultsSection(
-        PickerSectionType::kSuggestions, std::move(suggested_results_)));
+    sections.emplace_back(PickerSectionType::kSuggestions,
+                          std::move(suggested_results_));
   }
   if (!category_results_.empty()) {
-    sections.push_back(PickerSearchResultsSection(
-        PickerSectionType::kCategories, std::move(category_results_)));
+    sections.emplace_back(PickerSectionType::kCategories,
+                          std::move(category_results_));
   }
   if (!emoji_results_.empty()) {
-    sections.push_back(PickerSearchResultsSection(
-        PickerSectionType::kExpressions, std::move(emoji_results_)));
+    sections.emplace_back(PickerSectionType::kExpressions,
+                          std::move(emoji_results_));
   }
   if (!omnibox_results_.empty()) {
-    sections.push_back(PickerSearchResultsSection(PickerSectionType::kLinks,
-                                                  std::move(omnibox_results_)));
+    sections.emplace_back(PickerSectionType::kLinks,
+                          std::move(omnibox_results_));
   }
   if (!local_file_results_.empty()) {
     sections.emplace_back(PickerSectionType::kFiles,
@@ -87,8 +87,7 @@ void PickerSearchAggregator::PublishBurnInResults() {
                           std::move(drive_file_results_));
   }
   if (!gif_results_.empty()) {
-    sections.push_back(PickerSearchResultsSection(PickerSectionType::kGifs,
-                                                  std::move(gif_results_)));
+    sections.emplace_back(PickerSectionType::kGifs, std::move(gif_results_));
   }
   current_callback_.Run(std::move(sections));
 }
