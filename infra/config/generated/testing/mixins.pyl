@@ -1145,6 +1145,17 @@
       },
     },
   },
+  'samsung_s23': {
+    'swarming': {
+      'dimensions': {
+        'device_type': 'dm1q',
+        'device_os': 'UP1A.231005.007',
+        'device_os_type': 'user',
+        'os': 'Android',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
   'shards-10': {
     'shards': 10,
   },

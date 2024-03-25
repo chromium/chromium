@@ -110,6 +110,17 @@ gpu_android_builder(
 )
 
 gpu_android_builder(
+    name = "gpu-fyi-try-android-s23-64",
+    description_html = "Runs GPU tests on Samsung S23 phones",
+    mirrors = [
+        "ci/GPU FYI Android arm64 Builder",
+        "ci/Android FYI Release (Samsung S23)",
+    ],
+    gn_args = "ci/GPU FYI Android arm64 Builder",
+    pool = "luci.chromium.gpu.android.s23.try",
+)
+
+gpu_android_builder(
     name = "gpu-try-android-m-nexus-5x-64",
     mirrors = [
         "ci/Android Release (Nexus 5X)",

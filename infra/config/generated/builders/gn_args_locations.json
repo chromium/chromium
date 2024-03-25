@@ -622,6 +622,7 @@
     "gpu-fyi-try-android-pixel-6-64": "try/gpu-fyi-try-android-pixel-6-64/gn-args.json",
     "gpu-fyi-try-android-pixel-6-64-exp": "try/gpu-fyi-try-android-pixel-6-64-exp/gn-args.json",
     "gpu-fyi-try-android-r-pixel-4-32": "try/gpu-fyi-try-android-r-pixel-4-32/gn-args.json",
+    "gpu-fyi-try-android-s23-64": "try/gpu-fyi-try-android-s23-64/gn-args.json",
     "gpu-try-android-m-nexus-5x-64": "try/gpu-try-android-m-nexus-5x-64/gn-args.json"
   },
   "tryserver.chromium.angle": {

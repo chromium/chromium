@@ -4233,6 +4233,19 @@
           'gpu_telemetry_tests': 'gpu_common_android_telemetry_tests',
         },
       },
+      'Android FYI Release (Samsung S23)': {
+        'browser_config': 'android-chromium',
+        'os_type': 'android',
+        'skip_merge_script': True,
+        'mixins': [
+          'has_native_resultdb_integration',
+          'samsung_s23',
+          'limited_capacity_bot',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
       'ChromeOS FYI Release (amd64-generic)': {
         'additional_compile_targets': [
           'chromiumos_preflight',

@@ -286,6 +286,33 @@ ci.thin_tester(
     ),
 )
 
+ci.thin_tester(
+    name = "Android FYI Release (Samsung S23)",
+    description_html = "Runs GPU tests on Samsung S23 phones",
+    triggered_by = ["GPU FYI Android arm64 Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "arm64_builder_rel_mb",
+        ),
+        run_tests_serially = True,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Android|U64|QCOM",
+        short_name = "S23",
+    ),
+)
+
 ci.gpu.linux_builder(
     name = "ChromeOS FYI Release (amd64-generic)",
     builder_spec = builder_config.builder_spec(

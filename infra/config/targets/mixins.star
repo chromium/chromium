@@ -1472,6 +1472,22 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "samsung_s23",
+    swarming = targets.swarming(
+        dimensions = {
+            # Unfortunately, "s23" is not exposed as a dimension. "dm1q" appears
+            # to refer to the S23 specifically, while "kalama" is for the entire
+            # S23 family.
+            "device_type": "dm1q",
+            "device_os": "UP1A.231005.007",
+            "device_os_type": "user",
+            "os": "Android",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
     name = "skia_gold_test",
     args = [
         "--git-revision=${got_revision}",

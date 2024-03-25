@@ -303,7 +303,11 @@ def GPUTelemetryNoRootForUnrootedDevices(test_config, _, tester_config):
   if os_type != 'android':
     return []
 
-  unrooted_devices = {'a13', 'a23'}
+  unrooted_devices = {
+      'a13',
+      'a23',
+      'dm1q',  # Samsung S23.
+  }
   dimensions = test_config.get('swarming', {}).get('dimensions')
   assert dimensions is not None
   device_type = dimensions.get('device_type')
