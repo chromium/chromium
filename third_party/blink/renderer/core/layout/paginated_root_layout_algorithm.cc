@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/page_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/paginated_root_layout_algorithm.h"
 
 #include <algorithm>
 
@@ -17,10 +17,11 @@
 
 namespace blink {
 
-PageLayoutAlgorithm::PageLayoutAlgorithm(const LayoutAlgorithmParams& params)
+PaginatedRootLayoutAlgorithm::PaginatedRootLayoutAlgorithm(
+    const LayoutAlgorithmParams& params)
     : LayoutAlgorithm(params) {}
 
-const LayoutResult* PageLayoutAlgorithm::Layout() {
+const LayoutResult* PaginatedRootLayoutAlgorithm::Layout() {
   DCHECK(!GetBreakToken());
   auto writing_direction = GetConstraintSpace().GetWritingDirection();
   const BlockBreakToken* break_token = nullptr;
@@ -77,13 +78,13 @@ const LayoutResult* PageLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-MinMaxSizesResult PageLayoutAlgorithm::ComputeMinMaxSizes(
+MinMaxSizesResult PaginatedRootLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   NOTREACHED();
   return MinMaxSizesResult();
 }
 
-const PhysicalBoxFragment* PageLayoutAlgorithm::LayoutPage(
+const PhysicalBoxFragment* PaginatedRootLayoutAlgorithm::LayoutPage(
     uint32_t page_index,
     const AtomicString& page_name,
     const BlockBreakToken* break_token) const {
@@ -104,7 +105,7 @@ const PhysicalBoxFragment* PageLayoutAlgorithm::LayoutPage(
   return &To<PhysicalBoxFragment>(result->GetPhysicalFragment());
 }
 
-ConstraintSpace PageLayoutAlgorithm::CreateConstraintSpaceForPages(
+ConstraintSpace PaginatedRootLayoutAlgorithm::CreateConstraintSpaceForPages(
     const LogicalSize& page_size) const {
   ConstraintSpaceBuilder space_builder(GetConstraintSpace(),
                                        Style().GetWritingDirection(),
