@@ -103,6 +103,13 @@ class EnumSet {
   // modify an EnumSet while traversing it with an iterator.
   class Iterator {
    public:
+    using value_type = EnumType;
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
+    using pointer = EnumType*;
+    using reference = EnumType&;
+    using iterator_category = std::forward_iterator_tag;
+
     Iterator() : enums_(nullptr), i_(kValueCount) {}
     ~Iterator() = default;
 
@@ -110,7 +117,7 @@ class EnumSet {
       return lhs.i_ == rhs.i_;
     }
 
-    E operator*() const {
+    value_type operator*() const {
       DCHECK(Good());
       return FromIndex(i_);
     }
@@ -292,10 +299,14 @@ class EnumSet {
   }
 
   // Returns true iff our set is empty.
-  bool Empty() const { return !enums_.any(); }
+  bool empty() const { return !enums_.any(); }
+  // TODO(thestig): Replace with empty().
+  bool Empty() const { return empty(); }
 
   // Returns how many values our set has.
-  size_t Size() const { return enums_.count(); }
+  size_t size() const { return enums_.count(); }
+  // TODO(thestig): Replace with size().
+  size_t Size() const { return size(); }
 
   // Returns an iterator pointing to the first element (if any).
   Iterator begin() const { return Iterator(enums_); }
