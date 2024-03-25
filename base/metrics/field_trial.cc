@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -224,7 +225,8 @@ bool FieldTrial::FieldTrialEntry::GetParams(
 }
 
 PickleIterator FieldTrial::FieldTrialEntry::GetPickleIterator() const {
-  Pickle pickle(GetPickledDataPtr(), checked_cast<size_t>(pickle_size));
+  Pickle pickle = Pickle::WithUnownedBuffer(
+      span(GetPickledDataPtr(), checked_cast<size_t>(pickle_size)));
   return PickleIterator(pickle);
 }
 

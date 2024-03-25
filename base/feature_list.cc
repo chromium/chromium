@@ -11,6 +11,7 @@
 
 #include "base/base_switches.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
@@ -161,16 +162,17 @@ struct FeatureEntry {
   uint64_t pickle_size;
 
   // Return a pointer to the pickled data area immediately following the entry.
-  char* GetPickledDataPtr() { return reinterpret_cast<char*>(this + 1); }
-  const char* GetPickledDataPtr() const {
-    return reinterpret_cast<const char*>(this + 1);
+  uint8_t* GetPickledDataPtr() { return reinterpret_cast<uint8_t*>(this + 1); }
+  const uint8_t* GetPickledDataPtr() const {
+    return reinterpret_cast<const uint8_t*>(this + 1);
   }
 
   // Reads the feature and trial name from the pickle. Calling this is only
   // valid on an initialized entry that's in shared memory.
   bool GetFeatureAndTrialName(StringPiece* feature_name,
                               StringPiece* trial_name) const {
-    Pickle pickle(GetPickledDataPtr(), checked_cast<size_t>(pickle_size));
+    Pickle pickle = Pickle::WithUnownedBuffer(
+        span(GetPickledDataPtr(), checked_cast<size_t>(pickle_size)));
     PickleIterator pickle_iter(pickle);
     if (!pickle_iter.ReadStringPiece(feature_name)) {
       return false;

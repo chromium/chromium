@@ -4,6 +4,7 @@
 
 #include "base/metrics/histogram_delta_serialization.h"
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_snapshot_manager.h"
@@ -57,9 +58,8 @@ void HistogramDeltaSerialization::PrepareAndSerializeDeltas(
 // static
 void HistogramDeltaSerialization::DeserializeAndAddSamples(
     const std::vector<std::string>& serialized_deltas) {
-  for (auto it = serialized_deltas.begin(); it != serialized_deltas.end();
-       ++it) {
-    Pickle pickle(it->data(), it->size());
+  for (const std::string& serialized_delta : serialized_deltas) {
+    Pickle pickle = Pickle::WithUnownedBuffer(as_byte_span(serialized_delta));
     PickleIterator iter(pickle);
     DeserializeHistogramAndAddSamples(&iter);
   }

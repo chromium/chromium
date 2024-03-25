@@ -183,9 +183,11 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
     static constexpr size_t kExpectedInstanceSize = 16;
 
     // Return a pointer to the data area immediately following the entry.
-    char* GetPickledDataPtr() { return reinterpret_cast<char*>(this + 1); }
-    const char* GetPickledDataPtr() const {
-      return reinterpret_cast<const char*>(this + 1);
+    uint8_t* GetPickledDataPtr() {
+      return reinterpret_cast<uint8_t*>(this + 1);
+    }
+    const uint8_t* GetPickledDataPtr() const {
+      return reinterpret_cast<const uint8_t*>(this + 1);
     }
 
     // Whether or not this field trial is activated. This is really just a
