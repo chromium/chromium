@@ -4,8 +4,10 @@
 
 /** @fileoverview Utils for device page browser tests. */
 
-import {GeolocationAccessLevel} from 'chrome://os-settings/os_settings.js';
-
+import {CrSliderElement, GeolocationAccessLevel} from 'chrome://os-settings/os_settings.js';
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 export function getFakePrefs() {
   return {
@@ -248,4 +250,38 @@ export function getFakePrefs() {
       },
     },
   };
+}
+
+/**
+ * Simulates clicking at a given point on cr-slider element.
+ * @param [minimumValue=0] The lowest possible value for the cr-slider.
+ *     Corresponds to the `min` property.
+ */
+export async function simulateSliderClicked(
+    crSlider: CrSliderElement, percent: number,
+    minimumValue: number = 0): Promise<void> {
+  assertTrue(!!crSlider);
+  assertFalse(crSlider.disabled);
+  const rect = crSlider.$.container.getBoundingClientRect();
+  crSlider.dispatchEvent(new PointerEvent('pointerdown', {
+    buttons: 1,
+    pointerId: 1,
+    clientX: rect.left +
+        (((percent - minimumValue) / (100 - minimumValue)) * rect.width),
+  }));
+  await flushTasks();
+}
+
+/**
+ * Simulates pressing left arrow key while focused on cr-slider element.
+ */
+export function pressArrowRight(crSlider: CrSliderElement): void {
+  pressAndReleaseKeyOn(crSlider, 39, [], 'ArrowRight');
+}
+
+/**
+ * Simulates pressing right arrow key while focused on cr-slider element.
+ */
+export function pressArrowLeft(crSlider: CrSliderElement): void {
+  pressAndReleaseKeyOn(crSlider, 37, [], 'ArrowLeft');
 }

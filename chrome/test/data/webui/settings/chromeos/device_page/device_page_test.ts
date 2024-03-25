@@ -7,7 +7,6 @@ import 'chrome://os-settings/os_settings.js';
 import {CrIconButtonElement, crosAudioConfigMojom, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, Route, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, SettingsAudioElement, SettingsDevicePageElement, SettingsPerDeviceKeyboardElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -16,7 +15,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 import {FakeSystemDisplay} from '../fake_system_display.js';
 import {clearBody} from '../utils.js';
 
-import {getFakePrefs} from './device_page_test_util.js';
+import {getFakePrefs, pressArrowLeft, pressArrowRight, simulateSliderClicked} from './device_page_test_util.js';
 import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
 suite('<settings-device-page>', () => {
@@ -505,38 +504,6 @@ suite('<settings-device-page>', () => {
       inputGainPercent: 0,
     };
 
-    /**
-     * Simulates clicking at a given point on cr-slider element.
-     */
-    async function simulateSliderClicked(
-        crSliderSelector: string, percent: number): Promise<void> {
-      const crSlider = audioPage.shadowRoot!.querySelector<CrSliderElement>(
-          crSliderSelector);
-      assertTrue(!!crSlider);
-      assertFalse(crSlider.disabled);
-      const rect = crSlider.$.container.getBoundingClientRect();
-      crSlider.dispatchEvent(new PointerEvent('pointerdown', {
-        buttons: 1,
-        pointerId: 1,
-        clientX: rect.left + ((percent / 100) * rect.width),
-      }));
-      await flushTasks();
-    }
-
-    /**
-     * Simulates pressing left arrow key while focused on cr-slider element.
-     */
-    function pressArrowRight(crSlider: HTMLElement): void {
-      pressAndReleaseKeyOn(crSlider, 39, [], 'ArrowRight');
-    }
-
-    /**
-     * Simulates pressing right arrow key while focused on cr-slider element.
-     */
-    function pressArrowLeft(crSlider: HTMLElement): void {
-      pressAndReleaseKeyOn(crSlider, 37, [], 'ArrowLeft');
-    }
-
     setup(async () => {
       await init();
 
@@ -638,7 +605,7 @@ suite('<settings-device-page>', () => {
 
       // Test clicking to min volume case.
       const minOutputVolumePercent = 0;
-      await simulateSliderClicked(sliderSelector, minOutputVolumePercent);
+      await simulateSliderClicked(outputSlider, minOutputVolumePercent);
       assertEquals(
           minOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent,
@@ -647,7 +614,7 @@ suite('<settings-device-page>', () => {
 
       // Test clicking to max volume case.
       const maxOutputVolumePercent = 100;
-      await simulateSliderClicked(sliderSelector, maxOutputVolumePercent);
+      await simulateSliderClicked(outputSlider, maxOutputVolumePercent);
       assertEquals(
           maxOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent,
@@ -656,8 +623,7 @@ suite('<settings-device-page>', () => {
 
       // Test clicking to non-boundary volume case.
       const nonBoundaryOutputVolumePercent = 50;
-      await simulateSliderClicked(
-          sliderSelector, nonBoundaryOutputVolumePercent);
+      await simulateSliderClicked(outputSlider, nonBoundaryOutputVolumePercent);
       assertEquals(
           nonBoundaryOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent,
@@ -686,7 +652,7 @@ suite('<settings-device-page>', () => {
 
       // Test clicking to a small icon volume case.
       const smallIconOutputVolumePercent = 10;
-      await simulateSliderClicked(sliderSelector, smallIconOutputVolumePercent);
+      await simulateSliderClicked(outputSlider, smallIconOutputVolumePercent);
       assertEquals(
           smallIconOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent,
@@ -909,21 +875,21 @@ suite('<settings-device-page>', () => {
           inputSlider.value);
 
       const minimumValue = 0;
-      await simulateSliderClicked(sliderSelector, minimumValue);
+      await simulateSliderClicked(inputSlider, minimumValue);
 
       assertEquals(minimumValue, inputSlider.value);
       assertEquals(
           audioPage.get('audioSystemProperties_').inputGainPercent,
           inputSlider.value);
       const maximumValue = 100;
-      await simulateSliderClicked(sliderSelector, maximumValue);
+      await simulateSliderClicked(inputSlider, maximumValue);
 
       assertEquals(maximumValue, inputSlider.value);
       assertEquals(
           audioPage.get('audioSystemProperties_').inputGainPercent,
           inputSlider.value);
       const middleValue = 50;
-      await simulateSliderClicked(sliderSelector, middleValue);
+      await simulateSliderClicked(inputSlider, middleValue);
 
       assertEquals(middleValue, inputSlider.value);
       assertEquals(
