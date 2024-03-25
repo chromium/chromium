@@ -3038,8 +3038,8 @@ const char kThirdPartyStoragePartitioningDescription[] =
     "When disabled, prevents partitioning of third-party storage by top-level "
     "site. If any site issues are experienced as a result of the third-party "
     "storage partitioning feature being enabled, please file bugs at "
-    "https://bugs.chromium.org/p/chromium/issues/entry"
-    "?labels=Proj-StoragePartitioningTrial&components=Blink%3EStorage.";
+    "https://issues.chromium.org/issues/new?component=1363614&template=1922563"
+    "&customFields=1223031:Proj-StoragePartitioningTrial.";
 
 const char kScreenSaverDurationName[] = "Screen saver duration settings";
 const char kScreenSaverDurationDescription[] =
