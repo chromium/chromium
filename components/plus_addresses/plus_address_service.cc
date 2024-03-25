@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/rand_util.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -65,14 +64,20 @@ PlusAddressService::PlusAddressService(
       plus_address_allocator_(std::make_unique<PlusAddressJitAllocator>(
           plus_address_http_client_.get())),
       excluded_sites_(GetAndParseExcludedSites()) {
-  CreateAndStartTimer();
-  if (identity_manager) {
-    identity_manager_observation_.Observe(identity_manager);
-  }
-  if (webdata_service_) {
-    webdata_service_observation_.Observe(webdata_service_.get());
-    if (is_enabled()) {
-      webdata_service_->GetPlusProfiles(this);
+  if (IsSyncingPlusAddresses()) {
+    if (webdata_service_) {
+      webdata_service_observation_.Observe(webdata_service_.get());
+      if (is_enabled()) {
+        webdata_service_->GetPlusProfiles(this);
+      }
+    }
+  } else {
+    CreateAndStartTimer();
+    // Observing the identity manager is only necessary to clear data on
+    // sign-out and start polling plus addresses for newly signed in accounts.
+    // When plus addresses arrive via sync, this becomes unnecessary.
+    if (identity_manager) {
+      identity_manager_observation_.Observe(identity_manager);
     }
   }
 }
@@ -138,6 +143,15 @@ std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
 void PlusAddressService::SavePlusAddress(url::Origin origin,
                                          std::string plus_address) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // New plus addresses are requested directly from the PlusAddress backend. If
+  // `IsSyncingPlusAddresses()`, these addresses become later available through
+  // sync.
+  // TODO(b/322147254): Until the address shows up in sync, it should still be
+  // available through `PlusAddressService`, even after reloading the data.
+  // This requires adding the address to the database. However, since the
+  // client is not receiving profile_ids from the backend yet, we can't insert
+  // into the database here. Doing so without the correct profile_id would
+  // create a duplicate once the address arrives via sync.
   std::string etld_plus_one = GetEtldPlusOne(origin);
   plus_address_by_site_[etld_plus_one] = plus_address;
   plus_addresses_.insert(plus_address);
@@ -313,36 +327,14 @@ void PlusAddressService::SyncPlusAddressMapping() {
 
 void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!webdata_service_) {
-    // Tests might not have a database. In this case, update the local cache
-    // directly.
-    plus_address_by_site_ = map;
-    plus_addresses_.clear();
-    for (const auto& [_, value] : map) {
-      plus_addresses_.insert(value);
-    }
-    for (Observer& o : observers_) {
-      o.OnPlusAddressesChanged();
-    }
-    return;
+  plus_address_by_site_ = map;
+  plus_addresses_.clear();
+  for (const auto& [_, value] : map) {
+    plus_addresses_.insert(value);
   }
-  // Update the database.
-  webdata_service_->ClearPlusProfiles();
-  for (const auto& [facet, plus_address] : map) {
-    // TODO(b/322147254): Receive profile_ids from the PlusAddress backend. For
-    // now, just assign any random identifier.
-    webdata_service_->AddOrUpdatePlusProfile(
-        {.profile_id = static_cast<int64_t>(base::RandUint64() >> 1),
-         .facet = facet,
-         .plus_address = plus_address,
-         .is_confirmed = true});
+  for (Observer& o : observers_) {
+    o.OnPlusAddressesChanged();
   }
-  // TODO(b/322147254): Re-reading the data we just wrote is unnecessary and the
-  // local cache could be updated right away. This simply exists as a "sanity
-  // check" that the round trip to the database works. Once the sync integration
-  // has finished, `UpdatePlusAddressMap()` and the surrounding polling logic
-  // will be removed.
-  webdata_service_->GetPlusProfiles(this);
 }
 
 void PlusAddressService::OnWebDataChangedBySync(
@@ -422,9 +414,6 @@ void PlusAddressService::HandleSignout() {
   plus_addresses_.clear();
   polling_timer_.Stop();
   plus_address_http_client_->Reset();
-  if (webdata_service_) {
-    webdata_service_->ClearPlusProfiles();
-  }
   for (Observer& o : observers_) {
     o.OnPlusAddressesChanged();
   }

@@ -770,25 +770,6 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
   std::optional<PlusAddressService> service_;
 };
 
-// Tests that when plus addresses are received from the backend, they are
-// persisted in the database and afterwards available through
-// PlusAddressService.
-TEST_F(PlusAddressServiceWebDataTest, DatabaseRoundTrip) {
-  // Simulate receiving an address from the backend.
-  // TODO(b/322147254): Update once sync integration exists.
-  url::Origin foo_origin = url::Origin::Create(GURL("https://foo.com"));
-  service().UpdatePlusAddressMap(
-      {{foo_origin.GetURL().host(), "plus+foo@plus.plus"}});
-
-  // Expect that it is not available through the `service` yet, since the DB
-  // task is still pending.
-  EXPECT_FALSE(service().GetPlusAddress(foo_origin).has_value());
-
-  // Wait for the DB task to finish and expect that the address is available.
-  test::PlusAddressesChangedWaiter(&service()).Wait();
-  EXPECT_TRUE(service().GetPlusAddress(foo_origin).has_value());
-}
-
 TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
   const PlusProfile profile = test::GetPlusProfile();
   // Simulate adding a `profile` to the database directly, as sync would. This

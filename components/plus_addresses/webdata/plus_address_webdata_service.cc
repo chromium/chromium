@@ -148,4 +148,8 @@ void PlusAddressWebDataService::NotifyOnWebDataChangedBySync(
   }
 }
 
+bool IsSyncingPlusAddresses() {
+  return base::FeatureList::IsEnabled(syncer::kSyncPlusAddress);
+}
+
 }  // namespace plus_addresses

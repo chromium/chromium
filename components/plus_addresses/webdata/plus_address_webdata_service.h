@@ -108,6 +108,10 @@ class PlusAddressWebDataService : public WebDataServiceBase {
   base::WeakPtrFactory<PlusAddressWebDataService> weak_factory_{this};
 };
 
+// Returns true if `syncer::kSyncPlusAddress` is enabled. This only exists to
+// avoid a sync dependency in components/plus_addresses.
+bool IsSyncingPlusAddresses();
+
 }  // namespace plus_addresses
 
 #endif  // COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_WEBDATA_SERVICE_H_

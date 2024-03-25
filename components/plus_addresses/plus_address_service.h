@@ -135,11 +135,6 @@ class PlusAddressService : public KeyedService,
 
   bool is_enabled() const;
 
-  // Updates `plus_address_by_site_` and `plus_addresses_` using `map`.
-  // TODO(b/322147254): This is only public for easier testing. Once sync
-  // integration has finished, it can be removed entirely.
-  void UpdatePlusAddressMap(const PlusAddressMap& map);
-
  private:
   // Creates and starts a timer to keep `plus_address_by_site_` and
   // `plus_addresses` in sync with a remote plus address server.
@@ -183,6 +178,10 @@ class PlusAddressService : public KeyedService,
   // Replaces the data stored in `plus_address_by_site_` and `plus_addresses_`
   // with the contents of `profiles`, and notifies observers about this change.
   void ReplacePlusProfiles(const std::vector<PlusProfile>& profiles);
+
+  // Updates `plus_address_by_site_` and `plus_addresses_` using `map`.
+  // TODO(b/322147254): Remove once integration has finished.
+  void UpdatePlusAddressMap(const PlusAddressMap& map);
 
   // The user's existing set of plus addresses, scoped to sites.
   PlusAddressMap plus_address_by_site_ GUARDED_BY_CONTEXT(sequence_checker_);
