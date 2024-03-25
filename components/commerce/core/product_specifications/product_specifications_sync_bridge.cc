@@ -43,9 +43,7 @@ ProductSpecificationsSyncBridge::~ProductSpecificationsSyncBridge() = default;
 
 std::unique_ptr<syncer::MetadataChangeList>
 ProductSpecificationsSyncBridge::CreateMetadataChangeList() {
-  // TODO(b/329519916) implement
-  NOTIMPLEMENTED();
-  return nullptr;
+  return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<syncer::ModelError>
