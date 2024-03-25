@@ -4671,6 +4671,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "hardware-media-key-handling",
+    "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "hats-webui",
     "owners": [
       "//chrome/browser/ui/hats/OWNERS"

@@ -2026,6 +2026,11 @@ const char kHandwritingLibraryDlcDescription[] =
     "Enables new on-device recognition with the handwriting library installed "
     "from DLC";
 
+const char kHardwareMediaKeyHandling[] = "Hardware Media Key Handling";
+const char kHardwareMediaKeyHandlingDescription[] =
+    "Enables using media keys to control the active media session. This "
+    "requires MediaSessionService to be enabled too";
+
 const char kHeavyAdPrivacyMitigationsName[] = "Heavy ad privacy mitigations";
 const char kHeavyAdPrivacyMitigationsDescription[] =
     "Enables privacy mitigations for the heavy ad intervention. Disabling "

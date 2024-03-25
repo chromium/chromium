@@ -7389,6 +7389,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableGpuServiceLoggingDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableGPUServiceLogging)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"hardware-media-key-handling",
+     flag_descriptions::kHardwareMediaKeyHandling,
+     flag_descriptions::kHardwareMediaKeyHandlingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kHardwareMediaKeyHandling)},
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"arc-window-predictor", flag_descriptions::kArcWindowPredictorName,
      flag_descriptions::kArcWindowPredictorDescription, kOsCrOS,
