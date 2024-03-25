@@ -6,9 +6,29 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/strings/string_number_conversions.h"
 
 namespace ash {
+
+namespace {
+
+// Separator for audio device id string concatenation.
+constexpr char kAudioDeviceListIdSeparator[] = ",";
+
+// A helper function to concatenate audio device ids.
+const std::string AudioDeviceIdListToString(
+    const base::flat_set<std::string>& ids) {
+  std::stringstream s;
+  const char* sep = "";
+  for (const std::string& id : ids) {
+    s << sep << id;
+    sep = kAudioDeviceListIdSeparator;
+  }
+  return s.str();
+}
+
+}  // namespace
 
 std::string GetVersionedDeviceIdString(const AudioDevice& device, int version) {
   CHECK(device.stable_device_id_version >= version);
@@ -33,6 +53,15 @@ std::string GetVersionedDeviceIdString(const AudioDevice& device, int version) {
 
 std::string GetDeviceIdString(const AudioDevice& device) {
   return GetVersionedDeviceIdString(device, device.stable_device_id_version);
+}
+
+const std::string AudioDeviceListToFlattenedDeviceIdString(
+    const AudioDeviceList& devices) {
+  base::flat_set<std::string> ids;
+  for (const AudioDevice& device : devices) {
+    ids.insert(GetDeviceIdString(device));
+  }
+  return AudioDeviceIdListToString(ids);
 }
 
 }  // namespace ash

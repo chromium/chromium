@@ -28,6 +28,12 @@ std::string GetVersionedDeviceIdString(const AudioDevice& device, int version);
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
 std::string GetDeviceIdString(const AudioDevice& device);
 
+// Converts AudioDeviceList to string containing comma separated set of
+// versioned device IDs.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
+const std::string AudioDeviceListToFlattenedDeviceIdString(
+    const AudioDeviceList& devices);
+
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICE_ID_H_

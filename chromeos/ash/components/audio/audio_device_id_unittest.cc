@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/audio/audio_device_id.h"
 
+#include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_device_selection_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -67,6 +68,35 @@ TEST_F(AudioDeviceIdTest, GetDeviceIdString) {
   for (const auto& item : items) {
     EXPECT_EQ(GetDeviceIdString(
                   CreateAudioDevice(item.audio_node_info, item.version)),
+              item.expected_id);
+  }
+}
+
+// Verify AudioDeviceListToFlattenedDeviceIdString() can convert AudioDeviceList
+// to string containing comma separated set of versioned device IDs.
+TEST_F(AudioDeviceIdTest, AudioDeviceListToFlattenedDeviceIdString) {
+  struct {
+    const AudioDeviceList& audio_device_list;
+    const std::string expected_id;
+  } items[] = {
+      {{}, ""},
+      {{CreateAudioDevice(kInternalMic, 1)}, "10003 : 1"},
+      {{CreateAudioDevice(kInternalMic, 1), CreateAudioDevice(kInternalMic, 1)},
+       "10003 : 1"},
+      {{CreateAudioDevice(kInternalMic, 1), CreateAudioDevice(kHeadphone, 1)},
+       "10002 : 0,10003 : 1"},
+      {{CreateAudioDevice(kInternalMic, 1), CreateAudioDevice(kHeadphone, 1),
+        CreateAudioDevice(kUSBMic, 1)},
+       "10002 : 0,10003 : 1,10005 : 1"},
+      {{CreateAudioDevice(kHeadphone, 1), CreateAudioDevice(kInternalMic, 1),
+        CreateAudioDevice(kUSBMic, 1)},
+       "10002 : 0,10003 : 1,10005 : 1"},
+      {{CreateAudioDevice(kUSBMic, 1), CreateAudioDevice(kHeadphone, 1),
+        CreateAudioDevice(kInternalMic, 1)},
+       "10002 : 0,10003 : 1,10005 : 1"}};
+
+  for (const auto& item : items) {
+    EXPECT_EQ(AudioDeviceListToFlattenedDeviceIdString(item.audio_device_list),
               item.expected_id);
   }
 }
