@@ -1040,10 +1040,6 @@ TEST_F(SearchEngineChoiceServiceTest, NoRepromptForSyntaxError) {
   pref_service()->SetInt64(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
       kPreviousTimestamp);
-  base::Version choice_version({1, 2, 3, 4});
-  pref_service()->SetString(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
-      choice_version.GetString());
 
   // Trigger the creation of the service, which should check for the reprompt.
   search_engine_choice_service();
@@ -1052,9 +1048,6 @@ TEST_F(SearchEngineChoiceServiceTest, NoRepromptForSyntaxError) {
   EXPECT_EQ(kPreviousTimestamp,
             pref_service()->GetInt64(
                 prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
-  EXPECT_EQ(choice_version.GetString(),
-            pref_service()->GetString(
-                prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
   histogram_tester_.ExpectTotalCount(
       search_engines::kSearchEngineChoiceWipeReasonHistogram, 0);
   histogram_tester_.ExpectTotalCount(
