@@ -1164,19 +1164,13 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ChromeContentBrowserClientTest, IsolatedWebAppsDisabledOnSignInScreen) {
-  auto set_install_force_list = [](Profile* profile) {
-    base::Value::List list;
-    list.Append("some_value");
-    profile->GetPrefs()->SetList(prefs::kIsolatedWebAppInstallForceList,
-                                 std::move(list));
-  };
-  set_install_force_list(&profile_);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kIsolatedWebApps);
 
   std::unique_ptr<TestingProfile> sign_in_screen_profile =
       TestingProfile::Builder()
           .SetPath(base::FilePath(ash::kSigninBrowserContextBaseName))
           .Build();
-  set_install_force_list(sign_in_screen_profile.get());
 
   ChromeContentBrowserClient client;
   EXPECT_TRUE(client.AreIsolatedWebAppsEnabled(&profile_));

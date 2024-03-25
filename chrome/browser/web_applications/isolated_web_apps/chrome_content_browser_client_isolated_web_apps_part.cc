@@ -18,10 +18,6 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/common/pref_names.h"
-#endif
-
 namespace web_apps {
 
 ChromeContentBrowserClientIsolatedWebAppsPart::
@@ -37,21 +33,12 @@ bool ChromeContentBrowserClientIsolatedWebAppsPart::AreIsolatedWebAppsEnabled(
     return false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Check if the enterprise policy that regulates Isolated Web Apps force
-  // installing is present. If it is there then the IWAs should be enabled.
-  const base::Value::List& isolated_web_apps =
-      profile->GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList);
-  if (!isolated_web_apps.empty()) {
-    return true;
-  }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // IWAs should be enabled for ShimlessRMA app profile.
   if (ash::IsShimlessRmaAppBrowserContext(browser_context)) {
     return true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
     return true;

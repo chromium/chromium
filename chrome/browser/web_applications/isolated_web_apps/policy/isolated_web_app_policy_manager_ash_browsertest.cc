@@ -84,7 +84,9 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
       const IsolatedWebAppPolicyManagerAshBrowserTest&) = delete;
 
  protected:
-  IsolatedWebAppPolicyManagerAshBrowserTest() = default;
+  IsolatedWebAppPolicyManagerAshBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+  }
 
   ~IsolatedWebAppPolicyManagerAshBrowserTest() override = default;
 
