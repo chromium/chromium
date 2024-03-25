@@ -1117,6 +1117,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.TimeDatabaseMigrationToV22" units="ms"
+    expires_after="2025-03-19">
+  <owner>arichiv@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    The amount of time (ms) to migrate a v21 cookie database to v22. Migration
+    occurs upon first startup of a browser version with v21 database code.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.TimeInitializeDB" units="ms" expires_after="2024-07-21">
   <owner>bingler@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>

@@ -142,7 +142,8 @@ public class CookiesFetcher {
                                     cookie.getPriority(),
                                     cookie.getPartitionKey(),
                                     cookie.sourceScheme(),
-                                    cookie.sourcePort());
+                                    cookie.sourcePort(),
+                                    cookie.sourceType());
                 }
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
@@ -196,7 +197,8 @@ public class CookiesFetcher {
             int priority,
             String partitionKey,
             int sourceScheme,
-            int sourcePort) {
+            int sourcePort,
+            int sourceType) {
         return new CanonicalCookie(
                 name,
                 value,
@@ -212,7 +214,8 @@ public class CookiesFetcher {
                 priority,
                 partitionKey,
                 sourceScheme,
-                sourcePort);
+                sourcePort,
+                sourceType);
     }
 
     @CalledByNative
@@ -282,6 +285,7 @@ public class CookiesFetcher {
                 int priority,
                 String partitionKey,
                 int sourceScheme,
-                int sourcePort);
+                int sourcePort,
+                int sourceType);
     }
 }

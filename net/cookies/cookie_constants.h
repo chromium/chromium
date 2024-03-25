@@ -369,6 +369,19 @@ enum class CookiesAllowedForUrlsUsage {
   kMaxValue = kAllPresent,
 };
 
+// Possible values for the 'source_type' column.
+enum class CookieSourceType {
+  // 'unknown' is used for tests or cookies set before this field was added.
+  kUnknown = 0,
+  // 'http' is used for cookies set via HTTP Response Headers.
+  kHTTP = 1,
+  // 'script' is used for cookies set via document.cookie.
+  kScript = 2,
+  // 'other' is used for cookies set via browser login, iOS, WebView APIs,
+  // Extension APIs, or DevTools.
+  kOther = 3,
+};
+
 }  // namespace net
 
 #endif  // NET_COOKIES_COOKIE_CONSTANTS_H_

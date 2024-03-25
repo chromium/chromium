@@ -220,7 +220,8 @@ class CookieStoreTest : public testing::Test {
       const CookieOptions& options,
       std::optional<base::Time> server_time = std::nullopt,
       std::optional<base::Time> system_time = std::nullopt,
-      std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt) {
+      std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt,
+      CookieSourceType source_type = CookieSourceType::kUnknown) {
     // Ensure a different Creation date to guarantee sort order for testing
     static base::Time last = base::Time::Min();
     last = base::Time::Now() == last ? last + base::Microseconds(1)
@@ -228,7 +229,9 @@ class CookieStoreTest : public testing::Test {
 
     auto cookie =
         CanonicalCookie::Create(url, cookie_line, system_time.value_or(last),
-                                server_time, cookie_partition_key);
+                                server_time, cookie_partition_key,
+                                /*block_truncated=*/true,
+                                /*status=*/nullptr, source_type);
 
     if (!cookie)
       return false;
@@ -287,14 +290,15 @@ class CookieStoreTest : public testing::Test {
       CookieStore* cs,
       const GURL& url,
       const std::string& cookie_line,
-      std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt) {
+      std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt,
+      CookieSourceType source_type = CookieSourceType::kUnknown) {
     CookieOptions options;
     if (!CookieStoreTestTraits::supports_http_only)
       options.set_include_httponly();
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
     return CreateAndSetCookie(cs, url, cookie_line, options, std::nullopt,
-                              std::nullopt, cookie_partition_key);
+                              std::nullopt, cookie_partition_key, source_type);
   }
 
   CookieInclusionStatus CreateAndSetCookieReturnStatus(

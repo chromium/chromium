@@ -201,7 +201,9 @@ void EssentialSearchManager::OnCookieFetched(const std::string& cookie_header) {
 
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       google_url, cookie_header, base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */));
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */,
+      /*block_truncated=*/true,
+      /*status=*/nullptr, net::CookieSourceType::kOther));
 
   if (!cc) {
     LOG(ERROR) << "Invalid cookie header";

@@ -13,6 +13,40 @@
 
 namespace mojo {
 
+network::mojom::CookieSourceType
+EnumTraits<network::mojom::CookieSourceType, net::CookieSourceType>::ToMojom(
+    net::CookieSourceType input) {
+  switch (input) {
+    case net::CookieSourceType::kUnknown:
+      return network::mojom::CookieSourceType::kUnknown;
+    case net::CookieSourceType::kHTTP:
+      return network::mojom::CookieSourceType::kHTTP;
+    case net::CookieSourceType::kScript:
+      return network::mojom::CookieSourceType::kScript;
+    case net::CookieSourceType::kOther:
+      return network::mojom::CookieSourceType::kOther;
+  }
+}
+
+bool EnumTraits<network::mojom::CookieSourceType, net::CookieSourceType>::
+    FromMojom(network::mojom::CookieSourceType input,
+              net::CookieSourceType* output) {
+  switch (input) {
+    case network::mojom::CookieSourceType::kUnknown:
+      *output = net::CookieSourceType::kUnknown;
+      return true;
+    case network::mojom::CookieSourceType::kHTTP:
+      *output = net::CookieSourceType::kHTTP;
+      return true;
+    case network::mojom::CookieSourceType::kScript:
+      *output = net::CookieSourceType::kScript;
+      return true;
+    case network::mojom::CookieSourceType::kOther:
+      *output = net::CookieSourceType::kOther;
+      return true;
+  }
+}
+
 network::mojom::CookiePriority
 EnumTraits<network::mojom::CookiePriority, net::CookiePriority>::ToMojom(
     net::CookiePriority input) {
@@ -688,12 +722,17 @@ bool StructTraits<
   if (!cookie.ReadSourceScheme(&source_scheme))
     return false;
 
+  net::CookieSourceType source_type;
+  if (!cookie.ReadSourceType(&source_type)) {
+    return false;
+  }
+
   auto cc = net::CanonicalCookie::FromStorage(
       std::move(name), std::move(value), std::move(domain), std::move(path),
       std::move(creation_time), std::move(expiry_time),
       std::move(last_access_time), std::move(last_update_time), cookie.secure(),
       cookie.httponly(), site_restrictions, priority, partition_key,
-      source_scheme, cookie.source_port());
+      source_scheme, cookie.source_port(), source_type);
   if (!cc)
     return false;
   *out = *cc;

@@ -25,6 +25,13 @@
 namespace mojo {
 
 template <>
+struct EnumTraits<network::mojom::CookieSourceType, net::CookieSourceType> {
+  static network::mojom::CookieSourceType ToMojom(net::CookieSourceType input);
+  static bool FromMojom(network::mojom::CookieSourceType input,
+                        net::CookieSourceType* output);
+};
+
+template <>
 struct EnumTraits<network::mojom::CookiePriority, net::CookiePriority> {
   static network::mojom::CookiePriority ToMojom(net::CookiePriority input);
   static bool FromMojom(network::mojom::CookiePriority input,
@@ -278,6 +285,9 @@ struct StructTraits<network::mojom::CanonicalCookieDataView,
   }
   static int source_port(const net::CanonicalCookie& c) {
     return c.SourcePort();
+  }
+  static net::CookieSourceType source_type(const net::CanonicalCookie& c) {
+    return c.SourceType();
   }
 
   static bool Read(network::mojom::CanonicalCookieDataView cookie,

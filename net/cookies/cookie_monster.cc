@@ -1669,6 +1669,8 @@ void CookieMonster::SetCanonicalCookie(
     SetCookiesCallback callback,
     std::optional<CookieAccessResult> cookie_access_result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // TODO(crbug.com/1482799): Check cc.StatusType() isn't kUnknown outside of
+  // tests.
 
   bool delegate_treats_url_as_trustworthy =
       cookie_access_delegate() &&

@@ -142,7 +142,7 @@ auto GetAllDataMembersAsTuple(const CanonicalCookie& c) {
                          c.SecureAttribute(), c.IsHttpOnly(), c.SameSite(),
                          c.Priority(), c.PartitionKey(), c.Name(), c.Value(),
                          c.Domain(), c.Path(), c.LastUpdateDate(),
-                         c.SourceScheme(), c.SourcePort());
+                         c.SourceScheme(), c.SourcePort(), c.SourceType());
 }
 
 }  // namespace
@@ -179,7 +179,8 @@ CanonicalCookie::CanonicalCookie(
     CookiePriority priority,
     std::optional<CookiePartitionKey> partition_key,
     CookieSourceScheme source_scheme,
-    int source_port)
+    int source_port,
+    CookieSourceType source_type)
     : CookieBase(std::move(name),
                  std::move(domain),
                  std::move(path),
@@ -194,7 +195,8 @@ CanonicalCookie::CanonicalCookie(
       expiry_date_(expiration),
       last_access_date_(last_access),
       last_update_date_(last_update),
-      priority_(priority) {}
+      priority_(priority),
+      source_type_(source_type) {}
 
 CanonicalCookie::~CanonicalCookie() = default;
 
@@ -343,7 +345,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     std::optional<base::Time> server_time,
     std::optional<CookiePartitionKey> cookie_partition_key,
     bool block_truncated,
-    CookieInclusionStatus* status) {
+    CookieInclusionStatus* status,
+    CookieSourceType source_type) {
   // Put a pointer on the stack so the rest of the function can assign to it if
   // the default nullptr is passed in.
   CookieInclusionStatus blank_status;
@@ -499,7 +502,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
       cookie_expires, creation_time,
       /*last_update=*/base::Time::Now(), parsed_cookie.IsSecure(),
       parsed_cookie.IsHttpOnly(), samesite, parsed_cookie.Priority(),
-      cookie_partition_key, source_scheme, source_port);
+      cookie_partition_key, source_scheme, source_port, source_type);
 
   // TODO(chlily): Log metrics.
   if (!cc->IsCanonical()) {
@@ -715,7 +718,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
       base::PassKey<CanonicalCookie>(), name, value, cookie_domain,
       encoded_cookie_path, creation_time, expiration_time, last_access_time,
       /*last_update=*/base::Time::Now(), secure, http_only, same_site, priority,
-      partition_key, source_scheme, source_port);
+      partition_key, source_scheme, source_port, CookieSourceType::kOther);
   DCHECK(cc->IsCanonical());
 
   return cc;
@@ -737,7 +740,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
     CookiePriority priority,
     std::optional<CookiePartitionKey> partition_key,
     CookieSourceScheme source_scheme,
-    int source_port) {
+    int source_port,
+    CookieSourceType source_type) {
   // We check source_port here because it could have concievably been
   // corrupted and changed to out of range. Eventually this would be caught by
   // IsCanonical*() but since the source_port is only used by metrics so far
@@ -750,7 +754,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
       base::PassKey<CanonicalCookie>(), std::move(name), std::move(value),
       std::move(domain), std::move(path), creation, expiration, last_access,
       last_update, secure, httponly, same_site, priority, partition_key,
-      source_scheme, validated_port);
+      source_scheme, validated_port, source_type);
 
   if (cc->IsCanonicalForFromStorage()) {
     // This will help capture the number of times a cookie is canonical but does
@@ -781,11 +785,12 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateUnsafeCookieForTesting(
     CookiePriority priority,
     std::optional<CookiePartitionKey> partition_key,
     CookieSourceScheme source_scheme,
-    int source_port) {
+    int source_port,
+    CookieSourceType source_type) {
   return std::make_unique<CanonicalCookie>(
       base::PassKey<CanonicalCookie>(), name, value, domain, path, creation,
       expiration, last_access, last_update, secure, httponly, same_site,
-      priority, partition_key, source_scheme, source_port);
+      priority, partition_key, source_scheme, source_port, source_type);
 }
 
 bool CanonicalCookie::IsEquivalentForSecureCookieMatching(

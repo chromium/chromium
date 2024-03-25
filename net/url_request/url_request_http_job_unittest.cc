@@ -1908,21 +1908,21 @@ TEST_F(URLRequestHttpJobTest, PrivacyMode_ExclusionReason) {
       req->maybe_sent_cookies(),
       UnorderedElementsAre(
           MatchesCookieWithAccessResult(
-              MatchesCookieWithName("one"),
+              MatchesCookieWithNameSourceType("one", CookieSourceType::kHTTP),
               MatchesCookieAccessResult(
                   HasExactlyExclusionReasonsForTesting(
                       std::vector<CookieInclusionStatus::ExclusionReason>{
                           CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
                   _, _, _)),
           MatchesCookieWithAccessResult(
-              MatchesCookieWithName("two"),
+              MatchesCookieWithNameSourceType("two", CookieSourceType::kHTTP),
               MatchesCookieAccessResult(
                   HasExactlyExclusionReasonsForTesting(
                       std::vector<CookieInclusionStatus::ExclusionReason>{
                           CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
                   _, _, _)),
           MatchesCookieWithAccessResult(
-              MatchesCookieWithName("three"),
+              MatchesCookieWithNameSourceType("three", CookieSourceType::kHTTP),
               MatchesCookieAccessResult(
                   HasExactlyExclusionReasonsForTesting(
                       std::vector<CookieInclusionStatus::ExclusionReason>{
@@ -1972,21 +1972,24 @@ TEST_F(URLRequestHttpJobTest, IndividuallyBlockedCookies) {
       req->maybe_sent_cookies(),
       UnorderedElementsAre(
           MatchesCookieWithAccessResult(
-              MatchesCookieWithName("blocked_one"),
+              MatchesCookieWithNameSourceType("blocked_one",
+                                              CookieSourceType::kHTTP),
               MatchesCookieAccessResult(
                   HasExactlyExclusionReasonsForTesting(
                       std::vector<CookieInclusionStatus::ExclusionReason>{
                           CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
                   _, _, _)),
           MatchesCookieWithAccessResult(
-              MatchesCookieWithName("blocked_two"),
+              MatchesCookieWithNameSourceType("blocked_two",
+                                              CookieSourceType::kHTTP),
               MatchesCookieAccessResult(
                   HasExactlyExclusionReasonsForTesting(
                       std::vector<CookieInclusionStatus::ExclusionReason>{
                           CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
                   _, _, _)),
           MatchesCookieWithAccessResult(
-              MatchesCookieWithName("allowed"),
+              MatchesCookieWithNameSourceType("allowed",
+                                              CookieSourceType::kHTTP),
               MatchesCookieAccessResult(IsInclude(), _, _, _))));
 }
 
@@ -2209,12 +2212,14 @@ TEST_F(URLRequestHttpJobTest, PartitionedCookiePrivacyMode) {
         req->maybe_sent_cookies(),
         UnorderedElementsAre(
             MatchesCookieWithAccessResult(
-                MatchesCookieWithName("__Host-partitioned"),
+                MatchesCookieWithNameSourceType("__Host-partitioned",
+                                                CookieSourceType::kHTTP),
                 MatchesCookieAccessResult(HasExactlyExclusionReasonsForTesting(
                                               want_exclusion_reasons),
                                           _, _, _)),
             MatchesCookieWithAccessResult(
-                MatchesCookieWithName("__Host-unpartitioned"),
+                MatchesCookieWithNameSourceType("__Host-unpartitioned",
+                                                CookieSourceType::kHTTP),
                 MatchesCookieAccessResult(
                     HasExactlyExclusionReasonsForTesting(
                         std::vector<CookieInclusionStatus::ExclusionReason>{
@@ -2238,14 +2243,16 @@ TEST_F(URLRequestHttpJobTest, PartitionedCookiePrivacyMode) {
         req->maybe_sent_cookies(),
         UnorderedElementsAre(
             MatchesCookieWithAccessResult(
-                MatchesCookieWithName("__Host-partitioned"),
+                MatchesCookieWithNameSourceType("__Host-partitioned",
+                                                CookieSourceType::kHTTP),
                 MatchesCookieAccessResult(
                     HasExactlyExclusionReasonsForTesting(
                         std::vector<CookieInclusionStatus::ExclusionReason>{
                             CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
                     _, _, _)),
             MatchesCookieWithAccessResult(
-                MatchesCookieWithName("__Host-unpartitioned"),
+                MatchesCookieWithNameSourceType("__Host-unpartitioned",
+                                                CookieSourceType::kHTTP),
                 MatchesCookieAccessResult(
                     HasExactlyExclusionReasonsForTesting(
                         std::vector<CookieInclusionStatus::ExclusionReason>{

@@ -127,6 +127,13 @@ enum CookieSameSiteContextMetadataDowngradeType {
   kLaxToCross,
 };
 
+enum CookieSourceType {
+  kUnknown,
+  kHTTP,
+  kScript,
+  kOther,
+};
+
 enum ContextRedirectTypeBug1221316 {
   kUnset,
   kNoRedirect,
@@ -201,6 +208,7 @@ struct CanonicalCookie {
   // -1 because of url::PORT_UNSPECIFIED
   // url/third_party/mozilla/url_parse.h
   int32 source_port = -1;
+  CookieSourceType source_type = kUnknown;
 };
 
 // Indicates reasons why a cookie may be excluded in a get or set

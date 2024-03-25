@@ -738,8 +738,8 @@ TEST_F(SQLitePersistentCookieStoreTest, FilterBadCookiesAndFixupDb) {
       "INSERT INTO cookies (creation_utc, host_key, top_frame_site_key, name, "
       "value, encrypted_value, path, expires_utc, is_secure, is_httponly, "
       "samesite, last_access_utc, has_expires, is_persistent, priority, "
-      "source_scheme, source_port, last_update_utc) "
-      "VALUES (?,?,?,?,?,'',?,0,0,0,0,0,1,1,0,?,?,?)"));
+      "source_scheme, source_port, last_update_utc, source_type) "
+      "VALUES (?,?,?,?,?,'',?,0,0,0,0,0,1,1,0,?,?,?,0)"));
   ASSERT_TRUE(stmt.is_valid());
 
   struct CookieInfo {
@@ -1579,6 +1579,44 @@ bool CreateV20Schema(sql::Database* db) {
   return db->Execute(kCreateSql) && db->Execute(kCreateIndexSql);
 }
 
+bool CreateV21Schema(sql::Database* db) {
+  sql::MetaTable meta_table;
+  if (!meta_table.Init(db, 21, 21)) {
+    return false;
+  }
+
+  // Version 21 schema
+  static constexpr char kCreateSql[] =
+      "CREATE TABLE cookies("
+      "creation_utc INTEGER NOT NULL,"
+      "host_key TEXT NOT NULL,"
+      "top_frame_site_key TEXT NOT NULL,"
+      "name TEXT NOT NULL,"
+      "value TEXT NOT NULL,"
+      "encrypted_value BLOB NOT NULL,"
+      "path TEXT NOT NULL,"
+      "expires_utc INTEGER NOT NULL,"
+      "is_secure INTEGER NOT NULL,"
+      "is_httponly INTEGER NOT NULL,"
+      "last_access_utc INTEGER NOT NULL,"
+      "has_expires INTEGER NOT NULL,"
+      "is_persistent INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL,"
+      "samesite INTEGER NOT NULL,"
+      "source_scheme INTEGER NOT NULL,"
+      "source_port INTEGER NOT NULL,"
+      "last_update_utc INTEGER NOT NULL,"
+      "UNIQUE (host_key, top_frame_site_key, name, path, source_scheme, "
+      "source_port))";
+
+  static constexpr char kCreateIndexSql[] =
+      "CREATE UNIQUE INDEX cookies_unique_index "
+      "ON cookies(host_key, top_frame_site_key, name, path, source_scheme, "
+      "source_port)";
+
+  return db->Execute(kCreateSql) && db->Execute(kCreateIndexSql);
+}
+
 int GetDBCurrentVersionNumber(sql::Database* db) {
   static constexpr char kGetDBCurrentVersionQuery[] =
       "SELECT value FROM meta WHERE key='version'";
@@ -1685,6 +1723,64 @@ bool AddV20CookiesToDB(sql::Database* db) {
   return AddV18CookiesToDB(db, base::Days(400));
 }
 
+bool AddV21CookiesToDB(sql::Database* db) {
+  std::vector<CanonicalCookie> cookies = CookiesForMigrationTest();
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT INTO cookies (creation_utc, top_frame_site_key, host_key, name, "
+      "value, encrypted_value, path, expires_utc, is_secure, is_httponly, "
+      "samesite, last_access_utc, has_expires, is_persistent, priority, "
+      "source_scheme, source_port, last_update_utc) "
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+  if (!statement.is_valid()) {
+    return false;
+  }
+  sql::Transaction transaction(db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+  for (const CanonicalCookie& cookie : cookies) {
+    base::Time max_expiration(cookie.CreationDate() + base::Days(400));
+
+    statement.Reset(true);
+    statement.BindTime(0, cookie.CreationDate());
+    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
+    // implemented update this method utilize the ancestor bit.
+    base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
+                   std::string>
+        serialized_partition_key =
+            CookiePartitionKey::Serialize(cookie.PartitionKey());
+    EXPECT_TRUE(serialized_partition_key.has_value());
+
+    statement.BindString(1, serialized_partition_key->TopLevelSite());
+    statement.BindString(2, cookie.Domain());
+    statement.BindString(3, cookie.Name());
+    statement.BindString(4, cookie.Value());
+    statement.BindBlob(5, base::span<uint8_t>());  // encrypted_value
+    statement.BindString(6, cookie.Path());
+    statement.BindTime(7, std::min(cookie.ExpiryDate(), max_expiration));
+    statement.BindInt(8, cookie.SecureAttribute());
+    statement.BindInt(9, cookie.IsHttpOnly());
+    // Note that this, Priority(), and SourceScheme() below nominally rely on
+    // the enums in sqlite_persistent_cookie_store.cc having the same values as
+    // the ones in ../../cookies/cookie_constants.h.  But nothing in this test
+    // relies on that equivalence, so it's not worth the hassle to guarantee
+    // that.
+    statement.BindInt(10, static_cast<int>(cookie.SameSite()));
+    statement.BindTime(11, cookie.LastAccessDate());
+    statement.BindInt(12, cookie.IsPersistent());
+    statement.BindInt(13, cookie.IsPersistent());
+    statement.BindInt(14, static_cast<int>(cookie.Priority()));
+    statement.BindInt(15, static_cast<int>(cookie.SourceScheme()));
+    statement.BindInt(16, cookie.SourcePort());
+    statement.BindTime(17, cookie.LastUpdateDate());
+    if (!statement.Run()) {
+      return false;
+    }
+  }
+  return transaction.Commit();
+}
+
 // Confirm the cookie list passed in has the above cookies in it.
 void ConfirmCookiesAfterMigrationTest(
     std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies,
@@ -1704,6 +1800,7 @@ void ConfirmCookiesAfterMigrationTest(
                                     : base::Time());
   EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
             read_in_cookies[i]->CreationDate());
+  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
 
   i++;
   EXPECT_EQ("A", read_in_cookies[i]->Name());
@@ -1717,6 +1814,7 @@ void ConfirmCookiesAfterMigrationTest(
                                     : base::Time());
   EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
             read_in_cookies[i]->CreationDate() + base::Days(400));
+  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
 
   i++;
   EXPECT_EQ("A", read_in_cookies[i]->Name());
@@ -1730,6 +1828,7 @@ void ConfirmCookiesAfterMigrationTest(
                                     : base::Time());
   EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
             read_in_cookies[i]->CreationDate());
+  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
 
   i++;
   EXPECT_EQ("C", read_in_cookies[i]->Name());
@@ -1743,6 +1842,7 @@ void ConfirmCookiesAfterMigrationTest(
                                     : base::Time());
   EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
             read_in_cookies[i]->CreationDate());
+  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
 
   i++;
   EXPECT_EQ("C", read_in_cookies[i]->Name());
@@ -1759,6 +1859,7 @@ void ConfirmCookiesAfterMigrationTest(
             base::Time::Now() + base::Days(400));
   EXPECT_GE(read_in_cookies[i]->ExpiryDate(),
             base::Time::Now() + base::Days(400) - base::Minutes(1));
+  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
 
   i++;
   EXPECT_EQ("C", read_in_cookies[i]->Name());
@@ -1772,6 +1873,7 @@ void ConfirmCookiesAfterMigrationTest(
                                     : base::Time());
   EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
             read_in_cookies[i]->CreationDate() + base::Days(399));
+  EXPECT_EQ(read_in_cookies[i]->SourceType(), CookieSourceType::kUnknown);
 }
 
 void ConfirmDatabaseVersionAfterMigration(const base::FilePath path,
@@ -1851,6 +1953,30 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion21) {
 
   ASSERT_NO_FATAL_FAILURE(
       ConfirmDatabaseVersionAfterMigration(database_path, 21));
+}
+
+TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion22) {
+  // Open db.
+  const base::FilePath database_path =
+      temp_dir_.GetPath().Append(kCookieFilename);
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(database_path));
+    ASSERT_TRUE(CreateV21Schema(&connection));
+    ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 21);
+    ASSERT_TRUE(AddV21CookiesToDB(&connection));
+  }
+
+  std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
+  CreateAndLoad(/*crypt_cookies=*/false, /*restore_old_session_cookies=*/false,
+                &read_in_cookies);
+  ASSERT_NO_FATAL_FAILURE(
+      ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
+                                       /*expect_last_update_date=*/true));
+  DestroyStore();
+
+  ASSERT_NO_FATAL_FAILURE(
+      ConfirmDatabaseVersionAfterMigration(database_path, 22));
 }
 
 class SQLitePersistentCookieStoreTest_OriginBoundCookies
@@ -2011,8 +2137,8 @@ TEST_F(SQLitePersistentCookieStoreTest, LoadingPartitionedCookies) {
       "INSERT INTO cookies (creation_utc, host_key, top_frame_site_key, name, "
       "value, encrypted_value, path, expires_utc, is_secure, is_httponly, "
       "samesite, last_access_utc, has_expires, is_persistent, priority, "
-      "source_scheme, source_port, last_update_utc) "
-      "VALUES (?,?,?,?,?,'',?,?,1,0,0,?,1,1,0,?,?,?)"));
+      "source_scheme, source_port, last_update_utc, source_type) "
+      "VALUES (?,?,?,?,?,'',?,?,1,0,0,?,1,1,0,?,?,?,0)"));
   ASSERT_TRUE(stmt.is_valid());
 
   base::Time creation(base::Time::Now());

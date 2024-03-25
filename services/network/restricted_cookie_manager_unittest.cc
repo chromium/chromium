@@ -1675,6 +1675,7 @@ TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
         net::CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")),
         cookies[0].PartitionKey());
     EXPECT_EQ("__Host-foo", cookies[0].Name());
+    EXPECT_EQ(net::CookieSourceType::kScript, cookies[0].SourceType());
 
     auto listener =
         CreateCookieChangeListener(kCookieURL, kSiteForCookies, kTopFrameOrigin,

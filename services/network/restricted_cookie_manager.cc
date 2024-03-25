@@ -834,7 +834,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
           cookie.Name(), cookie.Value(), cookie.Domain(), cookie.Path(), now,
           cookie.ExpiryDate(), now, now, cookie.SecureAttribute(),
           cookie.IsHttpOnly(), cookie.SameSite(), cookie.Priority(),
-          cookie_partition_key, source_scheme, origin_.port());
+          cookie_partition_key, source_scheme, origin_.port(),
+          cookie.SourceType());
   DCHECK(sanitized_cookie);
   // FromStorage() uses a less strict version of IsCanonical(), we need to check
   // the stricter version as well here.
@@ -944,7 +945,8 @@ void RestrictedCookieManager::SetCookieFromString(
       net::CanonicalCookie::Create(
           url, cookie, base::Time::Now(), /*server_time=*/std::nullopt,
           cookie_partition_key_,
-          cookie_settings().are_truncated_cookies_blocked(), &status);
+          cookie_settings().are_truncated_cookies_blocked(), &status,
+          net::CookieSourceType::kScript);
   if (!parsed_cookie) {
     if (cookie_observer_) {
       std::vector<network::mojom::CookieOrLineWithAccessResultPtr>

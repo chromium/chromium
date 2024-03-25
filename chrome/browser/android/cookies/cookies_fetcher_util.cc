@@ -64,7 +64,8 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
         static_cast<int>(cookie.SameSite()), cookie.Priority(),
         base::android::ConvertUTF8ToJavaString(
             env, key_serialized_result->TopLevelSite()),
-        static_cast<int>(cookie.SourceScheme()), cookie.SourcePort());
+        static_cast<int>(cookie.SourceScheme()), cookie.SourcePort(),
+        static_cast<int>(cookie.SourceType()));
     env->SetObjectArrayElement(joa.obj(), index++, java_cookie.obj());
   }
 
@@ -106,7 +107,8 @@ static void JNI_CookiesFetcher_RestoreCookies(
     jint priority,
     const JavaParamRef<jstring>& partition_key,
     jint source_scheme,
-    jint source_port) {
+    jint source_port,
+    jint source_type) {
   if (!ProfileManager::GetPrimaryUserProfile()->HasPrimaryOTRProfile())
     return;  // Don't create it. There is nothing to do.
 
@@ -142,7 +144,8 @@ static void JNI_CookiesFetcher_RestoreCookies(
           secure, httponly, static_cast<net::CookieSameSite>(same_site),
           static_cast<net::CookiePriority>(priority),
           serialized_cookie_partition_key.value(),
-          static_cast<net::CookieSourceScheme>(source_scheme), source_port);
+          static_cast<net::CookieSourceScheme>(source_scheme), source_port,
+          static_cast<net::CookieSourceType>(source_type));
   // FromStorage() uses a less strict version of IsCanonical(), we need to check
   // the stricter version as well here. This is safe because this function is
   // only used for incognito cookies which don't survive Chrome updates and

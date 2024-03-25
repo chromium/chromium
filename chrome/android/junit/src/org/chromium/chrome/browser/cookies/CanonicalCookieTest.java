@@ -62,6 +62,7 @@ public class CanonicalCookieTest {
         Assert.assertEquals(lhs.getPriority(), rhs.getPriority());
         Assert.assertEquals(lhs.sourceScheme(), rhs.sourceScheme());
         Assert.assertEquals(lhs.sourcePort(), rhs.sourcePort());
+        Assert.assertEquals(lhs.sourceType(), rhs.sourceType());
     }
 
     private static void doSaveRestoreCookiesListTest(final List<CanonicalCookie> cookies)
@@ -99,7 +100,8 @@ public class CanonicalCookieTest {
                         /* priority= */ 0,
                         /* partitionKey= */ "",
                         /* sourceScheme= */ 1,
-                        /* sourcePort= */ 72));
+                        /* sourcePort= */ 72,
+                        /* sourceType= */ 0));
         cookies.add(
                 new CanonicalCookie(
                         "name2",
@@ -116,7 +118,8 @@ public class CanonicalCookieTest {
                         /* priority= */ 1,
                         /* partitionKey= */ "",
                         /* sourceScheme= */ 2,
-                        /* sourcePort= */ 445));
+                        /* sourcePort= */ 445,
+                        /* sourceType= */ 1));
         cookies.add(
                 new CanonicalCookie(
                         "name3",
@@ -133,7 +136,8 @@ public class CanonicalCookieTest {
                         /* priority= */ 2,
                         /* partitionKey= */ "https://toplevelsite.com",
                         /* sourceScheme= */ 2,
-                        /* sourcePort= */ -1));
+                        /* sourcePort= */ -1,
+                        /* sourceType= */ 2));
 
         doSaveRestoreCookiesListTest(cookies);
     }

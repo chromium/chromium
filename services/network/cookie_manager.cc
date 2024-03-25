@@ -142,7 +142,7 @@ void CookieManager::SetCanonicalCookie(const net::CanonicalCookie& cookie,
         cookie.CreationDate(), adjusted_expiry_date, cookie.LastAccessDate(),
         cookie.LastUpdateDate(), cookie.SecureAttribute(), cookie.IsHttpOnly(),
         cookie.SameSite(), cookie.Priority(), cookie_partition_key,
-        cookie.SourceScheme(), cookie.SourcePort());
+        cookie.SourceScheme(), cookie.SourcePort(), cookie.SourceType());
     if (!cookie_ptr) {
       std::move(callback).Run(
           net::CookieAccessResult(net::CookieInclusionStatus(

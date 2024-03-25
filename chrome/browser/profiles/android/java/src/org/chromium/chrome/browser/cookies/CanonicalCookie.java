@@ -31,6 +31,7 @@ class CanonicalCookie {
     private final String mPartitionKey;
     private final int mSourceScheme;
     private final int mSourcePort;
+    private final int mSourceType;
 
     /** Constructs a CanonicalCookie */
     CanonicalCookie(
@@ -48,7 +49,8 @@ class CanonicalCookie {
             int priority,
             String partitionKey,
             int sourceScheme,
-            int sourcePort) {
+            int sourcePort,
+            int sourceType) {
         mName = name;
         mValue = value;
         mDomain = domain;
@@ -64,9 +66,12 @@ class CanonicalCookie {
         mPartitionKey = partitionKey;
         mSourceScheme = sourceScheme;
         mSourcePort = sourcePort;
+        mSourceType = sourceType;
     }
 
-    /** @return Priority of the cookie. */
+    /**
+     * @return Priority of the cookie.
+     */
     int getPriority() {
         return mPriority;
     }
@@ -131,7 +136,9 @@ class CanonicalCookie {
         return mPartitionKey;
     }
 
-    /** @return Source scheme of the cookie. */
+    /**
+     * @return Source scheme of the cookie.
+     */
     int sourceScheme() {
         return mSourceScheme;
     }
@@ -139,6 +146,13 @@ class CanonicalCookie {
     /** @return Source port of the cookie. */
     int sourcePort() {
         return mSourcePort;
+    }
+
+    /**
+     * @return Source of the cookie (http, script, etc.).
+     */
+    int sourceType() {
+        return mSourceType;
     }
 
     // Note incognito state cannot persist across app installs since the encryption key is stored
@@ -213,6 +227,7 @@ class CanonicalCookie {
         out.writeUTF(mPartitionKey);
         out.writeInt(mSourceScheme);
         out.writeInt(mSourcePort);
+        out.writeInt(mSourceType);
     }
 
     private static CanonicalCookie createFromStream(DataInputStream in) throws IOException {
@@ -231,6 +246,7 @@ class CanonicalCookie {
                 in.readInt(), // priority
                 in.readUTF(), // partition key
                 in.readInt(), // source scheme
-                in.readInt()); // source port
+                in.readInt(), // source port
+                in.readInt()); // source type
     }
 }

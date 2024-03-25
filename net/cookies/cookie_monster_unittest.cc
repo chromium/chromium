@@ -2359,6 +2359,42 @@ TEST_F(CookieMonsterTest, InheritCreationDate) {
   EXPECT_LT(last_update, cookies[0].LastUpdateDate());
 }
 
+TEST_F(CookieMonsterTest, OverwriteSource) {
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+
+  // Set cookie with unknown source.
+  EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "A=0", std::nullopt,
+                        CookieSourceType::kUnknown));
+  CookieList cookies = GetAllCookies(cm.get());
+  ASSERT_EQ(1u, cookies.size());
+  EXPECT_EQ("0", cookies[0].Value());
+  EXPECT_EQ(CookieSourceType::kUnknown, cookies[0].SourceType());
+
+  // Overwrite the cookie with the same value and an http source.
+  EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "A=0", std::nullopt,
+                        CookieSourceType::kHTTP));
+  cookies = GetAllCookies(cm.get());
+  ASSERT_EQ(1u, cookies.size());
+  EXPECT_EQ("0", cookies[0].Value());
+  EXPECT_EQ(CookieSourceType::kHTTP, cookies[0].SourceType());
+
+  // Overwrite the cookie with a new value and a script source.
+  EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "A=1", std::nullopt,
+                        CookieSourceType::kScript));
+  cookies = GetAllCookies(cm.get());
+  ASSERT_EQ(1u, cookies.size());
+  EXPECT_EQ("1", cookies[0].Value());
+  EXPECT_EQ(CookieSourceType::kScript, cookies[0].SourceType());
+
+  // Overwrite the cookie with the same value and an other source.
+  EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "A=1", std::nullopt,
+                        CookieSourceType::kOther));
+  cookies = GetAllCookies(cm.get());
+  ASSERT_EQ(1u, cookies.size());
+  EXPECT_EQ("1", cookies[0].Value());
+  EXPECT_EQ(CookieSourceType::kOther, cookies[0].SourceType());
+}
+
 // Check that GetAllCookiesForURL() does not return expired cookies and deletes
 // them.
 TEST_F(CookieMonsterTest, DeleteExpiredCookiesOnGet) {

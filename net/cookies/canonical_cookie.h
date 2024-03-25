@@ -73,7 +73,8 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
                   CookiePriority priority,
                   std::optional<CookiePartitionKey> partition_key,
                   CookieSourceScheme scheme_secure = CookieSourceScheme::kUnset,
-                  int source_port = url::PORT_UNSPECIFIED);
+                  int source_port = url::PORT_UNSPECIFIED,
+                  CookieSourceType source_type = CookieSourceType::kUnknown);
 
   // Creates a new |CanonicalCookie| from the |cookie_line| and the
   // |creation_time|.  Canonicalizes inputs.  May return nullptr if
@@ -111,7 +112,8 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       std::optional<base::Time> server_time,
       std::optional<CookiePartitionKey> cookie_partition_key,
       bool block_truncated = true,
-      CookieInclusionStatus* status = nullptr);
+      CookieInclusionStatus* status = nullptr,
+      CookieSourceType source_type = CookieSourceType::kUnknown);
 
   // Create a canonical cookie based on sanitizing the passed inputs in the
   // context of the passed URL.  Returns a null unique pointer if the inputs
@@ -156,7 +158,8 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       CookiePriority priority,
       std::optional<CookiePartitionKey> partition_key,
       CookieSourceScheme source_scheme,
-      int source_port);
+      int source_port,
+      CookieSourceType source_type = CookieSourceType::kUnknown);
 
   // Create a CanonicalCookie that is not guaranteed to actually be Canonical
   // for tests. This factory should NOT be used in production.
@@ -175,7 +178,8 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       CookiePriority priority,
       std::optional<CookiePartitionKey> partition_key = std::nullopt,
       CookieSourceScheme scheme_secure = CookieSourceScheme::kUnset,
-      int source_port = url::PORT_UNSPECIFIED);
+      int source_port = url::PORT_UNSPECIFIED,
+      CookieSourceType source_type = CookieSourceType::kUnknown);
 
   bool operator<(const CanonicalCookie& other) const {
     // Use the cookie properties that uniquely identify a cookie to determine
@@ -194,6 +198,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   const base::Time& LastUpdateDate() const { return last_update_date_; }
   bool IsPersistent() const { return !expiry_date_.is_null(); }
   CookiePriority Priority() const { return priority_; }
+  CookieSourceType SourceType() const { return source_type_; }
 
   bool IsExpired(const base::Time& current) const {
     return !expiry_date_.is_null() && current >= expiry_date_;
@@ -448,6 +453,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   base::Time last_access_date_;
   base::Time last_update_date_;
   CookiePriority priority_{COOKIE_PRIORITY_MEDIUM};
+  CookieSourceType source_type_{CookieSourceType::kUnknown};
 };
 
 // Used to pass excluded cookie information when it's possible that the

@@ -1280,7 +1280,8 @@ void InterceptionJob::ProcessSetCookies(const net::HttpResponseHeaders& headers,
   while (headers.EnumerateHeader(&iter, name, &cookie_line)) {
     std::unique_ptr<net::CanonicalCookie> cookie = net::CanonicalCookie::Create(
         create_loader_params_->request.url, cookie_line, now, server_time,
-        std::nullopt);
+        std::nullopt, /*block_truncated=*/true,
+        /*status=*/nullptr, net::CookieSourceType::kOther);
     if (cookie)
       cookies.emplace_back(std::move(cookie));
   }

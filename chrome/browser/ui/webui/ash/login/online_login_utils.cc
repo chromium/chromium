@@ -113,7 +113,9 @@ void SetCookieForPartition(
   const GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       gaia_url, gaps_cookie_value, base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */));
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */,
+      /*block_truncated=*/true,
+      /*status=*/nullptr, net::CookieSourceType::kOther));
   if (!cc)
     return;
 
