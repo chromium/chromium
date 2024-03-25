@@ -55,15 +55,9 @@ class LocalDataContainer {
 
   // This method must be called to start the process of fetching the resources.
   // The delegate passed in is called back to deliver the updates.
-  void Init(CookiesTreeModel* delegate);
+  void Init();
 
  private:
-  friend class CookiesTreeModel;
-  friend class CookieTreeCookieNode;
-  friend class CookieTreeLocalStorageNode;
-  friend class CookieTreeSessionStorageNode;
-  friend class CookieTreeQuotaNode;
-
   // Callback methods to be invoked when fetching the data is complete.
   void OnCookiesModelInfoLoaded(const net::CookieList& cookie_list);
   void OnLocalStorageModelInfoLoaded(
@@ -85,10 +79,6 @@ class LocalDataContainer {
   LocalStorageInfoList local_storage_info_list_;
   LocalStorageInfoList session_storage_info_list_;
   QuotaInfoList quota_info_list_;
-
-  // A delegate, which must outlive this object. The update callbacks use the
-  // delegate to deliver the updated data to the CookieTreeModel.
-  raw_ptr<CookiesTreeModel> model_ = nullptr;
 
   base::WeakPtrFactory<LocalDataContainer> weak_ptr_factory_{this};
 };

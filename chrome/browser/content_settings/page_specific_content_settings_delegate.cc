@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
-#include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -27,6 +26,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "pdf/buildflags.h"
 
@@ -210,12 +210,6 @@ void PageSpecificContentSettingsDelegate::SetDefaultRendererContentSettingRules(
         content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
         std::string(), is_off_the_record);
   }
-}
-
-browsing_data::CookieHelper::IsDeletionDisabledCallback
-PageSpecificContentSettingsDelegate::GetIsDeletionDisabledCallback() {
-  return CookiesTreeModel::GetCookieDeletionDisabledCallback(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
 }
 
 PageSpecificContentSettings::MicrophoneCameraState

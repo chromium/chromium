@@ -158,9 +158,6 @@ class PageSpecificContentSettings
         content::RenderFrameHost* rfh,
         RendererContentSettingRules* rules) = 0;
 
-    virtual browsing_data::CookieHelper::IsDeletionDisabledCallback
-    GetIsDeletionDisabledCallback() = 0;
-
     // Allows the delegate to provide additional logic for getting microphone
     // and camera state on top of the microphone and camera state at the last
     // media stream request.

@@ -27,8 +27,6 @@ class TestPageSpecificContentSettingsDelegate
   void SetDefaultRendererContentSettingRules(
       content::RenderFrameHost* rfh,
       RendererContentSettingRules* rules) override;
-  browsing_data::CookieHelper::IsDeletionDisabledCallback
-  GetIsDeletionDisabledCallback() override;
   PageSpecificContentSettings::MicrophoneCameraState GetMicrophoneCameraState()
       override;
   content::WebContents* MaybeGetSyncedWebContentsForPictureInPicture(

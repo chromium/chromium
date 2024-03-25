@@ -36,11 +36,6 @@ void TestPageSpecificContentSettingsDelegate::
     SetDefaultRendererContentSettingRules(content::RenderFrameHost* rfh,
                                           RendererContentSettingRules* rules) {}
 
-browsing_data::CookieHelper::IsDeletionDisabledCallback
-TestPageSpecificContentSettingsDelegate::GetIsDeletionDisabledCallback() {
-  return base::NullCallback();
-}
-
 PageSpecificContentSettings::MicrophoneCameraState
 TestPageSpecificContentSettingsDelegate::GetMicrophoneCameraState() {
   return {};

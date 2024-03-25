@@ -14,8 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
-#include "chrome/browser/browsing_data/cookies_tree_model.h"
-#include "chrome/browser/browsing_data/local_data_container.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
@@ -33,8 +31,7 @@ const char kDebugOriginKey[] = "iwa_origins";
 
 // Estimates the size in bytes of a non-default StoragePartition by summing the
 // size of all browsing data stored within it.
-class StoragePartitionSizeEstimator : private CookiesTreeModel::Observer,
-                                      private ProfileObserver {
+class StoragePartitionSizeEstimator : private ProfileObserver {
  public:
   static void EstimateSize(
       Profile* profile,
@@ -68,13 +65,6 @@ class StoragePartitionSizeEstimator : private CookiesTreeModel::Observer,
   void Start(const content::StoragePartitionConfig& storage_partition_config,
              base::OnceCallback<void(int64_t)> complete_callback) {
     complete_callback_ = std::move(complete_callback);
-    // Need to wait for both BrowsingDataModel and CookiesTreeModel to load.
-    int number_of_models_to_load = 2;
-    model_loaded_closure_ = base::BarrierClosure(
-        number_of_models_to_load,
-        base::BindOnce(&StoragePartitionSizeEstimator::ModelsLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-
     content::StoragePartition* storage_partition =
         profile_->GetStoragePartition(storage_partition_config);
     BrowsingDataModel::BuildFromNonDefaultStoragePartition(
@@ -83,37 +73,18 @@ class StoragePartitionSizeEstimator : private CookiesTreeModel::Observer,
             profile_, storage_partition),
         base::BindOnce(&StoragePartitionSizeEstimator::BrowsingDataModelLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
-
-    std::unique_ptr<LocalDataContainer> local_data_container =
-        LocalDataContainer::CreateFromStoragePartition(
-            storage_partition,
-            CookiesTreeModel::GetCookieDeletionDisabledCallback(profile_));
-    cookies_tree_model_ = base::WrapUnique(
-        new CookiesTreeModel(std::move(local_data_container),
-                             /*special_storage_policy=*/nullptr));
-    cookies_tree_model_->AddCookiesTreeObserver(this);
-  }
-
-  void ModelsLoaded() {
-    int64_t size = cookies_tree_model_->GetRoot()->InclusiveSize();
-    for (const BrowsingDataModel::BrowsingDataEntryView& entry :
-         *browsing_data_model_) {
-      size += entry.data_details->storage_size;
-    }
-    std::move(complete_callback_).Run(size);
   }
 
   void BrowsingDataModelLoaded(
       std::unique_ptr<BrowsingDataModel> browsing_data_model) {
     browsing_data_model_ = std::move(browsing_data_model);
-    model_loaded_closure_.Run();
-  }
 
-  // CookiesTreeModel::Observer
-  void TreeModelEndBatchDeprecated(
-      CookiesTreeModel* cookies_tree_model) override {
-    cookies_tree_model_->RemoveCookiesTreeObserver(this);
-    model_loaded_closure_.Run();
+    int64_t size = 0;
+    for (const BrowsingDataModel::BrowsingDataEntryView& entry :
+         *browsing_data_model_) {
+      size += entry.data_details->storage_size;
+    }
+    std::move(complete_callback_).Run(size);
   }
 
   // ProfileObserver:
@@ -125,9 +96,7 @@ class StoragePartitionSizeEstimator : private CookiesTreeModel::Observer,
 
   raw_ptr<Profile> profile_ = nullptr;
   base::OnceCallback<void(int64_t)> complete_callback_;
-  base::RepeatingClosure model_loaded_closure_;
   std::unique_ptr<BrowsingDataModel> browsing_data_model_;
-  std::unique_ptr<CookiesTreeModel> cookies_tree_model_;
   base::WeakPtrFactory<StoragePartitionSizeEstimator> weak_ptr_factory_{this};
 };
 
