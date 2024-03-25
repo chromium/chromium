@@ -49,3 +49,7 @@ src:*/third_party/icu/source/common/ucmndata.c
 #############################################################################
 # Delete in destructor on a this where this == nullptr
 fun:*re2*RegexpD*
+
+#############################################################################
+# https://crbug.com/40943968
+fun:*OT*Layout*propagate_attachment_offsets*
