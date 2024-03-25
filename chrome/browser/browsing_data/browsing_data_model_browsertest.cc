@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/browsing_data/content/browsing_data_model.h"
-
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/run_loop.h"
@@ -31,6 +30,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/content/browsing_data_model_test_util.h"
 #include "components/browsing_data/content/browsing_data_test_util.h"
 #include "components/browsing_data/content/shared_worker_info.h"
@@ -93,10 +93,10 @@ static constexpr char kLoggedOutHeaderValue[] = "logged-out";
 constexpr char kToken[] = "[not a real token]";
 
 void ProvideRequestHandlerKeyCommitmentsToNetworkService(
-    base::StringPiece host,
+    std::string_view host,
     net::EmbeddedTestServer* https_server,
     const network::test::TrustTokenRequestHandler& request_handler) {
-  base::flat_map<url::Origin, base::StringPiece> origins_and_commitments;
+  base::flat_map<url::Origin, std::string_view> origins_and_commitments;
   std::string key_commitments = request_handler.GetKeyCommitmentRecord();
 
   GURL::Replacements replacements;

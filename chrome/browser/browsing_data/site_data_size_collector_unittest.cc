@@ -5,13 +5,13 @@
 #include "chrome/browser/browsing_data/site_data_size_collector.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/content/mock_browsing_data_quota_helper.h"
@@ -44,7 +44,7 @@ class SiteDataSizeCollectorTest : public testing::Test {
         base::MakeRefCounted<MockBrowsingDataQuotaHelper>();
     base::WriteFile(
         profile_->GetPath().Append(chrome::kCookieFilename),
-        base::StringPiece(kCookieFileData, std::size(kCookieFileData)));
+        std::string_view(kCookieFileData, std::size(kCookieFileData)));
     fetched_size_ = -1;
   }
 

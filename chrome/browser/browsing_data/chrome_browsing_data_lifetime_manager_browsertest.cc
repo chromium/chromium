@@ -7,6 +7,7 @@
 #include <array>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
@@ -126,7 +127,7 @@ class ChromeBrowsingDataLifetimeManagerTest
     }
   }
 
-  void ApplyBrowsingDataLifetimeDeletion(base::StringPiece pref) {
+  void ApplyBrowsingDataLifetimeDeletion(std::string_view pref) {
     auto* browsing_data_lifetime_manager =
         ChromeBrowsingDataLifetimeManagerFactory::GetForProfile(GetProfile());
     browsing_data_lifetime_manager->SetEndTimeForTesting(base::Time::Max());
