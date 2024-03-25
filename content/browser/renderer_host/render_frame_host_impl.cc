@@ -9022,6 +9022,16 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
   FencedDocumentData* fenced_frame_data =
       FencedDocumentData::GetForCurrentDocument(this);
 
+  auto properties = frame_tree_node()->GetFencedFrameProperties(
+      FencedFramePropertiesNodeSource::kFrameTreeRoot);
+  if (properties.has_value() && properties->has_disabled_untrusted_network()) {
+    error_message =
+        "Cannot send fenced frame event-level reports after "
+        "calling window.fence.disableUntrustedNetwork().";
+    AddMessageToConsole(console_message_level, error_message);
+    return;
+  }
+
   // The FencedDocumentData is created on the initiative of the renderer when
   // creating the document. It is expected to be received before receiving an
   // IPC about the document initiating a new navigation, and before any

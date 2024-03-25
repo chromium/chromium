@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<title>Test that automatic beacons are not sent after calling window.fence.disableUntrustedNetwork().</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/automatic-beacon-helper.js"></script>
+
+<body>
+<script>
+promise_test(async(t) => {
+  const actions = new test_driver.Actions();
+  const fencedframe = await attachFencedFrameContext(
+      {generator_api: 'fledge', register_beacon: true,
+       origin: get_host_info().HTTPS_REMOTE_ORIGIN});
+
+  await fencedframe.execute(() => {
+    window.fence.disableUntrustedNetwork();
+  });
+  const start_event = {
+    eventType: "reserved.top_navigation_start",
+    eventData: "This is the start data",
+    destination: ["buyer"],
+  }
+  const commit_event = {
+    eventType: "reserved.top_navigation_commit",
+    eventData: "This is the commit data",
+    destination: ["buyer"],
+  }
+  // This will only set the automatic beacon data when the fenced frame is
+  // clicked.
+  await setupAutomaticBeacon(fencedframe, [start_event, commit_event],
+      NavigationTrigger.Click);
+
+  await actions.pointerMove(0, 0, {origin: fencedframe.element})
+               .pointerDown()
+               .pointerUp()
+               .send();
+
+  // Automatic beacons should not be sent after calling
+  // window.fence.disableUntrustedNetwork().
+  await verifyBeaconData(start_event.eventType,
+                         start_event.eventData,
+                         expected_success = false,
+                         t);
+  await verifyBeaconData(commit_event.eventType,
+                         commit_event.eventData,
+                         expected_success = false,
+                         t);
+
+  // Leaving this fenced frame around for subsequent tests can lead to
+  // flakiness.
+  document.body.removeChild(fencedframe.element);
+}, 'Test that automatic beacons are not sent after calling ' +
+   'window.fence.disableUntrustedNetwork().');
+
+</script>
+</body>

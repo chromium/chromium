@@ -5097,7 +5097,8 @@ class FencedFrameReportEventBrowserTest
       kNoDestination,
       kNoReportingURL,
       kInvalidReportingURL,
-      kExceedMaxEventDataLength
+      kExceedMaxEventDataLength,
+      kUntrustedNetworkDisabled
     };
 
     // Outcome of reportEvent.
@@ -5126,6 +5127,9 @@ class FencedFrameReportEventBrowserTest
       case Step::Result::kExceedMaxEventDataLength:
         return "The data provided to reportEvent() exceeds the maximum length, "
                "which is 64KB.";
+      case Step::Result::kUntrustedNetworkDisabled:
+        return "Cannot send fenced frame event-level reports after "
+               "calling window.fence.disableUntrustedNetwork().";
       default:
         return "";
     }
@@ -5366,6 +5370,12 @@ class FencedFrameReportEventBrowserTest
         console_observer.SetPattern(GetErrorPattern(step.report_event_result));
       }
 
+      if (step.report_event_result == Step::Result::kUntrustedNetworkDisabled) {
+        EXPECT_TRUE(ExecJs(navigation_target_node, R"(
+            window.fence.disableUntrustedNetwork();
+          )"));
+      }
+
       // Perform the reportEvent call, with a unique body.
       if (step.use_custom_destination_url) {
         // Call reportEvent to a custom `destinationURL`.
@@ -5548,6 +5558,21 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
           .is_opaque = true,
           .destination = {"a.test", "/fenced_frames/title1.html"},
           .report_event_result = Step::Result::kSuccess,
+      },
+  };
+  RunTest(config);
+}
+
+// reportEvent shouldn't work if `window.fence.disableUntrustedNetwork` has been
+// called in a fenced frame.
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
+                       FencedFrameReportEventDisableUntrustedNetwork) {
+  std::vector<Step> config = {
+      {
+          .is_embedder_initiated = true,
+          .is_opaque = true,
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kUntrustedNetworkDisabled,
       },
   };
   RunTest(config);
@@ -7043,6 +7068,12 @@ class FencedFrameAutomaticBeaconBrowserTest
     // TODO(crbug.com/1496395): Remove this after 3PCD.
     bool expected_cookie = true;
 
+    // Whether a fenced frame should call window.fence.disableUntrustedNetwork()
+    // before doing an "_unfencedTop" navigation. Should only be true if
+    // `expected_success` is false, since disabling untrusted network will
+    // prevent beacons from sending.
+    bool disable_untrusted_network = false;
+
     BeaconType beacon_type = {
         blink::kFencedFrameTopNavigationCommitBeaconType,
         blink::mojom::AutomaticBeaconType::kTopNavigationCommit};
@@ -7092,6 +7123,15 @@ class FencedFrameAutomaticBeaconBrowserTest
 
   // A helper function for specifying automatic beacon tests.
   void RunTest(Config& config) {
+    // Disabling untrusted network only applies to fenced frames, so skip these
+    // tests for iframes. This is sort of against the spirit of parameterized
+    // tests, but it's the most practical way to deal with the clash in behavior
+    // between the two frame types.
+    if (GetParam() != std::string("fencedframe") &&
+        config.disable_untrusted_network) {
+      GTEST_SKIP();
+    }
+
     // In order to check events reported over the network, we register an HTTP
     // response interceptor for each successful reportEvent request we expect.
     net::test_server::ControllableHttpResponse response(https_server(),
@@ -7298,6 +7338,13 @@ class FencedFrameAutomaticBeaconBrowserTest
                  "document.cookie = 'name=foobarbaz; SameSite=None; Secure';"));
     }
 
+    if (GetParam() == std::string("fencedframe") &&
+        config.disable_untrusted_network) {
+      EXPECT_TRUE(ExecJs(ad_frame_root_node, R"(
+          window.fence.disableUntrustedNetwork();
+        )"));
+    }
+
     EXPECT_TRUE(
         ExecJs(ad_frame_root_node,
                JsReplace("window.open($1, $2);", navigation_url, target),
@@ -7436,6 +7483,15 @@ IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
       .message = std::string(blink::kFencedFrameMaxBeaconLength + 1, '*'),
       .expected_success = false,
   };
+  RunTest(config);
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
+                       UntrustedNetworkDisabled) {
+  Config config = {.starting_url = {"a.test", "/fenced_frames/title1.html"},
+                   .navigation_url = {"a.test", "/fenced_frames/title1.html"},
+                   .expected_success = false,
+                   .disable_untrusted_network = true};
   RunTest(config);
 }
 
