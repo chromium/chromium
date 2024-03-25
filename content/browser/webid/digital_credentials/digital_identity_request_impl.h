@@ -52,6 +52,12 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
       RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>);
 
+  // Called after checking whether an interstitial was needed. If an
+  // interstitial was needed called after the user dismisses the interstitial.
+  void OnInterstitialRequirementFulfilled(
+      blink::mojom::DigitalCredentialProviderPtr digital_credential_provider,
+      DigitalIdentityProvider::RequestStatusForMetrics status_for_metrics);
+
   // Infers one of [kError, kSuccess] for RequestDigitalIdentityStatus based on
   // `status_for_metrics`.
   void CompleteRequest(

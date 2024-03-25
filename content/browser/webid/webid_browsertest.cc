@@ -265,7 +265,6 @@ class WebIdBrowserTest : public ContentBrowserTest {
 
     test_browser_client_ = std::make_unique<WebIdTestContentBrowserClient>();
     SetTestIdentityRequestDialogController("not_real_account");
-    SetTestDigitalIdentityProvider();
     SetTestModalDialogViewDelegate();
   }
 
@@ -926,6 +925,12 @@ class WebIdDigitalCredentialsBrowserTest : public WebIdBrowserTest {
     BrowserContext* context = shell()->web_contents()->GetBrowserContext();
     return static_cast<ShellFederatedPermissionContext*>(
         context->GetFederatedIdentityPermissionContext());
+  }
+
+  void SetUpOnMainThread() override {
+    WebIdBrowserTest::SetUpOnMainThread();
+
+    SetTestDigitalIdentityProvider();
   }
 };
 

@@ -6041,6 +6041,26 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_SHARED_IMAGE_TILES_COUNT" desc="The count string for number of tiles that overflows from shared image tiles. |COUNT_NUMBER| will be a number between 1 and 99 (it will be 1-2 digits at most). [CHAR_LIMIT=3]">
         +<ph name="COUNT_NUMBER">%1$s<ex>1</ex></ph>
       </message>
+
+      <!-- Interstitial shown prior to making digital identity request to wallet -->
+      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_DIALOG_TITLE" translateable="false">
+        Caution
+      </message>
+      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_LOW_RISK_DIALOG_TEXT" translateable="false">
+        <ph name="WEBSITE_ORIGIN">%1$s<ex>www.cheapalcohol.com</ex></ph> would like to ask Android to give you options for sharing your identity information.
+      </message>
+      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_LOW_RISK_POSITIVE_BUTTON_TEXT" translateable="false">
+        Share
+      </message>
+      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_HIGH_RISK_DIALOG_TEXT" translateable="false">
+        <ph name="WEBSITE_ORIGIN">%1$s<ex>www.cheapalcohol.com</ex></ph> would like to ask Android for access to your identity. Chrome cannot determine what privacy risks this may pose.
+      </message>
+      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_HIGH_RISK_POSITIVE_BUTTON_TEXT" translateable="false">
+        Share Anyway
+      </message>
+      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_NEGATIVE_BUTTON_TEXT" translateable="false">
+        Do Not Share
+      </message>
     </messages>
   </release>
 </grit>

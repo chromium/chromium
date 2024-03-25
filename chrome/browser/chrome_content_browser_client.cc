@@ -315,6 +315,7 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/client_certificate_delegate.h"
+#include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/file_url_loader.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
@@ -479,6 +480,7 @@
 #include "chrome/browser/download/android/intercept_oma_download_navigation_throttle.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/webid/digital_identity_safety_interstitial_bridge_android.h"
 #include "chrome/common/chrome_descriptors.h"
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
@@ -7702,6 +7704,34 @@ ChromeContentBrowserClient::CreateIdentityRequestDialogController(
     content::WebContents* web_contents) {
   return std::make_unique<IdentityDialogController>(web_contents);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+namespace {
+
+void RunDigitalIdentityCallback(
+    std::unique_ptr<DigitalIdentitySafetyInterstitialBridgeAndroid> bridge,
+    content::ContentBrowserClient::DigitalIdentityInterstitialCallback callback,
+    content::DigitalIdentityProvider::RequestStatusForMetrics
+        status_for_metrics) {
+  std::move(callback).Run(status_for_metrics);
+}
+
+}  // anonymous namespace
+
+void ChromeContentBrowserClient::ShowDigitalIdentityInterstitialIfNeeded(
+    content::WebContents& web_contents,
+    const url::Origin& origin,
+    DigitalIdentityInterstitialCallback callback) {
+  auto bridge =
+      std::make_unique<DigitalIdentitySafetyInterstitialBridgeAndroid>();
+  auto* bridge_ptr = bridge.get();
+  // Callback takes ownership of |bridge|.
+  bridge_ptr->ShowInterstitialIfNeeded(
+      web_contents, origin,
+      base::BindOnce(&RunDigitalIdentityCallback, std::move(bridge),
+                     std::move(callback)));
+}
+#endif
 
 bool ChromeContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
     content::BrowserContext* browser_context) {

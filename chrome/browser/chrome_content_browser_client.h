@@ -891,6 +891,13 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   CreateIdentityRequestDialogController(
       content::WebContents* web_contents) override;
 
+#if BUILDFLAG(IS_ANDROID)
+  void ShowDigitalIdentityInterstitialIfNeeded(
+      content::WebContents& web_contents,
+      const url::Origin& origin,
+      DigitalIdentityInterstitialCallback callback) override;
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
   base::TimeDelta GetKeepaliveTimerTimeout(content::BrowserContext* context);
 #endif  // !BUILDFLAG(IS_ANDROID)

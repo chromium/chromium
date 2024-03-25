@@ -157,6 +157,27 @@ void DigitalIdentityRequestImpl::Request(
     return;
   }
 
+  GetContentClient()->browser()->ShowDigitalIdentityInterstitialIfNeeded(
+      *WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
+      base::BindOnce(
+          &DigitalIdentityRequestImpl::OnInterstitialRequirementFulfilled,
+          weak_ptr_factory_.GetWeakPtr(),
+          std::move(digital_credential_provider)));
+}
+
+void DigitalIdentityRequestImpl::Abort() {
+  CompleteRequestWithStatus(RequestDigitalIdentityStatus::kErrorCanceled, "",
+                            RequestStatusForMetrics::kErrorAborted);
+}
+
+void DigitalIdentityRequestImpl::OnInterstitialRequirementFulfilled(
+    blink::mojom::DigitalCredentialProviderPtr digital_credential_provider,
+    RequestStatusForMetrics status_for_metrics) {
+  if (status_for_metrics != RequestStatusForMetrics::kSuccess) {
+    CompleteRequest("", status_for_metrics);
+    return;
+  }
+
   // provider_ is not destroyed after a successful wallet request so we need to
   // have the nullcheck to avoid duplicated creation.
   if (!provider_) {
@@ -168,16 +189,10 @@ void DigitalIdentityRequestImpl::Request(
   }
 
   auto request = BuildRequest(std::move(digital_credential_provider));
-
   provider_->Request(
       WebContents::FromRenderFrameHost(&render_frame_host()), origin(), request,
       base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void DigitalIdentityRequestImpl::Abort() {
-  CompleteRequestWithStatus(RequestDigitalIdentityStatus::kErrorCanceled, "",
-                            RequestStatusForMetrics::kErrorAborted);
 }
 
 std::unique_ptr<DigitalIdentityProvider>

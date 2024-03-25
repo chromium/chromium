@@ -38,6 +38,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kTouchDragAndContextMenu,
     &features::kViewportSegments,
     &features::kWebBluetoothNewPermissionsBackend,
+    &features::kWebIdentityDigitalCredentials,
     &features::kWebNfc,
 };
 

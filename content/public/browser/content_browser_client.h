@@ -34,6 +34,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/commit_deferring_condition.h"
+#include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/generated_code_cache_settings.h"
 #include "content/public/browser/interest_group_api_operation.h"
@@ -231,7 +232,6 @@ class FontAccessDelegate;
 class HidDelegate;
 class IdentityRequestDialogController;
 class LoginDelegate;
-class DigitalIdentityProvider;
 class MediaObserver;
 class NavigationHandle;
 class NavigationThrottle;
@@ -2591,6 +2591,17 @@ class CONTENT_EXPORT ContentBrowserClient {
   // given |web_contents|.
   virtual std::unique_ptr<IdentityRequestDialogController>
   CreateIdentityRequestDialogController(WebContents* web_contents);
+
+  // Determines whether to show interstitial to prompt user whether they want to
+  // share their identity with the web page. Shows the interstitial if one is
+  // needed. Runs callback immediately if no interestitial is needed or after
+  // the user dismisses the interstitial if an interstitial is needed.
+  using DigitalIdentityInterstitialCallback = base::OnceCallback<void(
+      DigitalIdentityProvider::RequestStatusForMetrics status_for_metrics)>;
+  virtual void ShowDigitalIdentityInterstitialIfNeeded(
+      WebContents& web_contents,
+      const url::Origin& origin,
+      DigitalIdentityInterstitialCallback callback);
 
   // Creates a digital credential provider to fetch from native apps.
   virtual std::unique_ptr<DigitalIdentityProvider>

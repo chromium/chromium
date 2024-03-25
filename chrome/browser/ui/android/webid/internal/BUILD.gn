@@ -115,7 +115,10 @@ android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.ui.android.webid"
 
-  sources = [ "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionIntegrationTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionIntegrationTest.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/DigitalIdentitySafetyInterstitialIntegrationTest.java",
+  ]
 
   deps = [
     ":java",
