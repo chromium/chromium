@@ -16,7 +16,7 @@ from clang import plugin_testing
 
 
 class IteratorCheckerPluginTest(plugin_testing.ClangPluginTest):
-  """Test harness for the Blink GC plugin."""
+  """Test harness for the Iterator Checker plugin."""
 
   def __init__(self, *args, **kwargs):
     super(IteratorCheckerPluginTest, self).__init__(*args, **kwargs)
