@@ -25,12 +25,10 @@ declare_args() {
 
 if (concurrent_links == -1) {
   if (use_thin_lto) {
-    _args = [ "--reserve_mem_gb=10" ]
-    if (use_goma_thin_lto) {
-      _args += [ "--thin-lto=goma" ]
-    } else {
-      _args += [ "--thin-lto=local" ]
-    }
+    _args = [
+      "--reserve_mem_gb=10",
+      "--thin-lto=local",
+    ]
     if (is_win) {
       # Based on measurements of linking chrome.dll and chrome_child.dll, plus
       # a little padding to account for future growth.

@@ -95,9 +95,6 @@ declare_args() {
                   (is_android && target_os != "chromeos") ||
                   (is_chromeos && is_chromeos_device)))
 
-  # If true, use Goma for ThinLTO code generation where applicable.
-  use_goma_thin_lto = false
-
   # Whether we're using a sample profile collected on an architecture different
   # than the one we're compiling for.
   #
