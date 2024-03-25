@@ -102,23 +102,27 @@ bool RateLimitTable::AddRateLimitForSource(sql::Database* db,
                                            const StoredSource& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return AddRateLimit(db, source, /*trigger_time=*/std::nullopt,
-                      /*context_origin=*/source.common_info().source_origin());
+                      /*context_origin=*/source.common_info().source_origin(),
+                      /*is_fake_event_level_attribution=*/false);
 }
 
 bool RateLimitTable::AddRateLimitForAttribution(
     sql::Database* db,
     const AttributionInfo& attribution_info,
-    const StoredSource& source) {
+    const StoredSource& source,
+    bool is_fake_event_level_attribution) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return AddRateLimit(db, source, attribution_info.time,
-                      attribution_info.context_origin);
+                      attribution_info.context_origin,
+                      is_fake_event_level_attribution);
 }
 
 bool RateLimitTable::AddRateLimit(
     sql::Database* db,
     const StoredSource& source,
     std::optional<base::Time> trigger_time,
-    const attribution_reporting::SuitableOrigin& context_origin) {
+    const attribution_reporting::SuitableOrigin& context_origin,
+    bool is_fake_event_level_attribution) {
   const CommonSourceInfo& common_info = source.common_info();
 
   // Only delete expired rate limits periodically to avoid excessive DB
@@ -167,9 +171,7 @@ bool RateLimitTable::AddRateLimit(
     return statement.Run();
   };
 
-  if (source.attribution_logic() ==
-          StoredSource::AttributionLogic::kTruthfully &&
-      scope == Scope::kAttribution) {
+  if (scope == Scope::kAttribution && !is_fake_event_level_attribution) {
     return insert_row(net::SchemefulSite(context_origin));
   }
 

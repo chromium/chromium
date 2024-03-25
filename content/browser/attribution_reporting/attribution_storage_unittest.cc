@@ -4103,4 +4103,66 @@ TEST_F(AttributionStorageTest, RejectsMultipleTriggerSpecs) {
   EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 }
 
+// Regression test for https://crbug.com/331100922.
+TEST_F(
+    AttributionStorageTest,
+    FakeSourceCreateAggregatableReport_EffectiveDestinationAttributionRateLimitRecord) {
+  delegate()->set_rate_limits([]() {
+    AttributionConfig::RateLimitConfig r;
+    r.time_window = base::TimeDelta::Max();
+    r.max_source_registration_reporting_origins =
+        std::numeric_limits<int64_t>::max();
+    r.max_attribution_reporting_origins = std::numeric_limits<int64_t>::max();
+    r.max_attributions = 2;
+    return r;
+  }());
+
+  delegate()->set_randomized_response(
+      std::vector<attribution_reporting::FakeEventLevelReport>{});
+  // This results in attribution rate-limit records for https://a.test and
+  // https://b.test.
+  auto result = storage()->StoreSource(
+      TestAggregatableSourceProvider()
+          .GetBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.test"),
+               net::SchemefulSite::Deserialize("https://b.test")})
+          .Build());
+  EXPECT_EQ(result.status(), StorableSource::Result::kSuccessNoised);
+  delegate()->set_randomized_response(std::nullopt);
+
+  // This results in one attribution rate-limit record for https://a.test.
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  DefaultAggregatableTriggerBuilder()
+                      .SetDestinationOrigin(
+                          *SuitableOrigin::Deserialize("https://a.test"))
+                      .Build(/*generate_event_trigger_data=*/false)),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kNotRegistered),
+                    CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::kSuccess)));
+
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder()
+              .SetDestinationOrigin(
+                  *SuitableOrigin::Deserialize("https://a.test"))
+              .Build(/*generate_event_trigger_data=*/false)),
+      AllOf(
+          CreateReportEventLevelStatusIs(
+              AttributionTrigger::EventLevelResult::kNotRegistered),
+          CreateReportAggregatableStatusIs(
+              AttributionTrigger::AggregatableResult::kExcessiveAttributions)));
+
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  DefaultAggregatableTriggerBuilder()
+                      .SetDestinationOrigin(
+                          *SuitableOrigin::Deserialize("https://b.test"))
+                      .Build(/*generate_event_trigger_data=*/false)),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kNotRegistered),
+                    CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::kSuccess)));
+}
+
 }  // namespace content

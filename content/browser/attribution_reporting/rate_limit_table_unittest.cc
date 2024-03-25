@@ -211,10 +211,13 @@ class RateLimitTableTest : public testing::Test {
                                         input.NewSourceBuilder().BuildStored());
   }
 
-  [[nodiscard]] bool AddRateLimitForAttribution(const RateLimitInput& input) {
+  [[nodiscard]] bool AddRateLimitForAttribution(
+      const RateLimitInput& input,
+      bool is_fake_event_level_attribution = false) {
     return table_.AddRateLimitForAttribution(
         &db_, input.BuildAttributionInfo(),
-        input.NewSourceBuilder().BuildStored());
+        input.NewSourceBuilder().BuildStored(),
+        is_fake_event_level_attribution);
   }
 
   [[nodiscard]] RateLimitResult SourceAllowedForReportingOriginLimit(
@@ -385,10 +388,12 @@ TEST_F(RateLimitTableTest,
             table_.AttributionAllowedForAttributionLimit(&db_, attribution_info,
                                                          event_source));
 
-  ASSERT_TRUE(table_.AddRateLimitForAttribution(&db_, attribution_info,
-                                                navigation_source));
-  ASSERT_TRUE(
-      table_.AddRateLimitForAttribution(&db_, attribution_info, event_source));
+  ASSERT_TRUE(table_.AddRateLimitForAttribution(
+      &db_, attribution_info, navigation_source,
+      /*is_fake_event_level_attribution=*/false));
+  ASSERT_TRUE(table_.AddRateLimitForAttribution(
+      &db_, attribution_info, event_source,
+      /*is_fake_event_level_attribution=*/false));
 
   ASSERT_EQ(RateLimitResult::kNotAllowed,
             table_.AttributionAllowedForAttributionLimit(&db_, attribution_info,
@@ -684,7 +689,8 @@ TEST_F(RateLimitTableTest,
 TEST_F(RateLimitTableTest, ClearAllDataAllTime) {
   for (int i = 0; i < 2; i++) {
     ASSERT_TRUE(table_.AddRateLimitForAttribution(
-        &db_, AttributionInfoBuilder().Build(), SourceBuilder().BuildStored()));
+        &db_, AttributionInfoBuilder().Build(), SourceBuilder().BuildStored(),
+        /*is_fake_event_level_attribution=*/false));
   }
   ASSERT_THAT(GetRateLimitRows(), SizeIs(2));
 
@@ -865,7 +871,8 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
       &db_, AttributionInfoBuilder().SetTime(base::Time::Now()).Build(),
       SourceBuilder()
           .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s1.test"))
-          .BuildStored()));
+          .BuildStored(),
+      /*is_fake_event_level_attribution=*/false));
 
   task_environment_.FastForwardBy(base::Minutes(4) - base::Milliseconds(1));
 
@@ -873,7 +880,8 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
       &db_, AttributionInfoBuilder().SetTime(base::Time::Now()).Build(),
       SourceBuilder()
           .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s2.test"))
-          .BuildStored()));
+          .BuildStored(),
+      /*is_fake_event_level_attribution=*/false));
 
   // Neither row has expired at this point.
   ASSERT_THAT(GetRateLimitRows(), SizeIs(2));
@@ -885,7 +893,8 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
       &db_, AttributionInfoBuilder().SetTime(base::Time::Now()).Build(),
       SourceBuilder()
           .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s3.test"))
-          .BuildStored()));
+          .BuildStored(),
+      /*is_fake_event_level_attribution=*/false));
 
   // The first row should be expired at this point.
   ASSERT_THAT(
@@ -926,7 +935,8 @@ TEST_F(RateLimitTableTest, AddFakeSourceForAttribution_OneRowPerDestination) {
                net::SchemefulSite::Deserialize("https://b.test"),
                net::SchemefulSite::Deserialize("https://c.test")})
           .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
-          .BuildStored()));
+          .BuildStored(),
+      /*is_fake_event_level_attribution=*/true));
 
   ASSERT_THAT(GetRateLimitRows(), SizeIs(3));
   ASSERT_THAT(
@@ -1004,7 +1014,8 @@ TEST_F(RateLimitTableTest, ClearDataForSourceIds) {
   for (int64_t id = 7; id <= 9; id++) {
     ASSERT_TRUE(table_.AddRateLimitForAttribution(
         &db_, AttributionInfoBuilder().Build(),
-        SourceBuilder().SetSourceId(StoredSource::Id(id)).BuildStored()));
+        SourceBuilder().SetSourceId(StoredSource::Id(id)).BuildStored(),
+        /*is_fake_event_level_attribution=*/false));
   }
 
   ASSERT_THAT(GetRateLimitRows(),
@@ -1366,7 +1377,8 @@ TEST_F(RateLimitTableTest, GetAttributionDataKeyList) {
       &db_, AttributionInfoBuilder().Build(),
       SourceBuilder()
           .SetReportingOrigin(*SuitableOrigin::Deserialize("https://b.r.test"))
-          .BuildStored()));
+          .BuildStored(),
+      /*is_fake_event_level_attribution=*/false));
 
   std::set<AttributionDataModel::DataKey> keys;
   table_.AppendRateLimitDataKeys(&db_, keys);

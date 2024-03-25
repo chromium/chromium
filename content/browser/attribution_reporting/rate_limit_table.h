@@ -85,7 +85,8 @@ class CONTENT_EXPORT RateLimitTable {
   [[nodiscard]] bool AddRateLimitForAttribution(
       sql::Database* db,
       const AttributionInfo& attribution_info,
-      const StoredSource&);
+      const StoredSource&,
+      bool is_fake_event_level_attribution);
 
   [[nodiscard]] RateLimitResult SourceAllowedForReportingOriginLimit(
       sql::Database* db,
@@ -141,7 +142,8 @@ class CONTENT_EXPORT RateLimitTable {
       sql::Database* db,
       const StoredSource& source,
       std::optional<base::Time> trigger_time,
-      const attribution_reporting::SuitableOrigin& context_origin)
+      const attribution_reporting::SuitableOrigin& context_origin,
+      bool is_fake_event_level_attribution)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] RateLimitResult AllowedForReportingOriginLimit(

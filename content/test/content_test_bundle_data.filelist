@@ -5605,6 +5605,7 @@ data/attribution_reporting/interop/aggregatable_dedup_key.json
 data/attribution_reporting/interop/aggregatable_large_key.json
 data/attribution_reporting/interop/aggregatable_report_trigger_context_id.json
 data/attribution_reporting/interop/aggregatable_report_window.json
+data/attribution_reporting/interop/aggregatable_reports_fake_source.json
 data/attribution_reporting/interop/aggregatable_storage_limit.json
 data/attribution_reporting/interop/aggregatable_values_filtering.json
 data/attribution_reporting/interop/aggregatable_with_event_disabled.json

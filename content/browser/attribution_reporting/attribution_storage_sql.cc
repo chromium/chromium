@@ -761,7 +761,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source,
             AttributionInfo(/*time=*/source_time,
                             /*debug_key=*/std::nullopt,
                             /*context_origin=*/common_info.source_origin()),
-            *stored_source)) {
+            *stored_source, /*is_fake_event_level_attribution=*/true)) {
       return make_result(StoreSourceResult::InternalError());
     }
   }
@@ -1265,7 +1265,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                           IsSuccessResult(store_aggregatable_status));
 
   if (!rate_limit_table_.AddRateLimitForAttribution(
-          &db_, attribution_info, source_to_attribute->source)) {
+          &db_, attribution_info, source_to_attribute->source,
+          /*is_fake_event_level_attribution=*/false)) {
     return assemble_report_result(EventLevelResult::kInternalError,
                                   AggregatableResult::kInternalError);
   }
