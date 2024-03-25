@@ -27,6 +27,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/session_state_animator_impl.h"
 #include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/window_restore_util.h"
@@ -168,16 +169,16 @@ void DeletePineImage(base::OnceClosure& for_test_callback,
                              std::move(delete_image_cb));
 }
 
-// TODO(minch): Check whether the screenshot should be taken in kiosk mode or
-// locked mode.
+// TODO(minch): Check whether the screenshot should be taken in kiosk mode.
 // Returns true if the pine screenshot should be taken on shutdown.
 bool ShouldTakePineScreeshot() {
   auto* shell = Shell::Get();
-  // Do not take the pine screenshot if it is in overview mode, lock screen or
-  // home launcher.
+  // Do not take the pine screenshot if it is in overview mode, lock screen,
+  // home launcher or pinned mode.
   if (shell->overview_controller()->InOverviewSession() ||
       shell->session_controller()->IsScreenLocked() ||
-      shell->app_list_controller()->IsHomeScreenVisible()) {
+      shell->app_list_controller()->IsHomeScreenVisible() ||
+      shell->screen_pinning_controller()->IsPinned()) {
     return false;
   }
 

@@ -28,6 +28,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/test/test_session_state_animator.h"
 #include "ash/wm/window_restore/window_restore_util.h"
+#include "ash/wm/window_util.h"
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -48,6 +49,7 @@
 #include "ui/display/tablet_state.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 namespace {
@@ -1163,6 +1165,21 @@ TEST_F(LockStateControllerPineTest, ShutdownInHomeLauncher) {
   RequestShutdownWithoutFailTimer();
   // The pine image should not be taken if it is in the home launcher page when
   // shutting down. The existing image should be deleted as well.
+  EXPECT_FALSE(base::PathExists(file_path()));
+}
+
+TEST_F(LockStateControllerPineTest, PinnedState) {
+  // Create an empty file to simulate an old pine image.
+  ASSERT_TRUE(base::WriteFile(file_path(), ""));
+
+  // Create and pin a window before requesting shutdown.
+  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  wm::ActivateWindow(pinned_window.get());
+  window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
+
+  RequestShutdownWithoutFailTimer();
+  // The pine image should not be taken when it is in pinned state. The existing
+  // image should be deleted as well.
   EXPECT_FALSE(base::PathExists(file_path()));
 }
 
