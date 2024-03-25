@@ -1,0 +1,26 @@
+caption: Enable <ph name="GOOGLE_CLASSROOM_NAME">Google Classroom</ph> integration
+default: true
+desc: |-
+  Enables <ph name="GOOGLE_CLASSROOM_NAME">Google Classroom</ph> integration on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
+
+  If this policy is enabled or left unset, the <ph name="GOOGLE_CLASSROOM_NAME">Google Classroom</ph> integration is enabled for enterprise users.
+
+  If this policy is disabled, the <ph name="GOOGLE_CLASSROOM_NAME">Google Classroom</ph> integration is disabled for enterprise users.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable <ph name="GOOGLE_CLASSROOM_NAME">Google Classroom</ph> integration.
+  value: true
+- caption: Disable <ph name="GOOGLE_CLASSROOM_NAME">Google Classroom</ph> integration.
+  value: false
+owners:
+- amitrokhin@google.com
+- file://ash/glanceables/OWNERS
+schema:
+  type: boolean
+future_on:
+- chrome_os
+tags: []
+type: main

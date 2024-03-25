@@ -1644,16 +1644,21 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPageUpAndPageDownKeysModifier,
     ash::prefs::kPageUpAndPageDownKeysModifier,
     base::Value::Type::INTEGER },
-{ key::kInsertKeyModifier,
+  { key::kInsertKeyModifier,
     ash::prefs::kInsertKeyModifier,
     base::Value::Type::INTEGER },
-  {key::kGoogleLocationServicesEnabled,
+  { key::kGoogleLocationServicesEnabled,
     ash::prefs::kUserGeolocationAccessLevel,
-    base::Value::Type::INTEGER},
+    base::Value::Type::INTEGER },
   { key::kLocalUserFilesAllowed,
     prefs::kLocalUserFilesAllowed,
-    base::Value::Type::BOOLEAN
-  },
+    base::Value::Type::BOOLEAN },
+  { key::kClassroomIntegrationEnabled,
+    ash::prefs::kClassroomIntegrationEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kTasksIntegrationEnabled,
+    ash::prefs::kTasksIntegrationEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

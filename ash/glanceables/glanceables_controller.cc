@@ -32,6 +32,8 @@ GlanceablesController::~GlanceablesController() {
 void GlanceablesController::RegisterUserProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kGlanceablesEnabled, true);
+  registry->RegisterBooleanPref(prefs::kClassroomIntegrationEnabled, true);
+  registry->RegisterBooleanPref(prefs::kTasksIntegrationEnabled, true);
   ClassroomBubbleStudentView::RegisterUserProfilePrefs(registry);
   TasksComboboxModel::RegisterUserProfilePrefs(registry);
 }

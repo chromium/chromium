@@ -1,0 +1,15 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.tasks_integration_enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

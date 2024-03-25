@@ -26,6 +26,14 @@ inline constexpr char kAssistPredictiveWritingEnabled[] =
 inline constexpr char kCalendarIntegrationEnabled[] =
     "ash.calendar_integration_enabled";
 
+// A boolean pref of whether Google Classroom integration is enabled.
+inline constexpr char kClassroomIntegrationEnabled[] =
+    "ash.classroom_integration_enabled";
+
+// A boolean pref of whether Google Tasks integration is enabled.
+inline constexpr char kTasksIntegrationEnabled[] =
+    "ash.tasks_integration_enabled";
+
 // A boolean pref of whether emoji suggestion is enabled.
 inline constexpr char kEmojiSuggestionEnabled[] =
     "assistive_input.emoji_suggestion_enabled";

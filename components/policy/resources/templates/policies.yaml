@@ -1240,6 +1240,8 @@ policies:
   1239: ProfileLabel
   1240: PrivacySandboxFingerprintingProtectionEnabled
   1241: MultiScreenCaptureAllowedForUrls
+  1242: ClassroomIntegrationEnabled
+  1243: TasksIntegrationEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

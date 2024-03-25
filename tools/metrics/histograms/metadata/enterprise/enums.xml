@@ -2081,6 +2081,8 @@ chromium-metrics-reviews@google.com.
   <int value="1239" label="ProfileLabel"/>
   <int value="1240" label="PrivacySandboxFingerprintingProtectionEnabled"/>
   <int value="1241" label="MultiScreenCaptureAllowedForUrls"/>
+  <int value="1242" label="ClassroomIntegrationEnabled"/>
+  <int value="1243" label="TasksIntegrationEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
