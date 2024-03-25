@@ -574,20 +574,6 @@ PageSpecificContentSettings::PageSpecificContentSettings(content::Page& page,
     : content::PageUserData<PageSpecificContentSettings>(page),
       delegate_(delegate),
       map_(delegate_->GetSettingsMap()),
-      allowed_local_shared_objects_(
-          GetWebContents()->GetPrimaryMainFrame()->GetStoragePartition(),
-#if !BUILDFLAG(IS_ANDROID)
-          // TODO(crbug.com/1404234): Remove the async local storage pathway
-          // completely when the new dialog has launched.
-          /*ignore_empty_localstorage=*/false,
-#else
-          /*ignore_empty_localstorage=*/true,
-#endif
-          delegate_->GetIsDeletionDisabledCallback()),
-      blocked_local_shared_objects_(
-          GetWebContents()->GetPrimaryMainFrame()->GetStoragePartition(),
-          /*ignore_empty_localstorage=*/false,
-          delegate_->GetIsDeletionDisabledCallback()),
       allowed_browsing_data_model_(BrowsingDataModel::BuildEmpty(
           GetWebContents()->GetPrimaryMainFrame()->GetStoragePartition(),
           delegate_->CreateBrowsingDataModelDelegate())),
@@ -1012,21 +998,13 @@ void PageSpecificContentSettings::OnCookiesAccessed(
   if (details.cookie_list.empty())
     return;
 
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kDeprecateCookiesTreeModel)) {
-    auto& model = details.blocked_by_policy ? blocked_browsing_data_model_
-                                            : allowed_browsing_data_model_;
-    for (const auto& cookie : details.cookie_list) {
-      // The size isn't relevant here and won't be displayed in the UI.
-      model->AddBrowsingData(cookie, BrowsingDataModel::StorageType::kCookie,
-                             /*storage_size=*/0,
-                             /*cookie_count=*/1);
-    }
-  } else {
-    auto& local_shared_objects = details.blocked_by_policy
-                                     ? blocked_local_shared_objects_
-                                     : allowed_local_shared_objects_;
-    local_shared_objects.cookies()->AddCookies(details);
+  auto& model = details.blocked_by_policy ? blocked_browsing_data_model_
+                                          : allowed_browsing_data_model_;
+  for (const auto& cookie : details.cookie_list) {
+    // The size isn't relevant here and won't be displayed in the UI.
+    model->AddBrowsingData(cookie, BrowsingDataModel::StorageType::kCookie,
+                           /*storage_size=*/0,
+                           /*cookie_count=*/1);
   }
 
   if (details.blocked_by_policy) {

@@ -23,7 +23,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/content/cookie_helper.h"
-#include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -353,19 +352,6 @@ class PageSpecificContentSettings
   // has changed since the last permission request.
   bool IsMicrophoneCameraStateChanged() const;
 
-  // Returns the |LocalSharedObjectsContainer| instances corresponding to all
-  // allowed, and blocked, respectively, local shared objects like cookies,
-  // local storage, ... .
-  const browsing_data::LocalSharedObjectsContainer&
-  allowed_local_shared_objects() const {
-    return allowed_local_shared_objects_;
-  }
-
-  const browsing_data::LocalSharedObjectsContainer&
-  blocked_local_shared_objects() const {
-    return blocked_local_shared_objects_;
-  }
-
   int stateful_bounce_count() const { return stateful_bounce_count_; }
 
   BrowsingDataModel* allowed_browsing_data_model() const {
@@ -603,10 +589,6 @@ class PageSpecificContentSettings
 
   // Profile-bound, this will outlive this class (which is WebContents bound).
   raw_ptr<HostContentSettingsMap> map_;
-
-  // Stores the blocked/allowed cookies.
-  browsing_data::LocalSharedObjectsContainer allowed_local_shared_objects_;
-  browsing_data::LocalSharedObjectsContainer blocked_local_shared_objects_;
 
   // Stores the count of stateful bounces during the navigation that led to this
   // page.

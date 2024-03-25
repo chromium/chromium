@@ -18,8 +18,6 @@ static_library("content") {
     "conditional_cache_counting_helper.h",
     "cookie_helper.cc",
     "cookie_helper.h",
-    "local_shared_objects_container.cc",
-    "local_shared_objects_container.h",
     "local_storage_helper.cc",
     "local_storage_helper.h",
     "shared_worker_info.cc",

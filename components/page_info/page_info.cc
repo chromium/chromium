@@ -1646,22 +1646,12 @@ void PageInfo::ContentSettingChangedViaPageInfo(ContentSettingsType type) {
   return settings->ContentSettingChangedViaPageInfo(type);
 }
 
-int PageInfo::GetFirstPartyAllowedCookiesCount(const GURL& site_url) {
-  auto* settings = GetPageSpecificContentSettings();
-  if (!settings) {
-    return 0;
-  }
-  return settings->allowed_local_shared_objects().GetObjectCountForDomain(
-      site_url);
-}
-
 int PageInfo::GetSitesWithAllowedCookiesAccessCount() {
   auto* settings = GetPageSpecificContentSettings();
   if (!settings) {
     return 0;
   }
   return browsing_data::GetUniqueHostCount(
-      settings->allowed_local_shared_objects(),
       *(settings->allowed_browsing_data_model()));
 }
 
@@ -1672,18 +1662,7 @@ int PageInfo::GetThirdPartySitesWithBlockedCookiesAccessCount(
     return 0;
   }
   return browsing_data::GetUniqueThirdPartyCookiesHostCount(
-      site_url, settings->blocked_local_shared_objects(),
-      *(settings->blocked_browsing_data_model()));
-}
-
-int PageInfo::GetFirstPartyBlockedCookiesCount(const GURL& site_url) {
-  auto* settings = GetPageSpecificContentSettings();
-  if (!settings) {
-    return 0;
-  }
-
-  return settings->blocked_local_shared_objects().GetObjectCountForDomain(
-      site_url);
+      site_url, *(settings->blocked_browsing_data_model()));
 }
 
 bool PageInfo::IsIsolatedWebApp() const {

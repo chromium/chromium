@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
-#include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 
 class CookiesTreeModel;
@@ -37,10 +36,6 @@ class LocalDataContainer {
   using LocalStorageInfoList = std::list<content::StorageUsageInfo>;
   using SessionStorageInfoList = std::list<content::StorageUsageInfo>;
   using QuotaInfoList = std::list<BrowsingDataQuotaHelper::QuotaInfo>;
-
-  static std::unique_ptr<LocalDataContainer>
-  CreateFromLocalSharedObjectsContainer(
-      const browsing_data::LocalSharedObjectsContainer& shared_objects);
 
   static std::unique_ptr<LocalDataContainer> CreateFromStoragePartition(
       content::StoragePartition* storage_partition,

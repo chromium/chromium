@@ -61,11 +61,6 @@ TEST_F(BrowsingDataHelperTest, SchemesThatCantStoreDataDontMatchAnything) {
 }
 
 TEST_F(BrowsingDataHelperTest, GetUniqueThirdPartyCookiesHostCount) {
-  auto local_shared_objects_container =
-      browsing_data::LocalSharedObjectsContainer(
-          browser_context_.GetDefaultStoragePartition(),
-          /*ignore_empty_localstorage=*/false, base::NullCallback());
-
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
       BrowsingDataModel::BuildEmpty(
           browser_context_.GetDefaultStoragePartition(), /*delegate=*/nullptr);
@@ -130,22 +125,21 @@ TEST_F(BrowsingDataHelperTest, GetUniqueThirdPartyCookiesHostCount) {
 
   // When `google_url` is the top frame unique third-party count should sites
   // other than google URLs (out of 6 entries should be 4).
-  int unique_site_count = GetUniqueThirdPartyCookiesHostCount(
-      google_url, local_shared_objects_container, *browsing_data_model);
+  int unique_site_count =
+      GetUniqueThirdPartyCookiesHostCount(google_url, *browsing_data_model);
   EXPECT_EQ(3, unique_site_count);
 
   // When `google_subdomain_url` is the top frame unique third-party count
   // should sites other than google URLs (out of 6 entries should be 4).
-  unique_site_count = GetUniqueThirdPartyCookiesHostCount(
-      google_subdomain_url, local_shared_objects_container,
-      *browsing_data_model);
+  unique_site_count = GetUniqueThirdPartyCookiesHostCount(google_subdomain_url,
+                                                          *browsing_data_model);
   EXPECT_EQ(3, unique_site_count);
 
   // When `ip_url` is the top frame this tests empty top frame domain with other
   // sites. Subdomains are counted separately because they're different hosts
   // (out of 6 entries should be 5).
-  unique_site_count = GetUniqueThirdPartyCookiesHostCount(
-      ip_url, local_shared_objects_container, *browsing_data_model);
+  unique_site_count =
+      GetUniqueThirdPartyCookiesHostCount(ip_url, *browsing_data_model);
   EXPECT_EQ(4, unique_site_count);
 }
 

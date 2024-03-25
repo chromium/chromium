@@ -379,10 +379,6 @@ class PageInfo : private content_settings::CookieControlsObserver {
   // via Page Info UI.
   void ContentSettingChangedViaPageInfo(ContentSettingsType type);
 
-  // Get counts of allowed and blocked cookies.
-  int GetFirstPartyAllowedCookiesCount(const GURL& site_url);
-  int GetFirstPartyBlockedCookiesCount(const GURL& site_url);
-
   // Get the count of blocked and allowed sites.
   int GetSitesWithAllowedCookiesAccessCount();
   int GetThirdPartySitesWithBlockedCookiesAccessCount(const GURL& site_url);

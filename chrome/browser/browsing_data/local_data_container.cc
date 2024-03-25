@@ -19,15 +19,6 @@
 
 // static
 std::unique_ptr<LocalDataContainer>
-LocalDataContainer::CreateFromLocalSharedObjectsContainer(
-    const browsing_data::LocalSharedObjectsContainer& shared_objects) {
-  return std::make_unique<LocalDataContainer>(
-      shared_objects.cookies(), shared_objects.local_storages(),
-      shared_objects.session_storages(), /*quota_helper=*/nullptr);
-}
-
-// static
-std::unique_ptr<LocalDataContainer>
 LocalDataContainer::CreateFromStoragePartition(
     content::StoragePartition* storage_partition,
     browsing_data::CookieHelper::IsDeletionDisabledCallback

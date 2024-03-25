@@ -14,7 +14,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
-#include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -299,7 +298,6 @@ int CookieControlsController::GetAllowedThirdPartyCookiesSitesCount() const {
 
   return browsing_data::GetUniqueThirdPartyCookiesHostCount(
       GetWebContents()->GetLastCommittedURL(),
-      pscs->allowed_local_shared_objects(),
       *(pscs->allowed_browsing_data_model()));
 }
 
@@ -312,7 +310,6 @@ int CookieControlsController::GetBlockedThirdPartyCookiesSitesCount() const {
 
   return browsing_data::GetUniqueThirdPartyCookiesHostCount(
       GetWebContents()->GetLastCommittedURL(),
-      pscs->blocked_local_shared_objects(),
       *(pscs->blocked_browsing_data_model()));
 }
 

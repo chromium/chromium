@@ -497,84 +497,6 @@ TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
       blocked_by_policy);
 }
 
-TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kDeprecateCookiesTreeModel)) {
-    GTEST_SKIP() << "kDeprecateCookiesTreeModel is enabled skipping "
-                    "CookiesTreeModel tests";
-  }
-  NavigateAndCommit(GURL("http://google.com"));
-  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
-  PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(rfh);
-  bool blocked_by_policy = false;
-  auto cookie = net::CanonicalCookie::Create(
-      GURL("http://google.com"), "k=v", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
-  GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
-                                 {content::CookieAccessDetails::Type::kRead,
-                                  GURL("http://google.com"),
-                                  GURL("http://google.com"),
-                                  {*cookie},
-                                  1u,
-                                  blocked_by_policy});
-
-  const auto& objects = content_settings->allowed_local_shared_objects();
-  EXPECT_EQ(1u, objects.GetObjectCount());
-  EXPECT_EQ(1u, objects.GetObjectCountForDomain(GURL("http://google.com")));
-}
-
-TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerCookie) {
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kDeprecateCookiesTreeModel)) {
-    GTEST_SKIP() << "kDeprecateCookiesTreeModel is enabled skipping "
-                    "CookiesTreeModel tests";
-  }
-  NavigateAndCommit(GURL("http://google.com"));
-  PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetPrimaryMainFrame());
-  bool blocked_by_policy = false;
-  auto cookie1 = net::CanonicalCookie::Create(
-      GURL("http://google.com"), "k1=v", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
-  auto cookie2 = net::CanonicalCookie::Create(
-      GURL("http://www.google.com"), "k2=v; Domain=google.com",
-      base::Time::Now(), std::nullopt /* server_time */,
-      std::nullopt /* cookie_partition_key */);
-  auto cookie3 = net::CanonicalCookie::Create(
-      GURL("http://www.google.com"), "k3=v; Domain=.google.com",
-      base::Time::Now(), std::nullopt /* server_time */,
-      std::nullopt /* cookie_partition_key */);
-  auto cookie4 = net::CanonicalCookie::Create(
-      GURL("http://www.google.com"), "k4=v; Domain=.www.google.com",
-      base::Time::Now(), std::nullopt /* server_time */,
-      std::nullopt /* cookie_partition_key */);
-  GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
-                                 {content::CookieAccessDetails::Type::kRead,
-                                  GURL("http://www.google.com"),
-                                  GURL("http://www.google.com"),
-                                  {*cookie1, *cookie2, *cookie3, *cookie4},
-                                  blocked_by_policy});
-
-  auto cookie5 = net::CanonicalCookie::Create(
-      GURL("https://www.google.com"), "k5=v", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
-  GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
-                                 {content::CookieAccessDetails::Type::kRead,
-                                  GURL("https://www.google.com"),
-                                  GURL("https://www.google.com"),
-                                  {*cookie5},
-                                  1u,
-                                  blocked_by_policy});
-
-  const auto& objects = content_settings->allowed_local_shared_objects();
-  EXPECT_EQ(5u, objects.GetObjectCount());
-  EXPECT_EQ(5u, objects.GetObjectCountForDomain(GURL("http://google.com")));
-  // google.com and www.google.com
-  EXPECT_EQ(2u, objects.GetHostCount());
-}
-
 TEST_F(PageSpecificContentSettingsTest, BrowsingDataModelTrustToken) {
   NavigateAndCommit(GURL("http://google.com"));
 
@@ -583,9 +505,7 @@ TEST_F(PageSpecificContentSettingsTest, BrowsingDataModelTrustToken) {
   auto* allowed_browsing_data_model = pscs->allowed_browsing_data_model();
 
   // Before Trust Token accesses, there should be no objects here.
-  EXPECT_EQ(
-      0, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
-                                           *allowed_browsing_data_model));
+  EXPECT_EQ(0, browsing_data::GetUniqueHostCount(*allowed_browsing_data_model));
   const url::Origin origin = url::Origin::Create(GURL("http://google.com/"));
   const url::Origin issuer =
       url::Origin::Create(GURL("http://issuer.example/"));
@@ -596,9 +516,7 @@ TEST_F(PageSpecificContentSettingsTest, BrowsingDataModelTrustToken) {
           origin, network::mojom::TrustTokenOperationType::kIssuance, issuer,
           false));
 
-  EXPECT_EQ(
-      1, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
-                                           *allowed_browsing_data_model));
+  EXPECT_EQ(1, browsing_data::GetUniqueHostCount(*allowed_browsing_data_model));
 }
 
 TEST_F(PageSpecificContentSettingsTest,
@@ -627,9 +545,7 @@ TEST_F(PageSpecificContentSettingsTest,
   auto* allowed_browsing_data_model = pscs->allowed_browsing_data_model();
 
   // Before Trust Token accesses, there should be no objects here.
-  EXPECT_EQ(
-      1, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
-                                           *allowed_browsing_data_model));
+  EXPECT_EQ(1, browsing_data::GetUniqueHostCount(*allowed_browsing_data_model));
 }
 
 TEST_F(PageSpecificContentSettingsTest, BrowsingDataModelSharedDictionary) {
@@ -641,12 +557,8 @@ TEST_F(PageSpecificContentSettingsTest, BrowsingDataModelSharedDictionary) {
   auto* blocked_browsing_data_model = pscs->blocked_browsing_data_model();
 
   // Before Shared Dictionary accesses, there should be no objects here.
-  EXPECT_EQ(
-      0, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
-                                           *allowed_browsing_data_model));
-  EXPECT_EQ(
-      0, browsing_data::GetUniqueHostCount(pscs->blocked_local_shared_objects(),
-                                           *blocked_browsing_data_model));
+  EXPECT_EQ(0, browsing_data::GetUniqueHostCount(*allowed_browsing_data_model));
+  EXPECT_EQ(0, browsing_data::GetUniqueHostCount(*blocked_browsing_data_model));
   const url::Origin origin = url::Origin::Create(GURL("http://google.com/"));
   net::SharedDictionaryIsolationKey isolation_key(origin,
                                                   net::SchemefulSite(origin));
@@ -659,12 +571,8 @@ TEST_F(PageSpecificContentSettingsTest, BrowsingDataModelSharedDictionary) {
   GetHandle()->OnSharedDictionaryAccessed(web_contents()->GetPrimaryMainFrame(),
                                           *details);
 
-  EXPECT_EQ(
-      1, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
-                                           *allowed_browsing_data_model));
-  EXPECT_EQ(
-      0, browsing_data::GetUniqueHostCount(pscs->blocked_local_shared_objects(),
-                                           *blocked_browsing_data_model));
+  EXPECT_EQ(1, browsing_data::GetUniqueHostCount(*allowed_browsing_data_model));
+  EXPECT_EQ(0, browsing_data::GetUniqueHostCount(*blocked_browsing_data_model));
   ASSERT_EQ(1u, allowed_browsing_data_model->size());
   EXPECT_EQ("google.com",
             *absl::get_if<std::string>(
@@ -681,12 +589,8 @@ TEST_F(PageSpecificContentSettingsTest,
   auto* blocked_browsing_data_model = pscs->blocked_browsing_data_model();
 
   // Before Shared Dictionary accesses, there should be no objects here.
-  EXPECT_EQ(
-      0, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
-                                           *allowed_browsing_data_model));
-  EXPECT_EQ(
-      0, browsing_data::GetUniqueHostCount(pscs->blocked_local_shared_objects(),
-                                           *blocked_browsing_data_model));
+  EXPECT_EQ(0, browsing_data::GetUniqueHostCount(*allowed_browsing_data_model));
+  EXPECT_EQ(0, browsing_data::GetUniqueHostCount(*blocked_browsing_data_model));
   const url::Origin origin = url::Origin::Create(GURL("http://google.com/"));
   net::SharedDictionaryIsolationKey isolation_key(origin,
                                                   net::SchemefulSite(origin));
@@ -699,12 +603,8 @@ TEST_F(PageSpecificContentSettingsTest,
   GetHandle()->OnSharedDictionaryAccessed(web_contents()->GetPrimaryMainFrame(),
                                           *details);
 
-  EXPECT_EQ(
-      0, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
-                                           *allowed_browsing_data_model));
-  EXPECT_EQ(
-      1, browsing_data::GetUniqueHostCount(pscs->blocked_local_shared_objects(),
-                                           *blocked_browsing_data_model));
+  EXPECT_EQ(0, browsing_data::GetUniqueHostCount(*allowed_browsing_data_model));
+  EXPECT_EQ(1, browsing_data::GetUniqueHostCount(*blocked_browsing_data_model));
   ASSERT_EQ(1u, blocked_browsing_data_model->size());
   EXPECT_EQ("google.com",
             *absl::get_if<std::string>(
@@ -739,12 +639,8 @@ TEST_F(PageSpecificContentSettingsTest,
   auto* allowed_browsing_data_model = pscs->allowed_browsing_data_model();
   auto* blocked_browsing_data_model = pscs->blocked_browsing_data_model();
 
-  EXPECT_EQ(
-      1, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
-                                           *allowed_browsing_data_model));
-  EXPECT_EQ(
-      0, browsing_data::GetUniqueHostCount(pscs->blocked_local_shared_objects(),
-                                           *blocked_browsing_data_model));
+  EXPECT_EQ(1, browsing_data::GetUniqueHostCount(*allowed_browsing_data_model));
+  EXPECT_EQ(0, browsing_data::GetUniqueHostCount(*blocked_browsing_data_model));
   ASSERT_EQ(1u, allowed_browsing_data_model->size());
   EXPECT_EQ("google.com",
             *absl::get_if<std::string>(
@@ -779,76 +675,12 @@ TEST_F(PageSpecificContentSettingsTest,
   auto* allowed_browsing_data_model = pscs->allowed_browsing_data_model();
   auto* blocked_browsing_data_model = pscs->blocked_browsing_data_model();
 
-  EXPECT_EQ(
-      0, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
-                                           *allowed_browsing_data_model));
-  EXPECT_EQ(
-      1, browsing_data::GetUniqueHostCount(pscs->blocked_local_shared_objects(),
-                                           *blocked_browsing_data_model));
+  EXPECT_EQ(0, browsing_data::GetUniqueHostCount(*allowed_browsing_data_model));
+  EXPECT_EQ(1, browsing_data::GetUniqueHostCount(*blocked_browsing_data_model));
   ASSERT_EQ(1u, blocked_browsing_data_model->size());
   EXPECT_EQ("google.com",
             *absl::get_if<std::string>(
                 &*(*blocked_browsing_data_model->begin()).data_owner));
-}
-
-TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerHostsCount) {
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kDeprecateCookiesTreeModel)) {
-    GTEST_SKIP() << "kDeprecateCookiesTreeModel is enabled skipping "
-                    "CookiesTreeModel tests";
-  }
-  NavigateAndCommit(GURL("http://google.com"));
-  PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetPrimaryMainFrame());
-  bool blocked_by_policy = false;
-  auto cookie1 = net::CanonicalCookie::Create(
-      GURL("http://google.com"), "k1=v", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
-  auto cookie2 = net::CanonicalCookie::Create(
-      GURL("https://example.com"), "k2=v", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
-  auto cookie3 = net::CanonicalCookie::Create(
-      GURL("https://example.com"), "k3=v", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
-  auto cookie4 = net::CanonicalCookie::Create(
-      GURL("http://example.com"), "k4=v", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
-  GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
-                                 {content::CookieAccessDetails::Type::kRead,
-                                  GURL("http://google.com"),
-                                  GURL("http://google.com"),
-                                  {*cookie1},
-                                  1u,
-                                  blocked_by_policy});
-  GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
-                                 {content::CookieAccessDetails::Type::kRead,
-                                  GURL("https://example.com"),
-                                  GURL("https://example.com"),
-                                  {*cookie2},
-                                  1u,
-                                  blocked_by_policy});
-  GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
-                                 {content::CookieAccessDetails::Type::kRead,
-                                  GURL("http://example.com"),
-                                  GURL("http://example.com"),
-                                  {*cookie3},
-                                  1u,
-                                  blocked_by_policy});
-  GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
-                                 {content::CookieAccessDetails::Type::kRead,
-                                  GURL("http://example.com"),
-                                  GURL("http://example.com"),
-                                  {*cookie4},
-                                  1u,
-                                  blocked_by_policy});
-
-  const auto& objects = content_settings->allowed_local_shared_objects();
-  EXPECT_EQ(4u, objects.GetObjectCount());
-  EXPECT_EQ(2u, objects.GetHostCount());
-  EXPECT_EQ(1u, objects.GetHostCountForDomain(GURL("http://google.com")));
-  EXPECT_EQ(1u, objects.GetHostCountForDomain(GURL("http://a.google.com")));
-  EXPECT_EQ(1u, objects.GetHostCountForDomain(GURL("http://a.example.com")));
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -931,26 +763,10 @@ TEST_F(PageSpecificContentSettingsTest, AllowedSitesCountedFromBothModels) {
       BrowsingDataModel::StorageType::kTrustTokens, /*storage_size=*/0);
 
   // Verify the size is counted without duplication of hosts.
-  EXPECT_EQ(
-      2, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
-                                           *allowed_browsing_data_model));
+  EXPECT_EQ(2, browsing_data::GetUniqueHostCount(*allowed_browsing_data_model));
 }
 
-class PageSpecificContentSettingsWithBDMTest
-    : public PageSpecificContentSettingsTest {
- public:
-  PageSpecificContentSettingsWithBDMTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{browsing_data::features::kDeprecateCookiesTreeModel, {}}},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(PageSpecificContentSettingsWithBDMTest, BrowsingDataModelStorageAccess) {
+TEST_F(PageSpecificContentSettingsTest, BrowsingDataModelStorageAccess) {
   NavigateAndCommit(GURL("http://google.com"));
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
@@ -970,9 +786,7 @@ TEST_F(PageSpecificContentSettingsWithBDMTest, BrowsingDataModelStorageAccess) {
   const auto* allowed_browsing_data_model =
       content_settings->allowed_browsing_data_model();
 
-  EXPECT_EQ(3, browsing_data::GetUniqueHostCount(
-                   content_settings->allowed_local_shared_objects(),
-                   *allowed_browsing_data_model));
+  EXPECT_EQ(3, browsing_data::GetUniqueHostCount(*allowed_browsing_data_model));
 }
 
 class PageSpecificContentSettingsWithPrerenderTest
