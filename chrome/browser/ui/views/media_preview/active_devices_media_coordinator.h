@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/views/media_preview/media_coordinator.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/separator.h"
 
@@ -53,6 +54,10 @@ class ActiveDevicesMediaCoordinator
   base::flat_map<std::string, std::unique_ptr<MediaCoordinator>>
       media_coordinators_;
   base::flat_map<std::string, raw_ptr<views::Separator>> separators_;
+
+  const media_preview_metrics::Context media_preview_metrics_context_;
+  base::TimeTicks media_preview_start_time_;
+
   base::WeakPtrFactory<ActiveDevicesMediaCoordinator> weak_ptr_factory_{this};
 };
 

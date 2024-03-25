@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MEDIA_PREVIEW_METRICS_H_
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MEDIA_PREVIEW_METRICS_H_
 
+#include "base/time/time.h"
+
 namespace media_preview_metrics {
 
 enum class UiLocation { kPermissionPrompt, kPageInfo };
@@ -39,6 +41,7 @@ void RecordDeviceSelectionAction(
 void RecordPreviewCameraPixelHeight(Context context, int pixel_height);
 void RecordPreviewVideoExpectedFPS(Context context, int expected_fps);
 void RecordPreviewVideoActualFPS(Context context, int actual_fps);
+void RecordMediaPreviewDuration(Context context, const base::TimeDelta& delta);
 
 }  // namespace media_preview_metrics
 
