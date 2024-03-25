@@ -37,6 +37,10 @@ class PaintCanvas;
 }  // namespace cc
 
 namespace gpu {
+
+struct Mailbox;
+struct SyncToken;
+
 namespace gles2 {
 
 class GLES2Interface;
@@ -280,6 +284,20 @@ class PLATFORM_EXPORT CanvasResourceProvider
   const std::optional<cc::PaintRecord>& LastRecording() {
     return last_recording_;
   }
+
+  // Given the mailbox of a SharedImage, overwrites the current image (either
+  // completely or partially) with the passed-in SharedImage. Waits on
+  // `ready_sync_token` before copying; pass SyncToken() if no sync is required.
+  // Synthesizes a new sync token in `completion_sync_token` which will satisfy
+  // after the image copy completes. In practice, this API can be used to
+  // replace a resource with the contents of an AcceleratedStaticBitmapImage or
+  // with a WebGPUMailboxTexture.
+  bool OverwriteImage(const gpu::Mailbox& shared_image_mailbox,
+                      const gfx::Rect& copy_rect,
+                      bool unpack_flip_y,
+                      bool unpack_premultiply_alpha,
+                      const gpu::SyncToken& ready_sync_token,
+                      gpu::SyncToken& completion_sync_token);
 
   struct UnusedResource {
     UnusedResource(base::TimeTicks last_use,

@@ -253,34 +253,21 @@ bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
   if (!IsValid())
     return false;
 
-  DCHECK(mailbox_.IsSharedImage());
-
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
-      SharedGpuContext::ContextProviderWrapper();
-  if (!shared_context_wrapper || !shared_context_wrapper->ContextProvider())
-    return false;
-
-  const auto& dst_mailbox = resource_provider->GetBackingMailboxForOverwrite(
-      MailboxSyncMode::kOrderingBarrier);
-  if (dst_mailbox.IsZero())
-    return false;
-
-  const GLenum dst_target = resource_provider->GetBackingTextureTarget();
   const bool unpack_flip_y =
-      IsOriginTopLeft() != resource_provider->IsOriginTopLeft();
-  const bool unpack_premultiply_alpha = false;
+      (IsOriginTopLeft() != resource_provider->IsOriginTopLeft());
 
-  auto* ri = shared_context_wrapper->ContextProvider()->RasterInterface();
-  DCHECK(ri);
-  ri->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
-  ri->CopySharedImage(mailbox_, dst_mailbox, dst_target, 0, 0, copy_rect.x(),
-                      copy_rect.y(), copy_rect.width(), copy_rect.height(),
-                      unpack_flip_y, unpack_premultiply_alpha);
+  const gpu::SyncToken& ready_sync_token = mailbox_ref_->sync_token();
+  gpu::SyncToken completion_sync_token;
+  if (!resource_provider->OverwriteImage(mailbox_, copy_rect, unpack_flip_y,
+                                         /*unpack_premultiply_alpha=*/false,
+                                         ready_sync_token,
+                                         completion_sync_token)) {
+    return false;
+  }
+
   // We need to update the texture holder's sync token to ensure that when this
   // mailbox is recycled or deleted, it is done after the copy operation above.
-  gpu::SyncToken sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  mailbox_ref_->set_sync_token(sync_token);
+  mailbox_ref_->set_sync_token(completion_sync_token);
   return true;
 }
 
