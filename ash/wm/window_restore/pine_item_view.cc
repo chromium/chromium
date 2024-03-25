@@ -9,9 +9,12 @@
 #include "ash/shell.h"
 #include "ash/style/typography.h"
 #include "ash/wm/window_restore/pine_constants.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "base/barrier_callback.h"
 #include "base/i18n/number_formatting.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/background.h"
@@ -36,12 +39,10 @@ constexpr int kTabCountRounding = 6;
 
 }  // namespace
 
-PineItemView::PineItemView(const std::u16string& app_title,
-                           const std::vector<GURL>& favicons,
-                           const size_t tab_count,
+PineItemView::PineItemView(const PineContentsData::AppInfo& app_info,
                            bool inside_screenshot)
-    : tab_count_(tab_count), inside_screenshot_(inside_screenshot) {
-  SetBetweenChildSpacing(inside_screenshot
+    : tab_count_(app_info.tab_count), inside_screenshot_(inside_screenshot) {
+  SetBetweenChildSpacing(inside_screenshot_
                              ? pine::kScreenshotIconRowChildSpacing
                              : pine::kItemChildSpacing);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -50,14 +51,14 @@ PineItemView::PineItemView(const std::u16string& app_title,
   auto* browser_image_view = AddChildView(
       views::Builder<views::ImageView>()
           .CopyAddressTo(&image_view_)
-          .SetImageSize(inside_screenshot
+          .SetImageSize(inside_screenshot_
                             ? pine::kScreenshotIconRowImageViewSize
                             : kItemIconPreferredSize)
-          .SetPreferredSize(inside_screenshot
+          .SetPreferredSize(inside_screenshot_
                                 ? pine::kScreenshotIconRowImageViewSize
                                 : pine::kItemIconBackgroundPreferredSize)
           .Build());
-  if (inside_screenshot) {
+  if (inside_screenshot_) {
     views::Separator* separator =
         AddChildView(std::make_unique<views::Separator>());
     separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
@@ -69,7 +70,7 @@ PineItemView::PineItemView(const std::u16string& app_title,
 
   // Add nested `BoxLayoutView`s, so we can have the title of the window on
   // top, and a row of favicons on the bottom.
-  if (inside_screenshot) {
+  if (inside_screenshot_) {
     AddChildView(
         views::Builder<views::BoxLayoutView>()
             .CopyAddressTo(&favicon_container_view_)
@@ -78,6 +79,25 @@ PineItemView::PineItemView(const std::u16string& app_title,
             .SetBetweenChildSpacing(pine::kScreenshotFaviconSpacing)
             .Build());
   } else {
+    // TODO(http://b/328830102): Handle case where the app is not ready or
+    // installed.
+    apps::AppRegistryCache* cache =
+        apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
+            Shell::Get()->session_controller()->GetActiveAccountId());
+
+    // `title` will be the window title from the previous session stored in the
+    // full restore file. The title fetched from the app service would more
+    // accurate, but the app might not be installed yet. Browsers are always
+    // installed and `title` will be the active tab title fetched from session
+    // restore. `cache` might be null in a test environment.
+    // TODO(http://b/328830102): Title should be updated once app is installed.
+    std::string title = app_info.title;
+    if (cache && !IsBrowserAppId(app_info.app_id)) {
+      cache->ForOneApp(
+          app_info.app_id,
+          [&title](const apps::AppUpdate& update) { title = update.Name(); });
+    }
+
     AddChildView(
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -90,7 +110,7 @@ PineItemView::PineItemView(const std::u16string& app_title,
                                                pine::kItemTitleFontSize,
                                                gfx::Font::Weight::BOLD))
                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                    .SetText(app_title),
+                    .SetText(base::UTF8ToUTF16(title)),
                 views::Builder<views::BoxLayoutView>()
                     .CopyAddressTo(&favicon_container_view_)
                     .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -100,6 +120,7 @@ PineItemView::PineItemView(const std::u16string& app_title,
             .Build());
   }
 
+  const std::vector<GURL>& favicons = app_info.tab_urls;
   if (favicons.empty()) {
     return;
   }

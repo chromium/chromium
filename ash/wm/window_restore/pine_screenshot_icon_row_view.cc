@@ -68,9 +68,7 @@ PineScreenshotIconRowView::PineScreenshotIconRowView(
     const PineContentsData::AppInfo& app_info = apps_infos[0];
 
     PineItemView* item_view = AddChildView(
-        std::make_unique<PineItemView>(base::UTF8ToUTF16(app_info.title),
-                                       app_info.tab_urls, app_info.tab_count,
-                                       /*inside_screenshot=*/true));
+        std::make_unique<PineItemView>(app_info, /*inside_screenshot=*/true));
 
     // The callback may be called synchronously.
     Shell::Get()->saved_desk_delegate()->GetIconForAppId(

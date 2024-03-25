@@ -6,6 +6,7 @@
 #define ASH_WM_WINDOW_RESTORE_PINE_ITEM_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/wm/window_restore/pine_contents_data.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -26,9 +27,7 @@ class ASH_EXPORT PineItemView : public views::BoxLayoutView {
   METADATA_HEADER(PineItemView, views::BoxLayoutView)
 
  public:
-  PineItemView(const std::u16string& app_title,
-               const std::vector<GURL>& favicons,
-               const size_t tab_count,
+  PineItemView(const PineContentsData::AppInfo& app_info,
                bool inside_screenshot);
   PineItemView(const PineItemView&) = delete;
   PineItemView& operator=(const PineItemView&) = delete;

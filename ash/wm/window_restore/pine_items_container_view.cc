@@ -9,9 +9,6 @@
 #include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/pine_item_view.h"
 #include "ash/wm/window_restore/pine_items_overflow_view.h"
-#include "ash/wm/window_restore/window_restore_util.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/background.h"
@@ -39,13 +36,6 @@ PineItemsContainerView::PineItemsContainerView(
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
   SetOrientation(views::BoxLayout::Orientation::kVertical);
 
-  // TODO(http://b/328830102): Handle case where the app is not ready or
-  // installed.
-  apps::AppRegistryCache* cache =
-      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
-          Shell::Get()->session_controller()->GetActiveAccountId());
-  auto* delegate = Shell::Get()->saved_desk_delegate();
-
   for (int i = 0; i < elements; ++i) {
     const PineContentsData::AppInfo& app_info = apps_infos[i];
     // If there are more than four elements, we will need to save the last
@@ -56,36 +46,21 @@ PineItemsContainerView::PineItemsContainerView(
       break;
     }
 
-    // `title` will be the window title from the previous session stored in the
-    // full restore file. The title fetched from the app service would more
-    // accurate, but the app might not be installed yet. Browsers are always
-    // installed and `title` will be the active tab title fetched from session
-    // restore. `cache` might be null in a test environment.
-    // TODO(http://b/328830102): Title should be updated once app is installed.
-    std::string title = app_info.title;
-    if (cache && !IsBrowserAppId(app_info.app_id)) {
-      cache->ForOneApp(
-          app_info.app_id,
-          [&title](const apps::AppUpdate& update) { title = update.Name(); });
-    }
-
-    // TODO(hewer|sammiequon): `PineItemView` should just take `app_info` and
-    // `cache` as a constructor argument.
-    PineItemView* item_view = AddChildView(std::make_unique<PineItemView>(
-        base::UTF8ToUTF16(title), app_info.tab_urls, app_info.tab_count,
-        /*inside_screenshot=*/false));
+    PineItemView* item_view = AddChildView(
+        std::make_unique<PineItemView>(app_info, /*inside_screenshot=*/false));
 
     // The callback may be called synchronously.
-    delegate->GetIconForAppId(app_info.app_id, pine::kAppImageSize,
-                              base::BindOnce(
-                                  [](base::WeakPtr<PineItemView> item_view_ptr,
-                                     const gfx::ImageSkia& icon) {
-                                    if (item_view_ptr) {
-                                      item_view_ptr->image_view()->SetImage(
-                                          ui::ImageModel::FromImageSkia(icon));
-                                    }
-                                  },
-                                  item_view->GetWeakPtr()));
+    Shell::Get()->saved_desk_delegate()->GetIconForAppId(
+        app_info.app_id, pine::kAppImageSize,
+        base::BindOnce(
+            [](base::WeakPtr<PineItemView> item_view_ptr,
+               const gfx::ImageSkia& icon) {
+              if (item_view_ptr) {
+                item_view_ptr->image_view()->SetImage(
+                    ui::ImageModel::FromImageSkia(icon));
+              }
+            },
+            item_view->GetWeakPtr()));
   }
 }
 
