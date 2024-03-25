@@ -585,6 +585,15 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 #pragma mark - BookmarksHomeConsumer
 
+- (void)closeThisFolder {
+  [self jumpToFolder:self.displayedFolderNode->parent()];
+}
+
+- (void)displayRoot {
+  [self jumpToFolder:_localOrSyncableBookmarkModel
+                         ->subtle_root_node_with_unspecified_children()];
+}
+
 - (void)setTableViewEditing:(BOOL)editing {
   self.mediator.currentlyInEditMode = editing;
   [self setContextBarState:editing ? BookmarksContextBarBeginSelection
@@ -1041,6 +1050,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     [self.navigationController pushViewController:controller animated:YES];
     return;
   }
+  [self jumpToFolder:folder];
+}
+
+- (void)jumpToFolder:(const bookmarks::BookmarkNode*)folder {
   // Clear bookmark path cache.
   int64_t unusedFolderId;
   BookmarkModelType modelType;

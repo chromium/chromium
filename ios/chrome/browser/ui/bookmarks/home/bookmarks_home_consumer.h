@@ -72,6 +72,12 @@ typedef NS_ENUM(NSInteger, BookmarksHomeBackgroundStyle) {
 // Displays the account settings.
 - (void)showAccountSettings;
 
+// Called when this folder is deleted.
+- (void)closeThisFolder;
+
+// Called when the account model is deleted.
+- (void)displayRoot;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_HOME_BOOKMARKS_HOME_CONSUMER_H_

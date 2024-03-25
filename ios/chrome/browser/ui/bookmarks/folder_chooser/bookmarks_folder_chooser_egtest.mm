@@ -269,7 +269,8 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCantDeleteFolderBeingEdited:KindOfTest::kLocal];
 }
-- (void)testCantDeleteFolderBeingEditedAccount {
+// TODO(crbug.com/326425036): New folder can’t be renamed in account model.
+- (void)DISABLED_testCantDeleteFolderBeingEditedAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCantDeleteFolderBeingEdited:KindOfTest::kAccount];
 }
@@ -481,28 +482,10 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       removeBookmarkWithTitle:@"Folder 1"
                     inStorage:kindOfTestToStorageType(kindOfTest)];
 
-  // Verify edit mode is close automatically (context bar switched back to
+  // Verify edit mode is closed automatically (context bar switched back to
   // default state) and both select and new folder button are disabled.
-  [BookmarkEarlGreyUI verifyContextBarInDefaultStateWithSelectEnabled:NO
-                                                     newFolderEnabled:NO];
-
-  // Verify the empty background appears.
-  [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
-
-  // Come back to Folder 1 (which is also deleted).
-  [[EarlGrey selectElementWithMatcher:BookmarksNavigationBarBackButton()]
-      performAction:grey_tap()];
-
-  // Verify both select and new folder button are disabled.
-  [BookmarkEarlGreyUI verifyContextBarInDefaultStateWithSelectEnabled:NO
-                                                     newFolderEnabled:NO];
-
-  // Verify the empty background appears.
-  [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
-
-  // Come back to Mobile Bookmarks.
-  [[EarlGrey selectElementWithMatcher:BookmarksNavigationBarBackButton()]
-      performAction:grey_tap()];
+  [BookmarkEarlGreyUI verifyContextBarInDefaultStateWithSelectEnabled:YES
+                                                     newFolderEnabled:YES];
 
   // Ensure Folder 1.1 is seen, that means it successfully comes back to Mobile
   // Bookmarks.
@@ -1225,8 +1208,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewFolderWithContextBar:KindOfTest::kLocal];
 }
-// TODO(crbug.com/326425036): New folder can’t be
-// renamed in account model.
+// TODO(crbug.com/326425036): New folder can’t be renamed in account model.
 - (void)DISABLE_testCreateNewFolderWithContextBarAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewFolderWithContextBar:KindOfTest::kAccount];
@@ -1372,8 +1354,8 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 2")]
       performAction:grey_tap()];
-  // TODO(crbug.com/330345514): check that the lists are closed up to root.
   [SigninEarlGrey signOut];
+  [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
 }
 
 @end

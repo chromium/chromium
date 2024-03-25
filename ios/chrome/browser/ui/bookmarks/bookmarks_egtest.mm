@@ -144,8 +144,9 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       removeBookmarkWithTitle:@"Folder 1"
                     inStorage:BookmarkModelType::kLocalOrSyncable];
 
-  // Verify the empty background appears because Folder 3 is deleted.
-  [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
+  // Ensure Folder 1.1 is seen, that means it successfully comes back to Mobile
+  // Bookmarks.
+  [BookmarkEarlGreyUI verifyBookmarkFolderIsSeen:@"Folder 1.1"];
 }
 
 // Test deleting grand parent is reflected in the bookmarks folder editor UI.
@@ -176,8 +177,9 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       removeBookmarkWithTitle:@"Folder 1"
                     inStorage:BookmarkModelType::kLocalOrSyncable];
 
-  // Verify the empty background appears because Folder 3 is deleted.
-  [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
+  // Ensure Folder 1.1 is seen, that means it successfully comes back to Mobile
+  // Bookmarks.
+  [BookmarkEarlGreyUI verifyBookmarkFolderIsSeen:@"Folder 1.1"];
 }
 
 // Test to set bookmarks in multiple tabs.

@@ -534,6 +534,14 @@ bool IsABookmarkNodeSectionForIdentifier(
 - (void)bookmarkModelWillRemoveAllNodes:(const LegacyBookmarkModel*)model {
   CHECK(model);
   if (model == [self displayedBookmarkModel]) {
+    if (self.displayedNode && self.displayedNode->is_permanent_node()) {
+      // All Bookmarks home mediators will receive
+      // `bookmarkModelWillRemoveAllNodes:`. However, the navigation controller
+      // should be edited only once. In order to ensure a single Bookmarks home
+      // view controller request the navigation controller to change we call
+      // `displayRoot` a single time, in the permanent folder.
+      [self.consumer displayRoot];
+    }
     self.displayedNode = nullptr;
   }
 }
@@ -603,8 +611,8 @@ bool IsABookmarkNodeSectionForIdentifier(
        willDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
   DCHECK(node);
-  if (self.displayedNode && self.displayedNode->HasAncestor(node)) {
-    self.displayedNode = nullptr;
+  if (self.displayedNode == node) {
+    [self.consumer closeThisFolder];
   }
 }
 
