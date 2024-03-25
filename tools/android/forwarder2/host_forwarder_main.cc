@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -97,7 +98,8 @@ class ServerDelegate : public Daemon::ServerDelegate {
       has_failed_ = true;
       return;
     }
-    const base::Pickle command_pickle(buf, bytes_read);
+    const base::Pickle command_pickle = base::Pickle::WithData(base::as_bytes(
+        base::span(buf, base::checked_cast<size_t>(bytes_read))));
     base::PickleIterator pickle_it(command_pickle);
 
     std::string device_serial;
