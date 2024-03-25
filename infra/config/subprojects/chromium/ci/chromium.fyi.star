@@ -1216,6 +1216,7 @@ fyi_mac_reclient_comparison_builder(
     },
     builderless = True,
     cores = None,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "cmp",
