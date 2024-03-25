@@ -1199,7 +1199,8 @@ CONV_FN(CommonTableExpr, cte) {
   }
   ret += " AS (";
   ret += SelectToString(cte.select());
-  ret += ") ";
+  // Avert infinite recursion.
+  ret += " LIMIT 1000)";
   return ret;
 }
 
