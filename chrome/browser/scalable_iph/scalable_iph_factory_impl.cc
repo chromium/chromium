@@ -126,6 +126,11 @@ content::BrowserContext* ScalableIphFactoryImpl::GetBrowserContextToUseInternal(
     return nullptr;
   }
 
+  if (!scalable_iph::ScalableIph::IsAnyIphFeatureEnabled()) {
+    SCALABLE_IPH_LOG(logger) << "No iph feature is enabled.";
+    return nullptr;
+  }
+
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (!profile) {
     SCALABLE_IPH_LOG(logger) << "Unable to obtain a profile from a browser "

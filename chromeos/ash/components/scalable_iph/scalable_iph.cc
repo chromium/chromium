@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
@@ -47,6 +48,8 @@ constexpr char kFunctionCallAfterKeyedServiceShutdown[] =
 constexpr auto kIphTriggeringEvents =
     base::MakeFixedFlatSet<ScalableIph::Event>(
         {ScalableIph::Event::kFiveMinTick, ScalableIph::Event::kUnlocked});
+
+bool force_enable_iph_feature_for_testing = false;
 
 std::string GetHelpAppIphEventName(ActionType action_type) {
   switch (action_type) {
@@ -555,6 +558,31 @@ bool ValidateVersionNumber(const base::Feature& feature) {
 }
 
 }  // namespace
+
+// static
+bool ScalableIph::IsAnyIphFeatureEnabled() {
+  if (force_enable_iph_feature_for_testing) {
+    return true;
+  }
+
+  const std::vector<raw_ptr<const base::Feature, VectorExperimental>>&
+      feature_list = GetFeatureListConstant();
+  for (auto feature : feature_list) {
+    if (base::FeatureList::IsEnabled(*feature)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// static
+void ScalableIph::ForceEnableIphFeatureForTesting() {
+  CHECK_IS_TEST();
+  CHECK(!force_enable_iph_feature_for_testing)
+      << "Iph feature is already force enabled";
+
+  force_enable_iph_feature_for_testing = true;
+}
 
 ScalableIph::ScalableIph(feature_engagement::Tracker* tracker,
                          std::unique_ptr<ScalableIphDelegate> delegate,

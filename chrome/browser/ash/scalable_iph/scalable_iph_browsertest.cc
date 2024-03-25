@@ -78,7 +78,6 @@
 
 namespace {
 
-using ScalableIphBrowserTestFlagOff = ::ash::CustomizableTestEnvBrowserTestBase;
 using ScalableIphBrowserTest = ::ash::ScalableIphBrowserTestBase;
 using TestEnvironment =
     ::ash::CustomizableTestEnvBrowserTestBase::TestEnvironment;
@@ -225,6 +224,25 @@ class CupsPrintJobManagerWaiter : public ash::CupsPrintJobManager::Observer {
   raw_ptr<ash::CupsPrintJobManager> print_job_manager_;
   base::RunLoop run_loop_;
   int job_id_;
+};
+
+class ScalableIphBrowserTestFlagOff
+    : public ash::CustomizableTestEnvBrowserTestBase {
+ public:
+  ScalableIphBrowserTestFlagOff() {
+    scoped_feature_list_.InitAndDisableFeature(ash::features::kScalableIph);
+    scalable_iph::ScalableIph::ForceEnableIphFeatureForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class ScalableIphBrowserTestNoIph
+    : public ash::CustomizableTestEnvBrowserTestBase {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kScalableIph};
 };
 
 class ScalableIphBrowserTestGame : public ScalableIphBrowserTest {
@@ -689,13 +707,18 @@ class ScalableIphBrowserTestBubbleInvalidConfig
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestFlagOff, HasServiceWhenFeatureEnabled) {
-  if (ash::features::IsScalableIphEnabled()) {
-    EXPECT_TRUE(ScalableIphFactory::GetForBrowserContext(browser()->profile()));
-  } else {
-    EXPECT_FALSE(
-        ScalableIphFactory::GetForBrowserContext(browser()->profile()));
-  }
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestFlagOff, ScalableIphOff) {
+  ASSERT_FALSE(ash::features::IsScalableIphEnabled());
+  ASSERT_TRUE(scalable_iph::ScalableIph::IsAnyIphFeatureEnabled());
+
+  EXPECT_FALSE(ScalableIphFactory::GetForBrowserContext(browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNoIph, NoIphFeatureFlagOn) {
+  ASSERT_TRUE(ash::features::IsScalableIphEnabled());
+  ASSERT_FALSE(scalable_iph::ScalableIph::IsAnyIphFeatureEnabled());
+
+  EXPECT_FALSE(ScalableIphFactory::GetForBrowserContext(browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, RecordEvent_FiveMinTick) {

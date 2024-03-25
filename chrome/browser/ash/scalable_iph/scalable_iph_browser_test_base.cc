@@ -49,7 +49,10 @@ BASE_FEATURE(kScalableIphTest,
 
 }  // namespace
 
-ScalableIphBrowserTestBase::ScalableIphBrowserTestBase() = default;
+ScalableIphBrowserTestBase::ScalableIphBrowserTestBase() {
+  scalable_iph::ScalableIph::ForceEnableIphFeatureForTesting();
+}
+
 ScalableIphBrowserTestBase::~ScalableIphBrowserTestBase() = default;
 
 void ScalableIphBrowserTestBase::SetUp() {
