@@ -268,25 +268,26 @@ ExportedSharedImage ClientSharedImage::Export() {
       !creation_sync_token_.verified_flush()) {
     sii_holder_->Get()->VerifySyncToken(creation_sync_token_);
   }
-  return ExportedSharedImage(mailbox_, metadata_, creation_sync_token_);
+  return ExportedSharedImage(mailbox_, metadata_, creation_sync_token_,
+                             client_side_native_buffer_used_);
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
     const ExportedSharedImage& exported_shared_image) {
-  // TODO(crbug.com/41494843): Pass through the info of whether the client
-  // supplied a native buffer.
   return base::WrapRefCounted<ClientSharedImage>(new ClientSharedImage(
       exported_shared_image.mailbox_, exported_shared_image.metadata_,
       exported_shared_image.creation_sync_token_, nullptr,
-      /*client_side_native_buffer_used=*/false));
+      exported_shared_image.client_side_native_buffer_used_));
 }
 
 ExportedSharedImage::ExportedSharedImage() = default;
 ExportedSharedImage::ExportedSharedImage(const Mailbox& mailbox,
                                          const SharedImageMetadata& metadata,
-                                         const SyncToken& sync_token)
+                                         const SyncToken& sync_token,
+                                         bool client_side_native_buffer_used)
     : mailbox_(mailbox),
       metadata_(metadata),
-      creation_sync_token_(sync_token) {}
+      creation_sync_token_(sync_token),
+      client_side_native_buffer_used_(client_side_native_buffer_used) {}
 
 }  // namespace gpu

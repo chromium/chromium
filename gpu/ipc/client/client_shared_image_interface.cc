@@ -315,16 +315,15 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::ImportSharedImage(
   const auto& mailbox = exported_shared_image.mailbox_;
   const auto& metadata = exported_shared_image.metadata_;
   const auto& sync_token = exported_shared_image.creation_sync_token_;
+  bool client_side_native_buffer_used =
+      exported_shared_image.client_side_native_buffer_used_;
 
   DCHECK(!mailbox.IsZero());
   AddMailbox(mailbox);
   proxy_->AddReferenceToSharedImage(sync_token, mailbox, metadata.usage);
 
-  // TODO(crbug.com/41494843): Pass through the info of whether the client
-  // supplied a native buffer.
-  return base::WrapRefCounted<ClientSharedImage>(
-      new ClientSharedImage(mailbox, metadata, sync_token, holder_,
-                            /*client_side_native_buffer_used=*/false));
+  return base::WrapRefCounted<ClientSharedImage>(new ClientSharedImage(
+      mailbox, metadata, sync_token, holder_, client_side_native_buffer_used));
 }
 
 uint32_t ClientSharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {

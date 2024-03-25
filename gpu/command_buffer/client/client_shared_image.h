@@ -250,11 +250,13 @@ struct GPU_EXPORT ExportedSharedImage {
 
   ExportedSharedImage(const Mailbox& mailbox,
                       const SharedImageMetadata& metadata,
-                      const SyncToken& sync_token);
+                      const SyncToken& sync_token,
+                      bool client_side_native_buffer_used);
 
   Mailbox mailbox_;
   SharedImageMetadata metadata_;
   SyncToken creation_sync_token_;
+  bool client_side_native_buffer_used_ = false;
 };
 
 }  // namespace gpu

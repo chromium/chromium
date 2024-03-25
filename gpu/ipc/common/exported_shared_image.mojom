@@ -13,4 +13,8 @@ struct ExportedSharedImage {
   gpu.mojom.Mailbox mailbox;
   gpu.mojom.SharedImageMetadata metadata;
   gpu.mojom.SyncToken creation_sync_token;
+
+  // Necessary to allow the ClientSharedImage that is created from this
+  // ExportedSharedImage to correctly compute the GL texture target to use.
+  bool client_side_native_buffer_used;
 };

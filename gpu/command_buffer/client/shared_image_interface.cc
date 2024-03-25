@@ -52,11 +52,14 @@ SharedImageInterface::AddReferenceToSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
+  // NOTE: This method exists only until the one client
+  // (AcceleratedStaticBitmapImage) is ported to use ClientSharedImage. Until
+  // then, that client uses the texture target in its MailboxHolder.
   return ImportSharedImage(ExportedSharedImage(
       mailbox,
       SharedImageMetadata{format, size, color_space, surface_origin, alpha_type,
                           usage},
-      sync_token));
+      sync_token, /*client_side_native_buffer_used=*/false));
 }
 
 scoped_refptr<ClientSharedImage> SharedImageInterface::NotifyMailboxAdded(

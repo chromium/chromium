@@ -33,6 +33,11 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ExportedSharedImageDataView,
     return shared_image.creation_sync_token_;
   }
 
+  static bool client_side_native_buffer_used(
+      const gpu::ExportedSharedImage& shared_image) {
+    return shared_image.client_side_native_buffer_used_;
+  }
+
   static bool Read(gpu::mojom::ExportedSharedImageDataView data,
                    gpu::ExportedSharedImage* out) {
     if (!data.ReadMailbox(&out->mailbox_) ||
@@ -40,6 +45,8 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ExportedSharedImageDataView,
         !data.ReadCreationSyncToken(&out->creation_sync_token_)) {
       return false;
     }
+    out->client_side_native_buffer_used_ =
+        data.client_side_native_buffer_used();
     return true;
   }
 };

@@ -302,13 +302,11 @@ TestSharedImageInterface::ImportSharedImage(
     const gpu::ExportedSharedImage& exported_shared_image) {
   shared_images_.insert(exported_shared_image.mailbox_);
 
-  // TODO(crbug.com/41494843): Pass through the info of whether the client
-  // supplied a native buffer.
   return base::WrapRefCounted<gpu::ClientSharedImage>(
       new gpu::ClientSharedImage(
           exported_shared_image.mailbox_, exported_shared_image.metadata_,
           exported_shared_image.creation_sync_token_, holder_,
-          /*client_side_native_buffer_used=*/false));
+          exported_shared_image.client_side_native_buffer_used_));
 }
 
 void TestSharedImageInterface::DestroySharedImage(
