@@ -5,6 +5,7 @@
 #include "chrome/browser/readaloud/android/synthetic_trial.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -23,7 +24,7 @@ namespace {
 
 inline constexpr char kSeparator[] = "|||";
 
-bool GetFeatureNameFromKey(const std::string& key, base::StringPiece* out) {
+bool GetFeatureNameFromKey(const std::string& key, std::string_view* out) {
   auto split_key = base::SplitStringPieceUsingSubstr(
       key, kSeparator, base::WhitespaceHandling::KEEP_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
@@ -43,7 +44,7 @@ void SyntheticTrial::ClearStalePrefs() {
   std::vector<std::string> keys_to_clear;
   for (auto [key, trial_name] :
        prefs->GetDict(prefs::kReadAloudSyntheticTrials)) {
-    base::StringPiece feature;
+    std::string_view feature;
     if (!GetFeatureNameFromKey(key, &feature)) {
       continue;
     }
