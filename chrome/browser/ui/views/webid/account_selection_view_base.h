@@ -264,7 +264,7 @@ class AccountSelectionViewBase {
   // method is virtual for testing purposes.
   virtual base::WeakPtr<views::Widget> GetDialogWidget();
 
-  // Populates `idp_images` when an IDP image has been fetched.
+  // Populates `brand_icon_images_` when an IDP image has been fetched.
   void AddIdpImage(const GURL& image_url, const gfx::ImageSkia& idp_image);
 
   // Returns the network traffic annotation tag for FedCM.

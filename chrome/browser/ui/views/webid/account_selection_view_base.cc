@@ -124,12 +124,19 @@ void BrandIconImageView::OnImageFetched(
       image.Width() < AccountSelectionView::GetBrandIconMinimumSize()) {
     return;
   }
+
   gfx::ImageSkia idp_image =
       gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
           image.AsImageSkia(), image.Width() * kMaskableWebIconSafeZoneRatio,
           image_size_);
   SetImage(ui::ImageModel::FromImageSkia(idp_image));
-  CHECK(add_image_);
+
+  // TODO(crbug.com/327509202): This stops the crashes but should fix to prevent
+  // this from crashing in the first place.
+  if (!add_image_) {
+    return;
+  }
+
   std::move(add_image_).Run(image_url, idp_image);
 }
 
