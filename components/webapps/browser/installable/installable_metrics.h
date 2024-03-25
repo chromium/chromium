@@ -146,6 +146,10 @@ enum class WebappInstallSource {
 
   IWA_DEV_UI = 32,
 
+  // Web apps installed via almanac://install-app navigation, see
+  // AppInstallNavigationThrottle.
+  ALMANAC_INSTALL_APP_URI = 33,
+
   // Add any new values above this one.
   COUNT,
 };

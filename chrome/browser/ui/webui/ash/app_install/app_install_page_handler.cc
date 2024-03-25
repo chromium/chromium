@@ -26,7 +26,19 @@ int64_t ToLong(web_app::WebAppInstallStatus web_app_install_status) {
   return static_cast<int64_t>(web_app_install_status);
 }
 
+bool g_auto_accept_for_testing = false;
+
 }  // namespace
+
+// static
+bool AppInstallPageHandler::GetAutoAcceptForTesting() {
+  return g_auto_accept_for_testing;
+}
+
+// static
+void AppInstallPageHandler::SetAutoAcceptForTesting(bool auto_accept) {
+  g_auto_accept_for_testing = auto_accept;
+}
 
 AppInstallPageHandler::AppInstallPageHandler(
     Profile* profile,
@@ -43,6 +55,11 @@ AppInstallPageHandler::AppInstallPageHandler(
       close_dialog_callback_{std::move(close_dialog_callback)} {
   base::RecordAction(
       base::UserMetricsAction("ChromeOS.AppInstallDialog.Shown"));
+
+  if (GetAutoAcceptForTesting()) {
+    InstallApp(base::DoNothing());
+    CloseDialog();
+  }
 }
 
 AppInstallPageHandler::~AppInstallPageHandler() = default;

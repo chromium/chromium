@@ -306,6 +306,7 @@
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
+#include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
 #include "chrome/browser/ui/webui/ash/audio/audio.mojom.h"
 #include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
@@ -1698,10 +1699,7 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       ash::screens_factory::mojom::ScreensFactory, ash::OobeUI>(map);
 
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kCrosWebAppInstallDialog) ||
-      base::FeatureList::IsEnabled(
-          chromeos::features::kCrosOmniboxInstallDialog)) {
+  if (ash::app_install::AppInstallDialog::IsEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         ash::app_install::mojom::PageHandlerFactory,
         ash::app_install::AppInstallDialogUI>(map);

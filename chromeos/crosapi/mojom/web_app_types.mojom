@@ -65,12 +65,15 @@ struct ArcWebAppInstallInfo {
   [MinVersion=1] array<string>? additional_policy_ids@5;
 };
 
+// Next version: 2
 [Stable, Extensible]
 enum PreloadWebAppInstallSource {
   // The app is preloaded by the device OEM.
   [Default] kOemPreload,
   // The app is preloaded by Google by default.
   kDefaultPreload,
+  // The app was installed via an almanac://install-app URI navigation.
+  [MinVersion=1] kAlmanacInstallAppUri,
 };
 
 // The set of information necessary to install a preloaded web app in Lacros.

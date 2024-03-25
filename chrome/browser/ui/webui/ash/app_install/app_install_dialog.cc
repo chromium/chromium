@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
+#include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/webapps/common/constants.h"
@@ -14,14 +15,26 @@
 namespace ash::app_install {
 
 // static
+bool AppInstallDialog::IsEnabled() {
+  return base::FeatureList::IsEnabled(
+             chromeos::features::kCrosWebAppInstallDialog) ||
+         base::FeatureList::IsEnabled(
+             chromeos::features::kCrosOmniboxInstallDialog) ||
+         AppInstallPageHandler::GetAutoAcceptForTesting();
+}
+
+// static
 base::WeakPtr<AppInstallDialog> AppInstallDialog::CreateDialog() {
-  CHECK(base::FeatureList::IsEnabled(
-            chromeos::features::kCrosWebAppInstallDialog) ||
-        base::FeatureList::IsEnabled(
-            chromeos::features::kCrosOmniboxInstallDialog));
+  CHECK(IsEnabled());
 
   return (new AppInstallDialog())->GetWeakPtr();
 }
+
+AppInstallDialog::AppInstallDialog()
+    : SystemWebDialogDelegate(GURL(chrome::kChromeUIAppInstallDialogURL),
+                              /*title=*/u"") {}
+
+AppInstallDialog::~AppInstallDialog() = default;
 
 void AppInstallDialog::Show(
     gfx::NativeWindow parent,
@@ -60,12 +73,6 @@ void AppInstallDialog::CleanUpDialogIfNotShown() {
     delete this;
   }
 }
-
-AppInstallDialog::AppInstallDialog()
-    : SystemWebDialogDelegate(GURL(chrome::kChromeUIAppInstallDialogURL),
-                              std::u16string() /* title */) {}
-
-AppInstallDialog::~AppInstallDialog() = default;
 
 bool AppInstallDialog::ShouldShowCloseButton() const {
   return false;

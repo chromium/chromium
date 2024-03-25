@@ -88,6 +88,7 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::OMNIBOX_INSTALL_ICON:
     case InstallSource::MENU_CREATE_SHORTCUT:
     case InstallSource::PROFILE_MENU:
+    case InstallSource::ALMANAC_INSTALL_APP_URI:
       return true;
     case InstallSource::DEVTOOLS:
     case InstallSource::MANAGEMENT_API:

@@ -1062,6 +1062,7 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
     case webapps::WebappInstallSource::MENU_CREATE_SHORTCUT:
     case webapps::WebappInstallSource::CHROME_SERVICE:
     case webapps::WebappInstallSource::PROFILE_MENU:
+    case webapps::WebappInstallSource::ALMANAC_INSTALL_APP_URI:
       return WebAppManagement::kSync;
 
     case webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER:

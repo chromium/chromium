@@ -20,6 +20,10 @@
 
 static_assert(BUILDFLAG(IS_CHROMEOS_ASH));
 
+namespace ash::app_install {
+class AppInstallDialog;
+}
+
 namespace apps {
 
 class AppInstallServiceAsh : public AppInstallService {
@@ -65,6 +69,19 @@ class AppInstallServiceAsh : public AppInstallService {
                             PackageId expected_package_id,
                             base::OnceClosure callback,
                             std::optional<AppInstallData> data);
+  void InstallIfDialogAccepted(
+      AppInstallSurface surface,
+      PackageId expected_package_id,
+      AppInstallData data,
+      base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
+      base::OnceClosure callback,
+      bool dialog_accepted);
+  void ProcessInstallResult(
+      AppInstallSurface surface,
+      PackageId expected_package_id,
+      base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
+      base::OnceClosure callback,
+      bool install_success);
 
   raw_ref<Profile> profile_;
   DeviceInfoManager device_info_manager_;

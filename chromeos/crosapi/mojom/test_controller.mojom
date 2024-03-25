@@ -593,4 +593,9 @@ interface TestController {
   // Checks whether the shelf is currently visible.
   [MinVersion=32]
   IsShelfVisible@47() => (bool visible);
+
+  // Sets whether the app install dialog is enabled and should auto accept
+  // installation without actual user input.
+  [MinVersion=33]
+  SetAppInstallDialogAutoAccept@48(bool auto_accept) => ();
 };

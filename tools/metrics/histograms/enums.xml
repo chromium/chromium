@@ -34391,6 +34391,7 @@ others/histograms.xml -->
   <int value="30" label="Isolated Web App: from policy"/>
   <int value="31" label="Isolated Web App: from graphical installer"/>
   <int value="32" label="Isolated Web App: from dev UI"/>
+  <int value="33" label="almanac://install-app navigation"/>
 </enum>
 
 <enum name="WebAppPreinstalledWindowExperimentUserGroup">

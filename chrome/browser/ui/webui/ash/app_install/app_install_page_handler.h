@@ -22,6 +22,11 @@ namespace ash::app_install {
 // the browser process exposing various methods for the JS to invoke.
 class AppInstallPageHandler : public mojom::PageHandler {
  public:
+  // Whether the app install dialog is enabled and should auto accept
+  // installation without actual user input.
+  static bool GetAutoAcceptForTesting();
+  static void SetAutoAcceptForTesting(bool auto_accept);
+
   using CloseDialogCallback = base::OnceCallback<void()>;
   explicit AppInstallPageHandler(
       Profile* profile,

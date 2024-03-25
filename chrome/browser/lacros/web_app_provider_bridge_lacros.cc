@@ -44,6 +44,8 @@ webapps::WebappInstallSource GetInstallSourceForPreload(
       return webapps::WebappInstallSource::PRELOADED_OEM;
     case mojom::PreloadWebAppInstallSource::kDefaultPreload:
       return webapps::WebappInstallSource::PRELOADED_DEFAULT;
+    case mojom::PreloadWebAppInstallSource::kAlmanacInstallAppUri:
+      return webapps::WebappInstallSource::ALMANAC_INSTALL_APP_URI;
   }
 }
 

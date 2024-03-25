@@ -163,6 +163,10 @@ class TestControllerAsh : public mojom::TestController,
 
   void IsShelfVisible(IsShelfVisibleCallback callback) override;
 
+  void SetAppInstallDialogAutoAccept(
+      bool auto_accept,
+      SetAppInstallDialogAutoAcceptCallback callback) override;
+
   mojom::StandaloneBrowserTestController* GetStandaloneBrowserTestController() {
     DCHECK(standalone_browser_test_controller_.is_bound());
     return standalone_browser_test_controller_.get();

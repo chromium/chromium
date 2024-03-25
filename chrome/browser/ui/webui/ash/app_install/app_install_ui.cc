@@ -7,6 +7,7 @@
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -110,10 +111,7 @@ WEB_UI_CONTROLLER_TYPE_IMPL(AppInstallDialogUI)
 
 bool AppInstallDialogUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return (base::FeatureList::IsEnabled(
-              chromeos::features::kCrosWebAppInstallDialog) ||
-          base::FeatureList::IsEnabled(
-              chromeos::features::kCrosOmniboxInstallDialog));
+  return AppInstallDialog::IsEnabled();
 }
 
 AppInstallDialogUIConfig::AppInstallDialogUIConfig()

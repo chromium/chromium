@@ -57,10 +57,12 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
+#include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -1002,6 +1004,13 @@ void TestControllerAsh::SnapWindow(const std::string& window_id,
 
 void TestControllerAsh::IsShelfVisible(IsShelfVisibleCallback callback) {
   std::move(callback).Run(ash::ShelfTestApi().IsVisible());
+}
+
+void TestControllerAsh::SetAppInstallDialogAutoAccept(
+    bool auto_accept,
+    SetAppInstallDialogAutoAcceptCallback callback) {
+  ash::app_install::AppInstallPageHandler::SetAutoAcceptForTesting(auto_accept);
+  std::move(callback).Run();
 }
 
 // This class waits for overview mode to either enter or exit and fires a

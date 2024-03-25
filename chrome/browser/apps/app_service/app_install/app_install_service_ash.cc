@@ -24,6 +24,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"  // nogncheck
+#include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"  // nogncheck
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -51,7 +52,9 @@ enum class AppInstallResult {
   kAppTypeNotSupported = 5,
   kInstallParametersInvalid = 6,
   kAppAlreadyInstalled = 7,
-  kMaxValue = kAppAlreadyInstalled,
+  kInstallDialogNotAccepted = 8,
+  kAppTypeInstallFailed = 9,
+  kMaxValue = kAppTypeInstallFailed,
 };
 
 AppInstallResult InstallWebAppWithBrowserInstallDialog(
@@ -102,6 +105,14 @@ const GURL& GetIconUrl(const std::vector<AppInstallIcon>& icons) {
   }
 
   return *icon_url;
+}
+
+// TODO(b/330414871): AppInstallService shouldn't know about publisher specific
+// logic, remove the generation of app_ids.
+std::string GetAppId(const PackageId& package_id) {
+  CHECK_EQ(package_id.app_type(), AppType::kWeb);
+  // data->package_id.identifier() is the manifest ID for web apps.
+  return web_app::GenerateAppIdFromManifestId(GURL(package_id.identifier()));
 }
 
 void RecordInstallResult(AppInstallSurface surface, AppInstallResult result) {
@@ -238,7 +249,8 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
     PackageId expected_package_id,
     base::OnceClosure callback,
     std::optional<AppInstallData> data) {
-  AppInstallResult result = [&] {
+  std::optional<AppInstallResult> result =
+      [&]() -> std::optional<AppInstallResult> {
     if (!data) {
       return AppInstallResult::kAlmanacFetchFailed;
     }
@@ -252,7 +264,9 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
         if (const auto* web_app_data =
                 absl::get_if<WebAppInstallData>(&data->app_type_data)) {
           if (base::FeatureList::IsEnabled(
-                  chromeos::features::kCrosWebAppInstallDialog)) {
+                  chromeos::features::kCrosWebAppInstallDialog) ||
+              ash::app_install::AppInstallPageHandler::
+                  GetAutoAcceptForTesting()) {
             ash::app_install::mojom::DialogArgsPtr args =
                 ash::app_install::mojom::DialogArgs::New();
             args->url = web_app_data->document_url;
@@ -260,22 +274,17 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
             args->description = data->description;
             args->icon_url = GetIconUrl(data->icons);
 
+            webapps::AppId expected_app_id = GetAppId(data->package_id);
             base::WeakPtr<ash::app_install::AppInstallDialog> dialog =
                 ash::app_install::AppInstallDialog::CreateDialog();
             // TODO(crbug.com/1488697): Install the app.
             dialog->Show(
-                nullptr, std::move(args),
-                web_app::GenerateAppIdFromManifestId(
-                    // expected_package_id.identifier() is the manifest ID for
-                    // web apps.
-                    GURL(expected_package_id.identifier())),
-                base::BindOnce(
-                    [](base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
-                       bool dialog_accepted) {
-                      dialog->SetInstallComplete(nullptr);
-                    },
-                    dialog));
-            return AppInstallResult::kUnknown;
+                nullptr, std::move(args), expected_app_id,
+                base::BindOnce(&AppInstallServiceAsh::InstallIfDialogAccepted,
+                               weak_ptr_factory_.GetWeakPtr(), surface,
+                               expected_package_id, std::move(data).value(),
+                               dialog, std::move(callback)));
+            return std::nullopt;
           }
           // TODO(b/303350800): Delegate to a generic AppPublisher method
           // instead of harboring app type specific logic here.
@@ -319,8 +328,44 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
     }
   }();
 
-  RecordInstallResult(surface, result);
+  if (result.has_value()) {
+    RecordInstallResult(surface, result.value());
+    std::move(callback).Run();
+  }
+}
 
+void AppInstallServiceAsh::InstallIfDialogAccepted(
+    AppInstallSurface surface,
+    PackageId expected_package_id,
+    AppInstallData data,
+    base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
+    base::OnceClosure callback,
+    bool dialog_accepted) {
+  if (!dialog_accepted) {
+    RecordInstallResult(surface, AppInstallResult::kInstallDialogNotAccepted);
+    std::move(callback).Run();
+    return;
+  }
+  web_app_installer_.InstallApp(
+      surface, std::move(data),
+      base::BindOnce(&AppInstallServiceAsh::ProcessInstallResult,
+                     weak_ptr_factory_.GetWeakPtr(), surface,
+                     expected_package_id, dialog, std::move(callback)));
+}
+
+void AppInstallServiceAsh::ProcessInstallResult(
+    AppInstallSurface surface,
+    PackageId expected_package_id,
+    base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
+    base::OnceClosure callback,
+    bool install_success) {
+  if (dialog) {
+    std::string app_id = GetAppId(expected_package_id);
+    dialog->SetInstallComplete(install_success ? &app_id : nullptr);
+  }
+  RecordInstallResult(surface, install_success
+                                   ? AppInstallResult::kSuccess
+                                   : AppInstallResult::kAppTypeInstallFailed);
   std::move(callback).Run();
 }
 
