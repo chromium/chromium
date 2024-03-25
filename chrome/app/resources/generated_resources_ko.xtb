@@ -4227,7 +4227,7 @@
 <translation id="4191892134568599822"><ph name="FEATURE_NAME" />(으)로 받기</translation>
 <translation id="4192024474038595073">{NUM_SITES,plural, =1{사용하지 않는 사이트 1개의 권한이 삭제됨}other{사용하지 않는 사이트 {NUM_SITES}개의 권한이 삭제됨}}</translation>
 <translation id="4193251682249731404">신뢰할 수 있는 CA</translation>
-<translation id="4193575319002689239">카드 보기</translation>
+<translation id="4193575319002689239">카드 표시</translation>
 <translation id="4193836101014293726">프로필을 삭제할 수 없습니다</translation>
 <translation id="419427585139779713">한 번에 한 음절 입력</translation>
 <translation id="4194570336751258953">탭하여 클릭 사용</translation>

@@ -1598,7 +1598,7 @@ Kyber поддерживает обратную совместимость. Су
       Правило переопределяет правила <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> и пользовательские настройки.
 
       Оно влияет только на доступ к USB-устройствам через Web Serial API. Чтобы предоставить доступ к USB-устройствам через WebUSB API, понадобится правило <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
-<translation id="2246565294817797392">Блокировать строки cookie с недопустимыми символами</translation>
+<translation id="2246565294817797392">Запретить обрезку строк cookie</translation>
 <translation id="2246621891161157804">Разрешать Chrome блокировать переходы на внешние протоколы в изолированных окнах iframe</translation>
 <translation id="224750967938323855">Не запрашивать согласие на синхронизацию при входе в аккаунт</translation>
 <translation id="2252400912879027343">WebSQL в небезопасных контекстах будет доступен в версиях до M109. Начиная с версии M110 он станет недоступен.</translation>
