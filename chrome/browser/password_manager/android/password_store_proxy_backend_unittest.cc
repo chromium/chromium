@@ -11,8 +11,10 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
@@ -111,6 +113,8 @@ class PasswordStoreProxyBackendBaseTest : public testing::Test {
         password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
         static_cast<int>(
             password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kEmptyProfileStoreLoginDatabase, true);
   }
 
   void SetUp() override {
@@ -286,6 +290,108 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
 
   EXPECT_CALL(original_callback, Run);
   built_in_sync_callback.Run();
+}
+
+TEST_F(PasswordStoreProxyBackendBaseTest, BuiltInBackendClearedOnSyncInit) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kUnifiedPasswordManagerSyncOnlyInGMSCore,
+                             features::kClearLoginDatabaseForUPMUsers},
+                            {});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+  EnablePasswordSync();
+
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+  EXPECT_CALL(built_in_backend(), RemoveLoginsCreatedBetweenAsync(
+                                      base::Time(), base::Time::Max(), _));
+  proxy_backend().OnSyncServiceInitialized(sync_service());
+}
+
+TEST_F(PasswordStoreProxyBackendBaseTest,
+       BuiltInBackendNotClearedOnSyncInit_WhenM4Disabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {features::kUnifiedPasswordManagerSyncOnlyInGMSCore},
+      {features::kClearLoginDatabaseForUPMUsers});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+  EnablePasswordSync();
+
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+  EXPECT_CALL(built_in_backend(), RemoveLoginsCreatedBetweenAsync).Times(0);
+  proxy_backend().OnSyncServiceInitialized(sync_service());
+}
+
+TEST_F(PasswordStoreProxyBackendBaseTest,
+       BuiltInBackendNotClearedOnSyncInit_WhenUnenrolled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kUnifiedPasswordManagerSyncOnlyInGMSCore,
+                             features::kClearLoginDatabaseForUPMUsers},
+                            {});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+  prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                      true);
+  EnablePasswordSync();
+
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+  EXPECT_CALL(built_in_backend(), RemoveLoginsCreatedBetweenAsync).Times(0);
+  proxy_backend().OnSyncServiceInitialized(sync_service());
+}
+
+TEST_F(PasswordStoreProxyBackendBaseTest,
+       BuiltInBackendNotClearedOnSyncInit_WhenInitialUPMMigrationNotFinished) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kUnifiedPasswordManagerSyncOnlyInGMSCore,
+                             features::kClearLoginDatabaseForUPMUsers},
+                            {});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
+  EnablePasswordSync();
+
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+  EXPECT_CALL(built_in_backend(), RemoveLoginsCreatedBetweenAsync).Times(0);
+  proxy_backend().OnSyncServiceInitialized(sync_service());
+}
+
+TEST_F(PasswordStoreProxyBackendBaseTest,
+       BuiltInBackendNotClearedOnSyncInit_WhenSyncDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kUnifiedPasswordManagerSyncOnlyInGMSCore,
+                             features::kClearLoginDatabaseForUPMUsers},
+                            {});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
+
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+  EXPECT_CALL(built_in_backend(), RemoveLoginsCreatedBetweenAsync).Times(0);
+  proxy_backend().OnSyncServiceInitialized(sync_service());
+}
+
+TEST_F(PasswordStoreProxyBackendBaseTest,
+       BuiltInBackendClearedOnSyncInit_Metrics) {
+  base::HistogramTester histogram_tester;
+  const char kStatusMetric[] =
+      "PasswordManager.PasswordStoreProxyBackend.PasswordRemovalStatus";
+  const char kCountMetric[] =
+      "PasswordManager.PasswordStoreProxyBackend.RemovedPasswordCount";
+
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kUnifiedPasswordManagerSyncOnlyInGMSCore,
+                             features::kClearLoginDatabaseForUPMUsers},
+                            {});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+  EnablePasswordSync();
+
+  PasswordStoreChangeList change_list;
+  change_list.emplace_back(Type::REMOVE, CreateTestForm());
+  change_list.emplace_back(Type::REMOVE, CreateTestForm());
+
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+  EXPECT_CALL(built_in_backend(), RemoveLoginsCreatedBetweenAsync(
+                                      base::Time(), base::Time::Max(), _))
+      .WillOnce(base::test::RunOnceCallback<2>(change_list));
+  proxy_backend().OnSyncServiceInitialized(sync_service());
+
+  histogram_tester.ExpectTotalCount(kStatusMetric, 1);
+  histogram_tester.ExpectBucketCount(kStatusMetric, true, 1);
+  histogram_tester.ExpectTotalCount(kCountMetric, 1);
+  histogram_tester.ExpectBucketCount(kCountMetric, change_list.size(), 1);
 }
 
 // Holds the conditions affecting UPM eligibility and the backends

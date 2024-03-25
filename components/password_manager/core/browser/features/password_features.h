@@ -115,6 +115,9 @@ BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
 // Enables UPM M4 that no longer needs Password sync engine to sync passwords.
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncOnlyInGMSCore);
 
+// This feature clears login database if user is capable of using UPM.
+BASE_DECLARE_FEATURE(kClearLoginDatabaseForUPMUsers);
+
 // A parameter for both the NoMigration and WithMigration features above. It
 // dictates the min value of base::android::BuildInfo::gms_version_code() for
 // the flag take effect.

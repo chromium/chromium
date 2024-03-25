@@ -2948,6 +2948,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.PasswordStoreProxyBackend.PasswordRemovalStatus"
+    enum="BooleanSuccess" expires_after="2024-08-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records whether a call to remove all passwords in BuiltInBackend succeeded.
+    Recorded when the removal operation is finished.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreProxyBackend.RemovedPasswordCount"
+    units="passwords" expires_after="2024-08-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records the number of credentials removed by
+    PasswordStoreProxyBackend::MaybeClearBuiltInBackend() when the deletion
+    actually took place. Recorded only when RemoveLoginsCreatedBetweenAsync()
+    operation was successful.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordStoreProxyBackend.{Function}.Fallback"
     enum="Boolean" expires_after="2024-09-01">
   <owner>ioanap@chromium.org</owner>

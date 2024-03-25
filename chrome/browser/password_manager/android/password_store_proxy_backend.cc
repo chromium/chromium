@@ -21,6 +21,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
@@ -57,6 +58,27 @@ void InvokeCallbackWithCombinedStatus(base::OnceCallback<void(bool)> completion,
 std::string GetFallbackMetricNameForMethod(const MethodName& method_name) {
   return base::StrCat({"PasswordManager.PasswordStoreProxyBackend.",
                        method_name.value(), ".Fallback"});
+}
+
+void RecordPasswordDeletionResult(PasswordChangesOrError result) {
+  bool is_operation_successful = true;
+  if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
+    is_operation_successful = false;
+  }
+  base::UmaHistogramBoolean(
+      "PasswordManager.PasswordStoreProxyBackend.PasswordRemovalStatus",
+      is_operation_successful);
+  if (!is_operation_successful) {
+    return;
+  }
+
+  PasswordChanges changes = absl::get<PasswordChanges>(std::move(result));
+
+  if (changes.has_value()) {
+    base::UmaHistogramCounts1000(
+        "PasswordManager.PasswordStoreProxyBackend.RemovedPasswordCount",
+        changes.value().size());
+  }
 }
 
 }  // namespace
@@ -297,6 +319,7 @@ void PasswordStoreProxyBackend::OnSyncServiceInitialized(
   sync_service_ = sync_service;
   sync_service_->AddObserver(this);
   android_backend_->OnSyncServiceInitialized(sync_service);
+  MaybeClearBuiltInBackend();
 }
 
 void PasswordStoreProxyBackend::RecordAddLoginAsyncCalledFromTheStore() {
@@ -372,6 +395,37 @@ bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackend() {
     return false;
   }
   return true;
+}
+
+void PasswordStoreProxyBackend::MaybeClearBuiltInBackend() {
+  CHECK(!password_manager::UsesSplitStoresAndUPMForLocal(prefs_));
+
+  // Don't do anything if `kUnifiedPasswordManagerSyncOnlyInGMSCore` feature is
+  // not enabled.
+  if (!base::FeatureList::IsEnabled(
+          features::kUnifiedPasswordManagerSyncOnlyInGMSCore)) {
+    return;
+  }
+
+  // Don't do anything if password syncing is not enabled.
+  if (!IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
+    return;
+  }
+
+  // Don't do anything if the user didn't complete initial UPM migration or was
+  // unenrolled in the past.
+  if (prefs_->GetInteger(
+          prefs::kCurrentMigrationVersionToGoogleMobileServices) == 0 ||
+      prefs_->GetBoolean(
+          prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kClearLoginDatabaseForUPMUsers)) {
+    built_in_backend_->RemoveLoginsCreatedBetweenAsync(
+        base::Time(), base::Time::Max(),
+        base::BindOnce(&RecordPasswordDeletionResult));
+  }
 }
 
 }  // namespace password_manager
