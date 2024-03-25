@@ -25,7 +25,7 @@ class PLATFORM_EXPORT DisplayItemList {
 
  public:
   DisplayItemList() = default;
-  ~DisplayItemList();
+  ~DisplayItemList() { clear(); }
 
   DisplayItemList(const DisplayItemList&) = delete;
   DisplayItemList& operator=(const DisplayItemList&) = delete;
@@ -35,6 +35,8 @@ class PLATFORM_EXPORT DisplayItemList {
   void ReserveCapacity(wtf_size_t initial_capacity) {
     items_.reserve(initial_capacity);
   }
+
+  void clear();
 
   // This private section is before the public APIs because some inline public
   // methods depend on the private definitions.

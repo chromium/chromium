@@ -54,6 +54,17 @@ void PaintController::Trace(Visitor* visitor) const {
   visitor->Trace(under_invalidation_checker_);
 }
 
+void PaintController::clear() {
+  if (current_paint_artifact_) {
+    current_paint_artifact_->clear();
+  }
+  if (new_paint_artifact_) {
+    new_paint_artifact_->clear();
+  }
+  new_subsequences_.tree.clear();
+  new_subsequences_.map.clear();
+}
+
 void PaintController::ReserveCapacity() {
   static constexpr wtf_size_t kDefaultDisplayItemListCapacity = 16;
   auto display_item_list_capacity = kDefaultDisplayItemListCapacity;
@@ -909,6 +920,26 @@ void PaintController::ValidateNewChunkClient(const DisplayItemClient& client) {
 void PaintController::SetBenchmarkMode(PaintBenchmarkMode mode) {
   DCHECK(new_paint_artifact_->IsEmpty());
   benchmark_mode_ = mode;
+}
+
+PaintControllerCycleScope::PaintControllerCycleScope(
+    PaintController& controller,
+    bool record_debug_info)
+    : controller_(controller),
+      old_paint_artifact_(controller.current_paint_artifact_.Get()) {
+  controller.StartCycle(record_debug_info);
+}
+
+PaintControllerCycleScope::~PaintControllerCycleScope() {
+  controller_.FinishCycle();
+  // After the cycle scope, the old paint artifact should not be referenced by
+  // anyone and the backing store can be freed. This is especially helpful
+  // when PaintArtifact is garbage collected while the vectors are not. See
+  // crbug.com/330072757.
+  if (old_paint_artifact_ &&
+      old_paint_artifact_ != controller_.current_paint_artifact_.Get()) {
+    old_paint_artifact_->clear();
+  }
 }
 
 }  // namespace blink

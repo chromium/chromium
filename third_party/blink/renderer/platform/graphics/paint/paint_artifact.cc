@@ -90,6 +90,12 @@ void PaintArtifact::AppendChunksAsJSON(wtf_size_t start_chunk_index,
   }
 }
 
+void PaintArtifact::clear() {
+  display_item_list_.clear();
+  chunks_.clear();
+  debug_info_.clear();
+}
+
 std::ostream& operator<<(std::ostream& os, const PaintArtifact& artifact) {
   return os << artifact.ToJSON()->ToPrettyJSONString().Utf8();
 }

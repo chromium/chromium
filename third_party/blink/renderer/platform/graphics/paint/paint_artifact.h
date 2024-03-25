@@ -74,6 +74,8 @@ class PLATFORM_EXPORT PaintArtifact final
                           JSONArray&,
                           unsigned flags) const;
 
+  void clear();
+
  private:
   struct ClientDebugInfo {
     String name;

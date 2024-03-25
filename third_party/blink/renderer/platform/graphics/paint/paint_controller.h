@@ -98,6 +98,8 @@ class PLATFORM_EXPORT PaintController
 
   friend class PaintControllerCycleScope;
 
+  void clear();
+
   // These methods are called during painting.
 
   // Provide a new set of paint chunk properties to apply to recorded display
@@ -481,14 +483,12 @@ class PLATFORM_EXPORT PaintControllerCycleScope {
 
  public:
   explicit PaintControllerCycleScope(PaintController& controller,
-                                     bool record_debug_info)
-      : controller_(controller) {
-    controller.StartCycle(record_debug_info);
-  }
-  ~PaintControllerCycleScope() { controller_.FinishCycle(); }
+                                     bool record_debug_info);
+  ~PaintControllerCycleScope();
 
  protected:
   PaintController& controller_;
+  PaintArtifact* old_paint_artifact_;
 };
 
 }  // namespace blink
