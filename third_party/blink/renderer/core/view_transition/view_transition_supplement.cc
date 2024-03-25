@@ -321,22 +321,9 @@ ViewTransitionSupplement::TakePendingRequests() {
   return std::move(pending_requests_);
 }
 
-void ViewTransitionSupplement::OnMetaTagChanged(
-    const AtomicString& content_value) {
-  auto cross_document_opt_in =
-      EqualIgnoringASCIICase(content_value, "same-origin")
-          ? mojom::blink::ViewTransitionSameOriginOptIn::kEnabled
-          : mojom::blink::ViewTransitionSameOriginOptIn::kDisabled;
-
-  SetCrossDocumentOptIn(cross_document_opt_in);
-}
-
 void ViewTransitionSupplement::OnViewTransitionsStyleUpdated(
     bool cross_document_enabled) {
   CHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
-  // TODO(https://crbug.com/1463966): Remove meta tag opt-in - ignore the case
-  // where both are specified for now.
-
   SetCrossDocumentOptIn(
       cross_document_enabled
           ? mojom::blink::ViewTransitionSameOriginOptIn::kEnabled

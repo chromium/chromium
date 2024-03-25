@@ -4,9 +4,9 @@
 <link rel="help" href="https://github.com/WICG/view-transitions">
 <link rel="author" href="mailto:khushalsagar@chromium.org">
 <link rel="match" href="root-element-transition-no-opt-in-ref.html">
-<meta name="view-transition" content="same-origin">
 <script src="/common/reftest-wait.js"></script>
 <style>
+@view-transition { navigation: auto; }
 html {
   background: blue;
 }
@@ -21,6 +21,7 @@ html {
 <div class="hidden"></div>
 <script>
 function runTest() {
+  document.styleSheets[0].cssRules[0].navigation = 'none';
   const url = "resources/root-element-transition-opt-in-removed.html";
   window.location.replace(new URL(url, window.location));
 }

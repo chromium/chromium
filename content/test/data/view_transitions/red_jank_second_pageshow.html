@@ -2,7 +2,11 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width">
-  <meta name="view-transition" content="same-origin">
+  <style>
+  @view-transition {
+    navigation: auto;
+  }
+  </style>
   <script>
     let firstPageShow = true;
     window.addEventListener("pageshow", () => {

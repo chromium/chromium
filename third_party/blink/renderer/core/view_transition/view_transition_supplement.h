@@ -80,10 +80,6 @@ class CORE_EXPORT ViewTransitionSupplement
   VectorOf<std::unique_ptr<ViewTransitionRequest>> TakePendingRequests();
   void OnTransitionFinished(ViewTransition* transition) override;
 
-  // Notifies when the "view-transition" meta tag associated with this Document
-  // has changed.
-  void OnMetaTagChanged(const AtomicString& content_value);
-
   // TODO(https://crbug.com/1422251): Expand this to receive a the full set of
   // @view-transition options.
   void OnViewTransitionsStyleUpdated(bool cross_document_enabled);

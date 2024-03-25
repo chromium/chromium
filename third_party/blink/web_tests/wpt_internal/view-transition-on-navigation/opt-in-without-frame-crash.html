@@ -6,7 +6,9 @@
 <script>
 const htmlString = `
 <!doctype html>
-<meta name="view-transition" content="same-origin">
+<style>
+@view-transition { navigation: auto; }
+</style>
 <div>Hello!</div>`;
 
 const parser = new DOMParser();
