@@ -27,6 +27,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -47,7 +48,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/snippet.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
@@ -57,14 +60,6 @@
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#endif
 
 using bookmarks::BookmarkModel;
 using history::BrowsingHistoryService;
@@ -260,7 +255,6 @@ base::Value::Dict HistoryEntryToValue(
   result.Set("deviceName", device_name);
   result.Set("deviceType", device_type);
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (supervised_user::IsSubjectToParentalControls(*profile.GetPrefs())) {
     supervised_user::SupervisedUserService* supervised_user_service =
         SupervisedUserServiceFactory::GetForProfile(&profile);
@@ -271,7 +265,6 @@ base::Value::Dict HistoryEntryToValue(
     is_blocked_visit = entry.blocked_visit;
     host_filtering_behavior = static_cast<int>(filtering_behavior);
   }
-#endif
 
   result.Set("dateTimeOfDay", date_time_of_day);
   result.Set("dateRelativeDay", date_relative_day);

@@ -27,7 +27,6 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/page_navigator.h"
 #include "extensions/common/constants.h"
@@ -347,12 +346,10 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
       ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT)
     default_button = ui::DIALOG_BUTTON_OK;
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // When we require parent permission next, we
   // set the default button to OK.
   if (prompt_->requires_parent_permission())
     default_button = ui::DIALOG_BUTTON_OK;
-#endif
 
   SetModalType(ui::MODAL_TYPE_WINDOW);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(

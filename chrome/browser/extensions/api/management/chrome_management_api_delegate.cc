@@ -47,7 +47,6 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -59,6 +58,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/common/api/management.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -377,7 +377,6 @@ void OnWebAppInstallabilityChecked(
   NOTREACHED();
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 extensions::SupervisedUserExtensionsDelegate*
 GetSupervisedUserExtensionsDelegateFromContext(
     content::BrowserContext* context) {
@@ -389,8 +388,6 @@ GetSupervisedUserExtensionsDelegateFromContext(
   CHECK(supervised_user_extensions_delegate);
   return supervised_user_extensions_delegate;
 }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
 }  // namespace
 
 ChromeManagementAPIDelegate::ChromeManagementAPIDelegate() = default;
@@ -563,7 +560,6 @@ void ChromeManagementAPIDelegate::EnableExtension(
       extensions::ExtensionRegistry::Get(context)->GetExtensionById(
           extension_id, extensions::ExtensionRegistry::EVERYTHING);
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // We add approval for the extension here under the assumption that prior
   // to this point, the supervised child user has already been prompted
   // for, and received parent permission to install the extension.
@@ -572,7 +568,6 @@ void ChromeManagementAPIDelegate::EnableExtension(
 
   extensions_delegate->AddExtensionApproval(*extension);
   extensions_delegate->RecordExtensionEnablementUmaMetrics(/*enabled=*/true);
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   // If the extension was disabled for a permissions increase, the Management
   // API will have displayed a re-enable prompt to the user, so we know it's
@@ -587,11 +582,9 @@ void ChromeManagementAPIDelegate::DisableExtension(
     const extensions::Extension* source_extension,
     const extensions::ExtensionId& extension_id,
     extensions::disable_reason::DisableReason disable_reason) const {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   extensions::SupervisedUserExtensionsDelegate* extensions_delegate =
       GetSupervisedUserExtensionsDelegateFromContext(context);
   extensions_delegate->RecordExtensionEnablementUmaMetrics(/*enabled=*/false);
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   extensions::ExtensionSystem::Get(context)
       ->extension_service()
       ->DisableExtensionWithSource(source_extension, extension_id,

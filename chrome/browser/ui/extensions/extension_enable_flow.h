@@ -14,14 +14,10 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "extensions/common/extension_id.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "extensions/browser/supervised_user_extensions_delegate.h"
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "extensions/common/extension_id.h"
 
 class ExtensionEnableFlowDelegate;
 
@@ -82,12 +78,10 @@ class ExtensionEnableFlow : public extensions::LoadErrorReporter::Observer,
   // Creates an ExtensionInstallPrompt in |prompt_|.
   void CreatePrompt();
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // Called when the extension approval flow is complete.
   void OnExtensionApprovalDone(
       extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult
           result);
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   // Starts/stops observing extension load notifications.
   void StartObserving();

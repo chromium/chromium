@@ -11,7 +11,6 @@
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -85,8 +84,6 @@ void ShowSettingsOverriddenDialog(
     std::unique_ptr<SettingsOverriddenDialogController> controller,
     Browser* browser);
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
 // The type of action that the ExtensionInstalledBlockedByParentDialog
 // is being shown in reaction to.
 enum class ExtensionInstalledBlockedByParentDialogAction {
@@ -103,8 +100,6 @@ void ShowExtensionInstallBlockedByParentDialog(
     const Extension* extension,
     content::WebContents* web_contents,
     base::OnceClosure done_callback);
-
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 

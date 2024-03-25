@@ -177,14 +177,9 @@ std::u16string ExtensionInstallPrompt::Prompt::GetAcceptButtonLabel() const {
   int id = -1;
   switch (type_) {
     case INSTALL_PROMPT:
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-      if (requires_parent_permission())
+      if (requires_parent_permission()) {
         id = IDS_EXTENSION_INSTALL_PROMPT_ASK_A_PARENT_BUTTON;
-      else
-#endif
-          // NOTE: strange indentation formatting is due to intervening
-          // BUILDFLAG above.
-          if (extension_->is_app()) {
+      } else if (extension_->is_app()) {
         id = IDS_EXTENSION_INSTALL_PROMPT_ACCEPT_BUTTON_APP;
       } else if (extension_->is_theme()) {
         id = IDS_EXTENSION_INSTALL_PROMPT_ACCEPT_BUTTON_THEME;

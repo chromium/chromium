@@ -31,7 +31,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -52,11 +52,6 @@
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/common/features.h"
-#endif
 
 namespace chrome {
 
@@ -103,24 +98,21 @@ std::optional<std::string> GetEnterpriseAccountDomain(Profile* profile) {
 }
 
 bool ShouldDisplayManagedByParentUi(Profile* profile) {
-#if !BUILDFLAG(ENABLE_SUPERVISED_USERS) || BUILDFLAG(IS_CHROMEOS)
-  // Don't display the managed by parent UI:
-  // * on unsupervised platforms
-  // * on ChromeOS, because similar UI is displayed at the OS level.
+#if BUILDFLAG(IS_CHROMEOS)
+  // Don't display the managed by parent UI on ChromeOS, because similar UI is
+  // displayed at the OS level.
   return false;
 #else
   return profile &&
          supervised_user::IsSubjectToParentalControls(*profile->GetPrefs());
-#endif  // !BUILDFLAG(ENABLE_SUPERVISED_USERS) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 ManagementStringType GetManagementStringType(Profile* profile) {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (!enterprise_util::IsBrowserManaged(profile) &&
       ShouldDisplayManagedByParentUi(profile)) {
     return SUPERVISED;
   }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   std::optional<std::string> account_manager =
       GetAccountManagerIdentity(profile);
@@ -198,11 +190,9 @@ GURL GetManagedUiUrl(Profile* profile) {
     return GURL(kChromeUIManagementURL);
   }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (ShouldDisplayManagedByParentUi(profile)) {
     return GURL(supervised_user::kManagedByParentUiMoreInfoUrl);
   }
-#endif
 
   return GURL();
 }
@@ -222,11 +212,9 @@ const gfx::VectorIcon& GetManagedUiIcon(Profile* profile) {
 
 std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
   CHECK(ShouldDisplayManagedUi(profile));
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (!enterprise_util::IsBrowserManaged(profile)) {
     CHECK(ShouldDisplayManagedByParentUi(profile));
   }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   std::optional<std::string> account_manager =
       GetAccountManagerIdentity(profile);
   std::optional<std::string> device_manager = GetDeviceManagerIdentity();
@@ -282,12 +270,10 @@ std::string GetManagedUiWebUIIcon(Profile* profile) {
     return "cr:domain";
   }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (ShouldDisplayManagedByParentUi(profile)) {
     // The Family Link "kite" icon.
     return "cr20:kite";
   }
-#endif
 
   // This method can be called even if we shouldn't display the managed UI.
   return std::string();
@@ -330,13 +316,9 @@ std::u16string GetManagedUiWebUILabel(Profile* profile) {
           base::UTF8ToUTF16(chrome::kChromeUIManagementURL),
           base::UTF8ToUTF16(*account_manager));
     case SUPERVISED:
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
       return l10n_util::GetStringFUTF16(
           IDS_MANAGED_BY_PARENT_WITH_HYPERLINK,
           base::UTF8ToUTF16(supervised_user::kManagedByParentUiMoreInfoUrl));
-#else
-      break;
-#endif
     case NOT_MANAGED:
       return std::u16string();
   }
@@ -359,11 +341,9 @@ std::u16string GetDeviceManagedUiHelpLabel(Profile* profile) {
                : l10n_util::GetStringUTF16(IDS_MANAGEMENT_SUBTITLE);
   }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (ShouldDisplayManagedByParentUi(profile)) {
     return l10n_util::GetStringUTF16(IDS_HELP_MANAGED_BY_YOUR_PARENT);
   }
-#endif
 
   return l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

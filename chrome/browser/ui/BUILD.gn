@@ -32,6 +32,8 @@ import("//third_party/protobuf/proto_library.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/views/features.gni")
 
+assert(enable_supervised_users)
+
 generate_histograms_variants_allowlist("webui_name_variants") {
   namespace = "views_metrics"
   input_xml_file = "//tools/metrics/histograms/metadata/page/histograms.xml"
@@ -276,6 +278,10 @@ static_library("ui") {
     "webui/download_internals/download_internals_ui_message_handler.h",
     "webui/engagement/site_engagement_ui.cc",
     "webui/engagement/site_engagement_ui.h",
+    "webui/family_link_user_internals/family_link_user_internals_message_handler.cc",
+    "webui/family_link_user_internals/family_link_user_internals_message_handler.h",
+    "webui/family_link_user_internals/family_link_user_internals_ui.cc",
+    "webui/family_link_user_internals/family_link_user_internals_ui.h",
     "webui/fileicon_source.cc",
     "webui/fileicon_source.h",
     "webui/flags/flags_ui.cc",
@@ -634,7 +640,7 @@ static_library("ui") {
     "//components/strings",
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/core/browser",
-    "//components/supervised_user/core/common:buildflags",
+    "//components/supervised_user/core/browser",
     "//components/sync",
     "//components/sync_preferences",
     "//components/sync_sessions",
@@ -2188,17 +2194,7 @@ static_library("ui") {
     deps += [ "//components/paint_preview/browser" ]
   }
 
-  if (enable_supervised_users) {
-    sources += [
-      "webui/family_link_user_internals/family_link_user_internals_message_handler.cc",
-      "webui/family_link_user_internals/family_link_user_internals_message_handler.h",
-      "webui/family_link_user_internals/family_link_user_internals_ui.cc",
-      "webui/family_link_user_internals/family_link_user_internals_ui.h",
-    ]
-    deps += [ "//components/supervised_user/core/browser" ]
-  }
-
-  if (enable_supervised_users && enable_extensions) {
+  if (enable_extensions) {
     sources += [
       "supervised_user/parent_permission_dialog.h",
       "views/supervised_user/extension_install_blocked_by_parent_dialog.cc",

@@ -22,7 +22,6 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/common/buildflags.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/common/permissions/permission_message.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
@@ -122,7 +121,6 @@ class ExtensionInstallPrompt {
     std::u16string GetAbortButtonLabel() const;
     std::u16string GetPermissionsHeading() const;
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     void set_requires_parent_permission(bool requires_parent_permission) {
       requires_parent_permission_ = requires_parent_permission;
     }
@@ -130,7 +128,6 @@ class ExtensionInstallPrompt {
     bool requires_parent_permission() const {
       return requires_parent_permission_;
     }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
     // Returns whether the dialog should withheld permissions if the dialog is
     // accepted.
@@ -190,10 +187,8 @@ class ExtensionInstallPrompt {
     // permissions if only additional ones are being requested)
     extensions::InstallPromptPermissions prompt_permissions_;
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     // True if the current user is a child.
     bool requires_parent_permission_ = false;
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
     bool is_requesting_host_permissions_;
 

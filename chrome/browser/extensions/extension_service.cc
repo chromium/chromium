@@ -77,7 +77,7 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -128,10 +128,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "storage/browser/file_system/file_system_context.h"
 #endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -1324,11 +1320,9 @@ void ExtensionService::CheckManagementPolicy() {
 
     // If this profile is not supervised, then remove any supervised user
     // related disable reasons.
-    bool is_supervised = false;
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    is_supervised = profile() && supervised_user::IsSubjectToParentalControls(
-                                     *profile()->GetPrefs());
-#endif
+    bool is_supervised =
+        profile() &&
+        supervised_user::IsSubjectToParentalControls(*profile()->GetPrefs());
     if (!is_supervised) {
       disable_reasons &= (~disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
     }

@@ -18,6 +18,7 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 assert(enable_extensions)
+assert(enable_supervised_users)
 
 static_library("extensions") {
   sources = [
@@ -829,7 +830,7 @@ static_library("extensions") {
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/site_engagement/core/mojom:mojo_bindings",
-    "//components/supervised_user/core/common:buildflags",
+    "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common:common",
     "//components/webapps/browser",
     "//components/webapps/common",
@@ -993,10 +994,6 @@ static_library("extensions") {
     "//ui/strings",
     "//url",
   ]
-
-  if (enable_supervised_users) {
-    deps += [ "//components/supervised_user/core/browser" ]
-  }
 
   if (is_linux || is_mac || is_win) {
     sources += [

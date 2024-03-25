@@ -46,7 +46,8 @@
 #include "components/security_interstitials/core/ssl_error_options_mask.h"
 #include "components/security_interstitials/core/ssl_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/browser/supervised_user_error_page.h"  // nogncheck
+#include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -69,10 +70,6 @@
 #include "components/security_interstitials/content/captive_portal_blocking_page.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/browser/supervised_user_error_page.h"  // nogncheck
-#include "components/supervised_user/core/browser/supervised_user_interstitial.h"
-#endif
 
 using security_interstitials::TestSafeBrowsingBlockingPageQuiet;
 
@@ -120,9 +117,7 @@ class InterstitialHTMLSource : public content::URLDataSource {
       content::URLDataSource::GotDataCallback callback) override;
 
  private:
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   std::string GetSupervisedUserInterstitialHTML(const std::string& path);
-#endif
 };
 
 std::unique_ptr<SSLBlockingPage> CreateSslBlockingPage(
@@ -573,10 +568,8 @@ void InterstitialHTMLSource::StartDataRequest(
         CreateSafeBrowsingQuietBlockingPage(web_contents);
     html = blocking_page->GetHTML();
     interstitial_delegate = std::move(blocking_page);
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   } else if (path_without_query == "/supervised_user") {
     html = GetSupervisedUserInterstitialHTML(path);
-#endif
   } else if (interstitial_delegate.get()) {
     html = interstitial_delegate.get()->GetHTMLContents();
   } else {
@@ -588,7 +581,6 @@ void InterstitialHTMLSource::StartDataRequest(
   std::move(callback).Run(html_bytes.get());
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
     const std::string& path) {
   GURL url("https://localhost/" + path);
@@ -641,4 +633,3 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
       g_browser_process->GetApplicationLocale(), /*already_sent_request=*/false,
       /*is_main_frame=*/true, show_banner);
 }
-#endif
