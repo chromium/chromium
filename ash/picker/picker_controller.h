@@ -55,8 +55,11 @@ class ASH_EXPORT PickerController
 
   // Sets the `client` used by this class and the widget to communicate with the
   // browser. `client` may be set to null, which will close the Widget if it's
-  // open. If `client` is not null, then it must remain valid for the lifetime
-  // of this class, or until `SetClient` is called with a different client.
+  // open, and may call "stop search" methods on the PREVIOUS client.
+  // If `client` is not null, then it must remain valid for the lifetime of this
+  // class, or until AFTER `SetClient` is called with a different client.
+  // Caution: If `client` outlives this class, the client should avoid calling
+  // this method on a destructed class instance to avoid a use after free.
   void SetClient(PickerClient* client);
 
   // Toggles the visibility of the Picker widget.

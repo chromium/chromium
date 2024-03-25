@@ -197,6 +197,8 @@ void PickerController::DisableFeatureKeyCheckForTesting() {
 
 void PickerController::SetClient(PickerClient* client) {
   client_ = client;
+  // The destructor of `PickerSearchRequest` inside `PickerSearchController` may
+  // result in "stop search" calls to the PREVIOUS `PickerClient`.
   if (client_ == nullptr) {
     search_controller_ = nullptr;
   } else {

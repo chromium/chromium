@@ -115,6 +115,9 @@ PickerClientImpl::PickerClientImpl(ash::PickerController* controller,
 }
 
 PickerClientImpl::~PickerClientImpl() {
+  // Calling `PickerController::SetClient` with null requires the old client
+  // (this client) to be valid. This is fine as we have not started destructing
+  // anything yet.
   controller_->SetClient(nullptr);
 }
 
