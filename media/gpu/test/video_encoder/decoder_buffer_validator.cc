@@ -110,7 +110,7 @@ bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
     return false;
   }
 
-  if (!metadata.end_of_picture) {
+  if (!metadata.end_of_picture()) {
     LOG(ERROR) << "end_of_picture must be true always in H264";
     return false;
   }
@@ -316,7 +316,7 @@ bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer,
     return true;
   }
 
-  if (!metadata.end_of_picture) {
+  if (!metadata.end_of_picture()) {
     LOG(ERROR) << "end_of_picture must be true always in VP8";
     return false;
   }
@@ -465,7 +465,7 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
           << "BitstreamBufferMetadata has Vp9Metadata on a dropped frame";
       return false;
     }
-    if (metadata.end_of_picture) {
+    if (metadata.end_of_picture()) {
       dropped_superframe_timestamp_.reset();
     } else {
       if (!dropped_superframe_timestamp_) {
@@ -688,9 +688,9 @@ bool VP9Validator::ValidateSVCStream(const DecoderBuffer& decoder_buffer,
   };
 
   const bool end_of_picture = vp9.spatial_idx == cur_num_spatial_layers_ - 1;
-  if (end_of_picture != metadata.end_of_picture) {
+  if (end_of_picture != metadata.end_of_picture()) {
     LOG(ERROR) << "end_of_picture mismatches: end_of_picture=" << end_of_picture
-               << ", metadata.end_of_picture=" << metadata.end_of_picture;
+               << ", metadata.end_of_picture=" << metadata.end_of_picture();
     return false;
   }
 
@@ -861,9 +861,9 @@ bool VP9Validator::ValidateSmodeStream(const DecoderBuffer& decoder_buffer,
   };
 
   const bool end_of_picture = vp9.spatial_idx == cur_num_spatial_layers_ - 1;
-  if (end_of_picture != metadata.end_of_picture) {
+  if (end_of_picture != metadata.end_of_picture()) {
     LOG(ERROR) << "end_of_picture mismatches: end_of_picture=" << end_of_picture
-               << ", metadata.end_of_picture=" << metadata.end_of_picture;
+               << ", metadata.end_of_picture=" << metadata.end_of_picture();
     return false;
   }
   if (end_of_picture) {
@@ -979,7 +979,7 @@ bool AV1Validator::Validate(const DecoderBuffer& decoder_buffer,
     }
     return true;
   }
-  if (!metadata.end_of_picture) {
+  if (!metadata.end_of_picture()) {
     LOG(ERROR) << "end_of_picture must be true always in AV1";
     return false;
   }

@@ -332,7 +332,7 @@ void MojoVideoEncodeAcceleratorService::BitstreamBufferReady(
                "MojoVideoEncodeAcceleratorService::BitstreamBufferReady",
                "timestamp", metadata.timestamp.InMicroseconds(),
                "bitstream_buffer_id", bitstream_buffer_id);
-  if (MediaTraceIsEnabled() && metadata.end_of_picture) {
+  if (MediaTraceIsEnabled() && metadata.end_of_picture()) {
     int64_t timestamp = metadata.timestamp.InMicroseconds();
     const auto timestamp_it = timestamps_.Peek(timestamp);
     if (timestamp_it != timestamps_.end()) {

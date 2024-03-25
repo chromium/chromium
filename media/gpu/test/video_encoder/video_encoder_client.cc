@@ -443,7 +443,7 @@ void VideoEncoderClient::BitstreamBufferReady(
     }
   }
 
-  if (metadata.end_of_picture) {
+  if (metadata.end_of_picture()) {
     frame_index_++;
     CHECK_EQ(source_timestamps_.erase(metadata.timestamp), 1u);
   }

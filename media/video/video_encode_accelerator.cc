@@ -44,16 +44,25 @@ BitstreamBufferMetadata::~BitstreamBufferMetadata() = default;
 BitstreamBufferMetadata BitstreamBufferMetadata::CreateForDropFrame(
     base::TimeDelta ts,
     uint8_t sid,
-    bool end_of_pic) {
+    bool end_of_picture) {
   BitstreamBufferMetadata metadata(0, false, ts);
   metadata.drop = DropFrameMetadata{
       .spatial_idx = sid,
+      .end_of_picture = end_of_picture,
   };
 
-  metadata.end_of_picture = end_of_pic;
   return metadata;
 }
 
+bool BitstreamBufferMetadata::end_of_picture() const {
+  if (vp9) {
+    return vp9->end_of_picture;
+  }
+  if (drop) {
+    return drop->end_of_picture;
+  }
+  return true;
+}
 bool BitstreamBufferMetadata::dropped_frame() const {
   return drop.has_value();
 }
@@ -299,9 +308,8 @@ bool operator==(const BitstreamBufferMetadata& l,
                 const BitstreamBufferMetadata& r) {
   return l.payload_size_bytes == r.payload_size_bytes &&
          l.key_frame == r.key_frame && l.timestamp == r.timestamp &&
-         l.end_of_picture == r.end_of_picture && l.vp8 == r.vp8 &&
-         l.vp9 == r.vp9 && l.h264 == r.h264 && l.av1 == r.av1 &&
-         l.h265 == r.h265;
+         l.vp8 == r.vp8 && l.vp9 == r.vp9 && l.h264 == r.h264 &&
+         l.av1 == r.av1 && l.h265 == r.h265;
 }
 
 bool operator==(const VideoEncodeAccelerator::Config::SpatialLayer& l,

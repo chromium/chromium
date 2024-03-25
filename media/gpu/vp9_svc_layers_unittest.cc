@@ -113,6 +113,7 @@ void VerifykSVCFrame(
   const uint8_t spatial_index = metadata.spatial_idx;
 
   EXPECT_EQ(picture_param.key_frame, frame_num == 0 && spatial_index == 0);
+  EXPECT_EQ(metadata.end_of_picture, spatial_index == num_spatial_layers - 1);
 
   if (picture_param.key_frame) {
     EXPECT_EQ(spatial_index, 0);
@@ -177,6 +178,7 @@ void VerifySmodeFrame(
   const uint8_t temporal_index = metadata.temporal_idx;
   const uint8_t spatial_index = metadata.spatial_idx;
   EXPECT_EQ(picture_param.key_frame, frame_num == 0);
+  EXPECT_EQ(metadata.end_of_picture, spatial_index == num_spatial_layers - 1);
 
   if (picture_param.key_frame) {
     EXPECT_EQ(temporal_index, 0u);

@@ -35,9 +35,11 @@ class VideoFrame;
 // Metadata for a dropped frame.
 // BitstreamBufferMetadata has this data if and only if the frame is
 // dropped.
-// |spatial_idx| indicates the spatial index for this frame.
+// |spatial_idx|    indicates the spatial index for this frame.
+// |end_of_picture| is trueiff frame is last spatial layer frame of picture.
 struct MEDIA_EXPORT DropFrameMetadata final {
   uint8_t spatial_idx = 0;
+  bool end_of_picture = true;
 };
 
 //  Metadata for a H264 bitstream buffer.
@@ -86,6 +88,8 @@ struct MEDIA_EXPORT Vp9Metadata final {
   bool referenced_by_upper_spatial_layers = false;
   // True iff frame is dependent on directly lower spatial layer frame.
   bool reference_lower_spatial_layers = false;
+  // True iff frame is last spatial layer frame of picture.
+  bool end_of_picture = true;
 
   // The temporal index for this frame.
   uint8_t temporal_idx = 0;
@@ -148,13 +152,10 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   bool key_frame;
   base::TimeDelta timestamp;
   int32_t qp = -1;
-  // This is true if a frame is the last spatial layer frame in SVC encoding.
-  // This is useful, in SVC encoding, to represent it when a frame is dropped
-  // and thus the vp9 metadata is not filled.
-  // TODO(b/329745253): Move to Vp9Metadata and DropFrameMetadata, and add
-  // end_of_picture().
-  bool end_of_picture = true;
 
+  // This is true if a frame is the last spatial layer frame in SVC encoding.
+  // This is always true in non-SVC encoding.
+  bool end_of_picture() const;
   bool dropped_frame() const;
   std::optional<uint8_t> spatial_idx() const;
 
