@@ -27,6 +27,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/style/typography.h"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "components/plus_addresses/resources/vector_icons.h"
@@ -458,7 +459,14 @@ void AddSuggestionContentToView(
   }
 
   // The leading icon.
-  if (std::unique_ptr<views::ImageView> icon = GetIconImageView(suggestion)) {
+  if (suggestion.is_loading) {
+    content_view.AddChildView(std::make_unique<views::Throbber>())->Start();
+    AddSpacerWithSize(content_view, layout,
+                      PopupBaseView::GetHorizontalPadding(),
+                      /*resize=*/false);
+    content_view.SetEnabled(false);
+  } else if (std::unique_ptr<views::ImageView> icon =
+                 GetIconImageView(suggestion)) {
     content_view.AddChildView(std::move(icon));
     AddSpacerWithSize(content_view, layout,
                       PopupBaseView::GetHorizontalPadding(),

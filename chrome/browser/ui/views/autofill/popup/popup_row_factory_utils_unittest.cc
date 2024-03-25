@@ -28,6 +28,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -37,7 +38,7 @@ using ::testing::Return;
 
 namespace autofill {
 
-class AutocompleteRowWithDeleteButtonTest : public ChromeViewsTestBase {
+class PopupRowFactoryUtilsTestBase : public ChromeViewsTestBase {
  public:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -47,25 +48,9 @@ class AutocompleteRowWithDeleteButtonTest : public ChromeViewsTestBase {
   }
 
   void TearDown() override {
-    view_ = nullptr;
     generator_.reset();
     widget_.reset();
     ChromeViewsTestBase::TearDown();
-  }
-
-  void ShowSuggestion(Suggestion suggestion) {
-    // Show the button.
-    controller().set_suggestions({std::move(suggestion)});
-    PopupRowView* view = widget_->SetContentsView(
-        CreatePopupRowView(controller().GetWeakPtr(), a11y_selection_delegate(),
-                           selection_delegate(), 0));
-    CHECK(views::IsViewClass<PopupRowWithButtonView>(view));
-    view_ = static_cast<PopupRowWithButtonView*>(view);
-    widget_->Show();
-  }
-
-  void ShowAutocompleteSuggestion() {
-    ShowSuggestion(Suggestion(u"Some entry", PopupItemId::kAutocompleteEntry));
   }
 
  protected:
@@ -77,16 +62,44 @@ class AutocompleteRowWithDeleteButtonTest : public ChromeViewsTestBase {
     return mock_selection_delegate_;
   }
   ui::test::EventGenerator& generator() { return *generator_; }
-  PopupRowWithButtonView& view() { return *view_; }
   views::Widget& widget() { return *widget_; }
 
  private:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
-  raw_ptr<PopupRowWithButtonView> view_ = nullptr;
   MockAutofillPopupController controller_;
   MockAccessibilitySelectionDelegate mock_a11y_selection_delegate_;
   MockSelectionDelegate mock_selection_delegate_;
+};
+
+class AutocompleteRowWithDeleteButtonTest
+    : public PopupRowFactoryUtilsTestBase {
+ public:
+  void TearDown() override {
+    view_ = nullptr;
+    PopupRowFactoryUtilsTestBase::TearDown();
+  }
+
+  void ShowSuggestion(Suggestion suggestion) {
+    // Show the button.
+    controller().set_suggestions({std::move(suggestion)});
+    PopupRowView* view = widget().SetContentsView(
+        CreatePopupRowView(controller().GetWeakPtr(), a11y_selection_delegate(),
+                           selection_delegate(), 0));
+    CHECK(views::IsViewClass<PopupRowWithButtonView>(view));
+    view_ = static_cast<PopupRowWithButtonView*>(view);
+    widget().Show();
+  }
+
+  void ShowAutocompleteSuggestion() {
+    ShowSuggestion(Suggestion(u"Some entry", PopupItemId::kAutocompleteEntry));
+  }
+
+ protected:
+  PopupRowWithButtonView& view() { return *view_; }
+
+ private:
+  raw_ptr<PopupRowWithButtonView> view_ = nullptr;
 
   // All current Autocomplete tests assume that the deletion button feature is
   // enabled.
@@ -134,6 +147,51 @@ TEST_F(AutocompleteRowWithDeleteButtonTest,
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT, u"Some entry"),
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+}
+
+class PasswordPopupRowViewTest : public PopupRowFactoryUtilsTestBase {
+ public:
+  void TearDown() override {
+    view_ = nullptr;
+    PopupRowFactoryUtilsTestBase::TearDown();
+  }
+
+  void ShowSuggestion(Suggestion suggestion) {
+    // Show the button.
+    controller().set_suggestions({std::move(suggestion)});
+    PopupRowView* view = widget().SetContentsView(
+        CreatePopupRowView(controller().GetWeakPtr(), a11y_selection_delegate(),
+                           selection_delegate(), 0));
+    CHECK(views::IsViewClass<PopupRowView>(view));
+    view_ = static_cast<PopupRowView*>(view);
+    widget().Show();
+  }
+
+  void ShowPasswordSuggestionWithLoadingState(bool is_loading) {
+    Suggestion suggestion{u"ortiler", PopupItemId::kPasswordEntry};
+    suggestion.is_loading = Suggestion::IsLoading(is_loading);
+    ShowSuggestion(suggestion);
+  }
+
+ protected:
+  PopupRowView& view() { return *view_; }
+
+ private:
+  raw_ptr<PopupRowView> view_ = nullptr;
+};
+
+TEST_F(PasswordPopupRowViewTest, LoadingSuggestionShowsThrobber) {
+  ShowPasswordSuggestionWithLoadingState(true);
+
+  EXPECT_TRUE(views::IsViewClass<views::Throbber>(
+      view().GetContentView().children().at(0)));
+}
+
+TEST_F(PasswordPopupRowViewTest, NonLoadingSuggestionDoesNotShowThrobber) {
+  ShowPasswordSuggestionWithLoadingState(false);
+
+  EXPECT_FALSE(views::IsViewClass<views::Throbber>(
+      view().GetContentView().children().at(0)));
 }
 
 }  // namespace autofill
