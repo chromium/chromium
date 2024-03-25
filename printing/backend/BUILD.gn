@@ -77,6 +77,11 @@ component("backend") {
   if (use_cups) {
     public_configs += [ "//printing:cups" ]
 
+    sources += [
+      "cups_deleters.cc",
+      "cups_deleters.h",
+    ]
+
     if (is_linux || is_chromeos) {
       # CUPS 1.6 deprecated the PPD APIs, but we will stay with this API
       # for now as the suitability of the replacement is unclear.
@@ -98,8 +103,6 @@ component("backend") {
       sources += [
         "cups_connection.cc",
         "cups_connection.h",
-        "cups_deleters.cc",
-        "cups_deleters.h",
         "cups_ipp_constants.cc",
         "cups_ipp_constants.h",
         "cups_ipp_helper.cc",

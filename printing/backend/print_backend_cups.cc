@@ -139,10 +139,6 @@ std::string PrintBackendCUPS::PrinterDriverInfoFromCUPS(
   return std::string(info);
 }
 
-void PrintBackendCUPS::DestinationDeleter::operator()(cups_dest_t* dest) const {
-  cupsFreeDests(1, dest);
-}
-
 mojom::ResultCode PrintBackendCUPS::EnumeratePrinters(
     PrinterList& printer_list) {
   DCHECK(printer_list.empty());
@@ -370,7 +366,7 @@ base::FilePath PrintBackendCUPS::GetPPD(const char* name) {
   return ppd_path;
 }
 
-PrintBackendCUPS::ScopedDestination PrintBackendCUPS::GetNamedDest(
+ScopedDestination PrintBackendCUPS::GetNamedDest(
     const std::string& printer_name) {
   cups_dest_t* dest;
   if (print_server_url_.is_empty()) {
