@@ -361,7 +361,7 @@ index 991e924..65fae23 100644
  #endif
 +#endif
 diff --git a/src/hunspell/hashmgr.cxx b/src/hunspell/hashmgr.cxx
-index 1de1690..770fac1 100644
+index 1de1690..a7bcbb7 100644
 --- a/src/hunspell/hashmgr.cxx
 +++ b/src/hunspell/hashmgr.cxx
 @@ -84,8 +84,14 @@
@@ -737,7 +737,7 @@ index 1de1690..770fac1 100644
    return (aliasf != NULL);
  }
 diff --git a/src/hunspell/hashmgr.hxx b/src/hunspell/hashmgr.hxx
-index 812171a..af27d6c 100644
+index 812171a..6471833 100644
 --- a/src/hunspell/hashmgr.hxx
 +++ b/src/hunspell/hashmgr.hxx
 @@ -82,9 +82,22 @@
@@ -763,7 +763,7 @@ index 812171a..af27d6c 100644
    int tablesize;
    struct hentry** tableptr;
    flag flag_mode;
-@@ -104,7 +118,23 @@ class HashMgr {
+@@ -104,7 +117,23 @@ class HashMgr {
    char** aliasm;
  
   public:
@@ -787,7 +787,7 @@ index 812171a..af27d6c 100644
    ~HashMgr();
  
    struct hentry* lookup(const char*) const;
-@@ -134,6 +164,40 @@ class HashMgr {
+@@ -134,6 +163,40 @@ class HashMgr {
                 bool onlyupcase);
    int load_config(const char* affpath, const char* key);
    bool parse_aliasf(const std::string& line, FileMgr* af);
@@ -850,10 +850,10 @@ index 1e6c118..c3aa2be 100644
  
  #define ROTATE(v, q) \
 diff --git a/src/hunspell/hunspell.cxx b/src/hunspell/hunspell.cxx
-index abcdb8f..c8c5cf4 100644
+index abcdb8f..df851c5 100644
 --- a/src/hunspell/hunspell.cxx
 +++ b/src/hunspell/hunspell.cxx
-@@ -79,6 +79,9 @@
+@@ -79,19 +79,28 @@
  #include "hunspell.hxx"
  #include "suggestmgr.hxx"
  #include "hunspell.h"
@@ -864,10 +864,10 @@ index abcdb8f..c8c5cf4 100644
  
  #include <limits>
  #include <string>
-
--#define MAXWORDUTF8LEN (MAXWORDLEN * 2)
-+#define MAXWORDUTF8LEN (MAXWORDLEN * 3)
-
+ 
+-#define MAXWORDUTF8LEN (MAXWORDLEN * 3)
++#define MAXWORDUTF8LEN (MAXWORDLEN * 2)
+ 
  class HunspellImpl
  {
  public:
@@ -934,12 +934,12 @@ index abcdb8f..c8c5cf4 100644
 +  bdict_reader = new hunspell::BDictReader;
 +  bdict_reader->Init(bdict_data, bdict_length);
  
-   /* first set up the hash manager */
++  /* first set up the hash manager */
 +  m_HMgrs.push_back(new HashMgr(bdict_reader));
 +
 +  pAMgr = new AffixMgr(bdict_reader, m_HMgrs); // TODO: 'key' ?
 +#else
-+  /* first set up the hash manager */
+   /* first set up the hash manager */
    m_HMgrs.push_back(new HashMgr(dpath, affpath, key));
  
    /* next set up the affix manager */
@@ -1055,7 +1055,7 @@ index abcdb8f..c8c5cf4 100644
  int Hunspell_spell(Hunhandle* pHunspell, const char* word) {
    return reinterpret_cast<Hunspell*>(pHunspell)->spell(std::string(word));
 diff --git a/src/hunspell/hunspell.hxx b/src/hunspell/hunspell.hxx
-index 43af66b..a35df83 100644
+index 43af66b..13cc2bd 100644
 --- a/src/hunspell/hunspell.hxx
 +++ b/src/hunspell/hunspell.hxx
 @@ -79,9 +79,13 @@
@@ -1073,7 +1073,6 @@ index 43af66b..a35df83 100644
  #define MAXSHARPS 5
  
  #ifndef MAXWORDLEN
-
 @@ -115,11 +119,17 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell {
     * long path names (without the long path prefix Hunspell will use fopen()
     * with system-dependent character encoding instead of _wfopen()).

@@ -34,8 +34,8 @@ steps, or simply run update_google_patch.sh from the commandline.
    $ cd hunspell
    $ git checkout v1.6.0
 2) Apply the existing patch:
-   $ patch -p0 -i ~/src/third_party/hunspell/google.patch
-3) Make your new changes inside the CVS hunspell directory.
+   $ patch -p1 -i ~/src/third_party/hunspell/google.patch
+3) Make your new changes inside the git hunspell directory.
 4) Generate the updated patch:
    $ git diff > ~/src/third_party/hunspell/google.patch
 
