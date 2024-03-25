@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/json/values_util.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
@@ -160,7 +161,7 @@ std::optional<DebugStreamData> DeserializeDebugStreamData(
   std::string binary_data;
   if (!base::Base64Decode(base64_encoded, &binary_data))
     return std::nullopt;
-  base::Pickle pickle(binary_data.data(), binary_data.size());
+  base::Pickle pickle = base::Pickle::WithData(base::as_byte_span(binary_data));
   DebugStreamData result;
   if (!UnpickleDebugStreamData(base::PickleIterator(pickle), result))
     return std::nullopt;
