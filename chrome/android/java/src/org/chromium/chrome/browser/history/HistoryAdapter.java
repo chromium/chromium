@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
@@ -40,6 +41,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private @Nullable HistoryProvider mHistoryProvider;
 
     // Headers
+    private TextView mPrivacyDisclaimerTextView;
     private View mPrivacyDisclaimerBottomSpace;
     private Button mHistoryOpenInChromeButton;
     private Button mClearBrowsingDataButton;
@@ -260,6 +262,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     @Override
     public void hasOtherFormsOfBrowsingData(boolean hasOtherForms) {
         mHasOtherFormsOfBrowsingData = hasOtherForms;
+        updatePrivacyDisclaimerText();
         setPrivacyDisclaimer();
         mManager.onPrivacyDisclaimerHasChanged();
     }
@@ -306,8 +309,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     /**
-     * Initialize clear browsing data and privacy disclaimer header views and generate header
-     * items for them.
+     * Initialize clear browsing data and privacy disclaimer header views and generate header items
+     * for them.
      */
     void generateHeaderItems() {
         ViewGroup privacyDisclaimerContainer = getPrivacyDisclaimerContainer(null);
@@ -323,7 +326,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                         clearBrowsingDataButtonContainer.findViewById(
                                 R.id.clear_browsing_data_button);
 
-        if (mManager.getShouldShowOpenInChrome()) {
+        if (mManager.isAppSpecificHistory()) {
             ViewGroup historyOpenInChromeButtonContainer = getCctOpenInChromeButtonContainer(null);
 
             mHistoryOpenInChromeHeaderItem = new HeaderItem(1, historyOpenInChromeButtonContainer);
@@ -367,20 +370,37 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                         LayoutInflater.from(context)
                                 .inflate(R.layout.history_privacy_disclaimer_header, parent, false);
 
-        TextView privacyDisclaimerTextView =
+        mPrivacyDisclaimerTextView =
                 privacyDisclaimerContainer.findViewById(R.id.privacy_disclaimer);
-        privacyDisclaimerTextView.setMovementMethod(LinkMovementMethod.getInstance());
-
-        NoUnderlineClickableSpan link =
-                new NoUnderlineClickableSpan(
-                        context, (view) -> mManager.onPrivacyDisclaimerLinkClicked());
-        CharSequence disclaimerText =
-                SpanApplier.applySpans(
-                        context.getResources()
-                                .getString(R.string.android_history_other_forms_of_history),
-                        new SpanApplier.SpanInfo("<link>", "</link>", link));
-        privacyDisclaimerTextView.setText(disclaimerText);
+        mPrivacyDisclaimerTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        updatePrivacyDisclaimerText();
         return privacyDisclaimerContainer;
+    }
+
+    private void updatePrivacyDisclaimerText() {
+        Context context = mPrivacyDisclaimerTextView.getContext();
+        CharSequence text;
+        if (mManager.isAppSpecificHistory()) {
+            if (!hasPrivacyDisclaimers()) {
+                text = context.getResources().getString(R.string.android_app_history_open_full);
+            } else {
+                text = getPrivacyDisclaimerClickableSpanString(
+                        context, R.string.android_app_history_open_full_other_forms);
+            }
+        } else {
+            text = getPrivacyDisclaimerClickableSpanString(
+                    context, R.string.android_history_other_forms_of_history);
+        }
+        mPrivacyDisclaimerTextView.setText(text);
+    }
+
+    private CharSequence getPrivacyDisclaimerClickableSpanString(
+            Context context, @StringRes int resId) {
+        var s = context.getResources().getString(resId);
+        var link =
+                new NoUnderlineClickableSpan(
+                        context, (v) -> mManager.onPrivacyDisclaimerLinkClicked());
+        return SpanApplier.applySpans(s, new SpanApplier.SpanInfo("<link>", "</link>", link));
     }
 
     /** Pass header items to {@link #setHeaders(HeaderItem...)} as parameters. */
@@ -388,7 +408,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         ArrayList<HeaderItem> args = new ArrayList<>();
         if (mPrivacyDisclaimersVisible) args.add(mPrivacyDisclaimerHeaderItem);
         if (mClearBrowsingDataButtonVisible) args.add(mClearBrowsingDataButtonHeaderItem);
-        if (mManager.getShouldShowOpenInChrome()) {
+        if (mManager.isAppSpecificHistory()) {
             args.add(mHistoryOpenInChromeHeaderItem);
         }
         setHeaders(args.toArray(new HeaderItem[args.size()]));
@@ -412,7 +432,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     /** Set text of privacy disclaimer and visibility of its container. */
     void setPrivacyDisclaimer() {
         boolean shouldShowPrivacyDisclaimers =
-                hasPrivacyDisclaimers() && mManager.getShouldShowPrivacyDisclaimersIfAvailable();
+                (hasPrivacyDisclaimers() || mManager.isAppSpecificHistory())
+                        && mManager.getShouldShowPrivacyDisclaimersIfAvailable();
 
         // Prevent from refreshing the recycler view if header visibility is not changed.
         if (mPrivacyDisclaimersVisible == shouldShowPrivacyDisclaimers) return;

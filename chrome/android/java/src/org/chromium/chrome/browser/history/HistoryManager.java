@@ -177,7 +177,7 @@ public class HistoryManager
                 mContentManager.getAdapter(), mContentManager.getRecyclerView());
 
         mShouldShowPrivacyDisclaimerSupplier.set(
-                shouldShowInfoHeader && mContentManager.hasPrivacyDisclaimers());
+                shouldShowInfoHeader && mContentManager.isInfoHeaderAvailable());
         mShouldShowClearBrowsingDataSupplier.set(mContentManager.getShouldShowClearData());
 
         // 3. Initialize toolbar.
@@ -303,7 +303,7 @@ public class HistoryManager
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeader);
         mContentManager.updatePrivacyDisclaimers(shouldShowInfoHeader);
         mShouldShowPrivacyDisclaimerSupplier.set(
-                shouldShowInfoHeader && mContentManager.hasPrivacyDisclaimers());
+                shouldShowInfoHeader && mContentManager.isInfoHeaderAvailable());
     }
 
     private String getSearchEmptyString() {
@@ -427,15 +427,15 @@ public class HistoryManager
         boolean firstAdapterItemScrolledOff = layoutManager.findFirstVisibleItemPosition() > 0;
 
         return !firstAdapterItemScrolledOff
-                && mContentManager.hasPrivacyDisclaimers()
+                && mContentManager.isInfoHeaderAvailable()
                 && mContentManager.getItemCount() > 0
                 && !mToolbar.isSearching()
                 && !mSelectionDelegate.isSelectionEnabled();
     }
 
     /**
-     * @return True if the available privacy disclaimers should be shown.
-     * Note that this may return true even if there are currently no privacy disclaimers.
+     * @return True if the available privacy disclaimers should be shown. Note that this may return
+     *     true even if there are currently no privacy disclaimers.
      */
     boolean shouldShowInfoHeaderIfAvailable() {
         return mContentManager.getShouldShowPrivacyDisclaimersIfAvailable();
@@ -502,7 +502,7 @@ public class HistoryManager
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeaderIfAvailable());
         mShouldShowPrivacyDisclaimerSupplier.set(
                 mContentManager.getShouldShowPrivacyDisclaimersIfAvailable()
-                        && mContentManager.hasPrivacyDisclaimers());
+                        && mContentManager.isInfoHeaderAvailable());
     }
 
     @Override
