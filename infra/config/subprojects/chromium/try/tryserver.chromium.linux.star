@@ -766,8 +766,6 @@ try_.orchestrator_builder(
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
-    # TODO: b/311312613 - enable Siso after fixing sanitizer build performance.
-    siso_enabled = False,
     tryjob = try_.job(),
 )
 
@@ -775,8 +773,6 @@ try_.compilator_builder(
     name = "linux_chromium_tsan_rel_ng-compilator",
     branch_selector = branches.selector.LINUX_BRANCHES,
     main_list_view = "try",
-    # TODO: b/311312613 - enable Siso after fixing sanitizer build performance.
-    siso_enabled = False,
 )
 
 # TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
