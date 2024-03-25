@@ -33,6 +33,7 @@
 #include "base/containers/span.h"
 #include "base/substring_set_matcher/substring_set_matcher.h"
 #include "base/trace_event/common/trace_event_common.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
@@ -1230,6 +1231,10 @@ void ElementRuleCollector::DidMatchRule(
       result_.SetFirstLineDependsOnSizeContainerQueries();
     }
   } else {
+    if (rule_data->Rule()->Properties().ContainsCursorHand()) {
+      context_.GetElement().GetDocument().CountUse(
+          WebFeature::kQuirksModeCursorHandApplied);
+    }
     matched_rules_.emplace_back(rule_data, layer_order, proximity,
                                 style_sheet_index);
   }

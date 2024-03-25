@@ -255,6 +255,7 @@ static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
   FilterProperties(false, parsed_properties, results, unused_entries,
                    seen_properties, seen_custom_properties);
 
+  bool count_cursor_hand = false;
   if (document && mode == kHTMLQuirksMode &&
       seen_properties.test(GetCSSPropertyIDIndex(CSSPropertyID::kCursor))) {
     // See if the properties contain “cursor: hand” without also containing
@@ -278,11 +279,13 @@ static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
     }
     if (contains_cursor_hand && !contains_cursor_pointer) {
       document->CountUse(WebFeature::kQuirksModeCursorHand);
+      count_cursor_hand = true;
     }
   }
 
   ImmutableCSSPropertyValueSet* result = ImmutableCSSPropertyValueSet::Create(
-      results.data() + unused_entries, results.size() - unused_entries, mode);
+      results.data() + unused_entries, results.size() - unused_entries, mode,
+      count_cursor_hand);
   parsed_properties.clear();
   return result;
 }

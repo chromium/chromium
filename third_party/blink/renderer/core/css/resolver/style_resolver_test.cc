@@ -4005,6 +4005,7 @@ TEST_P(ParameterizedStyleResolverTest, CursorHandIsCounted) {
       <div>target</div>
     )HTML");
   EXPECT_TRUE(IsUseCounted(WebFeature::kQuirksModeCursorHand));
+  EXPECT_TRUE(IsUseCounted(WebFeature::kQuirksModeCursorHandApplied));
 }
 
 TEST_P(ParameterizedStyleResolverTest, CursorHandInStandardsModeIsIgnored) {
@@ -4017,6 +4018,7 @@ TEST_P(ParameterizedStyleResolverTest, CursorHandInStandardsModeIsIgnored) {
       <div>target</div>
     )HTML");
   EXPECT_FALSE(IsUseCounted(WebFeature::kQuirksModeCursorHand));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kQuirksModeCursorHandApplied));
 }
 
 TEST_P(ParameterizedStyleResolverTest, IEIgnoreSyntaxForCursorHandIsIgnored) {
@@ -4030,6 +4032,7 @@ TEST_P(ParameterizedStyleResolverTest, IEIgnoreSyntaxForCursorHandIsIgnored) {
       <div>target</div>
     )HTML");
   EXPECT_FALSE(IsUseCounted(WebFeature::kQuirksModeCursorHand));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kQuirksModeCursorHandApplied));
 }
 
 TEST_P(ParameterizedStyleResolverTest, CursorHandThatLoses) {
@@ -4045,6 +4048,7 @@ TEST_P(ParameterizedStyleResolverTest, CursorHandThatLoses) {
       <div>target</div>
     )HTML");
   EXPECT_FALSE(IsUseCounted(WebFeature::kQuirksModeCursorHand));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kQuirksModeCursorHandApplied));
 }
 
 TEST_P(ParameterizedStyleResolverTest,
@@ -4061,6 +4065,21 @@ TEST_P(ParameterizedStyleResolverTest,
       <div>target</div>
     )HTML");
   EXPECT_FALSE(IsUseCounted(WebFeature::kQuirksModeCursorHand));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kQuirksModeCursorHandApplied));
+}
+
+TEST_P(ParameterizedStyleResolverTest, CursorHandNotApplied) {
+  GetDocument().SetCompatibilityMode(Document::kQuirksMode);
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        .doesnotexist {
+          cursor: hand;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kQuirksModeCursorHand));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kQuirksModeCursorHandApplied));
 }
 
 }  // namespace blink

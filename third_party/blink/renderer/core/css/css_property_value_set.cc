@@ -53,11 +53,12 @@ AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(
 ImmutableCSSPropertyValueSet* ImmutableCSSPropertyValueSet::Create(
     const CSSPropertyValue* properties,
     unsigned count,
-    CSSParserMode css_parser_mode) {
+    CSSParserMode css_parser_mode,
+    bool contains_cursor_hand) {
   DCHECK_LE(count, static_cast<unsigned>(kMaxArraySize));
   return MakeGarbageCollected<ImmutableCSSPropertyValueSet>(
       AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(count),
-      properties, count, css_parser_mode);
+      properties, count, css_parser_mode, contains_cursor_hand);
 }
 
 ImmutableCSSPropertyValueSet* CSSPropertyValueSet::ImmutableCopyIfNeeded()
@@ -93,8 +94,9 @@ MutableCSSPropertyValueSet::MutableCSSPropertyValueSet(
 ImmutableCSSPropertyValueSet::ImmutableCSSPropertyValueSet(
     const CSSPropertyValue* properties,
     unsigned length,
-    CSSParserMode css_parser_mode)
-    : CSSPropertyValueSet(css_parser_mode, length) {
+    CSSParserMode css_parser_mode,
+    bool contains_query_hand)
+    : CSSPropertyValueSet(css_parser_mode, length, contains_query_hand) {
   CSSPropertyValueMetadata* metadata_array =
       const_cast<CSSPropertyValueMetadata*>(MetadataArray());
   Member<const CSSValue>* value_array =
