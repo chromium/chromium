@@ -133,7 +133,7 @@ std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
     target = !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format,
                                                              buffer_plane)
                  ? GL_TEXTURE_2D
-                 : gpu::GetPlatformSpecificTextureTarget();
+                 : GL_TEXTURE_EXTERNAL_OES;
   }
 
   gl::GLApi* api = gl::g_current_gl_context;
