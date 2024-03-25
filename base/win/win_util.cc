@@ -268,31 +268,34 @@ bool IsKeyboardPresentOnSlate(HWND hwnd, std::string* reason) {
 
   if (CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableUsbKeyboardDetect)) {
-    if (reason)
+    if (reason) {
       *reason = "Detection disabled";
+    }
     return false;
   }
 
   // This function should be only invoked for machines with touch screens.
   if ((GetSystemMetrics(SM_DIGITIZER) & NID_INTEGRATED_TOUCH) !=
       NID_INTEGRATED_TOUCH) {
-    if (reason) {
-      *reason += "NID_INTEGRATED_TOUCH\n";
-      result = true;
-    } else {
+    if (!reason) {
       return true;
     }
+
+    *reason += "NID_INTEGRATED_TOUCH\n";
+    result = true;
   }
 
   // If it is a tablet device we assume that there is no keyboard attached.
   if (IsTabletDevice(reason, hwnd)) {
-    if (reason)
+    if (reason) {
       *reason += "Tablet device.\n";
+    }
     return false;
   }
 
-  if (!reason)
+  if (!reason) {
     return true;
+  }
 
   *reason += "Not a tablet device";
   result = true;
@@ -323,8 +326,9 @@ bool IsKeyboardPresentOnSlate(HWND hwnd, std::string* reason) {
       // If there is no auto rotation sensor or rotation is not supported in
       // the current configuration, then we can assume that this is a desktop
       // or a traditional laptop.
-      if (!reason)
+      if (!reason) {
         return true;
+      }
 
       *reason += (auto_rotation_state & AR_NOSENSOR) ? "AR_NOSENSOR\n"
                                                      : "AR_NOT_SUPPORTED\n";
@@ -342,8 +346,9 @@ bool IsKeyboardPresentOnSlate(HWND hwnd, std::string* reason) {
   HDEVINFO device_info = SetupDiGetClassDevs(&KEYBOARD_CLASS_GUID, nullptr,
                                              nullptr, DIGCF_PRESENT);
   if (device_info == INVALID_HANDLE_VALUE) {
-    if (reason)
+    if (reason) {
       *reason += "No keyboard info\n";
+    }
     return result;
   }
 
@@ -529,22 +534,23 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
   std::optional<bool> ret;
 
   if (GetSystemMetrics(SM_MAXIMUMTOUCHES) == 0) {
-    if (reason) {
-      *reason += "Device does not support touch.\n";
-      ret = false;
-    } else {
+    if (!reason) {
       return false;
     }
+
+    *reason += "Device does not support touch.\n";
+    ret = false;
   }
 
   // If the device is docked, the user is treating the device as a PC.
   if (GetSystemMetrics(SM_SYSTEMDOCKED) != 0) {
-    if (reason) {
-      *reason += "SM_SYSTEMDOCKED\n";
-      if (!ret.has_value())
-        ret = false;
-    } else {
+    if (!reason) {
       return false;
+    }
+
+    *reason += "SM_SYSTEMDOCKED\n";
+    if (!ret.has_value()) {
+      ret = false;
     }
   }
 
@@ -559,8 +565,9 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
   if (get_auto_rotation_state_func) {
     AR_STATE rotation_state = AR_ENABLED;
     if (get_auto_rotation_state_func(&rotation_state) &&
-        (rotation_state & (AR_NOT_SUPPORTED | AR_LAPTOP | AR_NOSENSOR)) != 0)
-      return ret.has_value() ? ret.value() : false;
+        (rotation_state & (AR_NOT_SUPPORTED | AR_LAPTOP | AR_NOSENSOR)) != 0) {
+      return ret.value_or(false);
+    }
   }
 
   // PlatformRoleSlate was added in Windows 8+.
@@ -569,12 +576,13 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
   if (role == PlatformRoleMobile || role == PlatformRoleSlate) {
     is_tablet = !GetSystemMetrics(SM_CONVERTIBLESLATEMODE);
     if (!is_tablet) {
-      if (reason) {
-        *reason += "Not in slate mode.\n";
-        if (!ret.has_value())
-          ret = false;
-      } else {
+      if (!reason) {
         return false;
+      }
+
+      *reason += "Not in slate mode.\n";
+      if (!ret.has_value()) {
+        ret = false;
       }
     } else if (reason) {
       *reason += (role == PlatformRoleMobile) ? "PlatformRoleMobile\n"
@@ -583,7 +591,7 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
   } else if (reason) {
     *reason += "Device role is not mobile or slate.\n";
   }
-  return ret.has_value() ? ret.value() : is_tablet;
+  return ret.value_or(is_tablet);
 }
 
 bool IsEnrolledToDomain() {
@@ -604,7 +612,7 @@ bool IsJoinedToAzureAD() {
 }
 
 bool IsUser32AndGdi32Available() {
-  static auto is_user32_and_gdi32_available = []() {
+  static const bool is_user32_and_gdi32_available = []() {
     // If win32k syscalls aren't disabled, then user32 and gdi32 are available.
     PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY policy = {};
     if (::GetProcessMitigationPolicy(GetCurrentProcess(),
@@ -640,6 +648,7 @@ bool GetLoadedModulesSnapshot(HANDLE process, std::vector<HMODULE>* snapshot) {
       DPLOG(ERROR) << "::EnumProcessModules failed.";
       return false;
     }
+
     DCHECK_EQ(0u, bytes_required % sizeof(HMODULE));
     size_t num_modules = bytes_required / sizeof(HMODULE);
     if (num_modules <= snapshot->size()) {
@@ -647,15 +656,17 @@ bool GetLoadedModulesSnapshot(HANDLE process, std::vector<HMODULE>* snapshot) {
       snapshot->erase(snapshot->begin() + static_cast<ptrdiff_t>(num_modules),
                       snapshot->end());
       return true;
-    } else if (num_modules == 0) {
+    }
+
+    if (num_modules == 0) {
       DLOG(ERROR) << "Can't determine the module list size.";
       return false;
-    } else {
-      // Buffer size was too small. Try again with a larger buffer. A little
-      // more room is given to avoid multiple expensive calls to
-      // ::EnumProcessModules() just because one module has been added.
-      snapshot->resize(num_modules + 8, nullptr);
     }
+
+    // Buffer size was too small. Try again with a larger buffer. A little
+    // more room is given to avoid multiple expensive calls to
+    // ::EnumProcessModules() just because one module has been added.
+    snapshot->resize(num_modules + 8, nullptr);
   } while (--retries_remaining);
 
   DLOG(ERROR) << "Failed to enumerate modules.";
@@ -771,8 +782,9 @@ bool IsCurrentSessionRemote() {
   static constexpr wchar_t kGlassSessionIdValueName[] = L"GlassSessionId";
   DWORD glass_session_id = 0;
   if (key.ReadValueDW(kGlassSessionIdValueName, &glass_session_id) !=
-      ERROR_SUCCESS)
+      ERROR_SUCCESS) {
     return false;
+  }
 
   return current_session_id != glass_session_id;
 }
