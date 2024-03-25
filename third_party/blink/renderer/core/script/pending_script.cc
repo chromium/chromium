@@ -186,10 +186,11 @@ void PendingScript::ExecuteScriptBlock() {
   Dispose();
 
   absl::optional<recordreplay::AutoDependencyExecution> execute;
-  if (recordreplay::IsReplaying()) {
+  if (recordreplay::IsReplaying() && !recordreplay::FeatureEnabled("no-dependency-graph")) {
     base::Value::Dict info;
     info.Set("kind", "executeScriptBlock");
-    info.Set("url", script->SourceUrl().GetString().Utf8());
+    if (script)
+      info.Set("url", script->SourceUrl().GetString().Utf8());
     std::string json;
     base::JSONWriter::Write(info, &json);
     int node_id = recordreplay::NewDependencyGraphNode(json.c_str());
