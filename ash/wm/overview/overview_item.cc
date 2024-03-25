@@ -4,7 +4,6 @@
 
 #include "ash/wm/overview/overview_item.h"
 
-#include <sstream>
 #include <utility>
 #include <vector>
 
@@ -1013,6 +1012,22 @@ void OverviewItem::OnWindowPropertyChanged(aura::Window* window,
   if (window->GetProperty(aura::client::kTopViewInset) !=
       static_cast<int>(old)) {
     overview_grid_->PositionWindows(/*animate=*/false);
+  }
+}
+
+void OverviewItem::OnWindowParentChanged(aura::Window* window,
+                                         aura::Window* parent) {
+  if (!parent || !prepared_for_overview_ ||
+      !OverviewController::Get()->InOverviewSession()) {
+    return;
+  }
+
+  if (root_window_ != window->GetRootWindow()) {
+    overview_session_->AddItemInMruOrder(
+        window, /*reposition=*/false, /*animate=*/true,
+        /*restack=*/true, /*use_spawn_animation=*/true);
+    window_destruction_delegate_->OnOverviewItemWindowDestroying(
+        this, /*reposition=*/true);
   }
 }
 

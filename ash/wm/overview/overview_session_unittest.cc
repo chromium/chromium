@@ -3699,6 +3699,44 @@ TEST_P(OverviewSessionTest,
   EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
 }
 
+// Verify that when an overview item is moved to a different display, it
+// is properly removed from the original grid and displayed in the new one with
+// no crash. See original crash reported at http://b/320479135.
+TEST_P(OverviewSessionTest,
+       NoCrashWhenSettingOverviewItemBoundsOnAnotherDisplay) {
+  UpdateDisplay("800x700,801+0-800x700");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  EXPECT_EQ(2U, display_manager->GetNumDisplays());
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+
+  std::unique_ptr<aura::Window> window =
+      CreateAppWindow(gfx::Rect(10, 10, 200, 100));
+  // Explicitly call `set_allow_set_bounds_direct()` to true to trigger the same
+  // stack trace.
+  WindowState::Get(window.get())->set_allow_set_bounds_direct(true);
+  aura::Window* old_root_window = window->GetRootWindow();
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  const auto& grids = GetOverviewSession()->grid_list();
+  ASSERT_EQ(2u, grids.size());
+  auto grid0 = grids[0].get();
+  ASSERT_TRUE(grid0);
+  const auto& overview_items = grid0->window_list();
+  ASSERT_EQ(overview_items.size(), 1u);
+  EXPECT_TRUE(IsWindowInItsCorrespondingOverviewGrid(window.get()));
+
+  // Verify that when setting the window bounds to another display, the window
+  // will be moved properly.
+  window->SetBoundsInScreen(
+      gfx::Rect(900, 10, 200, 100),
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          Shell::GetAllRootWindows()[1].get()));
+  EXPECT_NE(window->GetRootWindow(), old_root_window);
+  EXPECT_TRUE(IsWindowInItsCorrespondingOverviewGrid(window.get()));
+}
+
 // If you update the parameterisation of OverviewSessionTest also update the
 // parameterisation of OverviewRasterScaleTest below.
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/,

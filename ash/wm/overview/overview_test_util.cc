@@ -174,4 +174,16 @@ void WaitForOcclusionStateChange(aura::Window* window,
   }
 }
 
+bool IsWindowInItsCorrespondingOverviewGrid(aura::Window* window) {
+  const auto& overview_items =
+      GetOverviewGridForRoot(window->GetRootWindow())->window_list();
+  for (auto& overview_item : overview_items) {
+    if (overview_item->Contains(window)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace ash

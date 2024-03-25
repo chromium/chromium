@@ -136,6 +136,8 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
+  void OnWindowParentChanged(aura::Window* window,
+                             aura::Window* parent) override;
   void OnWindowBoundsChanged(aura::Window* window,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
