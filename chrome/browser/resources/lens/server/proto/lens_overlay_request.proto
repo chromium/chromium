@@ -18,8 +18,8 @@ message LensOverlayRequest {
     TEXT_SELECTION = 2;
     // Requests selection and fulfillment of a specific object.
     OBJECT_FULFILLMENT = 3;
-    // User performed a multimodal query.
-    MULTIMODAL_QUERY = 4;
+    // User performed a text query.
+    TEXT_QUERY = 4;
   }
   Type type = 1;
 
