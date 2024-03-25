@@ -18,12 +18,6 @@
 
 @interface LegacyInfobarEditAddressProfileTableViewController () <UITextFieldDelegate>
 
-// The delegate passed to this instance.
-@property(nonatomic, weak) id<InfobarModalDelegate> delegate;
-
-// Used to build and record metrics.
-@property(nonatomic, strong) InfobarMetricsRecorder* metricsRecorder;
-
 // Yes, if the edit is done for updating the profile.
 @property(nonatomic, assign) BOOL isEditForUpdate;
 
@@ -32,7 +26,13 @@
 
 @end
 
-@implementation LegacyInfobarEditAddressProfileTableViewController
+@implementation LegacyInfobarEditAddressProfileTableViewController {
+  // The delegate passed to this instance.
+  __weak id<InfobarModalDelegate> _delegate;
+
+  // Used to build and record metrics.
+  InfobarMetricsRecorder* _metricsRecorder;
+}
 
 #pragma mark - Initialization
 
@@ -123,8 +123,8 @@
 - (void)handleCancelButton {
   base::RecordAction(
       base::UserMetricsAction("MobileMessagesModalCancelledTapped"));
-  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Canceled];
-  [self.delegate dismissInfobarModal:self];
+  [_metricsRecorder recordModalEvent:MobileMessagesModalEvent::Canceled];
+  [_delegate dismissInfobarModal:self];
 }
 
 #pragma mark - UITextFieldDelegate
