@@ -248,10 +248,13 @@ def _get_enabled_canvas_types(test: Mapping[str, Any]) -> Set[CanvasType]:
 
 
 @dataclasses.dataclass
-class TestConfig:
-    out_dir: str
-    image_out_dir: str
+class _OutputPaths:
+    element: str
+    offscreen: str
 
+    def sub_path(self, sub_dir: str):
+        return _OutputPaths(element=os.path.join(self.element, sub_dir),
+                            offscreen=os.path.join(self.offscreen, sub_dir))
 
 def _validate_test(test: Mapping[str, Any]):
     if test.get('expected', '') == 'green' and re.search(
@@ -309,27 +312,27 @@ def _render(jinja_env: jinja2.Environment, template_name: str,
                             params)
 
 
-def _write_reference_test(jinja_env: jinja2.Environment,
-                          params: Mapping[str, Any],
+def _write_reference_test(jinja_env: jinja2.Environment, params: Mapping[str,
+                                                                         Any],
                           enabled_tests: Set[CanvasType],
-                          canvas_path: str, offscreen_path: str):
+                          output_files: _OutputPaths) -> None:
     if CanvasType.HTML_CANVAS in enabled_tests:
         html_params = dict(params)
         html_params.update({'canvas_type': CanvasType.HTML_CANVAS.value})
-        pathlib.Path(f'{canvas_path}.html').write_text(
+        pathlib.Path(f'{output_files.element}.html').write_text(
             _render(jinja_env, "reftest_element.html", html_params), 'utf-8')
     if CanvasType.OFFSCREEN_CANVAS in enabled_tests:
         offscreen_params = dict(params)
         offscreen_params.update({
             'canvas_type': CanvasType.OFFSCREEN_CANVAS.value
         })
-        pathlib.Path(f'{offscreen_path}.html').write_text(
+        pathlib.Path(f'{output_files.offscreen}.html').write_text(
             _render(jinja_env, "reftest_offscreen.html", offscreen_params),
             'utf-8')
     if CanvasType.WORKER in enabled_tests:
         worker_params = dict(params)
         worker_params.update({'canvas_type': CanvasType.WORKER.value})
-        pathlib.Path(f'{offscreen_path}.w.html').write_text(
+        pathlib.Path(f'{output_files.offscreen}.w.html').write_text(
             _render(jinja_env, "reftest_worker.html", worker_params), 'utf-8')
 
     js_ref = params.get('reference', '')
@@ -341,23 +344,22 @@ def _write_reference_test(jinja_env: jinja2.Environment,
     })
     ref_template_name = 'reftest_element.html' if js_ref else 'reftest.html'
     if CanvasType.HTML_CANVAS in enabled_tests:
-        pathlib.Path(f'{canvas_path}-expected.html').write_text(
+        pathlib.Path(f'{output_files.element}-expected.html').write_text(
             _render(jinja_env, ref_template_name, ref_params), 'utf-8')
     if {CanvasType.OFFSCREEN_CANVAS, CanvasType.WORKER} & enabled_tests:
-        pathlib.Path(f'{offscreen_path}-expected.html').write_text(
+        pathlib.Path(f'{output_files.offscreen}-expected.html').write_text(
             _render(jinja_env, ref_template_name, ref_params), 'utf-8')
 
 
 def _write_testharness_test(jinja_env: jinja2.Environment,
                             params: Mapping[str, Any],
                             enabled_tests: Set[CanvasType],
-                            canvas_path: str,
-                            offscreen_path: str):
+                            output_files: _OutputPaths) -> None:
     # Create test cases for canvas and offscreencanvas.
     if CanvasType.HTML_CANVAS in enabled_tests:
         html_params = dict(params)
         html_params.update({'canvas_type': CanvasType.HTML_CANVAS.value})
-        pathlib.Path(f'{canvas_path}.html').write_text(
+        pathlib.Path(f'{output_files.element}.html').write_text(
             _render(jinja_env, "testharness_element.html", html_params),
             'utf-8')
 
@@ -366,22 +368,21 @@ def _write_testharness_test(jinja_env: jinja2.Environment,
         offscreen_params.update({
             'canvas_type': CanvasType.OFFSCREEN_CANVAS.value
         })
-        pathlib.Path(f'{offscreen_path}.html').write_text(
+        pathlib.Path(f'{output_files.offscreen}.html').write_text(
             _render(jinja_env, "testharness_offscreen.html", offscreen_params),
             'utf-8')
 
     if CanvasType.WORKER in enabled_tests:
         worker_params = dict(params)
         worker_params.update({'canvas_type': CanvasType.WORKER.value})
-        pathlib.Path(f'{offscreen_path}.worker.js').write_text(
+        pathlib.Path(f'{output_files.offscreen}.worker.js').write_text(
             _render(jinja_env, "testharness_worker.js", worker_params),
             'utf-8')
 
 
-def _generate_expected_image(expected: str, name: str, sub_dir: str,
+def _generate_expected_image(expected: str, name: str,
                              enabled_canvas_types: Set[CanvasType],
-                             html_canvas_cfg: TestConfig,
-                             offscreen_canvas_cfg: TestConfig) -> str:
+                             output_dirs: _OutputPaths) -> str:
     """Creates a reference image using Cairo and returns the file location."""
     if expected == 'green':
         return '/images/green-100x50.png'
@@ -394,17 +395,18 @@ def _generate_expected_image(expected: str, name: str, sub_dir: str,
         r'surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, \1, \2)'
         r'\ncr = cairo.Context(surface)', expected)
 
+    output_paths = output_dirs.sub_path(name)
     if CanvasType.HTML_CANVAS in enabled_canvas_types:
         expected_canvas = (
-            expected + "\nsurface.write_to_png('%s.png')\n" %
-            os.path.join(html_canvas_cfg.image_out_dir, sub_dir, name))
+            expected +
+            "\nsurface.write_to_png('%s.png')\n" % output_paths.element)
         eval(compile(expected_canvas, '<test %s>' % name, 'exec'), {},
              {'cairo': cairo})
 
     if {CanvasType.OFFSCREEN_CANVAS, CanvasType.WORKER} & enabled_canvas_types:
         expected_offscreen = (
-            expected + "\nsurface.write_to_png('%s.png')\n" %
-            os.path.join(offscreen_canvas_cfg.image_out_dir, sub_dir, name))
+            expected +
+            "\nsurface.write_to_png('%s.png')\n" % output_paths.offscreen)
         eval(compile(expected_offscreen, '<test %s>' % name, 'exec'), {},
              {'cairo': cairo})
 
@@ -412,15 +414,12 @@ def _generate_expected_image(expected: str, name: str, sub_dir: str,
 
 
 def _generate_test(test: Mapping[str, Any], jinja_env: jinja2.Environment,
-                   name_to_sub_dir: Mapping[str, str],
                    used_tests: DefaultDict[str, Set[CanvasType]],
-                   html_canvas_cfg: TestConfig,
-                   offscreen_canvas_cfg: TestConfig) -> None:
+                   output_dirs: _OutputPaths) -> None:
     _validate_test(test)
 
     name = test['name']
 
-    sub_dir = _get_test_sub_dir(name, name_to_sub_dir)
     enabled_canvas_types = _get_enabled_canvas_types(test)
 
     # Defaults:
@@ -438,9 +437,8 @@ def _generate_test(test: Mapping[str, Any], jinja_env: jinja2.Environment,
     expected_img = None
     if 'expected' in test and test['expected'] is not None:
         expected_img = _generate_expected_image(test['expected'], name,
-                                                sub_dir, enabled_canvas_types,
-                                                html_canvas_cfg,
-                                                offscreen_canvas_cfg)
+                                                enabled_canvas_types,
+                                                output_dirs)
 
     params.update({
         'code': _expand_test_code(test['code']),
@@ -453,18 +451,17 @@ def _generate_test(test: Mapping[str, Any], jinja_env: jinja2.Environment,
             f'Test {name} is defined twice for types {already_tested}')
     used_tests[name].update(enabled_canvas_types)
 
-    canvas_path = os.path.join(html_canvas_cfg.out_dir, sub_dir, name)
-    offscreen_path = os.path.join(offscreen_canvas_cfg.out_dir, sub_dir, name)
+    file_name = name
     if 'manual' in test:
-        canvas_path += '-manual'
-        offscreen_path += '-manual'
+        file_name += '-manual'
+    output_files = output_dirs.sub_path(file_name)
 
     if 'reference' in test or 'html_reference' in test:
         _write_reference_test(jinja_env, params, enabled_canvas_types,
-                              canvas_path, offscreen_path)
+                              output_files)
     else:
         _write_testharness_test(jinja_env, params, enabled_canvas_types,
-                                canvas_path, offscreen_path)
+                                output_files)
 
 
 def _recursive_expand_variant_matrix(test_list: List[Mapping[str, Any]],
@@ -512,10 +509,7 @@ def _expand_variant_matrix(
 
 
 def genTestUtils_union(NAME2DIRFILE: str) -> None:
-    CANVASOUTPUTDIR = '../element'
-    CANVASIMAGEOUTPUTDIR = '../element'
-    OFFSCREENCANVASOUTPUTDIR = '../offscreen'
-    OFFSCREENCANVASIMAGEOUTPUTDIR = '../offscreen'
+    output_dirs = _OutputPaths(element='../element', offscreen='../offscreen')
 
     jinja_env = jinja2.Environment(
         loader=jinja2.PackageLoader("gentestutilsunion"),
@@ -550,13 +544,10 @@ def genTestUtils_union(NAME2DIRFILE: str) -> None:
             tests.append(t)
 
     # Ensure the test output directories exist.
-    testdirs = [
-        CANVASOUTPUTDIR, OFFSCREENCANVASOUTPUTDIR, CANVASIMAGEOUTPUTDIR,
-        OFFSCREENCANVASIMAGEOUTPUTDIR
-    ]
+    testdirs = [output_dirs.element, output_dirs.offscreen]
     for sub_dir in set(name_to_sub_dir.values()):
-        testdirs.append('%s/%s' % (CANVASOUTPUTDIR, sub_dir))
-        testdirs.append('%s/%s' % (OFFSCREENCANVASOUTPUTDIR, sub_dir))
+        testdirs.append('%s/%s' % (output_dirs.element, sub_dir))
+        testdirs.append('%s/%s' % (output_dirs.offscreen, sub_dir))
     for d in testdirs:
         try:
             os.mkdir(d)
@@ -574,15 +565,8 @@ def genTestUtils_union(NAME2DIRFILE: str) -> None:
             variants = [test]
 
         for variant in variants:
-            _generate_test(variant,
-                           jinja_env,
-                           name_to_sub_dir,
-                           used_tests,
-                           html_canvas_cfg=TestConfig(
-                               out_dir=CANVASOUTPUTDIR,
-                               image_out_dir=CANVASIMAGEOUTPUTDIR),
-                           offscreen_canvas_cfg=TestConfig(
-                               out_dir=OFFSCREENCANVASOUTPUTDIR,
-                               image_out_dir=OFFSCREENCANVASIMAGEOUTPUTDIR))
+            sub_dir = _get_test_sub_dir(variant['name'], name_to_sub_dir)
+            _generate_test(variant, jinja_env, used_tests,
+                           output_dirs.sub_path(sub_dir))
 
     print()
