@@ -628,8 +628,8 @@
     </summary>
     <metric name="Status" type="int">
       <summary>
-        Value from CrashReporterStatus enum, indicating the final result of the
-        collection attempt.
+        Value from CrashCollectionStatus enum, indicating the final result of
+        the collection attempt.
       </summary>
     </metric>
     <metric name="Collector" type="int">
