@@ -8,6 +8,7 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -65,6 +66,13 @@ void SaveStringPreferenceForced(const char* pref_name,
   prefs->CommitPendingWrite();
 }
 
+// Saves time "Local State" preference and forces its persistence to disk.
+void SaveTimePreferenceForced(const char* pref_name, base::Time value) {
+  PrefService* prefs = g_browser_process->local_state();
+  prefs->SetTime(pref_name, value);
+  prefs->CommitPendingWrite();
+}
+
 // Returns the path to flag file indicating that both parts of OOBE were
 // completed.
 // On chrome device, returns /home/chronos/.oobe_completed.
@@ -104,6 +112,7 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kOobeScreenPending, "");
   registry->RegisterTimePref(prefs::kOobeStartTime, base::Time());
   registry->RegisterIntegerPref(::prefs::kDeviceRegistered, -1);
+  registry->RegisterTimePref(ash::prefs::kDeviceRegisteredTime, base::Time());
   registry->RegisterBooleanPref(::prefs::kEnrollmentRecoveryRequired, false);
   registry->RegisterStringPref(::prefs::kInitialLocale, "en-US");
   registry->RegisterBooleanPref(kDisableHIDDetectionScreenForTests, false);
@@ -246,6 +255,9 @@ void StartupUtils::ClearSpecificOobePrefs() {
 // static
 void StartupUtils::MarkDeviceRegistered(base::OnceClosure done_callback) {
   SaveIntegerPreferenceForced(::prefs::kDeviceRegistered, 1);
+
+  SaveTimePreferenceForced(ash::prefs::kDeviceRegisteredTime,
+                           base::Time::Now());
 
   auto* host = LoginDisplayHost::default_host();
   if (host) {

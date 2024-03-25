@@ -2121,6 +2121,9 @@ inline constexpr char kBirchUseWeather[] = "ash.birch.use_weather";
 // A boolean pref indicating whether Birch should use release notes data.
 inline constexpr char kBirchUseReleaseNotes[] = "ash.birch.use_release_notes";
 
+// A preference to keep track of the device registered time.
+inline constexpr char kDeviceRegisteredTime[] = "DeviceRegisteredTime";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------
