@@ -168,7 +168,7 @@ void CreateSerializedMessageObject(uint32_t name,
                                   buffer_size);
 
   // Make sure we zero the memory first!
-  memset(payload_buffer.data(), 0, total_allocation_size);
+  memset(payload_buffer.data(), 0, buffer_size);
   WriteMessageHeader(name, flags, trace_nonce, payload_interface_id_count,
                      &payload_buffer);
 
