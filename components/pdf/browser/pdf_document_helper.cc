@@ -70,7 +70,11 @@ void PDFDocumentHelper::SetListener(
   if (pdf_rwh_) {
     pdf_rwh_->RemoveObserver(this);
   }
-  pdf_rwh_ = client_->FindPdfFrame(&GetWebContents())->GetRenderWidgetHost();
+  content::RenderFrameHost* pdf_host =
+      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)
+          ? &render_frame_host()
+          : client_->FindPdfFrame(&GetWebContents());
+  pdf_rwh_ = pdf_host->GetRenderWidgetHost();
   pdf_rwh_->AddObserver(this);
 }
 

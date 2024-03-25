@@ -216,11 +216,6 @@ views::Widget* TouchSelectText(content::WebContents* contents,
 // icon on the menu, the context menu should open up.
 IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
                        ContextMenuOpensFromTouchSelectionMenu) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   const GURL url = embedded_test_server()->GetURL("/pdf/text_large.pdf");
   content::RenderFrameHost* extension_host =
       LoadPdfInNewTabGetExtensionHost(url);
@@ -276,11 +271,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
 #endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
                        MAYBE_TouchSelectionBounds) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   // Use test.pdf here because it has embedded font metrics. With a fixed zoom,
   // coordinates should be consistent across platforms.
   const GURL url = embedded_test_server()->GetURL("/pdf/test.pdf#zoom=100");
