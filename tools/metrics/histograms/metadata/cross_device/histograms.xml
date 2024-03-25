@@ -1869,8 +1869,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.FileAction"
-    enum="MultiDeviceNearbyFileAction" expires_after="2024-05-05">
-  <owner>jasonsun@google.com</owner>
+    enum="MultiDeviceNearbyFileAction" expires_after="2025-03-25">
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Measures the reception of SecureChannel file payload transfers via the
@@ -1880,8 +1880,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.FileTransferResult"
-    enum="MultiDeviceNearbyFileTransferResult" expires_after="2024-05-05">
-  <owner>jasonsun@google.com</owner>
+    enum="MultiDeviceNearbyFileTransferResult" expires_after="2025-03-25">
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Measures the completion of SecureChannel file payload transfers via the
