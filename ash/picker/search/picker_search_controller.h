@@ -41,8 +41,12 @@ class ASH_EXPORT PickerSearchController {
  private:
   const raw_ref<PickerClient> client_;
 
+  base::TimeDelta burn_in_period_;
+
   emoji::EmojiSearch emoji_search_;
-  PickerSearchAggregator aggregator_;
+  // The search request calls the aggregator, so the search request should be
+  // destructed first.
+  std::unique_ptr<PickerSearchAggregator> aggregator_;
   std::unique_ptr<PickerSearchRequest> search_request_;
 };
 

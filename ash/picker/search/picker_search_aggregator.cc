@@ -44,14 +44,10 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
 
 }  // namespace
 
-PickerSearchAggregator::PickerSearchAggregator(base::TimeDelta burn_in_period)
-    : burn_in_period_(burn_in_period) {}
-
-PickerSearchAggregator::~PickerSearchAggregator() = default;
-
-void PickerSearchAggregator::StartSearch(
-    PickerViewDelegate::SearchResultsCallback callback) {
-  StopSearch();
+PickerSearchAggregator::PickerSearchAggregator(
+    base::TimeDelta burn_in_period,
+    PickerViewDelegate::SearchResultsCallback callback)
+    : burn_in_period_(burn_in_period) {
   current_callback_ = std::move(callback);
 
   // TODO: b/324154537 - Show a loading animation while waiting for results.
@@ -59,34 +55,13 @@ void PickerSearchAggregator::StartSearch(
                        &PickerSearchAggregator::PublishBurnInResults);
 }
 
-void PickerSearchAggregator::StopSearch() {
-  current_callback_.Reset();
-  ResetResults();
-}
-
-bool PickerSearchAggregator::IsSearchStopped() const {
-  return current_callback_.is_null();
-}
+PickerSearchAggregator::~PickerSearchAggregator() = default;
 
 bool PickerSearchAggregator::IsPostBurnIn() const {
   return !burn_in_timer_.IsRunning();
 }
 
-void PickerSearchAggregator::ResetResults() {
-  category_results_.clear();
-  suggested_results_.clear();
-  omnibox_results_.clear();
-  gif_results_.clear();
-  emoji_results_.clear();
-  local_file_results_.clear();
-  drive_file_results_.clear();
-}
-
 void PickerSearchAggregator::PublishBurnInResults() {
-  if (IsSearchStopped()) {
-    return;
-  }
-
   std::vector<PickerSearchResultsSection> sections;
   if (!suggested_results_.empty()) {
     sections.push_back(PickerSearchResultsSection(
@@ -122,10 +97,6 @@ void PickerSearchAggregator::PublishBurnInResults() {
 void PickerSearchAggregator::HandleSearchSourceResults(
     PickerSearchSource source,
     std::vector<PickerSearchResult> results) {
-  if (IsSearchStopped()) {
-    return;
-  }
-
   // Suggested results have multiple sources, which we store in any order and
   // explicitly do not append if post-burn-in.
   if (source == PickerSearchSource::kDate ||

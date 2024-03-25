@@ -23,7 +23,7 @@ namespace ash {
 
 PickerSearchController::PickerSearchController(PickerClient* client,
                                                base::TimeDelta burn_in_period)
-    : client_(CHECK_DEREF(client)), aggregator_(burn_in_period) {}
+    : client_(CHECK_DEREF(client)), burn_in_period_(burn_in_period) {}
 
 PickerSearchController::~PickerSearchController() = default;
 
@@ -33,13 +33,13 @@ void PickerSearchController::StartSearch(
     base::span<const PickerCategory> available_categories,
     PickerViewDelegate::SearchResultsCallback callback) {
   search_request_.reset();
-  // `PickerSearchAggregator::StopSearch` is called from this
-  // `PickerSearchAggregator::StartSearch` call.
-  aggregator_.StartSearch(std::move(callback));
+  aggregator_.reset();
+  aggregator_ = std::make_unique<PickerSearchAggregator>(burn_in_period_,
+                                                         std::move(callback));
   search_request_ = std::make_unique<PickerSearchRequest>(
       query, std::move(category),
       base::BindRepeating(&PickerSearchAggregator::HandleSearchSourceResults,
-                          aggregator_.GetWeakPtr()),
+                          aggregator_->GetWeakPtr()),
       &client_.get(), &emoji_search_, available_categories);
 }
 

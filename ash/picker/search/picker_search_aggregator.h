@@ -18,14 +18,19 @@ namespace ash {
 
 class PickerSearchResult;
 
+// Aggregates search results for a single Picker search request, including
+// managing the order of search results and managing when to publish search
+// results (with burn-in logic).
+// Call `HandleSearchSourceResults` with new results once they arrive.
+// Any timers start immediately once this class is constructed.
 class ASH_EXPORT PickerSearchAggregator {
  public:
-  explicit PickerSearchAggregator(base::TimeDelta burn_in_period);
+  explicit PickerSearchAggregator(
+      base::TimeDelta burn_in_period,
+      PickerViewDelegate::SearchResultsCallback callback);
   PickerSearchAggregator(const PickerSearchAggregator&) = delete;
   PickerSearchAggregator& operator=(const PickerSearchAggregator&) = delete;
   ~PickerSearchAggregator();
-
-  void StartSearch(PickerViewDelegate::SearchResultsCallback callback);
 
   void HandleSearchSourceResults(PickerSearchSource source,
                                  std::vector<PickerSearchResult> results);
@@ -33,20 +38,9 @@ class ASH_EXPORT PickerSearchAggregator {
   base::WeakPtr<PickerSearchAggregator> GetWeakPtr();
 
  private:
-  // Stops the current search, and resets the state to begin a new search.
-  // This is called in `StartSearch` before every new search query.
-  void StopSearch();
-
-  // Whether there is no current search. This could be because a search was
-  // never started, or `StopSearch` was called (possibly as part of
-  // `StartSearch`).
-  // This is equivalent to whether the current callback is null.
-  bool IsSearchStopped() const;
-
   // Whether the burn-in period has ended for the current search.
   bool IsPostBurnIn() const;
 
-  void ResetResults();
   void PublishBurnInResults();
 
   base::TimeDelta burn_in_period_;
