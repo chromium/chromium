@@ -24,10 +24,14 @@ constexpr CGFloat kLargeAccessoryHeight = 59;
 // Button target area for the large keyboard accessory.
 constexpr CGFloat kLargeButtonTargetArea = 44;
 
-// The width for the white gradient UIView.
+// The width for the background-colored gradient UIView.
 constexpr CGFloat ManualFillGradientWidth = 44;
 
-// The margin for the white gradient UIView.
+// The width for the background-colored gradient UIView for the large keyboard
+// accessory.
+constexpr CGFloat ManualFillLargeAccessoryGradientWidth = 6;
+
+// The margin for the background-colored gradient UIView.
 constexpr CGFloat ManualFillGradientMargin = 14;
 
 // The spacing between the items in the navigation view.
@@ -38,6 +42,9 @@ constexpr CGFloat ManualFillCloseButtonLeftInset = 7;
 
 // The right content inset for the close button.
 constexpr CGFloat ManualFillCloseButtonRightInset = 15;
+
+// The bottom content inset for the close button.
+constexpr CGFloat ManualFillCloseButtonBottomInset = 4;
 
 // The height for the top and bottom sepparator lines.
 constexpr CGFloat ManualFillSeparatorHeight = 0.5;
@@ -324,10 +331,14 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     [gradientView.bottomAnchor
         constraintEqualToAnchor:trailingView.bottomAnchor],
     [gradientView.widthAnchor
-        constraintEqualToConstant:ManualFillGradientWidth],
+        constraintEqualToConstant:_largeAccessoryViewEnabled
+                                      ? ManualFillLargeAccessoryGradientWidth
+                                      : ManualFillGradientWidth],
     [gradientView.trailingAnchor
         constraintEqualToAnchor:trailingView.leadingAnchor
-                       constant:ManualFillGradientMargin],
+                       constant:_largeAccessoryViewEnabled
+                                    ? 0
+                                    : ManualFillGradientMargin],
 
     [leadingViewContainer.trailingAnchor
         constraintEqualToAnchor:trailingView.leadingAnchor],
@@ -470,7 +481,9 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     buttonConfiguration.title = textData.closeButtonTitle;
   }
   buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      0, ManualFillCloseButtonLeftInset, 0, ManualFillCloseButtonRightInset);
+      0, ManualFillCloseButtonLeftInset,
+      self.closeButtonSymbol ? ManualFillCloseButtonBottomInset : 0,
+      ManualFillCloseButtonRightInset);
   closeButton.configuration = buttonConfiguration;
 
   [closeButton setAccessibilityLabel:textData.closeButtonAccessibilityLabel];

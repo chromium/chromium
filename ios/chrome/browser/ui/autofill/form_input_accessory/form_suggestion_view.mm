@@ -28,6 +28,9 @@ constexpr CGFloat kSuggestionVerticalMargin = 6;
 // the end suggestions and the suggestion content frame).
 constexpr CGFloat kSuggestionHorizontalMargin = 6;
 
+// Horizontal margin at the end of the last suggestion.
+constexpr CGFloat kSuggestionEndHorizontalMargin = 10;
+
 // Initial spacing between suggestion chips at the beginning of the scroll hint
 // animation.
 constexpr CGFloat kScrollHintInitialSpacing = 50;
@@ -153,9 +156,11 @@ constexpr CGFloat kScrollHintDuration = 0.5;
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[]];
   stackView.axis = UILayoutConstraintAxisHorizontal;
   stackView.layoutMarginsRelativeArrangement = YES;
-  stackView.layoutMargins =
-      UIEdgeInsetsMake(kSuggestionVerticalMargin, kSuggestionHorizontalMargin,
-                       kSuggestionVerticalMargin, kSuggestionHorizontalMargin);
+  stackView.layoutMargins = UIEdgeInsetsMake(
+      kSuggestionVerticalMargin, kSuggestionHorizontalMargin,
+      kSuggestionVerticalMargin,
+      IsKeyboardAccessoryUpgradeEnabled() ? kSuggestionEndHorizontalMargin
+                                          : kSuggestionHorizontalMargin);
   stackView.spacing = kSuggestionHorizontalMargin;
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:stackView];

@@ -360,8 +360,6 @@ using manual_fill::ManualFillDataType;
           customTrailingView:self.manualFillAccessoryViewController.view];
   } else {
     formInputAccessoryView.accessibilityViewIsModal = YES;
-    self.formSuggestionView.trailingView =
-        self.manualFillAccessoryViewController.view;
     if (IsKeyboardAccessoryUpgradeEnabled()) {
       [formInputAccessoryView
                 setUpWithLeadingView:self.leadingView
@@ -381,6 +379,8 @@ using manual_fill::ManualFillDataType;
                                          kKeyboardDownSymbol,
                                          kSymbolActionPointSize)];
     } else {
+      self.formSuggestionView.trailingView =
+          self.manualFillAccessoryViewController.view;
       [formInputAccessoryView setUpWithLeadingView:self.leadingView
                                 navigationDelegate:self.navigationDelegate];
     }

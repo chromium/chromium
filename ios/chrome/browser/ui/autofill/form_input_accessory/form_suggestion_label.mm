@@ -31,6 +31,9 @@ const CGFloat kIphoneFontSize = 14.0f;
 
 // The horizontal space between the edge of the background and the text.
 const CGFloat kBorderWidth = 14.0f;
+// The horizontal space between the edge of the background and the text for the
+// large keyboard accessory.
+const CGFloat kSmallBorderWidth = 12.0f;
 // The space between items in the label.
 const CGFloat kSpacing = 4.0f;
 // The corner radius of the label.
@@ -49,7 +52,7 @@ const CGFloat kSuggestionIconWidth = 40;
 // represents the width of the stack view minus the width of the first
 // suggestion.
 const CGFloat kHalfCreditCardIconOffset =
-    2 * kBorderWidth + 2 * kSpacing + 0.5 * kSuggestionIconWidth;
+    2 * kSmallBorderWidth + 2 * kSpacing + 0.5 * kSuggestionIconWidth;
 
 // Creates a label with the given `text` and `alpha` suitable for use in a
 // suggestion button in the keyboard accessory view.
@@ -93,13 +96,13 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
     stackView.alignment = UIStackViewAlignmentCenter;
     stackView.layoutMarginsRelativeArrangement = YES;
     stackView.layoutMargins =
-        UIEdgeInsetsMake(0, kBorderWidth, 0, kBorderWidth);
+        UIEdgeInsetsMake(0, [self borderWidth], 0, [self borderWidth]);
     stackView.spacing = kSpacing;
     stackView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:stackView];
     AddSameConstraints(stackView, self);
 
-    if (suggestion.icon != nil) {
+    if (suggestion.icon) {
       UIImage* icon = suggestion.icon;
       if (IsKeyboardAccessoryUpgradeEnabled()) {
         if (icon && (icon.size.width > 0) &&
@@ -123,7 +126,8 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
       verticalStackView.axis = UILayoutConstraintAxisVertical;
       verticalStackView.alignment = UIStackViewAlignmentLeading;
       verticalStackView.layoutMarginsRelativeArrangement = YES;
-      verticalStackView.layoutMargins = UIEdgeInsetsMake(0, kBorderWidth, 0, 0);
+      verticalStackView.layoutMargins =
+          UIEdgeInsetsMake(0, suggestion.icon ? [self borderWidth] : 0, 0, 0);
       [stackView addArrangedSubview:verticalStackView];
 
       // Insert the next subviews vertically instead of horizonatally.
@@ -230,6 +234,10 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 - (CGFloat)cornerRadius {
   return IsKeyboardAccessoryUpgradeEnabled() ? kCornerRadius
                                              : self.bounds.size.height / 2.0;
+}
+
+- (CGFloat)borderWidth {
+  return IsKeyboardAccessoryUpgradeEnabled() ? kSmallBorderWidth : kBorderWidth;
 }
 
 // Computes the suggestion label's maximum width.
