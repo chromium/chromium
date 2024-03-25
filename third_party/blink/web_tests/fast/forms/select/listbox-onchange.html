@@ -25,94 +25,85 @@
 
                 checkSelection("0");
 
-                log("1) Make sure onChange doesn't fire when clicking on an initially selected item");
+                log("1) Make sure onChange fires when deselecting an initially selected item");
                 mouseDownOnSelect("sl1", 0, false, false);
                 mouseUpOnSelect("sl1", 0, false, false);
-                checkSelection("0");
-
-                log("2) Make sure onChange fires when deselecting an initially selected item");
-                mouseDownOnSelect("sl1", 0, false, true);
-                mouseUpOnSelect("sl1", 0, false, true);
                 checkSelection("");
 
-                log("3) Make sure onChange fires when clicking");
+                log("2) Make sure onChange fires when clicking");
                 mouseDownOnSelect("sl1", 2, false, false);
                 mouseUpOnSelect("sl1", 2, false, false);
                 checkSelection("2");
 
-                log("4) Make sure onChange doesn't fire when clicking again on the same item");
-                mouseDownOnSelect("sl1", 2, false, false);
-                mouseUpOnSelect("sl1", 2, false, false);
-                checkSelection("2");
-
-                log("5) Make sure onChange fires when clicking on a new item");
+                log("3) Make sure onChange fires when clicking on a new item");
                 mouseDownOnSelect("sl1", 0, false, false);
                 mouseUpOnSelect("sl1", 0, false, false);
                 checkSelection("0");
 
-                log("6) Make sure onChange fires when changing the selection with the keyboard");
+                log("4) Make sure onChange fires when changing the selection with the keyboard");
                 keyDownOnSelect("sl1", "ArrowDown", true, false);
                 checkSelection("0,1");
 
-                log("7) Make sure onChange doesn't fire when setting the select element's value from JS");
+                log("5) Make sure onChange doesn't fire when setting the select element's value from JS");
                 document.getElementById("sl1").value = "2";
                 checkSelection("2");
 
-                log("8) Make sure onChange doesn't fire when clicking on the already selected option");
+                log("6) Make sure onChange fires when clicking on the already selected option");
                 mouseDownOnSelect("sl1", 2, false, false);
                 mouseUpOnSelect("sl1", 2, false, false);
-                checkSelection("2");
+                checkSelection("");
 
-                log("9) Make sure onChange doesn't fire when setting an option's selected state from JS");
+                log("7) Make sure onChange doesn't fire when setting an option's selected state from JS");
                 document.getElementById("sl1").item(3).selected = true;
-                checkSelection("2,3");
-                document.getElementById("sl1").item(2).selected = false;
                 checkSelection("3");
+                document.getElementById("sl1").item(3).selected = false;
+                checkSelection("");
 
-                log("10) Make sure onChange doesn't fire when clicking on this option");
+                log("8) Make sure onChange fires when clicking on this option");
                 mouseDownOnSelect("sl1", 3, false, false);
                 mouseUpOnSelect("sl1", 3, false, false);
                 checkSelection("3");
 
-                log("11) Make sure onChange fires when deselecting the last selected option with a mouse click");
-                mouseDownOnSelect("sl1", 3, false, true);
-                mouseUpOnSelect("sl1", 3, false, true);
+                log("9) Make sure onChange fires when deselecting the last selected option with a mouse click");
+                mouseDownOnSelect("sl1", 3, false, false);
+                mouseUpOnSelect("sl1", 3, false, false);
                 checkSelection("");
 
-                log("12) Make sure onChange doesn't fire when adding a new selected option");
+                log("10) Make sure onChange doesn't fire when adding a new selected option");
                 option = document.createElement("option");
                 option.setAttribute("selected", "");
                 option.appendChild(document.createTextNode("item 4"));
                 document.getElementById("sl1").appendChild(option);
                 checkSelection("4");
 
-                log("13) Make sure onChange doesn't fire when clicking on it");
+                log("11) Make sure onChange fires when clicking on it");
                 mouseDownOnSelect("sl1", 4, false, false);
                 mouseUpOnSelect("sl1", 4, false, false);
-                checkSelection("4");
+                checkSelection("");
 
-                log("14) Make sure onChange fires when clicking on a previously selected option");
-                mouseDownOnSelect("sl1", 3, false, true);
-                mouseUpOnSelect("sl1", 3, false, true);
-                checkSelection("3,4");
-
-                log("15) Make sure onChange doesn't fire when removing a selected option");
-                document.getElementById("sl1").removeChild(document.getElementById("sl1").item(4));
-                checkSelection("3");
-
-                log("16) Make sure onChange doesn't fire when clicking on the option that remains selected");
+                log("12) Make sure onChange fires when clicking on a previously selected option");
                 mouseDownOnSelect("sl1", 3, false, false);
                 mouseUpOnSelect("sl1", 3, false, false);
                 checkSelection("3");
 
-                log("17) Make sure onChange fires when typing the name of an option");
+                log("13) Make sure onChange doesn't fire when removing a selected option");
+                document.getElementById("sl1").item(4).selected = true;
+                document.getElementById("sl1").removeChild(document.getElementById("sl1").item(4));
+                checkSelection("3");
+
+                log("14) Make sure onChange fires when clicking on the option that remains selected");
+                mouseDownOnSelect("sl1", 3, false, false);
+                mouseUpOnSelect("sl1", 3, false, false);
+                checkSelection("");
+
+                log("15) Make sure onChange fires when typing the name of an option");
                 option = document.createElement("option");
                 option.appendChild(document.createTextNode("keyboard test"));
                 document.getElementById("sl1").appendChild(option);
                 keyDownOnSelect("sl1", "K", false, false);
                 checkSelection("4");
 
-                log("18) Make sure onChange doesn't fire when leaving the select");
+                log("16) Make sure onChange doesn't fire when leaving the select");
                 document.getElementById("sl1").blur();
                 checkSelection("4");
 
