@@ -76,6 +76,8 @@ BASE_DECLARE_FEATURE(kMemorySaverMultistateMode);
 // saver option.
 extern const base::FeatureParam<bool> kMemorySaverShowRecommendedBadge;
 
+// Round 3 Performance Controls features
+
 // This enables the performance controls side panel for learning about and
 // configuring performance settings.
 BASE_DECLARE_FEATURE(kPerformanceControlsSidePanel);
@@ -90,23 +92,27 @@ BASE_DECLARE_FEATURE(kPrefetchVirtualMemoryPolicy);
 #endif
 
 // This represents the duration that CPU must be over the threshold before
-// an intervention is triggered.
+// a notification is triggered.
 extern const base::FeatureParam<base::TimeDelta> kCPUTimeOverThreshold;
 
-// If Chrome CPU utilization and System CPU utilization are both over the
-// specified percent thresholds then we will trigger an intervention.
-extern const base::FeatureParam<int> kCPUSystemPercentThreshold;
-extern const base::FeatureParam<int> kCPUChromePercentThreshold;
+// Frequency to sample for cpu usage to ensure that the user is experiencing
+// consistent cpu issues before surfacing a notitication
+extern const base::FeatureParam<base::TimeDelta> kCPUSampleFrequency;
+
+// If the system CPU consistently exceeds these percent thresholds, then
+// the CPU health will be classified as the threshold it is exceeding
+extern const base::FeatureParam<int> kCPUDegradedHealthPercentageThreshold;
+extern const base::FeatureParam<int> kCPUUnhealthyPercentageThreshold;
 
 // This enables the Memory performance interventions within the side panel.
 BASE_DECLARE_FEATURE(kPerformanceMemoryIntervention);
 
 // This represents the duration that Memory must be over the threshold before
-// an intervention is triggered.
+// a notification is triggered.
 extern const base::FeatureParam<base::TimeDelta> kMemoryTimeOverThreshold;
 
 // If available Memory percent and bytes are both under the specified thresholds
-// then we will trigger an intervention.
+// then we will trigger a notification.
 extern const base::FeatureParam<int> kMemoryFreePercentThreshold;
 extern const base::FeatureParam<int> kMemoryFreeBytesThreshold;
 

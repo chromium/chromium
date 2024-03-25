@@ -79,11 +79,13 @@ BASE_FEATURE(kPerformanceCPUIntervention,
 
 const base::FeatureParam<base::TimeDelta> kCPUTimeOverThreshold{
     &kPerformanceCPUIntervention, "cpu_time_over_threshold", base::Seconds(60)};
+const base::FeatureParam<base::TimeDelta> kCPUSampleFrequency{
+    &kPerformanceCPUIntervention, "cpu_sample_frequency", base::Seconds(15)};
 
-const base::FeatureParam<int> kCPUSystemPercentThreshold{
-    &kPerformanceCPUIntervention, "cpu_system_percent_threshold", 90};
-const base::FeatureParam<int> kCPUChromePercentThreshold{
-    &kPerformanceCPUIntervention, "cpu_chrome_percent_threshold", 20};
+const base::FeatureParam<int> kCPUDegradedHealthPercentageThreshold{
+    &kPerformanceCPUIntervention, "cpu_degraded_percent_threshold", 50};
+const base::FeatureParam<int> kCPUUnhealthyPercentageThreshold{
+    &kPerformanceCPUIntervention, "cpu_unhealthy_percent_threshold", 75};
 
 BASE_FEATURE(kPerformanceMemoryIntervention,
              "PerformanceMemoryIntervention",
