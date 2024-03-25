@@ -34,6 +34,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -136,8 +137,6 @@ class CORE_EXPORT ScriptPromise {
 
   static ScriptPromise RejectWithDOMException(ScriptState*, DOMException*);
 
-  static v8::Local<v8::Promise> RejectRaw(ScriptState*, v8::Local<v8::Value>);
-
   // Constructs and returns a ScriptPromise to be resolved when all |promises|
   // are resolved. If one of |promises| is rejected, the returned
   // ScriptPromise is rejected.
@@ -149,32 +148,16 @@ class CORE_EXPORT ScriptPromise {
     visitor->Trace(script_state_);
   }
 
-  // This is a utility class intended to be used internally.
-  // ScriptPromiseResolver is for general purpose.
-  class CORE_EXPORT InternalResolver {
-    DISALLOW_NEW();
-
-   public:
-    explicit InternalResolver(ScriptState*);
-    v8::Local<v8::Promise> V8Promise() const;
-    ScriptPromise Promise() const;
-    void Resolve(v8::Local<v8::Value>);
-    void Reject(v8::Local<v8::Value>);
-    void Clear() { resolver_.Clear(); }
-    ScriptState* GetScriptState() const { return script_state_.Get(); }
-    void Trace(Visitor* visitor) const {
-      visitor->Trace(script_state_);
-      visitor->Trace(resolver_);
-    }
-
-   protected:
-    Member<ScriptState> script_state_;
-    ScriptValue resolver_;
-  };
-
   bool IsAssociatedWith(ScriptState* script_state) const {
     return script_state == script_state_;
   }
+
+ protected:
+  template <typename IDLType, typename BlinkType>
+  friend ScriptPromiseTyped<IDLType> ToResolvedPromise(ScriptState*, BlinkType);
+
+  static v8::Local<v8::Promise> ResolveRaw(ScriptState*, v8::Local<v8::Value>);
+  static v8::Local<v8::Promise> RejectRaw(ScriptState*, v8::Local<v8::Value>);
 
  private:
   Member<ScriptState> script_state_;
@@ -194,24 +177,6 @@ class ScriptPromiseTyped : public ScriptPromise {
     return ScriptPromiseTyped<T>(script_state, promise);
   }
 
-  class InternalResolverTyped : public ScriptPromise::InternalResolver {
-   public:
-    explicit InternalResolverTyped(ScriptState* script_state)
-        : InternalResolver(script_state) {}
-
-    ScriptPromiseTyped<IDLResolvedType> Promise() {
-      if (resolver_.IsEmpty()) {
-        return ScriptPromiseTyped<IDLResolvedType>();
-      }
-      return ScriptPromiseTyped<IDLResolvedType>(script_state_, V8Promise());
-    }
-
-    static InternalResolverTyped GetTyped(InternalResolver& resolver) {
-      static_assert(sizeof(InternalResolverTyped) == sizeof(InternalResolver));
-      return static_cast<InternalResolverTyped&>(resolver);
-    }
-  };
-
   static ScriptPromiseTyped<IDLResolvedType> RejectWithDOMException(
       ScriptState* script_state,
       DOMException* exception) {
@@ -229,10 +194,8 @@ class ScriptPromiseTyped : public ScriptPromise {
     if (value.IsEmpty()) {
       return ScriptPromiseTyped<IDLResolvedType>();
     }
-    InternalResolverTyped resolver(script_state);
-    ScriptPromiseTyped<IDLResolvedType> promise = resolver.Promise();
-    resolver.Reject(value);
-    return promise;
+    return ScriptPromiseTyped<IDLResolvedType>(
+        script_state, ScriptPromise::RejectRaw(script_state, value));
   }
 
   static ScriptPromiseTyped<IDLResolvedType> Reject(
@@ -245,6 +208,12 @@ class ScriptPromiseTyped : public ScriptPromise {
   }
 
  private:
+  template <typename IDLType>
+  friend class ScriptPromiseResolverTyped;
+
+  template <typename IDLType, typename BlinkType>
+  friend ScriptPromiseTyped<IDLType> ToResolvedPromise(ScriptState*, BlinkType);
+
   ScriptPromiseTyped(ScriptState* script_state, v8::Local<v8::Promise> promise)
       : ScriptPromise(script_state, promise) {}
 };

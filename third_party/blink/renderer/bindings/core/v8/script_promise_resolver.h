@@ -158,9 +158,7 @@ class CORE_EXPORT ScriptPromiseResolver
   template <typename IDLResolvedType>
   friend class ScriptPromiseResolverTyped;
 
-  typedef ScriptPromise::InternalResolver Resolver;
-
-  ScriptPromiseResolver(ScriptState*, const ExceptionContext&, Resolver);
+  ScriptPromiseResolver(ScriptState*, const ExceptionContext&);
 
 #if DCHECK_IS_ON()
   template <typename T>
@@ -220,7 +218,7 @@ class CORE_EXPORT ScriptPromiseResolver
   void ScheduleResolveOrReject();
   void ResolveOrRejectDeferred();
 
-  Resolver resolver_;
+  TraceWrapperV8Reference<v8::Promise::Resolver> resolver_;
   ResolutionState state_;
   const Member<ScriptState> script_state_;
   TraceWrapperV8Reference<v8::Value> value_;
@@ -246,9 +244,7 @@ class ScriptPromiseResolverTyped final : public ScriptPromiseResolver {
 
   ScriptPromiseResolverTyped(ScriptState* script_state,
                              const ExceptionContext& context)
-      : ScriptPromiseResolver(script_state,
-                              context,
-                              TypedResolver(script_state)) {
+      : ScriptPromiseResolver(script_state, context) {
 #if DCHECK_IS_ON()
     runtime_type_id_ = GetTypeId<ScriptPromiseResolverTyped<IDLResolvedType>>();
 #endif
@@ -292,7 +288,12 @@ class ScriptPromiseResolverTyped final : public ScriptPromiseResolver {
 #if DCHECK_IS_ON()
     is_promise_called_ = true;
 #endif
-    return TypedResolver::GetTyped(resolver_).Promise();
+    if (resolver_.IsEmpty()) {
+      return ScriptPromiseTyped<IDLResolvedType>();
+    }
+    return ScriptPromiseTyped<IDLResolvedType>(
+        script_state_,
+        resolver_.Get(script_state_->GetIsolate())->GetPromise());
   }
 
   // Returns a callback that will run |callback| with the Entry realm
@@ -320,10 +321,6 @@ class ScriptPromiseResolverTyped final : public ScriptPromiseResolver {
         },
         WrapPersistent(this), std::move(callback));
   }
-
- private:
-  using TypedResolver =
-      ScriptPromiseTyped<IDLResolvedType>::InternalResolverTyped;
 };
 
 }  // namespace blink

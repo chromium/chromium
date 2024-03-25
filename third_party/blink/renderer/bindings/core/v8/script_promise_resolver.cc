@@ -39,15 +39,16 @@ class ScriptPromiseResolver::ExceptionStateScope final : public ExceptionState {
 
 ScriptPromiseResolver::ScriptPromiseResolver(
     ScriptState* script_state,
-    const ExceptionContext& exception_context,
-    Resolver resolver)
-    : resolver_(std::move(resolver)),
+    const ExceptionContext& exception_context)
+    : resolver_(script_state->GetIsolate(),
+                v8::Promise::Resolver::New(script_state->GetContext())
+                    .ToLocalChecked()),
       state_(kPending),
       script_state_(script_state),
       exception_context_(exception_context) {
   if (!GetExecutionContext()) {
     state_ = kDetached;
-    resolver_.Clear();
+    resolver_.Reset();
   }
   script_url_ = GetCurrentScriptUrl(script_state->GetIsolate());
 }
@@ -139,7 +140,7 @@ void ScriptPromiseResolver::Detach() {
   if (state_ == kDetached)
     return;
   state_ = kDetached;
-  resolver_.Clear();
+  resolver_.Reset();
   value_.Reset();
 }
 
@@ -169,12 +170,20 @@ void ScriptPromiseResolver::ResolveOrRejectImmediately() {
                            state_ == kResolving,
                            exception_context_.GetClassName(),
                            exception_context_.GetPropertyName(), script_url_);
+
+  v8::MicrotasksScope microtasks_scope(
+      script_state_->GetIsolate(), ToMicrotaskQueue(script_state_),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  auto resolver = resolver_.Get(script_state_->GetIsolate());
   if (state_ == kResolving) {
-    resolver_.Resolve(value_.Get(script_state_->GetIsolate()));
+    std::ignore = resolver->Resolve(script_state_->GetContext(),
+                                    value_.Get(script_state_->GetIsolate()));
   } else {
     DCHECK_EQ(state_, kRejecting);
-    resolver_.Reject(value_.Get(script_state_->GetIsolate()));
+    std::ignore = resolver->Reject(script_state_->GetContext(),
+                                   value_.Get(script_state_->GetIsolate()));
   }
+
   Detach();
 }
 

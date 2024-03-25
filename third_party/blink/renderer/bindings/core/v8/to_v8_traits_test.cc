@@ -277,8 +277,7 @@ TEST(ToV8TraitsTest, Object) {
 TEST(ToV8TraitsTest, Promise) {
   test::TaskEnvironment task_environment;
   const V8TestingScope scope;
-  ScriptPromise::InternalResolver resolver(scope.GetScriptState());
-  ScriptPromise promise = resolver.Promise();
+  auto promise = ToResolvedUndefinedPromise(scope.GetScriptState());
   TEST_TOV8_TRAITS(scope, IDLPromise, "[object Promise]", promise);
 }
 
