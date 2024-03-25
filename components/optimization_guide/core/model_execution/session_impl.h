@@ -87,11 +87,17 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // On-device was used and completed successfully, but the output was not in
     // a language that could be reliably evaluated for safety.
     kUsedOnDeviceOutputUnsupportedLanguage = 13,
+    // On-device was used and completed successfully, but failed constructing
+    // the text safety remote request.
+    kFailedConstructingRemoteTextSafetyRequest = 14,
+    // On-device was used and completed successfully, but the text safety remote
+    // request failed for some reason.
+    kTextSafetyRemoteRequestFailed = 15,
 
     // Please update OptimizationGuideOnDeviceExecuteModelResult in
     // optimization/enums.xml.
 
-    kMaxValue = kUsedOnDeviceOutputUnsupportedLanguage,
+    kMaxValue = kTextSafetyRemoteRequestFailed,
   };
 
   SessionImpl(
@@ -160,7 +166,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // Returns true if ExecuteModel() was called and the complete response
     // has not been received.
     bool did_execute_and_waiting_for_on_complete() const {
-      return start != base::TimeTicks();
+      return start != base::TimeTicks() && !model_response_complete;
     }
 
     // Returns the mutable on-device model service response for logging.
@@ -192,6 +198,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     std::unique_ptr<ExecuteModelHistogramLogger> histogram_logger;
     // Used to log execution information for the request.
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request;
+    // Whether the model response is complete.
+    bool model_response_complete = false;
 
     // Factory for weak pointers related to this session that are invalidated
     // with the request state.
@@ -221,6 +229,19 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   void DestroyOnDeviceState();
 
+  // Called to run the text safety remote fallback. Will invoke completion
+  // callback when done.
+  void RunTextSafetyRemoteFallbackAndCompletionCallback(
+      proto::Any success_response_metadata);
+
+  // Callback invoked when the text safety remote fallback response comes back.
+  // Will invoke the session's completion callback and destroy state.
+  void OnTextSafetyRemoteResponse(
+      proto::InternalOnDeviceModelExecutionInfo remote_ts_model_execution_info,
+      proto::Any success_response_metadata,
+      OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<ModelQualityLogEntry> remote_log_entry);
+
   // Returns a new message created by merging `request` into `context_`. This
   // is a bit tricky since we don't know the type of MessageLite.
   std::unique_ptr<google::protobuf::MessageLite> MergeContext(
@@ -235,6 +256,13 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // Whether the text is unsafe.
   bool IsUnsafeText(
       const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
+
+  // Sends the partial response callback.
+  void SendPartialResponseCallback(const proto::Any& success_response_metadata);
+
+  // Sends the success completion callback and destroys any state.
+  void SendSuccessCompletionCallback(
+      const proto::Any& success_response_metadata);
 
   base::WeakPtr<OnDeviceModelServiceController> controller_;
   const proto::ModelExecutionFeature feature_;

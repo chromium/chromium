@@ -165,6 +165,11 @@ BASE_FEATURE(kTextSafetyClassifier,
              "TextSafetyClassifier",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether the text safety remote fallback should be used.
+BASE_FEATURE(kTextSafetyRemoteFallback,
+             "TextSafetyRemoteFallback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
@@ -784,6 +789,10 @@ double GetOnDeviceModelLanguageDetectionMinimumReliability() {
           &kTextSafetyClassifier,
           "on_device_language_detection_minimum_reliability", 0.8};
   return kOnDeviceModelLanguageDetectionMinimumReliability.Get();
+}
+
+bool ShouldUseTextSafetyRemoteFallbackForEligibleFeatures() {
+  return base::FeatureList::IsEnabled(kTextSafetyRemoteFallback);
 }
 
 int GetOnDeviceModelNumRepeats() {

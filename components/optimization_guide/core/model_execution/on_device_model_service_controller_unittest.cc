@@ -355,6 +355,10 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
           last_remote_message_ = base::WrapUnique(m.New());
           last_remote_message_->CheckTypeAndMergeFrom(m);
           log_ai_data_request_passed_to_remote_ = std::move(l);
+
+          if (feature == proto::MODEL_EXECUTION_FEATURE_TEXT_SAFETY) {
+            last_remote_ts_callback_ = std::move(c);
+          }
         });
   }
 
@@ -530,6 +534,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   std::unique_ptr<google::protobuf::MessageLite> last_remote_message_;
   std::unique_ptr<proto::LogAiDataRequest>
       log_ai_data_request_passed_to_remote_;
+  OptimizationGuideModelExecutionResultCallback last_remote_ts_callback_;
   OptimizationGuideLogger logger_;
 };
 
@@ -1827,7 +1832,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
   // Fast forward by the amount of time that triggers a disconnect.
   task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
                                   base::Seconds(1));
-  // As there are no sessions and no traffice for GetOnDeviceModelIdleTimeout()
+  // As there are no sessions and no traffic for GetOnDeviceModelIdleTimeout()
   // the connection should be dropped.
   EXPECT_FALSE(test_controller_->IsConnectedForTesting());
 }
@@ -2178,6 +2183,323 @@ TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
       false, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       UseRemoteTextSafetyFallbackButNoSafetyFallbackConfig) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTextSafetyRemoteFallback);
+
+  base::HistogramTester histogram_tester;
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(config);
+  Initialize({.config = config});
+
+  g_model_execute_result = {
+      "some text",
+      " some more repeating text",
+      " some more non repeating text",
+      " more stuff",
+  };
+  auto session = test_controller_->CreateSession(
+      kFeature, CreateExecuteRemoteFn(), &logger_, nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(streamed_responses_.empty());
+  EXPECT_FALSE(response_received_);
+  ASSERT_TRUE(response_error_);
+  EXPECT_EQ(*response_error_, OptimizationGuideModelExecutionError::
+                                  ModelExecutionError::kGenericFailure);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+      ExecuteModelResult::kFailedConstructingRemoteTextSafetyRequest, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, UseRemoteTextSafetyFallback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTextSafetyRemoteFallback);
+
+  base::HistogramTester histogram_tester;
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(config);
+  // Set input url proto field for text safety to just be user input.
+  auto* input_url_proto_field = config.mutable_text_safety_fallback_config()
+                                    ->mutable_input_url_proto_field();
+  input_url_proto_field->add_proto_descriptors()->set_tag_number(7);
+  input_url_proto_field->add_proto_descriptors()->set_tag_number(1);
+  Initialize({.config = config});
+
+  g_model_execute_result = {
+      "some text",
+      " some more repeating text",
+      " some more non repeating text",
+      " more stuff",
+  };
+  auto session = test_controller_->CreateSession(
+      kFeature, CreateExecuteRemoteFn(), &logger_, nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+  const std::vector<std::string> expected_responses = ConcatResponses({
+      "some text",
+      " some more repeating text",
+      " some more non repeating text",
+      " more stuff",
+  });
+
+  // Expect remote execute called for T&S.
+  EXPECT_TRUE(remote_execute_called_);
+  ASSERT_TRUE(last_remote_message_);
+  auto& ts_request =
+      static_cast<const proto::TextSafetyRequest&>(*last_remote_message_);
+  EXPECT_EQ(expected_responses.back(), ts_request.text());
+  EXPECT_EQ("foo", ts_request.url());
+  ASSERT_TRUE(last_remote_ts_callback_);
+
+  // Invoke T&S callback.
+  proto::Any ts_any;
+  auto remote_log_ai_data_request = std::make_unique<proto::LogAiDataRequest>();
+  remote_log_ai_data_request->mutable_model_execution_info()->set_execution_id(
+      "serverexecid");
+  auto remote_log_entry = std::make_unique<ModelQualityLogEntry>(
+      std::move(remote_log_ai_data_request),
+      /*model_quality_uploader_service=*/nullptr);
+  std::move(last_remote_ts_callback_)
+      .Run(base::ok(ts_any), std::move(remote_log_entry));
+
+  EXPECT_TRUE(streamed_responses_.empty());
+  EXPECT_EQ(*response_received_, expected_responses.back());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+      ExecuteModelResult::kUsedOnDevice, 1);
+
+  // Verify log entry.
+  ASSERT_TRUE(log_entry_received_);
+  // Should have 2 infos: one for text generation, one for safety fallback.
+  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            2);
+  auto& ts_exec_info = log_entry_received_->log_ai_data_request()
+                           ->model_execution_info()
+                           .on_device_model_execution_info()
+                           .execution_infos(1);
+  auto& ts_req_log = ts_exec_info.request().text_safety_model_request();
+  EXPECT_EQ(expected_responses.back(), ts_req_log.text());
+  EXPECT_EQ("foo", ts_req_log.url());
+  auto& ts_resp_log = ts_exec_info.response().text_safety_model_response();
+  EXPECT_EQ("serverexecid", ts_resp_log.server_execution_id());
+  EXPECT_FALSE(ts_resp_log.is_unsafe());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       UseRemoteTextSafetyFallbackFiltered) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTextSafetyRemoteFallback);
+
+  base::HistogramTester histogram_tester;
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(config);
+  // Create an empty ts fallback config which is valid and will call the
+  // fallback.
+  config.mutable_text_safety_fallback_config();
+  Initialize({.config = config});
+
+  g_model_execute_result = {
+      "some text",
+      " some more repeating text",
+      " some more non repeating text",
+      " more stuff",
+  };
+  auto session = test_controller_->CreateSession(
+      kFeature, CreateExecuteRemoteFn(), &logger_, nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+  const std::vector<std::string> expected_responses = ConcatResponses({
+      "some text",
+      " some more repeating text",
+      " some more non repeating text",
+      " more stuff",
+  });
+
+  // Expect remote execute called for T&S.
+  EXPECT_TRUE(remote_execute_called_);
+  ASSERT_TRUE(last_remote_message_);
+  auto& ts_request =
+      static_cast<const proto::TextSafetyRequest&>(*last_remote_message_);
+  EXPECT_EQ(expected_responses.back(), ts_request.text());
+  ASSERT_TRUE(last_remote_ts_callback_);
+
+  // Invoke T&S callback.
+  auto remote_log_ai_data_request = std::make_unique<proto::LogAiDataRequest>();
+  remote_log_ai_data_request->mutable_model_execution_info()->set_execution_id(
+      "serverexecid");
+  auto remote_log_entry = std::make_unique<ModelQualityLogEntry>(
+      std::move(remote_log_ai_data_request),
+      /*model_quality_uploader_service=*/nullptr);
+  std::move(last_remote_ts_callback_)
+      .Run(base::unexpected(
+               OptimizationGuideModelExecutionError::FromModelExecutionError(
+                   OptimizationGuideModelExecutionError::ModelExecutionError::
+                       kFiltered)),
+           std::move(remote_log_entry));
+
+  EXPECT_TRUE(streamed_responses_.empty());
+  EXPECT_FALSE(response_received_);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+      ExecuteModelResult::kUsedOnDeviceOutputUnsafe, 1);
+
+  // Verify log entry.
+  ASSERT_TRUE(log_entry_received_);
+  // Should have 2 infos: one for text generation, one for safety fallback.
+  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            2);
+  auto& ts_exec_info = log_entry_received_->log_ai_data_request()
+                           ->model_execution_info()
+                           .on_device_model_execution_info()
+                           .execution_infos(1);
+  auto& ts_req_log = ts_exec_info.request().text_safety_model_request();
+  EXPECT_EQ(expected_responses.back(), ts_req_log.text());
+  auto& ts_resp_log = ts_exec_info.response().text_safety_model_response();
+  EXPECT_EQ("serverexecid", ts_resp_log.server_execution_id());
+  EXPECT_TRUE(ts_resp_log.is_unsafe());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       UseRemoteTextSafetyFallbackOtherError) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTextSafetyRemoteFallback);
+
+  base::HistogramTester histogram_tester;
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(config);
+  // Create an empty ts fallback config which is valid and will call the
+  // fallback.
+  config.mutable_text_safety_fallback_config();
+  Initialize({.config = config});
+
+  g_model_execute_result = {
+      "some text",
+      " some more repeating text",
+      " some more non repeating text",
+      " more stuff",
+  };
+  auto session = test_controller_->CreateSession(
+      kFeature, CreateExecuteRemoteFn(), &logger_, nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+  const std::vector<std::string> expected_responses = ConcatResponses({
+      "some text",
+      " some more repeating text",
+      " some more non repeating text",
+      " more stuff",
+  });
+
+  // Expect remote execute called for T&S.
+  EXPECT_TRUE(remote_execute_called_);
+  ASSERT_TRUE(last_remote_message_);
+  auto& ts_request =
+      static_cast<const proto::TextSafetyRequest&>(*last_remote_message_);
+  EXPECT_EQ(expected_responses.back(), ts_request.text());
+  ASSERT_TRUE(last_remote_ts_callback_);
+
+  // Invoke T&S callback.
+  std::move(last_remote_ts_callback_)
+      .Run(base::unexpected(
+               OptimizationGuideModelExecutionError::FromModelExecutionError(
+                   OptimizationGuideModelExecutionError::ModelExecutionError::
+                       kRequestThrottled)),
+           nullptr);
+
+  ASSERT_TRUE(response_error_);
+  EXPECT_EQ(*response_error_, OptimizationGuideModelExecutionError::
+                                  ModelExecutionError::kGenericFailure);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+      ExecuteModelResult::kTextSafetyRemoteRequestFailed, 1);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       UseRemoteTextSafetyFallbackNewRequestBeforeCallbackComesBack) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTextSafetyRemoteFallback);
+
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(config);
+  // Create an empty ts fallback config which is valid and will call the
+  // fallback.
+  config.mutable_text_safety_fallback_config();
+  Initialize({.config = config});
+
+  g_model_execute_result = {
+      "some text",
+      " some more repeating text",
+      " some more non repeating text",
+      " more stuff",
+  };
+  auto session = test_controller_->CreateSession(
+      kFeature, CreateExecuteRemoteFn(), &logger_, nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+  ExecuteModelUsingInput(*session, "foo");
+  task_environment_.RunUntilIdle();
+  const std::vector<std::string> expected_responses = ConcatResponses({
+      "some text",
+      " some more repeating text",
+      " some more non repeating text",
+      " more stuff",
+  });
+
+  // Expect remote execute called for T&S.
+  EXPECT_TRUE(remote_execute_called_);
+  ASSERT_TRUE(last_remote_message_);
+  auto& ts_request =
+      static_cast<const proto::TextSafetyRequest&>(*last_remote_message_);
+  EXPECT_EQ(expected_responses.back(), ts_request.text());
+  ASSERT_TRUE(last_remote_ts_callback_);
+
+  {
+    base::HistogramTester histogram_tester;
+
+    ExecuteModelUsingInput(*session, "newquery");
+
+    ASSERT_TRUE(response_error_);
+    EXPECT_EQ(
+        *response_error_,
+        OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+        ExecuteModelResult::kCancelled, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    // Invoke T&S callback and make sure nothing crashes.
+    std::move(last_remote_ts_callback_)
+        .Run(base::unexpected(
+                 OptimizationGuideModelExecutionError::FromModelExecutionError(
+                     OptimizationGuideModelExecutionError::ModelExecutionError::
+                         kRequestThrottled)),
+             nullptr);
+    // Request should have been cancelled and we shouldn't receive anything
+    // back.
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+        0);
+  }
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,

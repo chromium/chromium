@@ -303,6 +303,18 @@ chromium-metrics-reviews@google.com.
     Used on-device and got output, but the detected output language is not
     supported by the safety model
   </int>
+  <int value="14"
+      label="Used on-device and got output, but failed to create remote text
+             safety request">
+    Used on-device and got output, but failed to create the remote text safety
+    request to evaluate safety of the response.
+  </int>
+  <int value="15"
+      label="Used on-device and got output, but remote text safety request
+             failed">
+    Used on-device and got output, but the remote text safety request failed to
+    evaluate safety of the response.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideOnDeviceModelEligibilityReason">

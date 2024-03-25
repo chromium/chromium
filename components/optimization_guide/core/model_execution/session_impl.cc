@@ -413,6 +413,12 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
     }
   }
 
+  if (features::ShouldUseTextSafetyRemoteFallbackForEligibleFeatures()) {
+    // If using remote text safety fallback, we will not be streaming. Do not
+    // process partial responses.
+    return;
+  }
+
   bool chunk_provided_safety_info = false;
   if (chunk->safety_info) {
     on_device_state_->current_safety_info = std::move(chunk->safety_info);
@@ -454,7 +460,6 @@ void SessionImpl::OnComplete(
     on_device_state_->current_safety_info = std::move(summary->safety_info);
   }
   SendResponse(ResponseType::kComplete);
-  on_device_state_->ResetRequestState();
 }
 
 on_device_model::mojom::Session& SessionImpl::GetOrCreateSession() {
@@ -482,7 +487,12 @@ void SessionImpl::OnDisconnect() {
     on_device_state_->add_context_before_execute = true;
   }
   on_device_state_->session.reset();
-  CancelPendingResponse(ExecuteModelResult::kDisconnectAndCancel);
+
+  if (!on_device_state_->model_response_complete) {
+    // Only cancel the request if the model response is not complete yet. We can
+    // get in this state if there is an outstanding remote text safety request.
+    CancelPendingResponse(ExecuteModelResult::kDisconnectAndCancel);
+  }
 }
 
 void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
@@ -605,25 +615,52 @@ void SessionImpl::SendResponse(ResponseType response_type) {
     LogResponseHasRepeats(feature_, false);
   }
 
-  std::unique_ptr<ModelQualityLogEntry> log_entry;
-  if (is_complete) {
-    // Only bother setting the full response if the request is complete.
-    if (on_device_state_->log_ai_data_request) {
-      SetExecutionResponse(feature_, *(on_device_state_->log_ai_data_request),
-                           *output);
-      logged_response->set_status(
-          proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
-      log_entry = std::make_unique<ModelQualityLogEntry>(
-          std::move(on_device_state_->log_ai_data_request),
-          model_quality_uploader_service_);
-      log_entry->set_model_execution_id(GenerateExecutionId());
-      on_device_state_->log_ai_data_request.reset();
-    }
+  if (!is_complete) {
+    SendPartialResponseCallback(*output);
+    return;
   }
+
+  on_device_state_->model_response_complete = true;
+
+  if (features::ShouldUseTextSafetyRemoteFallbackForEligibleFeatures()) {
+    RunTextSafetyRemoteFallbackAndCompletionCallback(std::move(*output));
+    return;
+  }
+
+  SendSuccessCompletionCallback(*output);
+}
+
+void SessionImpl::SendPartialResponseCallback(
+    const proto::Any& success_response_metadata) {
   on_device_state_->callback.Run(OptimizationGuideModelStreamingExecutionResult(
-      base::ok(
-          StreamingResponse{.response = *output, .is_complete = is_complete}),
-      true, std::move(log_entry)));
+      base::ok(StreamingResponse{.response = success_response_metadata,
+                                 .is_complete = false}),
+      /*provided_by_on_device=*/true, /*log_entry=*/nullptr));
+}
+
+void SessionImpl::SendSuccessCompletionCallback(
+    const proto::Any& success_response_metadata) {
+  // Complete the log entry and promise it to the ModelQualityUploaderService.
+  std::unique_ptr<ModelQualityLogEntry> log_entry;
+  if (on_device_state_->log_ai_data_request) {
+    SetExecutionResponse(feature_, *(on_device_state_->log_ai_data_request),
+                         success_response_metadata);
+    on_device_state_->MutableLoggedResponse()->set_status(
+        proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
+    log_entry = std::make_unique<ModelQualityLogEntry>(
+        std::move(on_device_state_->log_ai_data_request),
+        model_quality_uploader_service_);
+    log_entry->set_model_execution_id(GenerateExecutionId());
+    on_device_state_->log_ai_data_request.reset();
+  }
+
+  // Return the execution response.
+  on_device_state_->callback.Run(OptimizationGuideModelStreamingExecutionResult(
+      base::ok(StreamingResponse{.response = success_response_metadata,
+                                 .is_complete = true}),
+      /*provided_by_on_device=*/true, std::move(log_entry)));
+
+  on_device_state_->ResetRequestState();
 }
 
 bool SessionImpl::ShouldUseOnDeviceModel() const {
@@ -663,6 +700,69 @@ std::unique_ptr<google::protobuf::MessageLite> SessionImpl::MergeContext(
   // Then merge in the request.
   message->CheckTypeAndMergeFrom(request);
   return message;
+}
+
+void SessionImpl::RunTextSafetyRemoteFallbackAndCompletionCallback(
+    proto::Any success_response_metadata) {
+  auto ts_request = on_device_state_->adapter->ConstructTextSafetyRequest(
+      *last_message_, on_device_state_->current_response);
+  if (!ts_request) {
+    CancelPendingResponse(
+        ExecuteModelResult::kFailedConstructingRemoteTextSafetyRequest,
+        ModelExecutionError::kGenericFailure);
+    return;
+  }
+
+  proto::InternalOnDeviceModelExecutionInfo remote_ts_model_execution_info;
+  auto* ts_request_log = remote_ts_model_execution_info.mutable_request()
+                             ->mutable_text_safety_model_request();
+  ts_request_log->set_text(ts_request->text());
+  ts_request_log->set_url(ts_request->url());
+
+  execute_remote_fn_.Run(
+      proto::MODEL_EXECUTION_FEATURE_TEXT_SAFETY, *ts_request,
+      /*log_ai_data_request=*/nullptr,
+      base::BindOnce(&SessionImpl::OnTextSafetyRemoteResponse,
+                     on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(remote_ts_model_execution_info),
+                     std::move(success_response_metadata)));
+}
+
+void SessionImpl::OnTextSafetyRemoteResponse(
+    proto::InternalOnDeviceModelExecutionInfo remote_ts_model_execution_info,
+    proto::Any success_response_metadata,
+    OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<ModelQualityLogEntry> remote_log_entry) {
+  bool is_unsafe =
+      !result.has_value() &&
+      result.error().error() ==
+          OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered;
+  if (on_device_state_->log_ai_data_request) {
+    if (remote_log_entry) {
+      auto* ts_response_log = remote_ts_model_execution_info.mutable_response()
+                                  ->mutable_text_safety_model_response();
+      ts_response_log->set_server_execution_id(
+          remote_log_entry->model_execution_id());
+      ts_response_log->set_is_unsafe(is_unsafe);
+    }
+    *(on_device_state_->log_ai_data_request->mutable_model_execution_info()
+          ->mutable_on_device_model_execution_info()
+          ->add_execution_infos()) = remote_ts_model_execution_info;
+  }
+
+  if (is_unsafe) {
+    CancelPendingResponse(ExecuteModelResult::kUsedOnDeviceOutputUnsafe,
+                          ModelExecutionError::kFiltered);
+    return;
+  }
+
+  if (!result.has_value()) {
+    CancelPendingResponse(ExecuteModelResult::kTextSafetyRemoteRequestFailed,
+                          ModelExecutionError::kGenericFailure);
+    return;
+  }
+
+  SendSuccessCompletionCallback(success_response_metadata);
 }
 
 bool SessionImpl::IsTextInUnsupportedOrUndeterminedLanguage(
@@ -779,6 +879,7 @@ void SessionImpl::OnDeviceState::ResetRequestState() {
   timer_for_first_response.Stop();
   histogram_logger.reset();
   log_ai_data_request.reset();
+  model_response_complete = false;
   session_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
