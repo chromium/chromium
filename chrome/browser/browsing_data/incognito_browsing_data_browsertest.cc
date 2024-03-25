@@ -19,7 +19,6 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
-#include "chrome/browser/browsing_data/local_data_container.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/media/clear_key_cdm_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -166,16 +165,11 @@ class IncognitoBrowsingDataBrowserTest
     ExpectTotalModelCount(incognito_browser, 0);
   }
 
-  inline void ExpectTotalModelCount(Browser* browser, int expected) {
-    std::unique_ptr<CookiesTreeModel> cookies_tree_model =
-        GetCookiesTreeModel(browser->profile());
+  inline void ExpectTotalModelCount(Browser* browser, size_t expected) {
     std::unique_ptr<BrowsingDataModel> browsing_data_model =
         GetBrowsingDataModel(browser->profile());
-    int total_model_size =
-        GetCookiesTreeModelCount(cookies_tree_model->GetRoot()) +
-        browsing_data_model->size();
-    EXPECT_EQ(expected, total_model_size)
-        << GetCookiesTreeModelInfo(cookies_tree_model->GetRoot());
+
+    EXPECT_EQ(expected, browsing_data_model->size());
   }
 
   void OnVideoDecodePerfInfo(base::RunLoop* run_loop,

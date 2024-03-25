@@ -24,7 +24,6 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
-#include "chrome/browser/browsing_data/local_data_container.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/media/clear_key_cdm_test_helper.h"
@@ -264,16 +263,11 @@ class BrowsingDataRemoverBrowserTest
     ExpectTotalModelCount(0);
   }
 
-  inline void ExpectTotalModelCount(int expected) {
-    std::unique_ptr<CookiesTreeModel> cookies_tree_model =
-        GetCookiesTreeModel(GetProfile());
+  inline void ExpectTotalModelCount(size_t expected) {
     std::unique_ptr<BrowsingDataModel> browsing_data_model =
         GetBrowsingDataModel(GetProfile());
-    int total_model_size =
-        GetCookiesTreeModelCount(cookies_tree_model->GetRoot()) +
-        browsing_data_model->size();
-    EXPECT_EQ(expected, total_model_size)
-        << GetCookiesTreeModelInfo(cookies_tree_model->GetRoot());
+
+    EXPECT_EQ(expected, browsing_data_model->size());
   }
 
   void OnVideoDecodePerfInfo(base::RunLoop* run_loop,
@@ -1466,12 +1460,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        PRE_StorageRemovedFromDisk) {
   EXPECT_EQ(1, GetSiteDataCount());
-  auto expected_model_size = 2;
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kDeprecateCookiesTreeModel)) {
-    expected_model_size--;
-  }
-  ExpectTotalModelCount(expected_model_size);
+  ExpectTotalModelCount(1);
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
                 content::BrowsingDataRemover::DATA_TYPE_CACHE |
                 chrome_browsing_data_remover::DATA_TYPE_HISTORY |
@@ -1523,12 +1512,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
     EXPECT_TRUE(HasDataForType(type));
   }
 
-  auto expected_model_size = 2;
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kDeprecateCookiesTreeModel)) {
-    expected_model_size--;
-  }
-  ExpectTotalModelCount(expected_model_size);
+  ExpectTotalModelCount(1);
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetDefaultContentSetting(ContentSettingsType::COOKIES,
                                  CONTENT_SETTING_SESSION_ONLY);

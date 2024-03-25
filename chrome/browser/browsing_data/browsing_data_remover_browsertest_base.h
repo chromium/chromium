@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -87,18 +86,8 @@ class BrowsingDataRemoverBrowserTestBase : public PlatformBrowserTest {
       const std::vector<std::string>& ignore_file_patterns,
       bool check_leveldb_content);
 
-  // Returns the cookie tree model for the browser.
-  std::unique_ptr<CookiesTreeModel> GetCookiesTreeModel(Profile* profile);
-
   // Returns the browsing data model for the browser.
   std::unique_ptr<BrowsingDataModel> GetBrowsingDataModel(Profile* profile);
-
-  // Returns the sum of the number of datatypes per host.
-  int GetCookiesTreeModelCount(const CookieTreeNode* root);
-
-  // Returns a string with information about the content of the
-  // cookie tree model.
-  std::string GetCookiesTreeModelInfo(const CookieTreeNode* root);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Sets the APISID Gaia cookie, which is monitored by the AccountReconcilor.
