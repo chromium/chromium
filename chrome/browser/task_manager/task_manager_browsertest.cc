@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -11,7 +13,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -1494,7 +1495,7 @@ class PrerenderTaskBrowserTest : public TaskManagerBrowserTest {
     embedded_test_server()->StartAcceptingConnections();
   }
 
-  void NavigateTo(base::StringPiece page_url) const {
+  void NavigateTo(std::string_view page_url) const {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL(page_url)));
   }
@@ -1854,13 +1855,13 @@ class FencedFrameTaskBrowserTest : public TaskManagerBrowserTest {
   }
 
   void NavigateTo(Browser* browser,
-                  base::StringPiece host,
-                  base::StringPiece rel_url) {
+                  std::string_view host,
+                  std::string_view rel_url) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser, https_server()->GetURL(host, rel_url)));
   }
 
-  std::string GetFencedFrameTitle(base::StringPiece host) const {
+  std::string GetFencedFrameTitle(std::string_view host) const {
     return base::StrCat({"https://", host, "/"});
   }
 
