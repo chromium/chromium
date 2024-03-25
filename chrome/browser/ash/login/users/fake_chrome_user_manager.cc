@@ -24,6 +24,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user.h"
@@ -69,6 +70,7 @@ namespace ash {
 
 FakeChromeUserManager::FakeChromeUserManager()
     : UserManagerBase(
+          std::make_unique<user_manager::FakeUserManagerDelegate>(),
           new FakeTaskRunner(),
           g_browser_process ? g_browser_process->local_state() : nullptr) {
   ProfileHelper::SetProfileToUserForTestingEnabled(true);
@@ -563,11 +565,6 @@ void FakeChromeUserManager::SimulateUserProfileLoad(
       break;
     }
   }
-}
-
-const std::string& FakeChromeUserManager::GetApplicationLocale() const {
-  static const std::string default_locale("en-US");
-  return default_locale;
 }
 
 void FakeChromeUserManager::LoadDeviceLocalAccounts(

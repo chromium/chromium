@@ -46,6 +46,7 @@
 #include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
+#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/external_data/handlers/crostini_ansible_playbook_external_data_handler.h"
@@ -290,6 +291,7 @@ ChromeUserManagerImpl::CreateChromeUserManager() {
 
 ChromeUserManagerImpl::ChromeUserManagerImpl()
     : UserManagerBase(
+          std::make_unique<UserManagerDelegateImpl>(),
           base::SingleThreadTaskRunner::HasCurrentDefault()
               ? base::SingleThreadTaskRunner::GetCurrentDefault()
               : nullptr,
@@ -589,10 +591,6 @@ void ChromeUserManagerImpl::OnPolicyUpdated(const std::string& user_id) {
 void ChromeUserManagerImpl::OnDeviceLocalAccountsChanged() {
   // No action needed here, changes to the list of device-local accounts get
   // handled via the kAccountsPrefDeviceLocalAccounts device setting observer.
-}
-
-const std::string& ChromeUserManagerImpl::GetApplicationLocale() const {
-  return g_browser_process->GetApplicationLocale();
 }
 
 bool ChromeUserManagerImpl::IsEnterpriseManaged() const {

@@ -117,7 +117,6 @@ class ChromeUserManagerImpl
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
  protected:
-  const std::string& GetApplicationLocale() const override;
   void LoadDeviceLocalAccounts(std::set<AccountId>* users_set) override;
   void NotifyOnLogin() override;
   void NotifyUserAddedToSession(const user_manager::User* added_user,

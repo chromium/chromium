@@ -77,6 +77,8 @@ if (is_chromeos_ash) {
       "fake_device_ownership_waiter.h",
       "fake_user_manager.cc",
       "fake_user_manager.h",
+      "fake_user_manager_delegate.cc",
+      "fake_user_manager_delegate.h",
     ]
 
     public_deps = [

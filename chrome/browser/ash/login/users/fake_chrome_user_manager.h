@@ -131,7 +131,6 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
   GetMultiUserSignInPolicyController() override;
 
   // user_manager::UserManagerBase override.
-  const std::string& GetApplicationLocale() const override;
   void LoadDeviceLocalAccounts(std::set<AccountId>* users_set) override;
   bool IsEnterpriseManaged() const override;
   void PerformPostUserLoggedInActions(bool browser_restart) override;

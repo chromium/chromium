@@ -2198,6 +2198,8 @@ source_set("ash") {
     "login/users/default_user_image/default_user_images.h",
     "login/users/test_users.cc",
     "login/users/test_users.h",
+    "login/users/user_manager_delegate_impl.cc",
+    "login/users/user_manager_delegate_impl.h",
     "login/version_info_updater.cc",
     "login/version_info_updater.h",
     "login/version_updater/update_time_estimator.cc",

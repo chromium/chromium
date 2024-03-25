@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 
@@ -41,7 +42,9 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
 namespace user_manager {
 
 FakeUserManager::FakeUserManager(PrefService* local_state)
-    : UserManagerBase(new FakeTaskRunner(), local_state) {}
+    : UserManagerBase(std::make_unique<FakeUserManagerDelegate>(),
+                      new FakeTaskRunner(),
+                      local_state) {}
 
 FakeUserManager::~FakeUserManager() = default;
 
@@ -354,11 +357,6 @@ void FakeUserManager::SetEphemeralModeConfig(
 bool FakeUserManager::IsEphemeralAccountIdByPolicy(
     const AccountId& account_id) const {
   return GetEphemeralModeConfig().IsAccountIdIncluded(account_id);
-}
-
-const std::string& FakeUserManager::GetApplicationLocale() const {
-  static const std::string default_locale("en-US");
-  return default_locale;
 }
 
 bool FakeUserManager::IsEnterpriseManaged() const {

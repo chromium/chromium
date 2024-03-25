@@ -64,9 +64,22 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
     kMaxValue = kLSUDeleted
   };
 
+  // Delegate interface to inject //chrome/* dependency.
+  // In case you need to extend this, please consider to minimize the
+  // responsibility, because it means to depend more things on //chrome/*
+  // browser from ash-system, which we prefer minimizing.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Returns the application locale.
+    virtual const std::string& GetApplicationLocale() = 0;
+  };
+
   // Creates UserManagerBase with |task_runner| for UI thread, and given
   // |local_state|. |local_state| must outlive this UserManager.
-  UserManagerBase(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+  UserManagerBase(std::unique_ptr<Delegate> delegate,
+                  scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                   PrefService* local_state);
 
   UserManagerBase(const UserManagerBase&) = delete;
@@ -202,9 +215,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // A wrapper around C++ delete operator. Deletes |user|, and when |user|
   // equals to active_user_, active_user_ is reset to NULL.
   virtual void DeleteUser(User* user);
-
-  // Returns the locale used by the application.
-  virtual const std::string& GetApplicationLocale() const = 0;
 
   // Loads |users_| from Local State if the list has not been loaded yet.
   // Subsequent calls have no effect. Must be called on the UI thread.
@@ -380,6 +390,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
                              std::unique_ptr<std::string> resolved_locale);
 
   void RemoveLegacySupervisedUser(const AccountId& account_id);
+
+  std::unique_ptr<Delegate> delegate_;
 
   // Indicates stage of loading user from prefs.
   UserLoadStage user_loading_stage_ = STAGE_NOT_LOADED;

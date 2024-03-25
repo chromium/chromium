@@ -109,9 +109,12 @@ void UserManagerBase::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 UserManagerBase::UserManagerBase(
+    std::unique_ptr<Delegate> delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     PrefService* local_state)
-    : task_runner_(std::move(task_runner)), local_state_(local_state) {
+    : delegate_(std::move(delegate)),
+      task_runner_(std::move(task_runner)),
+      local_state_(local_state) {
   // |local_state| can be nullptr only for testing.
   if (!local_state) {
     CHECK_IS_TEST();
@@ -1357,7 +1360,7 @@ void UserManagerBase::SendGaiaUserLoginMetrics(const AccountId& account_id) {
 void UserManagerBase::UpdateUserAccountLocale(const AccountId& account_id,
                                               const std::string& locale) {
   std::unique_ptr<std::string> resolved_locale(new std::string());
-  if (!locale.empty() && locale != GetApplicationLocale()) {
+  if (!locale.empty() && locale != delegate_->GetApplicationLocale()) {
     // std::move will nullptr out |resolved_locale|, so cache the underlying
     // ptr.
     std::string* raw_resolved_locale = resolved_locale.get();
