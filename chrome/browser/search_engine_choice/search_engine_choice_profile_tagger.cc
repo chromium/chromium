@@ -27,7 +27,8 @@ SearchEngineChoiceProfileTagger::~SearchEngineChoiceProfileTagger() = default;
 // static
 std::unique_ptr<SearchEngineChoiceProfileTagger>
 SearchEngineChoiceProfileTagger::Create(ProfileManager& profile_manager) {
-  if (!switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get()) {
+  if (!(IsChoiceScreenFlagEnabled(search_engines::ChoicePromo::kAny) &&
+        switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get())) {
     return nullptr;
   }
 
