@@ -109,6 +109,13 @@ ios_blink_app_ext_toolchain("ios_clang_arm64_blink_app_ext") {
   }
 }
 
+ios_blink_app_ext_toolchain("ios_clang_x64_blink_app_ext") {
+  toolchain_args = {
+    current_cpu = "x64"
+    use_blink = true
+  }
+}
+
 ios_app_ext_toolchain("ios_clang_arm64_app_ext_13_4") {
   toolchain_args = {
     current_cpu = "arm64"
