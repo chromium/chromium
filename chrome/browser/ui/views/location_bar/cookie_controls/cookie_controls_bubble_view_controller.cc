@@ -91,8 +91,7 @@ void CookieControlsBubbleViewController::OnUserClosedContentView() {
     return;
   }
 
-  web_contents_->GetController().SetNeedsReload();
-  web_contents_->GetController().LoadIfNecessary();
+  web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
 
   SwitchToReloadingView();
 }
