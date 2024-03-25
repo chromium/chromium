@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/growth/action_performer.h"
 
@@ -131,6 +132,7 @@ class TargetingBase {
   const std::optional<bool> GetBoolCriteria(const char* path_suffix) const;
   const std::optional<int> GetIntCriteria(const char* path_suffix) const;
   const std::string* GetStringCriteria(const char* path_suffix) const;
+  const base::Value::Dict* GetDictCriteria(const char* path_suffix) const;
 
  private:
   const std::string GetCriteriaPath(const char* path_suffix) const;
@@ -168,6 +170,29 @@ class DemoModeTargeting : public TargetingBase {
   const std::optional<bool> TargetFeatureAwareDevice() const;
 };
 
+// Wrapper around time window targeting dictionary.
+//
+// The structure looks like:
+// {
+//   "start": 1697046365,
+//   "end": 1697046598
+// }
+//
+// Start and end are the number of seconds since epoch in UTC.
+class TimeWindowTargeting {
+ public:
+  explicit TimeWindowTargeting(const base::Value::Dict* time_window_dict);
+  TimeWindowTargeting(const TimeWindowTargeting&) = delete;
+  TimeWindowTargeting& operator=(const TimeWindowTargeting) = delete;
+  ~TimeWindowTargeting();
+
+  const base::Time GetStartTime() const;
+  const base::Time GetEndTime() const;
+
+ private:
+  raw_ptr<const base::Value::Dict> time_window_dict_;
+};
+
 // Wrapper around Device targeting dictionary. The structure looks like:
 // {
 //   "locales": ["en-US", "zh-CN"];
@@ -187,29 +212,7 @@ class DeviceTargeting : public TargetingBase {
   const std::optional<int> GetMinMilestone() const;
   const std::optional<int> GetMaxMilestone() const;
   const std::optional<bool> GetFeatureAwareDevice() const;
-};
-
-// Wrapper around scheduling targeting dictionary.
-//
-// The structure looks like:
-// {
-//   "start": 1697046365,
-//   "end": 1697046598
-// }
-//
-// Start and end are the number of seconds since epoch in UTC.
-class SchedulingTargeting {
- public:
-  explicit SchedulingTargeting(const base::Value::Dict* scheduling_dict);
-  SchedulingTargeting(const SchedulingTargeting&) = delete;
-  SchedulingTargeting& operator=(const SchedulingTargeting) = delete;
-  ~SchedulingTargeting();
-
-  const base::Time GetStartTime() const;
-  const base::Time GetEndTime() const;
-
- private:
-  raw_ptr<const base::Value::Dict> scheduling_dict_;
+  std::unique_ptr<TimeWindowTargeting> GetRegisteredTime() const;
 };
 
 // Wrapper around app targeting dictionary.
@@ -244,7 +247,7 @@ class SessionTargeting : public TargetingBase {
   SessionTargeting& operator=(const SessionTargeting) = delete;
   ~SessionTargeting();
 
-  const std::vector<std::unique_ptr<SchedulingTargeting>> GetSchedulings()
+  const std::vector<std::unique_ptr<TimeWindowTargeting>> GetSchedulings()
       const;
   const base::Value::List* GetExperimentTags() const;
   // Returns a list of apps to be matched against the current opened app.

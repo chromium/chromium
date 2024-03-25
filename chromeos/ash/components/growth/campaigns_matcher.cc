@@ -53,8 +53,14 @@ int GetMilestone() {
   return version_info::GetMajorVersionNumberAsInt();
 }
 
+bool MatchTimeWindow(const TimeWindowTargeting& time_window_targeting,
+                     const base::Time& targeted_time) {
+  return time_window_targeting.GetStartTime() <= targeted_time &&
+         time_window_targeting.GetEndTime() >= targeted_time;
+}
+
 // Matched if any of the given `scheduling_targetings` is matched.
-bool MatchSchedulings(const std::vector<std::unique_ptr<SchedulingTargeting>>&
+bool MatchSchedulings(const std::vector<std::unique_ptr<TimeWindowTargeting>>&
                           scheduling_targetings) {
   if (scheduling_targetings.empty()) {
     // Match campaign if there is no scheduling targeting criteria.
@@ -63,8 +69,7 @@ bool MatchSchedulings(const std::vector<std::unique_ptr<SchedulingTargeting>>&
 
   const auto now = base::Time::Now();
   for (const auto& scheduling_targeting : scheduling_targetings) {
-    if (scheduling_targeting->GetStartTime() <= now &&
-        scheduling_targeting->GetEndTime() >= now) {
+    if (MatchTimeWindow(*scheduling_targeting, now)) {
       return true;
     }
   }
@@ -260,13 +265,31 @@ bool CampaignsMatcher::MatchDeviceTargeting(
     return false;
   }
 
-  auto* targeting_locales = targeting.GetLocales();
+  const auto* targeting_locales = targeting.GetLocales();
   if (targeting_locales &&
       !Contains(*targeting_locales, client_->GetApplicationLocale())) {
     return false;
   }
 
+  const auto registered_time_targeting = targeting.GetRegisteredTime();
+  if (!MatchRegisteredTime(registered_time_targeting)) {
+    return false;
+  }
+
   return MatchMilestone(targeting);
+}
+
+bool CampaignsMatcher::MatchRegisteredTime(
+    const std::unique_ptr<TimeWindowTargeting>& registered_time_targeting)
+    const {
+  if (!registered_time_targeting) {
+    // Match campaign if there is no registered date targeting.
+    return true;
+  }
+
+  const auto& registered_time =
+      local_state_->GetTime(ash::prefs::kDeviceRegisteredTime);
+  return MatchTimeWindow(*registered_time_targeting, registered_time);
 }
 
 bool CampaignsMatcher::MatchOpenedApp(

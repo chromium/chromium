@@ -43,6 +43,7 @@ inline constexpr char kDeviceLocales[] = "locales";
 inline constexpr char kMinMilestone[] = "milestone.min";
 inline constexpr char kMaxMilestone[] = "milestone.max";
 inline constexpr char kFeatureAware[] = "isFeatureAwareDevice";
+inline constexpr char kRegisteredTime[] = "registeredTime";
 
 // Session Targeting paths.
 inline constexpr char kSessionTargeting[] = "session";
@@ -149,6 +150,11 @@ const std::string* TargetingBase::GetStringCriteria(
   return targeting_->FindStringByDottedPath(GetCriteriaPath(path_suffix));
 }
 
+const base::Value::Dict* TargetingBase::GetDictCriteria(
+    const char* path_suffix) const {
+  return targeting_->FindDictByDottedPath(GetCriteriaPath(path_suffix));
+}
+
 const std::string TargetingBase::GetCriteriaPath(
     const char* path_suffix) const {
   return base::StringPrintf("%s.%s", targeting_path_, path_suffix);
@@ -210,6 +216,16 @@ const std::optional<bool> DeviceTargeting::GetFeatureAwareDevice() const {
   return GetBoolCriteria(kFeatureAware);
 }
 
+std::unique_ptr<TimeWindowTargeting> DeviceTargeting::GetRegisteredTime()
+    const {
+  auto* registered_time_dict = GetDictCriteria(kRegisteredTime);
+  if (!registered_time_dict) {
+    return nullptr;
+  }
+
+  return std::make_unique<TimeWindowTargeting>(registered_time_dict);
+}
+
 // Apps Targeting.
 AppTargeting::AppTargeting(const base::Value::Dict* app_dict)
     : app_dict_(app_dict) {}
@@ -221,14 +237,14 @@ const std::string* AppTargeting::GetAppId() const {
 }
 
 // Scheduling Targeting.
-SchedulingTargeting::SchedulingTargeting(
-    const base::Value::Dict* scheduling_dict)
-    : scheduling_dict_(scheduling_dict) {}
+TimeWindowTargeting::TimeWindowTargeting(
+    const base::Value::Dict* time_window_dict)
+    : time_window_dict_(time_window_dict) {}
 
-SchedulingTargeting::~SchedulingTargeting() = default;
+TimeWindowTargeting::~TimeWindowTargeting() = default;
 
-const base::Time SchedulingTargeting::GetStartTime() const {
-  auto start = scheduling_dict_->FindDouble(kSchedulingStart);
+const base::Time TimeWindowTargeting::GetStartTime() const {
+  auto start = time_window_dict_->FindDouble(kSchedulingStart);
   if (start.has_value()) {
     return base::Time::FromSecondsSinceUnixEpoch(start.value());
   }
@@ -236,8 +252,8 @@ const base::Time SchedulingTargeting::GetStartTime() const {
   return base::Time::Min();
 }
 
-const base::Time SchedulingTargeting::GetEndTime() const {
-  auto end = scheduling_dict_->FindDouble(kSchedulingEnd);
+const base::Time TimeWindowTargeting::GetEndTime() const {
+  auto end = time_window_dict_->FindDouble(kSchedulingEnd);
   if (end.has_value()) {
     return base::Time::FromSecondsSinceUnixEpoch(end.value());
   }
@@ -251,9 +267,9 @@ SessionTargeting::SessionTargeting(const Targeting* targeting_dict)
 
 SessionTargeting::~SessionTargeting() = default;
 
-const std::vector<std::unique_ptr<SchedulingTargeting>>
+const std::vector<std::unique_ptr<TimeWindowTargeting>>
 SessionTargeting::GetSchedulings() const {
-  std::vector<std::unique_ptr<SchedulingTargeting>> schedulings;
+  std::vector<std::unique_ptr<TimeWindowTargeting>> schedulings;
   auto* scheduling_dicts = GetListCriteria(kSchedulingTargetings);
   if (!scheduling_dicts) {
     // TODO(b/308440474): Empty scheduling targeting is a valid use case. Remove
@@ -271,7 +287,7 @@ SessionTargeting::GetSchedulings() const {
       continue;
     }
     schedulings.push_back(
-        std::make_unique<SchedulingTargeting>(&scheduling_dict.GetDict()));
+        std::make_unique<TimeWindowTargeting>(&scheduling_dict.GetDict()));
   }
   return schedulings;
 }

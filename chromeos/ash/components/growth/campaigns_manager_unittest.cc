@@ -244,6 +244,19 @@ class CampaignsManagerTest : public testing::Test {
         kValidCampaignsFileTemplate, device_targeting.c_str()));
   }
 
+  void LoadComponentWithRegisteredTimeTargeting(
+      const std::string& registerd_time_targeting) {
+    auto device_targeting =
+        base::StringPrintf(R"(
+            "device": {
+              "registeredTime": %s
+            }
+          )",
+                           registerd_time_targeting.c_str());
+    LoadComponentAndVerifyLoadComplete(base::StringPrintf(
+        kValidCampaignsFileTemplate, device_targeting.c_str()));
+  }
+
   void LoadComponentWithExperimentTagTargeting(const std::string& exp_tags) {
     auto session_targeting = base::StringPrintf(R"(
             "session": {
@@ -297,6 +310,8 @@ class CampaignsManagerTest : public testing::Test {
         ash::prefs::kDemoModeRetailerId, std::string());
     local_state_->registry()->RegisterStringPref(ash::prefs::kDemoModeStoreId,
                                                  std::string());
+    local_state_->registry()->RegisterTimePref(
+        ash::prefs::kDeviceRegisteredTime, base::Time());
   }
 };
 
@@ -1107,6 +1122,89 @@ TEST_F(CampaignsManagerTest, GetSchedulingCampaignInvalidScheduling) {
   histogram_tester.ExpectBucketCount(kCampaignsManagerErrorHistogramName,
                                      CampaignsManagerError::kInvalidTargeting,
                                      /*count=*/1);
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithRegisteredTimeTargeting) {
+  const auto now = base::Time::Now();
+  auto start = now;
+  auto end = now + base::Seconds(5);
+  local_state_->SetTime(ash::prefs::kDeviceRegisteredTime, now);
+  LoadComponentWithRegisteredTimeTargeting(base::StringPrintf(
+      R"({"start": %f, "end": %f})", start.InSecondsFSinceUnixEpoch(),
+      end.InSecondsFSinceUnixEpoch()));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithRegisteredTimeTargetingStartOnly) {
+  const auto now = base::Time::Now();
+  auto start = now;
+  local_state_->SetTime(ash::prefs::kDeviceRegisteredTime, now);
+  LoadComponentWithRegisteredTimeTargeting(
+      base::StringPrintf(R"({"start": %f})", start.InSecondsFSinceUnixEpoch()));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithRegisteredTimeTargetingEndOnly) {
+  const auto now = base::Time::Now();
+  auto end = now + base::Seconds(5);
+  local_state_->SetTime(ash::prefs::kDeviceRegisteredTime, now);
+  LoadComponentWithRegisteredTimeTargeting(
+      base::StringPrintf(R"({"end": %f})", end.InSecondsFSinceUnixEpoch()));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       GetCampaignWithRegisteredTimeTargetingStartMismatch) {
+  const auto now = base::Time::Now();
+  auto start = now + base::Seconds(5);
+  auto end = now + base::Seconds(10);
+  local_state_->SetTime(ash::prefs::kDeviceRegisteredTime, now);
+  LoadComponentWithRegisteredTimeTargeting(base::StringPrintf(
+      R"({"start": %f, "end": %f})", start.InSecondsFSinceUnixEpoch(),
+      end.InSecondsFSinceUnixEpoch()));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       GetCampaignWithRegisteredTimeTargetingEndMismatch) {
+  const auto now = base::Time::Now();
+  auto start = now - base::Seconds(2);
+  auto end = now - base::Seconds(1);
+  local_state_->SetTime(ash::prefs::kDeviceRegisteredTime, now);
+  LoadComponentWithRegisteredTimeTargeting(base::StringPrintf(
+      R"({"start": %f, "end": %f})", start.InSecondsFSinceUnixEpoch(),
+      end.InSecondsFSinceUnixEpoch()));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       GetCampaignWithRegisteredTimeTargetingStartOnlyMismatch) {
+  const auto now = base::Time::Now();
+  auto start = now + base::Seconds(5);
+  local_state_->SetTime(ash::prefs::kDeviceRegisteredTime, now);
+  LoadComponentWithRegisteredTimeTargeting(
+      base::StringPrintf(R"({"start": %f})", start.InSecondsFSinceUnixEpoch()));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       GetCampaignWithRegisteredTimeTargetingEndOnlyMismatch) {
+  const auto now = base::Time::Now();
+  auto end = now - base::Seconds(5);
+  local_state_->SetTime(ash::prefs::kDeviceRegisteredTime, now);
+  LoadComponentWithRegisteredTimeTargeting(
+      base::StringPrintf(R"({"end": %f})", end.InSecondsFSinceUnixEpoch()));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignAppsOpened) {

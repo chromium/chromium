@@ -39,6 +39,8 @@ class CampaignsMatcher {
   bool MaybeMatchDemoModeTargeting(const DemoModeTargeting& targeting) const;
   bool MatchMilestone(const DeviceTargeting& targeting) const;
   bool MatchDeviceTargeting(const DeviceTargeting& targeting) const;
+  bool MatchRegisteredTime(const std::unique_ptr<TimeWindowTargeting>&
+                               registered_time_targeting) const;
   bool MatchExperimentTagTargeting(const base::Value::List* targeting) const;
   bool MatchOpenedApp(
       std::vector<std::unique_ptr<AppTargeting>> apps_opened_targeting) const;
