@@ -13,7 +13,7 @@
 
 :host {
   align-items: center;
-  background-color: var(--cr-toolbar-background-color);
+  box-sizing: border-box;
   color: var(--google-grey-900);
   display: flex;
   height: var(--cr-toolbar-height);
@@ -21,14 +21,7 @@
 
 @media (prefers-color-scheme: dark) {
   :host {
-    border-bottom: var(--cr-separator-line);
-    box-sizing: border-box;
     color: var(--cr-secondary-text-color);
-  }
-
-  :host-context([chrome-refresh-2023]):host {
-    background-color: transparent;
-    border-bottom: none;
   }
 }
 
