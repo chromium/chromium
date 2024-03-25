@@ -406,6 +406,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
 
   __weak __typeof(self) weakSelf = self;
+  __weak UIWindow* sceneWindow = sceneState.window;
 
   ProceduralBlock transitionCompletionBlock = ^{
     __typeof(self) strongSelf = weakSelf;
@@ -420,8 +421,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       [strongSelf displayBringAndroidTabsPrompt];
     }
 
-    strongSelf.baseViewController.view.window.overrideUserInterfaceStyle =
-        UIUserInterfaceStyleDark;
+    sceneWindow.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   };
 
   ProceduralBlock transitionBlock = ^{
@@ -480,7 +480,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     self.tabGridEnterTime = base::TimeTicks();
   }
 
-  self.baseViewController.view.window.overrideUserInterfaceStyle =
+  SceneState* sceneState = self.regularBrowser->GetSceneState();
+  sceneState.window.overrideUserInterfaceStyle =
       UIUserInterfaceStyleUnspecified;
 
   // If another BVC is already being presented, swap this one into the

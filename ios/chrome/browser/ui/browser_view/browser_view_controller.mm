@@ -1019,6 +1019,13 @@ enum HeaderBehaviour {
     return;
   }
 
+  if (self.traitCollection.horizontalSizeClass ==
+          previousTraitCollection.horizontalSizeClass &&
+      self.traitCollection.verticalSizeClass ==
+          previousTraitCollection.verticalSizeClass) {
+    return;
+  }
+
   self.fullscreenController->BrowserTraitCollectionChangedBegin();
 
   // TODO(crbug.com/527092): - traitCollectionDidChange: is not always forwarded
