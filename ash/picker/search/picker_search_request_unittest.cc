@@ -236,7 +236,7 @@ TEST_F(PickerSearchRequestTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
 
 TEST_F(PickerSearchRequestTest, RecordsOmniboxMetrics) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
 
   PickerSearchRequest request(
       u"cat", std::nullopt,
@@ -257,7 +257,7 @@ TEST_F(PickerSearchRequestTest, RecordsOmniboxMetrics) {
 TEST_F(PickerSearchRequestTest,
        DoesNotRecordOmniboxMetricsIfNoOmniboxResponse) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
   EXPECT_CALL(client(), StopCrosQuery)
       .Times(AtLeast(1))
@@ -293,7 +293,7 @@ TEST_F(PickerSearchRequestTest,
 TEST_F(PickerSearchRequestTest,
        DoesNotRecordOmniboxMetricsIfOtherCrosSearchResponse) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
   EXPECT_CALL(client(), StopCrosQuery)
       .Times(AtLeast(1))
@@ -398,7 +398,7 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromFileSearch) {
 
 TEST_F(PickerSearchRequestTest, RecordsFileMetrics) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
 
   PickerSearchRequest request(
       u"cat", std::nullopt,
@@ -416,7 +416,7 @@ TEST_F(PickerSearchRequestTest, RecordsFileMetrics) {
 
 TEST_F(PickerSearchRequestTest, DoesNotRecordFileMetricsIfNoFileResponse) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
   EXPECT_CALL(client(), StopCrosQuery)
       .Times(AtLeast(1))
@@ -452,7 +452,7 @@ TEST_F(PickerSearchRequestTest, DoesNotRecordFileMetricsIfNoFileResponse) {
 TEST_F(PickerSearchRequestTest,
        DoesNotRecordFileMetricsIfOtherCrosSearchResponse) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
   EXPECT_CALL(client(), StopCrosQuery)
       .Times(AtLeast(1))
@@ -514,7 +514,7 @@ TEST_F(PickerSearchRequestTest, ShowsResultsFromDriveSearch) {
 
 TEST_F(PickerSearchRequestTest, RecordsDriveMetrics) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
 
   PickerSearchRequest request(
       u"cat", std::nullopt,
@@ -532,7 +532,7 @@ TEST_F(PickerSearchRequestTest, RecordsDriveMetrics) {
 
 TEST_F(PickerSearchRequestTest, DoesNotRecordDriveMetricsIfNoFileResponse) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
   EXPECT_CALL(client(), StopCrosQuery)
       .Times(AtLeast(1))
@@ -568,7 +568,7 @@ TEST_F(PickerSearchRequestTest, DoesNotRecordDriveMetricsIfNoFileResponse) {
 TEST_F(PickerSearchRequestTest,
        DoesNotRecordDriveMetricsIfOtherCrosSearchResponse) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
   EXPECT_CALL(client(), StopCrosQuery)
       .Times(AtLeast(1))
@@ -701,7 +701,7 @@ TEST_F(PickerSearchRequestTest, StopsOldGifSearches) {
 
 TEST_F(PickerSearchRequestTest, RecordsGifMetrics) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
 
   PickerSearchRequest request(
       u"cat", std::nullopt,
@@ -724,7 +724,7 @@ TEST_F(PickerSearchRequestTest, RecordsGifMetrics) {
 
 TEST_F(PickerSearchRequestTest, DoesNotRecordGifMetricsIfNoResponse) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
 
   {
     PickerSearchRequest request(

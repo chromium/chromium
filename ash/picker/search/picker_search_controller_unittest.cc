@@ -305,7 +305,7 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
 
 TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsBeforeBurnIn) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
 
   controller.StartSearch(
@@ -325,7 +325,7 @@ TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsBeforeBurnIn) {
 
 TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsAfterBurnIn) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
 
   controller.StartSearch(
@@ -346,7 +346,7 @@ TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsAfterBurnIn) {
 TEST_F(PickerSearchControllerTest,
        DoesNotRecordOmniboxMetricsIfNoOmniboxResponse) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
   EXPECT_CALL(client(), StopCrosQuery)
       .Times(AtLeast(2))
@@ -385,7 +385,7 @@ TEST_F(PickerSearchControllerTest,
 TEST_F(PickerSearchControllerTest,
        DoesNotRecordOmniboxMetricsIfOtherCrosSearchResponse) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
   EXPECT_CALL(client(), StopCrosQuery)
       .Times(AtLeast(2))
@@ -499,7 +499,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromFileSearch) {
 
 TEST_F(PickerSearchControllerTest, RecordsFileMetricsBeforeBurnIn) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
 
   controller.StartSearch(
@@ -517,7 +517,7 @@ TEST_F(PickerSearchControllerTest, RecordsFileMetricsBeforeBurnIn) {
 
 TEST_F(PickerSearchControllerTest, RecordsFileMetricsAfterBurnIn) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
 
   controller.StartSearch(
@@ -535,7 +535,7 @@ TEST_F(PickerSearchControllerTest, RecordsFileMetricsAfterBurnIn) {
 
 TEST_F(PickerSearchControllerTest, DoesNotRecordFileMetricsIfNoFileResponse) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
   EXPECT_CALL(client(), StopCrosQuery)
       .Times(AtLeast(2))
@@ -574,7 +574,7 @@ TEST_F(PickerSearchControllerTest, DoesNotRecordFileMetricsIfNoFileResponse) {
 TEST_F(PickerSearchControllerTest,
        DoesNotRecordFileMetricsIfOtherCrosSearchResponse) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
   EXPECT_CALL(client(), StopCrosQuery)
       .Times(AtLeast(2))
@@ -643,7 +643,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromDriveSearch) {
 
 TEST_F(PickerSearchControllerTest, RecordsDriveMetricsBeforeBurnIn) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
 
   controller.StartSearch(
@@ -661,7 +661,7 @@ TEST_F(PickerSearchControllerTest, RecordsDriveMetricsBeforeBurnIn) {
 
 TEST_F(PickerSearchControllerTest, RecordsDriveMetricsAfterBurnIn) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
 
   controller.StartSearch(
@@ -679,7 +679,7 @@ TEST_F(PickerSearchControllerTest, RecordsDriveMetricsAfterBurnIn) {
 
 TEST_F(PickerSearchControllerTest, DoesNotRecordDriveMetricsIfNoFileResponse) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
   EXPECT_CALL(client(), StopCrosQuery)
       .Times(AtLeast(2))
@@ -718,7 +718,7 @@ TEST_F(PickerSearchControllerTest, DoesNotRecordDriveMetricsIfNoFileResponse) {
 TEST_F(PickerSearchControllerTest,
        DoesNotRecordDriveMetricsIfOtherCrosSearchResponse) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   bool search_started = false;
   EXPECT_CALL(client(), StopCrosQuery)
       .Times(AtLeast(2))
@@ -910,7 +910,7 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
 
 TEST_F(PickerSearchControllerTest, RecordsGifMetricsBeforeBurnIn) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
 
   controller.StartSearch(
@@ -933,7 +933,7 @@ TEST_F(PickerSearchControllerTest, RecordsGifMetricsBeforeBurnIn) {
 
 TEST_F(PickerSearchControllerTest, RecordsGifMetricsAfterBurnIn) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
 
   controller.StartSearch(
@@ -956,7 +956,7 @@ TEST_F(PickerSearchControllerTest, RecordsGifMetricsAfterBurnIn) {
 
 TEST_F(PickerSearchControllerTest, DoesNotRecordGifMetricsIfNoResponse) {
   base::HistogramTester histogram;
-  MockSearchResultsCallback search_results_callback;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
   PickerSearchController controller(&client(), kAllCategories, kBurnInPeriod);
 
   controller.StartSearch(
