@@ -289,6 +289,7 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testBookmarkSyncPromoChooseAccountButtonLaunchesSigninFlow() throws Throwable {
         mSigninTestRule.addAccount("test@" + SyncPromoController.GMAIL_DOMAIN);
