@@ -112,7 +112,12 @@ public class CreditCardAccessorySheetViewTest {
                                                 AccessorySheetTabViewBinder.initializeView(
                                                         mView.get(), null);
                                                 CreditCardAccessorySheetViewBinder.initializeView(
-                                                        mView.get(), mModel);
+                                                        mView.get(),
+                                                        CreditCardAccessorySheetCoordinator
+                                                                .createUiConfiguration(
+                                                                        view.getContext(),
+                                                                        mMockPersonalDataManager),
+                                                        mModel);
                                             }
 
                                             @Override

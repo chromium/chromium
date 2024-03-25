@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessor
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessorySheetCoordinator;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -851,7 +852,7 @@ class ManualFillingMediator
         ManualFillingState state = mStateCache.getStateFor(webContents);
         sheet = mSheets.get(tabType, null);
         if (sheet != null) return sheet;
-        sheet = createNewSheet(tabType);
+        sheet = createNewSheet(Profile.fromWebContents(webContents), tabType);
 
         mSheets.put(tabType, sheet);
         if (state.getSheetDataProvider(tabType) != null) {
@@ -879,11 +880,12 @@ class ManualFillingMediator
         return false;
     }
 
-    private AccessorySheetTabCoordinator createNewSheet(@AccessoryTabType int tabType) {
+    private AccessorySheetTabCoordinator createNewSheet(
+            Profile profile, @AccessoryTabType int tabType) {
         switch (tabType) {
             case AccessoryTabType.CREDIT_CARDS:
                 return new CreditCardAccessorySheetCoordinator(
-                        mActivity, mAccessorySheet.getScrollListener());
+                        mActivity, profile, mAccessorySheet.getScrollListener());
             case AccessoryTabType.ADDRESSES:
                 return new AddressAccessorySheetCoordinator(
                         mActivity, mAccessorySheet.getScrollListener());

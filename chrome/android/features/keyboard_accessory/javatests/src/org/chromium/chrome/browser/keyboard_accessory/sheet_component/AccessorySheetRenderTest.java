@@ -256,7 +256,7 @@ public class AccessorySheetRenderTest {
                 TestThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new CreditCardAccessorySheetCoordinator(
-                                        mActivityTestRule.getActivity(), null));
+                                        mActivityTestRule.getActivity(), mProfile, null));
         showSheetTab(coordinator, sheet);
 
         mRenderTestRule.render(mContentView, "credit_cards_and_promo_codes");
