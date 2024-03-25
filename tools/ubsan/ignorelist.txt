@@ -49,7 +49,3 @@ src:*/third_party/icu/source/common/ucmndata.c
 #############################################################################
 # Delete in destructor on a this where this == nullptr
 fun:*re2*RegexpD*
-
-#############################################################################
-# Harmless float division by zero.
-fun:*RendererFrameManager*CullUnlockedFrames*

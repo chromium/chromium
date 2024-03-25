@@ -9,11 +9,6 @@
 # UBSan security ignorelist.
 
 #############################################################################
-# YASM does some funny things that UBsan doesn't like.
-# https://crbug.com/489901
-src:*/third_party/yasm/*
-
-#############################################################################
 # V8 gives too many false positives. Ignore them for now.
 src:*/v8/*
 
@@ -71,10 +66,6 @@ src:*/third_party/icu/source/common/ucmndata.c
 #############################################################################
 # Delete in destructor on a this where this == nullptr
 fun:*re2*RegexpD*
-
-#############################################################################
-# Harmless float division by zero.
-fun:*RendererFrameManager*CullUnlockedFrames*
 
 #############################################################################
 # Generic cleanup function pointer of wrong type.
