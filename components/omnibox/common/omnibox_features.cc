@@ -491,6 +491,10 @@ BASE_FEATURE(kActionsInSuggest,
              "OmniboxActionsInSuggest",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAnimateSuggestionsListAppearance,
+             "AnimateSuggestionsListAppearance",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOmniboxAnswerActions,
              "OmniboxAnswerActions",
              base::FEATURE_DISABLED_BY_DEFAULT);

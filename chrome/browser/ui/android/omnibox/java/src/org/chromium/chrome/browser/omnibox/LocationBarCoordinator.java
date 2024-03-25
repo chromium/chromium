@@ -255,7 +255,8 @@ public class LocationBarCoordinator
                         omniboxActionDelegate,
                         omniboxSuggestionsDropdownScrollListener,
                         mActivityLifecycleDispatcher,
-                        uiOverrides.isForcedPhoneStyleOmnibox());
+                        uiOverrides.isForcedPhoneStyleOmnibox(),
+                        windowAndroid);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator =
                 new StatusCoordinator(

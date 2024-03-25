@@ -34,7 +34,10 @@ class SuggestionListViewBinder {
      */
     public static void bind(
             PropertyModel model, SuggestionListViewHolder view, PropertyKey propertyKey) {
-        if (SuggestionListProperties.VISIBLE.equals(propertyKey)) {
+        if (SuggestionListProperties.ALPHA.equals(propertyKey)) {
+            View dropdownView = view.dropdown.getViewGroup();
+            dropdownView.setAlpha(model.get(SuggestionListProperties.ALPHA));
+        } else if (SuggestionListProperties.VISIBLE.equals(propertyKey)) {
             boolean visible = model.get(SuggestionListProperties.VISIBLE);
             // Actual View showing the dropdown.
             View dropdownView = view.dropdown.getViewGroup();

@@ -19077,6 +19077,7 @@ from previous Chrome versions.
   <int value="-822237807" label="UnifiedSidePanel:enabled"/>
   <int value="-822103041" label="SeamlessRefreshRateSwitching:disabled"/>
   <int value="-821635312" label="EyeDropper:enabled"/>
+  <int value="-821547066" label="AnimateSuggestionsListAppearance:disabled"/>
   <int value="-821236443" label="ComposeTextSelection:disabled"/>
   <int value="-820676825" label="MessagesPreinstall:enabled"/>
   <int value="-820041355" label="enable-transition-compositing"/>
@@ -23625,6 +23626,7 @@ from previous Chrome versions.
   <int value="1231489022" label="SyncAutofillWalletCredentialData:disabled"/>
   <int value="1233310128" label="ExoConsumedByImeByFlag:enabled"/>
   <int value="1234601252" label="ForceUseAPDownloadProtection:enabled"/>
+  <int value="1234891176" label="AnimateSuggestionsListAppearance:enabled"/>
   <int value="1234950775" label="FileTransferEnterpriseConnector:enabled"/>
   <int value="1235048843" label="RenderArcNotificationsByChrome:disabled"/>
   <int value="1235197204" label="AvatarsCloudMigration:enabled"/>

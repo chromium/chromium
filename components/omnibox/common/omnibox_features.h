@@ -141,6 +141,9 @@ BASE_DECLARE_FEATURE(kInspireMe);
 // Data driven feature; flag helps tune behavior.
 BASE_DECLARE_FEATURE(kActionsInSuggest);
 
+// Animate appearance of suggestions list.
+BASE_DECLARE_FEATURE(kAnimateSuggestionsListAppearance);
+
 // Action Chips for Answer Suggestions.
 BASE_DECLARE_FEATURE(kOmniboxAnswerActions);
 

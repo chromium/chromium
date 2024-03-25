@@ -132,6 +132,7 @@ public class AutocompleteMediatorUnitTest {
     private @Mock TemplateUrlService mTemplateUrlService;
     private @Mock NavigationHandle mNavigationHandle;
     private @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private @Mock WindowAndroid mWindowAndroid;
 
     private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
 
@@ -183,8 +184,8 @@ public class AutocompleteMediatorUnitTest {
                         mTabWindowManagerSupplier,
                         url -> false,
                         mOmniboxActionDelegate,
-                        mActivityLifecycleDispatcher);
-
+                        mActivityLifecycleDispatcher,
+                        mWindowAndroid);
         mMediator
                 .getDropdownItemViewInfoListBuilderForTest()
                 .registerSuggestionProcessor(mMockProcessor);

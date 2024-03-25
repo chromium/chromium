@@ -61,6 +61,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -102,6 +103,7 @@ class AutocompleteMediator
     private final @NonNull Runnable mClearFocusCallback;
     private final @NonNull OmniboxActionDelegate mOmniboxActionDelegate;
     private final @NonNull ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private final @NonNull SuggestionsListAnimationDriver mAnimationDriver;
 
     private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
     private @Nullable Runnable mCurrentAutocompleteRequest;
@@ -161,6 +163,7 @@ class AutocompleteMediator
     private boolean mShouldPreventOmniboxAutocomplete;
     private long mLastActionUpTimestamp;
     private boolean mIgnoreOmniboxItemSelection = true;
+    private boolean mAnimateSuggestionsListAppearance;
 
     // The number of touch down events sent to native during an omnibox session.
     private int mNumTouchDownEventForwardedInOmniboxSession;
@@ -183,7 +186,8 @@ class AutocompleteMediator
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState,
             @NonNull OmniboxActionDelegate omniboxActionDelegate,
-            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher) {
+            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
+            WindowAndroid windowAndroid) {
         mContext = context;
         mDelegate = delegate;
         mUrlBarEditingTextProvider = textProvider;
@@ -213,6 +217,7 @@ class AutocompleteMediator
                 SuggestionListProperties.DRAW_OVER_ANCHOR,
                 OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)
                         && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext));
+        mAnimationDriver = new SuggestionsListAnimationDriver(windowAndroid, mListPropertyModel);
     }
 
     /** Initialize the Mediator with default set of suggestion processors. */
@@ -328,6 +333,8 @@ class AutocompleteMediator
                         ChromeFeatureList.CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION,
                         "clear_focus_asynchronously",
                         true);
+        mAnimateSuggestionsListAppearance =
+                OmniboxFeatures.shouldAnimateSuggestionsListAppearance();
         mDropdownViewInfoListManager.onNativeInitialized();
         mDropdownViewInfoListBuilder.onNativeInitialized();
         runPendingAutocompleteRequests();
@@ -814,6 +821,13 @@ class AutocompleteMediator
             }
         }
 
+        if (mAnimateSuggestionsListAppearance
+                && !mListPropertyModel.get(SuggestionListProperties.VISIBLE)) {
+            mDelegate.setKeyboardVisibility(true, false);
+            updateOmniboxSuggestionsVisibility(true);
+            mAnimationDriver.onShowAnimationAboutToStart();
+        }
+
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, isFinal);
         measureSuggestionRequestToUiModelTime(isFinal);
     }
@@ -1027,6 +1041,9 @@ class AutocompleteMediator
         mListPropertyModel.set(SuggestionListProperties.VISIBLE, shouldBeVisible);
         if (shouldBeVisible && !wasVisible) {
             mIgnoreOmniboxItemSelection = true; // Reset to default value.
+            if (!mAnimateSuggestionsListAppearance) {
+                TraceEvent.instant("SuggestionsListShown");
+            }
         }
     }
 

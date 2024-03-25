@@ -56,6 +56,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.ViewProvider;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -99,7 +100,8 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             @NonNull OmniboxActionDelegate omniboxActionDelegate,
             @NonNull OmniboxSuggestionsDropdownScrollListener scrollListener,
             @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
-            boolean forcePhoneStyleOmnibox) {
+            boolean forcePhoneStyleOmnibox,
+            @NonNull WindowAndroid windowAndroid) {
         mParent = parent;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         Context context = parent.getContext();
@@ -129,7 +131,8 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                         tabWindowManagerSupplier,
                         bookmarkState,
                         omniboxActionDelegate,
-                        lifecycleDispatcher);
+                        lifecycleDispatcher,
+                        windowAndroid);
         mMediator.initDefaultProcessors();
 
         mScrollListenerList.addObserver(scrollListener);

@@ -299,6 +299,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &language::kCctAutoTranslate,
     &language::kDetailedLanguageSettings,
     &messages::kMessagesForAndroidSaveCard,
+    &omnibox::kAnimateSuggestionsListAppearance,
     &omnibox::kMostVisitedTilesHorizontalRenderGroup,
     &omnibox::kOmniboxAnswerActions,
     &omnibox::kOmniboxMatchToolbarAndStatusBarColor,

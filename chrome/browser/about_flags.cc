@@ -6169,6 +6169,12 @@ const FeatureEntry kFeatureEntries[] = {
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"animate-suggestions-list-appearance",
+     flag_descriptions::kAnimateSuggestionsListAppearanceName,
+     flag_descriptions::kAnimateSuggestionsListAppearanceDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kAnimateSuggestionsListAppearance)},
+
     {"omnibox-actions-in-suggest",
      flag_descriptions::kOmniboxActionsInSuggestName,
      flag_descriptions::kOmniboxActionsInSuggestDescription, kOsAndroid,

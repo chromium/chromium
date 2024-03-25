@@ -2239,6 +2239,10 @@ extern const char kAndroidSurfaceControlDescription[];
 
 extern const char kAnimatedImageDragShadowName[];
 extern const char kAnimatedImageDragShadowDescription[];
+
+extern const char kAnimateSuggestionsListAppearanceName[];
+extern const char kAnimateSuggestionsListAppearanceDescription[];
+
 extern const char kAndroidImprovedBookmarksName[];
 extern const char kAndroidImprovedBookmarksDescription[];
 

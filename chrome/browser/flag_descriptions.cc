@@ -3844,6 +3844,12 @@ const char kAnimatedImageDragShadowDescription[] =
     "Image drag on Android is available when flag touch-drag-and-context-menu "
     "is enabled.";
 
+const char kAnimateSuggestionsListAppearanceName[] =
+    "Animate appearance of the omnibox suggestions list";
+const char kAnimateSuggestionsListAppearanceDescription[] =
+    "Animate the omnibox suggestions list when it appears instead of "
+    "immediately setting it to visible";
+
 const char kAppSpecificHistoryName[] = "Allow app specific history";
 const char kAppSpecificHistoryDescription[] =
     "If enabled, history results will also be categorized by application.";

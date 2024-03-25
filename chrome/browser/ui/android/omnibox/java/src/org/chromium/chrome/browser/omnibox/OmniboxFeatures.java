@@ -188,4 +188,12 @@ public class OmniboxFeatures {
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.OMNIBOX_ANSWER_ACTIONS, "ShowRichCard", false);
     }
+
+    /**
+     * Whether the appearance of the omnibox suggestions list should animated in sync with the soft
+     * keyboard.
+     */
+    public static boolean shouldAnimateSuggestionsListAppearance() {
+        return ChromeFeatureList.sAnimateSuggestionsListAppearance.isEnabled();
+    }
 }
