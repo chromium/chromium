@@ -17,6 +17,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/barrier_closure.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -553,6 +554,12 @@ void ChromeUserManagerImpl::SaveUserDisplayName(
 
 void ChromeUserManagerImpl::StopPolicyObserverForTesting() {
   cloud_external_data_policy_handlers_.clear();
+}
+
+void ChromeUserManagerImpl::SetUsingSamlForTesting(const AccountId& account_id,
+                                                   bool using_saml) {
+  user_manager::User& user = CHECK_DEREF(FindUserAndModify(account_id));
+  user.set_using_saml(using_saml);
 }
 
 void ChromeUserManagerImpl::OwnershipStatusChanged() {

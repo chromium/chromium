@@ -113,7 +113,6 @@ std::string GetDeviceId(const user_manager::KnownUser& known_user) {
 }
 
 const char kMainElement[] = "$(\'main-element\').";
-const char kIdpTestingDomain[] = "example.com";
 
 }  // namespace
 
@@ -220,8 +219,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   params.Set("clientId", gaia_urls.oauth2_chrome_client_id());
 
   std::string hosted_domain = GetHostedDomain(context.gaia_id);
-  bool do_saml_redirect =
-      force_saml_redirect_for_testing_ || ShouldDoSamlRedirect(context.email);
+  bool do_saml_redirect = ShouldDoSamlRedirect(context.email);
   params.Set("doSamlRedirect", do_saml_redirect);
 
   // Path without the leading slash, as expected by authenticator.js.
@@ -239,9 +237,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
     params.Set("gaiaPath", default_gaia_path);
   }
 
-  if (force_saml_redirect_for_testing_) {
-    params.Set("enterpriseEnrollmentDomain", kIdpTestingDomain);
-  } else if (!hosted_domain.empty()) {
+  if (!hosted_domain.empty()) {
     params.Set("enterpriseEnrollmentDomain", hosted_domain);
   } else {
     LOG(ERROR) << "Couldn't get hosted_domain from account info.";

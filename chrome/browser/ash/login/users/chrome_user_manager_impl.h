@@ -103,6 +103,7 @@ class ChromeUserManagerImpl
   SessionLengthLimiter* GetSessionLengthLimiterForTesting() {
     return session_length_limiter_.get();
   }
+  void SetUsingSamlForTesting(const AccountId& account_id, bool using_saml);
 
   // policy::MinimumVersionPolicyHandler::Observer:
   void OnMinimumVersionStateChanged() override;

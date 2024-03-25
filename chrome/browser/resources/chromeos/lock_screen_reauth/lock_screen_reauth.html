@@ -347,10 +347,11 @@
         on-click="onChangeSigninProviderClicked_">
     </oobe-text-button>
   </div>
-  <div id="gaia-buttons" class="flex layout horizontal button-container"
+  <div id="buttons-container" class="flex layout horizontal button-container"
       hidden="[[isSaml_]]">
     <div class="action-buttons">
-      <gaia-action-buttons authenticator="[[authenticator_]]"
+      <gaia-action-buttons id="gaia-buttons"
+          authenticator="[[authenticator_]]"
           rounded-button="True"
           on-set-focus-to-webview="setFocusToWebview_">
       </gaia-action-buttons>

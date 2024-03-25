@@ -1661,9 +1661,6 @@ IN_PROC_BROWSER_TEST_P(SigninFrameWebviewClientCertsLoginTest, LockscreenTest) {
   std::optional<LockScreenReauthDialogTestHelper> lock_screen_reauth_dialog =
       LockScreenReauthDialogTestHelper::ShowDialogAndWait();
   ASSERT_TRUE(lock_screen_reauth_dialog);
-  lock_screen_reauth_dialog->ForceSamlRedirect();
-  lock_screen_reauth_dialog->WaitForVerifyAccountScreen();
-  lock_screen_reauth_dialog->ClickVerifyButton();
   lock_screen_reauth_dialog->WaitForSigninWebview();
 
   // Act: navigate to the page hosted by the test server in the sign-in frame of

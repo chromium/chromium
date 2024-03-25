@@ -6,6 +6,7 @@ gaia.chromeOSLogin = {};
 
 gaia.chromeOSLogin.parent_webview_signin_url_ = 'chrome://chrome-signin';
 gaia.chromeOSLogin.parent_webview_oob_url_ = 'chrome://oobe';
+gaia.chromeOSLogin.parent_webview_lock_reauth_url_ = 'chrome://lock-reauth';
 gaia.chromeOSLogin.parent_webview_ = undefined;
 gaia.chromeOSLogin.parent_webview_url_ = undefined;
 gaia.chromeOSLogin.initialized_ = false;
@@ -29,7 +30,8 @@ function goFirstPage() {
 gaia.chromeOSLogin.registerHtml5Listener = function() {
   var onMessage = function(e) {
     if (e.origin == gaia.chromeOSLogin.parent_webview_signin_url_ ||
-        e.origin == gaia.chromeOSLogin.parent_webview_oob_url_) {
+        e.origin == gaia.chromeOSLogin.parent_webview_oob_url_ ||
+        e.origin == gaia.chromeOSLogin.parent_webview_lock_reauth_url_) {
         gaia.chromeOSLogin.parent_webview_ = e.source;
         gaia.chromeOSLogin.parent_webview_url_ = e.origin;
         if (!gaia.chromeOSLogin.initialized_) {

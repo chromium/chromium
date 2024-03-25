@@ -43,10 +43,6 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   bool IsAuthenticatorLoaded(base::OnceClosure callback);
 
-  void force_saml_redirect_for_testing() {
-    force_saml_redirect_for_testing_ = true;
-  }
-
  private:
   enum class AuthenticatorState { NOT_LOADED, LOADING, LOADED };
 
@@ -113,11 +109,6 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   void CallJavascript(const std::string& function, base::ValueView params);
 
   AuthenticatorState authenticator_state_ = AuthenticatorState::NOT_LOADED;
-
-  // For testing only. Forces SAML redirect regardless of email.
-  // TODO(b/318077327): remove, we can fully mock SAML users and their policy
-  // setup in browser tests without this test-only flag.
-  bool force_saml_redirect_for_testing_ = false;
 
   // User non-canonicalized email for display
   std::string email_;

@@ -33,8 +33,8 @@ class LockScreenReauthDialogTestHelper {
   // Returns an empty `std::optional` if the operation fails.
   static std::optional<LockScreenReauthDialogTestHelper> ShowDialogAndWait();
 
-  // Triggers the online re-authentication dialog, clicks through VerifyAccount
-  // screen and waits for IdP page to load. Returns an empty `std::optional` if
+  // Triggers the online re-authentication dialog and navigates through initial
+  // state until SAML IdP page is loaded. Returns an empty `std::optional` if
   // the operation fails.
   static std::optional<LockScreenReauthDialogTestHelper>
   StartSamlAndWaitForIdpPageLoad();
@@ -50,9 +50,6 @@ class LockScreenReauthDialogTestHelper {
   LockScreenReauthDialogTestHelper(LockScreenReauthDialogTestHelper&& other);
   LockScreenReauthDialogTestHelper& operator=(
       LockScreenReauthDialogTestHelper&& other);
-
-  // Forces SAML redirect regardless of email.
-  void ForceSamlRedirect();
 
   // Waits for the 'Verify Account' screen (the first screen the dialog shows)
   // to be visible.
@@ -75,9 +72,18 @@ class LockScreenReauthDialogTestHelper {
   // Clicks the 'Enter Google Account Info' button on the SAML screen.
   void ClickChangeIdPButtonOnSamlScreen();
 
+  // Primary Gaia button is the "Next" button on Gaia pages.
+  void ClickPrimaryGaiaButton();
+  void WaitForPrimaryGaiaButtonToBeEnabled();
+
   // Check visibility of native Gaia button on online re-authentication dialog.
   void ExpectGaiaButtonsVisible();
   void ExpectGaiaButtonsHidden();
+
+  // Check visibility of the button which allows to restart online flow from the
+  // Gaia page.
+  void ExpectChangeIdPButtonVisible();
+  void ExpectChangeIdPButtonHidden();
 
   // Waits for sign-in webview to be shown.
   void WaitForSigninWebview();
