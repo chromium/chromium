@@ -80,6 +80,11 @@ namespace blink {
 
 namespace {
 
+// Controls if VideoFrame.copyTo() reads GPU frames asynchronously
+BASE_FEATURE(kVideoFrameAsyncCopyTo,
+             "VideoFrameAsyncCopyTo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 media::VideoPixelFormat ToMediaPixelFormat(V8VideoPixelFormat::Enum fmt) {
   switch (fmt) {
     case V8VideoPixelFormat::Enum::kI420:
@@ -1217,9 +1222,11 @@ ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
   } else {
     DCHECK(local_frame->HasTextures());
 
-    if (auto* resolver = CopyToAsync(script_state, local_frame, src_rect,
-                                     destination, dest_layout)) {
-      return resolver->Promise();
+    if (base::FeatureList::IsEnabled(kVideoFrameAsyncCopyTo)) {
+      if (auto* resolver = CopyToAsync(script_state, local_frame, src_rect,
+                                       destination, dest_layout)) {
+        return resolver->Promise();
+      }
     }
 
     if (!CopyTexturablePlanes(*local_frame, src_rect, dest_layout, buffer)) {
