@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cmath>
 #include <memory>
 #include <tuple>
 #include <vector>
@@ -39,6 +40,7 @@
 #include "ipc/common/gpu_client_ids.h"
 #include "skia/ext/font_utils.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "skia/ext/skcolorspace_trfn.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -644,6 +646,111 @@ TEST_F(OopPixelTest, DrawImageWithTargetColorSpace) {
   EXPECT_NE(actual.getColor(0, 0), SkColors::kMagenta.toSkColor());
 }
 
+TEST_F(OopPixelTest, DrawGainmapImage) {
+  constexpr gfx::Size kSize(8, 8);
+  constexpr gfx::Rect kRect(kSize);
+
+  // We'll be working in 2.2 space.
+  const float kDegamma = 2.2f;
+  const float kGamma = 1 / kDegamma;
+
+  // The base image is (0.5, 0.5, 0.5) in linear space
+  auto base_color_space =
+      SkColorSpace::MakeRGB(SkNamedTransferFn::k2Dot2, SkNamedGamut::kSRGB);
+  auto base_info = SkImageInfo::MakeN32Premul(kSize.width(), kSize.height(),
+                                              base_color_space);
+  auto base_image_generator = sk_make_sp<FakePaintImageGenerator>(base_info);
+  const float kBaseLinear = 0.5f;
+  const float kBaseSignal = std::pow(kBaseLinear, kGamma);
+  {
+    SkBitmap bitmap;
+    bitmap.installPixels(base_image_generator->GetPixmap());
+    SkCanvas canvas(bitmap, SkSurfaceProps{});
+    SkColor4f color{kBaseSignal, kBaseSignal, kBaseSignal, 1.f};
+    canvas.drawColor(color);
+  }
+
+  // The gainmap is fully applied at headroom 2, and has a maximum scale of 4.
+  const float kHeadroom = 2.f;
+  const float kRatioMax = 4.f;
+  SkGainmapInfo gainmap_info;
+  auto gain_info = SkImageInfo::MakeN32Premul(kSize.width(), kSize.height(),
+                                              SkColorSpace::MakeSRGB());
+  auto gain_image_generator = sk_make_sp<FakePaintImageGenerator>(gain_info);
+  {
+    gainmap_info.fDisplayRatioSdr = 1.f;
+    gainmap_info.fDisplayRatioHdr = kHeadroom;
+    gainmap_info.fEpsilonSdr = {0.f, 0.f, 0.f, 1.f};
+    gainmap_info.fEpsilonHdr = {0.f, 0.f, 0.f, 1.f};
+    gainmap_info.fGainmapRatioMin = {1.f, 1.f, 1.f, 1.f};
+    gainmap_info.fGainmapRatioMax = {kRatioMax, kRatioMax, kRatioMax, 1.f};
+  }
+
+  // The gainmap scales by (1, 2, 4) in linear space.
+  {
+    SkBitmap bitmap;
+    bitmap.installPixels(gain_image_generator->GetPixmap());
+    SkCanvas canvas(bitmap, SkSurfaceProps{});
+    SkColor4f color{0.f, std::log(kHeadroom) / std::log(kRatioMax), 1.f, 1.f};
+    canvas.drawColor(color);
+  }
+
+  static int counter = 0;
+  const PaintImage::Id kSomeId = 32 + counter++;
+  auto paint_image =
+      PaintImageBuilder::WithDefault()
+          .set_id(kSomeId)
+          .set_paint_image_generator(base_image_generator)
+          .set_gainmap_paint_image_generator(gain_image_generator, gainmap_info)
+          .TakePaintImage();
+
+  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+  display_item_list->StartPaint();
+  SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
+  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
+                                       nullptr);
+  display_item_list->EndPaintOfUnpaired(kRect);
+  display_item_list->Finalize();
+
+  // Give an extremely generous epsilon, based on the observations of
+  // DrawHdrImageWithMetadata. Local testing passed with epsilon of 2/255.
+  float kEps = 16.f / 255.f;
+
+  const float kDestScale = kHeadroom;
+  auto dest_color_space = SkColorSpace::MakeRGB(
+      skia::ScaleTransferFunction(SkNamedTransferFn::k2Dot2, kDestScale),
+      SkNamedGamut::kSRGB);
+
+  // Raster with headroom of 1, and the result should be the input, converted
+  // to the output space.
+  {
+    RasterOptions options(kSize);
+    options.target_color_params.color_space =
+        gfx::ColorSpace(*dest_color_space);
+    options.target_color_params.hdr_max_luminance_relative = 1.f;
+    auto result = Raster(display_item_list, options);
+    auto out_color = result.getColor4f(0, 0);
+    EXPECT_NEAR(out_color.fR, std::pow(kBaseLinear / kDestScale, kGamma), kEps);
+    EXPECT_NEAR(out_color.fG, std::pow(kBaseLinear / kDestScale, kGamma), kEps);
+    EXPECT_NEAR(out_color.fB, std::pow(kBaseLinear / kDestScale, kGamma), kEps);
+  }
+
+  // Raster with headroom of 2, and the result should be be the fully applied
+  // gainmap, so (0.5, 1, 2) in linear space.
+  {
+    RasterOptions options(kSize);
+    options.target_color_params.color_space =
+        gfx::ColorSpace(*dest_color_space);
+    options.target_color_params.hdr_max_luminance_relative = kDestScale;
+    auto result = Raster(display_item_list, options);
+    auto out_color = result.getColor4f(0, 0);
+    EXPECT_NEAR(out_color.fR, std::pow(0.5f / kDestScale, kGamma), kEps);
+    EXPECT_NEAR(out_color.fG, std::pow(1.0f / kDestScale, kGamma), kEps);
+    EXPECT_NEAR(out_color.fB, std::pow(2.0f / kDestScale, kGamma), kEps);
+  }
+}
+
 TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   constexpr gfx::Size kSize(8, 8);
   constexpr gfx::Rect kRect(kSize);
@@ -709,6 +816,7 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
 
     return display_item_list;
   };
+
   // Create a DisplayItemList drawing `image` with 10k nits and 500 nits HDR
   // metadata.
   scoped_refptr<DisplayItemList> display_item_list_10k_nits =
