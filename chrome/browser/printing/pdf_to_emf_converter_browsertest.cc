@@ -9,6 +9,7 @@
 
 #include <limits>
 #include <optional>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -123,8 +124,8 @@ class PdfToEmfConverterBrowserTest
 
   void RunSinglePagePdfToPostScriptConverterTest(
       const PdfRenderSettings& pdf_settings,
-      base::StringPiece input_filename,
-      base::StringPiece output_filename) {
+      std::string_view input_filename,
+      std::string_view output_filename) {
     ASSERT_TRUE(GetTestInput(input_filename));
     ASSERT_TRUE(StartPdfConverter(pdf_settings, 1));
     ASSERT_TRUE(GetPage(0));
@@ -134,7 +135,7 @@ class PdfToEmfConverterBrowserTest
     ComparePageEmfPayload();
   }
 
-  bool GetTestInput(base::StringPiece filename) {
+  bool GetTestInput(std::string_view filename) {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     if (test_data_dir_.empty())
@@ -180,7 +181,7 @@ class PdfToEmfConverterBrowserTest
     return GetEmfData();
   }
 
-  bool GetPageExpectedEmfData(base::StringPiece filename) {
+  bool GetPageExpectedEmfData(std::string_view filename) {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     base::FilePath emf_file = test_data_dir_.AppendASCII(filename);

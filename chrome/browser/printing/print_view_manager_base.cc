@@ -5,6 +5,7 @@
 #include "chrome/browser/printing/print_view_manager_base.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -141,7 +142,7 @@ void OnDidScriptedPrint(
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 std::string PrintMsgPrintParamsErrorDetails(const mojom::PrintParams& params) {
-  std::vector<base::StringPiece> details;
+  std::vector<std::string_view> details;
 
   if (params.content_size.IsEmpty()) {
     details.push_back("content size is empty");

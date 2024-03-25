@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -126,7 +127,7 @@ std::string PrintBackendServiceManager::ClientTypeToString(
 
 // static
 void PrintBackendServiceManager::LogCallToRemote(
-    base::StringPiece name,
+    std::string_view name,
     const CallbackContext& context) {
   DVLOG(1) << "Sending " << name << " on remote `" << context.remote_id
            << "`, saved callback ID of " << context.saved_callback_id;
@@ -134,7 +135,7 @@ void PrintBackendServiceManager::LogCallToRemote(
 
 // static
 void PrintBackendServiceManager::LogCallbackFromRemote(
-    base::StringPiece name,
+    std::string_view name,
     const CallbackContext& context) {
   DVLOG(1) << name << " completed for remote `" << context.remote_id
            << "` saved callback ID " << context.saved_callback_id;

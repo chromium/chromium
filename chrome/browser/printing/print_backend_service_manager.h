@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 #include "base/containers/flat_map.h"
@@ -372,9 +373,9 @@ class PrintBackendServiceManager {
 
   static std::string ClientTypeToString(ClientType client_type);
 
-  static void LogCallToRemote(base::StringPiece name,
+  static void LogCallToRemote(std::string_view name,
                               const CallbackContext& context);
-  static void LogCallbackFromRemote(base::StringPiece name,
+  static void LogCallbackFromRemote(std::string_view name,
                                     const CallbackContext& context);
 
   void SetCrashKeys(const std::string& printer_name);

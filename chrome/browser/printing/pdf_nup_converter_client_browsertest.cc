@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -97,7 +98,7 @@ void VerifyPdf(base::span<const uint8_t> pdf_data,
     EXPECT_EQ(expected_sizes[i], page_sizes[i]);
 }
 
-base::span<const gfx::SizeF> GetExpectedPdfSizes(base::StringPiece pdf_name) {
+base::span<const gfx::SizeF> GetExpectedPdfSizes(std::string_view pdf_name) {
   if (pdf_name == "hello_world.pdf") {
     static constexpr gfx::SizeF kSizes[] = {
         {612.0f, 792.0f},
