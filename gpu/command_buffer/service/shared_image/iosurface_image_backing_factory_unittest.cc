@@ -134,7 +134,12 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
   EXPECT_TRUE(backing);
   backing->SetCleared();
 
-  GLenum expected_target = gpu::GetPlatformSpecificTextureTarget();
+  GLenum expected_target =
+#if BUILDFLAG(IS_MAC)
+      GetMacOSSpecificTextureTargetForCurrentGLImplementation();
+#else
+      GL_TEXTURE_2D;
+#endif
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
       shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
 
@@ -440,7 +445,12 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, GL_Dawn_Skia_UnclearTexture) {
     auto gl_representation =
         shared_image_representation_factory_.ProduceGLTexturePassthrough(
             factory_ref->mailbox());
-    GLenum expected_target = GetPlatformSpecificTextureTarget();
+    GLenum expected_target =
+#if BUILDFLAG(IS_MAC)
+        GetMacOSSpecificTextureTargetForCurrentGLImplementation();
+#else
+        GL_TEXTURE_2D;
+#endif
     EXPECT_TRUE(gl_representation);
     EXPECT_EQ(expected_target,
               gl_representation->GetTexturePassthrough()->target());
@@ -979,7 +989,12 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
   EXPECT_TRUE(shared_image);
-  GLenum expected_target = gpu::GetPlatformSpecificTextureTarget();
+  GLenum expected_target =
+#if BUILDFLAG(IS_MAC)
+      GetMacOSSpecificTextureTargetForCurrentGLImplementation();
+#else
+      GL_TEXTURE_2D;
+#endif
 
   if (get_gr_context_type() == GrContextType::kGL) {
     // First, validate a GLTexturePassthroughImageRepresentation.
