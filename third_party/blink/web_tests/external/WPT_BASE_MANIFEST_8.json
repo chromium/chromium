@@ -63282,6 +63282,19 @@
         {}
        ]
       ],
+      "table-vertical-align-baseline-009.xht": [
+       "4620848ddc19661b5ddfaa34cefc9c9eee266dcb",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "table-visual-layout-017.xht": [
        "25067cb68385a520a10a31949d742b520c7e9cd6",
        [
@@ -272208,6 +272221,19 @@
         ],
         {}
        ]
+      ],
+      "display-css-property-reference.tentative.html": [
+       "973a76d723518218565642056beb5e6e56a3d1c3",
+       [
+        null,
+        [
+         [
+          "/html/semantics/permission-element/display-css-property-reference-expected.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "popovers": {
@@ -358369,7 +358395,7 @@
        []
       ],
       "gentest.py": [
-       "36cb7fe0f6cde15a9cf3fe6fe1b92d4d8b114afa",
+       "784005fc9a308812507e7cf4bb91fdf805054578",
        []
       ],
       "gentest_union.py": [
@@ -358381,7 +358407,7 @@
        []
       ],
       "gentestutilsunion.py": [
-       "445617bed5c4a8e62028060e18bb3c1a2c994684",
+       "8f6afb1cbdef2bdfc1c8f81a1d380ff092766caf",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -358454,35 +358480,35 @@
       },
       "yaml-new": {
        "color_space.yaml": [
-        "39556caf0a4bd5c2fa64b888f4a4b0d08b300ace",
+        "56f6d01d308de00869b438e7fa6515161345354b",
         []
        ],
        "compositing.yaml": [
-        "bd7fae1d62911835a74cb3315b708bff89ff9562",
+        "6bd0aaad8a51bb6d5eb90163886f8439f041a0b0",
         []
        ],
        "conformance_requirements.yaml": [
-        "3483d115f4616260e627926e2f4cc1c18f15dcc0",
+        "a070c0a6ef99492c33cc3d01e70a55e7e3a7386f",
         []
        ],
        "drawing-images-to-the-canvas.yaml": [
-        "09e9e0018674e4946c98cbcce9bae150cf41559a",
+        "7ebe9cca85ea7be514093c3238579852535320fe",
         []
        ],
        "drawing-rectangles-to-the-canvas.yaml": [
-        "408e932abe86b31ce3e8d88672e04abed12b74b2",
+        "cb7ae0d858f5ef958f708f2e2ed622e8fa09af17",
         []
        ],
        "fill-and-stroke-styles.yaml": [
-        "c992af6e7c14b14f89615aca17dc2e5694110dff",
+        "e0e1dc3b07c8cbda657dab4895d39efad1bdfc7c",
         []
        ],
        "filters.yaml": [
-        "f327b9fe949b8d3d2ad886af2998175abca22eaa",
+        "c62eec97cb0ba48f5fc690241981e082474abb67",
         []
        ],
        "layers.yaml": [
-        "437a70c3f7a4fede779e6d0c91ecaa43659409d8",
+        "85816cf75c27f2d6fe679e9e79ac4dc3b71acdbf",
         []
        ],
        "line-styles.yaml": [
@@ -358494,23 +358520,23 @@
         []
        ],
        "pixel-manipulation.yaml": [
-        "0643b047b173f1ea31b87af2c11496618a070380",
+        "6721f5ffde52ac54372d6e6dbb6f0511baf58a3f",
         []
        ],
        "reset.yaml": [
-        "086fb04e04ae34763294879f302086730afe7f69",
+        "27764e4550e015a424d6faed4a07356e703ab720",
         []
        ],
        "scroll.yaml": [
-        "dd088aa396f47e70a6e66b0b9c7d8ffca0fa0e1e",
+        "0579a8b3d74c407e27181847f0d8fc59c572bb87",
         []
        ],
        "shadows.yaml": [
-        "953ab2c555d5ad9d46d52b6c74f09d344850982c",
+        "e42237dadbbab398419a761e5ebba217d7a94b7f",
         []
        ],
        "text.yaml": [
-        "ca945c2953c70899c3946146570dd49231cd07b5",
+        "7f2047bc9c41c7e04b671c83fc50fe61e82b566b",
         []
        ],
        "the-canvas-state.yaml": [
@@ -358522,7 +358548,7 @@
         []
        ],
        "video.yaml": [
-        "f9b48fb8daa2a247e9e22a18b5e891be3351bda9",
+        "ca8a1ab8161bef09e550a5f988d23b5ee1e72991",
         []
        ]
       }
@@ -367414,6 +367440,10 @@
      "permission-element": {
       "bounded-css-properties-reference-expected.html": [
        "248f4969f448e80acb1cb7f406e507a2ff4c038b",
+       []
+      ],
+      "display-css-property-reference-expected.html": [
+       "6a04c94c037ae5f6fe0d7fd4b2dcf7671eef7a4e",
        []
       ]
      },
@@ -378942,10 +378972,6 @@
       []
      ]
     },
-    "pointerevent_after_target_removed_mouse-expected.txt": [
-     "e11952ae249a02b0872a77ea7668f3b8b38e3fbc",
-     []
-    ],
     "pointerevent_click_during_capture_mouse-auxclick-expected.txt": [
      "f437e71db197936b4c3c820405d56c1eac817266",
      []
@@ -394520,6 +394546,10 @@
      "ab69467652e1c224810bc3d65160a5d603acfdcd",
      []
     ],
+    "RTCPeerConnection-addTcpIceCandidate-expected.txt": [
+     "ad6cb35788827e1509df0ffee2f5475824e30f40",
+     []
+    ],
     "RTCPeerConnection-createDataChannel-expected.txt": [
      "d49abcb9a55f2187c45fc38d0358cab440114a17",
      []
@@ -394533,7 +394563,7 @@
      []
     ],
     "RTCPeerConnection-helper.js": [
-     "6f35fde76ce274d4283ec77fd7ec8bf056cee257",
+     "cd27b033d3b65020d31f9750e310b59aaa00a8ea",
      []
     ],
     "RTCPeerConnection-iceConnectionState-disconnected.https-expected.txt": [
@@ -438653,6 +438683,13 @@
        {}
       ]
      ],
+     "position-try-position-anchor.html": [
+      "7355c23f53b6373d3ab1f0f4bee4821eca5d91f7",
+      [
+       null,
+       {}
+      ]
+     ],
      "position-try-pseudo-element.html": [
       "5895f2a4077b697b4d59dec4e0cb2dbace4aefd6",
       [
@@ -468868,17 +468905,21 @@
      "calc-size": {
       "animation": {
        "calc-size-height-interpolation.tentative.html": [
-        "c789ae670d41a7bc07eee629b1c073f74f96f23b",
+        "43686c4537b9a43f8519bb1cb46e51387f93babb",
         [
          null,
-         {}
+         {
+          "timeout": "long"
+         }
         ]
        ],
        "calc-size-width-interpolation.tentative.html": [
-        "6703ddecb3607f5f0cc3ea37212229b007ab5ab4",
+        "ab7bda59a0f2794b7b6135b1a6f34021fd31715d",
         [
          null,
-         {}
+         {
+          "timeout": "long"
+         }
         ]
        ]
       },
@@ -575819,6 +575860,13 @@
         {}
        ]
       ],
+      "display-css-property.tentative.html": [
+       "7aa22ef4a2bee44968b4a960d49a789778c2868e",
+       [
+        null,
+        {}
+       ]
+      ],
       "invalid-css-properties.tentative.html": [
        "334280c83bdf9919626ddaf64adc522f2ca51f8d",
        [
@@ -605274,7 +605322,7 @@
      ]
     ],
     "pointerevent_after_target_appended.html": [
-     "02d06c37f881fcedfe90694863f6799238af9048",
+     "712670d6479c819732825f8dad3609f9872001fe",
      [
       "pointerevents/pointerevent_after_target_appended.html?mouse",
       {
@@ -605316,7 +605364,7 @@
      ]
     ],
     "pointerevent_after_target_removed.html": [
-     "7b2a4eeb800854bb7b09c7731c7043447ff1df79",
+     "b63e8b92d18d11ac979a8da2b5753bc8126d3b05",
      [
       "pointerevents/pointerevent_after_target_removed.html?mouse",
       {
@@ -671006,7 +671054,7 @@
       ]
      ],
      "batchNormalization.https.any.js": [
-      "37d2a441d068b2a2ca19de464226d86d091a006e",
+      "cafd9f9cd50c9caeb1fc251fe7a44d21e024cc38",
       [
        "webnn/validation_tests/batchNormalization.https.any.html",
        {
@@ -671211,7 +671259,7 @@
       ]
      ],
      "conv2d.https.any.js": [
-      "a5da6c4717ac8a8817756c5f38f9d64b4bed363e",
+      "ffc9c2c65dff541da38886067febd4c4850ec9d8",
       [
        "webnn/validation_tests/conv2d.https.any.html",
        {
@@ -671252,7 +671300,7 @@
       ]
      ],
      "convTranspose2d.https.any.js": [
-      "c9863dcae65da471821016371a6dbab9cc70efa9",
+      "c14f445bf3cd503c8f87686c533dac0d1caf0867",
       [
        "webnn/validation_tests/convTranspose2d.https.any.html",
        {
@@ -671539,7 +671587,7 @@
       ]
      ],
      "gru.https.any.js": [
-      "ef92cd0b523b3fc02c72f015e8b2a8c1889193f7",
+      "50d39d297a3961b00e671d9e019c999bd987cdfb",
       [
        "webnn/validation_tests/gru.https.any.html",
        {
@@ -671580,7 +671628,7 @@
       ]
      ],
      "gruCell.https.any.js": [
-      "ca89b9a21b93562df0765a7171f318d96e7c3a64",
+      "5056f8be68c3e9058c322cf267b6a220d8ae2037",
       [
        "webnn/validation_tests/gruCell.https.any.html",
        {
@@ -671908,7 +671956,7 @@
       ]
      ],
      "lstm.https.any.js": [
-      "c0f15791b9709f4f383ab62a368956c65e3efd2f",
+      "18d609798ce93aeeb3e30b9c5ed983bc2fa36917",
       [
        "webnn/validation_tests/lstm.https.any.html",
        {
@@ -671949,7 +671997,7 @@
       ]
      ],
      "lstmCell.https.any.js": [
-      "7abb91daf23063913691f605de068541f598bffb",
+      "2a3c1ab7637765c2af0258647cd840b8b3fb3be4",
       [
        "webnn/validation_tests/lstmCell.https.any.html",
        {
@@ -672977,6 +673025,13 @@
     ],
     "RTCPeerConnection-addIceCandidate.html": [
      "d8e24d608baee6c60e6d2b3ae246974fe6936ec2",
+     [
+      null,
+      {}
+     ]
+    ],
+    "RTCPeerConnection-addTcpIceCandidate.html": [
+     "1e7fc3ba9576d0ee124a6d6ee9729d682ee86fe8",
      [
       null,
       {}
