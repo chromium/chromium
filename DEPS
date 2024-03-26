@@ -4644,13 +4644,13 @@ hooks = [
     'name': 'clang',
     'pattern': '.',
     'condition': 'not llvm_force_head_revision',
-    'action': ['python3', 'src/tools/clang/scripts/update.py'],
+    'action': ['vpython3', 'src/tools/clang/scripts/update.py'],
   },
   {
     # Update prebuilt Rust toolchain.
     'name': 'rust-toolchain',
     'pattern': '.',
-    'action': ['python3', 'src/tools/rust/update_rust.py'],
+    'action': ['vpython3', 'src/tools/rust/update_rust.py'],
   },
   {
     # Build the clang toolchain from tip-of-tree.
@@ -4658,7 +4658,7 @@ hooks = [
     'name': 'clang_tot',
     'pattern': '.',
     'condition': 'llvm_force_head_revision',
-    'action': ['python3', 'src/tools/clang/scripts/build.py',
+    'action': ['vpython3', 'src/tools/clang/scripts/build.py',
                '--llvm-force-head-revision',
                '--with-android={checkout_android}',
                '--with-fuchsia={checkout_fuchsia}'],
@@ -4668,7 +4668,7 @@ hooks = [
     'name': 'clang_coverage',
     'pattern': '.',
     'condition': 'checkout_clang_coverage_tools',
-    'action': ['python3', 'src/tools/clang/scripts/update.py',
+    'action': ['vpython3', 'src/tools/clang/scripts/update.py',
                '--package=coverage_tools'],
   },
   {
@@ -4677,7 +4677,7 @@ hooks = [
     'name': 'clang_tidy',
     'pattern': '.',
     'condition': 'checkout_clang_tidy',
-    'action': ['python3', 'src/tools/clang/scripts/update.py',
+    'action': ['vpython3', 'src/tools/clang/scripts/update.py',
                '--package=clang-tidy'],
   },
   {
@@ -4686,7 +4686,7 @@ hooks = [
     'name': 'clangd',
     'pattern': '.',
     'condition': 'checkout_clangd',
-    'action': ['python3', 'src/tools/clang/scripts/update.py',
+    'action': ['vpython3', 'src/tools/clang/scripts/update.py',
                '--package=clangd'],
   },
   {
@@ -4696,7 +4696,7 @@ hooks = [
     'name': 'objdump',
     'pattern': '.',
     'condition': 'checkout_linux or checkout_mac or checkout_android and host_os != "mac"',
-    'action': ['python3', 'src/tools/clang/scripts/update.py',
+    'action': ['vpython3', 'src/tools/clang/scripts/update.py',
                '--package=objdump'],
   },
   {
