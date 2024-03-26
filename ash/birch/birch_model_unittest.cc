@@ -1080,4 +1080,52 @@ TEST_F(BirchModelTest, RemoveAndFilterFileItem) {
   ASSERT_EQ(all_items.size(), 2u);
 }
 
+TEST_F(BirchModelTest, DuplicateFileAndAttachmentItem) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  model->SetCalendarItems({});
+  model->SetRecentTabItems({});
+  model->SetWeatherItems({});
+  model->SetReleaseNotesItems({});
+
+  std::vector<BirchAttachmentItem> attachment_item_list;
+  attachment_item_list.emplace_back(
+      u"Ongoing Event Attachment 1",
+      /*file_url=*/GURL(),
+      /*icon_url=*/GURL(),
+      /*start_time=*/base::Time(TimeFromString("22 Feb 2024 3:00 UTC")),
+      /*end_time=*/base::Time(TimeFromString("22 Feb 2024 5:00 UTC")),
+      /*file_id=*/"duplicate_file_id_1");
+  attachment_item_list.emplace_back(
+      u"Tomorrow Event Attachment 2",
+      /*file_url=*/GURL(),
+      /*icon_url=*/GURL(),
+      /*start_time=*/base::Time(TimeFromString("23 Feb 2024 3:00 UTC")),
+      /*end_time=*/base::Time(TimeFromString("23 Feb 2024 5:00 UTC")),
+      /*file_id=*/"duplicate_file_id_2");
+  model->SetAttachmentItems(attachment_item_list);
+
+  std::vector<BirchFileItem> file_item_list;
+  file_item_list.emplace_back(
+      base::FilePath("Recently Edited File 1"),
+      /*justification=*/u"",
+      /*timestamp=*/base::Time(TimeFromString("22 Feb 2024 3:00 UTC")),
+      /*file_id=*/"duplicate_file_id_1");
+  file_item_list.emplace_back(
+      base::FilePath("Recently Edited File 2"),
+      /*justification=*/u"",
+      /*timestamp=*/base::Time(TimeFromString("22 Feb 2024 3:00 UTC")),
+      /*file_id=*/"duplicate_file_id_2");
+  model->SetFileSuggestItems(file_item_list);
+
+  // Calling GetAllItems() should return two items, once attachment and one
+  // file.
+  std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 2u);
+  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kAttachment);
+  EXPECT_EQ(all_items[0]->title(), u"Ongoing Event Attachment 1");
+  EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kFile);
+  EXPECT_EQ(all_items[1]->title(), u"Recently Edited File 2");
+}
+
 }  // namespace ash

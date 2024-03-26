@@ -232,12 +232,36 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   ranker.RankWeatherItems(&weather_items_);
   ranker.RankReleaseNotesItems(&release_notes_items_);
 
+  // Avoid showing a duplicate file which is both an attachment and file
+  // suggestion by erasing the item with the higher ranking.
+  std::unordered_map<std::string, BirchAttachmentItem>
+      file_id_to_attachment_item;
+  for (auto& attachment : attachment_items_) {
+    file_id_to_attachment_item.emplace(attachment.file_id(), attachment);
+  }
+  std::erase_if(file_suggest_items_, [&file_id_to_attachment_item](
+                                         const auto& file_suggest_item) {
+    if (file_id_to_attachment_item.contains(file_suggest_item.file_id())) {
+      if (file_suggest_item.ranking() >
+          file_id_to_attachment_item.at(file_suggest_item.file_id())
+              .ranking()) {
+        // Duplicate item with a higher ranked file suggest item. Erase the file
+        // suggest item.
+        return true;
+      }
+      // Duplicate item with a higher ranked attachment item. Erase the
+      // attachment item.
+      file_id_to_attachment_item.erase(file_suggest_item.file_id());
+    }
+    return false;
+  });
+
   std::vector<std::unique_ptr<BirchItem>> all_items;
   for (auto& event : calendar_items_) {
     all_items.push_back(std::make_unique<BirchCalendarItem>(event));
   }
-  for (auto& event : attachment_items_) {
-    all_items.push_back(std::make_unique<BirchAttachmentItem>(event));
+  for (auto& event : file_id_to_attachment_item) {
+    all_items.push_back(std::make_unique<BirchAttachmentItem>(event.second));
   }
   for (auto& tab : recent_tab_items_) {
     all_items.push_back(std::make_unique<BirchTabItem>(tab));
@@ -257,9 +281,6 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
             [](const auto& item_a, const auto& item_b) {
               return item_a->ranking() < item_b->ranking();
             });
-
-  // TODO(b/330392691): Remove any duplicate items between file suggestions and
-  // calendar file attachments.
 
   return all_items;
 }
