@@ -514,6 +514,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     overview_session_->set_enter_exit_overview_type(new_type);
     for (auto& observer : observers_)
       observer.OnOverviewModeStarting();
+
     overview_session_->Init(windows, hide_windows);
 
     overview_session_->UpdateFrameThrottling();

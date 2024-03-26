@@ -34,6 +34,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
+#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
 #include "ash/style/rounded_label_widget.h"
@@ -10830,7 +10831,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 // -----------------------------------------------------------------------------
 // OakTest:
 
-// Test fixture to validate overview behavior with forest enabled.
+// Test fixture to validate Overview behavior with forest enabled.
 class OakTest : public OverviewTestBase {
  public:
   OakTest() {
@@ -11083,6 +11084,24 @@ TEST_F(OakTest, WallpaperClipAnimation) {
   ASSERT_EQ(display_bounds, wallpaper_view_layer->bounds());
   EXPECT_FALSE(wallpaper_underlay_layer->IsVisible());
   EXPECT_TRUE(wallpaper_view_layer->clip_rect().IsEmpty());
+}
+
+// Tests that the shelf's opaque background transitions from visible (default)
+// to invisible (overview) and back to visible (overview exit).
+TEST_F(OakTest, ShelfOpaqueBackground) {
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  ShelfWidget* shelf_widget = GetPrimaryShelf()->shelf_widget();
+  ui::Layer* opaque_background_layer =
+      shelf_widget->GetDelegateViewOpaqueBackgroundLayerForTesting();
+  ASSERT_TRUE(opaque_background_layer->IsVisible());
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_FALSE(opaque_background_layer->IsVisible());
+
+  ToggleOverview();
+  ASSERT_FALSE(IsInOverviewSession());
+  EXPECT_TRUE(opaque_background_layer->IsVisible());
 }
 
 // Tests that wallpaper clip rect bounds update upon virtual desk bar state

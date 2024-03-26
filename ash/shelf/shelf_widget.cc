@@ -488,10 +488,16 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
   const bool tablet_mode = Shell::Get()->IsInTabletMode();
   const bool in_app = ShelfConfig::Get()->is_in_app();
 
+  const bool in_overview_mode = ShelfConfig::Get()->in_overview_mode();
+  const bool in_oak_session =
+      features::IsForestFeatureEnabled() && in_overview_mode;
   const bool split_view = ShelfConfig::Get()->in_split_view_with_overview();
-  bool show_opaque_background = !tablet_mode || in_app || split_view;
-  if (show_opaque_background != opaque_background_layer()->visible())
-    opaque_background_layer()->SetVisible(show_opaque_background);
+  bool show_opaque_background =
+      (!in_oak_session) && (!tablet_mode || in_app || split_view);
+  auto* opaque_back_ground_layer = opaque_background_layer();
+  if (show_opaque_background != opaque_back_ground_layer->visible()) {
+    opaque_back_ground_layer->SetVisible(show_opaque_background);
+  }
 
   // Extend the opaque layer a little bit to handle "overshoot" gestures
   // gracefully (the user drags the shelf further than it can actually go).
@@ -509,9 +515,10 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
       0, -shelf->SelectValueForShelfAlignment(0, safety_margin, 0),
       -shelf->SelectValueForShelfAlignment(safety_margin, 0, 0),
       -shelf->SelectValueForShelfAlignment(0, 0, safety_margin)));
+  opaque_back_ground_layer->SetBounds(opaque_background_bounds);
 
   const bool is_vertical_alignment_in_overview =
-      !shelf->IsHorizontalAlignment() && ShelfConfig::Get()->in_overview_mode();
+      in_overview_mode && !shelf->IsHorizontalAlignment();
 
   // Show rounded corners except in maximized (which includes split view) mode,
   // or whenever we are "in app", or the shelf is on the vertical alignment in
@@ -524,7 +531,6 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
   } else {
     opaque_background_.SetRoundedCornerRadius(radius);
   }
-  opaque_background_layer()->SetBounds(opaque_background_bounds);
 
   UpdateDragHandle();
   UpdateBackgroundBlur();
@@ -944,6 +950,14 @@ void ShelfWidget::UpdateTargetBoundsForGesture(int shelf_position) {
   } else {
     target_bounds_.set_x(shelf_position);
   }
+}
+
+void ShelfWidget::OnOverviewModeStarting() {
+  delegate_view_->UpdateOpaqueBackground();
+}
+
+void ShelfWidget::OnOverviewModeEnding(OverviewSession* overview_session) {
+  delegate_view_->UpdateOpaqueBackground();
 }
 
 gfx::Rect ShelfWidget::GetTargetBounds() const {

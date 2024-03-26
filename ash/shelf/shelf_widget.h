@@ -20,6 +20,7 @@
 #include "ash/shelf/shelf_component.h"
 #include "ash/shelf/shelf_layout_manager_observer.h"
 #include "ash/shelf/shelf_observer.h"
+#include "ash/wm/overview/overview_observer.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -44,7 +45,8 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
                                public ShelfComponent,
                                public ShelfLayoutManagerObserver,
                                public ShelfObserver,
-                               public views::Widget {
+                               public views::Widget,
+                               public OverviewObserver {
  public:
   explicit ShelfWidget(Shelf* shelf);
 
@@ -113,6 +115,10 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   gfx::Rect GetTargetBounds() const override;
   void UpdateLayout(bool animate) override;
   void UpdateTargetBoundsForGesture(int shelf_position) override;
+
+  // OverviewObserver:
+  void OnOverviewModeStarting() override;
+  void OnOverviewModeEnding(OverviewSession* overview_session) override;
 
   // TODO(manucornet): Remove this method when all this widget's layout
   // logic is part of this class.
