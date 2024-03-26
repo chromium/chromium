@@ -223,7 +223,7 @@ public class SearchActivity extends AsyncInitializationActivity
         // WebContents needs the insets to determine the portion of the screen obscured by
         // non-content displaying things such as the OSK.
         mInsetObserverViewSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
-        mInsetObserverViewSupplier.set(new InsetObserver(rootView));
+        mInsetObserverViewSupplier.set(new InsetObserver(rootView, true));
 
         mContentView = createContentView();
         setContentView(mContentView);

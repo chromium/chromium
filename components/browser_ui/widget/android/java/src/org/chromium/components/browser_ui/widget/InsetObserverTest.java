@@ -86,7 +86,7 @@ public class InsetObserverTest {
                 .when(mContentView)
                 .onApplyWindowInsets(mModifiedNonCompatInsets);
 
-        mInsetObserver = new InsetObserver(mContentView);
+        mInsetObserver = new InsetObserver(mContentView, true);
         mInsetObserver.addObserver(mObserver);
     }
 
