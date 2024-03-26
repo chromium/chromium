@@ -3,9 +3,9 @@ URL: https://crates.io/crates/regex
 Description: An implementation of regular expressions for Rust. This implementation uses
 finite automata and guarantees linear time matching on all inputs.
 
-Version: 1.10.3
+Version: 1.10.4
 Security Critical: no
 Shipped: no
 License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/regex-1.10.3/LICENSE-APACHE
-Revision: 0c0990399270277832fbb5b91a1fa118e6f63dba
+License File: //third_party/rust/chromium_crates_io/vendor/regex-1.10.4/LICENSE-APACHE
+Revision: aa2d8bd8be283471b17b4ab6faeae5b751553572

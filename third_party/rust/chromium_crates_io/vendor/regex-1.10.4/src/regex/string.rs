@@ -1,8 +1,8 @@
-use alloc::{borrow::Cow, string::String, sync::Arc, vec::Vec};
+use alloc::{borrow::Cow, string::String, sync::Arc};
 
 use regex_automata::{meta, util::captures, Input, PatternID};
 
-use crate::{bytes::RegexBuilder, error::Error};
+use crate::{error::Error, RegexBuilder};
 
 /// A compiled regular expression for searching Unicode haystacks.
 ///
@@ -12,12 +12,15 @@ use crate::{bytes::RegexBuilder, error::Error};
 /// an pattern. To force an expression to match the whole string (or a prefix
 /// or a suffix), you must use an anchor like `^` or `$` (or `\A` and `\z`).
 ///
-/// Like the `Regex` type in the parent module, matches with this regex return
-/// byte offsets into the haystack. **Unlike** the parent `Regex` type, these
-/// byte offsets may not correspond to UTF-8 sequence boundaries since the
-/// regexes in this module can match arbitrary bytes.
+/// While this crate will handle Unicode strings (whether in the regular
+/// expression or in the haystack), all positions returned are **byte
+/// offsets**. Every byte offset is guaranteed to be at a Unicode code point
+/// boundary. That is, all offsets returned by the `Regex` API are guaranteed
+/// to be ranges that can slice a `&str` without panicking. If you want to
+/// relax this requirement, then you must search `&[u8]` haystacks with a
+/// [`bytes::Regex`](crate::bytes::Regex).
 ///
-/// The only methods that allocate new byte strings are the string replacement
+/// The only methods that allocate new strings are the string replacement
 /// methods. All other methods (searching and splitting) return borrowed
 /// references into the haystack given.
 ///
@@ -26,10 +29,10 @@ use crate::{bytes::RegexBuilder, error::Error};
 /// Find the offsets of a US phone number:
 ///
 /// ```
-/// use regex::bytes::Regex;
+/// use regex::Regex;
 ///
 /// let re = Regex::new("[0-9]{3}-[0-9]{3}-[0-9]{4}").unwrap();
-/// let m = re.find(b"phone: 111-222-3333").unwrap();
+/// let m = re.find("phone: 111-222-3333").unwrap();
 /// assert_eq!(7..19, m.range());
 /// ```
 ///
@@ -46,54 +49,53 @@ use crate::{bytes::RegexBuilder, error::Error};
 /// into a fixed size array:
 ///
 /// ```
-/// use regex::bytes::Regex;
+/// use regex::Regex;
 ///
-/// let hay = b"
+/// let hay = "
 /// rabbit         54 true
 /// groundhog 2 true
 /// does not match
 /// fox   109    false
 /// ";
 /// let re = Regex::new(r"(?m)^\s*(\S+)\s+([0-9]+)\s+(true|false)\s*$").unwrap();
-/// let mut fields: Vec<(&[u8], i64, bool)> = vec![];
+/// let mut fields: Vec<(&str, i64, bool)> = vec![];
 /// for (_, [f1, f2, f3]) in re.captures_iter(hay).map(|caps| caps.extract()) {
-///     // These unwraps are OK because our pattern is written in a way where
-///     // all matches for f2 and f3 will be valid UTF-8.
-///     let f2 = std::str::from_utf8(f2).unwrap();
-///     let f3 = std::str::from_utf8(f3).unwrap();
 ///     fields.push((f1, f2.parse()?, f3.parse()?));
 /// }
 /// assert_eq!(fields, vec![
-///     (&b"rabbit"[..], 54, true),
-///     (&b"groundhog"[..], 2, true),
-///     (&b"fox"[..], 109, false),
+///     ("rabbit", 54, true),
+///     ("groundhog", 2, true),
+///     ("fox", 109, false),
 /// ]);
 ///
 /// # Ok::<(), Box<dyn std::error::Error>>(())
 /// ```
 ///
-/// # Example: matching invalid UTF-8
+/// # Example: searching with the `Pattern` trait
 ///
-/// One of the reasons for searching `&[u8]` haystacks is that the `&[u8]`
-/// might not be valid UTF-8. Indeed, with a `bytes::Regex`, patterns that
-/// match invalid UTF-8 are explicitly allowed. Here's one example that looks
-/// for valid UTF-8 fields that might be separated by invalid UTF-8. In this
-/// case, we use `(?s-u:.)`, which matches any byte. Attempting to use it in a
-/// top-level `Regex` will result in the regex failing to compile. Notice also
-/// that we use `.` with Unicode mode enabled, in which case, only valid UTF-8
-/// is matched. In this way, we can build one pattern where some parts only
-/// match valid UTF-8 while other parts are more permissive.
+/// **Note**: This section requires that this crate is compiled with the
+/// `pattern` Cargo feature enabled, which **requires nightly Rust**.
 ///
-/// ```
-/// use regex::bytes::Regex;
+/// Since `Regex` implements `Pattern` from the standard library, one can
+/// use regexes with methods defined on `&str`. For example, `is_match`,
+/// `find`, `find_iter` and `split` can, in some cases, be replaced with
+/// `str::contains`, `str::find`, `str::match_indices` and `str::split`.
 ///
-/// // F0 9F 92 A9 is the UTF-8 encoding for a Pile of Poo.
-/// let hay = b"\xFF\xFFfoo\xFF\xFF\xFF\xF0\x9F\x92\xA9\xFF";
-/// // An equivalent to '(?s-u:.)' is '(?-u:[\x00-\xFF])'.
-/// let re = Regex::new(r"(?s)(?-u:.)*?(?<f1>.+)(?-u:.)*?(?<f2>.+)").unwrap();
-/// let caps = re.captures(hay).unwrap();
-/// assert_eq!(&caps["f1"], &b"foo"[..]);
-/// assert_eq!(&caps["f2"], "💩".as_bytes());
+/// Here are some examples:
+///
+/// ```ignore
+/// use regex::Regex;
+///
+/// let re = Regex::new(r"\d+").unwrap();
+/// let hay = "a111b222c";
+///
+/// assert!(hay.contains(&re));
+/// assert_eq!(hay.find(&re), Some(1));
+/// assert_eq!(hay.match_indices(&re).collect::<Vec<_>>(), vec![
+///     (1, "111"),
+///     (5, "222"),
+/// ]);
+/// assert_eq!(hay.split(&re).collect::<Vec<_>>(), vec!["a", "b", "c"]);
 /// ```
 #[derive(Clone)]
 pub struct Regex {
@@ -164,7 +166,7 @@ impl Regex {
     /// # Example
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// // An Invalid pattern because of an unclosed parenthesis
     /// assert!(Regex::new(r"foo(bar").is_err());
@@ -192,14 +194,14 @@ impl Regex {
     /// Unicode word characters:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"\b\w{13}\b").unwrap();
-    /// let hay = b"I categorically deny having triskaidekaphobia.";
+    /// let hay = "I categorically deny having triskaidekaphobia.";
     /// assert!(re.is_match(hay));
     /// ```
     #[inline]
-    pub fn is_match(&self, haystack: &[u8]) -> bool {
+    pub fn is_match(&self, haystack: &str) -> bool {
         self.is_match_at(haystack, 0)
     }
 
@@ -218,16 +220,16 @@ impl Regex {
     /// Find the first word with exactly 13 Unicode word characters:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"\b\w{13}\b").unwrap();
-    /// let hay = b"I categorically deny having triskaidekaphobia.";
+    /// let hay = "I categorically deny having triskaidekaphobia.";
     /// let mat = re.find(hay).unwrap();
     /// assert_eq!(2..15, mat.range());
-    /// assert_eq!(b"categorically", mat.as_bytes());
+    /// assert_eq!("categorically", mat.as_str());
     /// ```
     #[inline]
-    pub fn find<'h>(&self, haystack: &'h [u8]) -> Option<Match<'h>> {
+    pub fn find<'h>(&self, haystack: &'h str) -> Option<Match<'h>> {
         self.find_at(haystack, 0)
     }
 
@@ -246,20 +248,20 @@ impl Regex {
     /// Find every word with exactly 13 Unicode word characters:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"\b\w{13}\b").unwrap();
-    /// let hay = b"Retroactively relinquishing remunerations is reprehensible.";
-    /// let matches: Vec<_> = re.find_iter(hay).map(|m| m.as_bytes()).collect();
+    /// let hay = "Retroactively relinquishing remunerations is reprehensible.";
+    /// let matches: Vec<_> = re.find_iter(hay).map(|m| m.as_str()).collect();
     /// assert_eq!(matches, vec![
-    ///     &b"Retroactively"[..],
-    ///     &b"relinquishing"[..],
-    ///     &b"remunerations"[..],
-    ///     &b"reprehensible"[..],
+    ///     "Retroactively",
+    ///     "relinquishing",
+    ///     "remunerations",
+    ///     "reprehensible",
     /// ]);
     /// ```
     #[inline]
-    pub fn find_iter<'r, 'h>(&'r self, haystack: &'h [u8]) -> Matches<'r, 'h> {
+    pub fn find_iter<'r, 'h>(&'r self, haystack: &'h str) -> Matches<'r, 'h> {
         Matches { haystack, it: self.meta.find_iter(haystack) }
     }
 
@@ -284,25 +286,25 @@ impl Regex {
     ///
     /// Say you have some haystack with movie names and their release years,
     /// like "'Citizen Kane' (1941)". It'd be nice if we could search for
-    /// strings looking like that, while also extracting the movie name and its
-    /// release year separately. The example below shows how to do that.
+    /// substrings looking like that, while also extracting the movie name and
+    /// its release year separately. The example below shows how to do that.
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"'([^']+)'\s+\((\d{4})\)").unwrap();
-    /// let hay = b"Not my favorite movie: 'Citizen Kane' (1941).";
+    /// let hay = "Not my favorite movie: 'Citizen Kane' (1941).";
     /// let caps = re.captures(hay).unwrap();
-    /// assert_eq!(caps.get(0).unwrap().as_bytes(), b"'Citizen Kane' (1941)");
-    /// assert_eq!(caps.get(1).unwrap().as_bytes(), b"Citizen Kane");
-    /// assert_eq!(caps.get(2).unwrap().as_bytes(), b"1941");
+    /// assert_eq!(caps.get(0).unwrap().as_str(), "'Citizen Kane' (1941)");
+    /// assert_eq!(caps.get(1).unwrap().as_str(), "Citizen Kane");
+    /// assert_eq!(caps.get(2).unwrap().as_str(), "1941");
     /// // You can also access the groups by index using the Index notation.
     /// // Note that this will panic on an invalid index. In this case, these
     /// // accesses are always correct because the overall regex will only
     /// // match when these capture groups match.
-    /// assert_eq!(&caps[0], b"'Citizen Kane' (1941)");
-    /// assert_eq!(&caps[1], b"Citizen Kane");
-    /// assert_eq!(&caps[2], b"1941");
+    /// assert_eq!(&caps[0], "'Citizen Kane' (1941)");
+    /// assert_eq!(&caps[1], "Citizen Kane");
+    /// assert_eq!(&caps[2], "1941");
     /// ```
     ///
     /// Note that the full match is at capture group `0`. Each subsequent
@@ -311,21 +313,21 @@ impl Regex {
     /// We can make this example a bit clearer by using *named* capture groups:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"'(?<title>[^']+)'\s+\((?<year>\d{4})\)").unwrap();
-    /// let hay = b"Not my favorite movie: 'Citizen Kane' (1941).";
+    /// let hay = "Not my favorite movie: 'Citizen Kane' (1941).";
     /// let caps = re.captures(hay).unwrap();
-    /// assert_eq!(caps.get(0).unwrap().as_bytes(), b"'Citizen Kane' (1941)");
-    /// assert_eq!(caps.name("title").unwrap().as_bytes(), b"Citizen Kane");
-    /// assert_eq!(caps.name("year").unwrap().as_bytes(), b"1941");
+    /// assert_eq!(caps.get(0).unwrap().as_str(), "'Citizen Kane' (1941)");
+    /// assert_eq!(caps.name("title").unwrap().as_str(), "Citizen Kane");
+    /// assert_eq!(caps.name("year").unwrap().as_str(), "1941");
     /// // You can also access the groups by name using the Index notation.
     /// // Note that this will panic on an invalid group name. In this case,
     /// // these accesses are always correct because the overall regex will
     /// // only match when these capture groups match.
-    /// assert_eq!(&caps[0], b"'Citizen Kane' (1941)");
-    /// assert_eq!(&caps["title"], b"Citizen Kane");
-    /// assert_eq!(&caps["year"], b"1941");
+    /// assert_eq!(&caps[0], "'Citizen Kane' (1941)");
+    /// assert_eq!(&caps["title"], "Citizen Kane");
+    /// assert_eq!(&caps["year"], "1941");
     /// ```
     ///
     /// Here we name the capture groups, which we can access with the `name`
@@ -340,17 +342,17 @@ impl Regex {
     /// [`Captures::extract`] API:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"'([^']+)'\s+\((\d{4})\)").unwrap();
-    /// let hay = b"Not my favorite movie: 'Citizen Kane' (1941).";
+    /// let hay = "Not my favorite movie: 'Citizen Kane' (1941).";
     /// let (full, [title, year]) = re.captures(hay).unwrap().extract();
-    /// assert_eq!(full, b"'Citizen Kane' (1941)");
-    /// assert_eq!(title, b"Citizen Kane");
-    /// assert_eq!(year, b"1941");
+    /// assert_eq!(full, "'Citizen Kane' (1941)");
+    /// assert_eq!(title, "Citizen Kane");
+    /// assert_eq!(year, "1941");
     /// ```
     #[inline]
-    pub fn captures<'h>(&self, haystack: &'h [u8]) -> Option<Captures<'h>> {
+    pub fn captures<'h>(&self, haystack: &'h str) -> Option<Captures<'h>> {
         self.captures_at(haystack, 0)
     }
 
@@ -377,20 +379,18 @@ impl Regex {
     /// some haystack, where the movie is formatted like "'Title' (xxxx)":
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"'([^']+)'\s+\(([0-9]{4})\)").unwrap();
-    /// let hay = b"'Citizen Kane' (1941), 'The Wizard of Oz' (1939), 'M' (1931).";
+    /// let hay = "'Citizen Kane' (1941), 'The Wizard of Oz' (1939), 'M' (1931).";
     /// let mut movies = vec![];
     /// for (_, [title, year]) in re.captures_iter(hay).map(|c| c.extract()) {
-    ///     // OK because [0-9]{4} can only match valid UTF-8.
-    ///     let year = std::str::from_utf8(year).unwrap();
     ///     movies.push((title, year.parse::<i64>()?));
     /// }
     /// assert_eq!(movies, vec![
-    ///     (&b"Citizen Kane"[..], 1941),
-    ///     (&b"The Wizard of Oz"[..], 1939),
-    ///     (&b"M"[..], 1931),
+    ///     ("Citizen Kane", 1941),
+    ///     ("The Wizard of Oz", 1939),
+    ///     ("M", 1931),
     /// ]);
     /// # Ok::<(), Box<dyn std::error::Error>>(())
     /// ```
@@ -398,28 +398,28 @@ impl Regex {
     /// Or with named groups:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"'(?<title>[^']+)'\s+\((?<year>[0-9]{4})\)").unwrap();
-    /// let hay = b"'Citizen Kane' (1941), 'The Wizard of Oz' (1939), 'M' (1931).";
+    /// let hay = "'Citizen Kane' (1941), 'The Wizard of Oz' (1939), 'M' (1931).";
     /// let mut it = re.captures_iter(hay);
     ///
     /// let caps = it.next().unwrap();
-    /// assert_eq!(&caps["title"], b"Citizen Kane");
-    /// assert_eq!(&caps["year"], b"1941");
+    /// assert_eq!(&caps["title"], "Citizen Kane");
+    /// assert_eq!(&caps["year"], "1941");
     ///
     /// let caps = it.next().unwrap();
-    /// assert_eq!(&caps["title"], b"The Wizard of Oz");
-    /// assert_eq!(&caps["year"], b"1939");
+    /// assert_eq!(&caps["title"], "The Wizard of Oz");
+    /// assert_eq!(&caps["year"], "1939");
     ///
     /// let caps = it.next().unwrap();
-    /// assert_eq!(&caps["title"], b"M");
-    /// assert_eq!(&caps["year"], b"1931");
+    /// assert_eq!(&caps["title"], "M");
+    /// assert_eq!(&caps["year"], "1931");
     /// ```
     #[inline]
     pub fn captures_iter<'r, 'h>(
         &'r self,
-        haystack: &'h [u8],
+        haystack: &'h str,
     ) -> CaptureMatches<'r, 'h> {
         CaptureMatches { haystack, it: self.meta.captures_iter(haystack) }
     }
@@ -440,14 +440,12 @@ impl Regex {
     /// To split a string delimited by arbitrary amounts of spaces or tabs:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"[ \t]+").unwrap();
-    /// let hay = b"a b \t  c\td    e";
-    /// let fields: Vec<&[u8]> = re.split(hay).collect();
-    /// assert_eq!(fields, vec![
-    ///     &b"a"[..], &b"b"[..], &b"c"[..], &b"d"[..], &b"e"[..],
-    /// ]);
+    /// let hay = "a b \t  c\td    e";
+    /// let fields: Vec<&str> = re.split(hay).collect();
+    /// assert_eq!(fields, vec!["a", "b", "c", "d", "e"]);
     /// ```
     ///
     /// # Example: more cases
@@ -455,111 +453,104 @@ impl Regex {
     /// Basic usage:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r" ").unwrap();
-    /// let hay = b"Mary had a little lamb";
-    /// let got: Vec<&[u8]> = re.split(hay).collect();
-    /// assert_eq!(got, vec![
-    ///     &b"Mary"[..], &b"had"[..], &b"a"[..], &b"little"[..], &b"lamb"[..],
-    /// ]);
+    /// let hay = "Mary had a little lamb";
+    /// let got: Vec<&str> = re.split(hay).collect();
+    /// assert_eq!(got, vec!["Mary", "had", "a", "little", "lamb"]);
     ///
     /// let re = Regex::new(r"X").unwrap();
-    /// let hay = b"";
-    /// let got: Vec<&[u8]> = re.split(hay).collect();
-    /// assert_eq!(got, vec![&b""[..]]);
+    /// let hay = "";
+    /// let got: Vec<&str> = re.split(hay).collect();
+    /// assert_eq!(got, vec![""]);
     ///
     /// let re = Regex::new(r"X").unwrap();
-    /// let hay = b"lionXXtigerXleopard";
-    /// let got: Vec<&[u8]> = re.split(hay).collect();
-    /// assert_eq!(got, vec![
-    ///     &b"lion"[..], &b""[..], &b"tiger"[..], &b"leopard"[..],
-    /// ]);
+    /// let hay = "lionXXtigerXleopard";
+    /// let got: Vec<&str> = re.split(hay).collect();
+    /// assert_eq!(got, vec!["lion", "", "tiger", "leopard"]);
     ///
     /// let re = Regex::new(r"::").unwrap();
-    /// let hay = b"lion::tiger::leopard";
-    /// let got: Vec<&[u8]> = re.split(hay).collect();
-    /// assert_eq!(got, vec![&b"lion"[..], &b"tiger"[..], &b"leopard"[..]]);
+    /// let hay = "lion::tiger::leopard";
+    /// let got: Vec<&str> = re.split(hay).collect();
+    /// assert_eq!(got, vec!["lion", "tiger", "leopard"]);
     /// ```
     ///
     /// If a haystack contains multiple contiguous matches, you will end up
     /// with empty spans yielded by the iterator:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"X").unwrap();
-    /// let hay = b"XXXXaXXbXc";
-    /// let got: Vec<&[u8]> = re.split(hay).collect();
-    /// assert_eq!(got, vec![
-    ///     &b""[..], &b""[..], &b""[..], &b""[..],
-    ///     &b"a"[..], &b""[..], &b"b"[..], &b"c"[..],
-    /// ]);
+    /// let hay = "XXXXaXXbXc";
+    /// let got: Vec<&str> = re.split(hay).collect();
+    /// assert_eq!(got, vec!["", "", "", "", "a", "", "b", "c"]);
     ///
     /// let re = Regex::new(r"/").unwrap();
-    /// let hay = b"(///)";
-    /// let got: Vec<&[u8]> = re.split(hay).collect();
-    /// assert_eq!(got, vec![&b"("[..], &b""[..], &b""[..], &b")"[..]]);
+    /// let hay = "(///)";
+    /// let got: Vec<&str> = re.split(hay).collect();
+    /// assert_eq!(got, vec!["(", "", "", ")"]);
     /// ```
     ///
     /// Separators at the start or end of a haystack are neighbored by empty
     /// substring.
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"0").unwrap();
-    /// let hay = b"010";
-    /// let got: Vec<&[u8]> = re.split(hay).collect();
-    /// assert_eq!(got, vec![&b""[..], &b"1"[..], &b""[..]]);
+    /// let hay = "010";
+    /// let got: Vec<&str> = re.split(hay).collect();
+    /// assert_eq!(got, vec!["", "1", ""]);
     /// ```
     ///
-    /// When the regex can match the empty string, it splits at every byte
-    /// position in the haystack. This includes between all UTF-8 code units.
-    /// (The top-level [`Regex::split`](crate::Regex::split) will only split
-    /// at valid UTF-8 boundaries.)
+    /// When the empty string is used as a regex, it splits at every valid
+    /// UTF-8 boundary by default (which includes the beginning and end of the
+    /// haystack):
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"").unwrap();
-    /// let hay = "☃".as_bytes();
-    /// let got: Vec<&[u8]> = re.split(hay).collect();
-    /// assert_eq!(got, vec![
-    ///     &[][..], &[b'\xE2'][..], &[b'\x98'][..], &[b'\x83'][..], &[][..],
-    /// ]);
+    /// let hay = "rust";
+    /// let got: Vec<&str> = re.split(hay).collect();
+    /// assert_eq!(got, vec!["", "r", "u", "s", "t", ""]);
+    ///
+    /// // Splitting by an empty string is UTF-8 aware by default!
+    /// let re = Regex::new(r"").unwrap();
+    /// let hay = "☃";
+    /// let got: Vec<&str> = re.split(hay).collect();
+    /// assert_eq!(got, vec!["", "☃", ""]);
     /// ```
     ///
     /// Contiguous separators (commonly shows up with whitespace), can lead to
     /// possibly surprising behavior. For example, this code is correct:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r" ").unwrap();
-    /// let hay = b"    a  b c";
-    /// let got: Vec<&[u8]> = re.split(hay).collect();
-    /// assert_eq!(got, vec![
-    ///     &b""[..], &b""[..], &b""[..], &b""[..],
-    ///     &b"a"[..], &b""[..], &b"b"[..], &b"c"[..],
-    /// ]);
+    /// let hay = "    a  b c";
+    /// let got: Vec<&str> = re.split(hay).collect();
+    /// assert_eq!(got, vec!["", "", "", "", "a", "", "b", "c"]);
     /// ```
     ///
     /// It does *not* give you `["a", "b", "c"]`. For that behavior, you'd want
     /// to match contiguous space characters:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r" +").unwrap();
-    /// let hay = b"    a  b c";
-    /// let got: Vec<&[u8]> = re.split(hay).collect();
+    /// let hay = "    a  b c";
+    /// let got: Vec<&str> = re.split(hay).collect();
     /// // N.B. This does still include a leading empty span because ' +'
     /// // matches at the beginning of the haystack.
-    /// assert_eq!(got, vec![&b""[..], &b"a"[..], &b"b"[..], &b"c"[..]]);
+    /// assert_eq!(got, vec!["", "a", "b", "c"]);
     /// ```
     #[inline]
-    pub fn split<'r, 'h>(&'r self, haystack: &'h [u8]) -> Split<'r, 'h> {
+    pub fn split<'r, 'h>(&'r self, haystack: &'h str) -> Split<'r, 'h> {
         Split { haystack, it: self.meta.split(haystack) }
     }
 
@@ -585,58 +576,58 @@ impl Regex {
     /// Get the first two words in some haystack:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"\W+").unwrap();
-    /// let hay = b"Hey! How are you?";
-    /// let fields: Vec<&[u8]> = re.splitn(hay, 3).collect();
-    /// assert_eq!(fields, vec![&b"Hey"[..], &b"How"[..], &b"are you?"[..]]);
+    /// let hay = "Hey! How are you?";
+    /// let fields: Vec<&str> = re.splitn(hay, 3).collect();
+    /// assert_eq!(fields, vec!["Hey", "How", "are you?"]);
     /// ```
     ///
     /// # Examples: more cases
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r" ").unwrap();
-    /// let hay = b"Mary had a little lamb";
-    /// let got: Vec<&[u8]> = re.splitn(hay, 3).collect();
-    /// assert_eq!(got, vec![&b"Mary"[..], &b"had"[..], &b"a little lamb"[..]]);
+    /// let hay = "Mary had a little lamb";
+    /// let got: Vec<&str> = re.splitn(hay, 3).collect();
+    /// assert_eq!(got, vec!["Mary", "had", "a little lamb"]);
     ///
     /// let re = Regex::new(r"X").unwrap();
-    /// let hay = b"";
-    /// let got: Vec<&[u8]> = re.splitn(hay, 3).collect();
-    /// assert_eq!(got, vec![&b""[..]]);
+    /// let hay = "";
+    /// let got: Vec<&str> = re.splitn(hay, 3).collect();
+    /// assert_eq!(got, vec![""]);
     ///
     /// let re = Regex::new(r"X").unwrap();
-    /// let hay = b"lionXXtigerXleopard";
-    /// let got: Vec<&[u8]> = re.splitn(hay, 3).collect();
-    /// assert_eq!(got, vec![&b"lion"[..], &b""[..], &b"tigerXleopard"[..]]);
+    /// let hay = "lionXXtigerXleopard";
+    /// let got: Vec<&str> = re.splitn(hay, 3).collect();
+    /// assert_eq!(got, vec!["lion", "", "tigerXleopard"]);
     ///
     /// let re = Regex::new(r"::").unwrap();
-    /// let hay = b"lion::tiger::leopard";
-    /// let got: Vec<&[u8]> = re.splitn(hay, 2).collect();
-    /// assert_eq!(got, vec![&b"lion"[..], &b"tiger::leopard"[..]]);
+    /// let hay = "lion::tiger::leopard";
+    /// let got: Vec<&str> = re.splitn(hay, 2).collect();
+    /// assert_eq!(got, vec!["lion", "tiger::leopard"]);
     ///
     /// let re = Regex::new(r"X").unwrap();
-    /// let hay = b"abcXdef";
-    /// let got: Vec<&[u8]> = re.splitn(hay, 1).collect();
-    /// assert_eq!(got, vec![&b"abcXdef"[..]]);
+    /// let hay = "abcXdef";
+    /// let got: Vec<&str> = re.splitn(hay, 1).collect();
+    /// assert_eq!(got, vec!["abcXdef"]);
     ///
     /// let re = Regex::new(r"X").unwrap();
-    /// let hay = b"abcdef";
-    /// let got: Vec<&[u8]> = re.splitn(hay, 2).collect();
-    /// assert_eq!(got, vec![&b"abcdef"[..]]);
+    /// let hay = "abcdef";
+    /// let got: Vec<&str> = re.splitn(hay, 2).collect();
+    /// assert_eq!(got, vec!["abcdef"]);
     ///
     /// let re = Regex::new(r"X").unwrap();
-    /// let hay = b"abcXdef";
-    /// let got: Vec<&[u8]> = re.splitn(hay, 0).collect();
+    /// let hay = "abcXdef";
+    /// let got: Vec<&str> = re.splitn(hay, 0).collect();
     /// assert!(got.is_empty());
     /// ```
     #[inline]
     pub fn splitn<'r, 'h>(
         &'r self,
-        haystack: &'h [u8],
+        haystack: &'h str,
         limit: usize,
     ) -> SplitN<'r, 'h> {
         SplitN { haystack, it: self.meta.splitn(haystack, limit) }
@@ -650,6 +641,9 @@ impl Regex {
     /// If no match is found, then the haystack is returned unchanged. In that
     /// case, this implementation will likely return a `Cow::Borrowed` value
     /// such that no allocation is performed.
+    ///
+    /// When a `Cow::Borrowed` is returned, the value returned is guaranteed
+    /// to be equivalent to the `haystack` given.
     ///
     /// # Replacement string syntax
     ///
@@ -676,10 +670,10 @@ impl Regex {
     /// In typical usage, this can just be a normal string:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"[^01]+").unwrap();
-    /// assert_eq!(re.replace(b"1078910", b""), &b"1010"[..]);
+    /// assert_eq!(re.replace("1078910", ""), "1010");
     /// ```
     ///
     /// But anything satisfying the [`Replacer`] trait will work. For example,
@@ -688,17 +682,13 @@ impl Regex {
     /// group matches easily:
     ///
     /// ```
-    /// use regex::bytes::{Captures, Regex};
+    /// use regex::{Captures, Regex};
     ///
     /// let re = Regex::new(r"([^,\s]+),\s+(\S+)").unwrap();
-    /// let result = re.replace(b"Springsteen, Bruce", |caps: &Captures| {
-    ///     let mut buf = vec![];
-    ///     buf.extend_from_slice(&caps[2]);
-    ///     buf.push(b' ');
-    ///     buf.extend_from_slice(&caps[1]);
-    ///     buf
+    /// let result = re.replace("Springsteen, Bruce", |caps: &Captures| {
+    ///     format!("{} {}", &caps[2], &caps[1])
     /// });
-    /// assert_eq!(result, &b"Bruce Springsteen"[..]);
+    /// assert_eq!(result, "Bruce Springsteen");
     /// ```
     ///
     /// But this is a bit cumbersome to use all the time. Instead, a simple
@@ -707,11 +697,11 @@ impl Regex {
     /// expansion technique with named capture groups:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"(?<last>[^,\s]+),\s+(?<first>\S+)").unwrap();
-    /// let result = re.replace(b"Springsteen, Bruce", b"$first $last");
-    /// assert_eq!(result, &b"Bruce Springsteen"[..]);
+    /// let result = re.replace("Springsteen, Bruce", "$first $last");
+    /// assert_eq!(result, "Bruce Springsteen");
     /// ```
     ///
     /// Note that using `$2` instead of `$first` or `$1` instead of `$last`
@@ -723,11 +713,11 @@ impl Regex {
     /// an underscore:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"(?<first>\w+)\s+(?<second>\w+)").unwrap();
-    /// let result = re.replace(b"deep fried", b"${first}_$second");
-    /// assert_eq!(result, &b"deep_fried"[..]);
+    /// let result = re.replace("deep fried", "${first}_$second");
+    /// assert_eq!(result, "deep_fried");
     /// ```
     ///
     /// Without the curly braces, the capture group name `first_` would be
@@ -739,11 +729,11 @@ impl Regex {
     /// string with [`NoExpand`]:
     ///
     /// ```
-    /// use regex::bytes::{NoExpand, Regex};
+    /// use regex::{NoExpand, Regex};
     ///
     /// let re = Regex::new(r"(?<last>[^,\s]+),\s+(\S+)").unwrap();
-    /// let result = re.replace(b"Springsteen, Bruce", NoExpand(b"$2 $last"));
-    /// assert_eq!(result, &b"$2 $last"[..]);
+    /// let result = re.replace("Springsteen, Bruce", NoExpand("$2 $last"));
+    /// assert_eq!(result, "$2 $last");
     /// ```
     ///
     /// Using `NoExpand` may also be faster, since the replacement string won't
@@ -751,15 +741,22 @@ impl Regex {
     #[inline]
     pub fn replace<'h, R: Replacer>(
         &self,
-        haystack: &'h [u8],
+        haystack: &'h str,
         rep: R,
-    ) -> Cow<'h, [u8]> {
+    ) -> Cow<'h, str> {
         self.replacen(haystack, 1, rep)
     }
 
     /// Replaces all non-overlapping matches in the haystack with the
     /// replacement provided. This is the same as calling `replacen` with
     /// `limit` set to `0`.
+    ///
+    /// If no match is found, then the haystack is returned unchanged. In that
+    /// case, this implementation will likely return a `Cow::Borrowed` value
+    /// such that no allocation is performed.
+    ///
+    /// When a `Cow::Borrowed` is returned, the value returned is guaranteed
+    /// to be equivalent to the `haystack` given.
     ///
     /// The documentation for [`Regex::replace`] goes into more detail about
     /// what kinds of replacement strings are supported.
@@ -780,39 +777,39 @@ impl Regex {
     /// implementing your own replacement routine:
     ///
     /// ```
-    /// use regex::bytes::{Captures, Regex};
+    /// use regex::{Captures, Regex};
     ///
     /// fn replace_all<E>(
     ///     re: &Regex,
-    ///     haystack: &[u8],
-    ///     replacement: impl Fn(&Captures) -> Result<Vec<u8>, E>,
-    /// ) -> Result<Vec<u8>, E> {
-    ///     let mut new = Vec::with_capacity(haystack.len());
+    ///     haystack: &str,
+    ///     replacement: impl Fn(&Captures) -> Result<String, E>,
+    /// ) -> Result<String, E> {
+    ///     let mut new = String::with_capacity(haystack.len());
     ///     let mut last_match = 0;
     ///     for caps in re.captures_iter(haystack) {
     ///         let m = caps.get(0).unwrap();
-    ///         new.extend_from_slice(&haystack[last_match..m.start()]);
-    ///         new.extend_from_slice(&replacement(&caps)?);
+    ///         new.push_str(&haystack[last_match..m.start()]);
+    ///         new.push_str(&replacement(&caps)?);
     ///         last_match = m.end();
     ///     }
-    ///     new.extend_from_slice(&haystack[last_match..]);
+    ///     new.push_str(&haystack[last_match..]);
     ///     Ok(new)
     /// }
     ///
     /// // Let's replace each word with the number of bytes in that word.
     /// // But if we see a word that is "too long," we'll give up.
     /// let re = Regex::new(r"\w+").unwrap();
-    /// let replacement = |caps: &Captures| -> Result<Vec<u8>, &'static str> {
+    /// let replacement = |caps: &Captures| -> Result<String, &'static str> {
     ///     if caps[0].len() >= 5 {
     ///         return Err("word too long");
     ///     }
-    ///     Ok(caps[0].len().to_string().into_bytes())
+    ///     Ok(caps[0].len().to_string())
     /// };
     /// assert_eq!(
-    ///     Ok(b"2 3 3 3?".to_vec()),
-    ///     replace_all(&re, b"hi how are you?", &replacement),
+    ///     Ok("2 3 3 3?".to_string()),
+    ///     replace_all(&re, "hi how are you?", &replacement),
     /// );
-    /// assert!(replace_all(&re, b"hi there", &replacement).is_err());
+    /// assert!(replace_all(&re, "hi there", &replacement).is_err());
     /// ```
     ///
     /// # Example
@@ -822,31 +819,31 @@ impl Regex {
     /// delimits the fields:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"(?m)^(\S+)[\s--\r\n]+(\S+)$").unwrap();
-    /// let hay = b"
+    /// let hay = "
     /// Greetings  1973
     /// Wild\t1973
     /// BornToRun\t\t\t\t1975
     /// Darkness                    1978
     /// TheRiver 1980
     /// ";
-    /// let new = re.replace_all(hay, b"$2 $1");
-    /// assert_eq!(new, &b"
+    /// let new = re.replace_all(hay, "$2 $1");
+    /// assert_eq!(new, "
     /// 1973 Greetings
     /// 1973 Wild
     /// 1975 BornToRun
     /// 1978 Darkness
     /// 1980 TheRiver
-    /// "[..]);
+    /// ");
     /// ```
     #[inline]
     pub fn replace_all<'h, R: Replacer>(
         &self,
-        haystack: &'h [u8],
+        haystack: &'h str,
         rep: R,
-    ) -> Cow<'h, [u8]> {
+    ) -> Cow<'h, str> {
         self.replacen(haystack, 0, rep)
     }
 
@@ -854,6 +851,13 @@ impl Regex {
     /// the replacement provided. If `limit` is `0`, then all non-overlapping
     /// matches are replaced. That is, `Regex::replace_all(hay, rep)` is
     /// equivalent to `Regex::replacen(hay, 0, rep)`.
+    ///
+    /// If no match is found, then the haystack is returned unchanged. In that
+    /// case, this implementation will likely return a `Cow::Borrowed` value
+    /// such that no allocation is performed.
+    ///
+    /// When a `Cow::Borrowed` is returned, the value returned is guaranteed
+    /// to be equivalent to the `haystack` given.
     ///
     /// The documentation for [`Regex::replace`] goes into more detail about
     /// what kinds of replacement strings are supported.
@@ -880,32 +884,32 @@ impl Regex {
     /// delimits the fields. But we only do it for the first two matches.
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"(?m)^(\S+)[\s--\r\n]+(\S+)$").unwrap();
-    /// let hay = b"
+    /// let hay = "
     /// Greetings  1973
     /// Wild\t1973
     /// BornToRun\t\t\t\t1975
     /// Darkness                    1978
     /// TheRiver 1980
     /// ";
-    /// let new = re.replacen(hay, 2, b"$2 $1");
-    /// assert_eq!(new, &b"
+    /// let new = re.replacen(hay, 2, "$2 $1");
+    /// assert_eq!(new, "
     /// 1973 Greetings
     /// 1973 Wild
     /// BornToRun\t\t\t\t1975
     /// Darkness                    1978
     /// TheRiver 1980
-    /// "[..]);
+    /// ");
     /// ```
     #[inline]
     pub fn replacen<'h, R: Replacer>(
         &self,
-        haystack: &'h [u8],
+        haystack: &'h str,
         limit: usize,
         mut rep: R,
-    ) -> Cow<'h, [u8]> {
+    ) -> Cow<'h, str> {
         // If we know that the replacement doesn't have any capture expansions,
         // then we can use the fast path. The fast path can make a tremendous
         // difference:
@@ -920,39 +924,39 @@ impl Regex {
             if it.peek().is_none() {
                 return Cow::Borrowed(haystack);
             }
-            let mut new = Vec::with_capacity(haystack.len());
+            let mut new = String::with_capacity(haystack.len());
             let mut last_match = 0;
             for (i, m) in it {
-                new.extend_from_slice(&haystack[last_match..m.start()]);
-                new.extend_from_slice(&rep);
+                new.push_str(&haystack[last_match..m.start()]);
+                new.push_str(&rep);
                 last_match = m.end();
                 if limit > 0 && i >= limit - 1 {
                     break;
                 }
             }
-            new.extend_from_slice(&haystack[last_match..]);
+            new.push_str(&haystack[last_match..]);
             return Cow::Owned(new);
         }
 
-        // The slower path, which we use if the replacement needs access to
+        // The slower path, which we use if the replacement may need access to
         // capture groups.
         let mut it = self.captures_iter(haystack).enumerate().peekable();
         if it.peek().is_none() {
             return Cow::Borrowed(haystack);
         }
-        let mut new = Vec::with_capacity(haystack.len());
+        let mut new = String::with_capacity(haystack.len());
         let mut last_match = 0;
         for (i, cap) in it {
             // unwrap on 0 is OK because captures only reports matches
             let m = cap.get(0).unwrap();
-            new.extend_from_slice(&haystack[last_match..m.start()]);
+            new.push_str(&haystack[last_match..m.start()]);
             rep.replace_append(&cap, &mut new);
             last_match = m.end();
             if limit > 0 && i >= limit - 1 {
                 break;
             }
         }
-        new.extend_from_slice(&haystack[last_match..]);
+        new.push_str(&haystack[last_match..]);
         Cow::Owned(new)
     }
 }
@@ -984,19 +988,19 @@ impl Regex {
     /// first `a`.
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"a+").unwrap();
-    /// let offset = re.shortest_match(b"aaaaa").unwrap();
+    /// let offset = re.shortest_match("aaaaa").unwrap();
     /// assert_eq!(offset, 1);
     /// ```
     #[inline]
-    pub fn shortest_match(&self, haystack: &[u8]) -> Option<usize> {
+    pub fn shortest_match(&self, haystack: &str) -> Option<usize> {
         self.shortest_match_at(haystack, 0)
     }
 
-    /// Returns the same as `shortest_match`, but starts the search at the
-    /// given offset.
+    /// Returns the same as [`Regex::shortest_match`], but starts the search at
+    /// the given offset.
     ///
     /// The significance of the starting point is that it takes the surrounding
     /// context into consideration. For example, the `\A` anchor can only match
@@ -1016,10 +1020,10 @@ impl Regex {
     /// surrounding context into account.
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"\bchew\b").unwrap();
-    /// let hay = b"eschew";
+    /// let hay = "eschew";
     /// // We get a match here, but it's probably not intended.
     /// assert_eq!(re.shortest_match(&hay[2..]), Some(4));
     /// // No match because the  assertions take the context into account.
@@ -1028,7 +1032,7 @@ impl Regex {
     #[inline]
     pub fn shortest_match_at(
         &self,
-        haystack: &[u8],
+        haystack: &str,
         start: usize,
     ) -> Option<usize> {
         let input =
@@ -1054,18 +1058,20 @@ impl Regex {
     /// surrounding context into account.
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"\bchew\b").unwrap();
-    /// let hay = b"eschew";
+    /// let hay = "eschew";
     /// // We get a match here, but it's probably not intended.
     /// assert!(re.is_match(&hay[2..]));
     /// // No match because the  assertions take the context into account.
     /// assert!(!re.is_match_at(hay, 2));
     /// ```
     #[inline]
-    pub fn is_match_at(&self, haystack: &[u8], start: usize) -> bool {
-        self.meta.is_match(Input::new(haystack).span(start..haystack.len()))
+    pub fn is_match_at(&self, haystack: &str, start: usize) -> bool {
+        let input =
+            Input::new(haystack).earliest(true).span(start..haystack.len());
+        self.meta.search_half(&input).is_some()
     }
 
     /// Returns the same as [`Regex::find`], but starts the search at the given
@@ -1086,10 +1092,10 @@ impl Regex {
     /// surrounding context into account.
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"\bchew\b").unwrap();
-    /// let hay = b"eschew";
+    /// let hay = "eschew";
     /// // We get a match here, but it's probably not intended.
     /// assert_eq!(re.find(&hay[2..]).map(|m| m.range()), Some(0..4));
     /// // No match because the  assertions take the context into account.
@@ -1098,11 +1104,13 @@ impl Regex {
     #[inline]
     pub fn find_at<'h>(
         &self,
-        haystack: &'h [u8],
+        haystack: &'h str,
         start: usize,
     ) -> Option<Match<'h>> {
         let input = Input::new(haystack).span(start..haystack.len());
-        self.meta.find(input).map(|m| Match::new(haystack, m.start(), m.end()))
+        self.meta
+            .search(&input)
+            .map(|m| Match::new(haystack, m.start(), m.end()))
     }
 
     /// Returns the same as [`Regex::captures`], but starts the search at the
@@ -1123,24 +1131,24 @@ impl Regex {
     /// surrounding context into account.
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"\bchew\b").unwrap();
-    /// let hay = b"eschew";
+    /// let hay = "eschew";
     /// // We get a match here, but it's probably not intended.
-    /// assert_eq!(&re.captures(&hay[2..]).unwrap()[0], b"chew");
+    /// assert_eq!(&re.captures(&hay[2..]).unwrap()[0], "chew");
     /// // No match because the  assertions take the context into account.
     /// assert!(re.captures_at(hay, 2).is_none());
     /// ```
     #[inline]
     pub fn captures_at<'h>(
         &self,
-        haystack: &'h [u8],
+        haystack: &'h str,
         start: usize,
     ) -> Option<Captures<'h>> {
         let input = Input::new(haystack).span(start..haystack.len());
         let mut caps = self.meta.create_captures();
-        self.meta.captures(input, &mut caps);
+        self.meta.search_captures(&input, &mut caps);
         if caps.is_match() {
             let static_captures_len = self.static_captures_len();
             Some(Captures { haystack, caps, static_captures_len })
@@ -1165,14 +1173,19 @@ impl Regex {
     /// This also returns the overall match if one was found. When a match is
     /// found, its offsets are also always stored in `locs` at index `0`.
     ///
+    /// # Panics
+    ///
+    /// This routine may panic if the given `CaptureLocations` was not created
+    /// by this regex.
+    ///
     /// # Example
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"^([a-z]+)=(\S*)$").unwrap();
     /// let mut locs = re.capture_locations();
-    /// assert!(re.captures_read(&mut locs, b"id=foo123").is_some());
+    /// assert!(re.captures_read(&mut locs, "id=foo123").is_some());
     /// assert_eq!(Some((0, 9)), locs.get(0));
     /// assert_eq!(Some((0, 2)), locs.get(1));
     /// assert_eq!(Some((3, 9)), locs.get(2));
@@ -1181,7 +1194,7 @@ impl Regex {
     pub fn captures_read<'h>(
         &self,
         locs: &mut CaptureLocations,
-        haystack: &'h [u8],
+        haystack: &'h str,
     ) -> Option<Match<'h>> {
         self.captures_read_at(locs, haystack, 0)
     }
@@ -1197,6 +1210,9 @@ impl Regex {
     ///
     /// This panics when `start >= haystack.len() + 1`.
     ///
+    /// This routine may also panic if the given `CaptureLocations` was not
+    /// created by this regex.
+    ///
     /// # Example
     ///
     /// This example shows the significance of `start` by demonstrating how it
@@ -1204,10 +1220,10 @@ impl Regex {
     /// surrounding context into account.
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"\bchew\b").unwrap();
-    /// let hay = b"eschew";
+    /// let hay = "eschew";
     /// let mut locs = re.capture_locations();
     /// // We get a match here, but it's probably not intended.
     /// assert!(re.captures_read(&mut locs, &hay[2..]).is_some());
@@ -1218,7 +1234,7 @@ impl Regex {
     pub fn captures_read_at<'h>(
         &self,
         locs: &mut CaptureLocations,
-        haystack: &'h [u8],
+        haystack: &'h str,
         start: usize,
     ) -> Option<Match<'h>> {
         let input = Input::new(haystack).span(start..haystack.len());
@@ -1236,7 +1252,7 @@ impl Regex {
     pub fn read_captures_at<'h>(
         &self,
         locs: &mut CaptureLocations,
-        haystack: &'h [u8],
+        haystack: &'h str,
         start: usize,
     ) -> Option<Match<'h>> {
         self.captures_read_at(locs, haystack, start)
@@ -1250,7 +1266,7 @@ impl Regex {
     /// # Example
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"foo\w+bar").unwrap();
     /// assert_eq!(re.as_str(), r"foo\w+bar");
@@ -1276,7 +1292,7 @@ impl Regex {
     /// This shows basic usage with a mix of named and unnamed capture groups:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"(?<a>.(?<b>.))(.)(?:.)(?<c>.)").unwrap();
     /// let mut names = re.capture_names();
@@ -1293,7 +1309,7 @@ impl Regex {
     /// no capture groups and even for regexes that can never match:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"").unwrap();
     /// let mut names = re.capture_names();
@@ -1322,7 +1338,7 @@ impl Regex {
     /// # Example
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"foo").unwrap();
     /// assert_eq!(1, re.captures_len());
@@ -1359,7 +1375,7 @@ impl Regex {
     /// available and a few cases where it is not.
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let len = |pattern| {
     ///     Regex::new(pattern).map(|re| re.static_captures_len())
@@ -1385,14 +1401,18 @@ impl Regex {
     /// be reused in multiple calls to [`Regex::captures_read`] or
     /// [`Regex::captures_read_at`].
     ///
+    /// The returned locations can be used for any subsequent search for this
+    /// particular regex. There is no guarantee that it is correct to use for
+    /// other regexes, even if they have the same number of capture groups.
+    ///
     /// # Example
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"(.)(.)(\w+)").unwrap();
     /// let mut locs = re.capture_locations();
-    /// assert!(re.captures_read(&mut locs, b"Padron").is_some());
+    /// assert!(re.captures_read(&mut locs, "Padron").is_some());
     /// assert_eq!(locs.get(0), Some((0, 6)));
     /// assert_eq!(locs.get(1), Some((0, 1)));
     /// assert_eq!(locs.get(2), Some((1, 2)));
@@ -1405,7 +1425,7 @@ impl Regex {
 
     /// An alias for `capture_locations` to preserve backward compatibility.
     ///
-    /// The `regex-capi` crate uses this method, so to avoid breaking that
+    /// The `regex-capi` crate used this method, so to avoid breaking that
     /// crate, we continue to export it as an undocumented API.
     #[doc(hidden)]
     #[inline]
@@ -1420,10 +1440,14 @@ impl Regex {
 /// actual substring corresponding to the range of those byte offsets. It is
 /// guaranteed that `start <= end`. When `start == end`, the match is empty.
 ///
-/// Unlike the top-level `Match` type, this `Match` type is produced by APIs
-/// that search `&[u8]` haystacks. This means that the offsets in a `Match` can
-/// point to anywhere in the haystack, including in a place that splits the
-/// UTF-8 encoding of a Unicode scalar value.
+/// Since this `Match` can only be produced by the top-level `Regex` APIs
+/// that only support searching UTF-8 encoded strings, the byte offsets for a
+/// `Match` are guaranteed to fall on valid UTF-8 codepoint boundaries. That
+/// is, slicing a `&str` with [`Match::range`] is guaranteed to never panic.
+///
+/// Values with this type are created by [`Regex::find`] or
+/// [`Regex::find_iter`]. Other APIs can create `Match` values too. For
+/// example, [`Captures::get`].
 ///
 /// The lifetime parameter `'h` refers to the lifetime of the matched of the
 /// haystack that this match was produced from.
@@ -1450,21 +1474,21 @@ impl Regex {
 /// particular search.
 ///
 /// ```
-/// use regex::bytes::Regex;
+/// use regex::Regex;
 ///
 /// let re = Regex::new(r"\p{Greek}+").unwrap();
-/// let hay = "Greek: αβγδ".as_bytes();
+/// let hay = "Greek: αβγδ";
 /// let m = re.find(hay).unwrap();
 /// assert_eq!(7, m.start());
 /// assert_eq!(15, m.end());
 /// assert!(!m.is_empty());
 /// assert_eq!(8, m.len());
 /// assert_eq!(7..15, m.range());
-/// assert_eq!("αβγδ".as_bytes(), m.as_bytes());
+/// assert_eq!("αβγδ", m.as_str());
 /// ```
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub struct Match<'h> {
-    haystack: &'h [u8],
+    haystack: &'h str,
     start: usize,
     end: usize,
 }
@@ -1476,9 +1500,10 @@ impl<'h> Match<'h> {
     ///
     /// It is guaranteed that `Match::start() <= Match::end()`.
     ///
-    /// Unlike the top-level `Match` type, the start offset may appear anywhere
-    /// in the haystack. This includes between the code units of a UTF-8
-    /// encoded Unicode scalar value.
+    /// This is guaranteed to fall on a valid UTF-8 codepoint boundary. That
+    /// is, it will never be an offset that appears between the UTF-8 code
+    /// units of a UTF-8 encoded Unicode scalar value. Consequently, it is
+    /// always safe to slice the corresponding haystack using this offset.
     #[inline]
     pub fn start(&self) -> usize {
         self.start
@@ -1491,9 +1516,10 @@ impl<'h> Match<'h> {
     ///
     /// It is guaranteed that `Match::start() <= Match::end()`.
     ///
-    /// Unlike the top-level `Match` type, the start offset may appear anywhere
-    /// in the haystack. This includes between the code units of a UTF-8
-    /// encoded Unicode scalar value.
+    /// This is guaranteed to fall on a valid UTF-8 codepoint boundary. That
+    /// is, it will never be an offset that appears between the UTF-8 code
+    /// units of a UTF-8 encoded Unicode scalar value. Consequently, it is
+    /// always safe to slice the corresponding haystack using this offset.
     #[inline]
     pub fn end(&self) -> usize {
         self.end
@@ -1518,6 +1544,10 @@ impl<'h> Match<'h> {
 
     /// Returns the range over the starting and ending byte offsets of the
     /// match in the haystack.
+    ///
+    /// It is always correct to slice the original haystack searched with this
+    /// range. That is, because the offsets are guaranteed to fall on valid
+    /// UTF-8 boundaries, the range returned is always valid.
     #[inline]
     pub fn range(&self) -> core::ops::Range<usize> {
         self.start..self.end
@@ -1525,38 +1555,30 @@ impl<'h> Match<'h> {
 
     /// Returns the substring of the haystack that matched.
     #[inline]
-    pub fn as_bytes(&self) -> &'h [u8] {
+    pub fn as_str(&self) -> &'h str {
         &self.haystack[self.range()]
     }
 
     /// Creates a new match from the given haystack and byte offsets.
     #[inline]
-    fn new(haystack: &'h [u8], start: usize, end: usize) -> Match<'h> {
+    fn new(haystack: &'h str, start: usize, end: usize) -> Match<'h> {
         Match { haystack, start, end }
     }
 }
 
 impl<'h> core::fmt::Debug for Match<'h> {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        let mut fmt = f.debug_struct("Match");
-        fmt.field("start", &self.start).field("end", &self.end);
-        if let Ok(s) = core::str::from_utf8(self.as_bytes()) {
-            fmt.field("bytes", &s);
-        } else {
-            // FIXME: It would be nice if this could be printed as a string
-            // with invalid UTF-8 replaced with hex escapes. A alloc would
-            // probably okay if that makes it easier, but regex-automata does
-            // (at time of writing) have internal routines that do this. So
-            // maybe we should expose them.
-            fmt.field("bytes", &self.as_bytes());
-        }
-        fmt.finish()
+        f.debug_struct("Match")
+            .field("start", &self.start)
+            .field("end", &self.end)
+            .field("string", &self.as_str())
+            .finish()
     }
 }
 
-impl<'h> From<Match<'h>> for &'h [u8] {
-    fn from(m: Match<'h>) -> &'h [u8] {
-        m.as_bytes()
+impl<'h> From<Match<'h>> for &'h str {
+    fn from(m: Match<'h>) -> &'h str {
+        m.as_str()
     }
 }
 
@@ -1608,17 +1630,17 @@ impl<'h> From<Match<'h>> for core::ops::Range<usize> {
 /// # Example
 ///
 /// ```
-/// use regex::bytes::Regex;
+/// use regex::Regex;
 ///
 /// let re = Regex::new(r"(?<first>\w)(\w)(?:\w)\w(?<last>\w)").unwrap();
-/// let caps = re.captures(b"toady").unwrap();
-/// assert_eq!(b"toady", &caps[0]);
-/// assert_eq!(b"t", &caps["first"]);
-/// assert_eq!(b"o", &caps[2]);
-/// assert_eq!(b"y", &caps["last"]);
+/// let caps = re.captures("toady").unwrap();
+/// assert_eq!("toady", &caps[0]);
+/// assert_eq!("t", &caps["first"]);
+/// assert_eq!("o", &caps[2]);
+/// assert_eq!("y", &caps["last"]);
 /// ```
 pub struct Captures<'h> {
-    haystack: &'h [u8],
+    haystack: &'h str,
     caps: captures::Captures,
     static_captures_len: Option<usize>,
 }
@@ -1636,15 +1658,15 @@ impl<'h> Captures<'h> {
     /// group didn't participate in the match:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"[a-z]+(?:([0-9]+)|([A-Z]+))").unwrap();
-    /// let caps = re.captures(b"abc123").unwrap();
+    /// let caps = re.captures("abc123").unwrap();
     ///
-    /// let substr1 = caps.get(1).map_or(&b""[..], |m| m.as_bytes());
-    /// let substr2 = caps.get(2).map_or(&b""[..], |m| m.as_bytes());
-    /// assert_eq!(substr1, b"123");
-    /// assert_eq!(substr2, b"");
+    /// let substr1 = caps.get(1).map_or("", |m| m.as_str());
+    /// let substr2 = caps.get(2).map_or("", |m| m.as_str());
+    /// assert_eq!(substr1, "123");
+    /// assert_eq!(substr2, "");
     /// ```
     #[inline]
     pub fn get(&self, i: usize) -> Option<Match<'h>> {
@@ -1670,17 +1692,17 @@ impl<'h> Captures<'h> {
     /// group didn't participate in the match:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(
     ///     r"[a-z]+(?:(?<numbers>[0-9]+)|(?<letters>[A-Z]+))",
     /// ).unwrap();
-    /// let caps = re.captures(b"abc123").unwrap();
+    /// let caps = re.captures("abc123").unwrap();
     ///
-    /// let numbers = caps.name("numbers").map_or(&b""[..], |m| m.as_bytes());
-    /// let letters = caps.name("letters").map_or(&b""[..], |m| m.as_bytes());
-    /// assert_eq!(numbers, b"123");
-    /// assert_eq!(letters, b"");
+    /// let numbers = caps.name("numbers").map_or("", |m| m.as_str());
+    /// let letters = caps.name("letters").map_or("", |m| m.as_str());
+    /// assert_eq!(numbers, "123");
+    /// assert_eq!(letters, "");
     /// ```
     #[inline]
     pub fn name(&self, name: &str) -> Option<Match<'h>> {
@@ -1718,16 +1740,16 @@ impl<'h> Captures<'h> {
     /// # Example
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"([0-9]{4})-([0-9]{2})-([0-9]{2})").unwrap();
-    /// let hay = b"On 2010-03-14, I became a Tenneessee lamb.";
+    /// let hay = "On 2010-03-14, I became a Tenneessee lamb.";
     /// let Some((full, [year, month, day])) =
     ///     re.captures(hay).map(|caps| caps.extract()) else { return };
-    /// assert_eq!(b"2010-03-14", full);
-    /// assert_eq!(b"2010", year);
-    /// assert_eq!(b"03", month);
-    /// assert_eq!(b"14", day);
+    /// assert_eq!("2010-03-14", full);
+    /// assert_eq!("2010", year);
+    /// assert_eq!("03", month);
+    /// assert_eq!("14", day);
     /// ```
     ///
     /// # Example: iteration
@@ -1736,19 +1758,19 @@ impl<'h> Captures<'h> {
     /// `Captures` matches in a haystack.
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"([0-9]{4})-([0-9]{2})-([0-9]{2})").unwrap();
-    /// let hay = b"1973-01-05, 1975-08-25 and 1980-10-18";
+    /// let hay = "1973-01-05, 1975-08-25 and 1980-10-18";
     ///
-    /// let mut dates: Vec<(&[u8], &[u8], &[u8])> = vec![];
+    /// let mut dates: Vec<(&str, &str, &str)> = vec![];
     /// for (_, [y, m, d]) in re.captures_iter(hay).map(|c| c.extract()) {
     ///     dates.push((y, m, d));
     /// }
     /// assert_eq!(dates, vec![
-    ///     (&b"1973"[..], &b"01"[..], &b"05"[..]),
-    ///     (&b"1975"[..], &b"08"[..], &b"25"[..]),
-    ///     (&b"1980"[..], &b"10"[..], &b"18"[..]),
+    ///     ("1973", "01", "05"),
+    ///     ("1975", "08", "25"),
+    ///     ("1980", "10", "18"),
     /// ]);
     /// ```
     ///
@@ -1759,17 +1781,17 @@ impl<'h> Captures<'h> {
     /// an identifier that might be in double quotes or single quotes:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r#"id:(?:"([^"]+)"|'([^']+)')"#).unwrap();
-    /// let hay = br#"The first is id:"foo" and the second is id:'bar'."#;
+    /// let hay = r#"The first is id:"foo" and the second is id:'bar'."#;
     /// let mut ids = vec![];
     /// for (_, [id]) in re.captures_iter(hay).map(|c| c.extract()) {
     ///     ids.push(id);
     /// }
-    /// assert_eq!(ids, vec![b"foo", b"bar"]);
+    /// assert_eq!(ids, vec!["foo", "bar"]);
     /// ```
-    pub fn extract<const N: usize>(&self) -> (&'h [u8], [&'h [u8]; N]) {
+    pub fn extract<const N: usize>(&self) -> (&'h str, [&'h str; N]) {
         let len = self
             .static_captures_len
             .expect("number of capture groups can vary in a match")
@@ -1782,7 +1804,7 @@ impl<'h> Captures<'h> {
         // this is guaranteed to never panic because we've asserted above that
         // the user has requested precisely the number of groups that must be
         // present in any match for this regex.
-        self.caps.extract_bytes(self.haystack)
+        self.caps.extract(self.haystack)
     }
 
     /// Expands all instances of `$ref` in `replacement` to the corresponding
@@ -1825,21 +1847,21 @@ impl<'h> Captures<'h> {
     /// # Example
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(
     ///     r"(?<day>[0-9]{2})-(?<month>[0-9]{2})-(?<year>[0-9]{4})",
     /// ).unwrap();
-    /// let hay = b"On 14-03-2010, I became a Tenneessee lamb.";
+    /// let hay = "On 14-03-2010, I became a Tenneessee lamb.";
     /// let caps = re.captures(hay).unwrap();
     ///
-    /// let mut dst = vec![];
-    /// caps.expand(b"year=$year, month=$month, day=$day", &mut dst);
-    /// assert_eq!(dst, b"year=2010, month=03, day=14");
+    /// let mut dst = String::new();
+    /// caps.expand("year=$year, month=$month, day=$day", &mut dst);
+    /// assert_eq!(dst, "year=2010, month=03, day=14");
     /// ```
     #[inline]
-    pub fn expand(&self, replacement: &[u8], dst: &mut Vec<u8>) {
-        self.caps.interpolate_bytes_into(self.haystack, replacement, dst);
+    pub fn expand(&self, replacement: &str, dst: &mut String) {
+        self.caps.interpolate_string_into(self.haystack, replacement, dst);
     }
 
     /// Returns an iterator over all capture groups. This includes both
@@ -1855,16 +1877,16 @@ impl<'h> Captures<'h> {
     /// # Example
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"(\w)(\d)?(\w)").unwrap();
-    /// let caps = re.captures(b"AZ").unwrap();
+    /// let caps = re.captures("AZ").unwrap();
     ///
     /// let mut it = caps.iter();
-    /// assert_eq!(it.next().unwrap().map(|m| m.as_bytes()), Some(&b"AZ"[..]));
-    /// assert_eq!(it.next().unwrap().map(|m| m.as_bytes()), Some(&b"A"[..]));
-    /// assert_eq!(it.next().unwrap().map(|m| m.as_bytes()), None);
-    /// assert_eq!(it.next().unwrap().map(|m| m.as_bytes()), Some(&b"Z"[..]));
+    /// assert_eq!(it.next().unwrap().map(|m| m.as_str()), Some("AZ"));
+    /// assert_eq!(it.next().unwrap().map(|m| m.as_str()), Some("A"));
+    /// assert_eq!(it.next().unwrap().map(|m| m.as_str()), None);
+    /// assert_eq!(it.next().unwrap().map(|m| m.as_str()), Some("Z"));
     /// assert_eq!(it.next(), None);
     /// ```
     #[inline]
@@ -1883,10 +1905,10 @@ impl<'h> Captures<'h> {
     /// # Example
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"(\w)(\d)?(\w)").unwrap();
-    /// let caps = re.captures(b"AZ").unwrap();
+    /// let caps = re.captures("AZ").unwrap();
     /// assert_eq!(caps.len(), 4);
     /// ```
     #[inline]
@@ -1940,14 +1962,12 @@ impl<'h> core::fmt::Debug for Captures<'h> {
 
         impl<'a> core::fmt::Debug for Value<'a> {
             fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-                use regex_automata::util::escape::DebugHaystack;
-
                 write!(
                     f,
                     "{}..{}/{:?}",
                     self.0.start(),
                     self.0.end(),
-                    DebugHaystack(self.0.as_bytes())
+                    self.0.as_str()
                 )
             }
         }
@@ -1973,13 +1993,13 @@ impl<'h> core::fmt::Debug for Captures<'h> {
 ///
 /// If there is no matching group at the given index.
 impl<'h> core::ops::Index<usize> for Captures<'h> {
-    type Output = [u8];
+    type Output = str;
 
     // The lifetime is written out to make it clear that the &str returned
     // does NOT have a lifetime equivalent to 'h.
-    fn index<'a>(&'a self, i: usize) -> &'a [u8] {
+    fn index<'a>(&'a self, i: usize) -> &'a str {
         self.get(i)
-            .map(|m| m.as_bytes())
+            .map(|m| m.as_str())
             .unwrap_or_else(|| panic!("no group at index '{}'", i))
     }
 }
@@ -2001,11 +2021,11 @@ impl<'h> core::ops::Index<usize> for Captures<'h> {
 ///
 /// If there is no matching group at the given name.
 impl<'h, 'n> core::ops::Index<&'n str> for Captures<'h> {
-    type Output = [u8];
+    type Output = str;
 
-    fn index<'a>(&'a self, name: &'n str) -> &'a [u8] {
+    fn index<'a>(&'a self, name: &'n str) -> &'a str {
         self.name(name)
-            .map(|m| m.as_bytes())
+            .map(|m| m.as_str())
             .unwrap_or_else(|| panic!("no group named '{}'", name))
     }
 }
@@ -2030,11 +2050,11 @@ impl<'h, 'n> core::ops::Index<&'n str> for Captures<'h> {
 /// This example shows how to create and use `CaptureLocations` in a search.
 ///
 /// ```
-/// use regex::bytes::Regex;
+/// use regex::Regex;
 ///
 /// let re = Regex::new(r"(?<first>\w+)\s+(?<last>\w+)").unwrap();
 /// let mut locs = re.capture_locations();
-/// let m = re.captures_read(&mut locs, b"Bruce Springsteen").unwrap();
+/// let m = re.captures_read(&mut locs, "Bruce Springsteen").unwrap();
 /// assert_eq!(0..17, m.range());
 /// assert_eq!(Some((0, 17)), locs.get(0));
 /// assert_eq!(Some((0, 5)), locs.get(1));
@@ -2067,11 +2087,11 @@ impl CaptureLocations {
     /// # Example
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"(?<first>\w+)\s+(?<last>\w+)").unwrap();
     /// let mut locs = re.capture_locations();
-    /// re.captures_read(&mut locs, b"Bruce Springsteen").unwrap();
+    /// re.captures_read(&mut locs, "Bruce Springsteen").unwrap();
     /// assert_eq!(Some((0, 17)), locs.get(0));
     /// assert_eq!(Some((0, 5)), locs.get(1));
     /// assert_eq!(Some((6, 17)), locs.get(2));
@@ -2090,19 +2110,19 @@ impl CaptureLocations {
     /// # Example
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"(?<first>\w+)\s+(?<last>\w+)").unwrap();
     /// let mut locs = re.capture_locations();
     /// assert_eq!(3, locs.len());
-    /// re.captures_read(&mut locs, b"Bruce Springsteen").unwrap();
+    /// re.captures_read(&mut locs, "Bruce Springsteen").unwrap();
     /// assert_eq!(3, locs.len());
     /// ```
     ///
     /// Notice that the length is always at least `1`, regardless of the regex:
     ///
     /// ```
-    /// use regex::bytes::Regex;
+    /// use regex::Regex;
     ///
     /// let re = Regex::new(r"").unwrap();
     /// let locs = re.capture_locations();
@@ -2150,7 +2170,7 @@ impl CaptureLocations {
 /// overall worst case time complexity for iteration is `O(m * n^2)`.
 #[derive(Debug)]
 pub struct Matches<'r, 'h> {
-    haystack: &'h [u8],
+    haystack: &'h str,
     it: meta::FindMatches<'r, 'h>,
 }
 
@@ -2194,7 +2214,7 @@ impl<'r, 'h> core::iter::FusedIterator for Matches<'r, 'h> {}
 /// overall worst case time complexity for iteration is `O(m * n^2)`.
 #[derive(Debug)]
 pub struct CaptureMatches<'r, 'h> {
-    haystack: &'h [u8],
+    haystack: &'h str,
     it: meta::CapturesMatches<'r, 'h>,
 }
 
@@ -2238,15 +2258,15 @@ impl<'r, 'h> core::iter::FusedIterator for CaptureMatches<'r, 'h> {}
 /// overall worst case time complexity for iteration is `O(m * n^2)`.
 #[derive(Debug)]
 pub struct Split<'r, 'h> {
-    haystack: &'h [u8],
+    haystack: &'h str,
     it: meta::Split<'r, 'h>,
 }
 
 impl<'r, 'h> Iterator for Split<'r, 'h> {
-    type Item = &'h [u8];
+    type Item = &'h str;
 
     #[inline]
-    fn next(&mut self) -> Option<&'h [u8]> {
+    fn next(&mut self) -> Option<&'h str> {
         self.it.next().map(|span| &self.haystack[span])
     }
 }
@@ -2273,15 +2293,15 @@ impl<'r, 'h> core::iter::FusedIterator for Split<'r, 'h> {}
 /// by the `limit` parameter to [`Regex::splitn`].
 #[derive(Debug)]
 pub struct SplitN<'r, 'h> {
-    haystack: &'h [u8],
+    haystack: &'h str,
     it: meta::SplitN<'r, 'h>,
 }
 
 impl<'r, 'h> Iterator for SplitN<'r, 'h> {
-    type Item = &'h [u8];
+    type Item = &'h str;
 
     #[inline]
-    fn next(&mut self) -> Option<&'h [u8]> {
+    fn next(&mut self) -> Option<&'h str> {
         self.it.next().map(|span| &self.haystack[span])
     }
 
@@ -2347,7 +2367,7 @@ impl<'r> core::iter::FusedIterator for CaptureNames<'r> {}
 /// matched haystack.
 #[derive(Clone, Debug)]
 pub struct SubCaptureMatches<'c, 'h> {
-    haystack: &'h [u8],
+    haystack: &'h str,
     it: captures::CapturesPatternIter<'c>,
 }
 
@@ -2379,54 +2399,53 @@ impl<'c, 'h> core::iter::FusedIterator for SubCaptureMatches<'c, 'h> {}
 /// A trait for types that can be used to replace matches in a haystack.
 ///
 /// In general, users of this crate shouldn't need to implement this trait,
-/// since implementations are already provided for `&[u8]` along with other
-/// variants of byte string types, as well as `FnMut(&Captures) -> Vec<u8>` (or
-/// any `FnMut(&Captures) -> T` where `T: AsRef<[u8]>`). Those cover most use
-/// cases, but callers can implement this trait directly if necessary.
+/// since implementations are already provided for `&str` along with other
+/// variants of string types, as well as `FnMut(&Captures) -> String` (or any
+/// `FnMut(&Captures) -> T` where `T: AsRef<str>`). Those cover most use cases,
+/// but callers can implement this trait directly if necessary.
 ///
 /// # Example
 ///
-/// This example shows a basic implementation of the `Replacer` trait. This can
-/// be done much more simply using the replacement byte string interpolation
+/// This example shows a basic implementation of  the `Replacer` trait. This
+/// can be done much more simply using the replacement string interpolation
 /// support (e.g., `$first $last`), but this approach avoids needing to parse
-/// the replacement byte string at all.
+/// the replacement string at all.
 ///
 /// ```
-/// use regex::bytes::{Captures, Regex, Replacer};
+/// use regex::{Captures, Regex, Replacer};
 ///
 /// struct NameSwapper;
 ///
 /// impl Replacer for NameSwapper {
-///     fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut Vec<u8>) {
-///         dst.extend_from_slice(&caps["first"]);
-///         dst.extend_from_slice(b" ");
-///         dst.extend_from_slice(&caps["last"]);
+///     fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut String) {
+///         dst.push_str(&caps["first"]);
+///         dst.push_str(" ");
+///         dst.push_str(&caps["last"]);
 ///     }
 /// }
 ///
 /// let re = Regex::new(r"(?<last>[^,\s]+),\s+(?<first>\S+)").unwrap();
-/// let result = re.replace(b"Springsteen, Bruce", NameSwapper);
-/// assert_eq!(result, &b"Bruce Springsteen"[..]);
+/// let result = re.replace("Springsteen, Bruce", NameSwapper);
+/// assert_eq!(result, "Bruce Springsteen");
 /// ```
 pub trait Replacer {
     /// Appends possibly empty data to `dst` to replace the current match.
     ///
-    /// The current match is represented by `caps`, which is guaranteed to have
-    /// a match at capture group `0`.
+    /// The current match is represented by `caps`, which is guaranteed to
+    /// have a match at capture group `0`.
     ///
-    /// For example, a no-op replacement would be
-    /// `dst.extend_from_slice(&caps[0])`.
-    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut Vec<u8>);
+    /// For example, a no-op replacement would be `dst.push_str(&caps[0])`.
+    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut String);
 
-    /// Return a fixed unchanging replacement byte string.
+    /// Return a fixed unchanging replacement string.
     ///
     /// When doing replacements, if access to [`Captures`] is not needed (e.g.,
-    /// the replacement byte string does not need `$` expansion), then it can
-    /// be beneficial to avoid finding sub-captures.
+    /// the replacement string does not need `$` expansion), then it can be
+    /// beneficial to avoid finding sub-captures.
     ///
     /// In general, this is called once for every call to a replacement routine
     /// such as [`Regex::replace_all`].
-    fn no_expansion<'r>(&'r mut self) -> Option<Cow<'r, [u8]>> {
+    fn no_expansion<'r>(&'r mut self) -> Option<Cow<'r, str>> {
         None
     }
 
@@ -2440,13 +2459,13 @@ pub trait Replacer {
     /// # Example
     ///
     /// ```
-    /// use regex::bytes::{Regex, Replacer};
+    /// use regex::{Regex, Replacer};
     ///
     /// fn replace_all_twice<R: Replacer>(
     ///     re: Regex,
-    ///     src: &[u8],
+    ///     src: &str,
     ///     mut rep: R,
-    /// ) -> Vec<u8> {
+    /// ) -> String {
     ///     let dst = re.replace_all(src, rep.by_ref());
     ///     let dst = re.replace_all(&dst, rep.by_ref());
     ///     dst.into_owned()
@@ -2457,72 +2476,52 @@ pub trait Replacer {
     }
 }
 
-impl<'a, const N: usize> Replacer for &'a [u8; N] {
-    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut Vec<u8>) {
-        caps.expand(&**self, dst);
-    }
-
-    fn no_expansion(&mut self) -> Option<Cow<'_, [u8]>> {
-        no_expansion(self)
-    }
-}
-
-impl<const N: usize> Replacer for [u8; N] {
-    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut Vec<u8>) {
-        caps.expand(&*self, dst);
-    }
-
-    fn no_expansion(&mut self) -> Option<Cow<'_, [u8]>> {
-        no_expansion(self)
-    }
-}
-
-impl<'a> Replacer for &'a [u8] {
-    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut Vec<u8>) {
+impl<'a> Replacer for &'a str {
+    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut String) {
         caps.expand(*self, dst);
     }
 
-    fn no_expansion(&mut self) -> Option<Cow<'_, [u8]>> {
+    fn no_expansion(&mut self) -> Option<Cow<'_, str>> {
         no_expansion(self)
     }
 }
 
-impl<'a> Replacer for &'a Vec<u8> {
-    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut Vec<u8>) {
-        caps.expand(*self, dst);
+impl<'a> Replacer for &'a String {
+    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut String) {
+        self.as_str().replace_append(caps, dst)
     }
 
-    fn no_expansion(&mut self) -> Option<Cow<'_, [u8]>> {
+    fn no_expansion(&mut self) -> Option<Cow<'_, str>> {
         no_expansion(self)
     }
 }
 
-impl Replacer for Vec<u8> {
-    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut Vec<u8>) {
-        caps.expand(self, dst);
+impl Replacer for String {
+    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut String) {
+        self.as_str().replace_append(caps, dst)
     }
 
-    fn no_expansion(&mut self) -> Option<Cow<'_, [u8]>> {
+    fn no_expansion(&mut self) -> Option<Cow<'_, str>> {
         no_expansion(self)
     }
 }
 
-impl<'a> Replacer for Cow<'a, [u8]> {
-    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut Vec<u8>) {
-        caps.expand(self.as_ref(), dst);
+impl<'a> Replacer for Cow<'a, str> {
+    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut String) {
+        self.as_ref().replace_append(caps, dst)
     }
 
-    fn no_expansion(&mut self) -> Option<Cow<'_, [u8]>> {
+    fn no_expansion(&mut self) -> Option<Cow<'_, str>> {
         no_expansion(self)
     }
 }
 
-impl<'a> Replacer for &'a Cow<'a, [u8]> {
-    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut Vec<u8>) {
-        caps.expand(self.as_ref(), dst);
+impl<'a> Replacer for &'a Cow<'a, str> {
+    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut String) {
+        self.as_ref().replace_append(caps, dst)
     }
 
-    fn no_expansion(&mut self) -> Option<Cow<'_, [u8]>> {
+    fn no_expansion(&mut self) -> Option<Cow<'_, str>> {
         no_expansion(self)
     }
 }
@@ -2530,10 +2529,10 @@ impl<'a> Replacer for &'a Cow<'a, [u8]> {
 impl<F, T> Replacer for F
 where
     F: FnMut(&Captures<'_>) -> T,
-    T: AsRef<[u8]>,
+    T: AsRef<str>,
 {
-    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut Vec<u8>) {
-        dst.extend_from_slice((*self)(caps).as_ref());
+    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut String) {
+        dst.push_str((*self)(caps).as_ref());
     }
 }
 
@@ -2547,11 +2546,11 @@ where
 pub struct ReplacerRef<'a, R: ?Sized>(&'a mut R);
 
 impl<'a, R: Replacer + ?Sized + 'a> Replacer for ReplacerRef<'a, R> {
-    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut Vec<u8>) {
+    fn replace_append(&mut self, caps: &Captures<'_>, dst: &mut String) {
         self.0.replace_append(caps, dst)
     }
 
-    fn no_expansion<'r>(&'r mut self) -> Option<Cow<'r, [u8]>> {
+    fn no_expansion(&mut self) -> Option<Cow<'_, str>> {
         self.0.no_expansion()
     }
 }
@@ -2569,21 +2568,21 @@ impl<'a, R: Replacer + ?Sized + 'a> Replacer for ReplacerRef<'a, R> {
 /// # Example
 ///
 /// ```
-/// use regex::bytes::{NoExpand, Regex};
+/// use regex::{NoExpand, Regex};
 ///
 /// let re = Regex::new(r"(?<last>[^,\s]+),\s+(\S+)").unwrap();
-/// let result = re.replace(b"Springsteen, Bruce", NoExpand(b"$2 $last"));
-/// assert_eq!(result, &b"$2 $last"[..]);
+/// let result = re.replace("Springsteen, Bruce", NoExpand("$2 $last"));
+/// assert_eq!(result, "$2 $last");
 /// ```
 #[derive(Clone, Debug)]
-pub struct NoExpand<'s>(pub &'s [u8]);
+pub struct NoExpand<'s>(pub &'s str);
 
 impl<'s> Replacer for NoExpand<'s> {
-    fn replace_append(&mut self, _: &Captures<'_>, dst: &mut Vec<u8>) {
-        dst.extend_from_slice(self.0);
+    fn replace_append(&mut self, _: &Captures<'_>, dst: &mut String) {
+        dst.push_str(self.0);
     }
 
-    fn no_expansion(&mut self) -> Option<Cow<'_, [u8]>> {
+    fn no_expansion(&mut self) -> Option<Cow<'_, str>> {
         Some(Cow::Borrowed(self.0))
     }
 }
@@ -2596,9 +2595,9 @@ impl<'s> Replacer for NoExpand<'s> {
 ///
 /// This is meant to be used to implement the `Replacer::no_expandsion` method
 /// in its various trait impls.
-fn no_expansion<T: AsRef<[u8]>>(replacement: &T) -> Option<Cow<'_, [u8]>> {
+fn no_expansion<T: AsRef<str>>(replacement: &T) -> Option<Cow<'_, str>> {
     let replacement = replacement.as_ref();
-    match crate::find_byte::find_byte(b'$', replacement) {
+    match crate::find_byte::find_byte(b'$', replacement.as_bytes()) {
         Some(_) => None,
         None => Some(Cow::Borrowed(replacement)),
     }

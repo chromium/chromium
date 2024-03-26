@@ -182,7 +182,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."regex-syntax:0.8.2"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."regex:1.10.3"]
+[policy."regex:1.10.4"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."rstest:0.17.0"]
