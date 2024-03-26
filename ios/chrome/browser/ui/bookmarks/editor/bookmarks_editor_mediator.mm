@@ -31,7 +31,8 @@
   raw_ptr<PrefService> _prefs;
 
   // Observer for the bookmark model of `self.bookmark`.
-  std::unique_ptr<BookmarkModelBridge> _bookmarkModelBridgeObserver;
+  std::unique_ptr<BookmarkModelBridge> _localOrSyncableBookmarkModelObserver;
+  std::unique_ptr<BookmarkModelBridge> _accountBookmarkModelBridgeObserver;
   std::unique_ptr<SyncObserverBridge> _syncObserverModelBridge;
   raw_ptr<ChromeBrowserState> _browserState;
   // Whether the user manually changed the folder. In which case it must be
@@ -77,13 +78,15 @@
     _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel->AsWeakPtr();
     if (accountBookmarkModel) {
       _accountBookmarkModel = accountBookmarkModel->AsWeakPtr();
+      _accountBookmarkModelBridgeObserver.reset(
+          new BookmarkModelBridge(self, _accountBookmarkModel.get()));
     }
     _bookmark = bookmarkNode;
     _folder = bookmarkNode->parent();
     _originalFolder = bookmarkNode->parent();
     _prefs = prefs;
-    _bookmarkModelBridgeObserver.reset(
-        new BookmarkModelBridge(self, self.bookmarkModel));
+    _localOrSyncableBookmarkModelObserver.reset(
+        new BookmarkModelBridge(self, _localOrSyncableBookmarkModel.get()));
     _syncService = syncService;
     _syncObserverModelBridge.reset(new SyncObserverBridge(self, syncService));
     _browserState = browserState;
@@ -98,7 +101,8 @@
   _bookmark = nullptr;
   _folder = nullptr;
   _prefs = nullptr;
-  _bookmarkModelBridgeObserver.reset();
+  _localOrSyncableBookmarkModelObserver.reset();
+  _accountBookmarkModelBridgeObserver.reset();
   _syncService = nullptr;
   _syncObserverModelBridge.reset();
   _browserState = nullptr;
@@ -207,14 +211,7 @@
     // This might happen when the user has changed `self.folder` but has not
     // commited the changes by pressing done. And in the background the chosen
     // folder was deleted.
-    if (model->mobile_node()) {
-      [self changeFolder:model->mobile_node()];
-    } else {
-      // When dealing with account bookmarks, it is possible that permanent
-      // folders no longer exist (e.g. the user signed out). In this case, fall
-      // back to the local model.
-      [self changeFolder:_localOrSyncableBookmarkModel->mobile_node()];
-    }
+    [self moveToDefaultFolderInModel:model];
   }
 }
 
@@ -226,10 +223,27 @@
 }
 
 - (void)bookmarkModelRemovedAllNodes:(LegacyBookmarkModel*)model {
-  CHECK(!self.ignoresBookmarkModelChanges);
-  _bookmark = nullptr;
-  self.folder = nullptr;
-  [self.delegate bookmarkEditorMediatorWantsDismissal:self];
+  // Nothing more to do.
+}
+
+- (void)bookmarkModelWillRemoveAllNodes:(const LegacyBookmarkModel*)model {
+  if (bookmark_utils_ios::GetBookmarkModelForNode(
+          self.bookmark, _localOrSyncableBookmarkModel.get(),
+          _accountBookmarkModel.get()) == model) {
+    // The current node is going to be deleted.
+    // Just close the view.
+    [self.delegate bookmarkEditorMediatorWantsDismissal:self];
+    return;
+  }
+  if (bookmark_utils_ios::GetBookmarkModelForNode(
+          _folder, _localOrSyncableBookmarkModel.get(),
+          _accountBookmarkModel.get()) == model) {
+    // The user selected a new parent that was deleted. That is, they wanted
+    // to move the folder to account model, and was signed-out. Let’s move it
+    // back to mobile_node of local or syncable model.
+    [self moveToDefaultFolderInModel:model];
+    [self updateFolderLabel];
+  }
 }
 
 #pragma mark - BookmarksEditorMutator
@@ -300,6 +314,19 @@
 }
 
 #pragma mark - Private
+
+// Change parent folder to a default folder. Either the one of model if it
+// exists, or the one of local or syncable.
+- (void)moveToDefaultFolderInModel:(const LegacyBookmarkModel*)model {
+  if (model->mobile_node()) {
+    [self changeFolder:model->mobile_node()];
+  } else {
+    // When dealing with account bookmarks, it is possible that permanent
+    // folders no longer exist (e.g. the user signed out). In this case, fall
+    // back to the local model.
+    [self changeFolder:_localOrSyncableBookmarkModel->mobile_node()];
+  }
+}
 
 // Tells the consumer to update the name of the bookmark’s folder.
 - (void)updateFolderLabel {
