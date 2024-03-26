@@ -596,7 +596,8 @@ bool Device::OpenDevice() {
   // we will just fail to open immediately.
   for (int i = 0; i < 10; ++i) {
     const auto path = kDecoderDevicePrefix + base::NumberToString(i);
-    device_fd_.reset(HANDLE_EINTR(open(path.c_str(), O_RDWR | O_CLOEXEC, 0)));
+    device_fd_.reset(
+        HANDLE_EINTR(open(path.c_str(), O_RDWR | O_NONBLOCK | O_CLOEXEC, 0)));
     if (!device_fd_.is_valid()) {
       LOG(ERROR) << "Failed to open media device: " << path;
       continue;
