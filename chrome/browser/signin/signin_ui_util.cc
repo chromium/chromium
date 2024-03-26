@@ -427,7 +427,7 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
       profile, access_point, existing_account_promo_action, account.account_id,
       signin_aborted_mode);
 #else
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED_NORETURN();
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

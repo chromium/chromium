@@ -1095,7 +1095,7 @@ void LoginDisplayHostWebUI::StartUserRecovery(const AccountId& account_id) {
 void LoginDisplayHostWebUI::UseAlternativeAuthentication(
     std::unique_ptr<UserContext> user_context,
     bool online_password_mismatch) {
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED_NORETURN();
 }
 
 void LoginDisplayHostWebUI::RunLocalAuthentication(

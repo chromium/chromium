@@ -499,7 +499,8 @@ void Canvas::DrawImageIntHelper(const ImageSkiaRep& image_rep,
   DLOG_ASSERT(src_x + src_w < std::numeric_limits<int16_t>::max() &&
               src_y + src_h < std::numeric_limits<int16_t>::max());
   if (src_w <= 0 || src_h <= 0) {
-    NOTREACHED() << "Attempting to draw bitmap from an empty rect!";
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "Attempting to draw bitmap from an empty rect!";
     return;
   }
 
