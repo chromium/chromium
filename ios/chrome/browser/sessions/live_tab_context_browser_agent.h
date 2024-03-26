@@ -16,6 +16,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 
+namespace base {
+class Uuid;
+}
+
 class WebStateList;
 
 // Implementation of sessions::LiveTabContext which uses a WebStateList
@@ -46,6 +50,8 @@ class LiveTabContextBrowserAgent
   std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const override;
   const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
+      const tab_groups::TabGroupId& group) const override;
+  const std::optional<base::Uuid> GetSavedTabGroupIdForGroup(
       const tab_groups::TabGroupId& group) const override;
   bool IsTabPinned(int index) const override;
   void SetVisualDataForGroup(

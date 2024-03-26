@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/browser_live_tab_context.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/token.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/browser_features.h"
@@ -23,12 +25,15 @@
 #include "chrome/browser/ui/browser_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/buildflags.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_platform_specific_tab_data.h"
 #include "components/sessions/core/session_types.h"
@@ -144,6 +149,27 @@ BrowserLiveTabContext::GetVisualDataForGroup(
       ->group_model()
       ->GetTabGroup(group)
       ->visual_data();
+}
+
+const std::optional<base::Uuid>
+BrowserLiveTabContext::GetSavedTabGroupIdForGroup(
+    const tab_groups::TabGroupId& group) const {
+  if (!base::FeatureList::IsEnabled(features::kTabGroupsSaveV2)) {
+    return std::nullopt;
+  }
+
+  Profile* profile = browser_->profile();
+  tab_groups::SavedTabGroupKeyedService* const service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile);
+
+  const tab_groups::SavedTabGroup* const saved_group =
+      service->model()->Get(group);
+
+  if (!saved_group) {
+    return std::nullopt;
+  }
+
+  return saved_group->saved_guid();
 }
 
 bool BrowserLiveTabContext::IsTabPinned(int index) const {

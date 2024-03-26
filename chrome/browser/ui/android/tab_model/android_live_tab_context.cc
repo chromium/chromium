@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
 
 #include <memory>
+#include <optional>
 
+#include "base/uuid.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
@@ -93,6 +95,14 @@ AndroidLiveTabContext::GetVisualDataForGroup(
   // be called.
   NOTREACHED();
   return nullptr;
+}
+
+const std::optional<base::Uuid>
+AndroidLiveTabContext::GetSavedTabGroupIdForGroup(
+    const tab_groups::TabGroupId& group) const {
+  // Not applicable to android... yet.
+  NOTREACHED();
+  return std::nullopt;
 }
 
 bool AndroidLiveTabContext::IsTabPinned(int index) const {

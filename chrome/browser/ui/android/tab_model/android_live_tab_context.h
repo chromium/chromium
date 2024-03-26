@@ -14,6 +14,10 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 
+namespace base {
+class Uuid;
+}
+
 namespace content {
 class WebContents;
 }
@@ -46,6 +50,8 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
   std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const override;
   const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
+      const tab_groups::TabGroupId& group) const override;
+  const std::optional<base::Uuid> GetSavedTabGroupIdForGroup(
       const tab_groups::TabGroupId& group) const override;
   bool IsTabPinned(int index) const override;
   void SetVisualDataForGroup(

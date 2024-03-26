@@ -18,6 +18,10 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 
+namespace base {
+class Uuid;
+}
+
 namespace gfx {
 class Rect;
 }
@@ -51,6 +55,8 @@ class SESSIONS_EXPORT LiveTabContext {
   // Should not be called for |group| unless GetTabGroupForTab() returned
   // |group|.
   virtual const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
+      const tab_groups::TabGroupId& group) const = 0;
+  virtual const std::optional<base::Uuid> GetSavedTabGroupIdForGroup(
       const tab_groups::TabGroupId& group) const = 0;
   virtual bool IsTabPinned(int index) const = 0;
   // Update |group|'s metadata. Should only be called for |group| if a tab has

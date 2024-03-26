@@ -10,6 +10,7 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/uuid.h"
 #import "components/sessions/core/session_types.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
@@ -95,6 +96,14 @@ LiveTabContextBrowserAgent::GetVisualDataForGroup(
 bool LiveTabContextBrowserAgent::IsTabPinned(int index) const {
   // Not supported by iOS.
   return false;
+}
+
+const std::optional<base::Uuid>
+LiveTabContextBrowserAgent::GetSavedTabGroupIdForGroup(
+    const tab_groups::TabGroupId& group) const {
+  // Not supported by iOS... yet.
+  NOTREACHED();
+  return std::nullopt;
 }
 
 void LiveTabContextBrowserAgent::SetVisualDataForGroup(

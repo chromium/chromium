@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_service.h"
@@ -105,6 +106,9 @@ class MockLiveTabContext : public sessions::LiveTabContext {
   MOCK_CONST_METHOD1(GetVisualDataForGroup,
                      const tab_groups::TabGroupVisualData*(
                          const tab_groups::TabGroupId& group));
+  MOCK_CONST_METHOD1(
+      GetSavedTabGroupIdForGroup,
+      const std::optional<base::Uuid>(const tab_groups::TabGroupId& group));
   MOCK_CONST_METHOD1(IsTabPinned, bool(int index));
   MOCK_METHOD2(SetVisualDataForGroup,
                void(const tab_groups::TabGroupId& group,
