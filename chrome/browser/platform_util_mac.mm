@@ -9,7 +9,6 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/command_line.h"
-#include "base/debug/crash_logging.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -89,14 +88,6 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
 void OpenExternal(const GURL& url) {
   DCHECK([NSThread isMainThread]);
   NSURL* ns_url = net::NSURLWithGURL(url);
-
-  // https://crbug.com/1504165
-  static auto* const crash_key_string = base::debug::AllocateCrashKeyString(
-      "platform_util_OpenExternal", base::debug::CrashKeySize::Size64);
-  NSUInteger length = [ns_url absoluteString].length;
-  NSString* lengthString = [NSString stringWithFormat:@"%lu", length];
-  base::debug::ScopedCrashKeyString crash_key(
-      crash_key_string, base::SysNSStringToUTF8(lengthString));
 
   if (!ns_url || ![[NSWorkspace sharedWorkspace] openURL:ns_url]) {
     LOG(WARNING) << "NSWorkspace failed to open URL " << url;
