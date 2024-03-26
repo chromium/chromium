@@ -2,24 +2,63 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/ios/form_util/form_activity_tab_helper.h"
+#import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 
 #import <Foundation/Foundation.h>
+#include <optional>
 
-#include "base/functional/bind.h"
-#include "base/logging.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/values.h"
+#import "base/functional/bind.h"
+#import "base/logging.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
 #import "components/autofill/ios/browser/autofill_util.h"
-#include "components/autofill/ios/form_util/form_activity_observer.h"
-#include "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/autofill/ios/form_util/form_activity_observer.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
-#include "ios/web/public/js_messaging/script_message.h"
-#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 
 using base::SysUTF8ToNSString;
+
+namespace {
+
+void RecordMetrics(const base::Value::Dict& message_body) {
+  const base::Value::Dict* metadata = message_body.FindDict("metadata");
+
+  if (!metadata) {
+    // Don't record metrics if no metadata because all the data for calculating
+    // the metrics is there.
+    return;
+  }
+
+  // Extract the essential data for metrics.
+  std::optional<double> drop_count = metadata->FindDouble("dropCount");
+  std::optional<double> batch_size = metadata->FindDouble("size");
+
+  // Don't record metrics if there is missing data.
+  if (!drop_count || !batch_size) {
+    return;
+  }
+
+  // Record the number of dropped form activities.
+  base::UmaHistogramCounts100("Autofill.iOS.FormActivity.DropCount",
+                              *drop_count);
+
+  // Record the number of messages sent in the batch.
+  base::UmaHistogramCounts100("Autofill.iOS.FormActivity.SendCount",
+                              *batch_size);
+
+  // Record the ratio of sent messages on total eligible messages.
+  if (const int denominator = *batch_size + *drop_count; denominator > 0) {
+    const int percentage = (100 * (*batch_size)) / denominator;
+    base::UmaHistogramPercentage("Autofill.iOS.FormActivity.SendRatio",
+                                 percentage);
+  }
+}
+}  // namespace
 
 namespace autofill {
 
@@ -53,6 +92,8 @@ void FormActivityTabHelper::OnFormMessageReceived(
     // Ignore invalid message.
     return;
   }
+
+  RecordMetrics(message.body()->GetDict());
 
   const std::string* command = message.body()->GetDict().FindString("command");
   if (!command) {

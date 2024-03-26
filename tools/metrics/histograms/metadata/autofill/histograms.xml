@@ -2610,6 +2610,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.iOS.FormActivity.SendRatio" units="%"
+    expires_after="2024-09-01">
+  <owner>vincb@google.com</owner>
+  <owner>eic@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the percentage of form activities that were really sent to the
+    browser from the renderer. Recorded when the browser receives the last
+    message of a batch of form activity messages. Only recorded on iOS.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.iOS.FormActivity.{Outcome}Count" units="count"
+    expires_after="2024-09-01">
+  <owner>vincb@google.com</owner>
+  <owner>eic@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the number of form activies observed in the renderer where
+    {Outcome}. Recorded when the browser receives the last message of a batch of
+    form activity messages. Only recorded on iOS.
+  </summary>
+  <token key="Outcome">
+    <variant name="Drop" summary="form activity was dropped"/>
+    <variant name="Send" summary="form activity sent to the browser"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.IsEnabled.PageLoad" enum="BooleanEnabled"
     expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
