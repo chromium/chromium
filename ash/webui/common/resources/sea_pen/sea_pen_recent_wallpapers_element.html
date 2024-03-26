@@ -109,14 +109,18 @@
     }
   }
 
+  #wallpaperInfoTitle {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-display-7-font);
+    padding: 32px 32px 16px;
+  }
+
   #wallpaperInfoBody {
     padding: 0 32px;
   }
 
-  #wallpaperInfoBody h2{
-    color: var(--cros-sys-on_surface);
-    font: var(--cros-display-7-font);
-    margin: 0 0 16px;
+  #wallpaperInfoBody:focus {
+    outline: none;
   }
 
   #wallpaperInfoBody p {
@@ -134,11 +138,12 @@
   }
 </style>
 <template is="dom-if" if="[[shouldShowRecentlyUsedWallpapers_(recentImages_)]]">
-  <h2 class="wallpaper-collections-heading">[[getRecentPoweredByGoogleMessage_()]]</h2>
+  <h2 id="recentImagesHeading" class="wallpaper-collections-heading">[[getRecentPoweredByGoogleMessage_()]]</h2>
   <iron-list id="grid"
       items="[[recentImagesToDisplay_]]"
       as="image"
       grid
+      aria-labelledby="recentImagesHeading"
       aria-setsize$="[[recentImagesToDisplay_.length]]"
       role="listbox">
     <template>
@@ -147,6 +152,7 @@
             class="sea-pen-image recent-used-image"
             index="[[index]]"
             data-sea-pen-image
+            aria-label$="[[getAriaLabel_(image, recentImageData_, recentImageDataLoading_)]]"
             aria-posinset$="[[getAriaIndex_(index)]]"
             on-wallpaper-grid-item-selected="onRecentImageSelected_"
             role="option"
@@ -156,14 +162,24 @@
         </wallpaper-grid-item>
         <div class="menu-icon-container">
           <div class="menu-icon-container-inner">
-            <cr-icon-button class="menu-icon-button" data-id$="[[index]]" iron-icon="cr:more-vert"
-              role="button" on-click="onClickMenuIcon_" tabindex$="[[tabIndex]]">
+            <cr-icon-button
+                class="menu-icon-button"
+                data-id$="[[index]]"
+                iron-icon="cr:more-vert"
+                aria-label$="[[i18n('seaPenRecentImageMenuButton')]]"
+                aria-description$="[[getAriaLabel_(image, recentImageData_, recentImageDataLoading_)]]"
+                role="button"
+                on-click="onClickMenuIcon_"
+                tabindex$="[[tabIndex]]">
             </cr-icon-button>
           </div>
           <div class="menu-icon-container-shadow-left"></div>
           <div class="menu-icon-container-shadow-top"></div>
         </div>
-        <cr-action-menu class="action-menu-container">
+        <cr-action-menu
+            class="action-menu-container"
+            accessibility-label="[[i18n('seaPenRecentImageMenuButton')]]"
+            role-description="[[i18n('seaPenMenuRoleDescription')]]">
           <button data-id$="[[index]]" class="dropdown-item more-like-this-option"
               on-click="onClickMoreLikeThis_">
             <iron-icon icon="cr:add"></iron-icon>
@@ -184,8 +200,8 @@
         </cr-action-menu>
         <template is="dom-if" if="[[shouldShowWallpaperInfoDialog_(index, currentShowWallpaperInfoDialog_)]]" restamp>
           <cr-dialog id="wallpaperInfoDialog" data-id$="[[index]]" on-close="onCloseDialog_" show-on-attach>
-            <div id="wallpaperInfoBody" slot="body">
-              <h2>[[i18n('seaPenAboutDialogTitle')]]</h2>
+            <div id="wallpaperInfoTitle" slot="title">[[i18n('seaPenAboutDialogTitle')]]</div>
+            <div id="wallpaperInfoBody" slot="body" tabindex="0">
               <p class="about-prompt-info">
                 [[getWallpaperInfoPromptMessage_(image, recentImageData_, recentImageDataLoading_)]]
               </p>

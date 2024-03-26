@@ -39,11 +39,12 @@
   }
 </style>
 <!-- TODO(b/308200616): Add real text -->
-<h2 class="wallpaper-collections-heading">[[i18n('seaPenTemplateHeading')]]</h2>
+<h2 id="templateHeading" class="wallpaper-collections-heading">[[i18n('seaPenTemplateHeading')]]</h2>
 <iron-list id="grid"
     items="[[seaPenTemplates_]]"
     as="template"
     grid
+    aria-labelledby="templateHeading"
     aria-setsize$="[[seaPenTemplates_.length]]"
     role="listbox">
   <template>

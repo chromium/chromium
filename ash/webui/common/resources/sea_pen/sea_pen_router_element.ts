@@ -190,6 +190,18 @@ export class SeaPenRouterElement extends WithSeaPenStore {
   private async onAcceptSeaPenTerms_() {
     await acceptSeaPenTermsOfService(getSeaPenProvider(), this.getStore());
   }
+
+  private onRecentImageDelete_() {
+    // focus on the first template if the deleted recent image is the only image
+    // or the last image of recent images list.
+    const seaPenTemplates =
+        this.shadowRoot!.querySelector<HTMLElement>('sea-pen-templates');
+    const firstTemplate =
+        seaPenTemplates!.shadowRoot!.querySelector<HTMLElement>(
+            '.sea-pen-template');
+    window.scrollTo(0, 0);
+    firstTemplate!.focus();
+  }
 }
 
 declare global {

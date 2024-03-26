@@ -50,6 +50,10 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
        IDS_SEA_PEN_WALLPAPER_TERMS_OF_SERVICE_DESC},
       {"seaPenCreatingHighResImage", IDS_SEA_PEN_CREATING_HIGH_RES_IMAGE},
       {"seaPenExpandOptionsButton", IDS_SEA_PEN_EXPAND_OPTIONS_BUTTON},
+      {"seaPenRecentImageMenuButton", IDS_SEA_PEN_RECENT_IMAGE_MENU_BUTTON},
+      {"seaPenMenuRoleDescription", IDS_SEA_PEN_MENU_ROLE_DESCRIPTION},
+
+      {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 }

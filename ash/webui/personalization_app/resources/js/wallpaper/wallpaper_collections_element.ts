@@ -751,6 +751,12 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
     return index + 1;
   }
 
+  private getSeaPenTileAriaLabel_(): string {
+    return `${this.i18n('seaPenLabel')}, ${
+        this.i18n(
+            'seaPenExperimentLabel')}, ${this.i18n('seaPenPoweredByGoogleAi')}`;
+  }
+
   private getOnlineTileSecondaryText_(item: Tile): string {
     assert(this.isOnlineTile_(item), 'item must be online tile');
     if (this.isTimeOfDayCollection_(item)) {

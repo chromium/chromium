@@ -167,12 +167,12 @@
             <wallpaper-grid-item
                 data-sea-pen
                 data-is-promoted-tile
+                aria-label$="[[getSeaPenTileAriaLabel_()]]"
                 aria-posinset$="[[getAriaIndex_(index)]]"
                 disabled="[[!isSelectableTile_(item)]]"
                 index="[[index]]"
                 on-wallpaper-grid-item-selected="onCollectionSelected_"
                 primary-text="$i18n{seaPenLabel}"
-                primary-text="[[item.name]]"
                 secondary-text="$i18n{seaPenPoweredByGoogleAi}"
                 role="option"
                 src="[[item.preview]]"

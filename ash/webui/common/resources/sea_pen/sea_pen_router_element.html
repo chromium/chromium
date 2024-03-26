@@ -102,7 +102,9 @@
   <div id="bottomInnerContainer">
     <template is="dom-if" if="[[shouldShowSeaPenRoot_(relativePath_)]]" restamp>
       <sea-pen-templates></sea-pen-templates>
-      <sea-pen-recent-wallpapers></sea-pen-recent-wallpapers>
+      <sea-pen-recent-wallpapers
+          on-sea-pen-recent-image-delete="onRecentImageDelete_">
+      </sea-pen-recent-wallpapers>
     </template>
     <template is="dom-if" if="[[shouldShowSeaPenImages_(relativePath_)]]" restamp>
       <sea-pen-images template-id="[[getTemplateIdFromQueryParams_(queryParams_.seaPenTemplateId)]]">
