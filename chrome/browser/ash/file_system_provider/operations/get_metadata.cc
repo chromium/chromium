@@ -199,6 +199,8 @@ bool GetMetadata::Execute(int request_id) {
       fields_ & ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL;
   options.cloud_identifier =
       fields_ & ProvidedFileSystemInterface::METADATA_FIELD_CLOUD_IDENTIFIER;
+  options.cloud_file_info =
+      fields_ & ProvidedFileSystemInterface::METADATA_FIELD_CLOUD_FILE_INFO;
 
   return SendEvent(
       request_id,
@@ -208,7 +210,7 @@ bool GetMetadata::Execute(int request_id) {
           options));
 }
 
-void GetMetadata::OnSuccess(int /* request_id */,
+void GetMetadata::OnSuccess(/*request_id=*/int,
                             const RequestValue& result,
                             bool has_more) {
   DCHECK(callback_);
@@ -226,8 +228,8 @@ void GetMetadata::OnSuccess(int /* request_id */,
   std::move(callback_).Run(std::move(metadata), base::File::FILE_OK);
 }
 
-void GetMetadata::OnError(int /* request_id */,
-                          const RequestValue& /* result */,
+void GetMetadata::OnError(/*request_id=*/int,
+                          /*result=*/const RequestValue&,
                           base::File::Error error) {
   DCHECK(callback_);
   std::move(callback_).Run(nullptr, error);
