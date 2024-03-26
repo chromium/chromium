@@ -15,7 +15,11 @@ class SecureChannelTetherAvailabilityOperationOrchestrator
  public:
   class Factory : public TetherAvailabilityOperationOrchestrator::Factory {
    public:
-    explicit Factory(raw_ptr<TetherHostFetcher> tether_host_fetcher);
+    Factory(raw_ptr<TetherHostFetcher> tether_host_fetcher,
+            raw_ptr<device_sync::DeviceSyncClient> device_sync_client,
+            raw_ptr<secure_channel::SecureChannelClient> secure_channel_client,
+            raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder,
+            raw_ptr<ConnectionPreserver> connection_preserver);
 
     ~Factory() override;
 
@@ -24,10 +28,16 @@ class SecureChannelTetherAvailabilityOperationOrchestrator
         override;
 
    private:
+    raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
+    raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
+    raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder_;
+    raw_ptr<ConnectionPreserver> connection_preserver_;
     raw_ptr<TetherHostFetcher> tether_host_fetcher_;
   };
 
-  explicit SecureChannelTetherAvailabilityOperationOrchestrator(
+  SecureChannelTetherAvailabilityOperationOrchestrator(
+      std::unique_ptr<TetherAvailabilityOperation::Initializer>
+          tether_availability_operation_initializer,
       raw_ptr<TetherHostFetcher> tether_host_fetcher);
   ~SecureChannelTetherAvailabilityOperationOrchestrator() override;
   SecureChannelTetherAvailabilityOperationOrchestrator(
@@ -48,6 +58,7 @@ class SecureChannelTetherAvailabilityOperationOrchestrator
 
   raw_ptr<TetherHostFetcher> tether_host_fetcher_;
   multidevice::RemoteDeviceRefList fetched_tether_hosts_;
+  bool is_fetching_hosts_ = false;
 
   base::WeakPtrFactory<SecureChannelTetherAvailabilityOperationOrchestrator>
       weak_ptr_factory_{this};

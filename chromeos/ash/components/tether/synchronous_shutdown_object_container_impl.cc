@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/tether/network_list_sorter.h"
 #include "chromeos/ash/components/tether/notification_remover.h"
 #include "chromeos/ash/components/tether/persistent_host_scan_cache_impl.h"
+#include "chromeos/ash/components/tether/secure_channel_tether_availability_operation_orchestrator.h"
 #include "chromeos/ash/components/tether/tether_connector_impl.h"
 #include "chromeos/ash/components/tether/tether_disconnector_impl.h"
 #include "chromeos/ash/components/tether/tether_host_response_recorder.h"
@@ -143,18 +144,19 @@ SynchronousShutdownObjectContainerImpl::SynchronousShutdownObjectContainerImpl(
           active_host_.get(),
           tether_host_response_recorder_.get())),
       host_scanner_(std::make_unique<HostScannerImpl>(
-          device_sync_client,
-          secure_channel_client,
+          std::make_unique<
+              SecureChannelTetherAvailabilityOperationOrchestrator::Factory>(
+              asychronous_container->tether_host_fetcher(),
+              device_sync_client,
+              secure_channel_client,
+              tether_host_response_recorder_.get(),
+              connection_preserver_.get()),
           network_state_handler_,
           session_manager,
-          asychronous_container->tether_host_fetcher(),
-          host_scan_device_prioritizer_.get(),
-          tether_host_response_recorder_.get(),
           gms_core_notifications_state_tracker,
           notification_presenter,
           device_id_tether_network_guid_map_.get(),
           top_level_host_scan_cache_.get(),
-          connection_preserver_.get(),
           base::DefaultClock::GetInstance())),
       host_scan_scheduler_(
           std::make_unique<HostScanSchedulerImpl>(network_state_handler_,

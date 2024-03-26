@@ -11,7 +11,7 @@
 
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/tether/gms_core_notifications_state_tracker.h"
-#include "chromeos/ash/components/tether/tether_availability_operation.h"
+#include "chromeos/ash/components/tether/tether_availability_operation_orchestrator.h"
 
 namespace ash {
 
@@ -20,7 +20,7 @@ namespace tether {
 // Concrete GmsCoreNotificationsStateTracker implementation.
 class GmsCoreNotificationsStateTrackerImpl
     : public GmsCoreNotificationsStateTracker,
-      public TetherAvailabilityOperation::Observer {
+      public TetherAvailabilityOperationOrchestrator::Observer {
  public:
   GmsCoreNotificationsStateTrackerImpl();
 
@@ -36,7 +36,7 @@ class GmsCoreNotificationsStateTrackerImpl
       override;
 
  protected:
-  // TetherAvailabilityOperation::Observer:
+  // TetherAvailabilityOperationOrchestrator::Observer:
   void OnTetherAvailabilityResponse(
       const std::vector<ScannedDeviceInfo>& scanned_device_list_so_far,
       const multidevice::RemoteDeviceRefList&
