@@ -610,6 +610,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sSafeBrowsingCallNewGmsApiOnStartup =
             newCachedFlag(SAFE_BROWSING_CALL_NEW_GMS_API_ON_STARTUP, false);
     public static final CachedFlag sSearchEngineChoice = newCachedFlag(SEARCH_ENGINE_CHOICE, false);
+    public static final CachedFlag sSearchInCCT = newCachedFlag(SEARCH_IN_CCT, false);
     public static final CachedFlag sShowNtpAtStartupAndroid =
             newCachedFlag(SHOW_NTP_AT_STARTUP_ANDROID, true);
     public static final CachedFlag sSmallerTabStripTitleLimit =
@@ -725,6 +726,7 @@ public abstract class ChromeFeatureList {
                     sRedirectExplicitCTAIntentsToExistingActivity,
                     sSafeBrowsingCallNewGmsApiOnStartup,
                     sSearchEngineChoice,
+                    sSearchInCCT,
                     sShowNtpAtStartupAndroid,
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceAndroid,
@@ -799,8 +801,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
     public static final MutableFlagWithSafeDefault sSafetyHub =
             newMutableFlagWithSafeDefault(SAFETY_HUB, false);
-    public static final MutableFlagWithSafeDefault sSearchInCCT =
-            newMutableFlagWithSafeDefault(SEARCH_IN_CCT, false);
     public static final MutableFlagWithSafeDefault sSearchReadyOmniboxAllowQueryEdit =
             newMutableFlagWithSafeDefault(SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT, false);
     public static final MutableFlagWithSafeDefault sSuppressionToolbarCaptures =
