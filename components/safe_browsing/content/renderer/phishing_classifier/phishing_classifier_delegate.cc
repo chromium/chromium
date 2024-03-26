@@ -307,6 +307,7 @@ void PhishingClassifierDelegate::OnRetryTimeout() {
   }
 
   is_phishing_detection_running_ = false;
+  awaiting_retry_ = false;
   if (!callback_.is_null()) {
     std::move(callback_).Run(
         mojom::PhishingDetectorResult::CLASSIFIER_NOT_READY, "");
