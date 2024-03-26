@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file contains Mojo structs representing nullable primitives - since Mojo
-// doesn't support these natively, when we want a primitive parameter or return
-// value to be optional, we need to wrap it in a nullable struct.
-// TODO(crbug/657632): Remove this file if Mojo adds support for nullable
-// primitives.
+// This file contains Mojo structs representing nullable primitives - Mojo
+// didn't support these natively in the past.
+//
+// DEPRECATED: nullable primitive types are supported natively now. See
+// b/40489779.
 
 // NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
 // in src/plaform2/diagnostics/mojom/public/nullable_primitives.mojom.
@@ -14,6 +14,7 @@
 module ash.cros_healthd.mojom;
 
 // Optional uint8 field.
+// Deprecated: Use uint8? instead.
 [Stable]
 struct NullableUint8 {
   // The value of the uint8.
@@ -21,6 +22,7 @@ struct NullableUint8 {
 };
 
 // Optional int16 field.
+// Deprecated: Use int16? instead.
 [Stable]
 struct NullableInt16 {
   // The value of the int16.
@@ -28,6 +30,7 @@ struct NullableInt16 {
 };
 
 // Optional uint16 field.
+// Deprecated: Use uint16? instead.
 [Stable]
 struct NullableUint16 {
   // The value of the uint16.
@@ -35,6 +38,7 @@ struct NullableUint16 {
 };
 
 // Optional uint32 field.
+// Deprecated: Use uint32? instead.
 [Stable]
 struct NullableUint32 {
   // The value of the uint32.
@@ -42,6 +46,7 @@ struct NullableUint32 {
 };
 
 // Optional uint64 field.
+// Deprecated: Use uint64? instead.
 [Stable]
 struct NullableUint64 {
   // The value of the uint64.
@@ -49,6 +54,7 @@ struct NullableUint64 {
 };
 
 // Optional double field.
+// Deprecated: Use double? instead.
 [Stable]
 struct NullableDouble {
   // The value of the double.
