@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.56"
 name = "syn"
-version = "2.0.53"
+version = "2.0.55"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 include = [
     "/benches/**",
@@ -105,7 +105,7 @@ version = "1"
 version = "1"
 
 [dev-dependencies.reqwest]
-version = "0.11"
+version = "0.12"
 features = ["blocking"]
 
 [dev-dependencies.rustversion]

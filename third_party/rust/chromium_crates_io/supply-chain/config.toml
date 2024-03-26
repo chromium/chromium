@@ -248,7 +248,7 @@ criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 [policy."syn:1.0.109"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."syn:2.0.53"]
+[policy."syn:2.0.55"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
 [policy."termcolor:1.4.1"]

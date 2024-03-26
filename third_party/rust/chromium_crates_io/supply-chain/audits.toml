@@ -1054,6 +1054,12 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "2.0.52 -> 2.0.53"
 
+[[audits.syn]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.0.53 -> 2.0.55"
+notes = "Mostly clippy, test changes - no changed unsafe."
+
 [[audits.termcolor]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

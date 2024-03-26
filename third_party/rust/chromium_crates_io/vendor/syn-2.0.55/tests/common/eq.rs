@@ -100,6 +100,7 @@ use rustc_ast::ast::MacCall;
 use rustc_ast::ast::MacCallStmt;
 use rustc_ast::ast::MacStmtStyle;
 use rustc_ast::ast::MacroDef;
+use rustc_ast::ast::MatchKind;
 use rustc_ast::ast::MetaItemLit;
 use rustc_ast::ast::MethodCall;
 use rustc_ast::ast::ModKind;
@@ -577,6 +578,7 @@ spanless_eq_enum!(LitFloatType; Suffixed(0) Unsuffixed);
 spanless_eq_enum!(LitIntType; Signed(0) Unsigned(0) Unsuffixed);
 spanless_eq_enum!(LocalKind; Decl Init(0) InitElse(0 1));
 spanless_eq_enum!(MacStmtStyle; Semicolon Braces NoBraces);
+spanless_eq_enum!(MatchKind; Prefix Postfix);
 spanless_eq_enum!(ModKind; Loaded(0 1 2) Unloaded);
 spanless_eq_enum!(Movability; Static Movable);
 spanless_eq_enum!(Mutability; Mut Not);
@@ -603,7 +605,7 @@ spanless_eq_enum!(CoroutineKind; Async(span closure_id return_impl_trait_id)
 spanless_eq_enum!(ExprKind; Array(0) ConstBlock(0) Call(0 1) MethodCall(0)
     Tup(0) Binary(0 1 2) Unary(0 1) Lit(0) Cast(0 1) Type(0 1) Let(0 1 2 3)
     If(0 1 2) While(0 1 2) ForLoop(pat iter body label kind) Loop(0 1 2)
-    Match(0 1) Closure(0) Block(0 1) Gen(0 1 2) Await(0 1) TryBlock(0)
+    Match(0 1 2) Closure(0) Block(0 1) Gen(0 1 2) Await(0 1) TryBlock(0)
     Assign(0 1 2) AssignOp(0 1 2) Field(0 1) Index(0 1 2) Underscore
     Range(0 1 2) Path(0 1) AddrOf(0 1 2) Break(0 1) Continue(0) Ret(0)
     InlineAsm(0) OffsetOf(0 1) MacCall(0) Struct(0) Repeat(0 1) Paren(0) Try(0)
@@ -618,8 +620,8 @@ spanless_eq_enum!(ItemKind; ExternCrate(0) Use(0) Static(0) Const(0) Fn(0)
 spanless_eq_enum!(LitKind; Str(0 1) ByteStr(0 1) CStr(0 1) Byte(0) Char(0)
     Int(0 1) Float(0 1) Bool(0) Err(0));
 spanless_eq_enum!(PatKind; Wild Ident(0 1 2) Struct(0 1 2 3) TupleStruct(0 1 2)
-    Or(0) Path(0 1) Tuple(0) Box(0) Ref(0 1) Lit(0) Range(0 1 2) Slice(0) Rest
-    Never Paren(0) MacCall(0) Err(0));
+    Or(0) Path(0 1) Tuple(0) Box(0) Deref(0) Ref(0 1) Lit(0) Range(0 1 2)
+    Slice(0) Rest Never Paren(0) MacCall(0) Err(0));
 spanless_eq_enum!(TyKind; Slice(0) Array(0 1) Ptr(0) Ref(0 1) BareFn(0) Never
     Tup(0) AnonStruct(0 1) AnonUnion(0 1) Path(0 1) TraitObject(0 1)
     ImplTrait(0 1) Paren(0) Typeof(0) Infer ImplicitSelf MacCall(0) CVarArgs

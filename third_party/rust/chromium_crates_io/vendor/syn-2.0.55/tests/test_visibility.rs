@@ -4,6 +4,7 @@
 mod macros;
 
 use proc_macro2::{Delimiter, Group, Ident, Punct, Spacing, Span, TokenStream, TokenTree};
+use quote::quote;
 use syn::parse::{Parse, ParseStream};
 use syn::{DeriveInput, Result, Visibility};
 
@@ -100,7 +101,7 @@ fn test_junk_after_in() {
 }
 
 #[test]
-fn test_empty_group_vis() {
+fn test_inherited_vis_named_field() {
     // mimics `struct S { $vis $field: () }` where $vis is empty
     let tokens = TokenStream::from_iter(vec![
         TokenTree::Ident(Ident::new("struct", Span::call_site())),
@@ -109,13 +110,7 @@ fn test_empty_group_vis() {
             Delimiter::Brace,
             TokenStream::from_iter(vec![
                 TokenTree::Group(Group::new(Delimiter::None, TokenStream::new())),
-                TokenTree::Group(Group::new(
-                    Delimiter::None,
-                    TokenStream::from_iter(vec![TokenTree::Ident(Ident::new(
-                        "f",
-                        Span::call_site(),
-                    ))]),
-                )),
+                TokenTree::Group(Group::new(Delimiter::None, quote!(f))),
                 TokenTree::Punct(Punct::new(':', Spacing::Alone)),
                 TokenTree::Group(Group::new(Delimiter::Parenthesis, TokenStream::new())),
             ]),
@@ -138,6 +133,52 @@ fn test_empty_group_vis() {
                     },
                 ],
             },
+        },
+    }
+    "###);
+}
+
+#[test]
+fn test_inherited_vis_unnamed_field() {
+    // mimics `struct S($vis $ty);` where $vis is empty
+    let tokens = TokenStream::from_iter(vec![
+        TokenTree::Ident(Ident::new("struct", Span::call_site())),
+        TokenTree::Ident(Ident::new("S", Span::call_site())),
+        TokenTree::Group(Group::new(
+            Delimiter::Parenthesis,
+            TokenStream::from_iter(vec![
+                TokenTree::Group(Group::new(Delimiter::None, TokenStream::new())),
+                TokenTree::Group(Group::new(Delimiter::None, quote!(str))),
+            ]),
+        )),
+        TokenTree::Punct(Punct::new(';', Spacing::Alone)),
+    ]);
+
+    snapshot!(tokens as DeriveInput, @r###"
+    DeriveInput {
+        vis: Visibility::Inherited,
+        ident: "S",
+        generics: Generics,
+        data: Data::Struct {
+            fields: Fields::Unnamed {
+                unnamed: [
+                    Field {
+                        vis: Visibility::Inherited,
+                        ty: Type::Group {
+                            elem: Type::Path {
+                                path: Path {
+                                    segments: [
+                                        PathSegment {
+                                            ident: "str",
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+            semi_token: Some,
         },
     }
     "###);

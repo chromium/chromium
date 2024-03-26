@@ -91,6 +91,7 @@ macro_rules! custom_keyword {
     ($ident:ident) => {
         #[allow(non_camel_case_types)]
         pub struct $ident {
+            #[allow(dead_code)]
             pub span: $crate::__private::Span,
         }
 
