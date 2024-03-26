@@ -228,7 +228,7 @@ std::optional<base::trace_event::TraceConfig> GetChromeTraceConfig(
         return std::nullopt;
       }
       for (const auto& cat : track_event_config.enabled_categories()) {
-        if (cat == "__metadata") {
+        if (cat == "__metadata" || cat == "*") {
           continue;
         }
         base::StringAppendF(&category_filter_string, "%s,", cat.c_str());

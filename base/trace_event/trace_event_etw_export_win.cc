@@ -509,7 +509,9 @@ perfetto::protos::gen::TrackEventConfig ETWKeywordToTrackEventConfig(
   bool other_events_enabled = (keyword & (1ULL << kOtherEventsGroupNameIndex));
   bool disabled_other_events_enables =
       (keyword & (1ULL << kDisabledOtherEventsGroupNameIndex));
-  if (!other_events_enabled) {
+  if (other_events_enabled) {
+    track_event_config.add_enabled_categories("*");
+  } else {
     track_event_config.add_disabled_categories("*");
   }
   if (!disabled_other_events_enables) {

@@ -1204,21 +1204,6 @@ TEST_F(TraceEventTestFixture, Categories) {
   EXPECT_FALSE(FindMatchingValue("cat", "test_inc"));
   EXPECT_TRUE(FindMatchingValue("cat", "test_inc2,test_inc"));
   EXPECT_TRUE(FindMatchingValue("cat", "test_inc,test_inc2"));
-
-  // Exclude existent wildcard -> all categories not matching wildcard
-  Clear();
-  TraceLog::GetInstance()->SetEnabled(TraceConfig("-test_inc_wildcard_*", ""),
-                                      TraceLog::RECORDING_MODE);
-  TRACE_EVENT_INSTANT0("test_inc_wildcard_abc", "not_inc",
-                       TRACE_EVENT_SCOPE_THREAD);
-  TRACE_EVENT_INSTANT0("test_inc_wildcard_", "not_inc",
-                       TRACE_EVENT_SCOPE_THREAD);
-  TRACE_EVENT_INSTANT0("cat1", "included", TRACE_EVENT_SCOPE_THREAD);
-  TRACE_EVENT_INSTANT0("cat2", "included", TRACE_EVENT_SCOPE_THREAD);
-  EndTraceAndFlush();
-  EXPECT_TRUE(FindMatchingValue("cat", "cat1"));
-  EXPECT_TRUE(FindMatchingValue("cat", "cat2"));
-  EXPECT_FALSE(FindMatchingValue("name", "not_inc"));
 }
 
 

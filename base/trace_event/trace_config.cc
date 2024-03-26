@@ -10,6 +10,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -785,10 +786,17 @@ std::string TraceConfig::ToTraceOptionsString() const {
 std::string TraceConfig::ToPerfettoTrackEventConfigRaw(
     bool privacy_filtering_enabled) const {
   perfetto::protos::gen::TrackEventConfig te_cfg;
-  // If no categories are explicitly enabled, enable the default ones.
-  // Otherwise only matching categories are enabled.
-  if (!category_filter_.included_categories().empty())
-    te_cfg.add_disabled_categories("*");
+  if (!base::Contains(category_filter_.excluded_categories(), "*") &&
+      !base::Contains(category_filter_.included_categories(), "*")) {
+    // In the case when the default behavior is not specified, apply the
+    // following rule: if no categories are explicitly enabled, enable the
+    // default ones; otherwise only enable matching categories.
+    if (category_filter_.included_categories().empty()) {
+      te_cfg.add_enabled_categories("*");
+    } else {
+      te_cfg.add_disabled_categories("*");
+    }
+  }
   for (const auto& excluded : category_filter_.excluded_categories()) {
     te_cfg.add_disabled_categories(excluded);
   }

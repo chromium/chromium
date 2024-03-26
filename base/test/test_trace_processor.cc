@@ -79,7 +79,9 @@ TraceConfig DefaultTraceConfig(std::string_view category_filter_string,
 
   // If no categories are explicitly enabled, enable the default ones.
   // Otherwise only matching categories are enabled.
-  if (!category_filter.included_categories().empty()) {
+  if (category_filter.included_categories().empty()) {
+    track_event_config.add_enabled_categories("*");
+  } else {
     track_event_config.add_disabled_categories("*");
   }
   for (const auto& included_category : category_filter.included_categories()) {

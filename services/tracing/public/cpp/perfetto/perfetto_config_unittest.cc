@@ -123,7 +123,7 @@ TEST_F(AdaptPerfettoConfigForChromeTest, DisabledCategories) {
       config: {
         name: "track_event"
         track_event_config: {
-          enabled_categories: [ "__metadata" ]
+          enabled_categories: [ "*", "__metadata" ]
           disabled_categories: [ "bar" ]
         }
       }
