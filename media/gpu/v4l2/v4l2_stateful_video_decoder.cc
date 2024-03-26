@@ -912,7 +912,14 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
         VLOGF(3) << "Failed to resume decoding after flush";
         // TODO(mcasas): Handle this error.
       }
-      if (flush_cb_) {
+      // In some cases we still have enqueued work in |OUTPUT_queue_| after
+      // seeing the LAST buffer. This happens at least when there's a pending
+      // resolution change (see vp80-03-segmentation-1436.ivf), that according
+      // to [1] must be processed first.
+      // [1] https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/dev-decoder.html#drain
+      const bool has_pending_OUTPUT_queue_work =
+          OUTPUT_queue_->QueuedBuffersCount();
+      if (flush_cb_ && !has_pending_OUTPUT_queue_work) {
         std::move(flush_cb_).Run(DecoderStatus::Codes::kOk);
       }
       return;
