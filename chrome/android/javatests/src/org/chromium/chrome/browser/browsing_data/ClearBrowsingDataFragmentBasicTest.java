@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -26,7 +27,6 @@ import org.mockito.Mockito;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -118,6 +118,11 @@ public class ClearBrowsingDataFragmentBasicTest {
                 });
     }
 
+    private void waitForCacheCounter() {
+        // The cache counter is populated asynchronusly.
+        ViewUtils.waitForVisibleView(withText(containsString("Frees up")));
+    }
+
     @Test
     @LargeTest
     public void testSignOutLinkNotOfferedToSupervisedAccounts() {
@@ -145,6 +150,7 @@ public class ClearBrowsingDataFragmentBasicTest {
                         .getActivity()
                         .findViewById(android.R.id.content)
                         .getRootView();
+        waitForCacheCounter();
         mRenderTestRule.render(view, "clear_browsing_data_basic_signed_in_sync");
     }
 
@@ -159,6 +165,7 @@ public class ClearBrowsingDataFragmentBasicTest {
                         .getActivity()
                         .findViewById(android.R.id.content)
                         .getRootView();
+        waitForCacheCounter();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_google_signed_out");
     }
 
@@ -175,6 +182,7 @@ public class ClearBrowsingDataFragmentBasicTest {
                         .getActivity()
                         .findViewById(android.R.id.content)
                         .getRootView();
+        waitForCacheCounter();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_google_signed_in");
     }
 
@@ -195,13 +203,13 @@ public class ClearBrowsingDataFragmentBasicTest {
                         .getActivity()
                         .findViewById(android.R.id.content)
                         .getRootView();
+        waitForCacheCounter();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_known_signed_in");
     }
 
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1446398#c8")
     public void testRenderSearchHistoryLinkSignedInUnknownNonGoogleDSE() throws IOException {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         setSyncable(false);
@@ -216,7 +224,7 @@ public class ClearBrowsingDataFragmentBasicTest {
                         .getActivity()
                         .findViewById(android.R.id.content)
                         .getRootView();
-        ViewUtils.waitForVisibleView(withText("Frees up"));
+        waitForCacheCounter();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_unknown_signed_in");
     }
 
@@ -235,13 +243,13 @@ public class ClearBrowsingDataFragmentBasicTest {
                         .getActivity()
                         .findViewById(android.R.id.content)
                         .getRootView();
+        waitForCacheCounter();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_known_signed_out");
     }
 
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "Flaky because the rendered page doesn't always finish loading ")
     public void testRenderSearchHistoryLinkSignedOutUnknownNonGoogleDSE() throws IOException {
         configureMockSearchEngine();
         Mockito.doReturn(false).when(mMockTemplateUrlService).isDefaultSearchEngineGoogle();
@@ -254,6 +262,7 @@ public class ClearBrowsingDataFragmentBasicTest {
                         .getActivity()
                         .findViewById(android.R.id.content)
                         .getRootView();
+        waitForCacheCounter();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_unknown_signed_out");
     }
 }
