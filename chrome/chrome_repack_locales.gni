@@ -70,6 +70,10 @@ template("chrome_repack_locales") {
       source_patterns +=
           [ "${root_gen_dir}/ui/chromeos/strings/ui_chromeos_strings_" ]
       deps += [ "//ui/chromeos/strings" ]
+      if (is_chrome_branded) {
+        source_patterns += [ "${root_gen_dir}/chrome/app/theme/google_chrome/chromeos/strings/chromeos_chrome_internal_strings_" ]
+        deps += [ "//chrome/app/theme/google_chrome/chromeos/strings" ]
+      }
     }
     if (is_chromeos_ash) {
       source_patterns += [

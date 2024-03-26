@@ -80,6 +80,9 @@
     "META": {"join": 5},
     "includes": [2120],
   },
+  "chrome/app/theme/google_chrome/chromeos/chromeos_chrome_internal_strings.grd": {
+    "messages": [2130],
+  },
 
   # Leave space for theme_resources since it has many structures.
   "chrome/app/theme/theme_resources.grd": {
