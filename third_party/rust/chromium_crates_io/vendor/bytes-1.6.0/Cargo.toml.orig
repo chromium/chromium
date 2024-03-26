@@ -4,7 +4,9 @@ name = "bytes"
 # When releasing to crates.io:
 # - Update CHANGELOG.md.
 # - Create "v1.x.y" git tag.
-version = "1.5.0"
+version = "1.6.0"
+edition = "2018"
+rust-version = "1.39"
 license = "MIT"
 authors = [
     "Carl Lerche <me@carllerche.com>",
@@ -15,7 +17,6 @@ repository = "https://github.com/tokio-rs/bytes"
 readme = "README.md"
 keywords = ["buffers", "zero-copy", "io"]
 categories = ["network-programming", "data-structures"]
-edition = "2018"
 
 [features]
 default = ["std"]
@@ -28,7 +29,7 @@ serde = { version = "1.0.60", optional = true, default-features = false, feature
 serde_test = "1.0"
 
 [target.'cfg(loom)'.dev-dependencies]
-loom = "0.5"
+loom = "0.7"
 
 [package.metadata.docs.rs]
 rustdoc-args = ["--cfg", "docsrs"]

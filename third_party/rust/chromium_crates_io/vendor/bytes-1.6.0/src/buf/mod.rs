@@ -13,8 +13,6 @@
 //! See [`Buf`] and [`BufMut`] for more details.
 //!
 //! [rope]: https://en.wikipedia.org/wiki/Rope_(data_structure)
-//! [`Buf`]: trait.Buf.html
-//! [`BufMut`]: trait.BufMut.html
 
 mod buf_impl;
 mod buf_mut;

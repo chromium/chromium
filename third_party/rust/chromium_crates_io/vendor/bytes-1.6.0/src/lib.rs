@@ -9,11 +9,8 @@
 //! Provides abstractions for working with bytes.
 //!
 //! The `bytes` crate provides an efficient byte buffer structure
-//! ([`Bytes`](struct.Bytes.html)) and traits for working with buffer
+//! ([`Bytes`]) and traits for working with buffer
 //! implementations ([`Buf`], [`BufMut`]).
-//!
-//! [`Buf`]: trait.Buf.html
-//! [`BufMut`]: trait.BufMut.html
 //!
 //! # `Bytes`
 //!
@@ -52,9 +49,7 @@
 //! `a` and `b` will share the underlying buffer and maintain indices tracking
 //! the view into the buffer represented by the handle.
 //!
-//! See the [struct docs] for more details.
-//!
-//! [struct docs]: struct.Bytes.html
+//! See the [struct docs](`Bytes`) for more details.
 //!
 //! # `Buf`, `BufMut`
 //!
@@ -70,7 +65,7 @@
 //! ## Relation with `Read` and `Write`
 //!
 //! At first glance, it may seem that `Buf` and `BufMut` overlap in
-//! functionality with `std::io::Read` and `std::io::Write`. However, they
+//! functionality with [`std::io::Read`] and [`std::io::Write`]. However, they
 //! serve different purposes. A buffer is the value that is provided as an
 //! argument to `Read::read` and `Write::write`. `Read` and `Write` may then
 //! perform a syscall, which has the potential of failing. Operations on `Buf`
@@ -114,4 +109,41 @@ fn abort() -> ! {
         let _a = Abort;
         panic!("abort");
     }
+}
+
+#[inline(always)]
+#[cfg(feature = "std")]
+fn saturating_sub_usize_u64(a: usize, b: u64) -> usize {
+    use core::convert::TryFrom;
+    match usize::try_from(b) {
+        Ok(b) => a.saturating_sub(b),
+        Err(_) => 0,
+    }
+}
+
+#[inline(always)]
+#[cfg(feature = "std")]
+fn min_u64_usize(a: u64, b: usize) -> usize {
+    use core::convert::TryFrom;
+    match usize::try_from(a) {
+        Ok(a) => usize::min(a, b),
+        Err(_) => b,
+    }
+}
+
+/// Panic with a nice error message.
+#[cold]
+fn panic_advance(idx: usize, len: usize) -> ! {
+    panic!(
+        "advance out of bounds: the len is {} but advancing by {}",
+        len, idx
+    );
+}
+
+#[cold]
+fn panic_does_not_fit(size: usize, nbytes: usize) -> ! {
+    panic!(
+        "size too large: the integer type can fit {} bytes, but nbytes is {}",
+        size, nbytes
+    );
 }

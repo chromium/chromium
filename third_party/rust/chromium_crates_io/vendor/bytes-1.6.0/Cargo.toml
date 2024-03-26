@@ -11,8 +11,9 @@
 
 [package]
 edition = "2018"
+rust-version = "1.39"
 name = "bytes"
-version = "1.5.0"
+version = "1.6.0"
 authors = [
     "Carl Lerche <me@carllerche.com>",
     "Sean McArthur <sean@seanmonstar.com>",
@@ -51,4 +52,4 @@ default = ["std"]
 std = []
 
 [target."cfg(loom)".dev-dependencies.loom]
-version = "0.5"
+version = "0.7"

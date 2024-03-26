@@ -5,7 +5,7 @@ use std::{cmp, io};
 /// A `BufMut` adapter which implements `io::Write` for the inner value.
 ///
 /// This struct is generally created by calling `writer()` on `BufMut`. See
-/// documentation of [`writer()`](trait.BufMut.html#method.writer) for more
+/// documentation of [`writer()`](BufMut::writer) for more
 /// details.
 #[derive(Debug)]
 pub struct Writer<B> {

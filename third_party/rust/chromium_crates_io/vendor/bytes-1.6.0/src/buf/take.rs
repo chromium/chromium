@@ -5,7 +5,7 @@ use core::cmp;
 /// A `Buf` adapter which limits the bytes read from an underlying buffer.
 ///
 /// This struct is generally created by calling `take()` on `Buf`. See
-/// documentation of [`take()`](trait.Buf.html#method.take) for more details.
+/// documentation of [`take()`](Buf::take) for more details.
 #[derive(Debug)]
 pub struct Take<T> {
     inner: T,

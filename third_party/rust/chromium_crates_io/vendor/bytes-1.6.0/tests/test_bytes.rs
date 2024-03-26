@@ -599,6 +599,28 @@ fn extend_mut_from_bytes() {
 }
 
 #[test]
+fn extend_past_lower_limit_of_size_hint() {
+    // See https://github.com/tokio-rs/bytes/pull/674#pullrequestreview-1913035700
+    struct Iter<I>(I);
+
+    impl<I: Iterator<Item = u8>> Iterator for Iter<I> {
+        type Item = u8;
+
+        fn next(&mut self) -> Option<Self::Item> {
+            self.0.next()
+        }
+
+        fn size_hint(&self) -> (usize, Option<usize>) {
+            (5, None)
+        }
+    }
+
+    let mut bytes = BytesMut::with_capacity(5);
+    bytes.extend(Iter(std::iter::repeat(0).take(10)));
+    assert_eq!(bytes.len(), 10);
+}
+
+#[test]
 fn extend_mut_without_size_hint() {
     let mut bytes = BytesMut::with_capacity(0);
     let mut long_iter = LONG.iter();
@@ -709,97 +731,6 @@ fn partial_eq_bytesmut() {
     assert!(bytes2 != bytesmut);
     assert!(bytesmut != bytes2);
 }
-
-/*
-#[test]
-fn bytes_unsplit_basic() {
-    let buf = Bytes::from(&b"aaabbbcccddd"[..]);
-
-    let splitted = buf.split_off(6);
-    assert_eq!(b"aaabbb", &buf[..]);
-    assert_eq!(b"cccddd", &splitted[..]);
-
-    buf.unsplit(splitted);
-    assert_eq!(b"aaabbbcccddd", &buf[..]);
-}
-
-#[test]
-fn bytes_unsplit_empty_other() {
-    let buf = Bytes::from(&b"aaabbbcccddd"[..]);
-
-    // empty other
-    let other = Bytes::new();
-
-    buf.unsplit(other);
-    assert_eq!(b"aaabbbcccddd", &buf[..]);
-}
-
-#[test]
-fn bytes_unsplit_empty_self() {
-    // empty self
-    let mut buf = Bytes::new();
-
-    let mut other = Bytes::with_capacity(64);
-    other.extend_from_slice(b"aaabbbcccddd");
-
-    buf.unsplit(other);
-    assert_eq!(b"aaabbbcccddd", &buf[..]);
-}
-
-#[test]
-fn bytes_unsplit_arc_different() {
-    let mut buf = Bytes::with_capacity(64);
-    buf.extend_from_slice(b"aaaabbbbeeee");
-
-    buf.split_off(8); //arc
-
-    let mut buf2 = Bytes::with_capacity(64);
-    buf2.extend_from_slice(b"ccccddddeeee");
-
-    buf2.split_off(8); //arc
-
-    buf.unsplit(buf2);
-    assert_eq!(b"aaaabbbbccccdddd", &buf[..]);
-}
-
-#[test]
-fn bytes_unsplit_arc_non_contiguous() {
-    let mut buf = Bytes::with_capacity(64);
-    buf.extend_from_slice(b"aaaabbbbeeeeccccdddd");
-
-    let mut buf2 = buf.split_off(8); //arc
-
-    let buf3 = buf2.split_off(4); //arc
-
-    buf.unsplit(buf3);
-    assert_eq!(b"aaaabbbbccccdddd", &buf[..]);
-}
-
-#[test]
-fn bytes_unsplit_two_split_offs() {
-    let mut buf = Bytes::with_capacity(64);
-    buf.extend_from_slice(b"aaaabbbbccccdddd");
-
-    let mut buf2 = buf.split_off(8); //arc
-    let buf3 = buf2.split_off(4); //arc
-
-    buf2.unsplit(buf3);
-    buf.unsplit(buf2);
-    assert_eq!(b"aaaabbbbccccdddd", &buf[..]);
-}
-
-#[test]
-fn bytes_unsplit_overlapping_references() {
-    let mut buf = Bytes::with_capacity(64);
-    buf.extend_from_slice(b"abcdefghijklmnopqrstuvwxyz");
-    let mut buf0010 = buf.slice(0..10);
-    let buf1020 = buf.slice(10..20);
-    let buf0515 = buf.slice(5..15);
-    buf0010.unsplit(buf1020);
-    assert_eq!(b"abcdefghijklmnopqrst", &buf0010[..]);
-    assert_eq!(b"fghijklmno", &buf0515[..]);
-}
-*/
 
 #[test]
 fn bytes_mut_unsplit_basic() {
@@ -1207,4 +1138,37 @@ fn test_bytes_capacity_len() {
             let _ = Bytes::from(v);
         }
     }
+}
+
+#[test]
+fn static_is_unique() {
+    let b = Bytes::from_static(LONG);
+    assert!(!b.is_unique());
+}
+
+#[test]
+fn vec_is_unique() {
+    let v: Vec<u8> = LONG.to_vec();
+    let b = Bytes::from(v);
+    assert!(b.is_unique());
+}
+
+#[test]
+fn arc_is_unique() {
+    let v: Vec<u8> = LONG.to_vec();
+    let b = Bytes::from(v);
+    let c = b.clone();
+    assert!(!b.is_unique());
+    drop(c);
+    assert!(b.is_unique());
+}
+
+#[test]
+fn shared_is_unique() {
+    let v: Vec<u8> = LONG.to_vec();
+    let b = Bytes::from(v);
+    let c = b.clone();
+    assert!(!c.is_unique());
+    drop(b);
+    assert!(c.is_unique());
 }

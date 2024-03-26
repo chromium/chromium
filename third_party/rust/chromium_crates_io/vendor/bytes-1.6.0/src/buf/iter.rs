@@ -17,9 +17,6 @@ use crate::Buf;
 /// assert_eq!(iter.next(), Some(b'c'));
 /// assert_eq!(iter.next(), None);
 /// ```
-///
-/// [`iter`]: trait.Buf.html#method.iter
-/// [`Buf`]: trait.Buf.html
 #[derive(Debug)]
 pub struct IntoIter<T> {
     inner: T,

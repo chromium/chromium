@@ -25,9 +25,7 @@ use std::io::IoSlice;
 /// assert_eq!(full[..], b"hello world"[..]);
 /// ```
 ///
-/// [`Buf::chain`]: trait.Buf.html#method.chain
-/// [`Buf`]: trait.Buf.html
-/// [`BufMut`]: trait.BufMut.html
+/// [`Buf::chain`]: Buf::chain
 #[derive(Debug)]
 pub struct Chain<T, U> {
     a: T,
@@ -135,7 +133,7 @@ where
     U: Buf,
 {
     fn remaining(&self) -> usize {
-        self.a.remaining().checked_add(self.b.remaining()).unwrap()
+        self.a.remaining().saturating_add(self.b.remaining())
     }
 
     fn chunk(&self) -> &[u8] {

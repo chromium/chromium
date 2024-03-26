@@ -168,7 +168,7 @@ impl UninitSlice {
     ///
     /// The caller **must not** read from the referenced memory and **must not** write
     /// **uninitialized** bytes to the slice either. This is because `BufMut` implementation
-    /// that created the `UninitSlice` knows which parts are initialized. Writing uninitalized
+    /// that created the `UninitSlice` knows which parts are initialized. Writing uninitialized
     /// bytes to the slice may cause the `BufMut` to read those bytes and trigger undefined
     /// behavior.
     ///
@@ -184,8 +184,8 @@ impl UninitSlice {
     /// };
     /// ```
     #[inline]
-    pub unsafe fn as_uninit_slice_mut<'a>(&'a mut self) -> &'a mut [MaybeUninit<u8>] {
-        &mut *(self as *mut _ as *mut [MaybeUninit<u8>])
+    pub unsafe fn as_uninit_slice_mut(&mut self) -> &mut [MaybeUninit<u8>] {
+        &mut self.0
     }
 
     /// Returns the number of bytes in the slice.

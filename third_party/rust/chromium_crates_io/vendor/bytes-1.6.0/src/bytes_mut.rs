@@ -1,4 +1,4 @@
-use core::iter::{FromIterator, Iterator};
+use core::iter::FromIterator;
 use core::mem::{self, ManuallyDrop, MaybeUninit};
 use core::ops::{Deref, DerefMut};
 use core::ptr::{self, NonNull};
@@ -80,6 +80,12 @@ struct Shared {
     ref_count: AtomicUsize,
 }
 
+// Assert that the alignment of `Shared` is divisible by 2.
+// This is a necessary invariant since we depend on allocating `Shared` a
+// shared object to implicitly carry the `KIND_ARC` flag in its pointer.
+// This flag is set when the LSB is 0.
+const _: [(); 0 - mem::align_of::<Shared>() % 2] = []; // Assert that the alignment of `Shared` is divisible by 2.
+
 // Buffer storage strategy flags.
 const KIND_ARC: usize = 0b0;
 const KIND_VEC: usize = 0b1;
@@ -96,11 +102,11 @@ const MIN_ORIGINAL_CAPACITY_WIDTH: usize = 10;
 const ORIGINAL_CAPACITY_MASK: usize = 0b11100;
 const ORIGINAL_CAPACITY_OFFSET: usize = 2;
 
+const VEC_POS_OFFSET: usize = 5;
 // When the storage is in the `Vec` representation, the pointer can be advanced
 // at most this value. This is due to the amount of storage available to track
 // the offset is usize - number of KIND bits and number of ORIGINAL_CAPACITY
 // bits.
-const VEC_POS_OFFSET: usize = 5;
 const MAX_VEC_POS: usize = usize::MAX >> VEC_POS_OFFSET;
 const NOT_VEC_POS_MASK: usize = 0b11111;
 
@@ -237,24 +243,23 @@ impl BytesMut {
     /// th.join().unwrap();
     /// ```
     #[inline]
-    pub fn freeze(mut self) -> Bytes {
-        if self.kind() == KIND_VEC {
+    pub fn freeze(self) -> Bytes {
+        let bytes = ManuallyDrop::new(self);
+        if bytes.kind() == KIND_VEC {
             // Just re-use `Bytes` internal Vec vtable
             unsafe {
-                let (off, _) = self.get_vec_pos();
-                let vec = rebuild_vec(self.ptr.as_ptr(), self.len, self.cap, off);
-                mem::forget(self);
+                let off = bytes.get_vec_pos();
+                let vec = rebuild_vec(bytes.ptr.as_ptr(), bytes.len, bytes.cap, off);
                 let mut b: Bytes = vec.into();
                 b.advance(off);
                 b
             }
         } else {
-            debug_assert_eq!(self.kind(), KIND_ARC);
+            debug_assert_eq!(bytes.kind(), KIND_ARC);
 
-            let ptr = self.ptr.as_ptr();
-            let len = self.len;
-            let data = AtomicPtr::new(self.data.cast());
-            mem::forget(self);
+            let ptr = bytes.ptr.as_ptr();
+            let len = bytes.len;
+            let data = AtomicPtr::new(bytes.data.cast());
             unsafe { Bytes::with_vtable(ptr, len, data, &SHARED_VTABLE) }
         }
     }
@@ -311,8 +316,10 @@ impl BytesMut {
         );
         unsafe {
             let mut other = self.shallow_clone();
-            other.set_start(at);
-            self.set_end(at);
+            // SAFETY: We've checked that `at` <= `self.capacity()` above.
+            other.advance_unchecked(at);
+            self.cap = at;
+            self.len = cmp::min(self.len, at);
             other
         }
     }
@@ -385,8 +392,11 @@ impl BytesMut {
 
         unsafe {
             let mut other = self.shallow_clone();
-            other.set_end(at);
-            self.set_start(at);
+            // SAFETY: We've checked that `at` <= `self.len()` and we know that `self.len()` <=
+            // `self.capacity()`.
+            self.advance_unchecked(at);
+            other.cap = at;
+            other.len = at;
             other
         }
     }
@@ -399,7 +409,7 @@ impl BytesMut {
     ///
     /// Existing underlying capacity is preserved.
     ///
-    /// The [`split_off`] method can emulate `truncate`, but this causes the
+    /// The [split_off](`Self::split_off()`) method can emulate `truncate`, but this causes the
     /// excess bytes to be returned instead of dropped.
     ///
     /// # Examples
@@ -411,8 +421,6 @@ impl BytesMut {
     /// buf.truncate(5);
     /// assert_eq!(buf, b"hello"[..]);
     /// ```
-    ///
-    /// [`split_off`]: #method.split_off
     pub fn truncate(&mut self, len: usize) {
         if len <= self.len() {
             unsafe {
@@ -592,7 +600,7 @@ impl BytesMut {
             // We need to make sure that this optimization does not kill the
             // amortized runtimes of BytesMut's operations.
             unsafe {
-                let (off, prev) = self.get_vec_pos();
+                let off = self.get_vec_pos();
 
                 // Only reuse space if we can satisfy the requested additional space.
                 //
@@ -613,11 +621,11 @@ impl BytesMut {
                     //
                     // Just move the pointer back to the start after copying
                     // data back.
-                    let base_ptr = self.ptr.as_ptr().offset(-(off as isize));
+                    let base_ptr = self.ptr.as_ptr().sub(off);
                     // Since `off >= self.len()`, the two regions don't overlap.
                     ptr::copy_nonoverlapping(self.ptr.as_ptr(), base_ptr, self.len);
                     self.ptr = vptr(base_ptr);
-                    self.set_vec_pos(0, prev);
+                    self.set_vec_pos(0);
 
                     // Length stays constant, but since we moved backwards we
                     // can gain capacity back.
@@ -648,13 +656,7 @@ impl BytesMut {
         // Compute the new capacity
         let mut new_cap = len.checked_add(additional).expect("overflow");
 
-        let original_capacity;
-        let original_capacity_repr;
-
         unsafe {
-            original_capacity_repr = (*shared).original_capacity_repr;
-            original_capacity = original_capacity_from_repr(original_capacity_repr);
-
             // First, try to reclaim the buffer. This is possible if the current
             // handle is the only outstanding handle pointing to the buffer.
             if (*shared).is_unique() {
@@ -722,10 +724,13 @@ impl BytesMut {
                 }
 
                 return;
-            } else {
-                new_cap = cmp::max(new_cap, original_capacity);
             }
         }
+
+        let original_capacity_repr = unsafe { (*shared).original_capacity_repr };
+        let original_capacity = original_capacity_from_repr(original_capacity_repr);
+
+        new_cap = cmp::max(new_cap, original_capacity);
 
         // Create a new vector to store the data
         let mut v = ManuallyDrop::new(Vec::with_capacity(new_cap));
@@ -823,11 +828,11 @@ impl BytesMut {
     // internal change could make a simple pattern (`BytesMut::from(vec)`)
     // suddenly a lot more expensive.
     #[inline]
-    pub(crate) fn from_vec(mut vec: Vec<u8>) -> BytesMut {
+    pub(crate) fn from_vec(vec: Vec<u8>) -> BytesMut {
+        let mut vec = ManuallyDrop::new(vec);
         let ptr = vptr(vec.as_mut_ptr());
         let len = vec.len();
         let cap = vec.capacity();
-        mem::forget(vec);
 
         let original_capacity_repr = original_capacity_to_repr(cap);
         let data = (original_capacity_repr << ORIGINAL_CAPACITY_OFFSET) | KIND_VEC;
@@ -850,14 +855,19 @@ impl BytesMut {
         unsafe { slice::from_raw_parts_mut(self.ptr.as_ptr(), self.len) }
     }
 
-    unsafe fn set_start(&mut self, start: usize) {
+    /// Advance the buffer without bounds checking.
+    ///
+    /// # SAFETY
+    ///
+    /// The caller must ensure that `count` <= `self.cap`.
+    unsafe fn advance_unchecked(&mut self, count: usize) {
         // Setting the start to 0 is a no-op, so return early if this is the
         // case.
-        if start == 0 {
+        if count == 0 {
             return;
         }
 
-        debug_assert!(start <= self.cap, "internal: set_start out of bounds");
+        debug_assert!(count <= self.cap, "internal: set_start out of bounds");
 
         let kind = self.kind();
 
@@ -866,11 +876,10 @@ impl BytesMut {
             // complicated. First, we have to track how far ahead the
             // "start" of the byte buffer from the beginning of the vec. We
             // also have to ensure that we don't exceed the maximum shift.
-            let (mut pos, prev) = self.get_vec_pos();
-            pos += start;
+            let pos = self.get_vec_pos() + count;
 
             if pos <= MAX_VEC_POS {
-                self.set_vec_pos(pos, prev);
+                self.set_vec_pos(pos);
             } else {
                 // The repr must be upgraded to ARC. This will never happen
                 // on 64 bit systems and will only happen on 32 bit systems
@@ -883,23 +892,9 @@ impl BytesMut {
         // Updating the start of the view is setting `ptr` to point to the
         // new start and updating the `len` field to reflect the new length
         // of the view.
-        self.ptr = vptr(self.ptr.as_ptr().add(start));
-
-        if self.len >= start {
-            self.len -= start;
-        } else {
-            self.len = 0;
-        }
-
-        self.cap -= start;
-    }
-
-    unsafe fn set_end(&mut self, end: usize) {
-        debug_assert_eq!(self.kind(), KIND_ARC);
-        assert!(end <= self.cap, "set_end out of bounds");
-
-        self.cap = end;
-        self.len = cmp::min(self.len, end);
+        self.ptr = vptr(self.ptr.as_ptr().add(count));
+        self.len = self.len.checked_sub(count).unwrap_or(0);
+        self.cap -= count;
     }
 
     fn try_unsplit(&mut self, other: BytesMut) -> Result<(), BytesMut> {
@@ -978,19 +973,18 @@ impl BytesMut {
     }
 
     #[inline]
-    unsafe fn get_vec_pos(&mut self) -> (usize, usize) {
+    unsafe fn get_vec_pos(&self) -> usize {
         debug_assert_eq!(self.kind(), KIND_VEC);
 
-        let prev = self.data as usize;
-        (prev >> VEC_POS_OFFSET, prev)
+        self.data as usize >> VEC_POS_OFFSET
     }
 
     #[inline]
-    unsafe fn set_vec_pos(&mut self, pos: usize, prev: usize) {
+    unsafe fn set_vec_pos(&mut self, pos: usize) {
         debug_assert_eq!(self.kind(), KIND_VEC);
         debug_assert!(pos <= MAX_VEC_POS);
 
-        self.data = invalid_ptr((pos << VEC_POS_OFFSET) | (prev & NOT_VEC_POS_MASK));
+        self.data = invalid_ptr((pos << VEC_POS_OFFSET) | (self.data as usize & NOT_VEC_POS_MASK));
     }
 
     /// Returns the remaining spare capacity of the buffer as a slice of `MaybeUninit<u8>`.
@@ -1039,7 +1033,7 @@ impl Drop for BytesMut {
 
         if kind == KIND_VEC {
             unsafe {
-                let (off, _) = self.get_vec_pos();
+                let off = self.get_vec_pos();
 
                 // Vector storage, free the vector
                 let _ = rebuild_vec(self.ptr.as_ptr(), self.len, self.cap, off);
@@ -1070,11 +1064,13 @@ impl Buf for BytesMut {
             self.remaining(),
         );
         unsafe {
-            self.set_start(cnt);
+            // SAFETY: We've checked that `cnt` <= `self.remaining()` and we know that
+            // `self.remaining()` <= `self.cap`.
+            self.advance_unchecked(cnt);
         }
     }
 
-    fn copy_to_bytes(&mut self, len: usize) -> crate::Bytes {
+    fn copy_to_bytes(&mut self, len: usize) -> Bytes {
         self.split_to(len).freeze()
     }
 }
@@ -1087,14 +1083,12 @@ unsafe impl BufMut for BytesMut {
 
     #[inline]
     unsafe fn advance_mut(&mut self, cnt: usize) {
-        let new_len = self.len() + cnt;
-        assert!(
-            new_len <= self.cap,
-            "new_len = {}; capacity = {}",
-            new_len,
-            self.cap
-        );
-        self.len = new_len;
+        let remaining = self.cap - self.len();
+        if cnt > remaining {
+            super::panic_advance(cnt, remaining);
+        }
+        // Addition won't overflow since it is at most `self.cap`.
+        self.len = self.len() + cnt;
     }
 
     #[inline]
@@ -1108,7 +1102,7 @@ unsafe impl BufMut for BytesMut {
     // Specialize these methods so they can skip checking `remaining_mut`
     // and `advance_mut`.
 
-    fn put<T: crate::Buf>(&mut self, mut src: T)
+    fn put<T: Buf>(&mut self, mut src: T)
     where
         Self: Sized,
     {
@@ -1288,9 +1282,7 @@ impl Extend<u8> for BytesMut {
 
         // TODO: optimize
         // 1. If self.kind() == KIND_VEC, use Vec::extend
-        // 2. Make `reserve` inline-able
         for b in iter {
-            self.reserve(1);
             self.put_u8(b);
         }
     }
@@ -1407,56 +1399,59 @@ fn original_capacity_from_repr(repr: usize) -> usize {
     1 << (repr + (MIN_ORIGINAL_CAPACITY_WIDTH - 1))
 }
 
-/*
-#[test]
-fn test_original_capacity_to_repr() {
-    assert_eq!(original_capacity_to_repr(0), 0);
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    let max_width = 32;
+    #[test]
+    fn test_original_capacity_to_repr() {
+        assert_eq!(original_capacity_to_repr(0), 0);
 
-    for width in 1..(max_width + 1) {
-        let cap = 1 << width - 1;
+        let max_width = 32;
 
-        let expected = if width < MIN_ORIGINAL_CAPACITY_WIDTH {
-            0
-        } else if width < MAX_ORIGINAL_CAPACITY_WIDTH {
-            width - MIN_ORIGINAL_CAPACITY_WIDTH
-        } else {
-            MAX_ORIGINAL_CAPACITY_WIDTH - MIN_ORIGINAL_CAPACITY_WIDTH
-        };
+        for width in 1..(max_width + 1) {
+            let cap = 1 << width - 1;
 
-        assert_eq!(original_capacity_to_repr(cap), expected);
+            let expected = if width < MIN_ORIGINAL_CAPACITY_WIDTH {
+                0
+            } else if width < MAX_ORIGINAL_CAPACITY_WIDTH {
+                width - MIN_ORIGINAL_CAPACITY_WIDTH
+            } else {
+                MAX_ORIGINAL_CAPACITY_WIDTH - MIN_ORIGINAL_CAPACITY_WIDTH
+            };
 
-        if width > 1 {
-            assert_eq!(original_capacity_to_repr(cap + 1), expected);
-        }
+            assert_eq!(original_capacity_to_repr(cap), expected);
 
-        //  MIN_ORIGINAL_CAPACITY_WIDTH must be bigger than 7 to pass tests below
-        if width == MIN_ORIGINAL_CAPACITY_WIDTH + 1 {
-            assert_eq!(original_capacity_to_repr(cap - 24), expected - 1);
-            assert_eq!(original_capacity_to_repr(cap + 76), expected);
-        } else if width == MIN_ORIGINAL_CAPACITY_WIDTH + 2 {
-            assert_eq!(original_capacity_to_repr(cap - 1), expected - 1);
-            assert_eq!(original_capacity_to_repr(cap - 48), expected - 1);
+            if width > 1 {
+                assert_eq!(original_capacity_to_repr(cap + 1), expected);
+            }
+
+            //  MIN_ORIGINAL_CAPACITY_WIDTH must be bigger than 7 to pass tests below
+            if width == MIN_ORIGINAL_CAPACITY_WIDTH + 1 {
+                assert_eq!(original_capacity_to_repr(cap - 24), expected - 1);
+                assert_eq!(original_capacity_to_repr(cap + 76), expected);
+            } else if width == MIN_ORIGINAL_CAPACITY_WIDTH + 2 {
+                assert_eq!(original_capacity_to_repr(cap - 1), expected - 1);
+                assert_eq!(original_capacity_to_repr(cap - 48), expected - 1);
+            }
         }
     }
+
+    #[test]
+    fn test_original_capacity_from_repr() {
+        assert_eq!(0, original_capacity_from_repr(0));
+
+        let min_cap = 1 << MIN_ORIGINAL_CAPACITY_WIDTH;
+
+        assert_eq!(min_cap, original_capacity_from_repr(1));
+        assert_eq!(min_cap * 2, original_capacity_from_repr(2));
+        assert_eq!(min_cap * 4, original_capacity_from_repr(3));
+        assert_eq!(min_cap * 8, original_capacity_from_repr(4));
+        assert_eq!(min_cap * 16, original_capacity_from_repr(5));
+        assert_eq!(min_cap * 32, original_capacity_from_repr(6));
+        assert_eq!(min_cap * 64, original_capacity_from_repr(7));
+    }
 }
-
-#[test]
-fn test_original_capacity_from_repr() {
-    assert_eq!(0, original_capacity_from_repr(0));
-
-    let min_cap = 1 << MIN_ORIGINAL_CAPACITY_WIDTH;
-
-    assert_eq!(min_cap, original_capacity_from_repr(1));
-    assert_eq!(min_cap * 2, original_capacity_from_repr(2));
-    assert_eq!(min_cap * 4, original_capacity_from_repr(3));
-    assert_eq!(min_cap * 8, original_capacity_from_repr(4));
-    assert_eq!(min_cap * 16, original_capacity_from_repr(5));
-    assert_eq!(min_cap * 32, original_capacity_from_repr(6));
-    assert_eq!(min_cap * 64, original_capacity_from_repr(7));
-}
-*/
 
 unsafe impl Send for BytesMut {}
 unsafe impl Sync for BytesMut {}
@@ -1618,15 +1613,16 @@ impl PartialEq<Bytes> for BytesMut {
 }
 
 impl From<BytesMut> for Vec<u8> {
-    fn from(mut bytes: BytesMut) -> Self {
+    fn from(bytes: BytesMut) -> Self {
         let kind = bytes.kind();
+        let bytes = ManuallyDrop::new(bytes);
 
         let mut vec = if kind == KIND_VEC {
             unsafe {
-                let (off, _) = bytes.get_vec_pos();
+                let off = bytes.get_vec_pos();
                 rebuild_vec(bytes.ptr.as_ptr(), bytes.len, bytes.cap, off)
             }
-        } else if kind == KIND_ARC {
+        } else {
             let shared = bytes.data as *mut Shared;
 
             if unsafe { (*shared).is_unique() } {
@@ -1636,10 +1632,8 @@ impl From<BytesMut> for Vec<u8> {
 
                 vec
             } else {
-                return bytes.deref().to_vec();
+                return ManuallyDrop::into_inner(bytes).deref().to_vec();
             }
-        } else {
-            return bytes.deref().to_vec();
         };
 
         let len = bytes.len;
@@ -1648,8 +1642,6 @@ impl From<BytesMut> for Vec<u8> {
             ptr::copy(bytes.ptr.as_ptr(), vec.as_mut_ptr(), len);
             vec.set_len(len);
         }
-
-        mem::forget(bytes);
 
         vec
     }
@@ -1684,7 +1676,7 @@ fn invalid_ptr<T>(addr: usize) -> *mut T {
 /// self.ptr.as_ptr().offset_from(ptr) as usize;
 /// ```
 ///
-/// But due to min rust is 1.39 and it is only stablised
+/// But due to min rust is 1.39 and it is only stabilized
 /// in 1.47, we cannot use it.
 #[inline]
 fn offset_from(dst: *mut u8, original: *mut u8) -> usize {
@@ -1694,7 +1686,7 @@ fn offset_from(dst: *mut u8, original: *mut u8) -> usize {
 }
 
 unsafe fn rebuild_vec(ptr: *mut u8, mut len: usize, mut cap: usize, off: usize) -> Vec<u8> {
-    let ptr = ptr.offset(-(off as isize));
+    let ptr = ptr.sub(off);
     len += off;
     cap += off;
 
@@ -1706,6 +1698,7 @@ unsafe fn rebuild_vec(ptr: *mut u8, mut len: usize, mut cap: usize, off: usize) 
 static SHARED_VTABLE: Vtable = Vtable {
     clone: shared_v_clone,
     to_vec: shared_v_to_vec,
+    is_unique: crate::bytes::shared_is_unique,
     drop: shared_v_drop,
 };
 

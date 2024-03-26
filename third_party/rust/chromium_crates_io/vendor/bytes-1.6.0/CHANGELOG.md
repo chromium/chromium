@@ -1,8 +1,45 @@
+# 1.6.0 (March 22, 2024)
+
+### Added
+
+- Add `Bytes::is_unique` (#643)
+
+### Documented
+
+- Fix changelog typo (#628)
+- Fix some spelling mistakes (#633)
+- Typo fix (#637)
+- Fix broken links (#639)
+- Add security policy (#649)
+
+### Internal changes
+
+- Move comment to correct constant (#629)
+- Various cleanup (#635)
+- Simplify `UninitSlice::as_uninit_slice_mut()` logic (#644)
+- Use `self.` instead of `Self::` (#642)
+- `BytesMut`: Assert alignment of `Shared` (#652)
+- Remove unnecessary namespace qualifier (#660)
+- Remove an unnecessary else branch (#662)
+- Remove unreachable else branch (#661)
+- make parameter mut in `From<Vec>` (#667)
+- Restore commented tests (#665)
+- Use `sub` instead of `offset` (#668)
+- Calculate original capacity only if necessary (#666)
+- `set_vec_pos` does not need a second parameter (#672)
+- `get_vec_pos`: use `&self` instead of `&mut self` (#670)
+- Refactor `split_at`/`split_to` (#663)
+- Use `Iterator` from the prelude (#673)
+- `copy_to_bytes`: Add panic section to docs (#676)
+- Remove redundant reserve call (#674)
+- Use `ManuallyDrop` instead of `mem::forget` (#675)
+
+
 # 1.5.0 (September 7, 2023)
 
 ### Added
 
-- Add `UninitSlice::{new,init}` (#598, #599)
+- Add `UninitSlice::{new,uninit}` (#598, #599)
 - Implement `BufMut` for `&mut [MaybeUninit<u8>]` (#597)
 
 ### Changed

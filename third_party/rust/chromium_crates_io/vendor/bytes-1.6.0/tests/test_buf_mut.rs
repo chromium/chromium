@@ -83,7 +83,7 @@ fn test_put_int_le_nbytes_overflow() {
 }
 
 #[test]
-#[should_panic(expected = "cannot advance")]
+#[should_panic(expected = "advance out of bounds: the len is 8 but advancing by 12")]
 fn test_vec_advance_mut() {
     // Verify fix for #354
     let mut buf = Vec::with_capacity(8);
