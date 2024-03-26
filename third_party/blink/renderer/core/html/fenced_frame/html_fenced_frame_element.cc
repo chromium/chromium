@@ -260,9 +260,6 @@ bool HTMLFencedFrameElement::canLoadOpaqueURL(ScriptState* script_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(frame_to_check && context);
 
-  ContentSecurityPolicy* csp = context->GetContentSecurityPolicy();
-  DCHECK(csp);
-
   // "A fenced frame tree of one mode cannot contain a child fenced frame of
   // another mode."
   // See: https://github.com/WICG/fenced-frame/blob/master/explainer/modes.md
@@ -301,26 +298,10 @@ bool HTMLFencedFrameElement::canLoadOpaqueURL(ScriptState* script_state) {
   // piggy-back off of the ancestor_or_self_has_cspee bit being sent from the
   // browser (which is sent at commit time) since it doesn't know about all the
   // CSP headers yet.
-  for (const auto& policy : csp->GetParsedPolicies()) {
-    CSPOperativeDirective directive = CSPDirectiveListOperativeDirective(
-        *policy, CSPDirectiveName::FencedFrameSrc);
-    if (directive.type != CSPDirectiveName::Unknown) {
-      // "*" urls will cause the allow_star flag to set
-      if (directive.source_list->allow_star) {
-        continue;
-      }
-
-      // Check for "https:" or "https://*:*"
-      bool found_matching_source = false;
-      for (const auto& source : directive.source_list->sources) {
-        if (source->scheme == url::kHttpsScheme && source->host == "") {
-          found_matching_source = true;
-          break;
-        }
-      }
-      if (!found_matching_source)
-        return false;
-    }
+  ContentSecurityPolicy* csp = context->GetContentSecurityPolicy();
+  DCHECK(csp);
+  if (!csp->AllowFencedFrameOpaqueURL()) {
+    return false;
   }
 
   return true;

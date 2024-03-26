@@ -641,17 +641,16 @@ function createLocalSource(key, url) {
 }
 
 function setupCSP(csp, second_csp=null) {
-  let meta = document.createElement('meta');
-  meta.httpEquiv = "Content-Security-Policy";
-  meta.content = "fenced-frame-src " + csp;
-  document.head.appendChild(meta);
+  let headers = [];
 
+  headers.push(["Content-Security-Policy", "fenced-frame-src " + csp]);
   if (second_csp != null) {
-    let second_meta = document.createElement('meta');
-    second_meta.httpEquiv = "Content-Security-Policy";
-    second_meta.content = "frame-src " + second_csp;
-    document.head.appendChild(second_meta);
+    headers.push(["Content-Security-Policy", "frame-src " + second_csp]);
   }
+
+  const iframe = attachIFrameContext({headers: headers});
+
+  return iframe;
 }
 
 // Clicking in WPT tends to be flaky (https://crbug.com/1066891), so you may

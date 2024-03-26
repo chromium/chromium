@@ -407,6 +407,15 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   bool HasPolicyFromSource(network::mojom::ContentSecurityPolicySource) const;
 
+  // Whether policies allow loading an opaque URL in a <fencedframe>.
+  //
+  // The document is not allowed to retrieve data about the URL, so the only
+  // allowed `fenced-frame-src` are the one allowing every HTTPs url:
+  // - '*'
+  // - https:
+  // - https://*:*
+  bool AllowFencedFrameOpaqueURL() const;
+
   void Count(WebFeature feature) const;
 
  private:

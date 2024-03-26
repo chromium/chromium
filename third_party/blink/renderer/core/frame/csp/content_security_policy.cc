@@ -133,6 +133,54 @@ int32_t HashAlgorithmsUsed(
   return hash_algorithms_used;
 }
 
+// 3. If request’s destination is "fencedframe", and this directive’s value does
+//    not contain either "https:", "https://*:*", or "*", return "Blocked".
+// https://wicg.github.io/fenced-frame/#csp-algorithms
+bool AllowOpaqueFencedFrames(
+    const network::mojom::blink::CSPSourcePtr& source) {
+  if (source->scheme != url::kHttpsScheme) {
+    return false;
+  }
+
+  // "https:" is allowed.
+  if (source->host.empty() && !source->is_host_wildcard) {
+    return true;
+  }
+
+  // "https://*:*" is allowed.
+  if (source->is_host_wildcard && source->is_port_wildcard) {
+    return true;
+  }
+
+  // "https://*" is not allowed as it could leak data about ports.
+
+  return false;
+}
+
+// Returns true if the CSP for the document loading the fenced frame allows all
+// HTTPS origins for "fenced-frame-src".
+bool AllowOpaqueFencedFrames(
+    const network::mojom::blink::ContentSecurityPolicyPtr& policy) {
+  CSPOperativeDirective directive = CSPDirectiveListOperativeDirective(
+      *policy, network::mojom::CSPDirectiveName::FencedFrameSrc);
+  if (directive.type == network::mojom::CSPDirectiveName::Unknown) {
+    return true;
+  }
+
+  // "*" is allowed.
+  if (directive.source_list->allow_star) {
+    return true;
+  }
+
+  for (const auto& source : directive.source_list->sources) {
+    if (AllowOpaqueFencedFrames(source)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace
 
 bool ContentSecurityPolicy::IsNonceableElement(const Element* element) {
@@ -1540,6 +1588,15 @@ bool ContentSecurityPolicy::HasPolicyFromSource(
       return true;
   }
   return false;
+}
+
+bool ContentSecurityPolicy::AllowFencedFrameOpaqueURL() const {
+  for (const auto& policy : GetParsedPolicies()) {
+    if (!AllowOpaqueFencedFrames(policy)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 void ContentSecurityPolicy::Count(WebFeature feature) const {
