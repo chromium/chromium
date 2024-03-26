@@ -33,6 +33,12 @@ function waitForCompositorCommit() {
   });
 }
 
+async function waitForCompositorReady() {
+  const animation =
+      document.body.animate({ opacity: [ 0, 1 ] }, {duration: 1 });
+  return animation.finished;
+}
+
 // Returns a promise that resolves when the given condition is met or rejects
 // after 200 animation frames.
 function waitFor(condition, error_message = 'Reaches the maximum frames.') {
