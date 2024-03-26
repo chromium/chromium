@@ -250,6 +250,70 @@ class AnchoredNudgeManagerImpl::AnchorViewObserver
   raw_ptr<AnchoredNudgeManagerImpl> anchored_nudge_manager_;
 };
 
+// A widget observer that is used to close the nudge's widget whenever its
+// `anchor_view` widget is hiding. `AnchorViewObserver` handles the
+// `OnViewIsDeleting` event to close the nudge when `anchor_view` is deleted.
+class AnchoredNudgeManagerImpl::AnchorViewWidgetObserver
+    : public views::WidgetObserver {
+ public:
+  // TODO(b/296948349): Pass the nudge id instead of a pointer to the nudge
+  // and access it through a new `GetNudge(id)` function.
+  AnchorViewWidgetObserver(AnchoredNudge* anchored_nudge,
+                           views::View* anchor_view,
+                           AnchoredNudgeManagerImpl* anchored_nudge_manager)
+      : anchored_nudge_(anchored_nudge),
+        anchor_view_(anchor_view),
+        anchored_nudge_manager_(anchored_nudge_manager) {
+    DCHECK(anchor_view->GetWidget());
+    active_widget_ = anchor_view->GetWidget();
+    active_widget_->AddObserver(this);
+  }
+
+  AnchorViewWidgetObserver(const AnchorViewWidgetObserver&) = delete;
+
+  AnchorViewWidgetObserver& operator=(const AnchorViewWidgetObserver&) = delete;
+
+  ~AnchorViewWidgetObserver() override {
+    if (active_widget_) {
+      active_widget_->RemoveObserver(this);
+    }
+  }
+
+  // WidgetObserver:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override {
+    if (!visible) {
+      CloseNudge();
+    }
+  }
+
+  void OnWidgetDestroying(views::Widget* widget) override {
+    widget->RemoveObserver(this);
+    active_widget_ = nullptr;
+    anchor_view_ = nullptr;
+    anchored_nudge_ = nullptr;
+  }
+
+ private:
+  void CloseNudge() {
+    const std::string id = anchored_nudge_->id();
+    // Make sure the nudge bubble no longer observes the anchor view.
+    anchored_nudge_->SetAnchorView(nullptr);
+    anchor_view_->GetWidget()->RemoveObserver(this);
+    anchor_view_ = nullptr;
+    anchored_nudge_ = nullptr;
+    anchored_nudge_manager_->Cancel(id);
+  }
+
+  // Owned by the views hierarchy.
+  raw_ptr<AnchoredNudge> anchored_nudge_;
+  raw_ptr<views::View> anchor_view_;
+  raw_ptr<views::Widget> active_widget_;
+
+  // `AnchorViewWidgetObserver` is guaranteed to not outlive
+  // `anchored_nudge_manager_`, which is owned by `Shell`.
+  raw_ptr<AnchoredNudgeManagerImpl> anchored_nudge_manager_;
+};
+
 // A widget observer that is used to clean up the cached objects related to a
 // nudge when its widget is destroying.
 class AnchoredNudgeManagerImpl::NudgeWidgetObserver
@@ -364,6 +428,9 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
   if (anchor_view) {
     anchor_view_observers_[id] = std::make_unique<AnchorViewObserver>(
         anchored_nudge_ptr, anchor_view, /*anchored_nudge_manager=*/this);
+    anchor_view_widget_observers_[id] =
+        std::make_unique<AnchorViewWidgetObserver>(
+            anchored_nudge_ptr, anchor_view, /*anchored_nudge_manager=*/this);
   }
 
   nudge_hover_observers_[id] = std::make_unique<NudgeHoverObserver>(
@@ -448,6 +515,9 @@ void AnchoredNudgeManagerImpl::HandleNudgeWidgetDestroying(
   nudge_hover_observers_.erase(id);
   if (anchor_view_observers_[id]) {
     anchor_view_observers_.erase(id);
+  }
+  if (anchor_view_widget_observers_[id]) {
+    anchor_view_widget_observers_.erase(id);
   }
   hide_animation_observers_.erase(id);
   nudge_widget_observers_.erase(id);

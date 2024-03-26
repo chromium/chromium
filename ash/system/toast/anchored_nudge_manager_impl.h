@@ -93,6 +93,7 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
  private:
   friend class AnchoredNudgeManagerImplTest;
   class AnchorViewObserver;
+  class AnchorViewWidgetObserver;
   class NudgeWidgetObserver;
   class NudgeHoverObserver;
   class PausableTimer;
@@ -138,6 +139,12 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // deleting or hiding.
   std::map<std::string, std::unique_ptr<AnchorViewObserver>>
       anchor_view_observers_;
+
+  // Maps an `AnchoredNudge` `id` to an observation of that nudge's
+  // `anchor_view` widget, which is used to close the nudge whenever its anchor
+  // view widget is deleting or hiding.
+  std::map<std::string, std::unique_ptr<AnchorViewWidgetObserver>>
+      anchor_view_widget_observers_;
 
   // Maps an `AnchoredNudge` `id` to an observation of that nudge's widget,
   // which is used to clean up the cached objects related to that nudge when its

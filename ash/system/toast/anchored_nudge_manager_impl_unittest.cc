@@ -750,6 +750,28 @@ TEST_F(AnchoredNudgeManagerImplTest,
   EXPECT_FALSE(GetShownNudge(id));
 }
 
+// Tests that a nudge closes if its anchor view widget is hiding.
+TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenAnchorViewWidgetIsHiding) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+
+  // Show a nudge.
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
+
+  // Hide the anchor view widget, the nudge should have closed.
+  widget->Hide();
+  EXPECT_FALSE(GetShownNudge(id));
+
+  // Show the anchor view widget, the nudge should not reappear.
+  widget->ShowInactive();
+  EXPECT_FALSE(GetShownNudge(id));
+}
+
 // Tests that a nudge is properly destroyed on shutdown.
 TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnShutdown) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
