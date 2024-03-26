@@ -372,7 +372,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void SetAcceptEvents(bool accept_events);
   bool accept_events() const { return accept_events_; }
 
-  // Sets a rounded corner clip on the layer.
+  // Gets/sets a rounded corner clip on the layer.
+  gfx::RoundedCornersF GetTargetRoundedCornerRadius() const;
   void SetRoundedCornerRadius(const gfx::RoundedCornersF& corner_radii);
   const gfx::RoundedCornersF& rounded_corner_radii() const {
     return cc_layer_->corner_radii();

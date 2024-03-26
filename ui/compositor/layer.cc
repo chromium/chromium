@@ -310,7 +310,7 @@ std::unique_ptr<Layer> Layer::Clone() const {
   clone->SetAcceptEvents(accept_events());
   clone->SetFillsBoundsOpaquely(fills_bounds_opaquely_);
   clone->SetFillsBoundsCompletely(fills_bounds_completely_);
-  clone->SetRoundedCornerRadius(rounded_corner_radii());
+  clone->SetRoundedCornerRadius(GetTargetRoundedCornerRadius());
   clone->SetGradientMask(gradient_mask());
   clone->SetIsFastRoundedCorner(is_fast_rounded_corner());
   clone->SetName(name_);
@@ -829,6 +829,15 @@ bool Layer::IsVisible() const {
   while (layer && layer->visible_)
     layer = layer->parent_;
   return layer == nullptr;
+}
+
+gfx::RoundedCornersF Layer::GetTargetRoundedCornerRadius() const {
+  if (animator_ &&
+      animator_->IsAnimatingProperty(LayerAnimationElement::ROUNDED_CORNERS)) {
+    return animator_->GetTargetRoundedCorners();
+  }
+
+  return rounded_corner_radii();
 }
 
 void Layer::SetRoundedCornerRadius(const gfx::RoundedCornersF& corner_radii) {
