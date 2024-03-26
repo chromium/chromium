@@ -269,6 +269,15 @@ bool DawnContextProvider::Initialize(
 #endif
   enabled_toggles.push_back("disable_lazy_clear_for_mapped_at_creation_buffer");
 
+#if BUILDFLAG(IS_WIN)
+  // ClearRenderTargetView() is buggy with some GPUs, so use draw instead.
+  // TODO(crbug.com/329702368): only enable color_clear_with_draw for GPUs with
+  // the issue.
+  if (backend_type == wgpu::BackendType::D3D11) {
+    enabled_toggles.push_back("clear_color_with_draw");
+  }
+#endif
+
   wgpu::DawnTogglesDescriptor toggles_desc;
   toggles_desc.enabledToggles = enabled_toggles.data();
   toggles_desc.disabledToggles = disabled_toggles.data();
