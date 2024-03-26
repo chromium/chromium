@@ -81,8 +81,7 @@ std::optional<uint64_t> ParseDeviceId(const std::string& id_string) {
   return id;
 }
 
-const std::string AudioDeviceListToFlattenedDeviceIdString(
-    const AudioDeviceList& devices) {
+const std::string GetDeviceSetIdString(const AudioDeviceList& devices) {
   base::flat_set<std::string> ids;
   for (const AudioDevice& device : devices) {
     ids.insert(GetDeviceIdString(device));

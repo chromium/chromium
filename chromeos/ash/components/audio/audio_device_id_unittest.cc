@@ -74,9 +74,9 @@ TEST_F(AudioDeviceIdTest, GetDeviceIdString) {
   }
 }
 
-// Verify AudioDeviceListToFlattenedDeviceIdString() can convert AudioDeviceList
+// Verify GetDeviceSetIdString() can convert AudioDeviceList
 // to string containing comma separated set of versioned device IDs.
-TEST_F(AudioDeviceIdTest, AudioDeviceListToFlattenedDeviceIdString) {
+TEST_F(AudioDeviceIdTest, GetDeviceSetIdString) {
   struct {
     const AudioDeviceList& audio_device_list;
     const std::string expected_id;
@@ -98,8 +98,7 @@ TEST_F(AudioDeviceIdTest, AudioDeviceListToFlattenedDeviceIdString) {
        "10002 : 0,10003 : 1,10005 : 1"}};
 
   for (const auto& item : items) {
-    EXPECT_EQ(AudioDeviceListToFlattenedDeviceIdString(item.audio_device_list),
-              item.expected_id);
+    EXPECT_EQ(GetDeviceSetIdString(item.audio_device_list), item.expected_id);
   }
 }
 
