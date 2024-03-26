@@ -1101,12 +1101,8 @@ class LocalPasswordSetupScreenTester extends ScreenElementApi {
     this.confirmInput.typeInto(password);
   }
 
-  nextButtonClick(): boolean {
-    if (this.nextButton && this.nextButton.isEnabled()) {
-      this.nextButton.click();
-      return true;
-    }
-    return false;
+  isNextButtonEnabled(): boolean {
+    return this.nextButton !== undefined && this.nextButton.isEnabled();
   }
 }
 
