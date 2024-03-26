@@ -6,22 +6,20 @@
  * @fileoverview The modes that the Chromevox panel can be in.
  */
 
-/**
- * @enum {string}
- */
-export const PanelMode = {
-  COLLAPSED: 'collapsed',
-  FOCUSED: 'focused',
-  FULLSCREEN_MENUS: 'menus',
-  FULLSCREEN_TUTORIAL: 'tutorial',
-  SEARCH: 'search',
-};
+export enum PanelMode {
+  COLLAPSED = 'collapsed',
+  FOCUSED = 'focused',
+  FULLSCREEN_MENUS = 'menus',
+  FULLSCREEN_TUTORIAL = 'tutorial',
+  SEARCH = 'search',
+}
 
-/** @typedef {{title: string, location: (string|undefined)}} */
-let PanelModeData;
+interface PanelModeData {
+  title: string;
+  location?: string;
+}
 
-/** @type {!Object<string, PanelModeData>} */
-export const PanelModeInfo = {
+export const PanelModeInfo: Record<PanelMode, PanelModeData> = {
   [PanelMode.COLLAPSED]: {title: 'panel_title', location: '#'},
   [PanelMode.FOCUSED]: {title: 'panel_title', location: '#focus'},
   [PanelMode.FULLSCREEN_MENUS]:
