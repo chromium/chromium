@@ -6,12 +6,24 @@
 
 #import <optional>
 
+#import "base/feature_list.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+
+namespace {
+
+// Killswitch to control new DockingPromo histograms.
+BASE_FEATURE(kDockingPromoHistogramKillswitch,
+             "DockingPromoHistogramKillswitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
 
 BOOL IsDockingPromoForcedForDisplay() {
   NSString* forced_promo_name = experimental_flags::GetForcedPromoToDisplay();
@@ -32,6 +44,15 @@ BOOL IsDockingPromoForcedForDisplay() {
 }
 
 BOOL CanShowDockingPromo(base::TimeDelta time_since_last_foreground) {
+  // TODO(crbug.com/330387623): Cleanup Docking Promo histograms.
+  if (base::FeatureList::IsEnabled(kDockingPromoHistogramKillswitch)) {
+    // Logs the time since last foreground over a range of 2 weeks.
+    UMA_HISTOGRAM_CUSTOM_COUNTS(
+        "IOS.DockingPromo.LastForegroundTimeViaAppState",
+        time_since_last_foreground.InMinutes(), 1, base::Days(14).InMinutes(),
+        100);
+  }
+
   if (IsDockingPromoForcedForDisplay()) {
     return YES;
   }

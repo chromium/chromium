@@ -917,6 +917,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.DockingPromo.LastForegroundTimeViaAppState"
+    units="minutes" expires_after="2024-09-10">
+  <owner>bwwilliams@google.com</owner>
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The value represents how long the app was away from the foreground (provided
+    via AppState) when evaluating whether or not the Docking Promo can be
+    displayed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DockingPromo.LostToCompetingPromo"
+    enum="IOSPromosManagerPromo" expires_after="2024-09-10">
+  <owner>bwwilliams@google.com</owner>
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Indicates which promo beat the eligible Docking Promo for display. Logged
+    once per app launch when deciding which full-screen promo to display, if
+    any.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DockingPromoRemindMeLater.LostToCompetingPromo"
+    enum="IOSPromosManagerPromo" expires_after="2024-09-10">
+  <owner>bwwilliams@google.com</owner>
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Indicates which promo beat the eligible Docking Promo (Remind Me Later
+    version) for display. Logged once per app launch when deciding which
+    full-screen promo to display, if any.
+  </summary>
+</histogram>
+
 <histogram name="IOS.DocumentDownload.ConflictResolution"
     enum="DocumentDownloadConflictResolution" expires_after="2025-02-09">
   <owner>qpubert@google.com</owner>
