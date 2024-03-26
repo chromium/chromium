@@ -32,9 +32,10 @@ ContextualPanelBrowserAgent::GetEntrypointConfiguration() {
   // Only pass a test config when force showing the entrypoint.
   // TODO(crbug.com/327181130) cleanup when appropriate to do so.
   ContextualPanelItemConfiguration config;
-  config.entrypoint_image_name = base::SysNSStringToUTF8(kMapSymbol);
+  config.entrypoint_image_name = base::SysNSStringToUTF8(kDownTrendSymbol);
   config.image_type =
       ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol;
+  config.accessibility_label = "Just a test entrypoint.";
   return config;
 }
 
@@ -54,7 +55,15 @@ void ContextualPanelBrowserAgent::WebStateListDidChange(
       IsContextualPanelForceShowEntrypointEnabled()) {
     id<ContextualPanelCommands> contextual_panel_handler = HandlerForProtocol(
         browser_->GetCommandDispatcher(), ContextualPanelCommands);
-    [contextual_panel_handler showContextualPanelEntrypoint];
+
+    [contextual_panel_handler hideContextualPanelEntrypoint];
+
+    // TODO(crbug.com/327181130): cleanup when we are done with manually testing
+    // for development.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC),
+                   dispatch_get_main_queue(), ^{
+                     [contextual_panel_handler showContextualPanelEntrypoint];
+                   });
   }
 }
 

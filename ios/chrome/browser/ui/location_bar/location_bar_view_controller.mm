@@ -335,12 +335,14 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   self.locationBarSteadyView.alpha = hidden ? 0 : 1;
 }
 
-- (void)hideSteadyViewBadgeView {
+- (void)hideSteadyViewBadgeAndEntrypointViews {
   [self.locationBarSteadyView displayBadgeView:NO animated:NO];
+  [self.delegate displayContextualPanelEntrypointView:NO];
 }
 
-- (void)showSteadyViewBadgeView {
+- (void)showSteadyViewBadgeAndEntrypointViews {
   [self.locationBarSteadyView displayBadgeView:YES animated:NO];
+  [self.delegate displayContextualPanelEntrypointView:YES];
 }
 
 - (void)setEditViewFaded:(BOOL)hidden {

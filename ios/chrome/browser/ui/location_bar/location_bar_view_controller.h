@@ -46,6 +46,11 @@
 // Starts a Lens search for the image currently in the pasteboard.
 - (void)lensCopiedImage;
 
+// Displays/hides the contextual panel entrypoint view. If `display` is NO, the
+// view will always be hidden. However, if it is YES, it will only be unhidden
+// if it should currently be displayed.
+- (void)displayContextualPanelEntrypointView:(BOOL)display;
+
 @end
 
 // The view controller displaying the location bar. Manages the two states of

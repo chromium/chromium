@@ -7,3 +7,16 @@
 const int ContextualPanelItemConfiguration::high_relevance = 80;
 
 const int ContextualPanelItemConfiguration::low_relevance = 20;
+
+ContextualPanelItemConfiguration::ContextualPanelItemConfiguration() = default;
+
+ContextualPanelItemConfiguration::ContextualPanelItemConfiguration(
+    const ContextualPanelItemConfiguration& other) = default;
+
+ContextualPanelItemConfiguration::ContextualPanelItemConfiguration(
+    ContextualPanelItemConfiguration&& other) = default;
+
+ContextualPanelItemConfiguration::~ContextualPanelItemConfiguration() = default;
+
+ContextualPanelItemConfiguration& ContextualPanelItemConfiguration::operator=(
+    const ContextualPanelItemConfiguration& other) = default;

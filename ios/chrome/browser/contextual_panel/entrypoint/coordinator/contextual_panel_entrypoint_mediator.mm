@@ -45,12 +45,12 @@
   ContextualPanelItemConfiguration config =
       _contextualPanelBrowserAgent->GetEntrypointConfiguration();
 
-  UIImage* image = DefaultSymbolWithPointSize(
-      base::SysUTF8ToNSString(config.entrypoint_image_name),
-      kInfobarSymbolPointSize);
-
-  [self.consumer setEntrypointImage:image];
+  [self.consumer setEntrypointConfig:config];
   [self.consumer showEntrypoint];
+}
+
+- (void)hideContextualPanelEntrypoint {
+  [self.consumer hideEntrypoint];
 }
 
 @end

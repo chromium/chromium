@@ -35,8 +35,11 @@ NSString* const kContextualPanelEntrypointBadgeButtonIdentifier =
   UIStackView* _stackView;
   // The badge button view for the entrypoint (circular button with image).
   UIButton* _badgeButton;
-  // The current visibility state of the entrypoint (displayed or hidden).
+  // Whether the entrypoint should currently be shown or not (transcends
+  // fullscreen events).
   BOOL _entrypointDisplayed;
+  // Whether the entrypoint should currently collapse for fullscreen.
+  BOOL _shouldCollapseForFullscreen;
 }
 @end
 
@@ -52,6 +55,10 @@ NSString* const kContextualPanelEntrypointBadgeButtonIdentifier =
 
   [self createAndConfigureStackView];
   [self createAndConfigureBadgeButton];
+}
+
+- (void)displayEntrypointView:(BOOL)display {
+  self.view.hidden = !display || !_entrypointDisplayed;
 }
 
 #pragma mark - private
@@ -127,7 +134,13 @@ NSString* const kContextualPanelEntrypointBadgeButtonIdentifier =
 
 #pragma mark - ContextualPanelEntrypointConsumer
 
-- (void)setEntrypointImage:(UIImage*)image {
+- (void)setEntrypointConfig:(ContextualPanelItemConfiguration)config {
+  _badgeButton.accessibilityLabel =
+      base::SysUTF8ToNSString(config.accessibility_label);
+
+  UIImage* image = CustomSymbolWithPointSize(
+      base::SysUTF8ToNSString(config.entrypoint_image_name),
+      kInfobarSymbolPointSize);
   [_badgeButton setImage:image forState:UIControlStateNormal];
 }
 
@@ -138,11 +151,15 @@ NSString* const kContextualPanelEntrypointBadgeButtonIdentifier =
 
   _entrypointDisplayed = YES;
 
+  if (_shouldCollapseForFullscreen) {
+    return;
+  }
+
   // Animate the entrypoint appearance.
   self.view.alpha = 0;
   self.view.transform = CGAffineTransformMakeScale(0.1, 0.1);
 
-  self.view.hidden = _entrypointDisplayed;
+  self.view.hidden = !_entrypointDisplayed;
 
   [UIView animateWithDuration:kMaterialDuration2
                         delay:0
@@ -156,6 +173,11 @@ NSString* const kContextualPanelEntrypointBadgeButtonIdentifier =
                    completion:nil];
 }
 
+- (void)hideEntrypoint {
+  _entrypointDisplayed = NO;
+  self.view.hidden = YES;
+}
+
 #pragma mark - ContextualPanelEntrypointMutator
 
 - (void)userTappedEntrypoint {
@@ -165,8 +187,8 @@ NSString* const kContextualPanelEntrypointBadgeButtonIdentifier =
 #pragma mark FullscreenUIElement
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
-  BOOL shouldCollapse = progress <= kFullscreenProgressThreshold;
-  if (shouldCollapse) {
+  _shouldCollapseForFullscreen = progress <= kFullscreenProgressThreshold;
+  if (_shouldCollapseForFullscreen) {
     self.view.hidden = YES;
   } else {
     self.view.hidden = !_entrypointDisplayed;

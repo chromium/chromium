@@ -7,11 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+struct ContextualPanelItemConfiguration;
+
 // Consumer for the ContextualPanelEntrypointViewController.
 @protocol ContextualPanelEntrypointConsumer
 
 // Update the consumer with the image to be shown on the entrypoint badge.
-- (void)setEntrypointImage:(UIImage*)image;
+- (void)setEntrypointConfig:(ContextualPanelItemConfiguration)config;
+
+// Notify the consumer to hide the entrypoint.
+- (void)hideEntrypoint;
 
 // Notify the consumer to show the entrypoint.
 - (void)showEntrypoint;

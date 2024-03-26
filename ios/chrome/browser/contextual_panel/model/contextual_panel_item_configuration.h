@@ -16,6 +16,14 @@ struct ContextualPanelItemConfiguration {
   // A constant defined to always be a low relevance amount.
   static const int low_relevance;
 
+  ContextualPanelItemConfiguration();
+  ~ContextualPanelItemConfiguration();
+  ContextualPanelItemConfiguration(
+      const ContextualPanelItemConfiguration& other);
+  ContextualPanelItemConfiguration(ContextualPanelItemConfiguration&& other);
+  ContextualPanelItemConfiguration& operator=(
+      const ContextualPanelItemConfiguration& other);
+
   // The different supported image types.
   enum class EntrypointImageType {
     // The image name is a UIImage to be loaded in.
@@ -27,6 +35,9 @@ struct ContextualPanelItemConfiguration {
   // The string the UI can show the user if this item is the primary item in the
   // contextual panel.
   std::string entrypoint_message;
+
+  // The string the entrypoint's badge button should have for accessibility.
+  std::string accessibility_label;
 
   // The name of the image the UI can show the user if this item is the primary
   // item in the contextual panel.

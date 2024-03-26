@@ -11,6 +11,9 @@
 // Set the Contextual Panel's entrypoint visible.
 - (void)showContextualPanelEntrypoint;
 
+// Hide the Contextual Panel's entrypoint.
+- (void)hideContextualPanelEntrypoint;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_CONTEXTUAL_PANEL_COMMANDS_H_

@@ -25,10 +25,10 @@
 // See comment for -resetTextFieldOffsetAndOffsetSteadyViewToMatch.
 - (void)resetSteadyViewOffsetAndOffsetTextFieldToMatch;
 
-// Hides badge view for steady view.
-- (void)hideSteadyViewBadgeView;
-// Displays the badge view of the steady view.
-- (void)showSteadyViewBadgeView;
+// Hides the badge and entrypoint views for steady view.
+- (void)hideSteadyViewBadgeAndEntrypointViews;
+// Displays the badge and entrypoint views of the steady view.
+- (void)showSteadyViewBadgeAndEntrypointViews;
 
 - (void)setSteadyViewFaded:(BOOL)hidden;
 - (void)setEditViewFaded:(BOOL)hidden;

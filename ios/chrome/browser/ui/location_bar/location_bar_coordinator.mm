@@ -486,6 +486,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       }));
 }
 
+- (void)displayContextualPanelEntrypointView:(BOOL)display {
+  [self.contextualPanelEntrypointCoordinator.viewController
+      displayEntrypointView:display];
+}
+
 #pragma mark - LocationBarConsumer
 
 - (void)defocusOmnibox {
