@@ -236,7 +236,7 @@ InsetModifiedContainingBlock ComputeUnclampedIMCB(
 
 // Absolutize margin values to pixels and resolve any auto margins.
 // https://drafts.csswg.org/css-position-3/#abspos-margins
-void ComputeMargins(const LayoutUnit margin_percentage_resolution_size,
+void ComputeMargins(LogicalSize margin_percentage_resolution_size,
                     const LayoutUnit imcb_size,
                     const Length& margin_start_length,
                     const Length& margin_end_length,
@@ -248,13 +248,13 @@ void ComputeMargins(const LayoutUnit margin_percentage_resolution_size,
                     LayoutUnit* margin_end_out) {
   std::optional<LayoutUnit> margin_start;
   if (!margin_start_length.IsAuto()) {
-    margin_start = MinimumValueForLength(margin_start_length,
-                                         margin_percentage_resolution_size);
+    margin_start = MinimumValueForLength(
+        margin_start_length, margin_percentage_resolution_size.inline_size);
   }
   std::optional<LayoutUnit> margin_end;
   if (!margin_end_length.IsAuto()) {
-    margin_end = MinimumValueForLength(margin_end_length,
-                                       margin_percentage_resolution_size);
+    margin_end = MinimumValueForLength(
+        margin_end_length, margin_percentage_resolution_size.inline_size);
   }
 
   // Solving the equation:
@@ -689,12 +689,11 @@ bool ComputeOofInlineDimensions(
   const bool is_block_direction = !IsParallelWritingMode(
       container_writing_direction.GetWritingMode(), style.GetWritingMode());
 
-  ComputeMargins(space.PercentageResolutionInlineSizeForParentWritingMode(),
-                 imcb.InlineSize(), style.MarginInlineStart(),
-                 style.MarginInlineEnd(), inline_size,
-                 imcb.has_auto_inline_inset, is_margin_start_dominant,
-                 is_block_direction, &dimensions->margins.inline_start,
-                 &dimensions->margins.inline_end);
+  ComputeMargins(
+      space.MarginPaddingPercentageResolutionSize(), imcb.InlineSize(),
+      style.MarginInlineStart(), style.MarginInlineEnd(), inline_size,
+      imcb.has_auto_inline_inset, is_margin_start_dominant, is_block_direction,
+      &dimensions->margins.inline_start, &dimensions->margins.inline_end);
 
   ComputeInsets(space.AvailableSize().inline_size, imcb.inline_start,
                 imcb.inline_end, imcb.inline_inset_bias,
@@ -831,12 +830,11 @@ const LayoutResult* ComputeOofBlockDimensions(
   const bool is_block_direction = IsParallelWritingMode(
       container_writing_direction.GetWritingMode(), style.GetWritingMode());
 
-  ComputeMargins(space.PercentageResolutionInlineSizeForParentWritingMode(),
-                 imcb.BlockSize(), style.MarginBlockStart(),
-                 style.MarginBlockEnd(), block_size, imcb.has_auto_block_inset,
-                 is_margin_start_dominant, is_block_direction,
-                 &dimensions->margins.block_start,
-                 &dimensions->margins.block_end);
+  ComputeMargins(
+      space.MarginPaddingPercentageResolutionSize(), imcb.BlockSize(),
+      style.MarginBlockStart(), style.MarginBlockEnd(), block_size,
+      imcb.has_auto_block_inset, is_margin_start_dominant, is_block_direction,
+      &dimensions->margins.block_start, &dimensions->margins.block_end);
 
   ComputeInsets(space.AvailableSize().block_size, imcb.block_start,
                 imcb.block_end, imcb.block_inset_bias,

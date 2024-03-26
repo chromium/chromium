@@ -1269,8 +1269,9 @@ LayoutUnit ColumnInlineProgression(LayoutUnit available_size,
   return column_inline_size + ResolveUsedColumnGap(available_size, style);
 }
 
-PhysicalBoxStrut ComputePhysicalMargins(const ComputedStyle& style,
-                                        LayoutUnit percentage_resolution_size) {
+PhysicalBoxStrut ComputePhysicalMargins(
+    const ComputedStyle& style,
+    LogicalSize percentage_resolution_size) {
   if (!style.MayHaveMargin())
     return PhysicalBoxStrut();
 
@@ -1280,11 +1281,15 @@ PhysicalBoxStrut ComputePhysicalMargins(const ComputedStyle& style,
   percentage_resolution_size =
       percentage_resolution_size.ClampIndefiniteToZero();
 
-  return {
-      MinimumValueForLength(style.MarginTop(), percentage_resolution_size),
-      MinimumValueForLength(style.MarginRight(), percentage_resolution_size),
-      MinimumValueForLength(style.MarginBottom(), percentage_resolution_size),
-      MinimumValueForLength(style.MarginLeft(), percentage_resolution_size)};
+  return PhysicalBoxStrut(
+      MinimumValueForLength(style.MarginTop(),
+                            percentage_resolution_size.block_size),
+      MinimumValueForLength(style.MarginRight(),
+                            percentage_resolution_size.inline_size),
+      MinimumValueForLength(style.MarginBottom(),
+                            percentage_resolution_size.block_size),
+      MinimumValueForLength(style.MarginLeft(),
+                            percentage_resolution_size.inline_size));
 }
 
 BoxStrut ComputeMarginsFor(const ConstraintSpace& constraint_space,
@@ -1292,8 +1297,8 @@ BoxStrut ComputeMarginsFor(const ConstraintSpace& constraint_space,
                            const ConstraintSpace& compute_for) {
   if (!style.MayHaveMargin() || constraint_space.IsAnonymous())
     return BoxStrut();
-  LayoutUnit percentage_resolution_size =
-      constraint_space.PercentageResolutionInlineSizeForParentWritingMode();
+  LogicalSize percentage_resolution_size =
+      constraint_space.MarginPaddingPercentageResolutionSize();
   return ComputePhysicalMargins(style, percentage_resolution_size)
       .ConvertToLogical(compute_for.GetWritingDirection());
 }
@@ -1355,17 +1360,17 @@ BoxStrut ComputePadding(const ConstraintSpace& constraint_space,
   // This function may be called for determining intrinsic padding, clamp
   // indefinite %-sizes to zero. See:
   // https://drafts.csswg.org/css-sizing-3/#min-percentage-contribution
-  LayoutUnit percentage_resolution_size =
-      constraint_space.PercentageResolutionInlineSizeForParentWritingMode()
+  LogicalSize percentage_resolution_size =
+      constraint_space.MarginPaddingPercentageResolutionSize()
           .ClampIndefiniteToZero();
   return {MinimumValueForLength(style.PaddingInlineStart(),
-                                percentage_resolution_size),
+                                percentage_resolution_size.inline_size),
           MinimumValueForLength(style.PaddingInlineEnd(),
-                                percentage_resolution_size),
+                                percentage_resolution_size.inline_size),
           MinimumValueForLength(style.PaddingBlockStart(),
-                                percentage_resolution_size),
+                                percentage_resolution_size.block_size),
           MinimumValueForLength(style.PaddingBlockEnd(),
-                                percentage_resolution_size)};
+                                percentage_resolution_size.block_size)};
 }
 
 BoxStrut ComputeScrollbarsForNonAnonymous(const BlockNode& node) {

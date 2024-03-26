@@ -1567,7 +1567,7 @@ void BlockNode::UpdateMarginPaddingInfoIfNeeded(
     const auto* containing_block = box_->ContainingBlock();
     if (UNLIKELY(containing_block && containing_block->IsLayoutGrid())) {
       box_->SetOverrideContainingBlockContentLogicalWidth(
-          space.PercentageResolutionInlineSizeForParentWritingMode());
+          space.MarginPaddingPercentageResolutionSize().inline_size);
     }
   }
 }

@@ -64,6 +64,11 @@ struct CORE_EXPORT LogicalSize {
     return LogicalSize(inline_size.ClampNegativeToZero(),
                        block_size.ClampNegativeToZero());
   }
+
+  LogicalSize ClampIndefiniteToZero() const {
+    return LogicalSize(inline_size.ClampIndefiniteToZero(),
+                       block_size.ClampIndefiniteToZero());
+  }
 };
 
 constexpr LogicalSize kIndefiniteLogicalSize(kIndefiniteSize, kIndefiniteSize);

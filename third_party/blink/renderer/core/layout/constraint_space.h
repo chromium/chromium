@@ -258,17 +258,39 @@ class CORE_EXPORT ConstraintSpace final {
             ReplacedPercentageResolutionBlockSize()};
   }
 
-  // The size to use for percentage resolution for margin/border/padding.
-  // They are always get computed relative to the inline size, in the parent
-  // writing mode.
-  LayoutUnit PercentageResolutionInlineSizeForParentWritingMode() const {
-    if (!IsOrthogonalWritingModeRoot())
-      return PercentageResolutionInlineSize();
-    if (PercentageResolutionBlockSize() != kIndefiniteSize)
-      return PercentageResolutionBlockSize();
-    // TODO(mstensho): Figure out why we get here. It seems wrong, but we do get
-    // here in some grid layout situations.
-    return LayoutUnit();
+  // Return the size to use for percentage resolution for margin/padding.
+  LogicalSize MarginPaddingPercentageResolutionSize() const {
+    // For regular CSS boxes, percentage-based margin and padding get computed
+    // relatively to the inline-size of the containing block.
+    //
+    // TODO(mstensho): @page margin and padding resolution is different from the
+    // rest. Inline percentages are resolved against the inline-size of the
+    // margin box, and block percentages are resolved against its block-size.
+    LayoutUnit cb_inline_size;
+    if (!IsOrthogonalWritingModeRoot()) {
+      cb_inline_size = PercentageResolutionInlineSize();
+    } else {
+      // Since the constraint space has been set up for the writing-mode of the
+      // node that is to be laid out, if the node is an orthogonal writing mode
+      // root, we need to flip and use the available block-size.
+      if (PercentageResolutionBlockSize() != kIndefiniteSize) {
+        cb_inline_size = PercentageResolutionBlockSize();
+      } else {
+        // There are cases where the inline-size of the containing block is
+        // indefinite, e.g. when performing a measure pass whose purpose is to
+        // resolve the inline-size of the containing block. In such cases,
+        // return zero. Example:
+        //
+        // <div style="float:left;">
+        //   <div style="writing-mode:vertical-rl; padding-left:10%;"></div>
+        // </div>
+        //
+        // TODO(layout-dev): It would be nice if we could DCHECK that the cache
+        // slot is kMeasure here, but there are cases in flex, and especially in
+        // grid, where the cache slot is kLayout.
+      }
+    }
+    return LogicalSize(cb_inline_size, cb_inline_size);
   }
 
   std::optional<MinMaxSizes> OverrideMinMaxBlockSizes() const {
