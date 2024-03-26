@@ -9,6 +9,7 @@
 #include "ash/system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_metrics.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
@@ -16,7 +17,9 @@
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/touchpad_device.h"
 #include "ui/events/devices/touchscreen_device.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ash {
 
@@ -32,16 +35,52 @@ const ui::KeyboardDevice GetSampleKeyboardUsb() {
   return {15, ui::INPUT_DEVICE_USB, "kSampleKeyboardUsb"};
 }
 
-const ui::KeyboardDevice GetSampleMouseUsb() {
+const ui::InputDevice GetSampleMouseUsb() {
   return {20, ui::INPUT_DEVICE_USB, "kSampleMouseUsb"};
 }
 
-const ui::KeyboardDevice GetSampleMouseBluetooth() {
+const ui::InputDevice GetSampleMouseBluetooth() {
   return {25, ui::INPUT_DEVICE_BLUETOOTH, "kSampleMouseBluetooth"};
 }
 
 const ui::KeyboardDevice GetSampleMouseInternal() {
   return {30, ui::INPUT_DEVICE_INTERNAL, "kSampleMouseInternal"};
+}
+
+const ui::TouchpadDevice GetSampleTouchpadInternal() {
+  return {35, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+          "kSampleTouchpadInternal"};
+}
+
+const ui::TouchpadDevice GetSampleTouchpadBluetooth() {
+  return {40, ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+          "kSampleTouchpadBluetooth"};
+}
+
+const ui::TouchscreenDevice GetSampleTouchscreenBluetooth() {
+  return {45, ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+          "kSampleTouchscreenBluetooth", gfx::Size(123, 456), 1};
+}
+
+const ui::TouchscreenDevice GetSampleTouchscreenInternal() {
+  return {50, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+          "kSampleTouchscreenInternal", gfx::Size(123, 456), 1};
+}
+
+const ui::InputDevice GetSamplePointingStickBluetooth() {
+  return {55, ui::INPUT_DEVICE_BLUETOOTH, "kSamplePointingStickBluetooth"};
+}
+
+const ui::InputDevice GetSamplePointingStickInternal() {
+  return {60, ui::INPUT_DEVICE_INTERNAL, "kSamplePointingStickInternal"};
+}
+
+const ui::InputDevice GetSampleGraphicsTabletBluetooth() {
+  return {65, ui::INPUT_DEVICE_BLUETOOTH, "kSampleGraphicsTabletBluetooth"};
+}
+
+const ui::InputDevice GetSampleGraphicsTabletInternal() {
+  return {70, ui::INPUT_DEVICE_INTERNAL, "kSampleGraphicsTabletInternal"};
 }
 
 }  // namespace
@@ -199,6 +238,26 @@ TEST_F(HidPreservingBluetoothStateControllerTest,
 }
 
 TEST_F(HidPreservingBluetoothStateControllerTest,
+       DisableBluetoothWithTouchPadDevices) {
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
+  EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+  CheckHistogramState(expected_state);
+
+  ui::DeviceDataManagerTestApi().SetTouchpadDevices(
+      {GetSampleTouchpadInternal(), GetSampleTouchpadBluetooth()});
+  base::RunLoop().RunUntilIdle();
+
+  TryToSetBluetoothEnabledState(/*enabled=*/false,
+                                mojom::HidWarningDialogSource::kQuickSettings);
+  EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
+  expected_state.disabled_bluetooth_dialog_not_shown_count++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(HidPreservingBluetoothStateControllerTest,
        DisableBluetoothWithKeyboardDevices) {
   ExpectedHistogramState expected_state;
   CheckHistogramState(expected_state);
@@ -219,6 +278,72 @@ TEST_F(HidPreservingBluetoothStateControllerTest,
 }
 
 TEST_F(HidPreservingBluetoothStateControllerTest,
+       DisableBluetoothWithTouchscreenDevices) {
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
+  EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+  CheckHistogramState(expected_state);
+
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices(
+      {GetSampleTouchscreenBluetooth(), GetSampleTouchscreenInternal()});
+  base::RunLoop().RunUntilIdle();
+
+  TryToSetBluetoothEnabledState(/*enabled=*/false,
+                                mojom::HidWarningDialogSource::kQuickSettings);
+  EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
+  expected_state.disabled_bluetooth_dialog_not_shown_count++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(HidPreservingBluetoothStateControllerTest,
+       DisableBluetoothWithPointingStickDevices) {
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
+  EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+  CheckHistogramState(expected_state);
+
+  ui::DeviceDataManagerTestApi().SetPointingStickDevices(
+      {GetSamplePointingStickBluetooth(), GetSamplePointingStickInternal()});
+  base::RunLoop().RunUntilIdle();
+
+  TryToSetBluetoothEnabledState(/*enabled=*/false,
+                                mojom::HidWarningDialogSource::kQuickSettings);
+  EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
+  expected_state.disabled_bluetooth_dialog_not_shown_count++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(HidPreservingBluetoothStateControllerTest,
+       DisableBluetoothNoBluetoothDevices) {
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+  SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
+  EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+  CheckHistogramState(expected_state);
+
+  TryToSetBluetoothEnabledState(false,
+                                mojom::HidWarningDialogSource::kQuickSettings);
+  EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
+  expected_state.disabled_bluetooth_dialog_not_shown_count++;
+  CheckHistogramState(expected_state);
+
+  TryToSetBluetoothEnabledState(true,
+                                mojom::HidWarningDialogSource::kQuickSettings);
+  EXPECT_EQ(BluetoothSystemState::kEnabling, GetBluetoothAdapterState());
+  CheckHistogramState(expected_state);
+
+  TryToSetBluetoothEnabledState(false,
+                                mojom::HidWarningDialogSource::kOsSettings);
+  EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
+  expected_state.disabled_bluetooth_dialog_not_shown_count++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(HidPreservingBluetoothStateControllerTest,
        DisableBluetoothWithOnlyBluetoothDevices_AllResults) {
   ExpectedHistogramState expected_state;
   CheckHistogramState(expected_state);
@@ -230,6 +355,14 @@ TEST_F(HidPreservingBluetoothStateControllerTest,
   ui::DeviceDataManagerTestApi().SetMouseDevices({GetSampleMouseBluetooth()});
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
       {GetSampleKeyboardBluetooth()});
+  ui::DeviceDataManagerTestApi().SetTouchpadDevices(
+      {GetSampleTouchpadBluetooth()});
+  ui::DeviceDataManagerTestApi().SetPointingStickDevices(
+      {GetSamplePointingStickBluetooth()});
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices(
+      {GetSampleTouchscreenBluetooth()});
+  ui::DeviceDataManagerTestApi().SetGraphicsTabletDevices(
+      {GetSampleGraphicsTabletBluetooth()});
   base::RunLoop().RunUntilIdle();
 
   size_t called_count = 0u;
@@ -265,26 +398,20 @@ TEST_F(HidPreservingBluetoothStateControllerTest,
 }
 
 TEST_F(HidPreservingBluetoothStateControllerTest,
-       DisableBluetoothNoBluetoothDevices) {
+       DisableBluetoothWithGraphicsTabletDevices) {
   ExpectedHistogramState expected_state;
   CheckHistogramState(expected_state);
+
   SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
   CheckHistogramState(expected_state);
 
-  TryToSetBluetoothEnabledState(false,
-                                mojom::HidWarningDialogSource::kQuickSettings);
-  EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
-  expected_state.disabled_bluetooth_dialog_not_shown_count++;
-  CheckHistogramState(expected_state);
+  ui::DeviceDataManagerTestApi().SetGraphicsTabletDevices(
+      {GetSampleGraphicsTabletBluetooth(), GetSampleGraphicsTabletInternal()});
+  base::RunLoop().RunUntilIdle();
 
-  TryToSetBluetoothEnabledState(true,
+  TryToSetBluetoothEnabledState(/*enabled=*/false,
                                 mojom::HidWarningDialogSource::kQuickSettings);
-  EXPECT_EQ(BluetoothSystemState::kEnabling, GetBluetoothAdapterState());
-  CheckHistogramState(expected_state);
-
-  TryToSetBluetoothEnabledState(false,
-                                mojom::HidWarningDialogSource::kOsSettings);
   EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
   expected_state.disabled_bluetooth_dialog_not_shown_count++;
   CheckHistogramState(expected_state);

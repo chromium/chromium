@@ -88,41 +88,36 @@ DisableBluetoothDialogController::DeviceNamesList
 HidPreservingBluetoothStateController::GetBluetoothDeviceNamesIfOnlyHids() {
   ui::DeviceDataManager* device_data_manager =
       ui::DeviceDataManager::GetInstance();
-
   DisableBluetoothDialogController::DeviceNamesList bluetooth_devices;
 
-  const int touchscreen_count =
-      device_data_manager->GetTouchscreenDevices().size();
-  const int pointing_stick_count =
-      device_data_manager->GetPointingStickDevices().size();
-  const int touchpad_count = device_data_manager->GetTouchpadDevices().size();
+  auto collect_hid_device_names =
+      [](const auto& devices,
+         DisableBluetoothDialogController::DeviceNamesList& names) {
+        for (const auto& device : devices) {
+          if (device.type != ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH) {
+            BLUETOOTH_LOG(DEBUG)
+                << "Non-Bluetooth device found: " << device.name
+                << ", Type: " << device.type;
+            return false;
+          }
+          names.push_back(device.name);
+        }
+        return true;
+      };
 
-  if (touchscreen_count > 0 || pointing_stick_count > 0 || touchpad_count > 0) {
-    BLUETOOTH_LOG(DEBUG) << "Touchscreen count: " << touchscreen_count
-                         << ", Touchpad count: " << touchpad_count
-                         << ", Pointing stick count: " << pointing_stick_count;
-    return bluetooth_devices;
-  }
-
-  for (const auto& keyboard : device_data_manager->GetKeyboardDevices()) {
-    // A non-Bluetooth HID is connected, return an empty list.
-    if (keyboard.type != ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH) {
-      BLUETOOTH_LOG(DEBUG) << "Non-Bluetooth keyboard found: " << keyboard.name
-                           << " Type: " << keyboard.type;
-      ;
-      return DisableBluetoothDialogController::DeviceNamesList();
-    }
-    bluetooth_devices.push_back(keyboard.name);
-  }
-
-  for (const auto& mice : device_data_manager->GetMouseDevices()) {
-    // A non-Bluetooth HID is connected, return an empty list.
-    if (mice.type != ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH) {
-      BLUETOOTH_LOG(DEBUG) << "Non-Bluetooth mouse found: " << mice.name
-                           << ", Type: " << mice.type;
-      return DisableBluetoothDialogController::DeviceNamesList();
-    }
-    bluetooth_devices.push_back(mice.name);
+  if (!collect_hid_device_names(device_data_manager->GetTouchpadDevices(),
+                                bluetooth_devices) ||
+      !collect_hid_device_names(device_data_manager->GetKeyboardDevices(),
+                                bluetooth_devices) ||
+      !collect_hid_device_names(device_data_manager->GetMouseDevices(),
+                                bluetooth_devices) ||
+      !collect_hid_device_names(device_data_manager->GetTouchscreenDevices(),
+                                bluetooth_devices) ||
+      !collect_hid_device_names(device_data_manager->GetPointingStickDevices(),
+                                bluetooth_devices) ||
+      !collect_hid_device_names(device_data_manager->GetGraphicsTabletDevices(),
+                                bluetooth_devices)) {
+    return DisableBluetoothDialogController::DeviceNamesList();
   }
 
   return bluetooth_devices;
