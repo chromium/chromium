@@ -403,6 +403,12 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.118 -> 1.0.119"
 notes = "Reviewed in https://crrev.com/c/5362136"
 
+[[audits.cxxbridge-cmd]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.119 -> 1.0.120"
+notes = "Version bump only."
+
 [[audits.cxxbridge-flags]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
