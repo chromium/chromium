@@ -1046,7 +1046,7 @@ void ComputedStyle::AdjustDiffForNeedsPaintInvalidation(
     StyleDifference& diff,
     const Document& document) const {
   if (ComputedStyleBase::DiffNeedsPaintInvalidation(*this, other) ||
-      !BorderVisuallyEqual(other) || !RadiiEqual(other)) {
+      !BorderVisuallyEqual(other) || !BorderRadiusEqual(other)) {
     diff.SetNeedsNormalPaintInvalidation();
   }
 

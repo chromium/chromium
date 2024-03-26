@@ -1287,15 +1287,8 @@ class ComputedStyle final : public ComputedStyleBase {
     return false;
   }
 
-  bool RadiiEqual(const ComputedStyle& o) const {
-    if (IsSurroundDataSharedWith(o)) {
-      // Fast path; we don't need to do individual testing.
-      return true;
-    }
-    return BorderTopLeftRadius() == o.BorderTopLeftRadius() &&
-           BorderTopRightRadius() == o.BorderTopRightRadius() &&
-           BorderBottomLeftRadius() == o.BorderBottomLeftRadius() &&
-           BorderBottomRightRadius() == o.BorderBottomRightRadius();
+  bool BorderRadiusEqual(const ComputedStyle& o) const {
+    return !DiffBorderRadius(*this, o);
   }
 
   bool BorderVisuallyEqual(const ComputedStyle& o) const {

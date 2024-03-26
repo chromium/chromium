@@ -370,6 +370,11 @@
         ]
     },
     {
+        name: "DiffBorderRadius",
+        fields_to_diff: ["border-top-left-radius", "border-top-right-radius",
+                         "border-bottom-left-radius", "border-bottom-right-radius"],
+    },
+    {
         name: "DiffTransformData",
         fields_to_diff: ["transform", "translate", "rotate",
                     "scale", "offset-path", "offset-rotate", "transform-origin",
