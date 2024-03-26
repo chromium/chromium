@@ -10,7 +10,12 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/types/optional_util.h"
+#include "net/base/cronet_buildflags.h"
 #include "net/cookies/cookie_constants.h"
+
+#if !BUILDFLAG(CRONET_BUILD)
+#include "mojo/public/cpp/bindings/default_construct_tag.h"
+#endif
 
 namespace net {
 
@@ -33,7 +38,9 @@ CookiePartitionKey::SerializedCookiePartitionKey::TopLevelSite() const {
   return top_level_site_;
 }
 
-CookiePartitionKey::CookiePartitionKey() = default;
+#if !BUILDFLAG(CRONET_BUILD)
+CookiePartitionKey::CookiePartitionKey(mojo::DefaultConstruct::Tag) {}
+#endif
 
 CookiePartitionKey::CookiePartitionKey(
     const SchemefulSite& site,

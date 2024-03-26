@@ -1202,6 +1202,7 @@ mojom("cookies_mojom") {
         {
           mojom = "network.mojom.CookiePartitionKey"
           cpp = "::net::CookiePartitionKey"
+          default_constructible = false
         },
         {
           mojom = "network.mojom.CookiePartitionKeyCollection"

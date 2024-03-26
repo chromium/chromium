@@ -9,10 +9,15 @@
 #include <string>
 
 #include "base/types/expected.h"
+#include "net/base/cronet_buildflags.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(CRONET_BUILD)
+#include "mojo/public/cpp/bindings/default_construct_tag.h"
+#endif
 
 namespace net {
 
@@ -35,7 +40,9 @@ class NET_EXPORT CookiePartitionKey {
     std::string top_level_site_;
   };
 
-  CookiePartitionKey();
+#if !BUILDFLAG(CRONET_BUILD)
+  explicit CookiePartitionKey(mojo::DefaultConstruct::Tag);
+#endif
   CookiePartitionKey(const CookiePartitionKey& other);
   CookiePartitionKey(CookiePartitionKey&& other);
   CookiePartitionKey& operator=(const CookiePartitionKey& other);

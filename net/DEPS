@@ -60,6 +60,10 @@ specific_include_rules = {
     "+third_party/zstd",
   ],
 
+  "cookie_partition_key\.(cc|h)": [
+    "+mojo/public/cpp/bindings/default_construct_tag.h",
+  ],
+
   # Dependencies specific for fuzz targets and other fuzzing-related code.
   ".*fuzz.*": [
     "+third_party/fuzztest",

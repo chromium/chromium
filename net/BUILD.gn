@@ -1596,6 +1596,10 @@ component("net") {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
+
+  if (!is_cronet_build) {
+    deps += [ "//mojo/public/cpp/bindings:default_construct_tag" ]
+  }
 }
 
 # net_export.h has its own build target so that code (eg
