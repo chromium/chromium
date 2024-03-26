@@ -453,10 +453,12 @@ bool PageDiscardingHelper::IsPageOptedOutOfDiscarding(
     const std::string& browser_context_id,
     const GURL& url) const {
   auto it = profiles_no_discard_patterns_.find(browser_context_id);
-  // TODO(crbug.com/1308741): Change the CHECK to a DCHECK in Sept 2022, after
-  // verifying that there are no crash reports.
-  CHECK(it != profiles_no_discard_patterns_.end());
-
+  if (it == profiles_no_discard_patterns_.end()) {
+    // There's can be narrow window between profile creation and when prefs are
+    // read, which is when `profiles_no_discard_patterns_` is populated. During
+    // that time assume that a page might be opted out of discarding.
+    return true;
+  }
   return !it->second->MatchURL(url).empty();
 }
 
