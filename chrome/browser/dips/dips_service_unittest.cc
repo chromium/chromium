@@ -355,6 +355,8 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Enabled) {
   auto filter_builder = content::BrowsingDataFilterBuilder::Create(
       content::BrowsingDataFilterBuilder::Mode::kDelete);
   filter_builder->AddRegisterableDomain(GetSiteForDIPS(url));
+  filter_builder->SetCookiePartitionKeyCollection(
+      net::CookiePartitionKeyCollection());
   delegate_.ExpectCall(
       base::Time::Min(), base::Time::Max(),
       chrome_browsing_data_remover::FILTERABLE_DATA_TYPES |
@@ -751,6 +753,8 @@ TEST_F(DIPSServiceStateRemovalTest, ImmediateEnforcement) {
   auto filter_builder = content::BrowsingDataFilterBuilder::Create(
       content::BrowsingDataFilterBuilder::Mode::kDelete);
   filter_builder->AddRegisterableDomain(GetSiteForDIPS(url));
+  filter_builder->SetCookiePartitionKeyCollection(
+      net::CookiePartitionKeyCollection());
   delegate_.ExpectCall(
       base::Time::Min(), base::Time::Max(),
       chrome_browsing_data_remover::FILTERABLE_DATA_TYPES |

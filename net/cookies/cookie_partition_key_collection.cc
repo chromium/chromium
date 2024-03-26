@@ -51,4 +51,37 @@ bool CookiePartitionKeyCollection::Contains(
   return contains_all_keys_ || base::Contains(keys_, key);
 }
 
+bool operator==(const CookiePartitionKeyCollection& lhs,
+                const CookiePartitionKeyCollection& rhs) {
+  if (lhs.ContainsAllKeys()) {
+    return rhs.ContainsAllKeys();
+  }
+
+  if (rhs.ContainsAllKeys()) {
+    return false;
+  }
+
+  return lhs.PartitionKeys() == rhs.PartitionKeys();
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const CookiePartitionKeyCollection& keys) {
+  if (keys.ContainsAllKeys()) {
+    return os << "(all keys)";
+  }
+
+  os << "{";
+  bool first = true;
+  for (const net::CookiePartitionKey& key : keys.PartitionKeys()) {
+    if (!first) {
+      os << ", ";
+    }
+
+    os << key;
+
+    first = false;
+  }
+  return os << "}";
+}
+
 }  // namespace net

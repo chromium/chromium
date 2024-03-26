@@ -19,6 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "content/browser/browsing_data/browsing_data_browsertest_utils.h"
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
@@ -43,8 +44,11 @@
 #include "content/shell/browser/shell.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/cookie_partition_key_collection.h"
 #include "net/cookies/cookie_store.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -54,6 +58,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -82,19 +87,26 @@ void WaitForTitle(const Shell* shell, const char* expected_title) {
 // in tests that need a valid header but do not depend on its value.
 static const char* kClearCookiesHeader = "\"cookies\"";
 
+// For use with TestBrowsingDataRemoverDelegate::ExpectClearSiteDataCall.
+enum class SetStorageKey { kYes, kNo };
+
 // A helper class to observe BrowsingDataRemover deletion tasks coming from
 // ClearSiteData.
 class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
  public:
-  // Sets a test expectation that a Clear-Site-Data header call from |origin|,
-  // instructing to delete |cookies|, |storage|, and |cache|, will schedule
-  // the corresponding BrowsingDataRemover deletion tasks.
+  // Sets a test expectation that a Clear-Site-Data header call from |origin|
+  // (under |top_level_site|) instructing to delete |cookies|, |storage|, and
+  // |cache|, will schedule the corresponding BrowsingDataRemover deletion
+  // tasks. If |set_storage_key|=kYes (the default) then a storage key will be
+  // set on the filter builder.
   void ExpectClearSiteDataCall(
       const StoragePartitionConfig& storage_partition_config,
       const url::Origin& origin,
+      const net::SchemefulSite& top_level_site,
       bool cookies,
       bool storage,
-      bool cache) {
+      bool cache,
+      SetStorageKey set_storage_key = SetStorageKey::kYes) {
     const uint64_t kOriginTypeMask =
         BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
         BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB;
@@ -108,6 +120,10 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
           BrowsingDataFilterBuilder::Mode::kDelete);
       filter_builder.AddRegisterableDomain(origin.host());
       filter_builder.SetStoragePartitionConfig(storage_partition_config);
+      filter_builder.SetCookiePartitionKeyCollection(
+          net::CookiePartitionKeyCollection::FromOptional(
+              net::CookiePartitionKey::FromStorageKeyComponents(
+                  top_level_site, /*nonce=*/std::nullopt)));
 
       ExpectCall(base::Time(), base::Time::Max(), data_type_mask,
                  kOriginTypeMask, &filter_builder);
@@ -125,19 +141,35 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
           BrowsingDataFilterBuilder::Mode::kDelete);
       filter_builder.AddOrigin(origin);
       filter_builder.SetStoragePartitionConfig(storage_partition_config);
+      if (set_storage_key == SetStorageKey::kYes) {
+        blink::mojom::AncestorChainBit ancestor_chain_bit =
+            (net::SchemefulSite(origin) == top_level_site
+                 ? blink::mojom::AncestorChainBit::kSameSite
+                 : blink::mojom::AncestorChainBit::kCrossSite);
+        filter_builder.SetStorageKey(blink::StorageKey::Create(
+            origin, top_level_site, ancestor_chain_bit));
+      }
 
       ExpectCall(base::Time(), base::Time::Max(), data_type_mask,
                  kOriginTypeMask, &filter_builder);
     }
   }
 
-  // A shortcut for the above method, but with only cookies deleted. This is
-  // useful for most tests that use |kClearCookiesHeader|.
+  // A shortcut for the above method, but with only cookies deleted, and
+  // |origin|'s site is used as |top_level_site| if omitted. This is useful for
+  // most tests that use |kClearCookiesHeader|.
   void ExpectClearSiteDataCookiesCall(
       const StoragePartitionConfig& storage_partition_config,
-      const url::Origin& origin) {
-    ExpectClearSiteDataCall(storage_partition_config, origin, true, false,
-                            false);
+      const url::Origin& origin,
+      base::optional_ref<const net::SchemefulSite> top_level_site =
+          base::optional_ref<const net::SchemefulSite>()) {
+    ExpectClearSiteDataCall(storage_partition_config, origin,
+                            top_level_site.has_value()
+                                ? top_level_site.value()
+                                : net::SchemefulSite(origin),
+                            /*cookies=*/true,
+                            /*storage=*/false,
+                            /*cache=*/false);
   }
 };
 
@@ -434,6 +466,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
     GURL urls[3];
 
     // Set up the expectations.
+    GURL page_with_image = https_server()->GetURL("origin4.com", "/index.html");
     for (int i = 0; i < 3; ++i) {
       urls[i] = resource_urls[i];
       if (mask & (1 << i))
@@ -441,16 +474,16 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
 
       if (mask & (1 << i))
         delegate()->ExpectClearSiteDataCookiesCall(
-            storage_partition_config(), url::Origin::Create(urls[i]));
+            storage_partition_config(), url::Origin::Create(urls[i]),
+            net::SchemefulSite(page_with_image));
     }
 
     // Set up redirects between urls 0 --> 1 --> 2.
     AddQuery(&urls[1], "redirect", urls[2].spec());
     AddQuery(&urls[0], "redirect", urls[1].spec());
 
-    // Navigate to a page that embeds "https://origin1.com/image.png"
+    // Navigate to a page that embeds "https://origin1.com/redirect-start"
     // and observe the loading of that resource.
-    GURL page_with_image = https_server()->GetURL("origin4.com", "/index.html");
     std::string content_with_image =
         "<html><head></head><body>"
         "<img src=\"" +
@@ -593,13 +626,17 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, ServiceWorker) {
   // that the number of calls is dependent on the number of network responses,
   // i.e. that it isn't always 1 as in the case of |origin1| and |origin2|.
   delegate()->ExpectClearSiteDataCookiesCall(storage_partition_config(),
-                                             url::Origin::Create(origin1));
+                                             url::Origin::Create(origin1),
+                                             net::SchemefulSite(url));
   delegate()->ExpectClearSiteDataCookiesCall(storage_partition_config(),
-                                             url::Origin::Create(origin4));
+                                             url::Origin::Create(origin4),
+                                             net::SchemefulSite(url));
   delegate()->ExpectClearSiteDataCookiesCall(storage_partition_config(),
-                                             url::Origin::Create(origin2));
+                                             url::Origin::Create(origin2),
+                                             net::SchemefulSite(url));
   delegate()->ExpectClearSiteDataCookiesCall(storage_partition_config(),
-                                             url::Origin::Create(origin4));
+                                             url::Origin::Create(origin4),
+                                             net::SchemefulSite(url));
 
   url = https_server()->GetURL("origin1.com", "/anything-in-workers-scope");
   AddQuery(&url, "origin1", origin1.spec());
@@ -670,7 +707,8 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, MAYBE_Credentials) {
 
     if (test_case.should_run)
       delegate()->ExpectClearSiteDataCookiesCall(storage_partition_config(),
-                                                 url::Origin::Create(resource));
+                                                 url::Origin::Create(resource),
+                                                 net::SchemefulSite(page));
 
     EXPECT_TRUE(NavigateToURL(shell(), page));
     WaitForTitle(shell(), "done");
@@ -746,8 +784,8 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, Types) {
 
     delegate()->ExpectClearSiteDataCall(
         storage_partition_config(), url::Origin::Create(url),
-        test_case.remove_cookies, test_case.remove_storage,
-        test_case.remove_cache);
+        net::SchemefulSite(url), test_case.remove_cookies,
+        test_case.remove_storage, test_case.remove_cache);
 
     EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -932,7 +970,8 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
   AddQuery(&url, "file", "worker_test.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
   delegate()->ExpectClearSiteDataCall(
-      storage_partition_config(), url::Origin::Create(url), false, true, false);
+      storage_partition_config(), url::Origin::Create(url),
+      net::SchemefulSite(url), false, true, false, SetStorageKey::kNo);
   SetClearSiteDataHeader("\"storage\"");
   EXPECT_FALSE(RunScriptAndGetBool("installServiceWorker()"));
   delegate()->VerifyAndClearExpectations();
@@ -959,7 +998,8 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
   delegate()->VerifyAndClearExpectations();
   // Update the service worker and send C-S-D during update.
   delegate()->ExpectClearSiteDataCall(
-      storage_partition_config(), url::Origin::Create(url), false, true, false);
+      storage_partition_config(), url::Origin::Create(url),
+      net::SchemefulSite(url), false, true, false, SetStorageKey::kNo);
 
   base::RunLoop loop;
   auto* remover = browser_context()->GetBrowsingDataRemover();
@@ -1110,6 +1150,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerSharedStorageBrowserTest,
 
   // Let Clear-Site-Data delete the shared storage of "origin1.com".
   delegate()->ExpectClearSiteDataCall(storage_partition_config(), kOrigin1,
+                                      net::SchemefulSite(kOrigin1),
                                       /*cookies=*/false,
                                       /*storage=*/true, /*cache=*/false);
   AddQuery(&url1, "header", "\"storage\"");

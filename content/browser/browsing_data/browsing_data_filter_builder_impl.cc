@@ -354,6 +354,11 @@ BrowsingDataFilterBuilderImpl::Mode BrowsingDataFilterBuilderImpl::GetMode() {
   return mode_;
 }
 
+BrowsingDataFilterBuilderImpl::OriginMatchingMode
+BrowsingDataFilterBuilderImpl::GetOriginModeForTesting() const {
+  return origin_mode_;
+}
+
 const std::set<url::Origin>& BrowsingDataFilterBuilderImpl::GetOrigins() const {
   return origins_;
 }
@@ -363,12 +368,27 @@ BrowsingDataFilterBuilderImpl::GetRegisterableDomains() const {
   return domains_;
 }
 
+const net::CookiePartitionKeyCollection&
+BrowsingDataFilterBuilderImpl::GetCookiePartitionKeyCollectionForTesting()
+    const {
+  return cookie_partition_key_collection_;
+}
+
+bool BrowsingDataFilterBuilderImpl::PartitionedStateAllowedOnlyForTesting()
+    const {
+  return partitioned_state_only_;
+}
+
 std::unique_ptr<BrowsingDataFilterBuilder>
 BrowsingDataFilterBuilderImpl::Copy() {
   std::unique_ptr<BrowsingDataFilterBuilderImpl> copy =
       std::make_unique<BrowsingDataFilterBuilderImpl>(mode_);
+  copy->origin_mode_ = origin_mode_;
   copy->origins_ = origins_;
   copy->domains_ = domains_;
+  copy->cookie_partition_key_collection_ = cookie_partition_key_collection_;
+  copy->storage_key_ = storage_key_;
+  copy->partitioned_state_only_ = partitioned_state_only_;
   copy->storage_partition_config_ = storage_partition_config_;
   return std::move(copy);
 }
@@ -382,6 +402,11 @@ bool BrowsingDataFilterBuilderImpl::IsEqual(
 
   return origins_ == other_impl->origins_ && domains_ == other_impl->domains_ &&
          mode_ == other_impl->mode_ &&
+         origin_mode_ == other_impl->origin_mode_ &&
+         cookie_partition_key_collection_ ==
+             other_impl->cookie_partition_key_collection_ &&
+         storage_key_ == other_impl->storage_key_ &&
+         partitioned_state_only_ == other_impl->partitioned_state_only_ &&
          storage_partition_config_ == other_impl->storage_partition_config_;
 }
 

@@ -58,11 +58,18 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
   Mode GetMode() override;
   std::unique_ptr<BrowsingDataFilterBuilder> Copy() override;
 
+  OriginMatchingMode GetOriginModeForTesting() const;
+
   // The origins targeted by the filter.
   const std::set<url::Origin>& GetOrigins() const;
 
   // The domains targeted by the filter.
   const std::set<std::string>& GetRegisterableDomains() const;
+
+  const net::CookiePartitionKeyCollection&
+  GetCookiePartitionKeyCollectionForTesting() const;
+
+  bool PartitionedStateAllowedOnlyForTesting() const;
 
  private:
   bool IsEqual(const BrowsingDataFilterBuilder& other) const override;

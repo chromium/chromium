@@ -5,6 +5,8 @@
 #ifndef NET_COOKIES_COOKIE_PARTITION_KEY_COLLECTION_H_
 #define NET_COOKIES_COOKIE_PARTITION_KEY_COLLECTION_H_
 
+#include <iosfwd>
+
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "net/base/net_export.h"
@@ -83,6 +85,12 @@ class NET_EXPORT CookiePartitionKeyCollection {
   // If `keys_` is not empty, then `contains_all_keys_` must be false.
   base::flat_set<CookiePartitionKey> keys_;
 };
+
+NET_EXPORT bool operator==(const CookiePartitionKeyCollection& lhs,
+                           const CookiePartitionKeyCollection& rhs);
+
+NET_EXPORT std::ostream& operator<<(std::ostream& os,
+                                    const CookiePartitionKeyCollection& keys);
 
 }  // namespace net
 

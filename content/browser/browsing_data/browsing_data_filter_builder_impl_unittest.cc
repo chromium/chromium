@@ -1198,13 +1198,15 @@ TEST(BrowsingDataFilterBuilderImplTest, CopyAndEquality) {
   TestBrowserContext browser_context;
 
   BrowsingDataFilterBuilderImpl builder(
-      BrowsingDataFilterBuilderImpl::Mode::kPreserve);
+      BrowsingDataFilterBuilderImpl::Mode::kPreserve,
+      BrowsingDataFilterBuilderImpl::OriginMatchingMode::kOriginInAllContexts);
   builder.AddOrigin(url::Origin::Create(GURL("https://example.com")));
   builder.AddRegisterableDomain(kGoogleDomain);
   builder.SetStorageKey(
       blink::StorageKey::CreateFromStringForTesting("https://foo.com"));
   builder.SetCookiePartitionKeyCollection(net::CookiePartitionKeyCollection(
       net::CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"))));
+  builder.SetPartitionedStateAllowedOnly(true);
   builder.SetStoragePartitionConfig(StoragePartitionConfig::Create(
       &browser_context, "domain", "name", /*in_memory=*/false));
 

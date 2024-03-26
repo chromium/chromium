@@ -105,4 +105,28 @@ TEST(CookiePartitionKeyCollectionTest, Contains) {
   }
 }
 
+TEST(CookiePartitionKeyCollectionTest, Equals) {
+  CookiePartitionKeyCollection empty;
+  CookiePartitionKeyCollection foo(
+      CookiePartitionKey::FromURLForTesting(GURL("https://foo.test")));
+  CookiePartitionKeyCollection bar(
+      CookiePartitionKey::FromURLForTesting(GURL("https://bar.test")));
+  CookiePartitionKeyCollection all =
+      CookiePartitionKeyCollection::ContainsAll();
+
+  EXPECT_EQ(empty, empty);
+  EXPECT_EQ(foo, foo);
+  EXPECT_EQ(bar, bar);
+  EXPECT_EQ(all, all);
+
+  EXPECT_NE(foo, empty);
+  EXPECT_NE(empty, foo);
+
+  EXPECT_NE(foo, bar);
+  EXPECT_NE(bar, foo);
+
+  EXPECT_NE(foo, all);
+  EXPECT_NE(all, foo);
+}
+
 }  // namespace net
