@@ -644,7 +644,7 @@ bool BrowserAutofillManager::ShouldShowCardsFromAccountOption(
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source) const {
   // If `trigger_source` is equal to `kShowCardsFromAccount`, that means that
-  // the user accepted "Show cards from account" suggestiona and it should not
+  // the user accepted "Show cards from account" suggestions and it should not
   // be shown again.
   if (trigger_source ==
       AutofillSuggestionTriggerSource::kShowCardsFromAccount) {
@@ -1559,12 +1559,6 @@ void BrowserAutofillManager::DidShowSuggestions(
   }
   autofill_field->set_did_trigger_suggestions(true);
 
-  if (!did_show_suggestions_) {
-    // TODO(crbug.com/1493361): Take suggestions for unclassified forms into
-    // account.
-    did_show_suggestions_ = true;
-  }
-
   auto* logger = GetEventFormLogger(*autofill_field);
   if (logger) {
     logger->OnDidShowSuggestions(*form_structure, *autofill_field,
@@ -1875,44 +1869,29 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
   if (observed_submission) {
     WipeLogQualityAndVotesUploadCallback(submitted_form->form_signature());
   }
-
   if (submitted_form->ShouldRunHeuristics() ||
       submitted_form->ShouldRunHeuristicsForSingleFieldForms() ||
       submitted_form->ShouldBeQueried()) {
-    FormInteractionCounts form_interaction_counts = {};
-    if (submitted_form->field_count() > 0) {
-      const AutofillField* autofill_field = submitted_form->field(0);
-      auto* logger = GetEventFormLogger(*autofill_field);
-      if (logger) {
-        form_interaction_counts = logger->form_interaction_counts();
-      }
-    }
-
     autofill_metrics::LogQualityMetrics(
         *submitted_form, submitted_form->form_parsed_timestamp(),
         interaction_time, submission_time, form_interactions_ukm_logger(),
-        did_show_suggestions_, observed_submission, form_interaction_counts);
-
+        observed_submission);
     if (observed_submission) {
       // Ensure that callbacks for blur votes get sent as well here because
       // we are not sure whether a full navigation with a Reset() call follows.
       FlushPendingLogQualityAndVotesUploadCallbacks();
     }
   }
-
   if (!submitted_form->ShouldBeUploaded()) {
     return;
   }
-
   if (ShouldRecordUkm() && ShouldUploadUkm(*submitted_form)) {
     AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
         client().GetUkmRecorder(), source_id, *submitted_form, submission_time);
   }
-
   if (!client().GetCrowdsourcingManager()) {
     return;
   }
-
   const PersonalDataManager* pdm = client().GetPersonalDataManager();
   FieldTypeSet non_empty_types;
   for (const AutofillProfile* profile : pdm->GetProfiles()) {
@@ -1926,7 +1905,6 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
       non_empty_types.contains(CREDIT_CARD_NUMBER)) {
     non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
   }
-
   client().GetCrowdsourcingManager()->StartUploadRequest(
       /*upload_contents=*/EncodeUploadRequest(*submitted_form, non_empty_types,
                                               /*login_form_signature=*/{},
@@ -2017,7 +1995,6 @@ void BrowserAutofillManager::Reset() {
       std::make_unique<autofill_metrics::ManualFallbackEventLogger>();
 
   has_logged_autofill_enabled_ = false;
-  did_show_suggestions_ = false;
   user_did_type_ = false;
   credit_card_ = CreditCard();
   credit_card_form_ = FormData();

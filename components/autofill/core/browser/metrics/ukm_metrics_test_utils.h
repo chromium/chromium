@@ -37,15 +37,6 @@ void VerifyDeveloperEngagementUkm(
     const DenseSet<FormType>& form_types,
     const std::vector<int64_t>& expected_metric_values);
 
-void VerifySubmitFormUkm(
-    const ukm::TestUkmRecorder* ukm_recorder,
-    const FormData& form,
-    AutofillMetrics::AutofillFormSubmittedState state,
-    bool is_for_credit_card,
-    bool has_upi_vpa_field,
-    const DenseSet<FormType>& form_types,
-    const FormInteractionCounts& form_interaction_counts = {});
-
 void AppendFieldFillStatusUkm(
     const FormData& form,
     std::vector<std::vector<ExpectedUkmMetricsPair>>* expected_metrics);

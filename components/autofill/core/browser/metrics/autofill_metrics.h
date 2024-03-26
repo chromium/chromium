@@ -56,14 +56,6 @@ extern const int kMaxBucketsCount;
 
 class AutofillMetrics {
  public:
-  enum AutofillFormSubmittedState {
-    NON_FILLABLE_FORM_OR_NEW_DATA,
-    FILLABLE_FORM_AUTOFILLED_ALL,
-    FILLABLE_FORM_AUTOFILLED_SOME,
-    FILLABLE_FORM_AUTOFILLED_NONE_DID_SHOW_SUGGESTIONS,
-    FILLABLE_FORM_AUTOFILLED_NONE_DID_NOT_SHOW_SUGGESTIONS,
-    AUTOFILL_FORM_SUBMITTED_STATE_ENUM_SIZE,
-  };
 
   enum DeveloperEngagementMetric {
     // Parsed a form that is potentially autofillable and does not contain any
@@ -728,13 +720,6 @@ class AutofillMetrics {
         FormEventSet form_events,
         const base::TimeTicks& initial_interaction_timestamp,
         const base::TimeTicks& form_submitted_timestamp);
-    void LogFormSubmitted(bool is_for_credit_card,
-                          bool has_upi_vpa_field,
-                          const DenseSet<FormType>& form_types,
-                          AutofillFormSubmittedState state,
-                          const base::TimeTicks& form_parsed_timestamp,
-                          FormSignature form_signature,
-                          const FormInteractionCounts& form_interaction_counts);
     void LogKeyMetrics(const DenseSet<FormType>& form_types,
                        bool data_to_fill_available,
                        bool suggestions_shown,
@@ -1064,18 +1049,6 @@ class AutofillMetrics {
 
   // This should be called each time a server response is parsed for a form.
   static void LogServerResponseHasDataForForm(bool has_data);
-
-  // This should be called at each form submission to indicate the autofilled
-  // state of the form.
-  static void LogAutofillFormSubmittedState(
-      AutofillFormSubmittedState state,
-      bool is_for_credit_card,
-      bool has_upi_vpa_field,
-      const DenseSet<FormType>& form_types,
-      const base::TimeTicks& form_parsed_timestamp,
-      FormSignature form_signature,
-      FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      const FormInteractionCounts& form_interaction_counts);
 
   // Logs if every non-empty field in a submitted form was filled by Autofill.
   // If |is_address| an address was filled, otherwise it was a credit card.

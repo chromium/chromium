@@ -28,9 +28,7 @@ void LogQualityMetrics(
     const base::TimeTicks& interaction_time,
     const base::TimeTicks& submission_time,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    bool did_show_suggestions,
-    bool observed_submission,
-    const FormInteractionCounts& form_interaction_counts);
+    bool observed_submission);
 
 // Log the quality of the heuristics and server predictions for the
 // `form_structure` structure, if autocomplete attributes are present on the

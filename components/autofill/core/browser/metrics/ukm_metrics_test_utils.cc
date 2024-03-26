@@ -23,7 +23,6 @@ using UkmLogHiddenRepresentationalFieldSkipDecisionType =
     ukm::builders::Autofill_HiddenRepresentationalFieldSkipDecision;
 using UkmLogRepeatedServerTypePredictionRationalized =
     ukm::builders::Autofill_RepeatedServerTypePredictionRationalized;
-using UkmFormSubmittedType = ukm::builders::Autofill_FormSubmitted;
 using UkmFieldTypeValidationType = ukm::builders::Autofill_FieldTypeValidation;
 using UkmFieldFillStatusType = ukm::builders::Autofill_FieldFillStatus;
 using UkmFormEventType = ukm::builders::Autofill_FormEvent;
@@ -101,28 +100,6 @@ void VerifyDeveloperEngagementUkm(
         entry, UkmDeveloperEngagementType::kFormSignatureName,
         Collapse(CalculateFormSignature(form)).value());
   }
-}
-
-void VerifySubmitFormUkm(const ukm::TestUkmRecorder* ukm_recorder,
-                         const FormData& form,
-                         AutofillMetrics::AutofillFormSubmittedState state,
-                         bool is_for_credit_card,
-                         bool has_upi_vpa_field,
-                         const DenseSet<FormType>& form_types,
-                         const FormInteractionCounts& form_interaction_counts) {
-  VerifyUkm(ukm_recorder, form, UkmFormSubmittedType::kEntryName,
-            {{{UkmFormSubmittedType::kAutofillFormSubmittedStateName, state},
-              {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-              {UkmFormSubmittedType::kIsForCreditCardName, is_for_credit_card},
-              {UkmFormSubmittedType::kHasUpiVpaFieldName, has_upi_vpa_field},
-              {UkmFormSubmittedType::kFormTypesName,
-               AutofillMetrics::FormTypesToBitVector(form_types)},
-              {UkmFormSubmittedType::kFormSignatureName,
-               Collapse(CalculateFormSignature(form)).value()},
-              {UkmFormSubmittedType::kFormElementUserModificationsName,
-               form_interaction_counts.form_element_user_modifications},
-              {UkmFormSubmittedType::kAutofillFillsName,
-               form_interaction_counts.autofill_fills}}});
 }
 
 void AppendFieldFillStatusUkm(

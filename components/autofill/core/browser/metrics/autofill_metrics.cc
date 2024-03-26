@@ -48,9 +48,6 @@ namespace {
 // Exponential bucket spacing for UKM event data.
 constexpr double kAutofillEventDataBucketSpacing = 2.0;
 
-// Overflow bucket for form user interactions
-constexpr int64_t kFormUserInteractionsOverflowBucket = 20;
-
 using autofill_metrics::FormGroupFillingStats;
 
 // Translates structured name types into simple names that are used for
@@ -1562,54 +1559,6 @@ void AutofillMetrics::LogServerResponseHasDataForForm(bool has_data) {
 }
 
 // static
-void AutofillMetrics::LogAutofillFormSubmittedState(
-    AutofillFormSubmittedState state,
-    bool is_for_credit_card,
-    bool has_upi_vpa_field,
-    const DenseSet<FormType>& form_types,
-    const base::TimeTicks& form_parsed_timestamp,
-    FormSignature form_signature,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    const FormInteractionCounts& form_interaction_counts) {
-  UMA_HISTOGRAM_ENUMERATION("Autofill.FormSubmittedState", state,
-                            AUTOFILL_FORM_SUBMITTED_STATE_ENUM_SIZE);
-
-  switch (state) {
-    case NON_FILLABLE_FORM_OR_NEW_DATA:
-      base::RecordAction(
-          base::UserMetricsAction("Autofill_FormSubmitted_NonFillable"));
-      break;
-
-    case FILLABLE_FORM_AUTOFILLED_ALL:
-      base::RecordAction(
-          base::UserMetricsAction("Autofill_FormSubmitted_FilledAll"));
-      break;
-
-    case FILLABLE_FORM_AUTOFILLED_SOME:
-      base::RecordAction(
-          base::UserMetricsAction("Autofill_FormSubmitted_FilledSome"));
-      break;
-
-    case FILLABLE_FORM_AUTOFILLED_NONE_DID_SHOW_SUGGESTIONS:
-      base::RecordAction(base::UserMetricsAction(
-          "Autofill_FormSubmitted_FilledNone_SuggestionsShown"));
-      break;
-
-    case FILLABLE_FORM_AUTOFILLED_NONE_DID_NOT_SHOW_SUGGESTIONS:
-      base::RecordAction(base::UserMetricsAction(
-          "Autofill_FormSubmitted_FilledNone_SuggestionsNotShown"));
-      break;
-
-    default:
-      NOTREACHED();
-      break;
-  }
-  form_interactions_ukm_logger->LogFormSubmitted(
-      is_for_credit_card, has_upi_vpa_field, form_types, state,
-      form_parsed_timestamp, form_signature, form_interaction_counts);
-}
-
-// static
 void AutofillMetrics::LogAutofillPerfectFilling(bool is_address,
                                                 bool perfect_filling) {
   if (is_address) {
@@ -2647,39 +2596,6 @@ const char* AutofillMetrics::GetMetricsSyncStateSuffix(
   }
 }
 
-void AutofillMetrics::FormInteractionsUkmLogger::LogFormSubmitted(
-    bool is_for_credit_card,
-    bool has_upi_vpa_field,
-    const DenseSet<FormType>& form_types,
-    AutofillFormSubmittedState state,
-    const base::TimeTicks& form_parsed_timestamp,
-    FormSignature form_signature,
-    const FormInteractionCounts& form_interaction_counts) {
-  if (!CanLog())
-    return;
-
-  ukm::builders::Autofill_FormSubmitted builder(GetSourceId());
-  builder.SetAutofillFormSubmittedState(static_cast<int>(state))
-      .SetIsForCreditCard(is_for_credit_card)
-      .SetHasUpiVpaField(has_upi_vpa_field)
-      .SetFormTypes(FormTypesToBitVector(form_types))
-      .SetFormSignature(HashFormSignature(form_signature))
-      .SetFormElementUserModifications(
-          std::min(form_interaction_counts.form_element_user_modifications,
-                   kFormUserInteractionsOverflowBucket))
-      .SetAutofillFills(std::min(form_interaction_counts.autofill_fills,
-                                 kFormUserInteractionsOverflowBucket));
-  if (form_parsed_timestamp.is_null())
-    DCHECK(state == NON_FILLABLE_FORM_OR_NEW_DATA ||
-           state == FILLABLE_FORM_AUTOFILLED_NONE_DID_NOT_SHOW_SUGGESTIONS)
-        << state;
-  else
-    builder.SetMillisecondsSinceFormParsed(
-        MillisecondsSinceFormParsed(form_parsed_timestamp));
-
-  builder.Record(ukm_recorder_);
-}
-
 void AutofillMetrics::FormInteractionsUkmLogger::LogKeyMetrics(
     const DenseSet<FormType>& form_types,
     bool data_to_fill_available,
@@ -2989,7 +2905,7 @@ void AutofillMetrics::LogDeleteAddressProfileFromPopup() {
 
 // static
 void AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory() {
-  // Only the "confirmed" bucket is recorded here, as the cancelation can only
+  // Only the "confirmed" bucket is recorded here, as the cancellation can only
   // be recorded from Java.
   base::UmaHistogramBoolean("Autofill.ProfileDeleted.KeyboardAccessory",
                             /*delete_confirmed=*/true);

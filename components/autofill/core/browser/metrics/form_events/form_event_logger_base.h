@@ -100,10 +100,6 @@ class FormEventLoggerBase {
 
   void OnTextFieldDidChange(const FieldGlobalId& field_global_id);
 
-  const FormInteractionCounts& form_interaction_counts() const {
-    return form_interaction_counts_;
-  }
-
   void SetFastCheckoutRunId(int64_t run_id) { fast_checkout_run_id_ = run_id; }
 
   AutofillMetrics::FormEventSet GetFormEvents(FormGlobalId form_global_id);
@@ -209,7 +205,7 @@ class FormEventLoggerBase {
   bool has_logged_edited_autofilled_field_ = false;
   bool has_logged_autofilled_field_was_cleared_by_javascript_after_fill_ =
       false;
-  bool has_called_on_destoryed_ = false;
+  bool has_called_on_destroyed_ = false;
   bool is_heuristic_only_email_form_ = false;
   AblationGroup ablation_group_ = AblationGroup::kDefault;
   AblationGroup conditional_ablation_group_ = AblationGroup::kDefault;

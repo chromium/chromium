@@ -4361,6 +4361,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_FormSubmitted_FilledAll">
+  <obsolete>Deprecated as of 03/2024.</obsolete>
   <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when Autofill detects a form submission for a
@@ -4369,6 +4370,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_FormSubmitted_FilledNone_SuggestionsNotShown">
+  <obsolete>Deprecated as of 03/2024.</obsolete>
   <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when Autofill detects a form submission for a
@@ -4377,6 +4379,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_FormSubmitted_FilledNone_SuggestionsShown">
+  <obsolete>Deprecated as of 03/2024.</obsolete>
   <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when Autofill detects a form submission for a
@@ -4385,6 +4388,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_FormSubmitted_FilledSome">
+  <obsolete>Deprecated as of 03/2024.</obsolete>
   <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when Autofill detects a form submission for a
@@ -4393,6 +4397,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_FormSubmitted_NonFillable">
+  <obsolete>Deprecated as of 03/2024.</obsolete>
   <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when Autofill detects a form submission for a

@@ -3166,6 +3166,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Autofill.FormSubmitted">
+  <obsolete>
+    Deprecated as of 03/2024.
+  </obsolete>
   <owner>jsaul@google.com</owner>
   <summary>
     Recorded when user submits a form.

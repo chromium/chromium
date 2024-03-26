@@ -1426,15 +1426,6 @@ Called by update_autofill_enums.py.-->
              benefit available were shown (once)"/>
 </enum>
 
-<enum name="AutofillFormSubmittedState">
-  <int value="0" label="Non fillable form or new data"/>
-  <int value="1" label="Fillable form, autofilled all"/>
-  <int value="2" label="Fillable form, autofilled some"/>
-  <int value="3" label="Fillable form, autofilled none, did show suggestions"/>
-  <int value="4"
-      label="Fillable form, autofilled none, did not show suggestions"/>
-</enum>
-
 <enum name="AutofillGetRealPanResult">
   <int value="0" label="Success"/>
   <int value="1" label="Retriable failure"/>
