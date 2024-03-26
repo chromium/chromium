@@ -12,8 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -27,7 +25,6 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
-#include "chromeos/ash/components/quick_start/logging.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
@@ -101,10 +98,7 @@ NetworkScreen::NetworkScreen(base::WeakPtr<NetworkScreenView> view,
     : BaseScreen(NetworkScreenView::kScreenId, OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
       exit_callback_(exit_callback),
-      network_state_helper_(std::make_unique<login::NetworkStateHelper>()) {
-  ash::GetNetworkConfigService(
-      remote_cros_network_config_.BindNewPipeAndPassReceiver());
-}
+      network_state_helper_(std::make_unique<login::NetworkStateHelper>()) {}
 
 NetworkScreen::~NetworkScreen() {
   connection_timer_.Stop();
@@ -219,14 +213,6 @@ void NetworkScreen::OnUiUpdateRequested(
     WizardController::default_controller()
         ->quick_start_controller()
         ->DetachFrontend(this);
-
-    // Do not change the view if we are waiting for the network to stabilize.
-    // The system will automatically transition to the next screen.
-    if (waiting_for_quickstart_stabilization_period_) {
-      quick_start::QS_LOG(INFO) << __func__ << "Waiting for screen change.";
-      return;
-    }
-
     // Show the standard 'Network List'
     if (view_) {
       view_->ShowScreenWithData({});
@@ -261,7 +247,6 @@ void NetworkScreen::UnsubscribeNetworkNotification() {
 }
 
 void NetworkScreen::NotifyOnConnection() {
-  waiting_for_quickstart_stabilization_period_ = false;
   UnsubscribeNetworkNotification();
   exit_callback_.Run(Result::CONNECTED);
 }
@@ -299,28 +284,10 @@ void NetworkScreen::UpdateStatus() {
 
 void NetworkScreen::StopWaitingForConnection(const std::u16string& network_id) {
   const bool is_connected = network_state_helper_->IsConnected();
-
-  // QuickStart case. Delay switching to the next screen by a couple of seconds
-  // while waiting for the network to stabilize. This is also a UX request so
-  // that users have enough time to see the WiFi transfer step. b/328677262
-  if (is_connected && (context() && context()->quick_start_setup_ongoing)) {
-    if (waiting_for_quickstart_stabilization_period_) {
-      return;
-    }
-
-    // Prevents posting multiple tasks, since this method might get triggered
-    // multiple times.
-    waiting_for_quickstart_stabilization_period_ = true;
-    quick_start::QS_LOG(INFO) << "Connected. About to advance screens.";
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&NetworkScreen::NotifyOnConnection,
-                       weak_ptr_factory_.GetWeakPtr()),
-        quickstart_stabilization_period_);
-    return;
-  }
-
-  if (is_connected && continue_pressed_) {
+  // `context()` might not exist in unit tests.
+  const bool quick_start_setup_ongoing =
+      context() && context()->quick_start_setup_ongoing;
+  if (is_connected && (continue_pressed_ || quick_start_setup_ongoing)) {
     NotifyOnConnection();
     return;
   }
@@ -380,8 +347,11 @@ void NetworkScreen::SetQuickStartButtonVisibility(bool visible) {
 
 void NetworkScreen::ConfigureWifiNetwork(
     const quick_start::mojom::WifiCredentials& wifi_credentials) {
-  quick_start::QS_LOG(INFO) << "Configuring WiFi...";
+  // TODO(b/300389592): Remove error logs.
+  LOG(ERROR) << __func__ << " configuring: " << wifi_credentials.ssid;
   network_id_ = base::UTF8ToUTF16(wifi_credentials.ssid);
+  ash::GetNetworkConfigService(
+      remote_cros_network_config_.BindNewPipeAndPassReceiver());
 
   auto config = CreateNetworkConfig(wifi_credentials);
   remote_cros_network_config_->ConfigureNetwork(
@@ -429,14 +399,6 @@ void NetworkScreen::ExitQuickStartFlow(
   quick_start_controller->DetachFrontend(this);
   const auto entry_point = quick_start_controller->GetExitPoint();
   quick_start_controller->AbortFlow(reason);
-
-  // If we scheduled a call to switch to the next screen already, do not change
-  // the UI.
-  if (waiting_for_quickstart_stabilization_period_) {
-    quick_start::QS_LOG(INFO) << "Waiting for network to stabilize.";
-    return;
-  }
-
   if (entry_point ==
       quick_start::QuickStartController::EntryPoint::NETWORK_SCREEN) {
     // Switches to the screen step that shows the list of networks.
