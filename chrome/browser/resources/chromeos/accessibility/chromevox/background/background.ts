@@ -8,6 +8,7 @@ import {Flags} from '/common/flags.js';
 import {InstanceChecker} from '/common/instance_checker.js';
 import {LocalStorage} from '/common/local_storage.js';
 
+import {BrailleKeyEvent} from '../common/braille/braille_key_types.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {EarconId} from '../common/earcon_id.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
@@ -57,23 +58,14 @@ import {TtsBackground} from './tts_background.js';
 
 /** ChromeVox background context. */
 export class Background extends ChromeVoxState {
+  private earcons_: AbstractEarcons;
+  private isReadingContinuously_ = false;
+  private talkBackEnabled_ = false;
+
   constructor() {
     super();
 
-    /** @private {!AbstractEarcons} */
     this.earcons_ = new Earcons();
-
-    /** @private {boolean} */
-    this.isReadingContinuously_ = false;
-
-    /** @private {boolean} */
-    this.talkBackEnabled_ = false;
-
-    this.init_();
-  }
-
-  /** @private */
-  init_() {
     this.earcons_.playEarcon(EarconId.CHROMEVOX_LOADING);
 
     // Export globals on ChromeVox.
@@ -94,7 +86,7 @@ export class Background extends ChromeVoxState {
     });
   }
 
-  static async init() {
+  static async init(): Promise<void> {
     // Pre-initialization.
     await Flags.init();
     await LocalStorage.init();
@@ -141,34 +133,28 @@ export class Background extends ChromeVoxState {
       waitForIntroducePromise,
     ]);
     ChromeVoxState.resolveReadyPromise_();
-    ChromeVoxState.instance.onIntroduceChromeVox_();
+    ChromeVoxState.instance.onIntroduceChromeVox();
   }
 
-  /** @override */
-  get isReadingContinuously() {
+  override get isReadingContinuously(): boolean {
     return this.isReadingContinuously_;
   }
 
-  /** @override */
-  get talkBackEnabled() {
+  override get talkBackEnabled(): boolean {
     return this.talkBackEnabled_;
   }
 
-  /** @override */
-  set isReadingContinuously(newValue) {
+  override set isReadingContinuously(newValue: boolean) {
     this.isReadingContinuously_ = newValue;
   }
 
-  /** @override */
-  onBrailleKeyEvent(evt, content) {
+  override onBrailleKeyEvent(
+      evt: BrailleKeyEvent, content: NavBraille): boolean {
     return BrailleCommandHandler.onBrailleKeyEvent(evt, content);
   }
 
-  /**
-   * Handles the onIntroduceChromeVox event.
-   * @private
-   */
-  onIntroduceChromeVox_() {
+  /** Handles the onIntroduceChromeVox event. */
+  override onIntroduceChromeVox(): void {
     this.earcons_.playEarcon(EarconId.CHROMEVOX_LOADED);
     ChromeVox.tts.speak(
         Msgs.getMsg('chromevox_intro'), QueueMode.QUEUE,
@@ -179,6 +165,7 @@ export class Background extends ChromeVoxState {
 
 InstanceChecker.closeExtraInstances();
 const waitForIntroducePromise = new Promise(
-    resolve =>
-        chrome.accessibilityPrivate.onIntroduceChromeVox.addListener(resolve));
+    (resolve: (value: unknown) => void) =>
+        chrome.accessibilityPrivate.onIntroduceChromeVox.addListener(
+            resolve as VoidFunction));
 Background.init();

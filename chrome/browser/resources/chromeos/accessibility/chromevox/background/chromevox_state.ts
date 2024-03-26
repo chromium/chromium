@@ -40,9 +40,6 @@ export abstract class ChromeVoxState {
     return ChromeVoxState.readyPromise_;
   }
 
-  /** Can be overridden to initialize values and state when first created. */
-  abstract init(): void;
-
   abstract get isReadingContinuously(): boolean;
   abstract set isReadingContinuously(newValue: boolean);
 
@@ -54,6 +51,8 @@ export abstract class ChromeVoxState {
    */
   abstract onBrailleKeyEvent(evt: BrailleKeyEvent, content: NavBraille):
       boolean;
+
+  abstract onIntroduceChromeVox(): void;
 }
 
 TestImportManager.exportForTesting(ChromeVoxState);

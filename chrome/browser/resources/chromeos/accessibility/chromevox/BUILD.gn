@@ -43,6 +43,7 @@ common_tsc_dir =
 #
 # TS files to compile.
 ts_modules = [
+  "background/background.ts",
   "background/chromevox_state.ts",
   "background/editing/editable_text_base.ts",
   "background/editing/editing.ts",
@@ -79,7 +80,6 @@ js_modules = [
   "background/abstract_tts.js",
   "background/automation_object_constructor_installer.js",
   "background/auto_scroll_handler.js",
-  "background/background.js",
   "background/braille/braille_background.js",
   "background/braille/braille_captions_background.js",
   "background/braille/braille_command_handler.js",
