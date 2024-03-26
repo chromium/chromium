@@ -1053,7 +1053,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mHasFinishedLatestAccessibilitySnapshot = false;
         long beforeSnapshotTimeMs = SystemClock.elapsedRealtime();
 
-        // Stubbed.
         if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS)) {
             mNativeAssistDataObj =
                     WebContentsAccessibilityImplJni.get()
@@ -1088,6 +1087,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     1,
                     5 * 1000,
                     100);
+        }
+
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS)) {
+            WebContentsAccessibilityImplJni.get().deleteEarly(mNativeAssistDataObj);
+            mNativeAssistDataObj = 0;
         }
     }
 
