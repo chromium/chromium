@@ -92,7 +92,6 @@ source_set("platform") {
     "//chromeos/ash/services/nearby/public/cpp:tcp_server_socket_port",
     "//chromeos/ash/services/nearby/public/mojom",
     "//chromeos/services/network_config/public/mojom",
-    "//components/cross_device/logging",
     "//components/webrtc:thread_wrapper",
     "//crypto",
     "//device/bluetooth",
