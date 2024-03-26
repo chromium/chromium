@@ -41,28 +41,31 @@ public class TabGroupCreationDialogManager implements Destroyable {
          */
         protected void showDialog(int rootId, TabGroupModelFilter filter) {
             int tabCount = filter.getRelatedTabCountForRootId(rootId);
-            boolean isIncognito = filter.isIncognito();
+            String defaultGroupTitle =
+                    mActivity
+                            .getResources()
+                            .getQuantityString(
+                                    R.plurals.bottom_tab_grid_title_placeholder,
+                                    tabCount,
+                                    tabCount);
 
             View customView =
                     LayoutInflater.from(mActivity)
                             .inflate(R.layout.tab_group_creation_dialog, null);
             ((AppCompatEditText) customView.findViewById(R.id.title_input_text))
-                    .setText(
-                            mActivity
-                                    .getResources()
-                                    .getQuantityString(
-                                            R.plurals.bottom_tab_grid_title_placeholder,
-                                            tabCount,
-                                            tabCount));
+                    .setText(defaultGroupTitle);
 
             List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
+            // TODO(b/330597857): Allow a dynamic incognito setting for the color picker.
+            // Force a false incognito value for the color picker as this modal dialog does not
+            // support incognito color themes and should just follow the system theme.
             ColorPickerCoordinator colorPickerCoordinator =
                     new ColorPickerCoordinator(
                             mActivity,
                             colors,
                             R.layout.tab_group_color_picker_container,
                             ColorPickerType.TAB_GROUP,
-                            isIncognito,
+                            /* isIncognito= */ false,
                             ColorPickerLayoutType.DYNAMIC,
                             null);
             final @TabGroupColorId int colorId = filter.getTabGroupColor(rootId);
@@ -86,20 +89,28 @@ public class TabGroupCreationDialogManager implements Destroyable {
 
                             final @DialogDismissalCause int cause;
                             if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-                                // TODO(crbug.com/1517346): Save title and color and delay undo
-                                // snackbar for drag and drop and selection editor.
+                                final @TabGroupColorId int color =
+                                        colorPickerCoordinator.getSelectedColorSupplier().get();
+                                filter.setTabGroupColor(rootId, color);
+
+                                // Only save the group title input text if it has been changed from
+                                // the suggested default title.
+                                String inputGroupTitle = groupTitle.getTrimmedText();
+                                if (!defaultGroupTitle.equals(inputGroupTitle)) {
+                                    filter.setTabGroupTitle(rootId, groupTitle.getTrimmedText());
+                                }
+
+                                // Refresh the GTS tab list with the newly set color and title.
+                                mOnDialogAcceptedRunnable.run();
+
                                 cause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
                             } else {
-                                // TODO(crbug.com/1517346): Enact the snackbar undo function if
-                                // applicable.
                                 cause = DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
                             }
 
                             mModalDialogManager.dismissDialog(mModel, cause);
                         }
 
-                        // TODO(crbug.com/1517346): On unexpected dismissal, save both the
-                        // default and user edited title and color.
                         @Override
                         public void onDismiss(PropertyModel model, int dismissalCause) {}
                     };
@@ -135,15 +146,18 @@ public class TabGroupCreationDialogManager implements Destroyable {
     private TabGroupModelFilterObserver mFilterObserver;
     private PropertyModel mModel;
     private ShowDialogDelegate mShowDialogDelegate;
+    private Runnable mOnDialogAcceptedRunnable;
 
     public TabGroupCreationDialogManager(
             @NonNull Activity activity,
             @NonNull ModalDialogManager modalDialogManager,
-            @NonNull TabModelSelector tabModelSelector) {
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull Runnable onDialogAccepted) {
         mActivity = activity;
         mModalDialogManager = modalDialogManager;
         mTabModelSelector = tabModelSelector;
         mShowDialogDelegate = createShowDialogDelegate();
+        mOnDialogAcceptedRunnable = onDialogAccepted;
 
         TabModelFilterProvider tabModelFilterProvider =
                 mTabModelSelector.getTabModelFilterProvider();

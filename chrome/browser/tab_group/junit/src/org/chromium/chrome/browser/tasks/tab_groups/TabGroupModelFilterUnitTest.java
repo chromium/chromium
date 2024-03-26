@@ -14,6 +14,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
@@ -62,7 +63,6 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -835,14 +835,8 @@ public class TabGroupModelFilterUnitTest {
         assertEquals(mTab1.getTabGroupId(), tabGroupId);
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab1, mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab1, mTab1.getId());
-        verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(
-                        Collections.singletonList(mTab1),
-                        Collections.singletonList(0),
-                        Collections.singletonList(mTab1.getRootId()),
-                        Collections.singletonList(null),
-                        null,
-                        INVALID_COLOR_ID);
+        verify(mTabGroupModelFilterObserver, never())
+                .didCreateGroup(anyList(), anyList(), anyList(), anyList(), anyString(), anyInt());
         assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab1));
 
         mTabGroupModelFilter.moveTabOutOfGroup(TAB1_ID);
@@ -1729,30 +1723,13 @@ public class TabGroupModelFilterUnitTest {
         when(mSharedPreferencesColor.getInt(anyString(), anyInt())).thenReturn(COLOR_ID);
 
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab4, mTab1));
-        List<Integer> originalIndexes = new ArrayList<>();
-        List<Integer> originalRootIds = new ArrayList<>();
-        List<Token> originalTabGroupIds = new ArrayList<>();
-
-        for (Tab tab : expectedGroup) {
-            originalIndexes.add(
-                    TabModelUtils.getTabIndexById(mTabGroupModelFilter.getTabModel(), tab.getId()));
-            originalRootIds.add(tab.getRootId());
-            originalTabGroupIds.add(tab.getTabGroupId());
-        }
-
         Token tabGroupId = new Token(33L, 82L);
         when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId(), false);
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab4, mTabGroupModelFilter);
-        verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(
-                        expectedGroup,
-                        originalIndexes,
-                        originalRootIds,
-                        originalTabGroupIds,
-                        TAB_TITLE,
-                        COLOR_ID);
+        verify(mTabGroupModelFilterObserver, never())
+                .didCreateGroup(anyList(), anyList(), anyList(), anyList(), anyString(), anyInt());
         assertArrayEquals(
                 mTabGroupModelFilter.getRelatedTabList(mTab1.getId()).toArray(),
                 expectedGroup.toArray());

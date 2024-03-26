@@ -498,6 +498,11 @@ public class TabGridDialogMediator
 
         TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
         Tab currentTab = TabModelUtils.getTabById(filter.getTabModel(), mCurrentTabId);
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+            final @TabGroupColorId int color =
+                    TabGroupColorUtils.getOrCreateTabGroupColor(currentTab.getRootId(), filter);
+            mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, color);
+        }
         if (mTabGroupTitleEditor != null) {
             String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(currentTab.getRootId());
             if (storedTitle != null && filter.isTabInTabGroup(currentTab)) {
@@ -521,12 +526,6 @@ public class TabGridDialogMediator
         mModel.set(
                 TabGridDialogProperties.HEADER_TITLE,
                 TabGroupTitleEditor.getDefaultTitle(mContext, tabsCount));
-
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            final @TabGroupColorId int color =
-                    TabGroupColorUtils.getOrCreateTabGroupColor(currentTab.getRootId(), filter);
-            mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, color);
-        }
     }
 
     private void updateColorProperties(Context context, boolean isIncognito) {

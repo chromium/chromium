@@ -229,11 +229,13 @@ public interface TabManagementDelegate {
      * @param activity The {@link Activity} that hosts this dialog.
      * @param modalDialogManager The modal dialog manager for the activity.
      * @param tabModelSelector The current {@link TabModelSelector}.
+     * @param onDialogAccepted The action to run when the dialog is accepted.
      */
     Destroyable createTabGroupCreationDialogManager(
             @NonNull Activity activity,
             @NonNull ModalDialogManager modalDialogManager,
-            @NonNull TabModelSelector tabModelSelector);
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull Runnable onDialogAccepted);
 
     /**
      * Create a {@link ColorPicker} when creating a custom color picker component.
