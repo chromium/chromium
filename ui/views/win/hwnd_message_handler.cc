@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/heap_array.h"
 #include "base/debug/gdi_debug_util_win.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -2799,9 +2800,10 @@ LRESULT HWNDMessageHandler::OnTouchEvent(UINT message,
 
   // Handle touch events only on Aura for now.
   WORD num_points = LOWORD(w_param);
-  std::unique_ptr<TOUCHINPUT[]> input(new TOUCHINPUT[num_points]);
+  base::HeapArray<TOUCHINPUT> input =
+      base::HeapArray<TOUCHINPUT>::WithSize(num_points);
   if (ui::GetTouchInputInfoWrapper(reinterpret_cast<HTOUCHINPUT>(l_param),
-                                   num_points, input.get(),
+                                   num_points, input.data(),
                                    sizeof(TOUCHINPUT))) {
     // input[i].dwTime doesn't necessarily relate to the system time at all,
     // so use base::TimeTicks::Now().
