@@ -202,10 +202,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
     return frame_connector_;
   }
 
-  // Returns the view into which this view is directly embedded. This can
-  // return nullptr when this view's associated child frame is not connected
-  // to the frame tree.
-  virtual RenderWidgetHostViewBase* GetParentView();
+  RenderWidgetHostViewBase* GetParentView() override;
 
   void RegisterFrameSinkId();
   void UnregisterFrameSinkId();

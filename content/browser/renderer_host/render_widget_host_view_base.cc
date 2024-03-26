@@ -650,6 +650,14 @@ float RenderWidgetHostViewBase::GetDeviceScaleFactor() const {
   return screen_infos_.current().device_scale_factor;
 }
 
+RenderInputRouter* RenderWidgetHostViewBase::GetViewRenderInputRouter() {
+  return host()->GetRenderInputRouter();
+}
+
+RenderWidgetHostViewBase* RenderWidgetHostViewBase::GetParentView() {
+  return nullptr;
+}
+
 void RenderWidgetHostViewBase::SetScaleOverrideForCapture(float scale) {
   DVLOG(1) << __func__ << ": override=" << scale;
   scale_override_for_capture_ = scale;

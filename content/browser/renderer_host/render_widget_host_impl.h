@@ -975,6 +975,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // the owned `compositor_metric_recorder_`.
   void DisableCompositorMetricRecording();
 
+  virtual RenderInputRouter* GetRenderInputRouter();  // virtual for testing.
+
  protected:
   // |routing_id| must not be MSG_ROUTING_NONE.
   // If this object outlives |delegate|, DetachDelegate() must be called when
@@ -1020,8 +1022,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   bool IsPointerLocked() const;
 
   std::unique_ptr<FlingSchedulerBase> MakeFlingScheduler();
-
-  virtual RenderInputRouter* GetRenderInputRouter();  // virtual for testing.
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FullscreenDetectionTest,
