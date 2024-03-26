@@ -10,11 +10,13 @@ import {LogType, SerializableLog} from '../common/log_types.js';
 
 /** Class to manage the log page. */
 export class LogPage {
+  static instance: LogPage;
+
   constructor() {
     this.initPage_();
   }
 
-  static async init() {
+  static async init(): Promise<void> {
     if (LogPage.instance) {
       throw new Error('LogPage can only be initiated once.');
     }
@@ -22,11 +24,7 @@ export class LogPage {
     await LogPage.instance.update();
   }
 
-  /**
-   * @param {!SerializableLog} log
-   * @private
-   */
-  addLogToPage_(log) {
+  private addLogToPage_(log: SerializableLog): void {
     const div = document.getElementById(IdName.LIST);
     const p = document.createElement(ElementName.PARAGRAPH);
 
@@ -43,11 +41,12 @@ export class LogPage {
     /** Add hide tree button when logType is tree. */
     if (log.logType === LogType.TREE) {
       const toggle = document.createElement(ElementName.LABEL);
-      const toggleCheckbox = document.createElement(ElementName.INPUT);
+      const toggleCheckbox =
+          document.createElement(ElementName.INPUT) as HTMLInputElement;
       toggleCheckbox.type = InputType.CHECKBOX;
       toggleCheckbox.checked = true;
       toggleCheckbox.onclick = event => textWrapper.hidden =
-          !event.target.checked;
+          !(event.target as HTMLInputElement).checked;
 
       const toggleText = document.createElement(ElementName.SPAN);
       toggleText.textContent = 'show tree';
@@ -62,26 +61,17 @@ export class LogPage {
     textWrapper.className = ClassName.TEXT;
     p.appendChild(textWrapper);
 
-    div.appendChild(p);
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    div!.appendChild(p);
   }
 
-  /**
-   * @param {!LogType} type
-   * @return {string}
-   * @private
-   */
-  checkboxId_(type) {
+  private checkboxId_(type: LogType): string {
     return type + 'Filter';
   }
 
-  /**
-   * @param {!LogType} type
-   * @param {boolean} checked
-   * @private
-   */
-  createFilterCheckbox_(type, checked) {
-    const label = document.createElement(ElementName.LABEL);
-    const input = document.createElement(ElementName.INPUT);
+  private createFilterCheckbox_(type: LogType, checked: boolean): void {
+    const label = document.createElement(ElementName.LABEL) as HTMLLabelElement;
+    const input = document.createElement(ElementName.INPUT) as HTMLInputElement;
     input.id = this.checkboxId_(type);
     input.type = InputType.CHECKBOX;
     input.classList.add(ClassName.FILTER);
@@ -93,11 +83,11 @@ export class LogPage {
     span.textContent = type;
     label.appendChild(span);
 
-    document.getElementById(IdName.FILTER).appendChild(label);
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    document.getElementById(IdName.FILTER)!.appendChild(label);
   }
 
-  /** @private */
-  getDownloadFileName_() {
+  private getDownloadFileName_(): string {
     const date = new Date();
     return [
       'chromevox_logpage',
@@ -110,8 +100,7 @@ export class LogPage {
         '.txt';
   }
 
-  /** @private */
-  initPage_() {
+  private initPage_(): void {
     const params = new URLSearchParams(location.search);
     for (const type of Object.values(LogType)) {
       const enabled =
@@ -119,35 +108,30 @@ export class LogPage {
       this.createFilterCheckbox_(type, enabled);
     }
 
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     const clearLogButton = document.getElementById(IdName.CLEAR);
-    clearLogButton.onclick = () => this.onClear_();
+    clearLogButton!.onclick = () => this.onClear_();
 
     const saveLogButton = document.getElementById(IdName.SAVE);
-    saveLogButton.onclick = event => this.onSave_(event);
+    saveLogButton!.onclick = event => this.onSave_(event);
   }
 
-  /**
-   * @param {!LogType} type
-   * @private
-   */
-  isEnabled_(type) {
-    return document.getElementById(this.checkboxId_(type)).checked;
+  private isEnabled_(type: LogType): boolean {
+    const element =
+        document.getElementById(this.checkboxId_(type)) as HTMLInputElement;
+    return element.checked;
   }
 
-  /**
-   * @param {Element} log
-   * @private
-   */
-  logToString_(log) {
-    const logText = [];
-    logText.push(log.querySelector(`.${ClassName.TYPE}`).textContent);
-    logText.push(log.querySelector(`.${ClassName.TIME}`).textContent);
-    logText.push(log.querySelector(`.${ClassName.TEXT}`).textContent);
+  private logToString_(log: Element): string {
+    const logText: string[] = [];
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    logText.push(log.querySelector(`.${ClassName.TYPE}`)!.textContent!);
+    logText.push(log.querySelector(`.${ClassName.TIME}`)!.textContent!);
+    logText.push(log.querySelector(`.${ClassName.TEXT}`)!.textContent!);
     return logText.join(' ');
   }
 
-  /** @private */
-  async onClear_() {
+  private async onClear_(): Promise<void> {
     await BackgroundBridge.LogStore.clearLog();
     location.reload();
   }
@@ -155,10 +139,8 @@ export class LogPage {
   /**
    * When saveLog button is clicked this function runs.
    * Save the current log appeared in the page as a plain text.
-   * @param {Event} event
-   * @private
    */
-  onSave_(event) {
+  private onSave_(_event: Event): void {
     let outputText = '';
     const logs =
         document.querySelectorAll(`#${IdName.LIST} ${ElementName.PARAGRAPH}`);
@@ -166,14 +148,14 @@ export class LogPage {
       outputText += this.logToString_(log) + '\n';
     }
 
-    const a = document.createElement(ElementName.ANCHOR);
+    const a = document.createElement(ElementName.ANCHOR) as HTMLAnchorElement;
     a.download = this.getDownloadFileName_();
     a.href = 'data:text/plain; charset=utf-8,' + encodeURI(outputText);
     a.click();
   }
 
   /** Update the logs. */
-  async update() {
+  async update(): Promise<void> {
     const logs = await BackgroundBridge.LogStore.getLogs();
     if (!logs) {
       return;
@@ -186,12 +168,9 @@ export class LogPage {
     }
   }
 
-  /**
-   * Update the URL parameter based on the checkboxes.
-   * @private
-   */
-  updateUrlParams_() {
-    const urlParams = [];
+  /** Update the URL parameter based on the checkboxes. */
+  private updateUrlParams_(): void {
+    const urlParams: string[] = [];
     for (const type of Object.values(LogType)) {
       urlParams.push(type + 'Filter=' + LogPage.instance.isEnabled_(type));
     }
@@ -202,11 +181,8 @@ export class LogPage {
    * Format time stamp.
    * In this log, events are dispatched many times in a short time, so
    * milliseconds order time stamp is required.
-   * @param {!string} dateStr
-   * @return {!string}
-   * @private
    */
-  formatTimeStamp_(dateStr) {
+  private formatTimeStamp_(dateStr: string): string {
     const date = new Date(dateStr);
     let time = date.getTime();
     time -= date.getTimezoneOffset() * 1000 * 60;
@@ -219,43 +195,35 @@ export class LogPage {
   }
 }
 
-/** @type {LogPage} */
-LogPage.instance;
-
 // Local to module.
 
-/** @enum {string} */
-const ClassName = {
-  FILTER: 'log-filter',
-  TEXT: 'log-text',
-  TIME: 'log-time-tag',
-  TYPE: 'log-type-tag',
-};
+enum ClassName {
+  FILTER = 'log-filter',
+  TEXT = 'log-text',
+  TIME = 'log-time-tag',
+  TYPE = 'log-type-tag',
+}
 
-/** @enum {string} */
-const ElementName = {
-  ANCHOR: 'a',
-  INPUT: 'input',
-  LABEL: 'label',
-  PARAGRAPH: 'p',
-  PRE: 'pre',
-  SPAN: 'span',
-};
+enum ElementName {
+  ANCHOR = 'a',
+  INPUT = 'input',
+  LABEL = 'label',
+  PARAGRAPH = 'p',
+  PRE = 'pre',
+  SPAN = 'span',
+}
 
-/** @enum {string} */
-const EventType = {
-  CLICK: 'click',
-};
+enum EventType {
+  CLICK = 'click',
+}
 
-/** @enum {string} */
-const IdName = {
-  CLEAR: 'clearLog',
-  FILTER: 'logFilters',
-  LIST: 'logList',
-  SAVE: 'saveLog',
-};
+enum IdName {
+  CLEAR = 'clearLog',
+  FILTER = 'logFilters',
+  LIST = 'logList',
+  SAVE = 'saveLog',
+}
 
-/** @enum {string} */
-const InputType = {
-  CHECKBOX: 'checkbox',
-};
+enum InputType {
+  CHECKBOX = 'checkbox',
+}
