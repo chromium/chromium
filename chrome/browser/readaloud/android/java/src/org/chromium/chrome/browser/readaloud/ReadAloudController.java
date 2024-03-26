@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.readaloud.exceptions.ReadAloudUnsupportedExce
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelTabObserver;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslationObserver;
 import org.chromium.chrome.modules.readaloud.Playback;
@@ -56,7 +55,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
@@ -443,37 +441,14 @@ public class ReadAloudController
                     new TabModelTabObserver(mTabModel) {
 
                         @Override
-                        public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
-                            Log.d(TAG, "onLoadStarted");
-                            if (tab != null
-                                    && tab.getUrl() != null
-                                    && tab.getUrl().isValid()
-                                    && toDifferentDocument) {
+                        public void onUrlUpdated(Tab tab) {
+                            Log.d(TAG, "onUrlUpdated to %s", tab.getUrl().getPossiblyInvalidSpec());
+                            notifyReadabilityMayHaveChanged();
+                            if (tab != null && tab.getUrl() != null && tab.getUrl().isValid()) {
                                 maybeCheckReadability(tab.getUrl());
                                 maybeHandleTabReload(tab, tab.getUrl());
                                 maybeStopPlayback(tab);
                             }
-                        }
-
-                        @Override
-                        public void onDidRedirectNavigation(
-                                Tab tab, NavigationHandle navigationHandle) {
-                            Log.d(TAG, "onDidRedirectNavigation");
-                            if (navigationHandle.getUrl() != null
-                                    && navigationHandle.getUrl().isValid()) {
-                                maybeCheckReadability(navigationHandle.getUrl());
-                            }
-                        }
-
-                        @Override
-                        public void onPageLoadStarted(Tab tab, GURL url) {
-                            // DO NOT add observers or references to native WebContents from here --
-                            // onPageLoadStarted() can be called in cases where WebContents is
-                            // temporary and is destroyed without warning.
-                            Log.d(TAG, "onPageLoad called for %s", url.getPossiblyInvalidSpec());
-                            maybeCheckReadability(url);
-                            maybeHandleTabReload(tab, url);
-                            maybeStopPlayback(tab);
                         }
 
                         @Override
@@ -496,15 +471,37 @@ public class ReadAloudController
                         }
 
                         @Override
-                        public void onTabSelected(Tab tab) {
-                            super.onTabSelected(tab);
+                        public void onShown(Tab tab, @TabSelectionType int type) {
+                            // This method is called when selecting and showing a cached tab (as
+                            // opposite to a tab that has to be loaded).
+                            Log.d(
+                                    TAG,
+                                    "onShown called for " + tab.getUrl().getPossiblyInvalidSpec());
+                            if (tab != null && tab.getUrl() != null) {
+                                maybeCheckReadability(tab.getUrl());
+                            }
+                        }
+
+                        @Override
+                        public void onRestoreCompleted(Tab tab) {
                             if (tab != null && tab.getUrl() != null) {
                                 Log.d(
                                         TAG,
-                                        "onTabSelected called for "
+                                        "onRestoreCompleted called for "
                                                 + tab.getUrl().getPossiblyInvalidSpec());
                                 maybeCheckReadability(tab.getUrl());
+                            }
+                        }
 
+                        @Override
+                        public void onTabSelected(Tab tab) {
+                            // This method is called when a tab is manually selected by user or
+                            // other reason, for example opening a new tab.
+                            // For redirects, it will be called multiple times - for the original
+                            // url and then the destination url. Because of that we should not use
+                            // this method to trigger readability.
+                            super.onTabSelected(tab);
+                            if (tab != null && tab.getUrl() != null) {
                                 if (mPausedForIncognito) {
                                     mPausedForIncognito = false;
                                     if (mPlayback != null) {
@@ -535,7 +532,6 @@ public class ReadAloudController
 
                         @Override
                         public void willCloseTab(Tab tab) {
-                            Log.d(TAG, "WillCloseTab");
                             maybeStopPlayback(tab);
                             // Make sure our translation observers are removed before tab's
                             // WebContents is destroyed.
@@ -606,24 +602,19 @@ public class ReadAloudController
         if (!isAvailable()) {
             return;
         }
-
         if (mReadabilityHooks == null) {
             return;
         }
-
         if (mProfile == null || !mProfile.isNativeInitialized()) {
             return;
         }
-
         if (!isURLReadAloudSupported(url)) {
             ReadAloudMetrics.recordIsPageReadable(false);
             return;
         }
-
         String urlSpec = stripUserData(url).getSpec();
         // TODO: 2 different URLs can have the same sanitized URL
         mSanitizedToFullUrlMap.put(url.getSpec(), urlSpec);
-
         if (mPendingRequests.contains(urlSpec)) {
             return;
         }
@@ -631,7 +622,6 @@ public class ReadAloudController
             ReadAloudMetrics.recordIsPageReadable(mReadabilityMap.get(urlSpec));
             return;
         }
-
         mPendingRequests.add(urlSpec);
         mReadabilityHooks.isPageReadable(urlSpec, mReadabilityCallback);
     }

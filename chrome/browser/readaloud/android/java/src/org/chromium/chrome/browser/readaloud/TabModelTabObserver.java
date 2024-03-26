@@ -1,22 +1,25 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tabmodel;
+package org.chromium.chrome.browser.readaloud;
 
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 
-/** Observer of tab changes for all tabs owned by a {@link TabModel}. */
+
+/** Observer of tab changes for tabs selected within and owned by a {@link TabModel}. */
 public class TabModelTabObserver extends EmptyTabObserver {
     private final TabModel mTabModel;
     private final TabModelObserver mTabModelObserver;
 
     /**
-     * Constructs an observer that should be notified of tab changes for all tabs
-     * owned by a specified {@link TabModel}. Any Tabs created after this call will
-     * be observed as well, and Tabs removed will no longer have their information
+     * Constructs an observer that should be notified of tab changes for the tabs
+     * that were selected within {@link TabModel}. Any Tabs created and selected after this call
+     * will be observed as well, and Tabs removed will no longer have their information
      * broadcast.
      *
      * <p>
@@ -40,7 +43,7 @@ public class TabModelTabObserver extends EmptyTabObserver {
 
                     @Override
                     public void restoreCompleted() {
-                        maybeCallOnTabSelected();
+                        maybeCallOnRestoreCompleted();
                     }
 
                     @Override
@@ -65,6 +68,9 @@ public class TabModelTabObserver extends EmptyTabObserver {
     /* Called when a tab starts closing. */
     public void willCloseTab(Tab tab) {}
 
+    /* Called when tabs are restored. */
+    public void onRestoreCompleted(Tab tab) {}
+
     /* Called when a tab in a model is selected or restored. */
     protected void onTabSelected(Tab tab) {
         tab.addObserver(TabModelTabObserver.this);
@@ -74,6 +80,13 @@ public class TabModelTabObserver extends EmptyTabObserver {
         Tab tab = mTabModel.getTabAt(mTabModel.index());
         if (tab != null) {
             onTabSelected(tab);
+        }
+    }
+
+    private void maybeCallOnRestoreCompleted() {
+        Tab tab = mTabModel.getTabAt(mTabModel.index());
+        if (tab != null) {
+            onRestoreCompleted(tab);
         }
     }
 }

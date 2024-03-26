@@ -13,6 +13,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayer.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefs.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonController.java",
+    "java/src/org/chromium/chrome/browser/readaloud/TabModelTabObserver.java",
     "java/src/org/chromium/chrome/browser/readaloud/TapToSeekHandler.java",
   ]
   deps = [
@@ -195,6 +196,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefsUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonControllerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/TabModelTabObserverUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/TapToSeekHandlerUnitTest.java",
   ]
   deps = [
@@ -225,6 +227,7 @@ robolectric_library("junit") {
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/tabmodel:junit",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/toolbar:java",
