@@ -11481,6 +11481,21 @@
             ]
         }
     ],
+    "NearbySharingRemoveRestrictToContacts": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "disable_features": [
+                        "NearbySharingRestrictToContacts"
+                    ]
+                }
+            ]
+        }
+    ],
     "NearbySharingSelfShare": [
         {
             "platforms": [
