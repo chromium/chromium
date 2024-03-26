@@ -3730,9 +3730,6 @@ extern const char kExperimentalAccessibilityDictationContextCheckingName[];
 extern const char
     kExperimentalAccessibilityDictationContextCheckingDescription[];
 
-extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksName[];
-extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksDescription[];
-
 extern const char kExperimentalAccessibilityGoogleTtsHighQualityVoicesName[];
 extern const char
     kExperimentalAccessibilityGoogleTtsHighQualityVoicesDescription[];

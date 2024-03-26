@@ -2798,11 +2798,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-experimental-accessibility-google-tts-language-packs",
-    "owners": [ "akihiroota@chromium.org", "josiahk@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 119
-  },
-  {
     "name": "enable-experimental-accessibility-language-detection",
     "owners": [ "chrishall@chromium.org", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 130

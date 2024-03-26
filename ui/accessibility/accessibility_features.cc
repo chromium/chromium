@@ -193,14 +193,6 @@ bool IsExperimentalAccessibilityDictationContextCheckingEnabled() {
       ::features::kExperimentalAccessibilityDictationContextChecking);
 }
 
-BASE_FEATURE(kExperimentalAccessibilityGoogleTtsLanguagePacks,
-             "ExperimentalAccessibilityGoogleTtsLanguagePacks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kExperimentalAccessibilityGoogleTtsLanguagePacks);
-}
-
 BASE_FEATURE(kAccessibilityExtraLargeCursor,
              "AccessibilityExtraLargeCursor",
              base::FEATURE_ENABLED_BY_DEFAULT);

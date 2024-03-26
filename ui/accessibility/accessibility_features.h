@@ -158,11 +158,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 AX_BASE_EXPORT bool
 IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled();
 
-// Use Language Packs to download Google TTS voices.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kExperimentalAccessibilityGoogleTtsLanguagePacks);
-AX_BASE_EXPORT bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled();
-
 // Whether the extra-large cursor size feature is enabled.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityExtraLargeCursor);
 AX_BASE_EXPORT bool IsAccessibilityExtraLargeCursorEnabled();

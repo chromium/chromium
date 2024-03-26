@@ -5636,13 +5636,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          features::kExperimentalAccessibilityDictationContextChecking)},
-    {"enable-experimental-accessibility-google-tts-language-packs",
-     flag_descriptions::kExperimentalAccessibilityGoogleTtsLanguagePacksName,
-     flag_descriptions::
-         kExperimentalAccessibilityGoogleTtsLanguagePacksDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         features::kExperimentalAccessibilityGoogleTtsLanguagePacks)},
     {"enable-experimental-accessibility-google-tts-high-quality-voices",
      flag_descriptions::
          kExperimentalAccessibilityGoogleTtsHighQualityVoicesName,

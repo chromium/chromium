@@ -6448,11 +6448,6 @@ const char kExperimentalAccessibilityDictationContextCheckingName[] =
 const char kExperimentalAccessibilityDictationContextCheckingDescription[] =
     "Enables experimental dictation context checking.";
 
-const char kExperimentalAccessibilityGoogleTtsLanguagePacksName[] =
-    "Experimental accessibility Google TTS Langauge Packs.";
-const char kExperimentalAccessibilityGoogleTtsLanguagePacksDescription[] =
-    "Enables downloading Google TTS voices using Langauge Packs.";
-
 const char kExperimentalAccessibilityGoogleTtsHighQualityVoicesName[] =
     "Experimental accessibility Google TTS High Quality Voices.";
 const char kExperimentalAccessibilityGoogleTtsHighQualityVoicesDescription[] =
