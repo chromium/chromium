@@ -363,10 +363,10 @@
       <message name="IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in rewrite mode." translateable="false">
         Enter a prompt like "sound more confident"
       </message>
-      <message name="IDS_EDITOR_MENU_SETTINGS_TOOLTIP" desc="Tooltip text for the settings button in the Editor Menu." translateable="false">
+      <message name="IDS_EDITOR_MENU_SETTINGS_TOOLTIP" desc="Tooltip text for the settings button in the Editor Menu.">
         Help me write settings
       </message>
-      <message name="IDS_EDITOR_MENU_FREEFORM_TEXTFIELD_ARROW_BUTTON_TOOLTIP" desc="Tooltip text for the arrow button in the freeform textfield in the Editor Menu." translateable="false">
+      <message name="IDS_EDITOR_MENU_FREEFORM_TEXTFIELD_ARROW_BUTTON_TOOLTIP" desc="Tooltip text for the arrow button in the freeform textfield in the Editor Menu.">
         Submit
       </message>
       <message name="IDS_EDITOR_MENU_EXPERIMENT_BADGE" desc="Label on the badge shown next to the Editor Menu title to indicate that it is an experimental feature.">
