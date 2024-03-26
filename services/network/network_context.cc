@@ -3043,8 +3043,13 @@ void NetworkContext::RevokeNetworkForNonces(
     RevokeNetworkForNoncesCallback callback) {
   for (const auto& nonce : nonces) {
     network_revocation_nonces_.insert(nonce);
+    const std::set<GURL>& exemptions = network_revocation_exemptions_[nonce];
+    for (const auto& factory : url_loader_factories_) {
+      for (const auto& loader : factory->url_loaders()) {
+        loader->CancelRequestIfNonceMatchesAndUrlNotExempted(nonce, exemptions);
+      }
+    }
   }
-  // TODO(crbug.com/41488151): Cancel requests in progress.
   std::move(callback).Run();
 }
 
@@ -3053,12 +3058,7 @@ void NetworkContext::ExemptUrlFromNetworkRevocationForNonce(
     const base::UnguessableToken& nonce,
     ExemptUrlFromNetworkRevocationForNonceCallback callback) {
   GURL url_without_filename = exempted_url.GetWithoutFilename();
-  if (network_revocation_exemptions_.contains(nonce)) {
-    network_revocation_exemptions_.find(nonce)->second.insert(
-        url_without_filename);
-  } else {
-    network_revocation_exemptions_.insert({nonce, {url_without_filename}});
-  }
+  network_revocation_exemptions_[nonce].insert(url_without_filename);
   std::move(callback).Run();
 }
 

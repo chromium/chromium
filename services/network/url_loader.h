@@ -248,6 +248,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void ContinueWithoutCertificate() override;
   void CancelRequest() override;
 
+  // Cancel the request because network revocation was triggered.
+  void CancelRequestIfNonceMatchesAndUrlNotExempted(
+      const base::UnguessableToken& nonce,
+      const std::set<GURL>& exemptions);
+
   net::LoadState GetLoadState() const;
   net::UploadProgress GetUploadProgress() const;
 

@@ -8013,6 +8013,228 @@ TEST_F(NetworkContextTest, RevokeNetworkForNoncesDisablesNewRequestsTest) {
   }
 }
 
+TEST_F(NetworkContextTest,
+       RevokeNetworkForNoncesCancelsRequestsInProgressTest) {
+  net::EmbeddedTestServer test_server;
+  net::test_server::RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+  const base::UnguessableToken nonce2 = base::UnguessableToken::Create();
+  ResourceRequest request;
+  GURL test_url = test_server.GetURL("/hung");
+  request.url = test_url;
+
+  // Exempt `test_url` from network revocation for irrelevant `nonce2`.
+  // This will show that exemptions for unrelated nonces are ignored.
+  base::test::TestFuture<void> exempted;
+  network_context->ExemptUrlFromNetworkRevocationForNonce(
+      test_url, nonce2, base::BindOnce(exempted.GetCallback()));
+  EXPECT_TRUE(exempted.Wait());
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  mojom::URLLoaderFactoryParamsPtr params =
+      mojom::URLLoaderFactoryParams::New();
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::CreateTransientWithNonce(nonce);
+  HangingTestURLLoaderHeaderClient header_client(
+      params->header_client.InitWithNewPipeAndPassReceiver());
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  TestURLLoaderClient client;
+  loader_factory->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Wait for OnBeforeSendHeaders.
+  header_client.WaitForOnBeforeSendHeaders();
+
+  // Revoke network access for the nonce.
+  base::test::TestFuture<void> revoked;
+  network_context->RevokeNetworkForNonces(
+      {nonce}, base::BindOnce(revoked.GetCallback()));
+  EXPECT_TRUE(revoked.Wait());
+
+  // Continue sending headers.
+  header_client.CallOnBeforeSendHeadersCallback();
+
+  // Run the request to completion.
+  client.RunUntilComplete();
+
+  // The request should have been cancelled due to network revocation.
+  EXPECT_EQ(client.completion_status().error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
+}
+
+TEST_F(NetworkContextTest,
+       RevokeNetworkForNoncesCancelsRequestsInProgressForSecondNonceTest) {
+  net::EmbeddedTestServer test_server;
+  net::test_server::RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+  const base::UnguessableToken nonce2 = base::UnguessableToken::Create();
+  ResourceRequest request;
+  GURL test_url = test_server.GetURL("/hung");
+  request.url = test_url;
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  mojom::URLLoaderFactoryParamsPtr params =
+      mojom::URLLoaderFactoryParams::New();
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::CreateTransientWithNonce(nonce);
+  HangingTestURLLoaderHeaderClient header_client(
+      params->header_client.InitWithNewPipeAndPassReceiver());
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  TestURLLoaderClient client;
+  loader_factory->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Wait for OnBeforeSendHeaders.
+  header_client.WaitForOnBeforeSendHeaders();
+
+  // Revoke network access for both `nonce` and `nonce2`. This confirms that
+  // requests for nonces beyond the first get cancelled.
+  base::test::TestFuture<void> revoked;
+  network_context->RevokeNetworkForNonces(
+      {nonce2, nonce}, base::BindOnce(revoked.GetCallback()));
+  EXPECT_TRUE(revoked.Wait());
+
+  // Continue sending headers.
+  header_client.CallOnBeforeSendHeadersCallback();
+
+  // Run the request to completion.
+  client.RunUntilComplete();
+
+  // The request should have been cancelled due to network revocation.
+  EXPECT_EQ(client.completion_status().error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
+}
+
+TEST_F(NetworkContextTest,
+       RevokeNetworkForNoncesAllowsExemptedRequestsInProgressTest) {
+  net::EmbeddedTestServer test_server;
+  net::test_server::RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+  ResourceRequest request;
+  GURL test_url = test_server.GetURL("/echoheader?foo");
+  request.url = test_url;
+
+  // Exempt `test_url` from network revocation for `nonce`.
+  base::test::TestFuture<void> exempted;
+  network_context->ExemptUrlFromNetworkRevocationForNonce(
+      test_url, nonce, base::BindOnce(exempted.GetCallback()));
+  EXPECT_TRUE(exempted.Wait());
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  mojom::URLLoaderFactoryParamsPtr params =
+      mojom::URLLoaderFactoryParams::New();
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::CreateTransientWithNonce(nonce);
+  HangingTestURLLoaderHeaderClient header_client(
+      params->header_client.InitWithNewPipeAndPassReceiver());
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  TestURLLoaderClient client;
+  loader_factory->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Pause the request in progress.
+  header_client.WaitForOnBeforeSendHeaders();
+
+  // Revoke network access for the nonce.
+  base::test::TestFuture<void> revoked;
+  network_context->RevokeNetworkForNonces(
+      {nonce}, base::BindOnce(revoked.GetCallback()));
+  EXPECT_TRUE(revoked.Wait());
+
+  // Run the request to completion.
+  header_client.CallOnBeforeSendHeadersCallback();
+  header_client.WaitForOnHeadersReceived();
+  header_client.CallOnHeadersReceivedCallback();
+  client.RunUntilComplete();
+
+  // The request should have succeeded because the url was exempted.
+  EXPECT_EQ(client.completion_status().error_code, net::OK);
+}
+
+TEST_F(NetworkContextTest,
+       RevokeNetworkForNoncesAllowsUnrelatedNonceRequestsInProgressTest) {
+  net::EmbeddedTestServer test_server;
+  net::test_server::RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+  const base::UnguessableToken nonce2 = base::UnguessableToken::Create();
+  ResourceRequest request;
+  request.url = test_server.GetURL("/echoheader?foo");
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  mojom::URLLoaderFactoryParamsPtr params =
+      mojom::URLLoaderFactoryParams::New();
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::CreateTransientWithNonce(nonce);
+  HangingTestURLLoaderHeaderClient header_client(
+      params->header_client.InitWithNewPipeAndPassReceiver());
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  TestURLLoaderClient client;
+  loader_factory->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Pause the request in progress.
+  header_client.WaitForOnBeforeSendHeaders();
+
+  // Revoke network access for an unrelated nonce `nonce2`.
+  base::test::TestFuture<void> revoked;
+  network_context->RevokeNetworkForNonces(
+      {nonce2}, base::BindOnce(revoked.GetCallback()));
+  EXPECT_TRUE(revoked.Wait());
+
+  // Run the request to completion.
+  header_client.CallOnBeforeSendHeadersCallback();
+  header_client.WaitForOnHeadersReceived();
+  header_client.CallOnHeadersReceivedCallback();
+  client.RunUntilComplete();
+
+  // The request should have succeeded because the url was exempted.
+  EXPECT_EQ(client.completion_status().error_code, net::OK);
+}
+
 // ExemptUrlFromNetworkRevocationForNonce(exempted_url, nonce) exempts
 // future requests that have the same "url without filename" as `exempted_url`
 // under the nonce `nonce`.

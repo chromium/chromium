@@ -2252,6 +2252,17 @@ void URLLoader::CancelRequest() {
   url_request_->CancelWithError(net::ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
 }
 
+void URLLoader::CancelRequestIfNonceMatchesAndUrlNotExempted(
+    const base::UnguessableToken& nonce,
+    const std::set<GURL>& exemptions) {
+  if (url_request_->isolation_info().nonce() == nonce) {
+    if (!exemptions.contains(
+            url_request_->original_url().GetWithoutFilename())) {
+      url_request_->CancelWithError(net::ERR_NETWORK_ACCESS_REVOKED);
+    }
+  }
+}
+
 void URLLoader::NotifyCompleted(int error_code) {
   // Ensure sending the final upload progress message here, since
   // OnResponseCompleted can be called without OnResponseStarted on cancellation
