@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/network/auto_connect_handler.h"
 #include "chromeos/ash/components/network/cellular_connection_handler.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
@@ -1366,6 +1367,24 @@ TEST_F(NetworkConnectionHandlerImplTest, MultipleCellularConnect) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(NetworkConnectionHandler::kErrorCellularDeviceBusy,
             GetResultAndReset());
+}
+
+TEST_F(NetworkConnectionHandlerImplTest, CellularConnect) {
+  Init();
+  AddCellularServiceWithESimProfile();
+  LoginToUser(LoginState::LOGGED_IN_USER_REGULAR);
+  Connect(kTestCellularServicePath);
+  SetCellularServiceConnectable();
+  EXPECT_TRUE(GetResultAndReset().empty());
+  AdvanceClock(kCellularAutoConnectTimeout);
+  EXPECT_EQ(kSuccessResult, GetResultAndReset());
+  EXPECT_EQ(shill::kStateOnline,
+            GetServiceStringProperty(kTestCellularServicePath,
+                                     shill::kStateProperty));
+  // Expect the service to be added to the shared profile even when logged in.
+  EXPECT_EQ(ShillProfileClient::Get()->GetSharedProfilePath(),
+            GetServiceStringProperty(kTestCellularServicePath,
+                                     shill::kProfileProperty));
 }
 
 TEST_F(NetworkConnectionHandlerImplTest, CellularConnectTimeout) {

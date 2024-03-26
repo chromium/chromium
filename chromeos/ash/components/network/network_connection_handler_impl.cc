@@ -164,11 +164,16 @@ bool ShouldUseSharedProfileByDefault(const NetworkState* network) {
     // details.
     return false;
   }
-  if (network && network->type() == shill::kTypeWifi && !network->IsSecure()) {
-    // Insecure networks are persisted in the shared profile by default
-    return true;
+  // Cellular networks and insecure Wi-Fi networks are persisted in the shared
+  // profile by default.
+  if (network) {
+    if (network->type() == shill::kTypeCellular) {
+      return true;
+    }
+    if (network->type() == shill::kTypeWifi) {
+      return !network->IsSecure();
+    }
   }
-
   // Use the user profile if available.
   return false;
 }
