@@ -89,8 +89,14 @@ class LargeTraceEventData : public base::trace_event::ConvertableToTraceFormat {
 // StartupTraceWriter, which Perfetto will then have to sync copy into
 // the SMB once the full tracing service starts up. This is to catch common
 // deadlocks.
+// TODO(crbug.com/330909115): Re-enable this test.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_TestFilledStartupBuffer DISABLED_TestFilledStartupBuffer
+#else
+#define MAYBE_TestFilledStartupBuffer TestFilledStartupBuffer
+#endif
 IN_PROC_BROWSER_TEST_F(StartupTracingInProcessTest,
-                       DISABLED_TestFilledStartupBuffer) {
+                       MAYBE_TestFilledStartupBuffer) {
   auto config = tracing::TraceStartupConfig::GetInstance()
                     ->GetDefaultBrowserStartupConfig();
   config.SetTraceBufferSizeInEvents(0);
