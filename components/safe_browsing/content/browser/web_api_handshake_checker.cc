@@ -10,6 +10,7 @@
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/scheme_logger.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -52,6 +53,8 @@ class WebApiHandshakeChecker::CheckerOnSB {
       return;
     }
 
+    scheme_logger::LogScheme(url,
+                             "SafeBrowsing.WebApiHandshakeCheck.UrlScheme");
     // If |kSafeBrowsingSkipSubresources2| is enabled, skip Safe Browsing checks
     // for WebTransport.
     if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources2)) {

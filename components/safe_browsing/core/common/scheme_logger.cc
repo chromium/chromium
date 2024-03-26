@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/utils/scheme_logger.h"
+#include "components/safe_browsing/core/common/scheme_logger.h"
 
 #include <map>
 #include "base/metrics/histogram_functions.h"

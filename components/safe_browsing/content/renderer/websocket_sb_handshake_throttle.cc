@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/scheme_logger.h"
 #include "content/public/renderer/render_frame.h"
 #include "ipc/ipc_message.h"
 #include "net/http/http_request_headers.h"
@@ -64,6 +65,7 @@ void WebSocketSBHandshakeThrottle::ThrottleHandshake(
   DCHECK_EQ(state_, State::kInitial);
   state_ = State::kStarted;
 
+  scheme_logger::LogScheme(url, "SafeBrowsing.WebSocketCheck.UrlScheme");
   // If |kSafeBrowsingSkipSubresources2| is enabled, skip Safe Browsing checks
   // on WebSockets. Note that we still want to perform the extensions telemetry
   // code above.

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_UTILS_SCHEME_LOGGER_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_UTILS_SCHEME_LOGGER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_COMMON_SCHEME_LOGGER_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_COMMON_SCHEME_LOGGER_H_
 
 #include "url/gurl.h"
 
@@ -59,4 +59,4 @@ void LogScheme(const GURL& url, const std::string& enum_histogram_name);
 
 }  // namespace safe_browsing::scheme_logger
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_UTILS_SCHEME_LOGGER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_SCHEME_LOGGER_H_

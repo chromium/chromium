@@ -47,6 +47,7 @@ source_set("unit_tests") {
   sources = [
     "safe_browsing_policy_handler_unittest.cc",
     "safe_browsing_prefs_unittest.cc",
+    "scheme_logger_unittest.cc",
     "utils_unittest.cc",
   ]
 
@@ -78,6 +79,8 @@ source_set("common") {
     "safebrowsing_referral_methods.h",
     "safebrowsing_switches.cc",
     "safebrowsing_switches.h",
+    "scheme_logger.cc",
+    "scheme_logger.h",
     "utils.cc",
     "utils.h",
     "web_ui_constants.cc",
