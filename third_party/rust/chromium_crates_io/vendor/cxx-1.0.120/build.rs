@@ -31,6 +31,11 @@ fn main() {
                 rustc.version,
             );
         }
+
+        if rustc.minor < 64 {
+            // core::ffi::c_char
+            println!("cargo:rustc-cfg=no_core_ffi_c_char");
+        }
     }
 }
 

@@ -364,7 +364,7 @@
 //! </table>
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/cxx/1.0.119")]
+#![doc(html_root_url = "https://docs.rs/cxx/1.0.120")]
 #![cfg_attr(doc_cfg, feature(doc_cfg))]
 #![deny(
     improper_ctypes,
@@ -383,6 +383,7 @@
     clippy::cognitive_complexity,
     clippy::declare_interior_mutable_const,
     clippy::doc_markdown,
+    clippy::duplicated_attributes, // clippy bug: https://github.com/rust-lang/rust-clippy/issues/12537
     clippy::empty_enum,
     clippy::extra_unused_type_parameters,
     clippy::inherent_to_string,

@@ -21,7 +21,7 @@ if (toolchain_has_rust) {
     # The version of cxx under //third_party/rust/chromium_crates_io/vendor.
     # Update this whenever cxx is rolled. Also update the version number in the
     # //third_party/rust/cxx/v1/cxx.h header.
-    cxx_version = "1.0.119"
+    cxx_version = "1.0.120"
 
     # The required dependencies for cxx-generated bindings, that must be included
     # on the C++ side.

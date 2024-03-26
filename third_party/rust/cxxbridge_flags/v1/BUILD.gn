@@ -12,16 +12,16 @@ cargo_crate("buildrs_support") {
   crate_name = "cxxbridge_flags"
   epoch = "1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/cxxbridge-flags-1.0.119/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/cxxbridge-flags-1.0.120/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-flags-1.0.119/src/impl.rs",
-    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-flags-1.0.119/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-flags-1.0.120/src/impl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-flags-1.0.120/src/lib.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "1.0.119"
+  cargo_pkg_version = "1.0.120"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "cxxbridge-flags"
   cargo_pkg_description =

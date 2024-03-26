@@ -20,11 +20,3 @@ help: consider introducing a named lifetime parameter
   |
 8 |         fn f<'a>(t: &'a T<'a>) -> &'a str;
   |             ++++     ++  ++++      ++
-
-error: lifetime may not live long enough
- --> tests/ui/unsupported_elided.rs:8:12
-  |
-8 |         fn f(t: &T) -> &str;
-  |            ^ - has type `&T<'1>`
-  |            |
-  |            returning this value requires that `'1` must outlive `'static`
