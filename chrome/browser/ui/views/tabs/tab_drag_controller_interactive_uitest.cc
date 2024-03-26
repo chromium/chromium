@@ -2066,20 +2066,16 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 #if !BUILDFLAG(IS_MAC)
 
 // Drags from browser to a separate window and releases mouse.
-// TODO(crbug.com/329836279): Flaky on LaCros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DetachToOwnWindowFromMaximizedWindow \
-  DISABLED_DetachToOwnWindowFromMaximizedWindow
-#else
-#define MAYBE_DetachToOwnWindowFromMaximizedWindow \
-  DetachToOwnWindowFromMaximizedWindow
-#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       MAYBE_DetachToOwnWindowFromMaximizedWindow) {
+                       DetachToOwnWindowFromMaximizedWindow) {
   // Maximize the initial browser window.
-  browser()->window()->Maximize();
-  MaximizedBrowserWindowWaiter(browser()->window()).Wait();
-  ASSERT_TRUE(browser()->window()->IsMaximized());
+  {
+    auto waiter = ui_test_utils::CreateAsyncWidgetRequestWaiter(*browser());
+    browser()->window()->Maximize();
+    MaximizedBrowserWindowWaiter(browser()->window()).Wait();
+    ASSERT_TRUE(browser()->window()->IsMaximized());
+    waiter.Wait();
+  }
 
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
