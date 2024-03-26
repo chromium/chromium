@@ -306,7 +306,7 @@ BASE_FEATURE(kCameraAppAutoQRDetection,
 
 BASE_FEATURE(kCameraAppCrosEvents,
              "CameraAppCrosEvents",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables to enable digital zoom control inside Camera app.
 BASE_FEATURE(kCameraAppDigitalZoom,
