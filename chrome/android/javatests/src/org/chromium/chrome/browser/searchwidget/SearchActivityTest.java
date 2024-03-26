@@ -557,7 +557,6 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1440967")
     public void testRealPromoDialogDismissWithoutSelection() throws Exception {
         // Start the Activity.  It should pause when the promo dialog appears.
         mTestDelegate.shouldShowRealSearchDialog = true;
