@@ -445,7 +445,7 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   // should be impacted by a scroll).
   if (!frame_view->IsInPerformLayout()) {
     // Update regions, scrolling may change the clip of a particular region.
-    frame_view->UpdateDocumentAnnotatedRegions();
+    frame_view->UpdateDocumentDraggableRegions();
 
     // As a performance optimization, the scroll offset of the root layer is
     // not included in EmbeddedContentView's stored frame rect, so there is no
@@ -1028,8 +1028,9 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
     Layer()->UpdateSelfPaintingLayer();
 
     // Force an update since we know the scrollbars have changed things.
-    if (GetLayoutBox()->GetDocument().HasAnnotatedRegions())
-      GetLayoutBox()->GetDocument().SetAnnotatedRegionsDirty(true);
+    if (GetLayoutBox()->GetDocument().HasDraggableRegions()) {
+      GetLayoutBox()->GetDocument().SetDraggableRegionsDirty(true);
+    }
 
     // Our proprietary overflow: overlay value doesn't trigger a layout.
     if (((horizontal_scrollbar_should_change &&
@@ -1770,8 +1771,9 @@ void PaintLayerScrollableArea::RemoveScrollbarsForReconstruction() {
   UpdateScrollOrigin();
 
   // Force an update since we know the scrollbars have changed things.
-  if (GetLayoutBox()->GetDocument().HasAnnotatedRegions())
-    GetLayoutBox()->GetDocument().SetAnnotatedRegionsDirty(true);
+  if (GetLayoutBox()->GetDocument().HasDraggableRegions()) {
+    GetLayoutBox()->GetDocument().SetDraggableRegionsDirty(true);
+  }
 }
 
 CompositorElementId PaintLayerScrollableArea::GetScrollCornerElementId() const {
@@ -1804,8 +1806,9 @@ void PaintLayerScrollableArea::SetHasHorizontalScrollbar(bool has_scrollbar) {
   SetScrollCornerNeedsPaintInvalidation();
 
   // Force an update since we know the scrollbars have changed things.
-  if (GetLayoutBox()->GetDocument().HasAnnotatedRegions())
-    GetLayoutBox()->GetDocument().SetAnnotatedRegionsDirty(true);
+  if (GetLayoutBox()->GetDocument().HasDraggableRegions()) {
+    GetLayoutBox()->GetDocument().SetDraggableRegionsDirty(true);
+  }
 }
 
 void PaintLayerScrollableArea::SetHasVerticalScrollbar(bool has_scrollbar) {
@@ -1838,8 +1841,9 @@ void PaintLayerScrollableArea::SetHasVerticalScrollbar(bool has_scrollbar) {
   SetScrollCornerNeedsPaintInvalidation();
 
   // Force an update since we know the scrollbars have changed things.
-  if (GetLayoutBox()->GetDocument().HasAnnotatedRegions())
-    GetLayoutBox()->GetDocument().SetAnnotatedRegionsDirty(true);
+  if (GetLayoutBox()->GetDocument().HasDraggableRegions()) {
+    GetLayoutBox()->GetDocument().SetDraggableRegionsDirty(true);
+  }
 }
 
 int PaintLayerScrollableArea::VerticalScrollbarWidth(

@@ -874,8 +874,8 @@ Document::Document(const DocumentInit& initializer,
       viewport_unit_flags_(0),
       design_mode_(false),
       is_running_exec_command_(false),
-      has_annotated_regions_(false),
-      annotated_regions_dirty_(false),
+      has_draggable_regions_(false),
+      draggable_regions_dirty_(false),
       document_classes_(document_classes),
       is_view_source_(false),
       saw_elements_in_known_namespaces_(false),
@@ -5444,14 +5444,14 @@ void Document::ActiveChainNodeDetached(Element& element) {
   }
 }
 
-const Vector<AnnotatedRegionValue>& Document::AnnotatedRegions() const {
-  return annotated_regions_;
+const Vector<DraggableRegionValue>& Document::DraggableRegions() const {
+  return draggable_regions_;
 }
 
-void Document::SetAnnotatedRegions(
-    const Vector<AnnotatedRegionValue>& regions) {
-  annotated_regions_ = regions;
-  SetAnnotatedRegionsDirty(false);
+void Document::SetDraggableRegions(
+    const Vector<DraggableRegionValue>& regions) {
+  draggable_regions_ = regions;
+  SetDraggableRegionsDirty(false);
 }
 
 void Document::SetLastFocusType(mojom::blink::FocusType last_focus_type) {

@@ -4027,10 +4027,10 @@ void WebViewImpl::SetSupportsDraggableRegions(bool supports_draggable_regions) {
   LocalFrame* local_frame = MainFrameImpl()->GetFrame();
 
   if (supports_draggable_regions_) {
-    local_frame->View()->UpdateDocumentAnnotatedRegions();
+    local_frame->View()->UpdateDocumentDraggableRegions();
   } else {
-    local_frame->GetDocument()->SetAnnotatedRegions(
-        Vector<AnnotatedRegionValue>());
+    local_frame->GetDocument()->SetDraggableRegions(
+        Vector<DraggableRegionValue>());
     chrome_client_->DraggableRegionsChanged();
   }
 }

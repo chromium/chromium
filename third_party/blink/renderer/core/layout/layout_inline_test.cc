@@ -672,7 +672,7 @@ TEST_F(LayoutInlineTest, AbsoluteBoundingBoxRectHandlingEmptyInlineVerticalRL) {
                 ->AbsoluteBoundingBoxRectHandlingEmptyInline());
 }
 
-TEST_F(LayoutInlineTest, AddAnnotatedRegions) {
+TEST_F(LayoutInlineTest, AddDraggableRegions) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -689,24 +689,24 @@ TEST_F(LayoutInlineTest, AddAnnotatedRegions) {
     </div>
   )HTML");
 
-  Vector<AnnotatedRegionValue> regions1;
-  GetLayoutObjectByElementId("target1")->AddAnnotatedRegions(regions1);
+  Vector<DraggableRegionValue> regions1;
+  GetLayoutObjectByElementId("target1")->AddDraggableRegions(regions1);
   ASSERT_EQ(1u, regions1.size());
   EXPECT_EQ(PhysicalRect(0, 10, 50, 20), regions1[0].bounds);
   EXPECT_TRUE(regions1[0].draggable);
 
-  Vector<AnnotatedRegionValue> regions2;
-  GetLayoutObjectByElementId("target2")->AddAnnotatedRegions(regions2);
+  Vector<DraggableRegionValue> regions2;
+  GetLayoutObjectByElementId("target2")->AddDraggableRegions(regions2);
   ASSERT_EQ(1u, regions2.size());
   EXPECT_EQ(PhysicalRect(0, 20, 70, 20), regions2[0].bounds);
   EXPECT_FALSE(regions2[0].draggable);
 
-  Vector<AnnotatedRegionValue> regions3;
-  GetLayoutObjectByElementId("target3")->AddAnnotatedRegions(regions3);
+  Vector<DraggableRegionValue> regions3;
+  GetLayoutObjectByElementId("target3")->AddDraggableRegions(regions3);
   EXPECT_TRUE(regions3.empty());
 }
 
-TEST_F(LayoutInlineTest, AddAnnotatedRegionsVerticalRL) {
+TEST_F(LayoutInlineTest, AddDraggableRegionsVerticalRL) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -723,20 +723,20 @@ TEST_F(LayoutInlineTest, AddAnnotatedRegionsVerticalRL) {
     </div>
   )HTML");
 
-  Vector<AnnotatedRegionValue> regions1;
-  GetLayoutObjectByElementId("target1")->AddAnnotatedRegions(regions1);
+  Vector<DraggableRegionValue> regions1;
+  GetLayoutObjectByElementId("target1")->AddDraggableRegions(regions1);
   ASSERT_EQ(1u, regions1.size());
   EXPECT_EQ(PhysicalRect(570, 0, 20, 50), regions1[0].bounds);
   EXPECT_TRUE(regions1[0].draggable);
 
-  Vector<AnnotatedRegionValue> regions2;
-  GetLayoutObjectByElementId("target2")->AddAnnotatedRegions(regions2);
+  Vector<DraggableRegionValue> regions2;
+  GetLayoutObjectByElementId("target2")->AddDraggableRegions(regions2);
   ASSERT_EQ(1u, regions2.size());
   EXPECT_EQ(PhysicalRect(560, 0, 20, 70), regions2[0].bounds);
   EXPECT_FALSE(regions2[0].draggable);
 
-  Vector<AnnotatedRegionValue> regions3;
-  GetLayoutObjectByElementId("target3")->AddAnnotatedRegions(regions3);
+  Vector<DraggableRegionValue> regions3;
+  GetLayoutObjectByElementId("target3")->AddDraggableRegions(regions3);
   EXPECT_TRUE(regions3.empty());
 }
 

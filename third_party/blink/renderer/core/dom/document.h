@@ -263,7 +263,7 @@ class EventWithHitTestResults;
 
 enum class CSSPropertyID;
 
-struct AnnotatedRegionValue;
+struct DraggableRegionValue;
 struct FocusParams;
 struct IconURL;
 struct PhysicalOffset;
@@ -1430,12 +1430,13 @@ class CORE_EXPORT Document : public ContainerNode,
   }
   bool SawDecodingError() const { return encoding_data_.SawDecodingError(); }
 
-  void SetAnnotatedRegionsDirty(bool f) { annotated_regions_dirty_ = f; }
-  bool AnnotatedRegionsDirty() const { return annotated_regions_dirty_; }
-  bool HasAnnotatedRegions() const { return has_annotated_regions_; }
-  void SetHasAnnotatedRegions(bool f) { has_annotated_regions_ = f; }
-  const Vector<AnnotatedRegionValue>& AnnotatedRegions() const;
-  void SetAnnotatedRegions(const Vector<AnnotatedRegionValue>&);
+  // Draggable regions are set using the "app-region" CSS property.
+  void SetDraggableRegionsDirty(bool f) { draggable_regions_dirty_ = f; }
+  bool DraggableRegionsDirty() const { return draggable_regions_dirty_; }
+  bool HasDraggableRegions() const { return has_draggable_regions_; }
+  void SetHasDraggableRegions(bool f) { has_draggable_regions_ = f; }
+  const Vector<DraggableRegionValue>& DraggableRegions() const;
+  void SetDraggableRegions(const Vector<DraggableRegionValue>&);
 
   void RemovedEventListener(const AtomicString& event_type,
                             const RegisteredEventListener&) final;
@@ -2566,9 +2567,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Member<SVGDocumentExtensions> svg_extensions_;
 
-  Vector<AnnotatedRegionValue> annotated_regions_;
-  bool has_annotated_regions_;
-  bool annotated_regions_dirty_;
+  Vector<DraggableRegionValue> draggable_regions_;
+  bool has_draggable_regions_ = false;
+  bool draggable_regions_dirty_ = false;
 
   std::unique_ptr<SelectorQueryCache> selector_query_cache_;
 

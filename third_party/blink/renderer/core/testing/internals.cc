@@ -2994,12 +2994,12 @@ void Internals::forceFullRepaint(Document* document,
 
 DOMRectList* Internals::draggableRegions(Document* document,
                                          ExceptionState& exception_state) {
-  return AnnotatedRegions(document, true, exception_state);
+  return DraggableRegions(document, true, exception_state);
 }
 
 DOMRectList* Internals::nonDraggableRegions(Document* document,
                                             ExceptionState& exception_state) {
-  return AnnotatedRegions(document, false, exception_state);
+  return DraggableRegions(document, false, exception_state);
 }
 
 void Internals::SetSupportsDraggableRegions(bool supports_draggable_regions) {
@@ -3009,7 +3009,7 @@ void Internals::SetSupportsDraggableRegions(bool supports_draggable_regions) {
       ->SetSupportsDraggableRegions(supports_draggable_regions);
 }
 
-DOMRectList* Internals::AnnotatedRegions(Document* document,
+DOMRectList* Internals::DraggableRegions(Document* document,
                                          bool draggable,
                                          ExceptionState& exception_state) {
   DCHECK(document);
@@ -3020,11 +3020,11 @@ DOMRectList* Internals::AnnotatedRegions(Document* document,
   }
 
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  document->View()->UpdateDocumentAnnotatedRegions();
-  Vector<AnnotatedRegionValue> regions = document->AnnotatedRegions();
+  document->View()->UpdateDocumentDraggableRegions();
+  Vector<DraggableRegionValue> regions = document->DraggableRegions();
 
   Vector<gfx::QuadF> quads;
-  for (const AnnotatedRegionValue& region : regions) {
+  for (const DraggableRegionValue& region : regions) {
     if (region.draggable == draggable)
       quads.push_back(gfx::QuadF(gfx::RectF(region.bounds)));
   }

@@ -1680,7 +1680,7 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
     }
   }
 
-  UpdateDocumentAnnotatedRegions();
+  UpdateDocumentDraggableRegions();
   ExecutePendingStickyUpdates();
 
   frame_->Selection().DidLayout();
@@ -1725,20 +1725,20 @@ void LocalFrameView::NotifyPageThatContentAreaWillPaint() const {
   }
 }
 
-void LocalFrameView::UpdateDocumentAnnotatedRegions() const {
+void LocalFrameView::UpdateDocumentDraggableRegions() const {
   Document* document = frame_->GetDocument();
-  if (!document->HasAnnotatedRegions() ||
+  if (!document->HasDraggableRegions() ||
       !frame_->GetPage()->GetChromeClient().SupportsDraggableRegions()) {
     return;
   }
 
-  Vector<AnnotatedRegionValue> new_regions;
-  CollectAnnotatedRegions(*(document->GetLayoutBox()), new_regions);
-  if (new_regions == document->AnnotatedRegions()) {
+  Vector<DraggableRegionValue> new_regions;
+  CollectDraggableRegions(*(document->GetLayoutBox()), new_regions);
+  if (new_regions == document->DraggableRegions()) {
     return;
   }
 
-  document->SetAnnotatedRegions(new_regions);
+  document->SetDraggableRegions(new_regions);
   frame_->GetPage()->GetChromeClient().DraggableRegionsChanged();
 }
 
@@ -4141,18 +4141,18 @@ RootFrameViewport* LocalFrameView::GetRootFrameViewport() {
   return viewport_scrollable_area_.Get();
 }
 
-void LocalFrameView::CollectAnnotatedRegions(
+void LocalFrameView::CollectDraggableRegions(
     LayoutObject& layout_object,
-    Vector<AnnotatedRegionValue>& regions) const {
+    Vector<DraggableRegionValue>& regions) const {
   // LayoutTexts don't have their own style, they just use their parent's style,
   // so we don't want to include them.
   if (layout_object.IsText())
     return;
 
-  layout_object.AddAnnotatedRegions(regions);
+  layout_object.AddDraggableRegions(regions);
   for (LayoutObject* curr = layout_object.SlowFirstChild(); curr;
        curr = curr->NextSibling())
-    CollectAnnotatedRegions(*curr, regions);
+    CollectDraggableRegions(*curr, regions);
 }
 
 bool LocalFrameView::UpdateViewportIntersectionsForSubtree(

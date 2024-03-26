@@ -7370,7 +7370,7 @@ TEST_F(StyleEngineTest,
   EXPECT_FALSE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
 }
 
-TEST_F(StyleEngineTest, EnsureAppRegionTriggersRelayout) {
+TEST_F(StyleEngineTest, EnsureDraggableRegionTriggersRelayout) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view_impl = web_view_helper.Initialize();
   web_view_impl->SetSupportsDraggableRegions(true);
@@ -7397,28 +7397,28 @@ TEST_F(StyleEngineTest, EnsureAppRegionTriggersRelayout) {
 
   Element* drag_element = document->getElementById(AtomicString("drag-region"));
 
-  auto regions = document->AnnotatedRegions();
+  auto regions = document->DraggableRegions();
   auto* it =
       std::find_if(regions.begin(), regions.end(),
-                   [](blink::AnnotatedRegionValue s) { return s.draggable; });
+                   [](blink::DraggableRegionValue s) { return s.draggable; });
   EXPECT_EQ(it, regions.end()) << "There should be no drag regions";
 
   drag_element->classList().Add(AtomicString("drag"));
   web_view_impl->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
-  regions = document->AnnotatedRegions();
+  regions = document->DraggableRegions();
   it = std::find_if(regions.begin(), regions.end(),
-                    [](blink::AnnotatedRegionValue s) { return s.draggable; });
+                    [](blink::DraggableRegionValue s) { return s.draggable; });
   EXPECT_NE(it, regions.end()) << "There should be one drag region";
 
   drag_element->classList().Add(AtomicString("no-drag"));
   web_view_impl->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
-  regions = document->AnnotatedRegions();
+  regions = document->DraggableRegions();
   it = std::find_if(regions.begin(), regions.end(),
-                    [](blink::AnnotatedRegionValue s) { return s.draggable; });
+                    [](blink::DraggableRegionValue s) { return s.draggable; });
 
   EXPECT_EQ(it, regions.end()) << "There should be no drag regions";
 }

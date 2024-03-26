@@ -2907,7 +2907,7 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
     if (visibility_changed ||
         style_->EffectiveZIndex() != new_style.EffectiveZIndex() ||
         IsStackingContext(*style_) != IsStackingContext(new_style)) {
-      GetDocument().SetAnnotatedRegionsDirty(true);
+      GetDocument().SetDraggableRegionsDirty(true);
     }
 
     bool background_color_changed =
@@ -4306,7 +4306,7 @@ const ComputedStyle* LayoutObject::GetSelectionStyle() const {
   return GetCachedPseudoElementStyle(kPseudoIdSelection);
 }
 
-void LayoutObject::AddAnnotatedRegions(Vector<AnnotatedRegionValue>& regions) {
+void LayoutObject::AddDraggableRegions(Vector<DraggableRegionValue>& regions) {
   NOT_DESTROYED();
   // Convert the style regions to absolute coordinates.
   if (StyleRef().Visibility() != EVisibility::kVisible || !IsBox())
@@ -4319,7 +4319,7 @@ void LayoutObject::AddAnnotatedRegions(Vector<AnnotatedRegionValue>& regions) {
   PhysicalRect local_bounds = box->PhysicalBorderBoxRect();
   PhysicalRect abs_bounds = LocalToAbsoluteRect(local_bounds);
 
-  AnnotatedRegionValue region;
+  DraggableRegionValue region;
   region.draggable =
       StyleRef().DraggableRegionMode() == EDraggableRegionMode::kDrag;
   region.bounds = abs_bounds;

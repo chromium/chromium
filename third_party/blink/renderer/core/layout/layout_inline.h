@@ -330,7 +330,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) final;
 
-  void AddAnnotatedRegions(Vector<AnnotatedRegionValue>&) final;
+  void AddDraggableRegions(Vector<DraggableRegionValue>&) final;
 
   void UpdateFromStyle() final;
   bool AnonymousHasStylePropagationOverride() final {

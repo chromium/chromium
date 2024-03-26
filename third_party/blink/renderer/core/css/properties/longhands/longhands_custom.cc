@@ -9682,7 +9682,7 @@ void AppRegion::ApplyValue(StyleResolverState& state,
       identifier_value.GetValueID() == CSSValueID::kDrag
           ? EDraggableRegionMode::kDrag
           : EDraggableRegionMode::kNoDrag);
-  state.GetDocument().SetHasAnnotatedRegions(true);
+  state.GetDocument().SetHasDraggableRegions(true);
 }
 
 const CSSValue* Appearance::ParseSingleValue(

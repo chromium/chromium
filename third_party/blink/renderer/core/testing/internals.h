@@ -644,7 +644,7 @@ class Internals final : public ScriptWrappable {
  private:
   Document* ContextDocument() const;
   Vector<String> IconURLs(Document*, int icon_types_mask) const;
-  DOMRectList* AnnotatedRegions(Document*, bool draggable, ExceptionState&);
+  DOMRectList* DraggableRegions(Document*, bool draggable, ExceptionState&);
   void HitTestRect(HitTestLocation&,
                    HitTestResult&,
                    int x,
