@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
@@ -45,11 +46,17 @@ bool KeyboardLockController::HandleUserPressedEscape() {
     return false;
   }
 
+  base::RecordAction(base::UserMetricsAction("UnlockKeyboard_PressEsc"));
   UnlockKeyboard();
   return true;
 }
 
 void KeyboardLockController::HandleUserHeldEscape() {
+  if (!IsKeyboardLockActive()) {
+    return;
+  }
+
+  base::RecordAction(base::UserMetricsAction("UnlockKeyboard_PressAndHoldEsc"));
   UnlockKeyboard();
 }
 

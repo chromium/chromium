@@ -9925,6 +9925,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ExitFullscreen_PressAndHoldEsc">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <description>
+    User exited browser fullscreen mode by holding the Esc key.
+  </description>
+</action>
+
 <action name="ExpandSearchEngineDescription">
   <owner>jyammine@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -40133,6 +40141,24 @@ should be able to be added at any place in this file.
 <action name="Unlink">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="UnlockKeyboard_PressAndHoldEsc">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <description>
+    The keyboard is locked with the Esc key and the user unlocked the keyboard
+    by holding the Esc key.
+  </description>
+</action>
+
+<action name="UnlockKeyboard_PressEsc">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <description>
+    The keyboard is locked without the Esc key and the user unlocked the
+    keyboard by pressing on the Esc key.
+  </description>
 </action>
 
 <action name="Unselect">

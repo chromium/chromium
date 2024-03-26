@@ -496,6 +496,8 @@ bool FullscreenController::HandleUserPressedEscape() {
 void FullscreenController::HandleUserHeldEscape() {
   if (RequiresPressAndHoldEscToExit()) {
     ExitFullscreenModeInternal();
+    base::RecordAction(
+        base::UserMetricsAction("ExitFullscreen_PressAndHoldEsc"));
   }
 }
 
