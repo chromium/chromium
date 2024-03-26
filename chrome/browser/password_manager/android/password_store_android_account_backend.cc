@@ -22,7 +22,6 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/sync/base/features.h"
-#include "components/sync/model/proxy_model_type_controller_delegate.h"
 
 namespace password_manager {
 
@@ -352,17 +351,9 @@ void PasswordStoreAndroidAccountBackend::DisableAutoSignInForOriginsAsync(
                                       origin_filter, std::move(completion));
 }
 
-std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+std::unique_ptr<syncer::ModelTypeControllerDelegate>
 PasswordStoreAndroidAccountBackend::CreateSyncControllerDelegate() {
-  // TODO: crbug.com/321220529 - Return
-  // PasswordModelTypeConrollerDelegateAndroid directly.
-  std::unique_ptr<PasswordModelTypeConrollerDelegateAndroid> delegate =
-      std::make_unique<PasswordModelTypeConrollerDelegateAndroid>();
-  return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindRepeating(
-          &PasswordModelTypeConrollerDelegateAndroid::GetWeakPtrToBaseClass,
-          std::move(delegate)));
+  return std::make_unique<PasswordModelTypeConrollerDelegateAndroid>();
 }
 
 SmartBubbleStatsStore*

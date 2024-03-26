@@ -309,7 +309,7 @@ SmartBubbleStatsStore* PasswordStoreProxyBackend::GetSmartBubbleStatsStore() {
   return main_backend()->GetSmartBubbleStatsStore();
 }
 
-std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+std::unique_ptr<syncer::ModelTypeControllerDelegate>
 PasswordStoreProxyBackend::CreateSyncControllerDelegate() {
   return built_in_backend_->CreateSyncControllerDelegate();
 }

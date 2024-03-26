@@ -302,21 +302,13 @@ SmartBubbleStatsStore* PasswordStoreBuiltInBackend::GetSmartBubbleStatsStore() {
   return this;
 }
 
-std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+std::unique_ptr<syncer::ModelTypeControllerDelegate>
 PasswordStoreBuiltInBackend::CreateSyncControllerDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-  // TODO: crbug.com/321220529 - Return
-  // PasswordModelTypeConrollerDelegateAndroid directly.
   if (password_manager::features::
           IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()) {
-    auto delegate =
-        std::make_unique<PasswordModelTypeConrollerDelegateAndroid>();
-    return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
-        base::SequencedTaskRunner::GetCurrentDefault(),
-        base::BindRepeating(
-            &PasswordModelTypeConrollerDelegateAndroid::GetWeakPtrToBaseClass,
-            std::move(delegate)));
+    return std::make_unique<PasswordModelTypeConrollerDelegateAndroid>();
   }
 #endif
   DCHECK(helper_);

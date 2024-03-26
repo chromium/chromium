@@ -203,7 +203,7 @@ PasswordStoreBackendMigrationDecorator::GetSmartBubbleStatsStore() {
   return nullptr;
 }
 
-std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+std::unique_ptr<syncer::ModelTypeControllerDelegate>
 PasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegate() {
   return built_in_backend_->CreateSyncControllerDelegate();
 }

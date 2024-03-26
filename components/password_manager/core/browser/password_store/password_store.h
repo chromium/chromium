@@ -34,7 +34,7 @@
 class PrefService;
 
 namespace syncer {
-class ProxyModelTypeControllerDelegate;
+class ModelTypeControllerDelegate;
 }  // namespace syncer
 
 namespace password_manager {
@@ -116,7 +116,7 @@ class PasswordStore : public PasswordStoreInterface {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
-  std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+  std::unique_ptr<syncer::ModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
   base::CallbackListSubscription AddSyncEnabledOrDisabledCallback(

@@ -15,7 +15,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 
 namespace syncer {
-class ProxyModelTypeControllerDelegate;
+class ModelTypeControllerDelegate;
 class SyncService;
 }  // namespace syncer
 
@@ -177,7 +177,7 @@ class PasswordStoreInterface : public RefcountedKeyedService {
 
   // For sync codebase only: instantiates a proxy controller delegate to
   // interact with PasswordSyncBridge. Must be called from the UI thread.
-  virtual std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+  virtual std::unique_ptr<syncer::ModelTypeControllerDelegate>
   CreateSyncControllerDelegate() = 0;
 
   // Propagates successful initialization of SyncService to reolve circular

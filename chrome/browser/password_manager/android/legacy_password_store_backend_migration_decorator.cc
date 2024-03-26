@@ -244,7 +244,7 @@ LegacyPasswordStoreBackendMigrationDecorator::GetSmartBubbleStatsStore() {
   return active_backend_->GetSmartBubbleStatsStore();
 }
 
-std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+std::unique_ptr<syncer::ModelTypeControllerDelegate>
 LegacyPasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegate() {
   return built_in_backend_->CreateSyncControllerDelegate();
 }

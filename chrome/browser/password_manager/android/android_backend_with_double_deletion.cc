@@ -164,7 +164,7 @@ AndroidBackendWithDoubleDeletion::GetSmartBubbleStatsStore() {
   return android_backend_->GetSmartBubbleStatsStore();
 }
 
-std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+std::unique_ptr<syncer::ModelTypeControllerDelegate>
 AndroidBackendWithDoubleDeletion::CreateSyncControllerDelegate() {
   return built_in_backend_->CreateSyncControllerDelegate();
 }

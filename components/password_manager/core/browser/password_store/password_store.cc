@@ -361,7 +361,7 @@ void PasswordStore::ShutdownOnUIThread() {
   prefs_ = nullptr;
 }
 
-std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+std::unique_ptr<syncer::ModelTypeControllerDelegate>
 PasswordStore::CreateSyncControllerDelegate() {
   return backend_ ? backend_->CreateSyncControllerDelegate() : nullptr;
 }

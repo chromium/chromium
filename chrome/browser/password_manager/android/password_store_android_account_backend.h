@@ -6,19 +6,19 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_ACCOUNT_BACKEND_H_
 
 #include "chrome/browser/password_manager/android/password_store_android_backend.h"
+#include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
 namespace syncer {
+class ModelTypeControllerDelegate;
 class SyncService;
-class ProxyModelTypeControllerDelegate;
 }  // namespace syncer
 
 namespace password_manager {
 
 class AffiliatedMatchHelper;
 class AffiliationsPrefetcher;
-class PasswordSyncControllerDelegateAndroid;
 
 // This class processes passwords only from an account.
 class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
@@ -79,7 +79,7 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
   void DisableAutoSignInForOriginsAsync(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion) override;
-  std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+  std::unique_ptr<syncer::ModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
   void RecordAddLoginAsyncCalledFromTheStore() override;
