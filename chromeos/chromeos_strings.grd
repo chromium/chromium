@@ -377,6 +377,9 @@
       <message name="IDS_MAHI_EXPERIMENT_BADGE_ACCESSIBLE_NAME" desc="Accessible name of the badge to indicate that it is an experimental feature." translateable="false">
         Experimental feature
       </message>
+      <message name="IDS_MAHI_FEEDBACK_PLACEHOLDER" desc="Placeholder text displayed in the feedback text box">
+        Feedback for mahi feature
+      </message>
       <message name="IDS_MAHI_OUTLINE_BUTTON_LABEL_TEXT" desc="The text label for the outline button inside the Mahi menu">
         Show outlines
       </message>

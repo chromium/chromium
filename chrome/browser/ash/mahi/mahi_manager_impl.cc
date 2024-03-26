@@ -268,10 +268,19 @@ void MahiManagerImpl::OnGetPageContentForQA(
 }
 
 void MahiManagerImpl::OpenFeedbackDialog() {
-  const std::string description_template = base::StringPrintf(
-      "#Mahi\nlatest status code: %d\nlatest summary: %s\nuser feedback:",
+  std::string description_template = base::StringPrintf(
+      "#Mahi user feedback:\n\n-----------\nlatest status code: %d\nlatest "
+      "summary: %s",
       static_cast<int>(latest_response_status_),
       base::UTF16ToUTF8(latest_summary_).c_str());
+
+  if (!current_panel_qa_.empty()) {
+    base::StringAppendF(&description_template, "\nQA history:");
+    for (const auto& [question, answer] : current_panel_qa_) {
+      base::StringAppendF(&description_template, "\nQ:%s\nA:%s\n",
+                          question.c_str(), answer.c_str());
+    }
+  }
 
   base::Value::Dict ai_metadata;
   ai_metadata.Set(feedback::kMahiMetadataKey, "true");
@@ -283,7 +292,7 @@ void MahiManagerImpl::OpenFeedbackDialog() {
       /*source=*/chrome::kFeedbackSourceAI, description_template,
       /*description_placeholder_text=*/
       base::UTF16ToUTF8(
-          l10n_util::GetStringUTF16(IDS_SEA_PEN_FEEDBACK_PLACEHOLDER)),
+          l10n_util::GetStringUTF16(IDS_MAHI_FEEDBACK_PLACEHOLDER)),
       /*category_tag=*/"mahi",
       /*extra_diagnostics=*/std::string(),
       /*autofill_metadata=*/base::Value::Dict(), std::move(ai_metadata));
