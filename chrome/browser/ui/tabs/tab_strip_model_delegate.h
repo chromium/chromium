@@ -188,6 +188,9 @@ class TabStripModelDelegate {
 
   // Returns whether the web_contents can be navigated back.
   virtual bool CanGoBack(content::WebContents* web_contents) = 0;
+
+  // Whether the associated window is a normal browser window.
+  virtual bool IsNormalWindow() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_DELEGATE_H_

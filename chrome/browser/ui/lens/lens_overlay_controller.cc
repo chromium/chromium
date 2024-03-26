@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/lens/lens_features.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -64,24 +65,62 @@ class LensOverlayControllerGlue
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(LensOverlayControllerGlue);
 
+// Allows lookup of a LensOverlayController from a WebContents associated with a
+// tab.
+class LensOverlayControllerTabGlue
+    : public content::WebContentsUserData<LensOverlayControllerTabGlue> {
+ public:
+  ~LensOverlayControllerTabGlue() override = default;
+
+  LensOverlayController* controller() { return controller_; }
+
+ private:
+  friend WebContentsUserData;
+  LensOverlayControllerTabGlue(content::WebContents* contents,
+                               LensOverlayController* controller)
+      : content::WebContentsUserData<LensOverlayControllerTabGlue>(*contents),
+        controller_(controller) {}
+
+  // Semantically owns this class.
+  raw_ptr<LensOverlayController> controller_;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(LensOverlayControllerTabGlue);
+
 }  // namespace
 
 LensOverlayController::LensOverlayController(tabs::TabModel* tab_model)
     : tab_model_(tab_model) {
+  if (tab_model_->contents()) {
+    LensOverlayControllerTabGlue::CreateForWebContents(tab_model_->contents(),
+                                                       this);
+  }
+
   // Automatically unregisters on destruction.
   tab_model_->owning_model()->AddObserver(this);
   lens_overlay_query_controller_ =
       std::make_unique<lens::LensOverlayQueryController>();
+
+  tab_model_observer_.Observe(tab_model);
 }
 
 LensOverlayController::~LensOverlayController() {
   CloseUI();
   lens_overlay_query_controller_.reset();
+  if (tab_model_->contents()) {
+    tab_model_->contents()->RemoveUserData(
+        LensOverlayControllerTabGlue::UserDataKey());
+  }
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController, kOverlayId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController,
                                       kOverlaySidePanelWebViewId);
+
+bool LensOverlayController::Enabled() {
+  return lens::features::IsLensOverlayEnabled();
+}
 
 void LensOverlayController::ShowUI() {
   // If UI is already showing or in the process of showing, do nothing.
@@ -163,6 +202,13 @@ LensOverlayController* LensOverlayController::GetController(
     content::WebUI* web_ui) {
   return LensOverlayControllerGlue::FromWebContents(web_ui->GetWebContents())
       ->controller();
+}
+
+// static
+LensOverlayController* LensOverlayController::GetController(
+    content::WebContents* tab_contents) {
+  auto* glue = LensOverlayControllerTabGlue::FromWebContents(tab_contents);
+  return glue ? glue->controller() : nullptr;
 }
 
 void LensOverlayController::BindOverlay(
@@ -390,6 +436,17 @@ void LensOverlayController::CloseUIAsync() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LensOverlayController::CloseUI,
                                 weak_factory_.GetWeakPtr()));
+}
+
+void LensOverlayController::WillRemoveContents(tabs::TabModel* tab,
+                                               content::WebContents* contents) {
+  contents->RemoveUserData(LensOverlayControllerTabGlue::UserDataKey());
+  CloseUI();
+}
+
+void LensOverlayController::DidAddContents(tabs::TabModel* tab,
+                                           content::WebContents* contents) {
+  LensOverlayControllerTabGlue::CreateForWebContents(contents, this);
 }
 
 void LensOverlayController::IssueLensRequest(const ::gfx::RectF& region) {
