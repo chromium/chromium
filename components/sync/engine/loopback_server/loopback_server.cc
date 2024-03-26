@@ -52,6 +52,8 @@ class LoopbackServerEntity;
 
 namespace {
 
+static const char kHistogramSuffix[] = "LoopBackServer";
+
 static const int kCurrentLoopbackServerProtoVersion = 1;
 static const int kKeystoreKeyLength = 16;
 
@@ -238,7 +240,8 @@ LoopbackServer::LoopbackServer(const base::FilePath& persistent_file)
       writer_(
           persistent_file_,
           base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
+              {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+          kHistogramSuffix) {
   DCHECK(!persistent_file_.empty());
   Init();
 }

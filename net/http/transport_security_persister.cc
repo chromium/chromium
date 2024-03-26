@@ -32,6 +32,8 @@ namespace net {
 
 namespace {
 
+constexpr const char* kHistogramSuffix = "TransportSecurityPersister";
+
 // This function converts the binary hashes to a base64 string which we can
 // include in a JSON file.
 std::string HashedDomainToExternalString(
@@ -186,7 +188,7 @@ TransportSecurityPersister::TransportSecurityPersister(
     const scoped_refptr<base::SequencedTaskRunner>& background_runner,
     const base::FilePath& data_path)
     : transport_security_state_(state),
-      writer_(data_path, background_runner),
+      writer_(data_path, background_runner, kHistogramSuffix),
       foreground_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       background_runner_(background_runner) {
   transport_security_state_->SetDelegate(this);

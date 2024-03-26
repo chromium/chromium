@@ -358,8 +358,9 @@ void AccountManager::Initialize(
   if (!IsEphemeralMode()) {
     DCHECK(task_runner_);
     tokens_file_path = home_dir_.Append(kTokensFileName);
-    writer_ = std::make_unique<base::ImportantFileWriter>(tokens_file_path,
-                                                          task_runner_);
+    constexpr const char* kHistogramSuffix = "AccountManager";
+    writer_ = std::make_unique<base::ImportantFileWriter>(
+        tokens_file_path, task_runner_, kHistogramSuffix);
   }
   initialization_callbacks_.emplace_back(std::move(initialization_callback));
 

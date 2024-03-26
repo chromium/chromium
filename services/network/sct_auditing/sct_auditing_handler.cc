@@ -84,8 +84,9 @@ SCTAuditingHandler::SCTAuditingHandler(NetworkContext* context,
   background_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-  writer_ = std::make_unique<base::ImportantFileWriter>(persistence_path_,
-                                                        background_runner_);
+  constexpr const char* kHistogramSuffix = "SCTAuditing";
+  writer_ = std::make_unique<base::ImportantFileWriter>(
+      persistence_path_, background_runner_, kHistogramSuffix);
 
   // Post a task to load persisted state after startup has finished.
   foreground_runner_->PostTask(

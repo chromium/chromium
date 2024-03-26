@@ -95,13 +95,19 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ImportantFileClients">
   <variant name="" summary="Unknown file"/>
+  <variant name=".AccountManager" summary="ChromeOS serialized accounts file"/>
   <variant name=".BookmarkStorage" summary="Bookmarks file"/>
   <variant name=".FeedbackReport" summary="Feedback Report file"/>
   <variant name=".Local_State" summary="Local State file"/>
+  <variant name=".LoopBackServer" summary="Sync file"/>
   <variant name=".Preferences" summary="Preferences file"/>
+  <variant name=".SCTAuditing"
+      summary="Signed Certificate Timestamp auditing report file"/>
   <variant name=".Secure_Preferences" summary="Secure Preferences file"/>
   <variant name=".StructuredMetricsPersistentProto"
       summary="Structured metrics persistent proto"/>
+  <variant name=".TransportSecurityPersister"
+      summary="TransportSecurity state file"/>
 </variants>
 
 <variants name="InterestGroupRequestType">
@@ -6493,6 +6499,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     CPU time used in the background thread to write serialized data into an
     important file. Recorded when the file is written.
+
+    Note: As client suffixes are added the volume of the unsufixed variant will
+    decline. This needs to be taken into account when analyzing overall counts.
   </summary>
   <token key="ImportantFileClients" variants="ImportantFileClients"/>
 </histogram>
