@@ -32,7 +32,6 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/gfx/vector_icon_utils.h"
@@ -59,16 +58,16 @@ constexpr int EXTENSION_PINNING = 14;
 
 void SetButtonIconWithColor(HoverButton* button,
                             const gfx::VectorIcon& icon,
-                            SkColor icon_color,
-                            SkColor disabled_icon_color) {
+                            ui::ColorId icon_color_id,
+                            ui::ColorId disabled_icon_color_id) {
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
   button->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(icon, icon_color, icon_size));
+      ui::ImageModel::FromVectorIcon(icon, icon_color_id, icon_size));
   button->SetImageModel(
       views::Button::STATE_DISABLED,
-      ui::ImageModel::FromVectorIcon(icon, disabled_icon_color, icon_size));
+      ui::ImageModel::FromVectorIcon(icon, disabled_icon_color_id, icon_size));
 }
 
 std::u16string GetPinButtonTooltip(bool is_force_pinned, bool is_pinned) {
@@ -376,8 +375,6 @@ ExtensionMenuItemView::~ExtensionMenuItemView() = default;
 
 void ExtensionMenuItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  const auto* const color_provider = GetColorProvider();
-  const SkColor icon_color = color_provider->GetColor(kColorExtensionMenuIcon);
 
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
@@ -388,9 +385,9 @@ void ExtensionMenuItemView::OnThemeChanged() {
         context_menu_button_,
         features::IsChromeRefresh2023() ? kBrowserToolsChromeRefreshIcon
                                         : kBrowserToolsIcon,
-        icon_color, color_provider->GetColor(kColorExtensionMenuIconDisabled));
+        kColorExtensionMenuIcon, kColorExtensionMenuIconDisabled);
     if (pin_button_) {
-      views::InkDrop::Get(pin_button_)->SetBaseColor(icon_color);
+      views::InkDrop::Get(pin_button_)->SetBaseColorId(kColorExtensionMenuIcon);
       bool is_pinned = model_ && model_->IsActionPinned(controller_->GetId());
       bool is_force_pinned =
           model_ && model_->IsActionForcePinned(controller_->GetId());
@@ -446,14 +443,13 @@ void ExtensionMenuItemView::UpdatePinButton(bool is_force_pinned,
   pin_button_->SetEnabled(!is_force_pinned &&
                           !browser_->profile()->IsOffTheRecord());
 
-  const auto* const color_provider = GetColorProvider();
-  const SkColor icon_color = color_provider->GetColor(
-      is_pinned ? kColorExtensionMenuPinButtonIcon : kColorExtensionMenuIcon);
-  const SkColor disabled_icon_color = color_provider->GetColor(
+  const ui::ColorId icon_color_id =
+      is_pinned ? kColorExtensionMenuPinButtonIcon : kColorExtensionMenuIcon;
+  const ui::ColorId disabled_icon_color_id =
       is_pinned ? kColorExtensionMenuPinButtonIconDisabled
-                : kColorExtensionMenuIconDisabled);
-  SetButtonIconWithColor(pin_button_, GetPinIcon(is_pinned), icon_color,
-                         disabled_icon_color);
+                : kColorExtensionMenuIconDisabled;
+  SetButtonIconWithColor(pin_button_, GetPinIcon(is_pinned), icon_color_id,
+                         disabled_icon_color_id);
 }
 
 void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
@@ -462,11 +458,10 @@ void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
 
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
-  const auto* const color_provider = GetColorProvider();
   auto three_dot_icon = ui::ImageModel::FromVectorIcon(
       features::IsChromeRefresh2023() ? kBrowserToolsChromeRefreshIcon
                                       : kBrowserToolsIcon,
-      color_provider->GetColor(kColorExtensionMenuIcon), icon_size);
+      kColorExtensionMenuIcon, icon_size);
 
   // Show a pin button for the context menu normal state icon when the action is
   // pinned in the toolbar. All other states should look, and behave, the same.
@@ -476,8 +471,7 @@ void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
           ? ui::ImageModel::FromVectorIcon(
                 features::IsChromeRefresh2023() ? kKeepPinChromeRefreshIcon
                                                 : views::kUnpinIcon,
-                color_provider->GetColor(kColorExtensionMenuPinButtonIcon),
-                icon_size)
+                kColorExtensionMenuPinButtonIcon, icon_size)
           : three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_HOVERED,
                                       three_dot_icon);
