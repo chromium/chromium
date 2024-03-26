@@ -3710,10 +3710,12 @@ AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
       return nullptr;
     }
 
-    VLOG(1) << "\n**** Processing tree update:" << "\n* Node: " << node
-            << "\n* Layout Object: " << node->GetLayoutObject()
-            << "\n* Event: " << tree_update->event
-            << "\n* Reason: " << static_cast<int>(tree_update->update_reason);
+    // Kept here for convenient debugging:
+    // DVLOG(1) << "\n**** Processing tree update:" << "\n* Node: " << node
+    //          << "\n* Layout Object: " << node->GetLayoutObject()
+    //          << "\n* Event: " << tree_update->event
+    //          << "\n* Reason: " <<
+    //          static_cast<int>(tree_update->update_reason);
 
     AXObject* ax_object = GetOrCreate(node);
     if (!ax_object || ax_object->IsDetached()) {
@@ -3739,10 +3741,11 @@ AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
     return nullptr;
   }
 
-  VLOG(1) << "\n**** Processing tree update:" << "\n* AXObject: "
-          << ax_object->ToString(true, true)
-          << "\n* Event: " << tree_update->event
-          << "\n* Reason: " << static_cast<int>(tree_update->update_reason);
+  // Kept here for convenient debugging:
+  // DVLOG(1) << "\n**** Processing tree update:" << "\n* AXObject: "
+  //          << ax_object->ToString(true, true)
+  //          << "\n* Event: " << tree_update->event
+  //          << "\n* Reason: " << static_cast<int>(tree_update->update_reason);
 
   if (ax_object->GetNode() && !ax_object->GetNode()->isConnected()) {
     return nullptr;
@@ -5516,7 +5519,8 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
     for (auto& node_data : update.nodes) {
       AXID id = node_data.id;
       DCHECK(id);
-      VLOG(1) << "*** AX Serialize: " << ObjectFromAXID(id)->ToString(true);
+      // Kept here for convenient debugging:
+      // DVLOG(1) << "*** AX Serialize: " << ObjectFromAXID(id)->ToString(true);
       auto result = already_serialized_ids.insert(node_data.id);
       if (!result.is_new_entry) {
         redundant_serialization_count++;
@@ -5572,8 +5576,9 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
 
     if (!base::Contains(already_serialized_ids, event.id)) {
       // Node no longer exists or could not be serialized.
-      VLOG(1) << "Dropped AXEvent: " << event.event_type << " on "
-              << ObjectFromAXID(event.id);
+      // Kept here for convenient debugging:
+      // DVLOG(1) << "Dropped AXEvent: " << event.event_type << " on "
+      //          << ObjectFromAXID(event.id);
       continue;
     }
 
@@ -5592,8 +5597,9 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
 
     events.push_back(event);
 
-    VLOG(1) << "AXEvent: " << event.event_type << " on "
-            << ObjectFromAXID(event.id);
+    // Kept here for convenient debugging:
+    // DVLOG(1) << "AXEvent: " << event.event_type << " on "
+    //          << ObjectFromAXID(event.id);
   }
 
 #if DCHECK_IS_ON()
