@@ -9,13 +9,16 @@
 #include <string>
 
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
+#include "chrome/grit/generated_resources.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 using testing::_;
 using testing::Eq;
@@ -37,15 +40,28 @@ media_preview_metrics::Context GetMetricsContext() {
   return metrics_context;
 }
 
+#if !BUILDFLAG(IS_MAC)
+std::optional<std::u16string> GetAnnouncementFromRootView(
+    views::View* root_view) {
+  if (!root_view || root_view->children().size() < 2u) {
+    return std::nullopt;
+  }
+  ui::AXNodeData node_data;
+  views::View* const hidden_polite_view = root_view->children()[1];
+  hidden_polite_view->GetAccessibleNodeData(&node_data);
+  return node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
+}
+#endif
+
 }  // namespace
 
 class MediaViewControllerBaseTestParameterized
-    : public TestWithBrowserView,
+    : public ChromeViewsTestBase,
       public ui::ComboboxModelObserver,
       public testing::WithParamInterface<bool> {
  protected:
   void SetUp() override {
-    TestWithBrowserView::SetUp();
+    ChromeViewsTestBase::SetUp();
     allow_device_selection_ = GetParam();
     media_view_ = std::make_unique<MediaView>();
     combobox_model_ = std::make_unique<ui::SimpleComboboxModel>(
@@ -65,7 +81,19 @@ class MediaViewControllerBaseTestParameterized
   void TearDown() override {
     controller_.reset();
     media_view_.reset();
-    TestWithBrowserView::TearDown();
+    if (widget_) {
+      widget_->Close();
+    }
+    ChromeViewsTestBase::TearDown();
+  }
+
+  void InitializeWidget() {
+    widget_ = std::make_unique<views::Widget>();
+    views::Widget::InitParams init_params =
+        CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    widget_->Init(std::move(init_params));
+    widget_->Show();
+    widget_->SetContentsView(std::move(media_view_));
   }
 
   // ui::ComboboxModelObserver override
@@ -107,8 +135,19 @@ class MediaViewControllerBaseTestParameterized
     combobox_model_->UpdateItemList(std::move(items));
   }
 
+  const raw_ref<views::Label> GetDeviceNameLabelView() {
+    return controller_->device_name_label_;
+  }
+
+  void SelectComboboxIndex(size_t index) {
+    if (index < actual_device_count_) {
+      controller_->device_selector_combobox_->SetSelectedIndex(index);
+    }
+  }
+
   bool allow_device_selection_ = false;
   size_t actual_device_count_ = 0;
+  views::UniqueWidgetPtr widget_;
   std::unique_ptr<MediaView> media_view_;
   std::unique_ptr<ui::SimpleComboboxModel> combobox_model_;
   base::MockCallback<MediaViewControllerBase::SourceChangeCallback>
@@ -183,3 +222,54 @@ TEST_P(MediaViewControllerBaseTestParameterized,
     EXPECT_EQ(GetDeviceNameLabel(), GetDeviceName(1));
   }
 }
+
+#if !BUILDFLAG(IS_MAC)
+TEST_P(MediaViewControllerBaseTestParameterized,
+       OnDeviceListChanged_Announcement) {
+  InitializeWidget();
+  auto* const widget = GetDeviceNameLabelView()->GetWidget();
+  ASSERT_TRUE(widget);
+  auto* const root_view = widget->GetRootView();
+  ASSERT_TRUE(root_view);
+  ui::AXNodeData node_data;
+
+  EXPECT_TRUE(IsNoDeviceLabelVisible());
+
+  // No announcement because `has_device_list_changed_before_` is false.
+  UpdateComboboxModel(/*device_count=*/2);
+  EXPECT_EQ(std::nullopt, GetAnnouncementFromRootView(root_view));
+
+  // No announcement because selected device name is equal to
+  // `previous_device_name`.
+  UpdateComboboxModel(/*device_count=*/1);
+  EXPECT_EQ(std::nullopt, GetAnnouncementFromRootView(root_view));
+
+  UpdateComboboxModel(/*device_count=*/0);
+  if (allow_device_selection_) {
+    // Announcement expected with `kNoDeviceLabelText` value.
+    EXPECT_EQ(kNoDeviceLabelText, GetAnnouncementFromRootView(root_view));
+  } else {
+    EXPECT_EQ(std::nullopt, GetAnnouncementFromRootView(root_view));
+  }
+
+  const std::u16string device_1_announcement = l10n_util::GetStringFUTF16(
+      IDS_MEDIA_PREVIEW_ANNOUNCE_SELECTED_DEVICE_CHANGE, GetDeviceName(1));
+
+  UpdateComboboxModel(/*device_count=*/2);
+  if (allow_device_selection_) {
+    // Announcement expected for `device_1`.
+    EXPECT_EQ(device_1_announcement, GetAnnouncementFromRootView(root_view));
+  } else {
+    EXPECT_EQ(std::nullopt, GetAnnouncementFromRootView(root_view));
+  }
+
+  SelectComboboxIndex(1);  // Selected device is `device_2`.
+  UpdateComboboxModel(/*device_count=*/1);
+  if (allow_device_selection_) {
+    // Announcement expected for `device_1`.
+    EXPECT_EQ(device_1_announcement, GetAnnouncementFromRootView(root_view));
+  } else {
+    EXPECT_EQ(std::nullopt, GetAnnouncementFromRootView(root_view));
+  }
+}
+#endif

@@ -174,7 +174,6 @@ void MediaViewControllerBase::AnnounceDynamicChangeIfNeeded(
     return;
   }
 
-  // TODO(b/329888948): Add test coverage for announcement.
   device_name_label_->GetViewAccessibility().AnnouncePolitely(announcement);
 }
 
