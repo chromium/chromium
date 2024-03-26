@@ -425,6 +425,7 @@ FUZZERS_WITH_CORPORA = [
     'v8_regexp_parser_fuzzer',
     'v8_script_parser_fuzzer',
     'v8_wasm_code_fuzzer',
+    'v8_wasm_compile_all_fuzzer',
     'v8_wasm_compile_fuzzer',
     'v8_wasm_compile_simd_fuzzer',
     'v8_wasm_compile_wasmgc_fuzzer',
