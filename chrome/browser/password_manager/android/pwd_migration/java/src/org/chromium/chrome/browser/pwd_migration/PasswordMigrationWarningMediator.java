@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningSheetStateAtClosing;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningUserActions;
@@ -228,13 +229,23 @@ class PasswordMigrationWarningMediator
     }
 
     private boolean shouldOfferSync() {
+        if (PasswordManagerUtilBridge.isUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()) {
+            return false;
+        }
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-        if (signinManager == null || signinManager.isSigninDisabledByPolicy()) return false;
-
+        if (signinManager == null || signinManager.isSigninDisabledByPolicy()) {
+            return false;
+        }
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
-        if (syncService == null) return false;
-        if (syncService.isSyncDisabledByEnterprisePolicy()) return false;
-        if (syncService.isTypeManagedByPolicy(UserSelectableType.PASSWORDS)) return false;
+        if (syncService == null) {
+            return false;
+        }
+        if (syncService.isSyncDisabledByEnterprisePolicy()) {
+            return false;
+        }
+        if (syncService.isTypeManagedByPolicy(UserSelectableType.PASSWORDS)) {
+            return false;
+        }
         return true;
     }
 

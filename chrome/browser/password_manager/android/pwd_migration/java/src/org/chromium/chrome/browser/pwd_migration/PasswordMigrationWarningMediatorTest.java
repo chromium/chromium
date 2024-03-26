@@ -37,6 +37,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningSheetStateAtClosing;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningUserActions;
@@ -116,11 +118,15 @@ public class PasswordMigrationWarningMediatorTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private SyncService mSyncService;
     @Mock private SigninManager mSigninManager;
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
+        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
+        when(mPasswordManagerUtilBridgeJniMock.isUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled())
+                .thenReturn(false);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
         mMediator =
                 new PasswordMigrationWarningMediator(
@@ -140,6 +146,28 @@ public class PasswordMigrationWarningMediatorTest {
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         mMediator.showWarning(ScreenType.INTRO_SCREEN);
         assertTrue(mModel.get(VISIBLE));
+    }
+
+    @Test
+    public void testShowWarningSetsShouldOfferSyncToTrue() {
+        when(mPasswordManagerUtilBridgeJniMock.isUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled())
+                .thenReturn(false);
+        when(mIdentityServicesProvider.getSigninManager(mProfile)).thenReturn(mSigninManager);
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        mModel.set(VISIBLE, false);
+        mMediator.showWarning(ScreenType.OPTIONS_SCREEN);
+        assertTrue(mModel.get(SHOULD_OFFER_SYNC));
+    }
+
+    @Test
+    public void testShowWarningWithSyncOnlyInGMSCoreSetsShouldOfferSyncToFalse() {
+        when(mPasswordManagerUtilBridgeJniMock.isUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled())
+                .thenReturn(true);
+        when(mIdentityServicesProvider.getSigninManager(mProfile)).thenReturn(mSigninManager);
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        mModel.set(VISIBLE, false);
+        mMediator.showWarning(ScreenType.OPTIONS_SCREEN);
+        assertFalse(mModel.get(SHOULD_OFFER_SYNC));
     }
 
     @Test

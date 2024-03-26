@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordManagerUtilBridge_jni.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/prefs/android/pref_service_android.h"
 
@@ -42,4 +43,11 @@ jboolean JNI_PasswordManagerUtilBridge_IsGmsCoreUpdateRequired(
   return IsGmsCoreUpdateRequired(
       pref_service, is_pwd_sync_enabled,
       base::android::BuildInfo::GetInstance()->gms_version_code());
+}
+
+jboolean
+JNI_PasswordManagerUtilBridge_IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled(
+    JNIEnv* env) {
+  return password_manager::features::
+      IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
 }
