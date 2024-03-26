@@ -3442,28 +3442,6 @@ Called by update_autofill_enums.py.-->
   <int value="11" label="Closed, abandon unmasking"/>
 </enum>
 
-<enum name="AutofillUserHappiness">
-  <summary>
-    These metrics track the user happiness about Autofill on address and credit
-    card forms. Starting from M63, these metrics are also split between
-    Autofill.UserHappiness.Address and Autofill.UserHappiness.CreditCard.
-  </summary>
-  <int value="0" label="Forms loaded"/>
-  <int value="1" label="Deprecated 1"/>
-  <int value="2" label="Deprecated 2"/>
-  <int value="3" label="Deprecated 3"/>
-  <int value="4" label="Deprecated 4"/>
-  <int value="5" label="User did type"/>
-  <int value="6" label="Suggestions shown"/>
-  <int value="7" label="Suggestions shown (once)"/>
-  <int value="8" label="User triggered autofill"/>
-  <int value="9" label="User triggered autofill (once)"/>
-  <int value="10" label="User edited autofilled field"/>
-  <int value="11" label="User edited autofilled field (once)"/>
-  <int value="12" label="User entered a UPI VPA into a form"/>
-  <int value="13" label="A field was populated by autofill"/>
-</enum>
-
 <enum name="AutofillValuePatterns">
   <int value="0" label="No pattern found"/>
   <int value="1" label="UPI VPA"/>

@@ -382,52 +382,6 @@ class AutofillMetrics {
     NUM_SCAN_CREDIT_CARD_PROMPT_METRICS,
   };
 
-  // Each of these metrics is logged only for potentially autofillable forms,
-  // i.e. forms with at least three fields, etc.
-  // These are used to derive certain "user happiness" metrics.  For example, we
-  // can compute the ratio (USER_DID_EDIT_AUTOFILLED_FIELD / USER_DID_AUTOFILL)
-  // to see how often users have to correct autofilled data.
-  enum UserHappinessMetric {
-    // Loaded a page containing forms.
-    FORMS_LOADED,
-    // Submitted a fillable form -- i.e. one with at least three field values
-    // that match the user's stored Autofill data -- and all matching fields
-    // were autofilled.
-    SUBMITTED_FILLABLE_FORM_AUTOFILLED_ALL,
-    // Submitted a fillable form and some (but not all) matching fields were
-    // autofilled.
-    SUBMITTED_FILLABLE_FORM_AUTOFILLED_SOME,
-    // Submitted a fillable form and no fields were autofilled.
-    SUBMITTED_FILLABLE_FORM_AUTOFILLED_NONE,
-    // Submitted a non-fillable form. This also counts entering new data into
-    // a form with identified fields. Because we didn't have the data the user
-    // wanted, from the user's perspective, the form was not autofillable.
-    SUBMITTED_NON_FILLABLE_FORM,
-
-    // User manually filled one of the form fields.
-    USER_DID_TYPE,
-    // We showed a popup containing Autofill suggestions.
-    SUGGESTIONS_SHOWN,
-    // Same as above, but only logged once per page load.
-    SUGGESTIONS_SHOWN_ONCE,
-    // User autofilled at least part of the form.
-    USER_DID_AUTOFILL,
-    // Same as above, but only logged once per page load.
-    USER_DID_AUTOFILL_ONCE,
-    // User edited a previously autofilled field.
-    USER_DID_EDIT_AUTOFILLED_FIELD,
-    // Same as above, but only logged once per page load.
-    USER_DID_EDIT_AUTOFILLED_FIELD_ONCE,
-
-    // User entered form data that appears to be a UPI Virtual Payment Address.
-    USER_DID_ENTER_UPI_VPA,
-
-    // A field was populated by autofill.
-    FIELD_WAS_AUTOFILLED,
-
-    NUM_USER_HAPPINESS_METRICS,
-  };
-
   // Cardholder name fix flow prompt metrics.
   enum CardholderNameFixFlowPromptEvent {
     // The prompt was shown.
@@ -951,26 +905,6 @@ class AutofillMetrics {
   static void LogEmailFieldPredictionMetrics(const AutofillField& field);
 
   static void LogServerQueryMetric(ServerQueryMetric metric);
-
-  static void LogUserHappinessMetric(
-      UserHappinessMetric metric,
-      FieldTypeGroup field_type_group,
-      security_state::SecurityLevel security_level,
-      uint32_t profile_form_bitmask);
-
-  static void LogUserHappinessMetric(
-      UserHappinessMetric metric,
-      const DenseSet<FormType>& form_types,
-      security_state::SecurityLevel security_level,
-      uint32_t profile_form_bitmask);
-
-  static void LogUserHappinessBySecurityLevel(
-      UserHappinessMetric metric,
-      FormType form_type,
-      security_state::SecurityLevel security_level);
-
-  static void LogUserHappinessByProfileFormType(UserHappinessMetric metric,
-                                                uint32_t profile_form_bitmask);
 
   // Logs |event| to the unmask prompt events histogram.
   static void LogUnmaskPromptEvent(UnmaskPromptEvent event,

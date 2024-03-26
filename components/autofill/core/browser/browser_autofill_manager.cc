@@ -1027,11 +1027,10 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
 
   UpdatePendingForm(form);
 
-  uint32_t profile_form_bitmask = 0;
   if (!user_did_type_ || autofill_field->is_autofilled) {
+    user_did_type_ = true;
     form_interactions_ukm_logger()->LogTextFieldDidChange(*form_structure,
                                                           *autofill_field);
-    profile_form_bitmask = data_util::DetermineGroups(*form_structure);
   }
 
   auto* logger = GetEventFormLogger(*autofill_field);
@@ -1041,31 +1040,11 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     }
   }
 
-  if (!user_did_type_) {
-    user_did_type_ = true;
-    AutofillMetrics::LogUserHappinessMetric(
-        AutofillMetrics::USER_DID_TYPE, autofill_field->Type().group(),
-        client().GetSecurityLevelForUmaHistograms(), profile_form_bitmask);
-  }
-
   if (autofill_field->is_autofilled) {
     autofill_field->is_autofilled = false;
     autofill_field->set_previously_autofilled(true);
-    AutofillMetrics::LogUserHappinessMetric(
-        AutofillMetrics::USER_DID_EDIT_AUTOFILLED_FIELD,
-        autofill_field->Type().group(),
-        client().GetSecurityLevelForUmaHistograms(), profile_form_bitmask);
-
     if (logger) {
       logger->OnEditedAutofilledField();
-    }
-
-    if (!user_did_edit_autofilled_field_) {
-      user_did_edit_autofilled_field_ = true;
-      AutofillMetrics::LogUserHappinessMetric(
-          AutofillMetrics::USER_DID_EDIT_AUTOFILLED_FIELD_ONCE,
-          autofill_field->Type().group(),
-          client().GetSecurityLevelForUmaHistograms(), profile_form_bitmask);
     }
   }
 
@@ -1517,26 +1496,11 @@ void BrowserAutofillManager::OnDidFillAutofillFormDataImpl(
 
   // Find the FormStructure that corresponds to |form|. Use default form type if
   // form is not present in our cache, which will happen rarely.
-
   FormStructure* form_structure = FindCachedFormById(form.global_id());
   DenseSet<FormType> form_types;
   if (form_structure) {
     form_types = form_structure->GetFormTypes();
   }
-
-  uint32_t profile_form_bitmask =
-      form_structure ? data_util::DetermineGroups(*form_structure) : 0;
-
-  AutofillMetrics::LogUserHappinessMetric(
-      AutofillMetrics::USER_DID_AUTOFILL, form_types,
-      client().GetSecurityLevelForUmaHistograms(), profile_form_bitmask);
-  if (!user_did_autofill_) {
-    user_did_autofill_ = true;
-    AutofillMetrics::LogUserHappinessMetric(
-        AutofillMetrics::USER_DID_AUTOFILL_ONCE, form_types,
-        client().GetSecurityLevelForUmaHistograms(), profile_form_bitmask);
-  }
-
   UpdateInitialInteractionTimestamp(timestamp);
 }
 
@@ -1594,18 +1558,11 @@ void BrowserAutofillManager::DidShowSuggestions(
     return;
   }
   autofill_field->set_did_trigger_suggestions(true);
-  uint32_t profile_form_bitmask = data_util::DetermineGroups(*form_structure);
-  AutofillMetrics::LogUserHappinessMetric(
-      AutofillMetrics::SUGGESTIONS_SHOWN, autofill_field->Type().group(),
-      client().GetSecurityLevelForUmaHistograms(), profile_form_bitmask);
 
   if (!did_show_suggestions_) {
     // TODO(crbug.com/1493361): Take suggestions for unclassified forms into
     // account.
     did_show_suggestions_ = true;
-    AutofillMetrics::LogUserHappinessMetric(
-        AutofillMetrics::SUGGESTIONS_SHOWN_ONCE, autofill_field->Type().group(),
-        client().GetSecurityLevelForUmaHistograms(), profile_form_bitmask);
   }
 
   auto* logger = GetEventFormLogger(*autofill_field);
@@ -2062,8 +2019,6 @@ void BrowserAutofillManager::Reset() {
   has_logged_autofill_enabled_ = false;
   did_show_suggestions_ = false;
   user_did_type_ = false;
-  user_did_autofill_ = false;
-  user_did_edit_autofilled_field_ = false;
   credit_card_ = CreditCard();
   credit_card_form_ = FormData();
   credit_card_field_ = FormFieldData();
@@ -2474,14 +2429,6 @@ void BrowserAutofillManager::OnFormProcessed(
         form, form_structure,
         {.trigger_source = AutofillTriggerSource::kFormsSeen});
   }
-}
-
-void BrowserAutofillManager::OnAfterProcessParsedForms(
-    const DenseSet<FormType>& form_types) {
-  AutofillMetrics::LogUserHappinessMetric(
-      AutofillMetrics::FORMS_LOADED, form_types,
-      client().GetSecurityLevelForUmaHistograms(),
-      /*profile_form_bitmask=*/0);
 }
 
 void BrowserAutofillManager::UpdateInitialInteractionTimestamp(

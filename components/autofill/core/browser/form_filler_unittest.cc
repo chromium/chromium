@@ -566,26 +566,6 @@ TEST_F(FormFillerTest,
               AutofilledWith(profile.GetInfo(NAME_LAST, kAppLocale)));
 }
 
-// Test that we correctly log FIELD_WAS_AUTOFILLED event in UserHappiness.
-// TODO(crbug.com/1007974): Move to a filling metric unittest file.
-TEST_F(FormFillerTest, FillCreditCardForm_LogFieldWasAutofill) {
-  // Construct a form with a 4 fields: cardholder name, card number,
-  // expiration date and cvc.
-  FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
-                                                     /*use_month_type=*/true);
-  ASSERT_EQ(form.fields.size(), 4u);
-  FormsSeen({form});
-
-  CreditCard credit_card = test::GetCreditCard();
-  base::HistogramTester histogram_tester;
-  FormData filled_form =
-      FillAutofillFormData(form, *form.fields.begin(), &credit_card);
-  // Cardholder name, card number, expiration data were autofilled but cvc was
-  // not be autofilled.
-  histogram_tester.ExpectBucketCount("Autofill.UserHappiness.CreditCard",
-                                     AutofillMetrics::FIELD_WAS_AUTOFILLED, 3);
-}
-
 // Test that we correctly fill a credit card form.
 TEST_F(FormFillerTest, FillCreditCardForm_Simple) {
   FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,

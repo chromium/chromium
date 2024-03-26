@@ -5441,20 +5441,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.UserHappiness{AutofillFormType}"
-    enum="AutofillUserHappiness" expires_after="2024-12-12">
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Measures the frequency of various events in the Autofill user interaction
-    flow. By comparing frequencies, we can compute several interesting
-    &quot;user happiness&quot; metrics. {AutofillFormType}
-  </summary>
-  <token key="AutofillFormType" variants="AutofillFormType">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Autofill.VirtualCard.Enroll.Attempt.{Source}"
     enum="BooleanAttempted" expires_after="2024-09-01">
   <owner>siyua@chromium.org</owner>

@@ -75,15 +75,9 @@ void LogQualityMetrics(
 
     if (IsUPIVirtualPaymentAddress(field->value)) {
       has_upi_vpa_field = true;
-      AutofillMetrics::LogUserHappinessMetric(
-          AutofillMetrics::USER_DID_ENTER_UPI_VPA, group,
-          security_state::SecurityLevel::SECURITY_LEVEL_COUNT,
-          data_util::DetermineGroups(form_structure));
     }
-
     form_interactions_ukm_logger->LogFieldFillStatus(form_structure, *field,
                                                      metric_type);
-
     AutofillMetrics::LogHeuristicPredictionQualityMetrics(
         form_interactions_ukm_logger, form_structure, *field, metric_type);
     AutofillMetrics::LogServerPredictionQualityMetrics(

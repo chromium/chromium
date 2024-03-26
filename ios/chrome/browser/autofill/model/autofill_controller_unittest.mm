@@ -276,9 +276,6 @@ class AutofillControllerTest : public PlatformTest {
   // Fails if the specified metric was not registered the given number of times.
   void ExpectMetric(const std::string& histogram_name, int sum);
 
-  // Fails if the specified user happiness metric was not registered.
-  void ExpectHappinessMetric(AutofillMetrics::UserHappinessMetric metric);
-
   TestSuggestionController* suggestion_controller() {
     return suggestion_controller_;
   }
@@ -408,11 +405,6 @@ void AutofillControllerTest::ExpectMetric(const std::string& histogram_name,
   histogram_tester_->ExpectBucketCount(histogram_name, sum, 1);
 }
 
-void AutofillControllerTest::ExpectHappinessMetric(
-    AutofillMetrics::UserHappinessMetric metric) {
-  histogram_tester_->ExpectBucketCount("Autofill.UserHappiness", metric, 1);
-}
-
 void AutofillControllerTest::WaitForCondition(ConditionBlock condition) {
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1000),
                                                            true, condition));
@@ -437,7 +429,6 @@ TEST_F(AutofillControllerTest, ReadForm) {
   CheckField(form, ADDRESS_HOME_STATE, "state");
   CheckField(form, ADDRESS_HOME_ZIP, "zip");
   ExpectMetric("Autofill.IsEnabled.PageLoad", 1);
-  ExpectHappinessMetric(AutofillMetrics::FORMS_LOADED);
 }
 
 // Checks that viewing an HTML page containing a form with an 'id' results in
@@ -535,7 +526,6 @@ TEST_F(AutofillControllerTest, ProfileSuggestions) {
   web::test::ExecuteJavaScript(@"document.forms[0].name.focus()", web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ExpectMetric("Autofill.AddressSuggestionsCount", 1);
-  ExpectHappinessMetric(AutofillMetrics::SUGGESTIONS_SHOWN);
   EXPECT_EQ(1U, [suggestion_controller() suggestions].count);
   FormSuggestion* suggestion = [suggestion_controller() suggestions][0];
   EXPECT_NSEQ(@"Homer Simpson", suggestion.value);
@@ -557,7 +547,6 @@ TEST_F(AutofillControllerTest, ProfileSuggestionsTwoAnonymousForms) {
   web::test::ExecuteJavaScript(@"document.forms[0].name.focus()", web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ExpectMetric("Autofill.AddressSuggestionsCount", 1);
-  ExpectHappinessMetric(AutofillMetrics::SUGGESTIONS_SHOWN);
   EXPECT_EQ(1U, [suggestion_controller() suggestions].count);
   FormSuggestion* suggestion = [suggestion_controller() suggestions][0];
   EXPECT_NSEQ(@"Homer Simpson", suggestion.value);
@@ -578,7 +567,6 @@ TEST_F(AutofillControllerTest, ProfileSuggestionsFromSelectField) {
   web::test::ExecuteJavaScript(@"document.forms[0].state.focus()", web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ExpectMetric("Autofill.AddressSuggestionsCount", 1);
-  ExpectHappinessMetric(AutofillMetrics::SUGGESTIONS_SHOWN);
   EXPECT_EQ(1U, [suggestion_controller() suggestions].count);
   FormSuggestion* suggestion = [suggestion_controller() suggestions][0];
   EXPECT_NSEQ(@"IL", suggestion.value);
@@ -625,7 +613,6 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
   web::test::ExecuteJavaScript(@"document.forms[0].name.focus()", web_state());
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ExpectMetric("Autofill.AddressSuggestionsCount", 2);
-  ExpectHappinessMetric(AutofillMetrics::SUGGESTIONS_SHOWN);
   EXPECT_EQ(2U, [suggestion_controller() suggestions].count);
 }
 

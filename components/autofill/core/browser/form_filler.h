@@ -285,7 +285,6 @@ class FormFiller {
       FormFieldData& field_data,
       bool should_notify,
       const std::u16string& cvc,
-      uint32_t profile_form_bitmask,
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
 

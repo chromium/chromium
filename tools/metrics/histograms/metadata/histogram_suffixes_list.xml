@@ -354,7 +354,6 @@ chromium-metrics-reviews@google.com.
              unknown fields"/>
   <suffix name="PhoneOnly" label="Form has phone field only"/>
   <affected-histogram name="Autofill.FormEvents.Address"/>
-  <affected-histogram name="Autofill.UserHappiness.Address"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AutofillCreditCardType" separator=".">
@@ -3897,10 +3896,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Upload"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptResult.Local"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptResult.Upload"/>
-  <affected-histogram name="Autofill.UserHappiness.Address"/>
-  <affected-histogram name="Autofill.UserHappiness.CreditCard"/>
-  <affected-histogram name="Autofill.UserHappiness.Password"/>
-  <affected-histogram name="Autofill.UserHappiness.Unknown"/>
   <affected-histogram name="Security.PageEndReason"/>
   <affected-histogram name="Security.PageInfo.TimeOpen"/>
   <affected-histogram name="Security.PageInfo.TimeOpen.Action"/>

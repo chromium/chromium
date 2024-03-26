@@ -661,8 +661,7 @@ void FormFiller::FillOrPreviewForm(
     const bool is_newly_autofilled = FillField(
         *autofill_field, profile_or_credit_card, forced_fill_values,
         result_form.fields[i], should_notify, cvc.has_value() ? *cvc : u"",
-        data_util::DetermineGroups(*form_structure), action_persistence,
-        &failure_to_fill);
+        action_persistence, &failure_to_fill);
     const bool autofilled_value_did_not_change =
         form.fields[i].is_autofilled && result_form.fields[i].is_autofilled &&
         form.fields[i].value == result_form.fields[i].value;
@@ -1042,7 +1041,6 @@ bool FormFiller::FillField(
     FormFieldData& field_data,
     bool should_notify,
     const std::u16string& cvc,
-    uint32_t profile_form_bitmask,
     mojom::ActionPersistence action_persistence,
     std::string* failure_to_fill) {
   const FieldFillingData filling_content = GetFieldFillingData(
@@ -1077,10 +1075,6 @@ bool FormFiller::FillField(
   // it. This allows the renderer to distinguish autofilled fields from
   // fields with non-empty values, such as select-one fields.
   field_data.is_autofilled = true;
-  AutofillMetrics::LogUserHappinessMetric(
-      AutofillMetrics::FIELD_WAS_AUTOFILLED, autofill_field.Type().group(),
-      manager_->client().GetSecurityLevelForUmaHistograms(),
-      profile_form_bitmask);
 
   if (should_notify) {
     DCHECK(absl::holds_alternative<const AutofillProfile*>(

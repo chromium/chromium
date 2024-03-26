@@ -1280,24 +1280,6 @@ class CreditCardSuggestionTest : public BrowserAutofillManagerTest {
   base::test::ScopedFeatureList feature_list_card_metadata_and_product_name_;
 };
 
-// Test that calling OnFormsSeen with an empty set of forms (such as when
-// reloading a page or when the renderer processes a set of forms but detects
-// no changes) does not load the forms again.
-TEST_F(BrowserAutofillManagerTest, OnFormsSeen_Empty) {
-  // Set up our form data.
-  FormData form = CreateTestAddressFormData();
-
-  base::HistogramTester histogram_tester;
-  FormsSeen({form});
-  histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
-                                      0 /* FORMS_LOADED */, 1);
-
-  // No more forms, metric is not logged.
-  FormsSeen({});
-  histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
-                                      0 /* FORMS_LOADED */, 1);
-}
-
 // Test that calling OnFormsSeen consecutively with a different set of forms
 // will query for each separately.
 TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
@@ -1325,15 +1307,8 @@ TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
       *crowdsourcing_manager(),
       StartQueryRequest(
           ElementsAre(FormStructureHasRendererId(form2.renderer_id)), _, _));
-
-  base::HistogramTester histogram_tester;
   FormsSeen({form});
-  histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
-                                      0 /* FORMS_LOADED */, 1);
-
   FormsSeen({form2});
-  histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
-                                      0 /* FORMS_LOADED */, 2);
 }
 
 // Test that when forms are seen, the renderer is updated with the predicted
@@ -3278,38 +3253,16 @@ TEST_F(BrowserAutofillManagerTest,
        OnFormsSeen_AutofillDisabledPasswordManagerEnabled) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
-
-  // Disable autofill and the password manager.
   browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
                                                               false);
   browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
-  ON_CALL(autofill_client_, IsPasswordManagerEnabled())
-      .WillByDefault(Return(false));
-
-  // As neither autofill nor password manager are enabled, the form should
-  // not be parsed.
-  {
-    base::HistogramTester histogram_tester;
-    FormsSeen({form});
-    EXPECT_EQ(0, histogram_tester.GetBucketCount("Autofill.UserHappiness",
-                                                 0 /* FORMS_LOADED */));
-  }
-
-  // Now enable the password manager.
-  ON_CALL(autofill_client_, IsPasswordManagerEnabled())
-      .WillByDefault(Return(true));
   // If the password manager is enabled, that's enough to parse the form.
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_CALL(*crowdsourcing_manager(), StartQueryRequest).Times(AnyNumber());
-    EXPECT_CALL(
-        *crowdsourcing_manager(),
-        StartQueryRequest(
-            ElementsAre(FormStructureHasRendererId(form.renderer_id)), _, _));
-    FormsSeen({form});
-    histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
-                                        0 /* FORMS_LOADED */, 1);
-  }
+  EXPECT_CALL(*crowdsourcing_manager(), StartQueryRequest).Times(AnyNumber());
+  EXPECT_CALL(
+      *crowdsourcing_manager(),
+      StartQueryRequest(
+          ElementsAre(FormStructureHasRendererId(form.renderer_id)), _, _));
+  FormsSeen({form});
 }
 
 // Test that we return normal Autofill suggestions when trying to autofill
@@ -5836,8 +5789,7 @@ TEST_F(BrowserAutofillManagerTest,
   // No Autofill logs.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
   EXPECT_THAT(histograms,
-              Not(AnyOf(HasSubstr("Autofill.UserHappiness"),
-                        HasSubstr("Autofill.FormEvents.Address"),
+              Not(AnyOf(HasSubstr("Autofill.FormEvents.Address"),
                         HasSubstr("Autofill.FormEvents.CreditCard"))));
 }
 
@@ -5848,15 +5800,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   base::HistogramTester histogram_tester;
   DidShowAutofillSuggestions(form);
-  histogram_tester.ExpectBucketCount("Autofill.UserHappiness",
-                                     AutofillMetrics::SUGGESTIONS_SHOWN, 1);
-  histogram_tester.ExpectBucketCount("Autofill.UserHappiness.Address",
-                                     AutofillMetrics::SUGGESTIONS_SHOWN, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.UserHappiness", AutofillMetrics::SUGGESTIONS_SHOWN_ONCE, 1);
-  histogram_tester.ExpectBucketCount("Autofill.UserHappiness.Address",
-                                     AutofillMetrics::SUGGESTIONS_SHOWN_ONCE,
-                                     1);
+
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address",
       autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
@@ -6432,15 +6376,6 @@ TEST_F(BrowserAutofillManagerTest,
   base::HistogramTester histogram_tester;
   DidShowAutofillSuggestions(form, /*field_index=*/0,
                              PopupItemId::kCreditCardEntry);
-  histogram_tester.ExpectBucketCount("Autofill.UserHappiness",
-                                     AutofillMetrics::SUGGESTIONS_SHOWN, 1);
-  histogram_tester.ExpectBucketCount("Autofill.UserHappiness.CreditCard",
-                                     AutofillMetrics::SUGGESTIONS_SHOWN, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.UserHappiness", AutofillMetrics::SUGGESTIONS_SHOWN_ONCE, 1);
-  histogram_tester.ExpectBucketCount("Autofill.UserHappiness.CreditCard",
-                                     AutofillMetrics::SUGGESTIONS_SHOWN_ONCE,
-                                     1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard",
       autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
