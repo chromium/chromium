@@ -34,6 +34,7 @@ AutofillBubbleBase* ShowEditAddressProfileDialogView(
   EditAddressProfileView* dialog = new EditAddressProfileView(controller);
   dialog->ShowForWebContents(web_contents);
   constrained_window::ShowWebModalDialogViews(dialog, web_contents);
+  dialog->RequestFocus();
   return dialog;
 }
 
@@ -107,6 +108,11 @@ void EditAddressProfileView::ShowForWebContents(
 void EditAddressProfileView::Hide() {
   controller_ = nullptr;
   GetWidget()->Close();
+}
+
+views::View* EditAddressProfileView::GetInitiallyFocusedView() {
+  return address_editor_view_ ? address_editor_view_->initial_focus_view()
+                              : nullptr;
 }
 
 void EditAddressProfileView::WindowClosing() {

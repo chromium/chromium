@@ -40,6 +40,7 @@ class EditAddressProfileView : public AutofillBubbleBase,
   void Hide() override;
 
   // views::DialogDelegateView
+  View* GetInitiallyFocusedView() override;
   void WindowClosing() override;
   void ChildPreferredSizeChanged(views::View* child) override;
 

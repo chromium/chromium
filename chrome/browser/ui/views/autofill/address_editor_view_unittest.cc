@@ -177,4 +177,11 @@ TEST_F(AddressEditorViewTest, WholeFormValidationState) {
   EXPECT_EQ(view_->GetValidationErrorForTesting(), u"");
 }
 
+TEST_F(AddressEditorViewTest, InitialFocusViewPointsToCountryCombobox) {
+  EXPECT_NE(view_->initial_focus_view(), nullptr);
+  EXPECT_EQ(
+      std::string(view_->initial_focus_view()->GetClassMetaData()->type_name()),
+      "Combobox");
+}
+
 }  // namespace autofill

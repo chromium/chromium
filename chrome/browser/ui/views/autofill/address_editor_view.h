@@ -34,6 +34,14 @@ class AddressEditorView : public views::View {
   AddressEditorView& operator=(const AddressEditorView&) = delete;
   ~AddressEditorView() override;
 
+  // The view to be focused first when the editor shows up. It points to
+  // the first input (normally the country combobox) and important from
+  // the usability perspective as the most reasonable place to start editing
+  // the address from.
+  // Returns `nullprt` only when `AddressEditorController::editor_fields()`
+  // returns no fields.
+  views::View* initial_focus_view() { return initial_focus_view_; }
+
   // views::View
   void PreferredSizeChanged() override;
 
@@ -90,6 +98,10 @@ class AddressEditorView : public views::View {
   std::unordered_map<views::Textfield*, const EditorField> text_fields_;
   const std::string locale_;
   raw_ptr<views::Label> validation_error_ = nullptr;
+
+  // The first input field, depends on the `controller_->editor_fields()`, but
+  // normally is the country selection combobox.
+  raw_ptr<views::View> initial_focus_view_ = nullptr;
 
   // The property is set to `true` after the first call of
   // `ValidateAllFields()`. It affects the validation logic upon on a single

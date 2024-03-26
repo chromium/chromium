@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -68,7 +69,9 @@ class EditAddressProfileViewTest : public ChromeViewsTestBase {
 
   void TearDown() override {
     dialog_ = nullptr;
-    std::exchange(widget_, nullptr)->Close();
+    if (widget_) {
+      std::exchange(widget_, nullptr)->Close();
+    }
     parent_widget_.reset();
     ChromeViewsTestBase::TearDown();
   }
@@ -76,6 +79,7 @@ class EditAddressProfileViewTest : public ChromeViewsTestBase {
   const AutofillProfile& address_profile_to_edit() {
     return address_profile_to_edit_;
   }
+  content::WebContents* test_web_contents() { return test_web_contents_.get(); }
   EditAddressProfileView* dialog() { return dialog_; }
   MockEditAddressProfileDialogController* mock_controller() {
     return &mock_controller_;
@@ -103,7 +107,7 @@ void EditAddressProfileViewTest::CreateViewAndShow(
       .WillByDefault(testing::ReturnRef(address_profile));
 
   dialog_ = new EditAddressProfileView(mock_controller());
-  dialog_->ShowForWebContents(test_web_contents_.get());
+  dialog_->ShowForWebContents(test_web_contents());
 
   gfx::NativeView parent = gfx::NativeView();
 #if BUILDFLAG(IS_MAC)
@@ -220,6 +224,23 @@ TEST_F(EditAddressProfileViewTest, InvalidFormIsNotSent) {
       .Times(0);
 
   dialog()->Accept();
+}
+
+TEST_F(EditAddressProfileViewTest, GetInitiallyFocusedView) {
+  auto dialog = std::make_unique<EditAddressProfileView>(mock_controller());
+
+  EXPECT_EQ(dialog->GetInitiallyFocusedView(), nullptr);
+
+  AutofillProfile profile(AddressCountryCode("US"));
+  ON_CALL(*mock_controller(), GetProfileToEdit())
+      .WillByDefault(testing::ReturnRef(profile));
+  dialog->ShowForWebContents(test_web_contents());
+
+  EXPECT_NE(dialog->GetInitiallyFocusedView(), nullptr);
+  EXPECT_EQ(
+      std::string(
+          dialog->GetInitiallyFocusedView()->GetClassMetaData()->type_name()),
+      "Combobox");
 }
 
 }  // namespace autofill
