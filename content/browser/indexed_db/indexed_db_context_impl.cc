@@ -126,7 +126,7 @@ bool ShardingEnabled() {
 scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
   return base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::WithBaseSyncPrimitives(),
-       base::TaskPriority::USER_VISIBLE,
+       base::TaskPriority::USER_BLOCKING,
        // BLOCK_SHUTDOWN to support clearing session-only storage.
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 }

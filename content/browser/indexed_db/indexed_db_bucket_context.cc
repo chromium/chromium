@@ -465,7 +465,7 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
             &MakeFileStreamAdapterAndRead,
             storage::FileStreamReader::CreateForLocalFile(
                 base::ThreadPool::CreateTaskRunner(
-                    {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
+                    {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),
                 file_path_, offset, expected_modification_time_),
             std::move(pipe), std::move(result_callback), length));
   }

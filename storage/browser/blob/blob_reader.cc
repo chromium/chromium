@@ -73,7 +73,7 @@ BlobReader::FileStreamReaderProvider::~FileStreamReaderProvider() = default;
 
 BlobReader::BlobReader(const BlobDataHandle* blob_handle)
     : file_task_runner_(base::ThreadPool::CreateTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING})),
       net_error_(net::OK) {
   if (blob_handle) {
     if (blob_handle->IsBroken()) {
