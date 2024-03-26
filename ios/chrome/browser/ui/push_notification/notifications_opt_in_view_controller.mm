@@ -284,8 +284,9 @@ NSString* const kNotificationsOptInScreenAxId = @"NotificationsOptInScreenAxId";
     switch (incomingButton.state) {
       case UIControlStateDisabled: {
         updatedConfig.background.backgroundColor =
-            [UIColor colorNamed:kGrey300Color];
-        updatedConfig.baseForegroundColor = [UIColor colorNamed:kGrey800Color];
+            [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
+        updatedConfig.baseForegroundColor =
+            [UIColor colorNamed:kTextTertiaryColor];
         break;
       }
       case UIControlStateNormal: {
