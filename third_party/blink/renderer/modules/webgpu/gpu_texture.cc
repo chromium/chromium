@@ -289,6 +289,10 @@ void GPUTexture::DissociateMailbox() {
   }
 }
 
+scoped_refptr<WebGPUMailboxTexture> GPUTexture::GetMailboxTexture() {
+  return mailbox_texture_;
+}
+
 void GPUTexture::SetBeforeDestroyCallback(base::OnceClosure callback) {
   destroy_callback_ = std::move(callback);
 }

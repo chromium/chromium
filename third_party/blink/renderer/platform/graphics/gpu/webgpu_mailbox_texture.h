@@ -78,6 +78,7 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
   uint32_t GetTextureIdForTest() { return wire_texture_id_; }
   uint32_t GetTextureGenerationForTest() { return wire_texture_generation_; }
   WGPUDevice GetDeviceForTest() { return device_; }
+  const gpu::Mailbox& GetMailbox() { return mailbox_; }
 
  private:
   WebGPUMailboxTexture(
@@ -92,6 +93,7 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   WGPUDevice device_;
+  gpu::Mailbox mailbox_;
   base::OnceCallback<void(const gpu::SyncToken&)> finished_access_callback_;
   WGPUTexture texture_;
   uint32_t wire_device_id_ = 0;

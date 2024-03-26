@@ -59,6 +59,10 @@ class GPUTexture : public DawnObject<WGPUTexture> {
 
   void DissociateMailbox();
 
+  // Returns a shared pointer to the mailbox texture. The mailbox texture
+  // remains associated to the GPUTexture.
+  scoped_refptr<WebGPUMailboxTexture> GetMailboxTexture();
+
   // Sets a callback which is called if destroy is called manually, before the
   // WebGPU handle is actually destroyed.
   void SetBeforeDestroyCallback(base::OnceClosure);

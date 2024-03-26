@@ -3434,7 +3434,17 @@ void BaseRenderingContext2D::endWebGPUAccess(ExceptionState& exception_state) {
 
   CHECK(webgpu_access_texture_);
 
-  // TODO(crbug.com/41490345): move webgpu_access_texture_ back onto the canvas.
+  // Get the GPU mailbox associated with the WebGPU access texture. This texture
+  // always originates from `beginWebGPUAccess`, so we should always find a
+  // shared-image mailbox here.
+  scoped_refptr<WebGPUMailboxTexture> texture =
+      webgpu_access_texture_->GetMailboxTexture();
+  CHECK(texture);
+
+  const gpu::Mailbox& mailbox = texture->GetMailbox();
+  CHECK(mailbox.IsSharedImage());
+
+  // TODO(crbug.com/41490345): copy this texture back onto the canvas.
   webgpu_access_device_ = nullptr;
   webgpu_access_texture_ = nullptr;
 }

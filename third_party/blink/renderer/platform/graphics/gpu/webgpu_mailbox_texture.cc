@@ -189,6 +189,7 @@ WebGPUMailboxTexture::WebGPUMailboxTexture(
     std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource)
     : dawn_control_client_(std::move(dawn_control_client)),
       device_(device),
+      mailbox_(mailbox),
       finished_access_callback_(std::move(finished_access_callback)),
       recyclable_canvas_resource_(std::move(recyclable_canvas_resource)) {
   DCHECK(dawn_control_client_->GetContextProviderWeakPtr());
