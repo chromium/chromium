@@ -1784,6 +1784,29 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoveBubbleFromManagementBubble) {
   ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
 }
 
+TEST_F(ManagePasswordsUIControllerTest, CloseMoveBubble) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kButterOnDesktopFollowup);
+  const PasswordForm* test_form_ptr = &test_local_form();
+  std::vector<PasswordForm> forms = {*test_form_ptr};
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnPasswordAutofilled(
+      forms, url::Origin::Create(test_form_ptr->url), nullptr);
+  EXPECT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(2);
+  controller()->ShowMovePasswordBubble(test_local_form());
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+  ExpectIconAndControllerStateIs(
+      password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE);
+
+  // A user closes the dialog.
+  controller()->OnBubbleHidden();
+  EXPECT_FALSE(controller()->opened_automatic_bubble());
+  ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
+}
+
 TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
   profile()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,

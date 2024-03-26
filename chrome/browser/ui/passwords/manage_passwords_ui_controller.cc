@@ -683,6 +683,11 @@ void ManagePasswordsUIController::OnBubbleHidden() {
     passwords_data_.TransitionToState(
         password_manager::ui::PENDING_PASSWORD_STATE);
     update_icon = true;
+  } else if (GetState() ==
+             password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE) {
+    passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
+    passwords_data_.clear_selected_password();
+    update_icon = true;
   }
   if (update_icon)
     UpdateBubbleAndIconVisibility();
