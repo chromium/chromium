@@ -528,11 +528,25 @@ void Compositor::SetBackgroundColor(SkColor color) {
 }
 
 void Compositor::SetVisible(bool visible) {
+  const bool changed = visible != IsVisible();
+  if (changed) {
+    for (auto& observer : observer_list_) {
+      observer.OnCompositorVisibilityChanging(this, visible);
+    }
+  }
+
   host_->SetVisible(visible);
   // Visibility is reset when the output surface is lost, so this must also be
-  // updated then.
+  // updated then. We need to call this even if the visibility hasn't changed,
+  // for the same reason.
   if (display_private_)
     display_private_->SetDisplayVisible(visible);
+
+  if (changed) {
+    for (auto& observer : observer_list_) {
+      observer.OnCompositorVisibilityChanged(this, visible);
+    }
+  }
 }
 
 bool Compositor::IsVisible() {

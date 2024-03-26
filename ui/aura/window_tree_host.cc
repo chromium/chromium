@@ -541,9 +541,7 @@ void WindowTreeHost::CreateCompositor(bool force_software_compositor,
       ui::IsPixelCanvasRecordingEnabled(), use_external_begin_frame_control,
       force_software_compositor, enable_compositing_based_throttling,
       memory_limit_when_visible_mb);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   compositor_->AddObserver(this);
-#endif
   if (!dispatcher()) {
     window()->Init(ui::LAYER_NOT_DRAWN);
     window()->set_host(this);
@@ -792,18 +790,26 @@ void WindowTreeHost::MoveCursorToInternal(const gfx::Point& root_location,
 }
 
 void WindowTreeHost::OnCompositingEnded(ui::Compositor* compositor) {
+  // Currently, input is only throttled on ash and is not well supported on
+  // other platforms. See crbug.com/41359082.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!holding_pointer_moves_)
     return;
 
   dispatcher_->ReleasePointerMoves();
   holding_pointer_moves_ = false;
+#endif
 }
 
 void WindowTreeHost::OnCompositingChildResizing(ui::Compositor* compositor) {
+  // Currently, input is only throttled on ash and is not well supported on
+  // other platforms. See crbug.com/41359082.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!Env::GetInstance()->throttle_input_on_resize() || holding_pointer_moves_)
     return;
   dispatcher_->HoldPointerMoves();
   holding_pointer_moves_ = true;
+#endif
 }
 
 void WindowTreeHost::OnFrameSinksToThrottleUpdated(

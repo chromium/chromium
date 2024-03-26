@@ -79,6 +79,15 @@ class COMPOSITOR_EXPORT CompositorObserver {
 
   // Called at the end of the BeginMainFrame.
   virtual void OnDidBeginMainFrame(Compositor* compositor) {}
+
+  // Called when the compositor visibility is about to change, but before it is
+  // changed.
+  virtual void OnCompositorVisibilityChanging(Compositor* compositor,
+                                              bool visible) {}
+
+  // Called when the compositor visibility has changed.
+  virtual void OnCompositorVisibilityChanged(Compositor* compositor,
+                                             bool visible) {}
 };
 
 }  // namespace ui
