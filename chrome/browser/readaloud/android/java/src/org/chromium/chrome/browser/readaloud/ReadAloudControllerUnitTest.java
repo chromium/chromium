@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudMetrics.IneligibilityReason;
+import org.chromium.chrome.browser.readaloud.exceptions.ReadAloudUnsupportedException;
 import org.chromium.chrome.browser.search_engines.SearchEngineType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -982,16 +983,58 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testPlayTab_onFailure() {
         mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        GURL gurl = new GURL("https://en.wikipedia.org/wiki/Google");
+        mTab.setGurlOverrideForTesting(gurl);
+        mController.maybeCheckReadability(gurl);
+        // also check that a generic error doesn't invalidate readability result
+        verify(mHooksImpl).isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        gurl.getSpec(), /* isReadable= */ true, /* timepointsSupported= */ false);
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+
+        assertTrue(mController.isReadable(mTab));
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        mPlaybackCallbackCaptor.getValue().onFailure(new Throwable());
+        resolvePromises();
+        verify(mPlayerCoordinator, times(1)).playbackFailed();
+        assertTrue(mController.isReadable(mTab));
+    }
+
+    @Test
+    public void testPlayTab_onFailure_unsupportedLink() {
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        GURL gurl = new GURL("https://en.wikipedia.org/wiki/Google");
+        mTab.setGurlOverrideForTesting(gurl);
+        mController.maybeCheckReadability(gurl);
+        // also check that a readAloudUnsupported error does invalidate a false positive readability
+        // result
+        verify(mHooksImpl).isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        gurl.getSpec(), /* isReadable= */ true, /* timepointsSupported= */ false);
+
+        assertTrue(mController.isReadable(mTab));
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
 
         verify(mPlaybackHooks, times(1))
                 .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
-
-        mPlaybackCallbackCaptor.getValue().onFailure(new Throwable());
+        mPlaybackCallbackCaptor
+                .getValue()
+                .onFailure(
+                        new ReadAloudUnsupportedException(
+                                "message",
+                                /* throwable= */ null,
+                                ReadAloudUnsupportedException.RejectionReason
+                                        .UNKNOWN_REJECTION_REASON));
         resolvePromises();
         verify(mPlayerCoordinator, times(1)).playbackFailed();
+        assertFalse(mController.isReadable(mTab));
     }
 
     @Test

@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.OnUserLeaveHintObserver;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.readaloud.exceptions.ReadAloudUnsupportedException;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -816,9 +817,10 @@ public class ReadAloudController
             return promise;
         }
 
+        final String sanitizedUrl = stripUserData(tab.getUrl()).getSpec();
         PlaybackArgs args =
                 new PlaybackArgs(
-                        stripUserData(tab.getUrl()).getSpec(),
+                        sanitizedUrl,
                         isTranslated ? playbackLanguage : null,
                         mPlaybackHooks.getPlaybackVoiceList(
                                 ReadAloudPrefs.getVoices(getPrefService())),
@@ -840,6 +842,13 @@ public class ReadAloudController
                 },
                 exception -> {
                     Log.e(TAG, exception.getMessage());
+                    if (exception instanceof ReadAloudUnsupportedException) {
+                        Log.e(TAG, "Attempting to play a non readable website");
+                        mReadabilityMap.put(sanitizedUrl, false);
+                        mReadabilityRequestTimeMap.put(sanitizedUrl, sClock.currentTimeMillis());
+                        notifyReadabilityMayHaveChanged();
+                    }
+
                     onCreatePlaybackFailed(entrypoint);
                 });
         return promise;
@@ -1202,7 +1211,11 @@ public class ReadAloudController
 
                     @Override
                     public void onFailure(Throwable throwable) {
-                        promise.reject(new Exception(throwable));
+                        if (throwable instanceof Exception) {
+                            promise.reject((Exception) throwable);
+                        } else {
+                            promise.reject(new Exception(throwable));
+                        }
                     }
                 });
         return promise;
