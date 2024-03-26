@@ -46,12 +46,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   configs.emplace_back(TabResumptionRanker::GetConfig());
   configs.emplace_back(PasswordManagerUserModel::GetConfig());
   configs.emplace_back(ShoppingUserModel::GetConfig());
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          "test-ios-module-ranker")) {
-    configs.emplace_back(TestIosModuleRanker::GetConfig());
-  } else {
-    configs.emplace_back(IosModuleRanker::GetConfig());
-  }
+  configs.emplace_back(IosModuleRanker::GetConfig());
   configs.emplace_back(MostVisitedTilesUser::GetConfig());
 
   // Add new configs here.

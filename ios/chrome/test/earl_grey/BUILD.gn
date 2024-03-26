@@ -145,6 +145,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/location_bar:constants",
     "//ios/chrome/browser/ui/location_bar:location_bar",
     "//ios/chrome/browser/ui/ntp",
+    "//ios/chrome/browser/ui/ntp:eg_app_support+eg2",
     "//ios/chrome/browser/ui/omnibox:eg_app_support+eg2",
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/omnibox:omnibox_internal",

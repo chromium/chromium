@@ -276,6 +276,9 @@ void IOSChromeSafetyCheckManager::SetSafeBrowsingCheckState(
 
   safe_browsing_check_state_ = state;
 
+  // The safe browsing state changed, log a freshness signal for Safety Check.
+  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
+
   local_pref_service_->SetString(
       prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
       NameForSafetyCheckState(state));

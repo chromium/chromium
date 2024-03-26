@@ -906,6 +906,19 @@ id<GREYMatcher> mostlyNotVisible() {
                     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
+  // Scroll down if the shortcuts may not be completely in view due to Trending
+  // Queries.
+  [[[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityID([NSString
+                  stringWithFormat:
+                      @"%@0",
+                      kContentSuggestionsShortcutsAccessibilityIdentifierPrefix]),
+              grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
+      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      assertWithMatcher:grey_notNil()];
   for (NSInteger index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
@@ -1002,9 +1015,9 @@ id<GREYMatcher> mostlyNotVisible() {
   // Just check for Magic Stack interactibility since the top module shown may
   // vary.
   [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kMagicStackViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_interactable()];
 
   // Ensures that fake omnibox visibility is correct.
   // On iPads, fake omnibox disappears and becomes real omnibox. On other
@@ -1153,14 +1166,17 @@ id<GREYMatcher> mostlyNotVisible() {
 // kMagicStackMostVisitedModuleParam param is true. Most Visited Tiles and
 // Shortcuts should be visible.
 - (void)testMagicStack {
-  [[self class] closeAllTabs];
-  [ChromeEarlGrey openNewTab];
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  std::string enable_mvt_arg = std::string(kMagicStack.name) + ":" +
-                               kMagicStackMostVisitedModuleParam + "/true";
-  config.additional_args.push_back("--enable-features=" + enable_mvt_arg);
-  config.additional_args.push_back("--test-ios-module-ranker=mvt");
+  config.additional_args.push_back(
+      "--enable-features=" + std::string(kMagicStack.name) + "<" +
+      std::string(kMagicStack.name));
+  config.additional_args.push_back(
+      "--force-fieldtrials=" + std::string(kMagicStack.name) + "/Test");
+  config.additional_args.push_back(
+      "--force-fieldtrial-params=" + std::string(kMagicStack.name) +
+      ".Test:" + std::string(kMagicStackMostVisitedModuleParam) + "/" + "true");
+
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   id<GREYMatcher> magicStackScrollView =
