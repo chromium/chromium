@@ -9,6 +9,8 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -59,7 +61,7 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
   }
 
   // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
-  // See ConsentLevel::kSync documentation for details.
+  // See ConsentLevel::kSync documentation for d  etails.
   // Eligibility for account storage is controlled by separate flags for syncing
   // and non-syncing users. Enabling the flag is a necessary condition but not
   // sufficient, other checks follow below.
@@ -77,7 +79,15 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
 
   switch (sync_service->GetTransportState()) {
     case syncer::SyncService::TransportState::DISABLED:
+      return false;
     case syncer::SyncService::TransportState::PAUSED:
+      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+              switches::ExplicitBrowserSigninPhase::kFull) &&
+          // `prefs::kExplicitBrowserSignin` is false for users who signed in
+          // implicitly through the Dice web signin in a previous run.
+          pref_service->GetBoolean(::prefs::kExplicitBrowserSignin)) {
+        break;
+      }
       return false;
     case syncer::SyncService::TransportState::START_DEFERRED:
     case syncer::SyncService::TransportState::INITIALIZING:

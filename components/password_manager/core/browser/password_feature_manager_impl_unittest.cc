@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_feature_manager_impl.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -15,6 +16,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -59,7 +61,7 @@ class PasswordFeatureManagerImplTest : public ::testing::Test {
 
 TEST_F(PasswordFeatureManagerImplTest,
        GenerationEnabledIfNonSyncingAndUsingAccountStorage) {
-  base::test::ScopedFeatureList feature_list_(
+  base::test::ScopedFeatureList feature_list(
       syncer::kEnablePasswordsAccountStorageForNonSyncingUsers);
 #if BUILDFLAG(IS_ANDROID)
   pref_service_.registry()->RegisterIntegerPref(
@@ -104,10 +106,29 @@ TEST_F(PasswordFeatureManagerImplTest, GenerationEnabledIfSyncing) {
 }
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
+class PasswordFeatureManagerImplExplicitSigninParamTest
+    : public base::test::WithFeatureOverride,
+      public PasswordFeatureManagerImplTest {
+ public:
+  PasswordFeatureManagerImplExplicitSigninParamTest()
+      : base::test::WithFeatureOverride(
+            ::switches::kExplicitBrowserSigninUIOnDesktop) {
+    pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
+  }
+
+  bool IsExplicitSignin() const {
+    return ::switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+        ::switches::ExplicitBrowserSigninPhase::kFull);
+  }
+};
+
 // Desktop users can be offered to opt in to account storage if eligible. One
 // such offer is triggered from the generation entry point, so
 // IsGenerationEnabled() must return true in that state.
-TEST_F(PasswordFeatureManagerImplTest,
+// When signin is explicit, account storage is ON by default, and password
+// generation no longer triggers an optin.
+TEST_P(PasswordFeatureManagerImplExplicitSigninParamTest,
        GenerationEnabledIfUserEligibleForAccountStorageOptIn) {
   sync_service_.SetAccountInfo(account_);
   sync_service_.SetHasSyncConsent(false);
@@ -120,11 +141,36 @@ TEST_F(PasswordFeatureManagerImplTest,
   ASSERT_EQ(password_manager::sync_util::GetPasswordSyncState(&sync_service_),
             password_manager::sync_util::SyncState::kNotActive);
 
-  // The user must be eligible for account storage opt in now.
-  ASSERT_TRUE(password_feature_manager_.ShouldShowAccountStorageOptIn());
+  // If signin is implicit, the user must be eligible for account storage opt in
+  // now. When signin is explicit, account storage is ON by default, and
+  // password generation no longer triggers an optin.
+  ASSERT_EQ(password_feature_manager_.ShouldShowAccountStorageOptIn(),
+            !IsExplicitSignin());
 
-  EXPECT_TRUE(password_feature_manager_.IsGenerationEnabled());
+  EXPECT_EQ(password_feature_manager_.IsGenerationEnabled(),
+            !IsExplicitSignin());
 }
+
+// When signin is explicit, account storage remains enabled in auth errors.
+TEST_P(PasswordFeatureManagerImplExplicitSigninParamTest,
+       OptedInIfSigninPaused) {
+  sync_service_.SetAccountInfo(account_);
+  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetDisableReasons({});
+  sync_service_.SetPersistentAuthError();
+
+  ASSERT_EQ(sync_service_.GetTransportState(),
+            syncer::SyncService::TransportState::PAUSED);
+  ASSERT_EQ(password_manager::sync_util::GetPasswordSyncState(&sync_service_),
+            password_manager::sync_util::SyncState::kNotActive);
+
+  EXPECT_EQ(password_feature_manager_.IsOptedInForAccountStorage(),
+            IsExplicitSignin());
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PasswordFeatureManagerImplExplicitSigninParamTest);
+
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
