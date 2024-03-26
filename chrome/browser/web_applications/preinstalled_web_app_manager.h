@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -149,6 +150,7 @@ class PreinstalledWebAppManager {
                    std::vector<ExternalInstallOptions>);
   void OnExternalWebAppsSynchronized(
       ExternallyManagedAppManager::SynchronizeCallback callback,
+      std::set<InstallUrl> desired_preferred_apps_for_supported_links,
       std::map<InstallUrl, std::vector<webapps::AppId>>
           desired_uninstall_and_replaces,
       std::map<InstallUrl, ExternallyManagedAppManager::InstallResult>

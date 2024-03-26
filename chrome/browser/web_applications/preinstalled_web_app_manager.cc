@@ -7,6 +7,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -930,23 +931,30 @@ void PreinstalledWebAppManager::Synchronize(
     std::vector<ExternalInstallOptions> desired_apps_install_options) {
   DCHECK(provider_);
 
+  std::set<InstallUrl> desired_preferred_apps_for_supported_links;
   std::map<InstallUrl, std::vector<webapps::AppId>> desired_uninstalls;
   for (const auto& entry : desired_apps_install_options) {
+    if (entry.is_preferred_app_for_supported_links) {
+      desired_preferred_apps_for_supported_links.insert(entry.install_url);
+    }
     if (!entry.uninstall_and_replace.empty()) {
       desired_uninstalls.emplace(entry.install_url,
                                  entry.uninstall_and_replace);
     }
   }
+
   provider_->externally_managed_app_manager().SynchronizeInstalledApps(
       std::move(desired_apps_install_options),
       ExternalInstallSource::kExternalDefault,
       base::BindOnce(&PreinstalledWebAppManager::OnExternalWebAppsSynchronized,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(desired_preferred_apps_for_supported_links),
                      std::move(desired_uninstalls)));
 }
 
 void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
     ExternallyManagedAppManager::SynchronizeCallback callback,
+    std::set<InstallUrl> desired_preferred_apps_for_supported_links,
     std::map<InstallUrl, std::vector<webapps::AppId>> desired_uninstalls,
     std::map<InstallUrl, ExternallyManagedAppManager::InstallResult>
         install_results,
@@ -966,9 +974,7 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
   size_t app_to_replace_still_default_installed_count = 0;
   size_t app_to_replace_still_installed_in_shelf_count = 0;
 
-  for (const auto& url_and_result : install_results) {
-    const ExternallyManagedAppManager::InstallResult& result =
-        url_and_result.second;
+  for (const auto& [url, result] : install_results) {
     base::UmaHistogramEnumeration(kHistogramInstallResult, result.code);
     if (result.did_uninstall_and_replace) {
       ++uninstall_and_replace_count;
@@ -980,7 +986,14 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
 
     DCHECK(result.app_id.has_value());
 
-    auto iter = desired_uninstalls.find(url_and_result.first);
+    // Do not set as the preferred app for supported links if the app is
+    // already installed as the user may have already updated their preference.
+    if (result.code != webapps::InstallResultCode::kSuccessAlreadyInstalled &&
+        desired_preferred_apps_for_supported_links.contains(url)) {
+      proxy->SetSupportedLinksPreference(*result.app_id);
+    }
+
+    auto iter = desired_uninstalls.find(url);
     if (iter == desired_uninstalls.end()) {
       continue;
     }

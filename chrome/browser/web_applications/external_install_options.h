@@ -233,6 +233,11 @@ struct ExternalInstallOptions {
   // expectation.
   // Intended to be used for post-install activities like metrics and migration.
   std::optional<webapps::AppId> expected_app_id;
+
+  // Whether the app should be set as the preferred app for its supported links
+  // after installation. Note that this has no effect if the app is already
+  // installed as the user may have already updated their preference.
+  bool is_preferred_app_for_supported_links = false;
 };
 
 WebAppInstallParams ConvertExternalInstallOptionsToParams(

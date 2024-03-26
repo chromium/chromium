@@ -24,6 +24,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/ssl_test_utils.h"
@@ -74,6 +75,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/startup/browser_init_params.h"
 #endif
@@ -1458,5 +1460,95 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerWithCloudGamingBrowserTest,
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+class PreinstalledWebAppManagerPreferredAppForSupportedLinksBrowserTest
+    : public PreinstalledWebAppManagerBrowserTest,
+      public ::testing::WithParamInterface<
+          /*is_preferred_app_for_supported_links=*/bool> {
+ public:
+  bool IsPreferredAppForSupportedLinks() const { return GetParam(); }
+
+  void RemoveSupportedLinksPreference(const webapps::AppId& app_id) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // NOTE: CrosAPI doesn't implement `RemoveSupportedLinksPreference()`.
+    loopback_crosapi_->RemoveSupportedLinksPreference(app_id);
+    WaitForSupportedLinksPreference(app_id, /*is_preferred_app=*/false);
+#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    apps_util::RemoveSupportedLinksPreferenceAndWait(profile(), app_id);
+#endif
+  }
+
+  void WaitForSupportedLinksPreference(const webapps::AppId& app_id,
+                                       bool is_preferred_app) {
+    apps_util::PreferredAppUpdateWaiter(
+        apps::AppServiceProxyFactory::GetForProfile(profile())
+            ->PreferredAppsList(),
+        app_id, is_preferred_app)
+        .Wait();
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+ private:
+  // PreinstalledWebAppManagerBrowserTest:
+  void SetUpOnMainThread() override {
+    PreinstalledWebAppManagerBrowserTest::SetUpOnMainThread();
+    loopback_crosapi_ =
+        std::make_unique<LoopbackCrosapiAppServiceProxy>(profile());
+  }
+
+  void TearDownOnMainThread() override {
+    PreinstalledWebAppManagerBrowserTest::TearDownOnMainThread();
+    loopback_crosapi_.reset();
+  }
+
+  std::unique_ptr<LoopbackCrosapiAppServiceProxy> loopback_crosapi_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PreinstalledWebAppManagerPreferredAppForSupportedLinksBrowserTest,
+    /*is_preferred_app_for_supported_links=*/::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
+    PreinstalledWebAppManagerPreferredAppForSupportedLinksBrowserTest,
+    MaybeSetPreferredAppForSupportedLinks) {
+  base::AutoReset<bool> bypass_offline_manifest_requirement =
+      PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const auto manifest = base::ReplaceStringPlaceholders(
+      R"({
+        "app_url": "$1",
+        "is_preferred_app_for_supported_links": $2,
+        "launch_container": "window",
+        "user_type": ["unmanaged"]
+      })",
+      {GetAppUrl().spec(),
+       IsPreferredAppForSupportedLinks() ? "true" : "false"},
+      nullptr);
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, GetAppUrl());
+
+  // Install the app for the first time.
+  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest),
+            webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_TRUE(registrar().IsInstalled(app_id));
+
+  // Verify that the app is the preferred app if requested in the manifest.
+  WaitForSupportedLinksPreference(app_id, IsPreferredAppForSupportedLinks());
+
+  // Clear the preferred app.
+  RemoveSupportedLinksPreference(app_id);
+
+  // Reinstall the app.
+  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest),
+            webapps::InstallResultCode::kSuccessAlreadyInstalled);
+  EXPECT_TRUE(registrar().IsInstalled(app_id));
+
+  // Verify that the app is *not* the preferred app after re-installation as the
+  // user may have already updated their preference.
+  WaitForSupportedLinksPreference(app_id, /*is_preferred_app=*/false);
+}
 
 }  // namespace web_app

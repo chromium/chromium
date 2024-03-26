@@ -65,6 +65,7 @@ bool ExternalInstallOptions::operator==(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
         options.require_manifest,
         options.install_as_shortcut,
+        options.is_preferred_app_for_supported_links,
         options.force_reinstall,
         options.force_reinstall_for_milestone,
         options.placeholder_resolution_behavior,
@@ -131,6 +132,8 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
   root.Set("install_placeholder", install_placeholder);
   root.Set("install_source", static_cast<int>(install_source));
   root.Set("is_disabled", is_disabled);
+  root.Set("is_preferred_app_for_supported_links",
+           is_preferred_app_for_supported_links);
   root.Set("launch_query_params", ConvertOptional(launch_query_params));
   root.Set("load_and_await_service_worker_registration",
            load_and_await_service_worker_registration);

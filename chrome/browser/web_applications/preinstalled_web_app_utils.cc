@@ -188,6 +188,13 @@ constexpr char kOemInstalled[] = "oem_installed";
 constexpr char kDisableIfTouchScreenWithStylusNotSupported[] =
     "disable_if_touchscreen_with_stylus_not_supported";
 
+// Contains boolean that, if set to true, will set the app as the preferred app
+// for its supported links after installation. Note that this has no effect if
+// the app is already installed as the user may have already updated their
+// preference.
+constexpr char kIsPreferredAppForSupportedLinks[] =
+    "is_preferred_app_for_supported_links";
+
 void EnsureContains(base::Value::List& list, std::string_view value) {
   for (const base::Value& item : list) {
     if (item.is_string() && item.GetString() == value) {
@@ -453,6 +460,16 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
                            kDisableIfTouchScreenWithStylusNotSupported});
     }
     options.disable_if_touchscreen_with_stylus_not_supported = value->GetBool();
+  }
+
+  // is_preferred_app_for_supported_links
+  value = app_config_dict.Find(kIsPreferredAppForSupportedLinks);
+  if (value) {
+    if (!value->is_bool()) {
+      return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ",
+                           kIsPreferredAppForSupportedLinks});
+    }
+    options.is_preferred_app_for_supported_links = value->GetBool();
   }
 
   return options;
