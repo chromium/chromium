@@ -4,12 +4,9 @@
 
 package org.chromium.components.embedder_support.delegate;
 
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-
 import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 
 import androidx.test.filters.MediumTest;
 
@@ -38,6 +35,7 @@ import java.util.List;
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
 public class ColorPickerDialogRenderTest extends BlankUiTestActivityTestCase {
+
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
@@ -58,23 +56,15 @@ public class ColorPickerDialogRenderTest extends BlankUiTestActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-        ColorSuggestion[] suggestions = new ColorSuggestion[8];
-        suggestions[0] = new ColorSuggestion(Color.WHITE, "white");
-        suggestions[1] = new ColorSuggestion(Color.BLACK, "black");
-        suggestions[2] = new ColorSuggestion(Color.YELLOW, "yellow");
-        suggestions[3] = new ColorSuggestion(Color.BLUE, "blue");
-        suggestions[4] = new ColorSuggestion(Color.GREEN, "green");
-        suggestions[5] = new ColorSuggestion(Color.RED, "red");
-        suggestions[6] = new ColorSuggestion(Color.MAGENTA, "magenta");
-        suggestions[7] = new ColorSuggestion(Color.CYAN, "cyan");
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Activity activity = getActivity();
-                    ColorPickerDialog dialog =
-                            new ColorPickerDialog(activity, (v) -> {}, Color.RED, suggestions);
+                    ColorPickerDialogView dialog = new ColorPickerDialogView(activity);
+                    ColorPickerCoordinator mColorPickerCoordinator =
+                            new ColorPickerCoordinator(activity, (i) -> {}, dialog);
                     mView = dialog.getContentView();
                     mView.setBackgroundResource(R.color.default_bg_color_baseline);
-                    activity.setContentView(mView, new LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
+                    mColorPickerCoordinator.show(Color.RED);
                 });
     }
 

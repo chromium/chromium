@@ -174,9 +174,6 @@
   <release seq="1">
     <messages fallback_to_english="true">
       <!-- Color picker -->
-      <message name="IDS_COLOR_PICKER_BUTTON_MORE" desc="Text for ColorPicker button to go to advanced view. [CHAR_LIMIT=20]">
-        More
-      </message>
       <message name="IDS_COLOR_PICKER_HUE" desc="Label for hue slider in ColorPicker.">
         Hue
       </message>
@@ -218,6 +215,15 @@
       </message>
       <message name="IDS_COLOR_PICKER_BUTTON_WHITE" desc="Accessibility label for button to select the white color.">
         White
+      </message>
+      <message name="IDS_COLOR_PICKER_BUTTON_SUGGESTIONS" desc="Text for ColorPicker suggestions button to go to the simple view. [CHAR_LIMIT=20]">
+        Suggestions
+      </message>
+      <message name="IDS_COLOR_PICKER_BUTTON_CUSTOM" desc="Text for ColorPicker custom button to go to the advanced view. [CHAR_LIMIT=20]">
+        Custom
+      </message>
+      <message name="IDS_COLOR_PICKER_LABEL_CHOSEN_COLOR" desc="Label for ColorPicker Chosen Color. [CHAR_LIMIT=20]">
+        Chosen color
       </message>
     </messages>
   </release>

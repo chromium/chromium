@@ -9,7 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "components/embedder_support/android/delegate/color_chooser_android.h"
+#include "components/embedder_support/android/delegate/color_picker_bridge.h"
 #include "components/embedder_support/android/web_contents_delegate_jni_headers/WebContentsDelegateAndroid_jni.h"
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/global_request_id.h"
@@ -62,7 +62,7 @@ WebContentsDelegateAndroid::OpenColorChooser(
     WebContents* source,
     SkColor color,
     const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
-  return std::make_unique<ColorChooserAndroid>(source, color, suggestions);
+  return std::make_unique<ColorPickerBridge>(source, color, suggestions);
 }
 
 // OpenURLFromTab() will be called when we're performing a browser-intiated

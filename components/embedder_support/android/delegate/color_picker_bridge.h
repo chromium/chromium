@@ -1,9 +1,9 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_COLOR_CHOOSER_ANDROID_H_
-#define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_COLOR_CHOOSER_ANDROID_H_
+#ifndef COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_COLOR_PICKER_BRIDGE_H_
+#define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_COLOR_PICKER_BRIDGE_H_
 
 #include <vector>
 
@@ -22,24 +22,24 @@ class WebContents;
 
 namespace web_contents_delegate_android {
 
-// Glues the Java (ColorPickerChooser.java) picker with the native part.
-class ColorChooserAndroid : public content::ColorChooser {
+// Glues the Java (ColorPickerDialogView.java) picker with the native part.
+class ColorPickerBridge : public content::ColorChooser {
  public:
-  ColorChooserAndroid(
+  ColorPickerBridge(
       content::WebContents* tab,
       SkColor initial_color,
       const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions);
 
-  ColorChooserAndroid(const ColorChooserAndroid&) = delete;
-  ColorChooserAndroid& operator=(const ColorChooserAndroid&) = delete;
+  ColorPickerBridge(const ColorPickerBridge&) = delete;
+  ColorPickerBridge& operator=(const ColorPickerBridge&) = delete;
 
-  ~ColorChooserAndroid() override;
+  ~ColorPickerBridge() override;
 
   void OnColorChosen(JNIEnv* env,
                      const base::android::JavaRef<jobject>& obj,
                      jint color);
 
-  // ColorChooser interface
+  // ColorPicker interface
   void End() override;
   void SetSelectedColor(SkColor color) override;
 
@@ -53,4 +53,4 @@ class ColorChooserAndroid : public content::ColorChooser {
 
 }  // namespace web_contents_delegate_android
 
-#endif  // COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_COLOR_CHOOSER_ANDROID_H_
+#endif  // COMPONENTS_EMBEDDER_SUPPORT_ANDROID_DELEGATE_COLOR_PICKER_BRIDGE_H_
