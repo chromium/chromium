@@ -194,5 +194,5 @@ Then add `:libdbus-1-3` to
 `//third_party/instrumented_libs:locally_built`'s `deps`.
 
 See [Linux Instrumented
-Libraries](https://chromium.googlesource.com/chromium/src.git/+/main/docs/instrumented_libraries.md)
+Libraries](https://chromium.googlesource.com/chromium/src.git/+/main/docs/linux/instrumented_libraries.md)
 for instructions on building and uploading the instrumented libraries.
