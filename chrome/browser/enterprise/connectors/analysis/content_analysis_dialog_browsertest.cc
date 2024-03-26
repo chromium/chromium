@@ -204,12 +204,11 @@ class ContentAnalysisDialogBehaviorBrowserTest
     EXPECT_TRUE(dialog_first_shown_);
     EXPECT_FALSE(dialog_updated_);
 
-    // TODO(crbug/1131565): Re-enable this for Mac.
-#if !BUILDFLAG(IS_MAC)
     // The dialog being updated implies an accessibility alert is sent.
-    EXPECT_EQ(ax_events_count_when_first_shown_ + 1,
-              ax_event_counter_.GetCount(ax::mojom::Event::kAlert));
-#endif
+    if (ax_event_counter_.GetCount(ax::mojom::Event::kAlert) !=
+        ax_events_count_when_first_shown_ + 1) {
+      ax_event_counter_.WaitForEvent(ax::mojom::Event::kAlert);
+    }
 
     // The updated dialog should have every relevant view initialized.
     EXPECT_TRUE(dialog->GetTopImageForTesting());
