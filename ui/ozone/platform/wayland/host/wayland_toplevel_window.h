@@ -166,6 +166,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool HasInFlightRequestsForState() const override;
   int64_t GetVizSequenceIdForAppliedState() const override;
   int64_t GetVizSequenceIdForLatchedState() const override;
+  void SetLatchImmediately(bool latch_immediately) override;
   void ShowSnapPreview(WaylandWindowSnapDirection snap,
                        bool allow_haptic_feedback) override;
   void CommitSnap(WaylandWindowSnapDirection snap, float snap_ratio) override;

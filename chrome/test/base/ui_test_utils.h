@@ -27,6 +27,10 @@
 #include "ui/views/view_observer.h"
 #include "url/gurl.h"
 
+#if defined(TOOLKIT_VIEWS)
+#include "ui/views/test/widget_test_api.h"
+#endif
+
 class Browser;
 class FullscreenController;
 class Profile;
@@ -201,8 +205,9 @@ void WaitForAutocompleteDone(Browser* browser);
 // Returns success or not.
 bool WaitForMinimized(Browser* browser);
 
-// See comment on views::WaitForAsyncWidgetRequests.
-void WaitForAsyncWidgetRequests(Browser& browser);
+// See comment on views::AsyncWidgetRequestWaiter.
+[[nodiscard]] views::AsyncWidgetRequestWaiter CreateAsyncWidgetRequestWaiter(
+    Browser& browser);
 
 // SetAndWaitForBounds sets the given `bounds` on `browser` and waits until the
 // bounds update will be observable from all parts of the client.

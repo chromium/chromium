@@ -7,6 +7,8 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#include <utility>
+
 #include "base/test/run_until.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window_tree_host_platform.h"
@@ -21,13 +23,33 @@ void DisableActivationChangeHandlingForTests() {
       Widget::DisableActivationChangeHandlingType::kIgnore);
 }
 
-void WaitForAsyncWidgetRequests(Widget& widget) {
+AsyncWidgetRequestWaiter::AsyncWidgetRequestWaiter(Widget& widget)
+    : widget_(widget) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
   if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
     // Wait for a Wayland roundtrip to ensure all side effects have been
     // processed.
     auto* host = aura::WindowTreeHostPlatform::GetHostForWindow(
-        widget.GetNativeWindow());
+        widget_->GetNativeWindow());
+    auto* wayland_extension = ui::GetWaylandExtension(*host->platform_window());
+    wayland_extension->SetLatchImmediately(false);
+  }
+#endif
+}
+
+AsyncWidgetRequestWaiter::~AsyncWidgetRequestWaiter() {
+  CHECK(waited_)
+      << "AsyncWidgetRequestWaiter has no effect unless `Wait` is called.";
+}
+
+void AsyncWidgetRequestWaiter::Wait() {
+  CHECK(!waited_) << "`Wait` may only be called once.";
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    // Wait for a Wayland roundtrip to ensure all side effects have been
+    // processed.
+    auto* host = aura::WindowTreeHostPlatform::GetHostForWindow(
+        widget_->GetNativeWindow());
     auto* wayland_extension = ui::GetWaylandExtension(*host->platform_window());
     wayland_extension->RoundTripQueue();
 
@@ -41,8 +63,10 @@ void WaitForAsyncWidgetRequests(Widget& widget) {
     // Wait for all Wayland messages sent as a result of requests being latched
     // to be processed on the server side.
     wayland_extension->RoundTripQueue();
+    wayland_extension->SetLatchImmediately(true);
   }
 #endif
+  waited_ = true;
 }
 
 }  // namespace views

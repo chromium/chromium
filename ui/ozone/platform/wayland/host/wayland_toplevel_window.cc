@@ -909,15 +909,22 @@ void WaylandToplevelWindow::RoundTripQueue() {
 }
 
 bool WaylandToplevelWindow::HasInFlightRequestsForState() const {
-  return WaylandWindow::HasInFlightRequestsForState();
+  CHECK(UseTestConfigForPlatformWindows());
+  return WaylandWindow::HasInFlightRequestsForStateForTesting();
 }
 
 int64_t WaylandToplevelWindow::GetVizSequenceIdForAppliedState() const {
-  return latest_applied_viz_seq();
+  CHECK(UseTestConfigForPlatformWindows());
+  return latest_applied_viz_seq_for_testing_;
 }
 
 int64_t WaylandToplevelWindow::GetVizSequenceIdForLatchedState() const {
-  return latest_latched_viz_seq();
+  CHECK(UseTestConfigForPlatformWindows());
+  return latest_latched_viz_seq_for_testing_;
+}
+
+void WaylandToplevelWindow::SetLatchImmediately(bool latch_immediately) {
+  latch_immediately_for_testing_ = latch_immediately;
 }
 
 void WaylandToplevelWindow::ShowSnapPreview(

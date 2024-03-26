@@ -462,11 +462,7 @@ class WaylandWindow : public PlatformWindow,
                                        : in_flight_requests_.back().state;
   }
 
-  int64_t latest_applied_viz_seq() const { return latest_applied_viz_seq_; }
-
-  int64_t latest_latched_viz_seq() const { return latest_latched_viz_seq_; }
-
-  bool HasInFlightRequestsForState() const {
+  bool HasInFlightRequestsForStateForTesting() const {
     return !in_flight_requests_.empty();
   }
 
@@ -484,6 +480,17 @@ class WaylandWindow : public PlatformWindow,
   // bounds or other state. When the configure is fully received, we may
   // create a StateRequest for this pending State.
   PendingConfigureState pending_configure_state_;
+
+  // Until all tests work properly with full asynchronicity, we latch
+  // immediately based on the value of `UseTestConfigForPlatformWindows()`.
+  // However, some tests require synchronisation with the wayland server, so
+  // we also provide this flag for turning on asynchronous latching.
+  // Eventually when all tests work asynchronously, we should remove this
+  // and the code to latch immediately based on
+  // `UseTestConfigForPlatformWindows()`.
+  bool latch_immediately_for_testing_ = true;
+  int64_t latest_applied_viz_seq_for_testing_ = -1;
+  int64_t latest_latched_viz_seq_for_testing_ = -1;
 
  private:
   friend class WaylandBufferManagerViewportTest;
@@ -666,13 +673,11 @@ class WaylandWindow : public PlatformWindow,
   // 4. Latched - the frame corresponding to this state came back, we can ack
   //    the configure if there was one
   PlatformWindowDelegate::State applied_state_;
-  int64_t latest_applied_viz_seq_ = -1;
 
   // The current configuration state of the window. This is initially set to
   // values provided by the client, until we get an actual configure from the
   // server. See the comments on applied_state_ for further explanation.
   PlatformWindowDelegate::State latched_state_;
-  int64_t latest_latched_viz_seq_ = -1;
 
   // Stores the insets in DIP at the time of the last latched state.
   gfx::Insets latched_insets_;

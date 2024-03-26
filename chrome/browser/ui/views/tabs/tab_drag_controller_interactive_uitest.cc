@@ -4396,17 +4396,9 @@ IN_PROC_BROWSER_TEST_P(
             browser()->window()->GetNativeWindow()->GetHost()->GetDisplayId());
 }
 
-// TODO(b/325166110): Flaky in Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DragTabToWindowOnSecondDisplay \
-  DISABLED_DragTabToWindowOnSecondDisplay
-#else
-#define MAYBE_DragTabToWindowOnSecondDisplay DragTabToWindowOnSecondDisplay
-#endif
-
 // Drags from browser to another browser on a second display and releases input.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
-                       MAYBE_DragTabToWindowOnSecondDisplay) {
+                       DragTabToWindowOnSecondDisplay) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 

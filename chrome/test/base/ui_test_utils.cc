@@ -486,17 +486,19 @@ bool WaitForMinimized(Browser* browser) {
   return minimize_waiter.Wait();
 }
 
-void WaitForAsyncWidgetRequests(Browser& browser) {
+views::AsyncWidgetRequestWaiter CreateAsyncWidgetRequestWaiter(
+    Browser& browser) {
   auto* widget = views::Widget::GetWidgetForNativeWindow(
       browser.window()->GetNativeWindow());
   CHECK(widget);
-  views::WaitForAsyncWidgetRequests(*widget);
+  return views::AsyncWidgetRequestWaiter(*widget);
 }
 
 void SetAndWaitForBounds(Browser& browser, const gfx::Rect& bounds) {
+  auto waiter = CreateAsyncWidgetRequestWaiter(browser);
   auto* window = browser.window();
   window->SetBounds(bounds);
-  WaitForAsyncWidgetRequests(browser);
+  waiter.Wait();
 }
 
 FullscreenWaiter::FullscreenWaiter(Browser* browser,

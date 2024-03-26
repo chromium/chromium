@@ -1331,6 +1331,7 @@ void WaylandWindow::ProcessSequencePoint(int64_t viz_seq) {
     if (i->viz_seq > viz_seq && i->viz_seq != -1) {
       break;
     }
+
     if (i->applied) {
       iter = i;
     }
@@ -1338,6 +1339,15 @@ void WaylandWindow::ProcessSequencePoint(int64_t viz_seq) {
 
   if (iter == in_flight_requests_.end()) {
     return;
+  }
+
+  if (UseTestConfigForPlatformWindows()) {
+    for (auto i = in_flight_requests_.begin(); i != iter; ++i) {
+      // We need to set `latest_latched_viz_seq_for_testing_` to the highest viz
+      // seq for all requests at or before the last request we latch.
+      latest_latched_viz_seq_for_testing_ =
+          std::max(i->viz_seq, latest_latched_viz_seq_for_testing_);
+    }
   }
 
   // Latch the latest state which was actually applied.
@@ -1410,7 +1420,6 @@ void WaylandWindow::LatchStateRequest(const StateRequest& req) {
   // Latch the most up to date state we have a frame back for.
   auto old_state = latched_state_;
   latched_state_ = req.state;
-  latest_latched_viz_seq_ = std::max(req.viz_seq, latest_latched_viz_seq_);
   auto old_latched_insets = latched_insets_;
   latched_insets_ = GetDecorationInsetsInDIP();
 
@@ -1459,6 +1468,14 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   }
   latest.applied = true;
 
+  if (UseTestConfigForPlatformWindows()) {
+    latest_applied_viz_seq_for_testing_ = std::max(
+        latest_applied_viz_seq_for_testing_,
+        base::ranges::max(in_flight_requests_, {}, [](const StateRequest& req) {
+          return req.viz_seq;
+        }).viz_seq);
+  }
+
   // Set the applied state here so it can be used by e.g. OnBoundsChanged to
   // pick up the new bounds.
   auto old = applied_state_;
@@ -1469,7 +1486,6 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   // old and new states are the same, or it only changes the origin of the
   // bounds.
   latest.viz_seq = delegate()->OnStateUpdate(old, latest.state);
-  latest_applied_viz_seq_ = std::max(latest.viz_seq, latest_applied_viz_seq_);
 
   // If we have state requests which don't require synchronization to latch, or
   // if no frames will be produced, ack them immediately. Using -2 (or any
@@ -1481,7 +1497,7 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
 
   // Latch in tests immediately if the test config is set.
   // Otherwise, such tests as interactive_ui_tests fail.
-  if (UseTestConfigForPlatformWindows()) {
+  if (UseTestConfigForPlatformWindows() && latch_immediately_for_testing_) {
     ProcessSequencePoint(INT64_MAX);
   }
 }

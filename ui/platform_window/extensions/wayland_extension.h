@@ -86,6 +86,11 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
   // Returns the latest viz sequence ID for the currently latched state.
   virtual int64_t GetVizSequenceIdForLatchedState() const = 0;
 
+  // Sets whether we should latch state requests immediately, or wait for the
+  // server to respond. See the comments on `latch_immediately_for_testing_` in
+  // `WaylandWindow` for more details.
+  virtual void SetLatchImmediately(bool latch_immediately) = 0;
+
   // Signals the underneath platform to shows a preview for the given window
   // snap direction. `allow_haptic_feedback` indicates if it should send haptic
   // feedback.
