@@ -46,8 +46,19 @@ const WrapperTypeInfo& DOMArrayBuffer::wrapper_type_info_ =
 
 static void AccumulateArrayBuffersForAllWorlds(
     v8::Isolate* isolate,
-    DOMArrayBuffer* object,
+    const DOMArrayBuffer* object,
     v8::LocalVector<v8::ArrayBuffer>& buffers) {
+  if (!object->has_non_main_world_wrappers() && IsMainThread()) {
+    const DOMWrapperWorld& world = DOMWrapperWorld::MainWorld(isolate);
+    v8::Local<v8::Object> wrapper;
+    if (world.DomDataStore()
+            .Get</*entered_context=*/false>(isolate, object)
+            .ToLocal(&wrapper)) {
+      buffers.push_back(v8::Local<v8::ArrayBuffer>::Cast(wrapper));
+    }
+    return;
+  }
+
   HeapVector<Member<DOMWrapperWorld>> worlds;
   DOMWrapperWorld::AllWorldsInIsolate(isolate, worlds);
   for (const auto& world : worlds) {
@@ -257,6 +268,47 @@ v8::Local<v8::Value> DOMArrayBuffer::Wrap(ScriptState* script_state) {
 
   return AssociateWithWrapper(script_state->GetIsolate(), wrapper_type_info,
                               wrapper);
+}
+
+bool DOMArrayBuffer::IsDetached() const {
+  if (contents_.BackingStore() == nullptr) {
+    return is_detached_;
+  }
+  if (is_detached_) {
+    return true;
+  }
+
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::HandleScope handle_scope(isolate);
+  v8::LocalVector<v8::ArrayBuffer> buffer_handles(isolate);
+  AccumulateArrayBuffersForAllWorlds(isolate, this, buffer_handles);
+
+  // There may be several v8::ArrayBuffers corresponding to the DOMArrayBuffer,
+  // but at most one of them may be non-detached.
+  int nondetached_count = 0;
+  int detached_count = 0;
+
+  for (const auto& buffer_handle : buffer_handles) {
+    if (buffer_handle->WasDetached()) {
+      ++detached_count;
+    } else {
+      ++nondetached_count;
+    }
+  }
+  CHECK_LE(nondetached_count, 1);
+
+  return nondetached_count == 0 && detached_count > 0;
+}
+
+v8::Local<v8::Object> DOMArrayBuffer::AssociateWithWrapper(
+    v8::Isolate* isolate,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::Object> wrapper) {
+  if (!DOMWrapperWorld::Current(isolate).IsMainWorld()) {
+    has_non_main_world_wrappers_ = true;
+  }
+  return ScriptWrappable::AssociateWithWrapper(isolate, wrapper_type_info,
+                                               wrapper);
 }
 
 DOMArrayBuffer* DOMArrayBuffer::Slice(size_t begin, size_t end) const {

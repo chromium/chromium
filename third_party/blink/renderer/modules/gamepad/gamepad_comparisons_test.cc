@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/modules/gamepad/gamepad_comparisons.h"
 
+#include "base/test/task_environment.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad.h"
+#include "third_party/blink/renderer/platform/testing/main_thread_isolate.h"
 
 namespace blink {
 
@@ -241,6 +243,11 @@ class GamepadComparisonsTest : public testing::Test {
     list[0] = gamepad;
     return list;
   }
+
+ private:
+  // Needed so we can do v8::Isolate::GetCurrent().
+  base::test::TaskEnvironment task_environment_;
+  blink::test::MainThreadIsolate isolate_;
 };
 
 TEST_F(GamepadComparisonsTest, EmptyListCausesNoActivation) {
