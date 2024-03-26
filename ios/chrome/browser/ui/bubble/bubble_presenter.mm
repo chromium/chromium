@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_view.h"
+#import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_view_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -69,7 +70,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
 }  // namespace
 
-@interface BubblePresenter ()
+@interface BubblePresenter () <GestureInProductHelpViewDelegate>
 
 // Used to display the bottom toolbar tip in-product help promotion bubble.
 // `nil` if the tip bubble has not yet been presented. Once the bubble is
@@ -596,16 +597,11 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   if (!userEligibleForPullToRefreshIPH) {
     return;
   }
-  __weak BubblePresenter* weakSelf = self;
   NSString* text = l10n_util::GetNSString(IDS_IOS_PULL_TO_REFRESH_IPH);
-  ProceduralBlock resetPullToRefreshGestureIPH = ^{
-    weakSelf.pullToRefreshGestureIPH = nil;
-  };
   self.pullToRefreshGestureIPH =
       [self presentGestureInProductHelpForFeature:pullToRefreshFeature
                                         direction:BubbleArrowDirectionUp
-                                             text:text
-                                    dismissAction:resetPullToRefreshGestureIPH];
+                                             text:text];
   [self.pullToRefreshGestureIPH startAnimation];
 }
 
@@ -639,21 +635,38 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                   : IDS_IOS_BACK_FORWARD_SWIPE_IPH_FORWARD_ONLY;
   }
 
-  __weak BubblePresenter* weakSelf = self;
-  ProceduralBlock resetSwipeBackForwardGestureIPH = ^{
-    weakSelf.swipeBackForwardGestureIPH = nil;
-  };
   self.swipeBackForwardGestureIPH = [self
       presentGestureInProductHelpForFeature:backForwardSwipeFeature
                                   direction:back ? BubbleArrowDirectionLeading
                                                  : BubbleArrowDirectionTrailing
-                                       text:l10n_util::GetNSString(textId)
-                              dismissAction:resetSwipeBackForwardGestureIPH];
+                                       text:l10n_util::GetNSString(textId)];
   if (back && forward) {
     self.swipeBackForwardGestureIPH.animationRepeatCount = 4;
     self.swipeBackForwardGestureIPH.bidirectional = YES;
   }
   [self.swipeBackForwardGestureIPH startAnimation];
+}
+
+#pragma mark - GestureInProductHelpViewDelegate
+
+- (void)gestureInProductHelpView:(GestureInProductHelpView*)view
+            didDismissWithReason:(IPHDismissalReasonType)reason {
+  const feature_engagement::Tracker::SnoozeAction snoozeAction =
+      feature_engagement::Tracker::SnoozeAction::DISMISSED;
+  if (view == self.pullToRefreshGestureIPH) {
+    [self featureDismissed:feature_engagement::kIPHiOSPullToRefreshFeature
+                withSnooze:snoozeAction];
+  } else if (view == self.swipeBackForwardGestureIPH) {
+    [self featureDismissed:feature_engagement::kIPHiOSSwipeBackForwardFeature
+                withSnooze:snoozeAction];
+  } else {
+    NOTREACHED();
+  }
+}
+
+- (void)gestureInProductHelpView:(GestureInProductHelpView*)view
+    shouldHandleSwipeInDirection:(UISwipeGestureRecognizerDirection)direction {
+  // TODO(crbug.com/40276959): Implement.
 }
 
 #pragma mark - Private
@@ -824,8 +837,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 // If an in-product help message should be shown for `feature`, presents an IPH
 // view covering the content area and return the view, otherwise return `nil`
 // and do nothing. `direction` is the direction the bubble's arrow is pointing.
-// `text` is the text displayed by the bubble. `dismissAction` is the callback
-// function invoked when the IPH is dismissed.
+// `text` is the text displayed by the bubble.
 //
 // Note that this method does NOT start the animation. The caller should start
 // the animation of the returned `GestureInProductHelpView` accordingly. This
@@ -833,8 +845,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 - (GestureInProductHelpView*)
     presentGestureInProductHelpForFeature:(const base::Feature&)feature
                                 direction:(BubbleArrowDirection)direction
-                                     text:(NSString*)text
-                            dismissAction:(ProceduralBlock)dismissAction {
+                                     text:(NSString*)text {
   DCHECK(self.engagementTracker);
   NamedGuide* contentAreaGuide =
       [NamedGuide guideWithName:kContentAreaGuide
@@ -884,17 +895,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   if (CanGestureInProductHelpViewFitInGuide(gestureIPHView,
                                             boundingSizeGuide) &&
       self.engagementTracker->ShouldTriggerHelpUI(feature)) {
-    __weak BubblePresenter* weakSelf = self;
-    CallbackWithIPHDismissalReasonType dismissalCallbackWithSnoozeAction =
-        ^(IPHDismissalReasonType IPHDismissalReasonType,
-          feature_engagement::Tracker::SnoozeAction snoozeAction) {
-          if (dismissAction) {
-            dismissAction();
-          }
-          [weakSelf featureDismissed:feature withSnooze:snoozeAction];
-        };
-    gestureIPHView.dismissCallback = dismissalCallbackWithSnoozeAction;
     [self.rootViewController.view addSubview:gestureIPHView];
+    gestureIPHView.delegate = self;
     AddSameConstraints(gestureIPHView, contentAreaGuide);
     return gestureIPHView;
   }

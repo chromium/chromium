@@ -10,7 +10,7 @@
 
 namespace {
 
-// The absolute maximum swipe angle from `x = y` for a swipe to begin.
+// The absolute maximum swipe angle from `y = 0` for a swipe to begin.
 const CGFloat kMaxSwipeYAngle = 65;
 // The minimum distance between touches for a swipe to begin.
 const CGFloat kDefaultMinSwipeXThreshold = 4;

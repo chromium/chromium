@@ -13,6 +13,8 @@ namespace base {
 class TimeDelta;
 }
 
+@protocol GestureInProductHelpViewDelegate;
+
 typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 
 /// A view to instruct users about possible gestural actions. The view will
@@ -50,12 +52,8 @@ typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
-/// Optional callback to handle side swipe dismissal with an
-/// IPHDismissalReasonType; called after the view is removed from its parent
-/// view. Note that if the reason type is `kTappedAnchorView`, the owner is
-/// oblidged to trigger an animation that resembles a user-initiated swipe on
-/// the views beneath the IPH.
-@property(nonatomic, copy) CallbackWithIPHDismissalReasonType dismissCallback;
+/// Delegate object that handles view events.
+@property(nonatomic, weak) id<GestureInProductHelpViewDelegate> delegate;
 
 /// Number of animation repeats until the user intervenes; should be set before
 /// calling `startAnimation(WithDelay):`. Optional; Defaults to 3.

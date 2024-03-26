@@ -13,7 +13,8 @@
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
 #import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_constants.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_gesture_recognizer.h"
+#import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_gesture_recognizer.h"
+#import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_view_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
@@ -95,6 +96,23 @@ BubbleArrowDirection GetOppositeDirection(BubbleArrowDirection direction) {
       return BubbleArrowDirectionTrailing;
     case BubbleArrowDirectionTrailing:
       return BubbleArrowDirectionLeading;
+  }
+}
+
+// Returns the expected swipe direction of `direction`.
+UISwipeGestureRecognizerDirection
+GetExpectedSwipeDirectionForBubbleArrowDirection(
+    BubbleArrowDirection bubble_arrow_direction) {
+  switch (bubble_arrow_direction) {
+    case BubbleArrowDirectionUp:
+      return UISwipeGestureRecognizerDirectionDown;
+    case BubbleArrowDirectionDown:
+      return UISwipeGestureRecognizerDirectionUp;
+    case BubbleArrowDirectionLeading:
+    case BubbleArrowDirectionTrailing:
+      return IsArrowPointingLeft(bubble_arrow_direction)
+                 ? UISwipeGestureRecognizerDirectionRight
+                 : UISwipeGestureRecognizerDirectionLeft;
   }
 }
 
@@ -214,6 +232,8 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   UIButton* _dismissButton;
   // Gaussian blurred super view that creates a blur-filter effect.
   UIImageView* _blurredSuperview;
+  // Gesture recognizer of the view.
+  GestureInProductHelpGestureRecognizer* _gestureRecognizer;
 
   // Constraints for the gesture indicator defining its size, margin to the
   // bubble view, and its center alignment. Saved as ivar to be updated during
@@ -259,9 +279,6 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
     _needsRepositionBubbleAndGestureIndicator = NO;
     _blurringSuperview = NO;
     _currentAnimationRepeatCount = 0;
-    _dismissCallback = ^(IPHDismissalReasonType reason,
-                         feature_engagement::Tracker::SnoozeAction action) {
-    };
     _animationRepeatCount = 3;
     _bidirectional = NO;
     _reduceMotion = UIAccessibilityIsReduceMotionEnabled() ||
@@ -309,13 +326,13 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
       [NSLayoutConstraint activateConstraints:[self dismissButtonConstraints]];
     }
 
-    SideSwipeGestureRecognizer* gestureRecognizer =
-        [[SideSwipeGestureRecognizer alloc]
-            initWithTarget:self
-                    action:@selector(handleSideSwipeGesture:)];
-    [gestureRecognizer setMaximumNumberOfTouches:1];
-    [gestureRecognizer setSwipeEdge:0];  // The swipe can start anywhere.
-    [self addGestureRecognizer:gestureRecognizer];
+    _gestureRecognizer = [[GestureInProductHelpGestureRecognizer alloc]
+        initWithExpectedSwipeDirection:
+            GetExpectedSwipeDirectionForBubbleArrowDirection(direction)
+                                target:self
+                                action:@selector
+                                (handleInstructedSwipeGesture:)];
+    [self addGestureRecognizer:_gestureRecognizer];
 
     self.alpha = 0;
     self.isAccessibilityElement = YES;
@@ -420,6 +437,11 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
 }
 
 #pragma mark - Public
+
+- (void)setBidirectional:(BOOL)bidirectional {
+  _bidirectional = bidirectional;
+  _gestureRecognizer.bidirectional = bidirectional;
+}
 
 - (void)startAnimation {
   [self startAnimationAfterDelay:base::TimeDelta()];
@@ -544,21 +566,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
 }
 
 - (void)dismissWithReason:(IPHDismissalReasonType)reason {
-  if (!self.superview || _dismissed) {
-    return;
-  }
-  _dismissed = YES;
-  GestureInProductHelpView* weakSelf = self;
-  [UIView
-      animateWithDuration:kGestureInProductHelpViewAppearDuration.InSecondsF()
-      animations:^{
-        weakSelf.alpha = 0;
-      }
-      completion:^(BOOL finished) {
-        [weakSelf removeFromSuperview];
-        weakSelf.dismissCallback(
-            reason, feature_engagement::Tracker::SnoozeAction::DISMISSED);
-      }];
+  [self dismissWithReason:reason completionHandler:nil];
 }
 
 #pragma mark - Private
@@ -626,54 +634,52 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   [self dismissWithReason:IPHDismissalReasonType::kVoiceOverAnnouncementEnded];
 }
 
+// Helper of "dismissWithReason:" that comes with an optional completion
+// handler.
+- (void)dismissWithReason:(IPHDismissalReasonType)reason
+        completionHandler:(ProceduralBlock)completionHandler {
+  if (!self.superview || _dismissed) {
+    return;
+  }
+  _dismissed = YES;
+  GestureInProductHelpView* weakSelf = self;
+  [UIView
+      animateWithDuration:kGestureInProductHelpViewAppearDuration.InSecondsF()
+      animations:^{
+        weakSelf.alpha = 0;
+      }
+      completion:^(BOOL finished) {
+        GestureInProductHelpView* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        [strongSelf removeFromSuperview];
+        [strongSelf.delegate gestureInProductHelpView:strongSelf
+                                 didDismissWithReason:reason];
+        if (completionHandler) {
+          completionHandler();
+        }
+      }];
+}
+
 #pragma mark - Gesture handler
 
-// Responds to all swipe gestures. If the direction of the swipe matches the way
-// shown by the in-product help, dismiss the IPH with the reason
-// `kSwipedAsInstructedByGestureIPH` so that the owner can trigger an animation
+// Responds to swipe gestures whose direction of the swipe matches the way
+// shown by the in-product help, so that the owner can trigger an animation
 // that resembles a user-initiated swipe on the views beneath the IPH (for one
 // directional IPH, the swipe direction should be opposite to the arrow
-// direction; for bidirectional ones, it should be either the arrow direction or
-// the opposite direction.)
-- (void)handleSideSwipeGesture:(SideSwipeGestureRecognizer*)gesture {
-  BOOL rightDirection = NO;
-  BubbleArrowDirection bubbleArrowDirection = _bubbleView.direction;
-  UISwipeGestureRecognizerDirection swipeDirection = gesture.direction;
-  switch (bubbleArrowDirection) {
-    case BubbleArrowDirectionUp:
-      rightDirection = swipeDirection == UISwipeGestureRecognizerDirectionDown;
-      if (self.bidirectional) {
-        rightDirection = rightDirection ||
-                         swipeDirection == UISwipeGestureRecognizerDirectionUp;
-      }
-      break;
-    case BubbleArrowDirectionDown:
-      rightDirection = swipeDirection == UISwipeGestureRecognizerDirectionUp;
-      if (self.bidirectional) {
-        rightDirection =
-            rightDirection ||
-            swipeDirection == UISwipeGestureRecognizerDirectionDown;
-      }
-      break;
-    case BubbleArrowDirectionLeading:
-    case BubbleArrowDirectionTrailing:
-      if (self.bidirectional) {
-        rightDirection =
-            swipeDirection == UISwipeGestureRecognizerDirectionLeft ||
-            swipeDirection == UISwipeGestureRecognizerDirectionRight;
-      } else if (IsArrowPointingLeft(bubbleArrowDirection)) {
-        rightDirection =
-            swipeDirection == UISwipeGestureRecognizerDirectionRight;
-      } else {
-        rightDirection =
-            swipeDirection == UISwipeGestureRecognizerDirectionLeft;
-      }
-      break;
-  }
-  if (rightDirection) {
-    [self dismissWithReason:IPHDismissalReasonType::
-                                kSwipedAsInstructedByGestureIPH];
-  }
+// direction. Also dismisses the IPH with the reason
+// `kSwipedAsInstructedByGestureIPH`
+- (void)handleInstructedSwipeGesture:
+    (GestureInProductHelpGestureRecognizer*)gesture {
+  __weak GestureInProductHelpView* weakSelf = self;
+  [self
+      dismissWithReason:IPHDismissalReasonType::kSwipedAsInstructedByGestureIPH
+      completionHandler:^{
+        [weakSelf.delegate
+                gestureInProductHelpView:weakSelf
+            shouldHandleSwipeInDirection:gesture.actualSwipeDirection];
+      }];
 }
 
 #pragma mark - Initial positioning helpers

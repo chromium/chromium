@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_view.h"
+#import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_view_delegate.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
@@ -100,7 +101,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 }  // namespace
 
-@interface TabGridViewController () <GridViewControllerDelegate,
+@interface TabGridViewController () <GestureInProductHelpViewDelegate,
+                                     GridViewControllerDelegate,
                                      PinnedTabsViewControllerDelegate,
                                      RecentTabsTableViewControllerUIDelegate,
                                      SuggestedActionsDelegate,
@@ -1530,26 +1532,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       smallestPossibleSizeOfIPH.height > expectedSize.height) {
     return;
   }
-
-  // Coast is clear. Show the message!
-  __weak TabGridViewController* weakSelf = self;
-  gestureIPHView.dismissCallback =
-      ^(IPHDismissalReasonType reason,
-        feature_engagement::Tracker::SnoozeAction snoozeAction) {
-        if (reason == IPHDismissalReasonType::kSwipedAsInstructedByGestureIPH) {
-          // Animate a swipe to incognito if the user has swiped right on the
-          // IPH.
-          [weakSelf.mutator
-              pageChanged:TabGridPageIncognitoTabs
-              interaction:TabSwitcherPageChangeInteraction::kScrollDrag];
-          [weakSelf setCurrentPageAndPageControl:TabGridPageIncognitoTabs
-                                        animated:YES];
-        }
-        [weakSelf.delegate tabGridDidDismissSwipeToIncognitoIPH];
-      };
   if (![self.delegate tabGridShouldPresentSwipeToIncognitoIPH]) {
     return;
   }
+  gestureIPHView.delegate = self;
   self.swipeToIncognitoIPH = gestureIPHView;
   [self.view addSubview:self.swipeToIncognitoIPH];
   self.swipeToIncognitoIPHBottomConstraint = [gestureIPHView.bottomAnchor
@@ -2219,6 +2205,20 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)prepareForDismissal {
   [self.incognitoTabsViewController prepareForDismissal];
   [self.regularTabsViewController prepareForDismissal];
+}
+
+#pragma mark - GestureInProductHelpViewDelegate
+
+- (void)gestureInProductHelpView:(GestureInProductHelpView*)view
+            didDismissWithReason:(IPHDismissalReasonType)reason {
+  [self.delegate tabGridDidDismissSwipeToIncognitoIPH];
+}
+
+- (void)gestureInProductHelpView:(GestureInProductHelpView*)view
+    shouldHandleSwipeInDirection:(UISwipeGestureRecognizerDirection)direction {
+  [self.mutator pageChanged:TabGridPageIncognitoTabs
+                interaction:TabSwitcherPageChangeInteraction::kScrollDrag];
+  [self setCurrentPageAndPageControl:TabGridPageIncognitoTabs animated:YES];
 }
 
 @end
