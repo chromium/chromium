@@ -378,13 +378,13 @@ TEST_F(
 TEST_F(PickerSearchRequestTest, ShowsResultsFromFileSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(PickerSearchSource::kLocalFile,
-           ElementsAre(Property("data", &PickerSearchResult::data,
-                                VariantWith<PickerSearchResult::TextData>(Field(
-                                    "text", &PickerSearchResult::TextData::text,
-                                    u"monorail_cat.jpg"))))))
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kLocalFile,
+                   ElementsAre(Property(
+                       "data", &PickerSearchResult::data,
+                       VariantWith<PickerSearchResult::TextData>(Field(
+                           "text", &PickerSearchResult::TextData::primary_text,
+                           u"monorail_cat.jpg"))))))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(
@@ -494,13 +494,13 @@ TEST_F(PickerSearchRequestTest,
 TEST_F(PickerSearchRequestTest, ShowsResultsFromDriveSearch) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(PickerSearchSource::kDrive,
-           ElementsAre(Property("data", &PickerSearchResult::data,
-                                VariantWith<PickerSearchResult::TextData>(Field(
-                                    "text", &PickerSearchResult::TextData::text,
-                                    u"catrbug_135117.jpg"))))))
+  EXPECT_CALL(search_results_callback,
+              Call(PickerSearchSource::kDrive,
+                   ElementsAre(Property(
+                       "data", &PickerSearchResult::data,
+                       VariantWith<PickerSearchResult::TextData>(Field(
+                           "text", &PickerSearchResult::TextData::primary_text,
+                           u"catrbug_135117.jpg"))))))
       .Times(AtLeast(1));
 
   PickerSearchRequest request(

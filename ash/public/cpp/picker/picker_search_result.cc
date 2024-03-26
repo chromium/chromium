@@ -96,7 +96,18 @@ PickerSearchResult& PickerSearchResult::operator=(PickerSearchResult&&) =
     default;
 
 PickerSearchResult PickerSearchResult::Text(std::u16string_view text) {
-  return PickerSearchResult(TextData{.text = std::u16string(text)});
+  return PickerSearchResult(TextData{.primary_text = std::u16string(text),
+                                     .secondary_text = u"",
+                                     .icon = ui::ImageModel()});
+}
+
+PickerSearchResult PickerSearchResult::Text(std::u16string_view primary_text,
+                                            std::u16string_view secondary_text,
+                                            ui::ImageModel icon) {
+  return PickerSearchResult(
+      TextData{.primary_text = std::u16string(primary_text),
+               .secondary_text = std::u16string(secondary_text),
+               .icon = std::move(icon)});
 }
 
 PickerSearchResult PickerSearchResult::Emoji(std::u16string_view emoji) {

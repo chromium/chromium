@@ -30,6 +30,8 @@
 #include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/focus/focus_manager.h"
@@ -209,7 +211,9 @@ void PickerSearchResultsView::AddResultToSection(
           [&](const PickerSearchResult::TextData& data) {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
-            item_view->SetPrimaryText(data.text);
+            item_view->SetPrimaryText(data.primary_text);
+            item_view->SetSecondaryText(data.secondary_text);
+            item_view->SetLeadingIcon(data.icon);
             section_view->AddListItem(std::move(item_view));
           },
           [&](const PickerSearchResult::EmojiData& data) {

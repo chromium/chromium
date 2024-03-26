@@ -20,11 +20,12 @@ TEST(PickerMathSearchTest, NoResult) {
 }
 
 TEST(PickerMathSearchTest, OnePlusOneEqualsTwo) {
-  EXPECT_THAT(PickerMathSearch(u"1 + 1"),
-              Optional(Property(
-                  "data", &PickerSearchResult::data,
-                  VariantWith<PickerSearchResult::TextData>(Field(
-                      "text", &PickerSearchResult::TextData::text, u"2")))));
+  EXPECT_THAT(
+      PickerMathSearch(u"1 + 1"),
+      Optional(Property(
+          "data", &PickerSearchResult::data,
+          VariantWith<PickerSearchResult::TextData>(Field(
+              "text", &PickerSearchResult::TextData::primary_text, u"2")))));
 }
 
 }  // namespace

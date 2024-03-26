@@ -133,7 +133,7 @@ InsertionContent GetInsertionContentForResult(
   return std::visit(
       base::Overloaded{
           [](const PickerSearchResult::TextData& data) -> ReturnType {
-            return PickerTextMedia(data.text);
+            return PickerTextMedia(data.primary_text);
           },
           [](const PickerSearchResult::EmojiData& data) -> ReturnType {
             return PickerTextMedia(data.emoji);

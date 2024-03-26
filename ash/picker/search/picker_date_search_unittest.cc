@@ -34,8 +34,8 @@ MATCHER(ResultMatchesDate, "") {
   const auto& [result, date] = arg;
   return ExplainMatchResult(
       Property("data", &PickerSearchResult::data,
-               VariantWith<PickerSearchResult::TextData>(
-                   Field("text", &PickerSearchResult::TextData::text, date))),
+               VariantWith<PickerSearchResult::TextData>(Field(
+                   "text", &PickerSearchResult::TextData::primary_text, date))),
       result, result_listener);
 }
 

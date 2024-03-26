@@ -98,6 +98,9 @@ void PickerListItemView::SetPrimaryImage(
 
 void PickerListItemView::SetLeadingIcon(const ui::ImageModel& icon) {
   leading_container_->RemoveAllChildViews();
+  if (icon.IsEmpty()) {
+    return;
+  }
   leading_container_->AddChildView(
       views::Builder<views::ImageView>()
           .SetImageSize(kLeadingIconSizeDip)
@@ -110,6 +113,9 @@ void PickerListItemView::SetLeadingIcon(const ui::ImageModel& icon) {
 void PickerListItemView::SetSecondaryText(
     const std::u16string& secondary_text) {
   secondary_container_->RemoveAllChildViews();
+  if (secondary_text.empty()) {
+    return;
+  }
   secondary_container_->AddChildView(bubble_utils::CreateLabel(
       TypographyToken::kCrosAnnotation2, secondary_text,
       cros_tokens::kCrosSysOnSurfaceVariant));
