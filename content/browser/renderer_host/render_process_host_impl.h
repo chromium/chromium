@@ -371,7 +371,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // HistogramChildProcess implementation:
   void BindChildHistogramFetcherFactory(
-      mojo::PendingReceiver<content::mojom::ChildHistogramFetcherFactory>
+      mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
           factory) override;
 
   // Call this function when it is evident that the child process is actively

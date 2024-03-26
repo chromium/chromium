@@ -10,9 +10,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
+#include "components/metrics/public/mojom/histogram_fetcher.mojom.h"
 #include "content/browser/metrics/histogram_subscriber.h"
-#include "content/common/histogram_fetcher.mojom-shared.h"
-#include "content/common/histogram_fetcher.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -20,18 +19,19 @@
 namespace content {
 
 namespace {
-const char* GetPingHistogramName(mojom::UmaPingCallSource call_source) {
+const char* GetPingHistogramName(
+    metrics::mojom::UmaPingCallSource call_source) {
   switch (call_source) {
-    case mojom::UmaPingCallSource::PERIODIC:
+    case metrics::mojom::UmaPingCallSource::PERIODIC:
       return "UMA.ChildProcess.Ping.Periodic";
-    case mojom::UmaPingCallSource::SHARED_MEMORY_SET_UP:
+    case metrics::mojom::UmaPingCallSource::SHARED_MEMORY_SET_UP:
       return "UMA.ChildProcess.Ping.SharedMemorySetUp";
   }
 }
 }  // namespace
 
 struct HistogramController::ChildHistogramFetcher {
-  mojo::Remote<content::mojom::ChildHistogramFetcher> remote;
+  mojo::Remote<metrics::mojom::ChildHistogramFetcher> remote;
   ChildProcessMode mode;
 };
 
@@ -86,20 +86,20 @@ void HistogramController::SetHistogramMemory(
     HistogramChildProcess* host,
     base::UnsafeSharedMemoryRegion shared_region,
     ChildProcessMode mode) {
-  mojo::Remote<content::mojom::ChildHistogramFetcherFactory> factory;
+  mojo::Remote<metrics::mojom::ChildHistogramFetcherFactory> factory;
   host->BindChildHistogramFetcherFactory(factory.BindNewPipeAndPassReceiver());
 
-  mojo::Remote<content::mojom::ChildHistogramFetcher> fetcher;
+  mojo::Remote<metrics::mojom::ChildHistogramFetcher> fetcher;
   factory->CreateFetcher(std::move(shared_region),
                          fetcher.BindNewPipeAndPassReceiver());
   PingChildProcess(fetcher.get(),
-                   mojom::UmaPingCallSource::SHARED_MEMORY_SET_UP);
+                   metrics::mojom::UmaPingCallSource::SHARED_MEMORY_SET_UP);
   InsertChildHistogramFetcherInterface(host, std::move(fetcher), mode);
 }
 
 void HistogramController::InsertChildHistogramFetcherInterface(
     HistogramChildProcess* host,
-    mojo::Remote<content::mojom::ChildHistogramFetcher> child_histogram_fetcher,
+    mojo::Remote<metrics::mojom::ChildHistogramFetcher> child_histogram_fetcher,
     ChildProcessMode mode) {
   // Broken pipe means remove this from the map. The map size is a proxy for
   // the number of known processes
@@ -120,14 +120,14 @@ void HistogramController::PingChildProcesses() {
   for (const auto& fetcher : child_histogram_fetchers_) {
     if (base::RandGenerator(/*range=*/10) == 0) {
       PingChildProcess(fetcher.second.remote.get(),
-                       mojom::UmaPingCallSource::PERIODIC);
+                       metrics::mojom::UmaPingCallSource::PERIODIC);
     }
   }
 }
 
 void HistogramController::PingChildProcess(
-    content::mojom::ChildHistogramFetcherProxy* fetcher,
-    mojom::UmaPingCallSource call_source) {
+    metrics::mojom::ChildHistogramFetcherProxy* fetcher,
+    metrics::mojom::UmaPingCallSource call_source) {
   // 1) Emit a histogram, 2) ping the child process (which should also emit a
   // histogram), and 3) call Pong(), which again emits a histogram.
   // If no histograms are lost, in total, the histograms should all be emitted
@@ -135,18 +135,19 @@ void HistogramController::PingChildProcess(
   // emitted more often because this may be called early on in the lifecycle of
   // the child process, and some child processes are killed very early on,
   // before any IPC messages are processed.
-  base::UmaHistogramEnumeration(GetPingHistogramName(call_source),
-                                mojom::UmaChildPingStatus::BROWSER_SENT_IPC);
+  base::UmaHistogramEnumeration(
+      GetPingHistogramName(call_source),
+      metrics::mojom::UmaChildPingStatus::BROWSER_SENT_IPC);
   // Unretained is safe because |this| is leaky.
   fetcher->Ping(call_source,
                 base::BindOnce(&HistogramController::Pong,
                                base::Unretained(this), call_source));
 }
 
-void HistogramController::Pong(mojom::UmaPingCallSource call_source) {
+void HistogramController::Pong(metrics::mojom::UmaPingCallSource call_source) {
   base::UmaHistogramEnumeration(
       GetPingHistogramName(call_source),
-      mojom::UmaChildPingStatus::BROWSER_REPLY_CALLBACK);
+      metrics::mojom::UmaChildPingStatus::BROWSER_REPLY_CALLBACK);
 }
 
 void HistogramController::RemoveChildHistogramFetcherInterface(

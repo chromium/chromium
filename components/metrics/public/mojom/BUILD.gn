@@ -19,3 +19,9 @@ mojom("call_stack_mojo_test_bindings") {
 mojom("single_sample_metrics_mojo_bindings") {
   sources = [ "single_sample_metrics.mojom" ]
 }
+
+mojom("histogram_fetcher_mojo_bindings") {
+  sources = [ "histogram_fetcher.mojom" ]
+
+  deps = [ "//mojo/public/mojom/base" ]
+}

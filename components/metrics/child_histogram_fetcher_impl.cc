@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/child/child_histogram_fetcher_impl.h"
+#include "components/metrics/child_histogram_fetcher_impl.h"
 
 #include <memory>
 
@@ -13,21 +13,18 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/metrics/persistent_histogram_allocator.h"
-#include "content/child/child_process.h"
-#include "content/common/histogram_fetcher.mojom-shared.h"
-#include "ipc/ipc_sender.h"
+#include "components/metrics/public/mojom/histogram_fetcher.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
-namespace content {
+namespace metrics {
 
 ChildHistogramFetcherFactoryImpl::ChildHistogramFetcherFactoryImpl() = default;
 
 ChildHistogramFetcherFactoryImpl::~ChildHistogramFetcherFactoryImpl() = default;
 
 void ChildHistogramFetcherFactoryImpl::Create(
-    mojo::PendingReceiver<content::mojom::ChildHistogramFetcherFactory>
-        receiver) {
+    mojo::PendingReceiver<mojom::ChildHistogramFetcherFactory> receiver) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ChildHistogramFetcherFactoryImpl>(),
       std::move(receiver));
@@ -35,7 +32,7 @@ void ChildHistogramFetcherFactoryImpl::Create(
 
 void ChildHistogramFetcherFactoryImpl::CreateFetcher(
     base::UnsafeSharedMemoryRegion shared_memory,
-    mojo::PendingReceiver<content::mojom::ChildHistogramFetcher> receiver) {
+    mojo::PendingReceiver<mojom::ChildHistogramFetcher> receiver) {
   // This message must be received only once.
   static bool already_called = false;
   CHECK(!already_called);
@@ -70,13 +67,14 @@ ChildHistogramFetcherImpl::~ChildHistogramFetcherImpl() = default;
 // Extract snapshot data and then send it off to the Browser process.
 // Send only a delta to what we have already sent.
 void ChildHistogramFetcherImpl::GetChildNonPersistentHistogramData(
-    HistogramDataCallback callback) {
+    GetChildNonPersistentHistogramDataCallback callback) {
   // If a persistent allocator is in use, it needs to occasionally update
   // some internal histograms. An upload is happening so this is a good time.
   base::PersistentHistogramAllocator* global_allocator =
       base::GlobalHistogramAllocator::Get();
-  if (global_allocator)
+  if (global_allocator) {
     global_allocator->UpdateTrackingHistograms();
+  }
 
   if (!histogram_delta_serialization_) {
     histogram_delta_serialization_ =
@@ -118,4 +116,4 @@ void ChildHistogramFetcherImpl::Ping(mojom::UmaPingCallSource call_source,
   std::move(callback).Run();
 }
 
-}  // namespace content
+}  // namespace metrics

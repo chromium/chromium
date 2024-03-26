@@ -448,7 +448,7 @@ void BrowserChildProcessHostImpl::OnBadMessageReceived(
 }
 
 void BrowserChildProcessHostImpl::BindChildHistogramFetcherFactory(
-    mojo::PendingReceiver<content::mojom::ChildHistogramFetcherFactory>
+    mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
         factory) {
   GetHost()->BindReceiver(std::move(factory));
 }

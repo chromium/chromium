@@ -5382,7 +5382,7 @@ void RenderProcessHostImpl::OnProcessLaunchFailed(int error_code) {
 }
 
 void RenderProcessHostImpl::BindChildHistogramFetcherFactory(
-    mojo::PendingReceiver<content::mojom::ChildHistogramFetcherFactory>
+    mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
         factory) {
   BindReceiver(std::move(factory));
 }

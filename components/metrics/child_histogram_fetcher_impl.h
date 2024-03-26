@@ -2,41 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_CHILD_CHILD_HISTOGRAM_FETCHER_IMPL_H_
-#define CONTENT_CHILD_CHILD_HISTOGRAM_FETCHER_IMPL_H_
+#ifndef COMPONENTS_METRICS_CHILD_HISTOGRAM_FETCHER_IMPL_H_
+#define COMPONENTS_METRICS_CHILD_HISTOGRAM_FETCHER_IMPL_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "content/common/histogram_fetcher.mojom-shared.h"
-#include "content/common/histogram_fetcher.mojom.h"
-#include "ipc/message_filter.h"
+#include "components/metrics/public/mojom/histogram_fetcher.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace base {
 class HistogramDeltaSerialization;
 }  // namespace base
 
-namespace content {
+namespace metrics {
 
 class ChildHistogramFetcherFactoryImpl
-    : public content::mojom::ChildHistogramFetcherFactory {
+    : public mojom::ChildHistogramFetcherFactory {
  public:
   ChildHistogramFetcherFactoryImpl();
   ~ChildHistogramFetcherFactoryImpl() override;
 
   static void Create(
-      mojo::PendingReceiver<content::mojom::ChildHistogramFetcherFactory>);
+      mojo::PendingReceiver<mojom::ChildHistogramFetcherFactory>);
 
  private:
+  // mojom::ChildHistogramFetcherFactory:
   void CreateFetcher(
       base::UnsafeSharedMemoryRegion,
-      mojo::PendingReceiver<content::mojom::ChildHistogramFetcher>) override;
+      mojo::PendingReceiver<mojom::ChildHistogramFetcher>) override;
 };
 
-class ChildHistogramFetcherImpl : public content::mojom::ChildHistogramFetcher {
+class ChildHistogramFetcherImpl : public mojom::ChildHistogramFetcher {
  public:
   ChildHistogramFetcherImpl();
 
@@ -47,15 +46,9 @@ class ChildHistogramFetcherImpl : public content::mojom::ChildHistogramFetcher {
   ~ChildHistogramFetcherImpl() override;
 
  private:
-  typedef std::vector<std::string> HistogramPickledList;
-
-  // content::mojom::ChildHistogram implementation.
-  using HistogramDataCallback = content::mojom::ChildHistogramFetcher::
-      GetChildNonPersistentHistogramDataCallback;
-
+  // mojom::ChildHistogramFetcher:
   void GetChildNonPersistentHistogramData(
-      HistogramDataCallback callback) override;
-
+      GetChildNonPersistentHistogramDataCallback callback) override;
   void Ping(mojom::UmaPingCallSource call_source,
             PingCallback callback) override;
 
@@ -68,6 +61,6 @@ class ChildHistogramFetcherImpl : public content::mojom::ChildHistogramFetcher {
       histogram_delta_serialization_;
 };
 
-}  // namespace content
+}  // namespace metrics
 
-#endif  // CONTENT_CHILD_CHILD_HISTOGRAM_FETCHER_IMPL_H_
+#endif  // COMPONENTS_METRICS_CHILD_HISTOGRAM_FETCHER_IMPL_H_

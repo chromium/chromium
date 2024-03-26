@@ -13,8 +13,8 @@
 #include "base/memory/singleton.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/timer/timer.h"
+#include "components/metrics/public/mojom/histogram_fetcher.mojom.h"
 #include "content/browser/metrics/histogram_child_process.h"
-#include "content/common/histogram_fetcher.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
@@ -82,7 +82,7 @@ class HistogramController {
 
   void InsertChildHistogramFetcherInterface(
       HistogramChildProcess* host,
-      mojo::Remote<content::mojom::ChildHistogramFetcher>
+      mojo::Remote<metrics::mojom::ChildHistogramFetcher>
           child_histogram_fetcher,
       ChildProcessMode mode);
 
@@ -95,12 +95,12 @@ class HistogramController {
   // histograms (both on the browser process and the child process), with the
   // goal of quantifying the amount of histogram samples lost from child
   // processes.
-  void PingChildProcess(content::mojom::ChildHistogramFetcherProxy* fetcher,
-                        mojom::UmaPingCallSource call_source);
+  void PingChildProcess(metrics::mojom::ChildHistogramFetcherProxy* fetcher,
+                        metrics::mojom::UmaPingCallSource call_source);
 
   // Callback for when a child process has received a ping (see
   // PingChildProcess()).
-  void Pong(mojom::UmaPingCallSource call_source);
+  void Pong(metrics::mojom::UmaPingCallSource call_source);
 
   void RemoveChildHistogramFetcherInterface(
       MayBeDangling<HistogramChildProcess> host);

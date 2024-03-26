@@ -107,7 +107,7 @@ class BrowserChildProcessHostImpl
 
   // HistogramChildProcess implementation:
   void BindChildHistogramFetcherFactory(
-      mojo::PendingReceiver<content::mojom::ChildHistogramFetcherFactory>
+      mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
           factory) override;
 
   // Terminates the process and logs a stack trace after a bad message was

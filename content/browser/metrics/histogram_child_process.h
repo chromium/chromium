@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_METRICS_HISTOGRAM_CHILD_PROCESS_H_
 #define CONTENT_BROWSER_METRICS_HISTOGRAM_CHILD_PROCESS_H_
 
-#include "content/common/histogram_fetcher.mojom-forward.h"
+#include "components/metrics/public/mojom/histogram_fetcher.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
@@ -17,7 +17,7 @@ class HistogramChildProcess {
   // Called to connect to a ChildHistogramFetcherFactory implementation in the
   // child process.
   virtual void BindChildHistogramFetcherFactory(
-      mojo::PendingReceiver<content::mojom::ChildHistogramFetcherFactory>
+      mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
           factory) = 0;
 };
 
