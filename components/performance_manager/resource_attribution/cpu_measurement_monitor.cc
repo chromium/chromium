@@ -20,6 +20,8 @@
 #include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/types/optional_util.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
@@ -447,7 +449,8 @@ CPUMeasurementMonitor::CPUMeasurement::CPUMeasurement(
       // Record the CPU usage immediately on starting to measure a process, so
       // that the first call to MeasureAndDistributeCPUUsage() will cover the
       // time between the measurement starting and the snapshot.
-      most_recent_measurement_(delegate_->GetCumulativeCPUUsage()),
+      most_recent_measurement_(
+          base::OptionalFromExpected(delegate_->GetCumulativeCPUUsage())),
       last_measurement_time_(base::TimeTicks::Now()) {}
 
 CPUMeasurementMonitor::CPUMeasurement::~CPUMeasurement() = default;
@@ -570,7 +573,7 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   CHECK_LT(measurement_interval_start, measurement_interval_end);
 
   std::optional<base::TimeDelta> current_cpu_usage =
-      delegate_->GetCumulativeCPUUsage();
+      base::OptionalFromExpected(delegate_->GetCumulativeCPUUsage());
   if (!current_cpu_usage.has_value()) {
     // GetCumulativeCPUUsage() failed. Don't update the measurement state.
     return;

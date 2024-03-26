@@ -61,6 +61,7 @@ using ::testing::Not;
 using ::testing::Pair;
 
 using performance_manager::TestNodeWrapper;
+using ProcessCPUUsageError = CPUMeasurementDelegate::ProcessCPUUsageError;
 
 constexpr base::TimeDelta kTimeBetweenMeasurements = base::Minutes(5);
 
@@ -112,7 +113,8 @@ class ResourceAttrCPUMonitorTest
   void SetProcessExited(ProcessNodeImpl* process_node) {
     process_node->SetProcessExitStatus(0);
     // After a process exits, GetCumulativeCPUUsage() starts returning an error.
-    SetProcessCPUUsageError(process_node, true);
+    SetProcessCPUUsageError(process_node,
+                            ProcessCPUUsageError::kProcessNotFound);
   }
 
   void SetProcessCPUUsage(const ProcessNodeImpl* process_node, double usage) {
@@ -120,8 +122,8 @@ class ResourceAttrCPUMonitorTest
   }
 
   void SetProcessCPUUsageError(const ProcessNodeImpl* process_node,
-                               bool has_error) {
-    delegate_factory_.GetDelegate(process_node).SetError(has_error);
+                               std::optional<ProcessCPUUsageError> error) {
+    delegate_factory_.GetDelegate(process_node).SetError(std::move(error));
   }
 
   // Calls StartMonitoring() on the CPUMeasurementMonitor under test, and
@@ -1178,8 +1180,8 @@ TEST_F(ResourceAttrCPUMonitorTest, MeasurementError) {
   task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
   const TestNodeWrapper<ProcessNodeImpl> renderer3 = CreateMockCPURenderer();
   SetProcessId(renderer3.get());
-  SetProcessCPUUsageError(renderer2.get(), true);
-  SetProcessCPUUsageError(renderer3.get(), true);
+  SetProcessCPUUsageError(renderer2.get(), ProcessCPUUsageError::kSystemError);
+  SetProcessCPUUsageError(renderer3.get(), ProcessCPUUsageError::kSystemError);
 
   // Finish the measurement period.
   task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
@@ -1196,7 +1198,7 @@ TEST_F(ResourceAttrCPUMonitorTest, MeasurementError) {
       base::Contains(current_measurements_, renderer3->GetResourceContext()));
 
   // `renderer1` starts returning errors.
-  SetProcessCPUUsageError(renderer1.get(), true);
+  SetProcessCPUUsageError(renderer1.get(), ProcessCPUUsageError::kSystemError);
 
   task_env().FastForwardBy(kTimeBetweenMeasurements);
   UpdateAndGetCPUMeasurements();
@@ -1211,9 +1213,9 @@ TEST_F(ResourceAttrCPUMonitorTest, MeasurementError) {
   EXPECT_FALSE(
       base::Contains(current_measurements_, renderer3->GetResourceContext()));
 
-  SetProcessCPUUsageError(renderer1.get(), false);
-  SetProcessCPUUsageError(renderer2.get(), false);
-  SetProcessCPUUsageError(renderer3.get(), false);
+  SetProcessCPUUsageError(renderer1.get(), std::nullopt);
+  SetProcessCPUUsageError(renderer2.get(), std::nullopt);
+  SetProcessCPUUsageError(renderer3.get(), std::nullopt);
 
   task_env().FastForwardBy(kTimeBetweenMeasurements);
   UpdateAndGetCPUMeasurements();

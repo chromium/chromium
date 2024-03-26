@@ -121,10 +121,10 @@ void SimulatedCPUMeasurementDelegate::SetCPUUsage(SimulatedCPUUsage usage,
   });
 }
 
-std::optional<base::TimeDelta>
+base::expected<base::TimeDelta, CPUMeasurementDelegate::ProcessCPUUsageError>
 SimulatedCPUMeasurementDelegate::GetCumulativeCPUUsage() {
-  if (has_error_) {
-    return std::nullopt;
+  if (error_.has_value()) {
+    return base::unexpected(error_.value());
   }
   base::TimeDelta cumulative_usage;
   for (const auto& usage_period : cpu_usage_periods_) {
@@ -137,7 +137,7 @@ SimulatedCPUMeasurementDelegate::GetCumulativeCPUUsage() {
     cumulative_usage +=
         (end_time - usage_period.start_time) * usage_period.cpu_usage;
   }
-  return cumulative_usage;
+  return base::ok(cumulative_usage);
 }
 
 FakeMemoryMeasurementDelegateFactory::FakeMemoryMeasurementDelegateFactory() =

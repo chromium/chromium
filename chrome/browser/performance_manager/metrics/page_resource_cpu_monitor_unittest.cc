@@ -50,6 +50,8 @@ using ::testing::IsEmpty;
 using ::testing::Optional;
 
 using resource_attribution::ResourceContext;
+using ProcessCPUUsageError =
+    resource_attribution::CPUMeasurementDelegate::ProcessCPUUsageError;
 
 constexpr base::TimeDelta kTimeBetweenMeasurements = base::Minutes(5);
 
@@ -145,7 +147,8 @@ class PageResourceCPUMonitorTest : public GraphTestHarness {
   void SetProcessExited(ProcessNodeImpl* process_node) {
     process_node->SetProcessExitStatus(0);
     // After a process exits, GetCumulativeCPUUsage() starts returning an error.
-    SetProcessCPUUsageError(process_node, true);
+    SetProcessCPUUsageError(process_node,
+                            ProcessCPUUsageError::kProcessNotFound);
   }
 
   void SetProcessCPUUsage(const ProcessNodeImpl* process_node, double usage) {
@@ -153,8 +156,8 @@ class PageResourceCPUMonitorTest : public GraphTestHarness {
   }
 
   void SetProcessCPUUsageError(const ProcessNodeImpl* process_node,
-                               bool has_error) {
-    delegate_factory_.GetDelegate(process_node).SetError(has_error);
+                               std::optional<ProcessCPUUsageError> error) {
+    delegate_factory_.GetDelegate(process_node).SetError(error);
   }
 
   // Factory to return CPUMeasurementDelegates for `cpu_monitor_`. This must be
@@ -466,7 +469,8 @@ TEST_F(PageResourceCPUMonitorTest, CPUMeasurementError) {
 
   SetProcessCPUUsage(renderer1.process_node.get(), 0.5);
   SetProcessCPUUsage(renderer2.process_node.get(), 0.5);
-  SetProcessCPUUsageError(renderer1.process_node.get(), true);
+  SetProcessCPUUsageError(renderer1.process_node.get(),
+                          ProcessCPUUsageError::kSystemError);
 
   task_env().FastForwardBy(kTimeBetweenMeasurements);
 
