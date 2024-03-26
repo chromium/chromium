@@ -8102,7 +8102,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTORS_B_AND_C" desc="Accessibility label for a wallpaper search result, with descriptors A, B, and C.">
         Generated image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="SUBJECT">$2</ph>, in <ph name="STYLE">$3</ph> style, with <ph name="MOOD">$4</ph> mood.
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_LABEL" desc="Label for the Create theme with AI dropdown for selecting subject of the image.">
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_LABEL" desc="Label for the Create theme with AI dropdown for selecting subject of the image." meaning="The main subject (house, forest, etc.) of an image.">
         Subject
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_DEFAULT_OPTION_LABEL" desc="Label for the option that a user can pick to unselect a previously selected subject. Also serves as a heading and label for the whole dropdown.">
