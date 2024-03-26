@@ -21,7 +21,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -40,7 +39,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
@@ -51,7 +50,6 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "content/public/browser/browser_context.h"
@@ -225,11 +223,6 @@ class NetworkContextConfigurationBrowserTest
     // the test server here.
     EXPECT_TRUE(embedded_test_server()->InitializeAndListen());
     EXPECT_TRUE(https_server()->InitializeAndListen());
-  }
-
-  void SetUp() override {
-    InitializeFeatureList();
-    InProcessBrowserTest::SetUp();
   }
 
   // Returns a cacheable response (10 hours) that is some random text.
@@ -707,10 +700,6 @@ class NetworkContextConfigurationBrowserTest
     provider_.UpdateChromePolicy(policy_map);
   }
 
-  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
-
-  virtual void InitializeFeatureList() {}
-
  private:
   void SimulateNetworkServiceCrashIfNecessary() {
     if (GetParam().network_service_state != NetworkServiceState::kRestarted ||
@@ -739,7 +728,6 @@ class NetworkContextConfigurationBrowserTest
   std::unique_ptr<net::test_server::ControllableHttpResponse>
       controllable_http_response_;
 
-  base::test::ScopedFeatureList feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   // Used in tests that need a live request during browser shutdown.
   std::unique_ptr<network::SimpleURLLoader> live_during_shutdown_simple_loader_;
@@ -1498,14 +1486,6 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
       }));
 }
 
-class NetworkContextConfigurationBrowserPre3pcdTest
-    : public NetworkContextConfigurationBrowserTest {
-  void InitializeFeatureList() override {
-    feature_list()->InitAndDisableFeature(
-        content_settings::features::kTrackingProtection3pcd);
-  }
-};
-
 // Disabled due to flakiness. See https://crbug.com/1126755.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PRE_ThirdPartyCookiesBlocked DISABLED_PRE_ThirdPartyCookiesBlocked
@@ -1514,7 +1494,7 @@ class NetworkContextConfigurationBrowserPre3pcdTest
 #define MAYBE_PRE_ThirdPartyCookiesBlocked PRE_ThirdPartyCookiesBlocked
 #define MAYBE_ThirdPartyCookiesBlocked ThirdPartyCookiesBlocked
 #endif
-IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserPre3pcdTest,
+IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
                        MAYBE_PRE_ThirdPartyCookiesBlocked) {
   if (IsRestartStateWithInProcessNetworkService())
     return;
@@ -1536,7 +1516,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserPre3pcdTest,
 }
 
 // Disabled due to flakiness. See https://crbug.com/1126755.
-IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserPre3pcdTest,
+IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
                        MAYBE_ThirdPartyCookiesBlocked) {
   if (IsRestartStateWithInProcessNetworkService())
     return;
@@ -1557,35 +1537,14 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserPre3pcdTest,
 
   EXPECT_TRUE(GetCookies(https_server()->base_url()).empty());
 
-  // Set pref to false, third party cookies should be allowed now.
-  GetPrefService()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kOff));
+  // Add exception, third party cookies should be allowed now.
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetCookieSetting(https_server()->base_url(), CONTENT_SETTING_ALLOW);
   // Set a third-party cookie. It should actually get set this time.
   SetCookie(CookieType::kThirdParty, CookiePersistenceType::kSession,
             https_server());
 
   EXPECT_FALSE(GetCookies(https_server()->base_url()).empty());
-}
-
-IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
-                       ThirdPartyCookiesBlocked) {
-  if (IsRestartStateWithInProcessNetworkService()) {
-    return;
-  }
-  // The system and SafeBrowsing network contexts don't support the third party
-  // cookie blocking options, since they have no notion of third parties.
-  bool system =
-      GetParam().network_context_type == NetworkContextType::kSystem ||
-      GetParam().network_context_type == NetworkContextType::kSafeBrowsing;
-  if (system) {
-    return;
-  }
-
-  GetPrefService()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  SetCookie(CookieType::kThirdParty, CookiePersistenceType::kSession,
-            https_server());
-  EXPECT_TRUE(GetCookies(https_server()->base_url()).empty());
 }
 
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
@@ -2258,8 +2217,6 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationReportingAndNelBrowserTest,
       ::testing::Values(TEST_CASES(NetworkContextType::kIncognitoProfile)))
 
 INSTANTIATE_TEST_CASES_FOR_TEST_FIXTURE(NetworkContextConfigurationBrowserTest);
-INSTANTIATE_TEST_CASES_FOR_TEST_FIXTURE(
-    NetworkContextConfigurationBrowserPre3pcdTest);
 INSTANTIATE_TEST_CASES_FOR_TEST_FIXTURE(
     NetworkContextConfigurationFixedPortBrowserTest);
 INSTANTIATE_TEST_CASES_FOR_TEST_FIXTURE(
