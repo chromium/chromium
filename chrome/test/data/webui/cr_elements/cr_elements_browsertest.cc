@@ -145,6 +145,10 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, WebUiListenerMixin) {
   RunTest("cr_elements/web_ui_listener_mixin_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, WebUiListenerMixinLit) {
+  RunTest("cr_elements/web_ui_listener_mixin_lit_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrUrlListItem) {
   RunTest("cr_elements/cr_url_list_item_test.js", "mocha.run()");
 }

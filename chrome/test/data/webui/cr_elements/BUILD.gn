@@ -61,6 +61,7 @@ build_webui_tests("build") {
     "list_property_update_mixin_test.ts",
     "store_client_test.ts",
     "web_ui_listener_mixin_test.ts",
+    "web_ui_listener_mixin_lit_test.ts",
   ]
 
   # Using custom config to turn off useDefineForClassFields TS compiler flag

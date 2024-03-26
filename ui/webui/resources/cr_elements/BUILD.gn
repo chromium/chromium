@@ -49,6 +49,7 @@ build_webui("build") {
       "policy/cr_policy_types.ts",
       "store_client/store_client.ts",
       "web_ui_listener_mixin.ts",
+      "web_ui_listener_mixin_lit.ts",
 
       # Web components files that either
       #  - don't have a corresponding .html file or

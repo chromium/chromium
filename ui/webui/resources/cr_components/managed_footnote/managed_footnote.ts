@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Polymer element for indicating that this user is managed by
+ * @fileoverview UI element for indicating that this user is managed by
  * their organization. This component uses the |isManaged| boolean in
  * loadTimeData, and the |managedByOrg| i18n string.
  *
@@ -12,73 +12,73 @@
  */
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/cr_elements/icons.html.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
 
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './managed_footnote.html.js';
+import {getCss} from './managed_footnote.css.js';
+import {getHtml} from './managed_footnote.html.js';
 
 const ManagedFootnoteElementBase =
-    I18nMixin(WebUiListenerMixin(PolymerElement));
+    I18nMixinLit(WebUiListenerMixinLit(CrLitElement));
 
 export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
   static get is() {
     return 'managed-footnote';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * Whether the user is managed by their organization through enterprise
        * policies.
        */
       isManaged_: {
-        reflectToAttribute: true,
+        reflect: true,
         type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isManaged');
-        },
       },
 
+      // <if expr="chromeos_ash">
       /**
        * Whether the device should be indicated as managed rather than the
        * browser.
        */
       showDeviceInfo: {
         type: Boolean,
-        value: false,
       },
+      // </if>
 
       /**
        * The name of the icon to display in the footer.
        * Should only be read if isManaged_ is true.
        */
       managedByIcon_: {
-        reflectToAttribute: true,
+        reflect: true,
         type: String,
-        value() {
-          return loadTimeData.getString('managedByIcon');
-        },
       },
 
     };
   }
 
-  private isManaged_: boolean;
-  showDeviceInfo: boolean;
-  private managedByIcon_: string;
+  protected isManaged_: boolean = loadTimeData.getBoolean('isManaged');
+  protected managedByIcon_: string = loadTimeData.getString('managedByIcon');
 
-  override ready() {
-    super.ready();
+  // <if expr="chromeos_ash">
+  showDeviceInfo: boolean = false;
+  // </if>
+
+  override firstUpdated() {
     this.addWebUiListener('is-managed-changed', (managed: boolean) => {
       loadTimeData.overrideValues({isManaged: managed});
       this.isManaged_ = managed;
@@ -86,7 +86,7 @@ export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
   }
 
   /** @return Message to display to the user. */
-  private getManagementString_(): TrustedHTML {
+  protected getManagementString_(): TrustedHTML {
     // <if expr="chromeos_ash">
     if (this.showDeviceInfo) {
       return this.i18nAdvanced('deviceManagedByOrg');
