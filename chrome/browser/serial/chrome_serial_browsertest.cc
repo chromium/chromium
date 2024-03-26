@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -57,7 +59,7 @@ class SerialTest : public InProcessBrowserTest {
     SerialBlocklist::Get().ResetToDefaultValuesForTesting();
   }
 
-  void SetDynamicBlocklist(base::StringPiece value) {
+  void SetDynamicBlocklist(std::string_view value) {
     feature_list_.Reset();
 
     std::map<std::string, std::string> parameters;

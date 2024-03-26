@@ -4,6 +4,7 @@
 
 #include "chrome/browser/serial/serial_chooser_context.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -56,7 +57,7 @@ std::string EncodeToken(const base::UnguessableToken& token) {
   return base::Base64Encode(base::as_byte_span(data));
 }
 
-base::UnguessableToken DecodeToken(base::StringPiece input) {
+base::UnguessableToken DecodeToken(std::string_view input) {
   std::string buffer;
   if (!base::Base64Decode(input, &buffer) ||
       buffer.length() != sizeof(uint64_t) * 2) {

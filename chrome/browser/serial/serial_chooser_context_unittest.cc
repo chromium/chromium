@@ -4,6 +4,8 @@
 
 #include "chrome/browser/serial/serial_chooser_context.h"
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -146,7 +148,7 @@ class SerialChooserContextTestBase {
     SerialBlocklist::Get().ResetToDefaultValuesForTesting();
   }
 
-  void SetDynamicBlocklist(base::StringPiece value) {
+  void SetDynamicBlocklist(std::string_view value) {
     feature_list_.Reset();
 
     std::map<std::string, std::string> parameters;
