@@ -471,6 +471,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/fast_checkout:java",
       "//chrome/browser/ui/android/favicon:java",
       "//chrome/browser/ui/android/google_bottom_bar:java",
+      "//chrome/browser/ui/android/google_bottom_bar:proto_java",
       "//chrome/browser/ui/android/hats:factory_java",
       "//chrome/browser/ui/android/hats:java",
       "//chrome/browser/ui/android/hats:message_ui_delegate_java",

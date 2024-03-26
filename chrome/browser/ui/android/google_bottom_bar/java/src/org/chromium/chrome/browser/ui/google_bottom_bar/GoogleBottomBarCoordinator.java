@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 
 /**
  * Coordinator for GoogleBottomBar module. Provides the view, and initializes various components.
@@ -28,12 +29,14 @@ public class GoogleBottomBarCoordinator {
      * Constructor.
      *
      * @param context The associated {@link Context}.
+     * @param googleBottomBarIntentParams The encoded button list provided through IntentParams
      */
-    public GoogleBottomBarCoordinator(Context context) {
+    public GoogleBottomBarCoordinator(
+            Context context, GoogleBottomBarIntentParams googleBottomBarIntentParams) {
         mContext = context;
         mGoogleBottomBarViewCreator =
                 new GoogleBottomBarViewCreator(
-                        context, BottomBarConfig.fromEncodedString(getEncodedButtonConfig()));
+                        context, getButtonConfig(googleBottomBarIntentParams));
     }
 
     /** Returns a view that contains the Google Bottom bar. */
@@ -41,11 +44,15 @@ public class GoogleBottomBarCoordinator {
         return mGoogleBottomBarViewCreator.createGoogleBottomBarView();
     }
 
-    private String getEncodedButtonConfig() {
-        // Chrome driven experiment - button list is obtained from Finch flag param
-        return ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR, BUTTON_LIST_PARAM);
+    private BottomBarConfig getButtonConfig(GoogleBottomBarIntentParams intentParams) {
+        // Encoded button list provided in intent from embedder
+        if (intentParams.getEncodedButtonCount() != 0) {
+            return BottomBarConfig.fromEncodedList(intentParams.getEncodedButtonList());
+        }
 
-        // TODO - implement AGA driven experiment - button list provided from Intent extra
+        // Fall back on encoded string provided in Finch param
+        return BottomBarConfig.fromEncodedString(
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR, BUTTON_LIST_PARAM));
     }
 }

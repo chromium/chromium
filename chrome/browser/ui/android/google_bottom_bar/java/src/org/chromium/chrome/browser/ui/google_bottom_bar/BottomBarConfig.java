@@ -27,6 +27,10 @@ class BottomBarConfig {
     static BottomBarConfig fromEncodedString(String encodedConfig) {
         List<Integer> encodedList = getEncodedListFromString(encodedConfig);
 
+        return fromEncodedList(encodedList);
+    }
+
+    static BottomBarConfig fromEncodedList(List<Integer> encodedList) {
         if (encodedList.isEmpty()) {
             throw new IllegalArgumentException("The list is empty or has wrong format");
         }

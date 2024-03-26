@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -2032,6 +2033,11 @@ public class CustomTabsConnection {
     public boolean shouldEnableGoogleBottomBarForIntent(
             BrowserServicesIntentDataProvider intentData) {
         return false;
+    }
+
+    public GoogleBottomBarIntentParams getGoogleBottomBarIntentParams(
+            BrowserServicesIntentDataProvider intentData) {
+        return GoogleBottomBarIntentParams.getDefaultInstance();
     }
 
     /**

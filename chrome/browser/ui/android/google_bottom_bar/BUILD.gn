@@ -12,8 +12,11 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarViewCreator.java",
   ]
   deps = [
+    ":proto_java",
     "//base:base_java",
     "//chrome/browser/flags:java",
+    "//components/optimization_guide/proto:optimization_guide_proto_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   resources_package = "org.chromium.chrome.browser.ui.google_bottom_bar"
@@ -28,4 +31,9 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//third_party/junit",
   ]
+}
+
+proto_java_library("proto_java") {
+  proto_path = "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/proto"
+  sources = [ "$proto_path/intent_params.proto" ]
 }
