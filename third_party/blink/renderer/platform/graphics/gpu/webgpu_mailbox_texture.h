@@ -65,7 +65,12 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
 
   void SetNeedsPresent(bool needs_present) { needs_present_ = needs_present; }
   void SetAlphaClearer(scoped_refptr<WebGPUTextureAlphaClearer> alpha_clearer);
-  void Dissociate();
+
+  // Dissociates this mailbox texture from WebGPU, presenting the image if
+  // necessary. Returns a sync token which will satisfy when the mailbox's
+  // commands have been fully processed; this return value can safely be ignored
+  // if the mailbox texture is not going to be accessed further.
+  gpu::SyncToken Dissociate();
 
   ~WebGPUMailboxTexture();
 
