@@ -2018,7 +2018,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'Q7OjAtILSVRYOMDgWlmBcIeYcZxG8rScascmf6vQYPQC',
+        'version': 'H5Z9jHxybOvP3eOrUfSdoEXr43KN3S-N3JxlLSWoEAQC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
