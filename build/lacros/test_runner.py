@@ -90,7 +90,7 @@ _ASAN_SYMBOLIZER_PATH = os.path.join(_SRC_ROOT, 'tools', 'valgrind', 'asan',
 
 # Number of seconds to wait for ash-chrome to start.
 ASH_CHROME_TIMEOUT_SECONDS = (
-    300 if os.environ.get('ASH_WRAPPER', None) else 10)
+    300 if os.environ.get('ASH_WRAPPER', None) else 25)
 
 # List of targets that require ash-chrome as a Wayland server in order to run.
 _TARGETS_REQUIRE_ASH_CHROME = [
