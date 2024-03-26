@@ -71,6 +71,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
         std::move(local_to_remote_payload_listener);
   }
 
+  // Invoked when both sides of the connection have been accepted, and payloads
+  // can be exchanged.
+  void set_connection_established_listener(
+      base::RepeatingClosure connection_established_listener) {
+    connection_established_listener_ =
+        std::move(connection_established_listener);
+  }
+
   // Simulates a bytes payload being sent from the remote device to the local
   // device.
   //
@@ -202,6 +210,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
   base::RepeatingCallback<Status()> register_payload_file_result_generator_;
   base::RepeatingCallback<void(::nearby::connections::mojom::PayloadPtr)>
       local_to_remote_payload_listener_;
+  base::RepeatingClosure connection_established_listener_;
 };
 
 }  // namespace data_migration

@@ -142,7 +142,9 @@ bool FakeNearbyConnections::SimulateRemoteDisconnect() {
   if (!connection_listener_.is_bound()) {
     return false;
   }
-  connection_listener_->OnDisconnected(remote_endpoint_id_);
+  auto connection_listener = std::move(connection_listener_);
+  DisconnectFromEndpoint(kServiceId, remote_endpoint_id_, base::DoNothing());
+  connection_listener->OnDisconnected(remote_endpoint_id_);
   return true;
 }
 
@@ -245,8 +247,8 @@ void FakeNearbyConnections::DisconnectFromEndpoint(
     remote_to_local_payload_listener_.reset();
     registered_files_.clear();
   } else {
-    GTEST_FAIL() << "StopAdvertising() call invalid. service_id=" << service_id
-                 << " endpoint_id=" << endpoint_id;
+    GTEST_FAIL() << "DisconnectFromEndpoint() call invalid. service_id="
+                 << service_id << " endpoint_id=" << endpoint_id;
   }
   std::move(callback).Run(Status::kSuccess);
 }
@@ -280,6 +282,10 @@ void FakeNearbyConnections::AcceptConnection(
   // (ChromeOS just sent the remote device an "accept connection", and now
   // the remote device sends an "accept connection" back).
   connection_listener_->OnConnectionAccepted(remote_endpoint_id_);
+
+  if (connection_established_listener_) {
+    connection_established_listener_.Run();
+  }
 }
 
 void FakeNearbyConnections::RejectConnection(

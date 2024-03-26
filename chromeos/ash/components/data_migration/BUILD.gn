@@ -10,6 +10,22 @@ source_set("constants") {
   sources = [ "constants.h" ]
 }
 
+source_set("data_migration") {
+  sources = [
+    "data_migration.cc",
+    "data_migration.h",
+  ]
+
+  deps = [
+    ":device",
+    "//base",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/nearby_sharing/public/cpp",
+    "//components/keyed_service/core",
+    "//third_party/nearby:platform_base_util",
+  ]
+}
+
 source_set("device") {
   sources = [
     "device.cc",
@@ -101,6 +117,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "data_migration_unittest.cc",
     "device_unittest.cc",
     "file_receiver_unittest.cc",
     "file_transfer_unittest.cc",
@@ -110,6 +127,7 @@ source_set("unit_tests") {
 
   deps = [
     ":constants",
+    ":data_migration",
     ":device",
     ":file_receiver",
     ":file_transfer",
