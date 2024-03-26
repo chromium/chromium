@@ -17,11 +17,14 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.prefs.PrefService;
@@ -32,12 +35,12 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
 
 /**
- * A preference that displays "Sign in to Chrome" when the user is not sign in, and displays
- * the user's name, email, profile image and sync error icon if necessary when the user is signed
- * in.
+ * A preference that displays "Sign in to Chrome" when the user is not sign in, and displays the
+ * user's name, email, profile image and sync error icon if necessary when the user is signed in.
  */
 public class SignInPreference extends Preference
         implements SignInStateObserver,
@@ -49,6 +52,7 @@ public class SignInPreference extends Preference
     private boolean mIsShowingSigninPromo;
     private boolean mShowAlertIcon;
 
+    private Profile mProfile;
     private PrefService mPrefService;
     private ProfileDataCache mProfileDataCache;
     private AccountManagerFacade mAccountManagerFacade;
@@ -70,22 +74,20 @@ public class SignInPreference extends Preference
     /**
      * Initialize the dependencies for the SignInPreference.
      *
-     * Must be called before the preference is attached, which is called from the containing
+     * <p>Must be called before the preference is attached, which is called from the containing
      * settings screen's onViewCreated method.
      */
     public void initialize(
+            Profile profile,
             ProfileDataCache profileDataCache,
-            AccountManagerFacade accountManagerFacade,
-            PrefService prefService,
-            SyncService syncService,
-            SigninManager signinManager,
-            IdentityManager identityManager) {
+            AccountManagerFacade accountManagerFacade) {
+        mProfile = profile;
         mProfileDataCache = profileDataCache;
         mAccountManagerFacade = accountManagerFacade;
-        mPrefService = prefService;
-        mSyncService = syncService;
-        mSigninManager = signinManager;
-        mIdentityManager = identityManager;
+        mPrefService = UserPrefs.get(mProfile);
+        mSyncService = SyncServiceFactory.getForProfile(mProfile);
+        mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(mProfile);
     }
 
     @Override
@@ -199,7 +201,7 @@ public class SignInPreference extends Preference
                 /* enabled= */ true,
                 /* alertIconVisible= */ ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
-                        && SyncSettingsUtils.getIdentityError(mSyncService) != SyncError.NO_ERROR);
+                        && SyncSettingsUtils.getIdentityError(mProfile) != SyncError.NO_ERROR);
         setOnPreferenceClickListener(null);
 
         mWasGenericSigninPromoDisplayed = false;

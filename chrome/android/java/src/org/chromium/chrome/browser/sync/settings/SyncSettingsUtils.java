@@ -33,10 +33,12 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.ui.widget.Toast;
@@ -545,7 +547,8 @@ public class SyncSettingsUtils {
     }
 
     /** Returns the type of the sync error/identity error for signed-in non-syncing users. */
-    public static @SyncError int getIdentityError(SyncService syncService) {
+    public static @SyncError int getIdentityError(Profile profile) {
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
         // TODO(crbug.com/1503649): Consider converting this to an assertion instead.
         if (syncService == null) {
             return SyncError.NO_ERROR;
@@ -553,6 +556,13 @@ public class SyncSettingsUtils {
 
         // Do not show identity error if sync is enabled.
         if (syncService.isSyncFeatureEnabled()) {
+            return SyncError.NO_ERROR;
+        }
+
+        // No error for not signed-in users.
+        if (!IdentityServicesProvider.get()
+                .getIdentityManager(profile)
+                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             return SyncError.NO_ERROR;
         }
 

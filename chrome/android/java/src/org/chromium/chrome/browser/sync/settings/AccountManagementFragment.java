@@ -191,7 +191,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         // TODO(crbug.com/1503649): Figure out the behaviour for child accounts.
         mIdentityErrorCardPreference =
                 (IdentityErrorCardPreference) findPreference(PREF_IDENTITY_ERROR_CARD_PREFERENCE);
-        mIdentityErrorCardPreference.initialize(mSyncService, this);
+        mIdentityErrorCardPreference.initialize(getProfile(), this);
     }
 
     /**
