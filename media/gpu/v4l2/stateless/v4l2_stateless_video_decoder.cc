@@ -8,9 +8,12 @@
 #include "media/gpu/v4l2/stateless/av1_delegate.h"
 #endif
 
-#include "base/barrier_closure.h"
+#include <poll.h>
+
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/posix/eintr_wrapper.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/chromeos/image_processor.h"
@@ -63,6 +66,17 @@ void LogError(const std::unique_ptr<media::MediaLog>& media_log,
   MEDIA_LOG(ERROR, media_log) << error_message.str();
 }
 
+void WaitForRequestFD(base::ScopedFD request_fd, media::DequeueCB cb) {
+  struct pollfd pollfds[] = {{.fd = request_fd.get(), .events = POLLPRI}};
+
+  constexpr int kPollTimeoutMS = -1;
+  const int poll_result =
+      HANDLE_EINTR(poll(pollfds, std::size(pollfds), kPollTimeoutMS));
+
+  const bool success = (poll_result > 0 && pollfds[0].revents & POLLPRI);
+  std::move(cb).Run(success);
+}
+
 }  // namespace
 
 namespace media {
@@ -104,6 +118,12 @@ V4L2StatelessVideoDecoder::V4L2StatelessVideoDecoder(
       bitstream_id_to_timestamp_(kTimestampCacheSize),
       weak_ptr_factory_for_events_(this) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  // Because this task runner is blocking waiting on an fd it needs to be on
+  // it's own thread. If it shares a thread with another task runner the
+  // blocking wait could cause other tasks to fail.
+  queue_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 }
 
 V4L2StatelessVideoDecoder::~V4L2StatelessVideoDecoder() {
@@ -406,10 +426,6 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(
     }
   }
 
-  // Each request needs a FD. A pool of FD's can be reused, but require
-  // reinitialization after use. Instead a scoped FD is created, which will
-  // be closed at the end of this function. This is fine as the driver will
-  // keep the FD open until it is done using it.
   base::ScopedFD request_fd = device_->CreateRequestFD();
 
   if (input_queue_->SubmitCompressedFrameData(
@@ -417,7 +433,13 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(
     surfaces_queued_.push(std::move(dec_surface));
 
     if (request_queue_->QueueRequest(ctrls, request_fd)) {
-      ArmBufferMonitor();
+      media::DequeueCB dequeue_cb = base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&V4L2StatelessVideoDecoder::DequeueBuffers,
+                         weak_ptr_factory_for_events_.GetWeakPtr()));
+
+      queue_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&WaitForRequestFD, std::move(request_fd),
+                                    std::move(dequeue_cb)));
 
       return true;
     }
@@ -617,44 +639,7 @@ bool V4L2StatelessVideoDecoder::SetupOutputFormatForPipeline() {
   return true;
 }
 
-void V4L2StatelessVideoDecoder::ArmBufferMonitor() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DVLOGF(3);
-
-  media::DequeueCB input_cb = base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&V4L2StatelessVideoDecoder::HandleDequeuedInputBuffers,
-                     weak_ptr_factory_for_events_.GetWeakPtr()));
-
-  input_queue_->ArmBufferMonitor(std::move(input_cb));
-
-  media::DequeueCB output_cb = base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers,
-                     weak_ptr_factory_for_events_.GetWeakPtr()));
-
-  output_queue_->ArmBufferMonitor(std::move(output_cb));
-}
-
-void V4L2StatelessVideoDecoder::InsertFence() {
-  // resolution change will occur without any queues present.
-  // possible for there only to be a single queue
-
-  const uint32_t fence_count = !!input_queue_ + !!output_queue_;
-  const auto fence_input_and_output_queues_ =
-      base::BindPostTaskToCurrentDefault(base::BarrierClosure(
-          fence_count,
-          base::BindOnce(&V4L2StatelessVideoDecoder::PrepareChangeResolution,
-                         weak_ptr_factory_for_events_.GetWeakPtr())));
-
-  if (input_queue_) {
-    input_queue_->PostTaskToQueueTaskRunner(fence_input_and_output_queues_);
-  }
-
-  if (output_queue_) {
-    output_queue_->PostTaskToQueueTaskRunner(fence_input_and_output_queues_);
-  }
-}
-
-void V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers(Buffer buffer) {
+void V4L2StatelessVideoDecoder::DequeueBuffers(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(!surfaces_queued_.empty());
   DVLOGF(4);
@@ -662,37 +647,31 @@ void V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers(Buffer buffer) {
   auto surface = std::move(surfaces_queued_.front());
   surfaces_queued_.pop();
 
-  DCHECK_EQ(surface->FrameID(), buffer.GetTimeAsFrameID())
+  // |output_queue_| is responsible for tracking which buffers correspond to
+  // which frames. The queue needs to know that the buffer is done, ready for
+  // display, and should not be queued.
+  auto output_buffer = output_queue_->DequeueBuffer();
+
+  // TODO(frkoenig): Handle |output_buffer| being a std::nullopt
+  last_frame_id_dequeued_ = output_buffer->GetTimeAsFrameID();
+
+  DCHECK_EQ(surface->FrameID(), last_frame_id_dequeued_)
       << "The surfaces are queued as the buffer is submitted. They are "
          "expected to be dequeued in order.";
-
-  last_frame_id_dequeued_ = buffer.GetTimeAsFrameID();
 
   // References that this frame holds can be removed once the frame is done
   // decoding.
   surface->ClearReferenceSurfaces();
 
-  // |output_queue_| is responsible for tracking which buffers correspond to
-  // which frames. The queue needs to know that the buffer is done, ready for
-  // display, and should not be queued.
-  output_queue_->RegisterDequeuedBuffer(buffer);
-
-  // Check the display queue to see if there are buffers that are ready to
-  // be displayed.
-  ServiceDisplayQueue();
-}
-
-void V4L2StatelessVideoDecoder::HandleDequeuedInputBuffers(Buffer buffer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DVLOGF(4);
-
   // Put the just dequeued buffer into the list of available input buffers.
-  input_queue_->Reclaim(buffer);
+  input_queue_->DequeueBuffer();
 
   // Always check to see if there are decode requests outstanding. This can
   // occur when there are no more surfaces. Another reason to try is EOS
   // handling. The EOS packet does not need a surface, but can get stuck behind
   // a decode request.
+  ServiceDisplayQueue();
+
   ServiceDecodeRequestQueue();
 }
 
@@ -764,8 +743,12 @@ void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
     switch (decode_result) {
       case AcceleratedVideoDecoder::kConfigChange:
         DVLOGF(3) << "AcceleratedVideoDecoder::kConfigChange";
-        InsertFence();
         resolution_changing_ = true;
+
+        queue_task_runner_->PostTask(
+            FROM_HERE, base::BindPostTaskToCurrentDefault(base::BindOnce(
+                           &V4L2StatelessVideoDecoder::PrepareChangeResolution,
+                           weak_ptr_factory_for_events_.GetWeakPtr())));
 
         // Return immediately because |current_decode_request_| is not
         // done being processed.

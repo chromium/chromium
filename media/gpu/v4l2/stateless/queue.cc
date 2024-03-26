@@ -6,8 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/notreached.h"
-#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
@@ -28,33 +26,11 @@ constexpr char kV4L2InputQueue[] = "V4L2 Input Buffer Queued Duration";
 constexpr char kCompressedBufferIndex[] = "compressed buffer index";
 constexpr char kDecodedBufferIndex[] = "decoded buffer index";
 
-void BlockOnDequeueOfBuffer(scoped_refptr<media::StatelessDevice> device,
-                            media::BufferType buffer_type,
-                            media::MemoryType memory_type,
-                            uint32_t num_planes,
-                            media::DequeueCB dequeue_cb) {
-  DVLOGF(4) << "Blocking on dequeue of " << BufferTypeString(buffer_type)
-            << " buffer.";
-  auto buffer = device->DequeueBuffer(buffer_type, memory_type, num_planes);
-  if (buffer) {
-    DVLOGF(4) << BufferTypeString(buffer_type) << " (" << buffer->GetIndex()
-              << ") buffer dequeued.";
-
-    if (buffer_type == media::BufferType::kCompressedData) {
-      TRACE_EVENT_NESTABLE_ASYNC_END0(kTracingCategory, kV4L2InputQueue,
-                                      TRACE_ID_LOCAL(buffer->GetIndex()));
-    } else {
-      TRACE_EVENT_NESTABLE_ASYNC_END0(kTracingCategory, kV4L2OutputQueue,
-                                      TRACE_ID_LOCAL(buffer->GetIndex()));
-    }
-    std::move(dequeue_cb).Run(std::move(*buffer));
-  }
-}
-
 size_t BufferSizeForResolution(gfx::Size image_resolution) {
   return image_resolution.GetArea() > k1080pArea ? kInputBufferMaxSizeFor4k
                                                  : kInputBufferMaxSizeFor1080p;
 }
+
 }  // namespace
 
 namespace media {
@@ -65,17 +41,7 @@ BaseQueue::BaseQueue(scoped_refptr<StatelessDevice> device,
     : device_(std::move(device)),
       buffer_type_(buffer_type),
       memory_type_(memory_type),
-      num_planes_(1) {
-  // |input_queue_task_runner_| and |output_queue_task_runner_| block on
-  // dequeuing a kernel ioctl call (VIDIOC_DQBUF). These don't need to be true
-  // task runners as there is never anything posted to those runners. They wait
-  // for an event and then post messages to the main task runner. Using task
-  // runners requires having a dedicated thread to prevent other runners that
-  // are put on the same thread from being blocked unintentionally.
-  queue_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
-      {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-}
+      num_planes_(1) {}
 
 BaseQueue::~BaseQueue() {
   DVLOGF(3);
@@ -173,16 +139,6 @@ std::optional<uint32_t> BaseQueue::GetFreeBufferIndex() {
   return index;
 }
 
-void BaseQueue::ArmBufferMonitor(DequeueCB cb) {
-  queue_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&BlockOnDequeueOfBuffer, device_, buffer_type_,
-                                memory_type_, num_planes_, std::move(cb)));
-}
-
-void BaseQueue::PostTaskToQueueTaskRunner(base::OnceClosure cb) {
-  queue_task_runner_->PostTask(FROM_HERE, std::move(cb));
-}
-
 // static
 std::unique_ptr<InputQueue> InputQueue::Create(
     scoped_refptr<StatelessDevice> device,
@@ -238,14 +194,28 @@ bool InputQueue::PrepareBuffers(size_t num_buffers,
   return false;
 }
 
-void InputQueue::Reclaim(Buffer& buffer) {
-  DVLOGF(4) << "#" << buffer.GetIndex() << " returned, now "
+const std::optional<Buffer> InputQueue::DequeueBuffer() {
+  DVLOGF(4);
+  const auto buffer =
+      device_->DequeueBuffer(buffer_type_, memory_type_, num_planes_);
+
+  if (!buffer) {
+    return std::nullopt;
+  }
+
+  const uint32_t index = buffer->GetIndex();
+  TRACE_EVENT_NESTABLE_ASYNC_END0(kTracingCategory, kV4L2InputQueue,
+                                  TRACE_ID_LOCAL(index));
+
+  DVLOGF(4) << "#" << index << " returned, now "
             << free_buffer_indices_.size() + 1 << " " << Description()
             << " available.";
-  if (!free_buffer_indices_.insert(buffer.GetIndex()).second) {
+  if (!free_buffer_indices_.insert(index).second) {
     NOTREACHED() << "There is no way that a reclaimed buffer is already "
                     "present in the list";
   }
+
+  return buffer;
 }
 
 bool InputQueue::SubmitCompressedFrameData(const void* data,
@@ -476,7 +446,17 @@ bool OutputQueue::PrepareBuffers(size_t num_buffers) {
   return true;
 }
 
-void OutputQueue::RegisterDequeuedBuffer(Buffer& buffer) {
+const std::optional<Buffer> OutputQueue::DequeueBuffer() {
+  const auto buffer =
+      device_->DequeueBuffer(buffer_type_, memory_type_, num_planes_);
+
+  if (!buffer) {
+    return std::nullopt;
+  }
+
+  TRACE_EVENT_NESTABLE_ASYNC_END0(kTracingCategory, kV4L2OutputQueue,
+                                  TRACE_ID_LOCAL(buffer->GetIndex()));
+
   // Once the buffer is dequeued it needs to be tracked. The index is all that
   // is needed to track the buffer. That index is what will be used when passing
   // the buffer off. The time is need to tell which buffer should be passed off.
@@ -490,13 +470,16 @@ void OutputQueue::RegisterDequeuedBuffer(Buffer& buffer) {
   // needed. Because of the detached nature of the queues there is no way to
   // know which output buffer index corresponds to the input buffer. Using
   // the timestamp this can be found.
-  const auto result = decoded_and_dequeued_frames_.insert(
-      {buffer.GetTimeAsFrameID(), buffer.GetIndex()});
+  const uint64_t frame_id = buffer->GetTimeAsFrameID();
+  const uint32_t index = buffer->GetIndex();
+  const auto result = decoded_and_dequeued_frames_.insert({frame_id, index});
 
-  DVLOGF(4) << "Inserted buffer " << buffer.GetIndex() << " with a frame id of "
-            << buffer.GetTimeAsFrameID();
+  DVLOGF(4) << "Inserted buffer " << index << " with a frame id of "
+            << frame_id;
 
   CHECK(result.second) << "Buffer already in map";
+
+  return buffer;
 }
 
 scoped_refptr<FrameResource> OutputQueue::GetFrame(uint64_t frame_id) {
@@ -568,29 +551,25 @@ base::ScopedFD RequestQueue::CreateRequestFD() {
   return device_->CreateRequestFD();
 }
 
+bool RequestQueue::SetHeadersForFormatNegotiation(void* ctrls) {
+  DVLOGF(4);
+  return device_->SetHeaders(ctrls, base::ScopedFD(-1));
+}
+
 bool RequestQueue::QueueRequest(void* ctrls, const base::ScopedFD& request_fd) {
   DVLOGF(4);
 
-  // Headers submission failure should never happen. There is no way to
-  // recover from this error.
   if (!device_->SetHeaders(ctrls, request_fd)) {
     LOG(ERROR) << "Unable to set headers to V4L2 at fd: " << request_fd.get();
     return false;
   }
 
-  // Everything has been allocated and this is the final submission. To error
-  // out here would mean that the driver is not in a state to decode video.
   if (!device_->QueueRequest(request_fd)) {
     LOG(ERROR) << "Unable to queue request at fd :" << request_fd.get();
     return false;
   }
 
   return true;
-}
-
-bool RequestQueue::SetHeadersForFormatNegotiation(void* ctrls) {
-  DVLOGF(4);
-  return device_->SetHeaders(ctrls, base::ScopedFD(-1));
 }
 
 }  // namespace media

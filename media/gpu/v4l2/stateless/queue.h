@@ -18,7 +18,7 @@
 #include "media/gpu/v4l2/stateless/stateless_device.h"
 
 namespace media {
-using DequeueCB = base::OnceCallback<void(media::Buffer)>;
+using DequeueCB = base::OnceCallback<void(bool)>;
 
 // V4L2 has two similar queues. Capitalized OUTPUT (for compressed frames)
 // and CAPTURE (for uncompressed frames) are the designation that the V4L2
@@ -37,8 +37,7 @@ class MEDIA_GPU_EXPORT BaseQueue {
   bool StartStreaming();
   bool StopStreaming();
   uint32_t FreeBufferCount() const { return free_buffer_indices_.size(); }
-  void ArmBufferMonitor(DequeueCB cb);
-  void PostTaskToQueueTaskRunner(base::OnceClosure cb);
+  virtual const std::optional<Buffer> DequeueBuffer() = 0;
 
  protected:
   bool AllocateBuffers(uint32_t num_planes, size_t num_buffers);
@@ -56,9 +55,6 @@ class MEDIA_GPU_EXPORT BaseQueue {
   // will be used more often than if it was a ring buffer. Using a set
   // enforces the elements be unique.
   std::set<uint32_t> free_buffer_indices_;
-
-  // Workers that block and wait for buffers to be ready to be dequeued.
-  scoped_refptr<base::SequencedTaskRunner> queue_task_runner_;
 };
 
 class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {
@@ -81,7 +77,7 @@ class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {
 
   // Add buffers that have been dequeued into the list of buffers available
   // to be used again.
-  void Reclaim(Buffer& buffer);
+  const std::optional<Buffer> DequeueBuffer() override;
 
   // Check if the new resolution size would require larger buffers than those
   // already allocated.
@@ -123,7 +119,7 @@ class MEDIA_GPU_EXPORT OutputQueue : public BaseQueue {
 
   // Record buffers that have finished decoded and have been dequeued so that
   // they can later be referenced.
-  void RegisterDequeuedBuffer(Buffer& buffer);
+  const std::optional<Buffer> DequeueBuffer() override;
 
   // Retrieve a |FrameResource| by |frame_id| that has already been decoded and
   // dequeued. Returns |nullptr| if there isn't a corresponding frame that has

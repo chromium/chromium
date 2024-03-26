@@ -123,16 +123,8 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // pipeline.
   bool SetupOutputFormatForPipeline();
 
-  // Restart the thread that will wait on a dequeue event from the driver.
-  void ArmBufferMonitor();
-
-  // Queue a task with a callback that will execute once all of the queued
-  // buffers are processed.
-  void InsertFence();
-
   // Callbacks used to handle buffers that have been dequeued.
-  void HandleDequeuedOutputBuffers(Buffer buffer);
-  void HandleDequeuedInputBuffers(Buffer buffer);
+  void DequeueBuffers(bool success);
 
   // Callback for frame destructor observer that will enqueue the output
   // buffer after it is done being used.
@@ -222,6 +214,10 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
 
   // Prevent nested resolution changes by tracking when one is occurring.
   bool resolution_changing_ = false;
+
+  // High priority task runner that can block. This task runner is to be used
+  // for synchronizing queue tasks.
+  scoped_refptr<base::SequencedTaskRunner> queue_task_runner_;
 
   // Weak factories associated with the main thread
   // (|decoder_sequence_checker_|).
