@@ -57,9 +57,9 @@ suite('AppManagementUninstallButtonTest', () => {
     assertEquals(fakeHandler.getCallCount('uninstall'), 0);
   });
 
-  test('System app, button hidden', async () => {
+  test('Disallow uninstall, button hidden', async () => {
     const app: App = createApp('app');
-    app.installReason = InstallReason.kSystem;
+    app.allowUninstall = false;
     await setupUninstallButton(app);
 
     assertFalse(!!uninstallButton.shadowRoot!.querySelector<HTMLElement>(

@@ -130,8 +130,9 @@ bool HasAnySpecifiedSourcesAndNoOtherSources(
     WebAppManagementTypes sources,
     WebAppManagementTypes specified_sources);
 
-// Check if all types of |sources| are uninstallable by the user.
-bool CanUserUninstallWebApp(WebAppManagementTypes sources);
+// Check if all types of |sources| for |app_id| are uninstallable by the user.
+bool CanUserUninstallWebApp(const webapps::AppId& app_id,
+                            WebAppManagementTypes sources);
 
 // Extracts app_id from chrome://app-settings/<app-id> URL path.
 webapps::AppId GetAppIdFromAppSettingsUrl(const GURL& url);
@@ -215,6 +216,11 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
     std::u16string supplementary_icon);
 
 bool IsValidScopeForLinkCapturing(const GURL& scope);
+
+// TODO(http://b/331208955): Remove after migration.
+// Returns whether |app_id| will soon refer to a system web app given |sources|.
+bool WillBeSystemWebApp(const webapps::AppId& app_id,
+                        WebAppManagementTypes sources);
 
 }  // namespace web_app
 

@@ -229,9 +229,21 @@ void AppManagementPageHandlerChromeOs::SetResizeLocked(
 }
 
 void AppManagementPageHandlerChromeOs::Uninstall(const std::string& app_id) {
-  apps::AppServiceProxyFactory::GetForProfile(profile())->Uninstall(
-      app_id, apps::UninstallSource::kAppManagement,
-      delegate_->GetUninstallAnchorWindow());
+  auto* const proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+
+  std::optional<bool> allow_uninstall;
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [&](const apps::AppUpdate& update) {
+        allow_uninstall = update.AllowUninstall();
+      });
+
+  if (!allow_uninstall.value_or(false)) {
+    mojo::ReportBadMessage("Invalid attempt to uninstall app.");
+    return;
+  }
+
+  proxy->Uninstall(app_id, apps::UninstallSource::kAppManagement,
+                   delegate_->GetUninstallAnchorWindow());
 }
 
 void AppManagementPageHandlerChromeOs::SetPreferredApp(
@@ -358,6 +370,8 @@ app_management::mojom::AppPtr AppManagementPageHandlerChromeOs::CreateApp(
 
         app->resize_locked = update.ResizeLocked().value_or(false);
         app->hide_resize_locked = !update.ResizeLocked().has_value();
+
+        app->allow_uninstall = update.AllowUninstall().value_or(false);
 
         if (ash::settings::IsPerAppLanguageEnabled(profile())) {
           const std::string& system_locale =

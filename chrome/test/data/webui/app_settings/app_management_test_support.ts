@@ -64,6 +64,7 @@ export function createTestApp(id: string, optConfig?: AppConfig): App {
     supportedLocales: [],
     selectedLocale: null,
     showSystemNotificationsSettingsLink: false,
+    allowUninstall: true,
   };
 
   if (optConfig) {

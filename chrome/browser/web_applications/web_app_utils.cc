@@ -60,6 +60,10 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/resources/preinstalled_web_apps/internal/container.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
@@ -570,8 +574,10 @@ bool HasAnySpecifiedSourcesAndNoOtherSources(
   return has_any_specified_sources && has_no_other_sources;
 }
 
-bool CanUserUninstallWebApp(WebAppManagementTypes sources) {
-  return HasAnySpecifiedSourcesAndNoOtherSources(sources,
+bool CanUserUninstallWebApp(const webapps::AppId& app_id,
+                            WebAppManagementTypes sources) {
+  return !WillBeSystemWebApp(app_id, sources) &&
+         HasAnySpecifiedSourcesAndNoOtherSources(sources,
                                                  kUserUninstallableSources);
 }
 
@@ -702,6 +708,16 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
 
 bool IsValidScopeForLinkCapturing(const GURL& scope) {
   return scope.is_valid() && scope.has_scheme() && scope.SchemeIsHTTPOrHTTPS();
+}
+
+// TODO(http://b/331208955): Remove after migration.
+bool WillBeSystemWebApp(const webapps::AppId& app_id,
+                        WebAppManagementTypes sources) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+  return app_id == kContainerAppId && sources.Has(WebAppManagement::kDefault);
+#else  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+  return false;
+#endif
 }
 
 }  // namespace web_app

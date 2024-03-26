@@ -176,6 +176,8 @@ struct App {
   //"appManagementNotificationsDescription" string to the system level
   // notification settings for this app.
   bool show_system_notifications_settings_link;
+  // Whether to allow uninstall of the app.
+  bool allow_uninstall;
 };
 
 // Extension-based apps primarily use install-time permissions that cannot be

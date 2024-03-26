@@ -103,6 +103,7 @@ export class FakePageHandler implements PageHandlerInterface {
       supportedLocales: [],
       selectedLocale: null,
       showSystemNotificationsSettingsLink: false,
+      allowUninstall: true,
     };
 
     if (optConfig) {

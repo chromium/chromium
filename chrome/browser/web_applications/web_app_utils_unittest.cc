@@ -23,7 +23,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
-#endif
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/resources/preinstalled_web_apps/internal/container.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -462,5 +465,24 @@ TEST_F(WebAppUtilsTest, GetBrowserContextForWebAppMetrics) {
           system_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 #endif
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+// TODO(http://b/331208955): Remove after migration.
+TEST_F(WebAppUtilsTest, CanUserUninstallContainerApp) {
+  EXPECT_FALSE(CanUserUninstallWebApp(
+      kContainerAppId, WebAppManagementTypes({WebAppManagement::kDefault})));
+  EXPECT_TRUE(CanUserUninstallWebApp(
+      kContainerAppId, WebAppManagementTypes({WebAppManagement::kSync})));
+}
+
+// TODO(http://b/331208955): Remove after migration.
+TEST_F(WebAppUtilsTest, ContainerAppWillBeSystemWebApp) {
+  for (auto src : WebAppManagementTypes::All()) {
+    EXPECT_THAT(
+        WillBeSystemWebApp(kContainerAppId, WebAppManagementTypes({src})),
+        src == WebAppManagement::kDefault);
+  }
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

@@ -57,6 +57,7 @@ suite('AppSettingsAppTest', () => {
       isPolicyPinned: null,
       selectedLocale: null,
       showSystemNotificationsSettingsLink: false,
+      allowUninstall: true,
     };
 
     if (optConfig) {

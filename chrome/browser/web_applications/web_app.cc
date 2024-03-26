@@ -403,7 +403,7 @@ bool WebApp::IsKioskInstalledApp() const {
 }
 
 bool WebApp::CanUserUninstallWebApp() const {
-  return web_app::CanUserUninstallWebApp(sources_);
+  return web_app::CanUserUninstallWebApp(app_id_, sources_);
 }
 
 bool WebApp::WasInstalledByUser() const {
