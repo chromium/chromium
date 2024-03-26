@@ -235,10 +235,9 @@ class NET_EXPORT_PRIVATE HttpAuthController
   // These two are owned by the HttpNetworkSession/IOThread, which own the
   // objects which reference |this|. Therefore, these raw pointers are valid
   // for the lifetime of this object.
-  const raw_ptr<HttpAuthCache, DanglingUntriaged> http_auth_cache_;
-  const raw_ptr<HttpAuthHandlerFactory, DanglingUntriaged>
-      http_auth_handler_factory_;
-  const raw_ptr<HostResolver, DanglingUntriaged> host_resolver_;
+  const raw_ptr<HttpAuthCache> http_auth_cache_;
+  const raw_ptr<HttpAuthHandlerFactory> http_auth_handler_factory_;
+  const raw_ptr<HostResolver> host_resolver_;
 
   std::set<HttpAuth::Scheme> disabled_schemes_;
 
