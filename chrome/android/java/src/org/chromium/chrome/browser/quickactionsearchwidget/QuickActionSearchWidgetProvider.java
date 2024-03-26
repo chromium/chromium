@@ -23,7 +23,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -44,8 +43,6 @@ import java.util.Map;
  * actions in Chrome.
  */
 public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider {
-    public static final String TAG = "b/300599867";
-
     /**
      * A sub class of {@link QuickActionSearchWidgetProvider} that provides the widget that can
      * resize.
@@ -98,12 +95,6 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
                 @NonNull SearchActivityPreferences prefs,
                 int areaWidthDp,
                 int areaHeightDp) {
-            Log.w(
-                    TAG,
-                    "Launcher-reported dino widget area size (W, H): "
-                            + areaWidthDp
-                            + ", "
-                            + areaHeightDp);
             return getDelegate()
                     .createDinoWidgetRemoteViews(
                             context, new SearchActivityUtils(), prefs, areaWidthDp, areaHeightDp);

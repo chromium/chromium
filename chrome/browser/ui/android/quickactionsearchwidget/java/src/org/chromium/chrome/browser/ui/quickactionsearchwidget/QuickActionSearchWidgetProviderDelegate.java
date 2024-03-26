@@ -18,7 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
-import org.chromium.base.Log;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.SearchType;
@@ -29,8 +28,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferen
  * contains as much of the widget logic for the Quick Action Search Widget as possible.
  */
 public class QuickActionSearchWidgetProviderDelegate {
-    public static final String TAG = "b/300599867";
-
     /** Class describing widget variant characteristics. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static class WidgetVariant {
@@ -305,8 +302,6 @@ public class QuickActionSearchWidgetProviderDelegate {
     Size computeWidgetAreaPaddingForDinoWidgetPx(
             int cellAreaWidthDp, int cellAreaHeightDp, float density) {
         int edgeLengthDp = Math.min(cellAreaWidthDp, cellAreaHeightDp);
-        Log.w(TAG, "Short edge length: " + edgeLengthDp);
-        Log.w(TAG, "Density: " + density);
         int width = (int) (((cellAreaWidthDp - edgeLengthDp) / 2.f) * density);
         int height = (int) (((cellAreaHeightDp - edgeLengthDp) / 2.f) * density);
         return new Size((int) width, (int) height);
@@ -353,26 +348,6 @@ public class QuickActionSearchWidgetProviderDelegate {
         // The left/right and top/bottom dimensions are the same, since we want to center the view
         // in the area where we have some non-zero padding.
         Size paddings = computeWidgetAreaPaddingForDinoWidgetPx(areaWidthDp, areaHeightDp, density);
-
-        Log.w(
-                TAG,
-                "Widget area size (pixels): (W, H): "
-                        + (int) (areaWidthDp * density)
-                        + ", "
-                        + (int) (areaHeightDp * density));
-        Log.w(
-                TAG,
-                "Widget paddings to apply to make widget square: (H, V): "
-                        + paddings.getWidth()
-                        + ", "
-                        + paddings.getHeight());
-        Log.w(
-                TAG,
-                "(Rounded) resulting area size: (W, H): "
-                        + (int) (areaWidthDp * density - 2 * paddings.getWidth())
-                        + ", "
-                        + (int) (areaHeightDp * density - 2 * paddings.getHeight()));
-
         views.setViewPadding(
                 R.id.dino_quick_action_area,
                 paddings.getWidth(),
@@ -434,7 +409,6 @@ public class QuickActionSearchWidgetProviderDelegate {
             @NonNull SearchActivityPreferences prefs,
             int areaWidthDp,
             int areaHeightDp) {
-        Log.w(TAG, "Requesting Dino widget for area (WxH): " + areaWidthDp + "x" + areaHeightDp);
         RemoteViews views =
                 createWidgetRemoteViews(
                         context, client, R.layout.quick_action_search_widget_dino_layout);
