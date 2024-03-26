@@ -143,6 +143,54 @@ const gfx::VectorIcon& GetPinIcon(bool is_pinned) {
                                          : views::kPinIcon;
 }
 
+views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
+    views::Button::PressedCallback callback,
+    bool is_enterprise,
+    int small_icon_size,
+    int icon_size,
+    int icon_label_spacing) {
+  auto button_builder =
+      views::Builder<HoverButton>(
+          std::make_unique<HoverButton>(std::move(callback), std::u16string()))
+          // Align the main and secondary row text by adding the primary
+          // action button's icon size as margin.
+          .SetProperty(views::kMarginsKey, gfx::Insets::VH(0, icon_size))
+          // Border should be the same as the space between icon and
+          // label in the primary action button.
+          .SetBorder(
+              views::CreateEmptyBorder(gfx::Insets::VH(0, icon_label_spacing)));
+
+  if (is_enterprise) {
+    // Add left-aligned business icon for enterprise extensions.
+    button_builder.SetHorizontalAlignment(gfx::ALIGN_LEFT)
+        .SetImageModel(views::Button::ButtonState::STATE_NORMAL,
+                       ui::ImageModel::FromVectorIcon(
+                           features::IsChromeRefresh2023()
+                               ? vector_icons::kBusinessChromeRefreshIcon
+                               : vector_icons::kBusinessIcon,
+                           ui::kColorIcon, small_icon_size));
+
+  } else {
+    // Add right-aligned arrow icon for non-enterprise extensions when the
+    // button is not disabled.
+    auto arrow_icon = ui::ImageModel::FromVectorIcon(
+        features::IsChromeRefresh2023()
+            ? vector_icons::kSubmenuArrowChromeRefreshIcon
+            : vector_icons::kSubmenuArrowIcon,
+        ui::kColorIcon,
+        features::IsChromeRefresh2023()
+            ? small_icon_size
+            : gfx::GetDefaultSizeOfVectorIcon(vector_icons::kSubmenuArrowIcon));
+
+    button_builder.SetHorizontalAlignment(gfx::ALIGN_RIGHT)
+        .SetImageModel(views::Button::ButtonState::STATE_NORMAL, arrow_icon)
+        .SetImageModel(views::Button::ButtonState::STATE_DISABLED,
+                       ui::ImageModel());
+  }
+
+  return button_builder;
+}
+
 }  // namespace
 
 ExtensionMenuItemView::ExtensionMenuItemView(
@@ -213,54 +261,6 @@ ExtensionMenuItemView::ExtensionMenuItemView(
   std::move(builder).BuildChildren();
 
   SetupContextMenuButton();
-}
-
-views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
-    views::Button::PressedCallback callback,
-    bool is_enterprise,
-    int small_icon_size,
-    int icon_size,
-    int icon_label_spacing) {
-  auto button_builder =
-      views::Builder<HoverButton>(
-          std::make_unique<HoverButton>(std::move(callback), std::u16string()))
-          // Align the main and secondary row text by adding the primary
-          // action button's icon size as margin.
-          .SetProperty(views::kMarginsKey, gfx::Insets::VH(0, icon_size))
-          // Border should be the same as the space between icon and
-          // label in the primary action button.
-          .SetBorder(
-              views::CreateEmptyBorder(gfx::Insets::VH(0, icon_label_spacing)));
-
-  if (is_enterprise) {
-    // Add left-aligned business icon for enterprise extensions.
-    button_builder.SetHorizontalAlignment(gfx::ALIGN_LEFT)
-        .SetImageModel(views::Button::ButtonState::STATE_NORMAL,
-                       ui::ImageModel::FromVectorIcon(
-                           features::IsChromeRefresh2023()
-                               ? vector_icons::kBusinessChromeRefreshIcon
-                               : vector_icons::kBusinessIcon,
-                           ui::kColorIcon, small_icon_size));
-
-  } else {
-    // Add right-aligned arrow icon for non-enterprise extensions when the
-    // button is not disabled.
-    auto arrow_icon = ui::ImageModel::FromVectorIcon(
-        features::IsChromeRefresh2023()
-            ? vector_icons::kSubmenuArrowChromeRefreshIcon
-            : vector_icons::kSubmenuArrowIcon,
-        ui::kColorIcon,
-        features::IsChromeRefresh2023()
-            ? small_icon_size
-            : gfx::GetDefaultSizeOfVectorIcon(vector_icons::kSubmenuArrowIcon));
-
-    button_builder.SetHorizontalAlignment(gfx::ALIGN_RIGHT)
-        .SetImageModel(views::Button::ButtonState::STATE_NORMAL, arrow_icon)
-        .SetImageModel(views::Button::ButtonState::STATE_DISABLED,
-                       ui::ImageModel());
-  }
-
-  return button_builder;
 }
 
 ExtensionMenuItemView::ExtensionMenuItemView(
