@@ -1105,6 +1105,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 (v, l, t, r, b, ol, ot, or, ob) -> setButtonsVisibility();
         private boolean mCurrentlyShowingBranding;
         private boolean mBrandingStarted;
+        private Drawable mOmniboxBackground;
         private CallbackController mCallbackController = new CallbackController();
         // Cached the state before branding start so we can reset to the state when its done.
         private @Nullable Integer mPreBandingState;
@@ -1657,6 +1658,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void updateColors() {
+            updateOmniboxBackground();
             updateButtonsTint();
 
             if (mUrlCoordinator.setBrandedColorScheme(mBrandedColorScheme)) {
@@ -1667,6 +1669,18 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mTitleBar.setTextColor(
                     OmniboxResourceProvider.getUrlBarPrimaryTextColor(
                             getContext(), mBrandedColorScheme));
+        }
+
+        private void updateOmniboxBackground() {
+            if (mOmniboxBackground == null) return;
+            @ColorInt int background = getBackground().getColor();
+            @ColorInt
+            int bg =
+                    ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
+                            getContext(),
+                            background,
+                            mBrandedColorScheme == BrandedColorScheme.INCOGNITO);
+            mOmniboxBackground.setTint(bg);
         }
 
         @Override
@@ -1788,6 +1802,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         void setOmniboxEnabled() {
+            mOmniboxBackground =
+                    AppCompatResources.getDrawable(
+                            getContext(),
+                            R.drawable.modern_toolbar_text_box_background_with_primary_color);
+            mOmniboxBackground.mutate();
+            mOmniboxBackground.setTint(
+                    ChromeColors.getSurfaceColor(getContext(), R.dimen.toolbar_text_box_elevation));
+            mLocationBarFrameLayout.setBackground(mOmniboxBackground);
+
             mTitleUrlContainer.setOnClickListener(
                     v -> {
                         RecordUserAction.record("CustomTabs.OmniboxClicked");
