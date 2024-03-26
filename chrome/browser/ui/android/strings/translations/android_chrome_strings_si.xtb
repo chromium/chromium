@@ -251,6 +251,7 @@
 <translation id="2364539095045928896">පිටු ඇතුළාන්ත කේන්‍ද්‍රයේ පෞද්ගලිකත්ව නිවේදනය වැසීමට බොත්තම වසන්න.</translation>
 <translation id="2386938421315164605">මාතෘකා සඟවන්න සහ සැඟවීම ඉවත් කරන්න</translation>
 <translation id="2390510615457643724">ඔබට නැවත <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> බාගැනීමට අවශ්‍යද?</translation>
+<translation id="2395004545133500011">සාරාංශ පත්‍රය විවෘතව බෙදා ගන්න</translation>
 <translation id="2410754283952462441">ගිණුමක් තෝරා ගන්න</translation>
 <translation id="2414886740292270097">අඳුරු</translation>
 <translation id="2421705177906985956">මේ මොහොතේ පෙන්වීමට අඩවි නැත</translation>
@@ -645,6 +646,7 @@
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{පිටුසන "<ph name="FOLDER_NAME" />" වෙත සුරකින ලදි. එය මෙම උපාංගයට පමණක් සුරැකෙයි.}one{පිටුසන් "<ph name="FOLDER_NAME" />" වෙත සුරකින ලදි. එය මෙම උපාංගයට පමණක් සුරැකෙයි.}other{පිටුසන් "<ph name="FOLDER_NAME" />" වෙත සුරකින ලදි. එය මෙම උපාංගයට පමණක් සුරැකෙයි.}}</translation>
 <translation id="4484496141267039529">සම්බන්ධතාව නැත. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="4487967297491345095">Chrome හි සියලු යෙදුම් දත්ත ස්ථිරවම මකනු ඇත. මෙහි සියලු ගොනු, සැකසීම්, ගිණුම්, දත්ත සමුදායන්, ආදිය ඇතුළත් වේ.</translation>
+<translation id="4489640160615759754">සාරාංශ පත්‍රය සමග බෙදා ගන්න</translation>
 <translation id="4494806687727322324">මුරපද සුරැකීම ඔබේ පරිපාලක විසින් ක්‍රියාත්මක කර ඇත</translation>
 <translation id="4508528996305412043">සංග්‍රහ කාඩ්පත් මෙනුව විවෘත කර ඇත</translation>
 <translation id="4509501256689523862">ඔබ බ්‍රවුස් කරන විට, ඔබ දකින දැන්වීමක් පෞද්ගලීකරණය කර තිබේ ද යන්න මෙම සැකසීම, <ph name="BEGIN_LINK_1" />දැන්වීම් මාතෘකා<ph name="END_LINK_1" />, ඔබේ <ph name="BEGIN_LINK_2" />කුකී සැකසීම්<ph name="END_LINK_2" />, සහ ඔබ බලන අඩවිය දැන්වීම් පෞද්ගලීකරණය කරන්නේ දැයි මත රඳා පවතී</translation>
@@ -654,6 +656,7 @@
 <translation id="4521489764227272523">තෝරා ගත් දත්ත Chrome සහ ඔබේ සමමුහුර්ත කළ උපාංග වෙතින් ඉවත් කර ඇත.
 
 ඔබගේ Google ගිණුමට සෙවීම් සහ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> හි වෙනත් Google සේවා වෙතින් වන ක්‍රියාකාරකම් වැනි බ්‍රවුස් කිරීමේ ඉතිහාසයේ වෙනත් ආකාර තිබිය හැකිය.</translation>
+<translation id="452279259461584111">සාරාංශ පත්‍රය වසා දමා බෙදා ගන්න</translation>
 <translation id="4523326818319942067">අවසන් පැය</translation>
 <translation id="452750746583162491">ඔබේ සමමුහූර්ත කළ දත්ත සමාලෝචන කරන්න</translation>
 <translation id="4532845899244822526">ෆෝල්ඩරය තෝරන්න</translation>

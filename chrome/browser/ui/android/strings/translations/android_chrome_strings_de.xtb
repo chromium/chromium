@@ -251,6 +251,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="2364539095045928896">Schaltfläche zum Schließen der Datenschutzhinweise der Seitenstatistiken.</translation>
 <translation id="2386938421315164605">Themen ein- und ausblenden</translation>
 <translation id="2390510615457643724">Möchtest du <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) noch einmal herunterladen?</translation>
+<translation id="2395004545133500011">„Mit Übersicht teilen“ geöffnet</translation>
 <translation id="2410754283952462441">Konto auswählen</translation>
 <translation id="2414886740292270097">Dunkel</translation>
 <translation id="2421705177906985956">Momentan sind keine Websites vorhanden</translation>
@@ -645,6 +646,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Lesezeichen wurde in „<ph name="FOLDER_NAME" />“ gespeichert. Es wird nur auf diesem Gerät gespeichert.}other{Lesezeichen wurden in „<ph name="FOLDER_NAME" />“ gespeichert. Sie werden nur auf diesem Gerät gespeichert.}}</translation>
 <translation id="4484496141267039529">Keine Verbindung. Versuche es später noch einmal.</translation>
 <translation id="4487967297491345095">Alle App-Daten in Chrome werden dauerhaft gelöscht. Hierzu gehören alle Dateien, Einstellungen, Konten, Datenbanken.</translation>
+<translation id="4489640160615759754">Mit Übersicht teilen</translation>
 <translation id="4494806687727322324">Das Speichern von Passwörtern wurde von deinem Administrator aktiviert</translation>
 <translation id="4508528996305412043">Feedkartenmenü ist geöffnet</translation>
 <translation id="4509501256689523862">Ob du beim Surfen personalisierte Werbung siehst, hängt von dieser Einstellung, <ph name="BEGIN_LINK_1" />den Werbethemen<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />deinen Cookie-Einstellungen<ph name="END_LINK_2" /> und davon ab, ob die besuchte Website Werbung personalisiert</translation>
@@ -654,6 +656,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="4521489764227272523">Die ausgewählten Daten wurden aus Chrome und von allen deinen synchronisierten Geräten entfernt.
 
 Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> weitere Formen des Browserverlaufs wie Suchanfragen oder Aktivitäten anderer Google-Dienste für dein Google-Konto.</translation>
+<translation id="452279259461584111">„Mit Übersicht teilen“ geschlossen</translation>
 <translation id="4523326818319942067">der letzten Stunde</translation>
 <translation id="452750746583162491">Synchronisierte Daten prüfen</translation>
 <translation id="4532845899244822526">Ordner auswählen</translation>

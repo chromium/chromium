@@ -445,7 +445,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1801812870656502108">Virtuella kortuppgifter</translation>
 <translation id="1803351196216024260">Får begära åtkomst till mikrofonen</translation>
 <translation id="1806174020048213474">Den här appen begär behörighet att installera wifi-användaruppgifter. Efter konfigureringen ansluter <ph name="DEVICE_TYPE" /> automatiskt till deltagande wifi-nätverk. Avinstallera appen om du vill ta bort dessa användaruppgifter.</translation>
-<translation id="1807246157184219062">Ljus</translation>
+<translation id="1807246157184219062">Ljust</translation>
 <translation id="1807528111851433570">Första ark</translation>
 <translation id="180757923930449935">(64-bitars emulerad)</translation>
 <translation id="180991881384371158">CVC-koden finns på baksidan av kortet. Det är de sista tre siffrorna uppe till höger i signaturrutan.</translation>
@@ -769,7 +769,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2404884497378469141">Testa att kopiera filerna igen</translation>
 <translation id="2413155254802890957">Tidigare</translation>
 <translation id="2413528052993050574">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat kan ha återkallats. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
-<translation id="2414886740292270097">Mörk</translation>
+<translation id="2414886740292270097">Mörkt</translation>
 <translation id="2429716554270894715">Tyg (vattentätt)</translation>
 <translation id="2436186046335138073">Vill du tillåta att <ph name="HANDLER_HOSTNAME" /> öppnar alla <ph name="PROTOCOL" />-länkar?</translation>
 <translation id="2436976580469434549">Fiber- och textilkonst</translation>

@@ -256,9 +256,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="7934404985878918282">Chromium-Leseliste ansehen</translation>
 <translation id="7971753607796745700">Leselisteneintrag zu Chromium hinzufügen</translation>
 <translation id="7980860476903281594">Chromium teilt deinen Standort mit Websites, für die du das zulässt.</translation>
-<translation id="7990085102929105708">Zahlungsmethoden und Adressen bei Google Pay werden nicht verschlüsselt. Der Chromium-Browserverlauf wird nicht synchronisiert.
-
-Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chromium-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Wenn du hilfreiche Tipps zu Chromium erhalten möchtest, aktiviere die Benachrichtigungen in den iOS-Einstellungen.</translation>
 <translation id="7995166854192397899">Die Vorschläge basieren auf deinen Browseraktivitäten auf deinen anderen Geräten. Melde dich auf allen deinen Geräten in Chromium an, um Vorschläge zu erhalten.</translation>
 <translation id="800195749539500647">Chromium optimal nutzen</translation>
@@ -286,13 +283,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8685813584220679697">Melde dich bei dieser Website und in Chromium an.</translation>
 <translation id="8730503818204408000">Öffnet die Chromium-Einstellung, mit der Chromium als Standardbrowser festgelegt wird.</translation>
 <translation id="8742300022028858275">Aktuellen Tab in Chromium öffnen</translation>
-<translation id="8747378496147986285">Wenn aktiviert:
-<ph name="BEGIN_INDENT" />  • Du hilfst, Chromium für Nutzer zu optimieren, die es genauso verwenden wie du.<ph name="END_INDENT" />
-
-Wichtige Hinweise:
-<ph name="BEGIN_INDENT" />  • Daten zu deiner Chromium-Nutzung werden an Google gesendet, können aber nicht mit dir in Verbindung gebracht werden.
-  • Falls Chromium abstürzt, können die Details zum Absturz einige personenbezogene Daten enthalten.
-  • Falls du die Synchronisierung aktivierst, können die Messwerte auch Informationen zu den von dir besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Dein Familienmitglied kann derzeit keine Passwörter erhalten. Bitte es, Chromium zu aktualisieren und seine Passwörter zu synchronisieren. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Dieses Konto und alle nicht gespeicherten Daten werden aus Chromium entfernt.</translation>
 <translation id="88376265765385899">Öffnet die Chromium-Lesezeichen.</translation>

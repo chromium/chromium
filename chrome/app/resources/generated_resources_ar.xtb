@@ -3511,6 +3511,7 @@
 <translation id="3660234220361471169">غير موثوق بها</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{تم العثور على كلمة مرور حالية واحدة}zero{تم العثور على {NUM_PASSWORDS} كلمة مرور حالية}two{تم العثور على كلمتَي مرور حاليتَين ({NUM_PASSWORDS})}few{تم العثور على {NUM_PASSWORDS} كلمات مرور حالية}many{تم العثور على {NUM_PASSWORDS} كلمة مرور حالية}other{تم العثور على {NUM_PASSWORDS} كلمة مرور حالية}}</translation>
 <translation id="3662207097851752847">‏تأكيد حسابك على Google باستخدام هاتفك</translation>
+<translation id="3663417513679360795">مزيد من المعلومات حول تفعيل التحميل المُسبق العادي</translation>
 <translation id="3664511988987167893">رمز الإضافة</translation>
 <translation id="3665100783276035932">من المفترض أن تعمل معظم المواقع الإلكترونية على النحو المتوقَّع</translation>
 <translation id="3665301845536101715">الفتح في اللوحة الجانبية</translation>
@@ -3600,6 +3601,7 @@
 <translation id="3720543739123045680">هناك عملية مشتركة تجري في علامة التبويب هذه وعلامات تبويب أخرى، ما قد يؤدي إلى ظهور أخطاء غير متوقَّعة عند استخدام "أدوات مطوري البرامج".</translation>
 <translation id="372062398998492895">‏إعدادات طابعات CUPS</translation>
 <translation id="3721119614952978349">‏أنت وGoogle</translation>
+<translation id="3721178866505920080">مزيد من المعلومات حول تفعيل التحميل المُسبَق الموسَّع</translation>
 <translation id="3722108462506185496">حدث خطأ أثناء بدء تشغيل خدمة الآلة الافتراضية. يُرجى إعادة المحاولة.</translation>
 <translation id="3722624153992426516">تم تلقي تعليمات "<ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />".</translation>
 <translation id="3724897774652282549">يُرجى ملء الاستمارة</translation>

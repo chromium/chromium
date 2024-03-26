@@ -153,7 +153,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="1791662854739702043">Installerat</translation>
 <translation id="1792959175193046959">Ändra standardplats för nedladdningar när som helst</translation>
 <translation id="1796666869097395659">Minimera fliken om du vill återvända till den senare</translation>
-<translation id="1807246157184219062">Ljus</translation>
+<translation id="1807246157184219062">Ljust</translation>
 <translation id="1807709131360304325">Öppna ett nytt fönster</translation>
 <translation id="1810845389119482123">Konfigurationen av synkronisering har inte slutförts</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> kan inte fortsätta använda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -251,8 +251,9 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="2364539095045928896">Knappen Stäng för att stänga integritetsmeddelandet för hubben för sidinsikter.</translation>
 <translation id="2386938421315164605">Dölj och visa ämnen</translation>
 <translation id="2390510615457643724">Vill du ladda ned <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> igen?</translation>
+<translation id="2395004545133500011">Dela med översiktsarket öppet</translation>
 <translation id="2410754283952462441">Välj ett konto</translation>
-<translation id="2414886740292270097">Mörk</translation>
+<translation id="2414886740292270097">Mörkt</translation>
 <translation id="2421705177906985956">Det finns inga webbplatser att visa just nu</translation>
 <translation id="2426805022920575512">Välj ett annat konto</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videor, 1 video i listan}other{Videor, # videor i listan}}</translation>
@@ -646,6 +647,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Bokmärket har sparats i <ph name="FOLDER_NAME" />. Det är bara sparat på den här enheten.}other{Bokmärkena har sparats i <ph name="FOLDER_NAME" />. De är bara sparade på den här enheten.}}</translation>
 <translation id="4484496141267039529">Ingen anslutning. Försök igen senare.</translation>
 <translation id="4487967297491345095">All appdata i Chrome raderas permanent. Detta omfattar alla filer, inställningar, konton, databaser osv.</translation>
+<translation id="4489640160615759754">Dela med översiktsark</translation>
 <translation id="4494806687727322324">Funktionen för att spara lösenord har aktiverats av administratören</translation>
 <translation id="4508528996305412043">Menyn med flödeskort är öppen</translation>
 <translation id="4509501256689523862">Huruvida annonser som visas när du surfar anpassas eller inte beror på den här inställningen, <ph name="BEGIN_LINK_1" />annonsämnen<ph name="END_LINK_1" />, dina <ph name="BEGIN_LINK_2" />cookieinställningar<ph name="END_LINK_2" /> och om webbplatsen du besöker anpassar annonser.</translation>
@@ -655,6 +657,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="4521489764227272523">Markerad data har tagits bort från Chrome och från synkroniserade enheter.
 
 Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />, t.ex. sökningar och aktivitet på andra tjänster från Google.</translation>
+<translation id="452279259461584111">Dela med översiktsarket stängt</translation>
 <translation id="4523326818319942067">senaste timmen</translation>
 <translation id="452750746583162491">Granska din synkroniserade data</translation>
 <translation id="4532845899244822526">Välj mapp</translation>

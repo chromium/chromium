@@ -257,9 +257,6 @@
 <translation id="7934404985878918282">查看 Chromium 阅读清单</translation>
 <translation id="7971753607796745700">将阅读清单项添加到 Chromium</translation>
 <translation id="7980860476903281594">Chromium 会将您的位置信息分享给您允许的网站。</translation>
-<translation id="7990085102929105708">Google Pay 中的付款方式和地址不会加密。Chromium 中的浏览记录不会同步。
-
-只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="7994322153108931467">如需获取实用 Chromium 提示，请在 iOS 设置中开启通知。</translation>
 <translation id="7995166854192397899">系统会根据您在其他设备上的浏览活动给出建议。如需获取建议，请在您的所有设备上登录 Chromium。</translation>
 <translation id="800195749539500647">充分利用 Chromium</translation>
@@ -285,15 +282,6 @@
 <translation id="8685813584220679697">登录此网站和 Chromium。</translation>
 <translation id="8730503818204408000">打开 Chromium 设置以将 Chromium 设为默认浏览器。</translation>
 <translation id="8742300022028858275">在 Chromium 中打开“我最近打开的标签页”</translation>
-<translation id="8747378496147986285">处于开启状态时：
-<ph name="BEGIN_INDENT" />  • 可协助改进 Chromium，让所有像您这样使用 Chromium 的用户都能获享更好的体验。<ph name="END_INDENT" />
-
-注意事项：
-<ph name="BEGIN_INDENT" />  • 系统会向 Google 发送与您的 Chromium 使用情况相关的信息，但这些信息未关联到您。
-
-  • 如果 Chromium 崩溃了，崩溃事件的相关详情可能会包含一些个人信息。
-
-  • 如果您开启了同步功能，相关指标可能会包含与您访问的网址有关的信息。<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">您的家庭成员目前无法接收密码。请让他们更新 Chromium 并同步其密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">系统会从 Chromium 中移除此账号以及所有未保存的数据。</translation>
 <translation id="88376265765385899">打开 Chromium 书签。</translation>

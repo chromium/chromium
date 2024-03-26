@@ -257,9 +257,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="7934404985878918282">Xem Danh sách đọc trên Chromium</translation>
 <translation id="7971753607796745700">Thêm mục trong danh sách đọc vào Chromium</translation>
 <translation id="7980860476903281594">Chromium chia sẻ thông tin vị trí của bạn với những trang web mà bạn cho phép.</translation>
-<translation id="7990085102929105708">Các địa chỉ và phương thức thanh toán từ Google Pay sẽ không được mã hoá. Nhật ký duyệt web trên Chromium sẽ không đồng bộ hoá.
-
-Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chromium khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Để biết các mẹo hữu ích khi dùng Chromium, hãy bật thông báo trong phần cài đặt của iOS.</translation>
 <translation id="7995166854192397899">Các nội dung đề xuất được đưa ra dựa trên hoạt động duyệt web của bạn trên các thiết bị khác. Để nhận nội dung đề xuất, hãy đăng nhập vào Chromium trên mọi thiết bị của bạn.</translation>
 <translation id="800195749539500647">Tận dụng tối đa Chromium</translation>
@@ -287,12 +284,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="8685813584220679697">Đăng nhập vào trang web này và Chromium.</translation>
 <translation id="8730503818204408000">Mở phần cài đặt Chromium để đặt Chromium làm trình duyệt mặc định.</translation>
 <translation id="8742300022028858275">Mở thẻ mà tôi mở gần đây nhất trong Chromium</translation>
-<translation id="8747378496147986285">Khi bật:
-<ph name="BEGIN_INDENT" />  • Cải thiện Chromium cho những ai đang dùng Chromium như bạn.<ph name="END_INDENT" />
-Những yếu tố cần xem xét:
-<ph name="BEGIN_INDENT" />  • Thông tin về mức sử dụng Chromium được gửi cho Google, tuy nhiên thông tin đó sẽ không gắn liền với bạn.
-  • Nếu Chromium gặp sự cố, thông tin chi tiết về sự cố có thể sẽ bao gồm một số thông tin cá nhân.
-  • Nếu bạn bật chế độ đồng bộ hoá, các chỉ số có thể sẽ còn bao gồm cả thông tin về các URL bạn từng truy cập.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Thành viên gia đình bạn hiện không thể nhận mật khẩu. Hãy đề nghị họ cập nhật Chromium và đồng bộ hoá mật khẩu của họ. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Tài khoản này và mọi dữ liệu chưa lưu sẽ bị xóa khỏi Chromium.</translation>
 <translation id="88376265765385899">Mở dấu trang trên Chromium.</translation>

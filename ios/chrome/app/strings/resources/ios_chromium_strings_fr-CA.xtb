@@ -257,9 +257,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="7934404985878918282">Voir la liste de lecture Chromium</translation>
 <translation id="7971753607796745700">Ajouter un élément à la Liste de lecture dans Chromium</translation>
 <translation id="7980860476903281594">Chromium partage votre position avec les sites que vous autorisez.</translation>
-<translation id="7990085102929105708">Les modes de paiement et les adresses de Google Pay ne seront pas chiffrés. L'historique de navigation de Chromium ne se synchronisera pas.
-
-Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. La phrase de passe n'est ni envoyée à Google ni stockée par cette dernière. Si vous oubliez votre phrase de passe ou si vous souhaitez modifier ce réglage, <ph name="BEGIN_LINK" />effacez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Pour obtenir des conseils utiles sur Chromium, activez les notifications dans vos réglages iOS.</translation>
 <translation id="7995166854192397899">Les suggestions sont basées sur votre activité de navigation sur vos autres appareils. Pour obtenir des suggestions, connectez-vous à Chromium sur tous vos appareils.</translation>
 <translation id="800195749539500647">Tirez le meilleur parti de Chromium</translation>
@@ -287,15 +284,6 @@ Pour modifier ce réglage, <ph name="BEGIN_LINK" />effacez les données Chromium
 <translation id="8685813584220679697">Connectez-vous à ce site et à Chromium.</translation>
 <translation id="8730503818204408000">Ouvre le paramètre de Chromium pour définir Chromium comme navigateur par défaut.</translation>
 <translation id="8742300022028858275">Ouvrir mon dernier onglet dans Chromium</translation>
-<translation id="8747378496147986285">Lorsque activé :
-<ph name="BEGIN_INDENT" />  • Vous contribuez à améliorer Chromium pour les personnes qui l'utilisent de la même façon que vous.<ph name="END_INDENT" />
-
-Éléments à prendre en compte :
-<ph name="BEGIN_INDENT" />  • Les données relatives à votre utilisation de Chromium sont envoyées à Google, mais elles ne vous identifient pas.
-
-  • En cas de plantage de Chromium, les détails de l'événement peuvent inclure des renseignements personnels.
-
-  • Si vous activez la synchronisation, les mesures peuvent également inclure des renseignements sur les URL que vous visitez.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Le membre de votre famille ne peut pas recevoir de mots de passe pour le moment. Demandez-lui de mettre à jour Chromium et de synchroniser ses mots de passe. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Ce compte et toutes les données non enregistrées seront supprimés de Chromium.</translation>
 <translation id="88376265765385899">Ouvre les favoris Chromium.</translation>

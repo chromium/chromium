@@ -1937,6 +1937,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2435248616906486374">Réseau déconnecté</translation>
 <translation id="2435457462613246316">Affich. mot de passe</translation>
 <translation id="2436385001956947090">Copier le lien</translation>
+<translation id="2436746748253887661">Cela permet aux services système autorisés d'utiliser votre position. Les services de localisation peuvent utiliser des sources, comme le Wi-Fi, les réseaux cellulaires et les capteurs, pour estimer la position de votre appareil. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Aucune imprimante connectée</translation>
 <translation id="2439152382014731627">Réinitialiser le mot de passe de votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> en cours de chargement…</translation>
@@ -3667,6 +3668,8 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3765055238058255342">ce type de carte</translation>
 <translation id="3765246971671567135">Impossible de lire la politique du mode démo hors ligne.</translation>
 <translation id="3765696567014520261">Les sites ne peuvent pas utiliser vos témoins pour voir votre activité de navigation sur différents sites, par exemple, pour personnaliser les annonces. Les fonctionnalités de certains sites pourraient ne pas fonctionner</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Le service de localisation de Google utilise des sources, comme le Wi-Fi, les réseaux cellulaires et les capteurs, pour vous aider à estimer la position de votre appareil.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Vous pouvez désactiver la localisation de ChromeOS et d'Android sur votre appareil à tout moment en accédant à Paramètres &gt; Confidentialité et sécurité &gt; Paramètres de confidentialité &gt; Accès à la localisation. Vous pouvez également désactiver l'utilisation du Wi-Fi, des réseaux cellulaires et des capteurs pour la localisation d'Android en désactivant « Améliorer la précision de la localisation » sous « Paramètres de localisation avancés » dans le même menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">En savoir plus sur Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Pour l'instant, vous ne pouvez partager les mots de passe qu'avec les membres de la famille. <ph name="BEGIN_LINK" />Invitez les membres de la famille<ph name="END_LINK" /> à se joindre à votre groupe et profitez davantage de vos produits et abonnements sur Google.</translation>
@@ -4333,6 +4336,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4278779213160967034">Ce processus peut prendre quelques minutes. Téléchargement des fichiers.</translation>
 <translation id="4279129444466079448">Vous pouvez installer un maximum de <ph name="PROFILE_LIMIT" /> profils de carte eSIM sur cet appareil. Pour en ajouter un autre, commencez par supprimer un profil existant.</translation>
 <translation id="4280325816108262082">L'appareil se déconnecte automatiquement lorsqu'il est éteint ou qu'il n'est pas utilisé</translation>
+<translation id="4281637354026226955">Autorisez les applications ChromeOS et Android ainsi que les services disposant de l'autorisation de localisation à utiliser la position de votre appareil. Google peut collecter des données de localisation périodiquement et les utiliser de manière anonyme pour aider à améliorer la précision de la localisation et les services basés sur l'emplacement.</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="4281849573951338030">Personnaliser les boutons du stylet</translation>
 <translation id="4282196459431406533">Smart Lock est activé</translation>
@@ -6212,6 +6216,8 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (paramètre système par défaut)</translation>
 <translation id="5776450228446082914">La liste des sites Web qui peuvent s'ouvrir dans l'un ou l'autre des navigateurs.</translation>
 <translation id="5776571780337000608">Vous pouvez ouvrir et modifier les fichiers pris en charge avec cette application à partir de votre explorateur de fichiers ou d'autres applications. Pour contrôler quels fichiers ouvrent cette application par défaut, <ph name="BEGIN_LINK" />découvrez comment définir des applications par défaut sur votre appareil<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">Le service de localisation de Google améliore la précision de la localisation en utilisant le Wi‑Fi, les réseaux cellulaires et des capteurs pour estimer la position de l'appareil. Google peut collecter périodiquement des données de localisation et utiliser ces données de manière anonyme pour améliorer la précision de la localisation et les services basés sur l'emplacement.
+    Si vous désactivez cette option, Android utilisera uniquement l'adresse IP pour la localisation, ce qui peut réduire la précision de la position pour les applications comme Maps.</translation>
 <translation id="5778491106820461378">Vous pouvez gérer les comptes Google auxquels vous êtes connecté dans le menu <ph name="LINK_BEGIN" />Paramètres<ph name="LINK_END" />. Les autorisations que vous avez accordées aux sites Web et aux applications peuvent s'appliquer à tous les comptes. Si vous ne souhaitez pas que les sites ou les applications accèdent aux données de votre compte, vous pouvez vous connecter à votre <ph name="DEVICE_TYPE" /> en tant qu'invité.</translation>
 <translation id="5780011244986845107">Le dossier que vous avez sélectionné contient des fichiers confidentiels. Voulez-vous vraiment accorder à « <ph name="APP_NAME" /> » un accès de lecture permanent à ce dossier?</translation>
 <translation id="5780973441651030252">Priorité de processus</translation>
@@ -6297,6 +6303,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5836999627049108525">Langue à partir de laquelle traduire</translation>
 <translation id="583756221537636748">Cas</translation>
 <translation id="5840680448799937675">Les fichiers seront toujours partagés hors ligne</translation>
+<translation id="5841167715783969407">Fuseau horaire automatique en fonction du Wi-Fi ou des réseaux cellulaires</translation>
 <translation id="5841270259333717135">Configurer l'Ethernet</translation>
 <translation id="5842497610951477805">Activer le Bluetooth</translation>
 <translation id="5844284118433003733">Lorsque vous êtes connecté, ces données sont associées à votre compte Google pour vous protéger dans l'ensemble des services Google. Elles permettent, par exemple, de renforcer la protection dans Gmail à la suite d'un incident de sécurité.</translation>
@@ -6746,6 +6753,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6180510783007738939">Ligne</translation>
 <translation id="6180550893222597997">Quelle clé d'accès voulez-vous utiliser pour <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Téléchargement bloqué</translation>
+<translation id="6183369864942961155">Thème clair/sombre automatique</translation>
 <translation id="6184099524311454384">Rechercher des onglets</translation>
 <translation id="6184868291074982484">Chrome limite automatiquement les témoins tiers</translation>
 <translation id="6185132558746749656">Position de l'appareil</translation>
@@ -7148,6 +7156,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6513247462497316522">Si vous n'êtes pas connecté à un autre réseau, Google Chrome va utiliser un service de données mobiles.</translation>
 <translation id="6514010653036109809">Appareil disponible :</translation>
 <translation id="6517227424170598783">Retirer le raccourci « <ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" /> »?</translation>
+<translation id="6517382055541687102">L'appareil sélectionné est maintenant <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Vos fichiers dans Mon Disque sont automatiquement synchronisés avec votre Chromebook afin que vous puissiez y accéder sans connexion Internet. Cela nécessitera environ <ph name="REQUIRED_SPACE" />. Vous disposez actuellement de <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Votre appareil pourrait ne plus fonctionner correctement, et vous pourriez rencontrer des problèmes de sécurité et de performance. La désactivation des mises à jour peut également avoir une incidence sur votre droit de faire des réclamations légales en cas de problème.</translation>
 <translation id="6518014396551869914">Cop&amp;ier l'image</translation>
@@ -7406,6 +7415,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6713441551032149301">Maintenez la touche de lancement enfoncée pour basculer entre les touches de fonction et les touches de la rangée supérieure du système</translation>
 <translation id="6713668088933662563">Ne jamais proposer de traduire ces langues</translation>
 <translation id="6715803357256707211">Une erreur s'est produite lors de l'installation de votre application Linux. Cliquez sur la notification pour en savoir plus.</translation>
+<translation id="6716049856796700977">Aucun client ni service ne peut utiliser votre position. Cependant, votre position peut toujours être visible pour les applications et les sites Web par le biais de votre adresse IP. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">La connexion réseau a été perdue. Vérifiez votre connexion réseau ou essayez un autre réseau Wi-Fi.</translation>
 <translation id="6718849325281682232">Les couleurs du thème Chrome ont été actualisées pour mieux fonctionner pour tout le monde, que vous soyez en mode sombre ou clair</translation>
 <translation id="671928215901716392">Verrouiller l'écran</translation>
@@ -8389,6 +8399,8 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7478658909253570368">Ne pas autoriser les sites à se connecter à des ports série</translation>
 <translation id="7479221278376295180">Aperçu de l'utilisation de la mémoire</translation>
 <translation id="747981547666531654">Connecté aux appareils Bluetooth <ph name="FIRST_DEVICE" /> et <ph name="SECOND_DEVICE" /></translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Le service de localisation de Google utilise des sources, comme le Wi-Fi, les réseaux cellulaires et les capteurs, pour estimer la position de cet appareil.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Vous pouvez désactiver la localisation de ChromeOS et d'Android sur cet appareil à tout moment en accédant à Paramètres &gt; Confidentialité et sécurité &gt; Paramètres de confidentialité &gt; Accès à la localisation. Vous pouvez également désactiver l'utilisation du Wi-Fi, des réseaux cellulaires et des capteurs pour la localisation d'Android en désactivant « Améliorer la précision de la localisation » sous « Paramètres de localisation avancés » dans le même menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Suivant</translation>
 <translation id="7481358317100446445">Prêt</translation>
 <translation id="748138892655239008">Contraintes de base du certificat</translation>
@@ -8480,6 +8492,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7552846755917812628">Essayez les conseils suivants :</translation>
 <translation id="7553012839257224005">Vérification du conteneur Linux en cours…</translation>
 <translation id="7553242001898162573">Entrez votre mot de passe</translation>
+<translation id="7553487223484420820">Les applications, les sites Web et les services système disposant de l'autorisation de localisation peuvent utiliser votre position. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">Votre administrateur n'autorise pas l'utilisation de cette langue</translation>
 <translation id="7554791636758816595">Nouvel onglet</translation>
 <translation id="7556033326131260574">Le système de verrouillage intelligent Smart Lock n'a pas pu vérifier votre compte. Tapez votre mot de passe pour y accéder.</translation>
@@ -9396,6 +9409,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8224427620313426549">Votre compte <ph name="DOMAIN_LINK" /> ne sera pas supprimé</translation>
 <translation id="8225046344534779393">Vérifiez la connexion Internet</translation>
 <translation id="8225265270453771718">Partager la fenêtre d'une application</translation>
+<translation id="8225516926291976401">Seuls les services système peuvent utiliser votre position. Cependant, votre position peut toujours être visible pour les applications et les sites Web par le biais de votre adresse IP. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Interdit</translation>
 <translation id="8226619461731305576">File d'attente</translation>
 <translation id="8227119283605456246">Joindre un fichier</translation>
@@ -9832,6 +9846,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8552102814346875916">Enregistrer dans la liste « Toujours garder ces sites actifs »</translation>
 <translation id="8553342806078037065">Gérer d'autres personnes</translation>
 <translation id="8554899698005018844">Aucune langue</translation>
+<translation id="8555444629041783356">Horaire de coucher du soleil automatique</translation>
 <translation id="855604308879080518">Laissez les applications Android accéder aux appareils USB sur ce Chromebook. Une autorisation sera demandée chaque fois que vous brancherez un appareil USB. Des autorisations supplémentaires seront demandées pour chaque application Android.</translation>
 <translation id="8557022314818157177">Continuez à toucher votre clé de sécurité jusqu'à ce que votre empreinte digitale soit capturée</translation>
 <translation id="8557180006508471423">Activer « Google Chrome » dans les services de localisation sur votre Mac</translation>

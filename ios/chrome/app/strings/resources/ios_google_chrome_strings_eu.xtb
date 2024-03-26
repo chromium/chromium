@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome-k jarraipen-zenbakiak hautemango ditu bisitatzen dituzun webguneetan, eta paketeei buruzko informazio eguneratua erakutsiko dizu Fitxa berria orrian. Paketearen jarraipen-zenbakia eta webgunearen izena Google-ri bidaliko zaizkio eginbide hau eskaintzeko eta Google-ren erosketa-eginbideak denentzat hobetzeko. Hori aldatzeko, joan <ph name="BEGIN_LINK" />paketeen jarraipenaren ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Erabili Chrome modu lehenetsian</translation>
 <translation id="1105362920864247682">Garbitu arakatze-datuak Chrome-n.</translation>
-<translation id="1113057722807951993">Pasaesaldi bidezko enkriptatzearen kanpoan utzi dira Google Pay-ko ordainketa-metodoak eta helbideak.
-
-Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" /> kontuko pasahitza Google-ren Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
 <translation id="1177414119866731261">Ireki Chrome-ko menua</translation>
 <translation id="1180362651362502943">Jarraitu Google-ko kontuan dauzkazun Chrome-ko datuak erabiltzen.</translation>
@@ -87,9 +84,6 @@ Kontuan hartu beharrekoak:
 <translation id="2876628302275096482">Lortu <ph name="BEGIN_LINK" />Chrome-k zure datuen pribatutasuna babesteko duen moduari<ph name="END_LINK" /> buruzko informazio gehiago</translation>
 <translation id="2952581218264071393">1. Ireki Chrome-ren ezarpenak</translation>
 <translation id="2957447865124070833">Hautatu <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
-<translation id="2988274366244053197">Google Pay-ko ordainketa-metodoak eta helbideak ez dira enkriptatuko. Chrome-ko arakatze-historia ez da sinkronizatuko.
-
-Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> domeinuak kudeatutako kontu baten saioa amaituko duzunez, Chrome-n dituzun datuak ezabatu egingo dira gailu honetatik. Hala ere, datu horiek Google-ko kontuan egoten jarraituko dute.</translation>
 <translation id="309672519329227863">Erabili Chrome-ko pasahitzak eta gainerako informazioa beste aplikazioetan.</translation>
 <translation id="3146109040683991651">Ezarri Chrome arakatzaile lehenetsi gisa</translation>
@@ -305,13 +299,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="8891935667620843985">Ezarri Chrome arakatzaile lehenetsi gisa eta ireki estekak bertan automatikoki.</translation>
 <translation id="8897749957032330183">Pasahitzak gailu honetan gordetzen dira, Google-ren Pasahitz-kudeatzailea zerbitzuan.</translation>
 <translation id="8949681853939555434">Ezarri Chrome arakatzaile lehenetsi gisa</translation>
-<translation id="8969290730818637510">Aktibatuta dagoenean:
-<ph name="BEGIN_INDENT" />  • Chrome zuk bezala erabiltzen dutenentzat hobetzen laguntzen duzu.<ph name="END_INDENT" />
-
-Kontuan hartu beharrekoak:
-<ph name="BEGIN_INDENT" />  • Chrome-ren erabilerari buruzko informazioa bidaliko zaio Google-ri, baina ez du izango loturarik zurekin.
-  • Chrome-k huts egiten badu, baliteke hutsegiteari buruzko xehetasunek informazio pertsonala edukitzea.
-  • Sinkronizazioa aktibatuz gero, baliteke neurketek bisitatzen dituzun URLei buruzko informazioa edukitzea.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Ireki Chrome-ren ezkutuko moduan</translation>
 <translation id="9071207983537882274">Chrome-ren ezarpenak irekitzen ditu.</translation>
 <translation id="9112744793181547300">Arakatzaile lehenetsi gisa ezarri nahi duzu Chrome?</translation>

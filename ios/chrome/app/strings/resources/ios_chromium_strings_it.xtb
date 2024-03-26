@@ -257,9 +257,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="7934404985878918282">Visualizza l'elenco di lettura di Chromium</translation>
 <translation id="7971753607796745700">Aggiungi l'elemento dell'elenco di lettura a Chromium</translation>
 <translation id="7980860476903281594">Chromium condivide la tua posizione con i siti autorizzati da te.</translation>
-<translation id="7990085102929105708">I metodi di pagamento e gli indirizzi memorizzati su Google Pay non verranno criptati. La cronologia di navigazione di Chromium non verrà sincronizzata.
-
-Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google o memorizzata da Google. Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chromium nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Per ricevere suggerimenti utili su Chromium, attiva le notifiche nelle impostazioni di iOS.</translation>
 <translation id="7995166854192397899">I suggerimenti sono basati sulla tua attività di navigazione sugli altri dispositivi. Per ricevere suggerimenti, accedi a Chromium su tutti i tuoi dispositivi.</translation>
 <translation id="800195749539500647">Usa al meglio Chromium</translation>
@@ -287,15 +284,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="8685813584220679697">Accedi a questo sito e a Chromium.</translation>
 <translation id="8730503818204408000">Apre l'impostazione di Chromium per impostare Chromium come browser predefinito.</translation>
 <translation id="8742300022028858275">Apri La mia scheda più recente in Chromium</translation>
-<translation id="8747378496147986285">Quando l'opzione è attiva:
-<ph name="BEGIN_INDENT" />  • Contribuisci a migliorare Chromium per le persone che lo usano come fai tu.<ph name="END_INDENT" />
-
-Aspetti da considerare:
-<ph name="BEGIN_INDENT" />  • Google riceve delle informazioni relative al tuo utilizzo di Chromium, ma che non sono riconducibili a te.
-
-  • Se Chromium si arresta in modo anomalo, i dettagli relativi a questo evento potrebbero includere alcune informazioni personali.
-
-  • Se attivi la sincronizzazione, le metriche potrebbero includere anche informazioni relative agli URL che visiti.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Al momento il tuo membro del gruppo Famiglia non può ricevere password. Chiedi di aggiornare Chromium e sincronizzare le sue password. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Questo account e gli eventuali dati non salvati verranno rimossi da Chromium.</translation>
 <translation id="88376265765385899">Consente di aprire i preferiti di Chromium.</translation>

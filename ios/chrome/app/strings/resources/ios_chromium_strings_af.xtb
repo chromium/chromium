@@ -257,9 +257,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="7934404985878918282">Sien Chromium-leeslys</translation>
 <translation id="7971753607796745700">Voeg leeslysitem by Chromium</translation>
 <translation id="7980860476903281594">Chromium deel jou ligging met werwe wat jy toelaat.</translation>
-<translation id="7990085102929105708">Betaalmetodes en adresse van Google Pay af sal nie geënkripteer word nie. Blaaigeskiedenis van Chromium af sal nie sinkroniseer nie.
-
-Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur Google geberg nie. <ph name="BEGIN_LINK" />Vee die Chromium-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet of hierdie instelling wil verander.</translation>
 <translation id="7994322153108931467">Skakel kennisgewings in jou iOS-instellings aan om nuttige Chromium-wenke te kry.</translation>
 <translation id="7995166854192397899">Voorstelle is op jou blaai-aktiwiteit op jou ander toestelle gebaseer. Meld op al jou toestelle by Chromium aan om voorstelle te kry.</translation>
 <translation id="800195749539500647">Benut Chromium ten beste</translation>
@@ -287,15 +284,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="8685813584220679697">Meld by hierdie werf en Chromium aan.</translation>
 <translation id="8730503818204408000">Maak die Chromium-instelling oop om Chromium as verstekblaaier te stel.</translation>
 <translation id="8742300022028858275">Maak My nuutste oortjie in Chromium oop</translation>
-<translation id="8747378496147986285">Wanneer dit aan is:
-<ph name="BEGIN_INDENT" />  • Help dit om Chromium beter te maak vir mense wat dit gebruik soos wat jy dit gebruik.<ph name="END_INDENT" />
-
-Dinge om in ag te neem:
-<ph name="BEGIN_INDENT" />  • Inligting oor jou gebruik van Chromium word na Google toe gestuur, maar dit word nie met jou verbind nie.
-
-  • As Chromium omval, kan besonderhede oor die omval sekere persoonlike inligting insluit.
-
-  • As jy sinkronisering aanskakel, kan maatstawwe inligting insluit oor URL'e wat jy besoek.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Jou gesinslede kan nie nou wagwoorde ontvang nie. Vra hulle om Chromium op te dateer en hul wagwoorde te sinkroniseer. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Hierdie rekening en enige ongstoorde data sal uit Chromium verwyder word.</translation>
 <translation id="88376265765385899">Maak die Chromium-boekmerke oop.</translation>

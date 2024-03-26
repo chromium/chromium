@@ -1087,7 +1087,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1805888043020974594">Utskriftsserver</translation>
 <translation id="1805967612549112634">Bekräfta pinkod</translation>
 <translation id="1806335016774576568">Byt till en annan öppen app</translation>
-<translation id="1807246157184219062">Ljus</translation>
+<translation id="1807246157184219062">Ljust</translation>
 <translation id="1809201888580326312">Du har valt att inte spara lösenord för dessa webbplatser och appar</translation>
 <translation id="1809483812148634490">Appar som du har laddat ned från Google Play raderas från Chromebook.
     <ph name="LINE_BREAKS1" />
@@ -1914,7 +1914,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2413009156320833859">Anpassa webbläsaren ännu mer med tillägg från <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Fortsätt att söka efter <ph name="MODULE_TITLE" /></translation>
-<translation id="2414886740292270097">Mörk</translation>
+<translation id="2414886740292270097">Mörkt</translation>
 <translation id="2415117815770324983">Du loggas ut från de flesta webbplatser. Du förblir inloggad på Google-kontot.</translation>
 <translation id="2416435988630956212">Funktionstangenter på tangentbordet</translation>
 <translation id="2418307627282545839">Låt det vara ljust och fräscht</translation>
@@ -3522,6 +3522,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3660234220361471169">Opålitliga</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 befintligt lösenord hittades}other{{NUM_PASSWORDS} befintliga lösenord hittades}}</translation>
 <translation id="3662207097851752847">Bekräfta ditt Google-konto på telefonen</translation>
+<translation id="3663417513679360795">Mer information om att aktivera standardinläsning i förväg</translation>
 <translation id="3664511988987167893">Tilläggsikon</translation>
 <translation id="3665100783276035932">De flesta webbplatser bör fungera som förväntat</translation>
 <translation id="3665301845536101715">Öppna i sidopanelen</translation>
@@ -3611,6 +3612,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3720543739123045680">Andra flikar delar en process med den här fliken, vilket kan leda till en oväntad upplevelse i Verktyg för programmerare.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Du och Google</translation>
+<translation id="3721178866505920080">Mer information om att aktivera utökad inläsning i förväg</translation>
 <translation id="3722108462506185496">Det gick inte att starta den virtuella maskinen. Försök igen.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />-instruktionen har tagits emot</translation>
 <translation id="3724897774652282549">Fyll i formuläret</translation>

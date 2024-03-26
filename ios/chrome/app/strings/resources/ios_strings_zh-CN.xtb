@@ -386,7 +386,6 @@
 <translation id="2931440415625410757">显示说明</translation>
 <translation id="2952246431280799028">轻触并按住相应地址。</translation>
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
-<translation id="2956733177489514605">登录您的 Google 账号即可同步您的密码等信息。</translation>
 <translation id="2958718410589002129">密码</translation>
 <translation id="2964349545761222050">阻止第三方 Cookie</translation>
 <translation id="2969979262385602596">登录失败，请稍后重试。</translation>
@@ -442,7 +441,6 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">如果您还共享了 Chrome 使用情况报告，这些报告会包含您访问过的网址</translation>
 <translation id="3245744387817103524">无法保存您的更改。</translation>
-<translation id="3252394070589632019"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" />，第 <ph name="INDEX" /> 项建议（共 <ph name="NUM_SUGGESTIONS" /> 项）</translation>
 <translation id="3264775633254836593">自动填充密码</translation>
 <translation id="3265534588625245297">管理您关注的网站</translation>
 <translation id="3268451620468152448">打开的标签页</translation>
@@ -454,7 +452,6 @@
 <translation id="3305294846493618482">更多</translation>
 <translation id="3311748811247479259">已关闭</translation>
 <translation id="3324193307694657476">地址第2行</translation>
-<translation id="3328801116991980348">网站信息</translation>
 <translation id="3344485292736684439">{count,plural, =1{已将书签保存到账号 {email} 中的“{title}”}other{已将书签保存到账号 {email} 中的“{title}”}}</translation>
 <translation id="3348387552617855658">此卡片可协助您跟踪包裹，并为您提供重要的递送动态。</translation>
 <translation id="3349676726073650389">您关注的网站和搜索内容会保存在您的 Google 账号中。您可随时在设置中管理您关注的内容。</translation>
@@ -562,8 +559,8 @@
 <translation id="3891414008432200754">价格</translation>
 <translation id="3892144330757387737">您的历史记录会显示在此处</translation>
 <translation id="3897092660631435901">菜单</translation>
-<translation id="3904829425754749514">贵组织已关闭同步功能。您仍可在此设备上查看自己的书签、历史记录、密码及其他设置。如果您做出更改，这些更改将不会同步到您的账号。</translation>
 <translation id="3909222758573607742">将密码和其他内容保存到账号</translation>
+<translation id="3915450441834151894">网站信息</translation>
 <translation id="3918585468378680136">正在获取包裹状态</translation>
 <translation id="3921585859122905677">地址栏位置</translation>
 <translation id="3922310737605261887">搜索复制的文字</translation>
@@ -593,7 +590,6 @@
 <translation id="4045648459118332842">在任意应用中点按一下即可获取您已保存的密码</translation>
 <translation id="4049507953662678203">请确保已连接到网络，然后重试。</translation>
 <translation id="4054572406751135230">随时掌握新闻、体育等方面的资讯。</translation>
-<translation id="4066639687323968621">只需使用您的 Google 账号登录，即可同步您的书签、历史记录等信息。</translation>
 <translation id="4092655288299341041">显示帮助</translation>
 <translation id="4105841739161771091">{count,plural, =1{删除这个地址}other{删除这些地址}}</translation>
 <translation id="4108998448622696017">检测危险事件并在此类事件发生时向您发出警告。</translation>
@@ -617,7 +613,6 @@
 <translation id="4187450337729239226">粘贴并搜索</translation>
 <translation id="4197456013861852807">{count,plural, =1{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {email}。}other{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
 <translation id="4216918546378735658">取消</translation>
-<translation id="4223967053752765281">贵单位关闭了登录功能。您仍可在此设备上查看自己的书签、历史记录、密码及其他设置。如果您做出更改，这些更改将不会同步到您的账号。</translation>
 <translation id="422474357428465195">您有多个密码问题，这可能会给您带来安全风险。</translation>
 <translation id="4232900911558558076">探索新菜单</translation>
 <translation id="4233831822770018312">修改权限</translation>
@@ -668,7 +663,6 @@
 <translation id="4469324811108161144">备注最多可以包含 <ph name="CHARACTER_LIMIT" /> 个字符。</translation>
 <translation id="4469418912670346607">继续设置</translation>
 <translation id="4474494258097106883">专为 iPhone 打造</translation>
-<translation id="448433063499977729">同步功能已关闭</translation>
 <translation id="4488754974567924717">如果您的密码已泄露，我们会通知您</translation>
 <translation id="4489536976005181779">{count,plural, =1{网页已添加到您的以下账户的阅读清单中：{email}}other{网页已添加到您的以下账户的阅读清单中：{email}}}</translation>
 <translation id="4493604894403585654">您目前登录的账号是 <ph name="USER_EMAIL" />。您可以随时在“设置”中停止同步。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
@@ -804,7 +798,6 @@
 <translation id="5118764316110575523">已关闭</translation>
 <translation id="5121618895923301719">您已在跟踪此商品。该网页已保存在<ph name="BEGIN_LINK" />移动设备书签<ph name="END_LINK" />中。</translation>
 <translation id="512533434554095351">您有多个密码问题。</translation>
-<translation id="5126465625664020024">登录并同步</translation>
 <translation id="5132942445612118989">将您的密码、历史记录等信息同步到所有设备上</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{有 {COUNT} 个安全系数低的密码}other{有 {COUNT} 个安全系数低的密码}}</translation>
 <translation id="5149188072385105201">添加密码…</translation>
@@ -924,7 +917,6 @@
 <translation id="5745916533876677730">转到上一个标签页</translation>
 <translation id="574762237186762643">活动</translation>
 <translation id="5748177854685749242">将于<ph name="DATE" />送达</translation>
-<translation id="5755162682436943950">已退出。打开对话框即可登录并开启同步功能。</translation>
 <translation id="5758631781033351321">您的阅读清单会显示在此处</translation>
 <translation id="5765456154762864099">菜单 → 设置 → 默认浏览器</translation>
 <translation id="5777888488419460501">保存在账号中</translation>
@@ -1035,7 +1027,6 @@
 <translation id="6293101329759844770">如需开启“安全浏览”功能，请打开 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />，然后点按“安全浏览”。</translation>
 <translation id="629730747756840877">账号</translation>
 <translation id="6321526113093607004">添加到书签</translation>
-<translation id="6324669097367352121">登录设置</translation>
 <translation id="6328337032497818759">自定义菜单</translation>
 <translation id="6331180460633101391">有 <ph name="COUNT" /> 个重复使用的密码</translation>
 <translation id="6337234675334993532">加密</translation>
@@ -1221,7 +1212,6 @@
 <translation id="719133302483559673">管理您的兴趣和偏好设置。</translation>
 <translation id="7192050974311852563">开始生成日志</translation>
 <translation id="7203585745079012652">说出答案</translation>
-<translation id="7207023858769244910">同步即可获取系统根据您的兴趣推荐的内容。</translation>
 <translation id="7210568419880432164">开启通知。</translation>
 <translation id="721597782417389033">卡的昵称无效</translation>
 <translation id="7221173315674413369">探索“新变化”中的新功能和提示</translation>
@@ -1618,7 +1608,6 @@
 <translation id="9162432979321511934">开启“自动填充密码”</translation>
 <translation id="9162941801309769488">已取消跟踪包裹</translation>
 <translation id="9165320910061267720">若要接收降价提醒通知，您需在 iOS 设置中开启通知功能。</translation>
-<translation id="9172603439892261948">同步您的书签、历史记录等信息。</translation>
 <translation id="9177438225260810839">在打开的标签页中搜索</translation>
 <translation id="9187853111759024059">要关闭超过 99 个闲置标签页吗？</translation>
 <translation id="9188680907066685419">退出受管理的账号</translation>

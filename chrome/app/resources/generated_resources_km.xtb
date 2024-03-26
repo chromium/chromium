@@ -3414,6 +3414,7 @@
 <translation id="3577487026101678864">ការធ្វើសមកាលកម្ម​ឯកសារ​ត្រូវបានបើក</translation>
 <translation id="3577745545227000795">ការប្រមូល​ទិន្នន័យ​ហាតវែរ <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">កំណត់រចនាសម្ព័ន្ធ​អាសយដ្ឋាន IP ដោយស្វ័យប្រវត្តិ</translation>
+<translation id="3581861561942370740">ស្វែងរកប្រវត្តិទាញ​យក</translation>
 <translation id="3582057310199111521">បានបញ្ចូលនៅលើគេហទំព័របញ្ឆោត និងបានរកឃើញនៅក្នុងការបែកធ្លាយ​ទិន្នន័យ</translation>
 <translation id="3582299299336701326">ប្ដូរ​ពន្លឺ​អេក្រង់​ភ្លឺឱ្យងងឹត និង​អេក្រង់​ងងឹត​ឱ្យ​ភ្លឺ។ ចុច Search + Ctrl + H ដើម្បីបើក និង​បិទ​ការបញ្ច្រាស​ពណ៌។</translation>
 <translation id="3584169441612580296">អាន និងប្តូររូបថត តន្ត្រី និងកំសាន្តផ្សេងទៀតពីកុំព្យូទ័ររបស់អ្នក</translation>
@@ -5332,6 +5333,7 @@
 <translation id="5056950756634735043">កំពុងភ្ជាប់ជាមួយទម្រង់ផ្ទុក</translation>
 <translation id="5057110919553308744">នៅពេលអ្នកចុច​កម្មវិធីបន្ថែម</translation>
 <translation id="5057127674016624293">ការស្កេន​កំពុង​ចំណាយពេល​យូរជាង​ការរំពឹងទុក</translation>
+<translation id="5057480703570202545">ប្រវត្តិទាញយក</translation>
 <translation id="5059241099014281248">រឹតបន្តឹង​ការចូលគណនី</translation>
 <translation id="5059429103770496207">របៀបបង្ហាញ</translation>
 <translation id="5059526285558225588">ជ្រើសរើសអ្វីដែលត្រូវចែករំលែក</translation>
@@ -5741,6 +5743,7 @@
 <translation id="5390677308841849479">ក្រហមចាស់ និងទឹកក្រូច</translation>
 <translation id="5392192690789334093">អនុញ្ញាតឱ្យផ្ញើការជូនដំណឹង</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{តំណ}other{តំណ #}}</translation>
+<translation id="5394529681046491727">WiFi ផ្ទាល់</translation>
 <translation id="5395498824851198390">ពុម្ព​អក្សរ​លំនាំ​ដើម</translation>
 <translation id="5397378439569041789">ចុះឈ្មោះឧបករណ៍បញ្ជរ ឬផ្ទាំងអេក្រង់ឌីជីថល</translation>
 <translation id="5397794290049113714">អ្នក</translation>

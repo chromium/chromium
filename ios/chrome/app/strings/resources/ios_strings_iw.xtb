@@ -386,7 +386,6 @@
 <translation id="2931440415625410757">הצגת ההוראות</translation>
 <translation id="2952246431280799028">לוחצים לחיצה ארוכה על כתובת.</translation>
 <translation id="2952278131021475699">‏חיפוש באמצעות המצלמה ב-Lens</translation>
-<translation id="2956733177489514605">‏כניסה באמצעות חשבון Google כדי לסנכרן את הסיסמאות שלך ועוד.</translation>
 <translation id="2958718410589002129">סיסמאות</translation>
 <translation id="2964349545761222050">‏חסימה של קובצי cookie מצדדים שלישיים</translation>
 <translation id="2969979262385602596">לא ניתן היה להיכנס לחשבון. יש לנסות שוב מאוחר יותר.</translation>
@@ -442,7 +441,6 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">‏אם בנוסף ישותפו דוחות שימוש ב-Chrome, הדוחות האלה יכללו את כתובות ה-URL שבהן ביקרת</translation>
 <translation id="3245744387817103524">לא ניתן היה לשמור את השינוי.</translation>
-<translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> מתוך <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">מילוי אוטומטי של סיסמאות</translation>
 <translation id="3265534588625245297">ניהול האתרים שבמעקב</translation>
 <translation id="3268451620468152448">כרטיסיות פתוחות</translation>
@@ -454,7 +452,6 @@
 <translation id="3305294846493618482">עוד</translation>
 <translation id="3311748811247479259">כבוי</translation>
 <translation id="3324193307694657476">כתובת, שורה 2</translation>
-<translation id="3328801116991980348">פרטי אתר</translation>
 <translation id="3344485292736684439">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘ בחשבון שלך, {email}}one{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}two{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}other{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}}</translation>
 <translation id="3348387552617855658">בכרטיס הזה אפשר לעקוב אחר חבילות ולקבל עדכונים חשובים על משלוחים.</translation>
 <translation id="3349676726073650389">‏האתרים והחיפושים שבמעקב נשמרים בחשבון Google שלך. בכל שלב אפשר לנהל את הפריטים שבמעקב בהגדרות.</translation>
@@ -562,8 +559,8 @@
 <translation id="3891414008432200754">מחיר</translation>
 <translation id="3892144330757387737">ההיסטוריה זמינה כאן</translation>
 <translation id="3897092660631435901">תפריט</translation>
-<translation id="3904829425754749514">הארגון שלך השבית את הסנכרון. יש לך עדיין אפשרות לראות את הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות במכשיר הזה. שינויים שיתבצעו על ידך לא יסונכרנו בחשבון שלך.</translation>
 <translation id="3909222758573607742">שמירת סיסמאות ופריטים אחרים בחשבון</translation>
+<translation id="3915450441834151894">פרטי אתר</translation>
 <translation id="3918585468378680136">סטטוס החבילה עוד לא התקבל</translation>
 <translation id="3921585859122905677">המיקום של סרגל הכתובות</translation>
 <translation id="3922310737605261887">חיפוש טקסט שהועתק</translation>
@@ -593,7 +590,6 @@
 <translation id="4045648459118332842">גישה לסיסמאות השמורות שלך בכל אפליקציה בהקשה אחת</translation>
 <translation id="4049507953662678203">צריך לוודא שיש חיבור לרשת ולנסות שוב.</translation>
 <translation id="4054572406751135230">מתעדכנים בחדשות, בספורט ועוד.</translation>
-<translation id="4066639687323968621">‏כניסה באמצעות חשבון Google לצורך סנכרון הסימניות, ההיסטוריה ועוד.</translation>
 <translation id="4092655288299341041">הצגת העזרה</translation>
 <translation id="4105841739161771091">{count,plural, =1{מחיקת הכתובת}one{מחיקת הכתובות}two{מחיקת הכתובות}other{מחיקת הכתובות}}</translation>
 <translation id="4108998448622696017">המערכת מזהה אירועים מסוכנים כשהם מתרחשים ומזהירה אותך על כך.</translation>
@@ -617,7 +613,6 @@
 <translation id="4187450337729239226">הדבקה וחיפוש</translation>
 <translation id="4197456013861852807">{count,plural, =1{‏פריט אחד ({count}) שמור רק במכשיר הזה. כדי להשתמש בו במכשירים אחרים, צריך לשמור אותו בחשבון Google עם הכתובת {email}.}one{‏{count} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת {email}.}two{‏{count} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת {email}.}other{‏{count} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת {email}.}}</translation>
 <translation id="4216918546378735658">ביטול</translation>
-<translation id="4223967053752765281">הכניסה הושבתה על ידי הארגון שלך. יש לך עדיין אפשרות לראות את הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות במכשיר הזה. שינויים שיתבצעו על ידך לא יסונכרנו בחשבון שלך.</translation>
 <translation id="422474357428465195">יש לך כמה בעיות בסיסמאות שעלולות לסכן את האבטחה שלך.</translation>
 <translation id="4232900911558558076">האפשרויות בתפריט החדש</translation>
 <translation id="4233831822770018312">עריכת ההרשאות</translation>
@@ -668,7 +663,6 @@
 <translation id="4469324811108161144">אפשר לשמור בהערות עד <ph name="CHARACTER_LIMIT" /> תווים.</translation>
 <translation id="4469418912670346607">להמשך ההגדרה</translation>
 <translation id="4474494258097106883">‏מותאם ל-iPhone שלך</translation>
-<translation id="448433063499977729">הסנכרון הושבת</translation>
 <translation id="4488754974567924717">אם הסיסמאות שלך ייחשפו לאחרים, נודיע לך</translation>
 <translation id="4489536976005181779">{count,plural, =1{הדף נוסף לרשימת הקריאה בחשבון שלך, {email}}one{הדפים נוספו לרשימת הקריאה בחשבון שלך, {email}}two{הדפים נוספו לרשימת הקריאה בחשבון שלך, {email}}other{הדפים נוספו לרשימת הקריאה בחשבון שלך, {email}}}</translation>
 <translation id="4493604894403585654">‏נכנסת לחשבון בתור <ph name="USER_EMAIL" /> אפשר לעדכן את ההגדרות, בכל רגע, כדי להפסיק את הסנכרון. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
@@ -804,7 +798,6 @@
 <translation id="5118764316110575523">כבויה</translation>
 <translation id="5121618895923301719">כבר מתבצע מעקב אחר המוצר הזה. הדף הזה שמור ב<ph name="BEGIN_LINK" />סימניות לנייד<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">יש לך כמה בעיות בסיסמאות.</translation>
-<translation id="5126465625664020024">היכנס וסנכרן</translation>
 <translation id="5132942445612118989">סנכרון הסיסמאות, ההיסטוריה ונתונים נוספים בכל המכשירים</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{סיסמה חלשה אחת ({COUNT})}one{{COUNT} סיסמאות חלשות}two{{COUNT} סיסמאות חלשות}other{{COUNT} סיסמאות חלשות}}</translation>
 <translation id="5149188072385105201">הוספת סיסמאות…</translation>
@@ -924,7 +917,6 @@
 <translation id="5745916533876677730">מעבר לכרטיסייה הקודמת</translation>
 <translation id="574762237186762643">אירועים</translation>
 <translation id="5748177854685749242">תאריך המסירה: <ph name="DATE" /></translation>
-<translation id="5755162682436943950">החשבון לא מחובר. תיפתח תיבת דו-שיח לכניסה לחשבון ולהפעלת הסנכרון.</translation>
 <translation id="5758631781033351321">רשימת הקריאה זמינה כאן</translation>
 <translation id="5765456154762864099">תפריט ← הגדרות ← דפדפן ברירת המחדל</translation>
 <translation id="5777888488419460501">שמירה בחשבון</translation>
@@ -1035,7 +1027,6 @@
 <translation id="6293101329759844770">‏כדי להפעיל גלישה בטוחה, יש להיכנס ל<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" /> ולהקיש על 'גלישה בטוחה'.</translation>
 <translation id="629730747756840877">חשבון</translation>
 <translation id="6321526113093607004">הוספה לסימניות</translation>
-<translation id="6324669097367352121">הגדרות כניסה</translation>
 <translation id="6328337032497818759">התאמה אישית של התפריט</translation>
 <translation id="6331180460633101391">יש <ph name="COUNT" /> סיסמאות בשימוש חוזר</translation>
 <translation id="6337234675334993532">הצפנה</translation>
@@ -1221,7 +1212,6 @@
 <translation id="719133302483559673">אפשר לנהל את תחומי העניין וההעדפות.</translation>
 <translation id="7192050974311852563">התחלת רישום ביומן</translation>
 <translation id="7203585745079012652">משוב לתשובות על-ידי דיבור</translation>
-<translation id="7207023858769244910">סנכרון לקבלת תוכן על סמך תחומי העניין שלך.</translation>
 <translation id="7210568419880432164">להפעלת ההתראות</translation>
 <translation id="721597782417389033">כינוי הכרטיס לא חוקי</translation>
 <translation id="7221173315674413369">בתכונה 'מה חדש' אפשר לגלות תכונות וטיפים חדשים</translation>
@@ -1618,7 +1608,6 @@
 <translation id="9162432979321511934">מפעילים את האפשרות מילוי אוטומטי של סיסמאות.</translation>
 <translation id="9162941801309769488">המעקב אחר החבילה בוטל</translation>
 <translation id="9165320910061267720">‏כדי לקבל התראות על הנחות, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
-<translation id="9172603439892261948">סנכרון הסימניות, ההיסטוריה ועוד.</translation>
 <translation id="9177438225260810839">חיפוש בכרטיסיות הפתוחות</translation>
 <translation id="9187853111759024059">לסגור מעל 99 כרטיסיות לא פעילות?</translation>
 <translation id="9188680907066685419">יציאה מהחשבון המנוהל</translation>

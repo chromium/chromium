@@ -386,7 +386,6 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="2931440415625410757">Koʻrsatmalarni koʻrsatish</translation>
 <translation id="2952246431280799028">Manzilni bosib turing.</translation>
 <translation id="2952278131021475699">Lens yordamida kamera bilan qidirish</translation>
-<translation id="2956733177489514605">Parollar va boshqalarni sinxronlash uchun Google hisobingizga kiring.</translation>
 <translation id="2958718410589002129">Parollar</translation>
 <translation id="2964349545761222050">Tashqi cookie fayllarni bloklash</translation>
 <translation id="2969979262385602596">Hisobga kirib bo‘lmadi. Keyinroq qayta urinib ko‘ring.</translation>
@@ -442,7 +441,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3244271242291266297">OO</translation>
 <translation id="3245429137663807393">Shuningdek, Chrome foydalanish statistikasini ham ulashsangiz, bu hisobotlarga siz tashrif qilgan URL manzillar ham kiradi</translation>
 <translation id="3245744387817103524">Oʻzgarish saqlanmadi.</translation>
-<translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Parollarni avtomatik kiritish</translation>
 <translation id="3265534588625245297">Kuzatadigan saytlaringizni boshqarish</translation>
 <translation id="3268451620468152448">Ochiq ichki oynalar</translation>
@@ -454,7 +452,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3305294846493618482">yana</translation>
 <translation id="3311748811247479259">Oʻchiq</translation>
 <translation id="3324193307694657476">Manzil, 2-qator</translation>
-<translation id="3328801116991980348">Sayt haqida ma’lumot</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bukmark {email} hisobingizdagi “{title}” jildiga saqlandi}other{Bukmark {email} hisobingizdagi “{title}” jildiga saqlandi}}</translation>
 <translation id="3348387552617855658">Bu karta sizga paketlarni kuzatib borish va muhim yetkazib berish yangiliklarini taqdim etishda yordam beradi.</translation>
 <translation id="3349676726073650389">Siz qidirgan va kuzatadigan saytlar Google hisobingizda saqlanadi. Kuzatuvdagi saytlarni endi istalgan vaqt sozlamalar orqali boshqarish mumkin.</translation>
@@ -562,8 +559,8 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3891414008432200754">Narxi</translation>
 <translation id="3892144330757387737">Brauzer tarixi shu yerda chiqadi</translation>
 <translation id="3897092660631435901">Menyu</translation>
-<translation id="3904829425754749514">Sinxronizatsiya tashkilotingiz tomonidan faolsizlantirilgan. Bu qurilmadagi bukmarklar, tarix, parollar va boshqa sozlamalarni koʻrishingiz mumkin. Oʻzgartirish kiritilsa, ular hisobingizga sinxronlanmaydi.</translation>
 <translation id="3909222758573607742">Hisobingizga parollar va boshqa maʼlumotlarni saqlang</translation>
+<translation id="3915450441834151894">Sayt haqida</translation>
 <translation id="3918585468378680136">Paket holati olinmoqda</translation>
 <translation id="3921585859122905677">Manzil qatori joylashuvi</translation>
 <translation id="3922310737605261887">Nusxalangan matnni qidirish</translation>
@@ -593,7 +590,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4045648459118332842">Istalgan qurilmada bitta harakat bilan saqlangan parollaringizdan foydalaning</translation>
 <translation id="4049507953662678203">Internet yoniqligini tekshiring va qayta urinib ko‘ring.</translation>
 <translation id="4054572406751135230">Yangiliklar, sport va boshqa xabarlarni olish.</translation>
-<translation id="4066639687323968621">Bukmarklar, tarix va boshqa maʼlumotlarni sinxronlash uchun Google hisobiga kiring.</translation>
 <translation id="4092655288299341041">Yordamni ochish</translation>
 <translation id="4105841739161771091">{count,plural, =1{Manzilni oʻchirish}other{Manzillarni oʻchirish}}</translation>
 <translation id="4108998448622696017">Xavfli tahdidlarni aniqlaydi va sizni ulardan himoya qiladi.</translation>
@@ -617,7 +613,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4187450337729239226">Joylash va qidirish</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} ta element faqat mazkur qurilmada saqlangan. Boshqa qurilmalarda foydalanish uchun uni Google hisobingizda ({email}) saqlang.}other{{count} ta element faqat bu qurilmaga saqlanadi. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda ({email}) saqlang.}}</translation>
 <translation id="4216918546378735658">Bekor qilish</translation>
-<translation id="4223967053752765281">Hisobga kirish tashkilotingiz tomonidan faolsizlantirilgan. Bu qurilmadagi bukmarklar, tarix, parollar va boshqa sozlamalarni koʻrishingiz mumkin. Oʻzgartirish kiritilsa, ular hisobingizga sinxronlanmaydi.</translation>
 <translation id="422474357428465195">Xavfli holatga qoʻyishi mumkin boʻlgan bir nechta parol bilan bogʻliq muammolar bor.</translation>
 <translation id="4232900911558558076">Yangi menyu bilan tanishing</translation>
 <translation id="4233831822770018312">Ruxsatlarni tahrirlash</translation>
@@ -668,7 +663,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4469324811108161144">Eslatmalar <ph name="CHARACTER_LIMIT" /> ta belgidan oshmasin.</translation>
 <translation id="4469418912670346607">Sozlashda davom etish</translation>
 <translation id="4474494258097106883">iPhone uchun ishlab chiqilgan</translation>
-<translation id="448433063499977729">Sinxronizatsiya faolsizlantirildi</translation>
 <translation id="4488754974567924717">Parollar oshkor qilinsa, sizga xabar qilamiz</translation>
 <translation id="4489536976005181779">{count,plural, =1{Hisobingizdagi ({email}) mutolaa roʻyxatiga sahifa kiritildi.}other{Hisobingizdagi ({email}) mutolaa roʻyxatiga sahifalar kiritildi.}}</translation>
 <translation id="4493604894403585654"><ph name="USER_EMAIL" /> nomidan kirgansiz. Sinxronlashni istalgan vaqt sozlamalar orqali toʻxtatish mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
@@ -804,7 +798,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5118764316110575523">Oʻchiq</translation>
 <translation id="5121618895923301719">Siz bu mahsulotni kuzatyapsiz. Bu sahifa <ph name="BEGIN_LINK" />Mobil bukmarklarga<ph name="END_LINK" /> saqlandi.</translation>
 <translation id="512533434554095351">Bir nechta parol bilan bogʻliq muammo bor.</translation>
-<translation id="5126465625664020024">Kiring va sinxronlang</translation>
 <translation id="5132942445612118989">Parollar, tarix va boshqa sozlamalaringizni barcha qurilmalaringizda sinxronlang</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ta kuchsiz parol aniqlandi}other{{COUNT} ta kuchsiz parol aniqlandi}}</translation>
 <translation id="5149188072385105201">Parol kiritish...</translation>
@@ -924,7 +917,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5745916533876677730">Avvalgi varaqni ochish</translation>
 <translation id="574762237186762643">Tadbirlar</translation>
 <translation id="5748177854685749242">Yetib keladi: <ph name="DATE" /></translation>
-<translation id="5755162682436943950">Hisobdan chiqqansiz. Kirish va sinxronlashni yoqish uchun oynani ochadi.</translation>
 <translation id="5758631781033351321">Brauzer mutolaa roʻyxati shu yerda chiqadi</translation>
 <translation id="5765456154762864099">Menyu → Sozlamalar → Standart brauzer</translation>
 <translation id="5777888488419460501">Hisobda saqlash</translation>
@@ -1035,7 +1027,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6293101329759844770">Saytlarni xavfsiz kezish rejimini yoqish uchun <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> bandini oching va Saytlarni xavfsiz kezish ustiga bosing.</translation>
 <translation id="629730747756840877">Hisob</translation>
 <translation id="6321526113093607004">Bukmarklash</translation>
-<translation id="6324669097367352121">Kirish sozlamalari</translation>
 <translation id="6328337032497818759">Menyuni sozlash</translation>
 <translation id="6331180460633101391"><ph name="COUNT" /> ta parol qayta ishlatilgan</translation>
 <translation id="6337234675334993532">Shifrlash</translation>
@@ -1221,7 +1212,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="719133302483559673">Qiziqish va sozlamalaringizni boshqaring</translation>
 <translation id="7192050974311852563">Yozib olishni boshlash</translation>
 <translation id="7203585745079012652">Qidiruv natijalari o‘qilsin</translation>
-<translation id="7207023858769244910">Qiziqishlar asosida yangi kontent chiqishini sinxronlash.</translation>
 <translation id="7210568419880432164">Bildirishnomalar yoqilmoqda…</translation>
 <translation id="721597782417389033">Karta nomi yaroqsiz</translation>
 <translation id="7221173315674413369">Nima yangiliklar ruknida yangi funksiyalar va maslahatlar bilan tanishing</translation>
@@ -1618,7 +1608,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="9162432979321511934">Parollar avtomatik kiritilishini yoqish</translation>
 <translation id="9162941801309769488">Paket kuzatilmadi</translation>
 <translation id="9165320910061267720">Narx tushishiga oid bildirishnomalar olish uchun iOS sozlamalari orqali bildirishnomalarni yoqishingiz kerak.</translation>
-<translation id="9172603439892261948">Bukmarklar, tarix va boshqa maʼlumotlarni sinxronlang</translation>
 <translation id="9177438225260810839">Ochiq varaqlar ichidan qidirish</translation>
 <translation id="9187853111759024059">99+ nofaol varaqlar yopilsinmi?</translation>
 <translation id="9188680907066685419">Boshqariladigan hisobdan chiqish</translation>

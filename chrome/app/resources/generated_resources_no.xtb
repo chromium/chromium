@@ -3409,6 +3409,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3577487026101678864">Filsynkronisering er på</translation>
 <translation id="3577745545227000795">Innsamling av <ph name="DEVICE_OS" />-maskinvaredata</translation>
 <translation id="3581605050355435601">Konfigurer IP-adressen automatisk</translation>
+<translation id="3581861561942370740">Søk i nedlastingsloggen</translation>
 <translation id="3582057310199111521">Skrevet inn på villedende nettsted og funnet i databrudd</translation>
 <translation id="3582299299336701326">Gjør lyse skjermer mørke og mørke skjermer lyse. Trykk på søketasten + Ctrl + H for å slå fargeinvertering på og av.</translation>
 <translation id="3584169441612580296">lese og endre bilder, musikk og andre medier fra datamaskinen din</translation>
@@ -5324,6 +5325,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5056950756634735043">Kobler til beholderen</translation>
 <translation id="5057110919553308744">Når du klikker på utvidelsen</translation>
 <translation id="5057127674016624293">Skanningen tar lengre tid enn forventet</translation>
+<translation id="5057480703570202545">Nedlastingslogg</translation>
 <translation id="5059241099014281248">Begrens pålogging</translation>
 <translation id="5059429103770496207">Visningsstil</translation>
 <translation id="5059526285558225588">Velg hva du vil dele</translation>
@@ -5733,6 +5735,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5390677308841849479">Mørk rød og oransje</translation>
 <translation id="5392192690789334093">Nettsteder som har lov til å sende varsler</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# linker}}</translation>
+<translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395498824851198390">Standard skrifttype</translation>
 <translation id="5397378439569041789">Registrer kiosk- eller skiltenhet</translation>
 <translation id="5397794290049113714">Deg</translation>

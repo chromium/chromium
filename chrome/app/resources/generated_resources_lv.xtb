@@ -3508,6 +3508,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3660234220361471169">Neuzticami</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Tika atrasta viena esoša parole}zero{Tika atrastas {NUM_PASSWORDS} esošas paroles}one{Tika atrasta {NUM_PASSWORDS} esoša parole}other{Tika atrastas {NUM_PASSWORDS} esošas paroles}}</translation>
 <translation id="3662207097851752847">Google konta apstiprināšana tālrunī</translation>
+<translation id="3663417513679360795">Plašāka informācija par standarta iepriekšējas ielādes ieslēgšanu</translation>
 <translation id="3664511988987167893">Paplašinājuma ikona</translation>
 <translation id="3665100783276035932">Vairumam vietņu ir jādarbojas paredzētajā veidā</translation>
 <translation id="3665301845536101715">Atvērt sānu panelī</translation>
@@ -3597,6 +3598,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3720543739123045680">Citās cilnēs tiek koplietots process ar šo cilni, tāpēc izstrādātāja rīku darbība var neatbilst paredzētajai.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Jūs un Google</translation>
+<translation id="3721178866505920080">Plašāka informācija par paplašinātas iepriekšējas ielādes ieslēgšanu</translation>
 <translation id="3722108462506185496">Startējot virtuālās mašīnas pakalpojumu, radās kļūda. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="3722624153992426516">Saņemts norādījums <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3724897774652282549">Aizpildiet veidlapu</translation>

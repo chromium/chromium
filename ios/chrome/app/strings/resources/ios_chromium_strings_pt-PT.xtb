@@ -257,9 +257,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="7934404985878918282">Veja a Lista de leitura do Chromium</translation>
 <translation id="7971753607796745700">Adicione o item da Lista de leitura ao Chromium</translation>
 <translation id="7980860476903281594">O Chromium partilha a sua localização com os sites que permite.</translation>
-<translation id="7990085102929105708">Os métodos de pagamento e as moradas do Google Pay não são encriptados. O histórico de navegação do Chromium não é sincronizado.
-
-Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Para receber sugestões úteis do Chromium, ative as notificações nas definições do iOS.</translation>
 <translation id="7995166854192397899">As sugestões são baseadas na atividade de navegação nos seus outros dispositivos. Para ver sugestões, inicie sessão no Chromium em todos os seus dispositivos.</translation>
 <translation id="800195749539500647">Tire o máximo partido do Chromium</translation>
@@ -287,15 +284,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chromiu
 <translation id="8685813584220679697">Inicie sessão neste site e no Chromium.</translation>
 <translation id="8730503818204408000">Abre a definição do Chromium para definir o Chromium como o navegador predefinido.</translation>
 <translation id="8742300022028858275">Abrir separador mais recente no Chromium</translation>
-<translation id="8747378496147986285">Quando a opção está ativada:
-<ph name="BEGIN_INDENT" />  • Ajude a melhorar o Chromium para as pessoas que o usam de forma semelhante à sua.<ph name="END_INDENT" />
-
-Aspetos a considerar:
-<ph name="BEGIN_INDENT" />  • São enviadas à Google informações sobre a sua utilização do Chromium, mas estas não são associadas a si.
-
-  • Se o Chromium falhar, os detalhes sobre a falha podem incluir algumas informações pessoais.
-
-  • Se ativar a sincronização, as métricas também podem incluir informações sobre os URLs que visita.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">De momento, o membro da sua família não pode receber palavras-passe. Peça-lhe para atualizar o Chromium e sincronizar as respetivas palavras-passe. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Esta conta e quaisquer dados não guardados serão removidos do Chromium.</translation>
 <translation id="88376265765385899">Abre os marcadores do Chromium.</translation>

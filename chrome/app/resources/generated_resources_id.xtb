@@ -1951,6 +1951,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2435248616906486374">Jaringan terputus</translation>
 <translation id="2435457462613246316">Tampilkan sandi</translation>
 <translation id="2436385001956947090">Salin &amp;link</translation>
+<translation id="2436746748253887661">Tindakan ini memungkinkan layanan sistem yang memiliki izin untuk menggunakan lokasi Anda. Lokasi dapat menggunakan sumber seperti Wi-Fi, jaringan seluler, dan sensor untuk membantu memperkirakan lokasi perangkat Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Tidak terhubung ke printer</translation>
 <translation id="2439152382014731627">Reset sandi <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Memuat <ph name="WINDOW_TITLE" /></translation>
@@ -3679,6 +3680,8 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3765055238058255342">jenis kartu ini</translation>
 <translation id="3765246971671567135">Tidak dapat membaca kebijakan mode demo offline.</translation>
 <translation id="3765696567014520261">Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan. Fitur tertentu di beberapa situs mungkin tidak berfungsi</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Layanan lokasi Google menggunakan sumber seperti Wi-Fi, jaringan seluler, dan sensor untuk membantu memperkirakan lokasi perangkat Anda.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Anda dapat menonaktifkan lokasi Android dan ChromeOS di perangkat Anda kapan saja dengan membuka Setelan &gt; Privasi dan keamanan &gt; Kontrol privasi &gt; Akses lokasi. Anda juga dapat menonaktifkan penggunaan Wi-Fi, jaringan seluler, dan sensor untuk lokasi Android dengan menonaktifkan "Tingkatkan akurasi lokasi" di bagian "Setelan lokasi lanjutan" pada menu yang sama.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Pelajari Phone Hub lebih lanjut</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Untuk saat ini, Anda hanya dapat berbagi sandi dengan anggota keluarga. <ph name="BEGIN_LINK" />Undang anggota keluarga<ph name="END_LINK" /> untuk bergabung dengan grup Anda, dan optimalkan produk serta langganan Anda di Google.</translation>
@@ -4345,6 +4348,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4278779213160967034">Proses ini mungkin memerlukan waktu beberapa menit. Mendownload file.</translation>
 <translation id="4279129444466079448">Anda dapat menginstal hingga <ph name="PROFILE_LIMIT" /> profil eSIM di perangkat ini. Untuk menambahkan profil lain, hapus profil yang sudah ada terlebih dahulu.</translation>
 <translation id="4280325816108262082">Perangkat akan otomatis terputus koneksinya saat dinonaktifkan atau sedang tidak digunakan</translation>
+<translation id="4281637354026226955">Izinkan aplikasi dan layanan Android dan ChromeOS yang memiliki izin akses lokasi untuk menggunakan lokasi perangkat Anda. Google dapat mengumpulkan data lokasi secara berkala dan menggunakan data ini secara anonim untuk meningkatkan akurasi lokasi dan layanan berdasarkan lokasi.</translation>
 <translation id="4281844954008187215">Persyaratan Layanan</translation>
 <translation id="4281849573951338030">Sesuaikan tombol pena</translation>
 <translation id="4282196459431406533">Smart Lock diaktifkan</translation>
@@ -6225,6 +6229,8 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (Default sistem)</translation>
 <translation id="5776450228446082914">Daftar situs yang dapat dibuka di browser mana pun.</translation>
 <translation id="5776571780337000608">Anda dapat membuka dan mengedit file yang didukung dengan aplikasi ini dari file browser Anda atau aplikasi lainnya. Untuk mengontrol file mana yang akan dibuka dengan aplikasi ini secara default, <ph name="BEGIN_LINK" />pelajari cara menyetel aplikasi default di perangkat Anda<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">Layanan lokasi Google meningkatkan akurasi lokasi dengan menggunakan Wi-Fi, jaringan seluler, dan sensor untuk membantu memperkirakan lokasi Anda. Google dapat mengumpulkan data lokasi secara berkala dan menggunakan data ini secara anonim untuk meningkatkan akurasi lokasi dan layanan berdasarkan lokasi.
+    Jika layanan ini dinonaktifkan, perangkat hanya akan menggunakan alamat IP untuk menentukan lokasi. Hal ini dapat memengaruhi akurasi lokasi yang digunakan oleh aplikasi seperti Maps.</translation>
 <translation id="5778491106820461378">Dari <ph name="LINK_BEGIN" />Setelan<ph name="LINK_END" />, Anda dapat mengelola Akun Google yang digunakan untuk login. Izin yang Anda berikan ke situs dan aplikasi dapat berlaku untuk semua akun. Jika tidak ingin situs atau aplikasi mengakses info akun, Anda dapat login ke <ph name="DEVICE_TYPE" /> sebagai tamu.</translation>
 <translation id="5780011244986845107">Folder yang Anda pilih berisi file sensitif. Yakin ingin memberi "<ph name="APP_NAME" />" akses baca permanen ke folder ini?</translation>
 <translation id="5780973441651030252">Prioritas proses</translation>
@@ -6310,6 +6316,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5836999627049108525">Bahasa Sumber</translation>
 <translation id="583756221537636748">Casing</translation>
 <translation id="5840680448799937675">File akan selalu dibagikan secara offline</translation>
+<translation id="5841167715783969407">Zona waktu otomatis berdasarkan jaringan Wi-Fi atau seluler</translation>
 <translation id="5841270259333717135">Konfigurasi Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth aktif</translation>
 <translation id="5844284118433003733">Jika Anda login, data ini akan ditautkan ke Akun Google Anda untuk melindungi Anda di berbagai layanan Google, misalnya, meningkatkan perlindungan di Gmail setelah insiden keamanan.</translation>
@@ -6759,6 +6766,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6180510783007738939">Alat Garis</translation>
 <translation id="6180550893222597997">Kunci sandi mana yang ingin Anda gunakan untuk <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Download diblokir</translation>
+<translation id="6183369864942961155">Tema terang/gelap otomatis</translation>
 <translation id="6184099524311454384">Telusuri Tab</translation>
 <translation id="6184868291074982484">Chrome otomatis membatasi cookie pihak ketiga</translation>
 <translation id="6185132558746749656">Lokasi Perangkat</translation>
@@ -7161,6 +7169,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6513247462497316522">Google Chrome akan menggunakan data seluler jika Anda tidak terhubung ke jaringan lain.</translation>
 <translation id="6514010653036109809">Perangkat yang tersedia:</translation>
 <translation id="6517227424170598783">Hapus pintasan "<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />"?</translation>
+<translation id="6517382055541687102">Perangkat yang dipilih diubah menjadi <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">File Anda di Drive Saya otomatis disinkronkan ke Chromebook sehingga Anda dapat mengaksesnya tanpa koneksi internet. Tindakan ini akan menggunakan sekitar <ph name="REQUIRED_SPACE" />. Saat ini Anda memiliki <ph name="FREE_SPACE_AVAILABLE" /> yang tersedia.</translation>
 <translation id="6517709704288360414">Perangkat Anda mungkin tidak lagi berfungsi dengan baik, dan Anda mungkin mengalami masalah keamanan dan performa. Menonaktifkan update juga dapat memengaruhi hak Anda untuk mengajukan klaim hukum jika Anda mengalami masalah apa pun.</translation>
 <translation id="6518014396551869914">Sali&amp;n gambar</translation>
@@ -7417,6 +7426,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6713441551032149301">Tahan tombol peluncur untuk beralih antara tombol fungsi dan tombol baris atas sistem</translation>
 <translation id="6713668088933662563">Jangan pernah tawarkan penerjemahan bahasa ini</translation>
 <translation id="6715803357256707211">Terjadi error saat menginstal aplikasi Linux. Klik notifikasi untuk mengetahui detailnya.</translation>
+<translation id="6716049856796700977">Tidak ada yang dapat menggunakan lokasi Anda. Namun, lokasi Anda mungkin masih dapat dilihat oleh aplikasi dan situs melalui alamat IP Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Koneksi jaringan terputus. Periksa koneksi jaringan Anda atau coba jaringan Wi-Fi lain.</translation>
 <translation id="6718849325281682232">Warna tema Chrome telah diperbarui agar berfungsi lebih baik bagi semua pengguna, baik saat Anda berada dalam mode gelap maupun terang</translation>
 <translation id="671928215901716392">Kunci layar</translation>
@@ -8400,6 +8410,8 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7478658909253570368">Jangan izinkan situs terhubung ke port serial</translation>
 <translation id="7479221278376295180">Ringkasan Penggunaan Penyimpanan</translation>
 <translation id="747981547666531654">Terhubung ke perangkat Bluetooth bernama <ph name="FIRST_DEVICE" /> dan <ph name="SECOND_DEVICE" /></translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Layanan lokasi Google menggunakan sumber seperti Wi-Fi, jaringan seluler, dan sensor untuk membantu memperkirakan lokasi perangkat ini.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Anda dapat menonaktifkan lokasi Android dan ChromeOS di perangkat ini kapan saja dengan membuka Setelan &gt; Privasi dan keamanan &gt; Kontrol privasi &gt; Akses lokasi. Anda juga dapat menonaktifkan penggunaan Wi-Fi, jaringan seluler, dan sensor untuk lokasi Android dengan menonaktifkan "Tingkatkan akurasi lokasi" di bagian "Setelan lokasi lanjutan" pada menu yang sama.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Maju</translation>
 <translation id="7481358317100446445">Siap</translation>
 <translation id="748138892655239008">Kendala Dasar Sertifikat</translation>
@@ -8491,6 +8503,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7552846755917812628">Coba tips berikut:</translation>
 <translation id="7553012839257224005">Memeriksa container Linux</translation>
 <translation id="7553242001898162573">Masukkan sandi Anda</translation>
+<translation id="7553487223484420820">Aplikasi, situs, dan layanan sistem yang memiliki izin akses lokasi dapat menggunakan lokasi Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">Administrator Anda tidak mengizinkan bahasa ini</translation>
 <translation id="7554791636758816595">Tab Baru</translation>
 <translation id="7556033326131260574">Smart Lock tidak dapat memverifikasi akun. Ketikkan sandi untuk masuk.</translation>
@@ -9408,6 +9421,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8224427620313426549">Akun <ph name="DOMAIN_LINK" /> Anda tidak akan dihapus</translation>
 <translation id="8225046344534779393">Periksa koneksi internet</translation>
 <translation id="8225265270453771718">Bagikan jendela aplikasi</translation>
+<translation id="8225516926291976401">Hanya layanan sistem yang dapat menggunakan lokasi Anda. Namun, lokasi Anda mungkin masih dapat dilihat oleh aplikasi dan situs melalui alamat IP Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Terlarang</translation>
 <translation id="8226619461731305576">Antrean</translation>
 <translation id="8227119283605456246">Lampirkan file</translation>
@@ -9844,6 +9858,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8552102814346875916">Simpan ke daftar "selalu aktifkan situs ini"</translation>
 <translation id="8553342806078037065">Kelola orang lain</translation>
 <translation id="8554899698005018844">Tidak ada bahasa</translation>
+<translation id="8555444629041783356">Jadwal matahari terbenam otomatis</translation>
 <translation id="855604308879080518">Mengizinkan aplikasi Android mengakses perangkat USB di Chromebook ini. Anda akan dimintai izin setiap kali mencolokkan perangkat USB. Setiap aplikasi Android akan meminta izin tambahan.</translation>
 <translation id="8557022314818157177">Terus sentuh kunci keamanan Anda hingga sidik jari terekam</translation>
 <translation id="8557180006508471423">Aktifkan "Google Chrome" di Layanan Lokasi pada Mac</translation>

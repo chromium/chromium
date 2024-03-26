@@ -3400,6 +3400,7 @@ Quer pará-lo?</translation>
 <translation id="3577487026101678864">Sincronização de ficheiros ativada</translation>
 <translation id="3577745545227000795">Recolha de dados do hardware do dispositivo <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Configurar automaticamente o endereço IP</translation>
+<translation id="3581861561942370740">Pesquise o histórico de transferências</translation>
 <translation id="3582057310199111521">Acedeu a um site fraudulento e encontrou uma violação de dados.</translation>
 <translation id="3582299299336701326">Muda os ecrãs claros para escuros e os ecrãs escuros para claros. Prima Pesquisa + Ctrl + H para ativar e desativar a inversão de cores.</translation>
 <translation id="3584169441612580296">Ler e alterar fotos, música e outros elementos multimédia a partir do computador</translation>
@@ -5317,6 +5318,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5056950756634735043">A ligar ao contentor</translation>
 <translation id="5057110919553308744">Quando clica na extensão</translation>
 <translation id="5057127674016624293">A análise está a demorar mais do que o esperado</translation>
+<translation id="5057480703570202545">Histórico de transferências</translation>
 <translation id="5059241099014281248">Restringir início de sessão</translation>
 <translation id="5059429103770496207">Estilo de visualização</translation>
 <translation id="5059526285558225588">Decida o que quer partilhar</translation>
@@ -5726,6 +5728,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5390677308841849479">Vermelho escuro e laranja</translation>
 <translation id="5392192690789334093">Com autorização para enviar notificações</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# links}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Tipo de letra predefinido</translation>
 <translation id="5397378439569041789">Inscrever dispositivo no modo quiosque ou sinalização</translation>
 <translation id="5397794290049113714">Utilizador</translation>

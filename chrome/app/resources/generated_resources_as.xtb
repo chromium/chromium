@@ -3519,6 +3519,7 @@
 <translation id="3660234220361471169">অবিশ্বাসী হিচাপে চিহ্নিত</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{১ টা পূৰ্বৰে পৰা থকা পাছৱৰ্ড পোৱা গৈছে}one{{NUM_PASSWORDS} টা পূৰ্বৰে পৰা থকা পাছৱৰ্ড পোৱা গৈছে}other{{NUM_PASSWORDS} টা পূৰ্বৰে পৰা থকা পাছৱৰ্ড পোৱা গৈছে}}</translation>
 <translation id="3662207097851752847">আপোনাৰ ফ’নত আপোনাৰ Google একাউণ্টটো নিশ্চিত কৰক</translation>
+<translation id="3663417513679360795">মানক আগতীয়াকৈ ল’ড কৰা বিকল্পটোৰ বিষয়ে অধিক তথ্য</translation>
 <translation id="3664511988987167893">এক্সটেনশ্বন আইকন</translation>
 <translation id="3665100783276035932">অধিকাংশ ছাইটে আশা কৰা ধৰণে কাম কৰিব লাগে</translation>
 <translation id="3665301845536101715">ছাইডৰ পেনেলত খোলক</translation>
@@ -3608,6 +3609,7 @@
 <translation id="3720543739123045680">আন টেবসমূহে এই টেবটোৰ সৈতে এটা প্ৰক্ৰিয়া শ্বেয়াৰ কৰে, যাৰ ফলত এটা অপ্ৰত্যাশিত বিকাশকৰ্তাৰ সঁজুলিৰ অভিজ্ঞতা হ’ব পাৰে।</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">আপুনি আৰু Google</translation>
+<translation id="3721178866505920080">সময়সীমা বৃদ্ধি কৰা আগতীয়াকৈ ল’ড কৰা বিকল্পটোৰ বিষয়ে অধিক তথ্য</translation>
 <translation id="3722108462506185496">ভাৰ্চুৱেল মেচিন সেৱা আৰম্ভ কৰাত আসোঁৱাহৰ সৃষ্টি হৈছে৷ অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> নিৰ্দেশনা লাভ কৰা হৈছে</translation>
 <translation id="3724897774652282549">ফ’ৰ্মখন পূৰাওক</translation>

@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome itagundua namba za ufuatiliaji kwenye tovuti unazotembelea na kukuonyesha taarifa za kifurushi kwenye ukurasa wa Kichupo Kipya. Namba ya ufuatiliaji wa kifurushi na jina la tovuti zitatumwa kwenye Google ili kutoa kipengele hiki na kuboresha vipengele vya ununuzi vya Google kwa kila mtu. Unaweza kusasisha mchakato huu wakati wowote katika <ph name="BEGIN_LINK" />Mipangilio ya Ufuatiliaji wa Kifurushi<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Tumia Chrome Kwa Chaguomsingi</translation>
 <translation id="1105362920864247682">Futa Data ya Kuvinjari kwenye Chrome.</translation>
-<translation id="1113057722807951993">Usimbaji fiche wa kauli ya siri haujumuishi njia za kulipa na anwani kutoka Google Pay.
-
-Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Nenosiri lako litahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Fungua Menyu ya Chrome</translation>
 <translation id="1180362651362502943">Endelea kutumia data ya Chrome katika Akaunti yako ya Google.</translation>
@@ -87,9 +84,6 @@ Mambo ya kuzingatia:
 <translation id="2876628302275096482">Pata maelezo zaidi kuhusu <ph name="BEGIN_LINK" />jinsi Chrome inavyoweka data yako kuwa ya faragha<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Fungua Mipangilio ya Chrome</translation>
 <translation id="2957447865124070833">Chagua <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2988274366244053197">Njia za kulipa na anwani kutoka Google Pay hazitasimbwa kwa njia fiche. Historia ya kuvinjari kutoka Chrome haitasawazishwa.
-
-Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa kwa njia fiche. Kauli ya siri haitumwi kwa au kuhifadhiwa na Google. Ukisahau kauli yako ya siri au ukitaka kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Kwa sababu unaondoka kwenye akaunti inayodhibitiwa na <ph name="SIGNOUT_MANAGED_DOMAIN" />, data yako ya Chrome itafutwa kwenye kifaa hiki, lakini itasalia katika Akaunti yako ya Google.</translation>
 <translation id="309672519329227863">Fikia manenosiri yako ya Chrome na zaidi kwenye programu zingine.</translation>
 <translation id="3146109040683991651">Ifanye Chrome iwe Kivinjari Chaguomsingi</translation>
@@ -305,15 +299,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8891935667620843985">Unaweza kufungua viungo kiotomatiki katika Chrome kwa kuiweka iwe Programu yako Chaguomsingi ya Kuvinjari.</translation>
 <translation id="8897749957032330183">Manenosiri huhifadhiwa kwenye Kidhibiti cha Manenosiri cha Google katika kifaa hiki.</translation>
 <translation id="8949681853939555434">Weka Chrome iwe Kivinjari chako Chaguomsingi</translation>
-<translation id="8969290730818637510">Inapokuwa imewashwa:
-<ph name="BEGIN_INDENT" />  • Saidia kuboresha Chrome kwa ajili ya watumiaji wengine wanaoitumia kama wewe unavyoitumia.<ph name="END_INDENT" />
-
-Mambo ya kuzingatia:
-<ph name="BEGIN_INDENT" />  • Taarifa kuhusu matumizi yako ya Chrome zitatumwa kwenda Google, lakini bila kukupa masharti yoyote.
-
-  • Ikiwa Chrome itaacha kufanya kazi, maelezo kuhusu kutofanya kazi yanaweza kuhusisha baadhi ya taarifa binafsi.
-
-  • Iwapo utawasha usawazishaji, vipimo vinaweza pia kujumuisha taarifa kuhusu URL unazozitembelea.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Fungua katika hali fiche ya Chrome</translation>
 <translation id="9071207983537882274">Hufungua Mipangilio kwenye Chrome.</translation>
 <translation id="9112744793181547300">Ungependa Kuweka Chrome iwe Kivinjari chaguomsingi?</translation>

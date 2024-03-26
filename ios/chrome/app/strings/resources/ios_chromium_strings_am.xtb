@@ -256,9 +256,6 @@
 <translation id="7934404985878918282">የChromium የንባብ ዝርዝርን ይመልከቱ</translation>
 <translation id="7971753607796745700">የንባብ ዝርዝር ንጥልን ወደ Chromium ያክሉ</translation>
 <translation id="7980860476903281594">Chromium እርስዎ ለሚፈቅዷቸው ጣቢያዎች አካባቢዎን ያጋራል።</translation>
-<translation id="7990085102929105708">የGoogle Pay የመክፈያ ዘዴዎች እና አድራሻዎች አይመሰጠሩም። የChromium የአሰሳ ታሪክ አይሰምርም።
-
-የእርስዎን የተመሰጠረ ውሂብ ማንበብ የሚችለው የይለፍ ሐረግዎ ያለው ሰው ብቻ ነው። የይለፍ ሐረጉ ወደ Google አይላክም ወይም በGoogle አይከማችም። የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ፣ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChromium ውሂብን ያጽዱ<ph name="END_LINK" />።</translation>
 <translation id="7994322153108931467">አጋዥ የሆኑ የChromium ምክሮችን ለማግኘት፣ በiOS ቅንብሮችዎ ውስጥ ማሳወቂያዎችን ያብሩ።</translation>
 <translation id="7995166854192397899">ጥቆማዎች በሌሎች መሣሪያዎችዎ ላይ ባለዎት የአሰሳ እንቅስቃሴ ላይ የተመሠረቱ ናቸው። ጥቆማዎችን ለማግኘት በሁሉም መሣሪያዎችዎ ላይ ወደ Chromium በመለያ ይግቡ።</translation>
 <translation id="800195749539500647">ከChromium ምርጡን ያግኙ።</translation>
@@ -286,13 +283,6 @@
 <translation id="8685813584220679697">ወደዚህ ጣቢያ እና Chromium ይግቡ።</translation>
 <translation id="8730503818204408000">Chromiumን እንደ ነባሪ አሳሸ ለማቀናበር የChromium ቅንብርን ይከፍታል።</translation>
 <translation id="8742300022028858275">በChromium ውስጥ የእኔ የቅርብ ጊዜ ትርን ክፈት</translation>
-<translation id="8747378496147986285">ሲበራ፦
-<ph name="BEGIN_INDENT" />  • Chromium እርስዎ በሚጠቀሙበት መንገድ ለሚጠቀሙ ሰዎች የተሻለ እንዲሆን ያግዙ።<ph name="END_INDENT" />
-
-ከግምት ውስጥ መግባት የሚገቡ ነገሮች፦
-<ph name="BEGIN_INDENT" />  • ስለ Chromium አጠቃቀምዎ መረጃ ወደ Google ተልኳል፣ ነገር ግን ከእርስዎ ጋር አልተያያዘም።
-  • Chromium ከተበላሸ ስለ ብልሽቱ ዝርዝሮች አንዳንድ የግል መረጃን ሊያካትቱ ይችላሉ።
-  • ማስመርን ካበሩት መለኪያዎች እርስዎ ስለሚጎበኟቸው ዩአርኤሎች መረጃንም ሊያካትቱ ይችላሉ።<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">በአሁኑ ጊዜ የቤተሰብ አባልዎ የይለፍ ቃሎችን መቀበል አይችሉም። Chromium እንዲያዘምኑ እና የይለፍ ቃላቸውን እንዲያሰምሩ ይጠይቋቸው። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">ይህ መለያ እና ማንኛውም ያልተቀመጠ ውሂብ ከChromium ይወገዳል።</translation>
 <translation id="88376265765385899">የChromium እልባቶችን ይከፍታል።</translation>

@@ -257,9 +257,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="7934404985878918282">Ikusi Chromium-en Irakurketa-zerrenda</translation>
 <translation id="7971753607796745700">Gehitu irakurketa-zerrendako elementu bat Chromium-en</translation>
 <translation id="7980860476903281594">Onartzen dituzun webguneekin partekatuko du kokapena Chromium-ek.</translation>
-<translation id="7990085102929105708">Google Pay-ko ordainketa-metodoak eta helbideak ez dira enkriptatuko. Chromium-eko arakatze-historia ez da sinkronizatuko.
-
-Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />garbitu kontuko Chromium-eko datuak<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Chromium-i buruzko aholku lagungarriak jasotzeko, aktibatu jakinarazpenak iOS-en ezarpenetan.</translation>
 <translation id="7995166854192397899">Beste gailuetan egin dituzun arakatze-jardueretan oinarrituta daude iradokizunak. Haiek jasotzeko, hasi saioa Chromium-en gailu guztietan.</translation>
 <translation id="800195749539500647">Atera ahalik eta etekin handiena Chromium-i</translation>
@@ -287,13 +284,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chromium-eko dat
 <translation id="8685813584220679697">Hasi saioa webgune honetan eta Chromium-en.</translation>
 <translation id="8730503818204408000">Chromium arakatzaile lehenetsi gisa ezartzeko Chromium-en ezarpena irekitzen du.</translation>
 <translation id="8742300022028858275">Ireki nire azken fitxa Chromium-en</translation>
-<translation id="8747378496147986285">Aktibatuta dagoenean:
-<ph name="BEGIN_INDENT" />  • Chromium zuk bezala erabiltzen dutenentzat hobetzen laguntzen duzu.<ph name="END_INDENT" />
-
-Kontuan hartu beharrekoak:
-<ph name="BEGIN_INDENT" />  • Chromium-en erabilerari buruzko informazioa bidaliko zaio Google-ri, baina ez du izango loturarik zurekin.
-  • Chromium-ek huts egiten badu, baliteke hutsegiteari buruzko xehetasunek informazio pertsonala edukitzea.
-  • Sinkronizazioa aktibatuz gero, baliteke neurketek bisitatzen dituzun URLei buruzko informazioa edukitzea.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Familiako kideak ezin du jaso pasahitzik une honetan. Eska iezaiozu Chromium eguneratzeko eta pasahitzak sinkronizatzeko. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Kontu hau eta gorde gabeko datuak kendu egingo dira Chromium-etik.</translation>
 <translation id="88376265765385899">Chromium-eko laster-markak irekitzen ditu.</translation>

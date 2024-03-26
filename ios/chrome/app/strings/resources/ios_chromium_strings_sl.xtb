@@ -257,9 +257,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7934404985878918282">Ogled bralnega seznama v Chromiumu</translation>
 <translation id="7971753607796745700">Dodajanje elementa bralnega seznama v Chromiumu</translation>
 <translation id="7980860476903281594">Chromium vašo lokacijo deli s spletnimi mesti, ki jih dovolite.</translation>
-<translation id="7990085102929105708">Plačilna sredstva in naslovi iz Googla Pay ne bodo šifrirani. Zgodovina brskanja v Chromiumu se ne bo sinhronizirala.
-
-Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Če želite prejemati uporabne nasvete za Chromium, v nastavitvah sistema iOS vklopite obvestila.</translation>
 <translation id="7995166854192397899">Predlogi temeljijo na vaši dejavnosti brskanja v drugih napravah. Če želite prejemati predloge, se v vseh napravah prijavite v Chromium.</translation>
 <translation id="800195749539500647">Kar najbolje izkoristite Chromium</translation>
@@ -287,15 +284,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="8685813584220679697">Prijavite se na tem spletnem mestu in v Chromium.</translation>
 <translation id="8730503818204408000">Odpre nastavitev za Chromium za nastavitev Chromiuma kot privzetega brskalnika.</translation>
 <translation id="8742300022028858275">Odpiranje zadnjega zavihka v Chromiumu</translation>
-<translation id="8747378496147986285">Če je omogočeno:
-<ph name="BEGIN_INDENT" />  • Pomagate izboljšati Chromium za ljudi, ki ga uporabljajo kot vi.<ph name="END_INDENT" />
-
-Kaj je treba upoštevati:
-<ph name="BEGIN_INDENT" />  • Googlu se pošiljajo podatki o vaši uporabi Chromiuma, vendar niso povezani z vami.
-
-  • Če se Chromium zruši, bodo med podatki o zrušitvi morda nekateri osebni podatki.
-
-  • Če vklopite sinhronizacijo, bodo meritve vključevale tudi podatke o URL-jih, ki jih obiščete.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Družinski član trenutno ne more prejemati gesel. Prosite ga, da posodobi Chromium in sinhronizira gesla. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Ta račun in neshranjeni podatki bodo odstranjeni iz Chromiuma.</translation>
 <translation id="88376265765385899">Odpre zaznamke v Chromiumu.</translation>

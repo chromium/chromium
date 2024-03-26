@@ -3522,6 +3522,7 @@
 <translation id="3660234220361471169">অবিশ্বস্থ</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{আগে থাকা ১টি পাসওয়ার্ড পাওয়া গেছে}one{আগে থাকা {NUM_PASSWORDS}টি পাসওয়ার্ড পাওয়া গেছে}other{আগে থাকা {NUM_PASSWORDS}টি পাসওয়ার্ড পাওয়া গেছে}}</translation>
 <translation id="3662207097851752847">আপনার ফোনে নিজের Google অ্যাকাউন্ট কনফার্ম করুন</translation>
+<translation id="3663417513679360795">'স্ট্যান্ডার্ড প্রিলোডিং' ফিচার চালু করার ব্যাপারে আরও তথ্য</translation>
 <translation id="3664511988987167893">এক্সটেনশনের আইকন</translation>
 <translation id="3665100783276035932">বেশিরভাগ সাইটের প্রত্যাশা অনুযায়ী কাজ করা উচিত</translation>
 <translation id="3665301845536101715">সাইড প্যানেলে খুলুন</translation>
@@ -3611,6 +3612,7 @@
 <translation id="3720543739123045680">অন্যান্য ট্যাব এই ট্যাবের সাথে প্রসেস শেয়ার করে, যার ফলে DevTools-এর ক্ষেত্রে অপ্রত্যাশিত অভিজ্ঞতা হতে পারে।</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">আপনি এবং Google</translation>
+<translation id="3721178866505920080">'এক্সটেন্ডেড প্রিলোডিং' ফিচার চালু করার ব্যাপারে আরও তথ্য</translation>
 <translation id="3722108462506185496">ভার্চুয়াল মেশিন পরিষেবা চালাতে সমস্যা হচ্ছে। আবার চেষ্টা করুন।</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> নির্দেশ রিসিভ করা হয়েছে</translation>
 <translation id="3724897774652282549">ফর্ম পূরণ করুন</translation>

@@ -256,9 +256,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="7934404985878918282">Viz seznam četby prohlížeče Chromium</translation>
 <translation id="7971753607796745700">Přidat položku do seznamu četby v prohlížeči Chromium</translation>
 <translation id="7980860476903281594">Chromium sdílí vaši polohu s weby, u kterých to povolíte.</translation>
-<translation id="7990085102929105708">Platební metody a adresy z Google Pay nebudou šifrovány. Historie prohlížení v prohlížeči Chromium se nebude synchronizovat.
-
-Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chromium ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Pokud chcete dostávat užitečné tipy pro Chromium, v nastavení systému iOS zapněte oznámení.</translation>
 <translation id="7995166854192397899">Návrhy vycházejí z vaší aktivity prohlížení na jiných zařízeních. Pokud chcete dostávat návrhy, přihlaste se do prohlížeče Chromium na všech svých zařízeních.</translation>
 <translation id="800195749539500647">Využijte Chromium na maximum</translation>
@@ -286,15 +283,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8685813584220679697">Přihlaste se na tento web a do prohlížeče Chromium.</translation>
 <translation id="8730503818204408000">Otevře nastavení prohlížeče Chromium, pomocí něhož ho lze nastavit jako výchozí prohlížeč.</translation>
 <translation id="8742300022028858275">Otevřít v prohlížeči Chromium naposledy otevřenou kartu</translation>
-<translation id="8747378496147986285">Když je tato funkce zapnutá:
-<ph name="BEGIN_INDENT" />  • Pomáháte s vylepšováním prohlížeče Chromium pro lidi, kteří jej používají stejně jako vy.<ph name="END_INDENT" />
-
-Co je třeba zvážit:
-<ph name="BEGIN_INDENT" />  • Informace o vašem používání prohlížeče Chromium se odesílají do Googlu, ale nejsou spojeny s vámi.
-
-  • Pokud Chromium spadne, podrobnosti o selhání mohou zahrnovat některé osobní údaje.
-
-  • Pokud zapnete synchronizaci, mohou metriky zahrnovat také informace o navštívených adresách URL.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Člen vaší rodiny momentálně nemůže přijímat hesla. Požádejte ho, aby aktualizoval Chromium a synchronizoval svá hesla. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Tento účet a všechna neuložená data budou z prohlížeče Chromium odstraněny.</translation>
 <translation id="88376265765385899">Otevře záložky prohlížeče Chromium.</translation>

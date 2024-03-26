@@ -257,9 +257,6 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
 <translation id="7934404985878918282">Tingnan ang Listahan ng Babasahin sa Chromium</translation>
 <translation id="7971753607796745700">Magdagdag ng Item sa Listahan ng Babasahin sa Chromium</translation>
 <translation id="7980860476903281594">Ibabahagi ng Chromium ang iyong lokasyon sa mga site na pinapayagan mo.</translation>
-<translation id="7990085102929105708">Hindi mae-encrypt ang mga paraan ng pagbabayad at address mula sa Google Pay. Hindi masi-sync ang history ng pag-browse mula sa Chromium.
-
-Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data. Hindi ipinapadala sa o sino-store ng Google ang passphrase. Kung makakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Para makakuha ng mga kapaki-pakinabang na tip sa Chromium, i-on ang mga notification sa iyong mga setting ng iOS.</translation>
 <translation id="7995166854192397899">Batay ang mga suhestyon sa iyong aktibidad sa pag-browse sa iba mo pang device. Para makatanggap ng mga suhestyon, mag-sign in sa Chromium sa lahat ng iyong device.</translation>
 <translation id="800195749539500647">Sulitin ang Chromium</translation>
@@ -287,15 +284,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="8685813584220679697">Mag-sign in sa site na ito at sa Chromium.</translation>
 <translation id="8730503818204408000">Mabubuksan ang Setting ng Chromium para itakda ang Chromium bilang Default na Browser.</translation>
 <translation id="8742300022028858275">Buksan ang Aking Pinakabagong Tab sa Chromium</translation>
-<translation id="8747378496147986285">Kapag naka-on:
-<ph name="BEGIN_INDENT" />  • Tumulong na pahusayin ang Chromium para sa mga taong gumagamit nito gaya ng iyong paggamit.<ph name="END_INDENT" />
-
-Mga bagay na dapat isaalang-alang:
-<ph name="BEGIN_INDENT" />  • Ipapadala sa Google ang impormasyon tungkol sa paggamit mo ng Chromium, pero hindi ito nauugnay sa iyo.
-
-  • Kung magka-crash ang Chromium, posibleng kasama sa mga detalye tungkol sa pag-crash ang ilang personal na impormasyon.
-
-  • Kung io-on mo ang pag-sync, posible ring kasama sa mga sukatan ang impormasyon tungkol sa mga URL na binibisita mo.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Hindi makakatanggap ng mga password ang iyong miyembro ng pamilya sa ngayon. Hilingin sa kanilang i-update ang Chromium at i-sync ang mga password nila. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Aalisin sa Chromium ang account na ito at anumang hindi naka-save na data.</translation>
 <translation id="88376265765385899">Mabubuksan ang mga bookmark sa Chromium.</translation>

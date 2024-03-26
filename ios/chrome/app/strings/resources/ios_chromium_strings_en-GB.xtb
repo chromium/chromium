@@ -257,9 +257,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7934404985878918282">See Chromium reading list</translation>
 <translation id="7971753607796745700">Add Reading List item to Chromium</translation>
 <translation id="7980860476903281594">Chromium shares your location with sites that you allow.</translation>
-<translation id="7990085102929105708">Payment methods and addresses from Google Pay won't be encrypted. Browsing history from Chromium won't sync.
-
-Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">To get helpful Chromium tips, turn on notifications in your iOS settings.</translation>
 <translation id="7995166854192397899">Suggestions are based on your browsing activity on your other devices. To get suggestions, sign in to Chromium on all your devices.</translation>
 <translation id="800195749539500647">Get the most out of Chromium.</translation>
@@ -287,15 +284,6 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your 
 <translation id="8685813584220679697">Sign in to this site and Chromium.</translation>
 <translation id="8730503818204408000">Opens the Chromium Setting to set Chromium as Default Browser.</translation>
 <translation id="8742300022028858275">Open my latest tab in Chromium</translation>
-<translation id="8747378496147986285">When on:
-<ph name="BEGIN_INDENT" />  • Help make Chromium better for people who use it the way that you do.<ph name="END_INDENT" />
-
-Things to consider:
-<ph name="BEGIN_INDENT" />  • Info is sent to Google about your Chromium usage, but it isn't tied to you.
-
-  • If Chromium crashes, details about the crash may include some personal info.
-
-  • If you turn on sync, metrics may also include info about URLs that you visit.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Your family member can't receive passwords right now. Ask them to update Chromium and sync their passwords. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">This account and any unsaved data will be removed from Chromium.</translation>
 <translation id="88376265765385899">Opens the Chromium bookmarks.</translation>

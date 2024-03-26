@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome siz ochgan saytlardagi treking raqamlarini aniqlaydi va yangi varaqda paket yangilanishlarini koʻrsatadi. Bu funksiyani ishlashini taʼminlash va hamma uchun Google Shopping xizmatini yaxshilash uchun joʻnatmani kuzatish raqami va veb-sayt nomi Chrome brauzeriga yuboriladi. Buni istalgan vaqtda <ph name="BEGIN_LINK" />Joʻnatmani kuzatish raqamlari<ph name="END_LINK" /> orqali yangilash mumkin.</translation>
 <translation id="1085696779717592361">Chrome birlamchi boʻlsin</translation>
 <translation id="1105362920864247682">Chrome brauzer maʼlumotlarini tozalash.</translation>
-<translation id="1113057722807951993">Kodli ibora bilan shifrlash ichiga Google Pay xizmatidagi toʻlov usullari va manzillar kirmaydi.
-
-Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Parolingiz Google Parollar menejerida <ph name="EMAIL" /> hisobiga saqlanadi.</translation>
 <translation id="1177414119866731261">Chrome menyusini oching</translation>
 <translation id="1180362651362502943">Chrome maʼlumotlari Google hisobingizda saqlanishda davom etsin.</translation>
@@ -88,9 +85,6 @@ Bularni hisobga olish kerak:
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome maʼlumotlaringizni qanday xavfsiz saqlashi<ph name="END_LINK" /> haqida batafsil</translation>
 <translation id="2952581218264071393">1. Chrome sozlamalarini oching</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> brauzerini tanlang.</translation>
-<translation id="2988274366244053197">Google Pay xizmatidagi toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.
-
-Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Siz <ph name="SIGNOUT_MANAGED_DOMAIN" /> domenida boshqariladigan hisobdan chiqish arafasidasiz. Barcha Chrome maʼlumotlari ushbu qurilmadan tozalanadi, lekin Google hisobingizda saqlanib qoladi.</translation>
 <translation id="309672519329227863">Boshqa ilovalarda Chrome parollaringiz va boshqalarni oching.</translation>
 <translation id="3146109040683991651">Chrome brauzerini asosiy deb sozlash</translation>
@@ -306,15 +300,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8891935667620843985">Saytlar Chrome brauzerida avtomatik ochilishi uchun uni birlamchi brauzer etib tayinlash kifoya.</translation>
 <translation id="8897749957032330183">Parollar shu qurilmadagi Google Parollar menejeriga saqlanadi.</translation>
 <translation id="8949681853939555434">Chromeni asosiy brauzer deb belgilang</translation>
-<translation id="8969290730818637510">Yoniq boʻlsa:
-<ph name="BEGIN_INDENT" />  • Chromeni siz kabi ishlatadigan odamlar uchun yaxshilashga yordam beradi<ph name="END_INDENT" />
-
-Bularni hisobga olish kerak:
-<ph name="BEGIN_INDENT" />  • Chromedan foydalanish maʼlumotlari Googlega yuboriladi, lekin siz bilan bogʻlanilmaydi
-
-  • Chromeda nosozlik yuz bersa, u haqidagi maʼlumotlar, shuningdek, ayrim shaxsiy axborotlar ham yuboriladi
-
-  • Sinxronizatsiya yoqilsa, koʻrsatkichlarga siz kiritgan URL manzillar ham biriktiriladi<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Chrome Inkognito oynasida ochish</translation>
 <translation id="9071207983537882274">Chromeda sozlamalar sahifasini ochadi.</translation>
 <translation id="9112744793181547300">Chrome asosiy brauzer sifatida tanlansinmi?</translation>

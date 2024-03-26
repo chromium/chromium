@@ -332,6 +332,7 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
 <translation id="67706546131546258">Chromium merekomendasikan pemindaian file ini karena file mungkin berbahaya.</translation>
 <translation id="6779406956731413166">ChromiumOS terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="6847869444787758381">Chromium akan memberi tahu jika sandi Anda disusupi</translation>
+<translation id="684888714667046800">Tidak dapat terhubung ke internet. Jika Anda menggunakan firewall, pastikan <ph name="PRODUCT_EXE_NAME" /> tercantum dalam daftar yang diizinkan.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium menemukan bahwa "<ph name="EXTENSION_NAME" />" berisi malware</translation>
 <translation id="6893813176749746474">Chromium telah diperbarui, tetapi Anda belum menggunakannya selama setidaknya 30 hari.</translation>

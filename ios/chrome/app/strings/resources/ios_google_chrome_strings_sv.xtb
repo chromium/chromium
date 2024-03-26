@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome identifierar spårningsnummer på webbplatser du besöker och visar uppdateringar om försändelser på sidan Ny flik. Paketets spårningsnummer och webbplatsens namn skickas till Google för att tillhandahålla den här funktionen och förbättra shoppingfunktioner för alla. Du kan uppdatera detta när du vill i <ph name="BEGIN_LINK" />inställningarna för spårning av försändelser<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Använd Chrome som standard</translation>
 <translation id="1105362920864247682">Rensa webbinformation i Chrome.</translation>
-<translation id="1113057722807951993">Betalningsmetoder och adresser från Google Pay omfattas inte av lösenfraskryptering.
-
-Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Lösenordet sparas med Google Lösenordshantering för <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Öppna Chrome-menyn</translation>
 <translation id="1180362651362502943">Fortsätt använda Chrome-data i Google-kontot.</translation>
@@ -87,9 +84,6 @@ Tänk på detta:
 <translation id="2876628302275096482">Läs mer om <ph name="BEGIN_LINK" />hur Chrome skyddar din data<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Öppna inställningarna för Chrome</translation>
 <translation id="2957447865124070833">Välj <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2988274366244053197">Betalningsmetoder och adresser från Google Pay krypteras inte. Webbhistorik från Chrome synkroniseras inte.
-
-Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du kontots Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Din data i Chrome raderas från den här enheten eftersom du loggar ut från ett konto som hanteras av <ph name="SIGNOUT_MANAGED_DOMAIN" />. Din data finns kvar i Google-kontot.</translation>
 <translation id="309672519329227863">Få tillgång till dina lösenord i Chrome och mer i andra appar.</translation>
 <translation id="3146109040683991651">Ange Chrome som standardwebbläsare</translation>
@@ -305,13 +299,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="8891935667620843985">Du kan öppna länkar i Chrome automatiskt genom att ställa in den som standardwebbläsare.</translation>
 <translation id="8897749957032330183">Lösenorden sparas med Google Lösenordshantering på den här enheten.</translation>
 <translation id="8949681853939555434">Ställ in Chrome som standardwebbläsare</translation>
-<translation id="8969290730818637510">När detta är aktiverat:
-<ph name="BEGIN_INDENT" />  • Du hjälper oss att göra Chrome bättre för den som använder programmet på samma sätt som du.<ph name="END_INDENT" />
-
-Tänk på detta:
-<ph name="BEGIN_INDENT" />  • Information om hur du använder Chrome skickas till Google men kopplas inte till dig.
-  • Om Chrome kraschar kan personliga uppgifter finnas med i kraschinformationen.
-  • Om du aktiverar synkronisering kan mätvärdena även innehålla information om webbadresser du besöker.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Öppna i Chromes inkognitoläge</translation>
 <translation id="9071207983537882274">Öppnar inställningarna i Chrome.</translation>
 <translation id="9112744793181547300">Vill du ställa in Chrome som standardwebbläsare?</translation>

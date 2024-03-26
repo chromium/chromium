@@ -386,7 +386,6 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2931440415625410757">Mostrar instruções</translation>
 <translation id="2952246431280799028">Toque em um endereço e pressione.</translation>
 <translation id="2952278131021475699">Pesquisa com a câmera do Lens</translation>
-<translation id="2956733177489514605">Faça login com sua Conta do Google para sincronizar suas senhas e muito mais.</translation>
 <translation id="2958718410589002129">Senhas</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
 <translation id="2969979262385602596">Falha durante o login. Tente novamente mais tarde.</translation>
@@ -442,7 +441,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Se você também compartilhar os relatórios de uso do Chrome, eles vão incluir os URLs acessados</translation>
 <translation id="3245744387817103524">Não foi possível salvar a mudança.</translation>
-<translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Preenchimento automático de senhas</translation>
 <translation id="3265534588625245297">Gerenciar os sites seguidos</translation>
 <translation id="3268451620468152448">Guias abertas</translation>
@@ -454,7 +452,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3305294846493618482">mais</translation>
 <translation id="3311748811247479259">Desativada</translation>
 <translation id="3324193307694657476">Endereço 2</translation>
-<translation id="3328801116991980348">Informações do site</translation>
 <translation id="3344485292736684439">{count,plural, =1{Favorito salvo em "{title}" na conta {email}}one{Favorito salvo em "{title}" na conta {email}}other{Favoritos salvos em "{title}" na conta {email}}}</translation>
 <translation id="3348387552617855658">Este card ajuda você a monitorar seus pacotes e fornece atualizações importantes sobre a entrega.</translation>
 <translation id="3349676726073650389">Os sites e as pesquisas que você segue são armazenados na sua Conta do Google. Você pode gerenciar esse conteúdo nas configurações a qualquer momento.</translation>
@@ -562,8 +559,8 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3891414008432200754">Preço</translation>
 <translation id="3892144330757387737">Você verá seu histórico aqui</translation>
 <translation id="3897092660631435901">Menu</translation>
-<translation id="3904829425754749514">Sua organização desativou a sincronização. Ainda é possível ver seus favoritos, seu histórico, suas senhas e outras configurações neste dispositivo. Se você fizer mudanças, elas não serão sincronizadas com sua conta.</translation>
 <translation id="3909222758573607742">Salvar senhas e outros itens na conta</translation>
+<translation id="3915450441834151894">Informações do site</translation>
 <translation id="3918585468378680136">Status do pacote pendente</translation>
 <translation id="3921585859122905677">Posição da Barra de Endereço</translation>
 <translation id="3922310737605261887">Pesquisar texto copiado</translation>
@@ -593,7 +590,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4045648459118332842">Acesse suas senhas salvas em qualquer app com um toque</translation>
 <translation id="4049507953662678203">Verifique se você tem uma conexão de rede e tente novamente.</translation>
 <translation id="4054572406751135230">Acompanhe as notícias, esportes e muito mais.</translation>
-<translation id="4066639687323968621">Faça login com sua Conta do Google para sincronizar favoritos, histórico e muito mais.</translation>
 <translation id="4092655288299341041">Mostrar "Ajuda"</translation>
 <translation id="4105841739161771091">{count,plural, =1{Excluir endereço}one{Excluir endereço}other{Excluir endereços}}</translation>
 <translation id="4108998448622696017">Detecta e avisa você sobre eventos perigosos quando eles acontecerem.</translation>
@@ -617,7 +613,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4187450337729239226">Colar e pesquisar</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} item foi salvo apenas neste dispositivo. Para usá-lo em outros dispositivos, salve na sua Conta do Google, {email}.}one{{count} item foi salvo apenas neste dispositivo. Para usá-lo em outros dispositivos, salve na sua Conta do Google, {email}.}other{{count} itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}}</translation>
 <translation id="4216918546378735658">Cancelar</translation>
-<translation id="4223967053752765281">Sua organização desativou o processo de login. Ainda é possível ver seus favoritos, seu histórico, suas senhas e outras configurações neste dispositivo. Se você fizer mudanças, elas não serão sincronizadas com sua conta.</translation>
 <translation id="422474357428465195">Você tem vários problemas de senha que podem colocar sua segurança em risco.</translation>
 <translation id="4232900911558558076">Explorar o novo menu</translation>
 <translation id="4233831822770018312">Editar permissões</translation>
@@ -668,7 +663,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4469324811108161144">Observações podem ter até <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="4469418912670346607">Continuar a configuração</translation>
 <translation id="4474494258097106883">Criado para o iPhone</translation>
-<translation id="448433063499977729">Sincronização desativada</translation>
 <translation id="4488754974567924717">Vamos avisar você se as senhas forem comprometidas</translation>
 <translation id="4489536976005181779">{count,plural, =1{Página adicionada à Lista de leitura na sua conta {email}}one{Página adicionada à Lista de leitura na sua conta {email}}other{Páginas adicionadas à Lista de leitura na sua conta {email}}}</translation>
 <translation id="4493604894403585654">Você fez login como <ph name="USER_EMAIL" />. Você pode parar a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
@@ -804,7 +798,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5118764316110575523">Desativado</translation>
 <translation id="5121618895923301719">Você já está acompanhando este produto. Esta página fica salva nos <ph name="BEGIN_LINK" />Favoritos nos dispositivos móveis<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Você tem vários problemas de senha.</translation>
-<translation id="5126465625664020024">Fazer login e sincronizar</translation>
 <translation id="5132942445612118989">Sincronize suas senhas, seu histórico e muito mais em todos os dispositivos</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} senha fraca}one{{COUNT} senha fraca}other{{COUNT} senhas fracas}}</translation>
 <translation id="5149188072385105201">Adicionar senha…</translation>
@@ -924,7 +917,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5745916533876677730">Ir para a guia anterior</translation>
 <translation id="574762237186762643">Eventos</translation>
 <translation id="5748177854685749242">Chegando às <ph name="DATE" /></translation>
-<translation id="5755162682436943950">Conta desconectada. Abre a caixa de diálogo para fazer login e ativar a sincronização.</translation>
 <translation id="5758631781033351321">Você encontrará sua lista de leituras aqui</translation>
 <translation id="5765456154762864099">Menu → Configurações → Navegador padrão</translation>
 <translation id="5777888488419460501">Salvar na conta</translation>
@@ -1035,7 +1027,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6293101329759844770">Acesse <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" /> e toque em "Navegação segura" para ativar esse recurso.</translation>
 <translation id="629730747756840877">Conta</translation>
 <translation id="6321526113093607004">Adicionar aos favoritos</translation>
-<translation id="6324669097367352121">Configurações de login</translation>
 <translation id="6328337032497818759">Personalizar menu</translation>
 <translation id="6331180460633101391"><ph name="COUNT" /> senhas reutilizadas</translation>
 <translation id="6337234675334993532">Criptografia</translation>
@@ -1221,7 +1212,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="719133302483559673">Gerencie seus interesses e suas preferências.</translation>
 <translation id="7192050974311852563">Iniciar registro</translation>
 <translation id="7203585745079012652">Falar as respostas</translation>
-<translation id="7207023858769244910">Sincronize para receber conteúdo com base nos seus interesses.</translation>
 <translation id="7210568419880432164">Ativar notificações.</translation>
 <translation id="721597782417389033">Apelido do cartão inválido</translation>
 <translation id="7221173315674413369">Conheça os novos recursos e dicas em "Novidades"</translation>
@@ -1618,7 +1608,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9162432979321511934">Ative a opção "Preenchimento automático de senhas"</translation>
 <translation id="9162941801309769488">Pacote não rastreado</translation>
 <translation id="9165320910061267720">Para receber notificações de alertas de redução no preço, ative as notificações nas configurações do iOS.</translation>
-<translation id="9172603439892261948">Sincronize seus favoritos, histórico e muito mais.</translation>
 <translation id="9177438225260810839">Pesquisar guias abertas</translation>
 <translation id="9187853111759024059">Fechar mais de 99 guias inativas?</translation>
 <translation id="9188680907066685419">Sair da conta gerenciada</translation>

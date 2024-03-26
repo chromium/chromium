@@ -257,9 +257,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="7934404985878918282">Lihat Senarai Bacaan Chromium</translation>
 <translation id="7971753607796745700">Tambahkan Item Senarai Bacaan pada Chromium</translation>
 <translation id="7980860476903281594">Chromium berkongsi lokasi anda dengan laman yang anda benarkan.</translation>
-<translation id="7990085102929105708">Kaedah pembayaran dan alamat daripada Google Pay tidak akan disulitkan. Sejarah penyemakan imbas daripada Chromium tidak akan disegerakkan.
-
-Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersulit anda. Ungkapan laluan tidak dihantar kepada atau disimpan oleh Google. Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chromium dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Untuk mendapatkan petua berguna Chromium, hidupkan pemberitahuan pada tetapan iOS anda.</translation>
 <translation id="7995166854192397899">Cadangan adalah berdasarkan aktiviti penyemakan imbas anda pada peranti anda yang lain. Untuk mendapatkan cadangan, log masuk ke Chromium pada semua peranti anda.</translation>
 <translation id="800195749539500647">Manfaat Chromium sepenuhnya</translation>
@@ -287,15 +284,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chromium dalam
 <translation id="8685813584220679697">Log masuk ke laman ini dan Chromium.</translation>
 <translation id="8730503818204408000">Buka Tetapan Chromium untuk menetapkan Chromium sebagai Penyemak Imbas Lalai.</translation>
 <translation id="8742300022028858275">Buka Tab Terbaharu Saya dalam Chromium</translation>
-<translation id="8747378496147986285">Apabila dihidupkan:
-<ph name="BEGIN_INDENT" />  • Bantu jadikan Chromium lebih baik untuk orang yang menggunakannya seperti yang anda lakukan.<ph name="END_INDENT" />
-
-Perkara yang perlu dipertimbangkan:
-<ph name="BEGIN_INDENT" />  • Maklumat tentang penggunaan Chromium anda dihantar kepada Google, tetapi maklumat ini tidak terikat dengan anda.
-
-  • Jika Chromium ranap, butiran tentang keranapan mungkin termasuk beberapa maklumat peribadi.
-
-  • Jika anda menghidupkan penyegerakan, metrik juga mungkin merangkumi maklumat tentang URL yang anda lawati.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Ahli keluarga anda tidak boleh menerima kata laluan sekarang. Minta mereka mengemaskinikan Chromium dan menyegerakkan kata laluan mereka. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Akaun ini dan sebarang data yang tidak disimpan akan dialih keluar daripada Chromium.</translation>
 <translation id="88376265765385899">Membuka penanda halaman Chromium.</translation>

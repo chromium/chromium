@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome tuvastab teie külastatud saitidel jälgimiskoodid. Kui avate uue vahelehe, kuvatakse saadetise uusim olek. Selle funktsiooni pakkumiseks ja Google'i ostufunktsioonide kõigi jaoks paremaks muutmiseks edastatakse paki jälgimiskood ja veebisaidi nimi Google'ile. Saate seda muuta <ph name="BEGIN_LINK" />pakkide jälgimise seadetes<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Vaikimisi Chrome'i kasutamine</translation>
 <translation id="1105362920864247682">Tühjendage Chrome'i sirvimisandmed.</translation>
-<translation id="1113057722807951993">Parooliga krüpteerimine ei hõlma Google Pay makseviise ja aadresse.
-
-Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i andmed<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Teie parool salvestatakse konto <ph name="EMAIL" /> Google'i paroolihaldurisse.</translation>
 <translation id="1177414119866731261">Chrome'i menüü avamine</translation>
 <translation id="1180362651362502943">Jätkake Google’i kontol Chrome’i andmete kasutamist.</translation>
@@ -87,9 +84,6 @@ Tasub teada
 <translation id="2876628302275096482">Vaadake lisateavet, <ph name="BEGIN_LINK" />kuidas Chrome teie andmeid privaatsena hoiab<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Avage Chrome'i seaded.</translation>
 <translation id="2957447865124070833">Valige <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
-<translation id="2988274366244053197">Google Payst pärinevaid makseviise ja aadresse ei krüpteerita. Sirvimisajalugu Chrome'ist ei sünkroonita.
-
-Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Parooli ei saadeta Google'ile ja Google ei salvesta seda. Kui parooli unustate või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i andmed<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Kuna logite välja kontolt, mida haldab <ph name="SIGNOUT_MANAGED_DOMAIN" />, kustutatakse selles seadmes teie Chrome'i andmed. Google'i kontole jäävad teie andmed alles.</translation>
 <translation id="309672519329227863">Pääsete muudes rakendustes juurde oma Chrome'i paroolidele ja muule teabele.</translation>
 <translation id="3146109040683991651">Määra Chrome vaikebrauseriks</translation>
@@ -305,15 +299,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i a
 <translation id="8891935667620843985">Saate Chrome'is linke avada automaatselt, muutes selle oma vaikebrauserirakenduseks.</translation>
 <translation id="8897749957032330183">Paroolid salvestatakse selles seadmes Google'i paroolihaldurisse.</translation>
 <translation id="8949681853939555434">Chrome'i vaikebrauseriks määramine</translation>
-<translation id="8969290730818637510">Kui see on sisse lülitatud
-<ph name="BEGIN_INDENT" />  • Aitate täiustada Chrome'i inimeste jaoks, kes kasutavad seda nagu teie.<ph name="END_INDENT" />
-
-Olulised aspektid
-<ph name="BEGIN_INDENT" />  • Google'ile saadetakse teavet teie Chrome'i kasutuse kohta, kuid see teave pole teiega seotud.
-
-  • Kui Chrome jookseb kokku, võivad krahhi üksikasjad isiklikku teavet sisaldada.
-
-  • Kui lülitate sünkroonimise sisse, võivad mõõdikud sisaldada ka teavet teie külastatavate URL-ide kohta.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Ava Chrome'i inkognito režiim</translation>
 <translation id="9071207983537882274">Avab Chrome’is seaded.</translation>
 <translation id="9112744793181547300">Kas määrata Chrome vaikebrauseriks?</translation>

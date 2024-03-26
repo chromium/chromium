@@ -3520,6 +3520,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3660234220361471169">Nem megbízható</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 meglévő jelszó található}other{{NUM_PASSWORDS} meglévő jelszó található}}</translation>
 <translation id="3662207097851752847">Erősítse meg Google-fiókját a telefonján</translation>
+<translation id="3663417513679360795">További információ a normál előtöltés bekapcsolásáról</translation>
 <translation id="3664511988987167893">Bővítmény ikonja</translation>
 <translation id="3665100783276035932">A legtöbb webhely a várt módon fog működni</translation>
 <translation id="3665301845536101715">Megnyitás az oldalsó panelen</translation>
@@ -3609,6 +3610,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3720543739123045680">Más lapok ezzel a lappal közös folyamaton futnak, ami váratlan DevTools-viselkedést eredményezhet.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Ön és a Google</translation>
+<translation id="3721178866505920080">További információ a kiterjesztett előtöltés bekapcsolásáról</translation>
 <translation id="3722108462506185496">Nem sikerült elindítani a virtuális gép szolgáltatást. Próbálja újra később.</translation>
 <translation id="3722624153992426516">Utasítás érkezett: <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3724897774652282549">Űrlap kitöltése</translation>

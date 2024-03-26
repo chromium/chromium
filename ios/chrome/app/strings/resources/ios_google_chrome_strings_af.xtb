@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome sal naspoornommers op werwe bespeur wat jy besoek en vir jou pakkie-opdaterings op die Nuwe Oortjie-bladsy wys. Die pakkienaspoornommer en webwerfnaam sal na Google gestuur word om hierdie kenmerk beskikbaar te maak en om Google Shopping-kenmerke vir almal te verbeter. Jy kan dit enige tyd in <ph name="BEGIN_LINK" />Pakkienasporinginstellings<ph name="END_LINK" /> opdateer.</translation>
 <translation id="1085696779717592361">Gebruik Chrome by verstek</translation>
 <translation id="1105362920864247682">Vee blaaierdata in Chrome uit.</translation>
-<translation id="1113057722807951993">Wagfrase-enkripsie sluit nie betaalmetodes en adresse van Google Pay af in nie.
-
-<ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> as jy hierdie instelling wil verander.</translation>
 <translation id="1143896152279775643">Jou wagwoord sal vir <ph name="EMAIL" /> in Google Wagwoordbestuurder gestoor word.</translation>
 <translation id="1177414119866731261">Maak die Chrome-kieslys oop</translation>
 <translation id="1180362651362502943">Hou aan om die Chrome-data in jou Google-rekening te gebruik.</translation>
@@ -87,9 +84,6 @@ Dinge om in ag te neem:
 <translation id="2876628302275096482">Kom meer te wete oor <ph name="BEGIN_LINK" />hoe Chrome jou data privaat hou<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Maak Chrome-instellings oop</translation>
 <translation id="2957447865124070833">Kies <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2988274366244053197">Betaalmetodes en adresse van Google Pay af sal nie geënkripteer word nie. Blaaigeskiedenis van Chrome af sal nie sinkroniseer nie.
-
-Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur Google geberg nie. <ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet of hierdie instelling wil verander.</translation>
 <translation id="3030414234702425231">Omdat jy afmeld uit 'n rekening wat deur <ph name="SIGNOUT_MANAGED_DOMAIN" /> bestuur word, sal jou Chrome-data op hierdie toestel uitgevee word. Jou data sal in jou Google-rekening bly.</translation>
 <translation id="309672519329227863">Kry toegang tot jou Chrome-wagwoorde en meer van ander apps af.</translation>
 <translation id="3146109040683991651">Stel Chrome as verstekblaaier</translation>
@@ -305,15 +299,6 @@ Jou data is op <ph name="TIME" /> met jou wagfrase geënkripteer. Voer dit in om
 <translation id="8891935667620843985">Jy kan skakels in Chrome outomaties oopmaak deur dit jou verstekblaaierprogram te maak.</translation>
 <translation id="8897749957032330183">Wagwoorde word op hierdie toestel in Google Wagwoordbestuurder gestoor.</translation>
 <translation id="8949681853939555434">Stel Chrome as jou verstekblaaier</translation>
-<translation id="8969290730818637510">Wanneer dit aan is:
-<ph name="BEGIN_INDENT" />  • Help dit om Chrome beter te maak vir mense wat dit gebruik soos wat jy dit gebruik.<ph name="END_INDENT" />
-
-Dinge om in ag te neem:
-<ph name="BEGIN_INDENT" />  • Inligting oor jou gebruik van Chrome word na Google toe gestuur, maar dit word nie met jou verbind nie.
-
-  • As Chrome omval, kan besonderhede oor die omval sekere persoonlike inligting insluit.
-
-  • As jy sinkronisering aanskakel, kan maatstawwe inligting insluit oor URL'e wat jy besoek.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Maak in Chrome Incognito oop</translation>
 <translation id="9071207983537882274">Maak die instellings in Chrome oop.</translation>
 <translation id="9112744793181547300">Stel Chrome as verstek?</translation>

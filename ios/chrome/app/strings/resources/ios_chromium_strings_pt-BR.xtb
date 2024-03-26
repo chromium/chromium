@@ -257,9 +257,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="7934404985878918282">Verificar Lista de leitura do Chromium</translation>
 <translation id="7971753607796745700">Adicionar item da Lista de leitura ao Chromium</translation>
 <translation id="7980860476903281594">O Chromium compartilha sua localização com os sites aos quais você concede permissão.</translation>
-<translation id="7990085102929105708">As formas de pagamento e os endereços do Google Pay não serão criptografados. O histórico de navegação do Chromium não será sincronizado.
-
-Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Para receber dicas úteis sobre o Chromium, ative as notificações nos ajustes do iOS.</translation>
 <translation id="7995166854192397899">As sugestões são baseadas na sua atividade de navegação em outros dispositivos. Para receber sugestões, faça login no Chromium em todos os seus dispositivos.</translation>
 <translation id="800195749539500647">Aproveite o Chromium ao máximo</translation>
@@ -287,15 +284,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromi
 <translation id="8685813584220679697">Faça login neste site e no Chromium.</translation>
 <translation id="8730503818204408000">Abre as configurações do Chromium para defini-lo como o navegador padrão.</translation>
 <translation id="8742300022028858275">Abrir "Minha guia mais recente" no Chromium.</translation>
-<translation id="8747378496147986285">Quando ativada, essa configuração:
-<ph name="BEGIN_INDENT" />  • ajuda a melhorar o Chromium para as pessoas que o usam da mesma forma que você.<ph name="END_INDENT" />
-
-Considerações:
-<ph name="BEGIN_INDENT" />  • São enviadas ao Google informações sobre seu uso do Chromium, mas elas não são vinculadas a você.
-
-  • Se o Chromium falhar, os detalhes sobre a falha poderão incluir algumas informações pessoais.
-
-  • Se você ativar a sincronização, as métricas também poderão incluir informações sobre os URLs que você acessa.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">O membro da sua família não pode receber senhas no momento. Peça para essa pessoa atualizar o Chromium e sincronizar as senhas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">A conta e os dados não salvos serão removidos do Chromium.</translation>
 <translation id="88376265765385899">Abre os favoritos do Chromium.</translation>

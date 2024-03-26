@@ -386,7 +386,6 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2931440415625410757">Afficher les instructions</translation>
 <translation id="2952246431280799028">Maintenez le doigt sur une adresse.</translation>
 <translation id="2952278131021475699">Recherche avec Lentille Google au moyen de l'appareil photo</translation>
-<translation id="2956733177489514605">Connectez-vous avec votre compte Google pour synchroniser vos mots de passe et bien plus encore.</translation>
 <translation id="2958718410589002129">Mots de passe</translation>
 <translation id="2964349545761222050">Bloquer les témoins tiers</translation>
 <translation id="2969979262385602596">Échec de connexion. Veuillez réessayer plus tard.</translation>
@@ -442,7 +441,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation de Chrome, ceux-ci incluent les URL que vous consultez</translation>
 <translation id="3245744387817103524">Votre modification n'a pas pu être enregistrée.</translation>
-<translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Remplissage automatique des mots de passe</translation>
 <translation id="3265534588625245297">Gérez les sites auxquels vous êtes abonnés</translation>
 <translation id="3268451620468152448">Onglets ouverts</translation>
@@ -454,7 +452,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3305294846493618482">plus</translation>
 <translation id="3311748811247479259">Désactivé</translation>
 <translation id="3324193307694657476">Ligne adresse 2</translation>
-<translation id="3328801116991980348">Information sur le site</translation>
 <translation id="3344485292736684439">{count,plural, =1{Favori enregistré dans « {title} » dans votre compte, {email}}one{Favoris enregistrés dans « {title} » dans votre compte, {email}}other{Favoris enregistrés dans « {title} » dans votre compte, {email}}}</translation>
 <translation id="3348387552617855658">Cette carte vous aide à suivre vos colis et vous donne des mises à jour importantes sur les livraisons.</translation>
 <translation id="3349676726073650389">Les sites et recherches que vous suivez sont enregistrés dans votre compte Google. Vous pouvez gérer vos contenus suivis dans les paramètres à tout moment.</translation>
@@ -562,8 +559,8 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3891414008432200754">Prix</translation>
 <translation id="3892144330757387737">Vous trouverez votre historique ici</translation>
 <translation id="3897092660631435901">Menu</translation>
-<translation id="3904829425754749514">Votre organisation a désactivé la synchronisation. Vous pouvez tout de même voir vos favoris, votre historique, vos mots de passe et d'autres paramètres sur cet appareil. Si vous apportez des modifications, elles ne seront pas synchronisées avec votre compte.</translation>
 <translation id="3909222758573607742">Enregistrez les mots de passe et les autres éléments dans le compte</translation>
+<translation id="3915450441834151894">Information sur le site</translation>
 <translation id="3918585468378680136">Consultez l'état du colis</translation>
 <translation id="3921585859122905677">Position de la barre d'adresse</translation>
 <translation id="3922310737605261887">Rechercher le texte copié</translation>
@@ -593,7 +590,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4045648459118332842">Utilisez vos mots de passe enregistrés dans n'importe quelle application en un seul clic</translation>
 <translation id="4049507953662678203">Assurez-vous d'avoir une connexion réseau et réessayez.</translation>
 <translation id="4054572406751135230">Tenez-vous au courant des actualités, des sports et bien plus encore.</translation>
-<translation id="4066639687323968621">Connectez-vous avec votre compte Google pour synchroniser vos favoris, votre historique et bien plus encore.</translation>
 <translation id="4092655288299341041">Afficher l'aide</translation>
 <translation id="4105841739161771091">{count,plural, =1{Supprimer l'adresse}one{Supprimer les adresses}other{Supprimer les adresses}}</translation>
 <translation id="4108998448622696017">Il détecte les événements dangereux et vous en informe lorsqu'ils surviennent.</translation>
@@ -617,7 +613,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4187450337729239226">Coller et rechercher</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} élément est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, {email}.}one{{count} élément est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, {email}.}other{{count} éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, {email}.}}</translation>
 <translation id="4216918546378735658">Annuler</translation>
-<translation id="4223967053752765281">Votre organisation a désactivé la connexion. Vous pouvez tout de même voir vos favoris, votre historique, vos mots de passe et d'autres paramètres sur cet appareil. Si vous apportez des modifications, elles ne seront pas synchronisées avec votre compte.</translation>
 <translation id="422474357428465195">Vous avez plusieurs problèmes relatifs aux mots de passe qui pourraient compromettre votre sécurité.</translation>
 <translation id="4232900911558558076">Explorer le nouveau menu</translation>
 <translation id="4233831822770018312">Modifier les autorisations</translation>
@@ -668,7 +663,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4469324811108161144">Les notes peuvent contenir jusqu'à <ph name="CHARACTER_LIMIT" /> caractères.</translation>
 <translation id="4469418912670346607">Poursuivre la configuration</translation>
 <translation id="4474494258097106883">Conçu pour votre iPhone</translation>
-<translation id="448433063499977729">La synchronisation a été désactivée</translation>
 <translation id="4488754974567924717">Si vos mots de passe sont compromis, nous vous en aviserons.</translation>
 <translation id="4489536976005181779">{count,plural, =1{ page ajoutée à votre liste de lecture dans votre compte, {email}}one{ page ajoutée à votre liste de lecture dans votre compte, {email}}other{ pages ajoutées à votre liste de lecture dans votre compte, {email}}}</translation>
 <translation id="4493604894403585654">Vous êtes connecté en tant que <ph name="USER_EMAIL" />. Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
@@ -804,7 +798,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5118764316110575523">Désactivé</translation>
 <translation id="5121618895923301719">Vous suivez déjà ce produit. Cette page est enregistrée dans les <ph name="BEGIN_LINK" />Favoris de l'appareil mobile<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Vous avez plusieurs problèmes relatifs aux mots de passe.</translation>
-<translation id="5126465625664020024">Se connecter et synchroniser</translation>
 <translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous vos appareils</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} mot de passe faible}one{{COUNT} mots de passe faibles}other{{COUNT} mots de passe faibles}}</translation>
 <translation id="5149188072385105201">Ajouter un mot de passe…</translation>
@@ -924,7 +917,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5745916533876677730">Accéder à l'onglet précédent</translation>
 <translation id="574762237186762643">Événements</translation>
 <translation id="5748177854685749242">Arrivée : <ph name="DATE" /></translation>
-<translation id="5755162682436943950">Déconnecté. Ouvre une boîte de dialogue pour se connecter et activer la synchronisation.</translation>
 <translation id="5758631781033351321">Vous trouverez votre liste de lecture ici</translation>
 <translation id="5765456154762864099">Menu → Paramètres → Navigateur par défaut</translation>
 <translation id="5777888488419460501">Enregistrer dans le compte</translation>
@@ -1035,7 +1027,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6293101329759844770">Pour activer la navigation sécurisée, ouvrez le menu <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /> et touchez Navigation sécurisée.</translation>
 <translation id="629730747756840877">Compte</translation>
 <translation id="6321526113093607004">Ajouter aux favoris</translation>
-<translation id="6324669097367352121">Param. de connexion</translation>
 <translation id="6328337032497818759">Personnaliser le menu</translation>
 <translation id="6331180460633101391"><ph name="COUNT" /> mots de passe réutilisés</translation>
 <translation id="6337234675334993532">Chiffrement</translation>
@@ -1221,7 +1212,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="719133302483559673">Gérez vos centres d'intérêt et vos préférences.</translation>
 <translation id="7192050974311852563">Commencer la journalisation</translation>
 <translation id="7203585745079012652">Réponses vocales</translation>
-<translation id="7207023858769244910">Activez la synchronisation pour voir du contenu en fonction de vos centres d'intérêt.</translation>
 <translation id="7210568419880432164">Activer les notifications…</translation>
 <translation id="721597782417389033">Pseudo de carte incorrect</translation>
 <translation id="7221173315674413369">Explorez les nouvelles fonctionnalités et astuces dans Nouveautés</translation>
@@ -1618,7 +1608,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9162432979321511934">Activer l'option de remplissage automatique des mots de passe</translation>
 <translation id="9162941801309769488">Suivi du colis annulé</translation>
 <translation id="9165320910061267720">Pour recevoir des notifications d'alertes relatives à une baisse de prix, vous devez activer les notifications dans vos paramètres iOS.</translation>
-<translation id="9172603439892261948">Synchronisez vos favoris, votre historique et bien plus encore.</translation>
 <translation id="9177438225260810839">Rechercher dans les onglets ouverts</translation>
 <translation id="9187853111759024059">Fermer plus de 99 onglets inactifs?</translation>
 <translation id="9188680907066685419">Se déconnecter du compte géré</translation>

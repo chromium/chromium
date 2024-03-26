@@ -257,9 +257,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7934404985878918282">Se Chromium-leselisten</translation>
 <translation id="7971753607796745700">Legg til elementet på leselisten i Chromium</translation>
 <translation id="7980860476903281594">Chromium deler posisjonen din med nettsteder du tillater.</translation>
-<translation id="7990085102929105708">Betalingsmåter og adresser fra Google Pay krypteres ikke. Nettleserloggen fra Chromium synkroniseres ikke.
-
-Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">For å få nyttige Chromium-tips, slå på varsler i iOS-innstillingene.</translation>
 <translation id="7995166854192397899">Forslagene er basert på nettleseraktiviteten din på de andre enhetene dine. For å få forslag, logg på Chromium på alle enhetene dine.</translation>
 <translation id="800195749539500647">Få mest mulig ut av Chromium</translation>
@@ -287,15 +284,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene
 <translation id="8685813584220679697">Logg på dette nettstedet og Chromium.</translation>
 <translation id="8730503818204408000">Åpner Chromium-innstillingen for å angi Chromium som standardnettleser.</translation>
 <translation id="8742300022028858275">Åpne den nyligste fanen min i Chromium</translation>
-<translation id="8747378496147986285">Når du gir samtykke
-<ph name="BEGIN_INDENT" />  • bidrar du til å gjøre Chromium bedre for folk som bruker nettleseren på samme måte som deg<ph name="END_INDENT" />
-
-Dette bør du tenke over:
-<ph name="BEGIN_INDENT" />  • Google mottar informasjon om hvordan du bruker Chromium, men informasjonen er ikke knyttet til deg.
-
-  • Hvis Chromium krasjer, kan detaljene om krasjet inneholde enkelte personopplysninger.
-
-  • Hvis du slår på synkronisering, kan verdiene også inneholde informasjon om nettadressene du besøker.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Familiemedlemmet ditt kan ikke motta passord akkurat nå. Be vedkommende om å oppdatere Chromium og synkronisere passordene sine. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chromium.</translation>
 <translation id="88376265765385899">Åpner Chromium-bokmerkene.</translation>

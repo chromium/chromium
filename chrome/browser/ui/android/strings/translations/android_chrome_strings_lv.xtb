@@ -251,6 +251,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chrome datus sa
 <translation id="2364539095045928896">Poga Aizvērt, lai aizvērtu lapas ieskatu centra konfidencialitātes paziņojumu.</translation>
 <translation id="2386938421315164605">Tēmu slēpšana un rādīšana</translation>
 <translation id="2390510615457643724">Vai vēlaties vēlreiz lejupielādēt failu “<ph name="FILE_NAME" />” <ph name="FILE_SIZE" />?</translation>
+<translation id="2395004545133500011">Kopīgot ar atvērtu kopsavilkuma lapu</translation>
 <translation id="2410754283952462441">Konta izvēle</translation>
 <translation id="2414886740292270097">Tumšs</translation>
 <translation id="2421705177906985956">Pašlaik nav parādāmu vietņu</translation>
@@ -645,6 +646,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chrome datus sa
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Grāmatzīme tika saglabāta mapē “<ph name="FOLDER_NAME" />”. Tā tika saglabāta tikai šajā ierīcē.}zero{Grāmatzīmes tika saglabātas mapē “<ph name="FOLDER_NAME" />”. Tās tika saglabātas tikai šajā ierīcē.}one{Grāmatzīmes tika saglabātas mapē “<ph name="FOLDER_NAME" />”. Tās tika saglabātas tikai šajā ierīcē.}other{Grāmatzīmes tika saglabātas mapē “<ph name="FOLDER_NAME" />”. Tās tika saglabātas tikai šajā ierīcē.}}</translation>
 <translation id="4484496141267039529">Nav savienojuma. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="4487967297491345095">Visi lietotnes Chrome dati tiks neatgriezeniski izdzēsti. Tas attiecas uz visiem failiem, iestatījumiem, kontiem, datu bāzēm un citiem datiem.</translation>
+<translation id="4489640160615759754">Kopīgot ar kopsavilkuma lapu</translation>
 <translation id="4494806687727322324">Jūsu administrators ir ieslēdzis paroļu saglabāšanu.</translation>
 <translation id="4508528996305412043">Plūsmas kartītes izvēlne ir atvērta</translation>
 <translation id="4509501256689523862">To, vai pārlūkošanas laikā jums rādītā reklāma tiek personalizēta, nosaka šis iestatījums, <ph name="BEGIN_LINK_1" />reklāmu tēmas<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />sīkfailu iestatījumi<ph name="END_LINK_2" />, kā arī tas, vai atvērtajā vietnē tiek veikta reklāmu personalizēšana.</translation>
@@ -654,6 +656,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chrome datus sa
 <translation id="4521489764227272523">Atlasītie dati ir noņemti no pārlūka Chrome un jūsu sinhronizētajām ierīcēm.
 
 Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> var būt citu veidu pārlūkošanas vēstures dati, piemēram, meklēšanas vaicājumi un darbības citos Google pakalpojumos.</translation>
+<translation id="452279259461584111">Kopīgot ar aizvērtu kopsavilkuma lapu</translation>
 <translation id="4523326818319942067">pēdējā stunda</translation>
 <translation id="452750746583162491">Pārskatīt sinhronizētos datus</translation>
 <translation id="4532845899244822526">Mapes izvēlēšanās</translation>

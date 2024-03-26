@@ -257,9 +257,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="7934404985878918282">Zobraziť čitateľský zoznam v prehliadači Chromium</translation>
 <translation id="7971753607796745700">Pridať položku čitateľského zoznamu do prehliadača Chromium</translation>
 <translation id="7980860476903281594">Chromium zdieľa vašu s webmi, pre ktoré to povolíte.</translation>
-<translation id="7990085102929105708">Spôsoby platby a adresy v službe Google Pay nebudú šifrované. História prehliadania z prehliadača Chromium sa nebude synchronizovať.
-
-Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Ak chcete dostávať užitočné tipy pre prehliadač Chromium, zapnite upozornenia v nastaveniach systému iOS.</translation>
 <translation id="7995166854192397899">Návrhy sú založené na aktivite prehliadania vo vašich iných zariadeniach. Ak ich chcete dostávať, prihláste sa do prehliadača Chromium v každom z nich.</translation>
 <translation id="800195749539500647">Využívajte Chromium naplno</translation>
@@ -287,14 +284,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="8685813584220679697">Prihláste sa na tomto webe a v prehliadači Chromium.</translation>
 <translation id="8730503818204408000">Otvorí nastavenia prehliadača Chromium, aby bolo možné Chromium nakonfigurovať ako predvolený prehliadač.</translation>
 <translation id="8742300022028858275">Otvoriť najnovšiu kartu v prehliadači Chromium</translation>
-<translation id="8747378496147986285">Keď túto možnosť zapnete:
-<ph name="BEGIN_INDENT" />  • budete pomáhať zlepšovať Chromium pre ľudí, ktorí ho používajú rovnako ako vy.<ph name="END_INDENT" />
-
-
-Čo je potrebné vziať do úvahy:
-<ph name="BEGIN_INDENT" />  • Informácie o vašom používaní prehliadača Chromium sa odosielajú Googlu, ale nie sú s vami spojené.
-  • V prípade pádu prehliadača Chromium môžu podrobnosti o páde zahŕňať niektoré osobné údaje.
-  • Ak zapnete synchronizáciu, metriky môžu zahŕňať aj informácie o webových adresách, ktoré navštívite.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Člen vašej rodiny nemôže momentálne dostávať heslá. Požiadajte ho, aby aktualizoval Chromium a synchronizoval svoje heslá. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Tento účet bude spolu so všetkými neuloženými údajmi odstránený z prehliadača Chromium.</translation>
 <translation id="88376265765385899">Otvorí záložky v prehliadači Chromium.</translation>

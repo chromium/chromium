@@ -257,9 +257,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca Twoje hasło wielow
 <translation id="7934404985878918282">Zobacz listę Do przeczytania w Chromium</translation>
 <translation id="7971753607796745700">Dodaj element listy Do przeczytania do Chromium</translation>
 <translation id="7980860476903281594">Chromium udostępnia Twoją lokalizację witrynom, którym zgadzasz się ją ujawnić.</translation>
-<translation id="7990085102929105708">Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chromium nie będzie synchronizowana.
-
-Twoje zaszyfrowane dane może odczytać tylko osoba znająca Twoje hasło wielowyrazowe. To hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło wielowyrazowe lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Aby otrzymywać przydatne wskazówki dotyczące Chromium, włącz powiadomienia w ustawieniach iOS.</translation>
 <translation id="7995166854192397899">Sugestie są tworzone na podstawie Twojej aktywności związanej z przeglądaniem na innych urządzeniach. Aby otrzymywać sugestie, zaloguj się w Chromium na wszystkich swoich urządzeniach.</translation>
 <translation id="800195749539500647">Wykorzystaj maksymalnie potencjał Chromium</translation>
@@ -287,15 +284,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na s
 <translation id="8685813584220679697">Zaloguj się w na tej stronie i w Chromium.</translation>
 <translation id="8730503818204408000">Otwiera opcję Chromium pozwalającą ustawić Chromium jako przeglądarkę domyślną.</translation>
 <translation id="8742300022028858275">Otwórz moją ostatnio używaną kartę w Chromium</translation>
-<translation id="8747378496147986285">Po włączeniu:
-<ph name="BEGIN_INDENT" />  • Pomagaj w udoskonalaniu Chromium pod kątem potrzeb użytkowników, którzy korzystają z przeglądarki w taki sam sposób jak Ty.<ph name="END_INDENT" />
-
-Pamiętaj, że:
-<ph name="BEGIN_INDENT" />  • Do Google są wysyłane informacje o tym, jak używasz Chromium, ale nie są one powiązane z Tobą.
-
-  • Jeśli Chromium ulegnie awarii, szczegółowe informacje o problemie mogą zawierać niektóre dane osobowe.
-
-  • Jeśli włączysz synchronizację, dane mogą też zawierać informacje o adresach URL, które odwiedzasz.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">W tej chwili członek Twojej grupy rodzinnej nie może otrzymać haseł. Poproś go, aby zaktualizował Chromium i zsynchronizował hasła. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">To konto razem z wszelkimi niezapisanymi danymi zostanie usunięte z Chromium.</translation>
 <translation id="88376265765385899">Otwiera zakładki w Chromium.</translation>

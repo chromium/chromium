@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">O Chrome vai detectar números de rastreamento nos sites que você visitar e mostrar atualizações de pacotes na página "Nova guia". O número de rastreamento do pacote e o nome do site serão enviados ao Google para fornecer esse recurso e melhorar os recursos de compras para todos. É possível atualizar essa opção a qualquer momento nas <ph name="BEGIN_LINK" />Configurações de rastreamento de pacote<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Usar o Chrome por padrão</translation>
 <translation id="1105362920864247682">Limpar dados de navegação no Chrome.</translation>
-<translation id="1113057722807951993">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay.
-
-Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">A senha será salva no Gerenciador de senhas do Google da conta <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Abra o menu do Google Chrome</translation>
 <translation id="1180362651362502943">Continue usando os dados do Chrome na sua Conta do Google.</translation>
@@ -87,9 +84,6 @@ Considerações:
 <translation id="2876628302275096482">Saiba mais sobre <ph name="BEGIN_LINK" />como o Chrome mantém a privacidade dos seus dados<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Abrir configurações do Chrome</translation>
 <translation id="2957447865124070833">Selecione o <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
-<translation id="2988274366244053197">As formas de pagamento e os endereços do Google Pay não serão criptografados. O histórico de navegação do Chrome não será sincronizado.
-
-Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa senha não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chrome serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
 <translation id="309672519329227863">Acesse suas senhas do Chrome e muito mais em outros apps.</translation>
 <translation id="3146109040683991651">Definir o Chrome como o navegador padrão</translation>
@@ -305,15 +299,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="8891935667620843985">Defina o Chrome como seu navegador padrão para abrir links nele automaticamente.</translation>
 <translation id="8897749957032330183">As senhas são salvas no Gerenciador de senhas do Google neste dispositivo.</translation>
 <translation id="8949681853939555434">Definir o Chrome como seu navegador padrão</translation>
-<translation id="8969290730818637510">Quando ativada, essa configuração:
-<ph name="BEGIN_INDENT" />  • ajuda a melhorar o Chrome para as pessoas que o usam da mesma forma que você.<ph name="END_INDENT" />
-
-Considerações:
-<ph name="BEGIN_INDENT" />  • São enviadas ao Google informações sobre seu uso do Chrome, mas elas não são vinculadas a você.
-
-  • Se o Chrome falhar, os detalhes sobre a falha poderão incluir algumas informações pessoais.
-
-  • Se você ativar a sincronização, as métricas também poderão incluir informações sobre os URLs que você acessa.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Abrir na navegação anônima do Chrome</translation>
 <translation id="9071207983537882274">Abre as configurações do Chrome.</translation>
 <translation id="9112744793181547300">Definir o Chrome como padrão?</translation>

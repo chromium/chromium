@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome tunnistaa seurantanumerot avaamillasi sivustoilla ja näyttää pakettien päivitykset Uusi välilehti ‐sivulla. Paketin seurantanumero ja verkkosivuston nimi lähetetään Googlelle tämän ominaisuuden tarjoamista ja Google Shopping ‑ominaisuuksien parantamista varten. Voit muuttaa tätä milloin tahansa <ph name="BEGIN_LINK" />lähetyksen seuranta-asetuksista<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Chromen käyttö oletuksena</translation>
 <translation id="1105362920864247682">Poista Chromen selausdata.</translation>
-<translation id="1113057722807951993">Tunnuslauseella ei salata Google Payn maksutapoja ja osoitteita.
-
-Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Salasana tallennetaan Googlen Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Avaa Chrome-valikko</translation>
 <translation id="1180362651362502943">Jatka Chrome-datan käyttöä Google-tilillä.</translation>
@@ -87,9 +84,6 @@ Huomioitavaa:
 <translation id="2876628302275096482">Lue lisää siitä, <ph name="BEGIN_LINK" />miten Chrome pitää datasi yksityisenä<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Avaa Chromen asetukset</translation>
 <translation id="2957447865124070833">Valitse <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2988274366244053197">Google Payn maksutapoja ja osoitteita ei salata. Chromen selaushistoriaa ei synkronoida.
-
-Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Koska kirjaudut ulos verkkotunnuksen <ph name="SIGNOUT_MANAGED_DOMAIN" /> ylläpitämältä tililtä, Chrome-datasi poistetaan tältä laitteelta. Se säilyy edelleen Google-tililläsi.</translation>
 <translation id="309672519329227863">Käytä Chrome-salasanojasi ja muita ominaisuuksia eri sovelluksissa.</translation>
 <translation id="3146109040683991651">Aseta Chrome oletusselaimeksi</translation>
@@ -305,13 +299,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="8891935667620843985">Voit avata linkkejä Chromessa automaattisesti tekemällä siitä oletusselainsovelluksesi.</translation>
 <translation id="8897749957032330183">Salasanat tallennetaan Google Salasanoihin tällä laitteella.</translation>
 <translation id="8949681853939555434">Valitse Chrome oletusselaimeksi</translation>
-<translation id="8969290730818637510">Kun se on päällä:
-<ph name="BEGIN_INDENT" />  • Auta tekemään Chromesta parempi muille, jotka käyttävät sitä samoin kuin sinä<ph name="END_INDENT" />
-
-Huomioitavaa:
-<ph name="BEGIN_INDENT" />  • Chromen käytöstä lähetetään tietoja Googlelle, mutta niitä ei liitetä sinuun
-  • Chromen kaatumisesta kerättävät tiedot saattavat sisältää henkilökohtaisia tietoja
-  • Jos laitat synkronoinnin päälle, tiedot voivat koskea myös avaamiasi URL-osoitteita<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Avaa Chromen incognito-tilassa</translation>
 <translation id="9071207983537882274">Avaa Asetukset Chromessa.</translation>
 <translation id="9112744793181547300">Valitaanko Chrome oletukseksi?</translation>

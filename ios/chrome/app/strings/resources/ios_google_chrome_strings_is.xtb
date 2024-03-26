@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome mun greina rakningarnúmer á vefsvæðum sem þú opnar og birta þér fréttir af pökkum á síðu nýrra flipa. Rakningarnúmer pakkans og heiti vefsvæðisins verða send til Google í því skyni að veita þennan eiginleika og bæta verslunareiginleika Google fyrir alla. Þú getur uppfært þetta hvenær sem er í <ph name="BEGIN_LINK" />stillingum pakkarakningar<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Nota Chrome sjálfgefið</translation>
 <translation id="1105362920864247682">Hreinsa vefskoðunargögn í Chrome.</translation>
-<translation id="1113057722807951993">Dulkóðun aðgangsorða felur ekki í sér greiðslumáta og heimilisföng frá Google Pay.
-
-Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Aðgangsorðið verður vistað í aðgangsorðastjórnun Google fyrir <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Opnaðu Chrome-valmyndina</translation>
 <translation id="1180362651362502943">Haltu áfram að nota Chrome-gögnin á Google-reikningnum þínum.</translation>
@@ -87,9 +84,6 @@ Hafðu í huga:
 <translation id="2876628302275096482">Nánar um <ph name="BEGIN_LINK" />hvernig Chrome heldur gögnunum þínum leyndum<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Opnaðu stillingar Chrome</translation>
 <translation id="2957447865124070833">Veldu <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2988274366244053197">Upplýsingar um greiðslumáta og heimilisföng frá Google Pay verða ekki dulkóðaðar. Vafraferill Chrome samstillist ekki.
-
-Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til né vistað hjá Google. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Vegna þess að þú ert að skrá þig út af reikningi sem stýrt er af <ph name="SIGNOUT_MANAGED_DOMAIN" /> verður Chrome gögnum þínum eytt úr þessu tæki. Gögnin verða áfram geymd á Google reikningnum þínum.</translation>
 <translation id="309672519329227863">Nálgastu Chrome-aðgangsorðin þín og fleira í öðrum forritum.</translation>
 <translation id="3146109040683991651">Nota Chrome sem sjálfgefinn vafra</translation>
@@ -305,13 +299,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="8891935667620843985">Þú getur opnað tengla sjálfkrafa í Chrome með því að stilla það sem sjálfgefið vafraforrit.</translation>
 <translation id="8897749957032330183">Aðgangsorð eru vistuð í Google aðgangsorðastjórnun í þessu tæki.</translation>
 <translation id="8949681853939555434">Stilltu Chrome sem sjálfgefinn vafra</translation>
-<translation id="8969290730818637510">Þegar kveikt er á þessu:
-<ph name="BEGIN_INDENT" />  • Hjálpaðu til við að bæta Chrome fyrir fólk sem notar það eins og þú.<ph name="END_INDENT" />
-
-Hafðu í huga:
-<ph name="BEGIN_INDENT" />  • Upplýsingar um notkun þína á Chrome eru sendar til Google en eru ekki tengdar við þig.
-  • Ef Chrome hrynur gætu tilteknar persónuupplýsingar komið fram í upplýsingum um hrunið.
-  • Ef þú kveikir að samstillingu gætu mæligildi innihaldið upplýsingar um vefslóðir sem þú ferð á.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Opna í huliðsstillingu Chrome</translation>
 <translation id="9071207983537882274">Opnar stillingarnar í Chrome.</translation>
 <translation id="9112744793181547300">Stilla Chrome sem sjálfgefið?</translation>

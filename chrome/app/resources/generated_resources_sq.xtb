@@ -3504,6 +3504,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3660234220361471169">Jo e besuar</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{U gjet 1 fjalëkalim ekzistues}other{U gjetën {NUM_PASSWORDS} fjalëkalime ekzistuese}}</translation>
 <translation id="3662207097851752847">Konfirmo "Llogarinë tënde të Google" në telefonin tënd</translation>
+<translation id="3663417513679360795">Më shumë informacione për aktivizimin e ngarkimit paraprak standard</translation>
 <translation id="3664511988987167893">Ikona e shtesës</translation>
 <translation id="3665100783276035932">Shumica e sajteve do të punojnë siç pritet</translation>
 <translation id="3665301845536101715">Hape në panelin anësor</translation>
@@ -3593,6 +3594,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3720543739123045680">Skedat e tjera ndajnë një proces me këtë skedë, gjë që mund të rezultojë në një përvojë të papritur me DevTools.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Ti dhe Google</translation>
+<translation id="3721178866505920080">Më shumë informacione për aktivizimin e ngarkimit paraprak të zgjeruar</translation>
 <translation id="3722108462506185496">Gabim në nisjen e shërbimit të pajisjes virtuale. Provo sërish.</translation>
 <translation id="3722624153992426516">U mor udhëzimi: <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3724897774652282549">Plotëso formularin</translation>

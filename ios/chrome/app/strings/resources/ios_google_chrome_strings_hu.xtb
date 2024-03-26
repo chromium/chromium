@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">A Chrome észleli a nyomon követési számokat az Ön által felkeresett webhelyeken, és csomagokkal kapcsolatos friss információkat jelenít meg az Új lap oldalon. A csomagkövetési számot és a webhely nevét elküldi a rendszer a Google-nak a funkció biztosítása, valamint a Google vásárlási funkcióinak minden felhasználó számára való továbbfejlesztése érdekében. Ezt bármikor módosíthatja a <ph name="BEGIN_LINK" />csomagkövetési beállítások<ph name="END_LINK" /> között.</translation>
 <translation id="1085696779717592361">A Chrome használata alapértelmezettként</translation>
 <translation id="1105362920864247682">A Chrome-ban lévő böngészési adatok törlése.</translation>
-<translation id="1113057722807951993">Az összetett jelszóval való titkosítás nem tartalmazza a Google Payben megadott fizetési módokat és címeket.
-
-A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Jelszavát elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>
 <translation id="1177414119866731261">Chrome-menü megnyitása</translation>
 <translation id="1180362651362502943">Továbbra is használhatja a Google-fiókjában lévő Chrome-adatokat.</translation>
@@ -87,9 +84,6 @@ Megjegyzések:
 <translation id="2876628302275096482">További információ arról, <ph name="BEGIN_LINK" />hogyan gondoskodik az Ön adatainak védelméről a Chrome<ph name="END_LINK" />.</translation>
 <translation id="2952581218264071393">1. Nyissa meg a Chrome beállításait.</translation>
 <translation id="2957447865124070833">Válassza ki a <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> böngészőt.</translation>
-<translation id="2988274366244053197">A Google Payből származó fizetési módok és címek nem lesznek titkosítva. A Chrome böngészési előzményei nem lesznek szinkronizálva.
-
-Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Mivel kijelentkezik a(z) <ph name="SIGNOUT_MANAGED_DOMAIN" /> által felügyelt fiókból, törli az eszközön található Chrome-adatokat. Ezek az adatok Google-fiókjában továbbra is megmaradnak.</translation>
 <translation id="309672519329227863">Hozzáférhet Chrome-jelszavaihoz és egyebekhez más alkalmazásokban.</translation>
 <translation id="3146109040683991651">A Chrome beállítása alapértelmezett böngészőként</translation>
@@ -305,14 +299,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8891935667620843985">Ha szeretné, hogy automatikusan a Chrome nyissa meg a linkeket, állítsa be alapértelmezett böngészőként.</translation>
 <translation id="8897749957032330183">A jelszavakat ezen az eszközön menti a rendszer a Google Jelszókezelőbe.</translation>
 <translation id="8949681853939555434">A Chrome beállítása alapértelmezett böngészőként</translation>
-<translation id="8969290730818637510">Ha be van kapcsolva:
-<ph name="BEGIN_INDENT" />  • Segíthet, hogy továbbfejlesszük a Chrome-ot azok számára, akik Önhöz hasonló módon használják.<ph name="END_INDENT" />
-
-Fontos tudnivalók:
-<ph name="BEGIN_INDENT" />  • A rendszer az Ön Chrome-használatáról küld információt a Google-nak, ez az információ azonban nem köthető Önhöz.
-  • Ha a Chrome összeomlik, az összeomlással kapcsolatos adatok között szerepelhetnek bizonyos személyes információk.
-
-  • Ha bekapcsolja a szinkronizálást, a mutatók tartalmazhatnak az Ön által felkeresett URL-ekkel kapcsolatos adatokat is.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Megnyitás a Chrome inkognitó módjában</translation>
 <translation id="9071207983537882274">Megnyitja a Chrome beállításait.</translation>
 <translation id="9112744793181547300">Beállítja a Chrome-ot alapértelmezettként?</translation>

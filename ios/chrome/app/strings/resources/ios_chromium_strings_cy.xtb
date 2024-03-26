@@ -257,9 +257,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7934404985878918282">Gweld Rhestr Ddarllen Cromiwm</translation>
 <translation id="7971753607796745700">Ychwanegu Eitem Rhestr Ddarllen at Chromium</translation>
 <translation id="7980860476903281594">Mae Chromium yn rhannu eich lleoliad â gwefannau rydych yn eu caniatáu.</translation>
-<translation id="7990085102929105708">Ni fydd dulliau talu a chyfeiriadau o Google Pay yn cael eu hamgryptio. Ni fydd hanes pori o Chromium yn cysoni.
-
-Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chromium yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">I gael awgrymiadau defnyddiol Chromium, trowch hysbysiadau ymlaen yn eich gosodiadau iOS.</translation>
 <translation id="7995166854192397899">Mae awgrymiadau yn seiliedig ar eich gweithgarwch pori ar eich dyfeisiau eraill. I gael awgrymiadau, mewngofnodwch i Chromium ar bob un o'ch dyfeisiau.</translation>
 <translation id="800195749539500647">Manteisio i'r eithaf ar Chromium</translation>
@@ -287,15 +284,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chromium yn eich
 <translation id="8685813584220679697">Mewngofnodi i'r wefan hon a Chromium.</translation>
 <translation id="8730503818204408000">Yn agor y Gosodiad Chromium i osod Chromium fel y Porwr Diofyn.</translation>
 <translation id="8742300022028858275">Agor Fy Nhab Diweddaraf yn Chromium</translation>
-<translation id="8747378496147986285">Pan fydd ymlaen:
-<ph name="BEGIN_INDENT" />  • Helpwch i wneud Chromium yn well i bobl sy'n ei ddefnyddio yn yr un ffordd â chi.<ph name="END_INDENT" />
-
-Pethau i'w hystyried:
-<ph name="BEGIN_INDENT" />  • Anfonir gwybodaeth at Google am eich defnydd Chromium, ond nid yw'n gysylltiedig â chi.
-
-  • Os bydd Chromium yn torri, gall manylion y toriad gynnwys rhywfaint o wybodaeth bersonol.
-
-  • Os ydych yn troi cysoni ymlaen, gall metrigau hefyd gynnwys gwybodaeth am gyfeiriadau URL rydych yn ymweld â nhw.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Ni all aelod o'ch teulu dderbyn cyfrineiriau ar hyn o bryd. Gofynnwch iddynt ddiweddaru Chromium a chysoni eu cyfrineiriau. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Bydd y cyfrif hwn ac unrhyw ddata sydd heb eu cadw yn cael eu tynnu o Chromium.</translation>
 <translation id="88376265765385899">Yn agor y nodau tudalen Chromium.</translation>

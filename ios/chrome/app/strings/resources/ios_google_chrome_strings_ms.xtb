@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome akan mengesan nombor penjejakan pada laman yang anda lawati dan menunjukkan kepada anda kemaskinian pakej pada halaman Tab Baharu. Nombor penjejakan bungkusan dan nama laman web akan dihantar kepada Google untuk menyediakan ciri ini dan untuk meningkatkan ciri beli-belah untuk semua. Anda boleh mengemaskinikan tetapan ini pada bila-bila masa dalam <ph name="BEGIN_LINK" />Tetapan Penjejakan Bungkusan<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Gunakan Chrome Secara Lalai</translation>
 <translation id="1105362920864247682">Kosongkan Data Semakan Imbas dalam Chrome.</translation>
-<translation id="1113057722807951993">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat daripada Google Pay.
-
-Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Kata laluan anda akan disimpan pada Pengurus Kata Laluan Google untuk <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Buka Menu Chrome</translation>
 <translation id="1180362651362502943">Kekal menggunakan data Chrome dalam Google Account anda.</translation>
@@ -87,9 +84,6 @@ Perkara yang perlu dipertimbangkan:
 <translation id="2876628302275096482">Ketahui lebih lanjut tentang <ph name="BEGIN_LINK" />cara Chrome mengekalkan data anda peribadi<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Buka Tetapan Chrome</translation>
 <translation id="2957447865124070833">Pilih <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2988274366244053197">Kaedah pembayaran dan alamat daripada Google Pay tidak akan disulitkan. Sejarah penyemakan imbas daripada Chrome tidak akan disegerakkan.
-
-Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersulit anda. Frasa laluan tidak dihantar kepada atau disimpan oleh Google. Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Oleh sebab anda log keluar daripada akaun yang diurus oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chrome anda akan dipadamkan daripada peranti ini. Data anda akan kekal dalam Google Account anda.</translation>
 <translation id="309672519329227863">Akses kata laluan Chrome anda dan pelbagai lagi merentas apl lain.</translation>
 <translation id="3146109040683991651">Tetapkan Chrome sebagai Penyemak Imbas Lalai</translation>
@@ -305,15 +299,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="8891935667620843985">Anda boleh membuka pautan dalam Chrome secara automatik dengan menjadikan Chrome sebagai Apl Penyemak Imbas Lalai anda.</translation>
 <translation id="8897749957032330183">Kata laluan disimpan pada Google Password Manager pada peranti ini.</translation>
 <translation id="8949681853939555434">Tetapkan Chrome sebagai Penyemak Imbas Lalai anda</translation>
-<translation id="8969290730818637510">Apabila dihidupkan:
-<ph name="BEGIN_INDENT" />  • Bantu jadikan Chrome lebih baik untuk orang yang menggunakannya seperti anda.<ph name="END_INDENT" />
-
-Perkara yang perlu dipertimbangkan:
-<ph name="BEGIN_INDENT" />  • Maklumat tentang penggunaan Chrome anda dihantar kepada Google, tetapi maklumat ini tidak terikat dengan anda.
-
-  • Jika Chrome ranap, butiran tentang keranapan mungkin termasuk beberapa maklumat peribadi.
-
-  • Jika anda menghidupkan penyegerakan, metrik juga mungkin merangkumi maklumat tentang URL yang anda lawati.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Buka dalam Inkognito Chrome</translation>
 <translation id="9071207983537882274">Buka Tetapan dalam Chrome.</translation>
 <translation id="9112744793181547300">Tetapkan Chrome sebagai Penyemak Imbas Lalai?</translation>

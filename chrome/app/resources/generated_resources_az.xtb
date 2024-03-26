@@ -3505,6 +3505,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3660234220361471169">Güvənilməyən</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 mövcud parol tapıldı}other{{NUM_PASSWORDS} mövcud parol tapıldı}}</translation>
 <translation id="3662207097851752847">Telefonunuzda Google Hesabınızı təsdiqləyin</translation>
+<translation id="3663417513679360795">Standart əvvəlcədən yükləməni aktivləşdirmək haqqında ətraflı məlumat</translation>
 <translation id="3664511988987167893">Arıtırma İkonası</translation>
 <translation id="3665100783276035932">Əksər saytlar düzgün işləməlidir</translation>
 <translation id="3665301845536101715">Yan paneldə açın</translation>
@@ -3594,6 +3595,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3720543739123045680">Digər tablar bu tab ilə proses paylaşır ki, bu da gözlənilməz DevTools təcrübəsi ilə nəticələnə bilər.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Siz və Google</translation>
+<translation id="3721178866505920080">Artırılmış əvvəlcədən yükləməni aktivləşdirmək haqqında ətraflı məlumat</translation>
 <translation id="3722108462506185496">Virtual cihaz xidmətini başlatmaq mümkün olmadı. Sonra yenidən cəhd edin.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> təlimatı alınıb</translation>
 <translation id="3724897774652282549">Formanı doldurun</translation>

@@ -386,7 +386,6 @@
 <translation id="2931440415625410757">แสดงวิธีการ</translation>
 <translation id="2952246431280799028">แตะที่อยู่ค้างไว้</translation>
 <translation id="2952278131021475699">การค้นหาด้วยกล้องโดยใช้ Lens</translation>
-<translation id="2956733177489514605">ลงชื่อเข้าใช้ด้วยบัญชี Google เพื่อซิงค์รหัสผ่านและอื่นๆ</translation>
 <translation id="2958718410589002129">รหัสผ่าน</translation>
 <translation id="2964349545761222050">บล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="2969979262385602596">ไม่สามารถลงชื่อเข้าใช้ได้ โปรดลองอีกครั้งในภายหลัง</translation>
@@ -442,7 +441,6 @@
 <translation id="3244271242291266297">ดด</translation>
 <translation id="3245429137663807393">หากคุณแชร์รายงานการใช้งาน Chrome ด้วย รายงานดังกล่าวจะรวม URL ที่คุณเข้าชม</translation>
 <translation id="3245744387817103524">บันทึกการเปลี่ยนแปลงไม่ได้</translation>
-<translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> จาก <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">ป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="3265534588625245297">จัดการเว็บไซต์ที่คุณติดตาม</translation>
 <translation id="3268451620468152448">แท็บที่เปิดอยู่</translation>
@@ -454,7 +452,6 @@
 <translation id="3305294846493618482">เพิ่มเติม</translation>
 <translation id="3311748811247479259">ปิด</translation>
 <translation id="3324193307694657476">ที่อยู่ 2</translation>
-<translation id="3328801116991980348">ข้อมูลไซต์</translation>
 <translation id="3344485292736684439">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}}</translation>
 <translation id="3348387552617855658">การ์ดนี้ช่วยให้คุณติดตามพัสดุภัณฑ์และให้ข้อมูลอัปเดตที่สำคัญเกี่ยวกับการนำส่งได้</translation>
 <translation id="3349676726073650389">ระบบจะบันทึกเว็บไซต์และการค้นหาที่คุณติดตามไว้ในบัญชี Google คุณจัดการการติดตามในการตั้งค่าได้ทุกเมื่อ</translation>
@@ -562,8 +559,8 @@
 <translation id="3891414008432200754">ราคา</translation>
 <translation id="3892144330757387737">คุณจะเห็นประวัติการเข้าชมที่นี่</translation>
 <translation id="3897092660631435901">เมนู</translation>
-<translation id="3904829425754749514">องค์กรของคุณปิดการซิงค์ คุณจะยังคงเห็นบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ ในอุปกรณ์นี้ หากทำการเปลี่ยนแปลง ระบบจะไม่ซิงค์การเปลี่ยนแปลงนั้นกับบัญชี</translation>
 <translation id="3909222758573607742">บันทึกรหัสผ่านและรายการอื่นๆ ในบัญชี</translation>
+<translation id="3915450441834151894">ข้อมูลเว็บไซต์</translation>
 <translation id="3918585468378680136">กําลังรอข้อมูลสถานะพัสดุภัณฑ์</translation>
 <translation id="3921585859122905677">ตำแหน่งของแถบที่อยู่</translation>
 <translation id="3922310737605261887">ค้นหาข้อความที่คัดลอก</translation>
@@ -593,7 +590,6 @@
 <translation id="4045648459118332842">เรียกข้อมูลรหัสผ่านที่บันทึกไว้ในแอปต่างๆ ด้วยการแตะเพียงครั้งเดียว</translation>
 <translation id="4049507953662678203">ตรวจสอบว่าคุณมีการเชื่อมต่อเครือข่าย และลองอีกครั้ง</translation>
 <translation id="4054572406751135230">ติดตามข่าวสาร กีฬา และอื่นๆ</translation>
-<translation id="4066639687323968621">ลงชื่อเข้าใช้ด้วยบัญชี Google เพื่อซิงค์บุ๊กมาร์ก ประวัติการเข้าชม และอื่นๆ</translation>
 <translation id="4092655288299341041">แสดงความช่วยเหลือ</translation>
 <translation id="4105841739161771091">{count,plural, =1{ลบที่อยู่}other{ลบที่อยู่}}</translation>
 <translation id="4108998448622696017">ตรวจหาและเตือนคุณเมื่อเกิดเหตุการณ์อันตราย</translation>
@@ -617,7 +613,6 @@
 <translation id="4187450337729239226">วางและค้นหา</translation>
 <translation id="4197456013861852807">{count,plural, =1{ข้อมูล {count} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}other{ข้อมูล {count} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}}</translation>
 <translation id="4216918546378735658">ยกเลิก</translation>
-<translation id="4223967053752765281">องค์กรปิดการลงชื่อเข้าใช้ไว้ คุณจะยังคงเห็นบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ ในอุปกรณ์นี้ หากทำการเปลี่ยนแปลง ระบบจะไม่ซิงค์การเปลี่ยนแปลงนั้นกับบัญชี</translation>
 <translation id="422474357428465195">คุณมีปัญหารหัสผ่านหลายรายการที่อาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง</translation>
 <translation id="4232900911558558076">สํารวจเมนูใหม่</translation>
 <translation id="4233831822770018312">แก้ไขสิทธิ์</translation>
@@ -668,7 +663,6 @@
 <translation id="4469324811108161144">หมายเหตุบักทึกอักขระได้สูงสุด <ph name="CHARACTER_LIMIT" /> ตัว</translation>
 <translation id="4469418912670346607">ตั้งค่าต่อ</translation>
 <translation id="4474494258097106883">สร้างขึ้นเพื่อ iPhone ของคุณ</translation>
-<translation id="448433063499977729">ปิดการซิงค์แล้ว</translation>
 <translation id="4488754974567924717">หากรหัสผ่านถูกละเมิด เราจะแจ้งให้คุณทราบ</translation>
 <translation id="4489536976005181779">{count,plural, =1{เพิ่มหน้าลงในเรื่องรออ่านในบัญชีของคุณแล้ว {email}}other{เพิ่มหน้าลงในเรื่องรออ่านในบัญชีของคุณแล้ว {email}}}</translation>
 <translation id="4493604894403585654">คุณลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL" /> คุณหยุดการซิงค์ได้ทุกเมื่อในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
@@ -804,7 +798,6 @@
 <translation id="5118764316110575523">ปิด</translation>
 <translation id="5121618895923301719">คุณติดตามผลิตภัณฑ์นี้อยู่แล้ว บันทึกหน้านี้ไว้ใน<ph name="BEGIN_LINK" />บุ๊กมาร์กอุปกรณ์เคลื่อนที่<ph name="END_LINK" />แล้ว</translation>
 <translation id="512533434554095351">คุณมีปัญหารหัสผ่านหลายรายการ</translation>
-<translation id="5126465625664020024">ลงชื่อเข้าใช้และซิงค์</translation>
 <translation id="5132942445612118989">ซิงค์รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}other{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}}</translation>
 <translation id="5149188072385105201">เพิ่มรหัสผ่าน...</translation>
@@ -924,7 +917,6 @@
 <translation id="5745916533876677730">ไปที่แท็บก่อนหน้า</translation>
 <translation id="574762237186762643">กิจกรรม</translation>
 <translation id="5748177854685749242">จะมาถึงใน <ph name="DATE" /></translation>
-<translation id="5755162682436943950">ออกจากระบบ เปิดกล่องโต้ตอบเพื่อลงชื่อเข้าใช้และเปิดการซิงค์</translation>
 <translation id="5758631781033351321">คุณจะเห็นเรื่องรออ่านที่นี่</translation>
 <translation id="5765456154762864099">เมนู → การตั้งค่า → เบราว์เซอร์เริ่มต้น</translation>
 <translation id="5777888488419460501">บันทึกในบัญชี</translation>
@@ -1035,7 +1027,6 @@
 <translation id="6293101329759844770">หากต้องการเปิด Google Safe Browsing ให้เปิด<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /> จากนั้นแตะ Google Safe Browsing</translation>
 <translation id="629730747756840877">บัญชี</translation>
 <translation id="6321526113093607004">เพิ่มลงในบุ๊กมาร์ก</translation>
-<translation id="6324669097367352121">ตั้งค่าลงชื่อเข้าใช้</translation>
 <translation id="6328337032497818759">ปรับแต่งเมนู</translation>
 <translation id="6331180460633101391">มีรหัสผ่านที่ใช้ซ้ำ <ph name="COUNT" /> รายการ</translation>
 <translation id="6337234675334993532">การเข้ารหัส</translation>
@@ -1221,7 +1212,6 @@
 <translation id="719133302483559673">จัดการความสนใจและความต้องการของคุณ</translation>
 <translation id="7192050974311852563">เริ่มต้นการบันทึก</translation>
 <translation id="7203585745079012652">พูดคำตอบกลับ</translation>
-<translation id="7207023858769244910">ซิงค์เพื่อรับเนื้อหาตามความสนใจของคุณ</translation>
 <translation id="7210568419880432164">เปิดการแจ้งเตือน</translation>
 <translation id="721597782417389033">ชื่อเล่นของบัตรไม่ถูกต้อง</translation>
 <translation id="7221173315674413369">สำรวจฟีเจอร์และเคล็ดลับใหม่ๆ ใน "มีอะไรใหม่"</translation>
@@ -1618,7 +1608,6 @@
 <translation id="9162432979321511934">เปิดการป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="9162941801309769488">เลิกติดตามพัสดุแล้ว</translation>
 <translation id="9165320910061267720">หากต้องการรับการแจ้งเตือนราคาลดลง คุณจะต้องเปิดการแจ้งเตือนในการตั้งค่า iOS</translation>
-<translation id="9172603439892261948">ซิงค์บุ๊กมาร์ก ประวัติการเข้าชม และอื่นๆ</translation>
 <translation id="9177438225260810839">ค้นหาในแท็บที่เปิดอยู่</translation>
 <translation id="9187853111759024059">ปิดแท็บที่ไม่ได้ใช้งานจำนวนกว่า 99 แท็บใช่ไหม</translation>
 <translation id="9188680907066685419">ออกจากระบบบัญชีที่มีการจัดการ</translation>

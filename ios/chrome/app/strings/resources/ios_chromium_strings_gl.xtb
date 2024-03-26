@@ -257,9 +257,6 @@ Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Goo
 <translation id="7934404985878918282">Abre a lista de lectura de Chromium</translation>
 <translation id="7971753607796745700">Engadir o elemento da lista de lectura a Chromium</translation>
 <translation id="7980860476903281594">Chromium comparte a localización cos sitios que queiras.</translation>
-<translation id="7990085102929105708">Non se encriptarán os métodos de pago nin os enderezos de Google Pay. Tampouco se sincronizará o historial de navegación de Chromium.
-
-Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase de acceso. Google non recibirá nin almacenará a frase de acceso. Se esqueces a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chromium da túa conta<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Se queres recibir consellos útiles sobre Chromium, activa as notificacións na configuración de iOS.</translation>
 <translation id="7995166854192397899">As suxestións baséanse na túa actividade de navegación noutros dispositivos. Para recibir suxestións, inicia sesión en Chromium en todos os teus dispositivos.</translation>
 <translation id="800195749539500647">Tira o máximo proveito de Chromium</translation>
@@ -287,15 +284,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="8685813584220679697">Inicia sesión neste sitio e en Chromium.</translation>
 <translation id="8730503818204408000">Abre a configuración de Chromium para definir este navegador como predeterminado.</translation>
 <translation id="8742300022028858275">Abre a pestana máis recente en Chromium</translation>
-<translation id="8747378496147986285">Cando esta opción está activada:
-<ph name="BEGIN_INDENT" />  • Axuda a mellorar Chromium para as persoas que o usan igual ca ti.<ph name="END_INDENT" />
-
-Cuestións que se deben ter en conta:
-<ph name="BEGIN_INDENT" />  • Envíaselle a Google información sobre o uso que fas de Chromium, pero estes datos non están vinculados contigo.
-
-  • Se se produce un erro en Chromium, entre os datos sobre o fallo podería incluírse algunha información persoal.
-
-  • Se activas a sincronización, nas métricas tamén podería figurar información sobre os URL que visitas.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">O membro da túa familia non pode recibir contrasinais agora mesmo. Pídelle que actualice Chromium e sincronice os seus contrasinais. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Esta conta e os datos que estean sen gardar quitaranse de Chromium.</translation>
 <translation id="88376265765385899">Abre os marcadores de Chromium.</translation>

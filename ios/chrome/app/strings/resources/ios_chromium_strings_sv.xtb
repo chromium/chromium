@@ -257,9 +257,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="7934404985878918282">Se läslistan i Chromium</translation>
 <translation id="7971753607796745700">Lägg till ett objekt från läslistan i Chromium</translation>
 <translation id="7980860476903281594">Chromium delar din plats med webbplatser du tillåter.</translation>
-<translation id="7990085102929105708">Betalningsmetoder och adresser från Google Pay krypteras inte. Webbhistorik från Chromium synkroniseras inte.
-
-Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du kontots Chromium-data<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Om du vill få användbara tips om Chromium kan du aktivera aviseringar i iOS-inställningarna.</translation>
 <translation id="7995166854192397899">Förslagen baseras på din webbaktivitet på dina andra enheter. Logga in i Chromium på alla dina enheter om du vill få förslag.</translation>
 <translation id="800195749539500647">Få ut mesta möjliga av Chromium</translation>
@@ -287,13 +284,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="8685813584220679697">Logga in på den här webbplatsen och i Chromium.</translation>
 <translation id="8730503818204408000">Öppnar Chromium-inställningen för att ställa in Chromium som standardwebbläsare.</translation>
 <translation id="8742300022028858275">Öppna Min senaste flik i Chromium</translation>
-<translation id="8747378496147986285">När detta är aktiverat:
-<ph name="BEGIN_INDENT" />  • Du hjälper oss att göra Chromium bättre för den som använder programmet på samma sätt som du.<ph name="END_INDENT" />
-
-Tänk på detta:
-<ph name="BEGIN_INDENT" />  • Information om hur du använder Chromium skickas till Google men kopplas inte till dig.
-  • Om Chromium kraschar kan personliga uppgifter finnas med i kraschinformationen.
-  • Om du aktiverar synkronisering kan mätvärdena även innehålla information om webbadresser du besöker.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Dina familjemedlemmar kan inte ta emot lösenord just nu. Be dem att uppdatera Chromium och synkronisera sina lösenord. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Det här kontot och data som inte har sparats tas bort från Chromium.</translation>
 <translation id="88376265765385899">Öppnar bokmärken i Chromium.</translation>

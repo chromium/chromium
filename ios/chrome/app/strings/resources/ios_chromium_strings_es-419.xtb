@@ -257,9 +257,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="7934404985878918282">Ver la Lista de lectura de Chromium</translation>
 <translation id="7971753607796745700">Agregar el elemento de la Lista de lectura a Chromium</translation>
 <translation id="7980860476903281594">Chromium comparte tu ubicación con los sitios en donde lo permites.</translation>
-<translation id="7990085102929105708">No se encriptarán las formas de pago ni las direcciones de Google Pay. No se sincronizará el historial de navegación de Chromium.
-
-Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Para obtener sugerencias útiles de Chromium, activa las notificaciones en la configuración de iOS.</translation>
 <translation id="7995166854192397899">Las sugerencias se basan en tu actividad de navegación en otros dispositivos. Para obtener sugerencias, accede a Chromium en todos tus dispositivos.</translation>
 <translation id="800195749539500647">Aprovecha Chromium al máximo</translation>
@@ -287,15 +284,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8685813584220679697">Accede a este sitio y a Chromium.</translation>
 <translation id="8730503818204408000">Abre la configuración de Chromium para establecer Chromium como navegador predeterminado.</translation>
 <translation id="8742300022028858275">Abrir Mi pestaña más reciente en Chromium</translation>
-<translation id="8747378496147986285">Cuando se activa:
-<ph name="BEGIN_INDENT" />  • Ayuda a mejorar Chromium para las personas que lo usan de la misma forma que tú.<ph name="END_INDENT" />
-
-Aspectos para tener en cuenta:
-<ph name="BEGIN_INDENT" />  • Se envía información sobre tu uso de Chromium a Google, pero no está vinculada a ti.
-
-  • Si Chromium falla, los detalles sobre lo ocurrido pueden incluir información personal.
-
-  • Si desactivas la sincronización, las métricas también pueden incluir información sobre las URLs que visitas.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">El miembro de tu familia no puede recibir contraseñas en este momento. Pídele que actualice Chromium y sincronice sus contraseñas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Esta cuenta y todos los datos sin guardar se quitarán de Chromium.</translation>
 <translation id="88376265765385899">Abre los favoritos de Chromium.</translation>

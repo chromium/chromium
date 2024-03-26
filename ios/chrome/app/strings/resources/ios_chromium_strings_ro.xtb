@@ -257,9 +257,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="7934404985878918282">Afișează Lista de lecturi Chromium</translation>
 <translation id="7971753607796745700">Adaugă un element din lista de lecturi în Chromium</translation>
 <translation id="7980860476903281594">Chromium trimite locația ta către site-urile pe care le permiți.</translation>
-<translation id="7990085102929105708">Metodele de plată și adresele din Google Pay nu vor fi criptate. Istoricul de navigare din Chromium nu se va sincroniza.
-
-Numai un utilizator care deține expresia ta de acces îți poate citi datele criptate. Expresia de acces nu este trimisă la sau stocată de Google. Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chromium din cont<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Pentru a primi sfaturi utile privind Chromium, activează notificările din setările iOS.</translation>
 <translation id="7995166854192397899">Sugestiile se bazează pe activitatea de navigare de pe celelalte dispozitive. Pentru a primi sugestii, conectează-te la Chromium pe toate dispozitivele.</translation>
 <translation id="800195749539500647">Profită din plin de Chromium</translation>
@@ -287,15 +284,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chromi
 <translation id="8685813584220679697">Conectează-te la acest site și la Chromium.</translation>
 <translation id="8730503818204408000">Deschide setarea Chromium pentru a seta Chromium ca browser prestabilit.</translation>
 <translation id="8742300022028858275">Deschide cea mai recentă filă în Chromium</translation>
-<translation id="8747378496147986285">Când opțiunea este activă
-<ph name="BEGIN_INDENT" />  • Contribui la îmbunătățirea Chromium pentru cei care-l folosesc în mod similar cu tine.<ph name="END_INDENT" />
-
-De reținut
-<ph name="BEGIN_INDENT" />  • Google primește informații despre modul în care folosești Chromium, dar acestea nu pot fi asociate cu tine.
-
-  • Dacă Chromium se blochează, detaliile despre blocare pot include unele informații cu caracter personal.
-
-  • Dacă activezi sincronizarea, valorile pot să includă și informații despre adresele URL pe care le accesezi.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Momentan, membrul familiei nu poate primi parole. Solicită-i să actualizeze Chromium și să-și sincronizeze parolele. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Acest cont și toate datele nesalvate vor fi eliminate din Chromium.</translation>
 <translation id="88376265765385899">Deschide marcajele Chromium.</translation>

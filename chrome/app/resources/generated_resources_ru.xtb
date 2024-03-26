@@ -3508,6 +3508,7 @@
 <translation id="3660234220361471169">Недоверенный</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Обнаружен 1 существующий пароль}one{Обнаружен {NUM_PASSWORDS} существующий пароль}few{Обнаружено {NUM_PASSWORDS} существующих пароля}many{Обнаружено {NUM_PASSWORDS} существующих паролей}other{Обнаружено {NUM_PASSWORDS} существующих пароля}}</translation>
 <translation id="3662207097851752847">Подтвердите аккаунт Google на телефоне</translation>
+<translation id="3663417513679360795">Подробнее о том, как включить стандартную предзагрузку</translation>
 <translation id="3664511988987167893">Значок расширения</translation>
 <translation id="3665100783276035932">Большинство сайтов работают без изменений</translation>
 <translation id="3665301845536101715">Открыть на боковой панели</translation>
@@ -3597,6 +3598,7 @@
 <translation id="3720543739123045680">Эта вкладка запущена в одном процессе вместе с другими вкладками. Из-за этого инструменты разработчика могут работать не так, как ожидается.</translation>
 <translation id="372062398998492895">Принтеры CUPS</translation>
 <translation id="3721119614952978349">Я и Google</translation>
+<translation id="3721178866505920080">Подробнее о том, как включить расширенную предзагрузку</translation>
 <translation id="3722108462506185496">Не удалось запустить сервис виртуальной машины. Повторите попытку.</translation>
 <translation id="3722624153992426516">Получена инструкция: <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
 <translation id="3724897774652282549">Заполните форму</translation>

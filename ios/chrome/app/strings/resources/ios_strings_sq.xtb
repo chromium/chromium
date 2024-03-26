@@ -386,7 +386,6 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="2931440415625410757">Shfaq udhëzimet</translation>
 <translation id="2952246431280799028">Prek dhe mbaj të shtypur një adresë.</translation>
 <translation id="2952278131021475699">Kërkimi me kamerën e "Lentes"</translation>
-<translation id="2956733177489514605">Identifikohu me "Llogarinë tënde të Google" për të sinkronizuar fjalëkalimet e tua etj.</translation>
 <translation id="2958718410589002129">Fjalëkalimet</translation>
 <translation id="2964349545761222050">Blloko kukit e palëve të treta</translation>
 <translation id="2969979262385602596">Nuk mund të identifikohej. Provo përsëri.</translation>
@@ -442,7 +441,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Nëse ndan edhe raportet e përdorimit të Chrome, ato raporte përfshijnë URL-të që viziton</translation>
 <translation id="3245744387817103524">Ndryshimi yt nuk mund të ruhej.</translation>
-<translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> nga <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Plotëso automatikisht fjalëkalimet</translation>
 <translation id="3265534588625245297">Menaxho faqet që ndjek</translation>
 <translation id="3268451620468152448">Hap skedat</translation>
@@ -454,7 +452,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3305294846493618482">më shumë</translation>
 <translation id="3311748811247479259">Joaktiv</translation>
 <translation id="3324193307694657476">Adresa 2</translation>
-<translation id="3328801116991980348">Informacionet rreth sajtit</translation>
 <translation id="3344485292736684439">{count,plural, =1{Faqeshënuesi u ruajt te "{title}" në llogarinë tënde, {email}}other{Faqeshënuesit u ruajtën te "{title}" në llogarinë tënde, {email}}}</translation>
 <translation id="3348387552617855658">Kjo kartë të ndihmon të gjurmosh pakot e tua dhe të jep përditësime të rëndësishme për dorëzimin.</translation>
 <translation id="3349676726073650389">Sajtet dhe kërkimet që ndjek ruhen në "Llogarinë tënde të Google". Mund t'i menaxhosh ndjekjet te cilësimet në çdo kohë.</translation>
@@ -562,8 +559,8 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3891414008432200754">Çmimi</translation>
 <translation id="3892144330757387737">Këtu do të gjesh historikun tënd</translation>
 <translation id="3897092660631435901">Menyja</translation>
-<translation id="3904829425754749514">Organizata jote e ka çaktivizuar sinkronizimin. Mund të shikosh ende faqeshënuesit, historikun, fjalëkalimet dhe cilësime të tjera në këtë pajisje. Nëse bën ndryshime, ato nuk do të sinkronizohen me llogarinë tënde.</translation>
 <translation id="3909222758573607742">Ruaj fjalëkalimet dhe artikujt e tjerë në llogari</translation>
+<translation id="3915450441834151894">Informacionet rreth sajtit</translation>
 <translation id="3918585468378680136">Statusi i pakos po merret</translation>
 <translation id="3921585859122905677">Pozicioni i Shiritit të Adresave</translation>
 <translation id="3922310737605261887">Kërko për tekstin e kopjuar</translation>
@@ -593,7 +590,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4045648459118332842">Merri fjalëkalimet e tua të ruajtura në çdo aplikacion me një trokitje</translation>
 <translation id="4049507953662678203">Sigurohu që ke një lidhje interneti dhe provo përsëri.</translation>
 <translation id="4054572406751135230">Qëndro i përditësuar për lajmet, sportet etj.</translation>
-<translation id="4066639687323968621">Identifikohu me "Llogarinë tënde të Google" për të sinkronizuar faqeshënuesit, historikun tënd etj.</translation>
 <translation id="4092655288299341041">Shfaq ndihmën</translation>
 <translation id="4105841739161771091">{count,plural, =1{Fshi adresën}other{Fshi adresat}}</translation>
 <translation id="4108998448622696017">Zbulon dhe të paralajmëron rreth ngjarjeve të rrezikshme kur ato ndodhin.</translation>
@@ -617,7 +613,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4187450337729239226">Ngjit dhe kërko</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} artikull është ruajtur vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje atë në "Llogarinë tënde të Google", {email}.}other{{count} artikuj janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google", {email}.}}</translation>
 <translation id="4216918546378735658">Anulo</translation>
-<translation id="4223967053752765281">Organizata jote ka e çaktivizuar identifikimin. Mund të shikosh ende faqeshënuesit, historikun, fjalëkalimet dhe cilësime të tjera në këtë pajisje. Nëse bën ndryshime, ato nuk do të sinkronizohen me llogarinë tënde.</translation>
 <translation id="422474357428465195">Ke disa probleme me fjalëkalimet që mund ta rrezikojnë sigurinë tënde.</translation>
 <translation id="4232900911558558076">Eksploro menynë e re</translation>
 <translation id="4233831822770018312">Modifiko lejet</translation>
@@ -668,7 +663,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4469324811108161144">Shënimet mund të ruajnë deri në <ph name="CHARACTER_LIMIT" /> karaktere.</translation>
 <translation id="4469418912670346607">Vazhdo konfigurimin</translation>
 <translation id="4474494258097106883">Krijuar për iPhone tënd</translation>
-<translation id="448433063499977729">Sinkronizimi është çaktivizuar</translation>
 <translation id="4488754974567924717">Nëse fjalëkalimet e tua janë komprometuar, do të të njoftojmë</translation>
 <translation id="4489536976005181779">{count,plural, =1{Faqja u shtua në listën e leximit në llogarinë tënde, {email}}other{Faqet u shtuan në listën e leximit në llogarinë tënde, {email}}}</translation>
 <translation id="4493604894403585654">Je i identifikuar si <ph name="USER_EMAIL" />. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
@@ -804,7 +798,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5118764316110575523">Joaktiv</translation>
 <translation id="5121618895923301719">Po e monitoron tashmë këtë produkt. Kjo faqe është ruajtur te <ph name="BEGIN_LINK" />Faqeshënuesit për celular<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Ke disa probleme me fjalëkalimet.</translation>
-<translation id="5126465625664020024">Identifikohu dhe sinkronizo</translation>
 <translation id="5132942445612118989">Sinkronizo fjalëkalimet, historikun etj. në të gjitha pajisjet</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} fjalëkalim i dobët}other{{COUNT} fjalëkalime të dobëta}}</translation>
 <translation id="5149188072385105201">Shto fjalëkalimin...</translation>
@@ -924,7 +917,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5745916533876677730">Shko te skeda e mëparshme</translation>
 <translation id="574762237186762643">Ngjarjet</translation>
 <translation id="5748177854685749242">Mbërrin më: <ph name="DATE" /></translation>
-<translation id="5755162682436943950">Ke dalë Hap dialogun për t'u identifikuar dhe për të aktivizuar sinkronizimin.</translation>
 <translation id="5758631781033351321">Këtu do të gjesh listën tënde të leximit</translation>
 <translation id="5765456154762864099">"Menyja → Cilësimet→ Shfletuesi i parazgjedhur"</translation>
 <translation id="5777888488419460501">Ruaje te llogaria</translation>
@@ -1035,7 +1027,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6293101329759844770">Për të aktivizuar "Shfletimin e sigurt", hap <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" /> dhe trokit te "Shfletimi i sigurt".</translation>
 <translation id="629730747756840877">Llogaria</translation>
 <translation id="6321526113093607004">Shto te faqeshënuesit</translation>
-<translation id="6324669097367352121">Cilësimet e identifikimit</translation>
 <translation id="6328337032497818759">Personalizo menynë</translation>
 <translation id="6331180460633101391"><ph name="COUNT" /> fjalëkalime të ripërdorura</translation>
 <translation id="6337234675334993532">Enkriptimi</translation>
@@ -1221,7 +1212,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="719133302483559673">Menaxho interesat dhe preferencat e tua.</translation>
 <translation id="7192050974311852563">Fillo regjistrimin</translation>
 <translation id="7203585745079012652">Thuaji përgjigjet mbrapsht</translation>
-<translation id="7207023858769244910">Sinkronizoje për të marrë përmbajtje bazuar në interesat e tu.</translation>
 <translation id="7210568419880432164">Aktivizo njoftimet..</translation>
 <translation id="721597782417389033">Pseudonim i pavlefshëm karte</translation>
 <translation id="7221173315674413369">Eksploro këshillat dhe veçoritë e reja te "Ç'të reja ka"</translation>
@@ -1618,7 +1608,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9162432979321511934">Aktivizo "Plotëso automatikisht fjalëkalimet"</translation>
 <translation id="9162941801309769488">Paketë e pagjurmuar</translation>
 <translation id="9165320910061267720">Për të marrë njoftime me sinjalizime për ulje çmimi, do të duhet të aktivizosh njoftimet në cilësimet e iOS.</translation>
-<translation id="9172603439892261948">Sinkronizo faqeshënuesit, historikun etj.</translation>
 <translation id="9177438225260810839">Kërko skedat e hapura</translation>
 <translation id="9187853111759024059">Të mbyllen 99+ skeda joaktive?</translation>
 <translation id="9188680907066685419">Dil nga llogaria e menaxhuar</translation>

@@ -3508,6 +3508,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3660234220361471169">Ishonchsiz</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 ta mavjud parol topildi}other{{NUM_PASSWORDS} ta mavjud parol topildi}}</translation>
 <translation id="3662207097851752847">Telefondagi Google hisobingizni tasdiqlang</translation>
+<translation id="3663417513679360795">Odatiy oldindan yuklashni yoqish haqida batafsil</translation>
 <translation id="3664511988987167893">Kengaytma ikonkasi</translation>
 <translation id="3665100783276035932">Koʻplab saytlar kutilganidek ishlashi kerak</translation>
 <translation id="3665301845536101715">Yon panelda ochish</translation>
@@ -3597,6 +3598,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3720543739123045680">Bu varaqdagi jarayonlar boshqa varaqlar bilan birga qayta ishlanadi va DevTools ishlashida kutilmagan xatolarni chiqarishi mumkin.</translation>
 <translation id="372062398998492895">CUPS printerlar</translation>
 <translation id="3721119614952978349">Siz va Google</translation>
+<translation id="3721178866505920080">Kengaytirilgan oldindan yuklashni yoqish haqida batafsil</translation>
 <translation id="3722108462506185496">Virtual mashina xizmati ishga tushmadi. Qaytadan urining.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> koʻrsatmasi qabul qilindi</translation>
 <translation id="3724897774652282549">Shaklni toʻldirish</translation>

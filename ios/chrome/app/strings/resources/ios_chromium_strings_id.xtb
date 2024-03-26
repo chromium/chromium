@@ -257,9 +257,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="7934404985878918282">Lihat Daftar Bacaan Chromium</translation>
 <translation id="7971753607796745700">Tambahkan Item Daftar Bacaan ke Chromium</translation>
 <translation id="7980860476903281594">Chromium membagikan lokasi Anda ke situs yang diizinkan.</translation>
-<translation id="7990085102929105708">Metode pembayaran dan alamat dari Google Pay tidak akan dienkripsi. Histori penjelajahan dari Chromium tidak akan disinkronkan.
-
-Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi Anda. Frasa sandi tidak dikirim ke atau disimpan oleh Google. Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Untuk mendapatkan tips Chromium yang berguna, aktifkan notifikasi di setelan iOS.</translation>
 <translation id="7995166854192397899">Saran didasarkan pada aktivitas penjelajahan Anda di perangkat lain. Untuk mendapatkan saran, login ke Chromium di semua perangkat Anda.</translation>
 <translation id="800195749539500647">Dapatkan manfaat optimal dari Chromium</translation>
@@ -287,15 +284,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun 
 <translation id="8685813584220679697">Login ke situs ini dan Chromium.</translation>
 <translation id="8730503818204408000">Membuka Setelan Chromium untuk menyetel Chromium sebagai Browser Default.</translation>
 <translation id="8742300022028858275">Buka Tab Terbaru Saya di Chromium</translation>
-<translation id="8747378496147986285">Jika aktif:
-<ph name="BEGIN_INDENT" />  • Membantu Chromium menjadi lebih baik bagi pengguna lain seperti Anda.<ph name="END_INDENT" />
-
-Hal-hal yang perlu dipertimbangkan:
-<ph name="BEGIN_INDENT" />  • Info tentang penggunaan Chromium akan dikirim ke Google, tetapi tidak dikaitkan dengan Anda.
-
-  • Jika Chromium mengalami error, detail tentang error tersebut dapat menyertakan beberapa info pribadi.
-
-  • Jika Anda mengaktifkan sinkronisasi, metrik juga dapat menyertakan info tentang URL yang Anda buka.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Anggota keluarga Anda saat ini tidak dapat menerima sandi. Minta anggota keluarga untuk mengupdate Chromium dan menyinkronkan sandi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Akun ini dan semua data yang tidak disimpan akan dihapus dari Chromium.</translation>
 <translation id="88376265765385899">Membuka bookmark Chromium.</translation>

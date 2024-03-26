@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome će otkriti evidencijske brojeve na web-lokacijama koje posjećujete i prikazati vam novosti o paketima na novoj kartici preglednika. Broj za praćenje pošiljke i naziv web-lokacije poslat će se Googleu radi pružanja te značajke i poboljšanja značajki Google Shoppinga za sve korisnike. To uvijek možete ažurirati u <ph name="BEGIN_LINK" />postavkama praćenja paketa<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Koristite Chrome prema zadanim postavkama</translation>
 <translation id="1105362920864247682">Brisanje podataka o pregledavanju u Chromeu.</translation>
-<translation id="1113057722807951993">Šifriranje uz pomoć šifre ne uključuje načine plaćanja i adrese s Google Paya.
-
-Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea na svom računu<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Zaporka će se spremiti u Google upravitelj zaporki za <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Otvorite izbornik preglednika Chrome</translation>
 <translation id="1180362651362502943">Nastavite upotrebljavati podatke iz Chromea na svom Google računu.</translation>
@@ -87,9 +84,6 @@ Važne napomene:
 <translation id="2876628302275096482">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chrome štiti privatnost vaših podataka<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Otvorite postavke Chromea</translation>
 <translation id="2957447865124070833">Odaberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2988274366244053197">Načini plaćanja i adrese s Google Paya neće se šifrirati. Povijest pregledavanja iz Chromea neće se sinkronizirati.
-
-Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šifra se ne šalje Googleu niti se pohranjuje na Googleu. Ako zaboravite šifru ili želite promijeniti tu postavku, <ph name="BEGIN_LINK" />izbrišite Chromeove podatke na računu<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Budući da se odjavljujete s računa kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromea izbrisat će se s ovog uređaja, no ostat će na vašem Google računu.</translation>
 <translation id="309672519329227863">Pristupajte svojim zaporkama u Chromeu i ostalome u drugim aplikacijama.</translation>
 <translation id="3146109040683991651">Postavi Chrome kao zadani preglednik</translation>
@@ -305,15 +299,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8891935667620843985">Veze u Chromeu možete otvoriti automatski tako da ga postavite kao zadanu aplikaciju preglednika.</translation>
 <translation id="8897749957032330183">Zaporke se spremaju u Google upravitelj zaporki na ovom uređaju.</translation>
 <translation id="8949681853939555434">Postavite Chrome kao zadani preglednik</translation>
-<translation id="8969290730818637510">Kada je uključeno:
-<ph name="BEGIN_INDENT" />  • Pomozite poboljšati Chrome za korisnike koji ga upotrebljavaju na isti način kao vi.<ph name="END_INDENT" />
-
-Važne napomene:
-<ph name="BEGIN_INDENT" />  • Podaci o upotrebi Chromea šalju se Googleu, no nisu povezani s vama.
-
-  • Ako se Chrome sruši, pojedinosti o rušenju mogu uključivati neke osobne podatke.
-
-  • Ako uključite sinkronizaciju, mjerni podaci mogu uključivati i podatke o URL-ovima koje posjetite.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Otvori u anonimnom načinu Chromea</translation>
 <translation id="9071207983537882274">Otvara Postavke u Chromeu.</translation>
 <translation id="9112744793181547300">Želite li postaviti Chrome kao zadani preglednik?</translation>

@@ -3405,6 +3405,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3577487026101678864">Failide sünkroonimine on sisse lülitatud</translation>
 <translation id="3577745545227000795">Operatsioonisüsteemi <ph name="DEVICE_OS" /> riistvaraandmete kogumine</translation>
 <translation id="3581605050355435601">IP-aadressi automaatne seadistamine</translation>
+<translation id="3581861561942370740">Otsige allalaadimise ajalugu</translation>
 <translation id="3582057310199111521">Sisestati petturlikul saidil ja ilmnes andmetega seotud rikkumises</translation>
 <translation id="3582299299336701326">Muutke heledad ekraanikuvad tumedaks ja tumedad ekraanikuvad heledaks. Värvide ümberpööramise sisse- või väljalülitamiseks vajutage klahvikombinatsiooni Otsing + Ctrl + H.</translation>
 <translation id="3584169441612580296">Arvutis olevate fotode, muusika ja muu meedia lugemine ja muutmine</translation>
@@ -5322,6 +5323,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5056950756634735043">Ühenduse loomine konteineriga</translation>
 <translation id="5057110919553308744">Laiendusel klõpsamisel</translation>
 <translation id="5057127674016624293">Skannimine võtab oodatust kauem</translation>
+<translation id="5057480703570202545">Allalaadimiste ajalugu</translation>
 <translation id="5059241099014281248">Sisselogimise piiramine</translation>
 <translation id="5059429103770496207">Kuva stiil</translation>
 <translation id="5059526285558225588">Valige, mida jagada</translation>
@@ -5731,6 +5733,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5390677308841849479">Tumepunane ja oranž.</translation>
 <translation id="5392192690789334093">Lubatud märguandeid saata</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# linki}}</translation>
+<translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395498824851198390">Vaikefont</translation>
 <translation id="5397378439569041789">Kioski- või teabeseade registreerimine</translation>
 <translation id="5397794290049113714">Teie</translation>

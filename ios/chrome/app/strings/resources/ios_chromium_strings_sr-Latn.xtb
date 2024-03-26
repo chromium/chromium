@@ -257,9 +257,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="7934404985878918282">Prikaži Chromium listu za čitanje</translation>
 <translation id="7971753607796745700">Dodaj stavku liste za čitanje u Chromium</translation>
 <translation id="7980860476903281594">Chromium deli lokaciju sa sajtovima koje dozvolite.</translation>
-<translation id="7990085102929105708">Načini plaćanja i adrese iz Google Pay-a se neće šifrovati. Istorija pregledanja iz Chromium-a se neće sinhronizovati.
-
-Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti se čuva na Google-u. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chromium podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Da biste dobijali korisne savete za Chromium, uključite obaveštenja u podešavanjima iOS-a.</translation>
 <translation id="7995166854192397899">Predlozi su zasnovani na aktivnostima pregledanja na drugim uređajima. Da biste dobijali predloge, prijavite se u Chromium na svim uređajima.</translation>
 <translation id="800195749539500647">Koristite Chromium na najbolji način</translation>
@@ -287,13 +284,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chromium 
 <translation id="8685813584220679697">Prijavite se na ovaj sajt i u Chromium.</translation>
 <translation id="8730503818204408000">Otvara podešavanje Chromium-a da bi ga podesilo kao podrazumevani pregledač.</translation>
 <translation id="8742300022028858275">Otvori moju najnoviju karticu u Chromium-u</translation>
-<translation id="8747378496147986285">Kada je ovo uključeno:
-<ph name="BEGIN_INDENT" />  • Pomozite da poboljšamo Chromium za ljude koji ga koriste kao vi.<ph name="END_INDENT" />
-
-Šta treba da imate na umu:
-<ph name="BEGIN_INDENT" />  • Informacije o vašem korišćenju Chromium-a se šalju Google-u, ali nisu povezane sa vama.
-  • Ako Chromium otkaže, detalji o otkazivanju mogu da sadrže neke lične podatke.
-  • Ako uključite sinhronizaciju, pokazatelji mogu da obuhvataju informacije o URL-ovima koje posećujete.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Član porodice trenutno ne može da prima lozinke. Zatražite mu da ažurira Chromium i sinhronizuje lozinke. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Ovaj nalog i svi nesačuvani podaci ukloniće se iz Chromium-a.</translation>
 <translation id="88376265765385899">Otvara Chromium obeleživače.</translation>

@@ -3503,6 +3503,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3660234220361471169">Nicht vertrauenswürdig</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 vorhandenes Passwort gefunden}other{{NUM_PASSWORDS} vorhandene Passwörter gefunden}}</translation>
 <translation id="3662207097851752847">Google-Konto auf dem Smartphone bestätigen</translation>
+<translation id="3663417513679360795">Weitere Informationen zum Aktivieren des standardmäßigen Vorabladens</translation>
 <translation id="3664511988987167893">Erweiterungssymbol</translation>
 <translation id="3665100783276035932">Die meisten Websites sollten wie erwartet funktionieren</translation>
 <translation id="3665301845536101715">In Seitenleiste öffnen</translation>
@@ -3592,6 +3593,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3720543739123045680">Andere Tabs weisen denselben Prozess wie dieser Tab auf, was dazu führen kann, dass die Entwicklertools nicht wie erwartet funktionieren.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Google und ich</translation>
+<translation id="3721178866505920080">Weitere Informationen zum Aktivieren des erweiterten Vorabladens</translation>
 <translation id="3722108462506185496">Fehler beim Starten des Dienstes für die virtuelle Maschine. Bitte versuche es noch einmal.</translation>
 <translation id="3722624153992426516">Anweisung „<ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />“ erhalten</translation>
 <translation id="3724897774652282549">Formular ausfüllen</translation>

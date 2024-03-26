@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome will detect tracking numbers on sites that you visit and show you package updates on the New tab page. The package tracking number and website name will be sent to Google to provide this feature and to improve Google Shopping features for everyone. You can update this at any time in <ph name="BEGIN_LINK" />package tracking settings<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Use Chrome by default</translation>
 <translation id="1105362920864247682">Clear browsing data in Chrome.</translation>
-<translation id="1113057722807951993">Passphrase encryption doesn’t include payment methods and addresses from Google Pay.
-
-To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Your password will be saved to Google Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Open the Chrome menu</translation>
 <translation id="1180362651362502943">Keep using the Chrome data in your Google Account.</translation>
@@ -87,9 +84,6 @@ Things to consider:
 <translation id="2876628302275096482">Learn more about <ph name="BEGIN_LINK" />how Chrome keeps your data private<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Open Chrome settings</translation>
 <translation id="2957447865124070833">Select <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2988274366244053197">Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chrome won’t sync.
-
-Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chrome data will be deleted from this device. Your data will remain in your Google Account.</translation>
 <translation id="309672519329227863">Access your Chrome passwords and more across other apps.</translation>
 <translation id="3146109040683991651">Set Chrome as default browser</translation>
@@ -305,15 +299,6 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="8891935667620843985">You can open links in Chrome automatically by making it your default browser app.</translation>
 <translation id="8897749957032330183">Passwords are saved to Google Password Manager on this device.</translation>
 <translation id="8949681853939555434">Set Chrome as your default browser</translation>
-<translation id="8969290730818637510">When on:
-<ph name="BEGIN_INDENT" />  • Help make Chrome better for people who use it the way that you do.<ph name="END_INDENT" />
-
-Things to consider:
-<ph name="BEGIN_INDENT" />  • Info is sent to Google about your Chrome usage, but it isn't tied to you.
-
-  • If Chrome crashes, details about the crash may include some personal info.
-
-  • If you turn on sync, metrics may also include info about URLs that you visit.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Open in Chrome Incognito</translation>
 <translation id="9071207983537882274">Opens The Settings in Chrome.</translation>
 <translation id="9112744793181547300">Set Chrome as default?</translation>

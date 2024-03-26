@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome detectará los números de seguimiento de los sitios que visites y te mostrará novedades sobre los envíos en la página Nueva pestaña. El número de seguimiento del envío y el nombre del sitio web se enviarán a Google para ofrecer esta función y mejorar las funciones de compra de Google para todos. Puedes actualizar esta información en cualquier momento en la <ph name="BEGIN_LINK" />configuración de Seguimiento de envíos<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Usa Chrome de forma predeterminada</translation>
 <translation id="1105362920864247682">Borra datos de navegación en Chrome.</translation>
-<translation id="1113057722807951993">El cifrado con frase de contraseña no incluye los métodos de pago ni las direcciones de Google Pay.
-
-Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Tu contraseña se guardará en el Gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Abre el menú de Chrome</translation>
 <translation id="1180362651362502943">Sigue usando los datos de Chrome en tu cuenta de Google.</translation>
@@ -87,9 +84,6 @@ Notas importantes:
 <translation id="2876628302275096482">Más información sobre <ph name="BEGIN_LINK" />cómo protege Chrome la privacidad de tus datos<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Abre la configuración de Chrome.</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2988274366244053197">Los métodos de pago y las direcciones de Google Pay no se cifrarán. El historial de navegación de Chrome no se sincronizará.
-
-Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google, que tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Al cerrar sesión en una cuenta gestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, se eliminan tus datos de Chrome en este dispositivo, pero permanecen en tu cuenta de Google.</translation>
 <translation id="309672519329227863">Accede a tus contraseñas de Chrome y más en otras aplicaciones.</translation>
 <translation id="3146109040683991651">Establecer Chrome como navegador predeterminado</translation>
@@ -305,15 +299,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="8891935667620843985">Puedes abrir enlaces en Chrome automáticamente estableciendo que sea tu aplicación de navegador predeterminada.</translation>
 <translation id="8897749957032330183">Las contraseñas se guardan en el Gestor de contraseñas de Google en este dispositivo.</translation>
 <translation id="8949681853939555434">Establecer Chrome como tu navegador predeterminado</translation>
-<translation id="8969290730818637510">Si esta opción está activada:
-<ph name="BEGIN_INDENT" />  • Ayuda a mejorar Chrome para las personas que lo usan de la misma manera que tú.<ph name="END_INDENT" />
-
-Notas importantes:
-<ph name="BEGIN_INDENT" />  • Se envía información a Google sobre el uso que haces de Chrome, pero no está vinculada a ti.
-
-  • Si Chrome falla, puede que los detalles sobre el fallo incluyan alguna información personal.
-
-  • Si activas la sincronización, puede que las métricas también incluyan información sobre las URLs que visites.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Abrir en modo Incógnito de Chrome</translation>
 <translation id="9071207983537882274">Abre la Configuración de Chrome.</translation>
 <translation id="9112744793181547300">¿Establecer Chrome como predeterminado?</translation>

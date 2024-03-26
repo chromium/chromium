@@ -257,9 +257,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="7934404985878918282">Sjá leslista Chromium</translation>
 <translation id="7971753607796745700">Bæta leslistaatriði við Chromium</translation>
 <translation id="7980860476903281594">Chromium deilir staðsetningunni þinni með vefsvæðum sem þú veitir heimild.</translation>
-<translation id="7990085102929105708">Upplýsingar um greiðslumáta og heimilisföng frá Google Pay verða ekki dulkóðaðar. Vafraferill Chromium samstillist ekki.
-
-Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til né vistað hjá Google. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chromium-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Til að fá gagnleg ráð um Chromium skaltu kveikja á tilkynningum í iOS-stillingum.</translation>
 <translation id="7995166854192397899">Tillögur miðast við vafranotkun þína í öðrum tækjum. Skráðu þig inn á Chromium í öllum tækjum til að fá tillögur.</translation>
 <translation id="800195749539500647">Fáðu sem mest út úr Chromium.</translation>
@@ -287,13 +284,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chromiu
 <translation id="8685813584220679697">Skráðu þig inn á þetta vefsvæði og Chromium.</translation>
 <translation id="8730503818204408000">Opnar Chromium-stillingar til að stilla Chromium sem sjálfgefinn vafra.</translation>
 <translation id="8742300022028858275">Opna nýjasta flipann minn í Chromium</translation>
-<translation id="8747378496147986285">Þegar kveikt er á þessu:
-<ph name="BEGIN_INDENT" />  • Hjálpaðu til við að bæta Chromium fyrir fólk sem notar það eins og þú.<ph name="END_INDENT" />
-
-Hafðu í huga:
-<ph name="BEGIN_INDENT" />  • Upplýsingar um notkun þína á Chromium eru sendar til Google en eru ekki tengdar við þig.
-  • Ef Chromium hrynur gætu tilteknar persónuupplýsingar komið fram í upplýsingum um hrunið.
-  • Ef þú kveikir að samstillingu gætu mæligildi innihaldið upplýsingar um vefslóðir sem þú ferð á.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Fjölskyldumeðlimur þinn getur ekki tekið á móti aðgangsorðum eins og er. Biddu viðkomandi um að uppfæra Chromium og samstilla aðgangsorðin sín. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Þessi reikningur og öll óvistuð gögn verða fjarlægð úr Chromium.</translation>
 <translation id="88376265765385899">Opnar bókamerki Chromium.</translation>

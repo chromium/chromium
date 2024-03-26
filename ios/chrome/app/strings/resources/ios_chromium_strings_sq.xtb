@@ -256,9 +256,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="7934404985878918282">Shiko "Listën e leximit" të Chromium</translation>
 <translation id="7971753607796745700">Shto artikullin e listës së leximit në Chromium</translation>
 <translation id="7980860476903281594">Chromium e ndan vendndodhjen tënde me sajtet që lejon ti.</translation>
-<translation id="7990085102929105708">Mënyrat e pagesës dhe adresat nga Google Pay nuk do të enkriptohen. Historiku i shfletimit nga Chromium nuk do të sinkronizohet.
-
-Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Për të marrë këshilla të dobishme për Chromium, aktivizo njoftimet te cilësimet e iOS.</translation>
 <translation id="7995166854192397899">Sugjerimet bazohen në aktivitetin tënd të shfletimit në pajisjet e tua të tjera. Për të marrë sugjerime, identifikohu në Chromium në të gjitha pajisjet e tua.</translation>
 <translation id="800195749539500647">Përfito sa më shumë nga Chromium</translation>
@@ -286,14 +283,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="8685813584220679697">Identifikohu në këtë sajt dhe në Chromium.</translation>
 <translation id="8730503818204408000">Hap cilësimin e Chromium për ta caktuar atë si shfletuesin e parazgjedhur.</translation>
 <translation id="8742300022028858275">Hap skedën time të fundit në Chromium</translation>
-<translation id="8747378496147986285">Kur aktivizohet:
-<ph name="BEGIN_INDENT" />  • Ndihmo në përmirësimin e Chromium për njerëzit që e përdorin atë ashtu si ti.<ph name="END_INDENT" />
-
-Gjëra për të pasur parasysh:
-<ph name="BEGIN_INDENT" />  • Informacioni në lidhje me përdorimin e Chromium nga ana jote dërgohet te Google, por nuk lidhet me ty.
-
-  • Nëse Chromium ndërpritet aksidentalisht, detajet në lidhje me ndërprerjen mund të përfshijnë disa informacione personale.
-  • Nëse aktivizon sinkronizimin, metrikat mund të përfshijnë gjithashtu informacione rreth URL-ve që ti viziton.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Anëtari i familjes nuk mund t'i marrë fjalëkalimet në këtë moment. Kërkoji që të përditësojë Chromium dhe sinkronizo fjalëkalimet e atij anëtari. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Kjo llogari dhe të dhënat e paruajtura do të hiqen nga Chromium.</translation>
 <translation id="88376265765385899">Hap faqeshënuesit e Chromium.</translation>

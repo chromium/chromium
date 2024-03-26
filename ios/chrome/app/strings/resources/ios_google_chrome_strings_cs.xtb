@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome na navštívených webech rozpozná čísla zásilek a bude vám na stránce Nová karta zobrazovat aktuální informace o zásilkách. Sledovací číslo zásilky a název webu se odešlou do Googlu, aby bylo možné tuto funkci poskytovat a zlepšovat funkce Google k nakupování pro všechny. Toto nastavení můžete kdykoli změnit v <ph name="BEGIN_LINK" />Nastavení sledování zásilek<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Používejte Chrome ve výchozím nastavení</translation>
 <translation id="1105362920864247682">Vymazat údaje o prohlížení v Chromu.</translation>
-<translation id="1113057722807951993">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy z Google Pay.
-
-Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Heslo bude uloženo do Správce hesel Google pro účet <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Otevřete nabídku Chrome.</translation>
 <translation id="1180362651362502943">Pokračujte v používání dat prohlížeče Chrome ve svém účtu Google.</translation>
@@ -87,9 +84,6 @@ Co je třeba zvážit:
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Další informace o tom, jak Chrome uchovává vaše data v soukromí<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Otevřít nastavení Chromu</translation>
 <translation id="2957447865124070833">Vyberte <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2988274366244053197">Platební metody a adresy z Google Pay nebudou šifrovány. Historie prohlížení v Chromu se nebude synchronizovat.
-
-Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Protože se odhlašujete z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaše data prohlížeče Chrome z tohoto zařízení budou smazána. V účtu Google vám zůstanou.</translation>
 <translation id="309672519329227863">Získejte přístup ke svým heslům v Chromu a k dalším funkcím v jiných aplikacích.</translation>
 <translation id="3146109040683991651">Nastavit Chrome jako výchozí prohlížeč</translation>
@@ -305,15 +299,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8891935667620843985">Pokud chcete odkazy otevírat automaticky v Chromu, nastavte ho jako výchozí prohlížeč.</translation>
 <translation id="8897749957032330183">Hesla se ukládají do Správce hesel Google na tomto zařízení.</translation>
 <translation id="8949681853939555434">Nastavte si Chrome jako výchozí prohlížeč</translation>
-<translation id="8969290730818637510">Když je tato funkce zapnutá:
-<ph name="BEGIN_INDENT" />  • Pomáháte s vylepšováním Chromu pro lidi, kteří jej používají stejně jako vy.<ph name="END_INDENT" />
-
-Co je třeba zvážit:
-<ph name="BEGIN_INDENT" />  • Informace o vašem používání prohlížeče Chrome se odesílají do Googlu, ale nejsou spojeny s vámi.
-
-  • Pokud Chrome spadne, podrobnosti o selhání mohou zahrnovat některé osobní údaje.
-
-  • Pokud zapnete synchronizaci, mohou metriky zahrnovat také informace o navštívených adresách URL.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Otevřít v Chromu v anonymním režimu</translation>
 <translation id="9071207983537882274">Otevře Nastavení v prohlížeči Chrome.</translation>
 <translation id="9112744793181547300">Nastavit Chrome jako výchozí prohlížeč?</translation>

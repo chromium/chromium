@@ -386,7 +386,6 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2931440415625410757">Vis veiledning</translation>
 <translation id="2952246431280799028">Trykk og hold på en adresse.</translation>
 <translation id="2952278131021475699">Lens-kamerasøk</translation>
-<translation id="2956733177489514605">Logg på med Google-kontoen din for å synkronisere blant annet passordene dine.</translation>
 <translation id="2958718410589002129">Passord</translation>
 <translation id="2964349545761222050">Blokkér informasjonskapsler fra tredjeparter</translation>
 <translation id="2969979262385602596">Kunne ikke logge på. Prøv på nytt senere.</translation>
@@ -442,7 +441,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Hvis du også deler Chrome-bruksrapporter, inneholder disse rapportene nettadressene du besøker</translation>
 <translation id="3245744387817103524">Kunne ikke lagre endringen.</translation>
-<translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> av <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Autofyll passord</translation>
 <translation id="3265534588625245297">Administrer hvilke nettsteder du følger</translation>
 <translation id="3268451620468152448">Åpne faner</translation>
@@ -454,7 +452,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3305294846493618482">mer</translation>
 <translation id="3311748811247479259">Av</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
-<translation id="3328801116991980348">Informasjon om nettstedet</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bokmerket er lagret i «{title}» i kontoen din, {email}}other{Bokmerkene er lagret i «{title}» i kontoen din, {email}}}</translation>
 <translation id="3348387552617855658">Med dette kortet kan du følge med på pakkene dine og få viktige leveringsoppdateringer.</translation>
 <translation id="3349676726073650389">Nettstedene og søkene du følger, lagres i Google-kontoen din. Du kan når som helst administrere det du følger, i innstillingene.</translation>
@@ -562,8 +559,8 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3891414008432200754">Pris</translation>
 <translation id="3892144330757387737">Her finner du loggen din</translation>
 <translation id="3897092660631435901">Meny</translation>
-<translation id="3904829425754749514">Organisasjonen din har slått av synkronisering. Du kan fremdeles se bokmerkene dine, loggen din, passordene dine og andre innstillinger på denne enheten. Hvis du gjør endringer, blir de ikke synkronisert med kontoen din.</translation>
 <translation id="3909222758573607742">Lagre passord og andre elementer i kontoen</translation>
+<translation id="3915450441834151894">Opplysninger om nettstedet</translation>
 <translation id="3918585468378680136">Henter pakkestatus</translation>
 <translation id="3921585859122905677">Posisjon for adressefeltet</translation>
 <translation id="3922310737605261887">Søk etter teksten du kopierte</translation>
@@ -593,7 +590,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4045648459118332842">Se de lagrede passordene dine i hvilken som helst app med ett trykk</translation>
 <translation id="4049507953662678203">Sørg for at du er koblet til et nettverk, og prøv igjen.</translation>
 <translation id="4054572406751135230">Hold deg oppdatert om nyheter, sport med mer.</translation>
-<translation id="4066639687323968621">Logg på med Google-kontoen din for å synkronisere blant annet bokmerker og loggen.</translation>
 <translation id="4092655288299341041">Vis Hjelp</translation>
 <translation id="4105841739161771091">{count,plural, =1{Slett adresse}other{Slett adresser}}</translation>
 <translation id="4108998448622696017">Oppdager og advarer deg om farlige hendelser idet de inntreffer.</translation>
@@ -617,7 +613,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4187450337729239226">Lim inn og søk</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din ({email}).}other{{count} passord er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din ({email}).}}</translation>
 <translation id="4216918546378735658">Avbryt</translation>
-<translation id="4223967053752765281">Organisasjonen din har slått av pålogging. Du kan fremdeles se bokmerkene dine, loggen din, passordene dine og andre innstillinger på denne enheten. Hvis du gjør endringer, blir de ikke synkronisert med kontoen din.</translation>
 <translation id="422474357428465195">Du har flere passordproblemer som kan utgjøre en sikkerhetsrisiko.</translation>
 <translation id="4232900911558558076">Utforsk den nye menyen</translation>
 <translation id="4233831822770018312">Endre tillatelser</translation>
@@ -636,6 +631,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4282944936010261425">Det er ingen sikkerhetsproblemer som må løses.</translation>
 <translation id="4286718549648564014">Adressen er flyttet til kontoen din: <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Hva er nytt?</translation>
+<translation id="429074084062258019">{count,plural, =1{Legg fanen til i en gruppe}other{Legg fanene til i en gruppe}}</translation>
 <translation id="4293080268407233932">Søk</translation>
 <translation id="4302248187517737842">Brukernavn mangler ••••••••</translation>
 <translation id="4302415908542657649">Deler passordet</translation>
@@ -668,7 +664,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4469324811108161144">Notater kan lagre opptil <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="4469418912670346607">Fortsett konfigureringen</translation>
 <translation id="4474494258097106883">Laget for iPhonen din</translation>
-<translation id="448433063499977729">Synkronisering er avslått</translation>
 <translation id="4488754974567924717">Vi gir deg beskjed hvis passordene dine blir utsatt for sikkerhetsbrudd</translation>
 <translation id="4489536976005181779">{count,plural, =1{Siden er lagt til på leselisten i kontoen din, {email}}other{Sidene er lagt til på leselisten i kontoen din, {email}}}</translation>
 <translation id="4493604894403585654">Du er pålogget som <ph name="USER_EMAIL" />. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
@@ -804,7 +799,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5118764316110575523">Av</translation>
 <translation id="5121618895923301719">Du sporer allerede dette produktet. Denne siden er lagret i <ph name="BEGIN_LINK" />Bokmerker for mobil<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Du har flere passordproblemer.</translation>
-<translation id="5126465625664020024">Pålogging og synkronisering</translation>
 <translation id="5132942445612118989">Synkroniser passordene dine, loggen din med mer på alle enheter</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} svakt passord}other{{COUNT} svake passord}}</translation>
 <translation id="5149188072385105201">Legg til et passord…</translation>
@@ -924,7 +918,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5745916533876677730">Gå til forrige fane</translation>
 <translation id="574762237186762643">Aktiviteter</translation>
 <translation id="5748177854685749242">Kommer frem <ph name="DATE" /></translation>
-<translation id="5755162682436943950">Logget av. Åpner dialogboksen for å logge på og slå på synkronisering.</translation>
 <translation id="5758631781033351321">Her finner du leselisten din</translation>
 <translation id="5765456154762864099">Meny → Innstillinger → Standardnettleser</translation>
 <translation id="5777888488419460501">Lagre i konto</translation>
@@ -1035,7 +1028,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6293101329759844770">For å slå på Safe Browsing, åpne <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" /> og trykk på Safe Browsing.</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6321526113093607004">Legg til i bokmerker</translation>
-<translation id="6324669097367352121">Påloggingsinnstillinger</translation>
 <translation id="6328337032497818759">Tilpass menyen</translation>
 <translation id="6331180460633101391"><ph name="COUNT" /> gjenbrukte passord</translation>
 <translation id="6337234675334993532">Kryptering</translation>
@@ -1221,7 +1213,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="719133302483559673">Administrer interessene og preferansene dine.</translation>
 <translation id="7192050974311852563">Start loggføring</translation>
 <translation id="7203585745079012652">Svar med tale</translation>
-<translation id="7207023858769244910">Synkroniser for å få innhold basert på interessene dine.</translation>
 <translation id="7210568419880432164">Slå på varsler…</translation>
 <translation id="721597782417389033">Ugyldig kallenavn på kortet</translation>
 <translation id="7221173315674413369">Utforsk nye funksjoner og tips i Nyheter</translation>
@@ -1278,6 +1269,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7524055474074101597">Få tilgang til passordene dine med mer på tvers av apper.</translation>
 <translation id="7527917367892640435">Pakken blir allerede sporet</translation>
 <translation id="7531345132340165516">Gjeldende nettsted</translation>
+<translation id="75362970626182391">Ny fanegruppe</translation>
 <translation id="7537586195939242955">Tillatelsen din kan for øyeblikket ikke installeres i Passbook.</translation>
 <translation id="754655535278952384">Sjekket <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Den siste fanen som ble brukt på <ph name="SOURCE_DEVICE" /></translation>
@@ -1618,7 +1610,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9162432979321511934">Slå på Autofyll-passord.</translation>
 <translation id="9162941801309769488">Pakken spores ikke lenger</translation>
 <translation id="9165320910061267720">For å få varsler om avslag må du slå på varsler i iOS-innstillingene.</translation>
-<translation id="9172603439892261948">Synkroniser blant annet bokmerker og loggen.</translation>
 <translation id="9177438225260810839">Søk i åpne faner</translation>
 <translation id="9187853111759024059">Vil du lukke 99 eller flere inaktive faner?</translation>
 <translation id="9188680907066685419">Logg av administrert konto</translation>

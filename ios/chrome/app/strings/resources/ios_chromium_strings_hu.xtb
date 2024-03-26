@@ -257,9 +257,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="7934404985878918282">A Chromium-olvasólista megtekintése</translation>
 <translation id="7971753607796745700">Olvasólista-elem felvétele a Chromiumba</translation>
 <translation id="7980860476903281594">A Chromium megosztja a tartózkodási helyét az Ön által engedélyezett webhelyekkel.</translation>
-<translation id="7990085102929105708">A Google Payből származó fizetési módok és címek nem lesznek titkosítva. A Chromium böngészési előzményei nem lesznek szinkronizálva.
-
-Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chromium-adatokat<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Ha hasznos tippeket szeretne kapni a Chromiumra vonatkozóan, kapcsolja be az értesítéseket az iOS beállításai között</translation>
 <translation id="7995166854192397899">A javaslatok a többi eszközén végzett böngészési tevékenységein alapulnak. Ha javaslatokat szeretne kapni, jelentkezzen be a Chromiumba az összes eszközén.</translation>
 <translation id="800195749539500647">Hozza ki a legtöbbet a Chromiumból.</translation>
@@ -287,14 +284,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8685813584220679697">Jelentkezzen be erre a webhelyre és a Chromiumba.</translation>
 <translation id="8730503818204408000">Megnyitja a Chromium beállításait a Chromium alapértelmezett böngészőként való beállításához.</translation>
 <translation id="8742300022028858275">A legutóbbi lap megnyitása a Chromiumban</translation>
-<translation id="8747378496147986285">Ha be van kapcsolva:
-<ph name="BEGIN_INDENT" />  • Segíthet, hogy továbbfejlesszük a Chromiumot azok számára, akik Önhöz hasonló módon használják.<ph name="END_INDENT" />
-
-Fontos tudnivalók:
-<ph name="BEGIN_INDENT" />  • A rendszer az Ön Chromium-használatáról küld információt a Google-nak, ez az információ azonban nem köthető Önhöz.
-  • Ha a Chromium összeomlik, az összeomlással kapcsolatos adatok között szerepelhetnek bizonyos személyes információk.
-
-  • Ha bekapcsolja a szinkronizálást, a mutatók tartalmazhatnak az Ön által felkeresett URL-ekkel kapcsolatos adatokat is.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Családtagja jelenleg nem tud jelszavakat fogadni. Kérje meg, hogy frissítse a Chromiumot, és szinkronizálja a jelszavait. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="8776843108004031667">Ezzel a fiók és a nem mentett adatok eltávolításra kerülnek a Chromiumból.</translation>
 <translation id="88376265765385899">Megnyitja a Chromium-könyvjelzőket.</translation>

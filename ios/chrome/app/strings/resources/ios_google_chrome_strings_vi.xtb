@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome sẽ phát hiện số vận đơn trên các trang web bạn truy cập và cho bạn thấy thông tin cập nhật về gói hàng trên trang Thẻ mới. Số vận đơn của gói hàng và tên trang web sẽ được gửi đến Google để cung cấp tính năng này và cải thiện các tính năng mua sắm của Google cho mọi người. Bạn có thể cập nhật tuỳ chọn này bất cứ lúc nào trong phần <ph name="BEGIN_LINK" />Cài đặt theo dõi gói hàng<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Sử dụng Chrome theo mặc định</translation>
 <translation id="1105362920864247682">Xoá dữ liệu duyệt web trong Chrome.</translation>
-<translation id="1113057722807951993">Quy trình mã hoá bằng cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán từ Google Pay.
-
-Để thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Mật khẩu của bạn sẽ được lưu vào Trình quản lý mật khẩu của Google cho <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Mở trình đơn Chrome</translation>
 <translation id="1180362651362502943">Tiếp tục sử dụng dữ liệu Chrome trong Tài khoản Google của bạn.</translation>
@@ -87,9 +84,6 @@ Những yếu tố cần xem xét:
 <translation id="2876628302275096482">Tìm hiểu thêm về <ph name="BEGIN_LINK" />cách Chrome bảo mật dữ liệu của bạn<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Mở phần Cài đặt của Chrome</translation>
 <translation id="2957447865124070833">Chọn <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2988274366244053197">Các địa chỉ và phương thức thanh toán từ Google Pay sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
-
-Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Vì bạn đăng xuất khỏi tài khoản do <ph name="SIGNOUT_MANAGED_DOMAIN" /> quản lý, nên dữ liệu Chrome của bạn sẽ bị xóa khỏi thiết bị này. Dữ liệu của bạn sẽ vẫn còn trong Tài khoản Google của bạn.</translation>
 <translation id="309672519329227863">Dùng mật khẩu và các dữ liệu khác mà bạn lưu trên Chrome trong các ứng dụng khác.</translation>
 <translation id="3146109040683991651">Đặt Chrome làm trình duyệt mặc định</translation>
@@ -305,13 +299,6 @@ Dữ liệu của bạn đã được mã hoá bằng cụm mật khẩu vào <p
 <translation id="8891935667620843985">Bạn có thể đặt Chrome làm Ứng dụng trình duyệt mặc định để các đường liên kết tự động mở trong Chrome.</translation>
 <translation id="8897749957032330183">Mật khẩu được lưu vào Trình quản lý mật khẩu của Google trên thiết bị này.</translation>
 <translation id="8949681853939555434">Đặt Chrome làm trình duyệt mặc định</translation>
-<translation id="8969290730818637510">Khi bật:
-<ph name="BEGIN_INDENT" />  • Cải thiện Chrome cho những ai đang dùng Chrome giống bạn.<ph name="END_INDENT" />
-
-Những yếu tố cần xem xét:
-<ph name="BEGIN_INDENT" />  • Thông tin về mức sử dụng Chrome được gửi cho Google, tuy nhiên thông tin đó sẽ không gắn liền với bạn.
-  • Nếu Chrome gặp sự cố, thông tin chi tiết về sự cố có thể sẽ bao gồm một số thông tin cá nhân.
-  • Nếu bạn bật chế độ đồng bộ hoá, các chỉ số có thể sẽ còn bao gồm cả thông tin về các URL bạn từng truy cập.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Mở trong chế độ ẩn danh của Chrome</translation>
 <translation id="9071207983537882274">Mở chế độ cài đặt trong Chrome.</translation>
 <translation id="9112744793181547300">Đặt Chrome làm trình duyệt mặc định?</translation>

@@ -386,7 +386,6 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2931440415625410757">Mostra istruzioni</translation>
 <translation id="2952246431280799028">Tocca e tieni premuto un indirizzo</translation>
 <translation id="2952278131021475699">Ricerca con la fotocamera di Lens</translation>
-<translation id="2956733177489514605">Accedi con il tuo Account Google per sincronizzare le password e altri dati.</translation>
 <translation id="2958718410589002129">Password</translation>
 <translation id="2964349545761222050">Blocca cookie di terze parti</translation>
 <translation id="2969979262385602596">Impossibile accedere. Riprova più tardi.</translation>
@@ -442,7 +441,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Se condividi anche report sull'utilizzo di Chrome, tali report includono gli URL visitati</translation>
 <translation id="3245744387817103524">Impossibile salvare la modifica.</translation>
-<translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> di <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Compila automaticamente le password</translation>
 <translation id="3265534588625245297">Gestisci i siti che segui</translation>
 <translation id="3268451620468152448">Schede aperte</translation>
@@ -454,7 +452,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3305294846493618482">altro</translation>
 <translation id="3311748811247479259">Off</translation>
 <translation id="3324193307694657476">Indirizzo 2</translation>
-<translation id="3328801116991980348">Informazioni sito</translation>
 <translation id="3344485292736684439">{count,plural, =1{Preferito salvato nella cartella "{title}" nel tuo account {email}}other{Preferiti salvati nella cartella "{title}" nel tuo account {email}}}</translation>
 <translation id="3348387552617855658">Questa scheda ti consente di monitorare tuoi pacchi e ti dà importanti aggiornamenti sulla consegna.</translation>
 <translation id="3349676726073650389">I siti e le ricerche che segui vengono salvati nel tuo Account Google. Puoi gestire le tue seguenti azioni nelle impostazioni in qualsiasi momento.</translation>
@@ -562,8 +559,8 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3891414008432200754">Prezzo</translation>
 <translation id="3892144330757387737">Qui troverai la tua cronologia</translation>
 <translation id="3897092660631435901">Menu</translation>
-<translation id="3904829425754749514">La tua organizzazione ha disattivato la sincronizzazione. Puoi trovare ancora i tuoi preferiti, la cronologia, le password e altre impostazioni su questo dispositivo. Le eventuali modifiche apportate non verranno sincronizzate con il tuo account.</translation>
 <translation id="3909222758573607742">Salva password e altri elementi nell'account</translation>
+<translation id="3915450441834151894">Informazioni sito</translation>
 <translation id="3918585468378680136">Recupero dello stato del pacco in corso…</translation>
 <translation id="3921585859122905677">Posizione barra degli indirizzi</translation>
 <translation id="3922310737605261887">Cerca il testo copiato</translation>
@@ -593,7 +590,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4045648459118332842">Recupera le tue password salvate con un solo tocco in qualsiasi app</translation>
 <translation id="4049507953662678203">Controlla la connessione di rete e riprova.</translation>
 <translation id="4054572406751135230">Rimani al passo con notizie, sport e molto altro.</translation>
-<translation id="4066639687323968621">Accedi con il tuo Account Google per sincronizzare i preferiti, la cronologia e altri dati.</translation>
 <translation id="4092655288299341041">Mostra la Guida</translation>
 <translation id="4105841739161771091">{count,plural, =1{Elimina indirizzo}other{Elimina indirizzi}}</translation>
 <translation id="4108998448622696017">Rileva e ti avvisa quando si verificano eventi pericolosi.</translation>
@@ -617,7 +613,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4187450337729239226">Incolla e cerca</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} elemento è salvato solo su questo dispositivo. Per usarlo sugli altri tuoi dispositivi, salvalo nel tuo Account Google {email}.}other{{count} elementi sono salvati solo su questo dispositivo. Per usarli su altri dispositivi, salvali nel tuo Account Google {email}.}}</translation>
 <translation id="4216918546378735658">Annulla</translation>
-<translation id="4223967053752765281">La tua organizzazione ha disattivato l'accesso. Puoi trovare ancora i tuoi preferiti, la cronologia, le password e altre impostazioni su questo dispositivo. Le eventuali modifiche apportate non verranno sincronizzate con il tuo account.</translation>
 <translation id="422474357428465195">Sono presenti diversi problemi relativi alle password che potrebbero mettere a rischio la tua sicurezza.</translation>
 <translation id="4232900911558558076">Esplora il nuovo menu</translation>
 <translation id="4233831822770018312">Modifica autorizzazioni</translation>
@@ -668,7 +663,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4469324811108161144">Le note possono contenere massimo <ph name="CHARACTER_LIMIT" /> caratteri.</translation>
 <translation id="4469418912670346607">Continua configurazione</translation>
 <translation id="4474494258097106883">Realizzato per il tuo iPhone</translation>
-<translation id="448433063499977729">La sincronizzazione è stata disattivata</translation>
 <translation id="4488754974567924717">Ti informeremo se le tue password vengono compromesse</translation>
 <translation id="4489536976005181779">{count,plural, =1{Pagina aggiunta al tuo elenco di lettura nel tuo account, {email}}other{Pagine aggiunte al tuo elenco di lettura nel tuo account, {email}}}</translation>
 <translation id="4493604894403585654">Hai eseguito l'accesso come <ph name="USER_EMAIL" />. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
@@ -804,7 +798,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5118764316110575523">Non attiva</translation>
 <translation id="5121618895923301719">Stai già monitorando questo prodotto. Questa pagina viene salvata nella sezione <ph name="BEGIN_LINK" />Preferiti su disp. mobili<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Sono presenti diversi problemi relativi alle password.</translation>
-<translation id="5126465625664020024">Accedi e sincronizza</translation>
 <translation id="5132942445612118989">Sincronizza le tue password, la tua cronologia e altro su tutti i tuoi dispositivi</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} password inefficace}other{{COUNT} password inefficaci}}</translation>
 <translation id="5149188072385105201">Aggiungi password…</translation>
@@ -924,7 +917,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5745916533876677730">Passa alla scheda precedente</translation>
 <translation id="574762237186762643">Eventi</translation>
 <translation id="5748177854685749242">In arrivo <ph name="DATE" /></translation>
-<translation id="5755162682436943950">Account disconnesso. Apre la finestra di dialogo per accedere e attivare la sincronizzazione.</translation>
 <translation id="5758631781033351321">Qui troverai il tuo elenco di lettura</translation>
 <translation id="5765456154762864099">Menu → Impostazioni → Browser predefinito</translation>
 <translation id="5777888488419460501">Salva nell'account</translation>
@@ -1035,7 +1027,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6293101329759844770">Per attivare Navigazione sicura, apri <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" /> e tocca Navigazione sicura.</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6321526113093607004">Aggiungi ai preferiti</translation>
-<translation id="6324669097367352121">Impostazioni accesso</translation>
 <translation id="6328337032497818759">Personalizza menu</translation>
 <translation id="6331180460633101391"><ph name="COUNT" /> password riutilizzate</translation>
 <translation id="6337234675334993532">Crittografia</translation>
@@ -1221,7 +1212,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="719133302483559673">Gestisci i tuoi interessi e le tue preferenze.</translation>
 <translation id="7192050974311852563">Avvia logging</translation>
 <translation id="7203585745079012652">Pronuncia le risposte</translation>
-<translation id="7207023858769244910">Sincronizza per ricevere contenuti in base ai tuoi interessi.</translation>
 <translation id="7210568419880432164">Attiva le notifiche…</translation>
 <translation id="721597782417389033">Nickname carta non valido</translation>
 <translation id="7221173315674413369">Esplora nuove funzionalità e suggerimenti nella sezione Novità</translation>
@@ -1618,7 +1608,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9162432979321511934">Attiva l'opzione Compila automaticamente le password.</translation>
 <translation id="9162941801309769488">Pacchetto non monitorato</translation>
 <translation id="9165320910061267720">Per ricevere notifiche relative agli avvisi sui cali di prezzo, devi attivare le notifiche nelle impostazioni di iOS.</translation>
-<translation id="9172603439892261948">Sincronizza i preferiti, la cronologia e altri dati.</translation>
 <translation id="9177438225260810839">Cerca nelle schede aperte</translation>
 <translation id="9187853111759024059">Chiudere più di 99 schede non attive?</translation>
 <translation id="9188680907066685419">Esci dall'account gestito</translation>

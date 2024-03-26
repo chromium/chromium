@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome, ziyaret ettiğiniz sitelerdeki takip numaralarını algılar ve kargoyla ilgili güncellemeleri Yeni Sekme sayfasında gösterir. Kargo takip numarası ve web sitesinin adı, bu özelliğin sunulması ve Google Alışveriş özelliklerinin herkes için iyileştirilmesi amacıyla Google'a gönderilir. Bunu istediğiniz zaman <ph name="BEGIN_LINK" />Kargo Takibi Ayarları<ph name="END_LINK" />'ndan güncelleyebilirsiniz.</translation>
 <translation id="1085696779717592361">Chrome'u Varsayılan Olarak Kullanın</translation>
 <translation id="1105362920864247682">Chrome'da Tarama Verilerini Temizleyin.</translation>
-<translation id="1113057722807951993">Parolayla şifreleme, Google Pay'deki ödeme yöntemlerini ve adresleri kapsamaz.
-
-Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Şifreniz, <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="1177414119866731261">Chrome menüsünü açın</translation>
 <translation id="1180362651362502943">Google Hesabınızdaki Chrome verilerini kullanmaya devam edin.</translation>
@@ -87,9 +84,6 @@ Dikkate alınması gereken noktalar:
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome'un verilerinizi nasıl gizli tuttuğu<ph name="END_LINK" /> hakkında daha fazla bilg edinin</translation>
 <translation id="2952581218264071393">1. Chrome Ayarlarını açın</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />'u seçin</translation>
-<translation id="2988274366244053197">Google Pay'deki ödeme yöntemleri ve adresler şifrelenmez. Chrome'daki tarama geçmişi senkronize edilmez.
-
-Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Parola Google'a gönderilmez veya Google tarafından saklanmaz. Parolanızı unutursanız veya bu ayarı değiştirmek isterseniz <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tarafından yönetilen bir hesabın oturumunu kapattığınız için Chrome verileriniz bu cihazdan silinecek. Ancak verileriniz Google Hesabınızda kalmaya devam edecek.</translation>
 <translation id="309672519329227863">Diğer uygulamalardan Chrome şifrelerinize ve daha fazlasına erişin.</translation>
 <translation id="3146109040683991651">Chrome'u Varsayılan Tarayıcı olarak ayarla</translation>
@@ -305,15 +299,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8891935667620843985">Varsayılan tarayıcı uygulamanız yaparak bağlantıları Chrome'da otomatik bir şekilde açabilirsiniz.</translation>
 <translation id="8897749957032330183">Şifreler bu cihazda Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="8949681853939555434">Chrome'u varsayılan tarayıcınız olarak ayarlayın</translation>
-<translation id="8969290730818637510">İzni kabul ederek:
-<ph name="BEGIN_INDENT" />  • Sizinkine benzer kullanımı olan kişiler için Chrome'u daha iyi hale getirmemize yardımcı olun.<ph name="END_INDENT" />
-
-Dikkate alınması gereken noktalar:
-<ph name="BEGIN_INDENT" />  • Chrome kullanımınızla ilgili bilgiler Google'a gönderilir ancak bu bilgiler kimliğinizle ilişkilendirilmez.
-
-  • Chrome kilitlenirse bu kilitlenmeyle ilgili ayrıntılarda bazı kişisel bilgiler yer alabilir.
-
-  • Senkronizasyonu açarsanız ziyaret ettiğiniz URL'ler hakkındaki bilgiler de metriklerde yer alabilir.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Chrome Gizli modda aç</translation>
 <translation id="9071207983537882274">Chrome'da Ayarlar'ı açar.</translation>
 <translation id="9112744793181547300">Chrome Varsayılan olarak ayarlansın mı?</translation>

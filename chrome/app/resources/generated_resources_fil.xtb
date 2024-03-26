@@ -3415,6 +3415,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3577487026101678864">Naka-on ang pag-sync ng file</translation>
 <translation id="3577745545227000795">Pagkolekta ng data ng hardware ng <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Awtomatikong i-configure ang IP address</translation>
+<translation id="3581861561942370740">Maghanap sa history ng pag-download</translation>
 <translation id="3582057310199111521">Nailagay sa isang mapanlinlang na site at nakita sa paglabag sa data</translation>
 <translation id="3582299299336701326">Padilimin ang maliliwanag na screen, at paliwanagin ang madidilim na screen. Pindutin ang Search + Ctrl + H para i-on at i-off ang pag-invert ng kulay.</translation>
 <translation id="3584169441612580296">Basahin at baguhin ang mga larawan, musika at iba pang media sa iyong computer</translation>
@@ -5333,6 +5334,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5056950756634735043">Kumokonekta sa container</translation>
 <translation id="5057110919553308744">Kapag iki-click mo ang extension</translation>
 <translation id="5057127674016624293">Mas matagal ang pag-scan kaysa sa inaasahan</translation>
+<translation id="5057480703570202545">History ng Pag-download</translation>
 <translation id="5059241099014281248">Paghigpitan ang pag-sign in</translation>
 <translation id="5059429103770496207">Istilo ng display</translation>
 <translation id="5059526285558225588">Piliin kung ano ang ibabahagi</translation>
@@ -5742,6 +5744,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5390677308841849479">Dark red at orange</translation>
 <translation id="5392192690789334093">Pinapayagang magpadala ng mga notification</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}one{# link}other{# na link}}</translation>
+<translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395498824851198390">Default na font</translation>
 <translation id="5397378439569041789">I-enroll ang kiosk o signage device</translation>
 <translation id="5397794290049113714">Ikaw</translation>

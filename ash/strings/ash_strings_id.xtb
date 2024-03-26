@@ -228,6 +228,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1882814835921407042">Tidak ada jaringan seluler</translation>
 <translation id="1882897271359938046">Mencerminkan ke <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Buka kunci dengan sidik jari</translation>
+<translation id="1904997243703671177">Jika Anda menonaktifkan Bluetooth, koneksi <ph name="DEVICE_COUNT" /> perangkat eksternal akan diputuskan dari <ph name="DEVICE_TYPE" />, termasuk:</translation>
 <translation id="1908992311423394684">Baru diinstal</translation>
 <translation id="1915307458270490472">Akhiri</translation>
 <translation id="1918022425394817322">Kamera dipaskan ke pojok kanan atas</translation>
@@ -957,6 +958,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4813311884204119883">Tarik link ke area kosong pada tab setrip</translation>
 <translation id="4814539958450445987">Layar Login</translation>
 <translation id="481455355267255546">Berikutnya</translation>
+<translation id="481749895090480684">Daftar tugas: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera dan mikrofon</translation>
 <translation id="482908187605862807">Aplikasi yang tersedia dari Play Store</translation>
 <translation id="4831034276697007977">Yakin ingin menonaktifkan klik otomatis?</translation>
@@ -998,6 +1000,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4952936045814352993">Fitur temukan ponsel tidak tersedia saat suara alarm dinonaktifkan</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> mengharuskan Anda me-roll back <ph name="DEVICE_TYPE" />. Perangkat Anda akan direset dan semua data akan dihapus.</translation>
 <translation id="4961318399572185831">Transmisikan layar</translation>
+<translation id="4964188651935955085">Jika Anda menonaktifkan Bluetooth, koneksi perangkat eksternal ini akan diputuskan dari <ph name="DEVICE_TYPE" /> Anda:</translation>
 <translation id="4966431234408005599">Naikkan volume</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />j <ph name="MINUTES" />m <ph name="SECONDS" />d</translation>
 <translation id="4975771730019223894">Tampilkan badge aplikasi</translation>
@@ -1234,7 +1237,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5864748620896638071">Baterai <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Mengumpulkan informasi jaringan</translation>
 <translation id="5867606971598166637">Administrator sistem memantau layar Anda</translation>
-<translation id="5876535466645959772">Daftar yang dipilih kosong, navigasikan ke bawah untuk menambahkan tugas baru</translation>
 <translation id="5876666360658629066">Masukkan kode orang tua</translation>
 <translation id="5881540930187678962">Siapkan Phone Hub nanti</translation>
 <translation id="5887954372087850114">Jendela <ph name="WINDOW_TITLE" /> ditetapkan ke <ph name="DESK_TITLE" /> dan tidak lagi ditetapkan ke semua desktop lainnya</translation>
@@ -1825,6 +1827,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8155628902202578800">Buka dialog info untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Menggunakan <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Aktifkan/nonaktifkan menu untuk mengubah ukuran mode kunci</translation>
+<translation id="8192727139462702395">Jika Anda menonaktifkan Bluetooth, koneksi perangkat eksternal ini akan diputuskan dari <ph name="DEVICE_TYPE" /> Anda:</translation>
 <translation id="8198456017687137612">Mentransmisikan tab</translation>
 <translation id="8200772114523450471">Lanjutkan</translation>
 <translation id="8203795194971602413">Klik kanan</translation>

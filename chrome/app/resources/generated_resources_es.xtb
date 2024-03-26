@@ -3507,6 +3507,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3660234220361471169">No es de confianza</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 contraseña existente encontrada}other{{NUM_PASSWORDS} contraseñas existentes encontradas}}</translation>
 <translation id="3662207097851752847">Confirma tu cuenta de Google en tu teléfono</translation>
+<translation id="3663417513679360795">Más información sobre cómo activar la precarga estándar</translation>
 <translation id="3664511988987167893">Icono de la extensión</translation>
 <translation id="3665100783276035932">La mayoría de los sitios deberían funcionar según lo previsto</translation>
 <translation id="3665301845536101715">Abrir en el panel lateral</translation>
@@ -3596,6 +3597,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3720543739123045680">Otras pestañas comparten un proceso con esta pestaña, lo que puede provocar una experiencia de DevTools inesperada.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Tú y Google</translation>
+<translation id="3721178866505920080">Más información sobre cómo activar la precarga ampliada</translation>
 <translation id="3722108462506185496">No se ha podido iniciar el servicio de la máquina virtual. Inténtalo de nuevo.</translation>
 <translation id="3722624153992426516">Instrucción <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> recibida</translation>
 <translation id="3724897774652282549">Rellena el formulario</translation>
@@ -9656,7 +9658,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8405118833120731611">{0,plural, =1{Cerrar este perfil}other{Cerrar este perfil (# ventanas)}}</translation>
 <translation id="8407199357649073301">Nivel de registro:</translation>
 <translation id="8408270600235826886">Puedes controlar qué datos se comparten con Google. Puedes cambiar esta opción en cualquier momento en Ajustes. Los datos se usan de acuerdo con la <ph name="BEGIN_LINK" />Política de Privacidad<ph name="END_LINK" /> de Google.</translation>
-<translation id="84098433273647700">Tema instalado actualmente.</translation>
+<translation id="84098433273647700">Tema instalado actualmente</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">pantalla completa</translation>
 <translation id="8412136526970428322">Con permiso: <ph name="PERMISSION" /> y <ph name="COUNT" /> más</translation>

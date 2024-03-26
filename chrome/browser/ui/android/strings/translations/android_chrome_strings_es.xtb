@@ -251,6 +251,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="2364539095045928896">Botón Cerrar para cerrar el aviso de privacidad del centro de estadísticas de la página.</translation>
 <translation id="2386938421315164605">Ocultar y mostrar temas</translation>
 <translation id="2390510615457643724">¿Quieres volver a descargar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
+<translation id="2395004545133500011">Compartir con la hoja de resumen abierta</translation>
 <translation id="2410754283952462441">Elige una cuenta</translation>
 <translation id="2414886740292270097">Oscuro</translation>
 <translation id="2421705177906985956">No hay sitios que mostrar en este momento</translation>
@@ -645,6 +646,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Marcador guardado en <ph name="FOLDER_NAME" />. Solo se guarda en este dispositivo.}other{Marcadores guardados en <ph name="FOLDER_NAME" />. Solo se guardan en este dispositivo.}}</translation>
 <translation id="4484496141267039529">No hay conexión. Inténtalo de nuevo más tarde.</translation>
 <translation id="4487967297491345095">Todos los datos de la aplicación Chrome se eliminarán de forma permanente. Esto incluye todos los archivos, ajustes, cuentas, bases de datos, etc.</translation>
+<translation id="4489640160615759754">Compartir con la hoja de resumen</translation>
 <translation id="4494806687727322324">Tu administrador ha activado la función de guardar contraseñas</translation>
 <translation id="4508528996305412043">El menú de la tarjeta del feed está abierto</translation>
 <translation id="4509501256689523862">Al navegar, la personalización de los anuncios que ves dependerá de esta opción, de los <ph name="BEGIN_LINK_1" />temas de anuncios<ph name="END_LINK_1" />, de tu <ph name="BEGIN_LINK_2" />configuración de cookies<ph name="END_LINK_2" /> y de si el sitio que estás viendo ofrece anuncios personalizados</translation>
@@ -654,6 +656,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="4521489764227272523">Los datos seleccionados se han quitado de Chrome y de los dispositivos sincronizados.
 
 Es posible que tu cuenta de Google tenga otros tipos de historial de navegación, como búsquedas o actividad de otros servicios de Google, en la página <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Compartir con la hoja de resumen cerrada</translation>
 <translation id="4523326818319942067">la última hora</translation>
 <translation id="452750746583162491">Revisar los datos sincronizados</translation>
 <translation id="4532845899244822526">Seleccionar carpeta</translation>

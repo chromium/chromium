@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chromeএ আপুনি চোৱা ছাইটসমূহত ট্ৰেকিং নম্বৰ চিনাক্ত কৰিব আৰু আপোনাক নতুন টেবৰ পৃষ্ঠাখনত পেকেজৰ আপডে’ট দেখুৱাব। এই সুবিধাটো প্ৰদান কৰিবলৈ আৰু সকলোৰে বাবে Googleৰ বজাৰ কৰাৰ সুবিধা উন্নত কৰিবলৈ পেকেজ ট্ৰেকিং নম্বৰ আৰু ৱেবছাইটৰ নাম Googleলৈ পঠিওৱা হ’ব। আপুনি <ph name="BEGIN_LINK" />পেকেজ ট্ৰেকিঙৰ ছেটিঙ<ph name="END_LINK" />ত যিকোনো সময়তে এইটো আপডে’ট কৰিব পাৰে।</translation>
 <translation id="1085696779717592361">ডিফ’ল্ট হিচাপে Chrome ব্যৱহাৰ কৰক</translation>
 <translation id="1105362920864247682">Chromeত ব্ৰাউজিঙৰ ডেটা মচক।</translation>
-<translation id="1113057722807951993">পাছফ্ৰে’জ এনক্ৰিপশ্বনত Google Payৰ পৰিশোধ পদ্ধতি আৰু ঠিকনা অন্তৰ্ভুক্ত নহয়।
-
-এই ছেটিংটো সলনি কৰিবলৈ, <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টৰ Chromeৰ ডেটা মচক<ph name="END_LINK" />।</translation>
 <translation id="1143896152279775643">আপোনাৰ পাছৱৰ্ডটো <ph name="EMAIL" />ৰ Google পাছৱৰ্ড পৰিচালকত ছেভ কৰা হ’ব।</translation>
 <translation id="1177414119866731261">Chromeৰ মেনুখন খোলক</translation>
 <translation id="1180362651362502943">আপোনাৰ Google একাউণ্টত Chromeৰ ডেটা ব্যৱহাৰ কৰি থাকক।</translation>
@@ -87,9 +84,6 @@
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chromeএ কেনেকৈ আপোনাৰ ডেটা ব্যক্তিগত কৰি ৰাখে<ph name="END_LINK" /> সেই বিষয়ে অধিক জানক</translation>
 <translation id="2952581218264071393">১) Chromeৰ ছেটিং খোলক</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> বাছনি কৰক</translation>
-<translation id="2988274366244053197">Google Payৰ পৰা পৰিশোধ পদ্ধতি আৰু ঠিকনা এনক্ৰিপ্ট কৰা নহ’ব। Chromeৰ পৰা ব্ৰাউজিঙৰ ইতিহাস ছিংক কৰা নহ’ব।
-
-আপোনাৰ পাছফ্ৰে’জ থকা লোকেহে আপোনাৰ এনক্ৰিপ্ট কৰা ডেটা পঢ়িব পাৰে। পাছফ্ৰে’জটো Googleলৈ পঠিওৱা নহয় অথবা Googleএ সেয়া ষ্ট’ৰ নকৰে। আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰে অথবা এই ছেটিংটো সলাব বিচাৰে, <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টৰ Chromeৰ ডেটা মচক<ph name="END_LINK" />।</translation>
 <translation id="3030414234702425231">আপুনি যিহেতু <ph name="SIGNOUT_MANAGED_DOMAIN" />এ পৰিচালনা কৰা এটা একাউণ্টৰ পৰা ছাইন আউট কৰি আছে আপোনাৰ Chrome ডেটা এই ডিভাইচটোৰ পৰা মচা হ’ব। আপোনাৰ ডেটা নিজৰ Google একাউণ্টত থাকিব।</translation>
 <translation id="309672519329227863">অন্য এপত আপোনাৰ Chromeৰ পাছৱৰ্ড আৰু অধিক বস্তু এক্সেছ কৰক।</translation>
 <translation id="3146109040683991651">Chromeক ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰক</translation>
@@ -305,13 +299,6 @@
 <translation id="8891935667620843985">আপুনি Chromeক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ এপ্‌ বনাই তাত স্বয়ংক্ৰিয়ভাৱে লিংকসমূহ খুলিব পাৰে।</translation>
 <translation id="8897749957032330183">পাছৱৰ্ডসমূহ এই ডিভাইচটোত থকা Google Password Managerত ছেভ কৰা হয়</translation>
 <translation id="8949681853939555434">Chromeক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰক</translation>
-<translation id="8969290730818637510">অন হৈ থাকিলে:
-<ph name="BEGIN_INDENT" />  • আপোনাৰ দৰে একেধৰণে Chrome ব্যৱহাৰ কৰা লোকসকলৰ বাবে ইয়াক উন্নত কৰাত সহায় কৰক।<ph name="END_INDENT" />
-
-বিবেচনা কৰিবলগীয়া কথা:
-<ph name="BEGIN_INDENT" />  • আপোনাৰ Chromeৰ ব্যৱহাৰৰ তথ্য Googleলৈ পঠিওৱা হয়, কিন্তু সেয়া আপোনাৰ সৈতে জড়িত কৰা নহয়।
-  • যদি Chrome ক্ৰেশ্ব হয়, ক্ৰেশ্বটোৰ সবিশেষত কিছুমান ব্যক্তিগত তথ্য অন্তৰ্ভুক্ত হ’ব পাৰে।
-  • যদি আপুনি ছিংক অন কৰে, মেট্ৰিক্সত আপুনি চোৱা URLৰ তথ্য অন্তৰ্ভুক্ত হ’ব পাৰে।<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Chromeৰ ইনক’গনিট’ ম’ডত খোলক</translation>
 <translation id="9071207983537882274">Chromeত ছেটিং খোলে।</translation>
 <translation id="9112744793181547300">Chromeক ডিফ’ল্ট হিচাপে ছেট কৰিবনে?</translation>

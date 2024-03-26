@@ -251,6 +251,7 @@ Ukuze ushintshel lawa masethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-C
 <translation id="2364539095045928896">Vala inkinobho ukuze uvale isaziso esemfihlo sehabhu lemininingwane yekhasi.</translation>
 <translation id="2386938421315164605">Fihla uphinde ungafihli izihloko</translation>
 <translation id="2390510615457643724">Ingabe ufuna ukudawunilda i-<ph name="FILE_NAME" /><ph name="FILE_SIZE" /> futhi?</translation>
+<translation id="2395004545133500011">Ukwabelana ngeshidi lesifinyezo kuvuliwe</translation>
 <translation id="2410754283952462441">Khetha i-akhawunti</translation>
 <translation id="2414886740292270097">Mnyama</translation>
 <translation id="2421705177906985956">Awekho amasayithi azoboniswa khona manje</translation>
@@ -645,6 +646,7 @@ Ukuze ushintshel lawa masethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-C
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Ibhukhimakhi ilondolozwe kokuthi "<ph name="FOLDER_NAME" />". Ilondolozwe kuphela kule divayisi.}one{Amabhukhimakhi alondolozwe kokuthi "<ph name="FOLDER_NAME" />". Alondolozwe kuphela kule divayisi.}other{Amabhukhimakhi alondolozwe kokuthi "<ph name="FOLDER_NAME" />". Alondolozwe kuphela kule divayisi.}}</translation>
 <translation id="4484496141267039529">Akukho ukuxhumana. Zama futhi emuva kwesikhathi.</translation>
 <translation id="4487967297491345095">Yonke idatha yohlelo lokusebenza le-Chrome izosuswa ngunaphakade. Lokhu kufaka phakathi onke amafayela, izilungiselelo, ama-akhawunti, isizindalwazi, njll.</translation>
+<translation id="4489640160615759754">Yabelana ngeshidi lesifinyezo</translation>
 <translation id="4494806687727322324">Ukulondolozwa kwephasiwedi kuvulwe ngumlawuli wakho</translation>
 <translation id="4508528996305412043">Imenyu yekhadi lokuphakelayo ivuliwe</translation>
 <translation id="4509501256689523862">Njengoba ubhrawuza, ukuthi isikhangiso osibonayo siqondansiwe nomuntu siqu kuncike kule sethingi, <ph name="BEGIN_LINK_1" />Izihloko zesikhangiso<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />amasethingi akho ekhukhi<ph name="END_LINK_2" />, futhi uma isayithi olibukayo lenza izikhangiso ziqondaniswe nomuntu siqu</translation>
@@ -654,6 +656,7 @@ Ukuze ushintshel lawa masethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-C
 <translation id="4521489764227272523">Idatha ekhethiwe isusiwe kusukela ku-Chrome kanye namadivayisi akho avunyelanisiwe.
 
 I-akhawunti yakho ye-Google ingaba namanye amafomu omlando okuphequlula afana nosesho nomsebenzi kusukela kwamanye amasevisi e-Google ku-<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">Ukwabelana ngeshidi lesifinyezo kuvaliwe</translation>
 <translation id="4523326818319942067">Ihora lokugcina</translation>
 <translation id="452750746583162491">Buyekeza idatha yakho evunyelanisiwe</translation>
 <translation id="4532845899244822526">Khetha ifolda</translation>

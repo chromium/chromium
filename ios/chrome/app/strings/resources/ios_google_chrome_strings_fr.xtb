@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome détectera le numéro de suivi sur les sites que vous consulterez et vous présentera les notifications de colis sur la page "Nouvel onglet". Le numéro de suivi du colis et le nom du site Web seront envoyés à Google afin de fournir cette fonctionnalité et d'améliorer les fonctionnalités de shopping Google pour tous. Vous pouvez modifier cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Utiliser Chrome par défaut</translation>
 <translation id="1105362920864247682">Effacer les données de navigation dans Chrome.</translation>
-<translation id="1113057722807951993">Le chiffrement par phrase secrète n'inclut pas les modes de paiement ni les adresses Google Pay.
-
-Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Votre mot de passe sera enregistré dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" /></translation>
 <translation id="1177414119866731261">Ouvrez le menu Chrome</translation>
 <translation id="1180362651362502943">Continuez d'utiliser les données Chrome de votre compte Google.</translation>
@@ -87,9 +84,6 @@ Points à prendre en compte :
 <translation id="2876628302275096482">Découvrez <ph name="BEGIN_LINK" />comment Chrome protège la confidentialité de vos données<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Accédez aux paramètres de Chrome</translation>
 <translation id="2957447865124070833">Sélectionnez <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2988274366244053197">Les adresses et les modes de paiement Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.
-
-Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Comme vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chrome seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="309672519329227863">Accédez à vos mots de passe Chrome et plus, dans d'autres applis.</translation>
 <translation id="3146109040683991651">Définir Chrome comme navigateur par défaut</translation>
@@ -305,15 +299,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="8891935667620843985">Vous pouvez ouvrir automatiquement des liens dans Chrome en le définissant comme navigateur par défaut.</translation>
 <translation id="8897749957032330183">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe de Google sur cet appareil.</translation>
 <translation id="8949681853939555434">Définir Chrome comme navigateur par défaut</translation>
-<translation id="8969290730818637510">Si l'option est activée :
-<ph name="BEGIN_INDENT" />  • Vous contribuez à améliorer Chrome pour les personnes qui l'utilisent comme vous.<ph name="END_INDENT" />
-
-Éléments à prendre en compte :
-<ph name="BEGIN_INDENT" />  • Des infos sur l'utilisation de Chrome, mais qui ne sont pas rattachées à vous, sont transmises à Google.
-
-  • Si Chrome plante, les détails sur ce plantage peuvent contenir des infos personnelles.
-
-  • Si vous activez la synchronisation, les métriques peuvent aussi inclure des infos sur les URL que vous consultez.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Ouvrir en navigation privée Chrome</translation>
 <translation id="9071207983537882274">Ouvre les paramètres dans Chrome.</translation>
 <translation id="9112744793181547300">Utiliser Chrome par défaut ?</translation>

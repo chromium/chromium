@@ -257,9 +257,6 @@
 <translation id="7934404985878918282">查看 Chromium 閱讀清單</translation>
 <translation id="7971753607796745700">將閱讀清單項目加入 Chromium</translation>
 <translation id="7980860476903281594">Chromium 會與你允許的網站分享位置資訊。</translation>
-<translation id="7990085102929105708">系統將不會加密你在 Google Pay 中的付款方式和地址，也不會同步 Chromium 中的瀏覽記錄。
-
-只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="7994322153108931467">如要取得 Chromium 的實用提示，請在 iOS 設定中開啟通知功能。</translation>
 <translation id="7995166854192397899">系統會根據你在其他裝置的瀏覽活動提供建議。如要取得建議，請在所有裝置上登入 Chromium。</translation>
 <translation id="800195749539500647">充分運用 Chromium 的各項功能</translation>
@@ -287,15 +284,6 @@
 <translation id="8685813584220679697">登入這個網站和 Chromium。</translation>
 <translation id="8730503818204408000">開啟 Chromium 設定，將 Chromium 設為預設瀏覽器。</translation>
 <translation id="8742300022028858275">在 Chromium 中開啟我的最新分頁</translation>
-<translation id="8747378496147986285">開啟時：
-<ph name="BEGIN_INDENT" />  • 可協助 Chromium 為使用者提供更優質的服務體驗。<ph name="END_INDENT" />
-
-注意事項：
-<ph name="BEGIN_INDENT" />  • 系統會將 Chromium 使用資訊傳送給 Google，但不會用於辨識你的身分。
-
-  • Chromium 當機時，有關當機的詳細資料可能會包含一些個人資訊。
-
-  • 開啟同步功能後，指標可能也會包含先前造訪網址的資訊。<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">你的家庭成員目前無法接收密碼。請要求對方更新 Chromium 並同步處理密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">系統會將這個帳戶和所有未儲存的資料從 Chromium 中移除。</translation>
 <translation id="88376265765385899">開啟 Chromium 書籤。</translation>

@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Chrome detectará os números de seguimento nos sitios que visites e mostrarache a información actualizada dos paquetes na páxina Nova pestana. O número de seguimento do paquete e o nome do sitio web enviaranse a Google co fin de fornecer este servizo e mellorar as funcións relacionadas coas compras de Google para todo o mundo. Podes modificar esta opción cando queiras na <ph name="BEGIN_LINK" />configuración de seguimento de paquetes<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Utilizar Chrome de forma predeterminada</translation>
 <translation id="1105362920864247682">Borra os datos de navegación en Chrome.</translation>
-<translation id="1113057722807951993">A encriptación mediante frase de acceso non inclúe os métodos de pago nin os enderezos de Google Pay.
-
-Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">O teu contrasinal gardarase no xestor de contrasinais de Google para <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Abre Menú de Chrome</translation>
 <translation id="1180362651362502943">Sigue usando os datos de Chrome na túa Conta de Google.</translation>
@@ -87,9 +84,6 @@ Cuestións que debes ter en conta:
 <translation id="2876628302275096482">Máis información sobre <ph name="BEGIN_LINK" />como protexe Chrome a privacidade dos teus datos<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Abre a configuración de Chrome</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2988274366244053197">Non se encriptarán os métodos de pago nin os enderezos de Google Pay. Non se sincronizará o historial de navegación de Chrome.
-
-Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Google non a recibirá nin a almacenará). Se esqueces a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Dado que estás pechando sesión nunha conta xestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, eliminaranse os teus datos de Chrome deste dispositivo, pero conservaranse na túa Conta de Google.</translation>
 <translation id="309672519329227863">Accede aos teus contrasinais de Chrome e moito máis noutras aplicacións.</translation>
 <translation id="3146109040683991651">Definir Chrome como navegador predeterminado</translation>
@@ -305,15 +299,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="8891935667620843985">Se configuras Chrome como aplicación de navegador predeterminada, poderás abrir ligazóns nel automaticamente.</translation>
 <translation id="8897749957032330183">Os contrasinais gárdanse no xestor de contrasinais de Google neste dispositivo.</translation>
 <translation id="8949681853939555434">Define Chrome como o teu navegador predeterminado</translation>
-<translation id="8969290730818637510">Cando esta opción está activada:
-<ph name="BEGIN_INDENT" />  • Axuda a mellorar Chrome para as persoas que o usan igual ca ti.<ph name="END_INDENT" />
-
-Cuestións que se deben ter en conta:
-<ph name="BEGIN_INDENT" />  • Envíaselle a Google información sobre o uso que fas de Chrome, pero estes datos non están vinculados contigo.
-
-  • Se se produce un erro en Chrome, entre os datos sobre o fallo podería incluírse algunha información persoal.
-
-  • Se activas a sincronización, nas métricas tamén podería figurar información sobre os URL que visitas.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Abrir no modo de incógnito de Chrome</translation>
 <translation id="9071207983537882274">Abre a configuración en Chrome.</translation>
 <translation id="9112744793181547300">Queres definir Chrome como navegador predeterminado?</translation>

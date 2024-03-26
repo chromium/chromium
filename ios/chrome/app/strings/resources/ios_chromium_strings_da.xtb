@@ -257,9 +257,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="7934404985878918282">Se Chromium-læselisten</translation>
 <translation id="7971753607796745700">Føj et element til læselisten i Chromium</translation>
 <translation id="7980860476903281594">Chromium deler din lokation med godkendte websites.</translation>
-<translation id="7990085102929105708">Betalingsmetoder og adresser fra Google Pay krypteres ikke. Browserhistorikken fra Chromium synkroniseres ikke.
-
-Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chromium-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Aktivér notifikationer i iOS-indstillingerne for at få nyttige tips til Chromium.</translation>
 <translation id="7995166854192397899">Forslagene er baseret på browseraktiviteten på dine andre enheder. Log ind i Chromium på alle dine enheder for at få forslag.</translation>
 <translation id="800195749539500647">Få mest muligt ud af Chromium</translation>
@@ -287,15 +284,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chromium-da
 <translation id="8685813584220679697">Log ind på dette website og Chromium.</translation>
 <translation id="8730503818204408000">Åbner indstillingen for Chromium, så du kan angive Chromium som standardbrowser.</translation>
 <translation id="8742300022028858275">Åbn min seneste fane i Chromium</translation>
-<translation id="8747378496147986285">Ved aktivering:
-<ph name="BEGIN_INDENT" />  • Hjælp med at gøre Chromium bedre for andre, der bruger Chromium på samme måde som dig.<ph name="END_INDENT" />
-
-Ting, du skal overveje:
-<ph name="BEGIN_INDENT" />  • Der sendes oplysninger til Google om din brug af Chromium, men oplysningerne kan ikke knyttes til dig.
-
-  • Hvis Chromium oplever nedbrud, kan oplysningerne om nedbruddet omfatte visse personlige oplysninger.
-
-  • Hvis du aktiverer synkronisering, kan metrics også omfatte oplysninger om de webadresser, du besøger.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Dit familiemedlem kan ikke modtage adgangskoder lige nu. Bed medlemmet om at opdatere Chromium og synkronisere sine adgangskoder. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Denne konto og data, som ikke er gemt, fjernes fra Chromium.</translation>
 <translation id="88376265765385899">Åbner Chromium-bogmærkerne.</translation>

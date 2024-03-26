@@ -257,9 +257,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="7934404985878918282">Žr. „Chromium“ skaitymo sąrašą</translation>
 <translation id="7971753607796745700">Pridėti skaitymo sąrašo elementą prie „Chromium“</translation>
 <translation id="7980860476903281594">„Chromium“ bendrina jūsų vietovę su svetainėmis, kurioms leidžiate gauti tokius duomenis.</translation>
-<translation id="7990085102929105708">„Google Pay“ mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chromium“ nebus sinchronizuojama.
-
-Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chromium“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Jei norite gauti naudingų „Chromium“ patarimų, įjunkite pranešimus „iOS“ nustatymuose.</translation>
 <translation id="7995166854192397899">Pasiūlymai pagrįsti jūsų naršymo veikla kituose įrenginiuose. Jei norite gauti pasiūlymų, prisijunkite prie „Chromium“ visuose savo įrenginiuose.</translation>
 <translation id="800195749539500647">Išnaudokite visas „Chromium“ galimybes</translation>
@@ -287,15 +284,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="8685813584220679697">Prisijunkite prie šios svetainės ir „Chromium“.</translation>
 <translation id="8730503818204408000">Atidaromas „Chromium“ nustatymas nustatyti „Chromium“ kaip numatytąją naršyklę.</translation>
 <translation id="8742300022028858275">Atidaryti naujausią skirtuką naršyklėje „Chromium“</translation>
-<translation id="8747378496147986285">Kai įjungta
-<ph name="BEGIN_INDENT" />  • Padėkite tobulinti „Chromium“ žmonėms, naudojantiems jį kaip jūs.<ph name="END_INDENT" />
-
-Į ką reikėtų atsižvelgti
-<ph name="BEGIN_INDENT" />  • Sistemai „Google“ siunčiama informacija apie „Chromium“ naudojimą, bet ji su jumis nesusiejama.
-
-  • Jei „Chromium“ užstringa, į strigties ataskaitą gali būti įtraukta tam tikros asmens informacijos.
-
-  • Jei įjungsite sinchronizavimą, į metriką taip pat gali būti įtraukta informacijos apie URL, kuriais lankotės.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Šeimos grupės narys šiuo metu negali gauti slaptažodžių. Paprašykite atnaujinti „Chromium“ ir sinchronizuoti slaptažodžius. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Ši paskyra ir bet kokie neišsaugoti duomenys bus pašalinti iš „Chromium“.</translation>
 <translation id="88376265765385899">Atidaromos „Chromium“ žymės.</translation>

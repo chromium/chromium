@@ -257,9 +257,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="7934404985878918282">Chromium-leeslijst bekijken</translation>
 <translation id="7971753607796745700">Item toevoegen aan leeslijst in Chromium</translation>
 <translation id="7980860476903281594">Chromium deelt je locatie met sites die je toestaat.</translation>
-<translation id="7990085102929105708">Betaalmethoden en adressen van Google Pay worden niet versleuteld. De browsegeschiedenis in Chromium wordt niet gesynchroniseerd.
-
-Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet gestuurd naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chromium-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Zet meldingen aan via de iOS-instellingen om nuttige Chromium-tips te krijgen.</translation>
 <translation id="7995166854192397899">Suggesties zijn gebaseerd op je browse-activiteit op je andere apparaten. Log op al je apparaten in bij Chromium om suggesties te krijgen.</translation>
 <translation id="800195749539500647">Het maximale uit Chromium halen</translation>
@@ -287,15 +284,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chromium
 <translation id="8685813584220679697">Log in bij deze site en Chromium.</translation>
 <translation id="8730503818204408000">Opent de Chromium-instelling om Chromium in te stellen als standaardbrowser.</translation>
 <translation id="8742300022028858275">Mijn nieuwste tabblad openen in Chromium</translation>
-<translation id="8747378496147986285">Als dit aanstaat:
-<ph name="BEGIN_INDENT" />  • Help Chromium te verbeteren voor mensen die de browser gebruiken op dezelfde manier als jij.<ph name="END_INDENT" />
-
-Aandachtspunten:
-<ph name="BEGIN_INDENT" />  • Er wordt informatie over je Chromium-gebruik naar Google gestuurd, maar deze informatie wordt niet aan jou gekoppeld.
-
-  • Als Chromium crasht, kunnen details over de crash bepaalde persoonlijke informatie bevatten.
-
-  • Als je synchronisatie aanzet, kunnen statistieken ook informatie bevatten over de URL's die je bezoekt.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Je gezinslid kan op dit moment geen wachtwoorden krijgen. Vraag hun Chromium te updaten en hun wachtwoorden te synchroniseren. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Dit account en niet-opgeslagen gegevens worden verwijderd uit Chromium.</translation>
 <translation id="88376265765385899">Opent de Chromium-bookmarks.</translation>

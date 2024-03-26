@@ -257,9 +257,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="7934404985878918282">Skatīt Chromium lasīšanas sarakstu</translation>
 <translation id="7971753607796745700">Pievienot lasīšanas saraksta vienumu pārlūkam Chromium</translation>
 <translation id="7980860476903281594">Chromium kopīgo jūsu atrašanās vietu ar vietnēm, kam atļaujat saņemt šo informāciju.</translation>
-<translation id="7990085102929105708">Maksājumu veidi un adreses no pakalpojuma Google Pay netiks šifrētas. Pārlūkā Chromium saglabātā pārlūkošanas vēsture netiks sinhronizēta.
-
-Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze. Ieejas frāze netiek sūtīta uzņēmumam Google, un uzņēmums Google to neuzglabā. Ja esat aizmirsis ieejas frāzi vai vēlaties mainīt šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chromium datus savā kontā<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Lai saņemtu noderīgus Chromium padomus, ieslēdziet paziņojumus iOS iestatījumos.</translation>
 <translation id="7995166854192397899">Ieteikumu pamatā ir pārlūkošanas darbības citās ierīcēs. Lai saņemtu ieteikumus, visās savās ierīcēs pierakstieties pārlūkā Chromium.</translation>
 <translation id="800195749539500647">Izmantojiet pārlūku Chromium pilnvērtīgi</translation>
@@ -287,15 +284,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chromium datus 
 <translation id="8685813584220679697">Pierakstieties šajā vietnē un pārlūkā Chromium.</translation>
 <translation id="8730503818204408000">Tiek atvērts Chromium iestatījums, lai iestatītu Chromium kā noklusējuma pārlūku.</translation>
 <translation id="8742300022028858275">Atvērt manu jaunāko cilni pārlūkā Chromium</translation>
-<translation id="8747378496147986285">Kad iestatījums ir ieslēgts:
-<ph name="BEGIN_INDENT" />  • Palīdziet uzlabot pārlūku Chromium visiem lietotājiem, kuri to izmanto līdzīgi jums.<ph name="END_INDENT" />
-
-Svarīga informācija
-<ph name="BEGIN_INDENT" />  • Uzņēmumam Google tiek nosūtīta informācija par Chromium lietojumu, taču tā netiek saistīta ar jums.
-
-  • Ja pārlūks Chromium avarē, informācija par avāriju var ietvert noteiktu personas informāciju.
-
-  • Ja ieslēgsiet sinhronizāciju, dati var ietvert arī informāciju par jūsu apmeklētajiem vietrāžiem URL.<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Jūsu ģimenes loceklis pašlaik nevar saņemt paroles. Lūdziet viņam atjaunināt pārlūku Chromium un sinhronizēt paroles. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Šis konts un visi nesaglabātie dati tiks noņemti no pārlūka Chromium.</translation>
 <translation id="88376265765385899">Tiek atvērtas Chromium grāmatzīmes.</translation>

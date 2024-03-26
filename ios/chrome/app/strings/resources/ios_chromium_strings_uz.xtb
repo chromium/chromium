@@ -256,9 +256,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="7934404985878918282">Chromium saqlangan sahifalarini koʻrish</translation>
 <translation id="7971753607796745700">Saqlangan sahifalar bandini Chromiumga qoʻshish</translation>
 <translation id="7980860476903281594">Chromium joylashuvingiz axborotini siz ruxsat bergan saytlarga ulashadi.</translation>
-<translation id="7990085102929105708">Google Pay xizmatidagi toʻlov usullari va manzillar shifrlanmaydi. Chromium brauzer tarixi sinxronlanmaydi.
-
-Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chromium maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">Chromium haqida tavsiyalar olish uchun iOS sozlamalari orqali bildirishnomalarni yoqing.</translation>
 <translation id="7995166854192397899">Tavsiyalar boshqa qurilmalardagi brauzer tarixi asosida tuziladi. Tavsiyalar olish uchun barcha qurilmalarda Chromium hisobiga kiring.</translation>
 <translation id="800195749539500647">Chromiumdan unumli foydalaning</translation>
@@ -286,15 +283,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chromium m
 <translation id="8685813584220679697">Bu sayt va Chromium hisoblariga kiring.</translation>
 <translation id="8730503818204408000">Asosiy brauzerni belgilash Chromium sozlamasini ochadi.</translation>
 <translation id="8742300022028858275">Oxirgi varagʻimni Chromiumda och</translation>
-<translation id="8747378496147986285">Yoniq boʻlsa:
-<ph name="BEGIN_INDENT" />  • Chromiumni siz kabi ishlatadigan odamlar uchun yaxshilashga yordam beradi<ph name="END_INDENT" />
-
-Bularni hisobga olish kerak:
-<ph name="BEGIN_INDENT" />  • Chromiumdan foydalanish maʼlumotlari Googlega yuboriladi, lekin siz bilan bogʻlanilmaydi
-
-  • Chromiumda nosozlik yuz bersa, u haqidagi maʼlumotlar, shuningdek, ayrim shaxsiy axborotlar ham yuboriladi
-
-  • Sinxronizatsiya yoqilsa, koʻrsatkichlarga siz kiritgan URL manzillar ham biriktiriladi<ph name="END_INDENT" /></translation>
 <translation id="8759037115129007407">Oila aʼzolaringiz hozir parollarni qabul qila olmaydi. Ulardan Chromium brauzerini yangilash va parollarini sinxronlashni soʻrang. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Bu hisob va uning barcha saqlanmagan maʼlumotlari Chromiumdan olib tashlanadi.</translation>
 <translation id="88376265765385899">Chromium bukmarklarini ochadi.</translation>

@@ -386,7 +386,6 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2931440415625410757">Mostrar instrucciones</translation>
 <translation id="2952246431280799028">Mantén pulsada una dirección.</translation>
 <translation id="2952278131021475699">Búsqueda mediante la cámara con Lens</translation>
-<translation id="2956733177489514605">Inicia sesión con tu cuenta de Google para sincronizar tus contraseñas y más.</translation>
 <translation id="2958718410589002129">Contraseñas</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceros</translation>
 <translation id="2969979262385602596">Error al iniciar sesión. Inténtalo más tarde.</translation>
@@ -442,7 +441,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Si también compartes informes de uso de Chrome, esos informes incluirán las URLs que visites.</translation>
 <translation id="3245744387817103524">No se ha podido guardar tu cambio.</translation>
-<translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Autocompletar contraseñas</translation>
 <translation id="3265534588625245297">Gestiona los sitios que sigues</translation>
 <translation id="3268451620468152448">Pestañas abiertas</translation>
@@ -454,7 +452,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3305294846493618482">más</translation>
 <translation id="3311748811247479259">Desactivada</translation>
 <translation id="3324193307694657476">Dirección 2</translation>
-<translation id="3328801116991980348">Información del sitio</translation>
 <translation id="3344485292736684439">{count,plural, =1{Marcador guardado en {title} de tu cuenta {email}}other{Marcadores guardados en {title} de tu cuenta {email}}}</translation>
 <translation id="3348387552617855658">Esta tarjeta te ayuda a hacer un seguimiento de tus paquetes y te ofrece información importante sobre las entregas.</translation>
 <translation id="3349676726073650389">Los sitios y las búsquedas que sigues se guardan en tu cuenta de Google. Puedes gestionar lo que sigues en la configuración en cualquier momento.</translation>
@@ -562,8 +559,8 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3891414008432200754">Precio</translation>
 <translation id="3892144330757387737">Aquí verás tu historial</translation>
 <translation id="3897092660631435901">Menú</translation>
-<translation id="3904829425754749514">Tu organización ha desactivado la sincronización. Podrás seguir viendo tus marcadores, el historial, las contraseñas y otros ajustes en este dispositivo. Si realizas cambios, no se sincronizarán con tu cuenta.</translation>
 <translation id="3909222758573607742">Guarda las contraseñas y otros elementos en la cuenta</translation>
+<translation id="3915450441834151894">Información del sitio web</translation>
 <translation id="3918585468378680136">Obteniendo estado del paquete</translation>
 <translation id="3921585859122905677">Posición de la barra de direcciones</translation>
 <translation id="3922310737605261887">Buscar el texto copiado</translation>
@@ -593,7 +590,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4045648459118332842">Obtén tus contraseñas guardadas en cualquier aplicación con un toque</translation>
 <translation id="4049507953662678203">Comprueba que tienes una conexión de red y vuelve a intentarlo.</translation>
 <translation id="4054572406751135230">Mantente al día de las noticias, los deportes y más.</translation>
-<translation id="4066639687323968621">Inicia sesión con tu cuenta de Google para sincronizar tus marcadores, tu historial y más.</translation>
 <translation id="4092655288299341041">Mostrar ayuda</translation>
 <translation id="4105841739161771091">{count,plural, =1{Eliminar dirección}other{Eliminar direcciones}}</translation>
 <translation id="4108998448622696017">Detecta y te advierte de los eventos peligrosos cuando suceden.</translation>
@@ -617,7 +613,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4187450337729239226">Pegar y buscar</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} elemento solo se guarda en este dispositivo. Para usarlo en tus otros dispositivos, guárdalo en tu cuenta de Google: {email}.}other{{count} elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google: {email}.}}</translation>
 <translation id="4216918546378735658">Cancelar</translation>
-<translation id="4223967053752765281">Tu organización ha desactivado el inicio de sesión. Podrás seguir viendo tus marcadores, el historial, las contraseñas y otros ajustes en este dispositivo. Si realizas cambios, no se sincronizarán con tu cuenta.</translation>
 <translation id="422474357428465195">Tienes varios problemas relacionados con contraseñas que podrían poner en riesgo tu seguridad.</translation>
 <translation id="4232900911558558076">Explora el nuevo menú</translation>
 <translation id="4233831822770018312">Editar permisos</translation>
@@ -668,7 +663,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4469324811108161144">Las notas pueden guardar hasta <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="4469418912670346607">Continuar configuración</translation>
 <translation id="4474494258097106883">Diseñado para tu iPhone</translation>
-<translation id="448433063499977729">Se ha desactivado la sincronización</translation>
 <translation id="4488754974567924717">Si se vulneran tus contraseñas, te avisaremos</translation>
 <translation id="4489536976005181779">{count,plural, =1{Página añadida a la lista de lectura de tu cuenta ({email})}other{Páginas añadidas a la lista de lectura de tu cuenta ({email})}}</translation>
 <translation id="4493604894403585654">Has iniciado sesión como <ph name="USER_EMAIL" />. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
@@ -804,7 +798,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5118764316110575523">Desactivado</translation>
 <translation id="5121618895923301719">Ya estás siguiendo este producto. Esta página se ha guardado en <ph name="BEGIN_LINK" />Marcadores del móvil<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Tienes varios problemas relacionados con contraseñas.</translation>
-<translation id="5126465625664020024">Iniciar sesión y sincronizar</translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, tu historial y más en todos tus dispositivos</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} contraseña poco segura}other{{COUNT} contraseñas poco seguras}}</translation>
 <translation id="5149188072385105201">Añadir contraseña...</translation>
@@ -924,7 +917,6 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5745916533876677730">Ir a la pestaña anterior</translation>
 <translation id="574762237186762643">Eventos</translation>
 <translation id="5748177854685749242">Llegada: <ph name="DATE" /></translation>
-<translation id="5755162682436943950">Has cerrado sesión. Abre el cuadro de diálogo para iniciar sesión y activar la sincronización.</translation>
 <translation id="5758631781033351321">Aquí verás tu lista de lectura</translation>
 <translation id="5765456154762864099">Menú → Configuración → Navegador predeterminado</translation>
 <translation id="5777888488419460501">Guardar en la cuenta</translation>
@@ -1035,7 +1027,6 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6293101329759844770">Para activar Navegación segura, abre <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" /> y toca Navegación segura.</translation>
 <translation id="629730747756840877">Cuenta</translation>
 <translation id="6321526113093607004">Añadir a Marcadores</translation>
-<translation id="6324669097367352121">Configuración de inicio de sesión</translation>
 <translation id="6328337032497818759">Personalizar menú</translation>
 <translation id="6331180460633101391"><ph name="COUNT" /> contraseñas reutilizadas</translation>
 <translation id="6337234675334993532">Cifrado</translation>
@@ -1221,7 +1212,6 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="719133302483559673">Gestiona tus intereses y preferencias.</translation>
 <translation id="7192050974311852563">Iniciar registro</translation>
 <translation id="7203585745079012652">Decir las respuestas</translation>
-<translation id="7207023858769244910">Habilita la sincronización para ver contenido basado en tus intereses.</translation>
 <translation id="7210568419880432164">Activar notificaciones…</translation>
 <translation id="721597782417389033">Nombre de la tarjeta no válido</translation>
 <translation id="7221173315674413369">Descubre nuevas funciones y consejos en Novedades</translation>
@@ -1618,7 +1608,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9162432979321511934">Activa Autocompletar contraseñas</translation>
 <translation id="9162941801309769488">Paquete sin seguimiento</translation>
 <translation id="9165320910061267720">Para recibir notificaciones de alertas por bajada de precio, deberás activarlas en los ajustes de iOS.</translation>
-<translation id="9172603439892261948">Sincroniza tus marcadores, tu historial y más.</translation>
 <translation id="9177438225260810839">Buscar en las pestañas abiertas</translation>
 <translation id="9187853111759024059">¿Cerrar más de 99 pestañas inactivas?</translation>
 <translation id="9188680907066685419">Cierra sesión en la cuenta gestionada</translation>

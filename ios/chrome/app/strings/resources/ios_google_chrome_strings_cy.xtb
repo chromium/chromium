@@ -5,9 +5,6 @@
 <translation id="1066101356081285416">Bydd Chrome yn canfod rhifau olrhain ar wefannau rydych chi'n ymweld â nhw ac yn dangos diweddariadau pecyn ar dudalen y Tab Newydd. Bydd y rhif olrhain pecyn ac enw'r wefan yn cael eu hanfon i Google i ddarparu'r nodwedd hon ac i wella nodweddion siopa Google i bawb. Gallwch ddiweddaru hyn yn y <ph name="BEGIN_LINK" />Gosodiadau Olrhain Pecyn<ph name="END_LINK" />.</translation>
 <translation id="1085696779717592361">Defnyddiwch Chrome yn Ddiofyn</translation>
 <translation id="1105362920864247682">Clirio Data Pori yn Chrome.</translation>
-<translation id="1113057722807951993">Nid yw amgryptio cyfrinymadrodd yn cynnwys dulliau talu a chyfeiriadau gan Google Pay.
-
-I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Bydd eich cyfrinair yn cael ei gadw i Reolwr Cyfrineiriau Google ar gyfer <ph name="EMAIL" />.</translation>
 <translation id="1177414119866731261">Agorwch y ddewislen Chrome</translation>
 <translation id="1180362651362502943">Parhewch i ddefnyddio'r data Chrome yn eich Cyfrif Google.</translation>
@@ -87,9 +84,6 @@ Pethau i'w hystyried:
 <translation id="2876628302275096482">Dysgu rhagor am <ph name="BEGIN_LINK" />sut mae Chrome yn cadw eich data yn breifat<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Agorwch Osodiadau Chrome</translation>
 <translation id="2957447865124070833">Dewiswch <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2988274366244053197">Ni fydd dulliau talu a chyfeiriadau o Google Pay yn cael eu hamgryptio. Ni fydd hanes pori o Chrome yn cysoni.
-
-Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="3030414234702425231">Oherwydd eich bod yn allgofnodi o gyfrif a reolir gan <ph name="SIGNOUT_MANAGED_DOMAIN" />, bydd eich data Chrome yn cael eu dileu o'r ddyfais hon. Bydd eich data yn aros yn eich Cyfrif Google.</translation>
 <translation id="309672519329227863">Cyrchwch eich cyfrineiriau Chrome a rhagor ar draws apiau eraill.</translation>
 <translation id="3146109040683991651">Gosod Chrome fel Porwr Diofyn</translation>
@@ -305,15 +299,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich c
 <translation id="8891935667620843985">Gallwch agor dolenni yn Chrome yn awtomatig drwy ei osod fel eich Ap Porwr Diofyn.</translation>
 <translation id="8897749957032330183">Mae cyfrineiriau'n cael eu cadw i Reolwr Cyfrineiriau Google ar y ddyfais hon.</translation>
 <translation id="8949681853939555434">Gosodwch Chrome fel eich Porwr Diofyn</translation>
-<translation id="8969290730818637510">Pan fydd ymlaen:
-<ph name="BEGIN_INDENT" />  • Helpwch i wneud Chrome yn well i bob sy'n ei ddefnyddio yn yr un ffordd â chi.<ph name="END_INDENT" />
-
-Pethau i'w hystyried:
-<ph name="BEGIN_INDENT" />  • Anfonir gwybodaeth at Google am eich defnydd Chrome, ond nid yw'n gysylltiedig â chi.
-
-  • Os bydd Chrome yn torri, gall manylion y toriad gynnwys rhywfaint o wybodaeth bersonol.
-
-  • Os ydych yn troi cysoni ymlaen, gall metrigau hefyd gynnwys gwybodaeth am gyfeiriadau URL rydych yn ymweld â nhw.<ph name="END_INDENT" /></translation>
 <translation id="9068336935206019333">Agor yn y modd Anhysbys Chrome</translation>
 <translation id="9071207983537882274">Yn agor Y Gosodiadau yn Chrome.</translation>
 <translation id="9112744793181547300">Gosod Chrome fel y porwr diofyn?</translation>

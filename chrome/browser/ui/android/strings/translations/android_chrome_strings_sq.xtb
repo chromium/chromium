@@ -251,6 +251,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="2364539095045928896">Butoni i mbylljes për mbylljen e njoftimit të privatësisë të qendrës së statistikave të faqes.</translation>
 <translation id="2386938421315164605">Fshih dhe shfaq temat</translation>
 <translation id="2390510615457643724">Do ta shkarkosh <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) sërish?</translation>
+<translation id="2395004545133500011">"Ndaj me fletën e përmbledhjes" u hap</translation>
 <translation id="2410754283952462441">Zgjidh një llogari</translation>
 <translation id="2414886740292270097">E errët</translation>
 <translation id="2421705177906985956">Nuk ka sajte për të shfaqur për momentin</translation>
@@ -645,6 +646,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Faqeshënuesi u ruajt te "<ph name="FOLDER_NAME" />". Ai ruhet vetëm në këtë pajisje.}other{Faqeshënuesit u ruajtën te "<ph name="FOLDER_NAME" />". Ata ruhen vetëm te kjo pajisje.}}</translation>
 <translation id="4484496141267039529">Nuk ka lidhje. Provo sërish më vonë.</translation>
 <translation id="4487967297491345095">Të gjitha të dhënat e aplikacionit të Chrome do të fshihen përgjithmonë. Kjo përfshin të gjithë skedarët, cilësimet, llogaritë, bazat e të dhënave etj.</translation>
+<translation id="4489640160615759754">Ndaj me fletën e përmbledhjes</translation>
 <translation id="4494806687727322324">Ruajtja e fjalëkalimeve është aktivizuar nga administratori yt</translation>
 <translation id="4508528996305412043">Menyja e kartave të furnizimit është hapur</translation>
 <translation id="4509501256689523862">Kur shfleton, nëse një reklamë që shikon është e personalizuar, kjo varet nga ky cilësim, nga <ph name="BEGIN_LINK_1" />Temat e reklamave<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />cilësimet e tua të kukive<ph name="END_LINK_2" />, si dhe nëse sajti që po shikon i personalizon reklamat</translation>
@@ -654,6 +656,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="4521489764227272523">Të dhënat e zgjedhura janë hequr nga Chrome dhe nga pajisjet e sinkronizuara.
 
 Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit, si kërkimet dhe aktivitetet nga shërbimet e tjera të Google në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="452279259461584111">"Ndaj me fletën e përmbledhjes" u mbyll</translation>
 <translation id="4523326818319942067">ora e fundit</translation>
 <translation id="452750746583162491">Rishiko të dhënat e tua të sinkronizuara</translation>
 <translation id="4532845899244822526">Zgjidh dosjen</translation>
