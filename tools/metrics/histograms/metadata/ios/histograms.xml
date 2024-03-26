@@ -1944,6 +1944,17 @@ chromium-metrics-reviews@google.com.
   <summary>Logs when a tips notification is cleared by the client.</summary>
 </histogram>
 
+<histogram name="IOS.Notifications.Tips.ClientStatus.Enabled.ByProvider"
+    enum="Boolean" expires_after="2024-06-26">
+  <owner>hiramahmood@google.com</owner>
+  <owner>scottyoder@chromium.org</owner>
+  <summary>
+    Logs the permission status, stored in iOS settings, the user has given for
+    receiving tips notifications on the device. Logged every time the metrics
+    provider reports filter metrics.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Notifications.Tips.Interaction"
     enum="IOSTipsNotificationType" expires_after="2024-06-26">
   <owner>scottyoder@chromium.org</owner>
