@@ -53,7 +53,6 @@ class AutofillSaveCardBottomSheetBridge;
 class AutofillSnackbarControllerImpl;
 class AutofillCvcSaveMessageDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
-class CardUnmaskOtpInputDialogControllerImpl;
 struct OfferNotificationOptions;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
@@ -142,10 +141,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
 
   void ShowAutofillSettings(FillingProduct main_filling_product) override;
-  void ShowCardUnmaskOtpInputDialog(
-      const CardUnmaskChallengeOption& challenge_option,
-      base::WeakPtr<OtpUnmaskDelegate> delegate) override;
-  void OnUnmaskOtpVerificationResult(OtpUnmaskResult unmask_result) override;
   void ShowUnmaskPrompt(
       const CreditCard& card,
       const CardUnmaskPromptOptions& card_unmask_prompt_options,
@@ -330,8 +325,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       autofill_cvc_save_message_delegate_;
 #endif
   std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;
-  std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
-      card_unmask_otp_input_dialog_controller_;
 };
 
 }  // namespace autofill

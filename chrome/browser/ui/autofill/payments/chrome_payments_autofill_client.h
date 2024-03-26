@@ -23,6 +23,10 @@ namespace autofill {
 
 class AutofillErrorDialogControllerImpl;
 class ContentAutofillClient;
+class CardUnmaskOtpInputDialogControllerImpl;
+class OtpUnmaskDelegate;
+struct CardUnmaskChallengeOption;
+enum class OtpUnmaskResult;
 
 namespace payments {
 
@@ -68,6 +72,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing,
       base::OnceClosure no_interactive_authentication_callback) override;
+  void ShowCardUnmaskOtpInputDialog(
+      const CardUnmaskChallengeOption& challenge_option,
+      base::WeakPtr<OtpUnmaskDelegate> delegate) override;
+  void OnUnmaskOtpVerificationResult(OtpUnmaskResult unmask_result) override;
   payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
   void ShowAutofillErrorDialog(AutofillErrorDialogContext context) override;
 
@@ -87,6 +95,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   std::unique_ptr<AutofillErrorDialogControllerImpl>
       autofill_error_dialog_controller_;
+
+  std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
+      card_unmask_otp_input_dialog_controller_;
 };
 
 }  // namespace payments

@@ -98,8 +98,6 @@ class IbanManager;
 class LogManager;
 class MerchantPromoCodeManager;
 struct OfferNotificationOptions;
-class OtpUnmaskDelegate;
-enum class OtpUnmaskResult;
 class PersonalDataManager;
 class StrikeDatabase;
 struct Suggestion;
@@ -522,14 +520,6 @@ class AutofillClient {
 
   // Causes the Autofill settings UI to be shown.
   virtual void ShowAutofillSettings(FillingProduct main_filling_product) = 0;
-
-  // Show the OTP unmask dialog to accept user-input OTP value.
-  virtual void ShowCardUnmaskOtpInputDialog(
-      const CardUnmaskChallengeOption& challenge_option,
-      base::WeakPtr<OtpUnmaskDelegate> delegate);
-
-  // Invoked when we receive the server response of the OTP unmask request.
-  virtual void OnUnmaskOtpVerificationResult(OtpUnmaskResult unmask_result);
 
   // A user has attempted to use a masked card. Prompt them for further
   // information to proceed.

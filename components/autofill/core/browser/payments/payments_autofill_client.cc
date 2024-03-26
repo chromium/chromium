@@ -47,6 +47,13 @@ void PaymentsAutofillClient::CloseAutofillProgressDialog(
     bool show_confirmation_before_closing,
     base::OnceClosure no_interactive_authentication_callback) {}
 
+void PaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(
+    const CardUnmaskChallengeOption& challenge_option,
+    base::WeakPtr<OtpUnmaskDelegate> delegate) {}
+
+void PaymentsAutofillClient::OnUnmaskOtpVerificationResult(
+    OtpUnmaskResult unmask_result) {}
+
 PaymentsNetworkInterface*
 PaymentsAutofillClient::GetPaymentsNetworkInterface() {
   return nullptr;

@@ -17,6 +17,9 @@ namespace autofill {
 struct AutofillErrorDialogContext;
 enum class AutofillProgressDialogType;
 class MigratableCreditCard;
+class OtpUnmaskDelegate;
+struct CardUnmaskChallengeOption;
+enum class OtpUnmaskResult;
 
 namespace payments {
 
@@ -98,6 +101,13 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing,
       base::OnceClosure no_interactive_authentication_callback);
+
+  // Show the OTP unmask dialog to accept user-input OTP value.
+  virtual void ShowCardUnmaskOtpInputDialog(
+      const CardUnmaskChallengeOption& challenge_option,
+      base::WeakPtr<OtpUnmaskDelegate> delegate);
+  // Invoked when we receive the server response of the OTP unmask request.
+  virtual void OnUnmaskOtpVerificationResult(OtpUnmaskResult unmask_result);
 
   // Gets the payments::PaymentsNetworkInterface instance owned by the client.
   virtual PaymentsNetworkInterface* GetPaymentsNetworkInterface();

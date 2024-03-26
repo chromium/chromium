@@ -181,7 +181,7 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
   // If the OTP input dialog is visible, also dismiss it. The two dialogs will
   // not be shown at the same time but either one of them can be visible when
   // this function is invoked.
-  autofill_client_->OnUnmaskOtpVerificationResult(
+  autofill_client_->GetPaymentsAutofillClient()->OnUnmaskOtpVerificationResult(
       OtpUnmaskResult::kPermanentFailure);
   // Show the virtual card permanent error dialog if server explicitly returned
   // vcn permanent error, show temporary error dialog for the rest failure cases
@@ -224,7 +224,7 @@ void CreditCardOtpAuthenticator::ShowOtpDialog() {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  autofill_client_->ShowCardUnmaskOtpInputDialog(
+  autofill_client_->GetPaymentsAutofillClient()->ShowCardUnmaskOtpInputDialog(
       selected_challenge_option_, weak_ptr_factory_.GetWeakPtr());
 }
 
@@ -285,16 +285,16 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
       // e.g. OTP mismatch or expired.
       if (response_details.flow_status.find("INCORRECT_OTP") !=
           std::string::npos) {
-        autofill_client_->OnUnmaskOtpVerificationResult(
-            OtpUnmaskResult::kOtpMismatch);
+        autofill_client_->GetPaymentsAutofillClient()
+            ->OnUnmaskOtpVerificationResult(OtpUnmaskResult::kOtpMismatch);
         autofill_metrics::LogOtpAuthRetriableError(
             autofill_metrics::OtpAuthEvent::kOtpMismatch,
             selected_challenge_option_.type);
       } else {
         CHECK(response_details.flow_status.find("EXPIRED_OTP") !=
               std::string::npos);
-        autofill_client_->OnUnmaskOtpVerificationResult(
-            OtpUnmaskResult::kOtpExpired);
+        autofill_client_->GetPaymentsAutofillClient()
+            ->OnUnmaskOtpVerificationResult(OtpUnmaskResult::kOtpExpired);
         autofill_metrics::LogOtpAuthRetriableError(
             autofill_metrics::OtpAuthEvent::kOtpExpired,
             selected_challenge_option_.type);
@@ -326,7 +326,8 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
       requester_->OnOtpAuthenticationComplete(response);
     }
 
-    autofill_client_->OnUnmaskOtpVerificationResult(OtpUnmaskResult::kSuccess);
+    autofill_client_->GetPaymentsAutofillClient()
+        ->OnUnmaskOtpVerificationResult(OtpUnmaskResult::kSuccess);
 
     autofill_metrics::LogOtpAuthResult(autofill_metrics::OtpAuthEvent::kSuccess,
                                        selected_challenge_option_.type);
@@ -357,7 +358,7 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
     requester_->OnOtpAuthenticationComplete(response);
   }
 
-  autofill_client_->OnUnmaskOtpVerificationResult(
+  autofill_client_->GetPaymentsAutofillClient()->OnUnmaskOtpVerificationResult(
       OtpUnmaskResult::kPermanentFailure);
 
   // If the server returned error dialog fields to be displayed, we prefer them

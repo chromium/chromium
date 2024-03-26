@@ -11,10 +11,14 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/risk_data_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
+#include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -147,6 +151,25 @@ void ChromePaymentsAutofillClient::CloseAutofillProgressDialog(
   autofill_progress_dialog_controller_->DismissDialog(
       show_confirmation_before_closing,
       std::move(no_interactive_authentication_callback));
+}
+
+void ChromePaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(
+    const CardUnmaskChallengeOption& challenge_option,
+    base::WeakPtr<OtpUnmaskDelegate> delegate) {
+  card_unmask_otp_input_dialog_controller_ =
+      std::make_unique<CardUnmaskOtpInputDialogControllerImpl>(challenge_option,
+                                                               delegate);
+  card_unmask_otp_input_dialog_controller_->ShowDialog(
+      base::BindOnce(&CreateAndShowOtpInputDialog,
+                     card_unmask_otp_input_dialog_controller_->GetWeakPtr(),
+                     base::Unretained(web_contents())));
+}
+
+void ChromePaymentsAutofillClient::OnUnmaskOtpVerificationResult(
+    OtpUnmaskResult unmask_result) {
+  CHECK(card_unmask_otp_input_dialog_controller_);
+  card_unmask_otp_input_dialog_controller_->OnOtpVerificationResult(
+      unmask_result);
 }
 
 PaymentsNetworkInterface*
