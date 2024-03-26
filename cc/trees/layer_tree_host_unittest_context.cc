@@ -824,7 +824,8 @@ class LayerTreeHostContextTestDontUseLostResources
   void SetupTree() override {
     auto* ri = child_context_provider_->RasterInterface();
 
-    gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+    scoped_refptr<gpu::ClientSharedImage> shared_image =
+        gpu::ClientSharedImage::CreateForTesting();
 
     gpu::SyncToken sync_token;
     ri->GenSyncTokenCHROMIUM(sync_token.GetData());
@@ -844,7 +845,7 @@ class LayerTreeHostContextTestDontUseLostResources
     texture->SetIsDrawable(true);
     constexpr gfx::Size size(64, 64);
     auto resource = viz::TransferableResource::MakeGpu(
-        mailbox, GL_TEXTURE_2D, sync_token, size,
+        shared_image, GL_TEXTURE_2D, sync_token, size,
         viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
     texture->SetTransferableResource(
         resource, base::BindOnce(&LayerTreeHostContextTestDontUseLostResources::
@@ -883,15 +884,16 @@ class LayerTreeHostContextTestDontUseLostResources
     color_video_frame_ = VideoFrame::CreateColorFrame(
         gfx::Size(4, 4), 0x80, 0x80, 0x80, base::TimeDelta());
     ASSERT_TRUE(color_video_frame_);
-    gpu::MailboxHolder holders[media::VideoFrame::kMaxPlanes] = {
-        gpu::MailboxHolder(mailbox, sync_token, GL_TEXTURE_2D)};
-    hw_video_frame_ = VideoFrame::WrapNativeTextures(
-        media::PIXEL_FORMAT_ARGB, holders,
+    scoped_refptr<gpu::ClientSharedImage>
+        shared_images[media::VideoFrame::kMaxPlanes];
+    shared_images[0] = shared_image;
+    hw_video_frame_ = VideoFrame::WrapSharedImages(
+        media::PIXEL_FORMAT_ARGB, shared_images, sync_token, GL_TEXTURE_2D,
         media::VideoFrame::ReleaseMailboxCB(), gfx::Size(4, 4),
         gfx::Rect(0, 0, 4, 4), gfx::Size(4, 4), base::TimeDelta());
     ASSERT_TRUE(hw_video_frame_);
-    scaled_hw_video_frame_ = VideoFrame::WrapNativeTextures(
-        media::PIXEL_FORMAT_ARGB, holders,
+    scaled_hw_video_frame_ = VideoFrame::WrapSharedImages(
+        media::PIXEL_FORMAT_ARGB, shared_images, sync_token, GL_TEXTURE_2D,
         media::VideoFrame::ReleaseMailboxCB(), gfx::Size(4, 4),
         gfx::Rect(0, 0, 3, 2), gfx::Size(4, 4), base::TimeDelta());
     ASSERT_TRUE(scaled_hw_video_frame_);
