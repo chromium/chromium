@@ -75,6 +75,9 @@ class TargetDeviceBootstrapController
     // TODO(b/318664950) - Remove once the server starts sending the gaia_id.
     std::string access_token;
     std::string refresh_token;
+    // The URL path and parameters to be used when showing the 'fallback' URL
+    // flow of QuickStart. Only exists when Gaia demands an extra verification.
+    std::optional<std::string> fallback_url_path;
   };
 
   using ConnectionClosedReason =

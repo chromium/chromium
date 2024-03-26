@@ -357,7 +357,7 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
       'onBeforeLoad',
       'reset',
       'toggleLoadingUi',
-      'setQuickStartEnabled',
+      'setQuickStartEntryPointVisibility',
     ];
   }
 
@@ -1084,11 +1084,11 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
     this.userActed('activateQuickStart');
   }
 
-  setQuickStartEnabled() {
+  private setQuickStartEntryPointVisibility(visible: boolean): void {
     const gaiaDialog =
         this.shadowRoot?.querySelector<GaiaDialog>('#signin-frame-dialog');
     assert(!!gaiaDialog);
-    gaiaDialog.isQuickStartEnabled = true;
+    gaiaDialog.isQuickStartEnabled = visible;
   }
 
   private recordUmaHistogramForEnrollmentNudgeUserAction(

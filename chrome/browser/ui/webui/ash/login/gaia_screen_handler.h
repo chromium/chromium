@@ -103,7 +103,7 @@ class GaiaView {
   virtual void ShowSigninScreenForTest(const std::string& username,
                                        const std::string& password,
                                        const std::string& services) = 0;
-  virtual void SetQuickStartEnabled() = 0;
+  virtual void SetQuickStartEntryPointVisibility(bool visible) = 0;
   // Sets if Gaia password is required during login. If the password is
   // required, Gaia passwordless login will be disallowed.
   virtual void SetIsGaiaPasswordRequired(bool is_required) = 0;
@@ -165,7 +165,7 @@ class GaiaScreenHandler final
                                const std::string& password,
                                const std::string& services) override;
 
-  void SetQuickStartEnabled() override;
+  void SetQuickStartEntryPointVisibility(bool visible) override;
   void SetIsGaiaPasswordRequired(bool is_required) override;
 
   void Reset() override;

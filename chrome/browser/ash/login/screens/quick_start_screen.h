@@ -28,6 +28,7 @@ class QuickStartScreen : public BaseScreen,
     CANCEL_AND_RETURN_TO_SIGNIN,
     SETUP_COMPLETE_NEXT_BUTTON,
     WIFI_CREDENTIALS_RECEIVED,
+    FALLBACK_URL_ON_GAIA,
   };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;

@@ -2011,6 +2011,13 @@ void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
     case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_GAIA_INFO:
       AdvanceToScreen(GaiaInfoScreenView::kScreenId);
       return;
+    case ash::QuickStartScreen::Result::FALLBACK_URL_ON_GAIA:
+      wizard_context_->gaia_config.gaia_path =
+          WizardContext::GaiaPath::kQuickStartFallback;
+      wizard_context_->gaia_config.quick_start_fallback_path_contents =
+          quickstart_controller_->GetFallbackUrl();
+      AdvanceToScreen(GaiaView::kScreenId);
+      return;
     case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_SIGNIN:
       AdvanceToScreen(GaiaView::kScreenId);
       return;

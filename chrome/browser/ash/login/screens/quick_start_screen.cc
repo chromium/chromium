@@ -45,6 +45,8 @@ std::string QuickStartScreen::GetResultString(Result result) {
       return "SetupCompleteNextButton";
     case Result::WIFI_CREDENTIALS_RECEIVED:
       return "WifiCredentialsReceived";
+    case Result::FALLBACK_URL_ON_GAIA:
+      return "FallbackUrlOnGaia";
   }
 }
 
@@ -137,6 +139,10 @@ void QuickStartScreen::OnUiUpdateRequested(
       break;
     case ash::quick_start::QuickStartController::UiState::CREATING_ACCOUNT:
       view_->ShowCreatingAccountStep();
+      break;
+    case ash::quick_start::QuickStartController::UiState::FALLBACK_URL_FLOW:
+      // WizardController will handle this edge case and populate the URL.
+      exit_callback_.Run(Result::FALLBACK_URL_ON_GAIA);
       break;
     case ash::quick_start::QuickStartController::UiState::SETUP_COMPLETE:
       view_->ShowSetupCompleteStep();

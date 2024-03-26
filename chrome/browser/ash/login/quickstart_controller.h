@@ -53,6 +53,7 @@ class QuickStartController
     CONNECTED,
     // TODO(b:283965994) - Replace with more appropriate state.
     CONTINUING_AFTER_ENROLLMENT_CHECKS,
+    FALLBACK_URL_FLOW_ON_GAIA_SCREEN,
     SETUP_COMPLETE,
   };
 
@@ -81,6 +82,8 @@ class QuickStartController
       SIGNING_IN,
       // Same state as 'SIGNING_IN' but without the 'Cancel' button.
       CREATING_ACCOUNT,
+      // Triggers a screen exit into the Gaia screen for the fallback URL flow.
+      FALLBACK_URL_FLOW,
       SETUP_COMPLETE,
       // Exits the screen.
       EXIT_SCREEN,
@@ -139,6 +142,12 @@ class QuickStartController
   std::string GetDiscoverableName() { return discoverable_name_.value(); }
   UserInfo GetUserInfo() { return user_info_; }
   std::string GetWiFiName() { return wifi_name_.value(); }
+  std::string GetFallbackUrl() { return fallback_url_.value(); }
+
+  // Called by the Gaia screen during the 'CompleteAuthentication' call. This
+  // notifies us that the flow succeeded and we use this signal to show the
+  // 'setup complete' step of QuickStart.
+  void OnFallbackUrlFlowSuccess();
 
   // Triggered when the user clicks on 'Turn on Bluetooth'
   void OnBluetoothPermissionGranted();
@@ -231,6 +240,9 @@ class QuickStartController
 
   // PIN to be shown on the UI when requested.
   std::optional<std::string> pin_;
+
+  // Fallback URL to be used on the Gaia screen when needed.
+  std::optional<std::string> fallback_url_;
 
   // User information that is shown while 'Signing in...'
   UserInfo user_info_;

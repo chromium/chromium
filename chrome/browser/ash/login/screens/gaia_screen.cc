@@ -117,7 +117,9 @@ GaiaScreen::~GaiaScreen() {
 
 bool GaiaScreen::MaybeSkip(WizardContext& context) {
   // Continue QuickStart flow if there is an ongoing setup.
-  if (context.quick_start_setup_ongoing) {
+  if (context.quick_start_setup_ongoing &&
+      context.gaia_config.gaia_path !=
+          WizardContext::GaiaPath::kQuickStartFallback) {
     exit_callback_.Run(Result::QUICK_START_ONGOING);
     return true;
   }
@@ -135,6 +137,7 @@ void GaiaScreen::LoadOnlineGaia() {
     case WizardContext::GaiaPath::kDefault:
     case WizardContext::GaiaPath::kSamlRedirect:
     case WizardContext::GaiaPath::kReauth:
+    case WizardContext::GaiaPath::kQuickStartFallback:
       LoadDefaultOnlineGaia(context->gaia_config.prefilled_account);
       break;
     case WizardContext::GaiaPath::kChildSignin:
@@ -422,8 +425,8 @@ void GaiaScreen::OnQuickStartButtonClicked() {
 }
 
 void GaiaScreen::SetQuickStartButtonVisibility(bool visible) {
-  if (visible && view_) {
-    view_->SetQuickStartEnabled();
+  if (view_) {
+    view_->SetQuickStartEntryPointVisibility(visible);
   }
 }
 

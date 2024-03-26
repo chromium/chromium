@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
@@ -362,10 +363,19 @@ void QuickStartController::OnStatusChanged(
       if (absl::holds_alternative<
               TargetDeviceBootstrapController::GaiaCredentials>(
               status.payload)) {
-        QS_LOG(INFO) << "Successfully received an OAuth authorization code.";
-        OnOAuthTokenReceived(
+        const TargetDeviceBootstrapController::GaiaCredentials gaia_creds =
             absl::get<TargetDeviceBootstrapController::GaiaCredentials>(
-                status.payload));
+                status.payload);
+        if (!gaia_creds.auth_code.empty()) {
+          QS_LOG(INFO) << "Successfully received an OAuth authorization code.";
+          OnOAuthTokenReceived(gaia_creds);
+        } else {
+          QS_LOG(INFO) << "QuickStart flow will continue via fallback URL";
+          CHECK(!gaia_creds.fallback_url_path->empty());
+          fallback_url_ = gaia_creds.fallback_url_path.value();
+          controller_state_ = ControllerState::FALLBACK_URL_FLOW_ON_GAIA_SCREEN;
+          UpdateUiState(UiState::FALLBACK_URL_FLOW);
+        }
       } else {
         CHECK(absl::holds_alternative<ErrorCode>(status.payload));
         QS_LOG(ERROR) << "Error receiving FIDO assertion. Error Code = "
@@ -407,6 +417,18 @@ void QuickStartController::OnCurrentScreenChanged(OobeScreenId previous_screen,
   } else if (IsSetupOngoing()) {
     QuickStartMetrics::RecordScreenOpened(
         ScreenNameFromOobeScreenId(current_screen));
+
+    // Detect when the user leaves the Gaia screen during the fallback flow.
+    if (controller_state_ ==
+            ControllerState::FALLBACK_URL_FLOW_ON_GAIA_SCREEN &&
+        previous_screen_ == GaiaScreenHandler::kScreenId) {
+      QS_LOG(INFO) << "Gaia screen dismissed while handling fallback URL flow.";
+      if (current_screen_ == ErrorScreenHandler::kScreenId) {
+        AbortFlow(AbortFlowReason::ERROR);
+      } else {
+        AbortFlow(AbortFlowReason::USER_CLICKED_BACK);
+      }
+    }
   }
 }
 
@@ -590,6 +612,7 @@ void QuickStartController::FinishAccountCreation() {
 void QuickStartController::ResetState() {
   entry_point_.reset();
   qr_code_data_.reset();
+  fallback_url_.reset();
   pin_.reset();
   user_info_ = UserInfo();
   gaia_creds_ = TargetDeviceBootstrapController::GaiaCredentials();
@@ -636,6 +659,13 @@ void QuickStartController::OnPropertiesUpdated(
 
 bool QuickStartController::IsBluetoothDisabled() {
   return bluetooth_system_state_ == BluetoothSystemState::kDisabled;
+}
+
+void QuickStartController::OnFallbackUrlFlowSuccess() {
+  if (controller_state_ == ControllerState::FALLBACK_URL_FLOW_ON_GAIA_SCREEN) {
+    SavePhoneInstanceID();
+    controller_state_ = ControllerState::SETUP_COMPLETE;
+  }
 }
 
 void QuickStartController::OnBluetoothPermissionGranted() {
@@ -687,6 +717,9 @@ std::ostream& operator<<(std::ostream& stream,
       break;
     case QuickStartController::UiDelegate::UiState::CREATING_ACCOUNT:
       stream << "[creating account]";
+      break;
+    case QuickStartController::UiDelegate::UiState::FALLBACK_URL_FLOW:
+      stream << "[fallback URL flow]";
       break;
     case QuickStartController::UiDelegate::UiState::SETUP_COMPLETE:
       stream << "[setup complete]";
@@ -756,6 +789,10 @@ std::ostream& operator<<(
     case QuickStartController::ControllerState::
         CONTINUING_AFTER_ENROLLMENT_CHECKS:
       stream << "[continuing after enrollment checks]";
+      break;
+    case QuickStartController::ControllerState::
+        FALLBACK_URL_FLOW_ON_GAIA_SCREEN:
+      stream << "[fallback URL flow on Gaia screen]";
       break;
     case QuickStartController::ControllerState::SETUP_COMPLETE:
       stream << "[setup complete]";

@@ -31,6 +31,7 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace ash::quick_start {
@@ -443,30 +444,37 @@ void TargetDeviceBootstrapController::OnAuthCodeReceived(
                          /*payload=*/gaia_creds);
             is_error = false;
           },
-          [](SecondDeviceAuthBroker::
-                 AuthCodeAdditionalChallengesOnTargetResponse res) {
-            // TODO(b/310937296) - Implement fallback logic.
-            quick_start::QS_LOG(ERROR)
-                << "Failed to fetch refresh token! "
+          [&](SecondDeviceAuthBroker::
+                  AuthCodeAdditionalChallengesOnTargetResponse res) {
+            quick_start::QS_LOG(INFO)
+                << "Failed to fetch OAuth authorization code! "
                    "Additional challenges needed on target device.";
+            const GURL fallback_url = GURL(res.fallback_url);
+            GaiaCredentials gaia_creds;
+            // Note that we are, on purpose, not taking the URL authority here!
+            gaia_creds.fallback_url_path = fallback_url.PathForRequest();
+            UpdateStatus(/*step=*/Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS,
+                         /*payload=*/gaia_creds);
+            is_error = false;
           },
           [](SecondDeviceAuthBroker::
                  AuthCodeAdditionalChallengesOnSourceResponse res) {
             quick_start::QS_LOG(ERROR)
-                << "Failed to fetch refresh token! "
+                << "Failed to fetch OAuth authorization code! "
                    "Additional challenges needed on source device.";
           },
           [](SecondDeviceAuthBroker::AuthCodeRejectionResponse res) {
             quick_start::QS_LOG(ERROR)
-                << "Failed to fetch refresh token! Rejected: " << res.reason;
+                << "Failed to fetch OAuth authorization code! Rejected: "
+                << res.reason;
           },
           [](SecondDeviceAuthBroker::AuthCodeParsingErrorResponse res) {
             quick_start::QS_LOG(ERROR)
-                << "Failed to fetch refresh token! Parsing error";
+                << "Failed to fetch OAuth authorization code! Parsing error";
           },
           [](SecondDeviceAuthBroker::AuthCodeUnknownErrorResponse res) {
             quick_start::QS_LOG(ERROR)
-                << "Failed to fetch refresh token! Unknown error";
+                << "Failed to fetch OAuth authorization code! Unknown error";
           }},
       response);
   if (is_error) {

@@ -43,9 +43,13 @@ class WizardContext {
     kChildSignin,
     kReauth,
     kSamlRedirect,
+    kQuickStartFallback,
   };
 
   struct GaiaConfig {
+    GaiaConfig();
+    ~GaiaConfig();
+
     // GAIA path to be loaded the next time GAIA Sign-in screen is shown.
     // This is usually set just before showing the GAIA screen and reset
     // to the default value when hiding the screen.
@@ -58,6 +62,10 @@ class WizardContext {
     // The account ID to be used in the next loading of GAIA webview.
     // The value is reset to `EmptyAccountId()` when hiding the screen.
     AccountId prefilled_account = EmptyAccountId();
+
+    // The URL path and parameters to be used when showing the 'fallback' URL
+    // flow of QuickStart. Only exists when Gaia demands an extra verification.
+    std::optional<std::string> quick_start_fallback_path_contents;
   };
 
   struct RecoverySetup {

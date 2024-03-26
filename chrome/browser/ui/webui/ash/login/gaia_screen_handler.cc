@@ -503,6 +503,11 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     case WizardContext::GaiaPath::kSamlRedirect:
       params.Set("gaiaPath", GetPath(gaia_urls.saml_redirect_chromeos_url()));
       break;
+    case WizardContext::GaiaPath::kQuickStartFallback:
+      params.Set("gaiaPath",
+                 LoginDisplayHost::default_host()
+                     ->GetWizardContext()
+                     ->gaia_config.quick_start_fallback_path_contents.value());
   }
 
   // We only send `chromeos_board` Gaia URL parameter if user has opted into
@@ -851,6 +856,17 @@ void GaiaScreenHandler::CompleteAuthentication(
 
   if (!LoginDisplayHost::default_host()) {
     return;
+  }
+
+  // In case of QuickStart, notify the controller of a successful attempt.
+  const auto* ctx = LoginDisplayHost::default_host()->GetWizardContext();
+  if (ctx->quick_start_setup_ongoing &&
+      ctx->gaia_config.gaia_path ==
+          WizardContext::GaiaPath::kQuickStartFallback) {
+    LoginDisplayHost::default_host()
+        ->GetWizardController()
+        ->quick_start_controller()
+        ->OnFallbackUrlFlowSuccess();
   }
 
   const AccountId account_id = login::GetAccountId(
@@ -1650,8 +1666,8 @@ void GaiaScreenHandler::ToggleLoadingUI(bool is_shown) {
   CallExternalAPI("toggleLoadingUi", is_shown);
 }
 
-void GaiaScreenHandler::SetQuickStartEnabled() {
-  CallExternalAPI("setQuickStartEnabled");
+void GaiaScreenHandler::SetQuickStartEntryPointVisibility(bool visible) {
+  CallExternalAPI("setQuickStartEntryPointVisibility", visible);
 }
 
 void GaiaScreenHandler::SetIsGaiaPasswordRequired(bool is_required) {
