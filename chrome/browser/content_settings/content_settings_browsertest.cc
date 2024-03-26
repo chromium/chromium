@@ -28,7 +28,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
-#include "components/browsing_data/core/features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"

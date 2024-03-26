@@ -25,7 +25,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
-#include "components/browsing_data/core/features.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"

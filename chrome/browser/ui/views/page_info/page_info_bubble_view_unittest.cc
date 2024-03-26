@@ -37,7 +37,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
-#include "components/browsing_data/core/features.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"

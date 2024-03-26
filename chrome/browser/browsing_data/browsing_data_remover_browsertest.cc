@@ -37,7 +37,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/content/browsing_data_model.h"
-#include "components/browsing_data/core/features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"

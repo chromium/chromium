@@ -11,7 +11,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
-#include "components/browsing_data/core/features.h"
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"

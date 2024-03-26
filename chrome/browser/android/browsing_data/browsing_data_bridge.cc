@@ -31,7 +31,6 @@
 #include "chrome/common/channel_info.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
-#include "components/browsing_data/core/features.h"
 #include "components/browsing_data/core/history_notice_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"

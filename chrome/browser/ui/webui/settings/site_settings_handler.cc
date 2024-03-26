@@ -64,7 +64,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_model.h"
-#include "components/browsing_data/core/features.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"

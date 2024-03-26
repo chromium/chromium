@@ -34,7 +34,6 @@
 #include "components/browsing_data/content/browsing_data_model_test_util.h"
 #include "components/browsing_data/content/browsing_data_test_util.h"
 #include "components/browsing_data/content/shared_worker_info.h"
-#include "components/browsing_data/core/features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -472,14 +471,6 @@ class BrowsingDataModelBrowserTest
     disabled_features.push_back(features::kCdmStorageDatabaseMigration);
 #endif
 
-    if (IsDeprecateCookiesTreeModelEnabled()) {
-      enabled_features.push_back(
-          {browsing_data::features::kDeprecateCookiesTreeModel, {}});
-    } else {
-      disabled_features.emplace_back(
-          browsing_data::features::kDeprecateCookiesTreeModel);
-    }
-
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }
@@ -558,8 +549,6 @@ class BrowsingDataModelBrowserTest
     return https_test_server()->GetURL(kTestHost, replaced_path);
   }
 
-  bool IsDeprecateCookiesTreeModelEnabled() { return GetParam(); }
-
   IdpTestServer* idp_server() { return idp_server_.get(); }
 
   network::test::TrustTokenRequestHandler request_handler_;
@@ -575,7 +564,7 @@ class BrowsingDataModelBrowserTest
   std::unique_ptr<IdpTestServer> idp_server_;
 };
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        SharedStorageHandledCorrectly) {
   // Add origin shared storage.
   auto* shared_storage_manager =
@@ -617,7 +606,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        SharedStorageAccessReportedCorrectly) {
   // Navigate to test page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
@@ -653,7 +642,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
          /*cookie_count=*/0}}});
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest, TrustTokenIssuance) {
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest, TrustTokenIssuance) {
   // Setup the test server to be able to issue trust tokens, and have it issue
   // some to the profile.
   ProvideRequestHandlerKeyCommitmentsToNetworkService(
@@ -705,7 +694,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest, TrustTokenIssuance) {
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        InterestGroupsHandledCorrectly) {
   // Check that no interest groups are joined at the beginning of the test.
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
@@ -744,7 +733,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        InterestGroupsAccessReportedCorrectly) {
   // Navigate to test page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
@@ -775,7 +764,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
          /*cookie_count=*/0}}});
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        AuctionWinReportedCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
   JoinInterestGroup(web_contents(), https_test_server(), kTestHost);
@@ -811,7 +800,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
          /*cookie_count=*/0}}});
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        AttributionReportingAccessReportedCorrectly) {
   const GURL kTestCases[] = {
       https_test_server()->GetURL(
@@ -854,7 +843,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        PrivateAggregationHandledCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
@@ -894,7 +883,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        TopicsAccessReportedCorrectly) {
   // Navigate to test page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
@@ -934,7 +923,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        IsolatedWebAppUsageInDefaultStoragePartitionModel) {
   // Check that no IWAs are installed at the beginning of the test.
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
@@ -976,7 +965,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
          /*cookie_count=*/0}}});
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        QuotaStorageHandledCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -1020,7 +1009,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        LocalStorageHandledCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -1075,7 +1064,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ASSERT_EQ(browsing_data_model->size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        LocalStorageAccessReportedCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -1113,7 +1102,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        SessionStorageAccessReportedCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -1170,7 +1159,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ASSERT_FALSE(HasDataForType("SessionStorage", web_contents()));
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        QuotaStorageAccessReportedCorrectly) {
   // Keeping the `ServiceWorker` type last as checking it after deletion counts
   // as a new access report and repopulates the model, this way we keep it from
@@ -1219,7 +1208,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        SharedWorkerAccessReportedCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -1262,7 +1251,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        LocalStorageRemovedBasedOnPartition) {
   // Build BDM from disk.
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
@@ -1401,7 +1390,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
          /*cookie_count=*/0}}});
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        SharedDictionaryHandledCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -1442,7 +1431,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ASSERT_EQ(browsing_data_model->size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        SharedDictionaryAccessReportedCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -1513,7 +1502,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
          /*cookie_count=*/0}}});
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        SharedDictionaryAccessForNavigationReportedCorrectly) {
   // Registers a shared dictionary.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -1569,7 +1558,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
          /*cookie_count=*/0}}});
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     BrowsingDataModelBrowserTest,
     SharedDictionaryAccessForIframeNavigationReportedCorrectly) {
   // Registers a shared dictionary.
@@ -1638,7 +1627,7 @@ IN_PROC_BROWSER_TEST_P(
          /*cookie_count=*/0}}});
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest, CookiesHandledCorrectly) {
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest, CookiesHandledCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
@@ -1647,10 +1636,6 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest, CookiesHandledCorrectly) {
       BuildBrowsingDataModel();
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
   ASSERT_EQ(browsing_data_model->size(), 0u);
-
-  if (!IsDeprecateCookiesTreeModelEnabled()) {
-    return;
-  }
 
   SetDataForType("Cookie", web_contents());
 
@@ -1680,12 +1665,8 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest, CookiesHandledCorrectly) {
   ASSERT_FALSE(HasDataForType("Cookie", web_contents()));
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        CookiesAccessReportedCorrectly) {
-  if (!IsDeprecateCookiesTreeModelEnabled()) {
-    return;
-  }
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
@@ -1724,7 +1705,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ASSERT_FALSE(HasDataForType("Cookie", web_contents()));
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        FederatedIdentityHandledCorrectly) {
   // Setup identity provider (IDP).
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
@@ -1775,7 +1756,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
 }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        CdmStorageHandledCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -1806,6 +1787,3 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
-
-// Enable/disable `kDeprecateCookiesTreeModel` feature.
-INSTANTIATE_TEST_SUITE_P(All, BrowsingDataModelBrowserTest, ::testing::Bool());

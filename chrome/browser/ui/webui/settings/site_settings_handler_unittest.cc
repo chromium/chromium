@@ -75,7 +75,6 @@
 #include "components/browsing_data/content/fake_browsing_data_model.h"
 #include "components/browsing_data/content/mock_cookie_helper.h"
 #include "components/browsing_data/content/mock_local_storage_helper.h"
-#include "components/browsing_data/core/features.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/test_util.h"
 #include "components/client_hints/common/client_hints.h"

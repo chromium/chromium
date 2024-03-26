@@ -11,7 +11,6 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/browsing_data/content/fake_browsing_data_model.h"
-#include "components/browsing_data/core/features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
