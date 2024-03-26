@@ -235,16 +235,16 @@ TEST_F(ColorAnalysisTest, GridSampler) {
 
 TEST_F(ColorAnalysisTest, FindClosestColor) {
   // Empty image returns input color.
-  SkColor color = FindClosestColor(NULL, 0, 0, SK_ColorRED);
+  SkColor color = FindClosestColor(base::span<uint8_t>(), 0, 0, SK_ColorRED);
   EXPECT_EQ(SK_ColorRED, color);
 
   // Single color image returns that color.
   SkBitmap bitmap;
   bitmap.allocN32Pixels(16, 16);
   bitmap.eraseColor(SK_ColorWHITE);
-  color = FindClosestColor(static_cast<uint8_t*>(bitmap.getPixels()),
-                           bitmap.width(),
-                           bitmap.height(),
+  base::span<uint8_t> bitmap_span(static_cast<uint8_t*>(bitmap.getPixels()),
+                                  bitmap.computeByteSize());
+  color = FindClosestColor(bitmap_span, bitmap.width(), bitmap.height(),
                            SK_ColorRED);
   EXPECT_EQ(SK_ColorWHITE, color);
 
@@ -252,9 +252,7 @@ TEST_F(ColorAnalysisTest, FindClosestColor) {
   // the black one in the image.
   uint32_t* pixel = bitmap.getAddr32(0, 0);
   *pixel = SK_ColorBLACK;
-  color = FindClosestColor(static_cast<uint8_t*>(bitmap.getPixels()),
-                           bitmap.width(),
-                           bitmap.height(),
+  color = FindClosestColor(bitmap_span, bitmap.width(), bitmap.height(),
                            SK_ColorDKGRAY);
   EXPECT_EQ(SK_ColorBLACK, color);
 }

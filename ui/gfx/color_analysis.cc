@@ -16,6 +16,8 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -427,7 +429,7 @@ int GridSampler::GetSample(int width, int height) {
   return index % (width * height);
 }
 
-SkColor FindClosestColor(const uint8_t* image,
+SkColor FindClosestColor(base::span<const uint8_t> image,
                          int width,
                          int height,
                          SkColor color) {
@@ -437,7 +439,7 @@ SkColor FindClosestColor(const uint8_t* image,
   // Search using distance-squared to avoid expensive sqrt() operations.
   int best_distance_squared = std::numeric_limits<int32_t>::max();
   SkColor best_color = color;
-  const uint8_t* byte = image;
+  auto byte = image.begin();
   for (int i = 0; i < width * height; ++i) {
     uint8_t b = *(byte++);
     uint8_t g = *(byte++);
@@ -461,7 +463,7 @@ SkColor FindClosestColor(const uint8_t* image,
 // For a 16x16 icon on an Intel Core i5 this function takes approximately
 // 0.5 ms to run.
 // TODO(port): This code assumes the CPU architecture is little-endian.
-SkColor CalculateKMeanColorOfBuffer(uint8_t* decoded_data,
+SkColor CalculateKMeanColorOfBuffer(base::span<const uint8_t> decoded_data,
                                     int img_width,
                                     int img_height,
                                     const HSL& lower_bound,
@@ -532,8 +534,9 @@ SkColor CalculateKMeanColorOfBuffer(uint8_t* decoded_data,
         ++iteration) {
 
       // Loop through each pixel so we can place it in the appropriate cluster.
-      uint8_t* pixel = decoded_data;
-      uint8_t* decoded_data_end = decoded_data + (img_width * img_height * 4);
+      auto pixel = decoded_data.begin();
+      auto decoded_data_end =
+          decoded_data.begin() + (img_width * img_height * 4);
       while (pixel < decoded_data_end) {
         uint8_t b = *(pixel++);
         uint8_t g = *(pixel++);
@@ -617,7 +620,7 @@ SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png,
   if (!png.empty() &&
       gfx::PNGCodec::Decode(png.data(), png.size(), gfx::PNGCodec::FORMAT_BGRA,
                             &decoded_data, &img_width, &img_height)) {
-    return CalculateKMeanColorOfBuffer(&decoded_data[0], img_width, img_height,
+    return CalculateKMeanColorOfBuffer(decoded_data, img_width, img_height,
                                        lower_bound, upper_bound, sampler, true);
   }
   return color;
@@ -644,19 +647,20 @@ SkColor CalculateKMeanColorOfBitmap(const SkBitmap& bitmap,
   // above uses non-pre-multiplied alpha. Transform the bitmap before we
   // analyze it because the function reads each pixel multiple times.
   int pixel_count = bitmap.width() * height;
-  std::unique_ptr<uint32_t[]> image(new uint32_t[pixel_count]);
+  base::HeapArray<uint32_t> image =
+      base::HeapArray<uint32_t>::Uninit(pixel_count);
 
   // Un-premultiplies each pixel in bitmap into the buffer. Requires
   // approximately 10 microseconds for a 16x16 icon on an Intel Core i5.
   uint32_t* in = static_cast<uint32_t*>(bitmap.getPixels());
-  uint32_t* out = image.get();
+  auto out = image.begin();
   for (int i = 0; i < pixel_count; ++i)
     *out++ = SkUnPreMultiply::PMColorToColor(*in++);
 
   GridSampler sampler;
-  return CalculateKMeanColorOfBuffer(reinterpret_cast<uint8_t*>(image.get()),
-                                     bitmap.width(), height, lower_bound,
-                                     upper_bound, &sampler, find_closest);
+  return CalculateKMeanColorOfBuffer(base::as_byte_span(image), bitmap.width(),
+                                     height, lower_bound, upper_bound, &sampler,
+                                     find_closest);
 }
 
 SkColor CalculateKMeanColorOfBitmap(const SkBitmap& bitmap) {

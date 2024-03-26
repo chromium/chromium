@@ -57,7 +57,9 @@ class GFX_EXPORT GridSampler : public KMeanImageSampler {
 
 // Returns the color in an ARGB |image| that is closest in RGB-space to the
 // provided |color|. Exported for testing.
-GFX_EXPORT SkColor FindClosestColor(const uint8_t* image, int width, int height,
+GFX_EXPORT SkColor FindClosestColor(base::span<const uint8_t> image,
+                                    int width,
+                                    int height,
                                     SkColor color);
 
 // Returns an SkColor that represents the calculated dominant color in the
