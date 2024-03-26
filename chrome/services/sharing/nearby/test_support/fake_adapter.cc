@@ -239,6 +239,12 @@ void FakeAdapter::CreateLocalGattService(
   }
 }
 
+void FakeAdapter::SetShouldAdvertisementRegistrationSucceed(
+    bool should_advertisement_registration_succeed) {
+  should_advertisement_registration_succeed_ =
+      should_advertisement_registration_succeed;
+}
+
 void FakeAdapter::SetShouldDiscoverySucceed(bool should_discovery_succeed) {
   should_discovery_succeed_ = should_discovery_succeed;
 }
