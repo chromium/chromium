@@ -1,0 +1,5 @@
+specific_include_rules = {
+    "web_view_browsertest\.cc": [
+        "+pdf/pdf_features.h",
+    ],
+}

@@ -172,7 +172,9 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 using extensions::ContextMenuMatcher;
@@ -4613,9 +4615,22 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestFocusWhileFocused) {
 }
 
 #if BUILDFLAG(ENABLE_PDF)
-using WebViewPdfTest = WebViewTest;
+class WebViewPdfTest : public base::test::WithFeatureOverride,
+                       public WebViewTest {
+ public:
+  WebViewPdfTest()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
 
-IN_PROC_BROWSER_TEST_F(WebViewPdfTest, NestedGuestContainerBounds) {
+  bool UseOopif() const { return GetParam(); }
+};
+
+// Test that the PDF viewer has the same bounds as the WebView.
+IN_PROC_BROWSER_TEST_P(WebViewPdfTest, PdfContainerBounds) {
+  // TODO(crbug.com/41495168): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   TestHelper("testPDFInWebview", "web_view/shim", NO_TEST_SERVER);
 
   std::vector<content::RenderFrameHost*> guest_rfh_list;
@@ -4637,9 +4652,14 @@ IN_PROC_BROWSER_TEST_F(WebViewPdfTest, NestedGuestContainerBounds) {
             mime_handler_view_container_bounds.origin());
 }
 
-// Test that context menu Back/Forward items in a MimeHandlerViewGuest affect
-// the embedder WebContents. See crbug.com/587355.
-IN_PROC_BROWSER_TEST_F(WebViewPdfTest, ContextMenuNavigationInMimeHandlerView) {
+// Test that context menu Back/Forward items in a WebView affect the embedder
+// WebContents. See crbug.com/587355.
+IN_PROC_BROWSER_TEST_P(WebViewPdfTest, ContextMenuNavigationInWebView) {
+  // TODO(crbug.com/41495168): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   TestHelper("testNavigateToPDFInWebview", "web_view/shim", NO_TEST_SERVER);
 
   GetGuestViewManager()->WaitForNumGuestsCreated(2u);
@@ -4677,9 +4697,18 @@ IN_PROC_BROWSER_TEST_F(WebViewPdfTest, ContextMenuNavigationInMimeHandlerView) {
   EXPECT_EQ(GURL(url::kAboutBlankURL), web_view_rfh2->GetLastCommittedURL());
 }
 
-IN_PROC_BROWSER_TEST_F(WebViewPdfTest, Shim_TestDialogInPdf) {
+IN_PROC_BROWSER_TEST_P(WebViewPdfTest, Shim_TestDialogInPdf) {
+  // TODO(crbug.com/41495168): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   TestHelper("testDialogInPdf", "web_view/shim", NO_TEST_SERVER);
 }
+
+// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
+// launches.
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebViewPdfTest);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestMailtoLink) {
