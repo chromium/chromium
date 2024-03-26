@@ -42,8 +42,8 @@ bool IsFieldFocusableAndEmpty(const FormData& received_form,
 
 TouchToFillDelegateAndroidImpl::DryRunResult::DryRunResult(
     TriggerOutcome outcome,
-    std::vector<CreditCard> cards_to_suggest)
-    : outcome(outcome), cards_to_suggest(std::move(cards_to_suggest)) {}
+    absl::variant<std::vector<CreditCard>, std::vector<Iban>> items_to_suggest)
+    : outcome(outcome), items_to_suggest(std::move(items_to_suggest)) {}
 
 TouchToFillDelegateAndroidImpl::DryRunResult::DryRunResult(DryRunResult&&) =
     default;
@@ -83,19 +83,6 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
   if (!field) {
     return {TriggerOutcome::kUnknownField, {}};
   }
-  // Trigger only for a credit card field/form.
-  if (field->Type().group() != FieldTypeGroup::kCreditCard) {
-    return {TriggerOutcome::kUnsupportedFieldType, {}};
-  }
-
-  // Trigger only for complete forms (containing the fields for the card number
-  // and the card expiration date).
-  if (!FormHasAllCreditCardFields(*form)) {
-    return {TriggerOutcome::kIncompleteForm, {}};
-  }
-  if (IsFormPrefilled(received_form)) {
-    return {TriggerOutcome::kFormAlreadyFilled, {}};
-  }
   // Trigger only if not shown before.
   if (ttf_credit_card_state_ != TouchToFillState::kShouldShow) {
     return {TriggerOutcome::kShownBefore, {}};
@@ -108,22 +95,56 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
   if (!IsFieldFocusableAndEmpty(received_form, field_id)) {
     return {TriggerOutcome::kFieldNotEmptyOrNotFocusable, {}};
   }
-  // Trigger only if Fast Checkout was not shown before.
-  if (!manager_->client().GetFastCheckoutClient()->IsNotShownYet()) {
-    return {TriggerOutcome::kFastCheckoutWasShown, {}};
-  }
   // Trigger only if the UI is available.
   if (!manager_->CanShowAutofillUi()) {
     return {TriggerOutcome::kCannotShowAutofillUi, {}};
   }
+
+  if (field->Type().group() == FieldTypeGroup::kIban) {
+    return DryRunForIban();
+  } else if (field->Type().group() == FieldTypeGroup::kCreditCard) {
+    return DryRunForCreditCard(*field, *form, received_form);
+  }
+
+  return {TriggerOutcome::kUnsupportedFieldType, {}};
+}
+
+TouchToFillDelegateAndroidImpl::DryRunResult
+TouchToFillDelegateAndroidImpl::DryRunForIban() {
+  std::vector<Iban> ibans_to_suggest =
+      AutofillSuggestionGenerator(manager_->client())
+          .GetTouchToFillIbansToSuggest();
+  return ibans_to_suggest.empty()
+             ? DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {})
+             : DryRunResult(TriggerOutcome::kShown,
+                            std::move(ibans_to_suggest));
+}
+
+TouchToFillDelegateAndroidImpl::DryRunResult
+TouchToFillDelegateAndroidImpl::DryRunForCreditCard(
+    const AutofillField& field,
+    const FormStructure& form,
+    const FormData& received_form) {
+  // Trigger only for complete forms (containing the fields for the card number
+  // and the card expiration date).
+  if (!FormHasAllCreditCardFields(form)) {
+    return {TriggerOutcome::kIncompleteForm, {}};
+  }
+  if (IsFormPrefilled(received_form)) {
+    return {TriggerOutcome::kFormAlreadyFilled, {}};
+  }
+  // Trigger only if Fast Checkout was not shown before.
+  if (!manager_->client().GetFastCheckoutClient()->IsNotShownYet()) {
+    return {TriggerOutcome::kFastCheckoutWasShown, {}};
+  }
+
   // Fetch all complete valid credit cards on file.
   // Complete = contains number, expiration date and name on card.
   // Valid = unexpired with valid number format.
   // TODO(b/40227496): `*field` must contain the updated field information.
   std::vector<CreditCard> cards_to_suggest =
       AutofillSuggestionGenerator(manager_->client())
-          .GetTouchToFillCardsToSuggest(*field,
-                                        field->Type().GetStorableType());
+          .GetTouchToFillCardsToSuggest(field, field.Type().GetStorableType());
   return cards_to_suggest.empty()
              ? DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {})
              : DryRunResult(TriggerOutcome::kShown,
@@ -153,14 +174,29 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
   query_form_ = form;
   query_field_ = field;
   DryRunResult dry_run = DryRun(form.global_id(), field.global_id(), form);
-  if (dry_run.outcome == TriggerOutcome::kShown &&
-      !manager_->client().ShowTouchToFillCreditCard(
-          GetWeakPtr(), std::move(dry_run.cards_to_suggest))) {
-    dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
+  if (dry_run.outcome == TriggerOutcome::kShown) {
+    if (std::vector<CreditCard>* cards_to_suggest =
+            absl::get_if<std::vector<CreditCard>>(&dry_run.items_to_suggest);
+        cards_to_suggest && !manager_->client().ShowTouchToFillCreditCard(
+                                GetWeakPtr(), std::move(*cards_to_suggest))) {
+      dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
+    } else if (std::vector<Iban>* ibans_to_suggest =
+                   absl::get_if<std::vector<Iban>>(&dry_run.items_to_suggest);
+               ibans_to_suggest) {
+      // TODO(b/309163844): Handle dry_run.ibans_to_suggest case.
+    }
   }
   if (dry_run.outcome != TriggerOutcome::kUnsupportedFieldType) {
-    base::UmaHistogramEnumeration(kUmaTouchToFillCreditCardTriggerOutcome,
-                                  dry_run.outcome);
+    const AutofillField* autofill_field =
+        manager_->FindCachedFormById(form.global_id())
+            ->GetFieldById(field.global_id());
+    if (autofill_field->Type().group() == FieldTypeGroup::kCreditCard) {
+      base::UmaHistogramEnumeration(kUmaTouchToFillCreditCardTriggerOutcome,
+                                    dry_run.outcome);
+    } else {
+      base::UmaHistogramEnumeration(kUmaTouchToFillIbanTriggerOutcome,
+                                    dry_run.outcome);
+    }
   }
   LOG_AF(manager_->client().GetLogManager())
       << LoggingScope::kTouchToFill << LogMessage::kTouchToFill
@@ -175,8 +211,14 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
   ttf_credit_card_state_ = TouchToFillState::kIsShowing;
   manager_->client().HideAutofillPopup(
       PopupHidingReason::kOverlappingWithTouchToFillSurface);
-  manager_->DidShowSuggestions(
-      std::vector<PopupItemId>({PopupItemId::kCreditCardEntry}), form, field);
+  if (std::vector<CreditCard>* cards_to_suggest =
+          absl::get_if<std::vector<CreditCard>>(&dry_run.items_to_suggest)) {
+    manager_->DidShowSuggestions(
+        std::vector<PopupItemId>({PopupItemId::kCreditCardEntry}), form, field);
+  } else {
+    manager_->DidShowSuggestions(
+        std::vector<PopupItemId>({PopupItemId::kIbanEntry}), form, field);
+  }
   return true;
 }
 

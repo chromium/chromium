@@ -61,6 +61,7 @@ namespace autofill {
 
 namespace {
 
+using testing::ElementsAreArray;
 using testing::Field;
 using testing::IsEmpty;
 using testing::Matcher;
@@ -2766,6 +2767,24 @@ TEST_F(AutofillSuggestionGeneratorTest,
   // The local card does not have a server duplicate, should return false.
   EXPECT_FALSE(test_api(suggestion_generator())
                    .ShouldShowVirtualCardOption(&local_card));
+}
+
+TEST_F(AutofillSuggestionGeneratorTest, GetTouchToFillIbansToSuggest) {
+  Iban local_iban1;
+  local_iban1.set_value(std::u16string(test::kIbanValue16));
+  local_iban1.set_identifier(
+      Iban::Guid(personal_data().AddAsLocalIban(local_iban1)));
+  local_iban1.set_record_type(Iban::kLocalIban);
+  Iban server_iban1 = test::GetServerIban2();
+  Iban server_iban2 = test::GetServerIban3();
+  personal_data().AddServerIban(server_iban1);
+  personal_data().AddServerIban(server_iban2);
+
+  std::vector<Iban> available_ibans =
+      suggestion_generator().GetTouchToFillIbansToSuggest();
+
+  EXPECT_THAT(available_ibans,
+              ElementsAreArray({server_iban2, server_iban1, local_iban1}));
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, GetLocalIbanSuggestions) {

@@ -1520,6 +1520,26 @@ AutofillSuggestionGenerator::GetTouchToFillCardsToSuggest(
              : std::vector<CreditCard>();
 }
 
+std::vector<Iban> AutofillSuggestionGenerator::GetTouchToFillIbansToSuggest() {
+  std::vector<Iban> ibans_to_suggest;
+  const PersonalDataManager& personal_data =
+      CHECK_DEREF(autofill_client_->GetPersonalDataManager());
+  std::vector<const Iban*> available_ibans = personal_data.GetIbansToSuggest();
+
+  // Rank the IBANs by ranking score (see AutoFillDataModel for details).
+  base::ranges::sort(
+      available_ibans, [comparison_time = AutofillClock::Now()](
+                           const Iban* iban0, const Iban* iban1) {
+        return iban0->HasGreaterRankingThan(iban1, comparison_time);
+      });
+
+  ibans_to_suggest.reserve(available_ibans.size());
+  for (const Iban* iban : available_ibans) {
+    ibans_to_suggest.push_back(*iban);
+  }
+  return ibans_to_suggest;
+}
+
 // static
 Suggestion AutofillSuggestionGenerator::CreateSeparator() {
   Suggestion suggestion;

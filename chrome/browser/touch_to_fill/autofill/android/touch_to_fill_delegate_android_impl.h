@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
@@ -67,13 +68,15 @@ enum class TouchToFillPaymentMethodTriggerOutcome {
 
 inline constexpr const char kUmaTouchToFillCreditCardTriggerOutcome[] =
     "Autofill.TouchToFill.CreditCard.TriggerOutcome";
+inline constexpr const char kUmaTouchToFillIbanTriggerOutcome[] =
+    "Autofill.TouchToFill.Iban.TriggerOutcome";
 
 class BrowserAutofillManager;
 class FormStructure;
 
 // Delegate for in-browser Touch To Fill (TTF) surface display and selection.
-// Currently TTF surface is eligible only for credit card forms on click on
-// an empty focusable field.
+// Currently TTF surface is eligible for credit card and IBAN forms on click
+// on an empty focusable field.
 //
 // If the surface was shown once, it won't be triggered again on the same page.
 // But calling |Reset()| on navigation restores such showing eligibility.
@@ -141,13 +144,14 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
 
   struct DryRunResult {
     DryRunResult(TriggerOutcome outcome,
-                 std::vector<CreditCard> cards_to_suggest);
+                 absl::variant<std::vector<CreditCard>, std::vector<Iban>>
+                     items_to_suggest);
     DryRunResult(DryRunResult&&);
     DryRunResult& operator=(DryRunResult&&);
     ~DryRunResult();
 
     TriggerOutcome outcome;
-    std::vector<CreditCard> cards_to_suggest;
+    absl::variant<std::vector<CreditCard>, std::vector<Iban>> items_to_suggest;
   };
 
   // Checks all preconditions for showing the TTF, that is, for calling
@@ -161,6 +165,16 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   DryRunResult DryRun(FormGlobalId form_id,
                       FieldGlobalId field_id,
                       const FormData& received_form);
+
+  // Returns a DryRunResult with the user's fillable IBANs, or
+  // `kNoValidPaymentMethods` if no IBANs are available.
+  DryRunResult DryRunForIban();
+
+  // Returns a DryRunResult with the user's fillable credit cards, or
+  // an error reason if TTF should not be triggered.
+  DryRunResult DryRunForCreditCard(const AutofillField& field,
+                                   const FormStructure& form,
+                                   const FormData& received_form);
 
   bool HasAnyAutofilledFields(const FormStructure& submitted_form) const;
 

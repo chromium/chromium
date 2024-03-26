@@ -91,6 +91,9 @@ class AutofillSuggestionGenerator {
       const FormFieldData& trigger_field,
       FieldType trigger_field_type);
 
+  // Returns the IBANs to be shown in touch to fill suggestions.
+  std::vector<Iban> GetTouchToFillIbansToSuggest();
+
   // Generates a separator suggestion.
   static Suggestion CreateSeparator();
 

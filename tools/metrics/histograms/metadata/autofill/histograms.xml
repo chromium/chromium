@@ -5160,6 +5160,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.TouchToFill.Iban.TriggerOutcome"
+    enum="TouchToFill.PaymentMethod.TriggerOutcome" expires_after="2024-07-21">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the outcome of the attempt to trigger Touch To Fill for IBANs. It is
+    recorded only when the form is parsed as an IBAN by autofill on Chrome
+    Android and the user clicks on the form field.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.UndoAfterFill{AutofillFormType}" enum="Boolean"
     expires_after="2024-12-12">
   <owner>jihadghanna@chromium.org</owner>

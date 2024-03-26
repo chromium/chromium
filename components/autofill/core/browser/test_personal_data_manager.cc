@@ -71,6 +71,7 @@ bool TestPersonalDataManager::ShouldSuggestServerPaymentMethods() const {
 void TestPersonalDataManager::ClearAllLocalData() {
   ClearProfiles();
   payments_data_manager_->local_credit_cards_.clear();
+  payments_data_manager_->local_ibans_.clear();
 }
 
 bool TestPersonalDataManager::IsDataLoaded() const {
