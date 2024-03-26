@@ -115,6 +115,12 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // there is an error.
   class NET_EXPORT Delegate {
    public:
+    Delegate() = default;
+
+    // Forbid copy and assign to prevent slicing.
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     // Called each time a connection is obtained, before any data is sent.
     //
     // |request| is never nullptr. Caller retains ownership.
