@@ -114,9 +114,7 @@
   [self.gridConsumer prepareForDismissal];
   // Present the tab only if it have been added.
   if ([self addNewItem]) {
-    [self.gridConsumer setActivePageFromPage:TabGridPageIncognitoTabs];
-    [self.tabPresentationDelegate showActiveTabInPage:TabGridPageIncognitoTabs
-                                         focusOmnibox:NO];
+    [self displayActiveTab];
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridCreateIncognitoTab"));
   } else {
@@ -167,6 +165,12 @@
   }
 
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
+}
+
+- (void)displayActiveTab {
+  [self.gridConsumer setActivePageFromPage:TabGridPageIncognitoTabs];
+  [self.tabPresentationDelegate showActiveTabInPage:TabGridPageIncognitoTabs
+                                       focusOmnibox:NO];
 }
 
 #pragma mark - PrefObserverDelegate

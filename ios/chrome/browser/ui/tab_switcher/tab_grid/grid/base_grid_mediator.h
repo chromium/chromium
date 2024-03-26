@@ -57,6 +57,7 @@ class WebStateList;
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
 // Tab Groups Dispatcher.
 @property(nonatomic, weak) id<TabGroupsCommands> dispatcher;
+
 @end
 
 @interface BaseGridMediator (Subclassing)
@@ -74,6 +75,10 @@ class WebStateList;
 // Called when the buttons needs to be updated for the selection mode.
 - (void)configureButtonsInSelectionMode:
     (TabGridToolbarsConfiguration*)configuration;
+
+// Display the current active tab. This function should be implemented in a
+// subclass.
+- (void)displayActiveTab;
 
 @end
 

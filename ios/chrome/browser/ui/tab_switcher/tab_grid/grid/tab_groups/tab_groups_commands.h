@@ -30,6 +30,9 @@ class WebStateID;
 // Shows tab group edition view.
 - (void)showTabGroupEditionForGroup:(const TabGroup*)tabGroup;
 
+// Show the current active tab.
+- (void)showActiveTab;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_TAB_GROUPS_COMMANDS_H_

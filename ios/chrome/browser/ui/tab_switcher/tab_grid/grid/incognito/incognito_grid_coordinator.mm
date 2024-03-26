@@ -26,11 +26,10 @@
 // Redefined as readwrite.
 @property(nonatomic, readwrite, strong)
     IncognitoGridViewController* gridViewController;
+
 @end
 
 @implementation IncognitoGridCoordinator {
-  // Mediator of incognito grid.
-  IncognitoGridMediator* _mediator;
   // Reauth scene agent.
   IncognitoReauthSceneAgent* _reauthAgent;
   // Mediator for incognito reauth.
@@ -43,6 +42,8 @@
   // Pointer to the browser. Even if this coordinator super class has a readonly
   // browser property, it is also kept locally as it must be readwrite here.
   base::WeakPtr<Browser> _browser;
+  // Mediator of incognito grid.
+  IncognitoGridMediator* _mediator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -69,6 +70,12 @@
 
 #pragma mark - Property Implementation.
 
+- (IncognitoGridMediator*)mediator {
+  CHECK(_mediator)
+      << "IncognitoGridCoordinator's -start should be called before.";
+  return _mediator;
+}
+
 - (IncognitoGridMediator*)incognitoGridMediator {
   CHECK(_mediator)
       << "IncognitoGridCoordinator's -start should be called before.";
@@ -80,7 +87,8 @@
 }
 
 - (id)gridHandler {
-  CHECK(_mediator);
+  CHECK(_mediator)
+      << "IncognitoGridCoordinator's -start should be called before.";
   return _mediator;
 }
 
@@ -92,10 +100,13 @@
   _reauthAgent =
       [IncognitoReauthSceneAgent agentFromScene:self.browser->GetSceneState()];
 
+  _mediator = [[IncognitoGridMediator alloc] init];
+  _mediator.incognitoDelegate = self;
+  _mediator.reauthSceneAgent = _reauthAgent;
+
   GridContainerViewController* container =
       [[GridContainerViewController alloc] init];
   self.gridContainerViewController = container;
-  _mediator = [[IncognitoGridMediator alloc] init];
 
   _tabContextMenuHelper = [[TabContextMenuHelper alloc]
         initWithBrowserState:self.browser->GetBrowserState()
@@ -109,13 +120,6 @@
     container.containedViewController = self.disabledViewController;
   }
 
-  _mediator.browser = self.browser;
-  _mediator.delegate = self.gridMediatorDelegate;
-  _mediator.toolbarsMutator = self.toolbarsMutator;
-  _mediator.incognitoDelegate = self;
-  _mediator.reauthSceneAgent = _reauthAgent;
-  _mediator.dispatcher = self;
-
   _incognitoAuthMediator =
       [[IncognitoReauthMediator alloc] initWithReauthAgent:_reauthAgent];
   _incognitoAuthMediator.consumer = self.gridViewController;
@@ -124,9 +128,6 @@
 }
 
 - (void)stop {
-  [_mediator disconnect];
-  _mediator = nil;
-
   _tabContextMenuHelper = nil;
   _incognitoAuthMediator = nil;
   _reauthAgent = nil;

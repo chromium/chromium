@@ -284,6 +284,10 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
                                  [_selectedEditingItems sharableItems]]];
 }
 
+- (void)displayActiveTab {
+  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)willChangeWebStateList:(WebStateList*)webStateList

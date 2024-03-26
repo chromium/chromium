@@ -10,6 +10,7 @@ source_set("grid") {
     "grid_coordinator_audience.h",
   ]
   deps = [
+    ":grid_mediator",
     ":grid_ui",
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_coordinator.h"
 
+@class BaseGridMediator;
 @protocol GridToolbarsMutator;
 @protocol GridMediatorDelegate;
 
@@ -26,6 +27,8 @@
 @property(nonatomic, weak, readonly) id<GridToolbarsMutator> toolbarsMutator;
 @property(nonatomic, weak, readonly) id<GridMediatorDelegate>
     gridMediatorDelegate;
+// Mediator of the grid. The subclasses should implement the getter.
+@property(nonatomic, strong, readonly) BaseGridMediator* mediator;
 
 @end
 

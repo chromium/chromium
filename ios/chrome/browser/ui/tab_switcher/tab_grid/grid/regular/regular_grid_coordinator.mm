@@ -29,15 +29,21 @@
 @end
 
 @implementation RegularGridCoordinator {
-  // Mediator of regular grid.
-  RegularGridMediator* _mediator;
   // Mediator for pinned Tabs.
   PinnedTabsMediator* _pinnedTabsMediator;
   // Context menu provider.
   TabContextMenuHelper* _contextMenuProvider;
+  // Mediator of regular grid.
+  RegularGridMediator* _mediator;
 }
 
 #pragma mark - Property Implementation.
+
+- (RegularGridMediator*)mediator {
+  CHECK(_mediator)
+      << "RegularGridCoordinator's -start should be called before.";
+  return _mediator;
+}
 
 - (RegularGridMediator*)regularGridMediator {
   CHECK(_mediator)
@@ -87,10 +93,6 @@
 
   _mediator = [[RegularGridMediator alloc] init];
   _mediator.consumer = gridViewController;
-  _mediator.browser = self.browser;
-  _mediator.delegate = self.gridMediatorDelegate;
-  _mediator.toolbarsMutator = self.toolbarsMutator;
-  _mediator.dispatcher = self;
 
   gridViewController.dragDropHandler = _mediator;
   gridViewController.mutator = _mediator;
@@ -131,9 +133,6 @@
 }
 
 - (void)stop {
-  [_mediator disconnect];
-  _mediator = nil;
-
   _pinnedTabsMediator = nil;
   _contextMenuProvider = nil;
 

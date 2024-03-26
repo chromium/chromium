@@ -539,6 +539,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // that the animated "tab switcher dismissal" (that is, presenting something
   // on top of the tab switcher) transition has completed.
   // Finally, the launch mask view should be removed.
+  __weak TabGridCoordinator* weakSelf = self;
   ProceduralBlock extendedCompletion = ^{
     [self.delegate tabGridDismissTransitionDidEnd:self];
     if (self.baseViewController.tabGridMode == TabGridModeSearch) {
@@ -560,6 +561,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       completion();
     }
     self.firstPresentation = NO;
+    [weakSelf hideTabGroupsViews];
   };
 
   self.baseViewController.childViewControllerForStatusBarStyle =
@@ -581,6 +583,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 #pragma mark - Private
+
+// Hides tab group views.
+- (void)hideTabGroupsViews {
+  [_incognitoGridCoordinator hideTabGroup];
+  [_regularGridCoordinator hideTabGroup];
+}
 
 // Lazily creates the bookmarks coordinator.
 - (BookmarksCoordinator*)bookmarksCoordinator {

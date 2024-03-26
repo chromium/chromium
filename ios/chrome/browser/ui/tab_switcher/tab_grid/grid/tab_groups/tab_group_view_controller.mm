@@ -181,9 +181,14 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 }
 
 - (void)didTapPlusButton {
-  // TODO(crbug.com/1501837): Take into account the returned bool value of
-  // `addNewItemInGroup`.
-  [self.mutator addNewItemInGroup];
+  if ([self.mutator addNewItemInGroup]) {
+    [_handler showActiveTab];
+  } else {
+    // Dismiss the view as it looks like the policy changed, and it is not
+    // possible to create a new tab anymore. In this case, the user should not
+    // see any tabs.
+    [_handler hideTabGroup];
+  }
 }
 
 #pragma mark - UINavigationBarDelegate

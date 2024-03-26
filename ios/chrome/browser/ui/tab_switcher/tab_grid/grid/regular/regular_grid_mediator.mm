@@ -139,9 +139,7 @@
   [self.gridConsumer prepareForDismissal];
   // Shows the tab only if has been created.
   if ([self addNewItem]) {
-    [self.gridConsumer setActivePageFromPage:TabGridPageRegularTabs];
-    [self.tabPresentationDelegate showActiveTabInPage:TabGridPageRegularTabs
-                                         focusOmnibox:NO];
+    [self displayActiveTab];
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridCreateRegularTab"));
   } else {
@@ -190,6 +188,12 @@
   }
 
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
+}
+
+- (void)displayActiveTab {
+  [self.gridConsumer setActivePageFromPage:TabGridPageRegularTabs];
+  [self.tabPresentationDelegate showActiveTabInPage:TabGridPageRegularTabs
+                                       focusOmnibox:NO];
 }
 
 #pragma mark - Private

@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_view_controller.h"
@@ -44,6 +45,10 @@
   return self;
 }
 
+- (BaseGridMediator*)mediator {
+  NOTREACHED_NORETURN() << "This should be implemented in subclasses.";
+}
+
 #pragma mark - Subclassing properties
 
 - (id<GridToolbarsMutator>)toolbarsMutator {
@@ -60,6 +65,11 @@
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(TabGroupsCommands)];
+
+  self.mediator.dispatcher = self;
+  self.mediator.browser = self.browser;
+  self.mediator.delegate = self.gridMediatorDelegate;
+  self.mediator.toolbarsMutator = self.toolbarsMutator;
 }
 
 - (void)stop {
@@ -67,6 +77,8 @@
   if (_tabGroupCoordinator) {
     [self hideTabGroup];
   }
+
+  [self.mediator disconnect];
 }
 
 #pragma mark - TabGroupsCommands
@@ -134,6 +146,10 @@
                                         browser:self.browser
                                        tabGroup:tabGroup];
   [_tabGroupCreator start];
+}
+
+- (void)showActiveTab {
+  [self.mediator displayActiveTab];
 }
 
 @end

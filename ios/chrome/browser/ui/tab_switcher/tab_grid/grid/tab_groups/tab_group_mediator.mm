@@ -7,6 +7,10 @@
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -17,12 +21,15 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 
 @implementation TabGroupMediator {
   // Tab group consumer.
   __weak id<TabGroupConsumer> _groupConsumer;
+  // Current group.
+  const TabGroup* _tabGroup;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -34,13 +41,15 @@
          "Tab Groups experiment.";
   CHECK(webStateList);
   CHECK(groupConsumer);
+  CHECK(tabGroup);
   if (self = [super init]) {
     self.webStateList = webStateList;
     _groupConsumer = groupConsumer;
     self.consumer = gridConsumer;
 
+    _tabGroup = tabGroup;
     const tab_groups::TabGroupVisualData& groupInformations =
-        tabGroup->visual_data();
+        _tabGroup->visual_data();
     [_groupConsumer
         setGroupTitle:base::SysUTF16ToNSString(groupInformations.title())];
     [_groupConsumer
@@ -66,9 +75,28 @@
 #pragma mark - TabGroupMutator
 
 - (BOOL)addNewItemInGroup {
-  // TODO(crbug.com/1501837): Call the appropriate function. Ensure to add new
-  // tab only if policies allows it.
-  return NO;
+  if (!self.browser) {
+    return NO;
+  }
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  if (!browserState ||
+      !IsAddNewTabAllowedByPolicy(browserState->GetPrefs(),
+                                  browserState->IsOffTheRecord())) {
+    return NO;
+  }
+
+  web::WebState::CreateParams params(browserState);
+  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
+
+  web::NavigationManager::WebLoadParams loadParams((GURL(kChromeUINewTabURL)));
+  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
+  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
+
+  self.webStateList->InsertWebState(
+      std::move(webState),
+      WebStateList::InsertionParams::Automatic().InGroup(_tabGroup).Activate());
+
+  return YES;
 }
 
 #pragma mark - Parent's functions
