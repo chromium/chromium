@@ -194,6 +194,12 @@ void ScriptPromise::InternalResolver::Resolve(v8::Local<v8::Value> value) {
 }
 
 void ScriptPromise::InternalResolver::Reject(v8::Local<v8::Value> value) {
+  
+  recordreplay::Assert(
+    "[RUN-3404-3409] InternalResolver::Reject A %d",
+    resolver_.IsEmpty()
+  );
+
   if (resolver_.IsEmpty())
     return;
   v8::MicrotasksScope microtasks_scope(

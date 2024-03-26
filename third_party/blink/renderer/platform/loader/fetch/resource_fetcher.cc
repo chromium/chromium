@@ -2060,7 +2060,10 @@ void ResourceFetcher::HandleLoaderError(Resource* resource,
     use_counter_->CountUse(
         mojom::WebFeature::kCertificateTransparencyRequiredErrorOnResourceLoad);
   }
+
+  recordreplay::Assert("[RUN-3404-3409] ResourceFetcher::HandleLoaderError A");
   resource->FinishAsError(error, freezable_task_runner_.get());
+  recordreplay::Assert("[RUN-3404-3409] ResourceFetcher::HandleLoaderError B");
   if (resource_load_observer_) {
     DCHECK(!IsDetached());
     resource_load_observer_->DidFailLoading(

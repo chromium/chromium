@@ -267,6 +267,12 @@ void V8Initializer::ReportRejectedPromisesOnMainThread() {
 static void PromiseRejectHandler(v8::PromiseRejectMessage data,
                                  RejectedPromises& rejected_promises,
                                  ScriptState* script_state) {
+
+  recordreplay::Assert(
+    "[RUN-3404-3409] PromiseRejectHandler A %d",
+    data.GetEvent()
+  );
+                                  
   if (data.GetEvent() == v8::kPromiseHandlerAddedAfterReject) {
     rejected_promises.HandlerAdded(data);
     return;
@@ -302,6 +308,11 @@ static void PromiseRejectHandler(v8::PromiseRejectMessage data,
 
   v8::Local<v8::Message> message =
       v8::Exception::CreateMessage(isolate, exception);
+
+  recordreplay::Assert(
+    "[RUN-3404-3409] PromiseRejectHandler B"
+  );
+
   if (!message.IsEmpty()) {
     // message->Get() can be empty here. https://crbug.com/450330
     error_message = ToCoreStringWithNullCheck(message->Get());
@@ -333,6 +344,13 @@ static void PromiseRejectHandlerInMainThread(v8::PromiseRejectMessage data) {
   // TODO(ikilpatrick): Remove this check, extensions tests that use
   // extensions::ModuleSystemTest incorrectly don't have a valid script state.
   LocalDOMWindow* window = CurrentDOMWindow(isolate);
+  
+  recordreplay::Assert(
+    "[RUN-3404-3409] PromiseRejectHandlerInMainThread %d %d",
+    !!window,
+    !!window->IsCurrentlyDisplayedInFrame()
+  );
+
   if (!window || !window->IsCurrentlyDisplayedInFrame())
     return;
 

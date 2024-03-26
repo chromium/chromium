@@ -161,6 +161,18 @@ class CORE_EXPORT ScriptPromiseResolver
 
   template <typename T>
   void ResolveOrReject(T value, ResolutionState new_state) {
+
+    recordreplay::Assert(
+      "[RUN-3404-3409] ScriptPromiseResolver::ResolveOrReject A"
+      "%d %d %d %d %d %d",
+      state_,
+      !!GetScriptState()->ContextIsValid(),
+      !!GetExecutionContext(),
+      GetExecutionContext() && GetExecutionContext()->IsContextDestroyed(),
+      GetExecutionContext() && GetExecutionContext()->IsContextPaused(),
+      ScriptForbiddenScope::IsScriptForbidden()
+    );
+
     if (state_ != kPending || !GetScriptState()->ContextIsValid() ||
         !GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
       return;
