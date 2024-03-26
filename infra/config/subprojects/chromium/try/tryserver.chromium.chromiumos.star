@@ -203,6 +203,17 @@ try_.builder(
     gn_args = "ci/chromeos-arm-generic-dbg",
 )
 
+# crbug.com/40207910
+try_.builder(
+    name = "linux-chromeos-dbg-oslogin",
+    description_html = "Try job to test changes that may fix OSLogin issues with tests on ChromeOS.",
+    mirrors = [
+        "ci/linux-chromeos-dbg-oslogin",
+    ],
+    gn_args = "ci/linux-chromeos-dbg-oslogin",
+    contact_team_email = "chrome-dev-infra-team@google.com",
+)
+
 try_.builder(
     name = "chromeos-arm-generic-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
