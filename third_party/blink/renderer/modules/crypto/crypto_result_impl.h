@@ -63,7 +63,7 @@ class MODULES_EXPORT CryptoResultImpl final
 
   template <typename IDLType>
   CryptoResultImpl(ScriptState* script_state,
-                   ScriptPromiseResolverTyped<IDLType>* resolver)
+                   ScriptPromiseResolver<IDLType>* resolver)
       : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
         resolver_(resolver),
         type_(std::is_same_v<IDLAny, IDLType> ? ResolverType::kAny
@@ -99,7 +99,7 @@ class MODULES_EXPORT CryptoResultImpl final
   void Cancel();
   void ClearResolver();
 
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverBase> resolver_;
   const ResolverType type_;
 
   // Separately communicate cancellation to WebCryptoResults so as to

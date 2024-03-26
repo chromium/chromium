@@ -21,7 +21,7 @@ class ExecutionContext;
 // attribute whose value is a Promise, and the same Promise must be
 // returned each time.
 //
-// Use ScriptPromise if the property is associated with only one world
+// Use ScriptPromiseUntyped if the property is associated with only one world
 // (e.g., FetchEvent.preloadResponse). Use ScriptPromiseProperty if the property
 // can be accessed from multiple worlds (e.g., ServiceWorkerContainer.ready).
 template <typename IDLResolvedType, typename IDLRejectedType>
@@ -46,34 +46,34 @@ class ScriptPromiseProperty final
   ScriptPromiseProperty(const ScriptPromiseProperty&) = delete;
   ScriptPromiseProperty& operator=(const ScriptPromiseProperty&) = delete;
 
-  ScriptPromiseTyped<IDLResolvedType> Promise(DOMWrapperWorld& world) {
+  ScriptPromise<IDLResolvedType> Promise(DOMWrapperWorld& world) {
     if (!GetExecutionContext()) {
-      return ScriptPromiseTyped<IDLResolvedType>();
+      return ScriptPromise<IDLResolvedType>();
     }
 
     v8::HandleScope handle_scope(GetExecutionContext()->GetIsolate());
     v8::Local<v8::Context> context = ToV8Context(GetExecutionContext(), world);
     if (context.IsEmpty()) {
-      return ScriptPromiseTyped<IDLResolvedType>();
+      return ScriptPromise<IDLResolvedType>();
     }
     ScriptState* script_state = ScriptState::From(context);
 
     for (auto& promise : promises_) {
       if (promise.IsAssociatedWith(script_state)) {
-        return static_cast<ScriptPromiseTyped<IDLResolvedType>&>(promise);
+        return static_cast<ScriptPromise<IDLResolvedType>&>(promise);
       }
     }
 
     ScriptState::Scope scope(script_state);
 
     auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolverTyped<IDLResolvedType>>(
+        MakeGarbageCollected<ScriptPromiseResolver<IDLResolvedType>>(
             script_state);
-    // ScriptPromiseResolver usually requires a caller to reject it before
+    // ScriptPromiseResolverBase usually requires a caller to reject it before
     // releasing, but ScriptPromiseProperty doesn't have such a requirement, so
     // suppress the check forcibly.
     resolver->SuppressDetachCheck();
-    ScriptPromiseTyped<IDLResolvedType> promise = resolver->Promise();
+    ScriptPromise<IDLResolvedType> promise = resolver->Promise();
     if (mark_as_handled_)
       promise.MarkAsHandled();
     switch (state_) {
@@ -100,9 +100,9 @@ class ScriptPromiseProperty final
     }
     state_ = kResolved;
     resolved_ = value;
-    HeapVector<Member<ScriptPromiseResolver>> resolvers;
+    HeapVector<Member<ScriptPromiseResolverBase>> resolvers;
     resolvers.swap(resolvers_);
-    for (const Member<ScriptPromiseResolver>& resolver : resolvers) {
+    for (const Member<ScriptPromiseResolverBase>& resolver : resolvers) {
       resolver->DowncastTo<IDLResolvedType>()->Resolve(value);
     }
   }
@@ -123,9 +123,9 @@ class ScriptPromiseProperty final
     }
     state_ = kRejected;
     rejected_ = value;
-    HeapVector<Member<ScriptPromiseResolver>> resolvers;
+    HeapVector<Member<ScriptPromiseResolverBase>> resolvers;
     resolvers.swap(resolvers_);
-    for (const Member<ScriptPromiseResolver>& resolver : resolvers) {
+    for (const Member<ScriptPromiseResolverBase>& resolver : resolvers) {
       resolver->Reject<IDLRejectedType>(rejected_);
     }
   }
@@ -180,12 +180,12 @@ class ScriptPromiseProperty final
   MemberResolvedType resolved_{DefaultPromiseResultValue<MemberResolvedType>()};
   MemberRejectedType rejected_{DefaultPromiseResultValue<MemberRejectedType>()};
 
-  // These vectors contain ScriptPromiseResolverTyped<IDLResolvedType> and
-  // ScriptPromiseTyped<IDLResolvedType>, respectively. We save ~10KB of binary
+  // These vectors contain ScriptPromiseResolver<IDLResolvedType> and
+  // ScriptPromise<IDLResolvedType>, respectively. We save ~10KB of binary
   // size by storing them as the untemplated base class and downcasting where
   // needed.
-  HeapVector<Member<ScriptPromiseResolver>> resolvers_;
-  HeapVector<ScriptPromise> promises_;
+  HeapVector<Member<ScriptPromiseResolverBase>> resolvers_;
+  HeapVector<ScriptPromiseUntyped> promises_;
 
   bool mark_as_handled_ = false;
 };

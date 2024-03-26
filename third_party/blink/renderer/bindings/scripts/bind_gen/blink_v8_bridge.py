@@ -382,7 +382,7 @@ def blink_type_info(idl_type):
         if "IDLTypeImplementedAsV8Promise" in real_type.extended_attributes:
             type_name = "v8::Local<v8::Promise>"
         else:
-            type_name = "ScriptPromise"
+            type_name = "ScriptPromiseUntyped"
         return TypeInfo(type_name,
                         ref_fmt="{}&",
                         const_ref_fmt="const {}&",

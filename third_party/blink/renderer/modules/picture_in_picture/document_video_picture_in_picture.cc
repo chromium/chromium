@@ -31,8 +31,7 @@ bool DocumentVideoPictureInPicture::pictureInPictureEnabled(
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined>
-DocumentVideoPictureInPicture::exitPictureInPicture(
+ScriptPromise<IDLUndefined> DocumentVideoPictureInPicture::exitPictureInPicture(
     ScriptState* script_state,
     Document& document,
     ExceptionState& exception_state) {
@@ -43,12 +42,11 @@ DocumentVideoPictureInPicture::exitPictureInPicture(
   if (!picture_in_picture_element) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kNoPictureInPictureElement);
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   DCHECK(IsA<HTMLVideoElement>(picture_in_picture_element));

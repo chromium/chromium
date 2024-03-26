@@ -29,9 +29,9 @@ class EXTENSIONS_WEBVIEW_EXPORT MediaIntegrityTokenProvider
 
   uint64_t cloudProjectNumber() { return cloud_project_number_; }
 
-  ScriptPromiseTyped<IDLString> requestToken(ScriptState* script_state,
-                                             const String& opt_content_binding,
-                                             ExceptionState& exception_state);
+  ScriptPromise<IDLString> requestToken(ScriptState* script_state,
+                                        const String& opt_content_binding,
+                                        ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
 
@@ -39,10 +39,10 @@ class EXTENSIONS_WEBVIEW_EXPORT MediaIntegrityTokenProvider
   void OnProviderConnectionError();
   void OnRequestTokenResponse(
       ScriptState* script_state,
-      ScriptPromiseResolverTyped<IDLString>* resolver,
+      ScriptPromiseResolver<IDLString>* resolver,
       mojom::blink::WebViewMediaIntegrityTokenResponsePtr response);
 
-  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLString>>> token_resolvers_;
+  HeapHashSet<Member<ScriptPromiseResolver<IDLString>>> token_resolvers_;
   HeapMojoRemote<mojom::blink::WebViewMediaIntegrityProvider> provider_remote_;
   const uint64_t cloud_project_number_;
 };

@@ -26,11 +26,11 @@ class MODULES_EXPORT BrowsingTopicsDocumentSupplement
 
   // Supplement functionality.
   static BrowsingTopicsDocumentSupplement* From(Document&);
-  static ScriptPromiseTyped<IDLSequence<BrowsingTopic>> browsingTopics(
+  static ScriptPromise<IDLSequence<BrowsingTopic>> browsingTopics(
       ScriptState* script_state,
       Document& document,
       ExceptionState& exception_state);
-  static ScriptPromiseTyped<IDLSequence<BrowsingTopic>> browsingTopics(
+  static ScriptPromise<IDLSequence<BrowsingTopic>> browsingTopics(
       ScriptState* script_state,
       Document& document,
       const BrowsingTopicsOptions* options,
@@ -39,7 +39,7 @@ class MODULES_EXPORT BrowsingTopicsDocumentSupplement
   explicit BrowsingTopicsDocumentSupplement(Document&);
 
   // Implements the document.browsingTopics().
-  ScriptPromiseTyped<IDLSequence<BrowsingTopic>> GetBrowsingTopics(
+  ScriptPromise<IDLSequence<BrowsingTopic>> GetBrowsingTopics(
       ScriptState* script_state,
       Document& document,
       const BrowsingTopicsOptions* options,

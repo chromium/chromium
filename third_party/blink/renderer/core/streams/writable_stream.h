@@ -96,11 +96,11 @@ class CORE_EXPORT WritableStream : public ScriptWrappable {
   }
 
   // https://streams.spec.whatwg.org/#ws-abort
-  ScriptPromise abort(ScriptState*, ExceptionState&);
-  ScriptPromise abort(ScriptState*, ScriptValue reason, ExceptionState&);
+  ScriptPromiseUntyped abort(ScriptState*, ExceptionState&);
+  ScriptPromiseUntyped abort(ScriptState*, ScriptValue reason, ExceptionState&);
 
   // https://streams.spec.whatwg.org/#ws-close
-  ScriptPromise close(ScriptState*, ExceptionState&);
+  ScriptPromiseUntyped close(ScriptState*, ExceptionState&);
 
   // https://streams.spec.whatwg.org/#ws-get-writer
   WritableStreamDefaultWriter* getWriter(ScriptState*, ExceptionState&);

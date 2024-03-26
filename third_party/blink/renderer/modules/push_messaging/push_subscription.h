@@ -51,7 +51,7 @@ class MODULES_EXPORT PushSubscription final : public ScriptWrappable {
   PushSubscriptionOptions* options() const { return options_.Get(); }
 
   DOMArrayBuffer* getKey(const AtomicString& name) const;
-  ScriptPromiseTyped<IDLBoolean> unsubscribe(ScriptState* script_state);
+  ScriptPromise<IDLBoolean> unsubscribe(ScriptState* script_state);
 
   ScriptValue toJSONForBinding(ScriptState* script_state);
 

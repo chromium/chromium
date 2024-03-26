@@ -1293,7 +1293,7 @@ Consult with the bindings team before you use this extended attribute.
 
 ### [IDLTypeImplementedAsV8Promise]
 
-Summary: Indicates that an IDL `Promise` type should be implemented as `v8::Local<v8::Promise>` rather than the default `ScriptPromise` type.
+Summary: Indicates that an IDL `Promise` type should be implemented as `v8::Local<v8::Promise>` rather than the default `ScriptPromiseUntyped` type.
 
 This is currently only used for the return types of `AsyncIteratorBase` methods. Consult with the bindings team before you use this extended attribute.
 

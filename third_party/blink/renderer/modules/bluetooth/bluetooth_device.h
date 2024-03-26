@@ -91,11 +91,11 @@ class BluetoothDevice final
   void Trace(Visitor*) const override;
 
   // IDL exposed interface:
-  ScriptPromiseTyped<IDLUndefined> watchAdvertisements(
+  ScriptPromise<IDLUndefined> watchAdvertisements(
       ScriptState*,
       const WatchAdvertisementsOptions*,
       ExceptionState&);
-  ScriptPromiseTyped<IDLUndefined> forget(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> forget(ScriptState*, ExceptionState&);
   String id() { return device_->id.DeviceIdInBase64().c_str(); }
   String name() { return device_->name; }
   BluetoothRemoteGATTServer* gatt() { return gatt_.Get(); }
@@ -128,8 +128,7 @@ class BluetoothDevice final
   Member<BluetoothRemoteGATTServer> gatt_;
   Member<Bluetooth> bluetooth_;
 
-  Member<ScriptPromiseResolverTyped<IDLUndefined>>
-      watch_advertisements_resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> watch_advertisements_resolver_;
 
   HeapMojoAssociatedReceiver<mojom::blink::WebBluetoothAdvertisementClient,
                              BluetoothDevice>

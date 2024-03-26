@@ -42,7 +42,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
   TestUnderlyingSource(SourceType source_type,
                        ScriptState* script_state,
                        Vector<int> sequence,
-                       ScriptPromise start_promise)
+                       ScriptPromiseUntyped start_promise)
       : UnderlyingSourceBase(script_state),
         type_(source_type),
         sequence_(std::move(sequence)),
@@ -50,13 +50,15 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
   TestUnderlyingSource(SourceType source_type,
                        ScriptState* script_state,
                        Vector<int> sequence)
-      : TestUnderlyingSource(source_type,
-                             script_state,
-                             std::move(sequence),
-                             ScriptPromise::CastUndefined(script_state)) {}
+      : TestUnderlyingSource(
+            source_type,
+            script_state,
+            std::move(sequence),
+            ScriptPromiseUntyped::CastUndefined(script_state)) {}
   ~TestUnderlyingSource() override = default;
 
-  ScriptPromise Start(ScriptState* script_state, ExceptionState&) override {
+  ScriptPromiseUntyped Start(ScriptState* script_state,
+                             ExceptionState&) override {
     started_ = true;
     if (type_ == SourceType::kPush) {
       for (int element : sequence_) {
@@ -67,24 +69,25 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
     }
     return start_promise_;
   }
-  ScriptPromise Pull(ScriptState* script_state, ExceptionState&) override {
+  ScriptPromiseUntyped Pull(ScriptState* script_state,
+                            ExceptionState&) override {
     if (type_ == SourceType::kPush) {
-      return ScriptPromise::CastUndefined(script_state);
+      return ScriptPromiseUntyped::CastUndefined(script_state);
     }
     if (index_ == sequence_.size()) {
       Controller()->Close();
-      return ScriptPromise::CastUndefined(script_state);
+      return ScriptPromiseUntyped::CastUndefined(script_state);
     }
     EnqueueOrError(script_state, sequence_[index_]);
     ++index_;
-    return ScriptPromise::CastUndefined(script_state);
+    return ScriptPromiseUntyped::CastUndefined(script_state);
   }
-  ScriptPromise Cancel(ScriptState* script_state,
-                       ScriptValue reason,
-                       ExceptionState&) override {
+  ScriptPromiseUntyped Cancel(ScriptState* script_state,
+                              ScriptValue reason,
+                              ExceptionState&) override {
     cancelled_ = true;
     cancel_reason_ = reason;
-    return ScriptPromise::CastUndefined(script_state);
+    return ScriptPromiseUntyped::CastUndefined(script_state);
   }
 
   bool IsStarted() const { return started_; }
@@ -111,7 +114,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
   const Vector<int> sequence_;
   wtf_size_t index_ = 0;
 
-  const ScriptPromise start_promise_;
+  const ScriptPromiseUntyped start_promise_;
   bool started_ = false;
   bool cancelled_ = false;
   ScriptValue cancel_reason_;
@@ -540,8 +543,7 @@ TEST(ConcatenatedReadableStreamTest, PendingStart1) {
   auto* script_state = scope.GetScriptState();
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   TestUnderlyingSource* source1 = MakeGarbageCollected<TestUnderlyingSource>(
       SourceType::kPull, script_state, Vector<int>({1, 2}),
       resolver->Promise());
@@ -577,8 +579,7 @@ TEST(ConcatenatedReadableStreamTest, PendingStart2) {
   auto* script_state = scope.GetScriptState();
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   TestUnderlyingSource* source1 = MakeGarbageCollected<TestUnderlyingSource>(
       SourceType::kPull, script_state, Vector<int>({1}));
   TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(

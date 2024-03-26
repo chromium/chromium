@@ -28,7 +28,7 @@ TEST(WakeLockTest, RequestWakeLockGranted) {
       V8WakeLockType::Enum::kScreen, mojom::blink::PermissionStatus::GRANTED);
 
   auto* screen_resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto screen_promise = screen_resolver->Promise();
 
@@ -43,8 +43,9 @@ TEST(WakeLockTest, RequestWakeLockGranted) {
   screen_lock.WaitForRequest();
   context.WaitForPromiseFulfillment(screen_promise);
 
-  EXPECT_NE(nullptr, ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(
-                         screen_promise));
+  EXPECT_NE(nullptr,
+            ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
+                screen_promise));
   EXPECT_TRUE(screen_lock.is_acquired());
 }
 
@@ -57,7 +58,7 @@ TEST(WakeLockTest, RequestWakeLockDenied) {
       V8WakeLockType::Enum::kSystem, mojom::blink::PermissionStatus::DENIED);
 
   auto* system_resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto system_promise = system_resolver->Promise();
 
@@ -72,13 +73,14 @@ TEST(WakeLockTest, RequestWakeLockDenied) {
   context.WaitForPromiseRejection(system_promise);
 
   EXPECT_EQ(v8::Promise::kRejected,
-            ScriptPromiseUtils::GetPromiseState(system_promise));
+            ScriptPromiseUntypedUtils::GetPromiseState(system_promise));
   EXPECT_FALSE(system_lock.is_acquired());
 
   // System locks are not allowed by default, so the promise should have been
   // rejected with a NotAllowedError DOMException.
   DOMException* dom_exception =
-      ScriptPromiseUtils::GetPromiseResolutionAsDOMException(system_promise);
+      ScriptPromiseUntypedUtils::GetPromiseResolutionAsDOMException(
+          system_promise);
   ASSERT_NE(dom_exception, nullptr);
   EXPECT_EQ("NotAllowedError", dom_exception->name());
 }
@@ -100,13 +102,13 @@ TEST(WakeLockTest, LossOfDocumentActivity) {
 
   // First, acquire a handful of locks of different types.
   auto* screen_resolver1 =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto* screen_resolver2 =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto* system_resolver1 =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
 
   auto* wake_lock = WakeLock::wakeLock(*context.DomWindow()->navigator());
@@ -118,8 +120,8 @@ TEST(WakeLockTest, LossOfDocumentActivity) {
 
   // Now shut down our Document and make sure all [[ActiveLocks]] slots have
   // been cleared. We cannot check that the promises have been rejected because
-  // ScriptPromiseResolver::Reject() will bail out if we no longer have a valid
-  // execution context.
+  // ScriptPromiseResolverBase::Reject() will bail out if we no longer have a
+  // valid execution context.
   context.Frame()->DomWindow()->FrameDestroyed();
   screen_lock.WaitForCancelation();
   system_lock.WaitForCancelation();
@@ -142,14 +144,14 @@ TEST(WakeLockTest, PageVisibilityHidden) {
   MockWakeLock& screen_lock =
       wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kScreen);
   auto* screen_resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto screen_promise = screen_resolver->Promise();
 
   MockWakeLock& system_lock =
       wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kSystem);
   auto* system_resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto system_promise = system_resolver->Promise();
 
@@ -174,7 +176,7 @@ TEST(WakeLockTest, PageVisibilityHidden) {
       mojom::blink::PageVisibilityState::kVisible, false);
 
   auto* other_resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto other_promise = other_resolver->Promise();
   wake_lock->DoRequest(V8WakeLockType::Enum::kScreen, other_resolver);
@@ -198,14 +200,14 @@ TEST(WakeLockTest, PageVisibilityHiddenBeforeLockAcquisition) {
   MockWakeLock& screen_lock =
       wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kScreen);
   auto* screen_resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto screen_promise = screen_resolver->Promise();
 
   MockWakeLock& system_lock =
       wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kSystem);
   auto* system_resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto system_promise = system_resolver->Promise();
 
@@ -220,9 +222,10 @@ TEST(WakeLockTest, PageVisibilityHiddenBeforeLockAcquisition) {
   context.WaitForPromiseFulfillment(system_promise);
 
   EXPECT_EQ(v8::Promise::kRejected,
-            ScriptPromiseUtils::GetPromiseState(screen_promise));
+            ScriptPromiseUntypedUtils::GetPromiseState(screen_promise));
   DOMException* dom_exception =
-      ScriptPromiseUtils::GetPromiseResolutionAsDOMException(screen_promise);
+      ScriptPromiseUntypedUtils::GetPromiseResolutionAsDOMException(
+          screen_promise);
   ASSERT_NE(dom_exception, nullptr);
   EXPECT_EQ("NotAllowedError", dom_exception->name());
 

@@ -12,7 +12,7 @@ namespace blink {
 
 class DOMException;
 class PushSubscription;
-class ScriptPromiseResolver;
+class ScriptPromiseResolverBase;
 
 // Used from PushProvider, for calls to PushMessaging::Unsubscribe().
 using PushUnsubscribeCallbacks = WebCallbacks<bool, DOMException*>;
@@ -25,7 +25,7 @@ class PushSubscriptionCallbacks final
   USING_FAST_MALLOC(PushSubscriptionCallbacks);
 
  public:
-  PushSubscriptionCallbacks(ScriptPromiseResolver*, bool null_allowed);
+  PushSubscriptionCallbacks(ScriptPromiseResolverBase*, bool null_allowed);
 
   PushSubscriptionCallbacks(const PushSubscriptionCallbacks&) = delete;
   PushSubscriptionCallbacks& operator=(const PushSubscriptionCallbacks&) =
@@ -38,7 +38,7 @@ class PushSubscriptionCallbacks final
   void OnError(DOMException* error) override;
 
  private:
-  Persistent<ScriptPromiseResolver> resolver_;
+  Persistent<ScriptPromiseResolverBase> resolver_;
   bool null_allowed_;
 };
 

@@ -25,7 +25,7 @@ class MODULES_EXPORT ServiceWorkerWindowClient final
       void(bool, mojom::blink::ServiceWorkerClientInfoPtr, const String&)>;
 
   static ResolveWindowClientCallback CreateResolveWindowClientCallback(
-      ScriptPromiseResolverTyped<IDLNullable<ServiceWorkerWindowClient>>*);
+      ScriptPromiseResolver<IDLNullable<ServiceWorkerWindowClient>>*);
 
   explicit ServiceWorkerWindowClient(
       const mojom::blink::ServiceWorkerClientInfo&);
@@ -34,8 +34,8 @@ class MODULES_EXPORT ServiceWorkerWindowClient final
   // WindowClient.idl
   String visibilityState() const;
   bool focused() const { return is_focused_; }
-  ScriptPromiseTyped<ServiceWorkerWindowClient> focus(ScriptState*);
-  ScriptPromiseTyped<IDLNullable<ServiceWorkerWindowClient>> navigate(
+  ScriptPromise<ServiceWorkerWindowClient> focus(ScriptState*);
+  ScriptPromise<IDLNullable<ServiceWorkerWindowClient>> navigate(
       ScriptState*,
       const String& url);
 

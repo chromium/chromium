@@ -24,18 +24,17 @@ class SerialPortUnderlyingSink final : public UnderlyingSinkBase {
   SerialPortUnderlyingSink(SerialPort*, mojo::ScopedDataPipeProducerHandle);
 
   // UnderlyingSinkBase
-  ScriptPromiseTyped<IDLUndefined> start(ScriptState*,
-                                         WritableStreamDefaultController*,
-                                         ExceptionState&) override;
-  ScriptPromiseTyped<IDLUndefined> write(ScriptState*,
-                                         ScriptValue chunk,
-                                         WritableStreamDefaultController*,
-                                         ExceptionState&) override;
-  ScriptPromiseTyped<IDLUndefined> close(ScriptState*,
-                                         ExceptionState&) override;
-  ScriptPromiseTyped<IDLUndefined> abort(ScriptState*,
-                                         ScriptValue reason,
-                                         ExceptionState&) override;
+  ScriptPromise<IDLUndefined> start(ScriptState*,
+                                    WritableStreamDefaultController*,
+                                    ExceptionState&) override;
+  ScriptPromise<IDLUndefined> write(ScriptState*,
+                                    ScriptValue chunk,
+                                    WritableStreamDefaultController*,
+                                    ExceptionState&) override;
+  ScriptPromise<IDLUndefined> close(ScriptState*, ExceptionState&) override;
+  ScriptPromise<IDLUndefined> abort(ScriptState*,
+                                    ScriptValue reason,
+                                    ExceptionState&) override;
 
   void SignalError(device::mojom::blink::SerialSendError);
 
@@ -61,7 +60,7 @@ class SerialPortUnderlyingSink final : public UnderlyingSinkBase {
   // Only one outstanding call to write(), close() or abort() is allowed at a
   // time. This holds the resolver for the Promise returned by any
   // of these functions.
-  Member<ScriptPromiseResolverTyped<IDLUndefined>> pending_operation_;
+  Member<ScriptPromiseResolver<IDLUndefined>> pending_operation_;
 };
 
 }  // namespace blink

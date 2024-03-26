@@ -34,19 +34,19 @@ TextDetector::TextDetector(ExecutionContext* context) : text_service_(context) {
       &TextDetector::OnTextServiceConnectionError, WrapWeakPersistent(this)));
 }
 
-ScriptPromiseTyped<IDLSequence<DetectedText>> TextDetector::detect(
+ScriptPromise<IDLSequence<DetectedText>> TextDetector::detect(
     ScriptState* script_state,
     const V8ImageBitmapSource* image_source,
     ExceptionState& exception_state) {
   std::optional<SkBitmap> bitmap =
       GetBitmapFromSource(script_state, image_source, exception_state);
   if (!bitmap) {
-    return ScriptPromiseTyped<IDLSequence<DetectedText>>();
+    return ScriptPromise<IDLSequence<DetectedText>>();
   }
 
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<DetectedText>>>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<DetectedText>>>(
+          script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   if (bitmap->isNull()) {
     resolver->Resolve(HeapVector<Member<DetectedText>>());
@@ -66,7 +66,7 @@ ScriptPromiseTyped<IDLSequence<DetectedText>> TextDetector::detect(
 }
 
 void TextDetector::OnDetectText(
-    ScriptPromiseResolverTyped<IDLSequence<DetectedText>>* resolver,
+    ScriptPromiseResolver<IDLSequence<DetectedText>>* resolver,
     Vector<shape_detection::mojom::blink::TextDetectionResultPtr>
         text_detection_results) {
   DCHECK(text_service_requests_.Contains(resolver));

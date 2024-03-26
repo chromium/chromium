@@ -79,16 +79,15 @@ class RTCRtpSender final : public ScriptWrappable,
   MediaStreamTrack* track();
   RTCDtlsTransport* transport();
   RTCDtlsTransport* rtcpTransport();
-  ScriptPromiseTyped<IDLUndefined> replaceTrack(ScriptState*,
-                                                MediaStreamTrack*);
+  ScriptPromise<IDLUndefined> replaceTrack(ScriptState*, MediaStreamTrack*);
   RTCDTMFSender* dtmf();
   static RTCRtpCapabilities* getCapabilities(ScriptState* state,
                                              const String& kind);
   RTCRtpSendParameters* getParameters();
-  ScriptPromiseTyped<IDLUndefined> setParameters(ScriptState*,
-                                                 const RTCRtpSendParameters*,
-                                                 const RTCSetParameterOptions*);
-  ScriptPromiseTyped<RTCStatsReport> getStats(ScriptState*);
+  ScriptPromise<IDLUndefined> setParameters(ScriptState*,
+                                            const RTCRtpSendParameters*,
+                                            const RTCSetParameterOptions*);
+  ScriptPromise<RTCStatsReport> getStats(ScriptState*);
   void setStreams(HeapVector<Member<MediaStream>> streams, ExceptionState&);
   RTCInsertableStreams* createEncodedStreams(ScriptState*, ExceptionState&);
   // TODO(crbug.com/1069295): Make these methods private.

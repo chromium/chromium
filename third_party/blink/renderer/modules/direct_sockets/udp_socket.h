@@ -51,9 +51,8 @@ class MODULES_EXPORT UDPSocket final : public ScriptWrappable,
                            ExceptionState&);
 
   // Socket:
-  ScriptPromiseTyped<UDPSocketOpenInfo> opened(ScriptState*) const;
-  ScriptPromiseTyped<IDLUndefined> close(ScriptState*,
-                                         ExceptionState&) override;
+  ScriptPromise<UDPSocketOpenInfo> opened(ScriptState*) const;
+  ScriptPromise<IDLUndefined> close(ScriptState*, ExceptionState&) override;
 
  public:
   explicit UDPSocket(ScriptState*);

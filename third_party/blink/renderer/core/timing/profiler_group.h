@@ -76,7 +76,7 @@ class CORE_EXPORT ProfilerGroup
 
   void StopProfiler(ScriptState*,
                     Profiler*,
-                    ScriptPromiseResolverTyped<ProfilerTrace>*);
+                    ScriptPromiseResolver<ProfilerTrace>*);
 
   // Cancels a profiler, discarding its associated trace.
   void CancelProfiler(Profiler*);

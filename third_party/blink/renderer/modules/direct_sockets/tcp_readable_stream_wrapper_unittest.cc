@@ -97,7 +97,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
   // static Iterator Read(const V8TestingScope& scope,
   Iterator Read(V8TestingScope& scope, ReadableStreamDefaultReader* reader) {
     auto* script_state = scope.GetScriptState();
-    ScriptPromise read_promise =
+    ScriptPromiseUntyped read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION);
     ScriptPromiseTester tester(script_state, read_promise);
     tester.WaitUntilSettled();
@@ -193,7 +193,8 @@ TEST(TCPReadableStreamWrapperTest, WriteToPipeWithPendingRead) {
   auto* reader =
       tcp_readable_stream_wrapper->Readable()->GetDefaultReaderForTesting(
           script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseUntyped read_promise =
+      reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, read_promise);
 
   stream_creator->WriteToPipe({'A'});
@@ -225,7 +226,8 @@ TEST_P(TCPReadableStreamWrapperCloseTest, TriggerClose) {
   auto* reader =
       tcp_readable_stream_wrapper->Readable()->GetDefaultReaderForTesting(
           script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseUntyped read_promise =
+      reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, read_promise);
 
   stream_creator->WriteToPipe({'A'});
@@ -259,7 +261,8 @@ TEST_P(TCPReadableStreamWrapperCloseTest, TriggerCloseInReverseOrder) {
   auto* reader =
       tcp_readable_stream_wrapper->Readable()->GetDefaultReaderForTesting(
           script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseUntyped read_promise =
+      reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, read_promise);
 
   stream_creator->WriteToPipe({'A'});

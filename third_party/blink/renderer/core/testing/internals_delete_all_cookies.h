@@ -18,9 +18,8 @@ class InternalsDeleteAllCookies {
   STATIC_ONLY(InternalsDeleteAllCookies);
 
  public:
-  static ScriptPromiseTyped<IDLUndefined> deleteAllCookies(
-      ScriptState* script_state,
-      Internals& internals);
+  static ScriptPromise<IDLUndefined> deleteAllCookies(ScriptState* script_state,
+                                                      Internals& internals);
 };
 
 }  // namespace blink

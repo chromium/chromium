@@ -8,7 +8,7 @@
 
 namespace blink {
 
-ScriptPromiseTyped<IDLUndefined> InternalsServiceWorker::terminateServiceWorker(
+ScriptPromise<IDLUndefined> InternalsServiceWorker::terminateServiceWorker(
     ScriptState* script_state,
     Internals& internals,
     ServiceWorker* worker) {

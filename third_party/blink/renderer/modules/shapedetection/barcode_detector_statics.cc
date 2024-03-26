@@ -46,10 +46,11 @@ void BarcodeDetectorStatics::CreateBarcodeDetection(
   service_->CreateBarcodeDetection(std::move(receiver), std::move(options));
 }
 
-ScriptPromiseTyped<IDLSequence<V8BarcodeFormat>>
+ScriptPromise<IDLSequence<V8BarcodeFormat>>
 BarcodeDetectorStatics::EnumerateSupportedFormats(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<V8BarcodeFormat>>>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<V8BarcodeFormat>>>(
+          script_state);
   auto promise = resolver->Promise();
   get_supported_format_requests_.insert(resolver);
   EnsureServiceConnection();
@@ -80,7 +81,7 @@ void BarcodeDetectorStatics::EnsureServiceConnection() {
 }
 
 void BarcodeDetectorStatics::OnEnumerateSupportedFormats(
-    ScriptPromiseResolverTyped<IDLSequence<V8BarcodeFormat>>* resolver,
+    ScriptPromiseResolver<IDLSequence<V8BarcodeFormat>>* resolver,
     const Vector<shape_detection::mojom::blink::BarcodeFormat>& formats) {
   DCHECK(get_supported_format_requests_.Contains(resolver));
   get_supported_format_requests_.erase(resolver);
@@ -107,7 +108,7 @@ void BarcodeDetectorStatics::OnEnumerateSupportedFormats(
 void BarcodeDetectorStatics::OnConnectionError() {
   service_.reset();
 
-  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLSequence<V8BarcodeFormat>>>>
+  HeapHashSet<Member<ScriptPromiseResolver<IDLSequence<V8BarcodeFormat>>>>
       resolvers;
   resolvers.swap(get_supported_format_requests_);
   for (const auto& resolver : resolvers) {

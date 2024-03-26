@@ -55,8 +55,7 @@ void FontFaceSetWorker::NotifyError(FontFace* font_face) {
   RemoveFromLoadingFonts(font_face);
 }
 
-ScriptPromiseTyped<FontFaceSet> FontFaceSetWorker::ready(
-    ScriptState* script_state) {
+ScriptPromise<FontFaceSet> FontFaceSetWorker::ready(ScriptState* script_state) {
   return ready_->Promise(script_state->World());
 }
 

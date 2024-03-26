@@ -40,8 +40,7 @@ class GPUQueue : public DawnObject<WGPUQueue> {
   // gpu_queue.idl
   void submit(ScriptState* script_state,
               const HeapVector<Member<GPUCommandBuffer>>& buffers);
-  ScriptPromiseTyped<IDLUndefined> onSubmittedWorkDone(
-      ScriptState* script_state);
+  ScriptPromise<IDLUndefined> onSubmittedWorkDone(ScriptState* script_state);
   void writeBuffer(ScriptState* script_state,
                    GPUBuffer* buffer,
                    uint64_t buffer_offset,

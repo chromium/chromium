@@ -274,11 +274,11 @@ MLGraphMojo* ToMLGraphMojo(V8TestingScope* scope, ScriptValue value) {
 }
 
 // Build a simple MLGraph asynchronously with only one relu operator.
-ScriptPromise BuildSimpleGraph(V8TestingScope& scope,
-                               MLContextOptions* context_options) {
+ScriptPromiseUntyped BuildSimpleGraph(V8TestingScope& scope,
+                                      MLContextOptions* context_options) {
   auto* builder = MLGraphTestBase::CreateGraphBuilder(scope, context_options);
   if (builder == nullptr) {
-    return ScriptPromise::RejectWithDOMException(
+    return ScriptPromiseUntyped::RejectWithDOMException(
         scope.GetScriptState(),
         DOMException::Create(
             "Unable to create graph builder.",

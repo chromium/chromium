@@ -30,9 +30,8 @@ class MODULES_EXPORT TCPServerSocket final : public ScriptWrappable,
                                  ExceptionState&);
 
   // Socket:
-  ScriptPromiseTyped<TCPServerSocketOpenInfo> opened(ScriptState*) const;
-  ScriptPromiseTyped<IDLUndefined> close(ScriptState*,
-                                         ExceptionState&) override;
+  ScriptPromise<TCPServerSocketOpenInfo> opened(ScriptState*) const;
+  ScriptPromise<IDLUndefined> close(ScriptState*, ExceptionState&) override;
 
   explicit TCPServerSocket(ScriptState*);
   ~TCPServerSocket() override;

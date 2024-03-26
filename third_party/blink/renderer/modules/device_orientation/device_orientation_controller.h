@@ -47,7 +47,7 @@ class MODULES_EXPORT DeviceOrientationController
       LocalFrame&,
       const AtomicString& event_name);
 
-  ScriptPromiseTyped<V8DeviceOrientationPermissionState> RequestPermission(
+  ScriptPromise<V8DeviceOrientationPermissionState> RequestPermission(
       ScriptState*);
 
  protected:

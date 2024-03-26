@@ -964,7 +964,7 @@ bool ImageLoader::GetImageAnimationPolicy(
   return true;
 }
 
-ScriptPromiseTyped<IDLUndefined> ImageLoader::Decode(
+ScriptPromise<IDLUndefined> ImageLoader::Decode(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -976,13 +976,13 @@ ScriptPromiseTyped<IDLUndefined> ImageLoader::Decode(
   if (!script_state->ContextIsValid() || !execution_context) {
     exception_state.ThrowDOMException(DOMExceptionCode::kEncodingError,
                                       "The source image cannot be decoded.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   UseCounter::Count(execution_context, WebFeature::kImageDecodeAPI);
 
   auto* request = MakeGarbageCollected<DecodeRequest>(
-      this, MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+      this, MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
                 script_state, exception_state.GetContext()));
   execution_context->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
       &DecodeRequest::ProcessForTask, WrapWeakPersistent(request)));
@@ -1023,7 +1023,7 @@ uint64_t ImageLoader::DecodeRequest::s_next_request_id_ = 0;
 
 ImageLoader::DecodeRequest::DecodeRequest(
     ImageLoader* loader,
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver)
+    ScriptPromiseResolver<IDLUndefined>* resolver)
     : request_id_(s_next_request_id_++), resolver_(resolver), loader_(loader) {}
 
 void ImageLoader::DecodeRequest::Resolve() {

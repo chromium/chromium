@@ -64,14 +64,14 @@ bool ValidateOptions(blink::PushSubscriptionOptions* options,
 }
 }  // namespace
 
-ScriptPromiseTyped<PushSubscription> PushManager::subscribe(
+ScriptPromise<PushSubscription> PushManager::subscribe(
     ScriptState* script_state,
     const PushSubscriptionOptionsInit* options_init,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Window is detached.");
-    return ScriptPromiseTyped<PushSubscription>();
+    return ScriptPromise<PushSubscription>();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -79,26 +79,26 @@ ScriptPromiseTyped<PushSubscription> PushManager::subscribe(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "subscribe() is not allowed in fenced frames.");
-    return ScriptPromiseTyped<PushSubscription>();
+    return ScriptPromise<PushSubscription>();
   }
 
   if (!registration_->active()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kAbortError,
         "Subscription failed - no active Service Worker");
-    return ScriptPromiseTyped<PushSubscription>();
+    return ScriptPromise<PushSubscription>();
   }
 
   PushSubscriptionOptions* options =
       PushSubscriptionOptions::FromOptionsInit(options_init, exception_state);
   if (exception_state.HadException())
-    return ScriptPromiseTyped<PushSubscription>();
+    return ScriptPromise<PushSubscription>();
 
   if (!ValidateOptions(options, exception_state))
-    return ScriptPromiseTyped<PushSubscription>();
+    return ScriptPromise<PushSubscription>();
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<PushSubscription>>(
+      MakeGarbageCollected<ScriptPromiseResolver<PushSubscription>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -124,10 +124,10 @@ ScriptPromiseTyped<PushSubscription> PushManager::subscribe(
   return promise;
 }
 
-ScriptPromiseTyped<IDLNullable<PushSubscription>> PushManager::getSubscription(
+ScriptPromise<IDLNullable<PushSubscription>> PushManager::getSubscription(
     ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLNullable<PushSubscription>>>(script_state);
+      ScriptPromiseResolver<IDLNullable<PushSubscription>>>(script_state);
   auto promise = resolver->Promise();
 
   GetPushProvider(registration_)
@@ -136,14 +136,14 @@ ScriptPromiseTyped<IDLNullable<PushSubscription>> PushManager::getSubscription(
   return promise;
 }
 
-ScriptPromiseTyped<V8PermissionState> PushManager::permissionState(
+ScriptPromise<V8PermissionState> PushManager::permissionState(
     ScriptState* script_state,
     const PushSubscriptionOptionsInit* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Window is detached.");
-    return ScriptPromiseTyped<V8PermissionState>();
+    return ScriptPromise<V8PermissionState>();
   }
 
   return PushMessagingBridge::From(registration_)

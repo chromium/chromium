@@ -86,7 +86,7 @@ static WebVector<WebEncryptedMediaSessionType> ConvertSessionTypes(
 
 MediaKeySystemAccessInitializerBase::MediaKeySystemAccessInitializerBase(
     ExecutionContext* context,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     const String& key_system,
     const HeapVector<Member<MediaKeySystemConfiguration>>&
         supported_configurations)

@@ -106,7 +106,7 @@ bool ShouldFocusCapturedSurface(V8CaptureStartFocusBehavior focus_behavior) {
 }
 
 void OnCapturedSurfaceControlResult(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     DOMException* exception) {
   if (exception) {
     resolver->Reject(exception);
@@ -185,7 +185,7 @@ void CaptureController::setFocusBehavior(
   FinalizeFocusDecision();
 }
 
-ScriptPromiseTyped<IDLUndefined> CaptureController::sendWheel(
+ScriptPromise<IDLUndefined> CaptureController::sendWheel(
     ScriptState* script_state,
     CapturedWheelAction* action) {
   DCHECK(IsMainThread());
@@ -196,8 +196,7 @@ ScriptPromiseTyped<IDLUndefined> CaptureController::sendWheel(
   CHECK(action->hasWheelDeltaY());
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
 
   const auto promise = resolver->Promise();
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -279,14 +278,13 @@ int CaptureController::getZoomLevel(ExceptionState& exception_state) {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
-ScriptPromiseTyped<IDLUndefined> CaptureController::setZoomLevel(
+ScriptPromise<IDLUndefined> CaptureController::setZoomLevel(
     ScriptState* script_state,
     int zoom_level) {
   DCHECK(IsMainThread());
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
 
   const auto promise = resolver->Promise();
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

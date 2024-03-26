@@ -98,8 +98,8 @@ class NavigatorShareTest : public testing::Test {
         &GetFrame(), mojom::UserActivationNotificationType::kTest);
     Navigator* navigator = GetFrame().DomWindow()->navigator();
     NonThrowableExceptionState exception_state;
-    ScriptPromise promise = NavigatorShare::share(GetScriptState(), *navigator,
-                                                  &share_data, exception_state);
+    ScriptPromiseUntyped promise = NavigatorShare::share(
+        GetScriptState(), *navigator, &share_data, exception_state);
     test::RunPendingTasks();
     EXPECT_EQ(mock_share_service_.error() == mojom::ShareError::OK
                   ? v8::Promise::kFulfilled

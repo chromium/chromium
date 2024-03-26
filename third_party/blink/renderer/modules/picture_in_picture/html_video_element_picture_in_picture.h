@@ -20,7 +20,7 @@ class HTMLVideoElementPictureInPicture {
   STATIC_ONLY(HTMLVideoElementPictureInPicture);
 
  public:
-  static ScriptPromiseTyped<PictureInPictureWindow>
+  static ScriptPromise<PictureInPictureWindow>
   requestPictureInPicture(ScriptState*, HTMLVideoElement&, ExceptionState&);
 
   static bool FastHasAttribute(const HTMLVideoElement&, const QualifiedName&);

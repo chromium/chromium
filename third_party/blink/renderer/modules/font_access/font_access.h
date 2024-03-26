@@ -32,7 +32,7 @@ class FontAccess final : public GarbageCollected<FontAccess>,
   void Trace(blink::Visitor* visitor) const override;
 
   // Web-exposed interface:
-  static ScriptPromiseTyped<IDLSequence<FontMetadata>> queryLocalFonts(
+  static ScriptPromise<IDLSequence<FontMetadata>> queryLocalFonts(
       ScriptState* script_state,
       LocalDOMWindow& window,
       const QueryOptions* options,
@@ -42,21 +42,21 @@ class FontAccess final : public GarbageCollected<FontAccess>,
   // Returns the supplement, creating one as needed.
   static FontAccess* From(LocalDOMWindow* window);
 
-  ScriptPromiseTyped<IDLSequence<FontMetadata>> QueryLocalFontsImpl(
+  ScriptPromise<IDLSequence<FontMetadata>> QueryLocalFontsImpl(
       ScriptState* script_state,
       const QueryOptions* options,
       ExceptionState& exception_state);
 
   void DidGetEnumerationResponse(
       const QueryOptions* options,
-      ScriptPromiseResolverTyped<IDLSequence<FontMetadata>>* resolver,
+      ScriptPromiseResolver<IDLSequence<FontMetadata>>* resolver,
       mojom::blink::FontEnumerationStatus status,
       base::ReadOnlySharedMemoryRegion region);
 
   // Returns whether the resolver has rejected.
   bool RejectPromiseIfNecessary(
       const mojom::blink::FontEnumerationStatus& status,
-      ScriptPromiseResolver* resolver);
+      ScriptPromiseResolverBase* resolver);
 
   void OnDisconnect();
 

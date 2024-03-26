@@ -35,7 +35,7 @@ CreateFedAuthRequestAutomation(ScriptState* script_state) {
 }  // namespace
 
 // static
-ScriptPromiseTyped<IDLString> InternalsFedCm::getFedCmDialogType(
+ScriptPromise<IDLString> InternalsFedCm::getFedCmDialogType(
     ScriptState* script_state,
     Internals&) {
   mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>
@@ -43,7 +43,7 @@ ScriptPromiseTyped<IDLString> InternalsFedCm::getFedCmDialogType(
           CreateFedAuthRequestAutomation(script_state);
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
   auto promise = resolver->Promise();
   // Get the interface so `federated_auth_request_automation` can be moved
   // below.
@@ -53,7 +53,7 @@ ScriptPromiseTyped<IDLString> InternalsFedCm::getFedCmDialogType(
   raw_federated_auth_request_automation->GetDialogType(WTF::BindOnce(
       // While we only really need |resolver|, we also take the
       // mojo::Remote<> so that it remains alive after this function exits.
-      [](ScriptPromiseResolverTyped<IDLString>* resolver,
+      [](ScriptPromiseResolver<IDLString>* resolver,
          mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>,
          const WTF::String& type) {
         if (!type.empty()) {
@@ -67,7 +67,7 @@ ScriptPromiseTyped<IDLString> InternalsFedCm::getFedCmDialogType(
 }
 
 // static
-ScriptPromiseTyped<IDLString> InternalsFedCm::getFedCmTitle(
+ScriptPromise<IDLString> InternalsFedCm::getFedCmTitle(
     ScriptState* script_state,
     Internals&) {
   mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>
@@ -75,7 +75,7 @@ ScriptPromiseTyped<IDLString> InternalsFedCm::getFedCmTitle(
           CreateFedAuthRequestAutomation(script_state);
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
   auto promise = resolver->Promise();
   // Get the interface so `federated_auth_request_automation` can be moved
   // below.
@@ -85,7 +85,7 @@ ScriptPromiseTyped<IDLString> InternalsFedCm::getFedCmTitle(
   raw_federated_auth_request_automation->GetFedCmDialogTitle(WTF::BindOnce(
       // While we only really need |resolver|, we also take the
       // mojo::Remote<> so that it remains alive after this function exits.
-      [](ScriptPromiseResolverTyped<IDLString>* resolver,
+      [](ScriptPromiseResolver<IDLString>* resolver,
          mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>,
          const WTF::String& title) {
         if (!title.empty()) {
@@ -99,7 +99,7 @@ ScriptPromiseTyped<IDLString> InternalsFedCm::getFedCmTitle(
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> InternalsFedCm::selectFedCmAccount(
+ScriptPromise<IDLUndefined> InternalsFedCm::selectFedCmAccount(
     ScriptState* script_state,
     Internals&,
     int account_index,
@@ -112,11 +112,10 @@ ScriptPromiseTyped<IDLUndefined> InternalsFedCm::selectFedCmAccount(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
         "A negative account index is not allowed");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   // Get the interface so `federated_auth_request_automation` can be moved
   // below.
@@ -128,7 +127,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsFedCm::selectFedCmAccount(
       WTF::BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
-          [](ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+          [](ScriptPromiseResolver<IDLUndefined>* resolver,
              mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>,
              bool success) {
             if (success) {
@@ -143,7 +142,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsFedCm::selectFedCmAccount(
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> InternalsFedCm::dismissFedCmDialog(
+ScriptPromise<IDLUndefined> InternalsFedCm::dismissFedCmDialog(
     ScriptState* script_state,
     Internals&) {
   mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>
@@ -151,8 +150,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsFedCm::dismissFedCmDialog(
           CreateFedAuthRequestAutomation(script_state);
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
   // Get the interface so `federated_auth_request_automation` can be moved
   // below.
@@ -162,7 +160,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsFedCm::dismissFedCmDialog(
   raw_federated_auth_request_automation->DismissFedCmDialog(WTF::BindOnce(
       // While we only really need |resolver|, we also take the
       // mojo::Remote<> so that it remains alive after this function exits.
-      [](ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+      [](ScriptPromiseResolver<IDLUndefined>* resolver,
          mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>,
          bool success) {
         if (success) {
@@ -176,7 +174,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsFedCm::dismissFedCmDialog(
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> InternalsFedCm::clickFedCmDialogButton(
+ScriptPromise<IDLUndefined> InternalsFedCm::clickFedCmDialogButton(
     ScriptState* script_state,
     Internals&,
     const V8DialogButton& v8_button) {
@@ -185,8 +183,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsFedCm::clickFedCmDialogButton(
           CreateFedAuthRequestAutomation(script_state);
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
   test::mojom::blink::DialogButton button;
@@ -212,7 +209,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsFedCm::clickFedCmDialogButton(
       WTF::BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
-          [](ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+          [](ScriptPromiseResolver<IDLUndefined>* resolver,
              mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>,
              bool success) {
             if (success) {

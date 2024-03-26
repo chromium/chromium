@@ -292,7 +292,7 @@ AudioBuffer* BaseAudioContext::createBuffer(uint32_t number_of_channels,
   return buffer;
 }
 
-ScriptPromiseTyped<AudioBuffer> BaseAudioContext::decodeAudioData(
+ScriptPromise<AudioBuffer> BaseAudioContext::decodeAudioData(
     ScriptState* script_state,
     DOMArrayBuffer* audio_data,
     ExceptionState& exception_state) {
@@ -300,7 +300,7 @@ ScriptPromiseTyped<AudioBuffer> BaseAudioContext::decodeAudioData(
                          exception_state);
 }
 
-ScriptPromiseTyped<AudioBuffer> BaseAudioContext::decodeAudioData(
+ScriptPromise<AudioBuffer> BaseAudioContext::decodeAudioData(
     ScriptState* script_state,
     DOMArrayBuffer* audio_data,
     V8DecodeSuccessCallback* success_callback,
@@ -309,7 +309,7 @@ ScriptPromiseTyped<AudioBuffer> BaseAudioContext::decodeAudioData(
                          exception_state);
 }
 
-ScriptPromiseTyped<AudioBuffer> BaseAudioContext::decodeAudioData(
+ScriptPromise<AudioBuffer> BaseAudioContext::decodeAudioData(
     ScriptState* script_state,
     DOMArrayBuffer* audio_data,
     V8DecodeSuccessCallback* success_callback,
@@ -322,7 +322,7 @@ ScriptPromiseTyped<AudioBuffer> BaseAudioContext::decodeAudioData(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Cannot decode audio data: The document is no longer active.");
-    return ScriptPromiseTyped<AudioBuffer>();
+    return ScriptPromise<AudioBuffer>();
   }
 
   v8::Isolate* isolate = script_state->GetIsolate();
@@ -347,9 +347,8 @@ ScriptPromiseTyped<AudioBuffer> BaseAudioContext::decodeAudioData(
   } else {  // audio_data->Transfer succeeded.
     DOMArrayBuffer* audio = DOMArrayBuffer::Create(buffer_contents);
 
-    auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolverTyped<AudioBuffer>>(
-            script_state, exception_state.GetContext());
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<AudioBuffer>>(
+        script_state, exception_state.GetContext());
     auto promise = resolver->Promise();
     decode_audio_resolvers_.insert(resolver);
 
@@ -372,12 +371,12 @@ ScriptPromiseTyped<AudioBuffer> BaseAudioContext::decodeAudioData(
     error_callback->InvokeAndReportException(this, dom_exception);
   }
 
-  return ScriptPromiseTyped<AudioBuffer>();
+  return ScriptPromise<AudioBuffer>();
 }
 
 void BaseAudioContext::HandleDecodeAudioData(
     AudioBuffer* audio_buffer,
-    ScriptPromiseResolverTyped<AudioBuffer>* resolver,
+    ScriptPromiseResolver<AudioBuffer>* resolver,
     V8DecodeSuccessCallback* success_callback,
     V8DecodeErrorCallback* error_callback,
     ExceptionContext exception_context) {

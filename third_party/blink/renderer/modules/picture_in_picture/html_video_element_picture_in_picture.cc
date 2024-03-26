@@ -41,17 +41,17 @@ const char kDocumentPip[] = "The video is currently in document pip mode.";
 }  // namespace
 
 // static
-ScriptPromiseTyped<PictureInPictureWindow>
+ScriptPromise<PictureInPictureWindow>
 HTMLVideoElementPictureInPicture::requestPictureInPicture(
     ScriptState* script_state,
     HTMLVideoElement& element,
     ExceptionState& exception_state) {
   CheckIfPictureInPictureIsAllowed(element, exception_state);
   if (exception_state.HadException())
-    return ScriptPromiseTyped<PictureInPictureWindow>();
+    return ScriptPromise<PictureInPictureWindow>();
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<PictureInPictureWindow>>(
+      MakeGarbageCollected<ScriptPromiseResolver<PictureInPictureWindow>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 

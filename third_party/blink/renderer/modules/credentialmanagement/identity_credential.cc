@@ -31,7 +31,7 @@ enum class FedCmCspStatus {
   kMaxValue = kFailedOrigin
 };
 
-void OnDisconnect(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+void OnDisconnect(ScriptPromiseResolver<IDLUndefined>* resolver,
                   DisconnectStatus status) {
   if (status != DisconnectStatus::kSuccess) {
     resolver->RejectWithDOMException(DOMExceptionCode::kNetworkError,
@@ -54,7 +54,7 @@ IdentityCredential* IdentityCredential::Create(const String& token,
 
 bool IdentityCredential::IsRejectingPromiseDueToCSP(
     ContentSecurityPolicy* policy,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     const KURL& provider_url) {
   if (policy->AllowConnectToSource(provider_url, provider_url,
                                    RedirectStatus::kNoRedirect,
@@ -96,13 +96,12 @@ bool IdentityCredential::IsIdentityCredential() const {
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> IdentityCredential::disconnect(
+ScriptPromise<IDLUndefined> IdentityCredential::disconnect(
     ScriptState* script_state,
     const blink::IdentityCredentialDisconnectOptions* options,
     ExceptionState& exception_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
   if (!options->hasConfigURL()) {

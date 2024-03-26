@@ -40,7 +40,7 @@ IdleManager::IdleManager(ExecutionContext* context)
 
 IdleManager::~IdleManager() = default;
 
-ScriptPromiseTyped<V8PermissionState> IdleManager::RequestPermission(
+ScriptPromise<V8PermissionState> IdleManager::RequestPermission(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   ExecutionContext* context = GetSupplementable();
@@ -54,7 +54,7 @@ ScriptPromiseTyped<V8PermissionState> IdleManager::RequestPermission(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Must be handling a user gesture to show a permission request.");
-    return ScriptPromiseTyped<V8PermissionState>();
+    return ScriptPromise<V8PermissionState>();
   }
 
   // This interface is annotated with [SecureContext].
@@ -70,7 +70,7 @@ ScriptPromiseTyped<V8PermissionState> IdleManager::RequestPermission(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<V8PermissionState>>(
+      MakeGarbageCollected<ScriptPromiseResolver<V8PermissionState>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -113,7 +113,7 @@ void IdleManager::InitForTesting(
 }
 
 void IdleManager::OnPermissionRequestComplete(
-    ScriptPromiseResolverTyped<V8PermissionState>* resolver,
+    ScriptPromiseResolver<V8PermissionState>* resolver,
     mojom::blink::PermissionStatus status) {
   resolver->Resolve(PermissionStatusToString(status));
 }

@@ -612,14 +612,14 @@ void AudioEncoder::CallOutputCallback(
 }
 
 // static
-ScriptPromiseTyped<AudioEncoderSupport> AudioEncoder::isConfigSupported(
+ScriptPromise<AudioEncoderSupport> AudioEncoder::isConfigSupported(
     ScriptState* script_state,
     const AudioEncoderConfig* config,
     ExceptionState& exception_state) {
   auto* parsed_config = ParseConfigStatic(config, exception_state);
   if (!parsed_config) {
     DCHECK(exception_state.HadException());
-    return ScriptPromiseTyped<AudioEncoderSupport>();
+    return ScriptPromise<AudioEncoderSupport>();
   }
 
   String unused_js_error_message;

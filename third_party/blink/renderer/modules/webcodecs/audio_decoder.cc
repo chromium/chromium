@@ -108,7 +108,7 @@ AudioDecoder* AudioDecoder::Create(ScriptState* script_state,
 }
 
 // static
-ScriptPromiseTyped<AudioDecoderSupport> AudioDecoder::isConfigSupported(
+ScriptPromise<AudioDecoderSupport> AudioDecoder::isConfigSupported(
     ScriptState* script_state,
     const AudioDecoderConfig* config,
     ExceptionState& exception_state) {
@@ -118,7 +118,7 @@ ScriptPromiseTyped<AudioDecoderSupport> AudioDecoder::isConfigSupported(
 
   if (!audio_type) {
     exception_state.ThrowTypeError(js_error_message);
-    return ScriptPromiseTyped<AudioDecoderSupport>();
+    return ScriptPromise<AudioDecoderSupport>();
   }
 
   AudioDecoderSupport* support = AudioDecoderSupport::Create();

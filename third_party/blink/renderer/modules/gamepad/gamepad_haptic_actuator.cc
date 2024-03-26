@@ -93,12 +93,12 @@ void GamepadHapticActuator::SetType(device::GamepadHapticActuatorType type) {
   }
 }
 
-ScriptPromiseTyped<V8GamepadHapticsResult> GamepadHapticActuator::playEffect(
+ScriptPromise<V8GamepadHapticsResult> GamepadHapticActuator::playEffect(
     ScriptState* script_state,
     const String& type,
     const GamepadEffectParameters* params) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<V8GamepadHapticsResult>>(
+      MakeGarbageCollected<ScriptPromiseResolver<V8GamepadHapticsResult>>(
           script_state);
   auto promise = resolver->Promise();
 
@@ -139,7 +139,7 @@ ScriptPromiseTyped<V8GamepadHapticsResult> GamepadHapticActuator::playEffect(
 }
 
 void GamepadHapticActuator::OnPlayEffectCompleted(
-    ScriptPromiseResolverTyped<V8GamepadHapticsResult>* resolver,
+    ScriptPromiseResolver<V8GamepadHapticsResult>* resolver,
     device::mojom::GamepadHapticsResult result) {
   if (result == GamepadHapticsResult::GamepadHapticsResultError) {
     resolver->Reject();
@@ -174,10 +174,10 @@ void GamepadHapticActuator::ResetVibrationIfNotPreempted() {
   }
 }
 
-ScriptPromiseTyped<V8GamepadHapticsResult> GamepadHapticActuator::reset(
+ScriptPromise<V8GamepadHapticsResult> GamepadHapticActuator::reset(
     ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<V8GamepadHapticsResult>>(
+      MakeGarbageCollected<ScriptPromiseResolver<V8GamepadHapticsResult>>(
           script_state);
 
   auto callback = WTF::BindOnce(&GamepadHapticActuator::OnResetCompleted,
@@ -189,7 +189,7 @@ ScriptPromiseTyped<V8GamepadHapticsResult> GamepadHapticActuator::reset(
 }
 
 void GamepadHapticActuator::OnResetCompleted(
-    ScriptPromiseResolverTyped<V8GamepadHapticsResult>* resolver,
+    ScriptPromiseResolver<V8GamepadHapticsResult>* resolver,
     device::mojom::GamepadHapticsResult result) {
   if (result == GamepadHapticsResult::GamepadHapticsResultError) {
     resolver->Reject();

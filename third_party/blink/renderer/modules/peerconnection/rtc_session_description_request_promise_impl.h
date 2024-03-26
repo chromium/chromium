@@ -25,13 +25,13 @@ class RTCSessionDescriptionRequestPromiseImpl final
  public:
   static RTCSessionDescriptionRequestPromiseImpl* Create(
       RTCPeerConnection*,
-      ScriptPromiseResolverTyped<RTCSessionDescriptionInit>*,
+      ScriptPromiseResolver<RTCSessionDescriptionInit>*,
       const char* interface_name,
       const char* property_name);
 
   RTCSessionDescriptionRequestPromiseImpl(
       RTCPeerConnection*,
-      ScriptPromiseResolverTyped<RTCSessionDescriptionInit>*,
+      ScriptPromiseResolver<RTCSessionDescriptionInit>*,
       const char* interface_name,
       const char* property_name);
   ~RTCSessionDescriptionRequestPromiseImpl() override;
@@ -46,7 +46,7 @@ class RTCSessionDescriptionRequestPromiseImpl final
   void Clear();
 
   Member<RTCPeerConnection> requester_;
-  Member<ScriptPromiseResolverTyped<RTCSessionDescriptionInit>> resolver_;
+  Member<ScriptPromiseResolver<RTCSessionDescriptionInit>> resolver_;
   const char* interface_name_;
   const char* property_name_;
 };

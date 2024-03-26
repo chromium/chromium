@@ -41,15 +41,15 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
   void Trace(Visitor* visitor) const override;
 
   // gpu_buffer.idl
-  ScriptPromiseTyped<IDLUndefined> mapAsync(ScriptState* script_state,
-                                            uint32_t mode,
-                                            uint64_t offset,
-                                            ExceptionState& exception_state);
-  ScriptPromiseTyped<IDLUndefined> mapAsync(ScriptState* script_state,
-                                            uint32_t mode,
-                                            uint64_t offset,
-                                            uint64_t size,
-                                            ExceptionState& exception_state);
+  ScriptPromise<IDLUndefined> mapAsync(ScriptState* script_state,
+                                       uint32_t mode,
+                                       uint64_t offset,
+                                       ExceptionState& exception_state);
+  ScriptPromise<IDLUndefined> mapAsync(ScriptState* script_state,
+                                       uint32_t mode,
+                                       uint64_t offset,
+                                       uint64_t size,
+                                       ExceptionState& exception_state);
   DOMArrayBuffer* getMappedRange(ScriptState* script_state,
                                  uint64_t offset,
                                  ExceptionState& exception_state);
@@ -66,18 +66,17 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
   void DetachMappedArrayBuffers(v8::Isolate* isolate);
 
  private:
-  ScriptPromiseTyped<IDLUndefined> MapAsyncImpl(
-      ScriptState* script_state,
-      uint32_t mode,
-      uint64_t offset,
-      std::optional<uint64_t> size,
-      ExceptionState& exception_state);
+  ScriptPromise<IDLUndefined> MapAsyncImpl(ScriptState* script_state,
+                                           uint32_t mode,
+                                           uint64_t offset,
+                                           std::optional<uint64_t> size,
+                                           ExceptionState& exception_state);
   DOMArrayBuffer* GetMappedRangeImpl(ScriptState* script_state,
                                      uint64_t offset,
                                      std::optional<uint64_t> size,
                                      ExceptionState& exception_state);
 
-  void OnMapAsyncCallback(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+  void OnMapAsyncCallback(ScriptPromiseResolver<IDLUndefined>* resolver,
                           WGPUBufferMapAsyncStatus status);
 
   DOMArrayBuffer* CreateArrayBufferForMappedData(v8::Isolate* isolate,

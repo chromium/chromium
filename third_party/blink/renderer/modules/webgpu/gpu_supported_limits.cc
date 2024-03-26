@@ -91,7 +91,7 @@ void GPUSupportedLimits::MakeUndefined(WGPURequiredLimits* out) {
 // static
 bool GPUSupportedLimits::Populate(WGPURequiredLimits* out,
                                   const Vector<std::pair<String, uint64_t>>& in,
-                                  ScriptPromiseResolver* resolver) {
+                                  ScriptPromiseResolverBase* resolver) {
   // TODO(crbug.com/dawn/685): This loop is O(n^2) if the developer
   // passes all of the limits. It could be O(n) with a mapping of
   // String -> WGPULimits::*member.

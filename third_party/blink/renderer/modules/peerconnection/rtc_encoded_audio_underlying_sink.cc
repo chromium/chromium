@@ -22,7 +22,7 @@ RTCEncodedAudioUnderlyingSink::RTCEncodedAudioUnderlyingSink(
   DCHECK(transformer_broker_);
 }
 
-ScriptPromiseTyped<IDLUndefined> RTCEncodedAudioUnderlyingSink::start(
+ScriptPromise<IDLUndefined> RTCEncodedAudioUnderlyingSink::start(
     ScriptState* script_state,
     WritableStreamDefaultController* controller,
     ExceptionState&) {
@@ -30,7 +30,7 @@ ScriptPromiseTyped<IDLUndefined> RTCEncodedAudioUnderlyingSink::start(
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> RTCEncodedAudioUnderlyingSink::write(
+ScriptPromise<IDLUndefined> RTCEncodedAudioUnderlyingSink::write(
     ScriptState* script_state,
     ScriptValue chunk,
     WritableStreamDefaultController* controller,
@@ -40,27 +40,27 @@ ScriptPromiseTyped<IDLUndefined> RTCEncodedAudioUnderlyingSink::write(
       script_state->GetIsolate(), chunk.V8Value());
   if (!encoded_frame) {
     exception_state.ThrowTypeError("Invalid frame");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   if (!transformer_broker_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Stream closed");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   auto webrtc_frame = encoded_frame->PassWebRtcFrame();
   if (!webrtc_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Empty frame");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   transformer_broker_->SendFrameToSink(std::move(webrtc_frame));
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> RTCEncodedAudioUnderlyingSink::close(
+ScriptPromise<IDLUndefined> RTCEncodedAudioUnderlyingSink::close(
     ScriptState* script_state,
     ExceptionState&) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -70,7 +70,7 @@ ScriptPromiseTyped<IDLUndefined> RTCEncodedAudioUnderlyingSink::close(
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> RTCEncodedAudioUnderlyingSink::abort(
+ScriptPromise<IDLUndefined> RTCEncodedAudioUnderlyingSink::abort(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {

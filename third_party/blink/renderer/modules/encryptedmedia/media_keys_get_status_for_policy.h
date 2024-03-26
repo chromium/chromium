@@ -19,7 +19,7 @@ class MediaKeysGetStatusForPolicy {
   STATIC_ONLY(MediaKeysGetStatusForPolicy);
 
  public:
-  static ScriptPromiseTyped<V8MediaKeyStatus> getStatusForPolicy(
+  static ScriptPromise<V8MediaKeyStatus> getStatusForPolicy(
       ScriptState*,
       MediaKeys&,
       const MediaKeysPolicy*,

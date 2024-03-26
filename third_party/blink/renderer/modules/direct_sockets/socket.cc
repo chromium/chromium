@@ -44,8 +44,7 @@ CreateDOMExceptionCodeAndMessageFromNetErrorCode(int32_t net_error) {
 
 }  // namespace
 
-ScriptPromiseTyped<IDLUndefined> Socket::closed(
-    ScriptState* script_state) const {
+ScriptPromise<IDLUndefined> Socket::closed(ScriptState* script_state) const {
   return closed_->Promise(script_state->World());
 }
 

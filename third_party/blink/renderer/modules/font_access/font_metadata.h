@@ -56,12 +56,12 @@ class BLINK_EXPORT FontMetadata final : public ScriptWrappable {
   String family() const { return family_; }
   String style() const { return style_; }
 
-  ScriptPromiseTyped<Blob> blob(ScriptState*);
+  ScriptPromise<Blob> blob(ScriptState*);
 
   void Trace(Visitor*) const override;
 
  private:
-  static void BlobImpl(ScriptPromiseResolverTyped<Blob>* resolver,
+  static void BlobImpl(ScriptPromiseResolver<Blob>* resolver,
                        const String& postscriptName);
   String postscriptName_;
   String fullName_;

@@ -179,7 +179,7 @@ void GPUBuffer::Trace(Visitor* visitor) const {
   DawnObject<WGPUBuffer>::Trace(visitor);
 }
 
-ScriptPromiseTyped<IDLUndefined> GPUBuffer::mapAsync(
+ScriptPromise<IDLUndefined> GPUBuffer::mapAsync(
     ScriptState* script_state,
     uint32_t mode,
     uint64_t offset,
@@ -188,7 +188,7 @@ ScriptPromiseTyped<IDLUndefined> GPUBuffer::mapAsync(
                       exception_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> GPUBuffer::mapAsync(
+ScriptPromise<IDLUndefined> GPUBuffer::mapAsync(
     ScriptState* script_state,
     uint32_t mode,
     uint64_t offset,
@@ -239,7 +239,7 @@ String GPUBuffer::mapState() const {
   return FromDawnEnum(GetProcs().bufferGetMapState(GetHandle()));
 }
 
-ScriptPromiseTyped<IDLUndefined> GPUBuffer::MapAsyncImpl(
+ScriptPromise<IDLUndefined> GPUBuffer::MapAsyncImpl(
     ScriptState* script_state,
     uint32_t mode,
     uint64_t offset,
@@ -263,9 +263,8 @@ ScriptPromiseTyped<IDLUndefined> GPUBuffer::MapAsyncImpl(
   size_t map_size =
       static_cast<size_t>(std::min(size_defaulted, kGuaranteedBufferOOMSize));
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   // And send the command, leaving remaining validation to Dawn.
@@ -369,7 +368,7 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
 }
 
 void GPUBuffer::OnMapAsyncCallback(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     WGPUBufferMapAsyncStatus status) {
   switch (status) {
     case WGPUBufferMapAsyncStatus_Success:

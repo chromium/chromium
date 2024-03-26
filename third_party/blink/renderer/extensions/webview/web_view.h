@@ -29,7 +29,7 @@ class EXTENSIONS_WEBVIEW_EXPORT WebView : public ScriptWrappable,
 
   explicit WebView(ExecutionContext&);
 
-  ScriptPromiseTyped<MediaIntegrityTokenProvider>
+  ScriptPromise<MediaIntegrityTokenProvider>
   getExperimentalMediaIntegrityTokenProvider(
       ScriptState* script_state,
       GetMediaIntegrityTokenProviderParams* params,
@@ -45,10 +45,10 @@ class EXTENSIONS_WEBVIEW_EXPORT WebView : public ScriptWrappable,
       mojo::PendingRemote<mojom::blink::WebViewMediaIntegrityProvider>
           provider_pending_remote,
       uint64_t cloud_project_number,
-      ScriptPromiseResolverTyped<MediaIntegrityTokenProvider>* resolver,
+      ScriptPromiseResolver<MediaIntegrityTokenProvider>* resolver,
       std::optional<mojom::blink::WebViewMediaIntegrityErrorCode> error);
 
-  HeapHashSet<Member<ScriptPromiseResolverTyped<MediaIntegrityTokenProvider>>>
+  HeapHashSet<Member<ScriptPromiseResolver<MediaIntegrityTokenProvider>>>
       provider_resolvers_;
   HeapMojoRemote<mojom::blink::WebViewMediaIntegrityService>
       media_integrity_service_remote_;

@@ -61,7 +61,7 @@ class ClipboardPromise::BlobPromiseResolverFunction final
   enum class ResolveType { kFulfill, kReject };
 
   static void Create(ScriptState* script_state,
-                     ScriptPromise promise,
+                     ScriptPromiseUntyped promise,
                      ClipboardPromise* clipboard_promise) {
     promise.Then(
         MakeGarbageCollected<ScriptFunction>(
@@ -110,17 +110,17 @@ class ClipboardPromise::BlobPromiseResolverFunction final
 };
 
 // static
-ScriptPromiseTyped<IDLSequence<ClipboardItem>> ClipboardPromise::CreateForRead(
+ScriptPromise<IDLSequence<ClipboardItem>> ClipboardPromise::CreateForRead(
     ExecutionContext* context,
     ScriptState* script_state,
     ClipboardUnsanitizedFormats* formats,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
-    return ScriptPromiseTyped<IDLSequence<ClipboardItem>>();
+    return ScriptPromise<IDLSequence<ClipboardItem>>();
   }
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<ClipboardItem>>>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<ClipboardItem>>>(
+          script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   ClipboardPromise* clipboard_promise = MakeGarbageCollected<ClipboardPromise>(
       context, resolver, exception_state);
@@ -129,14 +129,14 @@ ScriptPromiseTyped<IDLSequence<ClipboardItem>> ClipboardPromise::CreateForRead(
 }
 
 // static
-ScriptPromiseTyped<IDLString> ClipboardPromise::CreateForReadText(
+ScriptPromise<IDLString> ClipboardPromise::CreateForReadText(
     ExecutionContext* context,
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
-    return ScriptPromiseTyped<IDLString>();
+    return ScriptPromise<IDLString>();
   }
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
       script_state, exception_state.GetContext());
   ClipboardPromise* clipboard_promise = MakeGarbageCollected<ClipboardPromise>(
       context, resolver, exception_state);
@@ -146,17 +146,16 @@ ScriptPromiseTyped<IDLString> ClipboardPromise::CreateForReadText(
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> ClipboardPromise::CreateForWrite(
+ScriptPromise<IDLUndefined> ClipboardPromise::CreateForWrite(
     ExecutionContext* context,
     ScriptState* script_state,
     const HeapVector<Member<ClipboardItem>>& items,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   ClipboardPromise* clipboard_promise = MakeGarbageCollected<ClipboardPromise>(
       context, resolver, exception_state);
   auto promise = resolver->Promise();
@@ -165,17 +164,16 @@ ScriptPromiseTyped<IDLUndefined> ClipboardPromise::CreateForWrite(
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> ClipboardPromise::CreateForWriteText(
+ScriptPromise<IDLUndefined> ClipboardPromise::CreateForWriteText(
     ExecutionContext* context,
     ScriptState* script_state,
     const String& data,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   ClipboardPromise* clipboard_promise = MakeGarbageCollected<ClipboardPromise>(
       context, resolver, exception_state);
   auto promise = resolver->Promise();
@@ -184,7 +182,7 @@ ScriptPromiseTyped<IDLUndefined> ClipboardPromise::CreateForWriteText(
 }
 
 ClipboardPromise::ClipboardPromise(ExecutionContext* context,
-                                   ScriptPromiseResolver* resolver,
+                                   ScriptPromiseResolverBase* resolver,
                                    ExceptionState& exception_state)
     : ExecutionContextLifecycleObserver(context),
       script_promise_resolver_(resolver),
@@ -367,11 +365,11 @@ void ClipboardPromise::ResolveRead() {
         DOMExceptionCode::kDataError, "No valid data on clipboard.");
     return;
   }
-  HeapVector<std::pair<String, ScriptPromise>> items;
+  HeapVector<std::pair<String, ScriptPromiseUntyped>> items;
   items.ReserveInitialCapacity(clipboard_item_data_.size());
 
   for (const auto& item : clipboard_item_data_) {
-    ScriptPromise promise =
+    ScriptPromiseUntyped promise =
         ToResolvedPromise<IDLNullable<Blob>>(script_state, item.second);
     items.emplace_back(item.first, promise);
   }
@@ -494,7 +492,7 @@ void ClipboardPromise::HandleWriteWithPermission(
     return;
   }
 
-  HeapVector<ScriptPromise> promise_list;
+  HeapVector<ScriptPromiseUntyped> promise_list;
   promise_list.ReserveInitialCapacity(
       clipboard_item_data_with_promises_.size());
   write_clipboard_item_types_.ReserveInitialCapacity(
@@ -515,7 +513,8 @@ void ClipboardPromise::HandleWriteWithPermission(
   ScriptState* script_state = GetScriptState();
   ScriptState::Scope scope(script_state);
   BlobPromiseResolverFunction::Create(
-      script_state, ScriptPromise::All(script_state, promise_list), this);
+      script_state, ScriptPromiseUntyped::All(script_state, promise_list),
+      this);
 }
 
 void ClipboardPromise::HandleWriteTextWithPermission(

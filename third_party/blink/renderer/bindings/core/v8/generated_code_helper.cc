@@ -96,7 +96,8 @@ void ExceptionToRejectPromiseScope::ConvertExceptionToRejectPromise() {
   // are created in the relevant realm of the context object.
   ScriptState* script_state = ScriptState::ForCurrentRealm(info_);
   V8SetReturnValue(
-      info_, ScriptPromise::Reject(script_state, exception_state_).V8Value());
+      info_,
+      ScriptPromiseUntyped::Reject(script_state, exception_state_).V8Value());
 }
 
 namespace bindings {

@@ -365,7 +365,7 @@ const char* XRSystem::CheckInlineSessionRequestAllowed(
 }
 
 XRSystem::PendingSupportsSessionQuery::PendingSupportsSessionQuery(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     device::mojom::blink::XRSessionMode session_mode,
     bool throw_on_unsupported)
     : resolver_(resolver),
@@ -395,7 +395,7 @@ void XRSystem::PendingSupportsSessionQuery::Resolve(
                              kSessionNotSupported, exception_state);
     }
   } else {
-    static_cast<ScriptPromiseResolverTyped<IDLBoolean>*>(resolver_.Get())
+    static_cast<ScriptPromiseResolver<IDLBoolean>*>(resolver_.Get())
         ->Resolve(supported);
   }
 }
@@ -465,7 +465,7 @@ XRSystem::PendingSupportsSessionQuery::mode() const {
 
 XRSystem::PendingRequestSessionQuery::PendingRequestSessionQuery(
     int64_t ukm_source_id,
-    ScriptPromiseResolverTyped<XRSession>* resolver,
+    ScriptPromiseResolver<XRSession>* resolver,
     device::mojom::blink::XRSessionMode session_mode,
     RequestedXRSessionFeatureSet required_features,
     RequestedXRSessionFeatureSet optional_features)
@@ -901,23 +901,22 @@ void XRSystem::SetFramesThrottled(const XRSession* session, bool throttled) {
   }
 }
 
-ScriptPromiseTyped<IDLUndefined> XRSystem::supportsSession(
+ScriptPromise<IDLUndefined> XRSystem::supportsSession(
     ScriptState* script_state,
     const String& mode,
     ExceptionState& exception_state) {
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   InternalIsSessionSupported(resolver, mode, exception_state, true);
   return promise;
 }
 
-ScriptPromiseTyped<IDLBoolean> XRSystem::isSessionSupported(
+ScriptPromise<IDLBoolean> XRSystem::isSessionSupported(
     ScriptState* script_state,
     const String& mode,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   InternalIsSessionSupported(resolver, mode, exception_state, false);
@@ -933,7 +932,7 @@ void XRSystem::AddConsoleMessage(mojom::blink::ConsoleMessageLevel error_level,
       mojom::blink::ConsoleMessageSource::kJavaScript, error_level, message));
 }
 
-void XRSystem::InternalIsSessionSupported(ScriptPromiseResolver* resolver,
+void XRSystem::InternalIsSessionSupported(ScriptPromiseResolverBase* resolver,
                                           const String& mode,
                                           ExceptionState& exception_state,
                                           bool throw_on_unsupported) {
@@ -1208,7 +1207,7 @@ XRSystem::RequestedXRSessionFeatureSet XRSystem::ParseRequestedFeatures(
   return result;
 }
 
-ScriptPromiseTyped<XRSession> XRSystem::requestSession(
+ScriptPromise<XRSession> XRSystem::requestSession(
     ScriptState* script_state,
     const String& mode,
     XRSessionInit* session_init,
@@ -1224,8 +1223,8 @@ ScriptPromiseTyped<XRSession> XRSystem::requestSession(
     // Document to get UkmRecorder anyway).
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kNavigatorDetachedError);
-    return ScriptPromiseTyped<XRSession>();  // Will be rejected by generated
-                                             // bindings
+    return ScriptPromise<XRSession>();  // Will be rejected by generated
+                                        // bindings
   }
 
   device::mojom::blink::XRSessionMode session_mode = stringToSessionMode(mode);
@@ -1244,7 +1243,7 @@ ScriptPromiseTyped<XRSession> XRSystem::requestSession(
         .SetMode(static_cast<int64_t>(session_mode))
         .SetStatus(static_cast<int64_t>(SessionRequestStatus::kOtherError))
         .Record(DomWindow()->UkmRecorder());
-    return ScriptPromiseTyped<XRSession>();
+    return ScriptPromise<XRSession>();
   }
 
   // Parse required feature strings
@@ -1294,7 +1293,7 @@ ScriptPromiseTyped<XRSession> XRSystem::requestSession(
     }
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<XRSession>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<XRSession>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 

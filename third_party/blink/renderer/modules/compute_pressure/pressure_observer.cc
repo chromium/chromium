@@ -54,21 +54,21 @@ Vector<V8PressureSource> PressureObserver::supportedSources() {
       {V8PressureSource(V8PressureSource::Enum::kCpu)});
 }
 
-ScriptPromiseTyped<IDLUndefined> PressureObserver::observe(
+ScriptPromise<IDLUndefined> PressureObserver::observe(
     ScriptState* script_state,
     V8PressureSource source,
     ExceptionState& exception_state) {
   if (!base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Compute Pressure API is not available.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsContextDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   // Checks whether the document is allowed by Permissions Policy to call
@@ -78,12 +78,11 @@ ScriptPromiseTyped<IDLUndefined> PressureObserver::observe(
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       kFeaturePolicyBlocked);
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   pending_resolvers_[ToSourceIndex(source.AsEnum())].insert(resolver);
 
   if (!manager_) {

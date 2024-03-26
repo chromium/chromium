@@ -87,7 +87,7 @@ class ScriptValueTest {
 // Runs microtasks and expects |promise| to be rejected. Calls
 // |valueTest| with the value passed to |reject|, if any.
 void ExpectRejected(ScriptState* script_state,
-                    ScriptPromise& promise,
+                    ScriptPromiseUntyped& promise,
                     const ScriptValueTest& value_test) {
   StubScriptFunction resolved, rejected;
   promise.Then(resolved.GetFunction(script_state),
@@ -209,7 +209,7 @@ class ServiceWorkerContainerTest : public PageTestBase {
     ScriptState::Scope script_scope(GetScriptState());
     RegistrationOptions* options = RegistrationOptions::Create();
     options->setScope(scope);
-    ScriptPromise promise =
+    ScriptPromiseUntyped promise =
         container->registerServiceWorker(GetScriptState(), script_url, options);
     ExpectRejected(GetScriptState(), promise, value_test);
   }
@@ -221,7 +221,7 @@ class ServiceWorkerContainerTest : public PageTestBase {
             *GetFrame().DomWindow(),
             std::make_unique<NotReachedWebServiceWorkerProvider>());
     ScriptState::Scope script_scope(GetScriptState());
-    ScriptPromise promise =
+    ScriptPromiseUntyped promise =
         container->getRegistration(GetScriptState(), document_url);
     ExpectRejected(GetScriptState(), promise, value_test);
   }

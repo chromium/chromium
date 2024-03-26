@@ -46,7 +46,7 @@ DOMException* ToException(WebSetSinkIdError error) {
 
 class SetSinkIdResolver : public GarbageCollected<SetSinkIdResolver> {
  public:
-  SetSinkIdResolver(ScriptPromiseResolverTyped<IDLUndefined>*,
+  SetSinkIdResolver(ScriptPromiseResolver<IDLUndefined>*,
                     HTMLMediaElement&,
                     const String& sink_id);
 
@@ -63,13 +63,13 @@ class SetSinkIdResolver : public GarbageCollected<SetSinkIdResolver> {
 
   void OnSetSinkIdComplete(std::optional<WebSetSinkIdError> error);
 
-  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   Member<HTMLMediaElement> element_;
   String sink_id_;
 };
 
 SetSinkIdResolver::SetSinkIdResolver(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     HTMLMediaElement& element,
     const String& sink_id)
     : resolver_(resolver), element_(element), sink_id_(sink_id) {}
@@ -190,13 +190,12 @@ void HTMLMediaElementAudioOutputDevice::setSinkId(const String& sink_id) {
   sink_id_ = sink_id;
 }
 
-ScriptPromiseTyped<IDLUndefined> HTMLMediaElementAudioOutputDevice::setSinkId(
+ScriptPromise<IDLUndefined> HTMLMediaElementAudioOutputDevice::setSinkId(
     ScriptState* script_state,
     HTMLMediaElement& element,
     const String& sink_id) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
   MakeGarbageCollected<SetSinkIdResolver>(resolver, element, sink_id)->Start();
   return promise;

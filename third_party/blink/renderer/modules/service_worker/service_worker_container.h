@@ -86,17 +86,16 @@ class MODULES_EXPORT ServiceWorkerContainer final
   void Trace(Visitor*) const override;
 
   ServiceWorker* controller() { return controller_.Get(); }
-  ScriptPromiseTyped<ServiceWorkerRegistration> ready(ScriptState*,
-                                                      ExceptionState&);
+  ScriptPromise<ServiceWorkerRegistration> ready(ScriptState*, ExceptionState&);
 
-  ScriptPromiseTyped<ServiceWorkerRegistration> registerServiceWorker(
+  ScriptPromise<ServiceWorkerRegistration> registerServiceWorker(
       ScriptState*,
       const String& pattern,
       const RegistrationOptions*);
-  ScriptPromiseTyped<ServiceWorkerRegistration> getRegistration(
+  ScriptPromise<ServiceWorkerRegistration> getRegistration(
       ScriptState*,
       const String& document_url);
-  ScriptPromiseTyped<IDLSequence<ServiceWorkerRegistration>> getRegistrations(
+  ScriptPromise<IDLSequence<ServiceWorkerRegistration>> getRegistrations(
       ScriptState*);
 
   void startMessages();

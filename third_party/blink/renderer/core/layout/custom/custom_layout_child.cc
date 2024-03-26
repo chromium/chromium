@@ -30,7 +30,7 @@ CustomLayoutChild::CustomLayoutChild(const CSSLayoutDefinition& definition,
           definition.ChildNativeInvalidationProperties(),
           definition.ChildCustomInvalidationProperties())) {}
 
-ScriptPromiseTyped<CustomIntrinsicSizes> CustomLayoutChild::intrinsicSizes(
+ScriptPromise<CustomIntrinsicSizes> CustomLayoutChild::intrinsicSizes(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   // A layout child may be invalid if it has been removed from the tree (it is
@@ -39,11 +39,11 @@ ScriptPromiseTyped<CustomIntrinsicSizes> CustomLayoutChild::intrinsicSizes(
   if (!node_ || !token_->IsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidLayoutChild);
-    return ScriptPromiseTyped<CustomIntrinsicSizes>();
+    return ScriptPromise<CustomIntrinsicSizes>();
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<CustomIntrinsicSizes>>(
+      MakeGarbageCollected<ScriptPromiseResolver<CustomIntrinsicSizes>>(
           script_state, exception_state.GetContext());
   CustomLayoutScope::Current()->Queue()->emplace_back(
       MakeGarbageCollected<CustomLayoutWorkTask>(
@@ -52,7 +52,7 @@ ScriptPromiseTyped<CustomIntrinsicSizes> CustomLayoutChild::intrinsicSizes(
   return resolver->Promise();
 }
 
-ScriptPromiseTyped<CustomLayoutFragment> CustomLayoutChild::layoutNextFragment(
+ScriptPromise<CustomLayoutFragment> CustomLayoutChild::layoutNextFragment(
     ScriptState* script_state,
     const CustomLayoutConstraintsOptions* options,
     ExceptionState& exception_state) {
@@ -62,7 +62,7 @@ ScriptPromiseTyped<CustomLayoutFragment> CustomLayoutChild::layoutNextFragment(
   if (!node_ || !token_->IsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidLayoutChild);
-    return ScriptPromiseTyped<CustomLayoutFragment>();
+    return ScriptPromise<CustomLayoutFragment>();
   }
 
   // Serialize the provided data if needed.
@@ -81,12 +81,12 @@ ScriptPromiseTyped<CustomLayoutFragment> CustomLayoutChild::layoutNextFragment(
           exception_state);
 
       if (exception_state.HadException())
-        return ScriptPromiseTyped<CustomLayoutFragment>();
+        return ScriptPromise<CustomLayoutFragment>();
     }
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<CustomLayoutFragment>>(
+      MakeGarbageCollected<ScriptPromiseResolver<CustomLayoutFragment>>(
           script_state, exception_state.GetContext());
   CustomLayoutScope::Current()->Queue()->emplace_back(
       MakeGarbageCollected<CustomLayoutWorkTask>(

@@ -246,7 +246,7 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   }
   {
     V8TestingScope scope;
-    ScriptPromise promise = storage_access_handle->getDirectory(
+    ScriptPromiseUntyped promise = storage_access_handle->getDirectory(
         scope.GetScriptState(), scope.GetExceptionState());
     ScriptPromiseTester tester(scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
@@ -262,7 +262,7 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   }
   {
     V8TestingScope scope;
-    ScriptPromise promise = storage_access_handle->estimate(
+    ScriptPromiseUntyped promise = storage_access_handle->estimate(
         scope.GetScriptState(), scope.GetExceptionState());
     ScriptPromiseTester tester(scope.GetScriptState(), promise);
     if (all() || estimate()) {

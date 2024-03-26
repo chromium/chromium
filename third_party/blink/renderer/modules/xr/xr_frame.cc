@@ -301,7 +301,7 @@ XRFrame::getHitTestResultsForTransientInput(
       hit_test_source->Results());
 }
 
-ScriptPromiseTyped<XRAnchor> XRFrame::createAnchor(
+ScriptPromise<XRAnchor> XRFrame::createAnchor(
     ScriptState* script_state,
     XRRigidTransform* offset_space_from_anchor,
     XRSpace* space,
@@ -376,7 +376,7 @@ ScriptPromiseTyped<XRAnchor> XRFrame::createAnchor(
                                             maybe_plane_id, exception_state);
 }
 
-ScriptPromiseTyped<XRAnchor> XRFrame::CreateAnchorFromNonStationarySpace(
+ScriptPromise<XRAnchor> XRFrame::CreateAnchorFromNonStationarySpace(
     ScriptState* script_state,
     const gfx::Transform& native_origin_from_anchor,
     XRSpace* space,

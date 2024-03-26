@@ -126,9 +126,10 @@ void StreamPromiseResolver::Reject(ScriptState* script_state,
   }
 }
 
-ScriptPromise StreamPromiseResolver::GetScriptPromise(
+ScriptPromiseUntyped StreamPromiseResolver::GetScriptPromiseUntyped(
     ScriptState* script_state) const {
-  return ScriptPromise(script_state, V8Promise(script_state->GetIsolate()));
+  return ScriptPromiseUntyped(script_state,
+                              V8Promise(script_state->GetIsolate()));
 }
 
 v8::Local<v8::Promise> StreamPromiseResolver::V8Promise(

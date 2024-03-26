@@ -39,7 +39,7 @@ ExceptionCode WebCdmExceptionToExceptionCode(
 }
 
 ContentDecryptionModuleResultPromise::ContentDecryptionModuleResultPromise(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     const MediaKeysConfig& config,
     EmeApiType api_type)
     : resolver_(resolver), config_(config), api_type_(api_type) {}

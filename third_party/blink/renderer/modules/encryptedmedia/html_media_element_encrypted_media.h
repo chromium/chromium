@@ -35,10 +35,10 @@ class MODULES_EXPORT HTMLMediaElementEncryptedMedia final
   static const char kSupplementName[];
 
   static MediaKeys* mediaKeys(HTMLMediaElement&);
-  static ScriptPromiseTyped<IDLUndefined> setMediaKeys(ScriptState*,
-                                                       HTMLMediaElement&,
-                                                       MediaKeys*,
-                                                       ExceptionState&);
+  static ScriptPromise<IDLUndefined> setMediaKeys(ScriptState*,
+                                                  HTMLMediaElement&,
+                                                  MediaKeys*,
+                                                  ExceptionState&);
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(encrypted, kEncrypted)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(waitingforkey, kWaitingforkey)
 

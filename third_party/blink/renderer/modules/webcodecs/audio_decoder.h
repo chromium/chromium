@@ -75,7 +75,7 @@ class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {
                               const AudioDecoderInit*,
                               ExceptionState&);
 
-  static ScriptPromiseTyped<AudioDecoderSupport>
+  static ScriptPromise<AudioDecoderSupport>
   isConfigSupported(ScriptState*, const AudioDecoderConfig*, ExceptionState&);
 
   // Returns parsed AudioType if the configuration is valid.

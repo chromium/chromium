@@ -21,14 +21,14 @@ namespace blink {
 
 CustomLayoutWorkTask::CustomLayoutWorkTask(CustomLayoutChild* child,
                                            CustomLayoutToken* token,
-                                           ScriptPromiseResolver* resolver,
+                                           ScriptPromiseResolverBase* resolver,
                                            const TaskType type)
     : CustomLayoutWorkTask(child, token, resolver, nullptr, nullptr, type) {}
 
 CustomLayoutWorkTask::CustomLayoutWorkTask(
     CustomLayoutChild* child,
     CustomLayoutToken* token,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     const CustomLayoutConstraintsOptions* options,
     scoped_refptr<SerializedScriptValue> constraint_data,
     const TaskType type)

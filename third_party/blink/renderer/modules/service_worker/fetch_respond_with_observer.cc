@@ -204,7 +204,7 @@ class UploadingCompletionObserver
       public BytesUploader::Client {
  public:
   explicit UploadingCompletionObserver(
-      ScriptPromiseResolverTyped<IDLUndefined>* resolver)
+      ScriptPromiseResolver<IDLUndefined>* resolver)
       : resolver_(resolver) {}
   ~UploadingCompletionObserver() override = default;
 
@@ -218,7 +218,7 @@ class UploadingCompletionObserver
   }
 
  private:
-  const Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
+  const Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
 };
 
 }  // namespace
@@ -422,8 +422,7 @@ void FetchRespondWithObserver::OnNoResponse(ScriptState* script_state) {
     // Keep the service worker alive as long as we are reading from the request
     // body.
     auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-            script_state);
+        MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
     WaitUntil(script_state, resolver->Promise(), ASSERT_NO_EXCEPTION);
     auto* observer =
         MakeGarbageCollected<UploadingCompletionObserver>(resolver);

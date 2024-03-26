@@ -27,8 +27,8 @@ class KeyboardLayout final : public GarbageCollected<KeyboardLayout>,
 
   virtual ~KeyboardLayout() = default;
 
-  ScriptPromiseTyped<KeyboardLayoutMap> GetKeyboardLayoutMap(ScriptState*,
-                                                             ExceptionState&);
+  ScriptPromise<KeyboardLayoutMap> GetKeyboardLayoutMap(ScriptState*,
+                                                        ExceptionState&);
 
   void Trace(Visitor*) const override;
 
@@ -39,11 +39,10 @@ class KeyboardLayout final : public GarbageCollected<KeyboardLayout>,
   // Returns true if |service_| is initialized and ready to be called.
   bool EnsureServiceConnected();
 
-  void GotKeyboardLayoutMap(ScriptPromiseResolverTyped<KeyboardLayoutMap>*,
+  void GotKeyboardLayoutMap(ScriptPromiseResolver<KeyboardLayoutMap>*,
                             mojom::blink::GetKeyboardLayoutMapResultPtr);
 
-  Member<ScriptPromiseResolverTyped<KeyboardLayoutMap>>
-      script_promise_resolver_;
+  Member<ScriptPromiseResolver<KeyboardLayoutMap>> script_promise_resolver_;
 
   HeapMojoRemote<mojom::blink::KeyboardLockService> service_;
 };

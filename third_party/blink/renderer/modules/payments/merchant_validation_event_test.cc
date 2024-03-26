@@ -89,7 +89,7 @@ TEST(MerchantValidationEventTest, EventMustBeTrusted) {
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   ASSERT_FALSE(event->isTrusted());
 
-  ScriptPromise dummy_promise;
+  ScriptPromiseUntyped dummy_promise;
   event->complete(scope.GetScriptState(), dummy_promise,
                   scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());

@@ -88,14 +88,14 @@ ContentIndex::ContentIndex(ServiceWorkerRegistration* registration,
 
 ContentIndex::~ContentIndex() = default;
 
-ScriptPromiseTyped<IDLUndefined> ContentIndex::add(
+ScriptPromise<IDLUndefined> ContentIndex::add(
     ScriptState* script_state,
     const ContentDescription* description,
     ExceptionState& exception_state) {
   if (!registration_->active()) {
     exception_state.ThrowTypeError(
         "No active registration available on the ServiceWorkerRegistration.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -103,19 +103,18 @@ ScriptPromiseTyped<IDLUndefined> ContentIndex::add(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "ContentIndex is not allowed in fenced frames.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   WTF::String description_error =
       ValidateDescription(*description, registration_.Get());
   if (!description_error.IsNull()) {
     exception_state.ThrowTypeError(description_error);
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   auto mojo_description = mojom::blink::ContentDescription::From(description);
@@ -130,7 +129,7 @@ ScriptPromiseTyped<IDLUndefined> ContentIndex::add(
 
 void ContentIndex::DidGetIconSizes(
     mojom::blink::ContentDescriptionPtr description,
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     const Vector<gfx::Size>& icon_sizes) {
   if (!icon_sizes.empty() && description->icons.empty()) {
     resolver->RejectWithTypeError("icons must be provided");
@@ -155,10 +154,9 @@ void ContentIndex::DidGetIconSizes(
                     WrapPersistent(resolver)));
 }
 
-void ContentIndex::DidGetIcons(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
-    mojom::blink::ContentDescriptionPtr description,
-    Vector<SkBitmap> icons) {
+void ContentIndex::DidGetIcons(ScriptPromiseResolver<IDLUndefined>* resolver,
+                               mojom::blink::ContentDescriptionPtr description,
+                               Vector<SkBitmap> icons) {
   for (const auto& icon : icons) {
     if (icon.isNull()) {
       resolver->RejectWithTypeError("Icon could not be loaded");
@@ -193,7 +191,7 @@ void ContentIndex::DidCheckOfflineCapability(
     KURL launch_url,
     mojom::blink::ContentDescriptionPtr description,
     Vector<SkBitmap> icons,
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     bool is_offline_capable) {
   if (!is_offline_capable) {
     resolver->RejectWithTypeError(
@@ -207,7 +205,7 @@ void ContentIndex::DidCheckOfflineCapability(
       WTF::BindOnce(&ContentIndex::DidAdd, WrapPersistent(resolver)));
 }
 
-void ContentIndex::DidAdd(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+void ContentIndex::DidAdd(ScriptPromiseResolver<IDLUndefined>* resolver,
                           mojom::blink::ContentIndexError error) {
   switch (error) {
     case mojom::blink::ContentIndexError::NONE:
@@ -228,14 +226,14 @@ void ContentIndex::DidAdd(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
   }
 }
 
-ScriptPromiseTyped<IDLUndefined> ContentIndex::deleteDescription(
+ScriptPromise<IDLUndefined> ContentIndex::deleteDescription(
     ScriptState* script_state,
     const String& id,
     ExceptionState& exception_state) {
   if (!registration_->active()) {
     exception_state.ThrowTypeError(
         "No active registration available on the ServiceWorkerRegistration.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -243,12 +241,11 @@ ScriptPromiseTyped<IDLUndefined> ContentIndex::deleteDescription(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "ContentIndex is not allowed in fenced frames.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   GetService()->Delete(registration_->RegistrationId(), id,
@@ -259,7 +256,7 @@ ScriptPromiseTyped<IDLUndefined> ContentIndex::deleteDescription(
 }
 
 void ContentIndex::DidDeleteDescription(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     mojom::blink::ContentIndexError error) {
   switch (error) {
     case mojom::blink::ContentIndexError::NONE:
@@ -281,13 +278,13 @@ void ContentIndex::DidDeleteDescription(
   }
 }
 
-ScriptPromiseTyped<IDLSequence<ContentDescription>>
-ContentIndex::getDescriptions(ScriptState* script_state,
-                              ExceptionState& exception_state) {
+ScriptPromise<IDLSequence<ContentDescription>> ContentIndex::getDescriptions(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!registration_->active()) {
     exception_state.ThrowTypeError(
         "No active registration available on the ServiceWorkerRegistration.");
-    return ScriptPromiseTyped<IDLSequence<ContentDescription>>();
+    return ScriptPromise<IDLSequence<ContentDescription>>();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -295,11 +292,11 @@ ContentIndex::getDescriptions(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "ContentIndex is not allowed in fenced frames.");
-    return ScriptPromiseTyped<IDLSequence<ContentDescription>>();
+    return ScriptPromise<IDLSequence<ContentDescription>>();
   }
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<ContentDescription>>>(
+      ScriptPromiseResolver<IDLSequence<ContentDescription>>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -311,7 +308,7 @@ ContentIndex::getDescriptions(ScriptState* script_state,
 }
 
 void ContentIndex::DidGetDescriptions(
-    ScriptPromiseResolverTyped<IDLSequence<ContentDescription>>* resolver,
+    ScriptPromiseResolver<IDLSequence<ContentDescription>>* resolver,
     mojom::blink::ContentIndexError error,
     Vector<mojom::blink::ContentDescriptionPtr> descriptions) {
   HeapVector<Member<ContentDescription>> blink_descriptions;

@@ -106,7 +106,7 @@ class GetRegistrationCallback : public WebServiceWorkerProvider::
                                     WebServiceWorkerGetRegistrationCallbacks {
  public:
   explicit GetRegistrationCallback(
-      ScriptPromiseResolverTyped<ServiceWorkerRegistration>* resolver)
+      ScriptPromiseResolver<ServiceWorkerRegistration>* resolver)
       : resolver_(resolver) {}
 
   GetRegistrationCallback(const GetRegistrationCallback&) = delete;
@@ -136,7 +136,7 @@ class GetRegistrationCallback : public WebServiceWorkerProvider::
   }
 
  private:
-  Persistent<ScriptPromiseResolverTyped<ServiceWorkerRegistration>> resolver_;
+  Persistent<ScriptPromiseResolver<ServiceWorkerRegistration>> resolver_;
 };
 
 }  // namespace
@@ -216,13 +216,14 @@ void ServiceWorkerContainer::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-ScriptPromiseTyped<ServiceWorkerRegistration>
+ScriptPromise<ServiceWorkerRegistration>
 ServiceWorkerContainer::registerServiceWorker(
     ScriptState* script_state,
     const String& url,
     const RegistrationOptions* options) {
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<ServiceWorkerRegistration>>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<ServiceWorkerRegistration>>(
+          script_state);
   auto promise = resolver->Promise();
   auto callbacks = std::make_unique<CallbackPromiseAdapter<
       ServiceWorkerRegistration, ServiceWorkerErrorForUpdate>>(resolver);
@@ -381,11 +382,12 @@ void ServiceWorkerContainer::RegisterServiceWorkerInternal(
       std::move(fetch_client_settings_object), std::move(callbacks));
 }
 
-ScriptPromiseTyped<ServiceWorkerRegistration>
+ScriptPromise<ServiceWorkerRegistration>
 ServiceWorkerContainer::getRegistration(ScriptState* script_state,
                                         const String& document_url) {
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<ServiceWorkerRegistration>>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<ServiceWorkerRegistration>>(
+          script_state);
   auto promise = resolver->Promise();
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -436,10 +438,10 @@ ServiceWorkerContainer::getRegistration(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromiseTyped<IDLSequence<ServiceWorkerRegistration>>
+ScriptPromise<IDLSequence<ServiceWorkerRegistration>>
 ServiceWorkerContainer::getRegistrations(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<ServiceWorkerRegistration>>>(
+      ScriptPromiseResolver<IDLSequence<ServiceWorkerRegistration>>>(
       script_state);
   auto promise = resolver->Promise();
 
@@ -484,18 +486,18 @@ void ServiceWorkerContainer::startMessages() {
   EnableClientMessageQueue();
 }
 
-ScriptPromiseTyped<ServiceWorkerRegistration> ServiceWorkerContainer::ready(
+ScriptPromise<ServiceWorkerRegistration> ServiceWorkerContainer::ready(
     ScriptState* caller_state,
     ExceptionState& exception_state) {
   if (!GetExecutionContext())
-    return ScriptPromiseTyped<ServiceWorkerRegistration>();
+    return ScriptPromise<ServiceWorkerRegistration>();
 
   if (!caller_state->World().IsMainWorld()) {
     // FIXME: Support .ready from isolated worlds when
     // ScriptPromiseProperty can vend Promises in isolated worlds.
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "'ready' is only supported in pages.");
-    return ScriptPromiseTyped<ServiceWorkerRegistration>();
+    return ScriptPromise<ServiceWorkerRegistration>();
   }
 
   if (!ready_) {

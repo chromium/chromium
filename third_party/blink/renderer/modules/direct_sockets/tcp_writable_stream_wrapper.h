@@ -43,8 +43,8 @@ class MODULES_EXPORT TCPWritableStreamWrapper
   bool HasPendingWrite() const override;
   void Trace(Visitor*) const override;
   void OnAbortSignal() override;
-  ScriptPromiseTyped<IDLUndefined> Write(ScriptValue chunk,
-                                         ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Write(ScriptValue chunk,
+                                    ExceptionState&) override;
 
  private:
   // Called when |data_pipe_| becomes writable or errored.
@@ -94,7 +94,7 @@ class MODULES_EXPORT TCPWritableStreamWrapper
 
   // If an asynchronous write() on the underlying sink object is pending, this
   // will be non-null.
-  Member<ScriptPromiseResolverTyped<IDLUndefined>> write_promise_resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> write_promise_resolver_;
 };
 
 }  // namespace blink

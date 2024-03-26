@@ -61,10 +61,9 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
       : outgoing_stream_(outgoing_stream) {}
 
   // Implementation of UnderlyingSinkBase
-  ScriptPromiseTyped<IDLUndefined> start(
-      ScriptState* script_state,
-      WritableStreamDefaultController* controller,
-      ExceptionState&) override {
+  ScriptPromise<IDLUndefined> start(ScriptState* script_state,
+                                    WritableStreamDefaultController* controller,
+                                    ExceptionState&) override {
     DVLOG(1) << "OutgoingStream::UnderlyinkSink::start() outgoing_stream_="
              << outgoing_stream_;
 
@@ -72,11 +71,10 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
     return ToResolvedUndefinedPromise(script_state);
   }
 
-  ScriptPromiseTyped<IDLUndefined> write(
-      ScriptState* script_state,
-      ScriptValue chunk,
-      WritableStreamDefaultController*,
-      ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> write(ScriptState* script_state,
+                                    ScriptValue chunk,
+                                    WritableStreamDefaultController*,
+                                    ExceptionState& exception_state) override {
     DVLOG(1) << "OutgoingStream::UnderlyingSink::write() outgoing_stream_="
              << outgoing_stream_;
 
@@ -86,8 +84,8 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
     return outgoing_stream_->SinkWrite(script_state, chunk, exception_state);
   }
 
-  ScriptPromiseTyped<IDLUndefined> close(ScriptState* script_state,
-                                         ExceptionState&) override {
+  ScriptPromise<IDLUndefined> close(ScriptState* script_state,
+                                    ExceptionState&) override {
     DVLOG(1) << "OutgoingStream::UnderlingSink::close() outgoing_stream_="
              << outgoing_stream_;
 
@@ -98,8 +96,7 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
     DCHECK(!outgoing_stream_->close_promise_resolver_);
 
     outgoing_stream_->close_promise_resolver_ =
-        MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-            script_state);
+        MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
     outgoing_stream_->pending_operation_ =
         outgoing_stream_->close_promise_resolver_;
 
@@ -120,10 +117,9 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
     return outgoing_stream_->close_promise_resolver_->Promise();
   }
 
-  ScriptPromiseTyped<IDLUndefined> abort(
-      ScriptState* script_state,
-      ScriptValue reason,
-      ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> abort(ScriptState* script_state,
+                                    ScriptValue reason,
+                                    ExceptionState& exception_state) override {
     DVLOG(1) << "OutgoingStream::UnderlyingSink::abort() outgoing_stream_="
              << outgoing_stream_;
     DCHECK(!reason.IsEmpty());
@@ -229,14 +225,14 @@ void OutgoingStream::AbortAlgorithm(OutgoingStream* stream) {
   // does not throw an exception, and hence a proper ExceptionState does not
   // have to be passed since it is not used.
   auto* underlying_sink = MakeGarbageCollected<UnderlyingSink>(stream);
-  ScriptPromise abort_promise =
+  ScriptPromiseUntyped abort_promise =
       underlying_sink->abort(script_state_, reason, ASSERT_NO_EXCEPTION);
 
   // 6. Upon fulfillment of promise, reject pendingOperation with reason.
   class ResolveFunction final : public PromiseHandler {
    public:
     ResolveFunction(ScriptValue reason,
-                    ScriptPromiseResolverTyped<IDLUndefined>* resolver)
+                    ScriptPromiseResolver<IDLUndefined>* resolver)
         : reason_(reason), resolver_(resolver) {}
 
     void CallWithLocal(ScriptState*, v8::Local<v8::Value>) override {
@@ -251,7 +247,7 @@ void OutgoingStream::AbortAlgorithm(OutgoingStream* stream) {
 
    private:
     ScriptValue reason_;
-    Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
+    Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   };
   StreamThenPromise(script_state_->GetContext(), abort_promise.V8Promise(),
                     MakeGarbageCollected<ScriptFunction>(
@@ -329,7 +325,7 @@ void OutgoingStream::HandlePipeClosed() {
   ErrorStreamAbortAndReset(CreateAbortException(IsLocalAbort(false)));
 }
 
-ScriptPromiseTyped<IDLUndefined> OutgoingStream::SinkWrite(
+ScriptPromise<IDLUndefined> OutgoingStream::SinkWrite(
     ScriptState* script_state,
     ScriptValue chunk,
     ExceptionState& exception_state) {
@@ -342,11 +338,11 @@ ScriptPromiseTyped<IDLUndefined> OutgoingStream::SinkWrite(
   auto* buffer_source = V8BufferSource::Create(
       script_state_->GetIsolate(), chunk.V8Value(), exception_state);
   if (exception_state.HadException())
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   DCHECK(buffer_source);
 
   if (!data_pipe_) {
-    return ScriptPromiseTyped<IDLUndefined>::Reject(
+    return ScriptPromise<IDLUndefined>::Reject(
         script_state, CreateAbortException(IsLocalAbort(false)));
   }
 
@@ -357,7 +353,7 @@ ScriptPromiseTyped<IDLUndefined> OutgoingStream::SinkWrite(
 
 // Attempt to write |data|. Cache anything that could not be written
 // synchronously. Arrange for the cached data to be written asynchronously.
-ScriptPromiseTyped<IDLUndefined> OutgoingStream::WriteOrCacheData(
+ScriptPromise<IDLUndefined> OutgoingStream::WriteOrCacheData(
     ScriptState* script_state,
     base::span<const uint8_t> data) {
   DVLOG(1) << "OutgoingStream::WriteOrCacheData() this=" << this << " data=("
@@ -370,7 +366,7 @@ ScriptPromiseTyped<IDLUndefined> OutgoingStream::WriteOrCacheData(
   DCHECK_LT(written, data.size());
 
   if (!data_pipe_) {
-    return ScriptPromiseTyped<IDLUndefined>::Reject(
+    return ScriptPromise<IDLUndefined>::Reject(
         script_state, CreateAbortException(IsLocalAbort(false)));
   }
 
@@ -380,8 +376,7 @@ ScriptPromiseTyped<IDLUndefined> OutgoingStream::WriteOrCacheData(
   DCHECK_EQ(offset_, 0u);
   write_watcher_.ArmOrNotify();
   write_promise_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   pending_operation_ = write_promise_resolver_;
   return write_promise_resolver_->Promise();
 }

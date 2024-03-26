@@ -78,24 +78,24 @@ class MODULES_EXPORT RemotePlayback final
   // Starts notifying the page about the changes to the remote playback devices
   // availability via the provided callback. May start the monitoring of remote
   // playback devices if it isn't running yet.
-  ScriptPromiseTyped<IDLLong> watchAvailability(
+  ScriptPromise<IDLLong> watchAvailability(
       ScriptState*,
       V8RemotePlaybackAvailabilityCallback*,
       ExceptionState&);
 
   // Cancels updating the page via the callback specified by its id.
-  ScriptPromiseTyped<IDLUndefined> cancelWatchAvailability(ScriptState*,
-                                                           int id,
-                                                           ExceptionState&);
+  ScriptPromise<IDLUndefined> cancelWatchAvailability(ScriptState*,
+                                                      int id,
+                                                      ExceptionState&);
 
   // Cancels all the callbacks watching remote playback availability changes
   // registered with this element.
-  ScriptPromiseTyped<IDLUndefined> cancelWatchAvailability(ScriptState*,
-                                                           ExceptionState&);
+  ScriptPromise<IDLUndefined> cancelWatchAvailability(ScriptState*,
+                                                      ExceptionState&);
 
   // Shows the UI allowing user to change the remote playback state of the media
   // element (by picking a remote playback device from the list, for example).
-  ScriptPromiseTyped<IDLUndefined> prompt(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> prompt(ScriptState*, ExceptionState&);
 
   String state() const;
 
@@ -183,7 +183,7 @@ class MODULES_EXPORT RemotePlayback final
   mojom::blink::ScreenAvailability availability_;
   HeapHashMap<int, Member<AvailabilityCallbackWrapper>> availability_callbacks_;
   Member<HTMLMediaElement> media_element_;
-  Member<ScriptPromiseResolverTyped<IDLUndefined>> prompt_promise_resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> prompt_promise_resolver_;
   Vector<KURL> availability_urls_;
   bool is_listening_;
   bool is_background_availability_monitoring_disabled_for_testing_ = false;

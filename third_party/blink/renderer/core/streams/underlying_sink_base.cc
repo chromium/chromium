@@ -9,7 +9,7 @@
 
 namespace blink {
 
-ScriptPromiseTyped<IDLUndefined> UnderlyingSinkBase::start(
+ScriptPromise<IDLUndefined> UnderlyingSinkBase::start(
     ScriptState* script_state,
     ScriptValue controller,
     ExceptionState& exception_state) {

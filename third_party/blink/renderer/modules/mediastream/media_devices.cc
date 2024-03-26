@@ -427,7 +427,7 @@ MediaDevices::MediaDevices(Navigator& navigator)
 
 MediaDevices::~MediaDevices() = default;
 
-ScriptPromiseTyped<IDLSequence<MediaDeviceInfo>> MediaDevices::enumerateDevices(
+ScriptPromise<IDLSequence<MediaDeviceInfo>> MediaDevices::enumerateDevices(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -435,7 +435,7 @@ ScriptPromiseTyped<IDLSequence<MediaDeviceInfo>> MediaDevices::enumerateDevices(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Current frame is detached.");
-    return ScriptPromiseTyped<IDLSequence<MediaDeviceInfo>>();
+    return ScriptPromise<IDLSequence<MediaDeviceInfo>>();
   }
 
   auto* result_tracker = MakeGarbageCollected<ScriptPromiseResolverWithTracker<
@@ -462,7 +462,7 @@ MediaTrackSupportedConstraints* MediaDevices::getSupportedConstraints() const {
   return MediaTrackSupportedConstraints::Create();
 }
 
-ScriptPromiseTyped<MediaStream> MediaDevices::getUserMedia(
+ScriptPromise<MediaStream> MediaDevices::getUserMedia(
     ScriptState* script_state,
     const UserMediaStreamConstraints* options,
     ExceptionState& exception_state) {
@@ -490,7 +490,7 @@ ScriptPromiseTyped<MediaStream> MediaDevices::getUserMedia(
 }
 
 template <typename IDLResolvedType>
-ScriptPromiseTyped<IDLResolvedType> MediaDevices::SendUserMediaRequest(
+ScriptPromise<IDLResolvedType> MediaDevices::SendUserMediaRequest(
     UserMediaRequestType media_type,
     ScriptPromiseResolverWithTracker<UserMediaRequestResult, IDLResolvedType>*
         resolver,
@@ -578,7 +578,7 @@ ScriptPromiseTyped<IDLResolvedType> MediaDevices::SendUserMediaRequest(
   return promise;
 }
 
-ScriptPromiseTyped<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
+ScriptPromise<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -639,7 +639,7 @@ ScriptPromiseTyped<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
                               constraints, exception_state);
 }
 
-ScriptPromiseTyped<MediaStream> MediaDevices::getDisplayMedia(
+ScriptPromise<MediaStream> MediaDevices::getDisplayMedia(
     ScriptState* script_state,
     const DisplayMediaStreamOptions* options,
     ExceptionState& exception_state) {
@@ -784,29 +784,28 @@ void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,
       .SetCaptureHandleConfig(std::move(config_ptr));
 }
 
-ScriptPromiseTyped<CropTarget> MediaDevices::ProduceCropTarget(
+ScriptPromise<CropTarget> MediaDevices::ProduceCropTarget(
     ScriptState* script_state,
     Element* element,
     ExceptionState& exception_state) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                     "Unsupported.");
-  return ScriptPromiseTyped<CropTarget>();
+  return ScriptPromise<CropTarget>();
 #else
   if (!MayProduceSubCaptureTarget(script_state, element, exception_state,
                                   SubCaptureTarget::Type::kCropTarget)) {
     // Exception thrown by helper.
-    return ScriptPromiseTyped<CropTarget>();
+    return ScriptPromise<CropTarget>();
   }
 
   if (const RegionCaptureCropId* id = element->GetRegionCaptureCropId()) {
     // A token was produced earlier and associated with the Element.
     const base::Token token = id->value();
     DCHECK(!token.is_zero());
-    auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolverTyped<CropTarget>>(
-            script_state, exception_state.GetContext());
-    const ScriptPromiseTyped<CropTarget> promise = resolver->Promise();
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<CropTarget>>(
+        script_state, exception_state.GetContext());
+    const ScriptPromise<CropTarget> promise = resolver->Promise();
     const WTF::String token_str(blink::TokenToGUID(token).AsLowercaseString());
     resolver->Resolve(MakeGarbageCollected<CropTarget>(token_str));
     RecordUma(
@@ -829,10 +828,10 @@ ScriptPromiseTyped<CropTarget> MediaDevices::ProduceCropTarget(
 
   // Mints a new ID on the browser process.
   // Resolves after it has been produced and is ready to be used.
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<CropTarget>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<CropTarget>>(
       script_state, exception_state.GetContext());
   crop_target_resolvers_.insert(element, resolver);
-  const ScriptPromiseTyped<CropTarget> promise = resolver->Promise();
+  const ScriptPromise<CropTarget> promise = resolver->Promise();
 
   LocalDOMWindow* const window = To<LocalDOMWindow>(GetExecutionContext());
   CHECK(window);  // Guaranteed by MayProduceSubCaptureTarget() earlier.
@@ -849,19 +848,19 @@ ScriptPromiseTyped<CropTarget> MediaDevices::ProduceCropTarget(
 #endif
 }
 
-ScriptPromiseTyped<RestrictionTarget> MediaDevices::ProduceRestrictionTarget(
+ScriptPromise<RestrictionTarget> MediaDevices::ProduceRestrictionTarget(
     ScriptState* script_state,
     Element* element,
     ExceptionState& exception_state) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                     "Unsupported.");
-  return ScriptPromiseTyped<RestrictionTarget>();
+  return ScriptPromise<RestrictionTarget>();
 #else
   if (!MayProduceSubCaptureTarget(script_state, element, exception_state,
                                   SubCaptureTarget::Type::kRestrictionTarget)) {
     // Exception thrown by helper.
-    return ScriptPromiseTyped<RestrictionTarget>();
+    return ScriptPromise<RestrictionTarget>();
   }
 
   if (const RestrictionTargetId* id = element->GetRestrictionTargetId()) {
@@ -869,9 +868,9 @@ ScriptPromiseTyped<RestrictionTarget> MediaDevices::ProduceRestrictionTarget(
     const base::Token token = id->value();
     DCHECK(!token.is_zero());
     auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolverTyped<RestrictionTarget>>(
+        MakeGarbageCollected<ScriptPromiseResolver<RestrictionTarget>>(
             script_state, exception_state.GetContext());
-    const ScriptPromiseTyped<RestrictionTarget> promise = resolver->Promise();
+    const ScriptPromise<RestrictionTarget> promise = resolver->Promise();
     const WTF::String token_str(blink::TokenToGUID(token).AsLowercaseString());
     resolver->Resolve(MakeGarbageCollected<RestrictionTarget>(token_str));
     RecordUma(
@@ -895,10 +894,10 @@ ScriptPromiseTyped<RestrictionTarget> MediaDevices::ProduceRestrictionTarget(
   // Mints a new ID on the browser process.
   // Resolves after it has been produced and is ready to be used.
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<RestrictionTarget>>(
+      MakeGarbageCollected<ScriptPromiseResolver<RestrictionTarget>>(
           script_state, exception_state.GetContext());
   restriction_target_resolvers_.insert(element, resolver);
-  const ScriptPromiseTyped<RestrictionTarget> promise = resolver->Promise();
+  const ScriptPromise<RestrictionTarget> promise = resolver->Promise();
 
   LocalDOMWindow* const window = To<LocalDOMWindow>(GetExecutionContext());
   CHECK(window);  // Guaranteed by MayProduceSubCaptureTarget() earlier.
@@ -1316,7 +1315,7 @@ void MediaDevices::ResolveCropTargetPromise(Element* element,
 
   const auto it = crop_target_resolvers_.find(element);
   DCHECK_NE(it, crop_target_resolvers_.end());
-  ScriptPromiseResolverTyped<CropTarget>* const resolver = it->value;
+  ScriptPromiseResolver<CropTarget>* const resolver = it->value;
   crop_target_resolvers_.erase(it);
 
   const base::Token token = SubCaptureTargetIdToToken(id);
@@ -1340,7 +1339,7 @@ void MediaDevices::ResolveRestrictionTargetPromise(Element* element,
 
   const auto it = restriction_target_resolvers_.find(element);
   DCHECK_NE(it, restriction_target_resolvers_.end());
-  ScriptPromiseResolverTyped<RestrictionTarget>* const resolver = it->value;
+  ScriptPromiseResolver<RestrictionTarget>* const resolver = it->value;
   restriction_target_resolvers_.erase(it);
 
   const base::Token token = SubCaptureTargetIdToToken(id);

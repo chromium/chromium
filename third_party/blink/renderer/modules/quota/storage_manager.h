@@ -33,10 +33,10 @@ class StorageManager final : public EventTarget,
   explicit StorageManager(ExecutionContext*);
   ~StorageManager() override;
 
-  ScriptPromiseTyped<IDLBoolean> persisted(ScriptState*, ExceptionState&);
-  ScriptPromiseTyped<IDLBoolean> persist(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLBoolean> persisted(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLBoolean> persist(ScriptState*, ExceptionState&);
 
-  ScriptPromiseTyped<StorageEstimate> estimate(ScriptState*, ExceptionState&);
+  ScriptPromise<StorageEstimate> estimate(ScriptState*, ExceptionState&);
 
   void Trace(Visitor* visitor) const override;
 
@@ -59,7 +59,7 @@ class StorageManager final : public EventTarget,
   mojom::blink::PermissionService* GetPermissionService(ExecutionContext*);
 
   void PermissionServiceConnectionError();
-  void PermissionRequestComplete(ScriptPromiseResolverTyped<IDLBoolean>*,
+  void PermissionRequestComplete(ScriptPromiseResolver<IDLBoolean>*,
                                  mojom::blink::PermissionStatus);
 
   // Called when a quota change event listener is added.

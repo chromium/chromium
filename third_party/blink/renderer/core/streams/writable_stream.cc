@@ -102,48 +102,48 @@ WritableStream* WritableStream::Create(ScriptState* script_state,
 WritableStream::WritableStream() = default;
 WritableStream::~WritableStream() = default;
 
-ScriptPromise WritableStream::abort(ScriptState* script_state,
-                                    ExceptionState& exception_state) {
+ScriptPromiseUntyped WritableStream::abort(ScriptState* script_state,
+                                           ExceptionState& exception_state) {
   return abort(script_state,
                ScriptValue(script_state->GetIsolate(),
                            v8::Undefined(script_state->GetIsolate())),
                exception_state);
 }
 
-ScriptPromise WritableStream::abort(ScriptState* script_state,
-                                    ScriptValue reason,
-                                    ExceptionState& exception_state) {
+ScriptPromiseUntyped WritableStream::abort(ScriptState* script_state,
+                                           ScriptValue reason,
+                                           ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#ws-abort
   //  2. If ! IsWritableStreamLocked(this) is true, return a promise rejected
   //     with a TypeError exception.
   if (IsLocked(this)) {
     exception_state.ThrowTypeError("Cannot abort a locked stream");
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
   //  3. Return ! WritableStreamAbort(this, reason).
-  return ScriptPromise(script_state,
-                       Abort(script_state, this, reason.V8Value()));
+  return ScriptPromiseUntyped(script_state,
+                              Abort(script_state, this, reason.V8Value()));
 }
 
-ScriptPromise WritableStream::close(ScriptState* script_state,
-                                    ExceptionState& exception_state) {
+ScriptPromiseUntyped WritableStream::close(ScriptState* script_state,
+                                           ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#ws-close
   // 2. If ! IsWritableStreamLocked(this) is true, return a promise rejected
   // with a TypeError exception.
   if (IsLocked(this)) {
     exception_state.ThrowTypeError("Cannot close a locked stream");
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
   // 3. If ! WritableStreamCloseQueuedOrInFlight(this) is true, return a promise
   // rejected with a TypeError exception.
   if (CloseQueuedOrInFlight(this)) {
     exception_state.ThrowTypeError("Cannot close a closed or closing stream");
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
-  return ScriptPromise(script_state, Close(script_state, this));
+  return ScriptPromiseUntyped(script_state, Close(script_state, this));
 }
 
 WritableStreamDefaultWriter* WritableStream::getWriter(

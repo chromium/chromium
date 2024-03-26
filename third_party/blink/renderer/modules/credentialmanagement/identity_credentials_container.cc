@@ -37,12 +37,12 @@ CredentialsContainer* IdentityCredentialsContainer::identity(
 IdentityCredentialsContainer::IdentityCredentialsContainer(Navigator& navigator)
     : Supplement<Navigator>(navigator) {}
 
-ScriptPromiseTyped<IDLNullable<Credential>> IdentityCredentialsContainer::get(
+ScriptPromise<IDLNullable<Credential>> IdentityCredentialsContainer::get(
     ScriptState* script_state,
     const CredentialRequestOptions* options,
     ExceptionState& exception_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<Credential>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
           script_state, exception_state.GetContext());
 
   if (IsDigitalIdentityCredentialType(*options)) {
@@ -54,29 +54,29 @@ ScriptPromiseTyped<IDLNullable<Credential>> IdentityCredentialsContainer::get(
   return resolver->Promise();
 }
 
-ScriptPromiseTyped<Credential> IdentityCredentialsContainer::store(
+ScriptPromise<Credential> IdentityCredentialsContainer::store(
     ScriptState* script_state,
     Credential* credential,
     ExceptionState& exception_state) {
   exception_state.ThrowDOMException(
       DOMExceptionCode::kNotSupportedError,
       "Store operation not supported for this credential type.");
-  return ScriptPromiseTyped<Credential>();
+  return ScriptPromise<Credential>();
 }
 
-ScriptPromiseTyped<IDLNullable<Credential>>
-IdentityCredentialsContainer::create(ScriptState* script_state,
-                                     const CredentialCreationOptions* options,
-                                     ExceptionState& exception_state) {
+ScriptPromise<IDLNullable<Credential>> IdentityCredentialsContainer::create(
+    ScriptState* script_state,
+    const CredentialCreationOptions* options,
+    ExceptionState& exception_state) {
   exception_state.ThrowDOMException(
       DOMExceptionCode::kNotSupportedError,
       "Create operation not supported for this credential type.");
-  return ScriptPromiseTyped<IDLNullable<Credential>>();
+  return ScriptPromise<IDLNullable<Credential>>();
 }
 
-ScriptPromiseTyped<IDLUndefined>
-IdentityCredentialsContainer::preventSilentAccess(ScriptState* script_state) {
-  return ScriptPromiseTyped<IDLUndefined>();
+ScriptPromise<IDLUndefined> IdentityCredentialsContainer::preventSilentAccess(
+    ScriptState* script_state) {
+  return ScriptPromise<IDLUndefined>();
 }
 
 void IdentityCredentialsContainer::Trace(Visitor* visitor) const {

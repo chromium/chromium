@@ -21,19 +21,19 @@ class InternalsSensor {
   STATIC_ONLY(InternalsSensor);
 
  public:
-  static ScriptPromiseTyped<IDLUndefined> createVirtualSensor(
+  static ScriptPromise<IDLUndefined> createVirtualSensor(
       ScriptState*,
       Internals&,
       V8VirtualSensorType,
       CreateVirtualSensorOptions*);
-  static ScriptPromiseTyped<IDLUndefined> updateVirtualSensor(
-      ScriptState*,
-      Internals&,
-      V8VirtualSensorType,
-      VirtualSensorReading*);
-  static ScriptPromiseTyped<IDLUndefined>
-  removeVirtualSensor(ScriptState*, Internals&, V8VirtualSensorType);
-  static ScriptPromiseTyped<VirtualSensorInformation>
+  static ScriptPromise<IDLUndefined> updateVirtualSensor(ScriptState*,
+                                                         Internals&,
+                                                         V8VirtualSensorType,
+                                                         VirtualSensorReading*);
+  static ScriptPromise<IDLUndefined> removeVirtualSensor(ScriptState*,
+                                                         Internals&,
+                                                         V8VirtualSensorType);
+  static ScriptPromise<VirtualSensorInformation>
   getVirtualSensorInformation(ScriptState*, Internals&, V8VirtualSensorType);
 };
 

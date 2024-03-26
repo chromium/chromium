@@ -90,18 +90,18 @@ TCPServerSocket* TCPServerSocket::Create(ScriptState* script_state,
   return socket;
 }
 
-ScriptPromiseTyped<TCPServerSocketOpenInfo> TCPServerSocket::opened(
+ScriptPromise<TCPServerSocketOpenInfo> TCPServerSocket::opened(
     ScriptState* script_state) const {
   return opened_->Promise(script_state->World());
 }
 
-ScriptPromiseTyped<IDLUndefined> TCPServerSocket::close(
+ScriptPromise<IDLUndefined> TCPServerSocket::close(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (GetState() == State::kOpening) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Socket is not properly initialized.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   if (GetState() != State::kOpen) {
@@ -111,7 +111,7 @@ ScriptPromiseTyped<IDLUndefined> TCPServerSocket::close(
   if (readable_stream_wrapper_->Locked()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Close called on locked streams.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   auto* reason = MakeGarbageCollected<DOMException>(

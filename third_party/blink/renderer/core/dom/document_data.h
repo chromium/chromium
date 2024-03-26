@@ -51,7 +51,7 @@ class DocumentData final : public GarbageCollected<DocumentData> {
   // In order to be able to answer promises when the Mojo remote disconnects,
   // maintain all pending promises here, deleting them on successful completion
   // or on connection error, whichever comes first.
-  HeapHashSet<Member<ScriptPromiseResolver>>
+  HeapHashSet<Member<ScriptPromiseResolverBase>>
       pending_trust_token_query_resolvers_;
 
   // To do email regex checks.

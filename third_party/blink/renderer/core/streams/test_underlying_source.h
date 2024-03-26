@@ -26,14 +26,15 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
   void Error(ScriptValue value) { Controller()->Error(value.V8Value()); }
   double DesiredSize() { return Controller()->DesiredSize(); }
 
-  ScriptPromise Start(ScriptState* script_state, ExceptionState&) override {
+  ScriptPromiseUntyped Start(ScriptState* script_state,
+                             ExceptionState&) override {
     DCHECK(!is_start_called_);
     is_start_called_ = true;
-    return ScriptPromise::CastUndefined(script_state);
+    return ScriptPromiseUntyped::CastUndefined(script_state);
   }
-  ScriptPromise Cancel(ScriptState* script_state,
-                       ScriptValue reason,
-                       ExceptionState&) override {
+  ScriptPromiseUntyped Cancel(ScriptState* script_state,
+                              ScriptValue reason,
+                              ExceptionState&) override {
     DCHECK(!is_cancelled_);
     DCHECK(!is_cancelled_with_undefined_);
     DCHECK(!is_cancelled_with_null_);
@@ -41,7 +42,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
     is_cancelled_ = true;
     is_cancelled_with_undefined_ = reason.V8Value()->IsUndefined();
     is_cancelled_with_null_ = reason.V8Value()->IsNull();
-    return ScriptPromise::CastUndefined(script_state);
+    return ScriptPromiseUntyped::CastUndefined(script_state);
   }
 
   bool IsStartCalled() const { return is_start_called_; }

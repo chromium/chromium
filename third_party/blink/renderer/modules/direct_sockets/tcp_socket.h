@@ -57,9 +57,8 @@ class MODULES_EXPORT TCPSocket final
                            ExceptionState&);
 
   // Socket:
-  ScriptPromiseTyped<TCPSocketOpenInfo> opened(ScriptState*) const;
-  ScriptPromiseTyped<IDLUndefined> close(ScriptState*,
-                                         ExceptionState&) override;
+  ScriptPromise<TCPSocketOpenInfo> opened(ScriptState*) const;
+  ScriptPromise<IDLUndefined> close(ScriptState*, ExceptionState&) override;
 
  public:
   // Constructor for use from TCPServerSocket.

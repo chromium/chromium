@@ -20,7 +20,7 @@ class InternalsMediaStream {
   STATIC_ONLY(InternalsMediaStream);
 
  public:
-  static ScriptPromiseTyped<IDLUndefined> addFakeDevice(
+  static ScriptPromise<IDLUndefined> addFakeDevice(
       ScriptState*,
       Internals&,
       const MediaDeviceInfo*,

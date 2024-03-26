@@ -52,7 +52,7 @@ class MODULES_EXPORT BackgroundFetchUpdateUIEvent final
   ~BackgroundFetchUpdateUIEvent() override;
 
   // Web Exposed method defined in the IDL file.
-  ScriptPromiseTyped<IDLUndefined> updateUI(
+  ScriptPromise<IDLUndefined> updateUI(
       ScriptState* script_state,
       const BackgroundFetchUIOptions* ui_options,
       ExceptionState&);
@@ -61,12 +61,12 @@ class MODULES_EXPORT BackgroundFetchUpdateUIEvent final
 
  private:
   void DidGetIcon(const String& title,
-                  ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+                  ScriptPromiseResolver<IDLUndefined>* resolver,
 
                   const SkBitmap& icon,
                   int64_t ideal_to_chosen_icon_size);
 
-  void DidUpdateUI(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+  void DidUpdateUI(ScriptPromiseResolver<IDLUndefined>* resolver,
                    mojom::blink::BackgroundFetchError error);
 
   bool update_ui_called_ = false;

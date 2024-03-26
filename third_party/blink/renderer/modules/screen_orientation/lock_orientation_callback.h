@@ -19,7 +19,7 @@ class LockOrientationCallback final : public WebLockOrientationCallback {
   USING_FAST_MALLOC(LockOrientationCallback);
 
  public:
-  explicit LockOrientationCallback(ScriptPromiseResolverTyped<IDLUndefined>*);
+  explicit LockOrientationCallback(ScriptPromiseResolver<IDLUndefined>*);
 
   LockOrientationCallback(const LockOrientationCallback&) = delete;
   LockOrientationCallback& operator=(const LockOrientationCallback&) = delete;
@@ -30,7 +30,7 @@ class LockOrientationCallback final : public WebLockOrientationCallback {
   void OnError(WebLockOrientationError) override;
 
  private:
-  Persistent<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
+  Persistent<ScriptPromiseResolver<IDLUndefined>> resolver_;
 };
 
 }  // namespace blink

@@ -73,14 +73,14 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
   // queue associated with the given DOMTaskSignal if one is provided. If the
   // underlying context is destroyed, e.g. for detached windows, this will
   // return a rejected promise.
-  ScriptPromiseTyped<IDLAny> postTask(ScriptState*,
-                                      V8SchedulerPostTaskCallback*,
-                                      SchedulerPostTaskOptions*,
-                                      ExceptionState&);
+  ScriptPromise<IDLAny> postTask(ScriptState*,
+                                 V8SchedulerPostTaskCallback*,
+                                 SchedulerPostTaskOptions*,
+                                 ExceptionState&);
 
-  ScriptPromiseTyped<IDLUndefined> yield(ScriptState*,
-                                         SchedulerYieldOptions*,
-                                         ExceptionState&);
+  ScriptPromise<IDLUndefined> yield(ScriptState*,
+                                    SchedulerYieldOptions*,
+                                    ExceptionState&);
 
   scheduler::TaskAttributionIdType taskId(ScriptState*);
   void setTaskId(ScriptState*, scheduler::TaskAttributionIdType);

@@ -73,8 +73,8 @@ class DeviceOrientationEvent final : public Event {
   std::optional<double> gamma() const;
   bool absolute() const;
 
-  static ScriptPromiseTyped<V8DeviceOrientationPermissionState>
-  requestPermission(ScriptState*);
+  static ScriptPromise<V8DeviceOrientationPermissionState> requestPermission(
+      ScriptState*);
 
   const AtomicString& InterfaceName() const override;
 

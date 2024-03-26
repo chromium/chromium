@@ -263,20 +263,20 @@ void PreferenceObject::clearOverride(ScriptState* script_state) {
   }
 }
 
-ScriptPromiseTyped<IDLUndefined> PreferenceObject::requestOverride(
+ScriptPromise<IDLUndefined> PreferenceObject::requestOverride(
     ScriptState* script_state,
     std::optional<AtomicString> value) {
   CHECK(RuntimeEnabledFeatures::WebPreferencesEnabled());
   if (!script_state || !script_state->ContextIsValid()) {
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
   auto* execution_context = ExecutionContext::From(script_state);
   if (!execution_context || execution_context->IsContextDestroyed()) {
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
   auto* window = DynamicTo<LocalDOMWindow>(execution_context);
   if (!window) {
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   if (!value.has_value() || value.value().empty()) {
@@ -380,10 +380,10 @@ ScriptPromiseTyped<IDLUndefined> PreferenceObject::requestOverride(
   }
 
   if (new_value.empty()) {
-    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kTypeMismatchError,
-            value.value() + " is not a valid value."));
+                          DOMExceptionCode::kTypeMismatchError,
+                          value.value() + " is not a valid value."));
   }
 
   if (!value_same_as_existing_override) {

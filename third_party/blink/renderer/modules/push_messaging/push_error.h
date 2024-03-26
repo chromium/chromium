@@ -12,7 +12,7 @@
 
 namespace blink {
 
-class ScriptPromiseResolver;
+class ScriptPromiseResolverBase;
 
 class PushError {
   STATIC_ONLY(PushError);
@@ -20,7 +20,7 @@ class PushError {
  public:
   // For CallbackPromiseAdapter.
   using WebType = const mojom::PushErrorType;
-  static DOMException* Take(ScriptPromiseResolver* resolver,
+  static DOMException* Take(ScriptPromiseResolverBase* resolver,
                             mojom::PushErrorType error) {
     return CreateException(error);
   }

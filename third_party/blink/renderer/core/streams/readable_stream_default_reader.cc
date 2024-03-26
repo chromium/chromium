@@ -85,7 +85,7 @@ ReadableStreamDefaultReader::ReadableStreamDefaultReader(
 
 ReadableStreamDefaultReader::~ReadableStreamDefaultReader() = default;
 
-ScriptPromise ReadableStreamDefaultReader::read(
+ScriptPromiseUntyped ReadableStreamDefaultReader::read(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#default-reader-read
@@ -95,7 +95,7 @@ ScriptPromise ReadableStreamDefaultReader::read(
     exception_state.ThrowTypeError(
         "This readable stream reader has been released and cannot be used to "
         "read from its previous owner stream");
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
   // 2. Let promise be a new promise.
@@ -115,7 +115,7 @@ ScriptPromise ReadableStreamDefaultReader::read(
   Read(script_state, this, read_request, exception_state);
 
   // 5. Return promise.
-  return promise->GetScriptPromise(script_state);
+  return promise->GetScriptPromiseUntyped(script_state);
 }
 
 void ReadableStreamDefaultReader::Read(ScriptState* script_state,

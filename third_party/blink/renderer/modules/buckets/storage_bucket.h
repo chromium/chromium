@@ -41,18 +41,18 @@ class StorageBucket final : public ScriptWrappable,
   ~StorageBucket() override = default;
 
   const String& name();
-  ScriptPromiseTyped<IDLBoolean> persist(ScriptState*);
-  ScriptPromiseTyped<IDLBoolean> persisted(ScriptState*);
-  ScriptPromiseTyped<StorageEstimate> estimate(ScriptState*);
-  ScriptPromiseTyped<V8StorageBucketDurability> durability(ScriptState*);
-  ScriptPromiseTyped<IDLUndefined> setExpires(ScriptState*,
-                                              const DOMHighResTimeStamp&);
-  ScriptPromiseTyped<IDLNullable<IDLDOMHighResTimeStamp>> expires(ScriptState*);
+  ScriptPromise<IDLBoolean> persist(ScriptState*);
+  ScriptPromise<IDLBoolean> persisted(ScriptState*);
+  ScriptPromise<StorageEstimate> estimate(ScriptState*);
+  ScriptPromise<V8StorageBucketDurability> durability(ScriptState*);
+  ScriptPromise<IDLUndefined> setExpires(ScriptState*,
+                                         const DOMHighResTimeStamp&);
+  ScriptPromise<IDLNullable<IDLDOMHighResTimeStamp>> expires(ScriptState*);
   IDBFactory* indexedDB();
   LockManager* locks();
   CacheStorage* caches(ExceptionState&);
-  ScriptPromiseTyped<FileSystemDirectoryHandle> getDirectory(ScriptState*,
-                                                             ExceptionState&);
+  ScriptPromise<FileSystemDirectoryHandle> getDirectory(ScriptState*,
+                                                        ExceptionState&);
 
   void GetDirectoryForDevTools(
       ExecutionContext* context,
@@ -63,27 +63,27 @@ class StorageBucket final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
-  void DidRequestPersist(ScriptPromiseResolverTyped<IDLBoolean>* resolver,
+  void DidRequestPersist(ScriptPromiseResolver<IDLBoolean>* resolver,
                          bool persisted,
                          bool success);
-  void DidGetPersisted(ScriptPromiseResolverTyped<IDLBoolean>* resolver,
+  void DidGetPersisted(ScriptPromiseResolver<IDLBoolean>* resolver,
                        bool persisted,
                        bool success);
-  void DidGetEstimate(ScriptPromiseResolverTyped<StorageEstimate>*,
+  void DidGetEstimate(ScriptPromiseResolver<StorageEstimate>*,
                       int64_t current_usage,
                       int64_t current_quota,
                       bool success);
   void DidGetDurability(
-      ScriptPromiseResolverTyped<V8StorageBucketDurability>* resolver,
+      ScriptPromiseResolver<V8StorageBucketDurability>* resolver,
       mojom::blink::BucketDurability durability,
       bool success);
-  void DidSetExpires(ScriptPromiseResolverTyped<IDLUndefined>*, bool success);
+  void DidSetExpires(ScriptPromiseResolver<IDLUndefined>*, bool success);
   void DidGetExpires(
-      ScriptPromiseResolverTyped<IDLNullable<IDLDOMHighResTimeStamp>>* resolver,
+      ScriptPromiseResolver<IDLNullable<IDLDOMHighResTimeStamp>>* resolver,
       const std::optional<base::Time> expires,
       bool success);
   void GetSandboxedFileSystem(
-      ScriptPromiseResolverTyped<FileSystemDirectoryHandle>* resolver);
+      ScriptPromiseResolver<FileSystemDirectoryHandle>* resolver);
   void GetSandboxedFileSystemForDevtools(
       ExecutionContext* context,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,

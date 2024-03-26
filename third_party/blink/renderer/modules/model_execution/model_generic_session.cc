@@ -69,13 +69,13 @@ class ModelGenericSession::Responder final
       public blink::mojom::blink::ModelStreamingResponder {
  public:
   explicit Responder(ScriptState* script_state)
-      : resolver_(MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(
+      : resolver_(MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
             script_state)) {}
   ~Responder() override = default;
 
   void Trace(Visitor* visitor) const { visitor->Trace(resolver_); }
 
-  ScriptPromiseTyped<IDLString> GetPromise() { return resolver_->Promise(); }
+  ScriptPromise<IDLString> GetPromise() { return resolver_->Promise(); }
 
   // `blink::mojom::blink::ModelStreamingResponder` implementation.
   void OnResponse(mojom::blink::ModelStreamingResponseStatus status,
@@ -112,7 +112,7 @@ class ModelGenericSession::Responder final
   }
 
  private:
-  Member<ScriptPromiseResolverTyped<IDLString>> resolver_;
+  Member<ScriptPromiseResolver<IDLString>> resolver_;
   WTF::String response_;
   int response_callback_count_;
 };
@@ -134,15 +134,15 @@ class ModelGenericSession::StreamingResponder final
   }
 
   // `UnderlyingSourceBase` implementation.
-  ScriptPromise Pull(ScriptState* script_state,
-                     ExceptionState& exception_state) override {
-    return ScriptPromise::CastUndefined(script_state);
+  ScriptPromiseUntyped Pull(ScriptState* script_state,
+                            ExceptionState& exception_state) override {
+    return ScriptPromiseUntyped::CastUndefined(script_state);
   }
 
-  ScriptPromise Cancel(ScriptState* script_state,
-                       ScriptValue reason,
-                       ExceptionState& exception_state) override {
-    return ScriptPromise::CastUndefined(script_state);
+  ScriptPromiseUntyped Cancel(ScriptState* script_state,
+                              ScriptValue reason,
+                              ExceptionState& exception_state) override {
+    return ScriptPromiseUntyped::CastUndefined(script_state);
   }
 
   // `blink::mojom::blink::ModelStreamingResponder` implementation.
@@ -206,14 +206,14 @@ ModelGenericSession::GetModelSessionReceiver() {
   return model_session_remote_.BindNewPipeAndPassReceiver(task_runner_);
 }
 
-ScriptPromiseTyped<IDLString> ModelGenericSession::execute(
+ScriptPromise<IDLString> ModelGenericSession::execute(
     ScriptState* script_state,
     const WTF::String& input,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
-    return ScriptPromiseTyped<IDLString>();
+    return ScriptPromise<IDLString>();
   }
 
   base::UmaHistogramEnumeration(

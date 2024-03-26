@@ -41,14 +41,14 @@ class ModelManager final : public ScriptWrappable,
   void Trace(Visitor* visitor) const override;
 
   // model_manager.idl implementation.
-  ScriptPromiseTyped<V8GenericModelAvailability> canCreateGenericSession(
+  ScriptPromise<V8GenericModelAvailability> canCreateGenericSession(
       ScriptState* script_state,
       ExceptionState& exception_state);
-  ScriptPromiseTyped<ModelGenericSession> createGenericSession(
+  ScriptPromise<ModelGenericSession> createGenericSession(
       ScriptState* script_state,
       ModelGenericSessionOptions* options,
       ExceptionState& exception_state);
-  ScriptPromiseTyped<ModelGenericSessionOptions> defaultGenericSessionOptions(
+  ScriptPromise<ModelGenericSessionOptions> defaultGenericSessionOptions(
       ScriptState* script_state,
       ExceptionState& exception_state);
 

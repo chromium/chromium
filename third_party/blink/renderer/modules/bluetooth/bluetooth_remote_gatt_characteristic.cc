@@ -90,7 +90,7 @@ void BluetoothRemoteGATTCharacteristic::AddedEventListener(
 }
 
 void BluetoothRemoteGATTCharacteristic::ReadValueCallback(
-    ScriptPromiseResolverTyped<NotShared<DOMDataView>>* resolver,
+    ScriptPromiseResolver<NotShared<DOMDataView>>* resolver,
     mojom::blink::WebBluetoothResult result,
     const std::optional<Vector<uint8_t>>& value) {
   if (!resolver->GetExecutionContext() ||
@@ -125,7 +125,7 @@ void BluetoothRemoteGATTCharacteristic::ReadValueCallback(
   }
 }
 
-ScriptPromiseTyped<NotShared<DOMDataView>>
+ScriptPromise<NotShared<DOMDataView>>
 BluetoothRemoteGATTCharacteristic::readValue(ScriptState* script_state,
                                              ExceptionState& exception_state) {
   if (!GetGatt()->connected() || !GetBluetooth()->IsServiceBound()) {
@@ -133,7 +133,7 @@ BluetoothRemoteGATTCharacteristic::readValue(ScriptState* script_state,
         DOMExceptionCode::kNetworkError,
         BluetoothError::CreateNotConnectedExceptionMessage(
             BluetoothOperation::kGATT));
-    return ScriptPromiseTyped<NotShared<DOMDataView>>();
+    return ScriptPromise<NotShared<DOMDataView>>();
   }
 
   if (!GetGatt()->device()->IsValidCharacteristic(
@@ -141,11 +141,11 @@ BluetoothRemoteGATTCharacteristic::readValue(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         CreateInvalidCharacteristicErrorMessage());
-    return ScriptPromiseTyped<NotShared<DOMDataView>>();
+    return ScriptPromise<NotShared<DOMDataView>>();
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<NotShared<DOMDataView>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<NotShared<DOMDataView>>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   GetGatt()->AddToActiveAlgorithms(resolver);
@@ -160,7 +160,7 @@ BluetoothRemoteGATTCharacteristic::readValue(ScriptState* script_state,
 }
 
 void BluetoothRemoteGATTCharacteristic::WriteValueCallback(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     const Vector<uint8_t>& value,
     mojom::blink::WebBluetoothResult result) {
   if (!resolver->GetExecutionContext() ||
@@ -182,7 +182,7 @@ void BluetoothRemoteGATTCharacteristic::WriteValueCallback(
   }
 }
 
-ScriptPromiseTyped<IDLUndefined>
+ScriptPromise<IDLUndefined>
 BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
     ScriptState* script_state,
     const DOMArrayPiece& value,
@@ -193,7 +193,7 @@ BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
         DOMExceptionCode::kNetworkError,
         BluetoothError::CreateNotConnectedExceptionMessage(
             BluetoothOperation::kGATT));
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   if (!GetGatt()->device()->IsValidCharacteristic(
@@ -201,13 +201,13 @@ BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         CreateInvalidCharacteristicErrorMessage());
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   if (value.IsDetached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Value buffer has been detached.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   // Partial implementation of writeValue algorithm:
@@ -220,7 +220,7 @@ BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
         "Value can't exceed 512 bytes.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   // Let valueVector be a copy of the bytes held by value.
@@ -228,9 +228,8 @@ BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
   value_vector.Append(value.Bytes(),
                       static_cast<wtf_size_t>(value.ByteLength()));
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   GetGatt()->AddToActiveAlgorithms(resolver);
 
@@ -244,7 +243,7 @@ BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
   return promise;
 }
 
-ScriptPromiseTyped<IDLUndefined> BluetoothRemoteGATTCharacteristic::writeValue(
+ScriptPromise<IDLUndefined> BluetoothRemoteGATTCharacteristic::writeValue(
     ScriptState* script_state,
     const DOMArrayPiece& value,
     ExceptionState& exception_state) {
@@ -254,7 +253,7 @@ ScriptPromiseTyped<IDLUndefined> BluetoothRemoteGATTCharacteristic::writeValue(
       exception_state);
 }
 
-ScriptPromiseTyped<IDLUndefined>
+ScriptPromise<IDLUndefined>
 BluetoothRemoteGATTCharacteristic::writeValueWithResponse(
     ScriptState* script_state,
     const DOMArrayPiece& value,
@@ -264,7 +263,7 @@ BluetoothRemoteGATTCharacteristic::writeValueWithResponse(
       mojom::blink::WebBluetoothWriteType::kWriteWithResponse, exception_state);
 }
 
-ScriptPromiseTyped<IDLUndefined>
+ScriptPromise<IDLUndefined>
 BluetoothRemoteGATTCharacteristic::writeValueWithoutResponse(
     ScriptState* script_state,
     const DOMArrayPiece& value,
@@ -276,7 +275,7 @@ BluetoothRemoteGATTCharacteristic::writeValueWithoutResponse(
 }
 
 void BluetoothRemoteGATTCharacteristic::NotificationsCallback(
-    ScriptPromiseResolverTyped<BluetoothRemoteGATTCharacteristic>* resolver,
+    ScriptPromiseResolver<BluetoothRemoteGATTCharacteristic>* resolver,
     bool started,
     mojom::blink::WebBluetoothResult result) {
   if (started) {
@@ -324,7 +323,7 @@ void BluetoothRemoteGATTCharacteristic::NotificationsCallback(
   }
 }
 
-ScriptPromiseTyped<BluetoothRemoteGATTCharacteristic>
+ScriptPromise<BluetoothRemoteGATTCharacteristic>
 BluetoothRemoteGATTCharacteristic::startNotifications(
     ScriptState* script_state,
     ExceptionState& exception_state) {
@@ -333,7 +332,7 @@ BluetoothRemoteGATTCharacteristic::startNotifications(
         DOMExceptionCode::kNetworkError,
         BluetoothError::CreateNotConnectedExceptionMessage(
             BluetoothOperation::kGATT));
-    return ScriptPromiseTyped<BluetoothRemoteGATTCharacteristic>();
+    return ScriptPromise<BluetoothRemoteGATTCharacteristic>();
   }
 
   if (!GetGatt()->device()->IsValidCharacteristic(
@@ -341,11 +340,11 @@ BluetoothRemoteGATTCharacteristic::startNotifications(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         CreateInvalidCharacteristicErrorMessage());
-    return ScriptPromiseTyped<BluetoothRemoteGATTCharacteristic>();
+    return ScriptPromise<BluetoothRemoteGATTCharacteristic>();
   }
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<BluetoothRemoteGATTCharacteristic>>(
+      ScriptPromiseResolver<BluetoothRemoteGATTCharacteristic>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   GetGatt()->AddToActiveAlgorithms(resolver);
@@ -368,7 +367,7 @@ BluetoothRemoteGATTCharacteristic::startNotifications(
   return promise;
 }
 
-ScriptPromiseTyped<BluetoothRemoteGATTCharacteristic>
+ScriptPromise<BluetoothRemoteGATTCharacteristic>
 BluetoothRemoteGATTCharacteristic::stopNotifications(
     ScriptState* script_state,
     ExceptionState& exception_state) {
@@ -377,7 +376,7 @@ BluetoothRemoteGATTCharacteristic::stopNotifications(
         DOMExceptionCode::kNetworkError,
         BluetoothError::CreateNotConnectedExceptionMessage(
             BluetoothOperation::kGATT));
-    return ScriptPromiseTyped<BluetoothRemoteGATTCharacteristic>();
+    return ScriptPromise<BluetoothRemoteGATTCharacteristic>();
   }
 
   if (!GetGatt()->device()->IsValidCharacteristic(
@@ -385,11 +384,11 @@ BluetoothRemoteGATTCharacteristic::stopNotifications(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         CreateInvalidCharacteristicErrorMessage());
-    return ScriptPromiseTyped<BluetoothRemoteGATTCharacteristic>();
+    return ScriptPromise<BluetoothRemoteGATTCharacteristic>();
   }
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<BluetoothRemoteGATTCharacteristic>>(
+      ScriptPromiseResolver<BluetoothRemoteGATTCharacteristic>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   GetGatt()->AddToActiveAlgorithms(resolver);
@@ -404,7 +403,7 @@ BluetoothRemoteGATTCharacteristic::stopNotifications(
   return promise;
 }
 
-ScriptPromiseTyped<BluetoothRemoteGATTDescriptor>
+ScriptPromise<BluetoothRemoteGATTDescriptor>
 BluetoothRemoteGATTCharacteristic::getDescriptor(
     ScriptState* script_state,
     const V8BluetoothDescriptorUUID* descriptor_uuid,
@@ -412,10 +411,10 @@ BluetoothRemoteGATTCharacteristic::getDescriptor(
   String descriptor =
       BluetoothUUID::getDescriptor(descriptor_uuid, exception_state);
   if (exception_state.HadException())
-    return ScriptPromiseTyped<BluetoothRemoteGATTDescriptor>();
+    return ScriptPromise<BluetoothRemoteGATTDescriptor>();
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<BluetoothRemoteGATTDescriptor>>(
+      ScriptPromiseResolver<BluetoothRemoteGATTDescriptor>>(
       script_state, exception_state.GetContext());
   GetDescriptorsImpl(resolver, exception_state,
                      mojom::blink::WebBluetoothGATTQueryQuantity::SINGLE,
@@ -423,19 +422,19 @@ BluetoothRemoteGATTCharacteristic::getDescriptor(
   return resolver->Promise();
 }
 
-ScriptPromiseTyped<IDLSequence<BluetoothRemoteGATTDescriptor>>
+ScriptPromise<IDLSequence<BluetoothRemoteGATTDescriptor>>
 BluetoothRemoteGATTCharacteristic::getDescriptors(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<BluetoothRemoteGATTDescriptor>>>(
+      ScriptPromiseResolver<IDLSequence<BluetoothRemoteGATTDescriptor>>>(
       script_state, exception_state.GetContext());
   GetDescriptorsImpl(resolver, exception_state,
                      mojom::blink::WebBluetoothGATTQueryQuantity::MULTIPLE);
   return resolver->Promise();
 }
 
-ScriptPromiseTyped<IDLSequence<BluetoothRemoteGATTDescriptor>>
+ScriptPromise<IDLSequence<BluetoothRemoteGATTDescriptor>>
 BluetoothRemoteGATTCharacteristic::getDescriptors(
     ScriptState* script_state,
     const V8BluetoothDescriptorUUID* descriptor_uuid,
@@ -443,10 +442,10 @@ BluetoothRemoteGATTCharacteristic::getDescriptors(
   String descriptor =
       BluetoothUUID::getDescriptor(descriptor_uuid, exception_state);
   if (exception_state.HadException())
-    return ScriptPromiseTyped<IDLSequence<BluetoothRemoteGATTDescriptor>>();
+    return ScriptPromise<IDLSequence<BluetoothRemoteGATTDescriptor>>();
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<BluetoothRemoteGATTDescriptor>>>(
+      ScriptPromiseResolver<IDLSequence<BluetoothRemoteGATTDescriptor>>>(
       script_state, exception_state.GetContext());
   GetDescriptorsImpl(resolver, exception_state,
                      mojom::blink::WebBluetoothGATTQueryQuantity::MULTIPLE,
@@ -455,7 +454,7 @@ BluetoothRemoteGATTCharacteristic::getDescriptors(
 }
 
 void BluetoothRemoteGATTCharacteristic::GetDescriptorsImpl(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     ExceptionState& exception_state,
     mojom::blink::WebBluetoothGATTQueryQuantity quantity,
     const String& descriptors_uuid) {
@@ -492,7 +491,7 @@ void BluetoothRemoteGATTCharacteristic::GetDescriptorsCallback(
     const String& requested_descriptor_uuid,
     const String& characteristic_instance_id,
     mojom::blink::WebBluetoothGATTQueryQuantity quantity,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     mojom::blink::WebBluetoothResult result,
     std::optional<Vector<mojom::blink::WebBluetoothRemoteGATTDescriptorPtr>>
         descriptors) {

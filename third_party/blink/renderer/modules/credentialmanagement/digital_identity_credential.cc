@@ -51,13 +51,12 @@ void AbortRequest(ScriptState* script_state) {
   CredentialManagerProxy::From(script_state)->DigitalIdentityRequest()->Abort();
 }
 
-void OnCompleteRequest(
-    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
-    std::unique_ptr<ScopedAbortState> scoped_abort_state,
-    const WTF::String& protocol,
-    bool should_return_digital_credential,
-    RequestDigitalIdentityStatus status,
-    const WTF::String& token) {
+void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
+                       std::unique_ptr<ScopedAbortState> scoped_abort_state,
+                       const WTF::String& protocol,
+                       bool should_return_digital_credential,
+                       RequestDigitalIdentityStatus status,
+                       const WTF::String& token) {
   switch (status) {
     case RequestDigitalIdentityStatus::kErrorTooManyRequests: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -110,10 +109,10 @@ bool IsDigitalIdentityCredentialType(const CredentialRequestOptions& options) {
   return options.hasDigital();
 }
 
-ScriptPromiseTyped<IDLNullable<Credential>>
+ScriptPromise<IDLNullable<Credential>>
 DiscoverDigitalIdentityCredentialFromExternalSource(
     ScriptState* script_state,
-    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
+    ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     const CredentialRequestOptions& options,
     ExceptionState& exception_state) {
   CHECK(IsDigitalIdentityCredentialType(options));
@@ -140,7 +139,7 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
     exception_state.ThrowTypeError(
         "Digital identity API needs at least one provider.");
     resolver->Detach();
-    return ScriptPromiseTyped<IDLNullable<Credential>>();
+    return ScriptPromise<IDLNullable<Credential>>();
   }
 
   // TODO(https://crbug.com/1416939): make sure the Digital Credentials
@@ -150,7 +149,7 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
         "Digital identity API currently does not support multiple "
         "providers.");
     resolver->Detach();
-    return ScriptPromiseTyped<IDLNullable<Credential>>();
+    return ScriptPromise<IDLNullable<Credential>>();
   }
 
   if (!IsSameSecurityOriginWithAncestors(
@@ -160,7 +159,7 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
         "The digital identity credential can only be requested in a "
         "document which is same-origin with all of its ancestors.");
     resolver->Detach();
-    return ScriptPromiseTyped<IDLNullable<Credential>>();
+    return ScriptPromise<IDLNullable<Credential>>();
   }
 
   UseCounter::Count(resolver->GetExecutionContext(),

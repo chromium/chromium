@@ -150,25 +150,25 @@ class MODULES_EXPORT BaseAudioContext
                             ExceptionState&);
 
   // Asynchronous audio file data decoding.
-  ScriptPromiseTyped<AudioBuffer> decodeAudioData(ScriptState*,
-                                                  DOMArrayBuffer* audio_data,
-                                                  V8DecodeSuccessCallback*,
-                                                  V8DecodeErrorCallback*,
-                                                  ExceptionState&);
+  ScriptPromise<AudioBuffer> decodeAudioData(ScriptState*,
+                                             DOMArrayBuffer* audio_data,
+                                             V8DecodeSuccessCallback*,
+                                             V8DecodeErrorCallback*,
+                                             ExceptionState&);
 
-  ScriptPromiseTyped<AudioBuffer> decodeAudioData(ScriptState*,
-                                                  DOMArrayBuffer* audio_data,
-                                                  ExceptionState&);
+  ScriptPromise<AudioBuffer> decodeAudioData(ScriptState*,
+                                             DOMArrayBuffer* audio_data,
+                                             ExceptionState&);
 
-  ScriptPromiseTyped<AudioBuffer> decodeAudioData(ScriptState*,
-                                                  DOMArrayBuffer* audio_data,
-                                                  V8DecodeSuccessCallback*,
-                                                  ExceptionState&);
+  ScriptPromise<AudioBuffer> decodeAudioData(ScriptState*,
+                                             DOMArrayBuffer* audio_data,
+                                             V8DecodeSuccessCallback*,
+                                             ExceptionState&);
 
   // Handles the promise and callbacks when `.decodeAudioData()` is finished
   // decoding.
   void HandleDecodeAudioData(AudioBuffer*,
-                             ScriptPromiseResolverTyped<AudioBuffer>*,
+                             ScriptPromiseResolver<AudioBuffer>*,
                              V8DecodeSuccessCallback*,
                              V8DecodeErrorCallback*,
                              ExceptionContext);
@@ -359,8 +359,7 @@ class MODULES_EXPORT BaseAudioContext
   // it creates these Promises.
   // Vector of promises created by resume(). It takes time to handle them, so we
   // collect all of the promises here until they can be resolved or rejected.
-  HeapVector<Member<ScriptPromiseResolverTyped<IDLUndefined>>>
-      resume_resolvers_;
+  HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>> resume_resolvers_;
 
   void RejectPendingDecodeAudioDataResolvers();
 
@@ -419,7 +418,7 @@ class MODULES_EXPORT BaseAudioContext
   // Vector of promises created by decodeAudioData.  This keeps the resolvers
   // alive until decodeAudioData finishes decoding and can tell the main thread
   // to resolve them.
-  HeapHashSet<Member<ScriptPromiseResolver>> decode_audio_resolvers_;
+  HeapHashSet<Member<ScriptPromiseResolverBase>> decode_audio_resolvers_;
 
   // PeriodicWave's for the builtin oscillator types.  These only depend on the
   // sample rate. so they can be shared with all OscillatorNodes in the context.

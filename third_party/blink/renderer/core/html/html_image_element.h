@@ -118,7 +118,7 @@ class CORE_EXPORT HTMLImageElement final
   int x() const;
   int y() const;
 
-  ScriptPromiseTyped<IDLUndefined> decode(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> decode(ScriptState*, ExceptionState&);
 
   bool complete() const;
 

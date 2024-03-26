@@ -46,7 +46,7 @@ class MODULES_EXPORT SmartCardResourceManager final
   void Trace(Visitor*) const override;
 
   // SmartCardResourceManager idl
-  ScriptPromiseTyped<SmartCardContext> establishContext(
+  ScriptPromise<SmartCardContext> establishContext(
       ScriptState* script_state,
       ExceptionState& exception_state);
 
@@ -55,11 +55,11 @@ class MODULES_EXPORT SmartCardResourceManager final
   void CloseServiceConnection();
 
   void OnCreateContextDone(
-      ScriptPromiseResolverTyped<SmartCardContext>*,
+      ScriptPromiseResolver<SmartCardContext>*,
       device::mojom::blink::SmartCardCreateContextResultPtr);
 
   HeapMojoRemote<mojom::blink::SmartCardService> service_;
-  HeapHashSet<Member<ScriptPromiseResolverTyped<SmartCardContext>>>
+  HeapHashSet<Member<ScriptPromiseResolver<SmartCardContext>>>
       create_context_promises_;
 };
 

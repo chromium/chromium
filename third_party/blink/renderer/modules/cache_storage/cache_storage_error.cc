@@ -45,7 +45,7 @@ String GetDefaultMessage(mojom::CacheStorageError web_error) {
 
 }  // namespace
 
-void RejectCacheStorageWithError(ScriptPromiseResolver* resolver,
+void RejectCacheStorageWithError(ScriptPromiseResolverBase* resolver,
                                  mojom::blink::CacheStorageError web_error,
                                  const String& message) {
   String final_message =

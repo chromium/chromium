@@ -195,7 +195,7 @@ void BrowserCaptureMediaStreamTrack::SetZoomLevel(
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-ScriptPromiseTyped<IDLUndefined> BrowserCaptureMediaStreamTrack::cropTo(
+ScriptPromise<IDLUndefined> BrowserCaptureMediaStreamTrack::cropTo(
     ScriptState* script_state,
     CropTarget* target,
     ExceptionState& exception_state) {
@@ -205,7 +205,7 @@ ScriptPromiseTyped<IDLUndefined> BrowserCaptureMediaStreamTrack::cropTo(
                                exception_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> BrowserCaptureMediaStreamTrack::restrictTo(
+ScriptPromise<IDLUndefined> BrowserCaptureMediaStreamTrack::restrictTo(
     ScriptState* script_state,
     RestrictionTarget* target,
     ExceptionState& exception_state) {
@@ -229,7 +229,7 @@ BrowserCaptureMediaStreamTrack* BrowserCaptureMediaStreamTrack::clone(
   return cloned_track;
 }
 
-ScriptPromiseTyped<IDLUndefined>
+ScriptPromise<IDLUndefined>
 BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
     ScriptState* script_state,
     SubCaptureTarget::Type type,

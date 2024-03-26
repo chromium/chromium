@@ -41,7 +41,7 @@ const size_t kMaxTypeLength = 4096;
 static const char kPaymentManagerUnavailable[] = "Payment manager unavailable";
 
 template <typename IDLType>
-bool rejectError(ScriptPromiseResolverTyped<IDLType>* resolver,
+bool rejectError(ScriptPromiseResolver<IDLType>* resolver,
                  payments::mojom::blink::PaymentHandlerStatus status) {
   switch (status) {
     case payments::mojom::blink::PaymentHandlerStatus::SUCCESS:
@@ -89,11 +89,11 @@ void ThrowNotAllowedToUsePaymentFeatures(ExceptionState& exception_state) {
       "allow=\"payment\" explicitly");
 }
 
-ScriptPromiseTyped<IDLUndefined> RejectNotAllowedToUsePaymentFeatures(
+ScriptPromise<IDLUndefined> RejectNotAllowedToUsePaymentFeatures(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   ThrowNotAllowedToUsePaymentFeatures(exception_state);
-  return ScriptPromiseTyped<IDLUndefined>();
+  return ScriptPromise<IDLUndefined>();
 }
 
 }  // namespace
@@ -103,22 +103,22 @@ PaymentInstruments::PaymentInstruments(
     ExecutionContext* context)
     : manager_(manager), permission_service_(context) {}
 
-ScriptPromiseTyped<IDLBoolean> PaymentInstruments::deleteInstrument(
+ScriptPromise<IDLBoolean> PaymentInstruments::deleteInstrument(
     ScriptState* script_state,
     const String& instrument_key,
     ExceptionState& exception_state) {
   if (!AllowedToUsePaymentFeatures(script_state)) {
     ThrowNotAllowedToUsePaymentFeatures(exception_state);
-    return ScriptPromiseTyped<IDLBoolean>();
+    return ScriptPromise<IDLBoolean>();
   }
 
   if (!manager_->is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
-    return ScriptPromiseTyped<IDLBoolean>();
+    return ScriptPromise<IDLBoolean>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -129,22 +129,21 @@ ScriptPromiseTyped<IDLBoolean> PaymentInstruments::deleteInstrument(
   return promise;
 }
 
-ScriptPromiseTyped<IDLAny> PaymentInstruments::get(
-    ScriptState* script_state,
-    const String& instrument_key,
-    ExceptionState& exception_state) {
+ScriptPromise<IDLAny> PaymentInstruments::get(ScriptState* script_state,
+                                              const String& instrument_key,
+                                              ExceptionState& exception_state) {
   if (!AllowedToUsePaymentFeatures(script_state)) {
     ThrowNotAllowedToUsePaymentFeatures(exception_state);
-    return ScriptPromiseTyped<IDLAny>();
+    return ScriptPromise<IDLAny>();
   }
 
   if (!manager_->is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
-    return ScriptPromiseTyped<IDLAny>();
+    return ScriptPromise<IDLAny>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -155,22 +154,22 @@ ScriptPromiseTyped<IDLAny> PaymentInstruments::get(
   return promise;
 }
 
-ScriptPromiseTyped<IDLSequence<IDLString>> PaymentInstruments::keys(
+ScriptPromise<IDLSequence<IDLString>> PaymentInstruments::keys(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!AllowedToUsePaymentFeatures(script_state)) {
     ThrowNotAllowedToUsePaymentFeatures(exception_state);
-    return ScriptPromiseTyped<IDLSequence<IDLString>>();
+    return ScriptPromise<IDLSequence<IDLString>>();
   }
 
   if (!manager_->is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
-    return ScriptPromiseTyped<IDLSequence<IDLString>>();
+    return ScriptPromise<IDLSequence<IDLString>>();
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<IDLString>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<IDLString>>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -180,22 +179,22 @@ ScriptPromiseTyped<IDLSequence<IDLString>> PaymentInstruments::keys(
   return promise;
 }
 
-ScriptPromiseTyped<IDLBoolean> PaymentInstruments::has(
+ScriptPromise<IDLBoolean> PaymentInstruments::has(
     ScriptState* script_state,
     const String& instrument_key,
     ExceptionState& exception_state) {
   if (!AllowedToUsePaymentFeatures(script_state)) {
     ThrowNotAllowedToUsePaymentFeatures(exception_state);
-    return ScriptPromiseTyped<IDLBoolean>();
+    return ScriptPromise<IDLBoolean>();
   }
 
   if (!manager_->is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
-    return ScriptPromiseTyped<IDLBoolean>();
+    return ScriptPromise<IDLBoolean>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -206,7 +205,7 @@ ScriptPromiseTyped<IDLBoolean> PaymentInstruments::has(
   return promise;
 }
 
-ScriptPromiseTyped<IDLUndefined> PaymentInstruments::set(
+ScriptPromise<IDLUndefined> PaymentInstruments::set(
     ScriptState* script_state,
     const String& instrument_key,
     const PaymentInstrument* details,
@@ -217,12 +216,11 @@ ScriptPromiseTyped<IDLUndefined> PaymentInstruments::set(
   if (!manager_->is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
 
   // TODO(crbug.com/1311953): A service worker can get here without a frame to
   // check for a user gesture. We should consider either removing the user
@@ -245,7 +243,7 @@ ScriptPromiseTyped<IDLUndefined> PaymentInstruments::set(
   return resolver->Promise();
 }
 
-ScriptPromiseTyped<IDLUndefined> PaymentInstruments::clear(
+ScriptPromise<IDLUndefined> PaymentInstruments::clear(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!AllowedToUsePaymentFeatures(script_state))
@@ -254,12 +252,11 @@ ScriptPromiseTyped<IDLUndefined> PaymentInstruments::clear(
   if (!manager_->is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   (*manager_)->ClearPaymentInstruments(
@@ -286,7 +283,7 @@ mojom::blink::PermissionService* PaymentInstruments::GetPermissionService(
 }
 
 void PaymentInstruments::OnRequestPermission(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     const String& instrument_key,
     const PaymentInstrument* details,
     mojom::blink::PermissionStatus status) {
@@ -348,7 +345,7 @@ void PaymentInstruments::OnRequestPermission(
 }
 
 void PaymentInstruments::onDeletePaymentInstrument(
-    ScriptPromiseResolverTyped<IDLBoolean>* resolver,
+    ScriptPromiseResolver<IDLBoolean>* resolver,
     payments::mojom::blink::PaymentHandlerStatus status) {
   DCHECK(resolver);
   resolver->Resolve(status ==
@@ -356,7 +353,7 @@ void PaymentInstruments::onDeletePaymentInstrument(
 }
 
 void PaymentInstruments::onGetPaymentInstrument(
-    ScriptPromiseResolverTyped<IDLAny>* resolver,
+    ScriptPromiseResolver<IDLAny>* resolver,
     payments::mojom::blink::PaymentInstrumentPtr stored_instrument,
     payments::mojom::blink::PaymentHandlerStatus status) {
   DCHECK(resolver);
@@ -391,7 +388,7 @@ void PaymentInstruments::onGetPaymentInstrument(
 }
 
 void PaymentInstruments::onKeysOfPaymentInstruments(
-    ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
+    ScriptPromiseResolver<IDLSequence<IDLString>>* resolver,
     const Vector<String>& keys,
     payments::mojom::blink::PaymentHandlerStatus status) {
   DCHECK(resolver);
@@ -401,7 +398,7 @@ void PaymentInstruments::onKeysOfPaymentInstruments(
 }
 
 void PaymentInstruments::onHasPaymentInstrument(
-    ScriptPromiseResolverTyped<IDLBoolean>* resolver,
+    ScriptPromiseResolver<IDLBoolean>* resolver,
     payments::mojom::blink::PaymentHandlerStatus status) {
   DCHECK(resolver);
   resolver->Resolve(status ==
@@ -409,7 +406,7 @@ void PaymentInstruments::onHasPaymentInstrument(
 }
 
 void PaymentInstruments::onSetPaymentInstrument(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     payments::mojom::blink::PaymentHandlerStatus status) {
   DCHECK(resolver);
   if (rejectError(resolver, status))
@@ -418,7 +415,7 @@ void PaymentInstruments::onSetPaymentInstrument(
 }
 
 void PaymentInstruments::onClearPaymentInstruments(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     payments::mojom::blink::PaymentHandlerStatus status) {
   DCHECK(resolver);
   if (rejectError(resolver, status))

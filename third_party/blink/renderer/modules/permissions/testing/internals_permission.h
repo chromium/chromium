@@ -23,12 +23,11 @@ class InternalsPermission {
   STATIC_ONLY(InternalsPermission);
 
  public:
-  static ScriptPromiseTyped<IDLUndefined> setPermission(
-      ScriptState*,
-      Internals&,
-      const ScriptValue&,
-      const WTF::String& state,
-      ExceptionState&);
+  static ScriptPromise<IDLUndefined> setPermission(ScriptState*,
+                                                   Internals&,
+                                                   const ScriptValue&,
+                                                   const WTF::String& state,
+                                                   ExceptionState&);
 };
 
 }  // namespace blink

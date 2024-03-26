@@ -133,10 +133,10 @@ ExecutionContext* BackgroundFetchRegistration::GetExecutionContext() const {
   return registration_->GetExecutionContext();
 }
 
-ScriptPromiseTyped<IDLBoolean> BackgroundFetchRegistration::abort(
+ScriptPromise<IDLBoolean> BackgroundFetchRegistration::abort(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -150,13 +150,13 @@ ScriptPromiseTyped<IDLBoolean> BackgroundFetchRegistration::abort(
   return promise;
 }
 
-ScriptPromiseTyped<BackgroundFetchRecord> BackgroundFetchRegistration::match(
+ScriptPromise<BackgroundFetchRecord> BackgroundFetchRegistration::match(
     ScriptState* script_state,
     const V8RequestInfo* request,
     const CacheQueryOptions* options,
     ExceptionState& exception_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<BackgroundFetchRecord>>(
+      MakeGarbageCollected<ScriptPromiseResolver<BackgroundFetchRecord>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   MatchImpl(script_state, resolver, request,
@@ -165,11 +165,11 @@ ScriptPromiseTyped<BackgroundFetchRecord> BackgroundFetchRegistration::match(
   return promise;
 }
 
-ScriptPromiseTyped<IDLSequence<BackgroundFetchRecord>>
+ScriptPromise<IDLSequence<BackgroundFetchRecord>>
 BackgroundFetchRegistration::matchAll(ScriptState* script_state,
                                       ExceptionState& exception_state) {
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<BackgroundFetchRecord>>>(
+      ScriptPromiseResolver<IDLSequence<BackgroundFetchRecord>>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   MatchImpl(script_state, resolver, /* request = */ nullptr,
@@ -178,13 +178,13 @@ BackgroundFetchRegistration::matchAll(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromiseTyped<IDLSequence<BackgroundFetchRecord>>
+ScriptPromise<IDLSequence<BackgroundFetchRecord>>
 BackgroundFetchRegistration::matchAll(ScriptState* script_state,
                                       const V8RequestInfo* request,
                                       const CacheQueryOptions* options,
                                       ExceptionState& exception_state) {
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<BackgroundFetchRecord>>>(
+      ScriptPromiseResolver<IDLSequence<BackgroundFetchRecord>>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   MatchImpl(script_state, resolver, request,
@@ -195,7 +195,7 @@ BackgroundFetchRegistration::matchAll(ScriptState* script_state,
 
 void BackgroundFetchRegistration::MatchImpl(
     ScriptState* script_state,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     const V8RequestInfo* request,
     mojom::blink::CacheQueryOptionsPtr cache_query_options,
     ExceptionState& exception_state,
@@ -237,7 +237,7 @@ void BackgroundFetchRegistration::MatchImpl(
 }
 
 void BackgroundFetchRegistration::DidGetMatchingRequests(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     bool return_all,
     Vector<mojom::blink::BackgroundFetchSettledFetchPtr> settled_fetches) {
   DCHECK(resolver);
@@ -313,7 +313,7 @@ bool BackgroundFetchRegistration::IsAborted() {
 }
 
 void BackgroundFetchRegistration::DidAbort(
-    ScriptPromiseResolverTyped<IDLBoolean>* resolver,
+    ScriptPromiseResolver<IDLBoolean>* resolver,
     mojom::blink::BackgroundFetchError error) {
   switch (error) {
     case mojom::blink::BackgroundFetchError::NONE:

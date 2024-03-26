@@ -119,7 +119,7 @@ MediaStreamVideoTrackUnderlyingSink::MediaStreamVideoTrackUnderlyingSink(
 MediaStreamVideoTrackUnderlyingSink::~MediaStreamVideoTrackUnderlyingSink() =
     default;
 
-ScriptPromiseTyped<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::start(
+ScriptPromise<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::start(
     ScriptState* script_state,
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
@@ -129,7 +129,7 @@ ScriptPromiseTyped<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::start(
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::write(
+ScriptPromise<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::write(
     ScriptState* script_state,
     ScriptValue chunk,
     WritableStreamDefaultController* controller,
@@ -139,13 +139,13 @@ ScriptPromiseTyped<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::write(
       V8VideoFrame::ToWrappable(script_state->GetIsolate(), chunk.V8Value());
   if (!video_frame) {
     exception_state.ThrowTypeError("Null video frame.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   auto media_frame = video_frame->frame();
   if (!media_frame) {
     exception_state.ThrowTypeError("Empty video frame.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
   // Invalidate the JS |video_frame|. Otherwise, the media frames might not be
   // released, which would leak resources and also cause some MediaStream
@@ -155,7 +155,7 @@ ScriptPromiseTyped<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::write(
   if (!source_broker_->IsRunning()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Stream closed");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   base::TimeTicks estimated_capture_time = base::TimeTicks::Now();
@@ -176,7 +176,7 @@ ScriptPromiseTyped<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::write(
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::abort(
+ScriptPromise<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::abort(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {
@@ -185,7 +185,7 @@ ScriptPromiseTyped<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::abort(
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::close(
+ScriptPromise<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::close(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -224,7 +224,7 @@ void MediaStreamVideoTrackUnderlyingSink::CreateAcceleratedFramePool(
   }
 }
 
-std::optional<ScriptPromiseTyped<IDLUndefined>>
+std::optional<ScriptPromise<IDLUndefined>>
 MediaStreamVideoTrackUnderlyingSink::MaybeConvertToNV12GMBVideoFrame(
     ScriptState* script_state,
     scoped_refptr<media::VideoFrame> video_frame,
@@ -271,8 +271,7 @@ MediaStreamVideoTrackUnderlyingSink::MaybeConvertToNV12GMBVideoFrame(
   DCHECK(accelerated_frame_pool_);
 
   auto resolver = WrapPersistent(
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state));
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state));
   auto convert_done_callback = WTF::BindOnce(
       &MediaStreamVideoTrackUnderlyingSink::ConvertDone, WrapPersistent(this),
       resolver, video_frame, estimated_capture_time);
@@ -290,7 +289,7 @@ MediaStreamVideoTrackUnderlyingSink::MaybeConvertToNV12GMBVideoFrame(
 }
 
 void MediaStreamVideoTrackUnderlyingSink::ConvertDone(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     scoped_refptr<media::VideoFrame> orig_video_frame,
     base::TimeTicks estimated_capture_time,
     scoped_refptr<media::VideoFrame> converted_video_frame) {

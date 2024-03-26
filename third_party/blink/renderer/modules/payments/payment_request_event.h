@@ -70,21 +70,21 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
   std::optional<HeapVector<Member<PaymentShippingOption>>> shippingOptions()
       const;
 
-  ScriptPromiseTyped<IDLNullable<ServiceWorkerWindowClient>> openWindow(
+  ScriptPromise<IDLNullable<ServiceWorkerWindowClient>> openWindow(
       ScriptState*,
       const String& url);
-  ScriptPromiseTyped<IDLNullable<PaymentRequestDetailsUpdate>>
-  changePaymentMethod(ScriptState*,
-                      const String& method_name,
-                      const ScriptValue& method_details,
-                      ExceptionState& exception_state);
-  ScriptPromiseTyped<IDLNullable<PaymentRequestDetailsUpdate>>
+  ScriptPromise<IDLNullable<PaymentRequestDetailsUpdate>> changePaymentMethod(
+      ScriptState*,
+      const String& method_name,
+      const ScriptValue& method_details,
+      ExceptionState& exception_state);
+  ScriptPromise<IDLNullable<PaymentRequestDetailsUpdate>>
   changeShippingAddress(ScriptState*, AddressInit*, ExceptionState&);
-  ScriptPromiseTyped<IDLNullable<PaymentRequestDetailsUpdate>>
-  changeShippingOption(ScriptState*,
-                       const String& shipping_option_id,
-                       ExceptionState&);
-  void respondWith(ScriptState*, ScriptPromise, ExceptionState&);
+  ScriptPromise<IDLNullable<PaymentRequestDetailsUpdate>> changeShippingOption(
+      ScriptState*,
+      const String& shipping_option_id,
+      ExceptionState&);
+  void respondWith(ScriptState*, ScriptPromiseUntyped, ExceptionState&);
 
   void Trace(Visitor*) const override;
 
@@ -103,7 +103,7 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
   Member<const PaymentOptions> payment_options_;
   HeapVector<Member<PaymentShippingOption>> shipping_options_;
 
-  Member<ScriptPromiseResolverTyped<IDLNullable<PaymentRequestDetailsUpdate>>>
+  Member<ScriptPromiseResolver<IDLNullable<PaymentRequestDetailsUpdate>>>
       change_payment_request_details_resolver_;
   Member<RespondWithObserver> observer_;
   HeapMojoRemote<payments::mojom::blink::PaymentHandlerHost>

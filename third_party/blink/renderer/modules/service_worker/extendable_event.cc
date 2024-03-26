@@ -51,7 +51,7 @@ ExtendableEvent* ExtendableEvent::Create(const AtomicString& type,
 ExtendableEvent::~ExtendableEvent() = default;
 
 void ExtendableEvent::waitUntil(ScriptState* script_state,
-                                ScriptPromise script_promise,
+                                ScriptPromiseUntyped script_promise,
                                 ExceptionState& exception_state) {
   if (!observer_) {
     exception_state.ThrowDOMException(

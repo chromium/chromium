@@ -1989,7 +1989,7 @@ void MLGraphXnnpack::ValidateAndBuild(
     ScopedMLTrace scoped_trace,
     MLContext* context,
     const MLNamedOperands& named_outputs,
-    ScriptPromiseResolverTyped<MLGraph>* resolver) {
+    ScriptPromiseResolver<MLGraph>* resolver) {
   scoped_trace.AddStep("MLGraphXnnpack::ValidateAndBuild");
   auto* graph = MakeGarbageCollected<MLGraphXnnpack>(context);
   graph->Build(std::move(scoped_trace), named_outputs, resolver);
@@ -2025,7 +2025,7 @@ const Vector<xnn_external_value>& MLGraphXnnpack::GetXnnExternalValuesTesting()
 
 void MLGraphXnnpack::BuildImpl(ScopedMLTrace scoped_trace,
                                const MLNamedOperands& named_outputs,
-                               ScriptPromiseResolverTyped<MLGraph>* resolver) {
+                               ScriptPromiseResolver<MLGraph>* resolver) {
   CHECK(!xnn_runtime_wrapper_);
   PostCrossThreadTask(
       *xnnpack_task_runner_, FROM_HERE,
@@ -2042,7 +2042,7 @@ void MLGraphXnnpack::GetSharedXnnpackContextOnBackgroundThread(
     ScopedMLTrace scoped_trace,
     CrossThreadHandle<MLGraphXnnpack> graph,
     CrossThreadHandle<MLNamedOperands> named_outputs,
-    CrossThreadHandle<ScriptPromiseResolverTyped<MLGraph>> resolver,
+    CrossThreadHandle<ScriptPromiseResolver<MLGraph>> resolver,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
   CHECK(!IsMainThread());
   // Get or create the SharedXnnpackContext.
@@ -2063,7 +2063,7 @@ void MLGraphXnnpack::OnDidGetSharedXnnpackContext(
     ScopedMLTrace scoped_trace,
     scoped_refptr<SharedXnnpackContext> xnn_context,
     MLNamedOperands* named_outputs,
-    ScriptPromiseResolverTyped<MLGraph>* resolver,
+    ScriptPromiseResolver<MLGraph>* resolver,
     String error_message) {
   if (!xnn_context) {
     resolver->RejectWithDOMException(
@@ -2101,7 +2101,7 @@ void MLGraphXnnpack::CreateXnnRuntimeOnBackgroundThread(
     Vector<DataBuffer> static_data_buffers,
     CrossThreadHandle<MLGraphXnnpack> graph,
     uint32_t num_threads,
-    CrossThreadHandle<ScriptPromiseResolverTyped<MLGraph>> resolver,
+    CrossThreadHandle<ScriptPromiseResolver<MLGraph>> resolver,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
   CHECK(!IsMainThread());
   String error_message;
@@ -2121,7 +2121,7 @@ void MLGraphXnnpack::CreateXnnRuntimeOnBackgroundThread(
 void MLGraphXnnpack::OnDidCreateXnnRuntime(
     ScopedMLTrace scoped_trace,
     scoped_refptr<XnnRuntimeWrapper> xnn_runtime_wrapper,
-    ScriptPromiseResolverTyped<MLGraph>* resolver,
+    ScriptPromiseResolver<MLGraph>* resolver,
     String error_message) {
   if (!xnn_runtime_wrapper) {
     resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
@@ -2136,7 +2136,7 @@ void MLGraphXnnpack::ComputeImpl(
     ScopedMLTrace scoped_trace,
     const MLNamedArrayBufferViews& inputs,
     const MLNamedArrayBufferViews& outputs,
-    ScriptPromiseResolverTyped<MLComputeResult>* resolver,
+    ScriptPromiseResolver<MLComputeResult>* resolver,
     ExceptionState& exception_state) {
   scoped_trace.AddStep("MLGraphXnnpack::TransferNamedArrayBufferViews");
   // `MLNamedArrayBufferViews` objects should be accessed on the thread owning
@@ -2195,7 +2195,7 @@ void MLGraphXnnpack::ComputeOnBackgroundThread(
     NamedArrayBufferViewsInfoPtr inputs_info,
     NamedArrayBufferViewsInfoPtr outputs_info,
     CrossThreadHandle<MLGraphXnnpack> graph,
-    CrossThreadHandle<ScriptPromiseResolverTyped<MLComputeResult>> resolver,
+    CrossThreadHandle<ScriptPromiseResolver<MLComputeResult>> resolver,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
   CHECK(!IsMainThread());
   scoped_trace.AddStep("MLGraphXnnpack::ComputeOnBackgroundThread");
@@ -2218,7 +2218,7 @@ void MLGraphXnnpack::OnDidCompute(
     xnn_status status,
     NamedArrayBufferViewsInfoPtr inputs_info,
     NamedArrayBufferViewsInfoPtr outputs_info,
-    ScriptPromiseResolverTyped<MLComputeResult>* resolver,
+    ScriptPromiseResolver<MLComputeResult>* resolver,
     String error_message) {
   if (status != xnn_status_success) {
     resolver->RejectWithDOMException(XnnStatusToDOMExceptionCode(status),

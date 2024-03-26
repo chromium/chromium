@@ -27,37 +27,37 @@ class NavigatorBadge final : public GarbageCollected<NavigatorBadge>,
   explicit NavigatorBadge(ExecutionContext*);
 
   // Badge IDL interface.
-  static ScriptPromiseTyped<IDLUndefined> setAppBadge(ScriptState*,
-                                                      Navigator&,
-                                                      ExceptionState&);
-  static ScriptPromiseTyped<IDLUndefined> setAppBadge(ScriptState*,
-                                                      WorkerNavigator&,
-                                                      ExceptionState&);
+  static ScriptPromise<IDLUndefined> setAppBadge(ScriptState*,
+                                                 Navigator&,
+                                                 ExceptionState&);
+  static ScriptPromise<IDLUndefined> setAppBadge(ScriptState*,
+                                                 WorkerNavigator&,
+                                                 ExceptionState&);
 
-  static ScriptPromiseTyped<IDLUndefined> setAppBadge(ScriptState*,
-                                                      Navigator&,
-                                                      uint64_t content,
-                                                      ExceptionState&);
-  static ScriptPromiseTyped<IDLUndefined> setAppBadge(ScriptState*,
-                                                      WorkerNavigator&,
-                                                      uint64_t content,
-                                                      ExceptionState&);
+  static ScriptPromise<IDLUndefined> setAppBadge(ScriptState*,
+                                                 Navigator&,
+                                                 uint64_t content,
+                                                 ExceptionState&);
+  static ScriptPromise<IDLUndefined> setAppBadge(ScriptState*,
+                                                 WorkerNavigator&,
+                                                 uint64_t content,
+                                                 ExceptionState&);
 
-  static ScriptPromiseTyped<IDLUndefined> clearAppBadge(ScriptState*,
-                                                        Navigator&,
-                                                        ExceptionState&);
-  static ScriptPromiseTyped<IDLUndefined> clearAppBadge(ScriptState*,
-                                                        WorkerNavigator&,
-                                                        ExceptionState&);
+  static ScriptPromise<IDLUndefined> clearAppBadge(ScriptState*,
+                                                   Navigator&,
+                                                   ExceptionState&);
+  static ScriptPromise<IDLUndefined> clearAppBadge(ScriptState*,
+                                                   WorkerNavigator&,
+                                                   ExceptionState&);
 
   void Trace(Visitor*) const override;
 
  private:
-  static ScriptPromiseTyped<IDLUndefined> SetAppBadgeHelper(
+  static ScriptPromise<IDLUndefined> SetAppBadgeHelper(
       ScriptState* script_state,
       mojom::blink::BadgeValuePtr badge_value,
       ExceptionState& exception_state);
-  static ScriptPromiseTyped<IDLUndefined> ClearAppBadgeHelper(
+  static ScriptPromise<IDLUndefined> ClearAppBadgeHelper(
       ScriptState* script_state,
       ExceptionState& exception_state);
   // Returns true if using the Badging API is allowed in this context.

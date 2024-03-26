@@ -90,24 +90,24 @@ void WebPrinter::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-ScriptPromiseTyped<WebPrinterAttributes> WebPrinter::fetchAttributes(
+ScriptPromise<WebPrinterAttributes> WebPrinter::fetchAttributes(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Context has shut down.");
-    return ScriptPromiseTyped<WebPrinterAttributes>();
+    return ScriptPromise<WebPrinterAttributes>();
   }
 
   if (fetch_attributes_resolver_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "A call to fetchAttributes() is already in progress.");
-    return ScriptPromiseTyped<WebPrinterAttributes>();
+    return ScriptPromise<WebPrinterAttributes>();
   }
 
   fetch_attributes_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WebPrinterAttributes>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WebPrinterAttributes>>(
           script_state, exception_state.GetContext());
   printer_->FetchAttributes(
       fetch_attributes_resolver_->WrapCallbackInScriptScope(
@@ -115,7 +115,7 @@ ScriptPromiseTyped<WebPrinterAttributes> WebPrinter::fetchAttributes(
   return fetch_attributes_resolver_->Promise();
 }
 
-ScriptPromiseTyped<WebPrintJob> WebPrinter::printJob(
+ScriptPromise<WebPrintJob> WebPrinter::printJob(
     ScriptState* script_state,
     const String& job_name,
     const WebPrintDocumentDescription* document,
@@ -124,11 +124,11 @@ ScriptPromiseTyped<WebPrintJob> WebPrinter::printJob(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Context has shut down.");
-    return ScriptPromiseTyped<WebPrintJob>();
+    return ScriptPromise<WebPrintJob>();
   }
 
   if (!ValidatePrintJobTemplateAttributes(pjt_attributes, exception_state)) {
-    return ScriptPromiseTyped<WebPrintJob>();
+    return ScriptPromise<WebPrintJob>();
   }
 
   auto attributes =
@@ -136,9 +136,8 @@ ScriptPromiseTyped<WebPrintJob> WebPrinter::printJob(
           pjt_attributes);
   attributes->job_name = job_name;
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WebPrintJob>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<WebPrintJob>>(
+      script_state, exception_state.GetContext());
   printer_->Print(document->data()->AsMojoBlob(), std::move(attributes),
                   resolver->WrapCallbackInScriptScope(WTF::BindOnce(
                       &WebPrinter::OnPrint, WrapPersistent(this))));
@@ -146,7 +145,7 @@ ScriptPromiseTyped<WebPrintJob> WebPrinter::printJob(
 }
 
 void WebPrinter::OnFetchAttributes(
-    ScriptPromiseResolverTyped<WebPrinterAttributes>*,
+    ScriptPromiseResolver<WebPrinterAttributes>*,
     mojom::blink::WebPrinterFetchResultPtr result) {
   if (result->is_error()) {
     switch (result->get_error()) {
@@ -172,7 +171,7 @@ void WebPrinter::OnFetchAttributes(
   fetch_attributes_resolver_ = nullptr;
 }
 
-void WebPrinter::OnPrint(ScriptPromiseResolverTyped<WebPrintJob>* resolver,
+void WebPrinter::OnPrint(ScriptPromiseResolver<WebPrintJob>* resolver,
                          mojom::blink::WebPrintResultPtr result) {
   if (result->is_error()) {
     switch (result->get_error()) {

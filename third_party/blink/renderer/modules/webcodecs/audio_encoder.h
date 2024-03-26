@@ -70,7 +70,7 @@ class MODULES_EXPORT AudioEncoder final
   // EventTarget interface
   const AtomicString& InterfaceName() const override;
 
-  static ScriptPromiseTyped<AudioEncoderSupport>
+  static ScriptPromise<AudioEncoderSupport>
   isConfigSupported(ScriptState*, const AudioEncoderConfig*, ExceptionState&);
 
  private:

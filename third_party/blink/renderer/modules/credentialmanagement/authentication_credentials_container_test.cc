@@ -147,8 +147,8 @@ class MockPublicKeyCredential : public Credential {
 };
 
 // The completion callbacks for pending mojom::CredentialManager calls each own
-// a persistent handle to a ScriptPromiseResolver instance. Ensure that if the
-// document is destroyed while a call is pending, it can still be freed up.
+// a persistent handle to a ScriptPromiseResolverBase instance. Ensure that if
+// the document is destroyed while a call is pending, it can still be freed up.
 TEST(AuthenticationCredentialsContainerTest, PendingGetRequest_NoGCCycles) {
   test::TaskEnvironment task_environment;
   MockCredentialManager mock_credential_manager;

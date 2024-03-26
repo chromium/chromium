@@ -164,8 +164,8 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::Call(
   if constexpr (return_type_is_promise == CallbackReturnTypeIsPromise::kYes) {
     v8::TryCatch block(callback_->GetIsolate());
     if (!CallInternal(argc, argv)) {
-      result_ = ScriptPromise::Reject(callback_->CallbackRelevantScriptState(),
-                                      block.Exception())
+      result_ = ScriptPromiseUntyped::Reject(
+                    callback_->CallbackRelevantScriptState(), block.Exception())
                     .V8Value();
     }
   } else {

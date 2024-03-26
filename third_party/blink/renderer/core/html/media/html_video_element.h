@@ -132,7 +132,7 @@ class CORE_EXPORT HTMLVideoElement final
 
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const override;
-  ScriptPromiseTyped<ImageBitmap> CreateImageBitmap(
+  ScriptPromise<ImageBitmap> CreateImageBitmap(
       ScriptState*,
       std::optional<gfx::Rect> crop_rect,
       const ImageBitmapOptions*,

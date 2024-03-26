@@ -206,18 +206,17 @@ UDPSocket::UDPSocket(ScriptState* script_state)
 
 UDPSocket::~UDPSocket() = default;
 
-ScriptPromiseTyped<UDPSocketOpenInfo> UDPSocket::opened(
+ScriptPromise<UDPSocketOpenInfo> UDPSocket::opened(
     ScriptState* script_state) const {
   return opened_->Promise(script_state->World());
 }
 
-ScriptPromiseTyped<IDLUndefined> UDPSocket::close(
-    ScriptState*,
-    ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> UDPSocket::close(ScriptState*,
+                                             ExceptionState& exception_state) {
   if (GetState() == State::kOpening) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Socket is not properly initialized.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   auto* script_state = GetScriptState();
@@ -229,7 +228,7 @@ ScriptPromiseTyped<IDLUndefined> UDPSocket::close(
       writable_stream_wrapper_->Locked()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Close called on locked streams.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   auto* reason = MakeGarbageCollected<DOMException>(

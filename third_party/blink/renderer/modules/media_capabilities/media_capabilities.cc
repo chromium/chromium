@@ -179,7 +179,7 @@ MediaCapabilitiesInfo* CreateEncodingInfoWith(bool value) {
   return info;
 }
 
-ScriptPromiseTyped<MediaCapabilitiesDecodingInfo>
+ScriptPromise<MediaCapabilitiesDecodingInfo>
 CreateResolvedPromiseToDecodingInfoWith(
     bool value,
     ScriptState* script_state,
@@ -202,12 +202,12 @@ class MediaCapabilitiesKeySystemAccessInitializer final
     : public MediaKeySystemAccessInitializerBase {
  public:
   using GetPerfCallback = base::OnceCallback<void(
-      ScriptPromiseResolverTyped<MediaCapabilitiesDecodingInfo>*,
+      ScriptPromiseResolver<MediaCapabilitiesDecodingInfo>*,
       MediaKeySystemAccess*)>;
 
   MediaCapabilitiesKeySystemAccessInitializer(
       ExecutionContext* context,
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverBase* resolver,
       const String& key_system,
       const HeapVector<Member<MediaKeySystemConfiguration>>&
           supported_configurations,
@@ -731,7 +731,7 @@ bool IsVideoConfigurationSupported(const String& mime_type,
 }
 
 void OnMediaCapabilitiesEncodingInfo(
-    ScriptPromiseResolverTyped<MediaCapabilitiesInfo>* resolver,
+    ScriptPromiseResolver<MediaCapabilitiesInfo>* resolver,
     std::unique_ptr<WebMediaCapabilitiesInfo> result) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed()) {
@@ -810,7 +810,7 @@ void MediaCapabilities::Trace(blink::Visitor* visitor) const {
 }
 
 MediaCapabilities::PendingCallbackState::PendingCallbackState(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     MediaKeySystemAccess* access,
     const base::TimeTicks& request_time,
     std::optional<IdentifiableToken> input_token)
@@ -825,10 +825,10 @@ void MediaCapabilities::PendingCallbackState::Trace(
   visitor->Trace(resolver);
 }
 
-ScriptPromiseTyped<MediaCapabilitiesDecodingInfo>
-MediaCapabilities::decodingInfo(ScriptState* script_state,
-                                const MediaDecodingConfiguration* config,
-                                ExceptionState& exception_state) {
+ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
+    ScriptState* script_state,
+    const MediaDecodingConfiguration* config,
+    ExceptionState& exception_state) {
   const base::TimeTicks request_time = base::TimeTicks::Now();
 
   if (config->hasKeySystemConfiguration()) {
@@ -841,7 +841,7 @@ MediaCapabilities::decodingInfo(ScriptState* script_state,
   String message;
   if (!IsValidMediaDecodingConfiguration(config, is_webrtc, &message)) {
     exception_state.ThrowTypeError(message);
-    return ScriptPromiseTyped<MediaCapabilitiesDecodingInfo>();
+    return ScriptPromise<MediaCapabilitiesDecodingInfo>();
   }
   // Validation errors should return above.
   DCHECK(message.empty());
@@ -851,7 +851,7 @@ MediaCapabilities::decodingInfo(ScriptState* script_state,
                       WebFeature::kMediaCapabilitiesDecodingInfoWebrtc);
 
     auto* resolver = MakeGarbageCollected<
-        ScriptPromiseResolverTyped<MediaCapabilitiesDecodingInfo>>(
+        ScriptPromiseResolver<MediaCapabilitiesDecodingInfo>>(
         script_state, exception_state.GetContext());
 
     // IMPORTANT: Acquire the promise before potentially synchronously resolving
@@ -1021,7 +1021,7 @@ MediaCapabilities::decodingInfo(ScriptState* script_state,
   }
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<MediaCapabilitiesDecodingInfo>>(
+      ScriptPromiseResolver<MediaCapabilitiesDecodingInfo>>(
       script_state, exception_state.GetContext());
 
   // IMPORTANT: Acquire the promise before potentially synchronously resolving
@@ -1035,7 +1035,7 @@ MediaCapabilities::decodingInfo(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromiseTyped<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
+ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
     ScriptState* script_state,
     const MediaEncodingConfiguration* config,
     ExceptionState& exception_state) {
@@ -1044,7 +1044,7 @@ ScriptPromiseTyped<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
     exception_state.ThrowTypeError(
         "The provided value 'record' is not a valid enum value of type "
         "MediaEncodingType.");
-    return ScriptPromiseTyped<MediaCapabilitiesInfo>();
+    return ScriptPromise<MediaCapabilitiesInfo>();
     ;
   }
 
@@ -1054,13 +1054,13 @@ ScriptPromiseTyped<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
   String message;
   if (!IsValidMediaEncodingConfiguration(config, is_webrtc, &message)) {
     exception_state.ThrowTypeError(message);
-    return ScriptPromiseTyped<MediaCapabilitiesInfo>();
+    return ScriptPromise<MediaCapabilitiesInfo>();
   }
   // Validation errors should return above.
   DCHECK(message.empty());
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<MediaCapabilitiesInfo>>(
+      MakeGarbageCollected<ScriptPromiseResolver<MediaCapabilitiesInfo>>(
           script_state, exception_state.GetContext());
 
   // IMPORTANT: Acquire the promise before potentially synchronously resolving
@@ -1223,8 +1223,7 @@ bool MediaCapabilities::EnsureWebrtcPerfHistoryService(
   return true;
 }
 
-ScriptPromiseTyped<MediaCapabilitiesDecodingInfo>
-MediaCapabilities::GetEmeSupport(
+ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::GetEmeSupport(
     ScriptState* script_state,
     media::VideoCodec video_codec,
     media::VideoCodecProfile video_profile,
@@ -1241,7 +1240,7 @@ MediaCapabilities::GetEmeSupport(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The context provided is not associated with a page.");
-    return ScriptPromiseTyped<MediaCapabilitiesDecodingInfo>();
+    return ScriptPromise<MediaCapabilitiesDecodingInfo>();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -1261,21 +1260,21 @@ MediaCapabilities::GetEmeSupport(
     exception_state.ThrowSecurityError(
         "decodingInfo(): Creating MediaKeySystemAccess is disabled by feature "
         "policy.");
-    return ScriptPromiseTyped<MediaCapabilitiesDecodingInfo>();
+    return ScriptPromise<MediaCapabilitiesDecodingInfo>();
   }
 
   if (execution_context->IsWorkerGlobalScope()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Encrypted Media decoding info not available in Worker context.");
-    return ScriptPromiseTyped<MediaCapabilitiesDecodingInfo>();
+    return ScriptPromise<MediaCapabilitiesDecodingInfo>();
   }
 
   if (!execution_context->IsSecureContext()) {
     exception_state.ThrowSecurityError(
         "Encrypted Media decoding info can only be queried in a secure"
         " context.");
-    return ScriptPromiseTyped<MediaCapabilitiesDecodingInfo>();
+    return ScriptPromise<MediaCapabilitiesDecodingInfo>();
   }
 
   const MediaCapabilitiesKeySystemConfiguration* key_system_config =
@@ -1283,7 +1282,7 @@ MediaCapabilities::GetEmeSupport(
   if (!key_system_config->hasKeySystem() ||
       key_system_config->keySystem().empty()) {
     exception_state.ThrowTypeError("The key system String is not valid.");
-    return ScriptPromiseTyped<MediaCapabilitiesDecodingInfo>();
+    return ScriptPromise<MediaCapabilitiesDecodingInfo>();
   }
 
   MediaKeySystemConfiguration* eme_config =
@@ -1350,7 +1349,7 @@ MediaCapabilities::GetEmeSupport(
   HeapVector<Member<MediaKeySystemConfiguration>> config_vector(1, eme_config);
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<MediaCapabilitiesDecodingInfo>>(script_state);
+      ScriptPromiseResolver<MediaCapabilitiesDecodingInfo>>(script_state);
   MediaCapabilitiesKeySystemAccessInitializer* initializer =
       MakeGarbageCollected<MediaCapabilitiesKeySystemAccessInitializer>(
           execution_context, resolver, key_system_config->keySystem(),
@@ -1377,7 +1376,7 @@ void MediaCapabilities::GetPerfInfo(
     media::VideoColorSpace video_color_space,
     const MediaDecodingConfiguration* decoding_config,
     const base::TimeTicks& request_time,
-    ScriptPromiseResolverTyped<MediaCapabilitiesDecodingInfo>* resolver,
+    ScriptPromiseResolver<MediaCapabilitiesDecodingInfo>* resolver,
     MediaKeySystemAccess* access) {
   ExecutionContext* execution_context = resolver->GetExecutionContext();
   if (!execution_context || execution_context->IsContextDestroyed())

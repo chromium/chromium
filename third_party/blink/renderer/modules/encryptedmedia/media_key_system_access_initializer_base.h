@@ -21,7 +21,7 @@ class MediaKeySystemAccessInitializerBase : public EncryptedMediaRequest,
  public:
   MediaKeySystemAccessInitializerBase(
       ExecutionContext*,
-      ScriptPromiseResolver*,
+      ScriptPromiseResolverBase*,
       const String& key_system,
       const HeapVector<Member<MediaKeySystemConfiguration>>&
           supported_configurations);
@@ -52,7 +52,7 @@ class MediaKeySystemAccessInitializerBase : public EncryptedMediaRequest,
   // UMA and UKM.
   void GenerateWarningAndReportMetrics() const;
 
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverBase> resolver_;
   const String key_system_;
   WebVector<WebMediaKeySystemConfiguration> supported_configurations_;
 };

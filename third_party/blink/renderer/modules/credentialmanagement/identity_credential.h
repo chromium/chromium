@@ -23,7 +23,7 @@ class MODULES_EXPORT IdentityCredential final : public Credential {
   static IdentityCredential* Create(const String& token, bool is_auto_selected);
 
   static bool IsRejectingPromiseDueToCSP(ContentSecurityPolicy* policy,
-                                         ScriptPromiseResolver* resolver,
+                                         ScriptPromiseResolverBase* resolver,
                                          const KURL& provider_url);
 
   explicit IdentityCredential(const String& token,
@@ -36,7 +36,7 @@ class MODULES_EXPORT IdentityCredential final : public Credential {
   const String& token() const { return token_; }
   const bool& isAutoSelected() const { return is_auto_selected_; }
 
-  static ScriptPromiseTyped<IDLUndefined> disconnect(
+  static ScriptPromise<IDLUndefined> disconnect(
       ScriptState*,
       const IdentityCredentialDisconnectOptions* options,
       ExceptionState&);

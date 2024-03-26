@@ -39,7 +39,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
 
  public:
   // Expects the ImageElementBase to return/have an SVGImage.
-  static ScriptPromiseTyped<ImageBitmap> CreateAsync(
+  static ScriptPromise<ImageBitmap> CreateAsync(
       ImageElementBase*,
       std::optional<gfx::Rect>,
       ScriptState*,
@@ -81,7 +81,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   // Type and helper function required by CallbackPromiseAdapter:
   using IDLType = ImageBitmap;
   using WebType = sk_sp<SkImage>;
-  static ImageBitmap* Take(ScriptPromiseResolver*, sk_sp<SkImage>);
+  static ImageBitmap* Take(ScriptPromiseResolverBase*, sk_sp<SkImage>);
 
   scoped_refptr<StaticBitmapImage> BitmapImage() const { return image_; }
 
@@ -123,10 +123,10 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
 
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const override { return Size(); }
-  ScriptPromiseTyped<ImageBitmap> CreateImageBitmap(ScriptState*,
-                                                    std::optional<gfx::Rect>,
-                                                    const ImageBitmapOptions*,
-                                                    ExceptionState&) override;
+  ScriptPromise<ImageBitmap> CreateImageBitmap(ScriptState*,
+                                               std::optional<gfx::Rect>,
+                                               const ImageBitmapOptions*,
+                                               ExceptionState&) override;
 
   struct ParsedOptions {
     bool flip_y = false;
@@ -145,7 +145,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
  private:
   void UpdateImageBitmapMemoryUsage();
   static void ResolvePromiseOnOriginalThread(
-      ScriptPromiseResolverTyped<ImageBitmap>*,
+      ScriptPromiseResolver<ImageBitmap>*,
       bool origin_clean,
       std::unique_ptr<ParsedOptions>,
       sk_sp<SkImage>,

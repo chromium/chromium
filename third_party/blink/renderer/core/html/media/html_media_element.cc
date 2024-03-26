@@ -2784,7 +2784,7 @@ WebMediaPlayer::Preload HTMLMediaElement::EffectivePreloadType() const {
   return preload;
 }
 
-ScriptPromiseTyped<IDLUndefined> HTMLMediaElement::playForBindings(
+ScriptPromise<IDLUndefined> HTMLMediaElement::playForBindings(
     ScriptState* script_state) {
   // We have to share the same logic for internal and external callers. The
   // internal callers do not want to receive a Promise back but when ::play()
@@ -2792,8 +2792,7 @@ ScriptPromiseTyped<IDLUndefined> HTMLMediaElement::playForBindings(
   // does is to populate |play_promise_resolvers_| before calling ::play() and
   // remove the Promise if ::play() failed.
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
   play_promise_resolvers_.push_back(resolver);
 

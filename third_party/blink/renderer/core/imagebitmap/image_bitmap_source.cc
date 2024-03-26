@@ -16,7 +16,7 @@ namespace blink {
 
 constexpr const char* kImageBitmapOptionNone = "none";
 
-ScriptPromiseTyped<ImageBitmap> ImageBitmapSource::FulfillImageBitmap(
+ScriptPromise<ImageBitmap> ImageBitmapSource::FulfillImageBitmap(
     ScriptState* script_state,
     ImageBitmap* image_bitmap,
     const ImageBitmapOptions* options,
@@ -25,7 +25,7 @@ ScriptPromiseTyped<ImageBitmap> ImageBitmapSource::FulfillImageBitmap(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The ImageBitmap could not be allocated.");
-    return ScriptPromiseTyped<ImageBitmap>();
+    return ScriptPromise<ImageBitmap>();
   }
 
   // imageOrientation: 'from-image' will be used to replace imageOrientation:
@@ -42,12 +42,12 @@ ScriptPromiseTyped<ImageBitmap> ImageBitmapSource::FulfillImageBitmap(
   return ToResolvedPromise<ImageBitmap>(script_state, image_bitmap);
 }
 
-ScriptPromiseTyped<ImageBitmap> ImageBitmapSource::CreateImageBitmap(
+ScriptPromise<ImageBitmap> ImageBitmapSource::CreateImageBitmap(
     ScriptState* script_state,
     std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
-  return ScriptPromiseTyped<ImageBitmap>();
+  return ScriptPromise<ImageBitmap>();
 }
 
 }  // namespace blink

@@ -82,7 +82,7 @@ void AbortPostTaskCallbackTraceEventData(perfetto::TracedValue trace_context,
 
 }  // namespace
 
-DOMTask::DOMTask(ScriptPromiseResolverTyped<IDLAny>* resolver,
+DOMTask::DOMTask(ScriptPromiseResolver<IDLAny>* resolver,
                  V8SchedulerPostTaskCallback* callback,
                  AbortSignal* abort_source,
                  DOMTaskSignal* priority_source,
@@ -161,7 +161,7 @@ void DOMTask::Invoke() {
     // detached child frame. The callback's relvant context must be valid to run
     // the callback (enforced in the bindings layer). Since we can't run this
     // task, and therefore won't settle the associated promise, we need to clean
-    // up the ScriptPromiseResolver since it is associated with a different
+    // up the ScriptPromiseResolverBase since it is associated with a different
     // context.
     resolver_->Detach();
     RemoveAbortAlgorithm();

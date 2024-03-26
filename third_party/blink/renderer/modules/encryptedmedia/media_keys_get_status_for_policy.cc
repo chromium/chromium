@@ -11,8 +11,7 @@
 
 namespace blink {
 
-ScriptPromiseTyped<V8MediaKeyStatus>
-MediaKeysGetStatusForPolicy::getStatusForPolicy(
+ScriptPromise<V8MediaKeyStatus> MediaKeysGetStatusForPolicy::getStatusForPolicy(
     ScriptState* script_state,
     MediaKeys& media_keys,
     const MediaKeysPolicy* media_keys_policy,

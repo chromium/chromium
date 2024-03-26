@@ -13,12 +13,12 @@ namespace file_system_access_error {
 
 // Rejects `resolver` with an appropriate exception if `status` represents an
 // error. Resolves `resolver` with undefined otherwise.
-void ResolveOrReject(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+void ResolveOrReject(ScriptPromiseResolver<IDLUndefined>* resolver,
                      const mojom::blink::FileSystemAccessError& status);
 
 // Rejects `resolver` with an appropriate exception if `status` represents an
 // error. DCHECKs otherwise.
-void Reject(ScriptPromiseResolver* resolver,
+void Reject(ScriptPromiseResolverBase* resolver,
             const mojom::blink::FileSystemAccessError& error);
 
 }  // namespace file_system_access_error

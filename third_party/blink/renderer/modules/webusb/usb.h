@@ -47,11 +47,11 @@ class USB final : public EventTarget,
   ~USB() override;
 
   // USB.idl
-  ScriptPromiseTyped<IDLSequence<USBDevice>> getDevices(ScriptState*,
-                                                        ExceptionState&);
-  ScriptPromiseTyped<USBDevice> requestDevice(ScriptState*,
-                                              const USBDeviceRequestOptions*,
-                                              ExceptionState&);
+  ScriptPromise<IDLSequence<USBDevice>> getDevices(ScriptState*,
+                                                   ExceptionState&);
+  ScriptPromise<USBDevice> requestDevice(ScriptState*,
+                                         const USBDeviceRequestOptions*,
+                                         ExceptionState&);
   DEFINE_ATTRIBUTE_EVENT_LISTENER(connect, kConnect)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(disconnect, kDisconnect)
 
@@ -71,9 +71,9 @@ class USB final : public EventTarget,
   void ForgetDevice(const String& device_guid,
                     mojom::blink::WebUsbService::ForgetDeviceCallback callback);
 
-  void OnGetDevices(ScriptPromiseResolverTyped<IDLSequence<USBDevice>>*,
+  void OnGetDevices(ScriptPromiseResolver<IDLSequence<USBDevice>>*,
                     Vector<device::mojom::blink::UsbDeviceInfoPtr>);
-  void OnGetPermission(ScriptPromiseResolverTyped<USBDevice>*,
+  void OnGetPermission(ScriptPromiseResolver<USBDevice>*,
                        device::mojom::blink::UsbDeviceInfoPtr);
 
   // DeviceManagerClient implementation.
@@ -95,9 +95,9 @@ class USB final : public EventTarget,
   bool IsFeatureEnabled(ReportOptions) const;
 
   HeapMojoRemote<mojom::blink::WebUsbService> service_;
-  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLSequence<USBDevice>>>>
+  HeapHashSet<Member<ScriptPromiseResolver<IDLSequence<USBDevice>>>>
       get_devices_requests_;
-  HeapHashSet<Member<ScriptPromiseResolver>> get_permission_requests_;
+  HeapHashSet<Member<ScriptPromiseResolverBase>> get_permission_requests_;
   HeapMojoAssociatedReceiver<device::mojom::blink::UsbDeviceManagerClient, USB>
       client_receiver_;
   HeapHashMap<String, WeakMember<USBDevice>> device_cache_;

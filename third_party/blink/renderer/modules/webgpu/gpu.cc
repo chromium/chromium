@@ -184,7 +184,7 @@ void GPU::ContextDestroyed() {
 void GPU::OnRequestAdapterCallback(
     ScriptState* script_state,
     const GPURequestAdapterOptions* options,
-    ScriptPromiseResolverTyped<IDLNullable<GPUAdapter>>* resolver,
+    ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver,
     WGPURequestAdapterStatus status,
     WGPUAdapter adapter,
     const char* error_message) {
@@ -280,13 +280,13 @@ std::unique_ptr<WebGraphicsContext3DProvider> CheckContextProvider(
 void GPU::RequestAdapterImpl(
     ScriptState* script_state,
     const GPURequestAdapterOptions* options,
-    ScriptPromiseResolverTyped<IDLNullable<GPUAdapter>>* resolver) {
+    ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (!dawn_control_client_ || dawn_control_client_->IsContextLost()) {
     dawn_control_client_initialized_callbacks_.push_back(WTF::BindOnce(
         [](GPU* gpu, ScriptState* script_state,
            const GPURequestAdapterOptions* options,
-           ScriptPromiseResolverTyped<IDLNullable<GPUAdapter>>* resolver) {
+           ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver) {
           if (gpu->dawn_control_client_ &&
               !gpu->dawn_control_client_->IsContextLost()) {
             gpu->RequestAdapterImpl(script_state, options, resolver);
@@ -367,7 +367,7 @@ void GPU::RequestAdapterImpl(
   UseCounter::Count(execution_context, WebFeature::kWebGPURequestAdapter);
 }
 
-ScriptPromiseTyped<IDLNullable<GPUAdapter>> GPU::requestAdapter(
+ScriptPromise<IDLNullable<GPUAdapter>> GPU::requestAdapter(
     ScriptState* script_state,
     const GPURequestAdapterOptions* options) {
   // Remind developers when they are using WebGPU on unsupported platforms.
@@ -383,7 +383,7 @@ ScriptPromiseTyped<IDLNullable<GPUAdapter>> GPU::requestAdapter(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<GPUAdapter>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<GPUAdapter>>>(
           script_state);
   auto promise = resolver->Promise();
   RequestAdapterImpl(script_state, options, resolver);

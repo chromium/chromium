@@ -39,7 +39,7 @@ CookieDeprecationLabel::CookieDeprecationLabel(Navigator& navigator)
 
 CookieDeprecationLabel::~CookieDeprecationLabel() = default;
 
-ScriptPromiseTyped<IDLString> CookieDeprecationLabel::getValue(
+ScriptPromise<IDLString> CookieDeprecationLabel::getValue(
     ScriptState* script_state) {
   String label;
 

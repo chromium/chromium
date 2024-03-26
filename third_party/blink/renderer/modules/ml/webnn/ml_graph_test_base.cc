@@ -59,9 +59,8 @@ DOMException* MLGraphTestBase::ComputeGraph(V8TestingScope& scope,
                                             MLGraph* graph,
                                             MLNamedArrayBufferViews& inputs,
                                             MLNamedArrayBufferViews& outputs) {
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<MLComputeResult>>(
-          scope.GetScriptState());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
+      scope.GetScriptState());
   ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
   graph->Compute(ScopedMLTrace("Compute"), inputs, outputs, resolver,
                  scope.GetExceptionState());
@@ -80,8 +79,8 @@ DOMException* MLGraphTestBase::ComputeGraph(V8TestingScope& scope,
   }
 }
 
-ScriptPromise MLGraphTestBase::CreateContext(V8TestingScope& scope,
-                                             MLContextOptions* options) {
+ScriptPromiseUntyped MLGraphTestBase::CreateContext(V8TestingScope& scope,
+                                                    MLContextOptions* options) {
   auto* ml = MakeGarbageCollected<ML>(scope.GetExecutionContext());
   return ml->createContext(scope.GetScriptState(), options,
                            scope.GetExceptionState());

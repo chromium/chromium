@@ -96,8 +96,8 @@ class CORE_EXPORT Blob : public ScriptWrappable,
   }
 
   ReadableStream* stream(ScriptState* script_state) const;
-  ScriptPromiseTyped<IDLUSVString> text(ScriptState* script_state);
-  ScriptPromiseTyped<DOMArrayBuffer> arrayBuffer(ScriptState* script_state);
+  ScriptPromise<IDLUSVString> text(ScriptState* script_state);
+  ScriptPromise<DOMArrayBuffer> arrayBuffer(ScriptState* script_state);
   String type() const { return blob_data_handle_->GetType(); }
   String Uuid() const { return blob_data_handle_->Uuid(); }
   scoped_refptr<BlobDataHandle> GetBlobDataHandle() const {

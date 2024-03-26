@@ -49,7 +49,7 @@ PushMessagingBridge::~PushMessagingBridge() = default;
 
 const char PushMessagingBridge::kSupplementName[] = "PushMessagingBridge";
 
-ScriptPromiseTyped<V8PermissionState> PushMessagingBridge::GetPermissionState(
+ScriptPromise<V8PermissionState> PushMessagingBridge::GetPermissionState(
     ScriptState* script_state,
     const PushSubscriptionOptionsInit* options) {
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -60,7 +60,7 @@ ScriptPromiseTyped<V8PermissionState> PushMessagingBridge::GetPermissionState(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<V8PermissionState>>(
+      MakeGarbageCollected<ScriptPromiseResolver<V8PermissionState>>(
           script_state);
   auto promise = resolver->Promise();
 
@@ -89,7 +89,7 @@ void PushMessagingBridge::Trace(Visitor* visitor) const {
 }
 
 void PushMessagingBridge::DidGetPermissionState(
-    ScriptPromiseResolverTyped<V8PermissionState>* resolver,
+    ScriptPromiseResolver<V8PermissionState>* resolver,
     mojom::blink::PermissionStatus status) {
   resolver->Resolve(ToV8PermissionState(status));
 }

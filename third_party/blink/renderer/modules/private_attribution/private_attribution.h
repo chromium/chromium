@@ -41,13 +41,13 @@ class PrivateAttribution final : public ScriptWrappable {
   explicit PrivateAttribution();
   ~PrivateAttribution() final = default;
 
-  static ScriptPromiseTyped<PrivateAttributionEncryptedMatchKey>
+  static ScriptPromise<PrivateAttributionEncryptedMatchKey>
   getEncryptedMatchKey(ScriptState*,
                        WTF::String report_collector,
                        PrivateAttributionOptions* options,
                        ExceptionState& exception_state);
 
-  static ScriptPromiseTyped<IDLSequence<PrivateAttributionNetwork>>
+  static ScriptPromise<IDLSequence<PrivateAttributionNetwork>>
   getHelperNetworks(ScriptState*, ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;

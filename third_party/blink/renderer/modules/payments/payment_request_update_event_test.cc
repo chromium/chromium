@@ -52,7 +52,7 @@ TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsCalled) {
   event->SetPaymentRequest(request);
   event->SetEventPhase(Event::PhaseType::kCapturingPhase);
   auto* payment_details =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
                     scope.GetExceptionState());
@@ -74,7 +74,7 @@ TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsFailureCalled) {
   event->SetPaymentRequest(request);
   event->SetEventPhase(Event::PhaseType::kCapturingPhase);
   auto* payment_details =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
                     scope.GetExceptionState());
@@ -93,12 +93,11 @@ TEST(PaymentRequestUpdateEventTest, CannotUpdateWithoutDispatching) {
       scope.GetExecutionContext(), event_type_names::kShippingaddresschange);
   event->SetPaymentRequest((MakeGarbageCollected<MockPaymentRequest>()));
 
-  event->updateWith(
-      scope.GetScriptState(),
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          scope.GetScriptState())
-          ->Promise(),
-      scope.GetExceptionState());
+  event->updateWith(scope.GetScriptState(),
+                    MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+                        scope.GetScriptState())
+                        ->Promise(),
+                    scope.GetExceptionState());
 
   EXPECT_TRUE(scope.GetExceptionState().HadException());
 }
@@ -112,20 +111,18 @@ TEST(PaymentRequestUpdateEventTest, CannotUpdateTwice) {
   event->SetTrusted(true);
   event->SetPaymentRequest(request);
   event->SetEventPhase(Event::PhaseType::kCapturingPhase);
-  event->updateWith(
-      scope.GetScriptState(),
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          scope.GetScriptState())
-          ->Promise(),
-      scope.GetExceptionState());
+  event->updateWith(scope.GetScriptState(),
+                    MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+                        scope.GetScriptState())
+                        ->Promise(),
+                    scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  event->updateWith(
-      scope.GetScriptState(),
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          scope.GetScriptState())
-          ->Promise(),
-      scope.GetExceptionState());
+  event->updateWith(scope.GetScriptState(),
+                    MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+                        scope.GetScriptState())
+                        ->Promise(),
+                    scope.GetExceptionState());
 
   EXPECT_TRUE(scope.GetExceptionState().HadException());
 }
@@ -137,12 +134,11 @@ TEST(PaymentRequestUpdateEventTest, UpdaterNotRequired) {
       scope.GetExecutionContext(), event_type_names::kShippingaddresschange);
   event->SetTrusted(true);
 
-  event->updateWith(
-      scope.GetScriptState(),
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          scope.GetScriptState())
-          ->Promise(),
-      scope.GetExceptionState());
+  event->updateWith(scope.GetScriptState(),
+                    MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+                        scope.GetScriptState())
+                        ->Promise(),
+                    scope.GetExceptionState());
 
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 }
@@ -176,12 +172,11 @@ TEST(PaymentRequestUpdateEventTest, AddressChangeUpdateWithTimeout) {
       "PaymentRequestUpdateEvent.updateWith(promise) to resolve.",
       error_message);
 
-  event->updateWith(
-      scope.GetScriptState(),
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          scope.GetScriptState())
-          ->Promise(),
-      scope.GetExceptionState());
+  event->updateWith(scope.GetScriptState(),
+                    MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+                        scope.GetScriptState())
+                        ->Promise(),
+                    scope.GetExceptionState());
 
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ("PaymentRequest is no longer interactive",
@@ -217,12 +212,11 @@ TEST(PaymentRequestUpdateEventTest, OptionChangeUpdateWithTimeout) {
       "PaymentRequestUpdateEvent.updateWith(promise) to resolve.",
       error_message);
 
-  event->updateWith(
-      scope.GetScriptState(),
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          scope.GetScriptState())
-          ->Promise(),
-      scope.GetExceptionState());
+  event->updateWith(scope.GetScriptState(),
+                    MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+                        scope.GetScriptState())
+                        ->Promise(),
+                    scope.GetExceptionState());
 
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ("PaymentRequest is no longer interactive",
@@ -251,7 +245,7 @@ TEST(PaymentRequestUpdateEventTest, AddressChangePromiseTimeout) {
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnShippingAddressChange(BuildPaymentAddressForTest());
   auto* payment_details =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
                     scope.GetExceptionState());
@@ -290,7 +284,7 @@ TEST(PaymentRequestUpdateEventTest, OptionChangePromiseTimeout) {
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnShippingAddressChange(BuildPaymentAddressForTest());
   auto* payment_details =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
                     scope.GetExceptionState());
@@ -314,12 +308,11 @@ TEST(PaymentRequestUpdateEventTest, NotAllowUntrustedEvent) {
       scope.GetExecutionContext(), event_type_names::kShippingaddresschange);
   event->SetTrusted(false);
 
-  event->updateWith(
-      scope.GetScriptState(),
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          scope.GetScriptState())
-          ->Promise(),
-      scope.GetExceptionState());
+  event->updateWith(scope.GetScriptState(),
+                    MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+                        scope.GetScriptState())
+                        ->Promise(),
+                    scope.GetExceptionState());
 
   EXPECT_TRUE(scope.GetExceptionState().HadException());
 }

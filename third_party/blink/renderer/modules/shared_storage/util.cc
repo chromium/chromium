@@ -60,7 +60,7 @@ bool CheckBrowsingContextIsValid(ScriptState& script_state,
 
 bool CheckSharedStoragePermissionsPolicy(ScriptState& script_state,
                                          ExecutionContext& execution_context,
-                                         ScriptPromiseResolver& resolver) {
+                                         ScriptPromiseResolverBase& resolver) {
   // The worklet scope has to be created from the Window scope, thus the
   // shared-storage permissions policy feature must have been enabled. Besides,
   // the `SharedStorageWorkletGlobalScope` is currently given a null
@@ -89,7 +89,7 @@ bool CheckSharedStoragePermissionsPolicy(ScriptState& script_state,
 bool CheckPrivateAggregationConfig(
     const SharedStorageRunOperationMethodOptions& options,
     ScriptState& script_state,
-    ScriptPromiseResolver& resolver,
+    ScriptPromiseResolverBase& resolver,
     WTF::String& out_context_id,
     scoped_refptr<SecurityOrigin>& out_aggregation_coordinator_origin) {
   out_context_id = WTF::String();

@@ -26,7 +26,7 @@ Ink* Ink::ink(Navigator& navigator) {
 
 Ink::Ink(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 
-ScriptPromiseTyped<DelegatedInkTrailPresenter> Ink::requestPresenter(
+ScriptPromise<DelegatedInkTrailPresenter> Ink::requestPresenter(
     ScriptState* state,
     InkPresenterParam* presenter_param,
     ExceptionState& exception_state) {
@@ -34,7 +34,7 @@ ScriptPromiseTyped<DelegatedInkTrailPresenter> Ink::requestPresenter(
     exception_state.ThrowException(
         ToExceptionCode(ESErrorType::kError),
         "The object is no longer associated with a window.");
-    return ScriptPromiseTyped<DelegatedInkTrailPresenter>();
+    return ScriptPromise<DelegatedInkTrailPresenter>();
   }
 
   if (presenter_param->presentationArea() &&
@@ -43,7 +43,7 @@ ScriptPromiseTyped<DelegatedInkTrailPresenter> Ink::requestPresenter(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Presentation area element does not belong to the document.");
-    return ScriptPromiseTyped<DelegatedInkTrailPresenter>();
+    return ScriptPromise<DelegatedInkTrailPresenter>();
   }
 
   return ToResolvedPromise<DelegatedInkTrailPresenter>(

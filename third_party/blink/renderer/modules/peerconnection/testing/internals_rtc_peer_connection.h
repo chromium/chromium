@@ -20,10 +20,10 @@ class InternalsRTCPeerConnection {
   static int peerConnectionCount(Internals&);
   static int peerConnectionCountLimit(Internals&);
 
-  static ScriptPromiseTyped<IDLAny>
-  waitForPeerConnectionDispatchEventsTaskCreated(ScriptState*,
-                                                 Internals&,
-                                                 RTCPeerConnection*);
+  static ScriptPromise<IDLAny> waitForPeerConnectionDispatchEventsTaskCreated(
+      ScriptState*,
+      Internals&,
+      RTCPeerConnection*);
 };
 
 }  // namespace blink

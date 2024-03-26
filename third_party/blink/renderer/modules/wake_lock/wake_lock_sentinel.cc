@@ -23,7 +23,7 @@ WakeLockSentinel::WakeLockSentinel(ScriptState* script_state,
 
 WakeLockSentinel::~WakeLockSentinel() = default;
 
-ScriptPromiseTyped<IDLUndefined> WakeLockSentinel::release(
+ScriptPromise<IDLUndefined> WakeLockSentinel::release(
     ScriptState* script_state) {
   // https://w3c.github.io/screen-wake-lock/#the-release-method
   // 1. If this's [[Released]] is false, then run release a wake lock with lock

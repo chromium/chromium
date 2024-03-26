@@ -31,9 +31,9 @@ class ModelGenericSession final : public ScriptWrappable {
   GetModelSessionReceiver();
 
   // model_generic_session.idl implementation.
-  ScriptPromiseTyped<IDLString> execute(ScriptState* script_state,
-                                        const WTF::String& input,
-                                        ExceptionState& exception_state);
+  ScriptPromise<IDLString> execute(ScriptState* script_state,
+                                   const WTF::String& input,
+                                   ExceptionState& exception_state);
   ReadableStream* executeStreaming(ScriptState* script_state,
                                    const WTF::String& input,
                                    ExceptionState& exception_state);

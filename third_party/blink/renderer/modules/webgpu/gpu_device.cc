@@ -372,7 +372,7 @@ void GPUDevice::OnDeviceLostError(WGPUDeviceLostReason reason,
 
 void GPUDevice::OnCreateRenderPipelineAsyncCallback(
     const String& label,
-    ScriptPromiseResolverTyped<GPURenderPipeline>* resolver,
+    ScriptPromiseResolver<GPURenderPipeline>* resolver,
     WGPUCreatePipelineAsyncStatus status,
     WGPURenderPipeline render_pipeline,
     const char* message) {
@@ -410,7 +410,7 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
 
 void GPUDevice::OnCreateComputePipelineAsyncCallback(
     const String& label,
-    ScriptPromiseResolverTyped<GPUComputePipeline>* resolver,
+    ScriptPromiseResolver<GPUComputePipeline>* resolver,
     WGPUCreatePipelineAsyncStatus status,
     WGPUComputePipeline compute_pipeline,
     const char* message) {
@@ -459,8 +459,7 @@ GPUSupportedFeatures* GPUDevice::features() const {
   return features_.Get();
 }
 
-ScriptPromiseTyped<GPUDeviceLostInfo> GPUDevice::lost(
-    ScriptState* script_state) {
+ScriptPromise<GPUDeviceLostInfo> GPUDevice::lost(ScriptState* script_state) {
   return lost_property_->Promise(script_state->World());
 }
 
@@ -538,11 +537,11 @@ GPUComputePipeline* GPUDevice::createComputePipeline(
   return GPUComputePipeline::Create(this, descriptor);
 }
 
-ScriptPromiseTyped<GPURenderPipeline> GPUDevice::createRenderPipelineAsync(
+ScriptPromise<GPURenderPipeline> GPUDevice::createRenderPipelineAsync(
     ScriptState* script_state,
     const GPURenderPipelineDescriptor* descriptor) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<GPURenderPipeline>>(
+      MakeGarbageCollected<ScriptPromiseResolver<GPURenderPipeline>>(
           script_state);
   auto promise = resolver->Promise();
 
@@ -571,11 +570,11 @@ ScriptPromiseTyped<GPURenderPipeline> GPUDevice::createRenderPipelineAsync(
   return promise;
 }
 
-ScriptPromiseTyped<GPUComputePipeline> GPUDevice::createComputePipelineAsync(
+ScriptPromise<GPUComputePipeline> GPUDevice::createComputePipelineAsync(
     ScriptState* script_state,
     const GPUComputePipelineDescriptor* descriptor) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<GPUComputePipeline>>(
+      MakeGarbageCollected<ScriptPromiseResolver<GPUComputePipeline>>(
           script_state);
   auto promise = resolver->Promise();
 
@@ -643,10 +642,10 @@ void GPUDevice::pushErrorScope(const V8GPUErrorFilter& filter) {
   GetProcs().devicePushErrorScope(GetHandle(), AsDawnEnum(filter));
 }
 
-ScriptPromiseTyped<IDLNullable<GPUError>> GPUDevice::popErrorScope(
+ScriptPromise<IDLNullable<GPUError>> GPUDevice::popErrorScope(
     ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<GPUError>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<GPUError>>>(
           script_state);
   auto promise = resolver->Promise();
 
@@ -664,7 +663,7 @@ ScriptPromiseTyped<IDLNullable<GPUError>> GPUDevice::popErrorScope(
 }
 
 void GPUDevice::OnPopErrorScopeCallback(
-    ScriptPromiseResolverTyped<IDLNullable<GPUError>>* resolver,
+    ScriptPromiseResolver<IDLNullable<GPUError>>* resolver,
     WGPUErrorType type,
     const char* message) {
   switch (type) {

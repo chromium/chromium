@@ -10,7 +10,8 @@
 
 namespace blink {
 
-ScopedPromiseResolver::ScopedPromiseResolver(ScriptPromiseResolver* resolver)
+ScopedPromiseResolver::ScopedPromiseResolver(
+    ScriptPromiseResolverBase* resolver)
     : resolver_(resolver) {}
 
 ScopedPromiseResolver::~ScopedPromiseResolver() {
@@ -18,7 +19,7 @@ ScopedPromiseResolver::~ScopedPromiseResolver() {
     OnConnectionError();
 }
 
-ScriptPromiseResolver* ScopedPromiseResolver::Release() {
+ScriptPromiseResolverBase* ScopedPromiseResolver::Release() {
   return resolver_.Release();
 }
 

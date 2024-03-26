@@ -43,14 +43,14 @@ const char kFeaturePolicyBlocked[] =
 const char kNoDeviceSelected[] = "No device selected.";
 
 void RejectWithTypeError(const String& error_details,
-                         ScriptPromiseResolver* resolver) {
+                         ScriptPromiseResolverBase* resolver) {
   ScriptState::Scope scope(resolver->GetScriptState());
   v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
   resolver->Reject(V8ThrowException::CreateTypeError(isolate, error_details));
 }
 
 UsbDeviceFilterPtr ConvertDeviceFilter(const USBDeviceFilter* filter,
-                                       ScriptPromiseResolver* resolver) {
+                                       ScriptPromiseResolverBase* resolver) {
   auto mojo_filter = device::mojom::blink::UsbDeviceFilter::New();
   mojo_filter->has_vendor_id = filter->hasVendorId();
   if (mojo_filter->has_vendor_id)
@@ -190,17 +190,17 @@ USB::~USB() {
   DCHECK(get_permission_requests_.empty());
 }
 
-ScriptPromiseTyped<IDLSequence<USBDevice>> USB::getDevices(
+ScriptPromise<IDLSequence<USBDevice>> USB::getDevices(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (ShouldBlockUsbServiceCall(GetSupplementable()->DomWindow(),
                                 GetExecutionContext(), &exception_state)) {
-    return ScriptPromiseTyped<IDLSequence<USBDevice>>();
+    return ScriptPromise<IDLSequence<USBDevice>>();
   }
 
   EnsureServiceConnection();
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<USBDevice>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<USBDevice>>>(
           script_state, exception_state.GetContext());
   get_devices_requests_.insert(resolver);
   service_->GetDevices(WTF::BindOnce(&USB::OnGetDevices, WrapPersistent(this),
@@ -208,7 +208,7 @@ ScriptPromiseTyped<IDLSequence<USBDevice>> USB::getDevices(
   return resolver->Promise();
 }
 
-ScriptPromiseTyped<USBDevice> USB::requestDevice(
+ScriptPromise<USBDevice> USB::requestDevice(
     ScriptState* script_state,
     const USBDeviceRequestOptions* options,
     ExceptionState& exception_state) {
@@ -217,12 +217,12 @@ ScriptPromiseTyped<USBDevice> USB::requestDevice(
         DOMExceptionCode::kNotSupportedError,
         "The implementation did not support the requested type of object or "
         "operation.");
-    return ScriptPromiseTyped<USBDevice>();
+    return ScriptPromise<USBDevice>();
   }
 
   if (ShouldBlockUsbServiceCall(GetSupplementable()->DomWindow(),
                                 GetExecutionContext(), &exception_state)) {
-    return ScriptPromiseTyped<USBDevice>();
+    return ScriptPromise<USBDevice>();
   }
 
   EnsureServiceConnection();
@@ -230,10 +230,10 @@ ScriptPromiseTyped<USBDevice> USB::requestDevice(
   if (!LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame())) {
     exception_state.ThrowSecurityError(
         "Must be handling a user gesture to show a permission request.");
-    return ScriptPromiseTyped<USBDevice>();
+    return ScriptPromise<USBDevice>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<USBDevice>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<USBDevice>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   auto mojo_options = mojom::blink::WebUsbRequestDeviceOptions::New();
@@ -301,9 +301,8 @@ void USB::ForgetDevice(
   service_->ForgetDevice(device_guid, std::move(callback));
 }
 
-void USB::OnGetDevices(
-    ScriptPromiseResolverTyped<IDLSequence<USBDevice>>* resolver,
-    Vector<UsbDeviceInfoPtr> device_infos) {
+void USB::OnGetDevices(ScriptPromiseResolver<IDLSequence<USBDevice>>* resolver,
+                       Vector<UsbDeviceInfoPtr> device_infos) {
   DCHECK(get_devices_requests_.Contains(resolver));
 
   HeapVector<Member<USBDevice>> devices;
@@ -313,7 +312,7 @@ void USB::OnGetDevices(
   get_devices_requests_.erase(resolver);
 }
 
-void USB::OnGetPermission(ScriptPromiseResolverTyped<USBDevice>* resolver,
+void USB::OnGetPermission(ScriptPromiseResolver<USBDevice>* resolver,
                           UsbDeviceInfoPtr device_info) {
   DCHECK(get_permission_requests_.Contains(resolver));
 
@@ -360,7 +359,7 @@ void USB::OnServiceConnectionError() {
   // script to be executed in the process of determining if the value is a
   // thenable. Move the set to a local variable to prevent such execution from
   // invalidating the iterator used by the loop.
-  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLSequence<USBDevice>>>>
+  HeapHashSet<Member<ScriptPromiseResolver<IDLSequence<USBDevice>>>>
       get_devices_requests;
   get_devices_requests.swap(get_devices_requests_);
   for (auto& resolver : get_devices_requests)

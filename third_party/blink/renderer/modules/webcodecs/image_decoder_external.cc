@@ -109,7 +109,7 @@ ImageDecoderExternal* ImageDecoderExternal::Create(
 }
 
 ImageDecoderExternal::DecodeRequest::DecodeRequest(
-    ScriptPromiseResolverTyped<ImageDecodeResult>* resolver,
+    ScriptPromiseResolver<ImageDecodeResult>* resolver,
     uint32_t frame_index,
     bool complete_frames_only)
     : resolver(resolver),
@@ -133,11 +133,11 @@ bool ImageDecoderExternal::DecodeRequest::IsFinal() const {
 }
 
 // static
-ScriptPromiseTyped<IDLBoolean> ImageDecoderExternal::isTypeSupported(
+ScriptPromise<IDLBoolean> ImageDecoderExternal::isTypeSupported(
     ScriptState* script_state,
     String type) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
-      script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
   auto promise = resolver->Promise();
   resolver->Resolve(IsTypeSupportedInternal(type));
   return promise;
@@ -288,11 +288,11 @@ ImageDecoderExternal::~ImageDecoderExternal() {
   DCHECK_EQ(pending_metadata_requests_, 0);
 }
 
-ScriptPromiseTyped<ImageDecodeResult> ImageDecoderExternal::decode(
+ScriptPromise<ImageDecodeResult> ImageDecoderExternal::decode(
     const ImageDecodeOptions* options) {
   DVLOG(1) << __func__;
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<ImageDecodeResult>>(
+      MakeGarbageCollected<ScriptPromiseResolver<ImageDecodeResult>>(
           script_state_);
   auto promise = resolver->Promise();
 
@@ -357,7 +357,7 @@ bool ImageDecoderExternal::complete() const {
   return data_complete_;
 }
 
-ScriptPromiseTyped<IDLUndefined> ImageDecoderExternal::completed(
+ScriptPromise<IDLUndefined> ImageDecoderExternal::completed(
     ScriptState* script_state) {
   return completed_property_->Promise(script_state->World());
 }

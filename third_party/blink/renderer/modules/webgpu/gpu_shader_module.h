@@ -31,12 +31,12 @@ class GPUShaderModule : public DawnObject<WGPUShaderModule> {
   GPUShaderModule& operator=(const GPUShaderModule&) = delete;
   ~GPUShaderModule() override = default;
 
-  ScriptPromiseTyped<GPUCompilationInfo> getCompilationInfo(
+  ScriptPromise<GPUCompilationInfo> getCompilationInfo(
       ScriptState* script_state);
 
  private:
   void OnCompilationInfoCallback(
-      ScriptPromiseResolverTyped<GPUCompilationInfo>* resolver,
+      ScriptPromiseResolver<GPUCompilationInfo>* resolver,
       WGPUCompilationInfoRequestStatus status,
       const WGPUCompilationInfo* info);
 

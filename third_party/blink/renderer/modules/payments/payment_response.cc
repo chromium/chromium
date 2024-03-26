@@ -149,7 +149,7 @@ ScriptValue PaymentResponse::details(ScriptState* script_state) const {
                      details_.GetAcrossWorld(script_state));
 }
 
-ScriptPromiseTyped<IDLUndefined> PaymentResponse::complete(
+ScriptPromise<IDLUndefined> PaymentResponse::complete(
     ScriptState* script_state,
     const String& result,
     ExceptionState& exception_state) {
@@ -165,7 +165,7 @@ ScriptPromiseTyped<IDLUndefined> PaymentResponse::complete(
                                            exception_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> PaymentResponse::retry(
+ScriptPromise<IDLUndefined> PaymentResponse::retry(
     ScriptState* script_state,
     const PaymentValidationErrors* error_fields,
     ExceptionState& exception_state) {

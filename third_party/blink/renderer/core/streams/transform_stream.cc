@@ -46,7 +46,7 @@ class TransformStream::FlushAlgorithm final : public StreamAlgorithm {
     }
     ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionContextType::kUnknown, "", "");
-    ScriptPromise promise;
+    ScriptPromiseUntyped promise;
     {
       // This is needed because the realm of the transformer can be different
       // from the realm of the transform stream.
@@ -98,7 +98,7 @@ class TransformStream::TransformAlgorithm final : public StreamAlgorithm {
     }
     ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionContextType::kUnknown, "", "");
-    ScriptPromise promise =
+    ScriptPromiseUntyped promise =
         transformer_->Transform(argv[0], controller_, exception_state);
     if (exception_state.HadException()) {
       auto exception = exception_state.GetException();

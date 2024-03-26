@@ -79,7 +79,7 @@ LocalDOMWindow* OpenDocumentPictureInPictureWindow(
 
   // Create the DocumentPictureInPictureOptions.
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<DOMWindow>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<DOMWindow>>(script_state);
   ExceptionState exception_state(script_state->GetIsolate(),
                                  ExceptionContextType::kOperationInvoke,
                                  "DocumentPictureInPicture", "requestWindow");
@@ -538,7 +538,7 @@ TEST_F(PictureInPictureControllerTestWithWidget,
   EXPECT_EQ(nullptr, Video()->GetWebMediaPlayer());
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<PictureInPictureWindow>>(
+      MakeGarbageCollected<ScriptPromiseResolver<PictureInPictureWindow>>(
           scope.GetScriptState());
   auto promise = resolver->Promise();
   PictureInPictureControllerImpl::From(GetDocument())
@@ -830,7 +830,7 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
 
   // Create the DocumentPictureInPictureOptions.
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<DOMWindow>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<DOMWindow>>(script_state);
   ExceptionState exception_state(script_state->GetIsolate(),
                                  ExceptionContextType::kOperationInvoke,
                                  "DocumentPictureInPicture", "requestWindow");

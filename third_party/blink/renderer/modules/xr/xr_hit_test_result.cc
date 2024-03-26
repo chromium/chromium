@@ -51,7 +51,7 @@ XRPose* XRHitTestResult::getPose(XRSpace* other,
   return MakeGarbageCollected<XRPose>(other_offset_from_this, false);
 }
 
-ScriptPromiseTyped<XRAnchor> XRHitTestResult::createAnchor(
+ScriptPromise<XRAnchor> XRHitTestResult::createAnchor(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DVLOG(2) << __func__;

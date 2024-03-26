@@ -40,18 +40,17 @@ class GamepadHapticActuator final : public ScriptWrappable,
   const String& type() const { return type_; }
   void SetType(device::GamepadHapticActuatorType);
 
-  ScriptPromiseTyped<V8GamepadHapticsResult>
+  ScriptPromise<V8GamepadHapticsResult>
   playEffect(ScriptState*, const String&, const GamepadEffectParameters*);
 
-  ScriptPromiseTyped<V8GamepadHapticsResult> reset(ScriptState*);
+  ScriptPromise<V8GamepadHapticsResult> reset(ScriptState*);
 
   void Trace(Visitor*) const override;
 
  private:
-  void OnPlayEffectCompleted(
-      ScriptPromiseResolverTyped<V8GamepadHapticsResult>*,
-      device::mojom::GamepadHapticsResult);
-  void OnResetCompleted(ScriptPromiseResolverTyped<V8GamepadHapticsResult>*,
+  void OnPlayEffectCompleted(ScriptPromiseResolver<V8GamepadHapticsResult>*,
+                             device::mojom::GamepadHapticsResult);
+  void OnResetCompleted(ScriptPromiseResolver<V8GamepadHapticsResult>*,
                         device::mojom::GamepadHapticsResult);
   void ResetVibrationIfNotPreempted();
 

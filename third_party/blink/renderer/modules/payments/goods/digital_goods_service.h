@@ -30,14 +30,13 @@ class DigitalGoodsService final : public ScriptWrappable {
   ~DigitalGoodsService() override;
 
   // IDL Interface:
-  ScriptPromiseTyped<IDLSequence<ItemDetails>> getDetails(
+  ScriptPromise<IDLSequence<ItemDetails>> getDetails(
       ScriptState*,
       const Vector<String>& item_ids);
-  ScriptPromiseTyped<IDLSequence<PurchaseDetails>> listPurchases(ScriptState*);
-  ScriptPromiseTyped<IDLSequence<PurchaseDetails>> listPurchaseHistory(
-      ScriptState*);
-  ScriptPromiseTyped<IDLUndefined> consume(ScriptState*,
-                                           const String& purchase_token);
+  ScriptPromise<IDLSequence<PurchaseDetails>> listPurchases(ScriptState*);
+  ScriptPromise<IDLSequence<PurchaseDetails>> listPurchaseHistory(ScriptState*);
+  ScriptPromise<IDLUndefined> consume(ScriptState*,
+                                      const String& purchase_token);
 
   void Trace(Visitor* visitor) const override;
 

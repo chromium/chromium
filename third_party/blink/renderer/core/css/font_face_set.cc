@@ -181,17 +181,17 @@ void FontFaceSet::LoadFontPromiseResolver::LoadFonts() {
   }
 }
 
-ScriptPromiseTyped<IDLSequence<FontFace>> FontFaceSet::load(
+ScriptPromise<IDLSequence<FontFace>> FontFaceSet::load(
     ScriptState* script_state,
     const String& font_string,
     const String& text) {
   if (!InActiveContext()) {
-    return ScriptPromiseTyped<IDLSequence<FontFace>>();
+    return ScriptPromise<IDLSequence<FontFace>>();
   }
 
   Font font;
   if (!ResolveFontStyle(font_string, font)) {
-    return ScriptPromiseTyped<IDLSequence<FontFace>>::RejectWithDOMException(
+    return ScriptPromise<IDLSequence<FontFace>>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kSyntaxError,

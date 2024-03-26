@@ -33,7 +33,7 @@ class CORE_EXPORT DynamicModuleResolver final
   // Should be called w/ a valid V8 context.
   void ResolveDynamically(const ModuleRequest& module_request,
                           const ReferrerScriptInfo& referrer_info,
-                          ScriptPromiseResolverTyped<IDLAny>*);
+                          ScriptPromiseResolver<IDLAny>*);
 
  private:
   Member<Modulator> modulator_;

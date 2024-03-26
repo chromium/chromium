@@ -73,13 +73,14 @@ class MediaKeys : public ScriptWrappable,
                                  const String& session_type_string,
                                  ExceptionState&);
 
-  ScriptPromiseTyped<IDLBoolean> setServerCertificate(
+  ScriptPromise<IDLBoolean> setServerCertificate(
       ScriptState*,
       const DOMArrayPiece& server_certificate,
       ExceptionState&);
 
-  ScriptPromiseTyped<V8MediaKeyStatus>
-  getStatusForPolicy(ScriptState*, const MediaKeysPolicy*, ExceptionState&);
+  ScriptPromise<V8MediaKeyStatus> getStatusForPolicy(ScriptState*,
+                                                     const MediaKeysPolicy*,
+                                                     ExceptionState&);
 
   // Indicates that the provided HTMLMediaElement wants to use this object.
   // Returns true if no other HTMLMediaElement currently references this

@@ -40,7 +40,7 @@ namespace {
 class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
  public:
   NewCdmResultPromise(
-      ScriptPromiseResolverTyped<MediaKeys>* resolver,
+      ScriptPromiseResolver<MediaKeys>* resolver,
       const MediaKeysConfig& config,
       const WebVector<WebEncryptedMediaSessionType>& supported_session_types)
       : ContentDecryptionModuleResultPromise(resolver,
@@ -201,7 +201,7 @@ MediaKeySystemConfiguration* MediaKeySystemAccess::getConfiguration() const {
   return result;
 }
 
-ScriptPromiseTyped<MediaKeys> MediaKeySystemAccess::createMediaKeys(
+ScriptPromise<MediaKeys> MediaKeySystemAccess::createMediaKeys(
     ScriptState* script_state) {
   // From http://w3c.github.io/encrypted-media/#createMediaKeys
   // (Reordered to be able to pass values into the promise constructor.)
@@ -213,7 +213,7 @@ ScriptPromiseTyped<MediaKeys> MediaKeySystemAccess::createMediaKeys(
   // 1. Let promise be a new promise.
   MediaKeysConfig config = {keySystem(), UseHardwareSecureCodecs()};
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<MediaKeys>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<MediaKeys>>(script_state);
   NewCdmResultPromise* helper = MakeGarbageCollected<NewCdmResultPromise>(
       resolver, config, configuration.session_types);
   auto promise = resolver->Promise();

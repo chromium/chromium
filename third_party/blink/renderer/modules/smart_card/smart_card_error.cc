@@ -21,7 +21,7 @@ SmartCardError* SmartCardError::Create(String message,
 
 // static
 void SmartCardError::MaybeReject(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     device::mojom::blink::SmartCardError mojom_error) {
   ScriptState* script_state = resolver->GetScriptState();
 

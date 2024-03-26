@@ -31,10 +31,10 @@ class MODULES_EXPORT PresentationConnectionCallbacks final {
 
  public:
   PresentationConnectionCallbacks(
-      ScriptPromiseResolverTyped<PresentationConnection>*,
+      ScriptPromiseResolver<PresentationConnection>*,
       PresentationRequest*);
   PresentationConnectionCallbacks(
-      ScriptPromiseResolverTyped<PresentationConnection>*,
+      ScriptPromiseResolver<PresentationConnection>*,
       ControllerPresentationConnection*);
 
   PresentationConnectionCallbacks(const PresentationConnectionCallbacks&) =
@@ -60,7 +60,7 @@ class MODULES_EXPORT PresentationConnectionCallbacks final {
                      connection_receiver);
   void OnError(const mojom::blink::PresentationError&);
 
-  Persistent<ScriptPromiseResolverTyped<PresentationConnection>> resolver_;
+  Persistent<ScriptPromiseResolver<PresentationConnection>> resolver_;
   Persistent<PresentationRequest> request_;
   WeakPersistent<ControllerPresentationConnection> connection_;
 };

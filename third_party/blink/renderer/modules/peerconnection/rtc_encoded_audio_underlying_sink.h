@@ -24,18 +24,17 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSink final
       scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>);
 
   // UnderlyingSinkBase
-  ScriptPromiseTyped<IDLUndefined> start(ScriptState*,
-                                         WritableStreamDefaultController*,
-                                         ExceptionState&) override;
-  ScriptPromiseTyped<IDLUndefined> write(ScriptState*,
-                                         ScriptValue chunk,
-                                         WritableStreamDefaultController*,
-                                         ExceptionState&) override;
-  ScriptPromiseTyped<IDLUndefined> close(ScriptState*,
-                                         ExceptionState&) override;
-  ScriptPromiseTyped<IDLUndefined> abort(ScriptState*,
-                                         ScriptValue reason,
-                                         ExceptionState&) override;
+  ScriptPromise<IDLUndefined> start(ScriptState*,
+                                    WritableStreamDefaultController*,
+                                    ExceptionState&) override;
+  ScriptPromise<IDLUndefined> write(ScriptState*,
+                                    ScriptValue chunk,
+                                    WritableStreamDefaultController*,
+                                    ExceptionState&) override;
+  ScriptPromise<IDLUndefined> close(ScriptState*, ExceptionState&) override;
+  ScriptPromise<IDLUndefined> abort(ScriptState*,
+                                    ScriptValue reason,
+                                    ExceptionState&) override;
 
   void Trace(Visitor*) const override;
 

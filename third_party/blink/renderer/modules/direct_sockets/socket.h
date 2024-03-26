@@ -27,9 +27,8 @@ class ExceptionState;
 class MODULES_EXPORT Socket : public ExecutionContextLifecycleStateObserver {
  public:
   // IDL definitions
-  virtual ScriptPromiseTyped<IDLUndefined> closed(ScriptState*) const;
-  virtual ScriptPromiseTyped<IDLUndefined> close(ScriptState*,
-                                                 ExceptionState&) = 0;
+  virtual ScriptPromise<IDLUndefined> closed(ScriptState*) const;
+  virtual ScriptPromise<IDLUndefined> close(ScriptState*, ExceptionState&) = 0;
 
  public:
   enum class State { kOpening, kOpen, kClosed, kAborted };

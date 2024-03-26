@@ -33,7 +33,7 @@ class MODULES_EXPORT WebTransportError : public DOMException {
   static WebTransportError* Create(const WebTransportErrorInit*);
 
   // For creating a WebTransportError from C++. Typically this will be
-  // immediately passed to ScriptPromiseResolver::Reject.
+  // immediately passed to ScriptPromiseResolverBase::Reject.
   static v8::Local<v8::Value> Create(v8::Isolate*,
                                      std::optional<uint32_t> stream_error_code,
                                      String message,

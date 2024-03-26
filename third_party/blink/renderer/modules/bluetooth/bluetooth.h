@@ -44,15 +44,16 @@ class Bluetooth final : public EventTarget,
   ~Bluetooth() override;
 
   // IDL exposed bluetooth interface:
-  ScriptPromiseTyped<IDLBoolean> getAvailability(ScriptState*, ExceptionState&);
-  ScriptPromiseTyped<IDLSequence<BluetoothDevice>> getDevices(ScriptState*,
-                                                              ExceptionState&);
-  ScriptPromiseTyped<BluetoothDevice> requestDevice(ScriptState*,
-                                                    const RequestDeviceOptions*,
-                                                    ExceptionState&);
+  ScriptPromise<IDLBoolean> getAvailability(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLSequence<BluetoothDevice>> getDevices(ScriptState*,
+                                                         ExceptionState&);
+  ScriptPromise<BluetoothDevice> requestDevice(ScriptState*,
+                                               const RequestDeviceOptions*,
+                                               ExceptionState&);
 
-  ScriptPromiseTyped<BluetoothLEScan>
-  requestLEScan(ScriptState*, const BluetoothLEScanOptions*, ExceptionState&);
+  ScriptPromise<BluetoothLEScan> requestLEScan(ScriptState*,
+                                               const BluetoothLEScanOptions*,
+                                               ExceptionState&);
 
   bool IsServiceBound() const { return service_.is_bound(); }
   mojom::blink::WebBluetoothService* Service() { return service_.get(); }
@@ -83,16 +84,15 @@ class Bluetooth final : public EventTarget,
       mojom::blink::WebBluetoothDevicePtr,
       ExecutionContext*);
 
-  void GetDevicesCallback(
-      ScriptPromiseResolverTyped<IDLSequence<BluetoothDevice>>*,
-      Vector<mojom::blink::WebBluetoothDevicePtr>);
+  void GetDevicesCallback(ScriptPromiseResolver<IDLSequence<BluetoothDevice>>*,
+                          Vector<mojom::blink::WebBluetoothDevicePtr>);
 
-  void RequestDeviceCallback(ScriptPromiseResolverTyped<BluetoothDevice>*,
+  void RequestDeviceCallback(ScriptPromiseResolver<BluetoothDevice>*,
                              mojom::blink::WebBluetoothResult,
                              mojom::blink::WebBluetoothDevicePtr);
 
   void RequestScanningCallback(
-      ScriptPromiseResolverTyped<BluetoothLEScan>*,
+      ScriptPromiseResolver<BluetoothLEScan>*,
       mojo::ReceiverId,
       mojom::blink::WebBluetoothRequestLEScanOptionsPtr,
       mojom::blink::WebBluetoothResult);

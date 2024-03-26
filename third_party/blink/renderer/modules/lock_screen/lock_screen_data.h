@@ -26,16 +26,16 @@ class LockScreenData final : public ScriptWrappable,
   static const char kSupplementName[];
   explicit LockScreenData(LocalDOMWindow&);
   ~LockScreenData() override;
-  static ScriptPromiseTyped<LockScreenData> getLockScreenData(ScriptState*,
-                                                              LocalDOMWindow&);
+  static ScriptPromise<LockScreenData> getLockScreenData(ScriptState*,
+                                                         LocalDOMWindow&);
 
   // IDL Interface:
-  ScriptPromiseTyped<IDLSequence<IDLString>> getKeys(ScriptState*);
-  ScriptPromiseTyped<IDLAny> getData(ScriptState*, const String& key);
-  ScriptPromiseTyped<IDLUndefined> setData(ScriptState*,
-                                           const String& key,
-                                           const String& data);
-  ScriptPromiseTyped<IDLUndefined> deleteData(ScriptState*, const String& key);
+  ScriptPromise<IDLSequence<IDLString>> getKeys(ScriptState*);
+  ScriptPromise<IDLAny> getData(ScriptState*, const String& key);
+  ScriptPromise<IDLUndefined> setData(ScriptState*,
+                                      const String& key,
+                                      const String& data);
+  ScriptPromise<IDLUndefined> deleteData(ScriptState*, const String& key);
 
   void Trace(Visitor* visitor) const override;
 

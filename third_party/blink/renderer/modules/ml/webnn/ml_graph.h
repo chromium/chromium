@@ -59,7 +59,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   void Compute(ScopedMLTrace scoped_trace,
                const MLNamedArrayBufferViews& inputs,
                const MLNamedArrayBufferViews& outputs,
-               ScriptPromiseResolverTyped<MLComputeResult>* resolver,
+               ScriptPromiseResolver<MLComputeResult>* resolver,
                ExceptionState& exception_state);
 
   const MLContext* Context() const;
@@ -74,7 +74,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // specific graph.
   void Build(ScopedMLTrace scoped_trace,
              const MLNamedOperands& named_outputs,
-             ScriptPromiseResolverTyped<MLGraph>* resolver);
+             ScriptPromiseResolver<MLGraph>* resolver);
 
   // An MLGraph backend should implement this method to build and compile a
   // platform specific graph asynchronously. The actual graph construction and
@@ -84,7 +84,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // rejected with a DOMException accordingly.
   virtual void BuildImpl(ScopedMLTrace scoped_trace,
                          const MLNamedOperands& outputs,
-                         ScriptPromiseResolverTyped<MLGraph>* resolver) = 0;
+                         ScriptPromiseResolver<MLGraph>* resolver) = 0;
 
   // An MLGraph backend should implement this method to execute the compiled
   // platform graph asynchronously. The actual graph execution work should be
@@ -98,12 +98,11 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // the resolver will be resolved with an MLComputeResult that contains the
   // input and output buffers. Otherwise, the resolver will be rejected with a
   // DOMException accordingly.
-  virtual void ComputeImpl(
-      ScopedMLTrace scoped_trace,
-      const MLNamedArrayBufferViews& inputs,
-      const MLNamedArrayBufferViews& outputs,
-      ScriptPromiseResolverTyped<MLComputeResult>* resolver,
-      ExceptionState& exception_state) = 0;
+  virtual void ComputeImpl(ScopedMLTrace scoped_trace,
+                           const MLNamedArrayBufferViews& inputs,
+                           const MLNamedArrayBufferViews& outputs,
+                           ScriptPromiseResolver<MLComputeResult>* resolver,
+                           ExceptionState& exception_state) = 0;
 
   Member<MLContext> ml_context_;
   bool resources_info_initialized_{false};

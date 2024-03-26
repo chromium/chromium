@@ -139,13 +139,13 @@ TEST(StreamPromiseResolverTest, ResolveDoesNothingInsideResolve) {
   EXPECT_EQ(promise->V8Promise(isolate)->Result(), value);
 }
 
-TEST(StreamPromiseResolverTest, GetScriptPromise) {
+TEST(StreamPromiseResolverTest, GetScriptPromiseUntyped) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* promise =
       MakeGarbageCollected<StreamPromiseResolver>(scope.GetScriptState());
-  ScriptPromise script_promise =
-      promise->GetScriptPromise(scope.GetScriptState());
+  ScriptPromiseUntyped script_promise =
+      promise->GetScriptPromiseUntyped(scope.GetScriptState());
   EXPECT_FALSE(script_promise.IsEmpty());
 }
 

@@ -35,22 +35,22 @@ class FileSystemDirectoryHandle final
 
   bool isDirectory() const override { return true; }
 
-  ScriptPromiseTyped<FileSystemFileHandle> getFileHandle(
+  ScriptPromise<FileSystemFileHandle> getFileHandle(
       ScriptState*,
       const String& name,
       const FileSystemGetFileOptions*,
       ExceptionState&);
-  ScriptPromiseTyped<FileSystemDirectoryHandle> getDirectoryHandle(
+  ScriptPromise<FileSystemDirectoryHandle> getDirectoryHandle(
       ScriptState*,
       const String& name,
       const FileSystemGetDirectoryOptions*,
       ExceptionState&);
-  ScriptPromiseTyped<IDLUndefined> removeEntry(ScriptState*,
-                                               const String& name,
-                                               const FileSystemRemoveOptions*,
-                                               ExceptionState&);
+  ScriptPromise<IDLUndefined> removeEntry(ScriptState*,
+                                          const String& name,
+                                          const FileSystemRemoveOptions*,
+                                          ExceptionState&);
 
-  ScriptPromiseTyped<IDLNullable<IDLSequence<IDLUSVString>>>
+  ScriptPromise<IDLNullable<IDLSequence<IDLUSVString>>>
   resolve(ScriptState*, FileSystemHandle* possible_child, ExceptionState&);
 
   mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> Transfer()

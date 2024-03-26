@@ -45,7 +45,7 @@ class MediaKeySystemAccessInitializer final
  public:
   MediaKeySystemAccessInitializer(
       ExecutionContext*,
-      ScriptPromiseResolver*,
+      ScriptPromiseResolverBase*,
       const String& key_system,
       const HeapVector<Member<MediaKeySystemConfiguration>>&
           supported_configurations);
@@ -71,7 +71,7 @@ class MediaKeySystemAccessInitializer final
 
 MediaKeySystemAccessInitializer::MediaKeySystemAccessInitializer(
     ExecutionContext* context,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     const String& key_system,
     const HeapVector<Member<MediaKeySystemConfiguration>>&
         supported_configurations)
@@ -120,7 +120,7 @@ void MediaKeySystemAccessInitializer::StartRequestAsync() {
 
 }  // namespace
 
-ScriptPromiseTyped<MediaKeySystemAccess>
+ScriptPromise<MediaKeySystemAccess>
 NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
     ScriptState* script_state,
     Navigator& navigator,
@@ -142,7 +142,7 @@ NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
         kEncryptedMediaPermissionsPolicyConsoleWarning));
     exception_state.ThrowSecurityError(
         "requestMediaKeySystemAccess is disabled by permissions policy.");
-    return ScriptPromiseTyped<MediaKeySystemAccess>();
+    return ScriptPromise<MediaKeySystemAccess>();
   }
 
   // From https://w3c.github.io/encrypted-media/#requestMediaKeySystemAccess
@@ -151,7 +151,7 @@ NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
   //    newly created TypeError.
   if (key_system.empty()) {
     exception_state.ThrowTypeError("The keySystem parameter is empty.");
-    return ScriptPromiseTyped<MediaKeySystemAccess>();
+    return ScriptPromise<MediaKeySystemAccess>();
   }
 
   // 2. If supportedConfigurations is empty, return a promise rejected with
@@ -159,7 +159,7 @@ NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
   if (!supported_configurations.size()) {
     exception_state.ThrowTypeError(
         "The supportedConfigurations parameter is empty.");
-    return ScriptPromiseTyped<MediaKeySystemAccess>();
+    return ScriptPromise<MediaKeySystemAccess>();
   }
 
   // 3. Let document be the calling context's Document.
@@ -168,7 +168,7 @@ NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The context provided is not associated with a page.");
-    return ScriptPromiseTyped<MediaKeySystemAccess>();
+    return ScriptPromise<MediaKeySystemAccess>();
   }
 
   UseCounter::Count(*window, WebFeature::kEncryptedMediaSecureOrigin);
@@ -180,7 +180,7 @@ NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
 
   // 5. Let promise be a new promise.
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<MediaKeySystemAccess>>(
+      MakeGarbageCollected<ScriptPromiseResolver<MediaKeySystemAccess>>(
           script_state);
   MediaKeySystemAccessInitializer* initializer =
       MakeGarbageCollected<MediaKeySystemAccessInitializer>(

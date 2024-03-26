@@ -37,7 +37,7 @@ class MODULES_EXPORT PaymentManager final : public ScriptWrappable {
 
   void Trace(Visitor*) const override;
 
-  ScriptPromiseTyped<IDLBoolean> enableDelegations(
+  ScriptPromise<IDLBoolean> enableDelegations(
       ScriptState*,
       const Vector<V8PaymentDelegation>& delegations,
       ExceptionState&);
@@ -52,7 +52,7 @@ class MODULES_EXPORT PaymentManager final : public ScriptWrappable {
   HeapMojoRemote<payments::mojom::blink::PaymentManager> manager_;
   Member<PaymentInstruments> instruments_;
   String user_hint_;
-  Member<ScriptPromiseResolverTyped<IDLBoolean>> enable_delegations_resolver_;
+  Member<ScriptPromiseResolver<IDLBoolean>> enable_delegations_resolver_;
 };
 
 }  // namespace blink

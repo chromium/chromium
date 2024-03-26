@@ -99,7 +99,7 @@ bool SVGImageElement::CurrentFrameHasSingleSecurityOrigin() const {
   return true;
 }
 
-ScriptPromiseTyped<IDLUndefined> SVGImageElement::decode(
+ScriptPromise<IDLUndefined> SVGImageElement::decode(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   return GetImageLoader().Decode(script_state, exception_state);

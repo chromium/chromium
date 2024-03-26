@@ -23,13 +23,13 @@
 namespace blink {
 
 // static
-ScriptPromiseTyped<IDLNullable<FileSystemHandle>>
+ScriptPromise<IDLNullable<FileSystemHandle>>
 DataTransferItemFileSystemAccess::getAsFileSystemHandle(
     ScriptState* script_state,
     DataTransferItem& data_transfer_item,
     ExceptionState& exception_state) {
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLNullable<FileSystemHandle>>>(
+      ScriptPromiseResolver<IDLNullable<FileSystemHandle>>>(
       script_state, exception_state.GetContext());
   auto result = resolver->Promise();
 
@@ -58,8 +58,7 @@ DataTransferItemFileSystemAccess::getAsFileSystemHandle(
       ->GetEntryFromDataTransferToken(
           std::move(token_remote),
           WTF::BindOnce(
-              [](ScriptPromiseResolverTyped<IDLNullable<FileSystemHandle>>*
-                     resolver,
+              [](ScriptPromiseResolver<IDLNullable<FileSystemHandle>>* resolver,
                  mojom::blink::FileSystemAccessErrorPtr result,
                  mojom::blink::FileSystemAccessEntryPtr entry) {
                 ScriptState* script_state = resolver->GetScriptState();

@@ -93,18 +93,18 @@ HeapVector<Member<MLTensorInfo>> MLModel::outputs(ScriptState* script_state) {
 
 MLModel::~MLModel() = default;
 
-ScriptPromiseTyped<IDLRecord<IDLString, MLTensor>> MLModel::compute(
+ScriptPromise<IDLRecord<IDLString, MLTensor>> MLModel::compute(
     ScriptState* script_state,
     const HeapVector<std::pair<String, Member<MLTensor>>>& inputs,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
-    return ScriptPromiseTyped<IDLRecord<IDLString, MLTensor>>();
+    return ScriptPromise<IDLRecord<IDLString, MLTensor>>();
   }
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLRecord<IDLString, MLTensor>>>(
+      ScriptPromiseResolver<IDLRecord<IDLString, MLTensor>>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -157,7 +157,7 @@ void MLModel::Trace(Visitor* visitor) const {
 
 void MLModel::OnComputeResult(
     ScriptState* script_state,
-    ScriptPromiseResolverTyped<IDLRecord<IDLString, MLTensor>>* resolver,
+    ScriptPromiseResolver<IDLRecord<IDLString, MLTensor>>* resolver,
     ComputeResult result,
     const std::optional<HashMap<String, Vector<uint8_t>>>& outputs) {
   if (result != ComputeResult::kOk || !outputs.has_value()) {

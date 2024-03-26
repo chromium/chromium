@@ -28,7 +28,7 @@ class MODULES_EXPORT WakeLockManager final
  public:
   WakeLockManager(ExecutionContext*, V8WakeLockType::Enum);
 
-  void AcquireWakeLock(ScriptPromiseResolverTyped<WakeLockSentinel>*);
+  void AcquireWakeLock(ScriptPromiseResolver<WakeLockSentinel>*);
   void ClearWakeLocks();
 
   void UnregisterSentinel(WakeLockSentinel*);

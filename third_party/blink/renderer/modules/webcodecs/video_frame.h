@@ -97,7 +97,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
   uint32_t allocationSize(VideoFrameCopyToOptions* options, ExceptionState&);
 
-  ScriptPromiseTyped<IDLSequence<PlaneLayout>> copyTo(
+  ScriptPromise<IDLSequence<PlaneLayout>> copyTo(
       ScriptState* script_state,
       const AllowSharedBufferSource* destination,
       VideoFrameCopyToOptions* options,
@@ -140,7 +140,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                            const gfx::Rect& src_rect,
                            const VideoFrameLayout& dest_layout,
                            base::span<uint8_t> buffer);
-  bool CopyToAsync(ScriptPromiseResolverTyped<IDLSequence<PlaneLayout>>*,
+  bool CopyToAsync(ScriptPromiseResolver<IDLSequence<PlaneLayout>>*,
                    scoped_refptr<media::VideoFrame> frame,
                    gfx::Rect src_rect,
                    const AllowSharedBufferSource* destination,
@@ -149,7 +149,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   // ImageBitmapSource implementation
   static constexpr uint64_t kCpuEfficientFrameSize = 320u * 240u;
   gfx::Size BitmapSourceSize() const override;
-  ScriptPromiseTyped<ImageBitmap> CreateImageBitmap(
+  ScriptPromise<ImageBitmap> CreateImageBitmap(
       ScriptState*,
       std::optional<gfx::Rect> crop_rect,
       const ImageBitmapOptions*,

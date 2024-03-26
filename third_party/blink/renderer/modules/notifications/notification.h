@@ -123,7 +123,7 @@ class MODULES_EXPORT Notification final
 
   static String PermissionString(mojom::blink::PermissionStatus permission);
   static String permission(ExecutionContext* context);
-  static ScriptPromiseTyped<V8NotificationPermission> requestPermission(
+  static ScriptPromise<V8NotificationPermission> requestPermission(
       ScriptState* script_state,
       V8NotificationPermissionCallback* deprecated_callback = nullptr);
 

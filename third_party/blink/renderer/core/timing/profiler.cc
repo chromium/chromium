@@ -73,10 +73,9 @@ ExecutionContext* Profiler::GetExecutionContext() const {
   return ExecutionContext::From(script_state_);
 }
 
-ScriptPromiseTyped<ProfilerTrace> Profiler::stop(ScriptState* script_state) {
+ScriptPromise<ProfilerTrace> Profiler::stop(ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<ProfilerTrace>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<ProfilerTrace>>(script_state);
   auto promise = resolver->Promise();
 
   if (!stopped()) {

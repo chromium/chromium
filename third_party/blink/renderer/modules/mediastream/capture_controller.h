@@ -36,14 +36,14 @@ class MODULES_EXPORT CaptureController final
   void setFocusBehavior(V8CaptureStartFocusBehavior, ExceptionState&);
 
   // Captured Surface Control IDL interface - scrolling
-  ScriptPromiseTyped<IDLUndefined> sendWheel(ScriptState* script_state,
-                                             CapturedWheelAction* action);
+  ScriptPromise<IDLUndefined> sendWheel(ScriptState* script_state,
+                                        CapturedWheelAction* action);
 
   // Captured Surface Control IDL interface - zooming
   static Vector<int> getSupportedZoomLevels();
   int getZoomLevel(ExceptionState& exception_state);
-  ScriptPromiseTyped<IDLUndefined> setZoomLevel(ScriptState* script_state,
-                                                int zoom_level);
+  ScriptPromise<IDLUndefined> setZoomLevel(ScriptState* script_state,
+                                           int zoom_level);
 
   void SetIsBound(bool value) { is_bound_ = value; }
   bool IsBound() const { return is_bound_; }

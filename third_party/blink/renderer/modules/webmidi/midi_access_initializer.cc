@@ -30,13 +30,12 @@ using midi::mojom::Result;
 
 MIDIAccessInitializer::MIDIAccessInitializer(ScriptState* script_state,
                                              const MIDIOptions* options)
-    : resolver_(MakeGarbageCollected<ScriptPromiseResolverTyped<MIDIAccess>>(
+    : resolver_(MakeGarbageCollected<ScriptPromiseResolver<MIDIAccess>>(
           script_state)),
       options_(options),
       permission_service_(ExecutionContext::From(script_state)) {}
 
-ScriptPromiseTyped<MIDIAccess> MIDIAccessInitializer::Start(
-    LocalDOMWindow* window) {
+ScriptPromise<MIDIAccess> MIDIAccessInitializer::Start(LocalDOMWindow* window) {
   // See https://bit.ly/2S0zRAS for task types.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       window->GetTaskRunner(TaskType::kMiscPlatformAPI);

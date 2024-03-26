@@ -27,9 +27,9 @@ class KeyboardLock final : public GarbageCollected<KeyboardLock>,
 
   ~KeyboardLock();
 
-  ScriptPromiseTyped<IDLUndefined> lock(ScriptState*,
-                                        const Vector<String>&,
-                                        ExceptionState&);
+  ScriptPromise<IDLUndefined> lock(ScriptState*,
+                                   const Vector<String>&,
+                                   ExceptionState&);
   void unlock(ScriptState*);
 
   void Trace(Visitor*) const override;
@@ -44,11 +44,11 @@ class KeyboardLock final : public GarbageCollected<KeyboardLock>,
   // Returns true if the current frame is a top-level browsing context.
   bool CalledFromSupportedContext(ExecutionContext*);
 
-  void LockRequestFinished(ScriptPromiseResolverTyped<IDLUndefined>*,
+  void LockRequestFinished(ScriptPromiseResolver<IDLUndefined>*,
                            mojom::KeyboardLockRequestResult);
 
   HeapMojoRemote<mojom::blink::KeyboardLockService> service_;
-  Member<ScriptPromiseResolverTyped<IDLUndefined>> request_keylock_resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> request_keylock_resolver_;
 };
 
 }  // namespace blink

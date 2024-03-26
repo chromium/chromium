@@ -32,9 +32,9 @@ namespace blink {
 // This class allows MediaKeys to be set asynchronously.
 class SetMediaKeysHandler : public GarbageCollected<SetMediaKeysHandler> {
  public:
-  static ScriptPromiseTyped<IDLUndefined> Create(ScriptState*,
-                                                 HTMLMediaElement&,
-                                                 MediaKeys*);
+  static ScriptPromise<IDLUndefined> Create(ScriptState*,
+                                            HTMLMediaElement&,
+                                            MediaKeys*);
 
   SetMediaKeysHandler(ScriptState*, HTMLMediaElement&, MediaKeys*);
 
@@ -57,7 +57,7 @@ class SetMediaKeysHandler : public GarbageCollected<SetMediaKeysHandler> {
   void ClearFailed(ExceptionCode, const String& error_message);
   void SetFailed(ExceptionCode, const String& error_message);
 
-  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   // Keep media element alive until promise is fulfilled
   Member<HTMLMediaElement> element_;
   Member<MediaKeys> new_media_keys_;
@@ -138,7 +138,7 @@ class SetContentDecryptionModuleResult final
   FailureCallback failure_callback_;
 };
 
-ScriptPromiseTyped<IDLUndefined> SetMediaKeysHandler::Create(
+ScriptPromise<IDLUndefined> SetMediaKeysHandler::Create(
     ScriptState* script_state,
     HTMLMediaElement& element,
     MediaKeys* media_keys) {
@@ -150,7 +150,7 @@ ScriptPromiseTyped<IDLUndefined> SetMediaKeysHandler::Create(
 SetMediaKeysHandler::SetMediaKeysHandler(ScriptState* script_state,
                                          HTMLMediaElement& element,
                                          MediaKeys* media_keys)
-    : resolver_(MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+    : resolver_(MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           script_state)),
       element_(element),
       new_media_keys_(media_keys),
@@ -371,7 +371,7 @@ MediaKeys* HTMLMediaElementEncryptedMedia::mediaKeys(
   return this_element.media_keys_.Get();
 }
 
-ScriptPromiseTyped<IDLUndefined> HTMLMediaElementEncryptedMedia::setMediaKeys(
+ScriptPromise<IDLUndefined> HTMLMediaElementEncryptedMedia::setMediaKeys(
     ScriptState* script_state,
     HTMLMediaElement& element,
     MediaKeys* media_keys,
@@ -389,7 +389,7 @@ ScriptPromiseTyped<IDLUndefined> HTMLMediaElementEncryptedMedia::setMediaKeys(
   if (this_element.is_attaching_media_keys_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Another request is in progress.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   // 2. If mediaKeys and the mediaKeys attribute are the same object,

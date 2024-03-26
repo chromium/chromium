@@ -14,7 +14,7 @@
 namespace blink {
 
 class ScriptState;
-class ScriptPromise;
+class ScriptPromiseUntyped;
 
 // Utility for writing unit tests involving promises.
 // Typical usage:
@@ -26,7 +26,7 @@ class ScriptPromiseTester final {
   STACK_ALLOCATED();
 
  public:
-  ScriptPromiseTester(ScriptState*, ScriptPromise);
+  ScriptPromiseTester(ScriptState*, ScriptPromiseUntyped);
 
   ScriptPromiseTester(const ScriptPromiseTester&) = delete;
   ScriptPromiseTester& operator=(const ScriptPromiseTester&) = delete;

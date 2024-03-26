@@ -18,10 +18,9 @@ class MODULES_EXPORT CropTarget final : public SubCaptureTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ScriptPromiseTyped<CropTarget> fromElement(
-      ScriptState* script_state,
-      Element* element,
-      ExceptionState& exception_state);
+  static ScriptPromise<CropTarget> fromElement(ScriptState* script_state,
+                                               Element* element,
+                                               ExceptionState& exception_state);
 
   // Not Web-exposed.
   explicit CropTarget(String id);

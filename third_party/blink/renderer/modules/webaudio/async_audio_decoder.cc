@@ -49,7 +49,7 @@ void AsyncAudioDecoder::DecodeAsync(
     float sample_rate,
     V8DecodeSuccessCallback* success_callback,
     V8DecodeErrorCallback* error_callback,
-    ScriptPromiseResolverTyped<AudioBuffer>* resolver,
+    ScriptPromiseResolver<AudioBuffer>* resolver,
     BaseAudioContext* context,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
@@ -79,7 +79,7 @@ void AsyncAudioDecoder::DecodeOnBackgroundThread(
     float sample_rate,
     CrossThreadHandle<V8DecodeSuccessCallback> success_callback,
     CrossThreadHandle<V8DecodeErrorCallback> error_callback,
-    CrossThreadHandle<ScriptPromiseResolverTyped<AudioBuffer>> resolver,
+    CrossThreadHandle<ScriptPromiseResolver<AudioBuffer>> resolver,
     CrossThreadHandle<BaseAudioContext> context,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const ExceptionContext& exception_context) {
@@ -106,7 +106,7 @@ void AsyncAudioDecoder::NotifyComplete(
     V8DecodeSuccessCallback* success_callback,
     V8DecodeErrorCallback* error_callback,
     AudioBus* audio_bus,
-    ScriptPromiseResolverTyped<AudioBuffer>* resolver,
+    ScriptPromiseResolver<AudioBuffer>* resolver,
     BaseAudioContext* context,
     const ExceptionContext& exception_context) {
   DCHECK(IsMainThread());

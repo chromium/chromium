@@ -61,10 +61,10 @@ class MODULES_EXPORT StorageAccessHandle final
   IDBFactory* indexedDB(ExceptionState& exception_state) const;
   LockManager* locks(ExceptionState& exception_state) const;
   CacheStorage* caches(ExceptionState& exception_state) const;
-  ScriptPromiseTyped<FileSystemDirectoryHandle> getDirectory(
+  ScriptPromise<FileSystemDirectoryHandle> getDirectory(
       ScriptState* script_state,
       ExceptionState& exception_state) const;
-  ScriptPromiseTyped<StorageEstimate> estimate(
+  ScriptPromise<StorageEstimate> estimate(
       ScriptState* script_state,
       ExceptionState& exception_state) const;
   String createObjectURL(Blob* blob, ExceptionState& exception_state) const;
@@ -94,7 +94,7 @@ class MODULES_EXPORT StorageAccessHandle final
   void InitSharedWorker();
 
   void GetDirectoryImpl(
-      ScriptPromiseResolverTyped<FileSystemDirectoryHandle>* resolver) const;
+      ScriptPromiseResolver<FileSystemDirectoryHandle>* resolver) const;
 
   Member<const StorageAccessTypes> storage_access_types_;
   Member<StorageArea> session_storage_;

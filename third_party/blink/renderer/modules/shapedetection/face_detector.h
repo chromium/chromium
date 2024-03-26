@@ -30,7 +30,7 @@ class MODULES_EXPORT FaceDetector final : public ShapeDetector {
   FaceDetector(ExecutionContext*, const FaceDetectorOptions*);
   ~FaceDetector() override = default;
 
-  ScriptPromiseTyped<IDLSequence<DetectedFace>> detect(
+  ScriptPromise<IDLSequence<DetectedFace>> detect(
       ScriptState* script_state,
       const V8ImageBitmapSource* image_source,
       ExceptionState&);
@@ -39,13 +39,13 @@ class MODULES_EXPORT FaceDetector final : public ShapeDetector {
 
  private:
   void OnDetectFaces(
-      ScriptPromiseResolverTyped<IDLSequence<DetectedFace>>*,
+      ScriptPromiseResolver<IDLSequence<DetectedFace>>*,
       Vector<shape_detection::mojom::blink::FaceDetectionResultPtr>);
   void OnFaceServiceConnectionError();
 
   HeapMojoRemote<shape_detection::mojom::blink::FaceDetection> face_service_;
 
-  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLSequence<DetectedFace>>>>
+  HeapHashSet<Member<ScriptPromiseResolver<IDLSequence<DetectedFace>>>>
       face_service_requests_;
 };
 

@@ -14,7 +14,7 @@ namespace blink {
 ApplyConstraintsRequest::ApplyConstraintsRequest(
     MediaStreamTrack* track,
     const MediaConstraints& constraints,
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver)
+    ScriptPromiseResolver<IDLUndefined>* resolver)
     : track_(track), constraints_(constraints), resolver_(resolver) {}
 
 MediaStreamComponent* ApplyConstraintsRequest::Track() const {

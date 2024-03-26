@@ -55,7 +55,7 @@ class FragmentDirective : public ScriptWrappable {
 
   // Web-exposed FragmentDirective interface.
   const HeapVector<Member<Directive>>& items() const;
-  ScriptPromiseTyped<SelectorDirective> createSelectorDirective(
+  ScriptPromise<SelectorDirective> createSelectorDirective(
       ScriptState*,
       const V8UnionRangeOrSelection*);
 

@@ -20,7 +20,7 @@ class CORE_EXPORT ElementFullscreen {
   STATIC_ONLY(ElementFullscreen);
 
  public:
-  static ScriptPromiseTyped<IDLUndefined> requestFullscreen(
+  static ScriptPromise<IDLUndefined> requestFullscreen(
       ScriptState*,
       Element&,
       const FullscreenOptions*,

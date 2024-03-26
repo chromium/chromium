@@ -128,8 +128,8 @@ TEST(ScriptPromiseTest, ConstructFromNonPromise) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::TryCatch try_catch(scope.GetIsolate());
-  ScriptPromise promise(scope.GetScriptState(),
-                        v8::Undefined(scope.GetIsolate()));
+  ScriptPromiseUntyped promise(scope.GetScriptState(),
+                               v8::Undefined(scope.GetIsolate()));
   ASSERT_TRUE(try_catch.HasCaught());
   ASSERT_TRUE(promise.IsEmpty());
 }
@@ -137,7 +137,7 @@ TEST(ScriptPromiseTest, ConstructFromNonPromise) {
 TEST(ScriptPromiseTest, ThenResolve) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
       scope.GetScriptState());
   auto promise = resolver->Promise();
   ScriptValue on_fulfilled, on_rejected;
@@ -165,7 +165,7 @@ TEST(ScriptPromiseTest, ThenResolve) {
 TEST(ScriptPromiseTest, ThenResolveScriptFunction) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
       scope.GetScriptState());
   auto promise = resolver->Promise();
   auto* const on_fulfilled = MakeGarbageCollected<ScriptValueHolder>();
@@ -226,9 +226,8 @@ TEST(ScriptPromiseTest, ResolveThenScriptFunction) {
 TEST(ScriptPromiseTest, ThenReject) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          scope.GetScriptState());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      scope.GetScriptState());
   auto promise = resolver->Promise();
   ScriptValue on_fulfilled, on_rejected;
   promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
@@ -255,9 +254,8 @@ TEST(ScriptPromiseTest, ThenReject) {
 TEST(ScriptPromiseTest, ThenRejectScriptFunction) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          scope.GetScriptState());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      scope.GetScriptState());
   auto promise = resolver->Promise();
   auto* const on_rejected = MakeGarbageCollected<ScriptValueHolder>();
   promise.Then(
@@ -280,9 +278,9 @@ TEST(ScriptPromiseTest, ThenRejectScriptFunction) {
 TEST(ScriptPromiseTest, ThrowingOnFulfilled) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
       scope.GetScriptState());
-  ScriptPromise promise = resolver->Promise();
+  ScriptPromiseUntyped promise = resolver->Promise();
   ScriptValue on_rejected, on_fulfilled2, on_rejected2;
 
   promise =
@@ -316,9 +314,9 @@ TEST(ScriptPromiseTest, ThrowingOnFulfilled) {
 TEST(ScriptPromiseTest, ThrowingOnFulfilledScriptFunction) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
       scope.GetScriptState());
-  ScriptPromise promise = resolver->Promise();
+  ScriptPromiseUntyped promise = resolver->Promise();
   auto* const on_rejected = MakeGarbageCollected<ScriptValueHolder>();
 
   promise =
@@ -344,10 +342,9 @@ TEST(ScriptPromiseTest, ThrowingOnFulfilledScriptFunction) {
 TEST(ScriptPromiseTest, ThrowingOnRejected) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          scope.GetScriptState());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      scope.GetScriptState());
+  ScriptPromiseUntyped promise = resolver->Promise();
   ScriptValue on_fulfilled, on_fulfilled2, on_rejected2;
 
   promise =
@@ -381,10 +378,9 @@ TEST(ScriptPromiseTest, ThrowingOnRejected) {
 TEST(ScriptPromiseTest, ThrowingOnRejectedScriptFunction) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          scope.GetScriptState());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      scope.GetScriptState());
+  ScriptPromiseUntyped promise = resolver->Promise();
   auto* const on_rejected = MakeGarbageCollected<ScriptValueHolder>();
 
   promise =
@@ -411,7 +407,7 @@ TEST(ScriptPromiseTest, RejectThen) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue on_fulfilled, on_rejected;
-  auto promise = ScriptPromiseTyped<IDLUndefined>::Reject(
+  auto promise = ScriptPromise<IDLUndefined>::Reject(
       scope.GetScriptState(), V8String(scope.GetIsolate(), "hello"));
   promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled),
@@ -432,7 +428,7 @@ TEST(ScriptPromiseTest, RejectThenScriptFunction) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* const on_rejected = MakeGarbageCollected<ScriptValueHolder>();
-  auto promise = ScriptPromiseTyped<IDLUndefined>::Reject(
+  auto promise = ScriptPromise<IDLUndefined>::Reject(
       scope.GetScriptState(), V8String(scope.GetIsolate(), "hello"));
   promise.Then(
       CreateFunction<NotReached>(scope.GetScriptState()),
@@ -451,8 +447,9 @@ TEST(ScriptPromiseTest, CastPromise) {
   V8TestingScope scope;
   auto resolver = v8::Promise::Resolver::New(scope.GetContext());
   v8::Local<v8::Value> promise = resolver.ToLocalChecked()->GetPromise();
-  ScriptPromise new_promise = ScriptPromise::FromUntypedValueForBindings(
-      scope.GetScriptState(), promise);
+  ScriptPromiseUntyped new_promise =
+      ScriptPromiseUntyped::FromUntypedValueForBindings(scope.GetScriptState(),
+                                                        promise);
 
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_EQ(promise, new_promise.V8Value());
@@ -465,9 +462,9 @@ TEST(ScriptPromiseTest, CastNonPromise) {
 
   ScriptValue value =
       ScriptValue(scope.GetIsolate(), V8String(scope.GetIsolate(), "hello"));
-  ScriptPromiseTyped<IDLAny> promise1 =
+  ScriptPromise<IDLAny> promise1 =
       ToResolvedPromise<IDLAny>(scope.GetScriptState(), value);
-  ScriptPromiseTyped<IDLAny> promise2 =
+  ScriptPromise<IDLAny> promise2 =
       ToResolvedPromise<IDLAny>(scope.GetScriptState(), value);
   promise1.Then(CreateFunction<FunctionForScriptPromiseTest>(
                     scope.GetScriptState(), &on_fulfilled1),
@@ -505,8 +502,8 @@ TEST(ScriptPromiseTest, Reject) {
 
   ScriptValue value =
       ScriptValue(scope.GetIsolate(), V8String(scope.GetIsolate(), "hello"));
-  ScriptPromise promise =
-      ScriptPromise::Reject(scope.GetScriptState(), ScriptValue(value));
+  ScriptPromiseUntyped promise =
+      ScriptPromiseUntyped::Reject(scope.GetScriptState(), ScriptValue(value));
   promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled),
                CreateFunction<FunctionForScriptPromiseTest>(
@@ -528,7 +525,7 @@ TEST(ScriptPromiseTest, RejectWithExceptionState) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue on_fulfilled, on_rejected;
-  ScriptPromise promise = ScriptPromise::RejectWithDOMException(
+  ScriptPromiseUntyped promise = ScriptPromiseUntyped::RejectWithDOMException(
       scope.GetScriptState(),
       MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
                                          "some syntax error"));
@@ -553,8 +550,8 @@ TEST(ScriptPromiseTest, AllWithEmptyPromises) {
   V8TestingScope scope;
   ScriptValue on_fulfilled, on_rejected;
 
-  ScriptPromise promise =
-      ScriptPromise::All(scope.GetScriptState(), HeapVector<ScriptPromise>());
+  ScriptPromiseUntyped promise = ScriptPromiseUntyped::All(
+      scope.GetScriptState(), HeapVector<ScriptPromiseUntyped>());
   ASSERT_FALSE(promise.IsEmpty());
 
   promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
@@ -577,13 +574,14 @@ TEST(ScriptPromiseTest, AllWithResolvedPromises) {
   V8TestingScope scope;
   ScriptValue on_fulfilled, on_rejected;
 
-  HeapVector<ScriptPromise> promises;
+  HeapVector<ScriptPromiseUntyped> promises;
   promises.push_back(ToResolvedPromise<IDLAny>(
       scope.GetScriptState(), V8String(scope.GetIsolate(), "hello")));
   promises.push_back(ToResolvedPromise<IDLAny>(
       scope.GetScriptState(), V8String(scope.GetIsolate(), "world")));
 
-  ScriptPromise promise = ScriptPromise::All(scope.GetScriptState(), promises);
+  ScriptPromiseUntyped promise =
+      ScriptPromiseUntyped::All(scope.GetScriptState(), promises);
   ASSERT_FALSE(promise.IsEmpty());
   promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled),
@@ -608,13 +606,14 @@ TEST(ScriptPromiseTest, AllWithRejectedPromise) {
   V8TestingScope scope;
   ScriptValue on_fulfilled, on_rejected;
 
-  HeapVector<ScriptPromise> promises;
+  HeapVector<ScriptPromiseUntyped> promises;
   promises.push_back(ToResolvedPromise<IDLAny>(
       scope.GetScriptState(), V8String(scope.GetIsolate(), "hello")));
-  promises.push_back(ScriptPromiseTyped<IDLAny>::Reject(
+  promises.push_back(ScriptPromise<IDLAny>::Reject(
       scope.GetScriptState(), V8String(scope.GetIsolate(), "world")));
 
-  ScriptPromise promise = ScriptPromise::All(scope.GetScriptState(), promises);
+  ScriptPromiseUntyped promise =
+      ScriptPromiseUntyped::All(scope.GetScriptState(), promises);
   ASSERT_FALSE(promise.IsEmpty());
   promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled),

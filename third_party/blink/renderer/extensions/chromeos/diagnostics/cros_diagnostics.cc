@@ -54,11 +54,10 @@ void CrosDiagnostics::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-ScriptPromiseTyped<CrosCpuInfo> CrosDiagnostics::getCpuInfo(
+ScriptPromise<CrosCpuInfo> CrosDiagnostics::getCpuInfo(
     ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<CrosCpuInfo>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<CrosCpuInfo>>(script_state);
   auto* cros_diagnostics = GetCrosDiagnosticsOrNull();
 
   if (cros_diagnostics) {
@@ -71,7 +70,7 @@ ScriptPromiseTyped<CrosCpuInfo> CrosDiagnostics::getCpuInfo(
 }
 
 void CrosDiagnostics::OnGetCpuInfoResponse(
-    ScriptPromiseResolverTyped<CrosCpuInfo>* resolver,
+    ScriptPromiseResolver<CrosCpuInfo>* resolver,
     mojom::blink::GetCpuInfoResultPtr result) {
   if (result->is_error()) {
     switch (result->get_error()) {
@@ -130,11 +129,10 @@ void CrosDiagnostics::OnGetCpuInfoResponse(
   resolver->Resolve(std::move(cpu_info_blink));
 }
 
-ScriptPromiseTyped<IDLSequence<CrosNetworkInterface>>
+ScriptPromise<IDLSequence<CrosNetworkInterface>>
 CrosDiagnostics::getNetworkInterfaces(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<CrosNetworkInterface>>>(
-      script_state);
+      ScriptPromiseResolver<IDLSequence<CrosNetworkInterface>>>(script_state);
   auto* cros_diagnostics = GetCrosDiagnosticsOrNull();
 
   if (cros_diagnostics) {
@@ -147,7 +145,7 @@ CrosDiagnostics::getNetworkInterfaces(ScriptState* script_state) {
 }
 
 void CrosDiagnostics::OnGetNetworkInterfacesResponse(
-    ScriptPromiseResolverTyped<IDLSequence<CrosNetworkInterface>>* resolver,
+    ScriptPromiseResolver<IDLSequence<CrosNetworkInterface>>* resolver,
     mojom::blink::GetNetworkInterfacesResultPtr result) {
   if (result->is_error()) {
     switch (result->get_error()) {

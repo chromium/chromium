@@ -31,7 +31,7 @@ class MediaTrackConstraintSet;
 class MediaTrackSettings;
 class PhotoCapabilities;
 class PhotoSettings;
-class ScriptPromiseResolver;
+class ScriptPromiseResolverBase;
 
 class MODULES_EXPORT ImageCapture final
     : public ScriptWrappable,
@@ -60,17 +60,17 @@ class MODULES_EXPORT ImageCapture final
 
   MediaStreamTrack* videoStreamTrack() const { return stream_track_.Get(); }
 
-  ScriptPromiseTyped<PhotoCapabilities> getPhotoCapabilities(ScriptState*);
-  ScriptPromiseTyped<PhotoSettings> getPhotoSettings(ScriptState*);
-  ScriptPromiseTyped<Blob> takePhoto(ScriptState*, const PhotoSettings*);
-  ScriptPromiseTyped<ImageBitmap> grabFrame(ScriptState*);
+  ScriptPromise<PhotoCapabilities> getPhotoCapabilities(ScriptState*);
+  ScriptPromise<PhotoSettings> getPhotoSettings(ScriptState*);
+  ScriptPromise<Blob> takePhoto(ScriptState*, const PhotoSettings*);
+  ScriptPromise<ImageBitmap> grabFrame(ScriptState*);
 
   bool CheckAndApplyMediaTrackConstraintsToSettings(
       media::mojom::blink::PhotoSettings*,
       const MediaTrackConstraints*,
-      ScriptPromiseResolver*) const;
+      ScriptPromiseResolverBase*) const;
   void GetMediaTrackCapabilities(MediaTrackCapabilities*) const;
-  void SetMediaTrackConstraints(ScriptPromiseResolver*,
+  void SetMediaTrackConstraints(ScriptPromiseResolverBase*,
                                 const MediaTrackConstraints* constraints);
   MediaTrackConstraints* GetMediaTrackConstraints() const;
   void ClearMediaTrackConstraints();
@@ -98,7 +98,7 @@ class MODULES_EXPORT ImageCapture final
 
  private:
   using PromiseResolverFunction =
-      base::OnceCallback<void(ScriptPromiseResolver*)>;
+      base::OnceCallback<void(ScriptPromiseResolverBase*)>;
 
   // Called by `CheckAndApplyMediaTrackConstraintsToSettings()` to apply
   // a single constraint set to photo settings and to effective capabilities.
@@ -115,21 +115,22 @@ class MODULES_EXPORT ImageCapture final
       const MediaTrackSettings* effective_settings,
       const MediaTrackConstraintSet*,
       MediaTrackConstraintSetType,
-      ScriptPromiseResolver*) const;
+      ScriptPromiseResolverBase*) const;
 
   // mojom::blink::PermissionObserver implementation.
   // Called when we get an updated PTZ permission value from the browser.
   void OnPermissionStatusChange(mojom::blink::PermissionStatus) override;
 
-  void GetMojoPhotoState(ScriptPromiseResolver*, PromiseResolverFunction);
-  void OnMojoGetPhotoState(ScriptPromiseResolver*,
+  void GetMojoPhotoState(ScriptPromiseResolverBase*, PromiseResolverFunction);
+  void OnMojoGetPhotoState(ScriptPromiseResolverBase*,
                            PromiseResolverFunction,
                            bool trigger_take_photo,
                            media::mojom::blink::PhotoStatePtr);
-  void OnMojoSetPhotoOptions(ScriptPromiseResolver*,
+  void OnMojoSetPhotoOptions(ScriptPromiseResolverBase*,
                              bool trigger_take_photo,
                              bool result);
-  void OnMojoTakePhoto(ScriptPromiseResolver*, media::mojom::blink::BlobPtr);
+  void OnMojoTakePhoto(ScriptPromiseResolverBase*,
+                       media::mojom::blink::BlobPtr);
 
   // If getUserMedia contains Image Capture constraints, the
   // corresponding settings will be set when image capture is created.
@@ -150,12 +151,12 @@ class MODULES_EXPORT ImageCapture final
 
   void OnServiceConnectionError();
 
-  void MaybeRejectWithOverconstrainedError(ScriptPromiseResolver*,
+  void MaybeRejectWithOverconstrainedError(ScriptPromiseResolverBase*,
                                            const char* constraint,
                                            const char* message) const;
-  void ResolveWithNothing(ScriptPromiseResolver*);
-  void ResolveWithPhotoSettings(ScriptPromiseResolver*);
-  void ResolveWithPhotoCapabilities(ScriptPromiseResolver*);
+  void ResolveWithNothing(ScriptPromiseResolverBase*);
+  void ResolveWithPhotoSettings(ScriptPromiseResolverBase*);
+  void ResolveWithPhotoCapabilities(ScriptPromiseResolverBase*);
 
   // Returns true if page is visible. Otherwise returns false.
   bool IsPageVisible() const;
@@ -192,7 +193,7 @@ class MODULES_EXPORT ImageCapture final
 
   Member<PhotoCapabilities> photo_capabilities_;
 
-  HeapHashSet<Member<ScriptPromiseResolver>> service_requests_;
+  HeapHashSet<Member<ScriptPromiseResolverBase>> service_requests_;
 
   const base::TimeDelta grab_frame_timeout_;
 };

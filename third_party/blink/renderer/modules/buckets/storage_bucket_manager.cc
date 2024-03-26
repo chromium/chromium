@@ -98,14 +98,13 @@ StorageBucketManager* StorageBucketManager::storageBuckets(
   return supplement;
 }
 
-ScriptPromiseTyped<StorageBucket> StorageBucketManager::open(
+ScriptPromise<StorageBucket> StorageBucketManager::open(
     ScriptState* script_state,
     const String& name,
     const StorageBucketOptions* options,
     ExceptionState& exception_state) {
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<StorageBucket>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<StorageBucket>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -138,11 +137,11 @@ ScriptPromiseTyped<StorageBucket> StorageBucketManager::open(
   return promise;
 }
 
-ScriptPromiseTyped<IDLSequence<IDLString>> StorageBucketManager::keys(
+ScriptPromise<IDLSequence<IDLString>> StorageBucketManager::keys(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<IDLString>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<IDLString>>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -159,13 +158,12 @@ ScriptPromiseTyped<IDLSequence<IDLString>> StorageBucketManager::keys(
   return promise;
 }
 
-ScriptPromiseTyped<IDLUndefined> StorageBucketManager::Delete(
+ScriptPromise<IDLUndefined> StorageBucketManager::Delete(
     ScriptState* script_state,
     const String& name,
     ExceptionState& exception_state) {
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -203,7 +201,7 @@ mojom::blink::BucketManagerHost* StorageBucketManager::GetBucketManager(
 }
 
 void StorageBucketManager::DidOpen(
-    ScriptPromiseResolverTyped<StorageBucket>* resolver,
+    ScriptPromiseResolver<StorageBucket>* resolver,
     const String& name,
     mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote,
     mojom::blink::BucketError error) {
@@ -237,7 +235,7 @@ void StorageBucketManager::DidOpen(
 }
 
 void StorageBucketManager::DidGetKeys(
-    ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
+    ScriptPromiseResolver<IDLSequence<IDLString>>* resolver,
     const Vector<String>& keys,
     bool success) {
   ScriptState* script_state = resolver->GetScriptState();
@@ -256,7 +254,7 @@ void StorageBucketManager::DidGetKeys(
 }
 
 void StorageBucketManager::DidDelete(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     bool success) {
   if (!success) {
     resolver->Reject(MakeGarbageCollected<DOMException>(

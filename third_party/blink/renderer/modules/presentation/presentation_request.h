@@ -47,13 +47,12 @@ class MODULES_EXPORT PresentationRequest final
   // ScriptWrappable implementation.
   bool HasPendingActivity() const final;
 
-  ScriptPromiseTyped<PresentationConnection> start(ScriptState*,
-                                                   ExceptionState&);
-  ScriptPromiseTyped<PresentationConnection> reconnect(ScriptState*,
-                                                       const String& id,
-                                                       ExceptionState&);
-  ScriptPromiseTyped<PresentationAvailability> getAvailability(ScriptState*,
-                                                               ExceptionState&);
+  ScriptPromise<PresentationConnection> start(ScriptState*, ExceptionState&);
+  ScriptPromise<PresentationConnection> reconnect(ScriptState*,
+                                                  const String& id,
+                                                  ExceptionState&);
+  ScriptPromise<PresentationAvailability> getAvailability(ScriptState*,
+                                                          ExceptionState&);
 
   const Vector<KURL>& Urls() const;
 

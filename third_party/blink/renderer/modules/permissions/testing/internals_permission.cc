@@ -31,7 +31,7 @@
 namespace blink {
 
 // static
-ScriptPromiseTyped<IDLUndefined> InternalsPermission::setPermission(
+ScriptPromise<IDLUndefined> InternalsPermission::setPermission(
     ScriptState* script_state,
     Internals&,
     const ScriptValue& raw_descriptor,
@@ -40,7 +40,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsPermission::setPermission(
   mojom::blink::PermissionDescriptorPtr descriptor =
       ParsePermissionDescriptor(script_state, raw_descriptor, exception_state);
   if (exception_state.HadException() || !script_state->ContextIsValid())
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   const SecurityOrigin* security_origin = window->GetSecurityOrigin();
@@ -48,7 +48,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsPermission::setPermission(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Unable to set permission for an opaque origin.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
   KURL url = KURL(security_origin->ToString());
   DCHECK(url.IsValid());
@@ -60,7 +60,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsPermission::setPermission(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Unable to set permission for an opaque embedding origin.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
   KURL embedding_url = KURL(top_security_origin->ToString());
 
@@ -69,9 +69,8 @@ ScriptPromiseTyped<IDLUndefined> InternalsPermission::setPermission(
       permission_automation.BindNewPipeAndPassReceiver());
   DCHECK(permission_automation.is_bound());
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   auto* raw_permission_automation = permission_automation.get();
   raw_permission_automation->SetPermission(
@@ -80,7 +79,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsPermission::setPermission(
       WTF::BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
-          [](ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+          [](ScriptPromiseResolver<IDLUndefined>* resolver,
              mojo::Remote<test::mojom::blink::PermissionAutomation>,
              bool success) {
             if (success)

@@ -65,12 +65,11 @@ class CORE_EXPORT PictureInPictureController
   // Enter Picture-in-Picture for a video element and resolve promise if any.
   virtual void EnterPictureInPicture(
       HTMLVideoElement*,
-      ScriptPromiseResolverTyped<PictureInPictureWindow>*) = 0;
+      ScriptPromiseResolver<PictureInPictureWindow>*) = 0;
 
   // Exit Picture-in-Picture for a video element and resolve promise if any.
-  virtual void ExitPictureInPicture(
-      HTMLVideoElement*,
-      ScriptPromiseResolverTyped<IDLUndefined>*) = 0;
+  virtual void ExitPictureInPicture(HTMLVideoElement*,
+                                    ScriptPromiseResolver<IDLUndefined>*) = 0;
 
   // Returns whether a given video element in a document associated with the
   // controller is allowed to request Picture-in-Picture.
@@ -79,7 +78,7 @@ class CORE_EXPORT PictureInPictureController
 
   // Should be called when an element has exited Picture-in-Picture.
   virtual void OnExitedPictureInPicture(
-      ScriptPromiseResolverTyped<IDLUndefined>*) = 0;
+      ScriptPromiseResolver<IDLUndefined>*) = 0;
 
   // Notifies that one of the states used by Picture-in-Picture has changed.
   virtual void OnPictureInPictureStateChange() = 0;

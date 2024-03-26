@@ -31,14 +31,14 @@ class ContentIndex final : public ScriptWrappable {
   ~ContentIndex() override;
 
   // Web-exposed function defined in the IDL file.
-  ScriptPromiseTyped<IDLUndefined> add(ScriptState* script_state,
-                                       const ContentDescription* description,
-                                       ExceptionState& exception_state);
-  ScriptPromiseTyped<IDLUndefined> deleteDescription(
+  ScriptPromise<IDLUndefined> add(ScriptState* script_state,
+                                  const ContentDescription* description,
+                                  ExceptionState& exception_state);
+  ScriptPromise<IDLUndefined> deleteDescription(
       ScriptState* script_state,
       const String& id,
       ExceptionState& exception_state);
-  ScriptPromiseTyped<IDLSequence<ContentDescription>> getDescriptions(
+  ScriptPromise<IDLSequence<ContentDescription>> getDescriptions(
       ScriptState* script_state,
       ExceptionState& exception_state);
 
@@ -49,24 +49,24 @@ class ContentIndex final : public ScriptWrappable {
 
   // Callbacks.
   void DidGetIconSizes(mojom::blink::ContentDescriptionPtr description,
-                       ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+                       ScriptPromiseResolver<IDLUndefined>* resolver,
                        const Vector<gfx::Size>& icon_sizes);
-  void DidGetIcons(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+  void DidGetIcons(ScriptPromiseResolver<IDLUndefined>* resolver,
                    mojom::blink::ContentDescriptionPtr description,
                    Vector<SkBitmap> icons);
   void DidCheckOfflineCapability(
       KURL launch_url,
       mojom::blink::ContentDescriptionPtr description,
       Vector<SkBitmap> icons,
-      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+      ScriptPromiseResolver<IDLUndefined>* resolver,
       bool is_offline_capable);
-  static void DidAdd(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+  static void DidAdd(ScriptPromiseResolver<IDLUndefined>* resolver,
                      mojom::blink::ContentIndexError error);
   static void DidDeleteDescription(
-      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+      ScriptPromiseResolver<IDLUndefined>* resolver,
       mojom::blink::ContentIndexError error);
   static void DidGetDescriptions(
-      ScriptPromiseResolverTyped<IDLSequence<ContentDescription>>* resolver,
+      ScriptPromiseResolver<IDLSequence<ContentDescription>>* resolver,
       mojom::blink::ContentIndexError error,
       Vector<mojom::blink::ContentDescriptionPtr> descriptions);
 

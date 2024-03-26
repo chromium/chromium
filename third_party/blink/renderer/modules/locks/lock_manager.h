@@ -43,17 +43,17 @@ class LockManager final : public ScriptWrappable,
   LockManager(const LockManager&) = delete;
   LockManager& operator=(const LockManager&) = delete;
 
-  ScriptPromiseTyped<IDLAny> request(ScriptState*,
-                                     const String& name,
-                                     V8LockGrantedCallback*,
-                                     ExceptionState&);
-  ScriptPromiseTyped<IDLAny> request(ScriptState*,
-                                     const String& name,
-                                     const LockOptions*,
-                                     V8LockGrantedCallback*,
-                                     ExceptionState&);
+  ScriptPromise<IDLAny> request(ScriptState*,
+                                const String& name,
+                                V8LockGrantedCallback*,
+                                ExceptionState&);
+  ScriptPromise<IDLAny> request(ScriptState*,
+                                const String& name,
+                                const LockOptions*,
+                                V8LockGrantedCallback*,
+                                ExceptionState&);
 
-  ScriptPromiseTyped<LockManagerSnapshot> query(ScriptState*, ExceptionState&);
+  ScriptPromise<LockManagerSnapshot> query(ScriptState*, ExceptionState&);
 
   void Trace(Visitor*) const override;
 
@@ -82,20 +82,20 @@ class LockManager final : public ScriptWrappable,
   void RemovePendingRequest(LockRequestImpl*);
   bool IsPendingRequest(LockRequestImpl*);
 
-  void QueryImpl(ScriptPromiseResolverTyped<LockManagerSnapshot>* resolver);
+  void QueryImpl(ScriptPromiseResolver<LockManagerSnapshot>* resolver);
   void RequestImpl(const LockOptions* options,
                    const String& name,
                    V8LockGrantedCallback* callback,
                    mojom::blink::LockMode mode,
-                   ScriptPromiseResolverTyped<IDLAny>* resolver);
+                   ScriptPromiseResolver<IDLAny>* resolver);
 
   // Query the ContentSettingsClient to ensure access is allowed from
   // this context. This invokes an asynchronous IPC call.
   // The result is cached for subsequent accesses.
   void CheckStorageAccessAllowed(ExecutionContext* context,
-                                 ScriptPromiseResolver* resolver,
+                                 ScriptPromiseResolverBase* resolver,
                                  base::OnceCallback<void()> callback);
-  void DidCheckStorageAccessAllowed(ScriptPromiseResolver* resolver,
+  void DidCheckStorageAccessAllowed(ScriptPromiseResolverBase* resolver,
                                     base::OnceCallback<void()> callback,
                                     bool allow_access);
 

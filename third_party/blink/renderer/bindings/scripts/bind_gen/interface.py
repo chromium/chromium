@@ -6663,7 +6663,7 @@ def _collect_include_headers(class_like):
         idl_type.apply_to_all_composing_elements(add_include_headers)
 
     def add_include_headers(idl_type):
-        # ScriptPromise doesn't require any header for the result type.
+        # ScriptPromiseUntyped doesn't require any header for the result type.
         if idl_type.is_promise:
             raise StopIteration(idl_type.syntactic_form)
 

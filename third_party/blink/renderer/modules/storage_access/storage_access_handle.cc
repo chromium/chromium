@@ -77,7 +77,7 @@ const char StorageAccessHandle::kSharedWorkerNotRequested[] =
 namespace {
 
 void EstimateImplAfterRemoteEstimate(
-    ScriptPromiseResolverTyped<StorageEstimate>* resolver,
+    ScriptPromiseResolver<StorageEstimate>* resolver,
     int64_t current_usage,
     int64_t current_quota,
     bool success) {
@@ -309,13 +309,13 @@ CacheStorage* StorageAccessHandle::caches(
   return caches_;
 }
 
-ScriptPromiseTyped<FileSystemDirectoryHandle> StorageAccessHandle::getDirectory(
+ScriptPromise<FileSystemDirectoryHandle> StorageAccessHandle::getDirectory(
     ScriptState* script_state,
     ExceptionState& exception_state) const {
   if (!storage_access_types_->all() && !storage_access_types_->getDirectory()) {
-    auto* resolver = MakeGarbageCollected<
-        ScriptPromiseResolverTyped<FileSystemDirectoryHandle>>(
-        script_state, exception_state.GetContext());
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolver<FileSystemDirectoryHandle>>(
+            script_state, exception_state.GetContext());
     auto promise = resolver->Promise();
     resolver->RejectWithSecurityError(kGetDirectoryNotRequested,
                                       kGetDirectoryNotRequested);
@@ -331,7 +331,7 @@ ScriptPromiseTyped<FileSystemDirectoryHandle> StorageAccessHandle::getDirectory(
 }
 
 void StorageAccessHandle::GetDirectoryImpl(
-    ScriptPromiseResolverTyped<FileSystemDirectoryHandle>* resolver) const {
+    ScriptPromiseResolver<FileSystemDirectoryHandle>* resolver) const {
   if (!remote_) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError));
@@ -342,12 +342,11 @@ void StorageAccessHandle::GetDirectoryImpl(
                     WrapPersistent(resolver)));
 }
 
-ScriptPromiseTyped<StorageEstimate> StorageAccessHandle::estimate(
+ScriptPromise<StorageEstimate> StorageAccessHandle::estimate(
     ScriptState* script_state,
     ExceptionState& exception_state) const {
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<StorageEstimate>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<StorageEstimate>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   if (!storage_access_types_->all() && !storage_access_types_->estimate()) {
     resolver->RejectWithSecurityError(kEstimateNotRequested,

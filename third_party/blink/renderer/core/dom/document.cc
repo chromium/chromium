@@ -6634,7 +6634,7 @@ void Document::PermissionServiceConnectionError() {
   data_->permission_service_.reset();
 }
 
-ScriptPromiseTyped<IDLBoolean> Document::hasStorageAccess(
+ScriptPromise<IDLBoolean> Document::hasStorageAccess(
     ScriptState* script_state) {
   // See
   // https://privacycg.github.io/storage-access/#dom-document-hasstorageaccess
@@ -6644,15 +6644,15 @@ ScriptPromiseTyped<IDLBoolean> Document::hasStorageAccess(
   // return p.
   if (!GetFrame()) {
     // Note that in detached frames, resolvers are not able to return a promise.
-    return ScriptPromiseTyped<IDLBoolean>::RejectWithDOMException(
+    return ScriptPromise<IDLBoolean>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "hasStorageAccess: Cannot be used unless the "
                           "document is fully active."));
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
-      script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
   auto promise = resolver->Promise();
   resolver->Resolve([&]() -> bool {
     // #3: if doc's origin is opaque, return false.
@@ -6683,14 +6683,14 @@ ScriptPromiseTyped<IDLBoolean> Document::hasStorageAccess(
   return promise;
 }
 
-ScriptPromiseTyped<IDLUndefined> Document::requestStorageAccessFor(
+ScriptPromise<IDLUndefined> Document::requestStorageAccessFor(
     ScriptState* script_state,
     const AtomicString& origin) {
   if (!GetFrame()) {
     FireRequestStorageAccessForHistogram(
         RequestStorageResult::REJECTED_NO_ORIGIN);
     // Note that in detached frames, resolvers are not able to return a promise.
-    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "requestStorageAccessFor: Cannot be used unless "
@@ -6698,8 +6698,7 @@ ScriptPromiseTyped<IDLUndefined> Document::requestStorageAccessFor(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
 
   // Access the promise first to ensure it is created so that the proper state
   // can be changed when it is resolved or rejected.
@@ -6802,7 +6801,7 @@ ScriptPromiseTyped<IDLUndefined> Document::requestStorageAccessFor(
   return promise;
 }
 
-ScriptPromiseTyped<IDLUndefined> Document::requestStorageAccess(
+ScriptPromise<IDLUndefined> Document::requestStorageAccess(
     ScriptState* script_state) {
   // Requesting storage access via `requestStorageAccess()` idl always requests
   // unpartitioned cookie access.
@@ -6810,14 +6809,14 @@ ScriptPromiseTyped<IDLUndefined> Document::requestStorageAccess(
                                   /*request_unpartitioned_cookie_access=*/true);
 }
 
-ScriptPromiseTyped<IDLUndefined> Document::RequestStorageAccessImpl(
+ScriptPromise<IDLUndefined> Document::RequestStorageAccessImpl(
     ScriptState* script_state,
     bool request_unpartitioned_cookie_access) {
   if (!GetFrame()) {
     FireRequestStorageAccessHistogram(RequestStorageResult::REJECTED_NO_ORIGIN);
 
     // Note that in detached frames, resolvers are not able to return a promise.
-    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "requestStorageAccess: Cannot be used unless the "
@@ -6832,8 +6831,7 @@ ScriptPromiseTyped<IDLUndefined> Document::RequestStorageAccessImpl(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
 
   // Access the promise first to ensure it is created so that the proper state
   // can be changed when it is resolved or rejected.
@@ -6925,7 +6923,7 @@ ScriptPromiseTyped<IDLUndefined> Document::RequestStorageAccessImpl(
 }
 
 void Document::ProcessStorageAccessPermissionState(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     bool request_unpartitioned_cookie_access,
     mojom::blink::PermissionStatus status) {
   DCHECK(resolver);
@@ -6963,7 +6961,7 @@ void Document::ProcessStorageAccessPermissionState(
 }
 
 void Document::ProcessTopLevelStorageAccessPermissionState(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     mojom::blink::PermissionStatus status) {
   DCHECK(resolver);
   DCHECK(GetFrame());
@@ -6992,11 +6990,11 @@ FragmentDirective& Document::fragmentDirective() const {
   return *fragment_directive_;
 }
 
-ScriptPromiseTyped<IDLBoolean> Document::hasPrivateToken(
+ScriptPromise<IDLBoolean> Document::hasPrivateToken(
     ScriptState* script_state,
     const String& issuer,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -7054,7 +7052,7 @@ ScriptPromiseTyped<IDLBoolean> Document::hasPrivateToken(
   data_->trust_token_query_answerer_->HasTrustTokens(
       issuer_origin,
       WTF::BindOnce(
-          [](WeakPersistent<ScriptPromiseResolverTyped<IDLBoolean>> resolver,
+          [](WeakPersistent<ScriptPromiseResolver<IDLBoolean>> resolver,
              WeakPersistent<Document> document,
              network::mojom::blink::HasTrustTokensResultPtr result) {
             // If there was a Mojo connection error, the promise was already
@@ -7107,11 +7105,11 @@ ScriptPromiseTyped<IDLBoolean> Document::hasPrivateToken(
   return promise;
 }
 
-ScriptPromiseTyped<IDLBoolean> Document::hasRedemptionRecord(
+ScriptPromise<IDLBoolean> Document::hasRedemptionRecord(
     ScriptState* script_state,
     const String& issuer,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -7169,7 +7167,7 @@ ScriptPromiseTyped<IDLBoolean> Document::hasRedemptionRecord(
   data_->trust_token_query_answerer_->HasRedemptionRecord(
       issuer_origin,
       WTF::BindOnce(
-          [](WeakPersistent<ScriptPromiseResolverTyped<IDLBoolean>> resolver,
+          [](WeakPersistent<ScriptPromiseResolver<IDLBoolean>> resolver,
              WeakPersistent<Document> document,
              network::mojom::blink::HasRedemptionRecordResultPtr result) {
             // If there was a Mojo connection error, the promise was already

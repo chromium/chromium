@@ -119,9 +119,9 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
     deleteRule(index, exception_state);
   }
 
-  ScriptPromiseTyped<CSSStyleSheet> replace(ScriptState* script_state,
-                                            const String& text,
-                                            ExceptionState&);
+  ScriptPromise<CSSStyleSheet> replace(ScriptState* script_state,
+                                       const String& text,
+                                       ExceptionState&);
   void replaceSync(const String& text, ExceptionState&);
 
   // For CSSRuleList.

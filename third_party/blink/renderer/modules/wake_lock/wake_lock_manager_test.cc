@@ -38,11 +38,11 @@ TEST(WakeLockManagerTest, AcquireWakeLock) {
   EXPECT_FALSE(manager->wake_lock_.is_bound());
 
   auto* resolver1 =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto promise1 = resolver1->Promise();
   auto* resolver2 =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto promise2 = resolver2->Promise();
 
@@ -54,9 +54,11 @@ TEST(WakeLockManagerTest, AcquireWakeLock) {
   context.WaitForPromiseFulfillment(promise2);
 
   auto* sentinel1 =
-      ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(promise1);
+      ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
+          promise1);
   auto* sentinel2 =
-      ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(promise2);
+      ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
+          promise2);
 
   EXPECT_TRUE(manager->wake_lock_sentinels_.Contains(sentinel1));
   EXPECT_TRUE(manager->wake_lock_sentinels_.Contains(sentinel2));
@@ -75,7 +77,7 @@ TEST(WakeLockManagerTest, ReleaseAllWakeLocks) {
       wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kScreen);
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto promise = resolver->Promise();
 
@@ -87,7 +89,8 @@ TEST(WakeLockManagerTest, ReleaseAllWakeLocks) {
   EXPECT_TRUE(screen_lock.is_acquired());
 
   auto* sentinel =
-      ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(promise);
+      ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
+          promise);
 
   manager->UnregisterSentinel(sentinel);
   screen_lock.WaitForCancelation();
@@ -107,11 +110,11 @@ TEST(WakeLockManagerTest, ReleaseOneWakeLock) {
       wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kScreen);
 
   auto* resolver1 =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto promise1 = resolver1->Promise();
   auto* resolver2 =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto promise2 = resolver2->Promise();
 
@@ -126,7 +129,8 @@ TEST(WakeLockManagerTest, ReleaseOneWakeLock) {
   EXPECT_EQ(2U, manager->wake_lock_sentinels_.size());
 
   auto* sentinel1 =
-      ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(promise1);
+      ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
+          promise1);
   EXPECT_TRUE(manager->wake_lock_sentinels_.Contains(sentinel1));
 
   manager->UnregisterSentinel(sentinel1);
@@ -159,11 +163,11 @@ TEST(WakeLockManagerTest, ClearWakeLocks) {
   auto* manager = MakeManager(context, V8WakeLockType::Enum::kSystem);
 
   auto* resolver1 =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto promise1 = resolver1->Promise();
   auto* resolver2 =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto promise2 = resolver2->Promise();
 
@@ -192,11 +196,11 @@ TEST(WakeLockManagerTest, WakeLockConnectionError) {
   auto* manager = MakeManager(context, V8WakeLockType::Enum::kSystem);
 
   auto* resolver1 =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto promise1 = resolver1->Promise();
   auto* resolver2 =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto promise2 = resolver2->Promise();
 

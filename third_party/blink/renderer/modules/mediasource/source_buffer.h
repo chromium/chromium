@@ -89,7 +89,7 @@ class SourceBuffer final : public EventTarget,
   void setTimestampOffset(double, ExceptionState&);
   void appendBuffer(DOMArrayBuffer* data, ExceptionState&);
   void appendBuffer(NotShared<DOMArrayBufferView> data, ExceptionState&);
-  ScriptPromiseTyped<IDLUndefined> appendEncodedChunks(
+  ScriptPromise<IDLUndefined> appendEncodedChunks(
       ScriptState* script_state,
       const V8EncodedChunks* chunks,
       ExceptionState& exception_state);
@@ -266,8 +266,7 @@ class SourceBuffer final : public EventTarget,
   // This resolver is set and valid only during the scope of synchronous and
   // asynchronous follow-up of appendEncodedChunks().
   std::unique_ptr<media::StreamParser::BufferQueue> pending_chunks_to_buffer_;
-  Member<ScriptPromiseResolverTyped<IDLUndefined>>
-      append_encoded_chunks_resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> append_encoded_chunks_resolver_;
   TaskHandle append_encoded_chunks_async_task_handle_;
 
   // These are valid only during the scope of synchronous and asynchronous

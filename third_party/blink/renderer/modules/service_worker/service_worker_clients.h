@@ -24,14 +24,14 @@ class ServiceWorkerClients final : public ScriptWrappable {
   ServiceWorkerClients();
 
   // Clients.idl
-  ScriptPromiseTyped<ServiceWorkerClient> get(ScriptState*, const String& id);
-  ScriptPromiseTyped<IDLSequence<ServiceWorkerClient>> matchAll(
+  ScriptPromise<ServiceWorkerClient> get(ScriptState*, const String& id);
+  ScriptPromise<IDLSequence<ServiceWorkerClient>> matchAll(
       ScriptState*,
       const ClientQueryOptions*);
-  ScriptPromiseTyped<IDLNullable<ServiceWorkerWindowClient>> openWindow(
+  ScriptPromise<IDLNullable<ServiceWorkerWindowClient>> openWindow(
       ScriptState*,
       const String& url);
-  ScriptPromiseTyped<IDLUndefined> claim(ScriptState*);
+  ScriptPromise<IDLUndefined> claim(ScriptState*);
 };
 
 }  // namespace blink

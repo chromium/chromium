@@ -24,7 +24,7 @@ class Ink : public ScriptWrappable, public Supplement<Navigator> {
   static Ink* ink(Navigator& navigator);
 
   explicit Ink(Navigator&);
-  ScriptPromiseTyped<DelegatedInkTrailPresenter> requestPresenter(
+  ScriptPromise<DelegatedInkTrailPresenter> requestPresenter(
       ScriptState* state,
       InkPresenterParam* presenter_param,
       ExceptionState& exception_state);

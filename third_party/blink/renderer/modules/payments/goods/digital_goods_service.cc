@@ -34,7 +34,7 @@ using payments::mojom::blink::BillingResponseCode;
 namespace {
 
 void OnGetDetailsResponse(
-    ScriptPromiseResolverTyped<IDLSequence<ItemDetails>>* resolver,
+    ScriptPromiseResolver<IDLSequence<ItemDetails>>* resolver,
     BillingResponseCode code,
     Vector<payments::mojom::blink::ItemDetailsPtr> item_details_list) {
   if (code != BillingResponseCode::kOk) {
@@ -54,7 +54,7 @@ void OnGetDetailsResponse(
 }
 
 void ResolveWithPurchaseReferenceList(
-    ScriptPromiseResolverTyped<IDLSequence<PurchaseDetails>>* resolver,
+    ScriptPromiseResolver<IDLSequence<PurchaseDetails>>* resolver,
     BillingResponseCode code,
     Vector<payments::mojom::blink::PurchaseReferencePtr>
         purchase_reference_list) {
@@ -75,7 +75,7 @@ void ResolveWithPurchaseReferenceList(
   resolver->Resolve(std::move(blink_purchase_details_list));
 }
 
-void OnConsumeResponse(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+void OnConsumeResponse(ScriptPromiseResolver<IDLUndefined>* resolver,
                        BillingResponseCode code) {
   if (code != BillingResponseCode::kOk) {
     resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
@@ -99,11 +99,12 @@ DigitalGoodsService::DigitalGoodsService(
 
 DigitalGoodsService::~DigitalGoodsService() = default;
 
-ScriptPromiseTyped<IDLSequence<ItemDetails>> DigitalGoodsService::getDetails(
+ScriptPromise<IDLSequence<ItemDetails>> DigitalGoodsService::getDetails(
     ScriptState* script_state,
     const Vector<String>& item_ids) {
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<ItemDetails>>>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<ItemDetails>>>(
+          script_state);
   auto promise = resolver->Promise();
 
   if (item_ids.empty()) {
@@ -117,10 +118,11 @@ ScriptPromiseTyped<IDLSequence<ItemDetails>> DigitalGoodsService::getDetails(
   return promise;
 }
 
-ScriptPromiseTyped<IDLSequence<PurchaseDetails>>
-DigitalGoodsService::listPurchases(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<PurchaseDetails>>>(script_state);
+ScriptPromise<IDLSequence<PurchaseDetails>> DigitalGoodsService::listPurchases(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<PurchaseDetails>>>(
+          script_state);
   auto promise = resolver->Promise();
 
   mojo_service_->ListPurchases(WTF::BindOnce(&ResolveWithPurchaseReferenceList,
@@ -128,10 +130,11 @@ DigitalGoodsService::listPurchases(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromiseTyped<IDLSequence<PurchaseDetails>>
+ScriptPromise<IDLSequence<PurchaseDetails>>
 DigitalGoodsService::listPurchaseHistory(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<PurchaseDetails>>>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<PurchaseDetails>>>(
+          script_state);
   auto promise = resolver->Promise();
 
   mojo_service_->ListPurchaseHistory(WTF::BindOnce(
@@ -139,12 +142,11 @@ DigitalGoodsService::listPurchaseHistory(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromiseTyped<IDLUndefined> DigitalGoodsService::consume(
+ScriptPromise<IDLUndefined> DigitalGoodsService::consume(
     ScriptState* script_state,
     const String& purchase_token) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
   if (purchase_token.empty()) {

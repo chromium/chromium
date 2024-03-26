@@ -43,7 +43,7 @@ KeyboardLock::KeyboardLock(ExecutionContext* context)
 
 KeyboardLock::~KeyboardLock() = default;
 
-ScriptPromiseTyped<IDLUndefined> KeyboardLock::lock(
+ScriptPromise<IDLUndefined> KeyboardLock::lock(
     ScriptState* state,
     const Vector<String>& keycodes,
     ExceptionState& exception_state) {
@@ -52,23 +52,23 @@ ScriptPromiseTyped<IDLUndefined> KeyboardLock::lock(
   if (!IsLocalFrameAttached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardLockFrameDetachedErrorMsg);
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   if (!CalledFromSupportedContext(ExecutionContext::From(state))) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardLockChildFrameErrorMsg);
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   if (!EnsureServiceConnected()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardLockRequestFailedErrorMsg);
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   request_keylock_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(state);
   service_->RequestKeyboardLock(
       keycodes,
       WTF::BindOnce(&KeyboardLock::LockRequestFinished, WrapPersistent(this),
@@ -115,7 +115,7 @@ bool KeyboardLock::CalledFromSupportedContext(ExecutionContext* context) {
 }
 
 void KeyboardLock::LockRequestFinished(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     mojom::KeyboardLockRequestResult result) {
   DCHECK(request_keylock_resolver_);
 

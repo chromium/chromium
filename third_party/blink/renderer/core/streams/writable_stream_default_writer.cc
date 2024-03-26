@@ -147,11 +147,11 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
 
 WritableStreamDefaultWriter::~WritableStreamDefaultWriter() = default;
 
-ScriptPromise WritableStreamDefaultWriter::closed(
+ScriptPromiseUntyped WritableStreamDefaultWriter::closed(
     ScriptState* script_state) const {
   // https://streams.spec.whatwg.org/#default-writer-closed
   //  2. Return this.[[closedPromise]].
-  return closed_promise_->GetScriptPromise(script_state);
+  return closed_promise_->GetScriptPromiseUntyped(script_state);
 }
 
 ScriptValue WritableStreamDefaultWriter::desiredSize(
@@ -171,14 +171,14 @@ ScriptValue WritableStreamDefaultWriter::desiredSize(
   return ScriptValue(isolate, GetDesiredSize(isolate, this));
 }
 
-ScriptPromise WritableStreamDefaultWriter::ready(
+ScriptPromiseUntyped WritableStreamDefaultWriter::ready(
     ScriptState* script_state) const {
   // https://streams.spec.whatwg.org/#default-writer-ready
   //  2. Return this.[[readyPromise]].
-  return ready_promise_->GetScriptPromise(script_state);
+  return ready_promise_->GetScriptPromiseUntyped(script_state);
 }
 
-ScriptPromise WritableStreamDefaultWriter::abort(
+ScriptPromiseUntyped WritableStreamDefaultWriter::abort(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   return abort(script_state,
@@ -187,7 +187,7 @@ ScriptPromise WritableStreamDefaultWriter::abort(
                exception_state);
 }
 
-ScriptPromise WritableStreamDefaultWriter::abort(
+ScriptPromiseUntyped WritableStreamDefaultWriter::abort(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {
@@ -196,15 +196,15 @@ ScriptPromise WritableStreamDefaultWriter::abort(
   //     with a TypeError exception.
   if (!owner_writable_stream_) {
     exception_state.ThrowTypeError(CreateWriterLockReleasedMessage("aborted"));
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
   //  3. Return ! WritableStreamDefaultWriterAbort(this, reason).
-  return ScriptPromise(script_state,
-                       Abort(script_state, this, reason.V8Value()));
+  return ScriptPromiseUntyped(script_state,
+                              Abort(script_state, this, reason.V8Value()));
 }
 
-ScriptPromise WritableStreamDefaultWriter::close(
+ScriptPromiseUntyped WritableStreamDefaultWriter::close(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#default-writer-close
@@ -215,7 +215,7 @@ ScriptPromise WritableStreamDefaultWriter::close(
   //     exception.
   if (!stream) {
     exception_state.ThrowTypeError(CreateWriterLockReleasedMessage("closed"));
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
   //  4. If ! WritableStreamCloseQueuedOrInFlight(stream) is true, return a
@@ -224,11 +224,11 @@ ScriptPromise WritableStreamDefaultWriter::close(
     exception_state.ThrowTypeError(
         "Cannot close a writable stream that has "
         "already been requested to be closed");
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
   //  5. Return ! WritableStreamDefaultWriterClose(this).
-  return ScriptPromise(script_state, Close(script_state, this));
+  return ScriptPromiseUntyped(script_state, Close(script_state, this));
 }
 
 void WritableStreamDefaultWriter::releaseLock(ScriptState* script_state) {
@@ -248,7 +248,7 @@ void WritableStreamDefaultWriter::releaseLock(ScriptState* script_state) {
   Release(script_state, this);
 }
 
-ScriptPromise WritableStreamDefaultWriter::write(
+ScriptPromiseUntyped WritableStreamDefaultWriter::write(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   return write(script_state,
@@ -257,7 +257,7 @@ ScriptPromise WritableStreamDefaultWriter::write(
                exception_state);
 }
 
-ScriptPromise WritableStreamDefaultWriter::write(
+ScriptPromiseUntyped WritableStreamDefaultWriter::write(
     ScriptState* script_state,
     ScriptValue chunk,
     ExceptionState& exception_state) {
@@ -267,12 +267,13 @@ ScriptPromise WritableStreamDefaultWriter::write(
   if (!owner_writable_stream_) {
     exception_state.ThrowTypeError(
         CreateWriterLockReleasedMessage("written to"));
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
   //  3. Return ! WritableStreamDefaultWriterWrite(this, chunk).
-  return ScriptPromise(script_state, Write(script_state, this, chunk.V8Value(),
-                                           exception_state));
+  return ScriptPromiseUntyped(
+      script_state,
+      Write(script_state, this, chunk.V8Value(), exception_state));
 }
 
 void WritableStreamDefaultWriter::EnsureReadyPromiseRejected(

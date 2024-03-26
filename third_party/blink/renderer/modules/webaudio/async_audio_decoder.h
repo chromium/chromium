@@ -69,7 +69,7 @@ class AsyncAudioDecoder {
                    float sample_rate,
                    V8DecodeSuccessCallback*,
                    V8DecodeErrorCallback*,
-                   ScriptPromiseResolverTyped<AudioBuffer>*,
+                   ScriptPromiseResolver<AudioBuffer>*,
                    BaseAudioContext*,
                    ExceptionState&);
 
@@ -80,7 +80,7 @@ class AsyncAudioDecoder {
       float sample_rate,
       CrossThreadHandle<V8DecodeSuccessCallback>,
       CrossThreadHandle<V8DecodeErrorCallback>,
-      CrossThreadHandle<ScriptPromiseResolverTyped<AudioBuffer>>,
+      CrossThreadHandle<ScriptPromiseResolver<AudioBuffer>>,
       CrossThreadHandle<BaseAudioContext>,
       scoped_refptr<base::SingleThreadTaskRunner>,
       const ExceptionContext&);
@@ -88,7 +88,7 @@ class AsyncAudioDecoder {
                              V8DecodeSuccessCallback*,
                              V8DecodeErrorCallback*,
                              AudioBus*,
-                             ScriptPromiseResolverTyped<AudioBuffer>*,
+                             ScriptPromiseResolver<AudioBuffer>*,
                              BaseAudioContext*,
                              const ExceptionContext&);
 };

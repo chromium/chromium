@@ -71,7 +71,7 @@ v8::Local<v8::Value> ModuleTestBase::GetResult(ScriptState* script_state,
   CHECK_EQ(result.GetResultType(),
            ScriptEvaluationResult::ResultType::kSuccess);
 
-  ScriptPromise script_promise = result.GetPromise(script_state);
+  ScriptPromiseUntyped script_promise = result.GetPromise(script_state);
   v8::Local<v8::Promise> promise = script_promise.V8Promise();
   if (promise->State() == v8::Promise::kFulfilled) {
     return promise->Result();
@@ -96,7 +96,7 @@ v8::Local<v8::Value> ModuleTestBase::GetException(
   CHECK_EQ(result.GetResultType(),
            ScriptEvaluationResult::ResultType::kSuccess);
 
-  ScriptPromise script_promise = result.GetPromise(script_state);
+  ScriptPromiseUntyped script_promise = result.GetPromise(script_state);
   v8::Local<v8::Promise> promise = script_promise.V8Promise();
   if (promise->State() == v8::Promise::kRejected) {
     return promise->Result();

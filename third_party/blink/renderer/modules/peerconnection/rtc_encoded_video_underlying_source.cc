@@ -36,21 +36,23 @@ RTCEncodedVideoUnderlyingSource::RTCEncodedVideoUnderlyingSource(
   task_runner_ = context->GetTaskRunner(TaskType::kInternalMediaRealTime);
 }
 
-ScriptPromise RTCEncodedVideoUnderlyingSource::Pull(ScriptState* script_state,
-                                                    ExceptionState&) {
+ScriptPromiseUntyped RTCEncodedVideoUnderlyingSource::Pull(
+    ScriptState* script_state,
+    ExceptionState&) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   // WebRTC is a push source without backpressure support, so nothing to do
   // here.
-  return ScriptPromise::CastUndefined(script_state);
+  return ScriptPromiseUntyped::CastUndefined(script_state);
 }
 
-ScriptPromise RTCEncodedVideoUnderlyingSource::Cancel(ScriptState* script_state,
-                                                      ScriptValue reason,
-                                                      ExceptionState&) {
+ScriptPromiseUntyped RTCEncodedVideoUnderlyingSource::Cancel(
+    ScriptState* script_state,
+    ScriptValue reason,
+    ExceptionState&) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   if (disconnect_callback_)
     std::move(disconnect_callback_).Run();
-  return ScriptPromise::CastUndefined(script_state);
+  return ScriptPromiseUntyped::CastUndefined(script_state);
 }
 
 void RTCEncodedVideoUnderlyingSource::Trace(Visitor* visitor) const {

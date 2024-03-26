@@ -11,8 +11,9 @@
 
 namespace blink {
 
-// ScriptPromiseResolverWithTracker is a wrapper around ScriptPromiseResolver
-// which simplifies recording UMA metric and latency for APIs.
+// ScriptPromiseResolverWithTracker is a wrapper around
+// ScriptPromiseResolverBase which simplifies recording UMA metric and latency
+// for APIs.
 
 // Callers should ensure that the ResultEnumType has kOk and kTimedOut as
 // values. This is a sample usage CL: http://crrev.com/c/4053546.
@@ -51,9 +52,8 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
         max_latency_bucket_(max_latency_bucket),
         n_buckets_(n_buckets) {
     DCHECK(!metric_name_prefix_.empty());
-    resolver_ =
-        MakeGarbageCollected<ScriptPromiseResolverTyped<IDLResolvedType>>(
-            script_state);
+    resolver_ = MakeGarbageCollected<ScriptPromiseResolver<IDLResolvedType>>(
+        script_state);
     if (timeout_interval.is_positive()) {
       auto* execution_context = ExecutionContext::From(script_state);
       // We're goging to keep this class alive for the duration of timeout,
@@ -143,7 +143,7 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
 
   ScriptState* GetScriptState() const { return resolver_->GetScriptState(); }
 
-  ScriptPromiseTyped<IDLResolvedType> Promise() { return resolver_->Promise(); }
+  ScriptPromise<IDLResolvedType> Promise() { return resolver_->Promise(); }
 
   void Trace(Visitor* visitor) const override {
     ExecutionContextLifecycleObserver::Trace(visitor);
@@ -153,7 +153,7 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
  private:
   void ContextDestroyed() override { resolver_->Detach(); }
 
-  Member<ScriptPromiseResolverTyped<IDLResolvedType>> resolver_;
+  Member<ScriptPromiseResolver<IDLResolvedType>> resolver_;
   const std::string metric_name_prefix_;
   const base::TimeTicks start_time_;
   const base::TimeDelta min_latency_bucket_;

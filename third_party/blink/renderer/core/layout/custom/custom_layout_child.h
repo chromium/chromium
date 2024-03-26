@@ -39,9 +39,9 @@ class CustomLayoutChild : public ScriptWrappable {
   PrepopulatedComputedStylePropertyMap* styleMap() const {
     return style_map_.Get();
   }
-  ScriptPromiseTyped<CustomIntrinsicSizes> intrinsicSizes(ScriptState*,
-                                                          ExceptionState&);
-  ScriptPromiseTyped<CustomLayoutFragment> layoutNextFragment(
+  ScriptPromise<CustomIntrinsicSizes> intrinsicSizes(ScriptState*,
+                                                     ExceptionState&);
+  ScriptPromise<CustomLayoutFragment> layoutNextFragment(
       ScriptState*,
       const CustomLayoutConstraintsOptions*,
       ExceptionState&);

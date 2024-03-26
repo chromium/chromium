@@ -50,9 +50,9 @@ FontMetadata* FontMetadata::Create(const FontEnumerationEntry& entry) {
   return MakeGarbageCollected<FontMetadata>(entry);
 }
 
-ScriptPromiseTyped<Blob> FontMetadata::blob(ScriptState* script_state) {
+ScriptPromise<Blob> FontMetadata::blob(ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<Blob>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<Blob>>(script_state);
   auto promise = resolver->Promise();
 
   ExecutionContext::From(script_state)
@@ -69,7 +69,7 @@ void FontMetadata::Trace(blink::Visitor* visitor) const {
 }
 
 // static
-void FontMetadata::BlobImpl(ScriptPromiseResolverTyped<Blob>* resolver,
+void FontMetadata::BlobImpl(ScriptPromiseResolver<Blob>* resolver,
                             const String& postscriptName) {
   if (!resolver->GetScriptState()->ContextIsValid())
     return;

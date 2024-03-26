@@ -64,7 +64,7 @@ class MLGraphTestBase : public ::testing::Test,
                                             MLContextOptions* options);
 
   // Helper method for testing only context creation.
-  static ScriptPromise CreateContext(
+  static ScriptPromiseUntyped CreateContext(
       V8TestingScope& scope,
       MLContextOptions* options = MLContextOptions::Create());
 

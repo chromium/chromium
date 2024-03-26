@@ -148,7 +148,7 @@ v8::Local<v8::Promise> AsyncIterationSourceBase::Return(
     ScriptState* script_state,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  ScriptPromise return_steps_promise;
+  ScriptPromiseUntyped return_steps_promise;
   if (!ongoing_promise_.IsEmpty()) {
     // step 10. If ongoingPromise is not null, then:
     // step 10.2. Let onSettled be CreateBuiltinFunction(returnSteps, << >>).
@@ -196,7 +196,7 @@ v8::Local<v8::Value> AsyncIterationSourceBase::MakeEndOfIteration() const {
 }
 
 // step 8. Let nextSteps be the following steps:
-ScriptPromiseTyped<IDLAny> AsyncIterationSourceBase::RunNextSteps(
+ScriptPromise<IDLAny> AsyncIterationSourceBase::RunNextSteps(
     ScriptState* script_state) {
   if (is_finished_) {
     // step 8.2. If object's is finished is true, then:
@@ -217,7 +217,7 @@ ScriptPromiseTyped<IDLAny> AsyncIterationSourceBase::RunNextSteps(
   // step 8.10. Return nextPromiseCapability.[[Promise]].
   DCHECK(!pending_promise_resolver_);
   pending_promise_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
   auto promise = pending_promise_resolver_->Promise();
   GetNextIterationResult();
   return promise.Then(on_fulfilled_function_, on_rejected_function_);
@@ -274,7 +274,7 @@ ScriptValue AsyncIterationSourceBase::RunRejectSteps(ScriptState* script_state,
 }
 
 // step 8. Let returnSteps be the following steps:
-ScriptPromiseTyped<IDLAny> AsyncIterationSourceBase::RunReturnSteps(
+ScriptPromise<IDLAny> AsyncIterationSourceBase::RunReturnSteps(
     ScriptState* script_state,
     ScriptValue value) {
   if (is_finished_) {
@@ -295,7 +295,7 @@ ScriptPromiseTyped<IDLAny> AsyncIterationSourceBase::RunReturnSteps(
   //     algorithm for interface, given object's target, object, and value.
   DCHECK(!pending_promise_resolver_);
   pending_promise_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
   auto promise = pending_promise_resolver_->Promise();
   AsyncIteratorReturn(value);
   return promise;

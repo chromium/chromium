@@ -934,10 +934,10 @@ struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLObject>>
 template <>
 struct CORE_EXPORT NativeValueTraits<IDLPromise>
     : public NativeValueTraitsBase<IDLPromise> {
-  static ScriptPromise NativeValue(v8::Isolate* isolate,
-                                   v8::Local<v8::Value> value,
-                                   ExceptionState& exception_state) {
-    return ScriptPromise::FromUntypedValueForBindings(
+  static ScriptPromiseUntyped NativeValue(v8::Isolate* isolate,
+                                          v8::Local<v8::Value> value,
+                                          ExceptionState& exception_state) {
+    return ScriptPromiseUntyped::FromUntypedValueForBindings(
         ScriptState::From(isolate->GetCurrentContext()), value);
   }
 };

@@ -36,14 +36,14 @@ FileSystemUnderlyingSink::FileSystemUnderlyingSink(
   DCHECK(writer_remote_.is_bound());
 }
 
-ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::start(
+ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::start(
     ScriptState* script_state,
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::write(
+ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::write(
     ScriptState* script_state,
     ScriptValue chunk,
     WritableStreamDefaultController* controller,
@@ -52,7 +52,7 @@ ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::write(
       V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVStringOrWriteParams>::
       NativeValue(script_state->GetIsolate(), chunk.V8Value(), exception_state);
   if (exception_state.HadException())
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
 
   if (input->IsWriteParams()) {
     return HandleParams(script_state, *input->GetAsWriteParams(),
@@ -64,17 +64,17 @@ ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::write(
   return WriteData(script_state, offset_, write_data, exception_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::close(
+ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::close(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!writer_remote_.is_bound() || pending_operation_) {
     ThrowDOMExceptionAndInvalidateSink(exception_state,
                                        DOMExceptionCode::kInvalidStateError,
                                        "Object reached an invalid state");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
   pending_operation_ =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           script_state, exception_state.GetContext());
   auto result = pending_operation_->Promise();
   writer_remote_->Close(WTF::BindOnce(&FileSystemUnderlyingSink::CloseComplete,
@@ -83,7 +83,7 @@ ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::close(
   return result;
 }
 
-ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::abort(
+ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::abort(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {
@@ -95,7 +95,7 @@ ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::abort(
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::HandleParams(
+ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::HandleParams(
     ScriptState* script_state,
     const WriteParams& params,
     ExceptionState& exception_state) {
@@ -104,7 +104,7 @@ ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::HandleParams(
       ThrowDOMExceptionAndInvalidateSink(
           exception_state, DOMExceptionCode::kSyntaxError,
           "Invalid params passed. truncate requires a size argument");
-      return ScriptPromiseTyped<IDLUndefined>();
+      return ScriptPromise<IDLUndefined>();
     }
     return Truncate(script_state, params.sizeNonNull(), exception_state);
   }
@@ -114,7 +114,7 @@ ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::HandleParams(
       ThrowDOMExceptionAndInvalidateSink(
           exception_state, DOMExceptionCode::kSyntaxError,
           "Invalid params passed. seek requires a position argument");
-      return ScriptPromiseTyped<IDLUndefined>();
+      return ScriptPromise<IDLUndefined>();
     }
     return Seek(script_state, params.positionNonNull(), exception_state);
   }
@@ -126,13 +126,13 @@ ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::HandleParams(
       ThrowDOMExceptionAndInvalidateSink(
           exception_state, DOMExceptionCode::kSyntaxError,
           "Invalid params passed. write requires a data argument");
-      return ScriptPromiseTyped<IDLUndefined>();
+      return ScriptPromise<IDLUndefined>();
     }
     if (!params.data()) {
       ThrowTypeErrorAndInvalidateSink(
           exception_state,
           "Invalid params passed. write requires a non-null data");
-      return ScriptPromiseTyped<IDLUndefined>();
+      return ScriptPromise<IDLUndefined>();
     }
     return WriteData(script_state, position, params.data(), exception_state);
   }
@@ -140,7 +140,7 @@ ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::HandleParams(
   ThrowDOMExceptionAndInvalidateSink(exception_state,
                                      DOMExceptionCode::kInvalidStateError,
                                      "Object reached an invalid state");
-  return ScriptPromiseTyped<IDLUndefined>();
+  return ScriptPromise<IDLUndefined>();
 }
 
 namespace {
@@ -339,7 +339,7 @@ void FileSystemUnderlyingSink::ThrowTypeErrorAndInvalidateSink(
   writer_remote_.reset();
 }
 
-ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::WriteData(
+ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::WriteData(
     ScriptState* script_state,
     uint64_t position,
     const V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString* data,
@@ -350,7 +350,7 @@ ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::WriteData(
     ThrowDOMExceptionAndInvalidateSink(exception_state,
                                        DOMExceptionCode::kInvalidStateError,
                                        "Object reached an invalid state");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   offset_ = position;
@@ -401,7 +401,7 @@ ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::WriteData(
     ThrowDOMExceptionAndInvalidateSink(exception_state,
                                        DOMExceptionCode::kInvalidStateError,
                                        "Failed to create datapipe");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   WriterHelper* helper;
@@ -434,12 +434,12 @@ ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::WriteData(
       WTF::BindOnce(&WriterHelper::WriteComplete, helper->AsWeakPtr()));
 
   pending_operation_ =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           script_state, exception_state.GetContext());
   return pending_operation_->Promise();
 }
 
-ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::Truncate(
+ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::Truncate(
     ScriptState* script_state,
     uint64_t size,
     ExceptionState& exception_state) {
@@ -447,10 +447,10 @@ ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::Truncate(
     ThrowDOMExceptionAndInvalidateSink(exception_state,
                                        DOMExceptionCode::kInvalidStateError,
                                        "Object reached an invalid state");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
   pending_operation_ =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           script_state, exception_state.GetContext());
   auto result = pending_operation_->Promise();
   writer_remote_->Truncate(
@@ -459,7 +459,7 @@ ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::Truncate(
   return result;
 }
 
-ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::Seek(
+ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::Seek(
     ScriptState* script_state,
     uint64_t offset,
     ExceptionState& exception_state) {
@@ -467,7 +467,7 @@ ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::Seek(
     ThrowDOMExceptionAndInvalidateSink(exception_state,
                                        DOMExceptionCode::kInvalidStateError,
                                        "Object reached an invalid state");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
   offset_ = offset;
   return ToResolvedUndefinedPromise(script_state);

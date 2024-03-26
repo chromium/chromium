@@ -70,7 +70,7 @@ class ScriptPromiseResolverWithTrackerTest : public testing::Test {
         ScriptPromiseResolverWithTracker<TestEnum, IDLString>>(
         GetScriptState(), metric_name_prefix_, timeout_delay);
 
-    ScriptPromise promise = result_tracker->Promise();
+    ScriptPromiseUntyped promise = result_tracker->Promise();
     promise.Then(MakeGarbageCollected<ScriptFunction>(
                      GetScriptState(),
                      MakeGarbageCollected<TestHelperFunction>(&on_fulfilled)),

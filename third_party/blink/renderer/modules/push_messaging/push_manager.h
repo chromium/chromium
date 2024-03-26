@@ -30,13 +30,13 @@ class MODULES_EXPORT PushManager final : public ScriptWrappable {
   static Vector<String> supportedContentEncodings();
 
   // Web-exposed methods:
-  ScriptPromiseTyped<PushSubscription> subscribe(
+  ScriptPromise<PushSubscription> subscribe(
       ScriptState* script_state,
       const PushSubscriptionOptionsInit* options_init,
       ExceptionState& exception_state);
-  ScriptPromiseTyped<IDLNullable<PushSubscription>> getSubscription(
+  ScriptPromise<IDLNullable<PushSubscription>> getSubscription(
       ScriptState* script_state);
-  ScriptPromiseTyped<V8PermissionState> permissionState(
+  ScriptPromise<V8PermissionState> permissionState(
       ScriptState* script_state,
       const PushSubscriptionOptionsInit* options,
       ExceptionState& exception_state);

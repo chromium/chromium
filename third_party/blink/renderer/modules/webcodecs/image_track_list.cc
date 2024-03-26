@@ -31,8 +31,7 @@ ImageTrack* ImageTrackList::selectedTrack() const {
   return tracks_[*selected_track_id_].Get();
 }
 
-ScriptPromiseTyped<IDLUndefined> ImageTrackList::ready(
-    ScriptState* script_state) {
+ScriptPromise<IDLUndefined> ImageTrackList::ready(ScriptState* script_state) {
   return ready_property_->Promise(script_state->World());
 }
 

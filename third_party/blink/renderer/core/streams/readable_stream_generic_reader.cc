@@ -19,14 +19,14 @@ ReadableStreamGenericReader::ReadableStreamGenericReader() = default;
 
 ReadableStreamGenericReader::~ReadableStreamGenericReader() = default;
 
-ScriptPromise ReadableStreamGenericReader::closed(
+ScriptPromiseUntyped ReadableStreamGenericReader::closed(
     ScriptState* script_state) const {
   // https://streams.spec.whatwg.org/#default-reader-closed
   // 1. Return this.[[closedPromise]].
-  return closed_promise_->GetScriptPromise(script_state);
+  return closed_promise_->GetScriptPromiseUntyped(script_state);
 }
 
-ScriptPromise ReadableStreamGenericReader::cancel(
+ScriptPromiseUntyped ReadableStreamGenericReader::cancel(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   return cancel(script_state,
@@ -35,7 +35,7 @@ ScriptPromise ReadableStreamGenericReader::cancel(
                 exception_state);
 }
 
-ScriptPromise ReadableStreamGenericReader::cancel(
+ScriptPromiseUntyped ReadableStreamGenericReader::cancel(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {
@@ -46,13 +46,13 @@ ScriptPromise ReadableStreamGenericReader::cancel(
     exception_state.ThrowTypeError(
         "This readable stream reader has been released and cannot be used to "
         "cancel its previous owner stream");
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
   // 3. Return ! ReadableStreamReaderGenericCancel(this, reason).
   v8::Local<v8::Promise> result =
       GenericCancel(script_state, this, reason.V8Value());
-  return ScriptPromise(script_state, result);
+  return ScriptPromiseUntyped(script_state, result);
 }
 
 void ReadableStreamGenericReader::GenericRelease(

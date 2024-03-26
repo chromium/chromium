@@ -72,9 +72,10 @@ class BrowserCaptureMediaStreamTrackTest
   BrowserCaptureMediaStreamTrackTest() : type_(GetParam()) {}
   ~BrowserCaptureMediaStreamTrackTest() override = default;
 
-  ScriptPromise ApplySubCaptureTarget(V8TestingScope& v8_scope,
-                                      BrowserCaptureMediaStreamTrack& track,
-                                      WTF::String id_string) {
+  ScriptPromiseUntyped ApplySubCaptureTarget(
+      V8TestingScope& v8_scope,
+      BrowserCaptureMediaStreamTrack& track,
+      WTF::String id_string) {
     switch (type_) {
       case SubCaptureTarget::Type::kCropTarget:
         return track.cropTo(
@@ -155,7 +156,7 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
   BrowserCaptureMediaStreamTrack* const track =
       MakeTrack(v8_scope, std::move(media_stream_video_source));
 
-  const ScriptPromise promise = ApplySubCaptureTarget(
+  const ScriptPromiseUntyped promise = ApplySubCaptureTarget(
       v8_scope, *track, WTF::String(valid_id.AsLowercaseString()));
 
   track->OnSubCaptureTargetVersionObservedForTesting(
@@ -195,7 +196,7 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
   BrowserCaptureMediaStreamTrack* const track =
       MakeTrack(v8_scope, std::move(media_stream_video_source));
 
-  const ScriptPromise promise = ApplySubCaptureTarget(
+  const ScriptPromiseUntyped promise = ApplySubCaptureTarget(
       v8_scope, *track, WTF::String(valid_id.AsLowercaseString()));
 
   track->OnSubCaptureTargetVersionObservedForTesting(
@@ -231,7 +232,7 @@ TEST_P(
   BrowserCaptureMediaStreamTrack* const track =
       MakeTrack(v8_scope, std::move(media_stream_video_source));
 
-  const ScriptPromise promise = ApplySubCaptureTarget(
+  const ScriptPromiseUntyped promise = ApplySubCaptureTarget(
       v8_scope, *track, WTF::String(valid_id.AsLowercaseString()));
 
   ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);
@@ -259,7 +260,7 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
   BrowserCaptureMediaStreamTrack* const track =
       MakeTrack(v8_scope, std::move(media_stream_video_source));
 
-  const ScriptPromise promise = ApplySubCaptureTarget(
+  const ScriptPromiseUntyped promise = ApplySubCaptureTarget(
       v8_scope, *track, WTF::String(valid_id.AsLowercaseString()));
 
   ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);

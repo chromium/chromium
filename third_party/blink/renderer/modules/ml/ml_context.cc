@@ -35,10 +35,9 @@ webnn::mojom::blink::PowerPreference ConvertBlinkPowerPreferenceToMojo(
 }  // namespace
 
 // static
-void MLContext::ValidateAndCreate(
-    ScriptPromiseResolverTyped<MLContext>* resolver,
-    MLContextOptions* options,
-    ML* ml) {
+void MLContext::ValidateAndCreate(ScriptPromiseResolver<MLContext>* resolver,
+                                  MLContextOptions* options,
+                                  ML* ml) {
   ScopedMLTrace scoped_trace("MLContext::ValidateAndCreate");
   auto* context = MakeGarbageCollected<MLContext>(
       options->devicePreference(), options->deviceType(),
@@ -118,7 +117,7 @@ void MLContext::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-ScriptPromiseTyped<MLComputeResult> MLContext::compute(
+ScriptPromise<MLComputeResult> MLContext::compute(
     ScriptState* script_state,
     MLGraph* graph,
     const MLNamedArrayBufferViews& inputs,
@@ -128,12 +127,11 @@ ScriptPromiseTyped<MLComputeResult> MLContext::compute(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
-    return ScriptPromiseTyped<MLComputeResult>();
+    return ScriptPromise<MLComputeResult>();
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<MLComputeResult>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   if (graph->Context() != this) {
@@ -165,7 +163,7 @@ void MLContext::CreateWebNNGraph(
 
 void MLContext::OnCreateWebNNContext(
     ScopedMLTrace scoped_trace,
-    ScriptPromiseResolverTyped<MLContext>* resolver,
+    ScriptPromiseResolver<MLContext>* resolver,
     webnn::mojom::blink::CreateContextResultPtr result) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state) {

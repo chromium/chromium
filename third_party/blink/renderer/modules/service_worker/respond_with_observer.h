@@ -16,7 +16,7 @@
 namespace blink {
 
 class ExecutionContext;
-class ScriptPromise;
+class ScriptPromiseUntyped;
 class ScriptState;
 class ScriptValue;
 class WaitUntilObserver;
@@ -38,7 +38,7 @@ class MODULES_EXPORT RespondWithObserver
   // OnResponseFulfilled() when it settles. It also keeps the event alive by
   // telling the event's WaitUntilObserver to observe the promise. The result of
   // RespondWith() is therefore reported back before the event finishes.
-  void RespondWith(ScriptState*, ScriptPromise, ExceptionState&);
+  void RespondWith(ScriptState*, ScriptPromiseUntyped, ExceptionState&);
 
   // Called when the respondWith() promise was rejected.
   virtual void OnResponseRejected(mojom::ServiceWorkerResponseError) = 0;
@@ -56,7 +56,7 @@ class MODULES_EXPORT RespondWithObserver
  protected:
   RespondWithObserver(ExecutionContext*, int event_id, WaitUntilObserver*);
 
-  bool WaitUntil(ScriptState*, ScriptPromise, ExceptionState&);
+  bool WaitUntil(ScriptState*, ScriptPromiseUntyped, ExceptionState&);
 
   const int event_id_;
   base::TimeTicks event_dispatch_time_;

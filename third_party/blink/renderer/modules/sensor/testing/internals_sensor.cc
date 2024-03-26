@@ -135,7 +135,7 @@ ToMojoRawReading(V8VirtualSensorType::Enum type,
 }  // namespace
 
 // static
-ScriptPromiseTyped<IDLUndefined> InternalsSensor::createVirtualSensor(
+ScriptPromise<IDLUndefined> InternalsSensor::createVirtualSensor(
     ScriptState* script_state,
     Internals&,
     V8VirtualSensorType type,
@@ -148,8 +148,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsSensor::createVirtualSensor(
       virtual_sensor_provider.BindNewPipeAndPassReceiver());
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
   auto* raw_virtual_sensor_provider = virtual_sensor_provider.get();
   raw_virtual_sensor_provider->CreateVirtualSensor(
@@ -157,7 +156,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsSensor::createVirtualSensor(
       WTF::BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
-          [](ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+          [](ScriptPromiseResolver<IDLUndefined>* resolver,
              mojo::Remote<test::mojom::blink::WebSensorProviderAutomation>,
              device::mojom::blink::CreateVirtualSensorResult result) {
             switch (result) {
@@ -175,14 +174,14 @@ ScriptPromiseTyped<IDLUndefined> InternalsSensor::createVirtualSensor(
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> InternalsSensor::updateVirtualSensor(
+ScriptPromise<IDLUndefined> InternalsSensor::updateVirtualSensor(
     ScriptState* script_state,
     Internals&,
     V8VirtualSensorType type,
     VirtualSensorReading* reading) {
   auto mojo_reading = ToMojoRawReading(type.AsEnum(), reading);
   if (!mojo_reading.has_value()) {
-    return ScriptPromiseTyped<IDLUndefined>::Reject(
+    return ScriptPromise<IDLUndefined>::Reject(
         script_state,
         V8ThrowDOMException::CreateOrEmpty(script_state->GetIsolate(),
                                            DOMExceptionCode::kInvalidStateError,
@@ -197,8 +196,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsSensor::updateVirtualSensor(
       virtual_sensor_provider.BindNewPipeAndPassReceiver());
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
   auto* raw_virtual_sensor_provider = virtual_sensor_provider.get();
   raw_virtual_sensor_provider->UpdateVirtualSensor(
@@ -206,7 +204,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsSensor::updateVirtualSensor(
       WTF::BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
-          [](ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+          [](ScriptPromiseResolver<IDLUndefined>* resolver,
              mojo::Remote<test::mojom::blink::WebSensorProviderAutomation>,
              device::mojom::blink::UpdateVirtualSensorResult result) {
             switch (result) {
@@ -226,7 +224,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsSensor::updateVirtualSensor(
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> InternalsSensor::removeVirtualSensor(
+ScriptPromise<IDLUndefined> InternalsSensor::removeVirtualSensor(
     ScriptState* script_state,
     Internals&,
     V8VirtualSensorType type) {
@@ -238,8 +236,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsSensor::removeVirtualSensor(
       virtual_sensor_provider.BindNewPipeAndPassReceiver());
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
   auto* raw_virtual_sensor_provider = virtual_sensor_provider.get();
   raw_virtual_sensor_provider->RemoveVirtualSensor(
@@ -247,7 +244,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsSensor::removeVirtualSensor(
       WTF::BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
-          [](ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+          [](ScriptPromiseResolver<IDLUndefined>* resolver,
              mojo::Remote<test::mojom::blink::WebSensorProviderAutomation>) {
             resolver->Resolve();
           },
@@ -256,7 +253,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsSensor::removeVirtualSensor(
 }
 
 // static
-ScriptPromiseTyped<VirtualSensorInformation>
+ScriptPromise<VirtualSensorInformation>
 InternalsSensor::getVirtualSensorInformation(ScriptState* script_state,
                                              Internals&,
                                              V8VirtualSensorType type) {
@@ -267,8 +264,9 @@ InternalsSensor::getVirtualSensorInformation(ScriptState* script_state,
   window->GetBrowserInterfaceBroker().GetInterface(
       virtual_sensor_provider.BindNewPipeAndPassReceiver());
 
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<VirtualSensorInformation>>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<VirtualSensorInformation>>(
+          script_state);
   auto promise = resolver->Promise();
   auto* raw_virtual_sensor_provider = virtual_sensor_provider.get();
   raw_virtual_sensor_provider->GetVirtualSensorInformation(
@@ -276,7 +274,7 @@ InternalsSensor::getVirtualSensorInformation(ScriptState* script_state,
       WTF::BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
-          [](ScriptPromiseResolverTyped<VirtualSensorInformation>* resolver,
+          [](ScriptPromiseResolver<VirtualSensorInformation>* resolver,
              mojo::Remote<test::mojom::blink::WebSensorProviderAutomation>,
              device::mojom::blink::GetVirtualSensorInformationResultPtr
                  result) {

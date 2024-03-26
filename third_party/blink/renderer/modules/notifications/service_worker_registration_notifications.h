@@ -34,13 +34,13 @@ class ServiceWorkerRegistrationNotifications final
  public:
   static const char kSupplementName[];
 
-  static ScriptPromiseTyped<IDLUndefined> showNotification(
+  static ScriptPromise<IDLUndefined> showNotification(
       ScriptState* script_state,
       ServiceWorkerRegistration& registration,
       const String& title,
       const NotificationOptions* options,
       ExceptionState& exception_state);
-  static ScriptPromiseTyped<IDLSequence<Notification>> getNotifications(
+  static ScriptPromise<IDLSequence<Notification>> getNotifications(
       ScriptState* script_state,
       ServiceWorkerRegistration& registration,
       const GetNotificationOptions* options);
@@ -64,11 +64,11 @@ class ServiceWorkerRegistrationNotifications final
       ServiceWorkerRegistration& registration);
 
   void PrepareShow(mojom::blink::NotificationDataPtr data,
-                   ScriptPromiseResolverTyped<IDLUndefined>* resolver);
+                   ScriptPromiseResolver<IDLUndefined>* resolver);
 
   void DidLoadResources(scoped_refptr<const SecurityOrigin> origin,
                         mojom::blink::NotificationDataPtr data,
-                        ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+                        ScriptPromiseResolver<IDLUndefined>* resolver,
                         NotificationResourcesLoader* loader);
 
   HeapHashSet<Member<NotificationResourcesLoader>> loaders_;

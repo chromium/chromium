@@ -13,7 +13,7 @@
 namespace blink {
 
 class ExceptionState;
-class ScriptPromise;
+class ScriptPromiseUntyped;
 class ScriptState;
 class TransformStreamDefaultController;
 
@@ -30,11 +30,11 @@ class CORE_EXPORT TransformStreamTransformer
       delete;
   virtual ~TransformStreamTransformer() = default;
 
-  virtual ScriptPromise Transform(v8::Local<v8::Value> chunk,
-                                  TransformStreamDefaultController*,
-                                  ExceptionState&) = 0;
-  virtual ScriptPromise Flush(TransformStreamDefaultController*,
-                              ExceptionState&) = 0;
+  virtual ScriptPromiseUntyped Transform(v8::Local<v8::Value> chunk,
+                                         TransformStreamDefaultController*,
+                                         ExceptionState&) = 0;
+  virtual ScriptPromiseUntyped Flush(TransformStreamDefaultController*,
+                                     ExceptionState&) = 0;
 
   // Returns the ScriptState associated with this Transformer.
   virtual ScriptState* GetScriptState() = 0;

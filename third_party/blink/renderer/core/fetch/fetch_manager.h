@@ -50,10 +50,10 @@ class CORE_EXPORT FetchManager final
  public:
   explicit FetchManager(ExecutionContext*);
 
-  ScriptPromiseTyped<Response> Fetch(ScriptState*,
-                                     FetchRequestData*,
-                                     AbortSignal*,
-                                     ExceptionState&);
+  ScriptPromise<Response> Fetch(ScriptState*,
+                                FetchRequestData*,
+                                AbortSignal*,
+                                ExceptionState&);
 
   // ExecutionContextLifecycleObserver overrides:
   void ContextDestroyed() override;

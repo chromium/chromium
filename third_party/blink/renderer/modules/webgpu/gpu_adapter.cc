@@ -207,7 +207,7 @@ bool GPUAdapter::isCompatibilityMode() const {
 void GPUAdapter::OnRequestDeviceCallback(
     ScriptState* script_state,
     const GPUDeviceDescriptor* descriptor,
-    ScriptPromiseResolverTyped<GPUDevice>* resolver,
+    ScriptPromiseResolver<GPUDevice>* resolver,
     WGPURequestDeviceStatus status,
     WGPUDevice dawn_device,
     const char* error_message) {
@@ -277,10 +277,10 @@ void GPUAdapter::OnRequestDeviceCallback(
   }
 }
 
-ScriptPromiseTyped<GPUDevice> GPUAdapter::requestDevice(
+ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
     ScriptState* script_state,
     GPUDeviceDescriptor* descriptor) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<GPUDevice>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<GPUDevice>>(
       script_state, ExceptionContext(ExceptionContextType::kOperationInvoke,
                                      "GPUAdapter", "requestDevice"));
   auto promise = resolver->Promise();
@@ -340,7 +340,7 @@ ScriptPromiseTyped<GPUDevice> GPUAdapter::requestDevice(
   return promise;
 }
 
-ScriptPromiseTyped<GPUAdapterInfo> GPUAdapter::requestAdapterInfo(
+ScriptPromise<GPUAdapterInfo> GPUAdapter::requestAdapterInfo(
     ScriptState* script_state) {
   GPUAdapterInfo* adapter_info;
   if (RuntimeEnabledFeatures::WebGPUDeveloperFeaturesEnabled()) {

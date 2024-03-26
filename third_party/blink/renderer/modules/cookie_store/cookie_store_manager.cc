@@ -110,7 +110,7 @@ CookieStoreManager::CookieStoreManager(ServiceWorkerRegistration& registration)
           execution_context->GetTaskRunner(TaskType::kDOMManipulation)));
 }
 
-ScriptPromiseTyped<IDLUndefined> CookieStoreManager::subscribe(
+ScriptPromise<IDLUndefined> CookieStoreManager::subscribe(
     ScriptState* script_state,
     const HeapVector<Member<CookieStoreGetOptions>>& subscriptions,
     ExceptionState& exception_state) {
@@ -122,14 +122,13 @@ ScriptPromiseTyped<IDLUndefined> CookieStoreManager::subscribe(
                               exception_state);
     if (backend_subscription.is_null()) {
       DCHECK(exception_state.HadException());
-      return ScriptPromiseTyped<IDLUndefined>();
+      return ScriptPromise<IDLUndefined>();
     }
     backend_subscriptions.push_back(std::move(backend_subscription));
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   backend_->AddSubscriptions(
       registration_->RegistrationId(), std::move(backend_subscriptions),
       WTF::BindOnce(&CookieStoreManager::OnSubscribeResult,
@@ -137,7 +136,7 @@ ScriptPromiseTyped<IDLUndefined> CookieStoreManager::subscribe(
   return resolver->Promise();
 }
 
-ScriptPromiseTyped<IDLUndefined> CookieStoreManager::unsubscribe(
+ScriptPromise<IDLUndefined> CookieStoreManager::unsubscribe(
     ScriptState* script_state,
     const HeapVector<Member<CookieStoreGetOptions>>& subscriptions,
     ExceptionState& exception_state) {
@@ -149,14 +148,13 @@ ScriptPromiseTyped<IDLUndefined> CookieStoreManager::unsubscribe(
                               exception_state);
     if (backend_subscription.is_null()) {
       DCHECK(exception_state.HadException());
-      return ScriptPromiseTyped<IDLUndefined>();
+      return ScriptPromise<IDLUndefined>();
     }
     backend_subscriptions.push_back(std::move(backend_subscription));
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   backend_->RemoveSubscriptions(
       registration_->RegistrationId(), std::move(backend_subscriptions),
       WTF::BindOnce(&CookieStoreManager::OnSubscribeResult,
@@ -164,17 +162,17 @@ ScriptPromiseTyped<IDLUndefined> CookieStoreManager::unsubscribe(
   return resolver->Promise();
 }
 
-ScriptPromiseTyped<IDLSequence<CookieStoreGetOptions>>
+ScriptPromise<IDLSequence<CookieStoreGetOptions>>
 CookieStoreManager::getSubscriptions(ScriptState* script_state,
                                      ExceptionState& exception_state) {
   if (!backend_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "CookieStore backend went away");
-    return ScriptPromiseTyped<IDLSequence<CookieStoreGetOptions>>();
+    return ScriptPromise<IDLSequence<CookieStoreGetOptions>>();
   }
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<CookieStoreGetOptions>>>(
+      ScriptPromiseResolver<IDLSequence<CookieStoreGetOptions>>>(
       script_state, exception_state.GetContext());
   backend_->GetSubscriptions(
       registration_->RegistrationId(),
@@ -191,7 +189,7 @@ void CookieStoreManager::Trace(Visitor* visitor) const {
 }
 
 void CookieStoreManager::OnSubscribeResult(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     bool backend_success) {
   if (!backend_success) {
     resolver->RejectWithDOMException(
@@ -203,7 +201,7 @@ void CookieStoreManager::OnSubscribeResult(
 }
 
 void CookieStoreManager::OnGetSubscriptionsResult(
-    ScriptPromiseResolverTyped<IDLSequence<CookieStoreGetOptions>>* resolver,
+    ScriptPromiseResolver<IDLSequence<CookieStoreGetOptions>>* resolver,
     Vector<mojom::blink::CookieChangeSubscriptionPtr> backend_result,
     bool backend_success) {
   if (!backend_success) {

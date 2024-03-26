@@ -25,7 +25,7 @@ class MediaKeySystemAccess final : public ScriptWrappable {
 
   String keySystem() const { return access_->GetKeySystem(); }
   MediaKeySystemConfiguration* getConfiguration() const;
-  ScriptPromiseTyped<MediaKeys> createMediaKeys(ScriptState*);
+  ScriptPromise<MediaKeys> createMediaKeys(ScriptState*);
 
   bool UseHardwareSecureCodecs() const {
     return access_->UseHardwareSecureCodecs();

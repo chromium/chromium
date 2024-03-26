@@ -29,13 +29,12 @@ class Keyboard final : public ScriptWrappable {
   ~Keyboard() override;
 
   // KeyboardLock API: https://w3c.github.io/keyboard-lock/
-  ScriptPromiseTyped<IDLUndefined> lock(ScriptState*,
-                                        const Vector<String>&,
-                                        ExceptionState&);
+  ScriptPromise<IDLUndefined> lock(ScriptState*,
+                                   const Vector<String>&,
+                                   ExceptionState&);
   void unlock(ScriptState*);
 
-  ScriptPromiseTyped<KeyboardLayoutMap> getLayoutMap(ScriptState*,
-                                                     ExceptionState&);
+  ScriptPromise<KeyboardLayoutMap> getLayoutMap(ScriptState*, ExceptionState&);
 
   // ScriptWrappable override.
   void Trace(Visitor*) const override;

@@ -18,7 +18,7 @@ class MODULES_EXPORT RestrictionTarget final : public SubCaptureTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ScriptPromiseTyped<RestrictionTarget> fromElement(
+  static ScriptPromise<RestrictionTarget> fromElement(
       ScriptState* script_state,
       Element* element,
       ExceptionState& exception_state);

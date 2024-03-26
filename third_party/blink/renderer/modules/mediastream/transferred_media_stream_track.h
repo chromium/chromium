@@ -59,7 +59,7 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   MediaTrackSettings* getSettings() const override;
   MediaStreamTrackVideoStats* stats() override;
   CaptureHandle* getCaptureHandle() const override;
-  ScriptPromiseTyped<IDLUndefined> applyConstraints(
+  ScriptPromise<IDLUndefined> applyConstraints(
       ScriptState*,
       const MediaTrackConstraints*) override;
 
@@ -127,7 +127,7 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
     CLONE
   };
 
-  void applyConstraints(ScriptPromiseResolverTyped<IDLUndefined>*,
+  void applyConstraints(ScriptPromiseResolver<IDLUndefined>*,
                         const MediaTrackConstraints*) override;
 
   // Helper class to register as an event listener on the underlying
@@ -145,11 +145,11 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   };
 
   struct ConstraintsPair : GarbageCollected<ConstraintsPair> {
-    ConstraintsPair(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ConstraintsPair(ScriptPromiseResolver<IDLUndefined>* resolver,
                     const MediaTrackConstraints* constraints);
     void Trace(Visitor*) const;
 
-    const Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver;
+    const Member<ScriptPromiseResolver<IDLUndefined>> resolver;
     const Member<const MediaTrackConstraints> constraints;
   };
 

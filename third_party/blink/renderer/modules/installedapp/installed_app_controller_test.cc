@@ -75,8 +75,7 @@ class InstalledAppControllerTest : public testing::Test {
 TEST_F(InstalledAppControllerTest, DestroyContextBeforeCallback) {
   auto* controller = InstalledAppController::From(*GetFrame().DomWindow());
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<RelatedApplication>>>(
-      GetScriptState());
+      ScriptPromiseResolver<IDLSequence<RelatedApplication>>>(GetScriptState());
   auto promise = resolver->Promise();
   controller->GetInstalledRelatedApps(
       std::make_unique<

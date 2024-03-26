@@ -216,7 +216,7 @@ void PresentationConnection::DidClose(
 
 // static
 ControllerPresentationConnection* ControllerPresentationConnection::Take(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     const mojom::blink::PresentationInfo& presentation_info,
     PresentationRequest* request) {
   DCHECK(resolver);

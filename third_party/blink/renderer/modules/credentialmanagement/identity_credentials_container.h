@@ -26,16 +26,17 @@ class MODULES_EXPORT IdentityCredentialsContainer final
   explicit IdentityCredentialsContainer(Navigator&);
 
   // CredentialsContainer.idl
-  ScriptPromiseTyped<IDLNullable<Credential>>
-  get(ScriptState*, const CredentialRequestOptions*, ExceptionState&) override;
-  ScriptPromiseTyped<Credential> store(ScriptState*,
-                                       Credential*,
-                                       ExceptionState&) override;
-  ScriptPromiseTyped<IDLNullable<Credential>> create(
+  ScriptPromise<IDLNullable<Credential>> get(ScriptState*,
+                                             const CredentialRequestOptions*,
+                                             ExceptionState&) override;
+  ScriptPromise<Credential> store(ScriptState*,
+                                  Credential*,
+                                  ExceptionState&) override;
+  ScriptPromise<IDLNullable<Credential>> create(
       ScriptState*,
       const CredentialCreationOptions*,
       ExceptionState&) override;
-  ScriptPromiseTyped<IDLUndefined> preventSilentAccess(ScriptState*) override;
+  ScriptPromise<IDLUndefined> preventSilentAccess(ScriptState*) override;
 
   void Trace(Visitor*) const override;
 };

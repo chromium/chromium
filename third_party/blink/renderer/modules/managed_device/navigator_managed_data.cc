@@ -119,18 +119,19 @@ void NavigatorManagedData::OnServiceConnectionError() {
   }
 
   // Resolve all pending promises with a failure.
-  for (ScriptPromiseResolver* resolver : pending_promises_) {
+  for (ScriptPromiseResolverBase* resolver : pending_promises_) {
     resolver->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
                                            kNotHighTrustedAppExceptionMessage));
   }
 }
 
-ScriptPromiseTyped<IDLRecord<IDLString, IDLAny>>
+ScriptPromise<IDLRecord<IDLString, IDLAny>>
 NavigatorManagedData::getManagedConfiguration(ScriptState* script_state,
                                               Vector<String> keys) {
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLRecord<IDLString, IDLAny>>>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLRecord<IDLString, IDLAny>>>(
+          script_state);
   pending_promises_.insert(resolver);
 
   auto promise = resolver->Promise();
@@ -149,10 +150,10 @@ NavigatorManagedData::getManagedConfiguration(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromiseTyped<IDLNullable<IDLString>> NavigatorManagedData::getDirectoryId(
+ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getDirectoryId(
     ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<IDLString>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
   pending_promises_.insert(resolver);
 
@@ -166,10 +167,10 @@ ScriptPromiseTyped<IDLNullable<IDLString>> NavigatorManagedData::getDirectoryId(
   return promise;
 }
 
-ScriptPromiseTyped<IDLNullable<IDLString>> NavigatorManagedData::getHostname(
+ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getHostname(
     ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<IDLString>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
   pending_promises_.insert(resolver);
 
@@ -183,10 +184,10 @@ ScriptPromiseTyped<IDLNullable<IDLString>> NavigatorManagedData::getHostname(
   return promise;
 }
 
-ScriptPromiseTyped<IDLNullable<IDLString>>
-NavigatorManagedData::getSerialNumber(ScriptState* script_state) {
+ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getSerialNumber(
+    ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<IDLString>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
   pending_promises_.insert(resolver);
 
@@ -200,10 +201,10 @@ NavigatorManagedData::getSerialNumber(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromiseTyped<IDLNullable<IDLString>>
-NavigatorManagedData::getAnnotatedAssetId(ScriptState* script_state) {
+ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getAnnotatedAssetId(
+    ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<IDLString>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
   pending_promises_.insert(resolver);
 
@@ -217,10 +218,10 @@ NavigatorManagedData::getAnnotatedAssetId(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromiseTyped<IDLNullable<IDLString>>
+ScriptPromise<IDLNullable<IDLString>>
 NavigatorManagedData::getAnnotatedLocation(ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<IDLString>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
   pending_promises_.insert(resolver);
 
@@ -235,7 +236,7 @@ NavigatorManagedData::getAnnotatedLocation(ScriptState* script_state) {
 }
 
 void NavigatorManagedData::OnConfigurationReceived(
-    ScriptPromiseResolverTyped<IDLRecord<IDLString, IDLAny>>* resolver,
+    ScriptPromiseResolver<IDLRecord<IDLString, IDLAny>>* resolver,
     const std::optional<HashMap<String, String>>& configurations) {
   pending_promises_.erase(resolver);
 
@@ -264,7 +265,7 @@ void NavigatorManagedData::OnConfigurationReceived(
 
 void NavigatorManagedData::OnAttributeReceived(
     ScriptState* script_state,
-    ScriptPromiseResolverTyped<IDLNullable<IDLString>>* resolver,
+    ScriptPromiseResolver<IDLNullable<IDLString>>* resolver,
     mojom::blink::DeviceAttributeResultPtr result) {
   pending_promises_.erase(resolver);
 

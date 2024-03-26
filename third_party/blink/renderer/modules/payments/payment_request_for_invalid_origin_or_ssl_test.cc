@@ -70,21 +70,22 @@ class PaymentRequestForInvalidOriginOrSslTest : public testing::Test {
       : payment_provider_(std::make_unique<MockPaymentProvider>()) {}
 
   ScriptValue GetRejectValue(ScriptState* script_state,
-                             ScriptPromise& promise) {
+                             ScriptPromiseUntyped& promise) {
     ScriptPromiseTester tester(script_state, promise);
     tester.WaitUntilSettled();
     EXPECT_TRUE(tester.IsRejected());
     return tester.Value();
   }
 
-  bool ResolvePromise(ScriptState* script_state, ScriptPromise& promise) {
+  bool ResolvePromise(ScriptState* script_state,
+                      ScriptPromiseUntyped& promise) {
     ScriptPromiseTester tester(script_state, promise);
     tester.WaitUntilSettled();
     return tester.Value().V8Value()->IsTrue();
   }
 
   std::string GetRejectString(ScriptState* script_state,
-                              ScriptPromise& promise) {
+                              ScriptPromiseUntyped& promise) {
     ScriptValue on_reject = GetRejectValue(script_state, promise);
     return ToCoreString(script_state->GetIsolate(),
                         on_reject.V8Value()
@@ -112,7 +113,7 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
   PaymentRequest* request = CreatePaymentRequest(scope);
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  ScriptPromise promise =
+  ScriptPromiseUntyped promise =
       request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   // PaymentRequest.OnError() runs in this idle.
   platform_->RunUntilIdle();
@@ -130,7 +131,7 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
 
   // The show() will be rejected before user activation is checked, so there is
   // no need to trigger user-activation here.
-  ScriptPromise promise =
+  ScriptPromiseUntyped promise =
       request->show(scope.GetScriptState(), scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
@@ -146,7 +147,7 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
 
   // The show()s will be rejected before user activation is checked, so there is
   // no need to trigger user-activation here.
-  ScriptPromise promise1 =
+  ScriptPromiseUntyped promise1 =
       request->show(scope.GetScriptState(), scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
@@ -154,7 +155,7 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
 
   scope.GetExceptionState().ClearException();
 
-  ScriptPromise promise2 =
+  ScriptPromiseUntyped promise2 =
       request->show(scope.GetScriptState(), scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
@@ -168,7 +169,7 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
   // PaymentRequest.OnError() runs in this idle.
   platform_->RunUntilIdle();
 
-  ScriptPromise promise =
+  ScriptPromiseUntyped promise =
       request->canMakePayment(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   EXPECT_FALSE(ResolvePromise(scope.GetScriptState(), promise));
 }
@@ -177,7 +178,7 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
        CanMakePaymentIsRejected_CheckBeforeIdle) {
   PaymentRequestV8TestingScope scope;
   PaymentRequest* request = CreatePaymentRequest(scope);
-  ScriptPromise promise =
+  ScriptPromiseUntyped promise =
       request->canMakePayment(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   // PaymentRequest.OnError() runs in this idle.
   platform_->RunUntilIdle();
@@ -192,8 +193,8 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
   // PaymentRequest.OnError() runs in this idle.
   platform_->RunUntilIdle();
 
-  ScriptPromise promise = request->hasEnrolledInstrument(scope.GetScriptState(),
-                                                         ASSERT_NO_EXCEPTION);
+  ScriptPromiseUntyped promise = request->hasEnrolledInstrument(
+      scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   EXPECT_FALSE(ResolvePromise(scope.GetScriptState(), promise));
 }
 
@@ -201,8 +202,8 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
        HasEnrolledInstrument_CheckBeforeIdle) {
   PaymentRequestV8TestingScope scope;
   PaymentRequest* request = CreatePaymentRequest(scope);
-  ScriptPromise promise = request->hasEnrolledInstrument(scope.GetScriptState(),
-                                                         ASSERT_NO_EXCEPTION);
+  ScriptPromiseUntyped promise = request->hasEnrolledInstrument(
+      scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   // PaymentRequest.OnError() runs in this idle.
   platform_->RunUntilIdle();
 

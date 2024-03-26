@@ -99,7 +99,7 @@ class IncomingStreamTest : public ::testing::Test {
   static Iterator Read(V8TestingScope& scope,
                        ReadableStreamDefaultReader* reader) {
     auto* script_state = scope.GetScriptState();
-    ScriptPromise read_promise =
+    ScriptPromiseUntyped read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION);
     ScriptPromiseTester tester(script_state, read_promise);
     tester.WaitUntilSettled();
@@ -111,7 +111,7 @@ class IncomingStreamTest : public ::testing::Test {
                        ReadableStreamBYOBReader* reader,
                        NotShared<DOMArrayBufferView> view) {
     auto* script_state = scope.GetScriptState();
-    ScriptPromise read_promise =
+    ScriptPromiseUntyped read_promise =
         reader->read(script_state, view, ASSERT_NO_EXCEPTION);
     ScriptPromiseTester tester(script_state, read_promise);
     tester.WaitUntilSettled();
@@ -175,7 +175,7 @@ TEST_F(IncomingStreamTest, ReadArrayBufferWithBYOBReader) {
       script_state, ASSERT_NO_EXCEPTION);
   NotShared<DOMArrayBufferView> view =
       NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
-  ScriptPromise read_promise =
+  ScriptPromiseUntyped read_promise =
       reader->read(script_state, view, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, read_promise);
   EXPECT_FALSE(tester.IsFulfilled());
@@ -255,7 +255,8 @@ TEST_F(IncomingStreamTest, ReadThenClosedWithoutFin) {
   // data.
   EXPECT_THAT(result2.value, ElementsAre('C'));
 
-  ScriptPromise result3 = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseUntyped result3 =
+      reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester result3_tester(script_state, result3);
   result3_tester.WaitUntilSettled();
   EXPECT_TRUE(result3_tester.IsRejected());
@@ -306,7 +307,8 @@ TEST_F(IncomingStreamTest, ClosedWithFinWithoutRead) {
   ClosePipe();
 
   ScriptPromiseTester tester(
-      script_state, reader->ClosedPromise()->GetScriptPromise(script_state));
+      script_state,
+      reader->ClosedPromise()->GetScriptPromiseUntyped(script_state));
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
 }
@@ -351,7 +353,8 @@ TEST_F(IncomingStreamTest, DataPipeResetBeforeClosedWithoutFin) {
   EXPECT_FALSE(result1.done);
   EXPECT_THAT(result1.value, ElementsAre('F'));
 
-  ScriptPromise result2 = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseUntyped result2 =
+      reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester result2_tester(script_state, result2);
   result2_tester.WaitUntilSettled();
   EXPECT_TRUE(result2_tester.IsRejected());
@@ -371,7 +374,8 @@ TEST_F(IncomingStreamTest, WriteToPipeWithPendingRead) {
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseUntyped read_promise =
+      reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, read_promise);
 
   test::RunPendingTasks();
@@ -396,7 +400,8 @@ TEST_F(IncomingStreamTest, Cancel) {
 
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromise promise = reader->cancel(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseUntyped promise =
+      reader->cancel(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, promise);
 
   test::RunPendingTasks();
@@ -420,7 +425,7 @@ TEST_F(IncomingStreamTest, CancelWithWebTransportError) {
                                 WebTransportError::Source::kStream);
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromise promise = reader->cancel(
+  ScriptPromiseUntyped promise = reader->cancel(
       script_state, ScriptValue(isolate, error), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, promise);
 
@@ -444,7 +449,7 @@ TEST_F(IncomingStreamTest, CancelWithWebTransportErrorWithCode) {
       /*stream_error_code=*/19, "foobar", WebTransportError::Source::kStream);
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromise promise = reader->cancel(
+  ScriptPromiseUntyped promise = reader->cancel(
       script_state, ScriptValue(isolate, error), ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, promise);
 

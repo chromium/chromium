@@ -32,15 +32,15 @@ class MODULES_EXPORT WebPrintingManager : public ScriptWrappable,
   explicit WebPrintingManager(NavigatorBase&);
 
   // navigator.printing.getPrinters()
-  ScriptPromiseTyped<IDLSequence<WebPrinter>> getPrinters(ScriptState*,
-                                                          ExceptionState&);
+  ScriptPromise<IDLSequence<WebPrinter>> getPrinters(ScriptState*,
+                                                     ExceptionState&);
 
   // ScriptWrappable:
   void Trace(Visitor*) const override;
 
  private:
   mojom::blink::WebPrintingService* GetPrintingService();
-  void OnPrintersRetrieved(ScriptPromiseResolverTyped<IDLSequence<WebPrinter>>*,
+  void OnPrintersRetrieved(ScriptPromiseResolver<IDLSequence<WebPrinter>>*,
                            mojom::blink::GetPrintersResultPtr result);
 
   HeapMojoRemote<mojom::blink::WebPrintingService> printing_service_;

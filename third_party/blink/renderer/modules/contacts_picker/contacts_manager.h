@@ -38,12 +38,12 @@ class ContactsManager final : public ScriptWrappable,
   ~ContactsManager() override;
 
   // Web-exposed function defined in the IDL file.
-  ScriptPromiseTyped<IDLSequence<ContactInfo>> select(
+  ScriptPromise<IDLSequence<ContactInfo>> select(
       ScriptState* script_state,
       const Vector<V8ContactProperty>& properties,
       ContactsSelectOptions* options,
       ExceptionState& exception_state);
-  ScriptPromiseTyped<IDLSequence<V8ContactProperty>> getProperties(
+  ScriptPromise<IDLSequence<V8ContactProperty>> getProperties(
       ScriptState* script_state);
 
   void Trace(Visitor*) const override;
@@ -52,7 +52,7 @@ class ContactsManager final : public ScriptWrappable,
   mojom::blink::ContactsManager* GetContactsManager(ScriptState* script_state);
 
   void OnContactsSelected(
-      ScriptPromiseResolverTyped<IDLSequence<ContactInfo>>* resolver,
+      ScriptPromiseResolver<IDLSequence<ContactInfo>>* resolver,
       std::optional<Vector<mojom::blink::ContactInfoPtr>> contacts);
 
   const Vector<V8ContactProperty>& GetProperties(ScriptState* script_state);

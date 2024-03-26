@@ -20,7 +20,7 @@ namespace blink {
 namespace {
 // The callback to get the recognition result.
 void OnRecognitionResult(
-    ScriptPromiseResolverTyped<IDLSequence<HandwritingPrediction>>* resolver,
+    ScriptPromiseResolver<IDLSequence<HandwritingPrediction>>* resolver,
     ScriptState* script_state,
     std::optional<Vector<handwriting::mojom::blink::HandwritingPredictionPtr>>
         predictions) {
@@ -71,11 +71,10 @@ const HeapVector<Member<HandwritingStroke>>& HandwritingDrawing::getStrokes() {
   return strokes_;
 }
 
-ScriptPromiseTyped<IDLSequence<HandwritingPrediction>>
+ScriptPromise<IDLSequence<HandwritingPrediction>>
 HandwritingDrawing::getPrediction(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<HandwritingPrediction>>>(
-      script_state);
+      ScriptPromiseResolver<IDLSequence<HandwritingPrediction>>>(script_state);
   auto promise = resolver->Promise();
 
   if (!IsValid()) {

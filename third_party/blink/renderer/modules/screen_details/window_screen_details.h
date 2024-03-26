@@ -31,7 +31,7 @@ class WindowScreenDetails final : public GarbageCollected<WindowScreenDetails>,
   explicit WindowScreenDetails(LocalDOMWindow* window);
 
   // Web-exposed interface:
-  static ScriptPromiseTyped<ScreenDetails> getScreenDetails(
+  static ScriptPromise<ScreenDetails> getScreenDetails(
       ScriptState* script_state,
       LocalDOMWindow& window,
       ExceptionState& exception_state);
@@ -48,7 +48,7 @@ class WindowScreenDetails final : public GarbageCollected<WindowScreenDetails>,
   static WindowScreenDetails* From(LocalDOMWindow* window);
 
   // Returns a ScreenDetails interface promise, and inquires about permission.
-  ScriptPromiseTyped<ScreenDetails> GetScreenDetails(
+  ScriptPromise<ScreenDetails> GetScreenDetails(
       ScriptState* script_state,
       ExceptionState& exception_state);
 
@@ -56,7 +56,7 @@ class WindowScreenDetails final : public GarbageCollected<WindowScreenDetails>,
   // `permission_requested` is true for inquiries that prompt users as needed,
   // and false for silent checks made without transient user activation.
   void OnPermissionInquiryComplete(
-      ScriptPromiseResolverTyped<ScreenDetails>* resolver,
+      ScriptPromiseResolver<ScreenDetails>* resolver,
       bool permission_requested,
       mojom::blink::PermissionStatus status);
 

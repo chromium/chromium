@@ -21,7 +21,7 @@ MLGraphBuilder* CreateMLGraphBuilder(ExecutionContext* execution_context,
                                      MLContextOptions* options) {
   ML* ml = MakeGarbageCollected<ML>(execution_context);
 
-  ScriptPromise promise =
+  ScriptPromiseUntyped promise =
       ml->createContext(script_state, options, exception_state);
   ScriptPromiseTester tester(script_state, promise);
   tester.WaitUntilSettled();

@@ -23,18 +23,17 @@ class StorageManagerFileSystemAccess {
   STATIC_ONLY(StorageManagerFileSystemAccess);
 
  public:
-  static ScriptPromiseTyped<FileSystemDirectoryHandle>
+  static ScriptPromise<FileSystemDirectoryHandle>
   getDirectory(ScriptState*, const StorageManager&, ExceptionState&);
 
   // Called to execute checks, both renderer side and browser side, that OPFS is
   // allowed. Will execute `on_allowed` with the result of browser side checks
   // if it gets that far.
-  static ScriptPromiseTyped<FileSystemDirectoryHandle>
-  CheckGetDirectoryIsAllowed(
+  static ScriptPromise<FileSystemDirectoryHandle> CheckGetDirectoryIsAllowed(
       ScriptState* script_state,
       ExceptionState& exception_state,
-      base::OnceCallback<void(
-          ScriptPromiseResolverTyped<FileSystemDirectoryHandle>*)> on_allowed);
+      base::OnceCallback<
+          void(ScriptPromiseResolver<FileSystemDirectoryHandle>*)> on_allowed);
   static void CheckGetDirectoryIsAllowed(
       ExecutionContext* context,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)>
@@ -42,7 +41,7 @@ class StorageManagerFileSystemAccess {
 
   // Handles resolving the `getDirectory` promise represented by `resolver`.
   static void DidGetSandboxedFileSystem(
-      ScriptPromiseResolverTyped<FileSystemDirectoryHandle>* resolver,
+      ScriptPromiseResolver<FileSystemDirectoryHandle>* resolver,
       mojom::blink::FileSystemAccessErrorPtr result,
       mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>
           handle);

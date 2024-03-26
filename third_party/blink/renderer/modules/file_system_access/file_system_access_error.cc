@@ -12,7 +12,7 @@
 
 namespace blink::file_system_access_error {
 
-void ResolveOrReject(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+void ResolveOrReject(ScriptPromiseResolver<IDLUndefined>* resolver,
                      const mojom::blink::FileSystemAccessError& error) {
   if (error.status == mojom::blink::FileSystemAccessStatus::kOk) {
     resolver->Resolve();
@@ -21,7 +21,7 @@ void ResolveOrReject(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
   }
 }
 
-void Reject(ScriptPromiseResolver* resolver,
+void Reject(ScriptPromiseResolverBase* resolver,
             const mojom::blink::FileSystemAccessError& error) {
   // Convert empty message to a null string, to make sure we get the default
   // error message if no custom error message is provided.

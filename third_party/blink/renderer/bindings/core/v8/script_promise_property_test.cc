@@ -197,7 +197,7 @@ class ScriptPromisePropertyGarbageCollectedTest
   void ClearHolder() { holder_.Clear(); }
   GarbageCollectedHolder* Holder() { return holder_; }
   Property* GetProperty() { return holder_->GetProperty(); }
-  ScriptPromise Promise(DOMWrapperWorld& world) {
+  ScriptPromiseUntyped Promise(DOMWrapperWorld& world) {
     return GetProperty()->Promise(world);
   }
 
@@ -249,9 +249,9 @@ class ScriptPromisePropertyNonScriptWrappableResolutionTargetTest
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest,
        Promise_IsStableObjectInMainWorld) {
-  ScriptPromise v =
+  ScriptPromiseUntyped v =
       GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
-  ScriptPromise w =
+  ScriptPromiseUntyped w =
       GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
   EXPECT_EQ(v, w);
   ASSERT_FALSE(v.IsEmpty());
@@ -265,10 +265,10 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest,
        Promise_IsStableObjectInVariousWorlds) {
-  ScriptPromise u = GetProperty()->Promise(OtherWorld());
-  ScriptPromise v =
+  ScriptPromiseUntyped u = GetProperty()->Promise(OtherWorld());
+  ScriptPromiseUntyped v =
       GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
-  ScriptPromise w =
+  ScriptPromiseUntyped w =
       GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
   EXPECT_NE(MainScriptState(), OtherScriptState());
   EXPECT_NE(&MainWorld(), &OtherWorld());
@@ -291,14 +291,14 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest,
        Promise_IsStableObjectAfterSettling) {
-  ScriptPromise v = Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
+  ScriptPromiseUntyped v = Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
   GarbageCollectedScriptWrappable* value =
       MakeGarbageCollected<GarbageCollectedScriptWrappable>("value");
 
   GetProperty()->Resolve(value);
   EXPECT_EQ(Property::kResolved, GetProperty()->GetState());
 
-  ScriptPromise w = Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
+  ScriptPromiseUntyped w = Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
   EXPECT_EQ(v, w);
   EXPECT_FALSE(v.IsEmpty());
 }
@@ -326,10 +326,10 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
 }
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest,
-       Resolve_ResolvesScriptPromise) {
-  ScriptPromise promise =
+       Resolve_ResolvesScriptPromiseUntyped) {
+  ScriptPromiseUntyped promise =
       GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
-  ScriptPromise other_promise = GetProperty()->Promise(OtherWorld());
+  ScriptPromiseUntyped other_promise = GetProperty()->Promise(OtherWorld());
   ScriptValue actual, other_actual;
   size_t n_resolve_calls = 0;
   size_t n_other_resolve_calls = 0;
@@ -364,9 +364,9 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest,
        ResolveAndGetPromiseOnOtherWorld) {
-  ScriptPromise promise =
+  ScriptPromiseUntyped promise =
       GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
-  ScriptPromise other_promise = GetProperty()->Promise(OtherWorld());
+  ScriptPromiseUntyped other_promise = GetProperty()->Promise(OtherWorld());
   ScriptValue actual, other_actual;
   size_t n_resolve_calls = 0;
   size_t n_other_resolve_calls = 0;
@@ -402,7 +402,8 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
   EXPECT_EQ(Wrap(OtherWorld(), value), other_actual);
 }
 
-TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reject_RejectsScriptPromise) {
+TEST_F(ScriptPromisePropertyGarbageCollectedTest,
+       Reject_RejectsScriptPromiseUntyped) {
   GarbageCollectedScriptWrappable* reason =
       MakeGarbageCollected<GarbageCollectedScriptWrappable>("reason");
   GetProperty()->Reject(reason);
@@ -468,7 +469,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Resolve_DeadContext) {
 TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reset) {
   ScriptState::Scope scope(MainScriptState());
 
-  ScriptPromise old_promise, new_promise;
+  ScriptPromiseUntyped old_promise, new_promise;
   ScriptValue old_actual, new_actual;
   GarbageCollectedScriptWrappable* old_value =
       MakeGarbageCollected<GarbageCollectedScriptWrappable>("old");
@@ -513,7 +514,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, MarkAsHandled) {
   {
     // Unhandled promise.
     ScriptState::Scope scope(MainScriptState());
-    ScriptPromise promise =
+    ScriptPromiseUntyped promise =
         GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
     GarbageCollectedScriptWrappable* reason =
         MakeGarbageCollected<GarbageCollectedScriptWrappable>("reason");
@@ -527,7 +528,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, MarkAsHandled) {
     // MarkAsHandled applies to newly created promises.
     ScriptState::Scope scope(MainScriptState());
     GetProperty()->MarkAsHandled();
-    ScriptPromise promise =
+    ScriptPromiseUntyped promise =
         GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
     GarbageCollectedScriptWrappable* reason =
         MakeGarbageCollected<GarbageCollectedScriptWrappable>("reason");
@@ -540,7 +541,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, MarkAsHandled) {
   {
     // MarkAsHandled applies to previously vended promises.
     ScriptState::Scope scope(MainScriptState());
-    ScriptPromise promise =
+    ScriptPromiseUntyped promise =
         GetProperty()->Promise(DOMWrapperWorld::MainWorld(GetIsolate()));
     GetProperty()->MarkAsHandled();
     GarbageCollectedScriptWrappable* reason =

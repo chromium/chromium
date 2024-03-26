@@ -86,9 +86,8 @@ class MODULES_EXPORT IDBFactory final
                                                       const String& name,
                                                       ExceptionState&);
 
-  ScriptPromiseTyped<IDLSequence<IDBDatabaseInfo>> GetDatabaseInfo(
-      ScriptState*,
-      ExceptionState&);
+  ScriptPromise<IDLSequence<IDBDatabaseInfo>> GetDatabaseInfo(ScriptState*,
+                                                              ExceptionState&);
 
   // This method is exposed specifically for DevTools.
   void GetDatabaseInfoForDevTools(
@@ -131,9 +130,9 @@ class MODULES_EXPORT IDBFactory final
       bool force_close);
 
   void GetDatabaseInfoImpl(
-      ScriptPromiseResolverTyped<IDLSequence<IDBDatabaseInfo>>*);
+      ScriptPromiseResolver<IDLSequence<IDBDatabaseInfo>>*);
   void DidGetDatabaseInfo(
-      ScriptPromiseResolverTyped<IDLSequence<IDBDatabaseInfo>>*,
+      ScriptPromiseResolver<IDLSequence<IDBDatabaseInfo>>*,
       Vector<mojom::blink::IDBNameAndVersionPtr> names_and_versions,
       mojom::blink::IDBErrorPtr error);
 

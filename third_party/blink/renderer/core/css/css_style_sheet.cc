@@ -499,7 +499,7 @@ int CSSStyleSheet::addRule(const String& selector,
   return addRule(selector, style, length(), exception_state);
 }
 
-ScriptPromiseTyped<CSSStyleSheet> CSSStyleSheet::replace(
+ScriptPromise<CSSStyleSheet> CSSStyleSheet::replace(
     ScriptState* script_state,
     const String& text,
     ExceptionState& exception_state) {
@@ -507,7 +507,7 @@ ScriptPromiseTyped<CSSStyleSheet> CSSStyleSheet::replace(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Can't call replace on non-constructed CSSStyleSheets.");
-    return ScriptPromiseTyped<CSSStyleSheet>();
+    return ScriptPromise<CSSStyleSheet>();
   }
   SetText(text, CSSImportRules::kIgnoreWithWarning);
   probe::DidReplaceStyleSheetText(OwnerDocument(), this, text);

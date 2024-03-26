@@ -16,7 +16,7 @@
 namespace blink {
 
 class ExceptionState;
-class ScriptPromise;
+class ScriptPromiseUntyped;
 class ScriptState;
 class ScriptValue;
 class StreamPromiseResolver;
@@ -42,29 +42,29 @@ class CORE_EXPORT WritableStreamDefaultWriter final : public ScriptWrappable {
   // Getters
 
   // https://streams.spec.whatwg.org/#default-writer-closed
-  ScriptPromise closed(ScriptState*) const;
+  ScriptPromiseUntyped closed(ScriptState*) const;
 
   // https://streams.spec.whatwg.org/#default-writer-desired-size
   ScriptValue desiredSize(ScriptState*, ExceptionState&) const;
 
   // https://streams.spec.whatwg.org/#default-writer-ready
-  ScriptPromise ready(ScriptState*) const;
+  ScriptPromiseUntyped ready(ScriptState*) const;
 
   // Methods
 
   // https://streams.spec.whatwg.org/#default-writer-abort
-  ScriptPromise abort(ScriptState*, ExceptionState&);
-  ScriptPromise abort(ScriptState*, ScriptValue reason, ExceptionState&);
+  ScriptPromiseUntyped abort(ScriptState*, ExceptionState&);
+  ScriptPromiseUntyped abort(ScriptState*, ScriptValue reason, ExceptionState&);
 
   // https://streams.spec.whatwg.org/#default-writer-close
-  ScriptPromise close(ScriptState*, ExceptionState&);
+  ScriptPromiseUntyped close(ScriptState*, ExceptionState&);
 
   // https://streams.spec.whatwg.org/#default-writer-release-lock
   void releaseLock(ScriptState*);
 
   // https://streams.spec.whatwg.org/#default-writer-write
-  ScriptPromise write(ScriptState*, ExceptionState&);
-  ScriptPromise write(ScriptState*, ScriptValue chunk, ExceptionState&);
+  ScriptPromiseUntyped write(ScriptState*, ExceptionState&);
+  ScriptPromiseUntyped write(ScriptState*, ScriptValue chunk, ExceptionState&);
 
   //
   // Methods used by WritableStream

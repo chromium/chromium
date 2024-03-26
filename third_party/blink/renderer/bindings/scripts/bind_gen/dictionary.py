@@ -50,7 +50,7 @@ class _DictionaryMember(object):
 
     # Map from Blink member type to presence expression.
     _MEMBER_TYPE_TO_PRESENCE_EXPR = {
-        "ScriptPromise": "!{}.IsEmpty()",
+        "ScriptPromiseUntyped": "!{}.IsEmpty()",
         "ScriptValue": "!{}.IsEmpty()",
     }
 

@@ -38,17 +38,17 @@ class SmartCardContext final : public ScriptWrappable,
                    ExecutionContext*);
 
   // SmartCardContext idl
-  ScriptPromiseTyped<IDLSequence<IDLString>> listReaders(
+  ScriptPromise<IDLSequence<IDLString>> listReaders(
       ScriptState* script_state,
       ExceptionState& exception_state);
 
-  ScriptPromiseTyped<IDLSequence<SmartCardReaderStateOut>> getStatusChange(
+  ScriptPromise<IDLSequence<SmartCardReaderStateOut>> getStatusChange(
       ScriptState* script_state,
       const HeapVector<Member<SmartCardReaderStateIn>>& reader_states,
       SmartCardGetStatusChangeOptions* options,
       ExceptionState& exception_state);
 
-  ScriptPromiseTyped<SmartCardConnectResult> connect(
+  ScriptPromise<SmartCardConnectResult> connect(
       ScriptState* script_state,
       const String& reader_name,
       V8SmartCardAccessMode access_mode,
@@ -66,39 +66,37 @@ class SmartCardContext final : public ScriptWrappable,
 
   bool EnsureNoOperationInProgress(ExceptionState& exception_state) const;
 
-  void SetConnectionOperationInProgress(ScriptPromiseResolver*);
-  void ClearConnectionOperationInProgress(ScriptPromiseResolver*);
+  void SetConnectionOperationInProgress(ScriptPromiseResolverBase*);
+  void ClearConnectionOperationInProgress(ScriptPromiseResolverBase*);
 
   bool IsOperationInProgress() const;
 
  private:
   // Sets the PC/SC operation that is in progress in this context.
   // CHECKs that there was no operation in progress.
-  void SetOperationInProgress(ScriptPromiseResolver*);
+  void SetOperationInProgress(ScriptPromiseResolverBase*);
 
   // Clears the operation in progress.
   // CHECKs that the given operation matches the one set to be in progress.
-  void ClearOperationInProgress(ScriptPromiseResolver*);
+  void ClearOperationInProgress(ScriptPromiseResolverBase*);
 
   void CloseMojoConnection();
   bool EnsureMojoConnection(ExceptionState& exception_state) const;
   void OnListReadersDone(
-      ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
+      ScriptPromiseResolver<IDLSequence<IDLString>>* resolver,
       device::mojom::blink::SmartCardListReadersResultPtr);
   void OnGetStatusChangeDone(
-      ScriptPromiseResolverTyped<IDLSequence<SmartCardReaderStateOut>>*
-          resolver,
+      ScriptPromiseResolver<IDLSequence<SmartCardReaderStateOut>>* resolver,
       AbortSignal* signal,
       AbortSignal::AlgorithmHandle* abort_handle,
       device::mojom::blink::SmartCardStatusChangeResultPtr result);
   void OnCancelDone(device::mojom::blink::SmartCardResultPtr result);
-  void OnConnectDone(
-      ScriptPromiseResolverTyped<SmartCardConnectResult>* resolver,
-      device::mojom::blink::SmartCardConnectResultPtr result);
+  void OnConnectDone(ScriptPromiseResolver<SmartCardConnectResult>* resolver,
+                     device::mojom::blink::SmartCardConnectResultPtr result);
 
   HeapMojoRemote<device::mojom::blink::SmartCardContext> scard_context_;
   // The currently ongoing request, if any.
-  Member<ScriptPromiseResolver> request_;
+  Member<ScriptPromiseResolverBase> request_;
 
   // Whether request_ comes from a blink::SmartCardConnection.
   bool is_connection_request_ = false;

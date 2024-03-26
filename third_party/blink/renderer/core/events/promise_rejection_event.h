@@ -35,7 +35,7 @@ class CORE_EXPORT PromiseRejectionEvent final : public Event {
   ~PromiseRejectionEvent() override;
 
   ScriptValue reason(ScriptState*) const;
-  ScriptPromiseTyped<IDLAny> promise(ScriptState*) const;
+  ScriptPromise<IDLAny> promise(ScriptState*) const;
 
   const AtomicString& InterfaceName() const override;
 

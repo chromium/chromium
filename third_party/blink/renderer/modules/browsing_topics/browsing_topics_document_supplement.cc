@@ -54,7 +54,7 @@ BrowsingTopicsDocumentSupplement* BrowsingTopicsDocumentSupplement::From(
 }
 
 // static
-ScriptPromiseTyped<IDLSequence<BrowsingTopic>>
+ScriptPromise<IDLSequence<BrowsingTopic>>
 BrowsingTopicsDocumentSupplement::browsingTopics(
     ScriptState* script_state,
     Document& document,
@@ -65,7 +65,7 @@ BrowsingTopicsDocumentSupplement::browsingTopics(
 }
 
 // static
-ScriptPromiseTyped<IDLSequence<BrowsingTopic>>
+ScriptPromise<IDLSequence<BrowsingTopic>>
 BrowsingTopicsDocumentSupplement::browsingTopics(
     ScriptState* script_state,
     Document& document,
@@ -81,7 +81,7 @@ BrowsingTopicsDocumentSupplement::BrowsingTopicsDocumentSupplement(
     : Supplement<Document>(document),
       document_host_(document.GetExecutionContext()) {}
 
-ScriptPromiseTyped<IDLSequence<BrowsingTopic>>
+ScriptPromise<IDLSequence<BrowsingTopic>>
 BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
     ScriptState* script_state,
     Document& document,
@@ -92,7 +92,7 @@ BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
                                       "A browsing context is required when "
                                       "calling document.browsingTopics().");
     RecordInvalidRequestingContextUkmMetrics(document);
-    return ScriptPromiseTyped<IDLSequence<BrowsingTopic>>();
+    return ScriptPromise<IDLSequence<BrowsingTopic>>();
   }
 
   if (RuntimeEnabledFeatures::PrivacySandboxAdsAPIsEnabled(
@@ -101,9 +101,9 @@ BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
                       mojom::blink::WebFeature::kPrivacySandboxAdsAPIs);
   }
 
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<BrowsingTopic>>>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<BrowsingTopic>>>(
+          script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   // See https://github.com/jkarlin/topics#specific-details for the restrictions
@@ -173,7 +173,7 @@ BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
   document_host_->GetBrowsingTopics(
       /*observe=*/!options->skipObservation(),
       WTF::BindOnce(
-          [](ScriptPromiseResolverTyped<IDLSequence<BrowsingTopic>>* resolver,
+          [](ScriptPromiseResolver<IDLSequence<BrowsingTopic>>* resolver,
              BrowsingTopicsDocumentSupplement* supplement,
              base::TimeTicks start_time,
              mojom::blink::GetBrowsingTopicsResultPtr result) {

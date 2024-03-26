@@ -33,7 +33,7 @@ class NavigateEventInit;
 class NavigationInterceptOptions;
 class ExceptionState;
 class FormData;
-class ScriptPromise;
+class ScriptPromiseUntyped;
 class V8NavigationInterceptHandler;
 
 class NavigateEvent final : public Event,
@@ -135,7 +135,7 @@ class NavigateEvent final : public Event,
   };
   InterceptState intercept_state_ = InterceptState::kNone;
 
-  HeapVector<ScriptPromise> navigation_action_promises_list_;
+  HeapVector<ScriptPromiseUntyped> navigation_action_promises_list_;
   HeapVector<Member<V8NavigationInterceptHandler>>
       navigation_action_handlers_list_;
   bool did_change_focus_during_intercept_ = false;

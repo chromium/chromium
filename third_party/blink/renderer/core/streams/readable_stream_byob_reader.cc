@@ -85,9 +85,10 @@ ReadableStreamBYOBReader::ReadableStreamBYOBReader(
 
 ReadableStreamBYOBReader::~ReadableStreamBYOBReader() = default;
 
-ScriptPromise ReadableStreamBYOBReader::read(ScriptState* script_state,
-                                             NotShared<DOMArrayBufferView> view,
-                                             ExceptionState& exception_state) {
+ScriptPromiseUntyped ReadableStreamBYOBReader::read(
+    ScriptState* script_state,
+    NotShared<DOMArrayBufferView> view,
+    ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#byob-reader-read
   // 1. If view.[[ByteLength]] is 0, return a promise rejected with a TypeError
   // exception.
@@ -95,7 +96,7 @@ ScriptPromise ReadableStreamBYOBReader::read(ScriptState* script_state,
     exception_state.ThrowTypeError(
         "This readable stream reader cannot be used to read as the view has "
         "byte length equal to 0");
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
   // 2. If view.[[ViewedArrayBuffer]].[[ArrayBufferByteLength]] is 0, return a
@@ -104,7 +105,7 @@ ScriptPromise ReadableStreamBYOBReader::read(ScriptState* script_state,
     exception_state.ThrowTypeError(
         "This readable stream reader cannot be used to read as the viewed "
         "array buffer has 0 byte length");
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
   // 3. If ! IsDetachedBuffer(view.[[ViewedArrayBuffer]]) is true, return a
@@ -113,7 +114,7 @@ ScriptPromise ReadableStreamBYOBReader::read(ScriptState* script_state,
     exception_state.ThrowTypeError(
         "This readable stream reader cannot be used to read as the viewed "
         "array buffer is detached");
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
   // 4. If this.[[stream]] is undefined, return a promise rejected with a
@@ -122,7 +123,7 @@ ScriptPromise ReadableStreamBYOBReader::read(ScriptState* script_state,
     exception_state.ThrowTypeError(
         "This readable stream reader has been released and cannot be used to "
         "read from its previous owner stream");
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
   // 5. Let promise be a new promise.
@@ -142,7 +143,7 @@ ScriptPromise ReadableStreamBYOBReader::read(ScriptState* script_state,
   // 7. Perform ! ReadableStreamBYOBReaderRead(this, view, readIntoRequest).
   Read(script_state, this, view, read_into_request, exception_state);
   // 8. Return promise.
-  return promise->GetScriptPromise(script_state);
+  return promise->GetScriptPromiseUntyped(script_state);
 }
 
 void ReadableStreamBYOBReader::Read(ScriptState* script_state,

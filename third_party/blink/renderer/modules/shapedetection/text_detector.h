@@ -28,20 +28,21 @@ class MODULES_EXPORT TextDetector final : public ShapeDetector {
   explicit TextDetector(ExecutionContext*);
   ~TextDetector() override = default;
 
-  ScriptPromiseTyped<IDLSequence<DetectedText>>
-  detect(ScriptState*, const V8ImageBitmapSource*, ExceptionState&);
+  ScriptPromise<IDLSequence<DetectedText>> detect(ScriptState*,
+                                                  const V8ImageBitmapSource*,
+                                                  ExceptionState&);
 
   void Trace(Visitor*) const override;
 
  private:
   void OnDetectText(
-      ScriptPromiseResolverTyped<IDLSequence<DetectedText>>*,
+      ScriptPromiseResolver<IDLSequence<DetectedText>>*,
       Vector<shape_detection::mojom::blink::TextDetectionResultPtr>);
   void OnTextServiceConnectionError();
 
   HeapMojoRemote<shape_detection::mojom::blink::TextDetection> text_service_;
 
-  HeapHashSet<Member<ScriptPromiseResolver>> text_service_requests_;
+  HeapHashSet<Member<ScriptPromiseResolverBase>> text_service_requests_;
 };
 
 }  // namespace blink

@@ -81,7 +81,7 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
                               const VideoDecoderInit*,
                               ExceptionState&);
 
-  static ScriptPromiseTyped<VideoDecoderSupport>
+  static ScriptPromise<VideoDecoderSupport>
   isConfigSupported(ScriptState*, const VideoDecoderConfig*, ExceptionState&);
 
   static HardwarePreference GetHardwareAccelerationPreference(

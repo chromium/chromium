@@ -168,8 +168,8 @@ class MLModelLoaderTest : public testing::Test {
     options->setPowerPreference(V8MLPowerPreference::Enum::kAuto);
     options->setModelFormat(V8MLModelFormat::Enum::kTflite);
 
-    ScriptPromise promise = ml->createContext(scope.GetScriptState(), options,
-                                              scope.GetExceptionState());
+    ScriptPromiseUntyped promise = ml->createContext(
+        scope.GetScriptState(), options, scope.GetExceptionState());
     EXPECT_FALSE(scope.GetExceptionState().HadException());
     ScriptPromiseTester tester(scope.GetScriptState(), promise);
     tester.WaitUntilSettled();

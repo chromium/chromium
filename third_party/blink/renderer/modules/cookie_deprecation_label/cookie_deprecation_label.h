@@ -28,7 +28,7 @@ class CookieDeprecationLabel : public ScriptWrappable,
   ~CookieDeprecationLabel() override;
 
   // Web exposed function defined in the IDL file.
-  ScriptPromiseTyped<IDLString> getValue(ScriptState* script_state);
+  ScriptPromise<IDLString> getValue(ScriptState* script_state);
 
   void Trace(Visitor*) const override;
 };

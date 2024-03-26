@@ -277,7 +277,7 @@ void ProfilerGroup::TeardownV8Profiler() {
 void ProfilerGroup::StopProfiler(
     ScriptState* script_state,
     Profiler* profiler,
-    ScriptPromiseResolverTyped<ProfilerTrace>* resolver) {
+    ScriptPromiseResolver<ProfilerTrace>* resolver) {
   DCHECK(cpu_profiler_);
   DCHECK(!profiler->stopped());
 

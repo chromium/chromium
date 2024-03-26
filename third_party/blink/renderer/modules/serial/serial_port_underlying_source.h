@@ -26,10 +26,11 @@ class SerialPortUnderlyingSource : public UnderlyingByteSourceBase,
                              mojo::ScopedDataPipeConsumerHandle);
 
   // UnderlyingByteSourceBase
-  ScriptPromise Pull(ReadableByteStreamController* controller,
-                     ExceptionState&) override;
-  ScriptPromise Cancel(ExceptionState&) override;
-  ScriptPromise Cancel(v8::Local<v8::Value> reason, ExceptionState&) override;
+  ScriptPromiseUntyped Pull(ReadableByteStreamController* controller,
+                            ExceptionState&) override;
+  ScriptPromiseUntyped Cancel(ExceptionState&) override;
+  ScriptPromiseUntyped Cancel(v8::Local<v8::Value> reason,
+                              ExceptionState&) override;
   ScriptState* GetScriptState() override;
 
   void ContextDestroyed() override;
@@ -43,7 +44,7 @@ class SerialPortUnderlyingSource : public UnderlyingByteSourceBase,
   void ReadDataOrArmWatcher();
 
   void OnHandleReady(MojoResult, const mojo::HandleSignalsState&);
-  void OnFlush(ScriptPromiseResolverTyped<IDLUndefined>*);
+  void OnFlush(ScriptPromiseResolver<IDLUndefined>*);
   void PipeClosed();
   void Close();
 

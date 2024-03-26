@@ -373,13 +373,13 @@ void AudioContext::Trace(Visitor* visitor) const {
   BaseAudioContext::Trace(visitor);
 }
 
-ScriptPromiseTyped<IDLUndefined> AudioContext::suspendContext(
+ScriptPromise<IDLUndefined> AudioContext::suspendContext(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
   if (ContextState() == kClosed) {
-    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "Cannot suspend a closed AudioContext."));
@@ -400,21 +400,20 @@ ScriptPromiseTyped<IDLUndefined> AudioContext::suspendContext(
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> AudioContext::resumeContext(
+ScriptPromise<IDLUndefined> AudioContext::resumeContext(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
   if (ContextState() == kClosed) {
-    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "Cannot resume a closed AudioContext."));
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   // If we're already running, just resolve; nothing else needs to be done.
@@ -502,19 +501,18 @@ AudioTimestamp* AudioContext::getOutputTimestamp(
   return result;
 }
 
-ScriptPromiseTyped<IDLUndefined> AudioContext::closeContext(
+ScriptPromise<IDLUndefined> AudioContext::closeContext(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (ContextState() == kClosed) {
-    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "Cannot close a closed AudioContext."));
   }
 
-  close_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  close_resolver_ = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = close_resolver_->Promise();
 
   // Stops the rendering, but it doesn't release the resources here.
@@ -604,7 +602,7 @@ double AudioContext::outputLatency() const {
   return std::round(output_position_.hardware_output_latency / factor) * factor;
 }
 
-ScriptPromiseTyped<IDLUndefined> AudioContext::setSinkId(
+ScriptPromise<IDLUndefined> AudioContext::setSinkId(
     ScriptState* script_state,
     const V8UnionAudioSinkOptionsOrString* v8_sink_id,
     ExceptionState& exception_state) {
@@ -614,7 +612,7 @@ ScriptPromiseTyped<IDLUndefined> AudioContext::setSinkId(
   // setSinkId invoked from a detached document should throw kInvalidStateError
   // DOMException.
   if (!GetExecutionContext()) {
-    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "Cannot proceed setSinkId on a detached document."));
@@ -623,7 +621,7 @@ ScriptPromiseTyped<IDLUndefined> AudioContext::setSinkId(
   // setSinkId invoked from a closed AudioContext should throw
   // kInvalidStateError DOMException.
   if (ContextState() == kClosed) {
-    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,

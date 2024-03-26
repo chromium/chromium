@@ -17,7 +17,7 @@ namespace blink {
 RTCSessionDescriptionRequestPromiseImpl*
 RTCSessionDescriptionRequestPromiseImpl::Create(
     RTCPeerConnection* requester,
-    ScriptPromiseResolverTyped<RTCSessionDescriptionInit>* resolver,
+    ScriptPromiseResolver<RTCSessionDescriptionInit>* resolver,
     const char* interface_name,
     const char* property_name) {
   return MakeGarbageCollected<RTCSessionDescriptionRequestPromiseImpl>(
@@ -27,7 +27,7 @@ RTCSessionDescriptionRequestPromiseImpl::Create(
 RTCSessionDescriptionRequestPromiseImpl::
     RTCSessionDescriptionRequestPromiseImpl(
         RTCPeerConnection* requester,
-        ScriptPromiseResolverTyped<RTCSessionDescriptionInit>* resolver,
+        ScriptPromiseResolver<RTCSessionDescriptionInit>* resolver,
         const char* interface_name,
         const char* property_name)
     : requester_(requester),

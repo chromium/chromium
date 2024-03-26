@@ -96,10 +96,10 @@ class XRFrame final : public ScriptWrappable {
       XRTransientInputHitTestSource* hit_test_source,
       ExceptionState& exception_state);
 
-  ScriptPromiseTyped<XRAnchor> createAnchor(ScriptState* script_state,
-                                            XRRigidTransform* initial_pose,
-                                            XRSpace* space,
-                                            ExceptionState& exception_state);
+  ScriptPromise<XRAnchor> createAnchor(ScriptState* script_state,
+                                       XRRigidTransform* initial_pose,
+                                       XRSpace* space,
+                                       ExceptionState& exception_state);
 
   const FrozenArray<XRImageTrackingResult>& getImageTrackingResults(
       ExceptionState&);
@@ -124,7 +124,7 @@ class XRFrame final : public ScriptWrappable {
   // |native_origin_from_anchor| is a transform from |space|'s native origin to
   // the desired anchor position (i.e. the origin-offset of the |space| is
   // already taken into account).
-  ScriptPromiseTyped<XRAnchor> CreateAnchorFromNonStationarySpace(
+  ScriptPromise<XRAnchor> CreateAnchorFromNonStationarySpace(
       ScriptState* script_state,
       const gfx::Transform& native_origin_from_anchor,
       XRSpace* space,

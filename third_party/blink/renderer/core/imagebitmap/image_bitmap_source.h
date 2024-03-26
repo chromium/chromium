@@ -24,7 +24,7 @@ class CORE_EXPORT ImageBitmapSource {
 
  public:
   virtual gfx::Size BitmapSourceSize() const { return gfx::Size(); }
-  virtual ScriptPromiseTyped<ImageBitmap> CreateImageBitmap(
+  virtual ScriptPromise<ImageBitmap> CreateImageBitmap(
       ScriptState*,
       std::optional<gfx::Rect>,
       const ImageBitmapOptions*,
@@ -36,7 +36,7 @@ class CORE_EXPORT ImageBitmapSource {
   // deprecated. A deprecation warning will be shown to developers when it is
   // used. Adding |options| temporarily here to verify if 'none' is used, which
   // will be removed in the next milestone.
-  static ScriptPromiseTyped<ImageBitmap> FulfillImageBitmap(
+  static ScriptPromise<ImageBitmap> FulfillImageBitmap(
       ScriptState*,
       ImageBitmap*,
       const ImageBitmapOptions* options,

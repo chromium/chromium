@@ -31,12 +31,12 @@ class HandwritingRecognitionService final
   static HandwritingRecognitionService& From(Navigator&);
 
   // IDL Interface:
-  static ScriptPromiseTyped<HandwritingRecognizer> createHandwritingRecognizer(
+  static ScriptPromise<HandwritingRecognizer> createHandwritingRecognizer(
       ScriptState*,
       Navigator&,
       const HandwritingModelConstraint*,
       ExceptionState&);
-  static ScriptPromiseTyped<IDLNullable<HandwritingRecognizerQueryResult>>
+  static ScriptPromise<IDLNullable<HandwritingRecognizerQueryResult>>
   queryHandwritingRecognizer(ScriptState*,
                              Navigator&,
                              const HandwritingModelConstraint*,
@@ -50,12 +50,12 @@ class HandwritingRecognitionService final
   // detached) and an exception will be thrown.
   // Otherwise returns true.
   bool BootstrapMojoConnectionIfNeeded(ScriptState*, ExceptionState&);
-  ScriptPromiseTyped<HandwritingRecognizer> CreateHandwritingRecognizer(
+  ScriptPromise<HandwritingRecognizer> CreateHandwritingRecognizer(
       ScriptState*,
       const HandwritingModelConstraint*,
       ExceptionState&);
 
-  ScriptPromiseTyped<IDLNullable<HandwritingRecognizerQueryResult>>
+  ScriptPromise<IDLNullable<HandwritingRecognizerQueryResult>>
   QueryHandwritingRecognizer(ScriptState*,
                              const HandwritingModelConstraint* constraint,
                              ExceptionState&);

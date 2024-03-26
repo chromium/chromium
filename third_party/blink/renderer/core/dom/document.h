@@ -1257,12 +1257,10 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // Storage Access API methods to check for or request access to storage that
   // may otherwise be blocked.
-  ScriptPromiseTyped<IDLBoolean> hasStorageAccess(ScriptState* script_state);
-  ScriptPromiseTyped<IDLUndefined> requestStorageAccess(
-      ScriptState* script_state);
-  ScriptPromiseTyped<IDLUndefined> requestStorageAccessFor(
-      ScriptState* script_state,
-      const AtomicString& site);
+  ScriptPromise<IDLBoolean> hasStorageAccess(ScriptState* script_state);
+  ScriptPromise<IDLUndefined> requestStorageAccess(ScriptState* script_state);
+  ScriptPromise<IDLUndefined> requestStorageAccessFor(ScriptState* script_state,
+                                                      const AtomicString& site);
 
   // Fragment directive API, currently used to feature detect text-fragments.
   // https://wicg.github.io/scroll-to-text-fragment/#feature-detectability
@@ -1273,18 +1271,18 @@ class CORE_EXPORT Document : public ContainerNode,
   // with the top-level origin would exceed the top-level origin's limit on the
   // number of associated issuers) or on other internal errors (e.g. the network
   // service is unavailable).
-  ScriptPromiseTyped<IDLBoolean> hasPrivateToken(ScriptState* script_state,
-                                                 const String& issuer,
-                                                 ExceptionState&);
+  ScriptPromise<IDLBoolean> hasPrivateToken(ScriptState* script_state,
+                                            const String& issuer,
+                                            ExceptionState&);
 
   // Sends a query via Mojo to ask whether the user has a redemption record.
   // This can reject on permissions errors (e.g. associating |issuer| with the
   // top-level origin would exceed the top-level origin's limit on the number of
   // associated issuers) or on other internal errors (e.g. the network service
   // is unavailable).
-  ScriptPromiseTyped<IDLBoolean> hasRedemptionRecord(ScriptState* script_state,
-                                                     const String& issuer,
-                                                     ExceptionState&);
+  ScriptPromise<IDLBoolean> hasRedemptionRecord(ScriptState* script_state,
+                                                const String& issuer,
+                                                ExceptionState&);
 
   void ariaNotify(const String& announcement,
                   const AriaNotificationOptions* options);
@@ -2314,7 +2312,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // Attempt permission checks for unpartitioned storage access and enable
   // unpartitioned cookie access based on success if
   // `request_unpartitioned_cookie_access` is true.
-  ScriptPromiseTyped<IDLUndefined> RequestStorageAccessImpl(
+  ScriptPromise<IDLUndefined> RequestStorageAccessImpl(
       ScriptState* script_state,
       bool request_unpartitioned_cookie_access);
 
@@ -2322,14 +2320,14 @@ class CORE_EXPORT Document : public ContainerNode,
   // otherwise, and consumes user activation. Enables unpartitioned cookie
   // access if `request_unpartitioned_cookie_access` is true.
   void ProcessStorageAccessPermissionState(
-      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+      ScriptPromiseResolver<IDLUndefined>* resolver,
       bool request_unpartitioned_cookie_access,
       mojom::blink::PermissionStatus status);
 
   // Similar to `ProcessStorageAccessPermissionState`, but for the top-level
   // variant. Notably, does not modify the per-frame storage access bit.
   void ProcessTopLevelStorageAccessPermissionState(
-      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+      ScriptPromiseResolver<IDLUndefined>* resolver,
       mojom::blink::PermissionStatus status);
 
   // Fetch the compression dictionary sent in the response header after the

@@ -63,12 +63,12 @@ class V8PerContextData;
 //
 // You should not store ScriptState on a C++ object that can be accessed
 // by multiple worlds. For example, you can store ScriptState on
-// ScriptPromiseResolver, ScriptValue etc because they can be accessed from one
-// world. However, you cannot store ScriptState on a DOM object that has
-// an IDL interface because the DOM object can be accessed from multiple
-// worlds. If ScriptState of one world "leak"s to another world, you will
-// end up with leaking any JavaScript objects from one Chrome extension
-// to another Chrome extension, which is a severe security bug.
+// ScriptPromiseResolverBase, ScriptValue etc because they can be accessed from
+// one world. However, you cannot store ScriptState on a DOM object that has an
+// IDL interface because the DOM object can be accessed from multiple worlds. If
+// ScriptState of one world "leak"s to another world, you will end up with
+// leaking any JavaScript objects from one Chrome extension to another Chrome
+// extension, which is a severe security bug.
 //
 // Lifetime:
 // ScriptState is created when v8::Context is created.

@@ -19,11 +19,12 @@
 
 namespace blink {
 
-class ScriptPromiseResolver::ExceptionStateScope final : public ExceptionState {
+class ScriptPromiseResolverBase::ExceptionStateScope final
+    : public ExceptionState {
   STACK_ALLOCATED();
 
  public:
-  explicit ExceptionStateScope(ScriptPromiseResolver* resolver)
+  explicit ExceptionStateScope(ScriptPromiseResolverBase* resolver)
       : ExceptionState(resolver->script_state_->GetIsolate(),
                        resolver->exception_context_),
         resolver_(resolver) {}
@@ -34,10 +35,10 @@ class ScriptPromiseResolver::ExceptionStateScope final : public ExceptionState {
   }
 
  private:
-  ScriptPromiseResolver* resolver_;
+  ScriptPromiseResolverBase* resolver_;
 };
 
-ScriptPromiseResolver::ScriptPromiseResolver(
+ScriptPromiseResolverBase::ScriptPromiseResolverBase(
     ScriptState* script_state,
     const ExceptionContext& exception_context)
     : resolver_(script_state->GetIsolate(),
@@ -53,10 +54,10 @@ ScriptPromiseResolver::ScriptPromiseResolver(
   script_url_ = GetCurrentScriptUrl(script_state->GetIsolate());
 }
 
-ScriptPromiseResolver::~ScriptPromiseResolver() = default;
+ScriptPromiseResolverBase::~ScriptPromiseResolverBase() = default;
 
 #if DCHECK_IS_ON()
-void ScriptPromiseResolver::Dispose() {
+void ScriptPromiseResolverBase::Dispose() {
   // This assertion fails if:
   //  - promise() is called at least once and
   //  - this resolver is destructed before it is resolved, rejected,
@@ -74,46 +75,46 @@ void ScriptPromiseResolver::Dispose() {
     crash_reporter::SetCrashKeyStringToStackTrace(&trace_key,
                                                   create_stack_trace_);
     DCHECK(false)
-        << "ScriptPromiseResolver was not properly detached; created at\n"
+        << "ScriptPromiseResolverBase was not properly detached; created at\n"
         << create_stack_trace_.ToString();
   }
 }
 #endif
 
-void ScriptPromiseResolver::Reject(DOMException* value) {
+void ScriptPromiseResolverBase::Reject(DOMException* value) {
   Reject<DOMException>(value);
 }
 
-void ScriptPromiseResolver::Reject(v8::Local<v8::Value> value) {
+void ScriptPromiseResolverBase::Reject(v8::Local<v8::Value> value) {
   Reject<IDLAny>(value);
 }
 
-void ScriptPromiseResolver::Reject(const ScriptValue& value) {
+void ScriptPromiseResolverBase::Reject(const ScriptValue& value) {
   Reject<IDLAny>(value);
 }
 
-void ScriptPromiseResolver::Reject(const char* value) {
+void ScriptPromiseResolverBase::Reject(const char* value) {
   Reject<IDLString>(value);
 }
 
-void ScriptPromiseResolver::Reject(bool value) {
+void ScriptPromiseResolverBase::Reject(bool value) {
   Reject<IDLBoolean>(value);
 }
 
-void ScriptPromiseResolver::Reject(ExceptionState& exception_state) {
+void ScriptPromiseResolverBase::Reject(ExceptionState& exception_state) {
   DCHECK(exception_state.HadException());
   Reject(exception_state.GetException());
   exception_state.ClearException();
 }
 
-void ScriptPromiseResolver::RejectWithDOMException(
+void ScriptPromiseResolverBase::RejectWithDOMException(
     DOMExceptionCode exception_code,
     const String& message) {
   ScriptState::Scope scope(script_state_.Get());
   ExceptionStateScope(this).ThrowDOMException(exception_code, message);
 }
 
-void ScriptPromiseResolver::RejectWithSecurityError(
+void ScriptPromiseResolverBase::RejectWithSecurityError(
     const String& sanitized_message,
     const String& unsanitized_message) {
   ScriptState::Scope scope(script_state_.Get());
@@ -121,22 +122,23 @@ void ScriptPromiseResolver::RejectWithSecurityError(
                                                unsanitized_message);
 }
 
-void ScriptPromiseResolver::RejectWithTypeError(const String& message) {
+void ScriptPromiseResolverBase::RejectWithTypeError(const String& message) {
   ScriptState::Scope scope(script_state_.Get());
   ExceptionStateScope(this).ThrowTypeError(message);
 }
 
-void ScriptPromiseResolver::RejectWithRangeError(const String& message) {
+void ScriptPromiseResolverBase::RejectWithRangeError(const String& message) {
   ScriptState::Scope scope(script_state_.Get());
   ExceptionStateScope(this).ThrowRangeError(message);
 }
 
-void ScriptPromiseResolver::RejectWithWasmCompileError(const String& message) {
+void ScriptPromiseResolverBase::RejectWithWasmCompileError(
+    const String& message) {
   ScriptState::Scope scope(script_state_.Get());
   ExceptionStateScope(this).ThrowWasmCompileError(message);
 }
 
-void ScriptPromiseResolver::Detach() {
+void ScriptPromiseResolverBase::Detach() {
   // Reset state even if we're already kDone. The resolver_ will not have been
   // reset yet if this was marked kDone due to resolve/reject, and an explicit
   // Detach() should really clear everything.
@@ -145,7 +147,7 @@ void ScriptPromiseResolver::Detach() {
   value_.Reset();
 }
 
-void ScriptPromiseResolver::NotifyResolveOrReject() {
+void ScriptPromiseResolverBase::NotifyResolveOrReject() {
   if (GetExecutionContext()->IsContextPaused()) {
     ScheduleResolveOrReject();
     return;
@@ -153,7 +155,7 @@ void ScriptPromiseResolver::NotifyResolveOrReject() {
   // TODO(esprehn): This is a hack, instead we should CHECK that
   // script is allowed, and v8 should be running the entry hooks below and
   // crashing if script is forbidden. We should then audit all users of
-  // ScriptPromiseResolver and the related specs and switch to an async
+  // ScriptPromiseResolverBase and the related specs and switch to an async
   // resolve.
   // See: http://crbug.com/663476
   if (ScriptForbiddenScope::IsScriptForbidden()) {
@@ -163,7 +165,7 @@ void ScriptPromiseResolver::NotifyResolveOrReject() {
   ResolveOrRejectImmediately();
 }
 
-void ScriptPromiseResolver::ResolveOrRejectImmediately() {
+void ScriptPromiseResolverBase::ResolveOrRejectImmediately() {
   DCHECK(!GetExecutionContext()->IsContextDestroyed());
   DCHECK(!GetExecutionContext()->IsContextPaused());
 
@@ -190,15 +192,16 @@ void ScriptPromiseResolver::ResolveOrRejectImmediately() {
   value_.Reset();
 }
 
-void ScriptPromiseResolver::ScheduleResolveOrReject() {
+void ScriptPromiseResolverBase::ScheduleResolveOrReject() {
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMicrotask)
-      ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&ScriptPromiseResolver::ResolveOrRejectDeferred,
-                               WrapPersistent(this)));
+      ->PostTask(
+          FROM_HERE,
+          WTF::BindOnce(&ScriptPromiseResolverBase::ResolveOrRejectDeferred,
+                        WrapPersistent(this)));
 }
 
-void ScriptPromiseResolver::ResolveOrRejectDeferred() {
+void ScriptPromiseResolverBase::ResolveOrRejectDeferred() {
   DCHECK(state_ == kResolving || state_ == kRejecting);
   if (!GetExecutionContext()) {
     Detach();
@@ -209,13 +212,13 @@ void ScriptPromiseResolver::ResolveOrRejectDeferred() {
   ResolveOrRejectImmediately();
 }
 
-void ScriptPromiseResolver::Trace(Visitor* visitor) const {
+void ScriptPromiseResolverBase::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(resolver_);
   visitor->Trace(value_);
 }
 
-ExecutionContext* ScriptPromiseResolver::GetExecutionContext() {
+ExecutionContext* ScriptPromiseResolverBase::GetExecutionContext() {
   if (!GetScriptState()->ContextIsValid()) {
     return nullptr;
   }

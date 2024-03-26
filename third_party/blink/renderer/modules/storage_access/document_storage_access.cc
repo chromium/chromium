@@ -19,7 +19,7 @@ class RequestExtendedStorageAccess final : public ScriptFunction::Callable {
   RequestExtendedStorageAccess(
       LocalDOMWindow& window,
       const StorageAccessTypes* storage_access_types,
-      ScriptPromiseResolverTyped<StorageAccessHandle>* resolver)
+      ScriptPromiseResolver<StorageAccessHandle>* resolver)
       : window_(&window),
         storage_access_types_(storage_access_types),
         resolver_(resolver) {}
@@ -40,7 +40,7 @@ class RequestExtendedStorageAccess final : public ScriptFunction::Callable {
  private:
   Member<LocalDOMWindow> window_;
   Member<const StorageAccessTypes> storage_access_types_;
-  Member<ScriptPromiseResolverTyped<StorageAccessHandle>> resolver_;
+  Member<ScriptPromiseResolver<StorageAccessHandle>> resolver_;
 };
 
 }  // namespace
@@ -64,8 +64,7 @@ DocumentStorageAccess& DocumentStorageAccess::From(Document& document) {
 }
 
 // static
-ScriptPromiseTyped<StorageAccessHandle>
-DocumentStorageAccess::requestStorageAccess(
+ScriptPromise<StorageAccessHandle> DocumentStorageAccess::requestStorageAccess(
     ScriptState* script_state,
     Document& document,
     const StorageAccessTypes* storage_access_types) {
@@ -74,9 +73,9 @@ DocumentStorageAccess::requestStorageAccess(
 }
 
 // static
-ScriptPromiseTyped<IDLBoolean>
-DocumentStorageAccess::hasUnpartitionedCookieAccess(ScriptState* script_state,
-                                                    Document& document) {
+ScriptPromise<IDLBoolean> DocumentStorageAccess::hasUnpartitionedCookieAccess(
+    ScriptState* script_state,
+    Document& document) {
   return From(document).hasUnpartitionedCookieAccess(script_state);
 }
 
@@ -87,8 +86,7 @@ void DocumentStorageAccess::Trace(Visitor* visitor) const {
   Supplement<Document>::Trace(visitor);
 }
 
-ScriptPromiseTyped<StorageAccessHandle>
-DocumentStorageAccess::requestStorageAccess(
+ScriptPromise<StorageAccessHandle> DocumentStorageAccess::requestStorageAccess(
     ScriptState* script_state,
     const StorageAccessTypes* storage_access_types) {
   if (!storage_access_types->all() && !storage_access_types->cookies() &&
@@ -102,13 +100,13 @@ DocumentStorageAccess::requestStorageAccess(
       !storage_access_types->revokeObjectURL() &&
       !storage_access_types->broadcastChannel() &&
       !storage_access_types->sharedWorker()) {
-    return ScriptPromiseTyped<StorageAccessHandle>::RejectWithDOMException(
+    return ScriptPromise<StorageAccessHandle>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kSecurityError,
                           DocumentStorageAccess::kNoAccessRequested));
   }
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<StorageAccessHandle>>(
+      MakeGarbageCollected<ScriptPromiseResolver<StorageAccessHandle>>(
           script_state);
   auto promise = resolver->Promise();
   GetSupplementable()
@@ -122,8 +120,8 @@ DocumentStorageAccess::requestStorageAccess(
   return promise;
 }
 
-ScriptPromiseTyped<IDLBoolean>
-DocumentStorageAccess::hasUnpartitionedCookieAccess(ScriptState* script_state) {
+ScriptPromise<IDLBoolean> DocumentStorageAccess::hasUnpartitionedCookieAccess(
+    ScriptState* script_state) {
   return GetSupplementable()->hasStorageAccess(script_state);
 }
 

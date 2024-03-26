@@ -43,7 +43,7 @@ ExecutionContext* DocumentPictureInPicture::GetExecutionContext() const {
   return GetSupplementable();
 }
 
-ScriptPromiseTyped<DOMWindow> DocumentPictureInPicture::requestWindow(
+ScriptPromise<DOMWindow> DocumentPictureInPicture::requestWindow(
     ScriptState* script_state,
     DocumentPictureInPictureOptions* options,
     ExceptionState& exception_state) {
@@ -51,7 +51,7 @@ ScriptPromiseTyped<DOMWindow> DocumentPictureInPicture::requestWindow(
   if (!dom_window) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Internal error: no window");
-    return ScriptPromiseTyped<DOMWindow>();
+    return ScriptPromise<DOMWindow>();
   }
 
   if (dom_window->GetFrame() &&
@@ -59,23 +59,23 @@ ScriptPromiseTyped<DOMWindow> DocumentPictureInPicture::requestWindow(
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Opening a PiP window is only allowed "
                                       "from a top-level browsing context");
-    return ScriptPromiseTyped<DOMWindow>();
+    return ScriptPromise<DOMWindow>();
   }
 
   if (dom_window->IsPictureInPictureWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Opening a PiP window from a PiP window is not allowed");
-    return ScriptPromiseTyped<DOMWindow>();
+    return ScriptPromise<DOMWindow>();
   }
 
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
                                       "Document not attached");
-    return ScriptPromiseTyped<DOMWindow>();
+    return ScriptPromise<DOMWindow>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<DOMWindow>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<DOMWindow>>(
       script_state, exception_state.GetContext());
   // |dom_window->document()| should always exist after document construction.
   auto* document = dom_window->document();

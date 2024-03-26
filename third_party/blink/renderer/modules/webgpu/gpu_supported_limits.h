@@ -21,11 +21,11 @@ class GPUSupportedLimits final : public ScriptWrappable {
   explicit GPUSupportedLimits(const WGPUSupportedLimits& limits);
 
   static void MakeUndefined(WGPURequiredLimits* out);
-  // Returns true if populated, false if not and the ScriptPromiseResolver has
-  // been rejected.
+  // Returns true if populated, false if not and the ScriptPromiseResolverBase
+  // has been rejected.
   static bool Populate(WGPURequiredLimits* out,
                        const Vector<std::pair<String, uint64_t>>& in,
-                       ScriptPromiseResolver*);
+                       ScriptPromiseResolverBase*);
 
   GPUSupportedLimits(const GPUSupportedLimits&) = delete;
   GPUSupportedLimits& operator=(const GPUSupportedLimits&) = delete;

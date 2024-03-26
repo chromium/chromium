@@ -70,7 +70,7 @@ class LockManager::LockRequestImpl final
  public:
   LockRequestImpl(
       V8LockGrantedCallback* callback,
-      ScriptPromiseResolverTyped<IDLAny>* resolver,
+      ScriptPromiseResolver<IDLAny>* resolver,
       const String& name,
       mojom::blink::LockMode mode,
       mojo::PendingAssociatedReceiver<mojom::blink::LockRequest> receiver,
@@ -182,18 +182,18 @@ class LockManager::LockRequestImpl final
         std::move(lock_lifetime_), manager_);
     manager_->held_locks_.insert(lock);
 
-    // Note that either invoking `callback` or calling ScriptPromise::Cast to
-    // convert the resulting value to a Promise can or will execute javascript.
-    // This means that the ExecutionContext could be synchronously destroyed,
-    // and the `lock` might be released before HoldUntil is called. This is
-    // safe, as releasing a lock twice is harmless.
+    // Note that either invoking `callback` or calling
+    // ScriptPromiseUntyped::Cast to convert the resulting value to a Promise
+    // can or will execute javascript. This means that the ExecutionContext
+    // could be synchronously destroyed, and the `lock` might be released before
+    // HoldUntil is called. This is safe, as releasing a lock twice is harmless.
     ScriptState::Scope scope(script_state);
     v8::TryCatch try_catch(script_state->GetIsolate());
     v8::Maybe<ScriptValue> result = callback->Invoke(nullptr, lock);
     if (try_catch.HasCaught()) {
-      lock->HoldUntil(ScriptPromiseTyped<IDLAny>::Reject(script_state,
-                                                         try_catch.Exception()),
-                      resolver_);
+      lock->HoldUntil(
+          ScriptPromise<IDLAny>::Reject(script_state, try_catch.Exception()),
+          resolver_);
     } else if (!result.IsNothing()) {
       lock->HoldUntil(
           ToResolvedPromise<IDLAny>(script_state, result.FromJust()),
@@ -207,7 +207,7 @@ class LockManager::LockRequestImpl final
 
   // Rejects if the request was aborted, otherwise resolves/rejects with
   // |callback_|'s result.
-  Member<ScriptPromiseResolverTyped<IDLAny>> resolver_;
+  Member<ScriptPromiseResolver<IDLAny>> resolver_;
 
   // Held to stamp the Lock object's |name| property.
   String name_;
@@ -257,26 +257,24 @@ void LockManager::SetManager(
                 execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
 }
 
-ScriptPromiseTyped<IDLAny> LockManager::request(
-    ScriptState* script_state,
-    const String& name,
-    V8LockGrantedCallback* callback,
-    ExceptionState& exception_state) {
+ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
+                                           const String& name,
+                                           V8LockGrantedCallback* callback,
+                                           ExceptionState& exception_state) {
   return request(script_state, name, LockOptions::Create(), callback,
                  exception_state);
 }
 
-ScriptPromiseTyped<IDLAny> LockManager::request(
-    ScriptState* script_state,
-    const String& name,
-    const LockOptions* options,
-    V8LockGrantedCallback* callback,
-    ExceptionState& exception_state) {
+ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
+                                           const String& name,
+                                           const LockOptions* options,
+                                           V8LockGrantedCallback* callback,
+                                           ExceptionState& exception_state) {
   // Observed context may be gone if frame is detached.
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidStateErrorMessage);
-    return ScriptPromiseTyped<IDLAny>();
+    return ScriptPromise<IDLAny>();
   }
 
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -291,7 +289,7 @@ ScriptPromiseTyped<IDLAny> LockManager::request(
   if (!context->GetSecurityOrigin()->CanAccessLocks()) {
     exception_state.ThrowSecurityError(
         "Access to the Locks API is denied in this context.");
-    return ScriptPromiseTyped<IDLAny>();
+    return ScriptPromise<IDLAny>();
   }
   if (context->GetSecurityOrigin()->IsLocal()) {
     UseCounter::Count(context, WebFeature::kFileAccessedLocks);
@@ -304,7 +302,7 @@ ScriptPromiseTyped<IDLAny> LockManager::request(
   if (name.StartsWith("-")) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Names cannot start with '-'.");
-    return ScriptPromiseTyped<IDLAny>();
+    return ScriptPromise<IDLAny>();
   }
 
   // 7. Otherwise, if both options’ steal dictionary member and option’s
@@ -314,7 +312,7 @@ ScriptPromiseTyped<IDLAny> LockManager::request(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "The 'steal' and 'ifAvailable' options cannot be used together.");
-    return ScriptPromiseTyped<IDLAny>();
+    return ScriptPromise<IDLAny>();
   }
 
   // 8. Otherwise, if options’ steal dictionary member is true and option’s mode
@@ -324,7 +322,7 @@ ScriptPromiseTyped<IDLAny> LockManager::request(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "The 'steal' option may only be used with 'exclusive' locks.");
-    return ScriptPromiseTyped<IDLAny>();
+    return ScriptPromise<IDLAny>();
   }
 
   // 9. Otherwise, if option’s signal dictionary member is present, and either
@@ -335,23 +333,23 @@ ScriptPromiseTyped<IDLAny> LockManager::request(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "The 'signal' and 'ifAvailable' options cannot be used together.");
-    return ScriptPromiseTyped<IDLAny>();
+    return ScriptPromise<IDLAny>();
   }
   if (options->hasSignal() && options->steal()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "The 'signal' and 'steal' options cannot be used together.");
-    return ScriptPromiseTyped<IDLAny>();
+    return ScriptPromise<IDLAny>();
   }
 
   // If options["signal"] exists and is aborted, then return a promise rejected
   // with options["signal"]'s abort reason.
   if (options->hasSignal() && options->signal()->aborted()) {
-    return ScriptPromiseTyped<IDLAny>::Reject(
+    return ScriptPromise<IDLAny>::Reject(
         script_state, options->signal()->reason(script_state));
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -369,7 +367,7 @@ void LockManager::RequestImpl(const LockOptions* options,
                               const String& name,
                               V8LockGrantedCallback* callback,
                               mojom::blink::LockMode mode,
-                              ScriptPromiseResolverTyped<IDLAny>* resolver) {
+                              ScriptPromiseResolver<IDLAny>* resolver) {
   ExecutionContext* context = resolver->GetExecutionContext();
   if (!service_.is_bound()) {
     context->GetBrowserInterfaceBroker().GetInterface(
@@ -424,14 +422,14 @@ void LockManager::RequestImpl(const LockOptions* options,
   service_->RequestLock(name, mode, wait, std::move(request_remote));
 }
 
-ScriptPromiseTyped<LockManagerSnapshot> LockManager::query(
+ScriptPromise<LockManagerSnapshot> LockManager::query(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   // Observed context may be gone if frame is detached.
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidStateErrorMessage);
-    return ScriptPromiseTyped<LockManagerSnapshot>();
+    return ScriptPromise<LockManagerSnapshot>();
   }
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
@@ -439,14 +437,14 @@ ScriptPromiseTyped<LockManagerSnapshot> LockManager::query(
   if (!context->GetSecurityOrigin()->CanAccessLocks()) {
     exception_state.ThrowSecurityError(
         "Access to the Locks API is denied in this context.");
-    return ScriptPromiseTyped<LockManagerSnapshot>();
+    return ScriptPromise<LockManagerSnapshot>();
   }
   if (context->GetSecurityOrigin()->IsLocal()) {
     UseCounter::Count(context, WebFeature::kFileAccessedLocks);
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<LockManagerSnapshot>>(
+      MakeGarbageCollected<ScriptPromiseResolver<LockManagerSnapshot>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -458,7 +456,7 @@ ScriptPromiseTyped<LockManagerSnapshot> LockManager::query(
 }
 
 void LockManager::QueryImpl(
-    ScriptPromiseResolverTyped<LockManagerSnapshot>* resolver) {
+    ScriptPromiseResolver<LockManagerSnapshot>* resolver) {
   ExecutionContext* context = resolver->GetExecutionContext();
   if (!service_.is_bound()) {
     context->GetBrowserInterfaceBroker().GetInterface(
@@ -471,7 +469,7 @@ void LockManager::QueryImpl(
   }
 
   service_->QueryState(WTF::BindOnce(
-      [](ScriptPromiseResolverTyped<LockManagerSnapshot>* resolver,
+      [](ScriptPromiseResolver<LockManagerSnapshot>* resolver,
          Vector<mojom::blink::LockInfoPtr> pending,
          Vector<mojom::blink::LockInfoPtr> held) {
         LockManagerSnapshot* snapshot = LockManagerSnapshot::Create();
@@ -519,7 +517,7 @@ void LockManager::OnLockReleased(Lock* lock) {
 
 void LockManager::CheckStorageAccessAllowed(
     ExecutionContext* context,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     base::OnceCallback<void()> callback) {
   DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
 
@@ -555,7 +553,7 @@ void LockManager::CheckStorageAccessAllowed(
 }
 
 void LockManager::DidCheckStorageAccessAllowed(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     base::OnceCallback<void()> callback,
     bool allow_access) {
   if (cached_allowed_.has_value()) {

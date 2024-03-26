@@ -174,33 +174,34 @@ class WakeLockTestingContext final {
   MockPermissionService& GetPermissionService();
 
   // Synchronously waits for |promise| to be fulfilled.
-  void WaitForPromiseFulfillment(ScriptPromise promise);
+  void WaitForPromiseFulfillment(ScriptPromiseUntyped promise);
 
   // Synchronously waits for |promise| to be rejected.
-  void WaitForPromiseRejection(ScriptPromise promise);
+  void WaitForPromiseRejection(ScriptPromiseUntyped promise);
 
  private:
   MockPermissionService permission_service_;
   V8TestingScope testing_scope_;
 };
 
-// Utility functions to retrieve promise data out of a ScriptPromise.
-class ScriptPromiseUtils final {
+// Utility functions to retrieve promise data out of a ScriptPromiseUntyped.
+class ScriptPromiseUntypedUtils final {
  public:
-  // Shorthand for getting a PromiseState out of a ScriptPromise.
+  // Shorthand for getting a PromiseState out of a ScriptPromiseUntyped.
   static v8::Promise::PromiseState GetPromiseState(
-      const ScriptPromise& promise);
+      const ScriptPromiseUntyped& promise);
 
-  // Shorthand for getting a DOMException* out of a ScriptPromise. This assumes
-  // the promise has been resolved with a DOMException. If the conversion fails,
-  // nullptr is returned.
-  static DOMException* GetPromiseResolutionAsDOMException(const ScriptPromise&);
+  // Shorthand for getting a DOMException* out of a ScriptPromiseUntyped. This
+  // assumes the promise has been resolved with a DOMException. If the
+  // conversion fails, nullptr is returned.
+  static DOMException* GetPromiseResolutionAsDOMException(
+      const ScriptPromiseUntyped&);
 
-  // Shorthand for getting a WakeLockSentinel* out of a ScriptPromise. This
-  // assumes the promise has been resolved with a WakeLockSentinel. If the
+  // Shorthand for getting a WakeLockSentinel* out of a ScriptPromiseUntyped.
+  // This assumes the promise has been resolved with a WakeLockSentinel. If the
   // conversion fails, nullptr is returned.
   static WakeLockSentinel* GetPromiseResolutionAsWakeLockSentinel(
-      const ScriptPromise&);
+      const ScriptPromiseUntyped&);
 };
 
 }  // namespace blink

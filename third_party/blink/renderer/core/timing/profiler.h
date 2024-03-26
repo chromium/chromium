@@ -66,7 +66,7 @@ class CORE_EXPORT Profiler final : public EventTarget {
 
   DOMHighResTimeStamp sampleInterval() { return target_sample_rate_; }
   bool stopped() const { return !profiler_group_; }
-  ScriptPromiseTyped<ProfilerTrace> stop(ScriptState*);
+  ScriptPromise<ProfilerTrace> stop(ScriptState*);
 
   void RemovedFromProfilerGroup() { profiler_group_ = nullptr; }
 

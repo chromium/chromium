@@ -71,7 +71,7 @@ void UDPWritableStreamWrapper::OnAbortSignal() {
   }
 }
 
-ScriptPromiseTyped<IDLUndefined> UDPWritableStreamWrapper::Write(
+ScriptPromise<IDLUndefined> UDPWritableStreamWrapper::Write(
     ScriptValue chunk,
     ExceptionState& exception_state) {
   DCHECK(udp_socket_->get().is_bound());
@@ -79,12 +79,12 @@ ScriptPromiseTyped<IDLUndefined> UDPWritableStreamWrapper::Write(
   UDPMessage* message = UDPMessage::Create(GetScriptState()->GetIsolate(),
                                            chunk.V8Value(), exception_state);
   if (exception_state.HadException()) {
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   if (!message->hasData()) {
     exception_state.ThrowTypeError("UDPMessage: missing 'data' field.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   std::optional<net::HostPortPair> dest_addr;
@@ -93,7 +93,7 @@ ScriptPromiseTyped<IDLUndefined> UDPWritableStreamWrapper::Write(
       exception_state.ThrowTypeError(
           "UDPMessage: 'remoteAddress' and 'remotePort' must not be specified "
           "in 'connected' mode.");
-      return ScriptPromiseTyped<IDLUndefined>();
+      return ScriptPromise<IDLUndefined>();
     }
     dest_addr = net::HostPortPair(message->remoteAddress().Utf8(),
                                   message->remotePort());
@@ -101,12 +101,12 @@ ScriptPromiseTyped<IDLUndefined> UDPWritableStreamWrapper::Write(
     exception_state.ThrowTypeError(
         "UDPMessage: either none or both 'remoteAddress' and 'remotePort' "
         "fields must be specified.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   } else if (mode_ == network::mojom::RestrictedUDPSocketMode::BOUND) {
     exception_state.ThrowTypeError(
         "UDPMessage: 'remoteAddress' and 'remotePort' must be specified "
         "in 'bound' mode.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   auto dns_query_type = net::DnsQueryType::UNSPECIFIED;
@@ -115,7 +115,7 @@ ScriptPromiseTyped<IDLUndefined> UDPWritableStreamWrapper::Write(
       exception_state.ThrowTypeError(
           "UDPMessage: 'dnsQueryType' must not be specified "
           "in 'connected' mode.");
-      return ScriptPromiseTyped<IDLUndefined>();
+      return ScriptPromise<IDLUndefined>();
     }
     switch (message->dnsQueryType().AsEnum()) {
       case V8SocketDnsQueryType::Enum::kIpv4:
@@ -132,7 +132,7 @@ ScriptPromiseTyped<IDLUndefined> UDPWritableStreamWrapper::Write(
 
   DCHECK(!write_promise_resolver_);
   write_promise_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           GetScriptState(), exception_state.GetContext());
 
   auto callback = WTF::BindOnce(&UDPWritableStreamWrapper::OnSend,

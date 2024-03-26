@@ -86,10 +86,11 @@ class CORE_EXPORT BodyStreamBuffer final
   void Tee(BodyStreamBuffer**, BodyStreamBuffer**, ExceptionState&);
 
   // UnderlyingByteSourceBase
-  ScriptPromise Pull(ReadableByteStreamController* controller,
-                     ExceptionState&) override;
-  ScriptPromise Cancel(ExceptionState&) override;
-  ScriptPromise Cancel(v8::Local<v8::Value> reason, ExceptionState&) override;
+  ScriptPromiseUntyped Pull(ReadableByteStreamController* controller,
+                            ExceptionState&) override;
+  ScriptPromiseUntyped Cancel(ExceptionState&) override;
+  ScriptPromiseUntyped Cancel(v8::Local<v8::Value> reason,
+                              ExceptionState&) override;
   ScriptState* GetScriptState() override;
 
   // ExecutionContextLifecycleObserver

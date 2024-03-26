@@ -45,10 +45,10 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
   std::optional<String> authenticatorAttachment() const {
     return authenticator_attachment_;
   }
-  static ScriptPromiseTyped<IDLBoolean>
+  static ScriptPromise<IDLBoolean>
   isUserVerifyingPlatformAuthenticatorAvailable(ScriptState*);
   AuthenticationExtensionsClientOutputs* getClientExtensionResults() const;
-  static ScriptPromiseTyped<IDLBoolean> isConditionalMediationAvailable(
+  static ScriptPromise<IDLBoolean> isConditionalMediationAvailable(
       ScriptState*);
   static const PublicKeyCredentialCreationOptions* parseCreationOptionsFromJSON(
       ScriptState*,

@@ -20,13 +20,16 @@ class AdditionalWindowingControls {
 
  public:
   // Web-exposed interfaces:
-  static ScriptPromiseTyped<IDLUndefined>
-  maximize(ScriptState*, LocalDOMWindow&, ExceptionState& exception_state);
-  static ScriptPromiseTyped<IDLUndefined>
-  minimize(ScriptState*, LocalDOMWindow&, ExceptionState& exception_state);
-  static ScriptPromiseTyped<IDLUndefined>
-  restore(ScriptState*, LocalDOMWindow&, ExceptionState& exception_state);
-  static ScriptPromiseTyped<IDLUndefined> setResizable(
+  static ScriptPromise<IDLUndefined> maximize(ScriptState*,
+                                              LocalDOMWindow&,
+                                              ExceptionState& exception_state);
+  static ScriptPromise<IDLUndefined> minimize(ScriptState*,
+                                              LocalDOMWindow&,
+                                              ExceptionState& exception_state);
+  static ScriptPromise<IDLUndefined> restore(ScriptState*,
+                                             LocalDOMWindow&,
+                                             ExceptionState& exception_state);
+  static ScriptPromise<IDLUndefined> setResizable(
       ScriptState*,
       LocalDOMWindow&,
       bool resizable,

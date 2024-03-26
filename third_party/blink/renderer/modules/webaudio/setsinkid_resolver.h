@@ -25,7 +25,7 @@ class SetSinkIdResolver : public GarbageCollected<SetSinkIdResolver> {
 
   void Start();
 
-  ScriptPromiseResolverTyped<IDLUndefined>* Resolver() { return resolver_; }
+  ScriptPromiseResolver<IDLUndefined>* Resolver() { return resolver_; }
 
   void Trace(Visitor*) const;
 
@@ -38,7 +38,7 @@ class SetSinkIdResolver : public GarbageCollected<SetSinkIdResolver> {
   void NotifySetSinkIdIsDone();
 
   WeakMember<AudioContext> audio_context_;
-  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   WebAudioSinkDescriptor sink_descriptor_;
 };
 }  // namespace blink

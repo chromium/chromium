@@ -39,11 +39,11 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
       delete;
 
   // UnderlyingSourceBase
-  ScriptPromise Pull(ScriptState*, ExceptionState&) override;
-  ScriptPromise Start(ScriptState*, ExceptionState&) override;
-  ScriptPromise Cancel(ScriptState*,
-                       ScriptValue reason,
-                       ExceptionState&) override;
+  ScriptPromiseUntyped Pull(ScriptState*, ExceptionState&) override;
+  ScriptPromiseUntyped Start(ScriptState*, ExceptionState&) override;
+  ScriptPromiseUntyped Cancel(ScriptState*,
+                              ScriptValue reason,
+                              ExceptionState&) override;
 
   // ExecutionLifecycleObserver
   void ContextDestroyed() override;

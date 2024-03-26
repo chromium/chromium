@@ -13,7 +13,7 @@
 
 namespace blink {
 
-class ScriptPromise;
+class ScriptPromiseUntyped;
 class ScriptState;
 
 // ScriptEvaluationResult encapsulates the result of a classic or module script
@@ -137,7 +137,7 @@ class CORE_EXPORT ScriptEvaluationResult final {
   // - For module script with TLA is enabled, and
   // - If GetResultType() == kSuccess or kException.
   //   (For kNotRun/kAborted, we should do nothing)
-  ScriptPromise GetPromise(ScriptState* script_state) const;
+  ScriptPromiseUntyped GetPromise(ScriptState* script_state) const;
 
  private:
   ScriptEvaluationResult(mojom::blink::ScriptType,

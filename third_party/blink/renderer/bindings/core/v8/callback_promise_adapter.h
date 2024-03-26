@@ -62,7 +62,7 @@ namespace blink {
 // class MyClass {
 // public:
 //     using WebType = std::unique_ptr<WebMyClass>;
-//     static scoped_refptr<MyClass> take(ScriptPromiseResolver* resolver,
+//     static scoped_refptr<MyClass> take(ScriptPromiseResolverBase* resolver,
 //         std::unique_ptr<WebMyClass> webInstance)
 //     {
 //         return MyClass::create(webInstance);
@@ -72,7 +72,7 @@ namespace blink {
 // class MyErrorClass {
 // public:
 //     using WebType = const WebMyErrorClass&;
-//     static MyErrorClass take(ScriptPromiseResolver* resolver,
+//     static MyErrorClass take(ScriptPromiseResolverBase* resolver,
 //         const WebErrorClass& webError)
 //     {
 //         return MyErrorClass(webError);
@@ -106,7 +106,9 @@ struct CallbackPromiseAdapterTrivialWebTypeHolder {
   using WebType = std::conditional_t<WTF::IsGarbageCollectedType<T>::value,
                                      std::add_pointer_t<T>,
                                      typename IDLTypeToBlinkImplType<T>::type>;
-  static WebType Take(ScriptPromiseResolver*, const WebType& x) { return x; }
+  static WebType Take(ScriptPromiseResolverBase*, const WebType& x) {
+    return x;
+  }
 };
 template <>
 struct CallbackPromiseAdapterTrivialWebTypeHolder<void> {
@@ -127,11 +129,9 @@ class CallbackPromiseAdapterInternal {
   template <typename S, typename T>
   class Base : public WebCallbacks<typename S::WebType, typename T::WebType> {
    public:
-    explicit Base(ScriptPromiseResolverTyped<typename S::IDLType>* resolver)
+    explicit Base(ScriptPromiseResolver<typename S::IDLType>* resolver)
         : resolver_(resolver) {}
-    ScriptPromiseResolverTyped<typename S::IDLType>* Resolver() {
-      return resolver_;
-    }
+    ScriptPromiseResolver<typename S::IDLType>* Resolver() { return resolver_; }
 
     void OnSuccess(typename S::WebType result) override {
       auto* resolver = this->Resolver();
@@ -139,14 +139,14 @@ class CallbackPromiseAdapterInternal {
     }
 
    private:
-    Persistent<ScriptPromiseResolverTyped<typename S::IDLType>> resolver_;
+    Persistent<ScriptPromiseResolver<typename S::IDLType>> resolver_;
   };
 
   template <typename S, typename T>
   class OnErrorAdapter : public Base<S, T> {
    public:
     explicit OnErrorAdapter(
-        ScriptPromiseResolverTyped<typename S::IDLType>* resolver)
+        ScriptPromiseResolver<typename S::IDLType>* resolver)
         : Base<S, T>(resolver) {}
     void OnError(typename T::WebType e) override {
       auto* resolver = this->Resolver();
@@ -161,7 +161,7 @@ class CallbackPromiseAdapterInternal {
       : public Base<S, CallbackPromiseAdapterTrivialWebTypeHolder<void>> {
    public:
     explicit OnErrorAdapter(
-        ScriptPromiseResolverTyped<typename S::IDLType>* resolver)
+        ScriptPromiseResolver<typename S::IDLType>* resolver)
         : Base<S, CallbackPromiseAdapterTrivialWebTypeHolder<void>>(resolver) {}
     void OnError() override { this->Resolver()->Reject(); }
   };
@@ -172,8 +172,7 @@ class CallbackPromiseAdapterInternal {
       : public OnErrorAdapter<WebTypeHolder<S>, WebTypeHolder<T>> {
    public:
     explicit CallbackPromiseAdapter(
-        ScriptPromiseResolverTyped<typename WebTypeHolder<S>::IDLType>*
-            resolver)
+        ScriptPromiseResolver<typename WebTypeHolder<S>::IDLType>* resolver)
         : OnErrorAdapter<WebTypeHolder<S>, WebTypeHolder<T>>(resolver) {}
 
     CallbackPromiseAdapter(const CallbackPromiseAdapter&) = delete;

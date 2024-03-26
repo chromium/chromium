@@ -50,9 +50,9 @@ class MODULES_EXPORT ML final : public ScriptWrappable,
   void Trace(blink::Visitor*) const override;
 
   // IDL interface:
-  ScriptPromiseTyped<MLContext> createContext(ScriptState* state,
-                                              MLContextOptions* option,
-                                              ExceptionState& exception_state);
+  ScriptPromise<MLContext> createContext(ScriptState* state,
+                                         MLContextOptions* option,
+                                         ExceptionState& exception_state);
 
  private:
   // Binds the ModelLoader Mojo connection to browser process if needed.

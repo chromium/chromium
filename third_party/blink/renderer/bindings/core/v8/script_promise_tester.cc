@@ -40,7 +40,7 @@ class ScriptPromiseTester::ThenFunction : public ScriptFunction::Callable {
 };
 
 ScriptPromiseTester::ScriptPromiseTester(ScriptState* script_state,
-                                         ScriptPromise script_promise)
+                                         ScriptPromiseUntyped script_promise)
     : script_state_(script_state),
       value_object_(MakeGarbageCollected<ScriptValueObject>()) {
   DCHECK(script_state);

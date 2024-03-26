@@ -1142,7 +1142,7 @@ void VideoFrame::ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
 }
 
 bool VideoFrame::CopyToAsync(
-    ScriptPromiseResolverTyped<IDLSequence<PlaneLayout>>* resolver,
+    ScriptPromiseResolver<IDLSequence<PlaneLayout>>* resolver,
     scoped_refptr<media::VideoFrame> frame,
     gfx::Rect src_rect,
     const AllowSharedBufferSource* destination,
@@ -1158,7 +1158,7 @@ bool VideoFrame::CopyToAsync(
 
   auto readback_done_handler =
       [](ArrayBufferContents contents,
-         ScriptPromiseResolverTyped<IDLSequence<PlaneLayout>>* resolver,
+         ScriptPromiseResolver<IDLSequence<PlaneLayout>>* resolver,
          VideoFrameLayout dest_layout, bool success) {
         if (success) {
           resolver->Resolve(ConvertLayout(dest_layout));
@@ -1175,14 +1175,15 @@ bool VideoFrame::CopyToAsync(
   return true;
 }
 
-ScriptPromiseTyped<IDLSequence<PlaneLayout>> VideoFrame::copyTo(
+ScriptPromise<IDLSequence<PlaneLayout>> VideoFrame::copyTo(
     ScriptState* script_state,
     const AllowSharedBufferSource* destination,
     VideoFrameCopyToOptions* options,
     ExceptionState& exception_state) {
   auto local_frame = handle_->frame();
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<PlaneLayout>>>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<PlaneLayout>>>(
+          script_state);
   auto promise = resolver->Promise();
   if (!local_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -1373,7 +1374,7 @@ gfx::Size VideoFrame::BitmapSourceSize() const {
   return local_frame->natural_size();
 }
 
-ScriptPromiseTyped<ImageBitmap> VideoFrame::CreateImageBitmap(
+ScriptPromise<ImageBitmap> VideoFrame::CreateImageBitmap(
     ScriptState* script_state,
     std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
@@ -1383,7 +1384,7 @@ ScriptPromiseTyped<ImageBitmap> VideoFrame::CreateImageBitmap(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Cannot create ImageBitmap from closed VideoFrame.");
-    return ScriptPromiseTyped<ImageBitmap>();
+    return ScriptPromise<ImageBitmap>();
   }
 
   // SkImages are always immutable, so we don't actually need to make a copy of
@@ -1428,7 +1429,7 @@ ScriptPromiseTyped<ImageBitmap> VideoFrame::CreateImageBitmap(
         String(("Unsupported VideoFrame: " +
                 local_handle->frame()->AsHumanReadableString())
                    .c_str()));
-    return ScriptPromiseTyped<ImageBitmap>();
+    return ScriptPromise<ImageBitmap>();
   }
 
   auto* image_bitmap =

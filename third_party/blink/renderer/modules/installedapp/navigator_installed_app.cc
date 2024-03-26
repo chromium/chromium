@@ -20,7 +20,7 @@
 
 namespace blink {
 
-ScriptPromiseTyped<IDLSequence<RelatedApplication>>
+ScriptPromise<IDLSequence<RelatedApplication>>
 NavigatorInstalledApp::getInstalledRelatedApps(
     ScriptState* script_state,
     Navigator& navigator,
@@ -28,7 +28,7 @@ NavigatorInstalledApp::getInstalledRelatedApps(
   // [SecureContext] from the IDL ensures this.
   DCHECK(ExecutionContext::From(script_state)->IsSecureContext());
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<RelatedApplication>>>(
+      ScriptPromiseResolver<IDLSequence<RelatedApplication>>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 

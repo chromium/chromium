@@ -24,7 +24,7 @@ const SecurityOrigin* GetSecurityOrigin(const Frame* frame) {
 }  // anonymous namespace
 
 bool CheckGenericSecurityRequirementsForCredentialsContainerRequest(
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverBase* resolver) {
   // Ignore calls if the current realm execution context is no longer valid,
   // e.g., because the responsible document was detached.
   if (!resolver->GetExecutionContext()) {

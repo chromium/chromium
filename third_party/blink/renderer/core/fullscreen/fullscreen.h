@@ -74,7 +74,7 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
   static bool IsFullscreenFlagSetFor(const Element&);
 
   static void RequestFullscreen(Element&);
-  static ScriptPromiseTyped<IDLUndefined> RequestFullscreen(
+  static ScriptPromise<IDLUndefined> RequestFullscreen(
       Element&,
       const FullscreenOptions*,
       FullscreenRequestType,
@@ -82,7 +82,7 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
       ExceptionState* exception_state = nullptr);
 
   static void FullyExitFullscreen(Document&, bool ua_originated = false);
-  static ScriptPromiseTyped<IDLUndefined> ExitFullscreen(
+  static ScriptPromise<IDLUndefined> ExitFullscreen(
       Document&,
       ScriptState* state = nullptr,
       ExceptionState* exception_state = nullptr,
@@ -118,12 +118,12 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
       Element&,
       FullscreenRequestType,
       const FullscreenOptions*,
-      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+      ScriptPromiseResolver<IDLUndefined>* resolver,
       const char* error);
 
   static void ContinueExitFullscreen(
       Document*,
-      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+      ScriptPromiseResolver<IDLUndefined>* resolver,
       bool resize);
 
   void FullscreenElementChanged(Element* old_element,
@@ -137,7 +137,7 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
     PendingRequest(Element* element,
                    FullscreenRequestType type,
                    const FullscreenOptions* options,
-                   ScriptPromiseResolverTyped<IDLUndefined>* resolver);
+                   ScriptPromiseResolver<IDLUndefined>* resolver);
     PendingRequest(const PendingRequest&) = delete;
     PendingRequest& operator=(const PendingRequest&) = delete;
     virtual ~PendingRequest();
@@ -146,20 +146,18 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
     Element* element() { return element_.Get(); }
     FullscreenRequestType type() { return type_; }
     const FullscreenOptions* options() { return options_.Get(); }
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver() {
-      return resolver_.Get();
-    }
+    ScriptPromiseResolver<IDLUndefined>* resolver() { return resolver_.Get(); }
 
    private:
     Member<Element> element_;
     FullscreenRequestType type_;
     Member<const FullscreenOptions> options_;
-    Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
+    Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   };
   using PendingRequests = HeapVector<Member<PendingRequest>>;
   PendingRequests pending_requests_;
 
-  using PendingExit = ScriptPromiseResolverTyped<IDLUndefined>;
+  using PendingExit = ScriptPromiseResolver<IDLUndefined>;
   using PendingExits = HeapVector<Member<PendingExit>>;
   PendingExits pending_exits_;
 

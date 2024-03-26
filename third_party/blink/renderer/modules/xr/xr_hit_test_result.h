@@ -29,8 +29,8 @@ class XRHitTestResult : public ScriptWrappable {
 
   XRPose* getPose(XRSpace* relative_to, ExceptionState& exception_state);
 
-  ScriptPromiseTyped<XRAnchor> createAnchor(ScriptState* script_state,
-                                            ExceptionState& exception_state);
+  ScriptPromise<XRAnchor> createAnchor(ScriptState* script_state,
+                                       ExceptionState& exception_state);
 
   void Trace(Visitor* visitor) const override;
 

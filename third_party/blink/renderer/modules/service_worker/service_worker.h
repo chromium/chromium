@@ -98,7 +98,7 @@ class MODULES_EXPORT ServiceWorker final
   // Implements mojom::blink::ServiceWorkerObject.
   void StateChanged(mojom::blink::ServiceWorkerState new_state) override;
 
-  ScriptPromiseTyped<IDLUndefined> InternalsTerminate(ScriptState*);
+  ScriptPromise<IDLUndefined> InternalsTerminate(ScriptState*);
 
  private:
   // ExecutionContextLifecycleStateObserver overrides.

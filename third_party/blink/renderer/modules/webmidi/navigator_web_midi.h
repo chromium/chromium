@@ -49,15 +49,14 @@ class NavigatorWebMIDI final : public GarbageCollected<NavigatorWebMIDI>,
   static const char kSupplementName[];
 
   static NavigatorWebMIDI& From(Navigator&);
-  static ScriptPromiseTyped<MIDIAccess> requestMIDIAccess(
+  static ScriptPromise<MIDIAccess> requestMIDIAccess(
       ScriptState*,
       Navigator&,
       const MIDIOptions*,
       ExceptionState& exception_state);
-  ScriptPromiseTyped<MIDIAccess> requestMIDIAccess(
-      ScriptState*,
-      const MIDIOptions*,
-      ExceptionState& exception_state);
+  ScriptPromise<MIDIAccess> requestMIDIAccess(ScriptState*,
+                                              const MIDIOptions*,
+                                              ExceptionState& exception_state);
 
   explicit NavigatorWebMIDI(Navigator&);
 

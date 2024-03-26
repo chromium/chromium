@@ -28,7 +28,7 @@ using blink::digital_goods_util::LogConsoleError;
 using payments::mojom::blink::CreateDigitalGoodsResponseCode;
 
 void OnCreateDigitalGoodsResponse(
-    ScriptPromiseResolverTyped<DigitalGoodsService>* resolver,
+    ScriptPromiseResolver<DigitalGoodsService>* resolver,
     CreateDigitalGoodsResponseCode code,
     mojo::PendingRemote<payments::mojom::blink::DigitalGoods> pending_remote) {
   if (code != CreateDigitalGoodsResponseCode::kOk) {
@@ -51,7 +51,7 @@ const char DOMWindowDigitalGoods::kSupplementName[] = "DOMWindowDigitalGoods";
 DOMWindowDigitalGoods::DOMWindowDigitalGoods(LocalDOMWindow& window)
     : Supplement(window), mojo_service_(&window) {}
 
-ScriptPromiseTyped<DigitalGoodsService>
+ScriptPromise<DigitalGoodsService>
 DOMWindowDigitalGoods::getDigitalGoodsService(ScriptState* script_state,
                                               LocalDOMWindow& window,
                                               const String& payment_method,
@@ -60,7 +60,7 @@ DOMWindowDigitalGoods::getDigitalGoodsService(ScriptState* script_state,
       script_state, window, payment_method, exception_state);
 }
 
-ScriptPromiseTyped<DigitalGoodsService>
+ScriptPromise<DigitalGoodsService>
 DOMWindowDigitalGoods::GetDigitalGoodsService(ScriptState* script_state,
                                               LocalDOMWindow& window,
                                               const String& payment_method,
@@ -68,11 +68,11 @@ DOMWindowDigitalGoods::GetDigitalGoodsService(ScriptState* script_state,
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
-    return ScriptPromiseTyped<DigitalGoodsService>();
+    return ScriptPromise<DigitalGoodsService>();
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<DigitalGoodsService>>(
+      MakeGarbageCollected<ScriptPromiseResolver<DigitalGoodsService>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   auto* execution_context = ExecutionContext::From(script_state);

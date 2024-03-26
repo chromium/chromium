@@ -71,8 +71,8 @@ class DeviceMotionEvent final : public Event {
   DeviceMotionEventRotationRate* rotationRate();
   double interval() const;
 
-  static ScriptPromiseTyped<V8DeviceOrientationPermissionState>
-  requestPermission(ScriptState*);
+  static ScriptPromise<V8DeviceOrientationPermissionState> requestPermission(
+      ScriptState*);
 
   const AtomicString& InterfaceName() const override;
 

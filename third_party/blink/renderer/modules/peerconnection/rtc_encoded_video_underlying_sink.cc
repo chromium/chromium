@@ -23,7 +23,7 @@ RTCEncodedVideoUnderlyingSink::RTCEncodedVideoUnderlyingSink(
   DCHECK(transformer_broker_);
 }
 
-ScriptPromiseTyped<IDLUndefined> RTCEncodedVideoUnderlyingSink::start(
+ScriptPromise<IDLUndefined> RTCEncodedVideoUnderlyingSink::start(
     ScriptState* script_state,
     WritableStreamDefaultController* controller,
     ExceptionState&) {
@@ -31,7 +31,7 @@ ScriptPromiseTyped<IDLUndefined> RTCEncodedVideoUnderlyingSink::start(
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> RTCEncodedVideoUnderlyingSink::write(
+ScriptPromise<IDLUndefined> RTCEncodedVideoUnderlyingSink::write(
     ScriptState* script_state,
     ScriptValue chunk,
     WritableStreamDefaultController* controller,
@@ -41,27 +41,27 @@ ScriptPromiseTyped<IDLUndefined> RTCEncodedVideoUnderlyingSink::write(
       script_state->GetIsolate(), chunk.V8Value());
   if (!encoded_frame) {
     exception_state.ThrowTypeError("Invalid frame");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   if (!transformer_broker_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Stream closed");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   auto webrtc_frame = encoded_frame->PassWebRtcFrame();
   if (!webrtc_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Empty frame");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   transformer_broker_->SendFrameToSink(std::move(webrtc_frame));
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> RTCEncodedVideoUnderlyingSink::close(
+ScriptPromise<IDLUndefined> RTCEncodedVideoUnderlyingSink::close(
     ScriptState* script_state,
     ExceptionState&) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -71,7 +71,7 @@ ScriptPromiseTyped<IDLUndefined> RTCEncodedVideoUnderlyingSink::close(
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> RTCEncodedVideoUnderlyingSink::abort(
+ScriptPromise<IDLUndefined> RTCEncodedVideoUnderlyingSink::abort(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {

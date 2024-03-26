@@ -33,7 +33,7 @@ TEST(WebIdentityRequesterTest, StartDelayTimerBeforeOnload) {
   ScriptState* script_state = scope.GetScriptState();
   ExecutionContext* context = ExecutionContext::From(script_state);
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<Credential>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
           script_state);
   WebIdentityRequester* web_identity_requester =
       MakeGarbageCollected<WebIdentityRequester>(
@@ -77,7 +77,7 @@ TEST(WebIdentityRequesterTest, StartDelayTimerAfterOnload) {
   ScriptState* script_state = scope.GetScriptState();
   ExecutionContext* context = ExecutionContext::From(script_state);
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<Credential>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
           script_state);
   WebIdentityRequester* web_identity_requester =
       MakeGarbageCollected<WebIdentityRequester>(
@@ -121,7 +121,7 @@ TEST(WebIdentityRequesterTest, OnRequestTokenToSecondIdp) {
   ScriptState* script_state = scope.GetScriptState();
   ExecutionContext* context = ExecutionContext::From(script_state);
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<Credential>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
           script_state);
   WebIdentityRequester* web_identity_requester =
       MakeGarbageCollected<WebIdentityRequester>(

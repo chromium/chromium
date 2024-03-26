@@ -22,22 +22,18 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSink
       scoped_refptr<PushableMediaStreamAudioSource::Broker> source_broker);
 
   // UnderlyingSinkBase overrides.
-  ScriptPromiseTyped<IDLUndefined> start(
-      ScriptState* script_state,
-      WritableStreamDefaultController* controller,
-      ExceptionState& exception_state) override;
-  ScriptPromiseTyped<IDLUndefined> write(
-      ScriptState* script_state,
-      ScriptValue chunk,
-      WritableStreamDefaultController* controller,
-      ExceptionState& exception_state) override;
-  ScriptPromiseTyped<IDLUndefined> abort(
-      ScriptState* script_state,
-      ScriptValue reason,
-      ExceptionState& exception_state) override;
-  ScriptPromiseTyped<IDLUndefined> close(
-      ScriptState* script_state,
-      ExceptionState& exception_state) override;
+  ScriptPromise<IDLUndefined> start(ScriptState* script_state,
+                                    WritableStreamDefaultController* controller,
+                                    ExceptionState& exception_state) override;
+  ScriptPromise<IDLUndefined> write(ScriptState* script_state,
+                                    ScriptValue chunk,
+                                    WritableStreamDefaultController* controller,
+                                    ExceptionState& exception_state) override;
+  ScriptPromise<IDLUndefined> abort(ScriptState* script_state,
+                                    ScriptValue reason,
+                                    ExceptionState& exception_state) override;
+  ScriptPromise<IDLUndefined> close(ScriptState* script_state,
+                                    ExceptionState& exception_state) override;
 
   std::unique_ptr<WritableStreamTransferringOptimizer>
   GetTransferringOptimizer();

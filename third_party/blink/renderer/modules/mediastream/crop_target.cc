@@ -12,20 +12,20 @@
 
 namespace blink {
 
-ScriptPromiseTyped<CropTarget> CropTarget::fromElement(
+ScriptPromise<CropTarget> CropTarget::fromElement(
     ScriptState* script_state,
     Element* element,
     ExceptionState& exception_state) {
 #if BUILDFLAG(IS_ANDROID)
   exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                     "Unsupported.");
-  return ScriptPromiseTyped<CropTarget>();
+  return ScriptPromise<CropTarget>();
 #else
   MediaDevices* const media_devices =
       GetMediaDevices(script_state, element, exception_state);
   if (!media_devices) {
     CHECK(exception_state.HadException());  // Exception thrown by helper.
-    return ScriptPromiseTyped<CropTarget>();
+    return ScriptPromise<CropTarget>();
   }
   return media_devices->ProduceCropTarget(script_state, element,
                                           exception_state);

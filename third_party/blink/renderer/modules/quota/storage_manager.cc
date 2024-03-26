@@ -41,7 +41,7 @@ const char kGenericErrorMessage[] =
 const char kAbortErrorMessage[] = "The operation was aborted due to shutdown.";
 
 void QueryStorageUsageAndQuotaCallback(
-    ScriptPromiseResolverTyped<StorageEstimate>* resolver,
+    ScriptPromiseResolver<StorageEstimate>* resolver,
     mojom::blink::QuotaStatusCode status_code,
     int64_t usage_in_bytes,
     int64_t quota_in_bytes,
@@ -106,17 +106,17 @@ StorageManager::StorageManager(ExecutionContext* execution_context)
 
 StorageManager::~StorageManager() = default;
 
-ScriptPromiseTyped<IDLBoolean> StorageManager::persist(
+ScriptPromise<IDLBoolean> StorageManager::persist(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   DCHECK(window->IsSecureContext());  // [SecureContext] in IDL
   if (window->GetSecurityOrigin()->IsOpaque()) {
     exception_state.ThrowTypeError(kUniqueOriginErrorMessage);
-    return ScriptPromiseTyped<IDLBoolean>();
+    return ScriptPromise<IDLBoolean>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -129,7 +129,7 @@ ScriptPromiseTyped<IDLBoolean> StorageManager::persist(
   return promise;
 }
 
-ScriptPromiseTyped<IDLBoolean> StorageManager::persisted(
+ScriptPromise<IDLBoolean> StorageManager::persisted(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -138,10 +138,10 @@ ScriptPromiseTyped<IDLBoolean> StorageManager::persisted(
       execution_context->GetSecurityOrigin();
   if (security_origin->IsOpaque()) {
     exception_state.ThrowTypeError(kUniqueOriginErrorMessage);
-    return ScriptPromiseTyped<IDLBoolean>();
+    return ScriptPromise<IDLBoolean>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -153,7 +153,7 @@ ScriptPromiseTyped<IDLBoolean> StorageManager::persisted(
   return promise;
 }
 
-ScriptPromiseTyped<StorageEstimate> StorageManager::estimate(
+ScriptPromise<StorageEstimate> StorageManager::estimate(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -167,12 +167,11 @@ ScriptPromiseTyped<StorageEstimate> StorageManager::estimate(
       execution_context->GetSecurityOrigin();
   if (security_origin->IsOpaque()) {
     exception_state.ThrowTypeError(kUniqueOriginErrorMessage);
-    return ScriptPromiseTyped<StorageEstimate>();
+    return ScriptPromise<StorageEstimate>();
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<StorageEstimate>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<StorageEstimate>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   auto callback = resolver->WrapCallbackInScriptScope(
@@ -247,7 +246,7 @@ void StorageManager::PermissionServiceConnectionError() {
 }
 
 void StorageManager::PermissionRequestComplete(
-    ScriptPromiseResolverTyped<IDLBoolean>* resolver,
+    ScriptPromiseResolver<IDLBoolean>* resolver,
     mojom::blink::PermissionStatus status) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())

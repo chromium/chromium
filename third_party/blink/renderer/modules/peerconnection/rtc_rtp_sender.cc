@@ -227,7 +227,7 @@ class ReplaceTrackRequest : public RTCVoidRequest {
  public:
   ReplaceTrackRequest(RTCRtpSender* sender,
                       MediaStreamTrack* with_track,
-                      ScriptPromiseResolverTyped<IDLUndefined>* resolver)
+                      ScriptPromiseResolver<IDLUndefined>* resolver)
       : sender_(sender), with_track_(with_track), resolver_(resolver) {}
   ~ReplaceTrackRequest() override {}
 
@@ -255,12 +255,12 @@ class ReplaceTrackRequest : public RTCVoidRequest {
  private:
   Member<RTCRtpSender> sender_;
   Member<MediaStreamTrack> with_track_;
-  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
 };
 
 class SetParametersRequest : public RTCVoidRequest {
  public:
-  SetParametersRequest(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+  SetParametersRequest(ScriptPromiseResolver<IDLUndefined>* resolver,
                        RTCRtpSender* sender)
       : resolver_(resolver), sender_(sender) {}
 
@@ -286,7 +286,7 @@ class SetParametersRequest : public RTCVoidRequest {
   }
 
  private:
-  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   Member<RTCRtpSender> sender_;
 };
 
@@ -689,13 +689,12 @@ RTCDtlsTransport* RTCRtpSender::rtcpTransport() {
   return nullptr;
 }
 
-ScriptPromiseTyped<IDLUndefined> RTCRtpSender::replaceTrack(
+ScriptPromise<IDLUndefined> RTCRtpSender::replaceTrack(
     ScriptState* script_state,
     MediaStreamTrack* with_track) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
   if (pc_->IsClosed()) {
     resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
@@ -819,14 +818,13 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
   return parameters;
 }
 
-ScriptPromiseTyped<IDLUndefined> RTCRtpSender::setParameters(
+ScriptPromise<IDLUndefined> RTCRtpSender::setParameters(
     ScriptState* script_state,
     const RTCRtpSendParameters* parameters,
     const RTCSetParameterOptions* options) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
   if (!last_returned_parameters_) {
@@ -882,12 +880,11 @@ void RTCRtpSender::ClearLastReturnedParameters() {
   last_returned_parameters_ = nullptr;
 }
 
-ScriptPromiseTyped<RTCStatsReport> RTCRtpSender::getStats(
+ScriptPromise<RTCStatsReport> RTCRtpSender::getStats(
     ScriptState* script_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<RTCStatsReport>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<RTCStatsReport>>(script_state);
   auto promise = resolver->Promise();
   sender_->GetStats(WTF::BindOnce(WebRTCStatsReportCallbackResolver,
                                   WrapPersistent(resolver)));

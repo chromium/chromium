@@ -176,7 +176,7 @@ bool ModulatorImplBase::HasValidContext() {
 void ModulatorImplBase::ResolveDynamically(
     const ModuleRequest& module_request,
     const ReferrerScriptInfo& referrer_info,
-    ScriptPromiseResolverTyped<IDLAny>* resolver) {
+    ScriptPromiseResolver<IDLAny>* resolver) {
   String reason;
   if (IsDynamicImportForbidden(&reason)) {
     resolver->Reject(V8ThrowException::CreateTypeError(

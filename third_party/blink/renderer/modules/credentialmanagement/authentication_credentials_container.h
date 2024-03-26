@@ -33,22 +33,24 @@ class MODULES_EXPORT AuthenticationCredentialsContainer final
   explicit AuthenticationCredentialsContainer(Navigator&);
 
   // CredentialsContainer:
-  ScriptPromiseTyped<IDLNullable<Credential>>
-  get(ScriptState*, const CredentialRequestOptions*, ExceptionState&) override;
-  ScriptPromiseTyped<Credential>
-  store(ScriptState*, Credential*, ExceptionState& exception_state) override;
-  ScriptPromiseTyped<IDLNullable<Credential>> create(
+  ScriptPromise<IDLNullable<Credential>> get(ScriptState*,
+                                             const CredentialRequestOptions*,
+                                             ExceptionState&) override;
+  ScriptPromise<Credential> store(ScriptState*,
+                                  Credential*,
+                                  ExceptionState& exception_state) override;
+  ScriptPromise<IDLNullable<Credential>> create(
       ScriptState*,
       const CredentialCreationOptions*,
       ExceptionState&) override;
-  ScriptPromiseTyped<IDLUndefined> preventSilentAccess(ScriptState*) override;
+  ScriptPromise<IDLUndefined> preventSilentAccess(ScriptState*) override;
 
   void Trace(Visitor*) const override;
 
  private:
   // get() implementation for FedCM and WebIdentityDigitalCredential.
   void GetForIdentity(ScriptState*,
-                      ScriptPromiseResolverTyped<IDLNullable<Credential>>*,
+                      ScriptPromiseResolver<IDLNullable<Credential>>*,
                       const CredentialRequestOptions&,
                       const IdentityCredentialRequestOptions&);
 

@@ -31,7 +31,8 @@ class MediaStreamComponent;
 //   1. Your WebCallbacks implementation requires either onSuccess or onError to
 //      be called before it's destroyed. This is the case with
 //      CallbackPromiseAdapter for example, because its underlying
-//      ScriptPromiseResolver must be resolved or rejected before destruction.
+//      ScriptPromiseResolverBase must be resolved or rejected before
+//      destruction.
 //
 //   2. You are passing ownership of the WebCallbacks to code which may
 //      silently drop it. A common way for this to happen is to bind the

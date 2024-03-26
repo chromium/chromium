@@ -59,7 +59,7 @@ class CORE_EXPORT PointerLockController final
       base::OnceCallback<void(mojom::blink::PointerLockResult)>;
   bool RequestPointerLock(Element* target, ResultCallback callback);
 
-  void RequestPointerLock(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+  void RequestPointerLock(ScriptPromiseResolver<IDLUndefined>* resolver,
                           Element* target,
                           ExceptionState& exception_state,
                           const PointerLockOptions* options = nullptr);
@@ -103,8 +103,8 @@ class CORE_EXPORT PointerLockController final
                      bool unadjusted_movement_requested,
                      mojom::blink::PointerLockResult result);
 
-  static void ProcessResultScriptPromise(
-      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+  static void ProcessResultScriptPromiseUntyped(
+      ScriptPromiseResolver<IDLUndefined>* resolver,
       mojom::blink::PointerLockResult result);
   static DOMException* ConvertResultToException(
       mojom::blink::PointerLockResult result);

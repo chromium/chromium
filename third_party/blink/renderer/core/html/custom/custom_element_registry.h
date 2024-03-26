@@ -65,7 +65,7 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
   // TODO(dominicc): Consider broadening this API when type extensions are
   // implemented.
   void AddCandidate(Element&);
-  ScriptPromiseTyped<V8CustomElementConstructor>
+  ScriptPromise<V8CustomElementConstructor>
   whenDefined(ScriptState*, const AtomicString& name, ExceptionState&);
   void upgrade(Node* root);
 
@@ -108,9 +108,9 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
   // non-candidates before upgrading.
   Member<UpgradeCandidateMap> upgrade_candidates_;
 
-  using WhenDefinedPromiseMap = HeapHashMap<
-      AtomicString,
-      Member<ScriptPromiseResolverTyped<V8CustomElementConstructor>>>;
+  using WhenDefinedPromiseMap =
+      HeapHashMap<AtomicString,
+                  Member<ScriptPromiseResolver<V8CustomElementConstructor>>>;
   WhenDefinedPromiseMap when_defined_promise_map_;
 
   // Weak ordered set of all documents where this registry is used, in the order

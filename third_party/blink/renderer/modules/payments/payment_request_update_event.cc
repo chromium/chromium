@@ -33,7 +33,7 @@ void PaymentRequestUpdateEvent::SetPaymentRequest(
 }
 
 void PaymentRequestUpdateEvent::updateWith(ScriptState* script_state,
-                                           ScriptPromise promise,
+                                           ScriptPromiseUntyped promise,
                                            ExceptionState& exception_state) {
   if (!isTrusted()) {
     exception_state.ThrowDOMException(

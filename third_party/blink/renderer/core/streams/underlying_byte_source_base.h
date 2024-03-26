@@ -14,7 +14,7 @@ namespace blink {
 
 class ExceptionState;
 class ReadableByteStreamController;
-class ScriptPromise;
+class ScriptPromiseUntyped;
 class ScriptState;
 
 // Interface to be implemented by C++ code that needs to create a
@@ -29,12 +29,12 @@ class CORE_EXPORT UnderlyingByteSourceBase
   UnderlyingByteSourceBase& operator=(const UnderlyingByteSourceBase&) = delete;
   virtual ~UnderlyingByteSourceBase() = default;
 
-  virtual ScriptPromise Pull(ReadableByteStreamController* controller,
-                             ExceptionState&) = 0;
+  virtual ScriptPromiseUntyped Pull(ReadableByteStreamController* controller,
+                                    ExceptionState&) = 0;
 
-  virtual ScriptPromise Cancel(ExceptionState&) = 0;
-  virtual ScriptPromise Cancel(v8::Local<v8::Value> reason,
-                               ExceptionState&) = 0;
+  virtual ScriptPromiseUntyped Cancel(ExceptionState&) = 0;
+  virtual ScriptPromiseUntyped Cancel(v8::Local<v8::Value> reason,
+                                      ExceptionState&) = 0;
 
   // Returns the ScriptState associated with this UnderlyingByteSource.
   virtual ScriptState* GetScriptState() = 0;

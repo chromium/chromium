@@ -33,8 +33,8 @@ PresentationReceiver::PresentationReceiver(LocalDOMWindow* window)
       presentation_receiver_receiver_.BindNewPipeAndPassRemote(task_runner));
 }
 
-ScriptPromiseTyped<PresentationConnectionList>
-PresentationReceiver::connectionList(ScriptState* script_state) {
+ScriptPromise<PresentationConnectionList> PresentationReceiver::connectionList(
+    ScriptState* script_state) {
   if (!connection_list_property_) {
     connection_list_property_ = MakeGarbageCollected<ConnectionListProperty>(
         ExecutionContext::From(script_state));

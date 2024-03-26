@@ -19,7 +19,7 @@ class InternalsGetAllCookies {
   STATIC_ONLY(InternalsGetAllCookies);
 
  public:
-  static ScriptPromiseTyped<IDLSequence<InternalCookie>> getAllCookies(
+  static ScriptPromise<IDLSequence<InternalCookie>> getAllCookies(
       ScriptState* script_state,
       Internals& internals);
 };

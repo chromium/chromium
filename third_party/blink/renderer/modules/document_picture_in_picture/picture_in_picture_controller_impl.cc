@@ -123,7 +123,7 @@ PictureInPictureControllerImpl::IsElementAllowed(
 
 void PictureInPictureControllerImpl::EnterPictureInPicture(
     HTMLVideoElement* video_element,
-    ScriptPromiseResolverTyped<PictureInPictureWindow>* resolver) {
+    ScriptPromiseResolver<PictureInPictureWindow>* resolver) {
   if (!video_element->GetWebMediaPlayer()) {
     if (resolver) {
       // TODO(crbug.com/1293949): Add an error message.
@@ -189,7 +189,7 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
 
 void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
     HTMLVideoElement* element,
-    ScriptPromiseResolverTyped<PictureInPictureWindow>* resolver,
+    ScriptPromiseResolver<PictureInPictureWindow>* resolver,
     mojo::PendingRemote<mojom::blink::PictureInPictureSession> session_remote,
     const gfx::Size& picture_in_picture_window_size) {
   // If |session_ptr| is null then Picture-in-Picture is not supported by the
@@ -267,7 +267,7 @@ void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
 
 void PictureInPictureControllerImpl::ExitPictureInPicture(
     HTMLVideoElement* element,
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
   if (!EnsureService())
     return;
 
@@ -281,7 +281,7 @@ void PictureInPictureControllerImpl::ExitPictureInPicture(
 }
 
 void PictureInPictureControllerImpl::OnExitedPictureInPicture(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
   DCHECK(GetSupplementable());
 
   // Bail out if document is not active.
@@ -359,7 +359,7 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
     ScriptState* script_state,
     LocalDOMWindow& opener,
     DocumentPictureInPictureOptions* options,
-    ScriptPromiseResolverTyped<DOMWindow>* resolver,
+    ScriptPromiseResolver<DOMWindow>* resolver,
     ExceptionState& exception_state) {
   if (!LocalFrame::ConsumeTransientUserActivation(opener.GetFrame())) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
@@ -440,7 +440,7 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
 
   document_picture_in_picture_window_ = local_dom_window;
 
-  // There should not be an unresolved ScriptPromiseResolver at this point.
+  // There should not be an unresolved ScriptPromiseResolverBase at this point.
   // Leaving one unresolved and letting it get garbage collected will crash the
   // renderer.
   DCHECK(!open_document_pip_resolver_);

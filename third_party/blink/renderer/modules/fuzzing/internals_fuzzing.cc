@@ -12,12 +12,12 @@
 
 namespace blink {
 
-static void ResolvePromise(ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
+static void ResolvePromise(ScriptPromiseResolver<IDLUndefined>* resolver) {
   resolver->Resolve();
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> InternalsFuzzing::runFuzzer(
+ScriptPromise<IDLUndefined> InternalsFuzzing::runFuzzer(
     ScriptState* script_state,
     Internals&,
     const String& fuzzer_id,
@@ -44,8 +44,7 @@ ScriptPromiseTyped<IDLUndefined> InternalsFuzzing::runFuzzer(
   std::vector<uint8_t> data(bytes, bytes + num_bytes);
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
   RendererFuzzingSupport::Run(

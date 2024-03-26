@@ -1422,7 +1422,7 @@ void VideoEncoder::ResetInternal(DOMException* ex) {
   active_encodes_ = 0;
 }
 
-void FindAnySupported(ScriptPromiseResolverTyped<VideoEncoderSupport>* resolver,
+void FindAnySupported(ScriptPromiseResolver<VideoEncoderSupport>* resolver,
                       const HeapVector<Member<VideoEncoderSupport>>& supports) {
   VideoEncoderSupport* result = nullptr;
   for (auto& support : supports) {
@@ -1497,14 +1497,14 @@ static void isConfigSupportedWithHardwareOnly(
 }
 
 // static
-ScriptPromiseTyped<VideoEncoderSupport> VideoEncoder::isConfigSupported(
+ScriptPromise<VideoEncoderSupport> VideoEncoder::isConfigSupported(
     ScriptState* script_state,
     const VideoEncoderConfig* config,
     ExceptionState& exception_state) {
   auto* parsed_config = ParseConfigStatic(config, exception_state);
   if (!parsed_config) {
     DCHECK(exception_state.HadException());
-    return ScriptPromiseTyped<VideoEncoderSupport>();
+    return ScriptPromise<VideoEncoderSupport>();
   }
   auto* config_copy = CopyConfig(*config, *parsed_config);
 
@@ -1528,7 +1528,7 @@ ScriptPromiseTyped<VideoEncoderSupport> VideoEncoder::isConfigSupported(
     ++num_callbacks;
   }
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<VideoEncoderSupport>>(
+      MakeGarbageCollected<ScriptPromiseResolver<VideoEncoderSupport>>(
           script_state);
   auto promise = resolver->Promise();
   auto find_any_callback = HeapBarrierCallback<VideoEncoderSupport>(

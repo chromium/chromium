@@ -66,7 +66,7 @@ void RecordGetLayoutMapResult(ExecutionContext* context,
 KeyboardLayout::KeyboardLayout(ExecutionContext* context)
     : ExecutionContextClient(context), service_(context) {}
 
-ScriptPromiseTyped<KeyboardLayoutMap> KeyboardLayout::GetKeyboardLayoutMap(
+ScriptPromise<KeyboardLayoutMap> KeyboardLayout::GetKeyboardLayoutMap(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK(script_state);
@@ -78,7 +78,7 @@ ScriptPromiseTyped<KeyboardLayoutMap> KeyboardLayout::GetKeyboardLayoutMap(
   if (!IsLocalFrameAttached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardMapFrameDetachedErrorMsg);
-    return ScriptPromiseTyped<KeyboardLayoutMap>();
+    return ScriptPromise<KeyboardLayoutMap>();
   }
 
   if (!EnsureServiceConnected()) {
@@ -90,11 +90,11 @@ ScriptPromiseTyped<KeyboardLayoutMap> KeyboardLayout::GetKeyboardLayoutMap(
 
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardMapRequestFailedErrorMsg);
-    return ScriptPromiseTyped<KeyboardLayoutMap>();
+    return ScriptPromise<KeyboardLayoutMap>();
   }
 
   script_promise_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<KeyboardLayoutMap>>(
+      MakeGarbageCollected<ScriptPromiseResolver<KeyboardLayoutMap>>(
           script_state, exception_state.GetContext());
   service_->GetKeyboardLayoutMap(
       script_promise_resolver_->WrapCallbackInScriptScope(WTF::BindOnce(
@@ -119,7 +119,7 @@ bool KeyboardLayout::EnsureServiceConnected() {
 }
 
 void KeyboardLayout::GotKeyboardLayoutMap(
-    ScriptPromiseResolverTyped<KeyboardLayoutMap>* resolver,
+    ScriptPromiseResolver<KeyboardLayoutMap>* resolver,
     mojom::blink::GetKeyboardLayoutMapResultPtr result) {
   DCHECK(script_promise_resolver_);
 

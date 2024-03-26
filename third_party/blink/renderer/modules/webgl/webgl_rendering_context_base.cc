@@ -877,13 +877,13 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
   return resource_provider->Snapshot(reason);
 }
 
-ScriptPromiseTyped<IDLUndefined> WebGLRenderingContextBase::makeXRCompatible(
+ScriptPromise<IDLUndefined> WebGLRenderingContextBase::makeXRCompatible(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (isContextLost()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Context lost.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   // Return a resolved promise if we're already xr compatible. Once we're
@@ -897,7 +897,7 @@ ScriptPromiseTyped<IDLUndefined> WebGLRenderingContextBase::makeXRCompatible(
     return make_xr_compatible_resolver_->Promise();
 
   make_xr_compatible_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           script_state, exception_state.GetContext());
   auto promise = make_xr_compatible_resolver_->Promise();
 

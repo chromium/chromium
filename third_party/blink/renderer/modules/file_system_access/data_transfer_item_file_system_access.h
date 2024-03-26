@@ -19,7 +19,7 @@ class DataTransferItemFileSystemAccess {
   STATIC_ONLY(DataTransferItemFileSystemAccess);
 
  public:
-  static ScriptPromiseTyped<IDLNullable<FileSystemHandle>>
+  static ScriptPromise<IDLNullable<FileSystemHandle>>
   getAsFileSystemHandle(ScriptState*, DataTransferItem&, ExceptionState&);
 };
 

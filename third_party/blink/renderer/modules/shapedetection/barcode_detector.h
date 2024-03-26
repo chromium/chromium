@@ -30,14 +30,15 @@ class MODULES_EXPORT BarcodeDetector final : public ShapeDetector {
                                  ExceptionState& exception_state);
 
   // Barcode Detection API functions.
-  static ScriptPromiseTyped<IDLSequence<V8BarcodeFormat>> getSupportedFormats(
+  static ScriptPromise<IDLSequence<V8BarcodeFormat>> getSupportedFormats(
       ScriptState*);
 
   static String BarcodeFormatToString(
       const shape_detection::mojom::BarcodeFormat format);
 
-  ScriptPromiseTyped<IDLSequence<DetectedBarcode>>
-  detect(ScriptState*, const V8ImageBitmapSource*, ExceptionState&);
+  ScriptPromise<IDLSequence<DetectedBarcode>> detect(ScriptState*,
+                                                     const V8ImageBitmapSource*,
+                                                     ExceptionState&);
 
   explicit BarcodeDetector(ExecutionContext*,
                            const BarcodeDetectorOptions*,
@@ -48,14 +49,14 @@ class MODULES_EXPORT BarcodeDetector final : public ShapeDetector {
 
  private:
   void OnDetectBarcodes(
-      ScriptPromiseResolverTyped<IDLSequence<DetectedBarcode>>*,
+      ScriptPromiseResolver<IDLSequence<DetectedBarcode>>*,
       Vector<shape_detection::mojom::blink::BarcodeDetectionResultPtr>);
 
   void OnConnectionError();
 
   HeapMojoRemote<shape_detection::mojom::blink::BarcodeDetection> service_;
 
-  HeapHashSet<Member<ScriptPromiseResolver>> detect_requests_;
+  HeapHashSet<Member<ScriptPromiseResolverBase>> detect_requests_;
 };
 
 }  // namespace blink

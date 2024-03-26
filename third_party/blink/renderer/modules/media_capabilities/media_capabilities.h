@@ -60,11 +60,11 @@ class MODULES_EXPORT MediaCapabilities final
 
   void Trace(blink::Visitor* visitor) const override;
 
-  ScriptPromiseTyped<MediaCapabilitiesDecodingInfo> decodingInfo(
+  ScriptPromise<MediaCapabilitiesDecodingInfo> decodingInfo(
       ScriptState*,
       const MediaDecodingConfiguration*,
       ExceptionState&);
-  ScriptPromiseTyped<MediaCapabilitiesInfo> encodingInfo(
+  ScriptPromise<MediaCapabilitiesInfo> encodingInfo(
       ScriptState*,
       const MediaEncodingConfiguration*,
       ExceptionState&);
@@ -74,13 +74,13 @@ class MODULES_EXPORT MediaCapabilities final
   // we wait for all predictions to arrive.
   class PendingCallbackState : public GarbageCollected<PendingCallbackState> {
    public:
-    PendingCallbackState(ScriptPromiseResolver* resolver,
+    PendingCallbackState(ScriptPromiseResolverBase* resolver,
                          MediaKeySystemAccess* access,
                          const base::TimeTicks& request_time,
                          std::optional<IdentifiableToken> input_token);
     virtual void Trace(blink::Visitor* visitor) const;
 
-    Member<ScriptPromiseResolver> resolver;
+    Member<ScriptPromiseResolverBase> resolver;
     Member<MediaKeySystemAccess> key_system_access;
     std::optional<bool> is_supported;
     std::optional<bool> is_bad_window_prediction_smooth;
@@ -114,7 +114,7 @@ class MODULES_EXPORT MediaCapabilities final
   // successful. Returns true if it was already bound.
   bool EnsureWebrtcPerfHistoryService(ExecutionContext* execution_context);
 
-  ScriptPromiseTyped<MediaCapabilitiesDecodingInfo> GetEmeSupport(
+  ScriptPromise<MediaCapabilitiesDecodingInfo> GetEmeSupport(
       ScriptState*,
       media::VideoCodec,
       media::VideoCodecProfile,
@@ -129,7 +129,7 @@ class MODULES_EXPORT MediaCapabilities final
                    media::VideoColorSpace,
                    const MediaDecodingConfiguration*,
                    const base::TimeTicks& request_time,
-                   ScriptPromiseResolverTyped<MediaCapabilitiesDecodingInfo>*,
+                   ScriptPromiseResolver<MediaCapabilitiesDecodingInfo>*,
                    MediaKeySystemAccess*);
 
   // Gets ML perf predictions from remote LearingTaskControllers.

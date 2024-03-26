@@ -130,7 +130,7 @@ size_t FontFaceSetDocument::ApproximateBlankCharacterCount() const {
   return count;
 }
 
-ScriptPromiseTyped<FontFaceSet> FontFaceSetDocument::ready(
+ScriptPromise<FontFaceSet> FontFaceSetDocument::ready(
     ScriptState* script_state) {
   if (ready_->GetState() != ReadyProperty::kPending && InActiveContext()) {
     // |ready_| is already resolved, but there may be pending stylesheet

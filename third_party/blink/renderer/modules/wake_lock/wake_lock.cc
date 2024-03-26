@@ -53,7 +53,7 @@ WakeLock::WakeLock(NavigatorBase& navigator)
               navigator.GetExecutionContext(),
               V8WakeLockType::Enum::kSystem)} {}
 
-ScriptPromiseTyped<WakeLockSentinel> WakeLock::request(
+ScriptPromise<WakeLockSentinel> WakeLock::request(
     ScriptState* script_state,
     V8WakeLockType type,
     ExceptionState& exception_state) {
@@ -65,7 +65,7 @@ ScriptPromiseTyped<WakeLockSentinel> WakeLock::request(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "The document has no associated browsing context");
-    return ScriptPromiseTyped<WakeLockSentinel>();
+    return ScriptPromise<WakeLockSentinel>();
   }
 
   auto* context = ExecutionContext::From(script_state);
@@ -76,7 +76,7 @@ ScriptPromiseTyped<WakeLockSentinel> WakeLock::request(
     exception_state.ThrowTypeError(
         "The provided value 'system' is not a valid enum value of type "
         "WakeLockType.");
-    return ScriptPromiseTyped<WakeLockSentinel>();
+    return ScriptPromise<WakeLockSentinel>();
   }
 
   // 2. If document is not allowed to use the policy-controlled feature named
@@ -93,7 +93,7 @@ ScriptPromiseTyped<WakeLockSentinel> WakeLock::request(
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Access to Screen Wake Lock features is "
                                       "disallowed by permissions policy");
-    return ScriptPromiseTyped<WakeLockSentinel>();
+    return ScriptPromise<WakeLockSentinel>();
   }
 
   if (context->IsDedicatedWorkerGlobalScope()) {
@@ -108,7 +108,7 @@ ScriptPromiseTyped<WakeLockSentinel> WakeLock::request(
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotAllowedError,
           "Screen locks cannot be requested from workers");
-      return ScriptPromiseTyped<WakeLockSentinel>();
+      return ScriptPromise<WakeLockSentinel>();
     }
   } else if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     // 1. Let document be this's relevant settings object's associated
@@ -118,7 +118,7 @@ ScriptPromiseTyped<WakeLockSentinel> WakeLock::request(
     if (!window->document()->IsActive()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                         "The document is not active");
-      return ScriptPromiseTyped<WakeLockSentinel>();
+      return ScriptPromise<WakeLockSentinel>();
     }
     // 6. If the steps to determine the visibility state return hidden, return a
     //    promise rejected with "NotAllowedError" DOMException.
@@ -126,7 +126,7 @@ ScriptPromiseTyped<WakeLockSentinel> WakeLock::request(
         !window->GetFrame()->GetPage()->IsPageVisible()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                         "The requesting page is not visible");
-      return ScriptPromiseTyped<WakeLockSentinel>();
+      return ScriptPromise<WakeLockSentinel>();
     }
 
     // Measure calls without sticky activation as proposed in
@@ -141,7 +141,7 @@ ScriptPromiseTyped<WakeLockSentinel> WakeLock::request(
 
   // 7. Let promise be a new promise.
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
@@ -161,9 +161,8 @@ ScriptPromiseTyped<WakeLockSentinel> WakeLock::request(
   return promise;
 }
 
-void WakeLock::DoRequest(
-    V8WakeLockType::Enum type,
-    ScriptPromiseResolverTyped<WakeLockSentinel>* resolver) {
+void WakeLock::DoRequest(V8WakeLockType::Enum type,
+                         ScriptPromiseResolver<WakeLockSentinel>* resolver) {
   // https://w3c.github.io/screen-wake-lock/#the-request-method
   // 8.1. Let state be the result of requesting permission to use
   //      "screen-wake-lock".
@@ -189,7 +188,7 @@ void WakeLock::DoRequest(
 
 void WakeLock::DidReceivePermissionResponse(
     V8WakeLockType::Enum type,
-    ScriptPromiseResolverTyped<WakeLockSentinel>* resolver,
+    ScriptPromiseResolver<WakeLockSentinel>* resolver,
     mojom::blink::PermissionStatus status) {
   // https://w3c.github.io/screen-wake-lock/#the-request-method
   DCHECK(status == mojom::blink::PermissionStatus::GRANTED ||

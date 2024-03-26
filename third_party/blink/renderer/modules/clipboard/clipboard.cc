@@ -30,7 +30,7 @@ Clipboard* Clipboard::clipboard(Navigator& navigator) {
 
 Clipboard::Clipboard(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 
-ScriptPromiseTyped<IDLSequence<ClipboardItem>> Clipboard::read(
+ScriptPromise<IDLSequence<ClipboardItem>> Clipboard::read(
     ScriptState* script_state,
     ClipboardUnsanitizedFormats* formats,
     ExceptionState& exception_state) {
@@ -38,14 +38,13 @@ ScriptPromiseTyped<IDLSequence<ClipboardItem>> Clipboard::read(
                                          formats, exception_state);
 }
 
-ScriptPromiseTyped<IDLString> Clipboard::readText(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
+ScriptPromise<IDLString> Clipboard::readText(ScriptState* script_state,
+                                             ExceptionState& exception_state) {
   return ClipboardPromise::CreateForReadText(GetExecutionContext(),
                                              script_state, exception_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> Clipboard::write(
+ScriptPromise<IDLUndefined> Clipboard::write(
     ScriptState* script_state,
     const HeapVector<Member<ClipboardItem>>& data,
     ExceptionState& exception_state) {
@@ -53,7 +52,7 @@ ScriptPromiseTyped<IDLUndefined> Clipboard::write(
                                           std::move(data), exception_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> Clipboard::writeText(
+ScriptPromise<IDLUndefined> Clipboard::writeText(
     ScriptState* script_state,
     const String& data,
     ExceptionState& exception_state) {

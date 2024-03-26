@@ -80,7 +80,7 @@ class RTCRtpReceiver final : public ScriptWrappable,
   HeapVector<Member<RTCRtpContributingSource>> getContributingSources(
       ScriptState*,
       ExceptionState&);
-  ScriptPromiseTyped<RTCStatsReport> getStats(ScriptState*);
+  ScriptPromise<RTCStatsReport> getStats(ScriptState*);
   RTCInsertableStreams* createEncodedStreams(ScriptState*, ExceptionState&);
   // TODO(crbug.com/1069295): Make these methods private.
   RTCInsertableStreams* createEncodedAudioStreams(ScriptState*,

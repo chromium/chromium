@@ -14,7 +14,7 @@
 namespace blink {
 
 PushSubscriptionCallbacks::PushSubscriptionCallbacks(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     bool null_allowed)
     : resolver_(resolver), null_allowed_(null_allowed) {
   DCHECK(resolver_);

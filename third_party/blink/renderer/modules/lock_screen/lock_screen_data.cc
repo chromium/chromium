@@ -18,7 +18,7 @@ LockScreenData::LockScreenData(LocalDOMWindow& window)
 
 LockScreenData::~LockScreenData() = default;
 
-ScriptPromiseTyped<LockScreenData> LockScreenData::getLockScreenData(
+ScriptPromise<LockScreenData> LockScreenData::getLockScreenData(
     ScriptState* script_state,
     LocalDOMWindow& window) {
   LockScreenData* supplement =
@@ -30,10 +30,10 @@ ScriptPromiseTyped<LockScreenData> LockScreenData::getLockScreenData(
   return ToResolvedPromise<LockScreenData>(script_state, supplement);
 }
 
-ScriptPromiseTyped<IDLSequence<IDLString>> LockScreenData::getKeys(
+ScriptPromise<IDLSequence<IDLString>> LockScreenData::getKeys(
     ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<IDLString>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<IDLString>>>(
           script_state);
   auto promise = resolver->Promise();
 
@@ -47,10 +47,10 @@ ScriptPromiseTyped<IDLSequence<IDLString>> LockScreenData::getKeys(
   return promise;
 }
 
-ScriptPromiseTyped<IDLAny> LockScreenData::getData(ScriptState* script_state,
-                                                   const String& key) {
+ScriptPromise<IDLAny> LockScreenData::getData(ScriptState* script_state,
+                                              const String& key) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
   auto promise = resolver->Promise();
 
   // TODO(crbug.com/1006642): This should call out to a mojo service instead.
@@ -63,17 +63,16 @@ ScriptPromiseTyped<IDLAny> LockScreenData::getData(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromiseTyped<IDLUndefined> LockScreenData::setData(
-    ScriptState* script_state,
-    const String& key,
-    const String& data) {
+ScriptPromise<IDLUndefined> LockScreenData::setData(ScriptState* script_state,
+                                                    const String& key,
+                                                    const String& data) {
   // TODO(crbug.com/1006642): This should call out to a mojo service instead.
   fake_data_store_.Set(key, data);
 
   return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromiseTyped<IDLUndefined> LockScreenData::deleteData(
+ScriptPromise<IDLUndefined> LockScreenData::deleteData(
     ScriptState* script_state,
     const String& key) {
   // TODO(crbug.com/1006642): This should call out to a mojo service instead.

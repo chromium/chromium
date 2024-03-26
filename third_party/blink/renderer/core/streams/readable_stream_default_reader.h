@@ -18,7 +18,7 @@ namespace blink {
 class ExceptionState;
 class ReadableStream;
 class ReadRequest;
-class ScriptPromise;
+class ScriptPromiseUntyped;
 class ScriptState;
 
 class CORE_EXPORT ReadableStreamDefaultReader
@@ -42,7 +42,7 @@ class CORE_EXPORT ReadableStreamDefaultReader
   bool IsBYOBReader() const override { return false; }
 
   // https://streams.spec.whatwg.org/#default-reader-read
-  ScriptPromise read(ScriptState*, ExceptionState&);
+  ScriptPromiseUntyped read(ScriptState*, ExceptionState&);
 
   // https://streams.spec.whatwg.org/#default-reader-release-lock
   void releaseLock(ScriptState*, ExceptionState&);

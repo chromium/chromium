@@ -26,9 +26,9 @@ class MODULES_EXPORT HTMLMediaElementAudioOutputDevice final
   static HTMLMediaElementAudioOutputDevice& From(HTMLMediaElement&);
 
   static String sinkId(HTMLMediaElement&);
-  static ScriptPromiseTyped<IDLUndefined> setSinkId(ScriptState*,
-                                                    HTMLMediaElement&,
-                                                    const String& sink_id);
+  static ScriptPromise<IDLUndefined> setSinkId(ScriptState*,
+                                               HTMLMediaElement&,
+                                               const String& sink_id);
   void setSinkId(const String&);
 
   // AudioOutputDeviceController implementation.

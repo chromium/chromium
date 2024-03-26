@@ -926,7 +926,7 @@ ImageBitmap::~ImageBitmap() {
 }
 
 void ImageBitmap::ResolvePromiseOnOriginalThread(
-    ScriptPromiseResolverTyped<ImageBitmap>* resolver,
+    ScriptPromiseResolver<ImageBitmap>* resolver,
     bool origin_clean,
     std::unique_ptr<ParsedOptions> parsed_options,
     sk_sp<SkImage> skia_image,
@@ -979,7 +979,7 @@ void ImageBitmap::RasterizeImageOnBackgroundThread(
                           ImageOrientationEnum::kDefault));
 }
 
-ScriptPromiseTyped<ImageBitmap> ImageBitmap::CreateAsync(
+ScriptPromise<ImageBitmap> ImageBitmap::CreateAsync(
     ImageElementBase* image,
     std::optional<gfx::Rect> crop_rect,
     ScriptState* script_state,
@@ -993,7 +993,7 @@ ScriptPromiseTyped<ImageBitmap> ImageBitmap::CreateAsync(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The ImageBitmap could not be allocated.");
-    return ScriptPromiseTyped<ImageBitmap>();
+    return ScriptPromise<ImageBitmap>();
   }
 
   scoped_refptr<Image> input = image->CachedImage()->GetImage();
@@ -1013,7 +1013,7 @@ ScriptPromiseTyped<ImageBitmap> ImageBitmap::CreateAsync(
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
           "The ImageBitmap could not be allocated.");
-      return ScriptPromiseTyped<ImageBitmap>();
+      return ScriptPromise<ImageBitmap>();
     }
   }
 
@@ -1049,9 +1049,8 @@ ScriptPromiseTyped<ImageBitmap> ImageBitmap::CreateAsync(
 
   std::unique_ptr<ParsedOptions> passed_parsed_options =
       std::make_unique<ParsedOptions>(parsed_options);
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<ImageBitmap>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<ImageBitmap>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   worker_pool::PostTask(
@@ -1075,7 +1074,8 @@ void ImageBitmap::close() {
 }
 
 // static
-ImageBitmap* ImageBitmap::Take(ScriptPromiseResolver*, sk_sp<SkImage> image) {
+ImageBitmap* ImageBitmap::Take(ScriptPromiseResolverBase*,
+                               sk_sp<SkImage> image) {
   return MakeGarbageCollected<ImageBitmap>(
       UnacceleratedStaticBitmapImage::Create(std::move(image)));
 }
@@ -1117,7 +1117,7 @@ gfx::Size ImageBitmap::Size() const {
   return image_->PreferredDisplaySize();
 }
 
-ScriptPromiseTyped<ImageBitmap> ImageBitmap::CreateImageBitmap(
+ScriptPromise<ImageBitmap> ImageBitmap::CreateImageBitmap(
     ScriptState* script_state,
     std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,

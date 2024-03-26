@@ -23,7 +23,7 @@ class RTCPeerConnection;
 class RTCVoidRequestPromiseImpl final : public RTCVoidRequest {
  public:
   RTCVoidRequestPromiseImpl(RTCPeerConnection*,
-                            ScriptPromiseResolverTyped<IDLUndefined>*,
+                            ScriptPromiseResolver<IDLUndefined>*,
                             const char* interface_name,
                             const char* property_name);
   ~RTCVoidRequestPromiseImpl() override;
@@ -38,7 +38,7 @@ class RTCVoidRequestPromiseImpl final : public RTCVoidRequest {
   void Clear();
 
   Member<RTCPeerConnection> requester_;
-  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   const char* interface_name_;
   const char* property_name_;
 };

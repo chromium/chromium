@@ -78,7 +78,7 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   VideoEncoder(ScriptState*, const VideoEncoderInit*, ExceptionState&);
   ~VideoEncoder() override;
 
-  static ScriptPromiseTyped<VideoEncoderSupport>
+  static ScriptPromise<VideoEncoderSupport>
   isConfigSupported(ScriptState*, const VideoEncoderConfig*, ExceptionState&);
 
   // EventTarget interface

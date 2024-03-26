@@ -340,7 +340,7 @@ class FetchManager::Loader final
  public:
   Loader(ExecutionContext*,
          FetchManager*,
-         ScriptPromiseResolverTyped<Response>*,
+         ScriptPromiseResolver<Response>*,
          FetchRequestData*,
          ScriptState*,
          AbortSignal*);
@@ -487,7 +487,7 @@ class FetchManager::Loader final
       std::optional<base::UnguessableToken> issue_id = std::nullopt) override;
 
   Member<FetchManager> fetch_manager_;
-  Member<ScriptPromiseResolverTyped<Response>> resolver_;
+  Member<ScriptPromiseResolver<Response>> resolver_;
   Member<ThreadableLoader> threadable_loader_;
   Member<PlaceHolderBytesConsumer> place_holder_body_;
   bool failed_;
@@ -503,7 +503,7 @@ class FetchManager::Loader final
 
 FetchManager::Loader::Loader(ExecutionContext* execution_context,
                              FetchManager* fetch_manager,
-                             ScriptPromiseResolverTyped<Response>* resolver,
+                             ScriptPromiseResolver<Response>* resolver,
                              FetchRequestData* fetch_request_data,
                              ScriptState* script_state,
                              AbortSignal* signal)
@@ -1473,20 +1473,19 @@ class FetchLaterManager::DeferredLoader final
 FetchManager::FetchManager(ExecutionContext* execution_context)
     : ExecutionContextLifecycleObserver(execution_context) {}
 
-ScriptPromiseTyped<Response> FetchManager::Fetch(
-    ScriptState* script_state,
-    FetchRequestData* request,
-    AbortSignal* signal,
-    ExceptionState& exception_state) {
+ScriptPromise<Response> FetchManager::Fetch(ScriptState* script_state,
+                                            FetchRequestData* request,
+                                            AbortSignal* signal,
+                                            ExceptionState& exception_state) {
   DCHECK(signal);
   if (signal->aborted()) {
     exception_state.RethrowV8Exception(signal->reason(script_state).V8Value());
-    return ScriptPromiseTyped<Response>();
+    return ScriptPromise<Response>();
   }
 
   request->SetDestination(network::mojom::RequestDestination::kEmpty);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<Response>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Response>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 

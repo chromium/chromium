@@ -46,8 +46,7 @@ class Lock final : public ScriptWrappable,
 
   // The lock is held until the passed promise resolves. When it is released,
   // the passed resolver is invoked with the promise's result.
-  void HoldUntil(ScriptPromiseTyped<IDLAny>,
-                 ScriptPromiseResolverTyped<IDLAny>*);
+  void HoldUntil(ScriptPromise<IDLAny>, ScriptPromiseResolver<IDLAny>*);
 
   static mojom::blink::LockMode StringToMode(const String&);
   static String ModeToString(mojom::blink::LockMode);
@@ -59,7 +58,7 @@ class Lock final : public ScriptWrappable,
 
   void OnConnectionError();
 
-  Member<ScriptPromiseResolverTyped<IDLAny>> resolver_;
+  Member<ScriptPromiseResolver<IDLAny>> resolver_;
 
   const String name_;
   const mojom::blink::LockMode mode_;

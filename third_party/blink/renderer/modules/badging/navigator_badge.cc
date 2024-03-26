@@ -37,7 +37,7 @@ NavigatorBadge::NavigatorBadge(ExecutionContext* context)
     : Supplement(*context) {}
 
 // static
-ScriptPromiseTyped<IDLUndefined> NavigatorBadge::setAppBadge(
+ScriptPromise<IDLUndefined> NavigatorBadge::setAppBadge(
     ScriptState* script_state,
     Navigator& /*navigator*/,
     ExceptionState& exception_state) {
@@ -46,7 +46,7 @@ ScriptPromiseTyped<IDLUndefined> NavigatorBadge::setAppBadge(
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> NavigatorBadge::setAppBadge(
+ScriptPromise<IDLUndefined> NavigatorBadge::setAppBadge(
     ScriptState* script_state,
     WorkerNavigator& /*navigator*/,
     ExceptionState& exception_state) {
@@ -55,7 +55,7 @@ ScriptPromiseTyped<IDLUndefined> NavigatorBadge::setAppBadge(
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> NavigatorBadge::setAppBadge(
+ScriptPromise<IDLUndefined> NavigatorBadge::setAppBadge(
     ScriptState* script_state,
     Navigator& /*navigator*/,
     uint64_t content,
@@ -66,7 +66,7 @@ ScriptPromiseTyped<IDLUndefined> NavigatorBadge::setAppBadge(
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> NavigatorBadge::setAppBadge(
+ScriptPromise<IDLUndefined> NavigatorBadge::setAppBadge(
     ScriptState* script_state,
     WorkerNavigator& /*navigator*/,
     uint64_t content,
@@ -77,7 +77,7 @@ ScriptPromiseTyped<IDLUndefined> NavigatorBadge::setAppBadge(
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> NavigatorBadge::clearAppBadge(
+ScriptPromise<IDLUndefined> NavigatorBadge::clearAppBadge(
     ScriptState* script_state,
     Navigator& /*navigator*/,
     ExceptionState& exception_state) {
@@ -85,7 +85,7 @@ ScriptPromiseTyped<IDLUndefined> NavigatorBadge::clearAppBadge(
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> NavigatorBadge::clearAppBadge(
+ScriptPromise<IDLUndefined> NavigatorBadge::clearAppBadge(
     ScriptState* script_state,
     WorkerNavigator& /*navigator*/,
     ExceptionState& exception_state) {
@@ -97,7 +97,7 @@ void NavigatorBadge::Trace(Visitor* visitor) const {
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> NavigatorBadge::SetAppBadgeHelper(
+ScriptPromise<IDLUndefined> NavigatorBadge::SetAppBadgeHelper(
     ScriptState* script_state,
     mojom::blink::BadgeValuePtr badge_value,
     ExceptionState& exception_state) {
@@ -108,7 +108,7 @@ ScriptPromiseTyped<IDLUndefined> NavigatorBadge::SetAppBadgeHelper(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "The badge API is not allowed in this context");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
@@ -146,14 +146,14 @@ ScriptPromiseTyped<IDLUndefined> NavigatorBadge::SetAppBadgeHelper(
 }
 
 // static
-ScriptPromiseTyped<IDLUndefined> NavigatorBadge::ClearAppBadgeHelper(
+ScriptPromise<IDLUndefined> NavigatorBadge::ClearAppBadgeHelper(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!IsAllowed(script_state)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "The badge API is not allowed in this context");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)

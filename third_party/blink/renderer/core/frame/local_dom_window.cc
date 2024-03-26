@@ -1706,9 +1706,9 @@ CSSStyleDeclaration* LocalDOMWindow::getComputedStyle(
                                                            pseudo_elt);
 }
 
-ScriptPromiseTyped<ComputedAccessibleNode>
-LocalDOMWindow::getComputedAccessibleNode(ScriptState* script_state,
-                                          Element* element) {
+ScriptPromise<ComputedAccessibleNode> LocalDOMWindow::getComputedAccessibleNode(
+    ScriptState* script_state,
+    Element* element) {
   DCHECK(element);
   auto* resolver = MakeGarbageCollected<ComputedAccessibleNodePromiseResolver>(
       script_state, *element);

@@ -44,8 +44,8 @@ class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
   const HeapVector<Member<NavigatorUABrandVersion>>& brands() const;
   bool mobile() const;
   const String& platform() const;
-  ScriptPromiseTyped<UADataValues> getHighEntropyValues(ScriptState*,
-                                                        Vector<String>&) const;
+  ScriptPromise<UADataValues> getHighEntropyValues(ScriptState*,
+                                                   Vector<String>&) const;
   ScriptValue toJSON(ScriptState*) const;
 
   void Trace(Visitor* visitor) const final;

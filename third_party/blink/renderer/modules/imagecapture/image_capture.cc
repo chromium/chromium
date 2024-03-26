@@ -1511,10 +1511,10 @@ void ImageCapture::ContextDestroyed() {
   frame_grabber_.reset();
 }
 
-ScriptPromiseTyped<PhotoCapabilities> ImageCapture::getPhotoCapabilities(
+ScriptPromise<PhotoCapabilities> ImageCapture::getPhotoCapabilities(
     ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<PhotoCapabilities>>(
+      MakeGarbageCollected<ScriptPromiseResolver<PhotoCapabilities>>(
           script_state);
   auto promise = resolver->Promise();
   GetMojoPhotoState(resolver,
@@ -1523,11 +1523,10 @@ ScriptPromiseTyped<PhotoCapabilities> ImageCapture::getPhotoCapabilities(
   return promise;
 }
 
-ScriptPromiseTyped<PhotoSettings> ImageCapture::getPhotoSettings(
+ScriptPromise<PhotoSettings> ImageCapture::getPhotoSettings(
     ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<PhotoSettings>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<PhotoSettings>>(script_state);
   auto promise = resolver->Promise();
   GetMojoPhotoState(resolver,
                     WTF::BindOnce(&ImageCapture::ResolveWithPhotoSettings,
@@ -1535,14 +1534,14 @@ ScriptPromiseTyped<PhotoSettings> ImageCapture::getPhotoSettings(
   return promise;
 }
 
-ScriptPromiseTyped<Blob> ImageCapture::takePhoto(
+ScriptPromise<Blob> ImageCapture::takePhoto(
     ScriptState* script_state,
     const PhotoSettings* photo_settings) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "ImageCapture::takePhoto");
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<Blob>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<Blob>>(script_state);
   auto promise = resolver->Promise();
 
   if (TrackIsInactive(*stream_track_)) {
@@ -1621,11 +1620,9 @@ ScriptPromiseTyped<Blob> ImageCapture::takePhoto(
   return promise;
 }
 
-ScriptPromiseTyped<ImageBitmap> ImageCapture::grabFrame(
-    ScriptState* script_state) {
+ScriptPromise<ImageBitmap> ImageCapture::grabFrame(ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<ImageBitmap>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<ImageBitmap>>(script_state);
   auto promise = resolver->Promise();
 
   if (TrackIsInactive(*stream_track_)) {
@@ -1697,7 +1694,7 @@ void ImageCapture::GotPhotoState(
 bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
     media::mojom::blink::PhotoSettings* settings,
     const MediaTrackConstraints* constraints,
-    ScriptPromiseResolver* resolver) const {
+    ScriptPromiseResolverBase* resolver) const {
   if (!IsPageVisible()) {
     for (const MediaTrackConstraintSet* constraint_set :
          AllConstraintSets(constraints)) {
@@ -1764,7 +1761,7 @@ void ImageCapture::GetMediaTrackCapabilities(
 // TODO(mcasas): make the implementation fully Spec compliant, see the TODOs
 // inside the method, https://crbug.com/708723.
 void ImageCapture::SetMediaTrackConstraints(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     const MediaTrackConstraints* constraints) {
   DCHECK(constraints);
 
@@ -2200,7 +2197,7 @@ bool ImageCapture::CheckMediaTrackConstraintSet(
     const MediaTrackSettings* effective_settings,
     const MediaTrackConstraintSet* constraint_set,
     MediaTrackConstraintSetType constraint_set_type,
-    ScriptPromiseResolver* resolver) const {
+    ScriptPromiseResolverBase* resolver) const {
   if (std::optional<const char*> name =
           GetConstraintWithCapabilityExistenceMismatch(constraint_set,
                                                        constraint_set_type)) {
@@ -2395,7 +2392,7 @@ bool ImageCapture::HasPanTiltZoomPermissionGranted() const {
   return pan_tilt_zoom_permission_ == mojom::blink::PermissionStatus::GRANTED;
 }
 
-void ImageCapture::GetMojoPhotoState(ScriptPromiseResolver* resolver,
+void ImageCapture::GetMojoPhotoState(ScriptPromiseResolverBase* resolver,
                                      PromiseResolverFunction resolver_cb) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "ImageCapture::GetMojoPhotoState");
@@ -2420,7 +2417,7 @@ void ImageCapture::GetMojoPhotoState(ScriptPromiseResolver* resolver,
 }
 
 void ImageCapture::OnMojoGetPhotoState(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     PromiseResolverFunction resolve_function,
     bool trigger_take_photo,
     media::mojom::blink::PhotoStatePtr photo_state) {
@@ -2482,7 +2479,7 @@ void ImageCapture::OnMojoGetPhotoState(
   service_requests_.erase(resolver);
 }
 
-void ImageCapture::OnMojoSetPhotoOptions(ScriptPromiseResolver* resolver,
+void ImageCapture::OnMojoSetPhotoOptions(ScriptPromiseResolverBase* resolver,
                                          bool trigger_take_photo,
                                          bool result) {
   DCHECK(service_requests_.Contains(resolver));
@@ -2506,7 +2503,7 @@ void ImageCapture::OnMojoSetPhotoOptions(ScriptPromiseResolver* resolver,
                                 std::move(resolver_cb), trigger_take_photo));
 }
 
-void ImageCapture::OnMojoTakePhoto(ScriptPromiseResolver* resolver,
+void ImageCapture::OnMojoTakePhoto(ScriptPromiseResolverBase* resolver,
                                    media::mojom::blink::BlobPtr blob) {
   DCHECK(service_requests_.Contains(resolver));
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
@@ -2695,16 +2692,16 @@ void ImageCapture::UpdateMediaTrackSettingsAndCapabilities(
 void ImageCapture::OnServiceConnectionError() {
   service_.reset();
 
-  HeapHashSet<Member<ScriptPromiseResolver>> resolvers;
+  HeapHashSet<Member<ScriptPromiseResolverBase>> resolvers;
   resolvers.swap(service_requests_);
-  for (ScriptPromiseResolver* resolver : resolvers) {
+  for (ScriptPromiseResolverBase* resolver : resolvers) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotFoundError, kNoServiceError));
   }
 }
 
 void ImageCapture::MaybeRejectWithOverconstrainedError(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     const char* constraint,
     const char* message) const {
   if (!resolver) {
@@ -2714,18 +2711,19 @@ void ImageCapture::MaybeRejectWithOverconstrainedError(
       MakeGarbageCollected<OverconstrainedError>(constraint, message));
 }
 
-void ImageCapture::ResolveWithNothing(ScriptPromiseResolver* resolver) {
+void ImageCapture::ResolveWithNothing(ScriptPromiseResolverBase* resolver) {
   DCHECK(resolver);
   resolver->DowncastTo<IDLUndefined>()->Resolve();
 }
 
-void ImageCapture::ResolveWithPhotoSettings(ScriptPromiseResolver* resolver) {
+void ImageCapture::ResolveWithPhotoSettings(
+    ScriptPromiseResolverBase* resolver) {
   DCHECK(resolver);
   resolver->DowncastTo<PhotoSettings>()->Resolve(photo_settings_);
 }
 
 void ImageCapture::ResolveWithPhotoCapabilities(
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverBase* resolver) {
   DCHECK(resolver);
   resolver->DowncastTo<PhotoCapabilities>()->Resolve(photo_capabilities_);
 }

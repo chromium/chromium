@@ -178,7 +178,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // https://tc39.github.io/proposal-dynamic-import/#sec-hostimportmoduledynamically
   virtual void ResolveDynamically(const ModuleRequest& module_request,
                                   const ReferrerScriptInfo&,
-                                  ScriptPromiseResolverTyped<IDLAny>*) = 0;
+                                  ScriptPromiseResolver<IDLAny>*) = 0;
 
   // Import maps. https://github.com/WICG/import-maps
 

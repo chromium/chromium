@@ -43,9 +43,9 @@ class MODULES_EXPORT ScreenOrientation final : public EventTarget,
   void SetType(display::mojom::blink::ScreenOrientation);
   void SetAngle(uint16_t);
 
-  ScriptPromiseTyped<IDLUndefined> lock(ScriptState*,
-                                        const AtomicString& orientation,
-                                        ExceptionState&);
+  ScriptPromise<IDLUndefined> lock(ScriptState*,
+                                   const AtomicString& orientation,
+                                   ExceptionState&);
   void unlock();
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)

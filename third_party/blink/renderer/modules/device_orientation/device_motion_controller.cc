@@ -123,7 +123,7 @@ void DeviceMotionController::Trace(Visitor* visitor) const {
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
-ScriptPromiseTyped<V8DeviceOrientationPermissionState>
+ScriptPromise<V8DeviceOrientationPermissionState>
 DeviceMotionController::RequestPermission(ScriptState* script_state) {
   ExecutionContext* context = GetSupplementable();
   DCHECK_EQ(context, ExecutionContext::From(script_state));
@@ -137,14 +137,13 @@ DeviceMotionController::RequestPermission(ScriptState* script_state) {
   }
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<V8DeviceOrientationPermissionState>>(
-      script_state);
+      ScriptPromiseResolver<V8DeviceOrientationPermissionState>>(script_state);
   auto promise = resolver->Promise();
 
   permission_service_->HasPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::SENSORS),
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          [](ScriptPromiseResolverTyped<V8DeviceOrientationPermissionState>*
+          [](ScriptPromiseResolver<V8DeviceOrientationPermissionState>*
                  resolver,
              mojom::blink::PermissionStatus status) {
             switch (status) {

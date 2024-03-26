@@ -54,9 +54,8 @@ class NavigationApiMethodTracker final
   ScriptValue info_;
   String key_;
   Member<NavigationHistoryEntry> committed_to_entry_;
-  Member<ScriptPromiseResolverTyped<NavigationHistoryEntry>>
-      committed_resolver_;
-  Member<ScriptPromiseResolverTyped<NavigationHistoryEntry>> finished_resolver_;
+  Member<ScriptPromiseResolver<NavigationHistoryEntry>> committed_resolver_;
+  Member<ScriptPromiseResolver<NavigationHistoryEntry>> finished_resolver_;
   Member<NavigationResult> result_;
 };
 

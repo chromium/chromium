@@ -20,9 +20,9 @@ class DocumentVideoPictureInPicture {
  public:
   static bool pictureInPictureEnabled(Document&);
 
-  static ScriptPromiseTyped<IDLUndefined> exitPictureInPicture(ScriptState*,
-                                                               Document&,
-                                                               ExceptionState&);
+  static ScriptPromise<IDLUndefined> exitPictureInPicture(ScriptState*,
+                                                          Document&,
+                                                          ExceptionState&);
 };
 
 }  // namespace blink

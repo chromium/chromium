@@ -29,18 +29,18 @@ class FileSystemFileHandle final : public FileSystemHandle {
 
   bool isFile() const override { return true; }
 
-  ScriptPromiseTyped<FileSystemWritableFileStream> createWritable(
+  ScriptPromise<FileSystemWritableFileStream> createWritable(
       ScriptState*,
       const FileSystemCreateWritableOptions* options,
       ExceptionState&);
-  ScriptPromiseTyped<File> getFile(ScriptState*, ExceptionState&);
+  ScriptPromise<File> getFile(ScriptState*, ExceptionState&);
 
   // TODO(fivedots): Define if this method should be generally exposed or only
   // on files backed by the Origin Private File System.
-  ScriptPromiseTyped<FileSystemSyncAccessHandle> createSyncAccessHandle(
+  ScriptPromise<FileSystemSyncAccessHandle> createSyncAccessHandle(
       ScriptState*,
       ExceptionState&);
-  ScriptPromiseTyped<FileSystemSyncAccessHandle> createSyncAccessHandle(
+  ScriptPromise<FileSystemSyncAccessHandle> createSyncAccessHandle(
       ScriptState*,
       const FileSystemCreateSyncAccessHandleOptions* options,
       ExceptionState&);

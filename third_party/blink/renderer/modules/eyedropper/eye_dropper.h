@@ -40,9 +40,9 @@ class EyeDropper final : public ScriptWrappable {
 
   // Opens the eyedropper and replaces the cursor with a browser-defined
   // preview.
-  ScriptPromiseTyped<ColorSelectionResult> open(ScriptState*,
-                                                const ColorSelectionOptions*,
-                                                ExceptionState&);
+  ScriptPromise<ColorSelectionResult> open(ScriptState*,
+                                           const ColorSelectionOptions*,
+                                           ExceptionState&);
 
   void Trace(Visitor*) const override;
 
@@ -50,16 +50,15 @@ class EyeDropper final : public ScriptWrappable {
   class OpenAbortAlgorithm;
 
   void AbortCallback(AbortSignal* signal);
-  void EyeDropperResponseHandler(
-      std::unique_ptr<ScopedAbortState>,
-      ScriptPromiseResolverTyped<ColorSelectionResult>*,
-      bool,
-      uint32_t);
+  void EyeDropperResponseHandler(std::unique_ptr<ScopedAbortState>,
+                                 ScriptPromiseResolver<ColorSelectionResult>*,
+                                 bool,
+                                 uint32_t);
   void EndChooser(std::unique_ptr<ScopedAbortState>);
   void RejectPromiseHelper(DOMExceptionCode, const WTF::String&);
 
   HeapMojoRemote<mojom::blink::EyeDropperChooser> eye_dropper_chooser_;
-  Member<ScriptPromiseResolverTyped<ColorSelectionResult>> resolver_;
+  Member<ScriptPromiseResolver<ColorSelectionResult>> resolver_;
 };
 
 }  // namespace blink

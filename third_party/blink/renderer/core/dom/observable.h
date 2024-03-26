@@ -68,11 +68,10 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
 
   // Promise-returning operators. See
   // https://wicg.github.io/observable/#promise-returning-operators.
-  ScriptPromiseTyped<IDLSequence<IDLAny>> toArray(ScriptState*,
-                                                  SubscribeOptions*);
-  ScriptPromiseTyped<IDLUndefined> forEach(ScriptState*,
-                                           V8Visitor*,
-                                           SubscribeOptions*);
+  ScriptPromise<IDLSequence<IDLAny>> toArray(ScriptState*, SubscribeOptions*);
+  ScriptPromise<IDLUndefined> forEach(ScriptState*,
+                                      V8Visitor*,
+                                      SubscribeOptions*);
 
   void Trace(Visitor*) const override;
 

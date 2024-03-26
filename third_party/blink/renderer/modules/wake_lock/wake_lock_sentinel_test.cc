@@ -82,13 +82,14 @@ TEST(WakeLockSentinelTest, MultipleReleaseCalls) {
   auto* manager = MakeGarbageCollected<WakeLockManager>(
       context.DomWindow(), V8WakeLockType::Enum::kScreen);
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto promise = resolver->Promise();
   manager->AcquireWakeLock(resolver);
   context.WaitForPromiseFulfillment(promise);
   auto* sentinel =
-      ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(promise);
+      ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
+          promise);
   ASSERT_NE(nullptr, sentinel);
   EXPECT_FALSE(sentinel->released());
 
@@ -122,7 +123,7 @@ TEST(WakeLockSentinelTest, ContextDestruction) {
       V8WakeLockType::Enum::kScreen, mojom::blink::PermissionStatus::GRANTED);
 
   auto* screen_resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto screen_promise = screen_resolver->Promise();
 
@@ -134,8 +135,9 @@ TEST(WakeLockSentinelTest, ContextDestruction) {
   ASSERT_TRUE(manager);
 
   context.WaitForPromiseFulfillment(screen_promise);
-  auto* sentinel = ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(
-      screen_promise);
+  auto* sentinel =
+      ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
+          screen_promise);
   ASSERT_TRUE(sentinel);
 
   auto* event_listener =
@@ -159,13 +161,14 @@ TEST(WakeLockSentinelTest, HasPendingActivityConditions) {
   auto* manager = MakeGarbageCollected<WakeLockManager>(
       context.DomWindow(), V8WakeLockType::Enum::kScreen);
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
           context.GetScriptState());
   auto promise = resolver->Promise();
   manager->AcquireWakeLock(resolver);
   context.WaitForPromiseFulfillment(promise);
   auto* sentinel =
-      ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(promise);
+      ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
+          promise);
   ASSERT_TRUE(sentinel);
 
   // A new WakeLockSentinel was created and it can be GC'ed.

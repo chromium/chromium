@@ -51,7 +51,7 @@ class ContentDecryptionModuleResultPromise
 
  protected:
   // |interface_name| and |property_name| must have static life time.
-  ContentDecryptionModuleResultPromise(ScriptPromiseResolver*,
+  ContentDecryptionModuleResultPromise(ScriptPromiseResolverBase*,
                                        const MediaKeysConfig&,
                                        EmeApiType api_type);
 
@@ -78,7 +78,7 @@ class ContentDecryptionModuleResultPromise
   MediaKeysConfig GetMediaKeysConfig();
 
  private:
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverBase> resolver_;
   const MediaKeysConfig config_;
   const EmeApiType api_type_;
 };

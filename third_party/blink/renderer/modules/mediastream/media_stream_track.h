@@ -106,11 +106,11 @@ class MODULES_EXPORT MediaStreamTrack
   virtual MediaTrackSettings* getSettings() const = 0;
   virtual MediaStreamTrackVideoStats* stats() = 0;
   virtual CaptureHandle* getCaptureHandle() const = 0;
-  virtual ScriptPromiseTyped<IDLUndefined> applyConstraints(
+  virtual ScriptPromise<IDLUndefined> applyConstraints(
       ScriptState*,
       const MediaTrackConstraints*) = 0;
 
-  virtual void applyConstraints(ScriptPromiseResolverTyped<IDLUndefined>*,
+  virtual void applyConstraints(ScriptPromiseResolver<IDLUndefined>*,
                                 const MediaTrackConstraints*) = 0;
   virtual void SetInitialConstraints(const MediaConstraints& constraints) = 0;
   virtual void SetConstraints(const MediaConstraints& constraints) = 0;

@@ -36,8 +36,8 @@ class CORE_EXPORT PreferenceObject final
 
   void clearOverride(ScriptState*);
 
-  ScriptPromiseTyped<IDLUndefined> requestOverride(ScriptState*,
-                                                   std::optional<AtomicString>);
+  ScriptPromise<IDLUndefined> requestOverride(ScriptState*,
+                                              std::optional<AtomicString>);
 
   const FrozenArray<IDLString>& validValues();
 

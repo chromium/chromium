@@ -21,7 +21,7 @@ class InternalsGetNamedCookie {
   STATIC_ONLY(InternalsGetNamedCookie);
 
  public:
-  static ScriptPromiseTyped<IDLNullable<InternalCookie>> getNamedCookie(
+  static ScriptPromise<IDLNullable<InternalCookie>> getNamedCookie(
       ScriptState* script_state,
       Internals& internals,
       const WTF::String& name);

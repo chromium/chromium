@@ -883,19 +883,19 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
         stream1_(stream1),
         source2_(source2) {}
 
-  ScriptPromise Start(ScriptState* script_state,
-                      ExceptionState& exception_state) override {
+  ScriptPromiseUntyped Start(ScriptState* script_state,
+                             ExceptionState& exception_state) override {
     reader_for_stream1_ = ReadableStream::AcquireDefaultReader(
         script_state, stream1_, exception_state);
     if (exception_state.HadException()) {
-      return ScriptPromise::Reject(script_state, exception_state);
+      return ScriptPromiseUntyped::Reject(script_state, exception_state);
     }
     DCHECK(reader_for_stream1_);
-    return ScriptPromise::CastUndefined(script_state);
+    return ScriptPromiseUntyped::CastUndefined(script_state);
   }
 
-  ScriptPromise Pull(ScriptState* script_state,
-                     ExceptionState& exception_state) override {
+  ScriptPromiseUntyped Pull(ScriptState* script_state,
+                            ExceptionState& exception_state) override {
     if (has_finished_reading_stream1_) {
       return source2_->Pull(script_state, exception_state);
     }
@@ -905,31 +905,34 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
                                                                        promise);
     ReadableStreamDefaultReader::Read(script_state, reader_for_stream1_,
                                       read_request, exception_state);
-    return promise->GetScriptPromise(script_state);
+    return promise->GetScriptPromiseUntyped(script_state);
   }
 
-  ScriptPromise Cancel(ScriptState* script_state,
-                       ScriptValue reason,
-                       ExceptionState& exception_state) override {
+  ScriptPromiseUntyped Cancel(ScriptState* script_state,
+                              ScriptValue reason,
+                              ExceptionState& exception_state) override {
     if (has_finished_reading_stream1_) {
       return source2_->Cancel(script_state, reason, exception_state);
     }
-    ScriptPromise cancel_promise1 =
+    ScriptPromiseUntyped cancel_promise1 =
         reader_for_stream1_->cancel(script_state, reason, exception_state);
     if (exception_state.HadException()) {
-      cancel_promise1 = ScriptPromise::Reject(script_state, exception_state);
+      cancel_promise1 =
+          ScriptPromiseUntyped::Reject(script_state, exception_state);
     }
 
     ReadableStream* dummy_stream =
         ReadableStream::CreateWithCountQueueingStrategy(script_state, source2_,
                                                         /*high_water_mark=*/0);
-    ScriptPromise cancel_promise2 =
+    ScriptPromiseUntyped cancel_promise2 =
         dummy_stream->cancel(script_state, reason, exception_state);
     if (exception_state.HadException()) {
-      cancel_promise2 = ScriptPromise::Reject(script_state, exception_state);
+      cancel_promise2 =
+          ScriptPromiseUntyped::Reject(script_state, exception_state);
     }
 
-    return ScriptPromise::All(script_state, {cancel_promise1, cancel_promise2});
+    return ScriptPromiseUntyped::All(script_state,
+                                     {cancel_promise1, cancel_promise2});
   }
 
   void Trace(Visitor* visitor) const override {

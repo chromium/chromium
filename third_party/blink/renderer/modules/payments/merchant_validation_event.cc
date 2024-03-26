@@ -62,9 +62,10 @@ MerchantValidationEvent::MerchantValidationEvent(
   }
 }
 
-void MerchantValidationEvent::complete(ScriptState* script_state,
-                                       ScriptPromise merchantSessionPromise,
-                                       ExceptionState& exception_state) {
+void MerchantValidationEvent::complete(
+    ScriptState* script_state,
+    ScriptPromiseUntyped merchantSessionPromise,
+    ExceptionState& exception_state) {
   if (!isTrusted()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,

@@ -14,7 +14,7 @@
 namespace blink {
 
 class ExceptionState;
-class ScriptPromise;
+class ScriptPromiseUntyped;
 class ScriptState;
 class ScriptValue;
 
@@ -74,7 +74,7 @@ class MODULES_EXPORT WaitUntilObserver final
   // |on_promise_rejected| will not be called.
   bool WaitUntil(
       ScriptState*,
-      ScriptPromise /* script_promise */,
+      ScriptPromiseUntyped /* script_promise */,
       ExceptionState&,
       PromiseSettledCallback on_promise_fulfilled = PromiseSettledCallback(),
       PromiseSettledCallback on_promise_rejected = PromiseSettledCallback());

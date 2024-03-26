@@ -56,7 +56,7 @@ class MODULES_EXPORT ExtendableEvent : public Event {
                   WaitUntilObserver*);
   ~ExtendableEvent() override;
 
-  void waitUntil(ScriptState*, ScriptPromise, ExceptionState&);
+  void waitUntil(ScriptState*, ScriptPromiseUntyped, ExceptionState&);
 
   const AtomicString& InterfaceName() const override;
   void Trace(Visitor*) const override;

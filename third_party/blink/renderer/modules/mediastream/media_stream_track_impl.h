@@ -93,7 +93,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   MediaTrackSettings* getSettings() const override;
   MediaStreamTrackVideoStats* stats() override;
   CaptureHandle* getCaptureHandle() const override;
-  ScriptPromiseTyped<IDLUndefined> applyConstraints(
+  ScriptPromise<IDLUndefined> applyConstraints(
       ScriptState*,
       const MediaTrackConstraints*) override;
 
@@ -170,7 +170,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   friend class InternalsMediaStream;
 
   // MediaStreamTrack
-  void applyConstraints(ScriptPromiseResolverTyped<IDLUndefined>*,
+  void applyConstraints(ScriptPromiseResolver<IDLUndefined>*,
                         const MediaTrackConstraints*) override;
 
   // MediaStreamSource::Observer

@@ -62,7 +62,7 @@ MeasureMemoryController::MeasureMemoryController(
     base::PassKey<MeasureMemoryController>,
     v8::Isolate* isolate,
     v8::Local<v8::Context> context,
-    ScriptPromiseResolverTyped<MemoryMeasurement>* resolver)
+    ScriptPromiseResolver<MemoryMeasurement>* resolver)
     : context_(isolate, context), resolver_(resolver) {
   context_.SetPhantom();
   // TODO(ulan): Currently we keep a strong reference to the promise resolver.
@@ -126,7 +126,7 @@ void StartMemoryMeasurement(WorkerGlobalScope* worker,
 
 }  // anonymous namespace
 
-ScriptPromiseTyped<MemoryMeasurement> MeasureMemoryController::StartMeasurement(
+ScriptPromise<MemoryMeasurement> MeasureMemoryController::StartMeasurement(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -143,23 +143,23 @@ ScriptPromiseTyped<MemoryMeasurement> MeasureMemoryController::StartMeasurement(
     case ApiStatus::kNotAvailableDueToResourceCoordinator:
       exception_state.ThrowSecurityError(
           "performance.measureUserAgentSpecificMemory is not available.");
-      return ScriptPromiseTyped<MemoryMeasurement>();
+      return ScriptPromise<MemoryMeasurement>();
     case ApiStatus::kNotAvailableDueToDetachedContext:
       exception_state.ThrowSecurityError(
           "performance.measureUserAgentSpecificMemory is not supported"
           " in detached iframes.");
-      return ScriptPromiseTyped<MemoryMeasurement>();
+      return ScriptPromise<MemoryMeasurement>();
     case ApiStatus::kNotAvailableDueToCrossOriginContext:
       exception_state.ThrowSecurityError(
           "performance.measureUserAgentSpecificMemory is not supported"
           " in cross-origin iframes.");
-      return ScriptPromiseTyped<MemoryMeasurement>();
+      return ScriptPromise<MemoryMeasurement>();
   }
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::Local<v8::Context> context = script_state->GetContext();
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<MemoryMeasurement>>(
+      MakeGarbageCollected<ScriptPromiseResolver<MemoryMeasurement>>(
           script_state);
   auto promise = resolver->Promise();
 

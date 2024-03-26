@@ -43,23 +43,22 @@ class MODULES_EXPORT WakeLock final : public ScriptWrappable,
 
   explicit WakeLock(NavigatorBase&);
 
-  ScriptPromiseTyped<WakeLockSentinel> request(ScriptState*,
-                                               V8WakeLockType type,
-                                               ExceptionState& exception_state);
+  ScriptPromise<WakeLockSentinel> request(ScriptState*,
+                                          V8WakeLockType type,
+                                          ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
 
  private:
   // While this could be part of request() itself, having it as a separate
-  // function makes testing (which uses a custom ScriptPromiseResolver) a lot
-  // easier.
+  // function makes testing (which uses a custom ScriptPromiseResolverBase) a
+  // lot easier.
   void DoRequest(V8WakeLockType::Enum,
-                 ScriptPromiseResolverTyped<WakeLockSentinel>*);
+                 ScriptPromiseResolver<WakeLockSentinel>*);
 
-  void DidReceivePermissionResponse(
-      V8WakeLockType::Enum,
-      ScriptPromiseResolverTyped<WakeLockSentinel>*,
-      mojom::blink::PermissionStatus);
+  void DidReceivePermissionResponse(V8WakeLockType::Enum,
+                                    ScriptPromiseResolver<WakeLockSentinel>*,
+                                    mojom::blink::PermissionStatus);
 
   // ExecutionContextLifecycleObserver implementation
   void ContextDestroyed() override;

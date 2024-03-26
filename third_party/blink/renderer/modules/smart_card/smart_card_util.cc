@@ -44,7 +44,7 @@ device::mojom::blink::SmartCardProtocolsPtr ToMojoSmartCardProtocols(
   return result;
 }
 
-void RejectWithAbortionReason(ScriptPromiseResolver* resolver,
+void RejectWithAbortionReason(ScriptPromiseResolverBase* resolver,
                               AbortSignal* signal) {
   CHECK(signal->aborted());
 

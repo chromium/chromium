@@ -69,7 +69,7 @@ class ReadableStream::PullAlgorithm final : public StreamAlgorithm {
     DCHECK(controller_);
     ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionContextType::kUnknown, "", "");
-    ScriptPromise promise;
+    ScriptPromiseUntyped promise;
     if (script_state->ContextIsValid()) {
       // This is needed because the realm of the underlying source can be
       // different from the realm of the readable stream.
@@ -117,7 +117,7 @@ class ReadableStream::CancelAlgorithm final : public StreamAlgorithm {
     DCHECK_EQ(argc, 1);
     ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionContextType::kUnknown, "", "");
-    ScriptPromise promise;
+    ScriptPromiseUntyped promise;
     if (script_state->ContextIsValid()) {
       // This is needed because the realm of the underlying source can be
       // different from the realm of the readable stream.
@@ -499,28 +499,28 @@ bool ReadableStream::locked() const {
   return IsLocked(this);
 }
 
-ScriptPromise ReadableStream::cancel(ScriptState* script_state,
-                                     ExceptionState& exception_state) {
+ScriptPromiseUntyped ReadableStream::cancel(ScriptState* script_state,
+                                            ExceptionState& exception_state) {
   return cancel(script_state,
                 ScriptValue(script_state->GetIsolate(),
                             v8::Undefined(script_state->GetIsolate())),
                 exception_state);
 }
 
-ScriptPromise ReadableStream::cancel(ScriptState* script_state,
-                                     ScriptValue reason,
-                                     ExceptionState& exception_state) {
+ScriptPromiseUntyped ReadableStream::cancel(ScriptState* script_state,
+                                            ScriptValue reason,
+                                            ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#rs-cancel
   // 2. If ! IsReadableStreamLocked(this) is true, return a promise rejected
   //    with a TypeError exception.
   if (IsLocked(this)) {
     exception_state.ThrowTypeError("Cannot cancel a locked stream");
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
   // 3. Return ! ReadableStreamCancel(this, reason).
   v8::Local<v8::Promise> result = Cancel(script_state, this, reason.V8Value());
-  return ScriptPromise(script_state, result);
+  return ScriptPromiseUntyped(script_state, result);
 }
 
 V8ReadableStreamReader* ReadableStream::getReader(
@@ -615,8 +615,8 @@ ReadableStream* ReadableStream::pipeThrough(ScriptState* script_state,
   // 4. Let promise be ! ReadableStreamPipeTo(this, transform["writable"],
   //    options["preventClose"], options["preventAbort"],
   //    options["preventCancel"], signal).
-  ScriptPromise promise = PipeTo(script_state, this, writable_stream,
-                                 pipe_options, exception_state);
+  ScriptPromiseUntyped promise = PipeTo(script_state, this, writable_stream,
+                                        pipe_options, exception_state);
 
   // 5. Set promise.[[PromiseIsHandled]] to true.
   promise.MarkAsHandled();
@@ -625,30 +625,30 @@ ReadableStream* ReadableStream::pipeThrough(ScriptState* script_state,
   return readable_stream;
 }
 
-ScriptPromise ReadableStream::pipeTo(ScriptState* script_state,
-                                     WritableStream* destination,
-                                     ExceptionState& exception_state) {
+ScriptPromiseUntyped ReadableStream::pipeTo(ScriptState* script_state,
+                                            WritableStream* destination,
+                                            ExceptionState& exception_state) {
   return pipeTo(script_state, destination, StreamPipeOptions::Create(),
                 exception_state);
 }
 
-ScriptPromise ReadableStream::pipeTo(ScriptState* script_state,
-                                     WritableStream* destination,
-                                     const StreamPipeOptions* options,
-                                     ExceptionState& exception_state) {
+ScriptPromiseUntyped ReadableStream::pipeTo(ScriptState* script_state,
+                                            WritableStream* destination,
+                                            const StreamPipeOptions* options,
+                                            ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#rs-pipe-to
   // 1. If ! IsReadableStreamLocked(this) is true, return a promise rejected
   //    with a TypeError exception.
   if (IsLocked(this)) {
     exception_state.ThrowTypeError("Cannot pipe a locked stream");
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
   // 2. If ! IsWritableStreamLocked(destination) is true, return a promise
   //    rejected with a TypeError exception.
   if (WritableStream::IsLocked(destination)) {
     exception_state.ThrowTypeError("Cannot pipe to a locked stream");
-    return ScriptPromise();
+    return ScriptPromiseUntyped();
   }
 
   // 3. Let signal be options["signal"] if it exists, or undefined otherwise.
@@ -983,11 +983,11 @@ ReadableStream* ReadableStream::Deserialize(
   return readable;
 }
 
-ScriptPromise ReadableStream::PipeTo(ScriptState* script_state,
-                                     ReadableStream* readable,
-                                     WritableStream* destination,
-                                     PipeOptions* pipe_options,
-                                     ExceptionState& exception_state) {
+ScriptPromiseUntyped ReadableStream::PipeTo(ScriptState* script_state,
+                                            ReadableStream* readable,
+                                            WritableStream* destination,
+                                            PipeOptions* pipe_options,
+                                            ExceptionState& exception_state) {
   auto* engine = MakeGarbageCollected<PipeToEngine>(script_state, pipe_options);
   return engine->Start(readable, destination, exception_state);
 }

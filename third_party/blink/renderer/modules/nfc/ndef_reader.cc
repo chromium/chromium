@@ -164,16 +164,15 @@ bool NDEFReader::HasPendingActivity() const {
 }
 
 // https://w3c.github.io/web-nfc/#the-scan-method
-ScriptPromiseTyped<IDLUndefined> NDEFReader::scan(
-    ScriptState* script_state,
-    const NDEFScanOptions* options,
-    ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> NDEFReader::scan(ScriptState* script_state,
+                                             const NDEFScanOptions* options,
+                                             ExceptionState& exception_state) {
   // https://w3c.github.io/web-nfc/#security-policies
   // WebNFC API must be only accessible from top level browsing context.
   if (!DomWindow() || !DomWindow()->GetFrame()->IsMainFrame()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kChildFrameErrorMessage);
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   if (scan_signal_ && scan_abort_handle_) {
@@ -183,7 +182,7 @@ ScriptPromiseTyped<IDLUndefined> NDEFReader::scan(
   scan_signal_ = options->getSignalOr(nullptr);
   if (scan_signal_) {
     if (scan_signal_->aborted()) {
-      return ScriptPromiseTyped<IDLUndefined>::Reject(
+      return ScriptPromise<IDLUndefined>::Reject(
           script_state, scan_signal_->reason(script_state));
     }
     scan_abort_handle_ = scan_signal_->AddAlgorithm(
@@ -194,12 +193,11 @@ ScriptPromiseTyped<IDLUndefined> NDEFReader::scan(
   if (scan_resolver_ || nfc_proxy_->IsReading(this)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "A scan() operation is ongoing.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
-  scan_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  scan_resolver_ = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(PermissionName::NFC),
       LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame()),
@@ -307,7 +305,7 @@ void NDEFReader::ReadAbort(AbortSignal* signal) {
 
 // https://w3c.github.io/web-nfc/#writing-content
 // https://w3c.github.io/web-nfc/#the-write-method
-ScriptPromiseTyped<IDLUndefined> NDEFReader::write(
+ScriptPromise<IDLUndefined> NDEFReader::write(
     ScriptState* script_state,
     const V8NDEFMessageSource* write_message,
     const NDEFWriteOptions* options,
@@ -317,14 +315,14 @@ ScriptPromiseTyped<IDLUndefined> NDEFReader::write(
   if (!DomWindow() || !DomWindow()->GetFrame()->IsMainFrame()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kChildFrameErrorMessage);
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
   if (auto* signal = options->getSignalOr(nullptr)) {
     if (signal->aborted()) {
-      return ScriptPromiseTyped<IDLUndefined>::Reject(
-          script_state, signal->reason(script_state));
+      return ScriptPromise<IDLUndefined>::Reject(script_state,
+                                                 signal->reason(script_state));
     }
     auto* handle =
         signal->AddAlgorithm(MakeGarbageCollected<WriteAbortAlgorithm>(this));
@@ -336,15 +334,14 @@ ScriptPromiseTyped<IDLUndefined> NDEFReader::write(
   NDEFMessage* ndef_message =
       NDEFMessage::Create(script_state, write_message, exception_state);
   if (exception_state.HadException()) {
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   auto message = device::mojom::blink::NDEFMessage::From(ndef_message);
   DCHECK(message);
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   write_requests_.insert(resolver);
 
   // Add the writer to proxy's writer list for Mojo connection error
@@ -362,7 +359,7 @@ ScriptPromiseTyped<IDLUndefined> NDEFReader::write(
 }
 
 void NDEFReader::WriteOnRequestPermission(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
     const NDEFWriteOptions* options,
     device::mojom::blink::NDEFMessagePtr message,
@@ -400,7 +397,7 @@ void NDEFReader::WriteOnRequestPermission(
 }
 
 void NDEFReader::WriteOnRequestCompleted(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
     device::mojom::blink::NDEFErrorPtr error) {
   DCHECK(write_requests_.Contains(resolver));
@@ -435,7 +432,7 @@ void NDEFReader::WriteAbort() {
   nfc_proxy_->CancelPush();
 }
 
-ScriptPromiseTyped<IDLUndefined> NDEFReader::makeReadOnly(
+ScriptPromise<IDLUndefined> NDEFReader::makeReadOnly(
     ScriptState* script_state,
     const NDEFMakeReadOnlyOptions* options,
     ExceptionState& exception_state) {
@@ -444,23 +441,22 @@ ScriptPromiseTyped<IDLUndefined> NDEFReader::makeReadOnly(
   if (!DomWindow() || !DomWindow()->GetFrame()->IsMainFrame()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kChildFrameErrorMessage);
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
   if (auto* signal = options->getSignalOr(nullptr)) {
     if (signal->aborted()) {
-      return ScriptPromiseTyped<IDLUndefined>::Reject(
-          script_state, signal->reason(script_state));
+      return ScriptPromise<IDLUndefined>::Reject(script_state,
+                                                 signal->reason(script_state));
     }
     auto* handle = signal->AddAlgorithm(
         MakeGarbageCollected<MakeReadOnlyAbortAlgorithm>(this));
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   make_read_only_requests_.insert(resolver);
 
   // Add the writer to proxy's writer list for Mojo connection error
@@ -478,7 +474,7 @@ ScriptPromiseTyped<IDLUndefined> NDEFReader::makeReadOnly(
 }
 
 void NDEFReader::MakeReadOnlyOnRequestPermission(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
     const NDEFMakeReadOnlyOptions* options,
     mojom::blink::PermissionStatus status) {
@@ -513,7 +509,7 @@ void NDEFReader::MakeReadOnlyOnRequestPermission(
 }
 
 void NDEFReader::MakeReadOnlyOnRequestCompleted(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
     device::mojom::blink::NDEFErrorPtr error) {
   DCHECK(make_read_only_requests_.Contains(resolver));
@@ -599,9 +595,9 @@ void NDEFReader::WriteOnMojoConnectionError() {
 
   // Script may execute during a call to Reject(). Swap these sets to prevent
   // concurrent modification.
-  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLUndefined>>> write_requests;
+  HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>> write_requests;
   write_requests_.swap(write_requests);
-  for (ScriptPromiseResolver* resolver : write_requests) {
+  for (ScriptPromiseResolverBase* resolver : write_requests) {
     DCHECK(resolver);
 
     ScriptState* script_state = resolver->GetScriptState();
@@ -626,10 +622,10 @@ void NDEFReader::MakeReadOnlyOnMojoConnectionError() {
 
   // Script may execute during a call to Reject(). Swap these sets to prevent
   // concurrent modification.
-  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLUndefined>>>
+  HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>>
       make_read_only_requests;
   make_read_only_requests_.swap(make_read_only_requests);
-  for (ScriptPromiseResolver* resolver : make_read_only_requests) {
+  for (ScriptPromiseResolverBase* resolver : make_read_only_requests) {
     DCHECK(resolver);
 
     ScriptState* script_state = resolver->GetScriptState();

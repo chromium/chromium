@@ -52,8 +52,8 @@
 namespace blink {
 
 static void RejectWithTypeError(const String& error_details,
-                                ScriptPromiseResolver* resolver) {
-  // Duplicate some of the checks done by ScriptPromiseResolver.
+                                ScriptPromiseResolverBase* resolver) {
+  // Duplicate some of the checks done by ScriptPromiseResolverBase.
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
     return;

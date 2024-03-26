@@ -45,19 +45,19 @@ void MediaIntegrityTokenProvider::OnProviderConnectionError() {
   token_resolvers_.clear();
 }
 
-ScriptPromiseTyped<IDLString> MediaIntegrityTokenProvider::requestToken(
+ScriptPromise<IDLString> MediaIntegrityTokenProvider::requestToken(
     ScriptState* script_state,
     const String& opt_content_binding,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidContext);
-    return ScriptPromiseTyped<IDLString>();
+    return ScriptPromise<IDLString>();
   }
-  ScriptPromiseResolverTyped<IDLString>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(
+  ScriptPromiseResolver<IDLString>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
           script_state, exception_state.GetContext());
-  ScriptPromiseTyped<IDLString> promise = resolver->Promise();
+  ScriptPromise<IDLString> promise = resolver->Promise();
 
   if (!provider_remote_.is_bound()) {
     // We cannot reconnect ourselves. The caller must request a new provider.
@@ -77,7 +77,7 @@ ScriptPromiseTyped<IDLString> MediaIntegrityTokenProvider::requestToken(
 
 void MediaIntegrityTokenProvider::OnRequestTokenResponse(
     ScriptState* script_state,
-    ScriptPromiseResolverTyped<IDLString>* resolver,
+    ScriptPromiseResolver<IDLString>* resolver,
     const mojom::blink::WebViewMediaIntegrityTokenResponsePtr response) {
   token_resolvers_.erase(resolver);
 

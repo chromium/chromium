@@ -36,7 +36,7 @@ SerialPortUnderlyingSource::SerialPortUnderlyingSource(
                                     WrapWeakPersistent(this)));
 }
 
-ScriptPromise SerialPortUnderlyingSource::Pull(
+ScriptPromiseUntyped SerialPortUnderlyingSource::Pull(
     ReadableByteStreamController* controller,
     ExceptionState&) {
   DCHECK(controller_ == nullptr || controller_ == controller);
@@ -49,10 +49,10 @@ ScriptPromise SerialPortUnderlyingSource::Pull(
   // we allow the stream to be canceled before that data is received. pull()
   // will not be called again until a chunk is enqueued or if an error has been
   // signaled to the controller.
-  return ScriptPromise::CastUndefined(script_state_.Get());
+  return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
 }
 
-ScriptPromise SerialPortUnderlyingSource::Cancel(
+ScriptPromiseUntyped SerialPortUnderlyingSource::Cancel(
     ExceptionState& exception_state) {
   DCHECK(data_pipe_);
 
@@ -62,12 +62,11 @@ ScriptPromise SerialPortUnderlyingSource::Cancel(
   // don't need to do it here.
   if (serial_port_->IsClosing()) {
     serial_port_->UnderlyingSourceClosed();
-    return ScriptPromise::CastUndefined(script_state_.Get());
+    return ScriptPromiseUntyped::CastUndefined(script_state_.Get());
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state_);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state_);
   serial_port_->Flush(
       device::mojom::blink::SerialPortFlushMode::kReceive,
       WTF::BindOnce(&SerialPortUnderlyingSource::OnFlush, WrapPersistent(this),
@@ -75,7 +74,7 @@ ScriptPromise SerialPortUnderlyingSource::Cancel(
   return resolver->Promise();
 }
 
-ScriptPromise SerialPortUnderlyingSource::Cancel(
+ScriptPromiseUntyped SerialPortUnderlyingSource::Cancel(
     v8::Local<v8::Value> reason,
     ExceptionState& exception_state) {
   return Cancel(exception_state);
@@ -210,7 +209,7 @@ void SerialPortUnderlyingSource::OnHandleReady(
 }
 
 void SerialPortUnderlyingSource::OnFlush(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
   serial_port_->UnderlyingSourceClosed();
   resolver->Resolve();
 }

@@ -35,7 +35,7 @@ class MODULES_EXPORT DeviceMotionController final
 
   void Trace(Visitor*) const override;
 
-  ScriptPromiseTyped<V8DeviceOrientationPermissionState> RequestPermission(
+  ScriptPromise<V8DeviceOrientationPermissionState> RequestPermission(
       ScriptState*);
 
  private:

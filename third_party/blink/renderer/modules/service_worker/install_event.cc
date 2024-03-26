@@ -23,7 +23,7 @@ namespace blink {
 
 namespace {
 
-void DidRegisterRouter(ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
+void DidRegisterRouter(ScriptPromiseResolver<IDLUndefined>* resolver) {
   resolver->Resolve();
 }
 
@@ -58,14 +58,14 @@ InstallEvent::InstallEvent(const AtomicString& type,
                            WaitUntilObserver* observer)
     : ExtendableEvent(type, initializer, observer), event_id_(event_id) {}
 
-ScriptPromiseTyped<IDLUndefined> InstallEvent::addRoutes(
+ScriptPromise<IDLUndefined> InstallEvent::addRoutes(
     ScriptState* script_state,
     const V8UnionRouterRuleOrRouterRuleSequence* v8_rules,
     ExceptionState& exception_state) {
   ServiceWorkerGlobalScope* global_scope =
       To<ServiceWorkerGlobalScope>(ExecutionContext::From(script_state));
   if (!global_scope) {
-    return ScriptPromiseTyped<IDLUndefined>::Reject(
+    return ScriptPromise<IDLUndefined>::Reject(
         script_state,
         V8ThrowDOMException::CreateOrDie(script_state->GetIsolate(),
                                          DOMExceptionCode::kInvalidStateError,
@@ -77,13 +77,11 @@ ScriptPromiseTyped<IDLUndefined> InstallEvent::addRoutes(
                                   global_scope->BaseURL(),
                                   global_scope->FetchHandlerType(), rules);
   if (exception_state.HadException()) {
-    return ScriptPromiseTyped<IDLUndefined>::Reject(script_state,
-                                                    exception_state);
+    return ScriptPromise<IDLUndefined>::Reject(script_state, exception_state);
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   global_scope->GetServiceWorkerHost()->AddRoutes(
       rules, WTF::BindOnce(&DidRegisterRouter, WrapPersistent(resolver)));
   return resolver->Promise();

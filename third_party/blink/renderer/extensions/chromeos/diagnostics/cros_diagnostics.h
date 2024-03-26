@@ -29,9 +29,9 @@ class CrosDiagnostics : public ScriptWrappable,
 
   explicit CrosDiagnostics(ExecutionContext&);
 
-  ScriptPromiseTyped<CrosCpuInfo> getCpuInfo(ScriptState* script_state);
+  ScriptPromise<CrosCpuInfo> getCpuInfo(ScriptState* script_state);
 
-  ScriptPromiseTyped<IDLSequence<CrosNetworkInterface>> getNetworkInterfaces(
+  ScriptPromise<IDLSequence<CrosNetworkInterface>> getNetworkInterfaces(
       ScriptState* script_state);
 
   void Trace(Visitor*) const override;
@@ -41,11 +41,11 @@ class CrosDiagnostics : public ScriptWrappable,
   // the ExecutionContext has been deleted.
   mojom::blink::CrosDiagnostics* GetCrosDiagnosticsOrNull();
 
-  void OnGetCpuInfoResponse(ScriptPromiseResolverTyped<CrosCpuInfo>* resolver,
+  void OnGetCpuInfoResponse(ScriptPromiseResolver<CrosCpuInfo>* resolver,
                             mojom::blink::GetCpuInfoResultPtr result);
 
   void OnGetNetworkInterfacesResponse(
-      ScriptPromiseResolverTyped<IDLSequence<CrosNetworkInterface>>* resolver,
+      ScriptPromiseResolver<IDLSequence<CrosNetworkInterface>>* resolver,
       mojom::blink::GetNetworkInterfacesResultPtr result);
 
   HeapMojoRemote<mojom::blink::CrosDiagnostics> cros_diagnostics_remote_;

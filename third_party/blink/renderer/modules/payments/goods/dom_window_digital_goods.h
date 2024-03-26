@@ -26,13 +26,13 @@ class DOMWindowDigitalGoods final
   DOMWindowDigitalGoods(LocalDOMWindow& window);
 
   // IDL Interface:
-  static ScriptPromiseTyped<DigitalGoodsService> getDigitalGoodsService(
+  static ScriptPromise<DigitalGoodsService> getDigitalGoodsService(
       ScriptState*,
       LocalDOMWindow&,
       const String& payment_method,
       ExceptionState&);
 
-  ScriptPromiseTyped<DigitalGoodsService> GetDigitalGoodsService(
+  ScriptPromise<DigitalGoodsService> GetDigitalGoodsService(
       ScriptState*,
       LocalDOMWindow&,
       const String& payment_method,

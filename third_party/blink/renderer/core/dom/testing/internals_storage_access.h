@@ -22,7 +22,7 @@ class InternalsStorageAccess {
   STATIC_ONLY(InternalsStorageAccess);
 
  public:
-  static ScriptPromiseTyped<IDLUndefined> setStorageAccess(
+  static ScriptPromise<IDLUndefined> setStorageAccess(
       ScriptState*,
       Internals&,
       const WTF::String& origin,

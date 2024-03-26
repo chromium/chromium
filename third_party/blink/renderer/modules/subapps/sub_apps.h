@@ -38,15 +38,14 @@ class SubApps : public ScriptWrappable, public Supplement<Navigator> {
   void Trace(Visitor*) const override;
 
   // SubApps API.
-  ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>> add(
+  ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>> add(
       ScriptState*,
       const HeapVector<std::pair<String, Member<SubAppsAddParams>>>&
           sub_apps_to_add,
       ExceptionState&);
-  ScriptPromiseTyped<IDLRecord<IDLString, SubAppsListResult>> list(
-      ScriptState*,
-      ExceptionState&);
-  ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>> remove(
+  ScriptPromise<IDLRecord<IDLString, SubAppsListResult>> list(ScriptState*,
+                                                              ExceptionState&);
+  ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>> remove(
       ScriptState*,
       const Vector<String>& manifest_id_paths,
       ExceptionState&);

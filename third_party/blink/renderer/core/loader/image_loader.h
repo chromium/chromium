@@ -133,7 +133,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
 
   bool GetImageAnimationPolicy(mojom::blink::ImageAnimationPolicy&) final;
 
-  ScriptPromiseTyped<IDLUndefined> Decode(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> Decode(ScriptState*, ExceptionState&);
 
   // `force_blocking` ensures that the image will block the load event.
   void LoadDeferredImage(bool force_blocking = false,
@@ -265,14 +265,14 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
    public:
     enum State { kPendingMicrotask, kPendingLoad, kDispatched };
 
-    DecodeRequest(ImageLoader*, ScriptPromiseResolverTyped<IDLUndefined>*);
+    DecodeRequest(ImageLoader*, ScriptPromiseResolver<IDLUndefined>*);
     ~DecodeRequest() = default;
 
     void Trace(Visitor*) const;
 
     uint64_t request_id() const { return request_id_; }
     State state() const { return state_; }
-    ScriptPromiseTyped<IDLUndefined> promise() { return resolver_->Promise(); }
+    ScriptPromise<IDLUndefined> promise() { return resolver_->Promise(); }
 
     void Resolve();
     void Reject();
@@ -286,7 +286,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
     uint64_t request_id_ = 0;
     State state_ = kPendingMicrotask;
 
-    Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
+    Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
     Member<ImageLoader> loader_;
   };
 

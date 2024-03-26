@@ -45,11 +45,10 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<WGPUAdapter> {
   bool SupportsMultiPlanarFormats() const;
   bool isCompatibilityMode() const;
 
-  ScriptPromiseTyped<GPUDevice> requestDevice(ScriptState* script_state,
-                                              GPUDeviceDescriptor* descriptor);
+  ScriptPromise<GPUDevice> requestDevice(ScriptState* script_state,
+                                         GPUDeviceDescriptor* descriptor);
 
-  ScriptPromiseTyped<GPUAdapterInfo> requestAdapterInfo(
-      ScriptState* script_state);
+  ScriptPromise<GPUAdapterInfo> requestAdapterInfo(ScriptState* script_state);
 
   // Console warnings should generally be attributed to a GPUDevice, but in
   // cases where there is no device warnings can be surfaced here. It's expected
@@ -61,7 +60,7 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<WGPUAdapter> {
  private:
   void OnRequestDeviceCallback(ScriptState* script_state,
                                const GPUDeviceDescriptor* descriptor,
-                               ScriptPromiseResolverTyped<GPUDevice>* resolver,
+                               ScriptPromiseResolver<GPUDevice>* resolver,
                                WGPURequestDeviceStatus status,
                                WGPUDevice dawn_device,
                                const char* error_message);

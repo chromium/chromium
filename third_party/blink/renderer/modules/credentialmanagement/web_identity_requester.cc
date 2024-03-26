@@ -19,7 +19,7 @@ WebIdentityRequester::WebIdentityRequester(ExecutionContext* context,
     : execution_context_(context), requirement_(requirement) {}
 
 WebIdentityRequester::ResolverAndProviders::ResolverAndProviders(
-    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
+    ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     Vector<KURL> providers)
     : resolver_(resolver), providers_(std::move(providers)) {}
 
@@ -99,7 +99,7 @@ void WebIdentityRequester::RequestToken() {
 }
 
 void WebIdentityRequester::AppendGetCall(
-    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
+    ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     const HeapVector<Member<IdentityProviderRequestOptions>>& providers,
     mojom::blink::RpContext rp_context,
     mojom::blink::RpMode rp_mode) {
@@ -172,7 +172,7 @@ void WebIdentityRequester::InsertScopedAbortState(
 }
 
 void WebIdentityRequester::InitWindowOnloadEventListener(
-    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver) {
+    ScriptPromiseResolver<IDLNullable<Credential>>* resolver) {
   auto* window = To<LocalDOMWindow>(execution_context_.Get());
   window_onload_event_listener_ =
       MakeGarbageCollected<WebIdentityWindowOnloadEventListener>(
@@ -182,7 +182,7 @@ void WebIdentityRequester::InitWindowOnloadEventListener(
 }
 
 void WebIdentityRequester::StartDelayTimer(
-    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver) {
+    ScriptPromiseResolver<IDLNullable<Credential>>* resolver) {
   DCHECK(!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
       execution_context_));
 

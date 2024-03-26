@@ -44,7 +44,7 @@ class MODULES_EXPORT MerchantValidationEvent final : public Event {
 
   const String& methodName() const;
   const KURL& validationURL() const;
-  void complete(ScriptState*, ScriptPromise, ExceptionState&);
+  void complete(ScriptState*, ScriptPromiseUntyped, ExceptionState&);
 
  private:
   String method_name_;

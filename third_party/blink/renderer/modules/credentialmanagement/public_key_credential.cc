@@ -27,7 +27,7 @@ namespace {
 // https://www.w3.org/TR/webauthn/#dom-publickeycredential-type-slot:
 constexpr char kPublicKeyCredentialType[] = "public-key";
 
-void OnIsUserVerifyingComplete(ScriptPromiseResolverTyped<IDLBoolean>* resolver,
+void OnIsUserVerifyingComplete(ScriptPromiseResolver<IDLBoolean>* resolver,
                                bool available) {
   resolver->Resolve(available);
 }
@@ -60,11 +60,11 @@ PublicKeyCredential::PublicKeyCredential(
       extension_outputs_(extension_outputs) {}
 
 // static
-ScriptPromiseTyped<IDLBoolean>
+ScriptPromise<IDLBoolean>
 PublicKeyCredential::isUserVerifyingPlatformAuthenticatorAvailable(
     ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
-      script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
   auto promise = resolver->Promise();
 
   // Ignore calls if the current realm execution context is no longer valid,
@@ -92,11 +92,10 @@ PublicKeyCredential::getClientExtensionResults() const {
 }
 
 // static
-ScriptPromiseTyped<IDLBoolean>
-PublicKeyCredential::isConditionalMediationAvailable(
+ScriptPromise<IDLBoolean> PublicKeyCredential::isConditionalMediationAvailable(
     ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
-      script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
   auto promise = resolver->Promise();
 
   // Ignore calls if the current realm execution context is no longer valid,
@@ -112,7 +111,7 @@ PublicKeyCredential::isConditionalMediationAvailable(
   auto* authenticator =
       CredentialManagerProxy::From(script_state)->Authenticator();
   authenticator->IsConditionalMediationAvailable(
-      WTF::BindOnce([](ScriptPromiseResolverTyped<IDLBoolean>* resolver,
+      WTF::BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
                        bool available) { resolver->Resolve(available); },
                     WrapPersistent(resolver)));
   return promise;

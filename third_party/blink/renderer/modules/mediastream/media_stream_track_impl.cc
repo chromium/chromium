@@ -734,16 +734,15 @@ CaptureHandle* MediaStreamTrackImpl::getCaptureHandle() const {
   return capture_handle;
 }
 
-ScriptPromiseTyped<IDLUndefined> MediaStreamTrackImpl::applyConstraints(
+ScriptPromise<IDLUndefined> MediaStreamTrackImpl::applyConstraints(
     ScriptState* script_state,
     const MediaTrackConstraints* constraints) {
   if (!script_state->ContextIsValid()) {
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
   applyConstraints(resolver, constraints);
   return promise;
@@ -777,7 +776,7 @@ void MediaStreamTrackImpl::SetConstraintsInternal(
 }
 
 void MediaStreamTrackImpl::applyConstraints(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     const MediaTrackConstraints* constraints) {
   String error_message;
   ExecutionContext* execution_context =

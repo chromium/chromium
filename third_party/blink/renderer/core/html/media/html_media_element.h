@@ -90,7 +90,7 @@ class MediaSourceAttachment;
 class MediaSourceHandle;
 class MediaSourceTracer;
 class MediaStreamDescriptor;
-class ScriptPromiseResolver;
+class ScriptPromiseResolverBase;
 class ScriptState;
 class TextTrack;
 class TextTrackContainer;
@@ -239,7 +239,7 @@ class CORE_EXPORT HTMLMediaElement
   bool Autoplay() const;
   bool Loop() const;
   void SetLoop(bool);
-  ScriptPromiseTyped<IDLUndefined> playForBindings(ScriptState*);
+  ScriptPromise<IDLUndefined> playForBindings(ScriptState*);
   std::optional<DOMExceptionCode> Play();
 
   // Called when the video should pause to let audio descriptions finish.
@@ -876,11 +876,11 @@ class CORE_EXPORT HTMLMediaElement
 
   Member<CueTimeline> cue_timeline_;
 
-  HeapVector<Member<ScriptPromiseResolver>> play_promise_resolvers_;
+  HeapVector<Member<ScriptPromiseResolverBase>> play_promise_resolvers_;
   TaskHandle play_promise_resolve_task_handle_;
   TaskHandle play_promise_reject_task_handle_;
-  HeapVector<Member<ScriptPromiseResolver>> play_promise_resolve_list_;
-  HeapVector<Member<ScriptPromiseResolver>> play_promise_reject_list_;
+  HeapVector<Member<ScriptPromiseResolverBase>> play_promise_resolve_list_;
+  HeapVector<Member<ScriptPromiseResolverBase>> play_promise_reject_list_;
   PlayPromiseError play_promise_error_code_;
 
   // HTMLMediaElement and its MediaElementAudioSourceNode in case it is provided

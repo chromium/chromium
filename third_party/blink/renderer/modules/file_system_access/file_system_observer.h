@@ -36,11 +36,10 @@ class FileSystemObserver : public ScriptWrappable,
       mojo::PendingRemote<mojom::blink::FileSystemAccessObserverHost>
           host_remote);
 
-  ScriptPromiseTyped<IDLUndefined> observe(
-      ScriptState*,
-      FileSystemHandle* handle,
-      FileSystemObserverObserveOptions* options,
-      ExceptionState&);
+  ScriptPromise<IDLUndefined> observe(ScriptState*,
+                                      FileSystemHandle* handle,
+                                      FileSystemObserverObserveOptions* options,
+                                      ExceptionState&);
   void unobserve(FileSystemHandle* handle);
   void disconnect();
 
@@ -51,7 +50,7 @@ class FileSystemObserver : public ScriptWrappable,
   void Trace(Visitor* visitor) const override;
 
  private:
-  void DidObserve(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+  void DidObserve(ScriptPromiseResolver<IDLUndefined>* resolver,
                   mojom::blink::FileSystemAccessErrorPtr result,
                   mojo::PendingReceiver<mojom::blink::FileSystemAccessObserver>
                       observer_receiver);

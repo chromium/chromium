@@ -51,7 +51,7 @@ class MODULES_EXPORT MIDIAccessInitializer
   MIDIAccessInitializer(ScriptState*, const MIDIOptions*);
   virtual ~MIDIAccessInitializer() = default;
 
-  ScriptPromiseTyped<MIDIAccess> Start(LocalDOMWindow*);
+  ScriptPromise<MIDIAccess> Start(LocalDOMWindow*);
 
   // MIDIDispatcher::Client
   void DidAddInputPort(const String& id,
@@ -83,7 +83,7 @@ class MODULES_EXPORT MIDIAccessInitializer
   void OnPermissionsUpdated(mojom::blink::PermissionStatus);
   void OnPermissionUpdated(mojom::blink::PermissionStatus);
 
-  Member<ScriptPromiseResolverTyped<MIDIAccess>> resolver_;
+  Member<ScriptPromiseResolver<MIDIAccess>> resolver_;
   Member<MIDIDispatcher> dispatcher_;
   Vector<PortDescriptor> port_descriptors_;
   Member<const MIDIOptions> options_;

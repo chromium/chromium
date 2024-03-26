@@ -178,8 +178,8 @@ class CORE_EXPORT Animation : public EventTarget,
   void updatePlaybackRate(double playback_rate,
                           ExceptionState& = ASSERT_NO_EXCEPTION);
 
-  ScriptPromiseTyped<Animation> finished(ScriptState*);
-  ScriptPromiseTyped<Animation> ready(ScriptState*);
+  ScriptPromise<Animation> finished(ScriptState*);
+  ScriptPromise<Animation> ready(ScriptState*);
 
   bool Paused() const {
     return CalculateAnimationPlayState() == kPaused && !is_paused_for_testing_;

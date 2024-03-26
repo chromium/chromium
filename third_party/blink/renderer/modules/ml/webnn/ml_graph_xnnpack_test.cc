@@ -579,7 +579,7 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     auto b_buffer_view = CreateArrayBufferViewForOperand(b_operand);
     auto output_buffer_view = CreateArrayBufferViewForOperand(output_operand);
     auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolverTyped<MLComputeResult>>(
+        MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
             scope.GetScriptState());
     ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
     graph->Compute(
@@ -607,7 +607,7 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     ASSERT_TRUE(b_buffer_view->IsDetached());
     auto output_buffer_view = CreateArrayBufferViewForOperand(output_operand);
     auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolverTyped<MLComputeResult>>(
+        MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
             scope.GetScriptState());
     ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
     graph->Compute(
@@ -635,7 +635,7 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     output_buffer_view->DetachForTesting();
     ASSERT_TRUE(output_buffer_view->IsDetached());
     auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolverTyped<MLComputeResult>>(
+        MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
             scope.GetScriptState());
     ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
     graph->Compute(
@@ -662,7 +662,7 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     auto b_buffer_view = CreateArrayBufferViewForOperand(b_operand);
     auto output_buffer_view = CreateArrayBufferViewForOperand(output_operand);
     auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolverTyped<MLComputeResult>>(
+        MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
             scope.GetScriptState());
     ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
     graph->Compute(
@@ -704,7 +704,7 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     size_t output_buffer_view_byte_length = output_buffer_view->byteLength();
     void* output_buffer_view_base_address = output_buffer_view->BaseAddress();
     auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolverTyped<MLComputeResult>>(
+        MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
             scope.GetScriptState());
     ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
     graph->Compute(

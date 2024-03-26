@@ -54,12 +54,12 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   void SetConstraints(MediaTrackConstraints* constraints) {
     constraints_ = constraints;
   }
-  ScriptPromiseTyped<IDLUndefined> applyConstraints(
+  ScriptPromise<IDLUndefined> applyConstraints(
       ScriptState* state,
       const MediaTrackConstraints* constraints) override {
     return applyConstraintsScriptState(state, constraints);
   }
-  void applyConstraints(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+  void applyConstraints(ScriptPromiseResolver<IDLUndefined>* resolver,
                         const MediaTrackConstraints* constraints) override {
     applyConstraintsResolver(resolver, constraints);
   }
@@ -113,10 +113,10 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   MOCK_METHOD1(clone, MediaStreamTrack*(ExecutionContext*));
   MOCK_METHOD0(stats, MediaStreamTrackVideoStats*());
   MOCK_METHOD2(applyConstraintsScriptState,
-               ScriptPromiseTyped<IDLUndefined>(ScriptState*,
-                                                const MediaTrackConstraints*));
+               ScriptPromise<IDLUndefined>(ScriptState*,
+                                           const MediaTrackConstraints*));
   MOCK_METHOD2(applyConstraintsResolver,
-               void(ScriptPromiseResolverTyped<IDLUndefined>*,
+               void(ScriptPromiseResolver<IDLUndefined>*,
                     const MediaTrackConstraints*));
   MOCK_METHOD1(SetInitialConstraints, void(const MediaConstraints&));
   MOCK_METHOD1(SetConstraints, void(const MediaConstraints&));

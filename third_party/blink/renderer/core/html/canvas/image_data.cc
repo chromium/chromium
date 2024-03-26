@@ -289,7 +289,7 @@ ImageData* ImageData::CreateForTest(const gfx::Size& size,
                                          storage_format);
 }
 
-ScriptPromiseTyped<ImageBitmap> ImageData::CreateImageBitmap(
+ScriptPromise<ImageBitmap> ImageData::CreateImageBitmap(
     ScriptState* script_state,
     std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
@@ -297,7 +297,7 @@ ScriptPromiseTyped<ImageBitmap> ImageData::CreateImageBitmap(
   if (IsBufferBaseDetached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The source data has been detached.");
-    return ScriptPromiseTyped<ImageBitmap>();
+    return ScriptPromise<ImageBitmap>();
   }
   return ImageBitmapSource::FulfillImageBitmap(
       script_state, MakeGarbageCollected<ImageBitmap>(this, crop_rect, options),

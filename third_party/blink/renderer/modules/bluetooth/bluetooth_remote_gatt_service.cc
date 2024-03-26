@@ -40,7 +40,7 @@ void BluetoothRemoteGATTService::GetCharacteristicsCallback(
     const String& service_instance_id,
     const String& requested_characteristic_uuid,
     mojom::blink::WebBluetoothGATTQueryQuantity quantity,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     mojom::blink::WebBluetoothResult result,
     std::optional<Vector<mojom::blink::WebBluetoothRemoteGATTCharacteristicPtr>>
         characteristics) {
@@ -87,7 +87,7 @@ void BluetoothRemoteGATTService::GetCharacteristicsCallback(
   }
 }
 
-ScriptPromiseTyped<BluetoothRemoteGATTCharacteristic>
+ScriptPromise<BluetoothRemoteGATTCharacteristic>
 BluetoothRemoteGATTService::getCharacteristic(
     ScriptState* script_state,
     const V8BluetoothCharacteristicUUID* characteristic,
@@ -95,10 +95,10 @@ BluetoothRemoteGATTService::getCharacteristic(
   String characteristic_uuid =
       BluetoothUUID::getCharacteristic(characteristic, exception_state);
   if (exception_state.HadException())
-    return ScriptPromiseTyped<BluetoothRemoteGATTCharacteristic>();
+    return ScriptPromise<BluetoothRemoteGATTCharacteristic>();
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<BluetoothRemoteGATTCharacteristic>>(
+      ScriptPromiseResolver<BluetoothRemoteGATTCharacteristic>>(
       script_state, exception_state.GetContext());
   GetCharacteristicsImpl(resolver, exception_state,
                          mojom::blink::WebBluetoothGATTQueryQuantity::SINGLE,
@@ -106,7 +106,7 @@ BluetoothRemoteGATTService::getCharacteristic(
   return resolver->Promise();
 }
 
-ScriptPromiseTyped<IDLSequence<BluetoothRemoteGATTCharacteristic>>
+ScriptPromise<IDLSequence<BluetoothRemoteGATTCharacteristic>>
 BluetoothRemoteGATTService::getCharacteristics(
     ScriptState* script_state,
     const V8BluetoothCharacteristicUUID* characteristic,
@@ -114,10 +114,10 @@ BluetoothRemoteGATTService::getCharacteristics(
   String characteristic_uuid =
       BluetoothUUID::getCharacteristic(characteristic, exception_state);
   if (exception_state.HadException())
-    return ScriptPromiseTyped<IDLSequence<BluetoothRemoteGATTCharacteristic>>();
+    return ScriptPromise<IDLSequence<BluetoothRemoteGATTCharacteristic>>();
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<
-      IDLSequence<BluetoothRemoteGATTCharacteristic>>>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<IDLSequence<BluetoothRemoteGATTCharacteristic>>>(
       script_state, exception_state.GetContext());
   GetCharacteristicsImpl(resolver, exception_state,
                          mojom::blink::WebBluetoothGATTQueryQuantity::MULTIPLE,
@@ -125,12 +125,12 @@ BluetoothRemoteGATTService::getCharacteristics(
   return resolver->Promise();
 }
 
-ScriptPromiseTyped<IDLSequence<BluetoothRemoteGATTCharacteristic>>
+ScriptPromise<IDLSequence<BluetoothRemoteGATTCharacteristic>>
 BluetoothRemoteGATTService::getCharacteristics(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<
-      IDLSequence<BluetoothRemoteGATTCharacteristic>>>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<IDLSequence<BluetoothRemoteGATTCharacteristic>>>(
       script_state, exception_state.GetContext());
   GetCharacteristicsImpl(resolver, exception_state,
                          mojom::blink::WebBluetoothGATTQueryQuantity::MULTIPLE);
@@ -138,7 +138,7 @@ BluetoothRemoteGATTService::getCharacteristics(
 }
 
 void BluetoothRemoteGATTService::GetCharacteristicsImpl(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     ExceptionState& exception_state,
     mojom::blink::WebBluetoothGATTQueryQuantity quantity,
     const String& characteristics_uuid) {

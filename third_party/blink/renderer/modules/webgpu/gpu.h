@@ -76,7 +76,7 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   void ContextDestroyed() override;
 
   // gpu.idl
-  ScriptPromiseTyped<IDLNullable<GPUAdapter>> requestAdapter(
+  ScriptPromise<IDLNullable<GPUAdapter>> requestAdapter(
       ScriptState* script_state,
       const GPURequestAdapterOptions* options);
   String getPreferredCanvasFormat();
@@ -102,7 +102,7 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   void OnRequestAdapterCallback(
       ScriptState* script_state,
       const GPURequestAdapterOptions* options,
-      ScriptPromiseResolverTyped<IDLNullable<GPUAdapter>>* resolver,
+      ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver,
       WGPURequestAdapterStatus status,
       WGPUAdapter adapter,
       const char* error_message);
@@ -113,7 +113,7 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
 
   void RequestAdapterImpl(ScriptState* script_state,
                           const GPURequestAdapterOptions* options,
-                          ScriptPromiseResolverTyped<IDLNullable<GPUAdapter>>*);
+                          ScriptPromiseResolver<IDLNullable<GPUAdapter>>*);
 
   Member<WGSLLanguageFeatures> wgsl_language_features_;
 

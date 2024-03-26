@@ -451,10 +451,11 @@ SubCaptureTarget* ToSubCaptureTarget(const blink::ScriptValue& value) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-ScriptPromise ProduceSubCaptureTargetAndGetPromise(V8TestingScope& scope,
-                                                   SubCaptureTarget::Type type,
-                                                   MediaDevices* media_devices,
-                                                   Element* element) {
+ScriptPromiseUntyped ProduceSubCaptureTargetAndGetPromise(
+    V8TestingScope& scope,
+    SubCaptureTarget::Type type,
+    MediaDevices* media_devices,
+    Element* element) {
   switch (type) {
     case SubCaptureTarget::Type::kCropTarget:
       return media_devices->ProduceCropTarget(scope.GetScriptState(), element,
@@ -475,7 +476,7 @@ void ProduceSubCaptureTargetAndGetTester(
     MediaDevices* media_devices,
     Element* element,
     std::optional<ScriptPromiseTester>& tester) {
-  const ScriptPromise promise =
+  const ScriptPromiseUntyped promise =
       ProduceSubCaptureTargetAndGetPromise(scope, type, media_devices, element);
   tester.emplace(scope.GetScriptState(), promise);
 }
@@ -555,7 +556,7 @@ TEST_F(MediaDevicesTest, GetUserMediaCanBeCalled) {
   V8TestingScope scope;
   UserMediaStreamConstraints* constraints =
       UserMediaStreamConstraints::Create();
-  ScriptPromise promise =
+  ScriptPromiseUntyped promise =
       GetMediaDevices(scope.GetWindow())
           ->getUserMedia(scope.GetScriptState(), constraints,
                          scope.GetExceptionState());
@@ -964,7 +965,7 @@ TEST_F(MediaDevicesTest, DistinctIdsForDistinctTypes) {
 
   Document& document = GetDocument();
   Element* const div = document.getElementById(AtomicString("test-div"));
-  const ScriptPromise first_promise = media_devices->ProduceCropTarget(
+  const ScriptPromiseUntyped first_promise = media_devices->ProduceCropTarget(
       scope.GetScriptState(), div, scope.GetExceptionState());
   ScriptPromiseTester first_tester(scope.GetScriptState(), first_promise);
   first_tester.WaitUntilSettled();
@@ -973,8 +974,9 @@ TEST_F(MediaDevicesTest, DistinctIdsForDistinctTypes) {
 
   // The second call to |produceSubCaptureTargetId|, given the different type,
   // should return a different ID.
-  const ScriptPromise second_promise = media_devices->ProduceRestrictionTarget(
-      scope.GetScriptState(), div, scope.GetExceptionState());
+  const ScriptPromiseUntyped second_promise =
+      media_devices->ProduceRestrictionTarget(scope.GetScriptState(), div,
+                                              scope.GetExceptionState());
   ScriptPromiseTester second_tester(scope.GetScriptState(), second_promise);
   second_tester.WaitUntilSettled();
   EXPECT_TRUE(second_tester.IsFulfilled());
@@ -1038,7 +1040,7 @@ TEST_P(ProduceSubCaptureTargetTest, IdUnsupportedOnAndroid) {
 
   Document& document = GetDocument();
   Element* const div = document.getElementById(AtomicString("test-div"));
-  const ScriptPromise div_promise =
+  const ScriptPromiseUntyped div_promise =
       ProduceSubCaptureTargetAndGetPromise(scope, type_, media_devices, div);
   platform()->RunUntilIdle();
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -1107,7 +1109,7 @@ TEST_P(ProduceSubCaptureTargetTest, IdRejectedIfDifferentWindow) {
 
   Document& document = GetDocument();
   Element* const div = document.getElementById(AtomicString("test-div"));
-  const ScriptPromise element_promise =
+  const ScriptPromiseUntyped element_promise =
       ProduceSubCaptureTargetAndGetPromise(scope, type_, media_devices, div);
   platform()->RunUntilIdle();
   EXPECT_TRUE(element_promise.IsEmpty());

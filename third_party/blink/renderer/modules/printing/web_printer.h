@@ -31,10 +31,10 @@ class MODULES_EXPORT WebPrinter : public ScriptWrappable {
   ~WebPrinter() override;
 
   WebPrinterAttributes* cachedAttributes() const { return attributes_; }
-  ScriptPromiseTyped<WebPrinterAttributes> fetchAttributes(
+  ScriptPromise<WebPrinterAttributes> fetchAttributes(
       ScriptState* script_state,
       ExceptionState& exception_state);
-  ScriptPromiseTyped<WebPrintJob> printJob(
+  ScriptPromise<WebPrintJob> printJob(
       ScriptState* script_state,
       const String& job_name,
       const WebPrintDocumentDescription* document,
@@ -44,14 +44,14 @@ class MODULES_EXPORT WebPrinter : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
  private:
-  void OnFetchAttributes(ScriptPromiseResolverTyped<WebPrinterAttributes>*,
+  void OnFetchAttributes(ScriptPromiseResolver<WebPrinterAttributes>*,
                          mojom::blink::WebPrinterFetchResultPtr result);
 
-  void OnPrint(ScriptPromiseResolverTyped<WebPrintJob>* resolver,
+  void OnPrint(ScriptPromiseResolver<WebPrintJob>* resolver,
                mojom::blink::WebPrintResultPtr result);
 
   Member<WebPrinterAttributes> attributes_;
-  Member<ScriptPromiseResolverTyped<WebPrinterAttributes>>
+  Member<ScriptPromiseResolver<WebPrinterAttributes>>
       fetch_attributes_resolver_;
   HeapMojoRemote<mojom::blink::WebPrinter> printer_;
 };

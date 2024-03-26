@@ -97,7 +97,7 @@ BarcodeDetector::BarcodeDetector(ExecutionContext* context,
 }
 
 // static
-ScriptPromiseTyped<IDLSequence<V8BarcodeFormat>>
+ScriptPromise<IDLSequence<V8BarcodeFormat>>
 BarcodeDetector::getSupportedFormats(ScriptState* script_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   return BarcodeDetectorStatics::From(context)->EnumerateSupportedFormats(
@@ -139,19 +139,19 @@ String BarcodeDetector::BarcodeFormatToString(
   }
 }
 
-ScriptPromiseTyped<IDLSequence<DetectedBarcode>> BarcodeDetector::detect(
+ScriptPromise<IDLSequence<DetectedBarcode>> BarcodeDetector::detect(
     ScriptState* script_state,
     const V8ImageBitmapSource* image_source,
     ExceptionState& exception_state) {
   std::optional<SkBitmap> bitmap =
       GetBitmapFromSource(script_state, image_source, exception_state);
   if (!bitmap) {
-    return ScriptPromiseTyped<IDLSequence<DetectedBarcode>>();
+    return ScriptPromise<IDLSequence<DetectedBarcode>>();
   }
 
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<DetectedBarcode>>>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<DetectedBarcode>>>(
+          script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   if (bitmap->isNull()) {
     resolver->Resolve(HeapVector<Member<DetectedBarcode>>());
@@ -172,7 +172,7 @@ ScriptPromiseTyped<IDLSequence<DetectedBarcode>> BarcodeDetector::detect(
 }
 
 void BarcodeDetector::OnDetectBarcodes(
-    ScriptPromiseResolverTyped<IDLSequence<DetectedBarcode>>* resolver,
+    ScriptPromiseResolver<IDLSequence<DetectedBarcode>>* resolver,
     Vector<shape_detection::mojom::blink::BarcodeDetectionResultPtr>
         barcode_detection_results) {
   DCHECK(detect_requests_.Contains(resolver));
@@ -204,7 +204,7 @@ void BarcodeDetector::OnDetectBarcodes(
 void BarcodeDetector::OnConnectionError() {
   service_.reset();
 
-  HeapHashSet<Member<ScriptPromiseResolver>> resolvers;
+  HeapHashSet<Member<ScriptPromiseResolverBase>> resolvers;
   resolvers.swap(detect_requests_);
   for (const auto& resolver : resolvers) {
     // Check if callback's resolver is still valid.

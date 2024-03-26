@@ -24,7 +24,7 @@ BluetoothRemoteGATTDescriptor::BluetoothRemoteGATTDescriptor(
     : descriptor_(std::move(descriptor)), characteristic_(characteristic) {}
 
 void BluetoothRemoteGATTDescriptor::ReadValueCallback(
-    ScriptPromiseResolverTyped<NotShared<DOMDataView>>* resolver,
+    ScriptPromiseResolver<NotShared<DOMDataView>>* resolver,
     mojom::blink::WebBluetoothResult result,
     const std::optional<Vector<uint8_t>>& value) {
   if (!resolver->GetExecutionContext() ||
@@ -49,25 +49,25 @@ void BluetoothRemoteGATTDescriptor::ReadValueCallback(
   }
 }
 
-ScriptPromiseTyped<NotShared<DOMDataView>>
-BluetoothRemoteGATTDescriptor::readValue(ScriptState* script_state,
-                                         ExceptionState& exception_state) {
+ScriptPromise<NotShared<DOMDataView>> BluetoothRemoteGATTDescriptor::readValue(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!GetGatt()->connected() || !GetBluetooth()->IsServiceBound()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNetworkError,
         BluetoothError::CreateNotConnectedExceptionMessage(
             BluetoothOperation::kGATT));
-    return ScriptPromiseTyped<NotShared<DOMDataView>>();
+    return ScriptPromise<NotShared<DOMDataView>>();
   }
 
   if (!GetGatt()->device()->IsValidDescriptor(descriptor_->instance_id)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       CreateInvalidDescriptorErrorMessage());
-    return ScriptPromiseTyped<NotShared<DOMDataView>>();
+    return ScriptPromise<NotShared<DOMDataView>>();
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<NotShared<DOMDataView>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<NotShared<DOMDataView>>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   GetGatt()->AddToActiveAlgorithms(resolver);
@@ -80,7 +80,7 @@ BluetoothRemoteGATTDescriptor::readValue(ScriptState* script_state,
 }
 
 void BluetoothRemoteGATTDescriptor::WriteValueCallback(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     const Vector<uint8_t>& value,
     mojom::blink::WebBluetoothResult result) {
   if (!resolver->GetExecutionContext() ||
@@ -103,7 +103,7 @@ void BluetoothRemoteGATTDescriptor::WriteValueCallback(
   }
 }
 
-ScriptPromiseTyped<IDLUndefined> BluetoothRemoteGATTDescriptor::writeValue(
+ScriptPromise<IDLUndefined> BluetoothRemoteGATTDescriptor::writeValue(
     ScriptState* script_state,
     const DOMArrayPiece& value,
     ExceptionState& exception_state) {
@@ -112,19 +112,19 @@ ScriptPromiseTyped<IDLUndefined> BluetoothRemoteGATTDescriptor::writeValue(
         DOMExceptionCode::kNetworkError,
         BluetoothError::CreateNotConnectedExceptionMessage(
             BluetoothOperation::kGATT));
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   if (!GetGatt()->device()->IsValidDescriptor(descriptor_->instance_id)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       CreateInvalidDescriptorErrorMessage());
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   if (value.IsDetached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Value buffer has been detached.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   // Partial implementation of writeValue algorithm:
@@ -137,7 +137,7 @@ ScriptPromiseTyped<IDLUndefined> BluetoothRemoteGATTDescriptor::writeValue(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
         "Value can't exceed 512 bytes.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   // Let valueVector be a copy of the bytes held by value.
@@ -145,9 +145,8 @@ ScriptPromiseTyped<IDLUndefined> BluetoothRemoteGATTDescriptor::writeValue(
   value_vector.Append(value.Bytes(),
                       static_cast<wtf_size_t>(value.ByteLength()));
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   GetGatt()->AddToActiveAlgorithms(resolver);
   GetBluetooth()->Service()->RemoteDescriptorWriteValue(

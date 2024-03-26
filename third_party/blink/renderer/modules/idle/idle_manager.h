@@ -31,8 +31,8 @@ class MODULES_EXPORT IdleManager final : public GarbageCollected<IdleManager>,
   explicit IdleManager(ExecutionContext*);
   ~IdleManager();
 
-  ScriptPromiseTyped<V8PermissionState> RequestPermission(ScriptState*,
-                                                          ExceptionState&);
+  ScriptPromise<V8PermissionState> RequestPermission(ScriptState*,
+                                                     ExceptionState&);
   void AddMonitor(mojo::PendingRemote<mojom::blink::IdleMonitor>,
                   mojom::blink::IdleManager::AddMonitorCallback);
 
@@ -42,9 +42,8 @@ class MODULES_EXPORT IdleManager final : public GarbageCollected<IdleManager>,
       mojo::PendingRemote<mojom::blink::IdleManager> idle_service);
 
  private:
-  void OnPermissionRequestComplete(
-      ScriptPromiseResolverTyped<V8PermissionState>*,
-      mojom::blink::PermissionStatus);
+  void OnPermissionRequestComplete(ScriptPromiseResolver<V8PermissionState>*,
+                                   mojom::blink::PermissionStatus);
 
   HeapMojoRemote<mojom::blink::IdleManager> idle_service_;
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;

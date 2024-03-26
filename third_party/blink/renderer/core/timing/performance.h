@@ -108,7 +108,7 @@ class CORE_EXPORT Performance : public EventTarget {
   virtual PerformanceTiming* timing() const;
   virtual PerformanceNavigation* navigation() const;
   virtual MemoryInfo* memory(ScriptState*) const;
-  virtual ScriptPromiseTyped<MemoryMeasurement> measureUserAgentSpecificMemory(
+  virtual ScriptPromise<MemoryMeasurement> measureUserAgentSpecificMemory(
       ScriptState*,
       ExceptionState& exception_state) const;
   virtual EventCounts* eventCounts();

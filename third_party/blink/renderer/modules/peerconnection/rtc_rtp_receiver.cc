@@ -163,12 +163,11 @@ RTCRtpReceiver::getContributingSources(ScriptState* script_state,
       script_state, exception_state, this);
 }
 
-ScriptPromiseTyped<RTCStatsReport> RTCRtpReceiver::getStats(
+ScriptPromise<RTCStatsReport> RTCRtpReceiver::getStats(
     ScriptState* script_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<RTCStatsReport>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<RTCStatsReport>>(script_state);
   auto promise = resolver->Promise();
   receiver_->GetStats(WTF::BindOnce(WebRTCStatsReportCallbackResolver,
                                     WrapPersistent(resolver)));

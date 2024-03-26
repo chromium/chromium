@@ -342,9 +342,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
       const String& pseudo_elt = String()) const;
 
   // Acessibility Object Model
-  ScriptPromiseTyped<ComputedAccessibleNode> getComputedAccessibleNode(
-      ScriptState*,
-      Element*);
+  ScriptPromise<ComputedAccessibleNode> getComputedAccessibleNode(ScriptState*,
+                                                                  Element*);
 
   // WebKit animation extensions
   int requestAnimationFrame(V8FrameRequestCallback*);

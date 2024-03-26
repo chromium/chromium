@@ -36,7 +36,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
  public:
   // Resolves `resolver` with a newly created MLContext. The caller must call
   // `Promise()` on `resolver` before calling this method.
-  static void ValidateAndCreate(ScriptPromiseResolverTyped<MLContext>* resolver,
+  static void ValidateAndCreate(ScriptPromiseResolver<MLContext>* resolver,
                                 MLContextOptions* options,
                                 ML* ml);
 
@@ -66,12 +66,11 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
   // IDL interface:
-  ScriptPromiseTyped<MLComputeResult> compute(
-      ScriptState* script_state,
-      MLGraph* graph,
-      const MLNamedArrayBufferViews& inputs,
-      const MLNamedArrayBufferViews& outputs,
-      ExceptionState& exception_state);
+  ScriptPromise<MLComputeResult> compute(ScriptState* script_state,
+                                         MLGraph* graph,
+                                         const MLNamedArrayBufferViews& inputs,
+                                         const MLNamedArrayBufferViews& outputs,
+                                         ExceptionState& exception_state);
 
   MLBuffer* createBuffer(ScriptState* script_state,
                          const MLBufferDescriptor* descriptor,
@@ -93,7 +92,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // Return `CreateContextResult::kNotSupported` on non-supported input
   // configuration.
   void OnCreateWebNNContext(ScopedMLTrace scoped_trace,
-                            ScriptPromiseResolverTyped<MLContext>* resolver,
+                            ScriptPromiseResolver<MLContext>* resolver,
                             webnn::mojom::blink::CreateContextResultPtr result);
 
   V8MLDevicePreference device_preference_;

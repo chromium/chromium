@@ -69,24 +69,22 @@ class MODULES_EXPORT WebTransport final
   ~WebTransport() override;
 
   // WebTransport IDL implementation.
-  ScriptPromiseTyped<WritableStream> createUnidirectionalStream(
-      ScriptState*,
-      ExceptionState&);
+  ScriptPromise<WritableStream> createUnidirectionalStream(ScriptState*,
+                                                           ExceptionState&);
   ReadableStream* incomingUnidirectionalStreams();
 
-  ScriptPromiseTyped<BidirectionalStream> createBidirectionalStream(
-      ScriptState*,
-      ExceptionState&);
+  ScriptPromise<BidirectionalStream> createBidirectionalStream(ScriptState*,
+                                                               ExceptionState&);
   ReadableStream* incomingBidirectionalStreams();
 
   DatagramDuplexStream* datagrams();
   WritableStream* datagramWritable();
   ReadableStream* datagramReadable();
   void close(WebTransportCloseInfo*);
-  ScriptPromiseTyped<IDLUndefined> ready(ScriptState*);
-  ScriptPromiseTyped<WebTransportCloseInfo> closed(ScriptState*);
+  ScriptPromise<IDLUndefined> ready(ScriptState*);
+  ScriptPromise<WebTransportCloseInfo> closed(ScriptState*);
   void setDatagramWritableQueueExpirationDuration(double ms);
-  ScriptPromiseTyped<WebTransportConnectionStats> getStats(ScriptState*);
+  ScriptPromise<WebTransportConnectionStats> getStats(ScriptState*);
 
   // WebTransportHandshakeClient implementation
   void OnConnectionEstablished(
@@ -151,12 +149,12 @@ class MODULES_EXPORT WebTransport final
   void OnConnectionError();
   void RejectPendingStreamResolvers(v8::Local<v8::Value> error);
   void HandlePendingGetStatsResolvers(v8::Local<v8::Value> error);
-  void OnCreateSendStreamResponse(ScriptPromiseResolverTyped<WritableStream>*,
+  void OnCreateSendStreamResponse(ScriptPromiseResolver<WritableStream>*,
                                   mojo::ScopedDataPipeProducerHandle,
                                   bool succeeded,
                                   uint32_t stream_id);
   void OnCreateBidirectionalStreamResponse(
-      ScriptPromiseResolverTyped<BidirectionalStream>*,
+      ScriptPromiseResolver<BidirectionalStream>*,
       mojo::ScopedDataPipeProducerHandle,
       mojo::ScopedDataPipeConsumerHandle,
       bool succeeded,
@@ -225,12 +223,12 @@ class MODULES_EXPORT WebTransport final
   // stats are requested after the transport is closed.
   Member<WebTransportConnectionStats> latest_stats_;
   // Tracks resolvers for in-progress getStats() calls.
-  HeapVector<Member<ScriptPromiseResolverTyped<WebTransportConnectionStats>>>
+  HeapVector<Member<ScriptPromiseResolver<WebTransportConnectionStats>>>
       pending_get_stats_resolvers_;
 
   // Tracks resolvers for in-progress createSendStream() and
   // createBidirectionalStream() operations so they can be rejected.
-  HeapHashSet<Member<ScriptPromiseResolver>> create_stream_resolvers_;
+  HeapHashSet<Member<ScriptPromiseResolverBase>> create_stream_resolvers_;
 
   // The [[ReceivedStreams]] slot.
   // https://w3c.github.io/webtransport/#webtransport-receivedstreams

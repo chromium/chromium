@@ -14,7 +14,7 @@
 
 namespace blink {
 
-ScriptPromise UnderlyingSourceBase::StartWrapper(
+ScriptPromiseUntyped UnderlyingSourceBase::StartWrapper(
     ScriptState* script_state,
     ReadableStreamDefaultController* controller,
     ExceptionState& exception_state) {
@@ -28,17 +28,17 @@ ScriptPromise UnderlyingSourceBase::StartWrapper(
   return Start(script_state, exception_state);
 }
 
-ScriptPromise UnderlyingSourceBase::Start(ScriptState* script_state,
-                                          ExceptionState&) {
-  return ScriptPromise::CastUndefined(script_state);
+ScriptPromiseUntyped UnderlyingSourceBase::Start(ScriptState* script_state,
+                                                 ExceptionState&) {
+  return ScriptPromiseUntyped::CastUndefined(script_state);
 }
 
-ScriptPromise UnderlyingSourceBase::Pull(ScriptState* script_state,
-                                         ExceptionState&) {
-  return ScriptPromise::CastUndefined(script_state);
+ScriptPromiseUntyped UnderlyingSourceBase::Pull(ScriptState* script_state,
+                                                ExceptionState&) {
+  return ScriptPromiseUntyped::CastUndefined(script_state);
 }
 
-ScriptPromise UnderlyingSourceBase::CancelWrapper(
+ScriptPromiseUntyped UnderlyingSourceBase::CancelWrapper(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {
@@ -47,10 +47,10 @@ ScriptPromise UnderlyingSourceBase::CancelWrapper(
   return Cancel(script_state, reason, exception_state);
 }
 
-ScriptPromise UnderlyingSourceBase::Cancel(ScriptState* script_state,
-                                           ScriptValue reason,
-                                           ExceptionState&) {
-  return ScriptPromise::CastUndefined(script_state);
+ScriptPromiseUntyped UnderlyingSourceBase::Cancel(ScriptState* script_state,
+                                                  ScriptValue reason,
+                                                  ExceptionState&) {
+  return ScriptPromiseUntyped::CastUndefined(script_state);
 }
 
 void UnderlyingSourceBase::ContextDestroyed() {

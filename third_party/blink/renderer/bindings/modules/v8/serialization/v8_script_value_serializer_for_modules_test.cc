@@ -333,7 +333,7 @@ template <typename IDLType, typename T>
 WebCryptoResult ToWebCryptoResult(ScriptState* script_state,
                                   base::RepeatingCallback<void(T)> function) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLType>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLType>>(script_state);
   auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
   resolver->Promise().Then(
       (MakeGarbageCollected<ScriptFunction>(

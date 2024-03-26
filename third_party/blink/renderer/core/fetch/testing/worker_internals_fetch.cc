@@ -28,13 +28,13 @@ Vector<String> WorkerInternalsFetch::getInternalResponseURLList(
   return url_list;
 }
 
-ScriptPromiseTyped<IDLLong> WorkerInternalsFetch::getInitialResourcePriority(
+ScriptPromise<IDLLong> WorkerInternalsFetch::getInitialResourcePriority(
     ScriptState* script_state,
     WorkerInternals& internals,
     const String& url,
     WorkerGlobalScope* worker_global) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLLong>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLLong>>(script_state);
   auto promise = resolver->Promise();
   KURL resource_url = url_test_helpers::ToKURL(url.Utf8());
 
@@ -47,7 +47,7 @@ ScriptPromiseTyped<IDLLong> WorkerInternalsFetch::getInitialResourcePriority(
 }
 
 void WorkerInternalsFetch::ResolveResourcePriority(
-    ScriptPromiseResolverTyped<IDLLong>* resolver,
+    ScriptPromiseResolver<IDLLong>* resolver,
     int resource_load_priority) {
   resolver->Resolve(resource_load_priority);
 }

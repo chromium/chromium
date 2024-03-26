@@ -78,7 +78,7 @@ bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
 }
 
 void RejectWithTypeError(const String& message,
-                         ScriptPromiseResolver* resolver) {
+                         ScriptPromiseResolverBase* resolver) {
   ScriptState::Scope scope(resolver->GetScriptState());
   v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
   resolver->Reject(V8ThrowException::CreateTypeError(isolate, message));
@@ -182,12 +182,12 @@ void HID::DeviceChanged(device::mojom::blink::HidDeviceInfoPtr device_info) {
   DeviceAdded(std::move(device_info));
 }
 
-ScriptPromiseTyped<IDLSequence<HIDDevice>> HID::getDevices(
+ScriptPromise<IDLSequence<HIDDevice>> HID::getDevices(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (ShouldBlockHidServiceCall(GetSupplementable()->DomWindow(),
                                 GetExecutionContext(), &exception_state)) {
-    return ScriptPromiseTyped<IDLSequence<HIDDevice>>();
+    return ScriptPromise<IDLSequence<HIDDevice>>();
   }
 
   auto* resolver = MakeGarbageCollected<HIDDeviceResolver>(
@@ -200,7 +200,7 @@ ScriptPromiseTyped<IDLSequence<HIDDevice>> HID::getDevices(
   return resolver->Promise();
 }
 
-ScriptPromiseTyped<IDLSequence<HIDDevice>> HID::requestDevice(
+ScriptPromise<IDLSequence<HIDDevice>> HID::requestDevice(
     ScriptState* script_state,
     const HIDDeviceRequestOptions* options,
     ExceptionState& exception_state) {
@@ -210,18 +210,18 @@ ScriptPromiseTyped<IDLSequence<HIDDevice>> HID::requestDevice(
   if (!window) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       kContextGone);
-    return ScriptPromiseTyped<IDLSequence<HIDDevice>>();
+    return ScriptPromise<IDLSequence<HIDDevice>>();
   }
 
   if (ShouldBlockHidServiceCall(window, GetExecutionContext(),
                                 &exception_state)) {
-    return ScriptPromiseTyped<IDLSequence<HIDDevice>>();
+    return ScriptPromise<IDLSequence<HIDDevice>>();
   }
 
   if (!LocalFrame::HasTransientUserActivation(window->GetFrame())) {
     exception_state.ThrowSecurityError(
         "Must be handling a user gesture to show a permission request.");
-    return ScriptPromiseTyped<IDLSequence<HIDDevice>>();
+    return ScriptPromise<IDLSequence<HIDDevice>>();
   }
 
   auto* resolver = MakeGarbageCollected<HIDDeviceResolver>(
@@ -248,7 +248,7 @@ ScriptPromiseTyped<IDLSequence<HIDDevice>> HID::requestDevice(
     if (options->exclusionFilters().size() == 0) {
       exception_state.ThrowTypeError(
           "'exclusionFilters', if present, must contain at least one filter.");
-      return ScriptPromiseTyped<IDLSequence<HIDDevice>>();
+      return ScriptPromise<IDLSequence<HIDDevice>>();
     }
     mojo_exclusion_filters.reserve(options->exclusionFilters().size());
     for (const auto& exclusion_filter : options->exclusionFilters()) {

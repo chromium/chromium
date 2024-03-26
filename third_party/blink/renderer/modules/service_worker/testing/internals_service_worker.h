@@ -18,8 +18,9 @@ class InternalsServiceWorker {
   STATIC_ONLY(InternalsServiceWorker);
 
  public:
-  static ScriptPromiseTyped<IDLUndefined>
-  terminateServiceWorker(ScriptState*, Internals&, ServiceWorker*);
+  static ScriptPromise<IDLUndefined> terminateServiceWorker(ScriptState*,
+                                                            Internals&,
+                                                            ServiceWorker*);
 };
 
 }  // namespace blink

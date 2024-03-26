@@ -36,7 +36,7 @@ class HandwritingDrawing final : public ScriptWrappable {
   void addStroke(HandwritingStroke* stroke);
   void removeStroke(const HandwritingStroke* stroke);
   void clear();
-  ScriptPromiseTyped<IDLSequence<HandwritingPrediction>> getPrediction(
+  ScriptPromise<IDLSequence<HandwritingPrediction>> getPrediction(
       ScriptState* script_state);
   const HeapVector<Member<HandwritingStroke>>& getStrokes();
 

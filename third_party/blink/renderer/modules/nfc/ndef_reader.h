@@ -53,19 +53,18 @@ class MODULES_EXPORT NDEFReader : public EventTarget,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(readingerror, kReadingerror)
 
   // Scan from an NFC tag.
-  ScriptPromiseTyped<IDLUndefined> scan(ScriptState* script_state,
-                                        const NDEFScanOptions* options,
-                                        ExceptionState& exception_state);
+  ScriptPromise<IDLUndefined> scan(ScriptState* script_state,
+                                   const NDEFScanOptions* options,
+                                   ExceptionState& exception_state);
 
   // Write NDEFMessageSource asynchronously to NFC tag.
-  ScriptPromiseTyped<IDLUndefined> write(
-      ScriptState* script_state,
-      const V8NDEFMessageSource* write_message,
-      const NDEFWriteOptions* options,
-      ExceptionState& exception_state);
+  ScriptPromise<IDLUndefined> write(ScriptState* script_state,
+                                    const V8NDEFMessageSource* write_message,
+                                    const NDEFWriteOptions* options,
+                                    ExceptionState& exception_state);
 
   // Make NFC tag permanently read-only.
-  ScriptPromiseTyped<IDLUndefined> makeReadOnly(
+  ScriptPromise<IDLUndefined> makeReadOnly(
       ScriptState* script_state,
       const NDEFMakeReadOnlyOptions* options,
       ExceptionState& exception_state);
@@ -95,13 +94,13 @@ class MODULES_EXPORT NDEFReader : public EventTarget,
 
   void WriteAbort();
   void WriteOnRequestCompleted(
-      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+      ScriptPromiseResolver<IDLUndefined>* resolver,
       std::unique_ptr<ScopedAbortState> scoped_abort_state,
       device::mojom::blink::NDEFErrorPtr error);
 
   void MakeReadOnlyAbort();
   void MakeReadOnlyOnRequestCompleted(
-      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+      ScriptPromiseResolver<IDLUndefined>* resolver,
       std::unique_ptr<ScopedAbortState> scoped_abort_state,
       device::mojom::blink::NDEFErrorPtr error);
 
@@ -111,7 +110,7 @@ class MODULES_EXPORT NDEFReader : public EventTarget,
 
   // Write Permission handling
   void WriteOnRequestPermission(
-      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+      ScriptPromiseResolver<IDLUndefined>* resolver,
       std::unique_ptr<ScopedAbortState> scoped_abort_state,
       const NDEFWriteOptions* options,
       device::mojom::blink::NDEFMessagePtr ndef_message,
@@ -119,7 +118,7 @@ class MODULES_EXPORT NDEFReader : public EventTarget,
 
   // Make read-only permission handling
   void MakeReadOnlyOnRequestPermission(
-      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+      ScriptPromiseResolver<IDLUndefined>* resolver,
       std::unique_ptr<ScopedAbortState> scoped_abort_state,
       const NDEFMakeReadOnlyOptions* options,
       mojom::blink::PermissionStatus status);
@@ -129,7 +128,7 @@ class MODULES_EXPORT NDEFReader : public EventTarget,
   // |scan_resolver_| is kept here to handle Mojo connection failures because in
   // that case the callback passed to Watch() won't be called and
   // mojo::WrapCallbackWithDefaultInvokeIfNotRun() is forbidden in Blink.
-  Member<ScriptPromiseResolverTyped<IDLUndefined>> scan_resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> scan_resolver_;
   Member<AbortSignal> scan_signal_;
   // The abort algorithm added during scan() needs to be valid while reading,
   // after resolving the scan() promise.
@@ -141,12 +140,12 @@ class MODULES_EXPORT NDEFReader : public EventTarget,
   // |write_requests_| are kept here to handle Mojo connection failures because
   // in that case the callback passed to Push() won't be called and
   // mojo::WrapCallbackWithDefaultInvokeIfNotRun() is forbidden in Blink.
-  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLUndefined>>> write_requests_;
+  HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>> write_requests_;
 
   // |make_read_only_requests_| are kept here to handle Mojo connection failures
   // because in that case the callback passed to MakeReadOnly() won't be called
   // and mojo::WrapCallbackWithDefaultInvokeIfNotRun() is forbidden in Blink.
-  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLUndefined>>>
+  HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>>
       make_read_only_requests_;
 };
 

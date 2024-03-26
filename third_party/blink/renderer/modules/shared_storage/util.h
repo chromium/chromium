@@ -17,7 +17,7 @@ namespace blink {
 class ExecutionContext;
 class ExceptionState;
 class ScriptState;
-class ScriptPromiseResolver;
+class ScriptPromiseResolverBase;
 class SecurityOrigin;
 class SharedStorageRunOperationMethodOptions;
 
@@ -35,7 +35,7 @@ bool CheckBrowsingContextIsValid(ScriptState& script_state,
 // `execution_context`. Reject the `resolver` with an error if disallowed.
 bool CheckSharedStoragePermissionsPolicy(ScriptState& script_state,
                                          ExecutionContext& execution_context,
-                                         ScriptPromiseResolver& resolver);
+                                         ScriptPromiseResolverBase& resolver);
 
 // Returns true if a valid privateAggregationConfig is provided or if no config
 // is provided. A config is invalid if an invalid (i.e. too long) context_id
@@ -50,7 +50,7 @@ bool CheckSharedStoragePermissionsPolicy(ScriptState& script_state,
 bool CheckPrivateAggregationConfig(
     const SharedStorageRunOperationMethodOptions& options,
     ScriptState& script_state,
-    ScriptPromiseResolver& resolver,
+    ScriptPromiseResolverBase& resolver,
     WTF::String& out_context_id,
     scoped_refptr<SecurityOrigin>& out_aggregation_coordinator_origin);
 

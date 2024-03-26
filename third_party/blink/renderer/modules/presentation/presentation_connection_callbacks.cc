@@ -18,7 +18,7 @@
 namespace blink {
 
 PresentationConnectionCallbacks::PresentationConnectionCallbacks(
-    ScriptPromiseResolverTyped<PresentationConnection>* resolver,
+    ScriptPromiseResolver<PresentationConnection>* resolver,
     PresentationRequest* request)
     : resolver_(resolver), request_(request), connection_(nullptr) {
   DCHECK(resolver_);
@@ -26,7 +26,7 @@ PresentationConnectionCallbacks::PresentationConnectionCallbacks(
 }
 
 PresentationConnectionCallbacks::PresentationConnectionCallbacks(
-    ScriptPromiseResolverTyped<PresentationConnection>* resolver,
+    ScriptPromiseResolver<PresentationConnection>* resolver,
     ControllerPresentationConnection* connection)
     : resolver_(resolver), request_(nullptr), connection_(connection) {
   DCHECK(resolver_);

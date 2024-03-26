@@ -36,14 +36,14 @@ class SelectorDirective : public Directive {
   void Trace(Visitor*) const override;
 
   // Web-exposed SelectorDirective interface.
-  ScriptPromiseTyped<Range> getMatchingRange(ScriptState*) const;
+  ScriptPromise<Range> getMatchingRange(ScriptState*) const;
 
  private:
   void ResolvePromise() const;
 
   // Mutable since it's only used to resolve the promise returned from
   // getMatchingRange and not part of this object's state.
-  mutable Member<ScriptPromiseResolverTyped<Range>> matching_range_resolver_;
+  mutable Member<ScriptPromiseResolver<Range>> matching_range_resolver_;
 
   // We'll cache the resulting range so that future calls to getMatchingRange
   // resolve immediately.

@@ -18,7 +18,7 @@ SetSinkIdResolver::SetSinkIdResolver(
     AudioContext& audio_context,
     const V8UnionAudioSinkOptionsOrString& sink_id)
     : audio_context_(audio_context),
-      resolver_(MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+      resolver_(MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           script_state)) {
   DCHECK(IsMainThread());
   // Currently the only available AudioSinkOptions is a type of a silent sink,

@@ -52,9 +52,9 @@ class PressureObserver final : public ScriptWrappable {
                                   ExceptionState&);
 
   // PressureObserver IDL implementation.
-  ScriptPromiseTyped<IDLUndefined> observe(ScriptState*,
-                                           V8PressureSource,
-                                           ExceptionState&);
+  ScriptPromise<IDLUndefined> observe(ScriptState*,
+                                      V8PressureSource,
+                                      ExceptionState&);
   void unobserve(V8PressureSource);
   void disconnect();
   HeapVector<Member<PressureRecord>> takeRecords();
@@ -114,7 +114,7 @@ class PressureObserver final : public ScriptWrappable {
   // https://w3c.github.io/compute-pressure/#dfn-sampleinterval
   uint32_t sample_interval_;
 
-  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLUndefined>>>
+  HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>>
       pending_resolvers_[V8PressureSource::kEnumSize];
 
   // Manages rate obfuscation mitigation parameters.

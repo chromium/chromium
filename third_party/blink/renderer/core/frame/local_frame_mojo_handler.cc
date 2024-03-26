@@ -894,8 +894,9 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
     case ScriptEvaluationResult::ResultType::kSuccess: {
       v8::Local<v8::Value> value = result.GetSuccessValue();
       if (resolve_promises && !value.IsEmpty() && value->IsPromise()) {
-        ScriptPromise promise =
-            ScriptPromise::FromUntypedValueForBindings(script_state, value);
+        ScriptPromiseUntyped promise =
+            ScriptPromiseUntyped::FromUntypedValueForBindings(script_state,
+                                                              value);
         promise.Then(handler->CreateResolveCallback(script_state, frame_),
                      handler->CreateRejectCallback(script_state, frame_));
       } else {

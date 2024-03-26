@@ -21,7 +21,7 @@ class NavigatorRequestMediaKeySystemAccess {
   STATIC_ONLY(NavigatorRequestMediaKeySystemAccess);
 
  public:
-  static ScriptPromiseTyped<MediaKeySystemAccess> requestMediaKeySystemAccess(
+  static ScriptPromise<MediaKeySystemAccess> requestMediaKeySystemAccess(
       ScriptState*,
       Navigator&,
       const String& key_system,

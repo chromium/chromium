@@ -161,7 +161,7 @@ class MediaKeys::PendingAction final
 class SetCertificateResultPromise
     : public ContentDecryptionModuleResultPromise {
  public:
-  SetCertificateResultPromise(ScriptPromiseResolverTyped<IDLBoolean>* resolver,
+  SetCertificateResultPromise(ScriptPromiseResolver<IDLBoolean>* resolver,
                               const MediaKeysConfig& config,
                               MediaKeys* media_keys)
       : ContentDecryptionModuleResultPromise(resolver,
@@ -215,7 +215,7 @@ class GetStatusForPolicyResultPromise
     : public ContentDecryptionModuleResultPromise {
  public:
   GetStatusForPolicyResultPromise(
-      ScriptPromiseResolverTyped<V8MediaKeyStatus>* resolver,
+      ScriptPromiseResolver<V8MediaKeyStatus>* resolver,
       const MediaKeysConfig& config,
       WebString min_hdcp_version,
       MediaKeys* media_keys)
@@ -335,7 +335,7 @@ MediaKeySession* MediaKeys::createSession(ScriptState* script_state,
                                                config_);
 }
 
-ScriptPromiseTyped<IDLBoolean> MediaKeys::setServerCertificate(
+ScriptPromise<IDLBoolean> MediaKeys::setServerCertificate(
     ScriptState* script_state,
     const DOMArrayPiece& server_certificate,
     ExceptionState& exception_state) {
@@ -343,7 +343,7 @@ ScriptPromiseTyped<IDLBoolean> MediaKeys::setServerCertificate(
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The context provided is invalid.");
-    return ScriptPromiseTyped<IDLBoolean>();
+    return ScriptPromise<IDLBoolean>();
   }
 
   // From https://w3c.github.io/encrypted-media/#setServerCertificate
@@ -360,7 +360,7 @@ ScriptPromiseTyped<IDLBoolean> MediaKeys::setServerCertificate(
   //    with a new a newly created TypeError.
   if (!server_certificate.ByteLength()) {
     exception_state.ThrowTypeError("The serverCertificate parameter is empty.");
-    return ScriptPromiseTyped<IDLBoolean>();
+    return ScriptPromise<IDLBoolean>();
   }
 
   // 3. Let certificate be a copy of the contents of the serverCertificate
@@ -369,8 +369,8 @@ ScriptPromiseTyped<IDLBoolean> MediaKeys::setServerCertificate(
       server_certificate.Data(), server_certificate.ByteLength());
 
   // 4. Let promise be a new promise.
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
-      script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
   auto promise = resolver->Promise();
   SetCertificateResultPromise* result =
       MakeGarbageCollected<SetCertificateResultPromise>(resolver, config_,
@@ -414,7 +414,7 @@ void MediaKeys::SetServerCertificateTask(
   // (These are handled by Chromium and the CDM.)
 }
 
-ScriptPromiseTyped<V8MediaKeyStatus> MediaKeys::getStatusForPolicy(
+ScriptPromise<V8MediaKeyStatus> MediaKeys::getStatusForPolicy(
     ScriptState* script_state,
     const MediaKeysPolicy* media_keys_policy,
     ExceptionState& exception_state) {
@@ -422,7 +422,7 @@ ScriptPromiseTyped<V8MediaKeyStatus> MediaKeys::getStatusForPolicy(
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The context provided is invalid.");
-    return ScriptPromiseTyped<V8MediaKeyStatus>();
+    return ScriptPromise<V8MediaKeyStatus>();
   }
 
   // TODO(xhwang): Pass MediaKeysPolicy classes all the way to Chromium when
@@ -431,7 +431,7 @@ ScriptPromiseTyped<V8MediaKeyStatus> MediaKeys::getStatusForPolicy(
 
   // Let promise be a new promise.
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<V8MediaKeyStatus>>(
+      MakeGarbageCollected<ScriptPromiseResolver<V8MediaKeyStatus>>(
           script_state);
   GetStatusForPolicyResultPromise* result =
       MakeGarbageCollected<GetStatusForPolicyResultPromise>(

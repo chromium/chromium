@@ -120,14 +120,13 @@ void ServiceWorker::PostMessageInternal(BlinkTransferableMessage message) {
   host_->PostMessageToServiceWorker(std::move(message));
 }
 
-ScriptPromiseTyped<IDLUndefined> ServiceWorker::InternalsTerminate(
+ScriptPromise<IDLUndefined> ServiceWorker::InternalsTerminate(
     ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
   host_->TerminateForTesting(WTF::BindOnce(
-      [](ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
+      [](ScriptPromiseResolver<IDLUndefined>* resolver) {
         resolver->Resolve();
       },
       WrapPersistent(resolver)));

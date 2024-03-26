@@ -39,7 +39,7 @@ const AtomicString& AbortPaymentEvent::InterfaceName() const {
 }
 
 void AbortPaymentEvent::respondWith(ScriptState* script_state,
-                                    ScriptPromise script_promise,
+                                    ScriptPromiseUntyped script_promise,
                                     ExceptionState& exception_state) {
   stopImmediatePropagation();
   if (observer_) {

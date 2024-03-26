@@ -33,13 +33,12 @@ class MeasureMemoryController final
   MeasureMemoryController(base::PassKey<MeasureMemoryController>,
                           v8::Isolate*,
                           v8::Local<v8::Context>,
-                          ScriptPromiseResolverTyped<MemoryMeasurement>*);
+                          ScriptPromiseResolver<MemoryMeasurement>*);
 
   ~MeasureMemoryController() = default;
 
-  static ScriptPromiseTyped<MemoryMeasurement> StartMeasurement(
-      ScriptState*,
-      ExceptionState&);
+  static ScriptPromise<MemoryMeasurement> StartMeasurement(ScriptState*,
+                                                           ExceptionState&);
 
   void Trace(Visitor* visitor) const;
 
@@ -48,7 +47,7 @@ class MeasureMemoryController final
 
  private:
   ScopedPersistent<v8::Context> context_;
-  Member<ScriptPromiseResolverTyped<MemoryMeasurement>> resolver_;
+  Member<ScriptPromiseResolver<MemoryMeasurement>> resolver_;
 };
 
 }  // namespace blink

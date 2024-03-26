@@ -38,10 +38,10 @@ class CORE_EXPORT Worklet : public ScriptWrappable,
 
   // Worklet.idl
   // addModule() imports ES6 module scripts.
-  ScriptPromiseTyped<IDLUndefined> addModule(ScriptState*,
-                                             const String& module_url,
-                                             const WorkletOptions*,
-                                             ExceptionState&);
+  ScriptPromise<IDLUndefined> addModule(ScriptState*,
+                                        const String& module_url,
+                                        const WorkletOptions*,
+                                        ExceptionState&);
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;

@@ -56,7 +56,7 @@ class CORE_EXPORT Fence final : public ScriptWrappable,
   HeapVector<Member<FencedFrameConfig>> getNestedConfigs(
       ExceptionState& exception_state);
 
-  ScriptPromiseTyped<IDLUndefined> disableUntrustedNetwork(
+  ScriptPromise<IDLUndefined> disableUntrustedNetwork(
       ScriptState* script_state,
       ExceptionState& exception_state);
 

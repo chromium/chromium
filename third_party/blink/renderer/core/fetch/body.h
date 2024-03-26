@@ -36,11 +36,11 @@ class CORE_EXPORT Body : public ExecutionContextClient {
   Body(const Body&) = delete;
   Body& operator=(const Body&) = delete;
 
-  ScriptPromiseTyped<DOMArrayBuffer> arrayBuffer(ScriptState*, ExceptionState&);
-  ScriptPromiseTyped<Blob> blob(ScriptState*, ExceptionState&);
-  ScriptPromiseTyped<FormData> formData(ScriptState*, ExceptionState&);
-  ScriptPromiseTyped<IDLAny> json(ScriptState*, ExceptionState&);
-  ScriptPromiseTyped<IDLUSVString> text(ScriptState*, ExceptionState&);
+  ScriptPromise<DOMArrayBuffer> arrayBuffer(ScriptState*, ExceptionState&);
+  ScriptPromise<Blob> blob(ScriptState*, ExceptionState&);
+  ScriptPromise<FormData> formData(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLAny> json(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUSVString> text(ScriptState*, ExceptionState&);
   ReadableStream* body();
   virtual BodyStreamBuffer* BodyBuffer() = 0;
   virtual const BodyStreamBuffer* BodyBuffer() const = 0;
@@ -77,7 +77,7 @@ class CORE_EXPORT Body : public ExecutionContextClient {
   template <class Consumer,
             typename CreateLoaderFunction,
             typename OnNoBodyFunction>
-  ScriptPromiseTyped<typename Consumer::ResolveType> LoadAndConvertBody(
+  ScriptPromise<typename Consumer::ResolveType> LoadAndConvertBody(
       ScriptState*,
       CreateLoaderFunction,
       OnNoBodyFunction,

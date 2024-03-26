@@ -27,7 +27,7 @@ PeriodicSyncManager::PeriodicSyncManager(
   DCHECK(registration_);
 }
 
-ScriptPromiseTyped<IDLUndefined> PeriodicSyncManager::registerPeriodicSync(
+ScriptPromise<IDLUndefined> PeriodicSyncManager::registerPeriodicSync(
     ScriptState* script_state,
     const String& tag,
     const BackgroundSyncOptions* options,
@@ -36,7 +36,7 @@ ScriptPromiseTyped<IDLUndefined> PeriodicSyncManager::registerPeriodicSync(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Registration failed - no active Service Worker");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -44,12 +44,11 @@ ScriptPromiseTyped<IDLUndefined> PeriodicSyncManager::registerPeriodicSync(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Periodic Background Sync is not allowed in fenced frames.");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   mojom::blink::SyncRegistrationOptionsPtr sync_registration =
@@ -63,11 +62,11 @@ ScriptPromiseTyped<IDLUndefined> PeriodicSyncManager::registerPeriodicSync(
   return promise;
 }
 
-ScriptPromiseTyped<IDLSequence<IDLString>> PeriodicSyncManager::getTags(
+ScriptPromise<IDLSequence<IDLString>> PeriodicSyncManager::getTags(
     ScriptState* script_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsInFencedFrame()) {
-    return ScriptPromiseTyped<IDLSequence<IDLString>>::RejectWithDOMException(
+    return ScriptPromise<IDLSequence<IDLString>>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
@@ -75,7 +74,7 @@ ScriptPromiseTyped<IDLSequence<IDLString>> PeriodicSyncManager::getTags(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<IDLString>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<IDLString>>>(
           script_state);
   auto promise = resolver->Promise();
 
@@ -96,12 +95,12 @@ ScriptPromiseTyped<IDLSequence<IDLString>> PeriodicSyncManager::getTags(
   return promise;
 }
 
-ScriptPromiseTyped<IDLUndefined> PeriodicSyncManager::unregister(
+ScriptPromise<IDLUndefined> PeriodicSyncManager::unregister(
     ScriptState* script_state,
     const String& tag) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsInFencedFrame()) {
-    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
@@ -109,8 +108,7 @@ ScriptPromiseTyped<IDLUndefined> PeriodicSyncManager::unregister(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
   // Silently succeed if there's no active service worker registration.
@@ -138,7 +136,7 @@ PeriodicSyncManager::GetBackgroundSyncServiceRemote() {
 }
 
 void PeriodicSyncManager::RegisterCallback(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     mojom::blink::BackgroundSyncError error,
     mojom::blink::SyncRegistrationOptionsPtr options) {
   switch (error) {
@@ -175,7 +173,7 @@ void PeriodicSyncManager::RegisterCallback(
 }
 
 void PeriodicSyncManager::GetRegistrationsCallback(
-    ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
+    ScriptPromiseResolver<IDLSequence<IDLString>>* resolver,
     mojom::blink::BackgroundSyncError error,
     WTF::Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations) {
   switch (error) {
@@ -207,7 +205,7 @@ void PeriodicSyncManager::GetRegistrationsCallback(
 }
 
 void PeriodicSyncManager::UnregisterCallback(
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     mojom::blink::BackgroundSyncError error) {
   switch (error) {
     case mojom::blink::BackgroundSyncError::NONE:

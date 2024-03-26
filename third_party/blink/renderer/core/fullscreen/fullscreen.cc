@@ -715,7 +715,7 @@ void Fullscreen::RequestFullscreen(Element& pending) {
   RequestFullscreen(pending, options, FullscreenRequestType::kUnprefixed);
 }
 
-ScriptPromiseTyped<IDLUndefined> Fullscreen::RequestFullscreen(
+ScriptPromise<IDLUndefined> Fullscreen::RequestFullscreen(
     Element& pending,
     const FullscreenOptions* options,
     FullscreenRequestType request_type,
@@ -729,23 +729,23 @@ ScriptPromiseTyped<IDLUndefined> Fullscreen::RequestFullscreen(
   Document& document = pending.GetDocument();
 
   // 3. Let |promise| be a new promise.
-  // For optimization allocate the ScriptPromiseResolver just after step 4.
-  ScriptPromiseResolverTyped<IDLUndefined>* resolver = nullptr;
+  // For optimization allocate the ScriptPromiseResolverBase just after step 4.
+  ScriptPromiseResolver<IDLUndefined>* resolver = nullptr;
 
   // 4. If |pendingDoc| is not fully active, then reject |promise| with a
   // TypeError exception and return |promise|.
   if (!document.IsActive() || !document.GetFrame()) {
     if (!exception_state)
-      return ScriptPromiseTyped<IDLUndefined>();
+      return ScriptPromise<IDLUndefined>();
     exception_state->ThrowTypeError("Document not active");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   if (script_state) {
     // We should only be creating promises for unprefixed variants.
     DCHECK(!(request_type & FullscreenRequestType::kPrefixed));
-    resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-        script_state);
+    resolver =
+        MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   }
 
   bool for_cross_process_descendant =
@@ -776,8 +776,7 @@ ScriptPromiseTyped<IDLUndefined> Fullscreen::RequestFullscreen(
   }
 
   // 7. Return |promise|, and run the remaining steps in parallel.
-  auto promise =
-      resolver ? resolver->Promise() : ScriptPromiseTyped<IDLUndefined>();
+  auto promise = resolver ? resolver->Promise() : ScriptPromise<IDLUndefined>();
 
   // 8. If |error| is false: Resize |pendingDoc|'s top-level browsing context's
   // document's viewport's dimensions to match the dimensions of the screen of
@@ -846,7 +845,7 @@ void Fullscreen::ContinueRequestFullscreen(
     Element& pending,
     FullscreenRequestType request_type,
     const FullscreenOptions* options,
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     const char* error) {
   DCHECK(document.IsActive());
   DCHECK(document.GetFrame());
@@ -973,27 +972,27 @@ void Fullscreen::FullyExitFullscreen(Document& document, bool ua_originated) {
 }
 
 // https://fullscreen.spec.whatwg.org/#exit-fullscreen
-ScriptPromiseTyped<IDLUndefined> Fullscreen::ExitFullscreen(
+ScriptPromise<IDLUndefined> Fullscreen::ExitFullscreen(
     Document& doc,
     ScriptState* script_state,
     ExceptionState* exception_state,
     bool ua_originated) {
   // 1. Let |promise| be a new promise.
-  // ScriptPromiseResolver is allocated after step 2.
-  ScriptPromiseResolverTyped<IDLUndefined>* resolver = nullptr;
+  // ScriptPromiseResolverBase is allocated after step 2.
+  ScriptPromiseResolver<IDLUndefined>* resolver = nullptr;
 
   // 2. If |doc| is not fully active or |doc|'s fullscreen element is null, then
   // reject |promise| with a TypeError exception and return |promise|.
   if (!doc.IsActive() || !doc.GetFrame() || !FullscreenElementFrom(doc)) {
     if (!exception_state)
-      return ScriptPromiseTyped<IDLUndefined>();
+      return ScriptPromise<IDLUndefined>();
     exception_state->ThrowTypeError("Document not active");
-    return ScriptPromiseTyped<IDLUndefined>();
+    return ScriptPromise<IDLUndefined>();
   }
 
   if (script_state) {
-    resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-        script_state);
+    resolver =
+        MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   }
 
   // 3. Let |resize| be false.
@@ -1060,8 +1059,7 @@ ScriptPromiseTyped<IDLUndefined> Fullscreen::ExitFullscreen(
   }
 
   // 7. Return |promise|, and run the remaining steps in parallel.
-  auto promise =
-      resolver ? resolver->Promise() : ScriptPromiseTyped<IDLUndefined>();
+  auto promise = resolver ? resolver->Promise() : ScriptPromise<IDLUndefined>();
 
   // 8. If |resize| is true, resize |doc|'s viewport to its "normal" dimensions.
   if (resize) {
@@ -1106,7 +1104,7 @@ void Fullscreen::DidExitFullscreen(Document& document) {
 
 void Fullscreen::ContinueExitFullscreen(
     Document* doc,
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     bool resize) {
   if (!doc || !doc->IsActive() || !doc->GetFrame()) {
     if (resolver) {
@@ -1249,7 +1247,7 @@ Fullscreen::PendingRequest::PendingRequest(
     Element* element,
     FullscreenRequestType type,
     const FullscreenOptions* options,
-    ScriptPromiseResolverTyped<IDLUndefined>* resolver)
+    ScriptPromiseResolver<IDLUndefined>* resolver)
     : element_(element), type_(type), options_(options), resolver_(resolver) {}
 
 Fullscreen::PendingRequest::~PendingRequest() = default;

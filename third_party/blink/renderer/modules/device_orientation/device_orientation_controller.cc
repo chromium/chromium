@@ -176,7 +176,7 @@ void DeviceOrientationController::RegisterWithOrientationEventPump(
   orientation_event_pump_->SetController(this);
 }
 
-ScriptPromiseTyped<V8DeviceOrientationPermissionState>
+ScriptPromise<V8DeviceOrientationPermissionState>
 DeviceOrientationController::RequestPermission(ScriptState* script_state) {
   ExecutionContext* context = GetSupplementable();
   DCHECK_EQ(context, ExecutionContext::From(script_state));
@@ -190,14 +190,13 @@ DeviceOrientationController::RequestPermission(ScriptState* script_state) {
   }
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<V8DeviceOrientationPermissionState>>(
-      script_state);
+      ScriptPromiseResolver<V8DeviceOrientationPermissionState>>(script_state);
   auto promise = resolver->Promise();
 
   permission_service_->HasPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::SENSORS),
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          [](ScriptPromiseResolverTyped<V8DeviceOrientationPermissionState>*
+          [](ScriptPromiseResolver<V8DeviceOrientationPermissionState>*
                  resolver,
              mojom::blink::PermissionStatus status) {
             switch (status) {

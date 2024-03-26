@@ -49,7 +49,7 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
   void GetPermissionStatusAsync(
       base::OnceCallback<void(mojom::blink::PermissionStatus)> callback);
 
-  ScriptPromiseTyped<V8NotificationPermission> RequestPermission(
+  ScriptPromise<V8NotificationPermission> RequestPermission(
       ScriptState* script_state,
       V8NotificationPermissionCallback* deprecated_callback);
 
@@ -73,7 +73,7 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
       int64_t service_worker_registration_id,
       mojom::blink::NotificationDataPtr notification_data,
       mojom::blink::NotificationResourcesPtr notification_resources,
-      ScriptPromiseResolverTyped<IDLUndefined>* resolver);
+      ScriptPromiseResolver<IDLUndefined>* resolver);
 
   // Closes a persistent notification identified by its notification id.
   void ClosePersistentNotification(const WebString& notification_id);
@@ -86,17 +86,17 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
       int64_t service_worker_registration_id,
       const WebString& filter_tag,
       bool include_triggered,
-      ScriptPromiseResolverTyped<IDLSequence<Notification>>* resolver);
+      ScriptPromiseResolver<IDLSequence<Notification>>* resolver);
 
   void Trace(Visitor* visitor) const override;
 
  private:
   void DidDisplayPersistentNotification(
-      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+      ScriptPromiseResolver<IDLUndefined>* resolver,
       mojom::blink::PersistentNotificationError error);
 
   void DidGetNotifications(
-      ScriptPromiseResolverTyped<IDLSequence<Notification>>* resolver,
+      ScriptPromiseResolver<IDLSequence<Notification>>* resolver,
       const Vector<String>& notification_ids,
       Vector<mojom::blink::NotificationDataPtr> notification_datas);
 
@@ -105,7 +105,7 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
   mojom::blink::NotificationService* GetNotificationService();
 
   void OnPermissionRequestComplete(
-      ScriptPromiseResolverTyped<V8NotificationPermission>* resolver,
+      ScriptPromiseResolver<V8NotificationPermission>* resolver,
       V8NotificationPermissionCallback* deprecated_callback,
       mojom::blink::PermissionStatus status);
 

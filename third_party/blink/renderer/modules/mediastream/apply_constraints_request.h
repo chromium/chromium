@@ -19,7 +19,7 @@ class MODULES_EXPORT ApplyConstraintsRequest final
  public:
   ApplyConstraintsRequest(MediaStreamTrack*,
                           const MediaConstraints&,
-                          ScriptPromiseResolverTyped<IDLUndefined>*);
+                          ScriptPromiseResolver<IDLUndefined>*);
 
   MediaStreamComponent* Track() const;
   MediaConstraints Constraints() const;
@@ -32,7 +32,7 @@ class MODULES_EXPORT ApplyConstraintsRequest final
  private:
   Member<MediaStreamTrack> track_;
   MediaConstraints constraints_;
-  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
 };
 
 }  // namespace blink

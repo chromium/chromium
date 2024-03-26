@@ -71,17 +71,17 @@ void DOMViewTransition::skipTransition() {
   view_transition_->SkipTransition();
 }
 
-ScriptPromiseTyped<IDLUndefined> DOMViewTransition::finished(
+ScriptPromise<IDLUndefined> DOMViewTransition::finished(
     ScriptState* script_state) const {
   return finished_promise_property_->Promise(script_state->World());
 }
 
-ScriptPromiseTyped<IDLUndefined> DOMViewTransition::ready(
+ScriptPromise<IDLUndefined> DOMViewTransition::ready(
     ScriptState* script_state) const {
   return ready_promise_property_->Promise(script_state->World());
 }
 
-ScriptPromiseTyped<IDLUndefined> DOMViewTransition::updateCallbackDone(
+ScriptPromise<IDLUndefined> DOMViewTransition::updateCallbackDone(
     ScriptState* script_state) const {
   return dom_updated_promise_property_->Promise(script_state->World());
 }
@@ -171,7 +171,7 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
 
   dom_callback_result_ = DOMCallbackResult::kRunning;
 
-  v8::Maybe<ScriptPromise> result = v8::Nothing<ScriptPromise>();
+  v8::Maybe<ScriptPromiseUntyped> result = v8::Nothing<ScriptPromiseUntyped>();
   ScriptState* script_state = nullptr;
 
   if (update_dom_callback_) {
@@ -184,7 +184,7 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
       auto value = ScriptValue::From(
           script_state, MakeGarbageCollected<DOMException>(
                             DOMExceptionCode::kAbortError, kAbortedMessage));
-      result = v8::Just(ScriptPromise::Reject(script_state, value));
+      result = v8::Just(ScriptPromiseUntyped::Reject(script_state, value));
     }
   } else {
     // It's ok to use the main world here since we're only using it to call
@@ -196,7 +196,7 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
 
     // If there's no callback provided, treat the same as an empty promise
     // resolved without a value.
-    result = v8::Just(ScriptPromise::CastUndefined(script_state));
+    result = v8::Just(ScriptPromiseUntyped::CastUndefined(script_state));
   }
 
   // Note, the DOMChangeFinishedCallback will be invoked asynchronously.

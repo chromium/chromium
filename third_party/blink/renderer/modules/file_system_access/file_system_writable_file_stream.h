@@ -16,7 +16,7 @@
 
 namespace blink {
 
-class ScriptPromise;
+class ScriptPromiseUntyped;
 class ScriptState;
 class FileSystemUnderlyingSink;
 
@@ -36,12 +36,12 @@ class FileSystemWritableFileStream final : public WritableStream {
   void Trace(Visitor* visitor) const override;
 
   // IDL defined functions specific to FileSystemWritableFileStream.
-  ScriptPromise write(
+  ScriptPromiseUntyped write(
       ScriptState*,
       const V8UnionBlobOrBufferSourceOrUSVStringOrWriteParams* data,
       ExceptionState&);
-  ScriptPromise truncate(ScriptState*, uint64_t size, ExceptionState&);
-  ScriptPromise seek(ScriptState*, uint64_t offset, ExceptionState&);
+  ScriptPromiseUntyped truncate(ScriptState*, uint64_t size, ExceptionState&);
+  ScriptPromiseUntyped seek(ScriptState*, uint64_t offset, ExceptionState&);
   const char* mode() const;
 
  private:

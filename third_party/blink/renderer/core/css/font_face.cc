@@ -551,8 +551,7 @@ void FontFace::SetError(DOMException* error) {
   SetLoadStatus(kError);
 }
 
-ScriptPromiseTyped<FontFace> FontFace::FontStatusPromise(
-    ScriptState* script_state) {
+ScriptPromise<FontFace> FontFace::FontStatusPromise(ScriptState* script_state) {
   if (!loaded_property_) {
     loaded_property_ = MakeGarbageCollected<LoadedProperty>(
         ExecutionContext::From(script_state));
@@ -565,7 +564,7 @@ ScriptPromiseTyped<FontFace> FontFace::FontStatusPromise(
   return loaded_property_->Promise(script_state->World());
 }
 
-ScriptPromiseTyped<FontFace> FontFace::load(ScriptState* script_state) {
+ScriptPromise<FontFace> FontFace::load(ScriptState* script_state) {
   if (status_ == kUnloaded) {
     css_font_face_->Load();
   }

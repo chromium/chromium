@@ -75,7 +75,7 @@ bool CheckIOTensorByteSize(const ModelInfoPtr& model_info) {
 }
 
 void OnRemoteModelLoad(ExecutionContext* execution_context,
-                       ScriptPromiseResolverTyped<MLModel>* resolver,
+                       ScriptPromiseResolver<MLModel>* resolver,
                        LoadModelResult result,
                        mojo::PendingRemote<Model> pending_remote,
                        ModelInfoPtr model_info) {
@@ -149,17 +149,16 @@ MLModelLoader* MLModelLoader::Create(ScriptState* script_state,
 
 MLModelLoader::~MLModelLoader() = default;
 
-ScriptPromiseTyped<MLModel> MLModelLoader::load(
-    ScriptState* script_state,
-    DOMArrayBuffer* buffer,
-    ExceptionState& exception_state) {
+ScriptPromise<MLModel> MLModelLoader::load(ScriptState* script_state,
+                                           DOMArrayBuffer* buffer,
+                                           ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
-    return ScriptPromiseTyped<MLModel>();
+    return ScriptPromise<MLModel>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<MLModel>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLModel>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 

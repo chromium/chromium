@@ -26,14 +26,14 @@ PromiseRejectionEvent::PromiseRejectionEvent(
 
 PromiseRejectionEvent::~PromiseRejectionEvent() = default;
 
-ScriptPromiseTyped<IDLAny> PromiseRejectionEvent::promise(
+ScriptPromise<IDLAny> PromiseRejectionEvent::promise(
     ScriptState* script_state) const {
   // Return null when the promise is accessed by a different world than the
   // world that created the promise.
   if (!CanBeDispatchedInWorld(script_state->World())) {
-    return ScriptPromiseTyped<IDLAny>();
+    return ScriptPromise<IDLAny>();
   }
-  return ScriptPromiseTyped<IDLAny>::FromV8Promise(
+  return ScriptPromise<IDLAny>::FromV8Promise(
       script_state, promise_.Get(script_state->GetIsolate()));
 }
 

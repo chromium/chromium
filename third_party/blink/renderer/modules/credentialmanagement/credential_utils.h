@@ -7,13 +7,13 @@
 
 namespace blink {
 
-class ScriptPromiseResolver;
+class ScriptPromiseResolverBase;
 
 // Checks non-page-origin-related security requirements for
 // navigator.credentials and navigator.identity requests. Rejects the promise
 // and returns false if the check fails.
 bool CheckGenericSecurityRequirementsForCredentialsContainerRequest(
-    ScriptPromiseResolver*);
+    ScriptPromiseResolverBase*);
 
 // Returns whether the frame has the same security origin as its ancestors.
 bool IsSameSecurityOriginWithAncestors(const Frame* frame);

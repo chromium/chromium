@@ -32,7 +32,7 @@ namespace {
 
 class RejectPromiseAbortAlgorithm final : public AbortSignal::Algorithm {
  public:
-  RejectPromiseAbortAlgorithm(ScriptPromiseResolver* resolver,
+  RejectPromiseAbortAlgorithm(ScriptPromiseResolverBase* resolver,
                               AbortSignal* signal)
       : resolver_(resolver), signal_(signal) {
     CHECK(resolver);
@@ -51,9 +51,9 @@ class RejectPromiseAbortAlgorithm final : public AbortSignal::Algorithm {
   }
 
  private:
-  // The `ScriptPromiseResolver` that `this` must reject when `signal_` is
+  // The `ScriptPromiseResolverBase` that `this` must reject when `signal_` is
   // aborted (as notified by `Run()` above).
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverBase> resolver_;
   // Never null. We have to store the `signal_` that `this` is associated with
   // in order to get the abort reason.
   Member<AbortSignal> signal_;
@@ -106,9 +106,8 @@ class ScriptCallbackInternalObserver final : public ObservableInternalObserver {
 
 class ToArrayInternalObserver final : public ObservableInternalObserver {
  public:
-  ToArrayInternalObserver(
-      ScriptPromiseResolverTyped<IDLSequence<IDLAny>>* resolver,
-      AbortSignal::AlgorithmHandle* handle)
+  ToArrayInternalObserver(ScriptPromiseResolver<IDLSequence<IDLAny>>* resolver,
+                          AbortSignal::AlgorithmHandle* handle)
       : resolver_(resolver), abort_algorithm_handle_(handle) {}
 
   void Next(ScriptValue value) override {
@@ -137,7 +136,7 @@ class ToArrayInternalObserver final : public ObservableInternalObserver {
   }
 
  private:
-  Member<ScriptPromiseResolverTyped<IDLSequence<IDLAny>>> resolver_;
+  Member<ScriptPromiseResolver<IDLSequence<IDLAny>>> resolver_;
   HeapVector<ScriptValue> values_;
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
 };
@@ -145,11 +144,10 @@ class ToArrayInternalObserver final : public ObservableInternalObserver {
 class OperatorForEachInternalObserver final
     : public ObservableInternalObserver {
  public:
-  OperatorForEachInternalObserver(
-      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
-      AbortController* controller,
-      V8Visitor* callback,
-      AbortSignal::AlgorithmHandle* handle)
+  OperatorForEachInternalObserver(ScriptPromiseResolver<IDLUndefined>* resolver,
+                                  AbortController* controller,
+                                  V8Visitor* callback,
+                                  AbortSignal::AlgorithmHandle* handle)
       : resolver_(resolver),
         controller_(controller),
         callback_(callback),
@@ -203,7 +201,7 @@ class OperatorForEachInternalObserver final
 
  private:
   uint64_t idx_ = 0;
-  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   Member<AbortController> controller_;
   Member<V8Visitor> callback_;
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
@@ -216,7 +214,7 @@ class OperatorForEachInternalObserver final
 class OperatorFromPromiseSubscribeDelegate final
     : public Observable::SubscribeDelegate {
  public:
-  explicit OperatorFromPromiseSubscribeDelegate(ScriptPromise promise)
+  explicit OperatorFromPromiseSubscribeDelegate(ScriptPromiseUntyped promise)
       : promise_(promise) {}
 
   void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
@@ -272,7 +270,7 @@ class OperatorFromPromiseSubscribeDelegate final
     ResolveType type_;
   };
 
-  ScriptPromise promise_;
+  ScriptPromiseUntyped promise_;
 };
 
 // This delegate is used by the `Observer#from()` operator, in the case where
@@ -997,7 +995,7 @@ Observable* Observable::from(ScriptState* script_state,
 
   // 4. Try to convert to a Promise.
   if (v8_value->IsPromise()) {
-    ScriptPromise promise(script_state, v8_value);
+    ScriptPromiseUntyped promise(script_state, v8_value);
     return MakeGarbageCollected<Observable>(
         ExecutionContext::From(script_state),
         MakeGarbageCollected<OperatorFromPromiseSubscribeDelegate>(promise));
@@ -1050,12 +1048,12 @@ Observable* Observable::drop(ScriptState*, uint64_t number_to_drop) {
   return return_observable;
 }
 
-ScriptPromiseTyped<IDLSequence<IDLAny>> Observable::toArray(
+ScriptPromise<IDLSequence<IDLAny>> Observable::toArray(
     ScriptState* script_state,
     SubscribeOptions* options) {
   if (!script_state->ContextIsValid()) {
     CHECK(!GetExecutionContext());
-    return ScriptPromiseTyped<IDLSequence<IDLAny>>::RejectWithDOMException(
+    return ScriptPromise<IDLSequence<IDLAny>>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
@@ -1063,7 +1061,7 @@ ScriptPromiseTyped<IDLSequence<IDLAny>> Observable::toArray(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<IDLAny>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<IDLAny>>>(
           script_state);
   auto promise = resolver->Promise();
 
@@ -1090,13 +1088,11 @@ ScriptPromiseTyped<IDLSequence<IDLAny>> Observable::toArray(
   return promise;
 }
 
-ScriptPromiseTyped<IDLUndefined> Observable::forEach(
-    ScriptState* script_state,
-    V8Visitor* callback,
-    SubscribeOptions* options) {
+ScriptPromise<IDLUndefined> Observable::forEach(ScriptState* script_state,
+                                                V8Visitor* callback,
+                                                SubscribeOptions* options) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
   AbortController* visitor_callback_controller =

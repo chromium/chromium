@@ -63,8 +63,8 @@ class MODULES_EXPORT WebSocketStream final
 
   // IDL properties
   const KURL& url() const { return common_.Url(); }
-  ScriptPromiseTyped<WebSocketOpenInfo> opened(ScriptState*) const;
-  ScriptPromiseTyped<WebSocketCloseInfo> closed(ScriptState*) const;
+  ScriptPromise<WebSocketOpenInfo> opened(ScriptState*) const;
+  ScriptPromise<WebSocketCloseInfo> closed(ScriptState*) const;
 
   // IDL functions
   void close(WebSocketCloseInfo*, ExceptionState&);

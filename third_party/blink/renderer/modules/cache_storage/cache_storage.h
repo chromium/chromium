@@ -41,21 +41,20 @@ class CacheStorage final : public ScriptWrappable,
 
   ~CacheStorage() override;
 
-  ScriptPromiseTyped<Cache> open(ScriptState*,
-                                 const String& cache_name,
-                                 ExceptionState& exception_state);
-  ScriptPromiseTyped<IDLBoolean> has(ScriptState*,
-                                     const String& cache_name,
-                                     ExceptionState& exception_state);
-  ScriptPromiseTyped<IDLBoolean> Delete(ScriptState*,
-                                        const String& cache_name,
-                                        ExceptionState& exception_state);
-  ScriptPromiseTyped<IDLSequence<IDLString>> keys(ScriptState*,
-                                                  ExceptionState&);
-  ScriptPromiseTyped<Response> match(ScriptState* script_state,
-                                     const V8RequestInfo* request,
-                                     const MultiCacheQueryOptions* options,
-                                     ExceptionState& exception_state);
+  ScriptPromise<Cache> open(ScriptState*,
+                            const String& cache_name,
+                            ExceptionState& exception_state);
+  ScriptPromise<IDLBoolean> has(ScriptState*,
+                                const String& cache_name,
+                                ExceptionState& exception_state);
+  ScriptPromise<IDLBoolean> Delete(ScriptState*,
+                                   const String& cache_name,
+                                   ExceptionState& exception_state);
+  ScriptPromise<IDLSequence<IDLString>> keys(ScriptState*, ExceptionState&);
+  ScriptPromise<Response> match(ScriptState* script_state,
+                                const V8RequestInfo* request,
+                                const MultiCacheQueryOptions* options,
+                                ExceptionState& exception_state);
 
   bool HasPendingActivity() const override;
   void Trace(Visitor*) const override;
@@ -69,34 +68,34 @@ class CacheStorage final : public ScriptWrappable,
   // The callback passed into IsCacheStorageAllowed is invoked upon success,
   // and the resolver is rejected upon failure.
   void IsCacheStorageAllowed(ExecutionContext* context,
-                             ScriptPromiseResolver* resolver,
+                             ScriptPromiseResolverBase* resolver,
                              base::OnceCallback<void()> callback);
   void OnCacheStorageAllowed(base::OnceCallback<void()> callback,
-                             ScriptPromiseResolver* resolver,
+                             ScriptPromiseResolverBase* resolver,
                              bool allow_access);
 
   void OpenImpl(const String& cache_name,
                 int64_t trace_id,
-                ScriptPromiseResolverTyped<Cache>* resolver);
+                ScriptPromiseResolver<Cache>* resolver);
   void HasImpl(const String& cache_name,
                int64_t trace_id,
-               ScriptPromiseResolverTyped<IDLBoolean>* resolver);
+               ScriptPromiseResolver<IDLBoolean>* resolver);
   void DeleteImpl(const String& cache_name,
                   int64_t trace_id,
-                  ScriptPromiseResolverTyped<IDLBoolean>* resolver);
+                  ScriptPromiseResolver<IDLBoolean>* resolver);
   void KeysImpl(int64_t trace_id,
-                ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver);
-  ScriptPromiseTyped<Response> MatchImpl(ScriptState*,
-                                         const Request*,
-                                         const MultiCacheQueryOptions*,
-                                         ExceptionState& exception_state);
+                ScriptPromiseResolver<IDLSequence<IDLString>>* resolver);
+  ScriptPromise<Response> MatchImpl(ScriptState*,
+                                    const Request*,
+                                    const MultiCacheQueryOptions*,
+                                    ExceptionState& exception_state);
   void MatchImplHelper(const MultiCacheQueryOptions* options,
                        mojom::blink::FetchAPIRequestPtr mojo_request,
                        mojom::blink::MultiCacheQueryOptionsPtr mojo_options,
                        bool in_related_fetch_event,
                        bool in_range_fetch_event,
                        int64_t trace_id,
-                       ScriptPromiseResolverTyped<Response>* resolver);
+                       ScriptPromiseResolver<Response>* resolver);
 
   Member<GlobalFetch::ScopedFetcher> scoped_fetcher_;
   Member<CacheStorageBlobClientList> blob_client_list_;

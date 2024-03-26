@@ -33,11 +33,11 @@
 namespace blink {
 
 template <typename IDLResolvedType>
-class ScriptPromiseResolverTyped;
+class ScriptPromiseResolver;
 
 // This class wraps v8::Promise::Resolver for easier use in blink.
 //
-// A ScriptPromiseResolverTyped must be templated with its IDLResolveType. This
+// A ScriptPromiseResolver must be templated with its IDLResolveType. This
 // is the type of the promise specified in the relevant IDL file. For types
 // that are part of the IDL language, find the corresponding type in idl_types.h
 // (`bool` becomes `IDLBoolean`, `any` becomes `IDLAny`, etc). For anything
@@ -47,19 +47,19 @@ class ScriptPromiseResolverTyped;
 // determine what values may be passed to `Resolve()` - the IDLResolveType and
 // the passed-in type will be forwarded to ToV8Traits<>, so the types must be
 // compatible for that purpose. For example, a
-// `ScriptPromiseResolverTyped<IDLAny>` may `Resolve()` with  a `ScriptValue` or
-// a `v8::Local<v8::Value>`, but a `ScriptPromiseResolverTyped<IDLBoolean>` must
+// `ScriptPromiseResolver<IDLAny>` may `Resolve()` with  a `ScriptValue` or
+// a `v8::Local<v8::Value>`, but a `ScriptPromiseResolver<IDLBoolean>` must
 // `Resolve()` with a `bool`.
 //
-// ScriptPromiseResolver is an untyped base class and may not be created
+// ScriptPromiseResolverBase is an untyped base class and may not be created
 // directly. It should only be used for logic that needs to handle resolvers
-// of multiple different IDL types. A ScriptPromiseResolver can be rejected
+// of multiple different IDL types. A ScriptPromiseResolverBase can be rejected
 // without being downcasted, because reject types are not specified in the IDL.
 // However, it must be downcasted via `DowncastTo<IDLResolveType>()` in order
 // to `Resolve()`.
 //
 // `DowncastTo` will DCHECK in the case of a bad cast. It's not a security issue
-// because all ScriptPromiseResolver/ScriptPromiseResolverTyped classes have the
+// because all ScriptPromiseResolverBase/ScriptPromiseResolver classes have the
 // same memory layout and vtable, but it is a correctness issue because the
 // promise will be resolved with an incorrect type.
 //
@@ -69,16 +69,17 @@ class ScriptPromiseResolverTyped;
 //
 // There are cases where promises cannot work (e.g., where the thread is being
 // terminated). In such cases operations will silently fail.
-class CORE_EXPORT ScriptPromiseResolver
-    : public GarbageCollected<ScriptPromiseResolver> {
+class CORE_EXPORT ScriptPromiseResolverBase
+    : public GarbageCollected<ScriptPromiseResolverBase> {
 #if DCHECK_IS_ON()
-  USING_PRE_FINALIZER(ScriptPromiseResolver, Dispose);
+  USING_PRE_FINALIZER(ScriptPromiseResolverBase, Dispose);
 #endif
 
  public:
-  ScriptPromiseResolver(const ScriptPromiseResolver&) = delete;
-  ScriptPromiseResolver& operator=(const ScriptPromiseResolver&) = delete;
-  virtual ~ScriptPromiseResolver();
+  ScriptPromiseResolverBase(const ScriptPromiseResolverBase&) = delete;
+  ScriptPromiseResolverBase& operator=(const ScriptPromiseResolverBase&) =
+      delete;
+  virtual ~ScriptPromiseResolverBase();
 
 #if DCHECK_IS_ON()
   void Dispose();
@@ -106,7 +107,7 @@ class CORE_EXPORT ScriptPromiseResolver
   void Reject(ExceptionState&);
 
   // Following functions create exceptions using ExceptionState.
-  // They require ScriptPromiseResolver to be created with ExceptionContext.
+  // They require ScriptPromiseResolverBase to be created with ExceptionContext.
 
   // Reject with DOMException with given exception code.
   void RejectWithDOMException(DOMExceptionCode exception_code,
@@ -128,12 +129,12 @@ class CORE_EXPORT ScriptPromiseResolver
   }
 
   template <typename IDLResolvedType>
-  ScriptPromiseResolverTyped<IDLResolvedType>* DowncastTo() {
+  ScriptPromiseResolver<IDLResolvedType>* DowncastTo() {
 #if DCHECK_IS_ON()
     DCHECK_EQ(runtime_type_id_,
-              GetTypeId<ScriptPromiseResolverTyped<IDLResolvedType>>());
+              GetTypeId<ScriptPromiseResolver<IDLResolvedType>>());
 #endif
-    return static_cast<ScriptPromiseResolverTyped<IDLResolvedType>*>(this);
+    return static_cast<ScriptPromiseResolver<IDLResolvedType>*>(this);
   }
 
   // Calling this function makes the resolver release its internal resources.
@@ -156,9 +157,9 @@ class CORE_EXPORT ScriptPromiseResolver
 
  private:
   template <typename IDLResolvedType>
-  friend class ScriptPromiseResolverTyped;
+  friend class ScriptPromiseResolver;
 
-  ScriptPromiseResolver(ScriptState*, const ExceptionContext&);
+  ScriptPromiseResolverBase(ScriptState*, const ExceptionContext&);
 
 #if DCHECK_IS_ON()
   template <typename T>
@@ -233,20 +234,19 @@ class CORE_EXPORT ScriptPromiseResolver
 };
 
 template <typename IDLResolvedType>
-class ScriptPromiseResolverTyped final : public ScriptPromiseResolver {
+class ScriptPromiseResolver final : public ScriptPromiseResolverBase {
  public:
-  explicit ScriptPromiseResolverTyped(ScriptState* script_state)
-      : ScriptPromiseResolverTyped(
-            script_state,
-            ExceptionContext(ExceptionContextType::kUnknown,
-                             nullptr,
-                             nullptr)) {}
+  explicit ScriptPromiseResolver(ScriptState* script_state)
+      : ScriptPromiseResolver(script_state,
+                              ExceptionContext(ExceptionContextType::kUnknown,
+                                               nullptr,
+                                               nullptr)) {}
 
-  ScriptPromiseResolverTyped(ScriptState* script_state,
-                             const ExceptionContext& context)
-      : ScriptPromiseResolver(script_state, context) {
+  ScriptPromiseResolver(ScriptState* script_state,
+                        const ExceptionContext& context)
+      : ScriptPromiseResolverBase(script_state, context) {
 #if DCHECK_IS_ON()
-    runtime_type_id_ = GetTypeId<ScriptPromiseResolverTyped<IDLResolvedType>>();
+    runtime_type_id_ = GetTypeId<ScriptPromiseResolver<IDLResolvedType>>();
 #endif
   }
 
@@ -284,14 +284,14 @@ class ScriptPromiseResolverTyped final : public ScriptPromiseResolver {
         ToV8UndefinedGenerator());
   }
 
-  ScriptPromiseTyped<IDLResolvedType> Promise() {
+  ScriptPromise<IDLResolvedType> Promise() {
 #if DCHECK_IS_ON()
     is_promise_called_ = true;
 #endif
     if (resolver_.IsEmpty()) {
-      return ScriptPromiseTyped<IDLResolvedType>();
+      return ScriptPromise<IDLResolvedType>();
     }
-    return ScriptPromiseTyped<IDLResolvedType>(
+    return ScriptPromise<IDLResolvedType>(
         script_state_,
         resolver_.Get(script_state_->GetIsolate())->GetPromise());
   }
@@ -304,11 +304,11 @@ class ScriptPromiseResolverTyped final : public ScriptPromiseResolver {
   // `IsInParallelAlgorithmRunnable` for details.
   template <typename... Args>
   base::OnceCallback<void(Args...)> WrapCallbackInScriptScope(
-      base::OnceCallback<void(ScriptPromiseResolverTyped<IDLResolvedType>*,
-                              Args...)> callback) {
+      base::OnceCallback<void(ScriptPromiseResolver<IDLResolvedType>*, Args...)>
+          callback) {
     return WTF::BindOnce(
-        [](ScriptPromiseResolverTyped<IDLResolvedType>* resolver,
-           base::OnceCallback<void(ScriptPromiseResolverTyped<IDLResolvedType>*,
+        [](ScriptPromiseResolver<IDLResolvedType>* resolver,
+           base::OnceCallback<void(ScriptPromiseResolver<IDLResolvedType>*,
                                    Args...)> callback,
            Args... args) {
           ScriptState* script_state = resolver->GetScriptState();

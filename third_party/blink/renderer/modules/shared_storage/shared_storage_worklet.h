@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 
 namespace blink {
-class ScriptPromiseResolver;
+class ScriptPromiseResolverBase;
 class SharedStorageUrlWithMetadata;
 class SharedStorageRunOperationMethodOptions;
 class WorkletOptions;
@@ -36,25 +36,23 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
 
   // shared_storage_worklet.idl
   // addModule() imports ES6 module scripts.
-  ScriptPromiseTyped<IDLUndefined> addModule(ScriptState*,
-                                             const String& module_url,
-                                             const WorkletOptions* options,
-                                             ExceptionState&);
-  ScriptPromiseTyped<V8SharedStorageResponse> selectURL(
+  ScriptPromise<IDLUndefined> addModule(ScriptState*,
+                                        const String& module_url,
+                                        const WorkletOptions* options,
+                                        ExceptionState&);
+  ScriptPromise<V8SharedStorageResponse> selectURL(
       ScriptState*,
       const String& name,
       HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
       ExceptionState&);
-  ScriptPromiseTyped<V8SharedStorageResponse> selectURL(
+  ScriptPromise<V8SharedStorageResponse> selectURL(
       ScriptState*,
       const String& name,
       HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
       const SharedStorageRunOperationMethodOptions* options,
       ExceptionState&);
-  ScriptPromiseTyped<IDLAny> run(ScriptState*,
-                                 const String& name,
-                                 ExceptionState&);
-  ScriptPromiseTyped<IDLAny> run(
+  ScriptPromise<IDLAny> run(ScriptState*, const String& name, ExceptionState&);
+  ScriptPromise<IDLAny> run(
       ScriptState*,
       const String& name,
       const SharedStorageRunOperationMethodOptions* options,
@@ -63,7 +61,7 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
   // Helper implementation method for `sharedStorage.worklet.addModule()` and
   // for `sharedStorage.createWorklet()`.
   void AddModuleHelper(ScriptState*,
-                       ScriptPromiseResolver*,
+                       ScriptPromiseResolverBase*,
                        const String& module_url,
                        const WorkletOptions* options,
                        ExceptionState&,

@@ -185,7 +185,7 @@ bool IsAncestorChainValidForWebOTP(const Frame* frame) {
 }
 
 bool CheckSecurityRequirementsBeforeRequest(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     RequiredOriginType required_origin_type) {
   if (!CheckGenericSecurityRequirementsForCredentialsContainerRequest(
           resolver)) {
@@ -316,7 +316,7 @@ bool CheckSecurityRequirementsBeforeRequest(
 }
 
 void AssertSecurityRequirementsBeforeResponse(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     RequiredOriginType require_origin) {
   // The |resolver| will blanket ignore Reject/Resolve calls if the context is
   // gone -- nevertheless, call Reject() to be on the safe side.
@@ -608,15 +608,14 @@ void AbortIdentityCredentialRequest(ScriptState* script_state) {
   auth_request->CancelTokenRequest();
 }
 
-void OnRequestToken(
-    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
-    std::unique_ptr<ScopedAbortState> scoped_abort_state,
-    const CredentialRequestOptions* options,
-    RequestTokenStatus status,
-    const std::optional<KURL>& selected_idp_config_url,
-    const WTF::String& token,
-    mojom::blink::TokenErrorPtr error,
-    bool is_auto_selected) {
+void OnRequestToken(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
+                    std::unique_ptr<ScopedAbortState> scoped_abort_state,
+                    const CredentialRequestOptions* options,
+                    RequestTokenStatus status,
+                    const std::optional<KURL>& selected_idp_config_url,
+                    const WTF::String& token,
+                    mojom::blink::TokenErrorPtr error,
+                    bool is_auto_selected) {
   switch (status) {
     case RequestTokenStatus::kErrorTooManyRequests: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -935,7 +934,7 @@ void OnGetAssertionComplete(
   }
 }
 
-void OnSmsReceive(ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
+void OnSmsReceive(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
                   std::unique_ptr<ScopedAbortState> scoped_abort_state,
                   base::TimeTicks start_time,
                   mojom::blink::SmsStatus status,
@@ -986,7 +985,7 @@ void OnSmsReceive(ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
 // Validates the "payment" extension for public key credential creation. The
 // function rejects the promise before returning in this case.
 bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
-                             ScriptPromiseResolver* resolver) {
+                             ScriptPromiseResolverBase* resolver) {
   const auto* payment = options->publicKey()->extensions()->payment();
   if (!payment->hasIsPayment() || !payment->isPayment()) {
     return true;
@@ -1213,12 +1212,12 @@ AuthenticationCredentialsContainer::AuthenticationCredentialsContainer(
     Navigator& navigator)
     : Supplement<Navigator>(navigator) {}
 
-ScriptPromiseTyped<IDLNullable<Credential>>
-AuthenticationCredentialsContainer::get(ScriptState* script_state,
-                                        const CredentialRequestOptions* options,
-                                        ExceptionState& exception_state) {
+ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
+    ScriptState* script_state,
+    const CredentialRequestOptions* options,
+    ExceptionState& exception_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<Credential>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -1489,12 +1488,12 @@ AuthenticationCredentialsContainer::get(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromiseTyped<Credential> AuthenticationCredentialsContainer::store(
+ScriptPromise<Credential> AuthenticationCredentialsContainer::store(
     ScriptState* script_state,
     Credential* credential,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<Credential>>(
-      script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<Credential>>(script_state);
   auto promise = resolver->Promise();
 
   if (!(credential->IsFederatedCredential() ||
@@ -1543,13 +1542,13 @@ ScriptPromiseTyped<Credential> AuthenticationCredentialsContainer::store(
   return promise;
 }
 
-ScriptPromiseTyped<IDLNullable<Credential>>
+ScriptPromise<IDLNullable<Credential>>
 AuthenticationCredentialsContainer::create(
     ScriptState* script_state,
     const CredentialCreationOptions* options,
     ExceptionState& exception_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<Credential>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
           script_state);
   auto promise = resolver->Promise();
 
@@ -1853,12 +1852,11 @@ AuthenticationCredentialsContainer::create(
   return promise;
 }
 
-ScriptPromiseTyped<IDLUndefined>
+ScriptPromise<IDLUndefined>
 AuthenticationCredentialsContainer::preventSilentAccess(
     ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
   const auto required_origin_type = RequiredOriginType::kSecure;
   if (!CheckSecurityRequirementsBeforeRequest(resolver, required_origin_type)) {
@@ -1890,7 +1888,7 @@ void AuthenticationCredentialsContainer::Trace(Visitor* visitor) const {
 
 void AuthenticationCredentialsContainer::GetForIdentity(
     ScriptState* script_state,
-    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
+    ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     const CredentialRequestOptions& options,
     const IdentityCredentialRequestOptions& identity_options) {
   // Common errors for FedCM and WebIdentityDigitalCredential.

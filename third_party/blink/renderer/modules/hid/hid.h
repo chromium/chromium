@@ -59,9 +59,9 @@ class MODULES_EXPORT HID : public EventTarget,
   // Web-exposed interfaces on hid object:
   DEFINE_ATTRIBUTE_EVENT_LISTENER(connect, kConnect)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(disconnect, kDisconnect)
-  ScriptPromiseTyped<IDLSequence<HIDDevice>> getDevices(ScriptState*,
-                                                        ExceptionState&);
-  ScriptPromiseTyped<IDLSequence<HIDDevice>>
+  ScriptPromise<IDLSequence<HIDDevice>> getDevices(ScriptState*,
+                                                   ExceptionState&);
+  ScriptPromise<IDLSequence<HIDDevice>>
   requestDevice(ScriptState*, const HIDDeviceRequestOptions*, ExceptionState&);
 
   // HIDDevice::ServiceInterface:
@@ -101,7 +101,7 @@ class MODULES_EXPORT HID : public EventTarget,
   // Closes the connection to HidService and resolves any pending promises.
   void CloseServiceConnection();
 
-  using HIDDeviceResolver = ScriptPromiseResolverTyped<IDLSequence<HIDDevice>>;
+  using HIDDeviceResolver = ScriptPromiseResolver<IDLSequence<HIDDevice>>;
   void FinishGetDevices(HIDDeviceResolver*,
                         Vector<device::mojom::blink::HidDeviceInfoPtr>);
   void FinishRequestDevice(HIDDeviceResolver*,
