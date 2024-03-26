@@ -17,29 +17,24 @@ import {ChromeVoxPrefs} from '../prefs.js';
 const Action = BridgeConstants.LogStore.Action;
 const TARGET = BridgeConstants.LogStore.TARGET;
 
-/**
- * Exported for testing.
- * @const {number}
- */
+/** Exported for testing. */
 export const LOG_LIMIT = 3000;
 
 export class LogStore {
+  static instance: LogStore;
+
+  /** Ring buffer of size LOG_LIMIT. */
+  private logs_: BaseLog[];
+  private shouldSkipOutput_ = false;
+  /**
+   * |this.logs_| is implemented as a ring buffer which starts
+   * from |this.startIndex_| and ends at |this.startIndex_ - 1|.
+   * In the initial state, this array is filled by undefined.
+   */
+  private startIndex_ = 0;
+
   constructor() {
-    /**
-     * Ring buffer of size this.LOG_LIMIT
-     * @private {!Array<!BaseLog>}
-     */
     this.logs_ = Array(LOG_LIMIT);
-
-    /** @private {boolean} */
-    this.shouldSkipOutput_ = false;
-
-    /*
-     * this.logs_ is implemented as a ring buffer which starts
-     * from this.startIndex_ and ends at this.startIndex_-1
-     * In the initial state, this array is filled by undefined.
-     * @private {number}
-     */
     this.startIndex_ = 0;
   }
 
@@ -47,11 +42,9 @@ export class LogStore {
    * Creates logs of type |type| in order.
    * This is not the best way to create logs fast but
    * getLogsOfType() is not called often.
-   * @param {!LogType} logType
-   * @return {!Array<!BaseLog>}
    */
-  getLogsOfType(logType) {
-    const returnLogs = [];
+  getLogsOfType(logType: LogType): BaseLog[] {
+    const returnLogs: BaseLog[] = [];
     for (let i = 0; i < LOG_LIMIT; i++) {
       const index = (this.startIndex_ + i) % LOG_LIMIT;
       if (!this.logs_[index]) {
@@ -68,10 +61,9 @@ export class LogStore {
    * Create logs in order.
    * This is not the best way to create logs fast but
    * getLogs() is not called often.
-   * @return {!Array<!BaseLog>}
    */
-  getLogs() {
-    const returnLogs = [];
+  getLogs(): BaseLog[] {
+    const returnLogs: BaseLog[] = [];
     for (let i = 0; i < LOG_LIMIT; i++) {
       const index = (this.startIndex_ + i) % LOG_LIMIT;
       if (!this.logs_[index]) {
@@ -82,8 +74,8 @@ export class LogStore {
     return returnLogs;
   }
 
-  /** @param {string} text The text string written to the braille display. */
-  writeBrailleLog(text) {
+  /** @param text The text string written to the braille display. */
+  writeBrailleLog(text: string): void {
     if (SettingsManager.getBoolean(ChromeVoxPrefs.loggingPrefs.BRAILLE)) {
       const logStr = `Braille "${text}"`;
       this.writeTextLog(logStr, LogType.BRAILLE);
@@ -91,12 +83,10 @@ export class LogStore {
   }
 
   /**
-   * Write a text log to this.logs_.
+   * Write a text log to |this.logs_|.
    * To add a message to logs, this function should be called.
-   * @param {string} logContent
-   * @param {!LogType} logType
    */
-  writeTextLog(logContent, logType) {
+  writeTextLog(logContent: string, logType: LogType): void {
     if (this.shouldSkipOutput_) {
       return;
     }
@@ -107,9 +97,8 @@ export class LogStore {
   /**
    * Write a tree log to this.logs_.
    * To add a message to logs, this function should be called.
-   * @param {!TreeDumper} logContent
    */
-  writeTreeLog(logContent) {
+  writeTreeLog(logContent: TreeDumper): void {
     if (this.shouldSkipOutput_) {
       return;
     }
@@ -120,9 +109,8 @@ export class LogStore {
   /**
    * Write a log to this.logs_.
    * To add a message to logs, this function should be called.
-   * @param {!BaseLog} log
    */
-  writeLog(log) {
+  writeLog(log: BaseLog): void {
     if (this.shouldSkipOutput_) {
       return;
     }
@@ -135,17 +123,16 @@ export class LogStore {
   }
 
   /** Clear this.logs_ and set to initial states. */
-  clearLog() {
+  clearLog(): void {
     this.logs_ = Array(LOG_LIMIT);
     this.startIndex_ = 0;
   }
 
-  /** @param {boolean} newValue */
-  set shouldSkipOutput(newValue) {
+  set shouldSkipOutput(newValue: boolean) {
     this.shouldSkipOutput_ = newValue;
   }
 
-  static init() {
+  static init(): void {
     LogStore.instance = new LogStore();
 
     BridgeHelper.registerHandler(
@@ -155,8 +142,5 @@ export class LogStore {
         () => LogStore.instance.getLogs().map(log => log.serialize()));
   }
 }
-
-/** @type {LogStore} */
-LogStore.instance;
 
 TestImportManager.exportForTesting(LogStore, ['LOG_LIMIT', LOG_LIMIT]);
