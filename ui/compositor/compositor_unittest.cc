@@ -33,6 +33,14 @@ using testing::_;
 namespace ui {
 namespace {
 
+class MockCompositorObserver : public CompositorObserver {
+ public:
+  MOCK_METHOD2(OnCompositorVisibilityChanging,
+               void(Compositor* compositor, bool visible));
+  MOCK_METHOD2(OnCompositorVisibilityChanged,
+               void(Compositor* compositor, bool visible));
+};
+
 class CompositorTest : public testing::Test {
  public:
   CompositorTest() = default;
@@ -538,6 +546,35 @@ TEST_F(CompositorTestWithMessageLoop, AddLayerDuringUpdateVisualState) {
   DrawWaiterForTest::WaitForCompositingEnded(compositor());
   EXPECT_TRUE(child_layer_delegate.update_visual_state_called());
   compositor()->SetRootLayer(nullptr);
+}
+
+TEST_F(CompositorTestWithMessageLoop, CompositorVisibilityChanges) {
+  testing::StrictMock<MockCompositorObserver> observer;
+  compositor()->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnCompositorVisibilityChanging(compositor(), false))
+      .Times(1);
+  EXPECT_CALL(observer, OnCompositorVisibilityChanged(compositor(), false))
+      .Times(1);
+  compositor()->SetVisible(false);
+  ::testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnCompositorVisibilityChanging(compositor(), true))
+      .Times(1);
+  EXPECT_CALL(observer, OnCompositorVisibilityChanged(compositor(), true))
+      .Times(1);
+  compositor()->SetVisible(true);
+  ::testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Verify no calls if visibility isn't changed.
+  EXPECT_CALL(observer, OnCompositorVisibilityChanging(compositor(), _))
+      .Times(0);
+  EXPECT_CALL(observer, OnCompositorVisibilityChanged(compositor(), _))
+      .Times(0);
+  compositor()->SetVisible(true);
+  ::testing::Mock::VerifyAndClearExpectations(&observer);
+
+  compositor()->RemoveObserver(&observer);
 }
 
 }  // namespace ui

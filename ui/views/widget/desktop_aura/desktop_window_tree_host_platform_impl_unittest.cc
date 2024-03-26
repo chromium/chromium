@@ -7,8 +7,11 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "ui/aura/native_window_occlusion_tracker.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/compositor/compositor.h"
 #include "ui/display/display_switches.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/views/test/views_test_base.h"
@@ -193,6 +196,48 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, MouseNCEvents) {
   EXPECT_TRUE(recorder.mouse_events()[0].flags() & ui::EF_IS_NON_CLIENT);
 
   widget->GetNativeWindow()->RemovePreTargetHandler(&recorder);
+}
+
+// Checks that the visibility of the content window of
+// `DesktopWindowTreeHostPlatform` matches the visibility of the ui compositor.
+TEST_F(DesktopWindowTreeHostPlatformImplTest,
+       ContentWindowVisibilityMatchesCompositorVisibility) {
+  std::unique_ptr<Widget> widget = CreateWidget(new ShapedWidgetDelegate());
+  // Disable native occlusion tracking so it doesn't interfere with visibility
+  // for this test.
+  aura::NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(
+      widget->GetNativeWindow()->GetHost());
+  widget->Show();
+  base::RunLoop().RunUntilIdle();
+
+  auto* host_platform = static_cast<DesktopWindowTreeHostPlatform*>(
+      widget->GetNativeWindow()->GetHost());
+  ASSERT_TRUE(host_platform);
+  auto* compositor = host_platform->compositor();
+  ASSERT_TRUE(compositor);
+
+  EXPECT_TRUE(compositor->IsVisible());
+  EXPECT_TRUE(host_platform->GetContentWindow()->IsVisible());
+
+  // Mark as not visible via `WindowTreeHost`.
+  host_platform->Hide();
+  EXPECT_FALSE(compositor->IsVisible());
+  EXPECT_FALSE(host_platform->GetContentWindow()->IsVisible());
+
+  // Mark as visible via `WindowTreeHost`.
+  static_cast<aura::WindowTreeHost*>(host_platform)->Show();
+  EXPECT_TRUE(compositor->IsVisible());
+  EXPECT_TRUE(host_platform->GetContentWindow()->IsVisible());
+
+  // Mark compositor directly as not visible.
+  compositor->SetVisible(false);
+  EXPECT_FALSE(compositor->IsVisible());
+  EXPECT_FALSE(host_platform->GetContentWindow()->IsVisible());
+
+  // Mark compositor directly as visible.
+  compositor->SetVisible(true);
+  EXPECT_TRUE(compositor->IsVisible());
+  EXPECT_TRUE(host_platform->GetContentWindow()->IsVisible());
 }
 
 // Checks that a call to `SetZOrderLevel` on a `PlatformWindow` sets the z order
