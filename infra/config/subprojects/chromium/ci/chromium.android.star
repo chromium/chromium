@@ -2274,6 +2274,7 @@ ci.builder(
 
 ci.builder(
     name = "android-webview-13-x64-hostside-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = (
         "Runs WebView host-driven CTS on Android 13 emulator."
     ),
@@ -2312,13 +2313,10 @@ ci.builder(
             "webview_shell",
         ],
     ),
-    # TODO(b/267730567): Enable sheriff once tests are stable
-    sheriff_rotations = args.ignore_default(None),
-    # TODO(b/267730567): Enable tree_closing once compile are stable
-    #tree_closing = True,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
-        category = "builder|x86",
-        short_name = "64",
+        category = "on_cq|x64",
+        short_name = "13-hs",
     ),
     contact_team_email = "woa-engprod@google.com",
 )

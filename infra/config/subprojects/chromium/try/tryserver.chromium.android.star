@@ -909,6 +909,7 @@ try_.orchestrator_builder(
     description_html = "Run Chromium tests on Android emulators.",
     mirrors = [
         "ci/android-12-x64-rel",
+        "ci/android-webview-13-x64-hostside-rel",
     ],
     gn_args = gn_args.config(
         configs = [
