@@ -91,4 +91,28 @@ if (!is_android) {
       ]
     }
   }
+
+  in_process_mojolpm_generated_fuzzer("renderer_in_process_mojolpm_fuzzer") {
+    sources = [ "renderer_in_process_mojolpm_fuzzer.cc" ]
+
+    mojom_source = "//third_party/blink/public/mojom/blob/blob_registry.mojom"
+    interface = "BlobRegistry"
+    remote_type = "Remote"
+
+    deps = [
+      ":in_process_proto_fuzzer_runner",
+      "//chrome/test:test_support",
+      "//content/test/fuzzer:mojolpm_fuzzer_support",
+      "//testing/libfuzzer:renderer_fuzzing",
+      "//testing/libfuzzer/proto:url_proto_converter",
+      "//third_party/blink/public/common:storage_key_proto_converter",
+      "//third_party/blink/public/mojom:mojom_core_mojolpm",
+      "//third_party/blink/public/mojom:mojom_platform_mojolpm",
+    ]
+
+    proto_deps = [
+      "//third_party/blink/public/mojom:mojom_core_mojolpm",
+      "//third_party/blink/public/mojom:mojom_platform_mojolpm",
+    ]
+  }
 }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/test/fuzzing/in_process_fuzzer.h"
+
 #include <vector>
 
 #include "base/at_exit.h"
@@ -11,11 +13,14 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
+#include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/test/base/chrome_test_launcher.h"
-#include "chrome/test/fuzzing/in_process_fuzzer.h"
 #include "chrome/test/fuzzing/in_process_fuzzer_buildflags.h"
 #include "content/public/app/content_main.h"
+#include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "content/public/test/test_launcher.h"
+#include "third_party/blink/public/web/web_testing_support.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/sys_string_conversions.h"
@@ -119,14 +124,44 @@ void InProcessFuzzer::SetUpOnMainThread() {
 
 InProcessFuzzer* g_test;
 
-class FuzzTestLauncherDelegate : public content::TestLauncherDelegate {
+// The following three classes are only meant to inject `internals` into JS.
+// This object is needed by our IPC based fuzzers, and could also be needed by
+// other in the future.
+class InternalsObjectFrameInjector : public content::RenderFrameObserver {
  public:
-  FuzzTestLauncherDelegate(std::unique_ptr<InProcessFuzzer>&& fuzzer,
-                           std::vector<std::string>&& libfuzzer_arguments)
+  explicit InternalsObjectFrameInjector(content::RenderFrame* render_frame)
+      : content::RenderFrameObserver(render_frame) {}
+  void DidClearWindowObject() override {
+    blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+    blink::WebTestingSupport::InjectInternalsObject(frame);
+  }
+  void OnDestruct() override { delete this; }
+};
+
+class InternalsObjectRendererInjector : public ChromeContentRendererClient {
+ public:
+  void RenderFrameCreated(content::RenderFrame* render_frame) override {
+    new InternalsObjectFrameInjector(render_frame);
+  }
+};
+
+class FuzzerChromeMainDelegate : public ChromeTestChromeMainDelegate {
+ public:
+  explicit FuzzerChromeMainDelegate(base::TimeTicks time)
+      : ChromeTestChromeMainDelegate(time) {}
+  content::ContentRendererClient* CreateContentRendererClient() override {
+    return new InternalsObjectRendererInjector();
+  }
+};
+
+class FuzzerTestLauncherDelegate : public content::TestLauncherDelegate {
+ public:
+  FuzzerTestLauncherDelegate(std::unique_ptr<InProcessFuzzer>&& fuzzer,
+                             std::vector<std::string>&& libfuzzer_arguments)
       : fuzzer_(std::move(fuzzer)),
         libfuzzer_arguments_(std::move(libfuzzer_arguments)) {
     content_main_delegate_ =
-        std::make_unique<ChromeTestChromeMainDelegate>(base::TimeTicks::Now());
+        std::make_unique<FuzzerChromeMainDelegate>(base::TimeTicks::Now());
   }
 
   int RunTestSuite(int argc, char** argv) override {
@@ -253,8 +288,8 @@ int main(int argc, char** argv) {
     TestTimeouts::Initialize();
   }
 
-  FuzzTestLauncherDelegate* fuzzer_launcher_delegate =
-      new FuzzTestLauncherDelegate(std::move(fuzzer),
-                                   std::move(libfuzzer_arguments));
+  FuzzerTestLauncherDelegate* fuzzer_launcher_delegate =
+      new FuzzerTestLauncherDelegate(std::move(fuzzer),
+                                     std::move(libfuzzer_arguments));
   return LaunchChromeTests(1, fuzzer_launcher_delegate, argc, argv);
 }

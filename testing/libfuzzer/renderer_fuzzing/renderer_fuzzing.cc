@@ -23,5 +23,8 @@ void RendererFuzzing::Run(
 }
 
 RendererFuzzing* RendererFuzzing::GetInstance() {
-  return base::Singleton<RendererFuzzing>::get();
+  // We must use a leaky singleton here because at this point of initialization,
+  // we might not have an AtExit manager set up yet.
+  return base::Singleton<RendererFuzzing,
+                         base::LeakySingletonTraits<RendererFuzzing>>::get();
 }

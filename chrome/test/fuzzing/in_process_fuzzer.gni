@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/fuzzers/mojolpm.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -216,6 +217,64 @@ template("in_process_proto_fuzzer") {
         seed_corpus = seed_corpus_path
         seed_corpus_deps = [ ":${protoc_convert_target_name}" ]
       }
+    }
+  } else {
+    # noop if the fuzzer harness always provides its own main
+    not_needed(invoker, "*")
+
+    group(target_name) {
+    }
+  }
+}
+
+# This template aims at mirroring what `mojolpm_fuzzer_test` does, except that
+# it embeds InProcessFuzzer internals in order to function correctly.
+#
+# Parameters:
+#  see parameters for //mojo/public/tools/fuzzers/mojolpm.gni:mojolpm_fuzzer_test
+template("in_process_mojolpm_fuzzer") {
+  if (fuzzing_engine_supports_custom_main) {
+    mojolpm_fuzzer_test(target_name) {
+      deps = [ "//chrome/test/fuzzing:in_process_fuzzer_runner" ]
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
+      forward_variables_from(invoker,
+                             "*",
+                             [
+                               "deps",
+                               "exclude_main",
+                             ])
+      exclude_main = true
+    }
+  } else {
+    # noop if the fuzzer harness always provides its own main
+    not_needed(invoker, "*")
+
+    group(target_name) {
+    }
+  }
+}
+
+# This template aims at mirroring what `mojolpm_generated_fuzzer` does, except
+# that it embeds InProcessFuzzer internals in order to function correctly.
+#
+# Parameters:
+#  see parameters for //mojo/public/tools/fuzzers/mojolpm.gni:mojolpm_generated_fuzzer
+template("in_process_mojolpm_generated_fuzzer") {
+  if (fuzzing_engine_supports_custom_main) {
+    mojolpm_generated_fuzzer(target_name) {
+      deps = [ "//chrome/test/fuzzing:in_process_fuzzer_runner" ]
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
+      forward_variables_from(invoker,
+                             "*",
+                             [
+                               "deps",
+                               "exclude_main",
+                             ])
+      exclude_main = true
     }
   } else {
     # noop if the fuzzer harness always provides its own main

@@ -33,6 +33,9 @@ import("//third_party/protobuf/proto_library.gni")
 #   proto_in_dir
 #       See documentation at //third_party/protobuf/proto_library.gni.
 #
+#   exclude_main
+#       See documentation at //testing/libfuzzer/fuzzer_test.gni.
+#
 #   proto_out_dir (optional)
 #       See documentation at //third_party/protobuf/proto_library.gni.
 #
@@ -156,6 +159,9 @@ template("mojolpm_fuzzer_test") {
       if (defined(invoker.seed_corpus_sources)) {
         seed_corpus = seed_corpus_path
         seed_corpus_deps = [ ":${protoc_convert_target_name}" ]
+      }
+      if (defined(invoker.exclude_main)) {
+        exclude_main = invoker.exclude_main
       }
     }
   } else {
