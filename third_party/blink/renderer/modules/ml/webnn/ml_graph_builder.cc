@@ -1211,9 +1211,7 @@ MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
       ConvertToComponentOperand(a), ConvertToComponentOperand(b),
       ConvertToGemmAttributes(options));
   if (!validated_output.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        WTF::String::FromUTF8(validated_output.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
   }
   auto* gemm = MakeGarbageCollected<MLOperator>(
@@ -1223,8 +1221,7 @@ MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
       this, ComponentOperandTypeToBlink(validated_output.value().data_type),
       Vector<uint32_t>(validated_output.value().dimensions), gemm);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   gemm->Connect(std::move(inputs), {output.value()});
