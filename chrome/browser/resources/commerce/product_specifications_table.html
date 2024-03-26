@@ -1,0 +1,44 @@
+<style>
+  .separator {
+    height: 16px;
+  }
+  .col {
+    width: 220px;
+  }
+  .col-card {
+    display: flex;
+    justify-content: flex-start;
+  }
+  .row-header {
+    font-weight: 500;
+  }
+  .row-content {
+    padding-bottom: 24px;
+  }
+</style>
+<table>
+  <thead>
+    <template is="dom-repeat" items="[[columns]]" as="column">
+      <th class="col">
+        <div class="col-card">[[column.title]]</div>
+      </th>
+    </template>
+  </thead>
+  <tbody>
+    <tr class="separator"> </tr>
+    <template is="dom-repeat" items="[[rows]]" as="row">
+      <tr class="row">
+        <td class="row-header">
+          <div>[[row.title]]</div>
+        </td>
+      </tr>
+      <tr class="row">
+        <template is="dom-repeat" items="[[row.values]]" as="value">
+          <td class="row-content">
+            <div>[[value]]</div>
+          </td>
+        </template>
+      </tr>
+    </template>
+  </tbody>
+</table>

@@ -3,14 +3,16 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
+import './product_specifications_table.js';
 
 import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import type {TableColumn, TableRow} from './product_specifications_table.js';
+import {Router} from './router.js';
 
 export class ProductSpecificationsElement extends PolymerElement {
   static get is() {
@@ -23,15 +25,15 @@ export class ProductSpecificationsElement extends PolymerElement {
 
   static get properties() {
     return {
-      message_: {
-        type: String,
-        value: () => loadTimeData.getString('message'),
+      specsTable_: {
+        type: Object,
+        value: {},
       },
     };
   }
 
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
-  private status_: string;
+  private specsTable_: {columns: TableColumn[], rows: TableRow[]};
 
   constructor() {
     super();
@@ -40,7 +42,8 @@ export class ProductSpecificationsElement extends PolymerElement {
 
   override async connectedCallback() {
     super.connectedCallback();
-    const params = new URLSearchParams(window.location.search);
+    const router = Router.getInstance();
+    const params = new URLSearchParams(router.getCurrentQuery());
     const urlsParam = params.get('urls');
     if (!urlsParam) {
       return;
@@ -58,14 +61,30 @@ export class ProductSpecificationsElement extends PolymerElement {
             urls.map(url => {
               return {url};
             }));
-    this.status_ =
-        `Found: ${urls.length}. Resolved: ${productSpecs.products.length}`;
+
+    const rows: TableRow[] = [];
+    productSpecs.productDimensionMap.forEach((value: string, key: bigint) => {
+      rows.push({
+        title: value,
+        values: productSpecs.products.map(
+            p => p.productDimensionValues.get(key)?.join(',') ?? ''),
+      });
+    });
+
+    this.specsTable_ = {
+      columns: productSpecs.products.map(p => {
+        return {
+          title: p.title,
+        };
+      }),
+      rows,
+    };
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'compare-app': ProductSpecificationsElement;
+    'product-specifications-app': ProductSpecificationsElement;
   }
 }
 

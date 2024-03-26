@@ -8,7 +8,12 @@ build_webui("build") {
     "product_specifications.css",
   ]
 
-  web_component_files = [ "app.ts" ]
+  web_component_files = [
+    "app.ts",
+    "product_specifications_table.ts",
+  ]
+
+  non_web_component_files = [ "router.ts" ]
 
   ts_composite = true
   ts_deps = [

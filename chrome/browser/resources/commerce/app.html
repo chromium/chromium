@@ -4,22 +4,17 @@
     border-radius: 8px;
     box-sizing: border-box;
     display: block;
-    max-width: 500px;
+    width: 100%;
     min-height: 50px;
     padding: 16px 16px 16px 16px;
-  }
-
-  h3 {
-    margin-top: 0px;
-    padding-top: 0px;
   }
 </style>
 
 <div class="app">
-  <h1>$i18n{pageTitle}</h1>
   <div class="summary">
-    <h3>$i18n{summaryTitle}</h3>
-    <div id="message">[[message_]]</div>
-    <div>[[status_]]</div>
+    <product-specifications-table
+        columns="[[specsTable_.columns]]"
+        rows="[[specsTable_.rows]]">
+    </product-specifications-table>
   </div>
 </div>
