@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -104,16 +105,29 @@ bool IsEligibleForBatteryReport(
   // treat them as ineligible until this is resolved.
   if (type == PeripheralBatteryListener::BatteryInfo::PeripheralType::
                   kStylusViaScreen &&
-      serial_number.empty())
+      serial_number.empty()) {
+    base::UmaHistogramEnumeration(
+        kStylusBatteryReportingEligibilityHistogramName,
+        StylusBatteryReportingEligibility::kIneligibleDueToScreen);
     return false;
+  }
 
-  if (serial_number.empty())
+  if (serial_number.empty()) {
+    base::UmaHistogramEnumeration(
+        kStylusBatteryReportingEligibilityHistogramName,
+        StylusBatteryReportingEligibility::kEligible);
     return true;
+  }
 
-  // TODO(b/188811631): Add metrics
-  if (RE2::FullMatch(serial_number, kBlockedStylusDevicesPattern))
+  if (RE2::FullMatch(serial_number, kBlockedStylusDevicesPattern)) {
+    base::UmaHistogramEnumeration(
+        kStylusBatteryReportingEligibilityHistogramName,
+        StylusBatteryReportingEligibility::kIncorrectReports);
     return false;
+  }
 
+  base::UmaHistogramEnumeration(kStylusBatteryReportingEligibilityHistogramName,
+                                StylusBatteryReportingEligibility::kEligible);
   // kUnusualStylusDevicesPattern and unrecognized devices are eligible
   return true;
 }

@@ -282,6 +282,13 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Auto Framing pipeline output error"/>
 </enum>
 
+<enum name="BatteryReportingEligibility">
+  <int value="0" label="Ineligible"/>
+  <int value="1" label="IneligibleDueToScreen"/>
+  <int value="2" label="Eligible"/>
+  <int value="3" label="IncorrectReports"/>
+</enum>
+
 <enum name="BooleanNewAccount">
   <int value="0" label="Existing account"/>
   <int value="1" label="New account"/>

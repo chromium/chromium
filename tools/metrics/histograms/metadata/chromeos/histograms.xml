@@ -1890,6 +1890,17 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.Stylus.BatteryReportingEligibility"
+    enum="BatteryReportingEligibility" expires_after="2025-03-15">
+  <owner>wmahon@google.com</owner>
+  <owner>chromeos-tango@google.com</owner>
+  <summary>
+    Records if a stylus peripheral device is accurately able to report its
+    battery status. Entries are logged everytime the battery status is polled by
+    power manager.
+  </summary>
+</histogram>
+
 <histogram
     name="ChromeOS.Inputs.TouchscreenUsage.Temporary.{TimePeriod}.{Mode}"
     units="ms" expires_after="2024-08-04">
