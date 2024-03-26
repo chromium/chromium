@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
@@ -349,4 +350,48 @@ void IosModuleRanker::ExecuteModelWithInput(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));
 }
+
+// static
+std::unique_ptr<Config> TestIosModuleRanker::GetConfig() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kIosModuleRankerKey;
+  config->segmentation_uma_name = kIosModuleRankerUmaName;
+  config->AddSegmentId(kSegmentId, std::make_unique<TestIosModuleRanker>());
+  config->auto_execute_and_cache = false;
+  return config;
+}
+
+TestIosModuleRanker::TestIosModuleRanker() : IosModuleRanker() {}
+
+void TestIosModuleRanker::ExecuteModelWithInput(
+    const ModelProvider::Request& inputs,
+    ExecutionCallback callback) {
+  // Invalid inputs.
+  if (inputs.size() !=
+      kUMAFeatures.size() + kIosModuleInputContextKeys.size()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+    return;
+  }
+
+  ModelProvider::Response response(kIosModuleLabels.size(), 0);
+  std::string card_type =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          "test-ios-module-ranker");
+  if (card_type == "mvt") {
+    response[0] = 6;
+  } else if (card_type == "shortcut") {
+    response[1] = 6;
+  } else if (card_type == "safety_check") {
+    response[2] = 6;
+  } else if (card_type == "tab_resumption") {
+    response[3] = 6;
+  } else if (card_type == "parcel_tracking") {
+    response[4] = 6;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), response));
+}
+
 }  // namespace segmentation_platform

@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_constants.h"
-#import "ios/chrome/browser/ui/ntp/ntp_app_interface.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -71,13 +70,12 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
       "--force-fieldtrial-params=" + std::string(kStartSurface.name) +
       ".Test:" + std::string(kReturnToStartSurfaceInactiveDurationInSeconds) +
       "/" + "0");
+  config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
   return config;
 }
 
 - (void)setUp {
   [super setUp];
-  [NTPAppInterface recordModuleFreshnessSignalForType:
-                       ContentSuggestionsModuleType::kTabResumption];
   [[self class] closeAllTabs];
   [ChromeEarlGrey openNewTab];
 }

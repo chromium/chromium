@@ -83,7 +83,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/ntp:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:constants",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/tabs/tests:eg_test_support+eg2",
     "//ios/chrome/browser/ui/tabs/tests:fake_distant_tab",

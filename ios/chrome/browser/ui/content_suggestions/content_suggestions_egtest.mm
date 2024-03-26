@@ -107,6 +107,7 @@ void TapSecondaryActionButton() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableFeedAblation);
+  config.additional_args.push_back("--test-ios-module-ranker=mvt");
   if ([self isRunningTest:@selector
             (DISABLED_testMagicStackSetUpListCompleteAllItems)] ||
       [self isRunningTest:@selector(testMagicStackEditButton)] ||
