@@ -1356,17 +1356,19 @@ void InterceptionJob::ProcessRedirectByClient(const GURL& redirect_url) {
 
 void InterceptionJob::SendResponse(scoped_refptr<base::RefCountedMemory> body,
                                    size_t offset) {
+  size_t body_size = body ? body->size() : 0;
+  CHECK_LE(offset, body_size);
+  body_size -= offset;
+  // We shouldn't be able to transfer a string that big over the protocol,
+  // but just in case...
+  CHECK_LE(body_size, UINT32_MAX)
+      << "Response bodies larger than " << UINT32_MAX << " are not supported";
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  CHECK_EQ(mojo::CreateDataPipe(body_size, producer_handle, consumer_handle),
+           MOJO_RESULT_OK);
+
   if (body) {
-    DCHECK_LE(offset, body->size());
-    size_t body_size = body->size() - offset;
-    // We shouldn't be able to transfer a string that big over the protocol,
-    // but just in case...
-    DCHECK_LE(body_size, UINT32_MAX)
-        << "Response bodies larger than " << UINT32_MAX << " are not supported";
-    mojo::ScopedDataPipeProducerHandle producer_handle;
-    CHECK_EQ(mojo::CreateDataPipe(body_size, producer_handle, consumer_handle),
-             MOJO_RESULT_OK);
     uint32_t num_bytes = body_size;
     MojoResult res = producer_handle->WriteData(
         body->front() + offset, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
