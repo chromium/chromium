@@ -612,10 +612,11 @@ TEST(VideoFrame, TextureNoLongerNeededCallbackIsCalled) {
                                    gpu::CommandBufferId::FromUnsafeValue(1), 1);
 
   {
-    gpu::MailboxHolder holders[VideoFrame::kMaxPlanes] = {gpu::MailboxHolder(
-        gpu::Mailbox::GenerateForSharedImage(), gpu::SyncToken(), 5)};
-    scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
-        PIXEL_FORMAT_ARGB, holders,
+    scoped_refptr<gpu::ClientSharedImage>
+        shared_images[VideoFrame::kMaxPlanes] = {
+            gpu::ClientSharedImage::CreateForTesting()};
+    scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImages(
+        PIXEL_FORMAT_ARGB, shared_images, gpu::SyncToken(), 5,
         base::BindOnce(&TextureCallback, &called_sync_token),
         gfx::Size(10, 10),   // coded_size
         gfx::Rect(10, 10),   // visible_rect
@@ -640,10 +641,10 @@ TEST(VideoFrame,
       gpu::CommandBufferNamespace::GPU_IO;
   const gpu::CommandBufferId kCommandBufferId =
       gpu::CommandBufferId::FromUnsafeValue(0x123);
-  gpu::Mailbox mailbox[kPlanesNum];
+  scoped_refptr<gpu::ClientSharedImage> shared_images[VideoFrame::kMaxPlanes];
   for (int i = 0; i < kPlanesNum; ++i) {
-    mailbox[i].name[0] = 50 + 1;
-  }
+    shared_images[i] = gpu::ClientSharedImage::CreateForTesting();
+  };
 
   gpu::SyncToken sync_token(kNamespace, kCommandBufferId, 7);
   sync_token.SetVerifyFlush();
@@ -653,13 +654,8 @@ TEST(VideoFrame,
 
   gpu::SyncToken called_sync_token;
   {
-    gpu::MailboxHolder holders[VideoFrame::kMaxPlanes] = {
-        gpu::MailboxHolder(mailbox[VideoFrame::kYPlane], sync_token, target),
-        gpu::MailboxHolder(mailbox[VideoFrame::kUPlane], sync_token, target),
-        gpu::MailboxHolder(mailbox[VideoFrame::kVPlane], sync_token, target),
-    };
-    scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
-        PIXEL_FORMAT_I420, holders,
+    scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImages(
+        PIXEL_FORMAT_I420, shared_images, sync_token, target,
         base::BindOnce(&TextureCallback, &called_sync_token),
         gfx::Size(10, 10),   // coded_size
         gfx::Rect(10, 10),   // visible_rect
@@ -672,7 +668,8 @@ TEST(VideoFrame,
     EXPECT_TRUE(frame->HasTextures());
     for (size_t i = 0; i < VideoFrame::NumPlanes(frame->format()); ++i) {
       const gpu::MailboxHolder& mailbox_holder = frame->mailbox_holder(i);
-      EXPECT_EQ(mailbox[i].name[0], mailbox_holder.mailbox.name[0]);
+      EXPECT_EQ(shared_images[i]->mailbox().name[0],
+                mailbox_holder.mailbox.name[0]);
       EXPECT_EQ(target, mailbox_holder.texture_target);
       EXPECT_EQ(sync_token, mailbox_holder.sync_token);
     }
