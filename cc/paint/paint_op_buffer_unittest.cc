@@ -1083,6 +1083,9 @@ std::vector<float> test_floats = {0.f,
                                   std::numeric_limits<float>::max(),
                                   std::numeric_limits<float>::infinity()};
 
+std::vector<float> test_angles = {0.f,  1.f, 0.f,  -1.f, 1.f,
+                                  3.14, 0,   6.24, 0.f,  0.f};
+
 std::vector<uint8_t> test_uint8s = {
     0, 255, 128, 10, 45,
 };
@@ -1549,6 +1552,15 @@ void PushDrawLineOps(PaintOpBuffer* buffer) {
   EXPECT_THAT(*buffer, Each(PaintOpIs<DrawLineOp>()));
 }
 
+void PushDrawArcOps(PaintOpBuffer* buffer) {
+  size_t len = std::min(test_angles.size() / 2, test_flags.size());
+  for (size_t i = 0; i < len; ++i) {
+    buffer->push<DrawArcOp>(test_rects[i], test_angles[2 * i],
+                            test_angles[2 * i + 1], test_flags[i]);
+  }
+  EXPECT_THAT(*buffer, Each(PaintOpIs<DrawArcOp>()));
+}
+
 void PushDrawOvalOps(PaintOpBuffer* buffer) {
   size_t len = std::min(test_paths.size(), test_flags.size());
   for (size_t i = 0; i < len; ++i)
@@ -1862,6 +1874,9 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
         break;
       case PaintOpType::kCustomData:
         PushCustomDataOps(&buffer_);
+        break;
+      case PaintOpType::kDrawArc:
+        PushDrawArcOps(&buffer_);
         break;
       case PaintOpType::kDrawColor:
         PushDrawColorOps(&buffer_);
@@ -2670,6 +2685,19 @@ TEST(PaintOpBufferTest, BoundingRect_DrawRectOp) {
 
     ASSERT_TRUE(PaintOp::GetBounds(op, &rect));
     EXPECT_EQ(rect, op.rect.makeSorted());
+  }
+}
+
+TEST(PaintOpBufferTest, BoundingRect_DrawArcOp) {
+  PaintOpBuffer buffer;
+  PushDrawArcOps(&buffer);
+
+  SkRect rect;
+  for (const PaintOp& base_op : buffer) {
+    const auto& op = static_cast<const DrawArcOp&>(base_op);
+
+    ASSERT_TRUE(PaintOp::GetBounds(op, &rect));
+    EXPECT_EQ(rect, op.oval.makeSorted());
   }
 }
 

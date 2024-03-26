@@ -191,6 +191,7 @@ bool PaintFlags::EqualsForTesting(const PaintFlags& other) const {
          getStyle() == other.getStyle() &&
          getFilterQuality() == other.getFilterQuality() &&
          getDynamicRangeLimit() == other.getDynamicRangeLimit() &&
+         isArcClosed() == other.isArcClosed() &&
          AreSkFlattenablesEqualForTesting(path_effect_,  // IN-TEST
                                           other.path_effect_) &&
          AreSkFlattenablesEqualForTesting(mask_filter_,  // IN-TEST

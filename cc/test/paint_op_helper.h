@@ -120,6 +120,14 @@ class PaintOpHelper {
             << ", flags=" << ToString(op.flags);
         break;
       }
+      case PaintOpType::kDrawArc: {
+        const auto& op = static_cast<const DrawArcOp&>(base_op);
+        str << "DrawArcOp(oval=" << ToString(op.oval)
+            << ", start_angle=" << ToString(op.start_angle_degrees)
+            << ", sweep_angle=" << ToString(op.sweep_angle_degrees)
+            << ", flags=" << ToString(op.flags) << ")";
+        break;
+      }
       case PaintOpType::kDrawOval: {
         const auto& op = static_cast<const DrawOvalOp&>(base_op);
         str << "oval=" << ToString(op.oval) << ", flags=" << ToString(op.flags);

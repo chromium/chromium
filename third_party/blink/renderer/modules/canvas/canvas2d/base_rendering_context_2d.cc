@@ -1254,6 +1254,38 @@ void BaseRenderingContext2D::DrawPathInternal(
     return;
   }
 
+  if (path.IsArc()) {
+    const auto& arc = path.arc();
+    const SkScalar x = WebCoreFloatToSkScalar(arc.x);
+    const SkScalar y = WebCoreFloatToSkScalar(arc.y);
+    const SkScalar radius = WebCoreFloatToSkScalar(arc.radius);
+    const SkScalar diameter = radius + radius;
+    const SkRect oval =
+        SkRect::MakeXYWH(x - radius, y - radius, diameter, diameter);
+    const SkScalar start_degrees =
+        WebCoreFloatToSkScalar(arc.start_angle_radians * 180 / kPiFloat);
+    const SkScalar sweep_degrees =
+        WebCoreFloatToSkScalar(arc.sweep_angle_radians * 180 / kPiFloat);
+    const bool closed = arc.closed;
+    Draw<OverdrawOp::kNone>(
+        [oval, start_degrees, sweep_degrees, closed](
+            cc::PaintCanvas* c,
+            const cc::PaintFlags* flags)  // draw lambda
+        {
+          cc::PaintFlags arc_paint_flags(*flags);
+          arc_paint_flags.setArcClosed(closed);
+          c->drawArc(oval, start_degrees, sweep_degrees, arc_paint_flags);
+        },
+        [](const SkIRect& rect)  // overdraw test lambda
+        { return false; },
+        bounds, paint_type,
+        GetState().HasPattern(paint_type)
+            ? CanvasRenderingContext2DState::kNonOpaqueImage
+            : CanvasRenderingContext2DState::kNoImage,
+        CanvasPerformanceMonitor::DrawType::kPath);
+    return;
+  }
+
   SkPath sk_path = path.GetPath().GetSkPath();
   sk_path.setFillType(fill_type);
 

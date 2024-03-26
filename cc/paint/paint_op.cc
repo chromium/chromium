@@ -120,6 +120,7 @@ void DrawImageRect(SkCanvas* canvas,
   M(ClipRRectOp)             \
   M(ConcatOp)                \
   M(CustomDataOp)            \
+  M(DrawArcOp)               \
   M(DrawColorOp)             \
   M(DrawDRRectOp)            \
   M(DrawImageOp)             \
@@ -468,6 +469,16 @@ void DrawLineOp::Serialize(PaintOpWriter& writer,
   writer.WriteSimpleMultiple(x0, y0, x1, y1, draw_as_path);
 }
 
+void DrawArcOp::Serialize(PaintOpWriter& writer,
+                          const PaintFlags* flags_to_serialize,
+                          const SkM44& current_ctm,
+                          const SkM44& original_ctm) const {
+  writer.Write(*flags_to_serialize, current_ctm);
+  writer.Write(oval);
+  writer.Write(start_angle_degrees);
+  writer.Write(sweep_angle_degrees);
+}
+
 void DrawOvalOp::Serialize(PaintOpWriter& writer,
                            const PaintFlags* flags_to_serialize,
                            const SkM44& current_ctm,
@@ -807,6 +818,15 @@ PaintOp* DrawLineOp::Deserialize(PaintOpReader& reader, void* output) {
   reader.Read(&op->x1);
   reader.Read(&op->y1);
   reader.Read(&op->draw_as_path);
+  return op;
+}
+
+PaintOp* DrawArcOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawArcOp* op = new (output) DrawArcOp;
+  reader.Read(&op->flags);
+  reader.Read(&op->oval);
+  reader.Read(&op->start_angle_degrees);
+  reader.Read(&op->sweep_angle_degrees);
   return op;
 }
 
@@ -1278,6 +1298,29 @@ void DrawLineOp::RasterWithFlags(const DrawLineOp* op,
   });
 }
 
+void DrawArcOp::RasterWithFlags(const DrawArcOp* op,
+                                const PaintFlags* flags,
+                                SkCanvas* canvas,
+                                const PlaybackParams& params) {
+  op->RasterWithFlagsImpl(flags, canvas);
+}
+
+void DrawArcOp::RasterWithFlagsImpl(const PaintFlags* flags,
+                                    SkCanvas* canvas) const {
+  flags->DrawToSk(canvas, [this, flags](SkCanvas* c, const SkPaint& p) {
+    if (flags->isArcClosed() &&
+        !SkScalarNearlyEqual(sweep_angle_degrees, SkIntToScalar(360)) &&
+        !SkScalarNearlyEqual(sweep_angle_degrees, SkIntToScalar(-360))) {
+      SkPath path;
+      path.arcTo(oval, start_angle_degrees, sweep_angle_degrees, false);
+      path.close();
+      c->drawPath(path, p);
+      return;
+    }
+    c->drawArc(oval, start_angle_degrees, sweep_angle_degrees, false, p);
+  });
+}
+
 void DrawOvalOp::RasterWithFlags(const DrawOvalOp* op,
                                  const PaintFlags* flags,
                                  SkCanvas* canvas,
@@ -1595,6 +1638,13 @@ bool DrawLineOp::EqualsForTesting(const DrawLineOp& other) const {
          x0 == other.x0 && y0 == other.y0 && x1 == other.x1 && y1 == other.y1;
 }
 
+bool DrawArcOp::EqualsForTesting(const DrawArcOp& other) const {
+  return flags.EqualsForTesting(other.flags) &&  // IN-TEST
+         oval == other.oval &&
+         start_angle_degrees == other.start_angle_degrees &&
+         sweep_angle_degrees == other.sweep_angle_degrees;
+}
+
 bool DrawOvalOp::EqualsForTesting(const DrawOvalOp& other) const {
   return flags.EqualsForTesting(other.flags) && oval == other.oval;  // IN-TEST
 }
@@ -1819,6 +1869,12 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
     case PaintOpType::kDrawLine: {
       const auto& line_op = static_cast<const DrawLineOp&>(op);
       rect->setLTRB(line_op.x0, line_op.y0, line_op.x1, line_op.y1);
+      rect->sort();
+      return true;
+    }
+    case PaintOpType::kDrawArc: {
+      const auto& arc_op = static_cast<const DrawArcOp&>(op);
+      *rect = arc_op.oval;
       rect->sort();
       return true;
     }

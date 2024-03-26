@@ -83,6 +83,7 @@ enum class PaintOpType : uint8_t {
   kClipRRect,
   kConcat,
   kCustomData,
+  kDrawArc,
   kDrawColor,
   kDrawDRRect,
   kDrawImage,
@@ -608,6 +609,36 @@ class CC_PAINT_EXPORT DrawLineOp final : public PaintOpWithFlags {
 
  private:
   DrawLineOp() : PaintOpWithFlags(kType) {}
+};
+
+class CC_PAINT_EXPORT DrawArcOp final : public PaintOpWithFlags {
+ public:
+  static constexpr PaintOpType kType = PaintOpType::kDrawArc;
+  static constexpr bool kIsDrawOp = true;
+  DrawArcOp(const SkRect& oval,
+            SkScalar start_angle_degrees,
+            SkScalar sweep_angle_degrees,
+            const PaintFlags& flags)
+      : PaintOpWithFlags(kType, flags),
+        oval(oval),
+        start_angle_degrees(start_angle_degrees),
+        sweep_angle_degrees(sweep_angle_degrees) {}
+  static void RasterWithFlags(const DrawArcOp* op,
+                              const PaintFlags* flags,
+                              SkCanvas* canvas,
+                              const PlaybackParams& params);
+  // Actual implementation for rastering.
+  void RasterWithFlagsImpl(const PaintFlags* flags, SkCanvas* canvas) const;
+  bool IsValid() const { return flags.IsValid(); }
+  bool EqualsForTesting(const DrawArcOp& other) const;
+  HAS_SERIALIZATION_FUNCTIONS();
+
+  SkRect oval;
+  SkScalar start_angle_degrees;
+  SkScalar sweep_angle_degrees;
+
+ private:
+  DrawArcOp() : PaintOpWithFlags(kType) {}
 };
 
 class CC_PAINT_EXPORT DrawOvalOp final : public PaintOpWithFlags {
