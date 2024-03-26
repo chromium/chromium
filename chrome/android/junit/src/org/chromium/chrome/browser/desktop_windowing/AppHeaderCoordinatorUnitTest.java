@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -66,11 +67,12 @@ public class AppHeaderCoordinatorUnitTest {
     @Captor private ArgumentCaptor<InsetsRectProvider.Observer> mInsetRectObserverCaptor;
 
     private AppHeaderCoordinator mAppHeaderCoordinator;
-    private Activity mActivity;
+    private Activity mSpyActivity;
 
     @Before
     public void setup() {
-        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
+        mActivityScenarioRule.getScenario().onActivity(activity -> mSpyActivity = spy(activity));
+        doReturn(true).when(mSpyActivity).isInMultiWindowMode();
         AppHeaderCoordinator.setInsetsRectProviderForTesting(mInsetsRectProvider);
         setupWithNoInsets();
         initAppHeaderCoordinator();
@@ -149,6 +151,17 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
+    public void notEnabledWhenNotInMultiWindowMode() {
+        doReturn(false).when(mSpyActivity).isInMultiWindowMode();
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectObserver();
+
+        assertFalse(
+                "Desktop Windowing does not enable when not in multi window mode.",
+                mAppHeaderCoordinator.isDesktopWindowingEnabled());
+    }
+
+    @Test
     public void enableDesktopWindowing() {
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
@@ -211,7 +224,7 @@ public class AppHeaderCoordinatorUnitTest {
     private void initAppHeaderCoordinator() {
         mAppHeaderCoordinator =
                 new AppHeaderCoordinator(
-                        mActivity,
+                        mSpyActivity,
                         mRootView,
                         mStripLayoutManager,
                         mBrowserControlsVisDelegate,

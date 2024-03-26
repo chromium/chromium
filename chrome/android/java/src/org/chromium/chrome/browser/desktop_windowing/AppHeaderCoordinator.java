@@ -166,6 +166,8 @@ public class AppHeaderCoordinator {
     // TODO(crbug/328446763): Add metrics to record the failure reason.
     // TODO(crbug/330213938): Add more criteria checks.
     private boolean isDesktopWindowingModeEnabled() {
+        if (!mActivity.isInMultiWindowMode()) return false;
+
         int numOfBoundingRects = mInsetsRectProvider.getBoundingRects().size();
         if (numOfBoundingRects != 2) {
             Log.w(TAG, "Unexpected number of bounding rects is observed! " + numOfBoundingRects);
