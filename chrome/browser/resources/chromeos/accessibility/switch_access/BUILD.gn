@@ -48,6 +48,7 @@ ts_modules = [
   "switch_access.ts",
   "switch_access_constants.ts",
   "switch_access_loader.ts",
+  "switch_access_predicate.ts",
   "text_navigation_manager.ts",
 ]
 
@@ -63,7 +64,6 @@ js_modules = [
   "nodes/slider_node.js",
   "nodes/tab_node.js",
   "nodes/window_node.js",
-  "switch_access_predicate.js",
 ]
 
 # Root dir must be the parent directory so it can reach common.

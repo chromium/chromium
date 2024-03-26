@@ -48,7 +48,7 @@ export class FocusHistory {
     }
     const cache = new SACache();
     // Create a list of ancestors.
-    const ancestorStack: Array<AutomationNode|SAChildNode|SARootNode> = [node];
+    const ancestorStack: AutomationNode[] = [node];
     while (node.parent) {
       ancestorStack.push(node.parent);
       node = node.parent;
