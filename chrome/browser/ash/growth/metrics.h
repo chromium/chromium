@@ -7,12 +7,22 @@
 
 // Enumeration of campaign button ID. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
-// "CampaignButtonId" in src/tools/metrics/histograms/metadata/enums.xml.
+// "CampaignButtonId" in
+// src/tools/metrics/histograms/metadata/ash/histograms.xml.
 enum class CampaignButtonId {
   kPrimary = 0,
   kSecondary = 1,
 
   kMaxValue = kSecondary,
 };
+
+// Records how many times a button is pressed in the campaign UI.
+void RecordButtonPressed(int campaign_id, CampaignButtonId button_id);
+
+// Records how many times a campaign UI is dismissed.
+void RecordDismissed(int campaign_id);
+
+// Records how many times a campaign UI is about to show.
+void RecordImpression(int campaign_id);
 
 #endif  // CHROME_BROWSER_ASH_GROWTH_METRICS_H_

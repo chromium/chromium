@@ -7,7 +7,9 @@
 
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
+#include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
@@ -25,6 +27,30 @@ inline constexpr char kCampaignsComponent[] = "growth-campaigns";
 
 inline constexpr char kTestCampaignsComponentMountedPath[] =
     "/run/imageloader/growth_campaigns";
+
+constexpr char kButtonPressedButton0HistogramName500[] =
+    "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500";
+
+constexpr char kButtonPressedButton0HistogramName1000[] =
+    "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns1000";
+
+constexpr char kButtonPressedButton1HistogramName500[] =
+    "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500";
+
+constexpr char kButtonPressedButton1HistogramName1000[] =
+    "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns1000";
+
+constexpr char kDismissedHistogramName500[] =
+    "Ash.Growth.Ui.Dismissed.Campaigns500";
+
+constexpr char kDismissedHistogramName1000[] =
+    "Ash.Growth.Ui.Dismissed.Campaigns1000";
+
+constexpr char kImpressionHistogramName500[] =
+    "Ash.Growth.Ui.Impression.Campaigns500";
+
+constexpr char kImpressionHistogramName1000[] =
+    "Ash.Growth.Ui.Impression.Campaigns1000";
 
 }  // namespace
 
@@ -94,6 +120,7 @@ class CampaignsManagerClientTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<CampaignsManagerClientImpl> campaigns_manager_client_;
   raw_ptr<FakeCrOSComponentManager> cros_component_manager_ = nullptr;
+  base::HistogramTester histogram_tester_;
 
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -124,4 +151,171 @@ TEST_F(CampaignsManagerClientTest, LoadCampaignsComponentFailed) {
       base::FilePath(),
       component_updater::CrOSComponentManager::Error::NOT_FOUND));
   EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kCampaignsComponent));
+}
+
+TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id0) {
+  int campaign_id = 0;
+  CampaignButtonId button_id = CampaignButtonId::kPrimary;
+  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id);
+
+  histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName500,
+                                       campaign_id,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id499) {
+  int campaign_id = 499;
+  CampaignButtonId button_id = CampaignButtonId::kPrimary;
+  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id);
+
+  histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName500,
+                                       campaign_id,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id500) {
+  int campaign_id = 500;
+  CampaignButtonId button_id = CampaignButtonId::kPrimary;
+  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id);
+
+  histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName1000,
+                                       campaign_id,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id0And500) {
+  int campaign_id_0 = 0;
+  int campaign_id_500 = 500;
+  CampaignButtonId button_id = CampaignButtonId::kPrimary;
+  campaigns_manager_client_->OnButtonPressed(campaign_id_0, button_id);
+  campaigns_manager_client_->OnButtonPressed(campaign_id_500, button_id);
+
+  histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName500,
+                                       campaign_id_0,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName1000,
+                                       campaign_id_500,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id0) {
+  int campaign_id = 0;
+  CampaignButtonId button_id = CampaignButtonId::kSecondary;
+  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id);
+
+  histogram_tester_.ExpectUniqueSample(kButtonPressedButton1HistogramName500,
+                                       campaign_id,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id499) {
+  int campaign_id = 499;
+  CampaignButtonId button_id = CampaignButtonId::kSecondary;
+  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id);
+
+  histogram_tester_.ExpectUniqueSample(kButtonPressedButton1HistogramName500,
+                                       campaign_id,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id500) {
+  int campaign_id = 500;
+  CampaignButtonId button_id = CampaignButtonId::kSecondary;
+  campaigns_manager_client_->OnButtonPressed(campaign_id, button_id);
+
+  histogram_tester_.ExpectUniqueSample(kButtonPressedButton1HistogramName1000,
+                                       campaign_id,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id0And500) {
+  int campaign_id_0 = 0;
+  int campaign_id_500 = 500;
+  CampaignButtonId button_id = CampaignButtonId::kSecondary;
+  campaigns_manager_client_->OnButtonPressed(campaign_id_0, button_id);
+  campaigns_manager_client_->OnButtonPressed(campaign_id_500, button_id);
+
+  histogram_tester_.ExpectUniqueSample(kButtonPressedButton1HistogramName500,
+                                       campaign_id_0,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(kButtonPressedButton1HistogramName1000,
+                                       campaign_id_500,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordDismissedId0) {
+  int campaign_id = 0;
+  campaigns_manager_client_->OnDismissed(campaign_id);
+
+  histogram_tester_.ExpectUniqueSample(kDismissedHistogramName500, campaign_id,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordDismissedId499) {
+  int campaign_id = 499;
+  campaigns_manager_client_->OnDismissed(campaign_id);
+
+  histogram_tester_.ExpectUniqueSample(kDismissedHistogramName500, campaign_id,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordDismissedId500) {
+  int campaign_id = 500;
+  campaigns_manager_client_->OnDismissed(campaign_id);
+
+  histogram_tester_.ExpectUniqueSample(kDismissedHistogramName1000, campaign_id,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordDismissedId0And500) {
+  int campaign_id_0 = 0;
+  int campaign_id_500 = 500;
+  campaigns_manager_client_->OnDismissed(campaign_id_0);
+  campaigns_manager_client_->OnDismissed(campaign_id_500);
+
+  histogram_tester_.ExpectUniqueSample(kDismissedHistogramName500,
+                                       campaign_id_0,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(kDismissedHistogramName1000,
+                                       campaign_id_500,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordImpressionId0) {
+  int campaign_id = 0;
+  campaigns_manager_client_->OnReadyToLogImpression(campaign_id);
+
+  histogram_tester_.ExpectUniqueSample(kImpressionHistogramName500, campaign_id,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordImpressionId499) {
+  int campaign_id = 499;
+  campaigns_manager_client_->OnReadyToLogImpression(campaign_id);
+
+  histogram_tester_.ExpectUniqueSample(kImpressionHistogramName500, campaign_id,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordImpressionId500) {
+  int campaign_id = 500;
+  campaigns_manager_client_->OnReadyToLogImpression(campaign_id);
+
+  histogram_tester_.ExpectUniqueSample(kImpressionHistogramName1000,
+                                       campaign_id,
+                                       /*expected_bucket_count=*/1);
+}
+
+TEST_F(CampaignsManagerClientTest, RecordImpressionId0And500) {
+  int campaign_id_0 = 0;
+  int campaign_id_500 = 500;
+  campaigns_manager_client_->OnReadyToLogImpression(campaign_id_0);
+  campaigns_manager_client_->OnReadyToLogImpression(campaign_id_500);
+
+  histogram_tester_.ExpectUniqueSample(kImpressionHistogramName500,
+                                       campaign_id_0,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(kImpressionHistogramName1000,
+                                       campaign_id_500,
+                                       /*expected_bucket_count=*/1);
 }

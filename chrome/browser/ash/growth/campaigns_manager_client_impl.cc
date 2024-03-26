@@ -137,16 +137,16 @@ void CampaignsManagerClientImpl::RegisterSyntheticFieldTrial(
 }
 
 void CampaignsManagerClientImpl::OnReadyToLogImpression(int campaign_id) {
-  // TODO: b/329671682 - Record metrics.
+  RecordImpression(campaign_id);
 }
 
 void CampaignsManagerClientImpl::OnDismissed(int campaign_id) {
-  // TODO: b/329671682 - Record metrics.
+  RecordDismissed(campaign_id);
 }
 
 void CampaignsManagerClientImpl::OnButtonPressed(int campaign_id,
                                                  CampaignButtonId button_id) {
-  // TODO: b/329671682 - Record metrics.
+  RecordButtonPressed(campaign_id, button_id);
 }
 
 void CampaignsManagerClientImpl::OnComponentDownloaded(

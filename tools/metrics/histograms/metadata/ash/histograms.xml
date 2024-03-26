@@ -201,6 +201,11 @@ chromium-metrics-reviews@google.com.
                install should be very quick and always succeed."/>
 </variants>
 
+<variants name="CampaignButtonId">
+  <variant name="0" summary="Primary"/>
+  <variant name="1" summary="Secondary"/>
+</variants>
+
 <variants name="DisplayModes">
 <!-- Should be kept in sync with variants AppDisplayModes in
   tools/metrics/histograms/metadata/apps/histograms.xml.
@@ -4111,6 +4116,39 @@ chromium-metrics-reviews@google.com.
     The amount of time in ms that the Campaigns Manager takes to match a
     campaign based on the targeting criteria. Recorded when fetching a campaign
     for a particular slot completed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Growth.Ui.ButtonPressed.Button{ButtonId}.Campaigns500"
+    units="int" expires_after="2025-03-01">
+  <owner>wutao@chromium.org</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Recorded when the button of {ButtonId} in the UI is pressed. The bucket is
+    indexed by the campaign_id. The campaign_id recorded in this histogram
+    should be less than 500.
+  </summary>
+  <token key="ButtonId" variants="CampaignButtonId"/>
+</histogram>
+
+<histogram name="Ash.Growth.Ui.Dismissed.Campaigns500" units="int"
+    expires_after="2025-03-01">
+  <owner>wutao@chromium.org</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Recorded when the UI is dismissed. The bucket is indexed by the campaign_id.
+    The campaign_id recorded in this histogram should be less than 500.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Growth.Ui.Impression.Campaigns500" units="int"
+    expires_after="2025-03-01">
+  <owner>wutao@chromium.org</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Recorded when it is ready to log a UI impression. Normally this is called
+    right after a call to show the UI. The bucket is indexed by the campaign_id.
+    The campaign_id recorded in this histogram should be less than 500.
   </summary>
 </histogram>
 
