@@ -517,10 +517,6 @@ webrtc::VideoCodecType ProfileToWebRtcVideoCodecType(
       return webrtc::kVideoCodecVP9;
     case media::VideoCodec::kAV1:
       return webrtc::kVideoCodecAV1;
-#if BUILDFLAG(RTC_USE_H265)
-    case media::VideoCodec::kHEVC:
-      return webrtc::kVideoCodecH265;
-#endif
     default:
       NOTREACHED() << "Invalid profile " << GetProfileName(profile);
       return webrtc::kVideoCodecGeneric;
@@ -654,11 +650,6 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
       const media::BitstreamBufferMetadata& metadata) override;
   void NotifyErrorStatus(const media::EncoderStatus& status) override;
   void NotifyEncoderInfoChange(const media::VideoEncoderInfo& info) override;
-
-#if BUILDFLAG(RTC_USE_H265)
-  void SetH265ParameterSetsTrackerForTesting(
-      std::unique_ptr<H265ParameterSetsTracker> tracker);
-#endif
 
  private:
   enum {
@@ -807,12 +798,6 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // CreateAndInitializeVEA() and updated in RequestEncodingParametersChange().
   ActiveSpatialLayers active_spatial_layers_;
 
-#if BUILDFLAG(RTC_USE_H265)
-  // Parameter sets(VPS/SPS/PPS) tracker used for H.265, to ensure parameter
-  // sets are always included in IRAP pictures.
-  std::unique_ptr<H265ParameterSetsTracker> ps_tracker_;
-#endif  // BUILDFLAG(RTC_USE_H265)
-
   // We cannot immediately return error conditions to the WebRTC user of this
   // class, as there is no error callback in the webrtc::VideoEncoder interface.
   // Instead, we cache an error status here and return it the next time an
@@ -910,12 +895,6 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
 
   active_spatial_layers_.begin_index = 0;
   active_spatial_layers_.end_index = vea_config.spatial_layers.size();
-
-#if BUILDFLAG(RTC_USE_H265)
-  if (!ps_tracker_) {
-    ps_tracker_ = std::make_unique<H265ParameterSetsTracker>();
-  }
-#endif  // BUILDFLAG(RTC_USE_H265)
 
   // RequireBitstreamBuffers or NotifyError will be called and the waiter will
   // be signaled.
@@ -1243,28 +1222,12 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   }
 
   webrtc::EncodedImage image;
-#if BUILDFLAG(RTC_USE_H265)
-  if (ps_tracker_.get()) {
-    H265ParameterSetsTracker::FixedBitstream fixed =
-        ps_tracker_->MaybeFixBitstream(rtc::MakeArrayView(
-            output_mapping->front(), metadata.payload_size_bytes));
-    if (fixed.action == H265ParameterSetsTracker::PacketAction::kInsert) {
-      image.SetEncodedData(fixed.bitstream);
-      BitstreamBufferAvailable(bitstream_buffer_id);
-    } else {
-#endif  // BUILDFLAG(RTC_USE_H265)
-
-      image.SetEncodedData(rtc::make_ref_counted<EncodedDataWrapper>(
-          std::move(output_mapping), metadata.payload_size_bytes,
-          base::BindPostTaskToCurrentDefault(
-              base::BindOnce(&RTCVideoEncoder::Impl::BitstreamBufferAvailable,
-                             weak_this_, bitstream_buffer_id))));
-#if BUILDFLAG(RTC_USE_H265)
-    }
-  }
-#endif  // BUILDFLAG(RTC_USE_H265)
+  image.SetEncodedData(rtc::make_ref_counted<EncodedDataWrapper>(
+      std::move(output_mapping), metadata.payload_size_bytes,
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&RTCVideoEncoder::Impl::BitstreamBufferAvailable,
+                         weak_this_, bitstream_buffer_id))));
   auto encoded_size = metadata.encoded_size.value_or(input_visible_size_);
-
   image._encodedWidth = encoded_size.width();
   image._encodedHeight = encoded_size.height();
   image.SetRtpTimestamp(rtp_timestamp.value());
@@ -1791,13 +1754,6 @@ void RTCVideoEncoder::Impl::RegisterEncodeCompleteCallback(
   encoded_image_callback_ = callback;
 }
 
-#if BUILDFLAG(RTC_USE_H265)
-void RTCVideoEncoder::Impl::SetH265ParameterSetsTrackerForTesting(
-    std::unique_ptr<H265ParameterSetsTracker> tracker) {
-  ps_tracker_ = std::move(tracker);
-}
-#endif
-
 RTCVideoEncoder::RTCVideoEncoder(
     media::VideoCodecProfile profile,
     bool is_constrained_h264,
@@ -2291,16 +2247,5 @@ void RTCVideoEncoder::SetError(uint32_t impl_id) {
   if (error_callback_for_testing_)
     std::move(error_callback_for_testing_).Run();
 }
-
-#if BUILDFLAG(RTC_USE_H265)
-void RTCVideoEncoder::SetH265ParameterSetsTrackerForTesting(
-    std::unique_ptr<H265ParameterSetsTracker> tracker) {
-  if (!impl_) {
-    DVLOG(1) << "Encoder is not initialized";
-    return;
-  }
-  impl_->SetH265ParameterSetsTrackerForTesting(std::move(tracker));
-}
-#endif
 
 }  // namespace blink

@@ -17,7 +17,6 @@ import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/platform/platform_generated.gni")
 import("//third_party/libgav1/options.gni")
-import("//third_party/webrtc/webrtc.gni")
 import("//v8/gni/v8.gni")
 
 if (is_ios) {
@@ -1874,13 +1873,6 @@ component("platform") {
     deps += [ "//third_party/pffft" ]
   }
 
-  if (rtc_use_h265) {
-    sources += [
-      "peerconnection/h265_parameter_sets_tracker.cc",
-      "peerconnection/h265_parameter_sets_tracker.h",
-    ]
-  }
-
   if (!is_debug && !optimize_for_size) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
@@ -2296,10 +2288,6 @@ source_set("blink_platform_unittests_sources") {
     "widget/input/scroll_predictor_unittest.cc",
   ]
 
-  if (rtc_use_h265) {
-    sources += [ "peerconnection/h265_parameter_sets_tracker_unittest.cc" ]
-  }
-
   if (is_android) {
     sources += [ "fonts/android/font_cache_android_test.cc" ]
   } else if (is_win) {
@@ -2601,17 +2589,6 @@ fuzzer_test("mathml_operator_dictionary_fuzzer") {
   ]
   libfuzzer_options = [ "max_len=10" ]
   dict = "//testing/libfuzzer/fuzzers/dicts/mathml_operator_dictionary.dict"
-}
-
-if (rtc_use_h265) {
-  # Fuzzer for blink::H265ParameterSetsTracker
-  fuzzer_test("h265_parameter_sets_tracker_fuzzer") {
-    sources = [ "peerconnection/h265_parameter_sets_tracker_fuzzer.cc" ]
-    deps = [
-      ":blink_fuzzer_test_support",
-      ":platform",
-    ]
-  }
 }
 
 # Fuzzer for blink::OpenTypeMathSupportTest.

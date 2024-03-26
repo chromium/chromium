@@ -38,9 +38,6 @@
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
-#if BUILDFLAG(RTC_USE_H265)
-#include "third_party/blink/renderer/platform/peerconnection/h265_parameter_sets_tracker.h"
-#endif
 
 using ::testing::_;
 using ::testing::AllOf;
@@ -78,8 +75,6 @@ const uint16_t kStartBitrate = 100;
 const uint16_t kSoftwareFallbackInputFrameWidth = 479;
 const uint16_t kSoftwareFallbackInputFrameHeight = 359;
 #endif
-
-constexpr size_t kDefaultEncodedPayloadSize = 100;
 
 const webrtc::VideoEncoder::Capabilities kVideoEncoderCapabilities(
     /* loss_notification= */ false);
@@ -255,26 +250,6 @@ class RTCVideoEncoderWrapper : public webrtc::VideoEncoder {
     webrtc_encoder_thread_.FlushForTesting();
   }
 
-#if BUILDFLAG(RTC_USE_H265)
-  void SetH265ParameterSetsTracker(
-      std::unique_ptr<H265ParameterSetsTracker> tracker) {
-    base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
-                               base::WaitableEvent::InitialState::NOT_SIGNALED);
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](RTCVideoEncoder* rtc_video_encoder,
-               std::unique_ptr<H265ParameterSetsTracker> tracker,
-               base::WaitableEvent* waiter) {
-              rtc_video_encoder->SetH265ParameterSetsTrackerForTesting(
-                  std::move(tracker));
-              waiter->Signal();
-            },
-            rtc_video_encoder_.get(), std::move(tracker), &waiter));
-    waiter.Wait();
-  }
-#endif
-
  private:
   RTCVideoEncoderWrapper() : webrtc_encoder_thread_("WebRTC encoder thread") {
     webrtc_encoder_thread_.Start();
@@ -390,11 +365,6 @@ class RTCVideoEncoderTest {
       case webrtc::kVideoCodecVP9:
         media_profile = media::VP9PROFILE_PROFILE0;
         break;
-#if BUILDFLAG(RTC_USE_H265)
-      case webrtc::kVideoCodecH265:
-        media_profile = media::HEVCPROFILE_MAIN;
-        break;
-#endif
       default:
         ADD_FAILURE() << "Unexpected codec type: " << codec_type;
         media_profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -519,8 +489,8 @@ class RTCVideoEncoderTest {
   void ReturnFrameWithTimeStamp(scoped_refptr<media::VideoFrame> frame,
                                 bool force_keyframe) {
     client_->BitstreamBufferReady(
-        0, media::BitstreamBufferMetadata(kDefaultEncodedPayloadSize,
-                                          force_keyframe, frame->timestamp()));
+        0, media::BitstreamBufferMetadata(100, force_keyframe,
+                                          frame->timestamp()));
   }
 
   void ReturnSVCLayerFrameWithVp9Metadata(
@@ -2560,106 +2530,6 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeAndDropWhenTooManyFramesInEncoder) {
   RunUntilIdle();
   dropframe_verifier.Verify(1, 2);
 }
-
-#if BUILDFLAG(RTC_USE_H265)
-class FakeH265ParameterSetsTracker : public H265ParameterSetsTracker {
- public:
-  FakeH265ParameterSetsTracker() = delete;
-  explicit FakeH265ParameterSetsTracker(
-      H265ParameterSetsTracker::PacketAction action)
-      : action_(action) {}
-  explicit FakeH265ParameterSetsTracker(rtc::ArrayView<const uint8_t> prefix)
-      : action_(H265ParameterSetsTracker::PacketAction::kInsert),
-        prefix_(prefix) {
-    EXPECT_GT(prefix.size(), 0u);
-  }
-
-  FixedBitstream MaybeFixBitstream(
-      rtc::ArrayView<const uint8_t> bitstream) override {
-    FixedBitstream fixed;
-    fixed.action = action_;
-    if (prefix_.size() > 0) {
-      fixed.bitstream =
-          webrtc::EncodedImageBuffer::Create(bitstream.size() + prefix_.size());
-      memcpy(fixed.bitstream->data(), prefix_.data(), prefix_.size());
-      memcpy(fixed.bitstream->data() + prefix_.size(), bitstream.data(),
-             bitstream.size());
-    }
-    return fixed;
-  }
-
- private:
-  H265ParameterSetsTracker::PacketAction action_;
-  rtc::ArrayView<const uint8_t> prefix_;
-};
-
-TEST_P(RTCVideoEncoderEncodeTest, EncodeH265WithBitstreamFix) {
-  class FixedBitstreamVerifier : public webrtc::EncodedImageCallback {
-   public:
-    explicit FixedBitstreamVerifier(rtc::ArrayView<const uint8_t> prefix,
-                                    size_t encoded_image_size)
-        : prefix_(prefix), encoded_image_size_(encoded_image_size) {}
-
-    webrtc::EncodedImageCallback::Result OnEncodedImage(
-        const webrtc::EncodedImage& encoded_image,
-        const webrtc::CodecSpecificInfo* codec_specific_info) override {
-      EXPECT_EQ(encoded_image.size(), encoded_image_size_ + prefix_.size());
-      EXPECT_THAT(
-          rtc::ArrayView<const uint8_t>(encoded_image.data(), prefix_.size()),
-          ::testing::ElementsAreArray(prefix_));
-      waiter_.Signal();
-      return Result(Result::OK);
-    }
-
-    void Wait() { waiter_.Wait(); }
-
-   private:
-    base::WaitableEvent waiter_;
-    rtc::ArrayView<const uint8_t> prefix_;
-    size_t encoded_image_size_;
-  };
-
-  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH265;
-  CreateEncoder(codec_type);
-  webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.codecType = codec_type;
-  if (!InitializeOnFirstFrameEnabled()) {
-    ExpectCreateInitAndDestroyVEA();
-  }
-
-  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
-            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
-
-  uint8_t prefix[] = {0x90, 0x91, 0x92, 0x93};
-  rtc::ArrayView<uint8_t> prefix_view =
-      rtc::ArrayView<uint8_t>(prefix, sizeof(prefix));
-  rtc_encoder_->SetH265ParameterSetsTracker(
-      std::make_unique<FakeH265ParameterSetsTracker>(prefix_view));
-  FixedBitstreamVerifier bitstream_verifier(prefix_view,
-                                            kDefaultEncodedPayloadSize);
-  rtc_encoder_->RegisterEncodeCompleteCallback(&bitstream_verifier);
-
-  if (InitializeOnFirstFrameEnabled()) {
-    ExpectCreateInitAndDestroyVEA();
-  }
-  EXPECT_CALL(*mock_vea_, Encode(_, _))
-      .WillOnce(Invoke(this, &RTCVideoEncoderTest::ReturnFrameWithTimeStamp));
-
-  const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
-      webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
-  FillFrameBuffer(buffer);
-  std::vector<webrtc::VideoFrameType> frame_types;
-  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
-            rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
-                                     .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
-                                     .set_timestamp_us(0)
-                                     .set_rotation(webrtc::kVideoRotation_0)
-                                     .build(),
-                                 &frame_types));
-  RunUntilIdle();
-}
-#endif
 
 const RTCVideoEncoderEncodeTestParam kEncodeTestCases[] = {
     {false},
