@@ -18,9 +18,9 @@ try_.defaults.set(
     cores = 8,
     os = os.LINUX_DEFAULT,
     compilator_cores = 8,
-    compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     orchestrator_cores = 2,
+    orchestrator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_configs = ["builder"],
@@ -546,6 +546,9 @@ This builder should be removed after migrating linux_chromium_asan_rel_ng from N
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
+    # b/311312613 - Siso's sanitizer builds are slower than Ninja builds.
+    # Many concurrent compile jobs may cause the slowness.
+    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
         experiment_percentage = 10,
     ),
@@ -554,9 +557,6 @@ This builder should be removed after migrating linux_chromium_asan_rel_ng from N
 try_.compilator_builder(
     name = "linux_chromium_asan_siso_rel_ng-compilator",
     main_list_view = "try",
-    # b/311312613 - Siso's sanitizer builds are slower than Ninja builds.
-    # Many concurrent compile jobs may cause the slowness.
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -794,6 +794,9 @@ This builder should be removed after migrating linux_chromium_tsan_rel_ng from N
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
+    # b/311312613 - Siso's sanitizer builds are slower than Ninja builds.
+    # Many concurrent compile jobs may cause the slowness.
+    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
         experiment_percentage = 10,
     ),
@@ -802,9 +805,6 @@ This builder should be removed after migrating linux_chromium_tsan_rel_ng from N
 try_.compilator_builder(
     name = "linux_chromium_tsan_siso_rel_ng-compilator",
     main_list_view = "try",
-    # b/311312613 - Siso's sanitizer builds are slower than Ninja builds.
-    # Many concurrent compile jobs may cause the slowness.
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
