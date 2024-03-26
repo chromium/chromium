@@ -40,6 +40,7 @@ enum class AuthenticationOperation {
   // the sign-in page with the user consent. The views are the newer FRE style
   // views with the first being a screen that asks the user if they want to
   // sign in and the second being the "tangible sync" screen.
+  // TODO(crbug.com/330333634): Unused now, remove.
   kSigninAndSyncWithTwoScreens,
   // Operation to trigger sign-in only operation, without presenting UI if an
   // identity is selected in `-ShowSigninCommand.identity`. Otherwise,

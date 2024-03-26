@@ -13,7 +13,6 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -233,20 +232,8 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   id<SystemIdentity> authenticatedIdentity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
-  NSString* title = nil;
-  if (authenticatedIdentity) {
-    title = authenticatedIdentity.userFullName;
-    if (!title) {
-      title = authenticatedIdentity.userEmail;
-    }
-  }
-  if ([self.modelIdentityDataSource isAccountSignedInNotSyncing] ||
-      base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    title = l10n_util::GetNSString(
-        IDS_IOS_GOOGLE_ACCOUNTS_MANAGEMENT_FROM_ACCOUNT_SETTINGS_TITLE);
-  }
-  self.title = title;
+  self.title = l10n_util::GetNSString(
+      IDS_IOS_GOOGLE_ACCOUNTS_MANAGEMENT_FROM_ACCOUNT_SETTINGS_TITLE);
 
   [super loadModel];
 

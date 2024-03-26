@@ -6,12 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -71,22 +69,16 @@ using base::UserMetricsAction;
 
 - (void)start {
   [super start];
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    if (self.accessPoint ==
-        signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO) {
-      ChromeAccountManagerService* accountManagerService =
-          ChromeAccountManagerServiceFactory::GetForBrowserState(
-              self.browser->GetBrowserState());
-      // TODO(crbug.com/779791): Need to add `CHECK(accountManagerService)`.
-      [UpgradeSigninLogger
-          logSigninStartedWithAccessPoint:self.accessPoint
-                    accountManagerService:accountManagerService];
-    }
-    _screenProvider = [[UnoSigninScreenProvider alloc] init];
-  } else {
-    _screenProvider = [[SigninSyncScreenProvider alloc] init];
+  if (self.accessPoint ==
+      signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO) {
+    ChromeAccountManagerService* accountManagerService =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    // TODO(crbug.com/779791): Need to add `CHECK(accountManagerService)`.
+    [UpgradeSigninLogger logSigninStartedWithAccessPoint:self.accessPoint
+                                   accountManagerService:accountManagerService];
   }
+  _screenProvider = [[UnoSigninScreenProvider alloc] init];
   _navigationController =
       [[UINavigationController alloc] initWithNavigationBarClass:nil
                                                     toolbarClass:nil];
@@ -190,10 +182,8 @@ using base::UserMetricsAction;
 // SigninCompletionInfo object that includes the given `identity`.
 - (void)finishWithResult:(SigninCoordinatorResult)result
                 identity:(id<SystemIdentity>)identity {
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
-      self.accessPoint ==
-          signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO) {
+  if (self.accessPoint ==
+      signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO) {
     // TODO(crbug.com/1491419): `addedAccount` is not always `NO`. Need to fix
     // that call to have the right value.
     [UpgradeSigninLogger logSigninCompletedWithResult:result addedAccount:NO];

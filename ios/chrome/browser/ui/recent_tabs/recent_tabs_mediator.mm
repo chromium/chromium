@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
 
 #import "base/debug/dump_without_crashing.h"
-#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
@@ -13,7 +12,6 @@
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
@@ -49,12 +47,6 @@ namespace {
 // tab sync work.
 bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   if (!sync_service->GetDisableReasons().Empty()) {
-    return true;
-  }
-
-  if (!sync_service->IsSyncFeatureEnabled() &&
-      !base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
     return true;
   }
 
@@ -230,11 +222,10 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
       break;
     case signin::PrimaryAccountChangeEvent::Type::kSet:
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      // Sign-in could happen without onForeignSessionsChanged (e.g. if
-      // kReplaceSyncPromosWithSignInPromos is enabled and the user signed-in
-      // without opting in to history sync; maybe also if sync ran into an
-      // encryption error). The sign-in promo must still be updated in that
-      // case, so handle it here.
+      // Sign-in could happen without onForeignSessionsChanged (e.g. if the user
+      // signed-in without opting in to history sync; maybe also if sync ran
+      // into an encryption error). The sign-in promo must still be updated in
+      // that case, so handle it here.
       [self refreshSessionsView];
       break;
   }
@@ -309,13 +300,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
 // Returns whether this profile has any foreign sessions to sync.
 - (SessionsSyncUserState)userSignedInState {
-  const auto requiredConsent =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync;
-  if (!_identityManager->HasPrimaryAccount(requiredConsent)) {
-    // This returns "signed out" when the user is signed-in non-syncing and
-    // kReplaceSyncPromosWithSignInPromos is off. That's a pre-existing issue.
+  if (!_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return SessionsSyncUserState::USER_SIGNED_OUT;
   }
 

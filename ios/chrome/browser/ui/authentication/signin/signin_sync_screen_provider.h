@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
 
 // The class that provides a list of signin and sync screens.
+// TODO(crbug.com/330333634): Unused now, delete.
 @interface SigninSyncScreenProvider : ScreenProvider
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

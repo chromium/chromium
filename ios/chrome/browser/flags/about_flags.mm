@@ -575,20 +575,6 @@ const FeatureEntry::FeatureVariation
          std::size(kBottomOmniboxPromoDefaultPositionBottom), nullptr},
 };
 
-const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
-    {"Default", "", ""},
-    {"Disabled", "disable-features", "ReplaceSyncPromosWithSignInPromos"},
-    {"Enabled without fast-follows", "enable-features",
-     "ReplaceSyncPromosWithSignInPromos"},
-    {"Enabled with fast-follows", "enable-features",
-     "ReplaceSyncPromosWithSignInPromos,"
-     "HistoryOptInForRestoreShortyAndReSignin,"
-     "EnableBatchUploadFromBookmarksManager,"
-     "EnableReviewAccountSettingsPromo,"
-     "LinkAccountSettingsToPrivacyFooter,"
-     "IPH_iOSReplaceSyncPromosWithSignInPromos"},
-};
-
 const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDefault[] = {
     {web::features::kOneTapForMapsConsentModeParamTitle,
      web::features::kOneTapForMapsConsentModeDefaultParam}};
@@ -1309,11 +1295,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSpotlightDonateNewIntentsName,
      flag_descriptions::kSpotlightDonateNewIntentsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSpotlightDonateNewIntents)},
-    {"replace-sync-promos-with-sign-in-promos",
-     flag_descriptions::kReplaceSyncPromosWithSignInPromosName,
-     flag_descriptions::kReplaceSyncPromosWithSignInPromosDescription,
-     flags_ui::kOsIos,
-     MULTI_VALUE_TYPE(kReplaceSyncPromosWithSignInPromosChoices)},
     {"tab-grid-refactoring", flag_descriptions::kTabGridRefactoringName,
      flag_descriptions::kTabGridRefactoringDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGridRefactoring)},

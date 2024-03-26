@@ -15,7 +15,6 @@
 #import "components/browser_sync/sync_to_signin_migration.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -161,9 +160,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   if (!self.authenticationService->HasPrimaryIdentity(
-          signin::ConsentLevel::kSync) &&
-      base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+          signin::ConsentLevel::kSync)) {
     const bool is_migrated_from_syncing =
         browser_sync::WasPrimaryAccountMigratedFromSyncingToSignedIn(
             IdentityManagerFactory::GetForBrowserState(

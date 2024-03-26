@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 
 #import "base/check_op.h"
-#import "base/feature_list.cc"
+#import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
@@ -14,7 +14,6 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/base/signin_switches.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
@@ -371,25 +370,10 @@ bool HasMachineLevelPolicies() {
 
     case CHECK_MERGE_CASE: {
       DCHECK_EQ(SHOULD_CLEAR_DATA_USER_CHOICE, self.localDataClearingStrategy);
-      // Do not perform a custom data clearing strategy for supervised users
-      // with the experiment `syncer::kReplaceSyncPromosWithSignInPromos`.
-      if (base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos)) {
-        [self checkPostSigninAction];
-        return;
-      }
-      __weak AuthenticationFlow* weakSelf = self;
-      GetApplicationContext()
-          ->GetSystemIdentityManager()
-          ->IsSubjectToParentalControls(
-              _identityToSignIn,
-              base::BindOnce(^(SystemIdentityCapabilityResult result) {
-                if (result == SystemIdentityCapabilityResult::kTrue) {
-                  [weakSelf checkMergeCaseForSupervisedAccounts];
-                  return;
-                }
-                [weakSelf checkPostSigninAction];
-              }));
+      // Do not perform a custom data clearing strategy for supervised users.
+      // TODO(crbug.com/330333634): Remove or rename CHECK_MERGE_CASE, no merge
+      // is checked here.
+      [self checkPostSigninAction];
       return;
     }
 
@@ -470,17 +454,6 @@ bool HasMachineLevelPolicies() {
       [self continueSignin];
       break;
   }
-}
-
-// Checks if data should be merged or cleared when `_identityToSignIn`
-// is subject to parental controls and then continues sign-in.
-- (void)checkMergeCaseForSupervisedAccounts {
-  // Always clear the data for supervised accounts if the account
-  // is not already signed in.
-  self.localDataClearingStrategy = _alreadySignedInWithTheSameAccount
-                                       ? SHOULD_CLEAR_DATA_MERGE_DATA
-                                       : SHOULD_CLEAR_DATA_CLEAR_DATA;
-  [self continueSignin];
 }
 
 // Checks if data should be merged or cleared for `_identityToSignIn`.
@@ -745,10 +718,8 @@ bool HasMachineLevelPolicies() {
     return YES;
   }
 
-  // Show the dialog if User Policy and sign-in only features enabled.
-  return policy::IsAnyUserPolicyFeatureEnabled() &&
-         base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos);
+  // Show the dialog if User Policy is enabled.
+  return policy::IsAnyUserPolicyFeatureEnabled();
 }
 
 // Returns YES if should fetch user policy.

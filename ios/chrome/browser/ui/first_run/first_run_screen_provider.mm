@@ -4,11 +4,9 @@
 
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 
-#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engine_choice_utils.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
@@ -27,12 +25,7 @@
 - (instancetype)initForBrowserState:(ChromeBrowserState*)browserState {
   NSMutableArray* screens = [NSMutableArray array];
   [screens addObject:@(kSignIn)];
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    [screens addObject:@(kHistorySync)];
-  } else {
-    [screens addObject:@(kTangibleSync)];
-  }
+  [screens addObject:@(kHistorySync)];
 
   if (ShouldDisplaySearchEngineChoiceScreen(
           *browserState, search_engines::ChoicePromo::kFre)) {

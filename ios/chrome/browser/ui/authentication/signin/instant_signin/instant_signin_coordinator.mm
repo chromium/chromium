@@ -7,7 +7,6 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
@@ -255,9 +254,7 @@
   // If this was triggered by the user tapping the default button in the sign-in
   // promo, give the user a chance to see the full email, by showing a snackbar.
   auto postSigninAction =
-      _promoAction == signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT ||
-              !base::FeatureList::IsEnabled(
-                  syncer::kReplaceSyncPromosWithSignInPromos)
+      _promoAction == signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT
           ? PostSignInAction::kShowSnackbar
           : PostSignInAction::kNone;
   AuthenticationFlow* authenticationFlow =

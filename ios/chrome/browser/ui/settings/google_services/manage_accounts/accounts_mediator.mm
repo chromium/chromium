@@ -5,10 +5,8 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mediator.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/feature_list.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
@@ -111,9 +109,7 @@
   // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
-  return base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos) &&
-         !_syncService->HasSyncConsent();
+  return !_syncService->HasSyncConsent();
 }
 
 - (AccountErrorUIInfo*)accountErrorUIInfo {

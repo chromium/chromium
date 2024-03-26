@@ -20,7 +20,6 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/model_type.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/local_data_description.h"
@@ -1092,9 +1091,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     if (value &&
         static_cast<syncer::UserSelectableType>(syncSwitchItem.dataType) ==
             syncer::UserSelectableType::kAutofill &&
-        _syncService->GetUserSettings()->IsUsingExplicitPassphrase() &&
-        base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
+        _syncService->GetUserSettings()->IsUsingExplicitPassphrase()) {
       [self.commandHandler showAdressesNotEncryptedDialog];
       return;
     }

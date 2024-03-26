@@ -12,7 +12,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/identity_manager/tribool.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -126,9 +125,7 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
     return false;
   }
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
-      auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetForBrowserState(browser_state);
     HistorySyncSkipReason skip_reason = [HistorySyncCoordinator

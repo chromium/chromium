@@ -11,7 +11,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/signin/public/identity_manager/account_info.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
@@ -173,9 +172,7 @@
   __weak __typeof(self) weakSelf = self;
   ShowSigninCommandCompletionCallback callback =
       ^(SigninCoordinatorResult result, SigninCompletionInfo* completionInfo) {
-        if (base::FeatureList::IsEnabled(
-                syncer::kReplaceSyncPromosWithSignInPromos) &&
-            result == SigninCoordinatorResultSuccess) {
+        if (result == SigninCoordinatorResultSuccess) {
           [weakSelf signinDone];
         }
       };

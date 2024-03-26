@@ -18,7 +18,6 @@
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -581,11 +580,8 @@
   CHECK(!_syncService->GetAccountInfo().IsEmpty())
       << base::SysNSStringToUTF8([self description]);
   SyncSettingsAccountState accountState =
-      (base::FeatureList::IsEnabled(
-           syncer::kReplaceSyncPromosWithSignInPromos) &&
-       !_syncService->HasSyncConsent())
-          ? SyncSettingsAccountState::kSignedIn
-          : SyncSettingsAccountState::kSyncing;
+      _syncService->HasSyncConsent() ? SyncSettingsAccountState::kSyncing
+                                     : SyncSettingsAccountState::kSignedIn;
   _manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
       initWithBaseViewController:self.tableViewController
                          browser:self.browser
@@ -650,8 +646,6 @@
 
   SigninPromoAction signinPromoAction = SigninPromoAction::kInstantSignin;
   if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-      base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
       base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
       !_syncService->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kReadingList)) {
@@ -670,9 +664,7 @@
   if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     syncer::UserSelectableTypeSet selected_types =
         _syncService->GetUserSettings()->GetSelectedTypes();
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos) &&
-        base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
+    if (base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
         !selected_types.Has(syncer::UserSelectableType::kReadingList)) {
       // Should remove the promo section completely in case it was showing
       // before with another action.

@@ -777,11 +777,6 @@ extern const char kRemoveExcessNTPsExperimentDescription[];
 extern const char kRemoveOldWebStateRestoreName[];
 extern const char kRemoveOldWebStateRestoreDescription[];
 
-// Title and description for the flag to replace all sync-related UI with
-// sign-in ones.
-extern const char kReplaceSyncPromosWithSignInPromosName[];
-extern const char kReplaceSyncPromosWithSignInPromosDescription[];
-
 // Title and description for the flag to revamp Page Info in iOS.
 extern const char kRevampPageInfoIosName[];
 extern const char kRevampPageInfoIosDescription[];

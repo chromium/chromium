@@ -878,11 +878,6 @@ const char kRemoveOldWebStateRestoreDescription[] =
     "attempting to restore WebState navigation history using "
     "session_restore.html.";
 
-const char kReplaceSyncPromosWithSignInPromosName[] =
-    "Replace all sync-related UI with sign-in ones";
-const char kReplaceSyncPromosWithSignInPromosDescription[] =
-    "When enabled, all sync-related promos will be replaced by sign-in ones.";
-
 const char kRevampPageInfoIosName[] = "Revamp Page Info";
 const char kRevampPageInfoIosDescription[] =
     "Revamps Page Info to add two new sections, AboutThisPage and Last "
