@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -65,7 +66,9 @@ export interface PromoCardElement {
 
 const isOpenedAsShortcut = window.matchMedia('(display-mode: standalone)');
 
-export class PromoCardElement extends PolymerElement {
+const PromoCardElementBase = I18nMixin(PolymerElement);
+
+export class PromoCardElement extends PromoCardElementBase {
   static get is() {
     return 'promo-card';
   }
