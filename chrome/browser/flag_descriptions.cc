@@ -5021,11 +5021,6 @@ const char kSmartCardWebApiDescription[] =
     "Enable access to the Smart Card API. See "
     "https://github.com/WICG/web-smart-card#readme for more information.";
 
-const char kSyncWebauthnCredentialsName[] = "Sync WebAuthn credentials";
-const char kSyncWebauthnCredentialsDescription[] =
-    "Allow syncing, managing, and displaying Google Password Manager WebAuthn "
-    "credential ('passkey') metadata";
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kSettingsEnableGetTheMostOutOfChromeName[] =
     "'Get the most out of Chrome' documentation";

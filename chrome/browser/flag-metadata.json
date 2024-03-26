@@ -7724,11 +7724,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "sync-webauthn-credentials",
-    "owners": [ "chrome-webauthn@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "system-color-chooser",
     "owners": [ "bur@chromium.org", "chrome-mac-dev@google.com" ],
     "expiry_milestone": 126
