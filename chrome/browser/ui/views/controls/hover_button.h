@@ -55,18 +55,20 @@ class HoverButton : public views::LabelButton {
 
   // Creates a HoverButton with custom subviews. |icon_view| replaces the
   // LabelButton icon, and titles appear on separate rows. An empty |subtitle|
-  // will vertically center |title|. |secondary_view|, when set, is shown
-  // on the opposite side of the button from |icon_view|.
-  // When |add_vertical_label_spacing| is false it will not add vertical spacing
-  // to the label wrapper.
-  // Warning: |icon_view| must have a fixed size and be correctly set during its
-  // constructor for the HoverButton to layout correctly.
+  // and |footer| will vertically center |title|. |footer| will be shown below
+  // |title| and |subtitle|. |secondary_view|, when set, is shown on the
+  // opposite side of the button from |icon_view|. When
+  // |add_vertical_label_spacing| is false it will not add vertical spacing to
+  // the label wrapper. Warning: |icon_view| must have a fixed size and be
+  // correctly set during its constructor for the HoverButton to layout
+  // correctly.
   HoverButton(PressedCallback callback,
               std::unique_ptr<views::View> icon_view,
               const std::u16string& title,
               const std::u16string& subtitle = std::u16string(),
               std::unique_ptr<views::View> secondary_view = nullptr,
-              bool add_vertical_label_spacing = true);
+              bool add_vertical_label_spacing = true,
+              const std::u16string& footer = std::u16string());
 
   HoverButton(const HoverButton&) = delete;
   HoverButton& operator=(const HoverButton&) = delete;
@@ -90,6 +92,9 @@ class HoverButton : public views::LabelButton {
   void SetSubtitleTextStyle(int text_context,
                             views::style::TextStyle text_style);
 
+  // Set the text context and style of the footer.
+  void SetFooterTextStyle(int text_context, views::style::TextStyle text_style);
+
   PressedCallback& callback(base::PassKey<HoverButtonController>) {
     return callback_;
   }
@@ -104,6 +109,7 @@ class HoverButton : public views::LabelButton {
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
   views::Label* subtitle() const { return subtitle_; }
+  views::Label* footer() const { return footer_; }
   views::View* icon_view() const { return icon_view_; }
   views::View* secondary_view() const { return secondary_view_; }
 
@@ -112,9 +118,8 @@ class HoverButton : public views::LabelButton {
                            SetTitleLabel);
   FRIEND_TEST_ALL_PREFIXES(media_router::CastDialogSinkButtonTest,
                            SetStatusLabel);
-  FRIEND_TEST_ALL_PREFIXES(HoverButtonTest,
-                           TooltipAndAccessibleName_DynamicTextUpdate);
   friend class AccountSelectionViewTestBase;
+  friend class HoverButtonTest;
   friend class PageInfoBubbleViewBrowserTest;
 
   // Updates the accessible name and tooltip of the button if necessary based on
@@ -123,11 +128,16 @@ class HoverButton : public views::LabelButton {
 
   void OnPressed(const ui::Event& event);
 
+  // Create the label for subtitle or footer.
+  std::unique_ptr<views::Label> CreateSecondaryLabel(
+      const std::u16string& text);
+
   PressedCallback callback_;
 
   raw_ptr<views::StyledLabel> title_ = nullptr;
   raw_ptr<views::View> label_wrapper_ = nullptr;
   raw_ptr<views::Label> subtitle_ = nullptr;
+  raw_ptr<views::Label> footer_ = nullptr;
   raw_ptr<views::View> icon_view_ = nullptr;
   raw_ptr<views::View> secondary_view_ = nullptr;
 

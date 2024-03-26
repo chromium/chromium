@@ -324,8 +324,9 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(kTopBottomPadding, kLeftRightPadding)));
-  row->AddChildView(
-      CreateAccountRow(account, idp_display_data, /*should_hover=*/false));
+  row->AddChildView(CreateAccountRow(account, idp_display_data,
+                                     /*should_hover=*/false,
+                                     /*should_include_idp=*/false));
   AddChildView(std::move(row));
 
   if (!has_sheet_) {
@@ -670,8 +671,9 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(0, kLeftRightPadding), kVerticalSpacing));
-  row->AddChildView(
-      CreateAccountRow(account, idp_display_data, /*should_hover=*/false));
+  row->AddChildView(CreateAccountRow(account, idp_display_data,
+                                     /*should_hover=*/false,
+                                     /*should_include_idp=*/false));
 
   // Prefer using the given name if it is provided, otherwise fallback to name.
   const std::string display_name =
@@ -721,14 +723,10 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
       num_rows += 1;
       continue;
     }
-    if (is_multi_idp) {
-      content->AddChildView(CreateIdpHeaderRowForMultiIdp(
-          idp_display_data.idp_etld_plus_one, idp_display_data.idp_metadata));
-      ++num_rows;
-    }
     for (const auto& account : idp_display_data.accounts) {
       content->AddChildView(
-          CreateAccountRow(account, idp_display_data, /*should_hover=*/true));
+          CreateAccountRow(account, idp_display_data, /*should_hover=*/true,
+                           /*should_include_idp=*/is_multi_idp));
     }
     const content::IdentityProviderMetadata& idp_metadata =
         idp_display_data.idp_metadata;
@@ -751,32 +749,6 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
   scroll_view->ClipHeightTo(
       0, static_cast<int>(per_account_size * num_visible_rows));
   return scroll_view;
-}
-
-std::unique_ptr<views::View>
-AccountSelectionBubbleView::CreateIdpHeaderRowForMultiIdp(
-    const std::u16string& idp_for_display,
-    const content::IdentityProviderMetadata& idp_metadata) {
-  auto header = std::make_unique<views::View>();
-  header->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(
-          gfx::Insets::TLBR(0, kLeftRightPadding, 0, kLeftRightPadding));
-
-  auto image_view = std::make_unique<BrandIconImageView>(
-      base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kDesiredIdpIconSize);
-  image_view->SetImageSize(gfx::Size(kDesiredIdpIconSize, kDesiredIdpIconSize));
-  image_view->SetProperty(views::kMarginsKey,
-                          gfx::Insets().set_right(kLeftRightPadding));
-  BrandIconImageView* idp_icon_view =
-      header->AddChildView(std::move(image_view));
-  ConfigureBrandImageView(idp_icon_view, idp_metadata.brand_icon_url);
-
-  header->AddChildView(std::make_unique<views::Label>(
-      idp_for_display, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_SECONDARY));
-  return header;
 }
 
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(

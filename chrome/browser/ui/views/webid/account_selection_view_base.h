@@ -26,6 +26,8 @@
 
 using TokenError = content::IdentityCredentialTokenError;
 
+class AccountImageView;
+
 namespace content {
 struct IdentityRequestAccount;
 }  // namespace content
@@ -36,6 +38,12 @@ inline constexpr int kButtonRadius = 16;
 inline constexpr int kBubbleWidth = 375;
 // The desired size of the avatars of user accounts.
 inline constexpr int kDesiredAvatarSize = 30;
+// The desired size of the avatar of user accounts when the button has three
+// lines of text.
+inline constexpr int kLargerAvatarSize = 40;
+// The desired size of the IDP icon used as badge for the user account avatar
+// when there are multiple IDPs.
+inline constexpr int kLargeAvatarBadgeSize = 16;
 // The desired size of the icon of the identity provider.
 inline constexpr int kDesiredIdpIconSize = 20;
 // The desired size of the icon for the "Use another account" button.
@@ -292,7 +300,8 @@ class AccountSelectionViewBase {
   std::unique_ptr<views::View> CreateAccountRow(
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data,
-      bool should_hover);
+      bool should_hover,
+      bool should_include_idp);
 
   // Returns a view containing a disclosure label. The label links to privacy
   // policy and terms of service URLs, if available.
@@ -303,6 +312,11 @@ class AccountSelectionViewBase {
   // download of the brand icon if necessary.
   void ConfigureBrandImageView(BrandIconImageView* image_view,
                                const GURL& brand_icon_url);
+
+  // Sets the badge of the AccountImageView, if available, or initiates the
+  // fetch otherwise.
+  void ConfigureBadgeIdp(AccountImageView& account_image_view,
+                         const GURL& brand_icon_url);
 
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
@@ -324,6 +338,10 @@ class AccountSelectionViewBase {
   // Observes events on AccountSelectionBubbleView.
   // Dangling when running Chromedriver's run_py_tests.py test suite.
   raw_ptr<Observer, DanglingUntriaged> observer_{nullptr};
+
+  // Used to ensure that callbacks are not run if the AccountSelectionViewBase
+  // is destroyed.
+  base::WeakPtrFactory<AccountSelectionViewBase> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_VIEW_BASE_H_

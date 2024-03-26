@@ -30,6 +30,11 @@ views::View* AccountSelectionViewTestBase::GetHoverButtonIconView(
   return account->icon_view();
 }
 
+views::Label* AccountSelectionViewTestBase::GetHoverButtonFooter(
+    HoverButton* account) {
+  return account->footer();
+}
+
 content::IdentityRequestAccount
 AccountSelectionViewTestBase::CreateTestIdentityRequestAccount(
     const std::string& account_suffix,
@@ -120,7 +125,8 @@ void AccountSelectionViewTestBase::CheckNonHoverableAccountRow(
 void AccountSelectionViewTestBase::CheckHoverableAccountRows(
     const std::vector<raw_ptr<views::View, VectorExperimental>>& accounts,
     const std::vector<std::string>& account_suffixes,
-    size_t& accounts_index) {
+    size_t& accounts_index,
+    bool expect_idp) {
   EXPECT_GE(accounts.size(), account_suffixes.size());
   // Checks the account rows starting at `accounts[accounts_index]`. Updates
   // `accounts_index` to the first unused index in `accounts`, or to
@@ -140,8 +146,13 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRows(
         GetHoverButtonSubtitle(account_row)->GetAutoColorReadabilityEnabled());
     views::View* icon_view = GetHoverButtonIconView(account_row);
     EXPECT_TRUE(icon_view);
+    // The footer should contain the IDP eTLD+1. This is not passed to the
+    // method but in our tests they all start with 'idp'.
+    EXPECT_TRUE(
+        GetHoverButtonFooter(account_row)->GetText().starts_with(u"idp"));
     EXPECT_EQ(icon_view->size(),
-              gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
+              expect_idp ? gfx::Size(kLargerAvatarSize, kLargerAvatarSize)
+                         : gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
   }
 }
 

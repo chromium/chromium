@@ -87,6 +87,14 @@ class HoverButtonTest : public ChromeViewsTestBase {
   ui::test::EventGenerator* generator() { return generator_.get(); }
   views::Widget* widget() { return widget_.get(); }
 
+  views::Label* GetButtonSubtitle(const HoverButton& button) {
+    return button.subtitle();
+  }
+
+  views::Label* GetButtonFooter(const HoverButton& button) {
+    return button.footer();
+  }
+
  private:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
@@ -112,6 +120,19 @@ TEST_F(HoverButtonTest, TooltipAndAccessibleName) {
     EXPECT_EQ(pair.tooltip ? expected : std::u16string(),
               button->GetTooltipText(gfx::Point()));
   }
+}
+
+TEST_F(HoverButtonTest, TooltipAndAccessibleNameWithFooter) {
+  auto button = std::make_unique<HoverButton>(
+      views::Button::PressedCallback(), CreateIcon(), u"Title", u"Subtitle",
+      /*secondary_icon=*/nullptr,
+      /*add_vertical_label_spacing=*/true, u"Footer");
+  button->SetSize(gfx::Size(kButtonWidth, 40));
+  // The accessible name should be the title, subtitle, and footer concatenated
+  // by \n.
+  const std::u16string expected = u"Title\nSubtitle\nFooter";
+  EXPECT_EQ(expected, GetAccessibleName(*button));
+  EXPECT_EQ(std::u16string(), button->GetTooltipText(gfx::Point()));
 }
 
 TEST_F(HoverButtonTest, TooltipAndAccessibleName_DynamicTextUpdate) {
@@ -143,7 +164,7 @@ TEST_F(HoverButtonTest, TooltipAndAccessibleName_DynamicTextUpdate) {
   // Update the subtitle with text that doesn't fit in the button.
   std::u16string updated_subtitle =
       u"A very long new subtitle that should not fit in the button";
-  button->subtitle()->SetText(updated_subtitle);
+  GetButtonSubtitle(*button)->SetText(updated_subtitle);
 
   // Verify both accessible name and tooltip have the updated title and
   // subtitle.
@@ -164,6 +185,22 @@ TEST_F(HoverButtonTest, CreateButtonWithSubtitleAndIcons) {
                      u"Title", u"Subtitle", std::move(secondary_icon));
   EXPECT_TRUE(button.Contains(primary_icon_raw));
   EXPECT_TRUE(button.Contains(secondary_icon_raw));
+}
+
+// Tests a button with a subtitle and a footer.
+TEST_F(HoverButtonTest, CreateButtonWithSubtitleAndFooter) {
+  std::unique_ptr<views::View> primary_icon = CreateIcon();
+  views::View* primary_icon_raw = primary_icon.get();
+  std::unique_ptr<views::View> secondary_icon = CreateIcon();
+  views::View* secondary_icon_raw = secondary_icon.get();
+  HoverButton button(views::Button::PressedCallback(), std::move(primary_icon),
+                     u"Title", u"Subtitle", std::move(secondary_icon),
+                     /*add_vertical_label_spacing=*/true, u"Footer");
+  EXPECT_TRUE(button.Contains(primary_icon_raw));
+  EXPECT_TRUE(button.Contains(secondary_icon_raw));
+  EXPECT_EQ(button.title()->GetText(), u"Title");
+  EXPECT_EQ(GetButtonSubtitle(button)->GetText(), u"Subtitle");
+  EXPECT_EQ(GetButtonFooter(button)->GetText(), u"Footer");
 }
 
 // Tests that the button is activated on mouse release rather than mouse press.

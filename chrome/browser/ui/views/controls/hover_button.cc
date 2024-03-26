@@ -131,7 +131,8 @@ HoverButton::HoverButton(PressedCallback callback,
                          const std::u16string& title,
                          const std::u16string& subtitle,
                          std::unique_ptr<views::View> secondary_view,
-                         bool add_vertical_label_spacing)
+                         bool add_vertical_label_spacing,
+                         const std::u16string& footer)
     : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
 
@@ -154,7 +155,8 @@ HoverButton::HoverButton(PressedCallback callback,
                      ->icon();
   }
 
-  // |label_wrapper| will hold both the title and subtitle if it exists.
+  // |label_wrapper| will hold the title as well as subtitle and footer, if
+  // present.
   auto label_wrapper = std::make_unique<views::View>();
 
   title_ = label_wrapper->AddChildView(std::make_unique<views::StyledLabel>());
@@ -173,18 +175,13 @@ HoverButton::HoverButton(PressedCallback callback,
                           base::Unretained(this))));
 
   if (!subtitle.empty()) {
-    auto subtitle_label = std::make_unique<views::Label>(
-        subtitle, views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY);
-    subtitle_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    subtitle_label->SetAutoColorReadabilityEnabled(false);
-    // A subtitle text update may result in the same label size and not trigger
-    // any observers. Thus, we need to add a callback that updates tooltip and
-    // accessible name when subtitle text changes.
-    text_changed_subscriptions_.push_back(
-        subtitle_label->AddTextChangedCallback(
-            base::BindRepeating(&HoverButton::UpdateTooltipAndAccessibleName,
-                                base::Unretained(this))));
+    std::unique_ptr<views::Label> subtitle_label =
+        CreateSecondaryLabel(subtitle);
     subtitle_ = label_wrapper->AddChildView(std::move(subtitle_label));
+  }
+  if (!footer.empty()) {
+    std::unique_ptr<views::Label> footer_label = CreateSecondaryLabel(footer);
+    footer_ = label_wrapper->AddChildView(std::move(footer_label));
   }
 
   label_wrapper->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -280,11 +277,31 @@ void HoverButton::SetSubtitleTextStyle(int text_context,
   PreferredSizeChanged();
 }
 
+void HoverButton::SetFooterTextStyle(int text_content,
+                                     views::style::TextStyle text_style) {
+  if (!footer()) {
+    return;
+  }
+
+  footer()->SetTextContext(text_content);
+  footer()->SetTextStyle(text_style);
+  footer()->SetAutoColorReadabilityEnabled(true);
+
+  // `footer_`'s preferred size may have changed. Notify the view because
+  // `footer_` is an indirect child and thus
+  // HoverButton::ChildPreferredSizeChanged() is not called.
+  PreferredSizeChanged();
+}
+
 void HoverButton::UpdateTooltipAndAccessibleName() {
-  const std::u16string accessible_name =
-      subtitle_ == nullptr
-          ? title_->GetText()
-          : base::JoinString({title_->GetText(), subtitle_->GetText()}, u"\n");
+  std::vector<base::StringPiece16> texts = {title_->GetText()};
+  if (subtitle_) {
+    texts.push_back(subtitle_->GetText());
+  }
+  if (footer_) {
+    texts.push_back(footer_->GetText());
+  }
+  const std::u16string accessible_name = base::JoinString(texts, u"\n");
 
   // views::StyledLabels only add tooltips for any links they may have. However,
   // since HoverButton will never insert a link inside its child StyledLabel,
@@ -345,6 +362,21 @@ void HoverButton::OnPressed(const ui::Event& event) {
   if (callback_) {
     callback_.Run(event);
   }
+}
+
+std::unique_ptr<views::Label> HoverButton::CreateSecondaryLabel(
+    const std::u16string& text) {
+  auto label = std::make_unique<views::Label>(
+      text, views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetAutoColorReadabilityEnabled(false);
+  // A subtitle text update may result in the same label size and not trigger
+  // any observers. Thus, we need to add a callback that updates tooltip and
+  // accessible name when subtitle text changes.
+  text_changed_subscriptions_.push_back(label->AddTextChangedCallback(
+      base::BindRepeating(&HoverButton::UpdateTooltipAndAccessibleName,
+                          base::Unretained(this))));
+  return label;
 }
 
 BEGIN_METADATA(HoverButton)

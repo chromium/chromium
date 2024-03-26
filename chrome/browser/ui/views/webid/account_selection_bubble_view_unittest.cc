@@ -210,8 +210,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
   void TestMultipleAccounts(
       const std::u16string& expected_title,
       const std::optional<std::u16string>& expected_subtitle,
-      bool expect_idp_brand_icon_in_header,
-      bool expect_idp_row) {
+      bool expect_idp_brand_icon_in_header) {
     const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
     CreateAndShowMultiAccountPicker(kAccountSuffixes);
 
@@ -236,11 +235,6 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
         contents->children();
 
     size_t accounts_index = 0;
-    if (expect_idp_row) {
-      EXPECT_LT(0u, accounts.size());
-      CheckIdpRow(accounts[0u], u"idp-example.com");
-      ++accounts_index;
-    }
 
     // Check the text shown.
     CheckHoverableAccountRows(accounts, kAccountSuffixes, accounts_index);
@@ -361,17 +355,6 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     }
   }
 
-  void CheckIdpRow(views::View* idp_account,
-                   const std::u16string& expected_idp) {
-    // Order: Brand icon, title.
-    EXPECT_THAT(GetChildClassNames(idp_account),
-                testing::ElementsAre("BrandIconImageView", "Label"));
-
-    views::Label* title_view =
-        static_cast<views::Label*>(idp_account->children()[1]);
-    EXPECT_EQ(title_view->GetText(), expected_idp);
-  }
-
   void CheckMismatchIdp(views::View* idp_row,
                         const std::u16string& expected_idp) {
     ASSERT_STREQ("HoverButton", idp_row->GetClassName());
@@ -472,8 +455,7 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
 
 TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
   TestMultipleAccounts(kTitleSignIn, /*expected_subtitle=*/std::nullopt,
-                       /*expect_idp_brand_icon_in_header=*/true,
-                       /*expect_idp_row=*/false);
+                       /*expect_idp_brand_icon_in_header=*/true);
 }
 
 TEST_F(AccountSelectionBubbleViewTest, UseDifferentAccount) {
@@ -761,8 +743,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, SingleAccount) {
 // AccountSelectionBubbleViewTest's MultipleAccounts test).
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultipleAccountsSingleIdp) {
   TestMultipleAccounts(kTitleSignIn, /*expected_subtitle=*/std::nullopt,
-                       /*expect_idp_brand_icon_in_header=*/true,
-                       /*expect_idp_row=*/false);
+                       /*expect_idp_brand_icon_in_header=*/true);
 }
 
 // Tests that the logo is visible with features::kFedCmMultipleIdentityProviders
@@ -808,17 +789,17 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
   std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
       contents->children();
 
-  // There should be 6 rows: 3 for the first IDP, 3 for the second.
-  EXPECT_EQ(6u, accounts.size());
+  // There should be 4 rows: 2 for the first IDP, 2 for the second.
+  ASSERT_EQ(4u, accounts.size());
 
   // Check the first IDP.
-  CheckIdpRow(accounts[0u], u"idp-example.com");
-  size_t accounts_index = 1;
-  CheckHoverableAccountRows(accounts, kAccountSuffixes1, accounts_index);
+  size_t accounts_index = 0;
+  CheckHoverableAccountRows(accounts, kAccountSuffixes1, accounts_index,
+                            /*expect_idp=*/true);
 
   // Check the second IDP.
-  CheckIdpRow(accounts[accounts_index++], u"idp2.com");
-  CheckHoverableAccountRows(accounts, kAccountSuffixes2, accounts_index);
+  CheckHoverableAccountRows(accounts, kAccountSuffixes2, accounts_index,
+                            /*expect_idp=*/true);
 }
 
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest, OneIdpWithMismatch) {
@@ -859,19 +840,19 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, OneIdpWithMismatch) {
   std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
       contents->children();
 
-  // There should be 4 rows: 3 for the first IDP, 1 for the second.
-  EXPECT_EQ(4u, accounts.size());
+  // There should be 3 rows: 2 for the first IDP, 1 for the second.
+  ASSERT_EQ(3u, accounts.size());
 
   // Check the first IDP.
-  CheckIdpRow(accounts[0u], u"idp-example.com");
-  size_t accounts_index = 1;
-  CheckHoverableAccountRows(accounts, kAccountSuffixes1, accounts_index);
+  size_t accounts_index = 0;
+  CheckHoverableAccountRows(accounts, kAccountSuffixes1, accounts_index,
+                            /*expect_idp=*/true);
 
   // Check the second IDP.
   CheckMismatchIdp(accounts[accounts_index++], u"idp2.com");
 }
 
-TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpUserOtherAccount) {
+TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpUseOtherAccount) {
   const std::vector<std::string> kAccountSuffixes1 = {"1", "2"};
   const std::vector<std::string> kAccountSuffixes2 = {"3"};
   std::vector<IdentityProviderDisplayData> idp_data;
@@ -914,18 +895,18 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpUserOtherAccount) {
   std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
       contents->children();
 
-  // There should be 9 rows: 5 for the first IDP, 4 for the second.
-  EXPECT_EQ(9u, accounts.size());
+  // There should be 7 rows: 4 for the first IDP, 3 for the second.
+  ASSERT_EQ(7u, accounts.size());
 
   // Check the first IDP.
-  CheckIdpRow(accounts[0u], u"idp-example.com");
-  size_t accounts_index = 1;
-  CheckHoverableAccountRows(accounts, kAccountSuffixes1, accounts_index);
+  size_t accounts_index = 0;
+  CheckHoverableAccountRows(accounts, kAccountSuffixes1, accounts_index,
+                            /*expect_idp=*/true);
   CheckUseOtherAccount(accounts, accounts_index);
 
   // Check the second IDP.
-  CheckIdpRow(accounts[accounts_index++], u"idp2.com");
-  CheckHoverableAccountRows(accounts, kAccountSuffixes2, accounts_index);
+  CheckHoverableAccountRows(accounts, kAccountSuffixes2, accounts_index,
+                            /*expect_idp=*/true);
   CheckUseOtherAccount(accounts, accounts_index);
 }
 

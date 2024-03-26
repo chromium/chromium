@@ -341,8 +341,9 @@ AccountSelectionModalView::CreateMultipleAccountChooser(
   size_t num_rows = 0;
   for (const auto& idp_display_data : idp_display_data_list) {
     for (const auto& account : idp_display_data.accounts) {
-      content->AddChildView(
-          CreateAccountRow(account, idp_display_data, /*should_hover=*/true));
+      content->AddChildView(CreateAccountRow(account, idp_display_data,
+                                             /*should_hover=*/true,
+                                             /*should_include_idp=*/false));
     }
     num_rows += idp_display_data.accounts.size();
   }
@@ -425,7 +426,8 @@ AccountSelectionModalView::CreateSingleAccountChooser(
       /*between_child_spacing=*/kVerticalPadding));
   // TODO(crbug.com/1518356): There should be an arrow to the right of the
   // account when the account row is hoverable.
-  row->AddChildView(CreateAccountRow(account, idp_display_data, should_hover));
+  row->AddChildView(CreateAccountRow(account, idp_display_data, should_hover,
+                                     /*should_include_idp=*/false));
   if (show_disclosure_label) {
     row->AddChildView(CreateDisclosureLabel(idp_display_data));
   }

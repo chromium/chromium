@@ -105,12 +105,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   std::unique_ptr<views::View> CreateMultipleAccountChooser(
       const std::vector<IdentityProviderDisplayData>& idp_display_data_list);
 
-  // Creates a row containing the IDP icon as well as the IDP ETLD+1. Used in
-  // the multi IDP scenario, when the user is selecting from multiple accounts.
-  std::unique_ptr<views::View> CreateIdpHeaderRowForMultiIdp(
-      const std::u16string& idp_for_display,
-      const content::IdentityProviderMetadata& idp_metadata);
-
   // Returns a view containing a button for the user to login to an IDP for
   // which there was a login status mismatch, to be used in the multiple account
   // chooser case.
