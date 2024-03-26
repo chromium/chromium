@@ -10,7 +10,6 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -41,8 +40,8 @@ using signin_metrics::PromoAction;
 // Coordinator to handle additional steps after the identity is added, i.e.
 // after `addAccountSigninManager` does its job.
 @property(nonatomic, strong) SigninCoordinator* postSigninManagerCoordinator;
-// Coordinator for history sync opt-in, if kReplaceSyncPromosWithSignInPromos
-// and kHistoryOptInForRestoreShortyAndReSignin are enabled.
+// Coordinator for history sync opt-in, if
+// kHistoryOptInForRestoreShortyAndReSignin is enabled.
 @property(nonatomic, strong)
     HistorySyncPopupCoordinator* historySyncPopupCoordinator;
 // Manager that handles sign-in add account UI.
@@ -277,22 +276,12 @@ using signin_metrics::PromoAction;
     (id<SystemIdentity>)identity {
   // The new UIViewController is presented on top of the currently displayed
   // view controller.
-  self.postSigninManagerCoordinator =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? [SigninCoordinator
-                instantSigninCoordinatorWithBaseViewController:
-                    self.baseViewController
-                                                       browser:self.browser
-                                                      identity:identity
-                                                   accessPoint:self.accessPoint
-                                                   promoAction:self.promoAction]
-          : [SigninCoordinator
-                userSigninCoordinatorWithBaseViewController:
-                    self.baseViewController
-                                                    browser:self.browser
-                                                   identity:identity
-                                                accessPoint:self.accessPoint
-                                                promoAction:self.promoAction];
+  self.postSigninManagerCoordinator = [SigninCoordinator
+      instantSigninCoordinatorWithBaseViewController:self.baseViewController
+                                             browser:self.browser
+                                            identity:identity
+                                         accessPoint:self.accessPoint
+                                         promoAction:self.promoAction];
 
   __weak AddAccountSigninCoordinator* weakSelf = self;
   self.postSigninManagerCoordinator.signinCompletion = ^(
@@ -311,8 +300,6 @@ using signin_metrics::PromoAction;
   self.postSigninManagerCoordinator = nil;
 
   const bool history_opt_in_flags_enabled =
-      base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
       base::FeatureList::IsEnabled(kHistoryOptInForRestoreShortyAndReSignin);
   if (result != SigninCoordinatorResultSuccess ||
       !history_opt_in_flags_enabled) {

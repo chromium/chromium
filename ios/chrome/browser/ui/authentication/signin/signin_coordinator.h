@@ -46,21 +46,6 @@ class PrefRegistrySyncable;
 // Registers preferences related to sign-in coordinator.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
-// Returns a coordinator for user sign-in workflow.
-// `viewController` presents the sign-in.
-// `identity` is the identity preselected with the sign-in opens.
-// `accessPoint` is the view where the sign-in button was displayed.
-// `promoAction` is promo button used to trigger the sign-in.
-+ (instancetype)
-    userSigninCoordinatorWithBaseViewController:
-        (UIViewController*)viewController
-                                        browser:(Browser*)browser
-                                       identity:(id<SystemIdentity>)identity
-                                    accessPoint:
-                                        (signin_metrics::AccessPoint)accessPoint
-                                    promoAction:(signin_metrics::PromoAction)
-                                                    promoAction;
-
 // Returns a coordinator to sign-in the user without taps if the identity has
 // been selected with `identity`. Otherwise, it will ask the user to select
 // an identity, and starts the sign-in flow. If there is no identity on the

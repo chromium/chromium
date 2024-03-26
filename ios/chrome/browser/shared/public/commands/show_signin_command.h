@@ -26,9 +26,6 @@ enum class AuthenticationOperation {
   // the SSOAuth re-authenticate dialog. This command can only be used if there
   // is no primary account.
   kSigninAndSyncReauth,
-  // Operation to start a sign-in and sync operation. The user is presented with
-  // the sign-in page with the user consent.
-  kSigninAndSync,
   // Operation to start a sign-in only operation. The user is presented with
   // the consistency web sign-in dialog.
   kSigninOnly,

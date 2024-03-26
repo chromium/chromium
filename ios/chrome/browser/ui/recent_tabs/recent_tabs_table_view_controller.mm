@@ -8,7 +8,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -22,7 +21,6 @@
 #import "components/sessions/core/session_id.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -670,13 +668,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
             l10n_util::GetNSString(IDS_IOS_RECENT_TABS_OTHER_DEVICES_LABEL);
         itemButtonText = l10n_util::GetNSString(
             IDS_IOS_RECENT_TABS_OTHER_DEVICES_TURN_ON_TABS);
-        if (!base::FeatureList::IsEnabled(
-                syncer::kReplaceSyncPromosWithSignInPromos)) {
-          itemSubtitle = l10n_util::GetNSString(
-              IDS_IOS_RECENT_TABS_OTHER_DEVICES_SYNC_IS_OFF_MESSAGE);
-          itemButtonText = l10n_util::GetNSString(
-              IDS_IOS_RECENT_TABS_OTHER_DEVICES_TURN_ON_SYNC);
-        }
         break;
 
       case SessionsSyncUserState::USER_SIGNED_IN_SYNC_ON_NO_SESSIONS:
@@ -689,12 +680,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
         [self addSigninPromoViewItem];
         itemType = ItemTypeOtherDevicesSignedOut;
         itemSubtitle =
-            base::FeatureList::IsEnabled(
-                syncer::kReplaceSyncPromosWithSignInPromos)
-                ? l10n_util::GetNSString(
-                      IDS_IOS_RECENT_TABS_OTHER_DEVICES_LABEL)
-                : l10n_util::GetNSString(
-                      IDS_IOS_RECENT_TABS_OTHER_DEVICES_SIGNED_OUT_MESSAGE);
+            l10n_util::GetNSString(IDS_IOS_RECENT_TABS_OTHER_DEVICES_LABEL);
         break;
     }
     NSString* title =
@@ -746,11 +732,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
                                           ACCESS_POINT_RECENT_TABS
                       signinPresenter:self
              accountSettingsPresenter:nil];
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
-      self.signinPromoViewMediator.signinPromoAction =
-          SigninPromoAction::kSigninWithNoDefaultIdentity;
-    }
+    self.signinPromoViewMediator.signinPromoAction =
+        SigninPromoAction::kSigninWithNoDefaultIdentity;
     self.signinPromoViewMediator.consumer = self;
   }
 
@@ -1207,18 +1190,12 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     [self.signinPromoViewMediator signinPromoViewIsVisible];
     TableViewSigninPromoCell* signinPromoCell =
         base::apple::ObjCCastStrict<TableViewSigninPromoCell>(cell);
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
-      TableViewSigninPromoItem* signinPromoItem =
-          base::apple::ObjCCastStrict<TableViewSigninPromoItem>(
-              [self.tableViewModel itemAtIndexPath:indexPath]);
-      [signinPromoItem.configurator
-          configureSigninPromoView:signinPromoCell.signinPromoView
-                         withStyle:SigninPromoViewStyleOnlyButton];
-    } else {
-      signinPromoCell.signinPromoView.imageView.hidden = YES;
-      signinPromoCell.signinPromoView.textLabel.hidden = YES;
-    }
+    TableViewSigninPromoItem* signinPromoItem =
+        base::apple::ObjCCastStrict<TableViewSigninPromoItem>(
+            [self.tableViewModel itemAtIndexPath:indexPath]);
+    [signinPromoItem.configurator
+        configureSigninPromoView:signinPromoCell.signinPromoView
+                       withStyle:SigninPromoViewStyleOnlyButton];
     // Disable animations when setting the background color to prevent flash on
     // rotation.
     const BOOL animationsWereEnabled = [UIView areAnimationsEnabled];
@@ -1776,12 +1753,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)signinDidFinish {
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    [self.presentationDelegate showHistorySyncOptInAfterDedicatedSignIn:YES];
-  } else {
-    [self.delegate refreshSessionsView];
-  }
+  [self.presentationDelegate showHistorySyncOptInAfterDedicatedSignIn:YES];
 }
 
 #pragma mark - SyncPresenter
@@ -1901,10 +1873,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 // TODO(crbug.com/1462326): This logic should be moved outside of the
 // ViewController.
 - (BOOL)shouldShowHistorySyncOnPromoAction {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    return NO;
-  }
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
   // TODO(crbug.com/1466884): Delete the usage of ConsentLevel::kSync after

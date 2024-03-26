@@ -580,7 +580,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
       }
       break;
     }
-    case SigninPromoAction::kSync:
     case SigninPromoAction::kSigninSheet:
     case SigninPromoAction::kInstantSignin:
     case SigninPromoAction::kSigninWithNoDefaultIdentity:
@@ -760,6 +759,8 @@ id<SystemIdentity> GetDisplayedIdentity(
     _prefService = prefService;
     _syncService = syncService;
     _accessPoint = accessPoint;
+    _signinPromoViewState = SigninPromoViewState::kNeverVisible;
+    _signinPromoAction = SigninPromoAction::kInstantSignin;
     _dataTypeToWaitForInitialSync = syncer::ModelType::UNSPECIFIED;
     _signinPresenter = signinPresenter;
     _accountSettingsPresenter = accountSettingsPresenter;
@@ -811,7 +812,6 @@ id<SystemIdentity> GetDisplayedIdentity(
                          hasCloseButton:hasCloseButton
                        hasSignInSpinner:self.showSpinner];
     switch (self.signinPromoAction) {
-      case SigninPromoAction::kSync:
       case SigninPromoAction::kSigninSheet:
       case SigninPromoAction::kInstantSignin:
       case SigninPromoAction::kSigninWithNoDefaultIdentity:
@@ -841,7 +841,6 @@ id<SystemIdentity> GetDisplayedIdentity(
                        hasCloseButton:hasCloseButton
                      hasSignInSpinner:self.showSpinner];
   switch (self.signinPromoAction) {
-    case SigninPromoAction::kSync:
     case SigninPromoAction::kReviewAccountSettings:
       break;
     case SigninPromoAction::kSigninSheet:
@@ -876,7 +875,6 @@ id<SystemIdentity> GetDisplayedIdentity(
       }
       // This action should not contribute to the DisplayedCount pref.
       return;
-    case SigninPromoAction::kSync:
     case SigninPromoAction::kSigninSheet:
     case SigninPromoAction::kInstantSignin:
     case SigninPromoAction::kSigninWithNoDefaultIdentity:
@@ -1099,7 +1097,6 @@ id<SystemIdentity> GetDisplayedIdentity(
   switch (self.signinPromoAction) {
     case SigninPromoAction::kReviewAccountSettings:
       return;
-    case SigninPromoAction::kSync:
     case SigninPromoAction::kSigninSheet:
     case SigninPromoAction::kInstantSignin:
     case SigninPromoAction::kSigninWithNoDefaultIdentity:
@@ -1183,11 +1180,6 @@ id<SystemIdentity> GetDisplayedIdentity(
                          operation:AuthenticationOperation::kInstantSignin
                        promoAction:promoAction];
       return;
-    case SigninPromoAction::kSync:
-      [self showSigninWithIdentity:nil
-                         operation:AuthenticationOperation::kSigninAndSync
-                       promoAction:promoAction];
-      return;
     case SigninPromoAction::kSigninSheet:
       [self showSigninWithIdentity:nil
                          operation:AuthenticationOperation::kSigninOnly
@@ -1211,13 +1203,6 @@ id<SystemIdentity> GetDisplayedIdentity(
       [self sendImpressionsTillSigninButtonsHistogram];
       [self showSigninWithIdentity:self.displayedIdentity
                          operation:AuthenticationOperation::kInstantSignin
-                       promoAction:signin_metrics::PromoAction::
-                                       PROMO_ACTION_WITH_DEFAULT];
-      return;
-    case SigninPromoAction::kSync:
-      [self sendImpressionsTillSigninButtonsHistogram];
-      [self showSigninWithIdentity:self.displayedIdentity
-                         operation:AuthenticationOperation::kSigninAndSync
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_WITH_DEFAULT];
       return;
@@ -1261,12 +1246,6 @@ id<SystemIdentity> GetDisplayedIdentity(
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_NOT_DEFAULT];
       return;
-    case SigninPromoAction::kSync:
-      [self showSigninWithIdentity:nil
-                         operation:AuthenticationOperation::kSigninAndSync
-                       promoAction:signin_metrics::PromoAction::
-                                       PROMO_ACTION_NOT_DEFAULT];
-      return;
     case SigninPromoAction::kSigninSheet:
       [self showSigninWithIdentity:nil
                          operation:AuthenticationOperation::kSigninOnly
@@ -1306,7 +1285,6 @@ id<SystemIdentity> GetDisplayedIdentity(
       // This promo action should not contribute to the displayed count of the
       // sign-in actions.
       break;
-    case SigninPromoAction::kSync:
     case SigninPromoAction::kSigninSheet:
     case SigninPromoAction::kInstantSignin:
     case SigninPromoAction::kSigninWithNoDefaultIdentity:

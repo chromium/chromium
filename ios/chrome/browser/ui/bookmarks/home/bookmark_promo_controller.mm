@@ -12,7 +12,6 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -127,16 +126,7 @@
     // If the user is already syncing, the promo should not be visible.
     self.shouldShowSigninPromo = NO;
     return;
-  } else if (!base::FeatureList::IsEnabled(
-                 syncer::kReplaceSyncPromosWithSignInPromos) &&
-             !bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(
-                 syncService)) {
-    // The user signed in, but not opted into syncing bookmarks - show sync
-    // promo.
-    signinPromoAction = SigninPromoAction::kSync;
-  } else if (base::FeatureList::IsEnabled(
-                 syncer::kReplaceSyncPromosWithSignInPromos) &&
-             base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
+  } else if (base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
              !bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(
                  syncService)) {
     if (self.shouldShowSigninPromo &&

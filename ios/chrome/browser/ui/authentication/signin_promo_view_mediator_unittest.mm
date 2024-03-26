@@ -189,7 +189,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     NSString* title = nil;
     switch (style) {
       case SigninPromoViewStyleStandard:
-        title = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
+        title = GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN);
         break;
       case SigninPromoViewStyleCompactHorizontal:
       case SigninPromoViewStyleCompactVertical:

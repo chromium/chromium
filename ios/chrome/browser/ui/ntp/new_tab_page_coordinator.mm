@@ -7,7 +7,6 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
-#import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -23,7 +22,6 @@
 #import "components/search/search.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_observer_bridge.h"
@@ -810,18 +808,11 @@
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   BOOL isSignedIn =
       self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (isSignedIn || ![self isSignInAllowed] ||
-      (![self isSyncAllowedByPolicy] &&
-       !base::FeatureList::IsEnabled(
-           syncer::kReplaceSyncPromosWithSignInPromos))) {
+  if (isSignedIn || ![self isSignInAllowed]) {
     [handler showSettingsFromViewController:self.baseViewController];
   } else {
-    AuthenticationOperation operation =
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-            ? AuthenticationOperation::kSheetSigninAndHistorySync
-            : AuthenticationOperation::kSigninAndSync;
     ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
-        initWithOperation:operation
+        initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync
               accessPoint:signin_metrics::AccessPoint::
                               ACCESS_POINT_NTP_SIGNED_OUT_ICON];
     [handler showSignin:showSigninCommand
@@ -1037,48 +1028,23 @@
     return;
   }
 
-  // If kReplaceSyncPromosWithSignInPromos is enabled, show a sign-in only flow.
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // If there are 0 identities, kInstantSignin requires less taps.
-    auto operation =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(browserState)
-                ->HasIdentities()
-            ? AuthenticationOperation::kSigninOnly
-            : AuthenticationOperation::kInstantSignin;
-    ShowSigninCommand* command = [[ShowSigninCommand alloc]
-        initWithOperation:operation
-              accessPoint:signin_metrics::AccessPoint::
-                              ACCESS_POINT_NTP_FEED_BOTTOM_PROMO];
-    [handler showSignin:command baseViewController:self.NTPViewController];
-    // TODO(crbug.com/1455963): Strictly speaking this should record a bucket
-    // other than kShowSyncFlow. But I don't think we care too much about this
-    // particular histogram, just rename the bucket after launch.
-    [self.feedMetricsRecorder
-        recordShowSyncnRelatedUIWithType:feed::FeedSyncPromo::kShowSyncFlow];
-    signin_metrics::RecordSigninUserActionForAccessPoint(
-        signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO);
-    return;
-  }
-
-  // kReplaceSyncPromosWithSignInPromos is disabled, the promo wants to offer
-  // the old sync flow. That shouldn't happen if sync is disallowed by policy.
-  if (![self isSyncAllowedByPolicy]) {
-    [self showSignInDisableMessage];
-    [self.feedMetricsRecorder recordShowSyncnRelatedUIWithType:
-                                  feed::FeedSyncPromo::kShowDisableToast];
-    return;
-  }
-
-  // Show sync flow.
+  // If there are 0 identities, kInstantSignin requires less taps.
+  auto operation =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState)
+              ->HasIdentities()
+          ? AuthenticationOperation::kSigninOnly
+          : AuthenticationOperation::kInstantSignin;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kSigninAndSync
+      initWithOperation:operation
             accessPoint:signin_metrics::AccessPoint::
                             ACCESS_POINT_NTP_FEED_BOTTOM_PROMO];
   [handler showSignin:command baseViewController:self.NTPViewController];
+  // TODO(crbug.com/1455963): Strictly speaking this should record a bucket
+  // other than kShowSyncFlow. But I don't think we care too much about this
+  // particular histogram, just rename the bucket after launch.
   [self.feedMetricsRecorder
       recordShowSyncnRelatedUIWithType:feed::FeedSyncPromo::kShowSyncFlow];
   signin_metrics::RecordSigninUserActionForAccessPoint(

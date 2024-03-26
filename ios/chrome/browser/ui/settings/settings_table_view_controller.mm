@@ -36,7 +36,6 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -630,16 +629,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   if ((authServiceStatus ==
        AuthenticationService::ServiceStatus::SigninDisabledByPolicy)) {
     item = [self signinDisabledByPolicyTextItem];
-  } else if ([self isSyncDisabledByPolicy] &&
-             !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
-             !base::FeatureList::IsEnabled(
-                 syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // When kReplaceSyncPromosWithSignInPromos is disabled, the normal item
-    // opens the sync screen, and that shouldn't happen with the SyncDisabled
-    // policy. Show the "disabled by enterprise" item instead.
-    // Note when the same flag is enabled, the normal item leads to the sign-in
-    // screen, which is allowed with SyncDisabled.
-    item = [self signinDisabledByPolicyTextItem];
   } else if ((authServiceStatus ==
                   AuthenticationService::ServiceStatus::SigninForcedByPolicy ||
               authServiceStatus ==
@@ -696,21 +685,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   AccountSignInItem* signInTextItem =
       [[AccountSignInItem alloc] initWithType:SettingsItemTypeSignInButton];
   signInTextItem.accessibilityIdentifier = kSettingsSignInCellId;
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(_browserState);
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // TODO(crbug.com/1447010): Make detailText private when the feature is
-    // launched.
-    signInTextItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
-  } else if (!HasManagedSyncDataType(syncService)) {
-    signInTextItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE);
-  } else {
-    signInTextItem.detailText = l10n_util::GetNSString(
-        IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE_SYNC_MANAGED);
-  }
+  // TODO(crbug.com/1447010): Make detailText private when the feature is
+  // launched.
+  signInTextItem.detailText =
+      l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
   return signInTextItem;
 }
 
@@ -1619,9 +1597,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // TODO(crbug.com/40066949): Remove usage of HasSyncConsent() after kSync
   // users migrated to kSignin in phase 3. See ConsentLevel::kSync
   // documentation for details.
-  return base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos) &&
-         !SyncServiceFactory::GetForBrowserState(_browserState)
+  return !SyncServiceFactory::GetForBrowserState(_browserState)
               ->HasSyncConsent();
 }
 
@@ -2083,12 +2059,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   }
   self.isSigninInProgress = YES;
   __weak __typeof(self) weakSelf = self;
-  AuthenticationOperation operation =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? AuthenticationOperation::kSheetSigninAndHistorySync
-          : AuthenticationOperation::kSigninAndSync;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:operation
+      initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync
                identity:nil
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
             promoAction:signin_metrics::PromoAction::

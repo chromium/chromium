@@ -1824,14 +1824,6 @@ using UserFeedbackDataCallback =
                                                    promoAction:
                                                        command.promoAction];
       break;
-    case AuthenticationOperation::kSigninAndSync:
-      self.signinCoordinator = [SigninCoordinator
-          userSigninCoordinatorWithBaseViewController:baseViewController
-                                              browser:mainBrowser
-                                             identity:command.identity
-                                          accessPoint:command.accessPoint
-                                          promoAction:command.promoAction];
-      break;
     case AuthenticationOperation::kSigninOnly:
       self.signinCoordinator = [SigninCoordinator
           consistencyPromoSigninCoordinatorWithBaseViewController:
