@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
@@ -53,6 +54,10 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/app/theme/google_chrome/chromeos/strings/grit/chromeos_chrome_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 namespace chromeos::mahi {
 
 namespace {
@@ -86,6 +91,15 @@ void StyleMenuButton(views::LabelButton* button, const gfx::VectorIcon& icon) {
                                            kButtonCornerRadius,
                                            ui::kColorSysTonalOutline),
       kButtonPadding));
+}
+
+// TODO(b/331127382): Finalize the Mahi menu title.
+std::u16string GetMahiMenuTitle() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_MAHI_MENU_TITLE);
+#else
+  return u"Mahi Menu";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 }  // namespace
@@ -159,10 +173,9 @@ MahiMenuView::MahiMenuView() {
                                    views::MaximumFlexSizeRule::kUnbounded)));
 
   // TODO(b/318733118): Finish building the menu UI.
-  // TODO(b/319264190): Replace the strings here with real strings.
   auto* header_label =
       header_left_container->AddChildView(std::make_unique<views::Label>(
-          u"Mahi Menu", views::style::CONTEXT_DIALOG_TITLE,
+          GetMahiMenuTitle(), views::style::CONTEXT_DIALOG_TITLE,
           views::style::STYLE_HEADLINE_5));
   header_label->SetEnabledColorId(ui::kColorSysOnSurface);
   header_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
