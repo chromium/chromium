@@ -33,13 +33,6 @@ public class OmniboxFeatures {
                     "enable_modernize_visual_update_on_tablet",
                     true);
 
-    public static final BooleanCachedFieldTrialParameter
-            MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX =
-                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                            ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
-                            "modernize_visual_update_active_color_on_omnibox",
-                            true);
-
     public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.QUERY_TILES_IN_ZPS_ON_NTP, "QueryTilesShowAsCarousel", false);
@@ -53,14 +46,6 @@ public class OmniboxFeatures {
     public static boolean shouldShowModernizeVisualUpdate(Context context) {
         return ChromeFeatureList.sOmniboxModernizeVisualUpdate.isEnabled()
                 && (!isTablet(context) || enabledModernizeVisualUpdateOnTablet());
-    }
-
-    /**
-     * @return Whether to show an active color for Omnibox which has a different background color
-     *     than toolbar.
-     */
-    public static boolean shouldShowActiveColorOnOmnibox() {
-        return MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX.getValue();
     }
 
     /**

@@ -182,8 +182,7 @@ public class StatusBarColorController
                 ChromeColors.getSurfaceColor(
                         context, R.dimen.home_surface_background_color_elevation);
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                && OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
             // TODO(crbug.com/1521964): Share code with LocationBarCoordinator's constructor.
             mActiveOmniboxDefaultColor =
                     ChromeColors.getSurfaceColor(
