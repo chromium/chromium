@@ -233,7 +233,10 @@ TEST_F(PineTest, NoScreenshotWithDifferentDisplayOrientation) {
   base::ScopedTempDir temp_dir;
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  TakeAndSavePineScreenshot(temp_dir.GetPath().AppendASCII("test_pine.png"));
+  const base::FilePath file_path =
+      temp_dir.GetPath().AppendASCII("test_pine.png");
+  TakeAndSavePineScreenshot(file_path);
+  ASSERT_TRUE(base::PathExists(file_path));
 
   // Rotate the display and trigger the accelerator to show the pine dialog.
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
@@ -254,6 +257,9 @@ TEST_F(PineTest, NoScreenshotWithDifferentDisplayOrientation) {
       histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
       testing::ElementsAre(base::Bucket(
           ScreenshotOnShutdownStatus::kFailedOnDifferentOrientations, 1)));
+  // The previously saved pine image will not be shown this time and should be
+  // deleted from the disk as well to avoid stale screenshot next time.
+  EXPECT_FALSE(base::PathExists(file_path));
 }
 
 TEST_F(PineTest, ScreenshotIconRowMaxElements) {
@@ -261,14 +267,21 @@ TEST_F(PineTest, ScreenshotIconRowMaxElements) {
   base::ScopedTempDir temp_dir;
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  TakeAndSavePineScreenshot(temp_dir.GetPath().AppendASCII("test_pine.png"));
+  const base::FilePath file_path =
+      temp_dir.GetPath().AppendASCII("test_pine.png");
+  TakeAndSavePineScreenshot(file_path);
+  ASSERT_TRUE(base::PathExists(file_path));
 
   // Starts the session with the maximum number of elements that can be shown
   // inside the icon row.
   StartPineOverviewSession(MakeTestAppIds(pine::kScreenshotIconRowMaxElements));
+  auto* pine_controller = Shell::Get()->pine_controller();
   const PineContentsData* pine_contents_data =
-      Shell::Get()->pine_controller()->pine_contents_data();
+      pine_controller->pine_contents_data();
   EXPECT_TRUE(pine_contents_data && !pine_contents_data->image.isNull());
+  // The image in the disk should be deleted to avoid stale screenshot on next
+  // time to show the pine dialog.
+  EXPECT_FALSE(base::PathExists(file_path));
   // Screenshot icon row should be shown when there is a screenshot.
   const PineScreenshotIconRowView* screenshot_icon_row_view =
       GetScreenshotIconRowView();
@@ -280,6 +293,12 @@ TEST_F(PineTest, ScreenshotIconRowMaxElements) {
                     .image_views_count());
   histogram_tester.ExpectBucketCount(kDialogScreenshotVisibility, true, 1);
   histogram_tester.ExpectBucketCount(kDialogScreenshotVisibility, false, 0);
+
+  pine_controller->MaybeEndPineOverviewSession();
+  // Starts the session again, the dialog should show with listview instead of
+  // the screenshot.
+  StartPineOverviewSession(MakeTestAppIds(pine::kScreenshotIconRowMaxElements));
+  EXPECT_FALSE(GetScreenshotIconRowView());
 }
 
 TEST_F(PineTest, ScreenshotIconRowExceedMaxElements) {

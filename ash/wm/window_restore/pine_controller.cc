@@ -30,8 +30,11 @@
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chromeos/ui/base/display_util.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
@@ -317,6 +320,12 @@ void PineController::OnPineImageDecoded(base::TimeTicks start_time,
     RecordScreenshotOnShutdownStatus(
         ScreenshotOnShutdownStatus::kFailedOnDifferentOrientations);
   }
+  // Delete the pine image from the disk to avoid stale screenshot on next
+  // time showing the dialog.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::HIGHEST},
+      base::BindOnce(base::IgnoreResult(&base::DeleteFile),
+                     GetShutdownPineImagePath()));
 
   StartPineOverviewSession();
 }
