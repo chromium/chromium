@@ -131,7 +131,6 @@ void OnFormsSeenWithExpectations(MockAutofillManager& manager,
   EXPECT_CALL(manager, ShouldParseForms).Times(1).WillOnce(Return(true));
   EXPECT_CALL(manager, OnBeforeProcessParsedForms()).Times(num > 0);
   EXPECT_CALL(manager, OnFormProcessed).Times(num);
-  EXPECT_CALL(manager, OnAfterProcessParsedForms).Times(num > 0);
   TestAutofillManagerWaiter waiter(manager, {AutofillManagerEvent::kFormsSeen});
   manager.OnFormsSeen(updated_forms, removed_forms);
   ASSERT_TRUE(waiter.Wait());
@@ -306,7 +305,6 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(manager(), OnSelectControlDidChangeImpl).Times(AtLeast(0));
   EXPECT_CALL(manager(), OnBeforeProcessParsedForms).Times(AtLeast(0));
   EXPECT_CALL(manager(), OnFormProcessed).Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnAfterProcessParsedForms).Times(AtLeast(0));
 
   // Reset the manager, the observers should stick around.
   EXPECT_CALL(observer, OnAutofillManagerReset(m));

@@ -100,10 +100,6 @@ class MockAutofillManager : public AutofillManager {
               (const FormData& form_data, const FormStructure& form_structure),
               (override));
   MOCK_METHOD(void,
-              OnAfterProcessParsedForms,
-              (const DenseSet<FormType>& form_types),
-              (override));
-  MOCK_METHOD(void,
               ReportAutofillWebOTPMetrics,
               (bool used_web_otp),
               (override));

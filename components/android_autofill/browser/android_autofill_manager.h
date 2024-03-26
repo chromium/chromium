@@ -112,9 +112,6 @@ class AndroidAutofillManager : public AutofillManager,
   void OnFormProcessed(const FormData& form,
                        const FormStructure& form_structure) override;
 
-  void OnAfterProcessParsedForms(
-      const DenseSet<FormType>& form_types) override {}
-
  private:
   // AutofillManager::Observer:
   void OnFieldTypesDetermined(AutofillManager& manager,

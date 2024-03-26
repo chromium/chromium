@@ -339,10 +339,6 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
     OnFormProcessed(form, *form_structure);
   }
 
-  if (!queryable_forms.empty() || !non_queryable_forms.empty()) {
-    OnAfterProcessParsedForms(form_types);
-  }
-
   // Send the current type predictions to the renderer. For non-queryable forms
   // this is all the information about them that will ever be available. The
   // queryable forms will be updated once the field type query is complete.

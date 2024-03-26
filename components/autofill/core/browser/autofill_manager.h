@@ -434,10 +434,6 @@ class AutofillManager
   // |form_structure|.
   virtual void OnFormProcessed(const FormData& form_data,
                                const FormStructure& form_structure) = 0;
-  // Invoked after all forms have been processed, |form_types| is a set of
-  // FormType found.
-  virtual void OnAfterProcessParsedForms(
-      const DenseSet<FormType>& form_types) = 0;
 
   // Returns the number of FormStructures with the given |form_signature| and
   // appends them to |form_structures|. Runs in linear time.

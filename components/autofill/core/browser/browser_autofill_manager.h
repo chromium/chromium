@@ -418,8 +418,6 @@ class BrowserAutofillManager : public AutofillManager {
   void OnBeforeProcessParsedForms() override;
   void OnFormProcessed(const FormData& form,
                        const FormStructure& form_structure) override;
-  void OnAfterProcessParsedForms(
-      const DenseSet<FormType>& form_types) override {}
 
  private:
   friend class BrowserAutofillManagerTestApi;
