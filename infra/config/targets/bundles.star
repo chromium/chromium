@@ -8,6 +8,25 @@
 
 load("//lib/targets.star", "targets")
 
+# Runs only the accessibility tests in CI/CQ to reduce accessibility
+# failures that land.
+targets.bundle(
+    name = "fuchsia_accessibility_browsertests",
+    targets = "accessibility_content_browsertests",
+    per_test_modifications = {
+        "accessibility_content_browsertests": targets.mixin(
+            args = [
+                "--test-arg=--disable-gpu",
+                "--test-arg=--headless",
+                "--test-arg=--ozone-platform=headless",
+            ],
+            swarming = targets.swarming(
+                shards = 8,  # this may depend on runtime of a11y CQ
+            ),
+        ),
+    },
+)
+
 # TODO(dpranke): These are run on the p/chromium waterfall; they should
 # probably be run on other builders, and we should get rid of the p/chromium
 # waterfall.

@@ -1932,22 +1932,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "fuchsia_accessibility_content_browsertests",
-    tests = {
-        "accessibility_content_browsertests": targets.legacy_test_config(
-            args = [
-                "--test-arg=--disable-gpu",
-                "--test-arg=--headless",
-                "--test-arg=--ozone-platform=headless",
-            ],
-            swarming = targets.swarming(
-                shards = 8,  # this may depend on runtime of a11y CQ
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "fuchsia_chrome_small_gtests",
     tests = {
         "courgette_unittests": targets.legacy_test_config(),

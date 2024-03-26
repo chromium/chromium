@@ -46,7 +46,8 @@
           "builder": "fuchsia-x64-accessibility-rel",
           "group": "tryserver.chromium.accessibility"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/fuchsia-x64-accessibility-rel/targets"
     }
   },
   "$build/reclient": {

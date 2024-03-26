@@ -17,7 +17,7 @@ _BINARY = _nodes_lib.create_unscoped_node_type("targets|binary")
 _LABEL_MAPPING = _nodes_lib.create_unscoped_node_type("targets|label-mapping")
 
 # A set of modifications to make when expanding tests in a suite
-_MIXIN = _nodes_lib.create_unscoped_node_type("targets|mixin")
+_MIXIN = _nodes_lib.create_unscoped_node_type("targets|mixin", allow_empty_id = True)
 
 # A set of modifications to make when multiply expanding a test in a matrix
 # compound suite
@@ -50,9 +50,16 @@ _LEGACY_MATRIX_CONFIG = _nodes_lib.create_scoped_node_type("targets|legacy-matri
 # bundle
 _COMPILE_TARGET = _nodes_lib.create_unscoped_node_type("targets|compile-target")
 
+# A test target that can be included in a bundle used by builders that have
+# their targets defined in starlark
+_TEST = _nodes_lib.create_unscoped_node_type("targets|test")
+
 # A collection of compile targets to build and tests to run with optional
 # modifications
 _BUNDLE = _nodes_lib.create_unscoped_node_type("targets|bundle", allow_empty_id = True)
+
+# Modifications to make to a single test contained in a bundle
+_PER_TEST_MODIFICATION = _nodes_lib.create_scoped_node_type("targets|per-test-modification", _BUNDLE.kind)
 
 nodes = struct(
     BINARY = _BINARY,
@@ -67,5 +74,7 @@ nodes = struct(
     LEGACY_MATRIX_COMPOUND_SUITE = _LEGACY_MATRIX_COMPOUND_SUITE,
     LEGACY_MATRIX_CONFIG = _LEGACY_MATRIX_CONFIG,
     COMPILE_TARGET = _COMPILE_TARGET,
+    TEST = _TEST,
     BUNDLE = _BUNDLE,
+    PER_TEST_MODIFICATION = _PER_TEST_MODIFICATION,
 )

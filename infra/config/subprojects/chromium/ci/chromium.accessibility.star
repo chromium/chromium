@@ -5,11 +5,12 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
+load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
-load("//lib/builder_health_indicators.star", "health_spec")
+load("//lib/targets.star", "targets")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -28,6 +29,10 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.accessibility",
+)
+
+targets.builder_defaults.set(
+    mixins = ["chromium-tester-service-account"],
 )
 
 ci.builder(
@@ -54,6 +59,20 @@ ci.builder(
             "fuchsia",
             "blink_symbol",
             "minimal_symbols",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = "fuchsia_accessibility_browsertests",
+        additional_compile_targets = "content_browsertests",
+        mixins = [
+            "linux-jammy",
+            targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "kvm": "1",
+                    },
+                ),
+            ),
         ],
     ),
     console_view_entry = [

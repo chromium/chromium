@@ -415,22 +415,9 @@
     'name': 'chromium.accessibility',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'fuchsia-x64-accessibility-rel': {
-        'additional_compile_targets': [
-          'content_browsertests',
-        ],
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'fuchsia_accessibility_browsertests',
-        },
-        'swarming': {
-          'dimensions': {
-            'kvm': '1',
-          },
-        },
-      },
+      # The following builders have been migrated to set their targets in the
+      # builders' declarations in //infra/config/subprojects/ci/chromium.accessibility.star
+      #   fuchsia-x64-accessibility-rel
       'linux-blink-web-tests-force-accessibility-rel': {
         'additional_compile_targets': [
           'blink_tests',

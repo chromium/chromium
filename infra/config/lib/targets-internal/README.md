@@ -19,6 +19,9 @@ Parents
 * [targets|legacy-test](#targets_legacy_test) (>=0)
   * created by `targets.test.gtest_test` and `targets.tests.isolated_script_test`
   * traversed when generating details in test_suites.pyl for a test in a basic suite that references a binary
+* [targets|test](#targets_test) (<=0)
+  * created by targets.tests.gtest_test
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
 
 ### targets|label-mapping
 
@@ -49,11 +52,12 @@ Variable reference: `_targets_nodes.MIXIN`
 Created by
 
 * `targets.mixin`
+  * unnamed instances can be created inline to apply changes to a bundle or to be used for per-test modifications
 
 Parents
 
 * [project](#project) (1)
-  * created for all mixins
+  * created for all named mixins
   * traversed to generate entries in mixins.pyl
 * [targets|legacy-test](#targets_legacy_test) (>=0)
   * created when a test specifies a mixin in `mixins`
@@ -67,6 +71,12 @@ Parents
 * [targets|legacy-remove-mixin](#targets_legacy_remove_mixin) (>=0)
   * created when a test specifies a mixin in `remove_mixins`
   * traversed to generate the `remove_mixins` field for a test when generating a basic suite in test_suites.pyl
+* [targets|bundle](#targets_bundle) (>=0)
+  * created when a bundle references a mixin
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+* [targets|per-test-modification](#targets_per_test_modification) (>=0)
+  * created when a per test modification references a mixin
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
 
 ### targets|variant
 
@@ -284,7 +294,28 @@ Parents
 
 * [targets|bundle](#Node-type-information-targets_bundle) (>=0)
   * created when a bundle references a compile target in `additional_compile_targets`
-  * traversed when generating targets spec files for builders that have their tests defined in starlark
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+
+### targets|test
+
+A test target that can be included in a bundle used by builders that have their targets defined in starlark
+
+Created by
+
+* functions in `targets.tests`
+  * support is only actually implemented for `script_test` and `gtest_test` (not including skylab); attempting to generate targets specs for a builder that includes other types will fail with a message indicating so
+
+Children
+
+* [targets|binary](#targets_binary) (>=0)
+  * created by `targets.tests.gtest_test`
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+
+Parents:
+
+* [targets|bundle](#targets_bundle) (>=0)
+  * created by functions in `targets.tests` (every test target declares a bundle containing that test)
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
 
 ### targets|bundle
 
@@ -305,10 +336,19 @@ Children
 
 * [targets|bundle](#Node-type-information-targets_bundle) (>=0)
   * created when a bundle references another bundle in `targets`
-  * traversed when generating targets spec files for builders that have their tests defined in starlark
-* [targets|compile-target](#Node-type-information-targets_compile_target) (>=0)
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+* [targets|compile-target](#targets_compile_target) (>=0)
   * created when a bundle references a compile target in `additional_compile_targets`
-  * traversed when generating targets spec files for builders that have their tests defined in starlark
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+* [targets|test](#targets_test) (>=0)
+  * created by functions in `targets.tests` (every test target declares a bundle containing that test)
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+* [targets|mixin](#targets_mixin) (>=0)
+  * created when a bundle references a mixin
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+* [targets|per-test-modification](#targets_per_test_modification) (>=0)
+  * created when a bundle specifies `per_test_modifications`
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
 
 Parents
 
@@ -319,6 +359,24 @@ Parents
   * created when a bundle references another bundle in targets
   * traversed when generating targets spec files for builders that have their
     targets defined in starlark
+
+### targets|per-test-modification
+
+Modifications to make to a single test contained in a bundle
+
+Created by
+* `targets.bundle`
+  * created when a bundle specifies `per_test_modifications`
+
+Children:
+* [targets|mixin](#targets_mixin) (>=1)
+  * created when a per test modification references a mixin
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+
+Parents:
+* [targets|bundle](#targets_bundle) (1)
+  * created when a bundle specifies `per_test_modifications`
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
 
 ### project
 
@@ -356,9 +414,13 @@ nodes created elsewhere.
 
 ![targets.tests.gpu_telemetry_test graph](img/creation/targets-tests-gpu-telemetry-test.png)
 
-#### targets.tests.gtest_test & targets.tests.isolated_script_test
+#### targets.tests.gtest_test
 
-![targets.tests.gtest_test & targets.tests.isolated_script_test graph](img/creation/targets-tests-gtest-test-targets-tests-isolated-script-test.png)
+![targets.tests.gtest_test graph](img/creation/targets-tests-gtest-test.png)
+
+#### targets.tests.isolated_script_test
+
+![targets.tests.isolated_script_test graph](img/creation/targets-tests-isolated-script-test.png)
 
 #### targets.tests.junit_test
 

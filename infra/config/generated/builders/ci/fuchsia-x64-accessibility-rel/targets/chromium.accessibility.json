@@ -1,0 +1,31 @@
+{
+  "fuchsia-x64-accessibility-rel": {
+    "additional_compile_targets": [
+      "content_browsertests"
+    ],
+    "gtest_tests": [
+      {
+        "args": [
+          "--gtest_filter=*All/DumpAccessibility*/fuchsia*",
+          "--test-arg=--disable-gpu",
+          "--test-arg=--headless",
+          "--test-arg=--ozone-platform=headless"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "accessibility_content_browsertests",
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
+      }
+    ]
+  }
+}

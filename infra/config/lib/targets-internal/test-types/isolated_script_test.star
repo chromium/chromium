@@ -40,5 +40,4 @@ def isolated_script_test(*, name, binary = None, mixins = None, args = None):
     _targets_common.create_test(
         name = name,
         spec_handler = _targets_common.spec_handler_for_unimplemented_target_type("isolated_script_test"),
-        spec_value = None,
     )

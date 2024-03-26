@@ -7,6 +7,7 @@
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
 load("./args.star", "args")
+load("./structs.star", "structs")
 load("./targets-internal/common.star", _targets_common = "common")
 load("./targets-internal/nodes.star", _targets_nodes = "nodes")
 load("./targets-internal/test-types/gpu_telemetry_test.star", "gpu_telemetry_test")
@@ -59,7 +60,21 @@ def _create_binary(
         args = args,
     )
 
+    label_pieces = label.split(":")
+    if len(label_pieces) != 2:
+        fail((
+            "malformed label '{}' for binary '{}''," +
+            " implicit names (like //f/b meaning //f/b:b) are disallowed",
+        ).format(label, name))
+    if label_pieces[1] != name:
+        fail((
+            "binary name '{}' doesn't match GN target name in label '{}'," +
+            "see http://crbug.com/1071091 for details"
+        ).format(name, label_pieces[1]))
+    test_id_prefix = "ninja:{}/".format(label)
+
     _targets_nodes.BINARY.add(name, props = dict(
+        test_id_prefix = test_id_prefix,
         test_config = test_config,
     ))
 
@@ -288,27 +303,6 @@ def _cipd_package(
         revision = revision,
     )
 
-def _merge(
-        *,
-        script,
-        args = None):
-    """Define a merge script to be used for a swarmed test.
-
-    Args:
-        script: GN-format path (e.g. //foo/bar/script.py) to the script
-            to use to merge results from the shard tasks.
-        args: Any args to pass to the merge script, in addition to any
-            arguments supplied by the recipe.
-
-    Returns:
-        A struct that can be passed to the merge argument of
-        `targets.mixin`.
-    """
-    return struct(
-        script = script,
-        args = args,
-    )
-
 def _resultdb(
         *,
         enable = False,
@@ -335,69 +329,6 @@ def _resultdb(
         has_native_resultdb_integration = has_native_resultdb_integration,
         result_format = result_format,
         result_file = result_file,
-    )
-
-def _swarming(
-        *,
-        enable = None,
-        dimensions = None,
-        optional_dimensions = None,
-        containment_type = None,
-        cipd_packages = None,
-        expiration_sec = None,
-        hard_timeout_sec = None,
-        io_timeout_sec = None,
-        shards = None,
-        idempotent = None,
-        service_account = None,
-        named_caches = None):
-    """Define the swarming details for a test.
-
-    When specified as a mixin, fields will overwrites the test's values
-    unless otherwise indicated.
-
-    Args:
-        enable: Whether swarming should be enabled for the test.
-        dimensions: A dict of dimensions to apply to all dimension sets
-            for the test. This can only be specified in a mixin. After
-            any dimension sets from the mixin are added to the test, the
-            dimensions will be applied to all of the dimension sets on
-            the test. If there are no dimension sets on the test, a
-            single dimension set with these dimensions will be added.
-        optional_dimensions: Optional dimensions to add to each
-            dimension set.
-        containment_type: The containment type to use for the swarming
-            task(s). See ContainmentType enum in
-            https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/swarming/proto/api/swarming.proto
-        cipd_packages: A list of targets.cipd_package that detail CIPD
-            packages to be downloaded for the test.
-        expiration_sec: The time that each task for the test should wait
-            to be scheduled.
-        hard_timeout_sec: The maximum time each task for the test can
-            take after starting.
-        io_timeout_sec: The maximum time that can elapse between output
-            from tasks for the test.
-        shards: The number of tasks to split the test into.
-        idempotent: Whether the test task should be considered
-            idempotent.
-        service_account: The service account used to run the test's
-            tasks.
-        named_caches: A list of swarming.cache that detail the named
-            caches that should be mounted for the test's tasks.
-    """
-    return struct(
-        enable = enable,
-        dimensions = dimensions,
-        optional_dimensions = optional_dimensions,
-        containment_type = containment_type,
-        cipd_packages = cipd_packages,
-        expiration_sec = expiration_sec,
-        hard_timeout_sec = hard_timeout_sec,
-        io_timeout_sec = io_timeout_sec,
-        shards = shards,
-        idempotent = idempotent,
-        service_account = service_account,
-        named_caches = named_caches,
     )
 
 def _skylab(
@@ -596,8 +527,9 @@ def _mixin(*, name = None, **kwargs):
     key = _targets_nodes.MIXIN.add(name, props = dict(
         mixin_values = _mixin_values(**kwargs),
     ))
-
-    graph.add_edge(keys.project(), key)
+    if name != None:
+        graph.add_edge(keys.project(), key)
+    return graph.keyset(key)
 
 def _variant(
         *,
@@ -637,7 +569,11 @@ def _variant(
 
     graph.add_edge(keys.project(), key)
 
-def _bundle(*, name = None, additional_compile_targets = None, targets = None):
+_builder_defaults = args.defaults(
+    mixins = [],
+)
+
+def _bundle(*, name = None, additional_compile_targets = None, targets = None, mixins = None, per_test_modifications = None):
     """Define a targets bundle.
 
     A bundle is a grouping of targets to build and test.
@@ -651,6 +587,8 @@ def _bundle(*, name = None, additional_compile_targets = None, targets = None):
         name = name,
         additional_compile_targets = args.listify(additional_compile_targets),
         targets = args.listify(targets),
+        mixins = args.listify(mixins),
+        per_test_modifications = per_test_modifications or {},
     ))
 
 def _legacy_basic_suite(*, name, tests):
@@ -831,6 +769,7 @@ targets = struct(
 
     # Functions for declaring bundles
     bundle = _bundle,
+    builder_defaults = _builder_defaults,
     legacy_basic_suite = _legacy_basic_suite,
     legacy_test_config = _legacy_test_config,
     legacy_compound_suite = _legacy_compound_suite,
@@ -839,9 +778,9 @@ targets = struct(
     mixin = _mixin,
     variant = _variant,
     cipd_package = _cipd_package,
-    merge = _merge,
+    merge = _targets_common.merge,
     resultdb = _resultdb,
-    swarming = _swarming,
+    swarming = _targets_common.swarming,
     skylab = _skylab,
 )
 
@@ -866,9 +805,46 @@ def register_targets(*, parent_key, name, targets):
     targets_key = _targets_common.create_bundle(
         name = name,
         targets = args.listify(targets),
+        mixins = _builder_defaults.mixins.get(),
     )
 
     graph.add_edge(parent_key, targets_key)
+
+def _merge_swarming(swarming1, swarming2):
+    if not swarming1 and swarming2:
+        return swarming1 or swarming2
+
+    d = {a: getattr(swarming1, a) for a in dir(swarming1)}
+    to_merge = {a: getattr(swarming2, a) for a in dir(swarming2)}
+
+    d["dimensions"] = ((d["dimensions"] or {}) | (to_merge.pop("dimensions") or {})) or None
+    d["named_caches"] = args.listify(d["named_caches"], to_merge.pop("named_caches")) or None
+    for k, v in to_merge.items():
+        if v != None:
+            d[k] = v
+    return _targets_common.swarming(**d)
+
+def _apply_mixin(spec, mixin_values):
+    invalid_mixin_values = [k for k in mixin_values if k not in spec.value]
+    if invalid_mixin_values:
+        # Return the original spec in the case of an error so that the caller
+        # doesn't have to save the original value
+        return spec, "unsupported mixin values: {}".format(sorted(invalid_mixin_values))
+
+    spec_value = dict(spec.value)
+    mixin_values = dict(mixin_values)
+
+    args_mixin = mixin_values.pop("args", None)
+    if args_mixin:
+        spec_value["args"] = args.listify(spec_value["args"], args_mixin) or None
+
+    swarming_mixin = mixin_values.pop("swarming", None)
+    if swarming_mixin:
+        spec_value["swarming"] = _merge_swarming(spec_value["swarming"], swarming_mixin)
+
+    spec_value.update(mixin_values)
+
+    return structs.evolve(spec, value = spec_value), None
 
 def _get_bundle_resolver():
     def resolved_bundle(*, additional_compile_targets, test_spec_and_source_by_name):
@@ -891,7 +867,14 @@ def _get_bundle_resolver():
             # so that more context is provided about where the error is
             # resulting from
             additional_compile_targets = set([t.key.id for t in graph.children(n.key, _targets_nodes.COMPILE_TARGET.kind)])
-            test_spec_and_source_by_name = {name: (spec, n.key) for name, spec in n.props.test_spec_by_name.items()}
+
+            test_spec_and_source_by_name = {}
+            for test in graph.children(n.key, kind = _targets_nodes.TEST.kind):
+                spec_handler = test.props.spec_handler
+                spec_value = spec_handler.init(test)
+                spec = struct(handler = spec_handler, value = spec_value)
+                test_spec_and_source_by_name[test.key.id] = spec, n.key
+
             for child in graph.children(n.key, kind = _targets_nodes.BUNDLE.kind):
                 child_resolved_bundle = resolved_bundle_by_bundle_node[child]
                 additional_compile_targets = additional_compile_targets | child_resolved_bundle.additional_compile_targets
@@ -908,6 +891,30 @@ def _get_bundle_resolver():
                                 spec,
                             ))
                     test_spec_and_source_by_name[name] = (spec, source)
+
+            def update_spec_with_mixin(test_name, spec, mixin):
+                new_spec, error = _apply_mixin(spec, mixin.props.mixin_values)
+                if error:
+                    fail(
+                        "modifying {} {} with {} failed: {}"
+                            .format(spec.spec_type.type_name, test_name, mixin, error),
+                        trace = n.props.stacktrace,
+                    )
+                test_spec_and_source_by_name[test_name] = new_spec, n.key
+
+            for mixin in graph.children(n.key, kind = _targets_nodes.MIXIN.kind):
+                for name, (spec, _) in test_spec_and_source_by_name.items():
+                    update_spec_with_mixin(name, spec, mixin)
+            for per_test_modification in graph.children(n.key, kind = _targets_nodes.PER_TEST_MODIFICATION.kind):
+                name = per_test_modification.key.id
+                if name not in test_spec_and_source_by_name:
+                    fail(
+                        "attempting to modify test '{}' that is not contained in the bundle"
+                            .format(name),
+                        trace = n.props.stacktrace,
+                    )
+                for mixin in graph.children(per_test_modification.key, kind = _targets_nodes.MIXIN.kind):
+                    update_spec_with_mixin(name, test_spec_and_source_by_name[name][0], mixin)
 
             resolved_bundle_by_bundle_node[n] = resolved_bundle(
                 additional_compile_targets = additional_compile_targets,
@@ -945,8 +952,9 @@ def get_targets_spec_generator():
         additional_compile_targets, test_spec_by_name = bundle_resolver(bundle_node)
         sort_key_and_specs_by_type_key = {}
         for name, spec in test_spec_by_name.items():
-            type_key, sort_key, spec = spec.handler.finalize(name, spec.spec_value)
-            sort_key_and_specs_by_type_key.setdefault(type_key, []).append((sort_key, spec))
+            type_key, sort_key, spec_value = spec.handler.finalize(name, spec.value)
+            finalized_spec = {k: v for k, v in spec_value.items() if v not in ([], None)}
+            sort_key_and_specs_by_type_key.setdefault(type_key, []).append((sort_key, finalized_spec))
 
         specs_by_type_key = {}
         if additional_compile_targets:

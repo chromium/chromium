@@ -103,6 +103,11 @@ rules {
         arg: "mixins"
         arg: "remove_mixins"
 
+        # bundles
+        arg: "additional_compile_targets"
+        arg: "targets"
+        arg: "per_test_modifications"
+
         # mixin/variant/test common fields
         arg: "args"
         arg: "precommit_args"

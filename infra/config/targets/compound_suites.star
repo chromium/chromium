@@ -584,15 +584,6 @@ targets.legacy_compound_suite(
     ],
 )
 
-# Runs only the accessibility tests in CI/CQ to reduce accessibility
-# failures that land.
-targets.legacy_compound_suite(
-    name = "fuchsia_accessibility_browsertests",
-    basic_suites = [
-        "fuchsia_accessibility_content_browsertests",
-    ],
-)
-
 targets.legacy_compound_suite(
     name = "fuchsia_arm64_isolated_scripts",
     basic_suites = [

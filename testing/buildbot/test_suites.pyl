@@ -2094,21 +2094,6 @@
       'base_unittests': {},
     },
 
-    'fuchsia_accessibility_content_browsertests': {
-      'accessibility_content_browsertests': {
-        'test': 'content_browsertests',
-        'args': [
-          '--gtest_filter=*All/DumpAccessibility*/fuchsia*',
-          '--test-arg=--disable-gpu',
-          '--test-arg=--headless',
-          '--test-arg=--ozone-platform=headless',
-        ],
-        'swarming': {
-          'shards': 8,
-        },
-      },
-    },
-
     'fuchsia_chrome_small_gtests': {
       'courgette_unittests': {},
       'headless_unittests': {},
@@ -6120,10 +6105,6 @@
     'devtools_gtests': [
       'blink_unittests',
       'devtools_browser_tests',
-    ],
-
-    'fuchsia_accessibility_browsertests': [
-      'fuchsia_accessibility_content_browsertests',
     ],
 
     'fuchsia_arm64_isolated_scripts': [
