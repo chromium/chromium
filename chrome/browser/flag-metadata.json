@@ -3094,7 +3094,7 @@
   {
     "name": "enable-hostname-setting",
     "owners": [ "khorimoto@chromium.org", "cros-connectivity@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 135
   },
   {
     "name": "enable-image-reader",
