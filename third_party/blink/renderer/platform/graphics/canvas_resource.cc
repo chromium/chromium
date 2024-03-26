@@ -54,14 +54,6 @@
 
 namespace blink {
 
-namespace {
-
-BASE_FEATURE(kCanvasAddSharedImageRasterUsageWithNonOOPR,
-             "CanvasAddSharedImageRasterUsageWithNonOOPR",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
-
 CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
                                cc::PaintFlags::FilterQuality filter_quality,
                                const SkColorInfo& info)
@@ -441,33 +433,20 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
   // textures by WebGL (via AcceleratedStaticBitmapImage::CopyToTexture()).
   // Hence, GLES2_READ usage is necessary regardless of whether raster is over
   // GLES.
+  // TODO(crbug.com/1518735): Determine whether FRAMEBUFFER_HINT can be
+  // eliminated.
+  shared_image_usage_flags = shared_image_usage_flags |
+                             gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                             gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                             gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
   if (use_oop_rasterization_) {
-    // TODO(crbug.com/1518735): Determine whether FRAMEBUFFER_HINT can be
-    // eliminated.
-    shared_image_usage_flags = shared_image_usage_flags |
-                               gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                               gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                               gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-                               gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                               gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
+    shared_image_usage_flags =
+        shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   } else {
     // The GLES2_WRITE flag is needed due to raster being over GL.
-    // TODO(crbug.com/1518735): Determine whether FRAMEBUFFER_HINT can be
-    // eliminated.
-    shared_image_usage_flags = shared_image_usage_flags |
-                               gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                               gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-                               gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
-    // RASTER_{READ, WRITE} usages should be included as these SharedImages are
-    // both read and written via raster, but historically these usages were not
-    // included. Currently in the process of adding with a killswitch.
-    // TODO(crbug.com/1518427): Remove this killswitch post-safe rollout.
-    if (base::FeatureList::IsEnabled(
-            kCanvasAddSharedImageRasterUsageWithNonOOPR)) {
-      shared_image_usage_flags = shared_image_usage_flags |
-                                 gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                                 gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
-    }
+    shared_image_usage_flags =
+        shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   }
 
   GrSurfaceOrigin surface_origin = is_origin_top_left_
@@ -1185,24 +1164,14 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                    gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
-                   gpu::SHARED_IMAGE_USAGE_SCANOUT;
-
+                   gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                   gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
   if (use_oop_rasterization_) {
-    usage = usage | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-            gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-            gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+    usage = usage | gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   } else {
     // The GLES2_WRITE flag is needed due to raster being over GL.
     usage = usage | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
-    // RASTER_{READ, WRITE} usages should be included as these SharedImages are
-    // both read and written via raster, but historically these usages were not
-    // included. Currently in the process of adding with a killswitch.
-    // TODO(crbug.com/1518427): Remove this killswitch post-safe rollout.
-    if (base::FeatureList::IsEnabled(
-            kCanvasAddSharedImageRasterUsageWithNonOOPR)) {
-      usage = usage | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
-    }
   }
 
   auto* sii =
