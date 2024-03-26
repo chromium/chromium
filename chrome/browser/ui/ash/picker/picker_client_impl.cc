@@ -243,7 +243,8 @@ void PickerClientImpl::OnCrosSearchResultsUpdated(
 
   for (const std::unique_ptr<ChromeSearchResult>& result : results) {
     switch (result->result_type()) {
-      case ash::AppListSearchResultType::kOmnibox: {
+      case ash::AppListSearchResultType::kOmnibox:
+      case ash::AppListSearchResultType::kOpenTab: {
         if (std::optional<GURL> result_url = result->url();
             result_url.has_value()) {
           picker_results.push_back(ash::PickerSearchResult::BrowsingHistory(

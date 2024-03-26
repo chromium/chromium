@@ -90,6 +90,10 @@ void OpenTabResult::Open(int event_flags) {
                                     WindowOpenDisposition::SWITCH_TO_TAB));
 }
 
+std::optional<GURL> OpenTabResult::url() const {
+  return *search_result_->destination_url;
+}
+
 std::optional<std::string> OpenTabResult::DriveId() const {
   return drive_id_;
 }
