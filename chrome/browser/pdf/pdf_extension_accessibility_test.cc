@@ -1255,13 +1255,17 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionAccessibilityPdfOcrTest);
 class PDFOCRIntegrationTest
     : public PDFExtensionAccessibilityTest,
       public screen_ai::ScreenAIInstallState::Observer,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   PDFOCRIntegrationTest() = default;
   ~PDFOCRIntegrationTest() override = default;
 
   bool IsOcrServiceEnabled() const { return std::get<0>(GetParam()); }
   bool IsLibraryAvailable() const { return std::get<1>(GetParam()); }
+
+  // PDFExtensionAccessibilityTest:
+  bool UseOopif() const override { return std::get<2>(GetParam()); }
+
   bool IsPdfOcrPrefSet() const {
     return browser()->profile()->GetPrefs()->GetBoolean(
         prefs::kAccessibilityPdfOcrAlwaysActive);
@@ -1322,6 +1326,9 @@ class PDFOCRIntegrationTest
     if (IsOcrServiceEnabled()) {
       enabled.push_back(ax::mojom::features::kScreenAIOCREnabled);
     }
+    if (UseOopif()) {
+      enabled.push_back(chrome_pdf::features::kPdfOopif);
+    }
     return enabled;
   }
 
@@ -1332,6 +1339,9 @@ class PDFOCRIntegrationTest
     std::vector<base::test::FeatureRef> disabled;
     if (!IsOcrServiceEnabled()) {
       disabled.push_back(ax::mojom::features::kScreenAIOCREnabled);
+    }
+    if (!UseOopif()) {
+      disabled.push_back(chrome_pdf::features::kPdfOopif);
     }
     return disabled;
   }
@@ -1465,6 +1475,12 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, EnsureScreenAIInitializes) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, HelloWorld) {
+  // TODO(crbug.com/324636880): Remove this once the test is no longer flaky for
+  // OOPIF PDF.
+  if (UseOopif() && IsLibraryAvailable()) {
+    GTEST_SKIP();
+  }
+
   // Turn on PDF OCR by setting its pref to be true.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityPdfOcrAlwaysActive, true);
@@ -1475,6 +1491,12 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, HelloWorld) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, ThreePagePDF) {
+  // TODO(crbug.com/324636880): Remove this once the test is no longer flaky for
+  // OOPIF PDF.
+  if (UseOopif() && IsLibraryAvailable()) {
+    GTEST_SKIP();
+  }
+
   // Turn on PDF OCR by setting its pref to be true.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityPdfOcrAlwaysActive, true);
@@ -1495,6 +1517,12 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, FeatureNotificationWhenOff) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, TestBatchingWithTwentyPagePDF) {
+  // TODO(crbug.com/324636880): Remove this once the test is no longer flaky for
+  // OOPIF PDF.
+  if (UseOopif() && IsLibraryAvailable()) {
+    GTEST_SKIP();
+  }
+
   // Turn on PDF OCR by setting its pref to be true.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityPdfOcrAlwaysActive, true);
@@ -1505,6 +1533,12 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, TestBatchingWithTwentyPagePDF) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, NoOcrResultOnBlankImagePdf) {
+  // TODO(crbug.com/324636880): Remove this once the test is no longer flaky for
+  // OOPIF PDF.
+  if (UseOopif() && IsLibraryAvailable()) {
+    GTEST_SKIP();
+  }
+
   // Turn on PDF OCR by setting its pref to be true.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityPdfOcrAlwaysActive, true);
@@ -1517,11 +1551,13 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, NoOcrResultOnBlankImagePdf) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     PDFOCRIntegrationTest,
-    ::testing::Combine(testing::Bool(), testing::Bool()),
-    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+    ::testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool, bool>>& info) {
       return base::StringPrintf(
-          "OCR_%s_Library_%s", std::get<0>(info.param) ? "Enabled" : "Disabled",
-          std::get<1>(info.param) ? "Available" : "Unavailable");
+          "OCR_%s_Library_%s_%s",
+          std::get<0>(info.param) ? "Enabled" : "Disabled",
+          std::get<1>(info.param) ? "Available" : "Unavailable",
+          std::get<2>(info.param) ? "OOPIF" : "GuestView");
     });
 
 #endif  // defined(PDF_OCR_INTEGRATION_TEST_ENABLED)
