@@ -66,13 +66,29 @@ class PlusProfileChecker : public StatusChangeChecker,
       scoped_observation_{this};
 };
 
-class SingleClientPlusAddressSyncTest : public SyncTest {
+// PLUS_ADDRESS is supposed to behave the same in and outside of transport mode.
+// These tests are parameterized by whether the test should run in transport
+// mode (true) or not (false).
+class SingleClientPlusAddressSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<bool> {
  public:
   SingleClientPlusAddressSyncTest() : SyncTest(SINGLE_CLIENT) {
     features_.InitWithFeatures(
         /*enabled_features=*/{plus_addresses::features::kFeature,
                               syncer::kSyncPlusAddress},
         /*disabled_features=*/{});
+  }
+
+  // Sets up the sync client in sync-the-feature or sync-the-transport mode,
+  // depending on `GetParam()`. Returns true if setup succeeded.
+  bool SetupSync() {
+    const bool should_run_in_transport_mode = GetParam();
+    if (should_run_in_transport_mode) {
+      return SetupClients() && GetClient(0)->SignInPrimaryAccount() &&
+             GetClient(0)->AwaitSyncTransportActive();
+    }
+    return SyncTest::SetupSync();
   }
 
   PlusAddressService* GetPlusAddressService() {
@@ -105,7 +121,20 @@ class SingleClientPlusAddressSyncTest : public SyncTest {
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest, InitialSync) {
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientPlusAddressSyncTest,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // On ChromeOS, sync-the-feature gets started automatically once a primary
+    // account is signed in and transport mode is not a thing. As such, only run
+    // the tests in sync-the-feature mode.
+    testing::Values(false)
+#else
+    testing::Bool()
+#endif
+);
+
+IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest, InitialSync) {
   // Start syncing with an existing `plus_profile` on the server.
   const PlusProfile plus_profile = CreatePlusProfile();
   InjectEntityToServer(EntityDataFromPlusProfile(plus_profile).specifics);
@@ -115,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest, InitialSync) {
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest, IncrementalUpdate_Add) {
+IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest, IncrementalUpdate_Add) {
   ASSERT_TRUE(SetupSync());
   // Simulate creating a new `plus_profile` on the server after sync started.
   const PlusProfile plus_profile = CreatePlusProfile();
@@ -125,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest, IncrementalUpdate_Add) {
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest,
                        IncrementalUpdate_Update) {
   PlusProfile plus_profile = CreatePlusProfile();
   InjectEntityToServer(EntityDataFromPlusProfile(plus_profile).specifics);
@@ -141,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest,
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest,
                        IncrementalUpdate_Remove) {
   const PlusProfile plus_profile = CreatePlusProfile();
   InjectEntityToServer(EntityDataFromPlusProfile(plus_profile).specifics);
@@ -157,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest,
 
 // ChromeOS does not support signing out of the primary account.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest, Signout_DataCleared) {
+IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest, Signout_DataCleared) {
   InjectEntityToServer(
       EntityDataFromPlusProfile(CreatePlusProfile()).specifics);
   ASSERT_TRUE(SetupSync());
