@@ -148,7 +148,8 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OpenNewTabs) {
   utils_->WaitForNodeWithClassNameAndValue("OmniboxViewViews", "tt");
 }
 
-IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, CtrlClickHomeButton) {
+// Flaky. https://crbug.com/331433886.
+IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, DISABLED_CtrlClickHomeButton) {
   // Show home page button.
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
