@@ -598,7 +598,7 @@ void BrowserFrame::OnTouchUiChanged() {
   } else {
     non_client_view()->InvalidateLayout();
   }
-  GetRootView()->DeprecatedLayoutImmediately();
+  GetRootView()->InvalidateLayout();
 }
 
 bool BrowserFrame::RegenerateFrameOnThemeChange(
