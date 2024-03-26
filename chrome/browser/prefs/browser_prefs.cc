@@ -1007,6 +1007,12 @@ constexpr char kPrivacySandboxApisEnabled[] = "privacy_sandbox.apis_enabled";
 constexpr char kOobeGuestAcceptedTos[] = "oobe.guest_accepted_tos";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 03/2024.
+// A `kDefaultSearchProviderChoicePending` pref persists (migrated to a new
+// pref name to reset the data), so the variable name has been changed here.
+constexpr char kDefaultSearchProviderChoicePendingDeprecated[] =
+    "default_search_provider.choice_pending";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1420,6 +1426,10 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 03/2024.
   registry->RegisterBooleanPref(kPrivacySandboxApisEnabled, true);
+
+  // Deprecated 03/2024.
+  registry->RegisterBooleanPref(kDefaultSearchProviderChoicePendingDeprecated,
+                                false);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2687,6 +2697,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 03/2024.
   profile_prefs->ClearPref(kPrivacySandboxApisEnabled);
+
+  // Added 03/2024.
+  profile_prefs->ClearPref(kDefaultSearchProviderChoicePendingDeprecated);
 
   // Added 02/2024, but DO NOT REMOVE after the usual year!
   // TODO(crbug.com/40282890): Remove ~one year after full launch.

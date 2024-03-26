@@ -32,8 +32,10 @@ inline constexpr char kSyncedDefaultSearchProviderGUID[] =
 // Note that this has effect only if the `kSearchEngineChoiceTrigger` feature
 // is enabled and if its `kSearchEngineChoiceTriggerForTaggedProfilesOnly`
 // param is set to `true`.
+// This pref is the replacement for "default_search_provider.choice_pending",
+// that was wrongly populated due to a bug and was deprecated.
 inline constexpr char kDefaultSearchProviderChoicePending[] =
-    "default_search_provider.choice_pending";
+    "default_search_provider.engine_choice_pending";
 
 // Epoch timestamp in seconds of when the user chose a search engine in
 // the choice screen.
