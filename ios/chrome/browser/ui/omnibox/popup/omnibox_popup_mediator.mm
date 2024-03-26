@@ -289,7 +289,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
           self.incognito, self.tracker, self.sceneState);
     }
     if (match.type == AutocompleteMatchType::CLIPBOARD_TEXT) {
-      default_browser::NotifyOmniboxTextCopyPasteAndNavigate();
+      default_browser::NotifyOmniboxTextCopyPasteAndNavigate(self.tracker);
     }
 
     if (!self.incognito &&

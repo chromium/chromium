@@ -60,7 +60,8 @@ void NotifyOmniboxURLCopyPasteAndNavigate(bool is_off_record,
 
 // Records all necessary information when user copy-pastes and searches a text
 // in omnibox.
-void NotifyOmniboxTextCopyPasteAndNavigate();
+void NotifyOmniboxTextCopyPasteAndNavigate(
+    feature_engagement::Tracker* tracker);
 
 // Record all necessary information when Default Browser FRE promo is shown.
 void NotifyDefaultBrowserFREPromoShown(feature_engagement::Tracker* tracker);

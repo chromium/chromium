@@ -470,6 +470,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       self.browser->GetSceneState());
 }
 
+- (void)locationBarSearchCopiedTextTapped {
+  default_browser::NotifyOmniboxTextCopyPasteAndNavigate(
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browserState));
+}
+
 - (void)searchCopiedImage {
   __weak LocationBarCoordinator* weakSelf = self;
   ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(

@@ -335,7 +335,7 @@ using base::UserMetricsAction;
   __weak __typeof(self) weakSelf = self;
   auto textCompletion =
       ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
-        default_browser::NotifyOmniboxTextCopyPasteAndNavigate();
+        default_browser::NotifyOmniboxTextCopyPasteAndNavigate(self.tracker);
         dispatch_async(dispatch_get_main_queue(), ^{
           NSString* text = static_cast<NSString*>(providedItem);
           if (text) {
@@ -416,7 +416,7 @@ using base::UserMetricsAction;
 }
 
 - (void)didTapSearchCopiedText {
-  default_browser::NotifyOmniboxTextCopyPasteAndNavigate();
+  default_browser::NotifyOmniboxTextCopyPasteAndNavigate(self.tracker);
   __weak __typeof(self) weakSelf = self;
   ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
       base::BindOnce(^(std::optional<std::u16string> optionalText) {

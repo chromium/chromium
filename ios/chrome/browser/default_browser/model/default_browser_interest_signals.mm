@@ -122,7 +122,8 @@ void NotifyOmniboxURLCopyPasteAndNavigate(bool is_off_record,
   }
 }
 
-void NotifyOmniboxTextCopyPasteAndNavigate() {
+void NotifyOmniboxTextCopyPasteAndNavigate(
+    feature_engagement::Tracker* tracker) {
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   LogCopyPasteInOmniboxForCriteriaExperiment();
 }

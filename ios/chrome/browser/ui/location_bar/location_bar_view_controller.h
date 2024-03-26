@@ -40,6 +40,10 @@
 // action.
 - (void)locationBarVisitCopyLinkTapped;
 
+// Notifies the delegate about a tap on the Search Copied Text context menu
+// action.
+- (void)locationBarSearchCopiedTextTapped;
+
 // Starts a reverse image search for the image currently in the pasteboard.
 - (void)searchCopiedImage;
 
