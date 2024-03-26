@@ -15,7 +15,6 @@ static_library("safe_browsing_prefs") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    ":common",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
     "//net:net",
@@ -95,7 +94,9 @@ source_set("common") {
     "//components/policy/core/browser:browser",
     "//components/prefs:prefs",
     "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/security_interstitials/core:unsafe_resource",
     "//components/variations",
     "//crypto:crypto",
     "//ipc",

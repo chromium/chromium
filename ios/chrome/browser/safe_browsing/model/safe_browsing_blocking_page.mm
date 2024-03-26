@@ -12,6 +12,7 @@
 #import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/safe_browsing/core/common/utils.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 #import "components/security_interstitials/core/metrics_helper.h"
@@ -38,6 +39,7 @@ std::unique_ptr<IOSBlockingPageMetricsHelper> CreateMetricsHelper(
     const UnsafeResource& resource) {
   security_interstitials::MetricsHelper::ReportDetails reporting_info;
   reporting_info.metric_prefix = GetUnsafeResourceMetricPrefix(resource);
+  reporting_info.extra_suffix = safe_browsing::GetExtraMetricsSuffix(resource);
   return std::make_unique<IOSBlockingPageMetricsHelper>(
       resource.weak_web_state.get(), resource.url, reporting_info);
 }

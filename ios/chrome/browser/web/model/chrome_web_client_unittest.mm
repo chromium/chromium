@@ -309,6 +309,8 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
   resource.url = GURL("http://www.chromium.test");
   resource.request_destination = network::mojom::RequestDestination::kDocument;
   resource.weak_web_state = web_state.GetWeakPtr();
+  // Added to ensure that `threat_source` isn't considered UNKNOWN in this case.
+  resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
   SafeBrowsingUrlAllowList::FromWebState(&web_state)
       ->AddPendingUnsafeNavigationDecision(resource.url, resource.threat_type);
   SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state)

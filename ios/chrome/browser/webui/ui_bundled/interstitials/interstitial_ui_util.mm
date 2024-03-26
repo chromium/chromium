@@ -184,6 +184,8 @@ CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
   resource.is_subframe = false;
   resource.threat_type = threat_type;
   resource.weak_web_state = web_state->GetWeakPtr();
+  // Added to ensure that `threat_source` isn't considered UNKNOWN in this case.
+  resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
 
   return SafeBrowsingBlockingPage::Create(resource);
 }

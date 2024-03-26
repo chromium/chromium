@@ -25,6 +25,10 @@ namespace network {
 struct ResourceRequest;
 }  // namespace network
 
+namespace security_interstitials {
+struct UnsafeResource;
+}
+
 class PrefService;
 
 namespace safe_browsing {
@@ -78,6 +82,10 @@ void RecordHttpResponseOrErrorCode(const char* metric_name,
 // returns whether an error is considered retriable and doesn't need to
 // increment backoff.
 bool ErrorIsRetriable(int net_error, int http_error);
+
+// We populate a parallel set of metrics to differentiate some threat sources.
+std::string GetExtraMetricsSuffix(
+    security_interstitials::UnsafeResource unsafe_resource);
 
 }  // namespace safe_browsing
 

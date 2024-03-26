@@ -107,9 +107,6 @@ class BaseBlockingPage
       const UnsafeResourceList& unsafe_resources,
       BaseSafeBrowsingErrorUI::SBInterstitialReason interstitial_reason);
 
-  static std::string GetExtraMetricsSuffix(
-      const UnsafeResourceList& unsafe_resources);
-
   // Return the most severe interstitial reason from a list of unsafe resources.
   // Severity ranking: malware > UwS (harmful) > phishing.
   static BaseSafeBrowsingErrorUI::SBInterstitialReason GetInterstitialReason(
