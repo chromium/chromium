@@ -2758,7 +2758,6 @@ void BaseRenderingContext2D::Trace(Visitor* visitor) const {
   visitor->Trace(dispatch_context_lost_event_timer_);
   visitor->Trace(dispatch_context_restored_event_timer_);
   visitor->Trace(try_restore_context_event_timer_);
-  visitor->Trace(webgpu_access_device_);
   visitor->Trace(webgpu_access_texture_);
   CanvasPath::Trace(visitor);
 }
@@ -3371,15 +3370,12 @@ GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
 
   // Prevent unbalanced calls to beginWebGPUAccess without a later call to
   // endWebGPUAccess.
-  if (webgpu_access_device_) {
-    CHECK(webgpu_access_texture_);
+  if (webgpu_access_texture_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "This canvas is already in use by WebGPU.");
     return nullptr;
   }
-
-  CHECK(!webgpu_access_texture_);
 
   // We can't rely on the HTMLCanvasElement, because the canvas may not actually
   // exist in the HTML. (e.g. `new OffscreenCanvas` has no HTML element.)
@@ -3413,7 +3409,6 @@ GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
     return nullptr;
   }
 
-  webgpu_access_device_ = blink_device;
   webgpu_access_texture_ = MakeGarbageCollected<GPUTexture>(
       blink_device, AsDawnType(image_info.colorType()), kUsage,
       std::move(texture), access_options->getLabelOr(String()));
@@ -3424,15 +3419,12 @@ GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
 void BaseRenderingContext2D::endWebGPUAccess(ExceptionState& exception_state) {
   // Prevent unbalanced calls to endWebGPUAccess without an earlier call to
   // beginWebGPUAccess.
-  if (!webgpu_access_device_) {
-    CHECK(!webgpu_access_texture_);
+  if (!webgpu_access_texture_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "This canvas is not currently in use by WebGPU.");
     return;
   }
-
-  CHECK(webgpu_access_texture_);
 
   // Get the GPU mailbox associated with the WebGPU access texture. This texture
   // always originates from `beginWebGPUAccess`, so we should always find a
@@ -3445,7 +3437,6 @@ void BaseRenderingContext2D::endWebGPUAccess(ExceptionState& exception_state) {
   CHECK(mailbox.IsSharedImage());
 
   // TODO(crbug.com/41490345): copy this texture back onto the canvas.
-  webgpu_access_device_ = nullptr;
   webgpu_access_texture_ = nullptr;
 }
 
