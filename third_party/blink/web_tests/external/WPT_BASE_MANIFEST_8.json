@@ -394517,7 +394517,7 @@
       []
      ],
      "utils_validation.js": [
-      "e289d3815d1715b7da67bc02639615f48fcae3d5",
+      "b2c1c534c8c653289f7495e0d0c87843008ef279",
       []
      ]
     },
@@ -664824,7 +664824,7 @@
      ]
     ],
     "videoFrame-serialization.crossAgentCluster.https.html": [
-     "967f02ec2cb4a38259d7c0eaa18a8d9d64866a91",
+     "e96725bb2866271b4cb0b42f5bef5a111066efd3",
      [
       null,
       {}
@@ -671484,7 +671484,7 @@
       ]
      ],
      "elementwise-unary.https.any.js": [
-      "8f3d544d83ab4dcc414c19d5869b37635a584ff4",
+      "f87c61b4e45689d4506bbef4a31aeb888c483b0a",
       [
        "webnn/validation_tests/elementwise-unary.https.any.html",
        {
@@ -671812,7 +671812,7 @@
       ]
      ],
      "hardSwish.https.any.js": [
-      "dd85165cf56e759d350ea410f86607c04be7a5e6",
+      "97ecfb4142de4aa53d5999ca96b768abdec6af4f",
       [
        "webnn/validation_tests/hardSwish.https.any.html",
        {
@@ -672345,7 +672345,7 @@
       ]
      ],
      "relu.https.any.js": [
-      "4c44d3c0dc17328eac9b8a9aa104bd00fb13510b",
+      "237c1c3eda3a490c5a14d335b1897ccc22b21848",
       [
        "webnn/validation_tests/relu.https.any.html",
        {
@@ -672468,7 +672468,7 @@
       ]
      ],
      "sigmoid.https.any.js": [
-      "206b6eda26b91054edc15ef351ad44ec07cda00d",
+      "b40ddc3fd4a7bc014c5a4050f4c42a3e525627ce",
       [
        "webnn/validation_tests/sigmoid.https.any.html",
        {
@@ -672632,7 +672632,7 @@
       ]
      ],
      "softsign.https.any.js": [
-      "a4a3847c2a3d54fa52a5fa4d59482e807aa6b9a7",
+      "58ec4871599686e51568ef045ac447b6dfdfa6a4",
       [
        "webnn/validation_tests/softsign.https.any.html",
        {
@@ -672714,7 +672714,7 @@
       ]
      ],
      "tanh.https.any.js": [
-      "4be36b9dbf2f6005b3b321ea8b52ca29d88a9871",
+      "4f9de919f61e2f119cae9ceba81ef3a4dcb5a6a8",
       [
        "webnn/validation_tests/tanh.https.any.html",
        {
