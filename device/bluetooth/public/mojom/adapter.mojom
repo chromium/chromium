@@ -59,6 +59,9 @@ struct AdapterInfo {
   // Whether the new CrOS Bluetooth stack (aka floss) is in use. See
   // go/project-floss for more info.
   bool floss;
+  // Whether the adapter supports BLE extended advertisements, which were
+  // added in Bluetooth 5.
+  bool extended_advertisement_support;
   bool initialized;
   bool present;
   bool powered;

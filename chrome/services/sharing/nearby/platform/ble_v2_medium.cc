@@ -317,10 +317,13 @@ std::unique_ptr<api::ble_v2::BleSocket> BleV2Medium::Connect(
 }
 
 bool BleV2Medium::IsExtendedAdvertisementsAvailable() {
-  // TODO(b/310269227): Also check hardware/chipset support for extended
-  // advertising; both the feature flag AND hardware support must be true to
-  // return true.
-  return features::IsNearbyBleV2ExtendedAdvertisingEnabled();
+  if (!features::IsNearbyBleV2ExtendedAdvertisingEnabled()) {
+    return false;
+  }
+
+  bluetooth::mojom::AdapterInfoPtr info;
+  bool success = adapter_->GetInfo(&info);
+  return success && info->extended_advertisement_support;
 }
 
 bool BleV2Medium::GetRemotePeripheral(const std::string& mac_address,

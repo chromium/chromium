@@ -417,6 +417,11 @@ TEST_F(BleV2MediumTest, IsExtendedAdvertisementsAvailable_FlagDisabled) {
       /*disabled_features=*/{
           ::features::kEnableNearbyBleV2ExtendedAdvertising});
 
+  // If the flag is disabled, always return false.
+  fake_adapter_->SetExtendedAdvertisementSupport(true);
+  EXPECT_FALSE(ble_v2_medium_->IsExtendedAdvertisementsAvailable());
+
+  fake_adapter_->SetExtendedAdvertisementSupport(false);
   EXPECT_FALSE(ble_v2_medium_->IsExtendedAdvertisementsAvailable());
 }
 
@@ -426,9 +431,12 @@ TEST_F(BleV2MediumTest, IsExtendedAdvertisementsAvailable_FlagEnabled) {
       /*enabled_features=*/{::features::kEnableNearbyBleV2ExtendedAdvertising},
       /*disabled_features=*/{});
 
-  // Once we check for hardware support, we should enforce that both the
-  // feature flag AND hardware support need to be true for this to be true.
+  // If the flag is enabled, return whether the device has hardware support.
+  fake_adapter_->SetExtendedAdvertisementSupport(true);
   EXPECT_TRUE(ble_v2_medium_->IsExtendedAdvertisementsAvailable());
+
+  fake_adapter_->SetExtendedAdvertisementSupport(false);
+  EXPECT_FALSE(ble_v2_medium_->IsExtendedAdvertisementsAvailable());
 }
 
 }  // namespace nearby::chrome

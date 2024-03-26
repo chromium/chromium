@@ -62,6 +62,7 @@ class FakeAdapter : public mojom::Adapter {
   void SetCreateLocalGattServiceCallback(base::OnceClosure callback);
   void SetCreateLocalGattServiceResult(
       std::unique_ptr<FakeGattService> fake_gatt_service);
+  void SetExtendedAdvertisementSupport(bool extended_advertisement_support);
   void SetDiscoverySessionDestroyedCallback(base::OnceClosure callback);
   bool IsDiscoverySessionActive();
   void NotifyDeviceAdded(mojom::DeviceInfoPtr device_info);
@@ -77,6 +78,7 @@ class FakeAdapter : public mojom::Adapter {
   mojo::Receiver<mojom::Adapter> adapter_{this};
   std::string address_ = "AdapterAddress";
   std::string name_ = "AdapterName";
+  bool extended_advertisement_support_ = false;
   bool present_ = true;
   bool powered_ = true;
   bool discoverable_ = false;
