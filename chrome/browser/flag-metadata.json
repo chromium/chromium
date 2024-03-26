@@ -6184,7 +6184,7 @@
   {
     "name": "omnibox-on-device-head-suggestions",
     "owners": [ "cechen@google.com", "suggest-2g@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "omnibox-on-device-head-suggestions-incognito",
@@ -6194,7 +6194,7 @@
   {
     "name": "omnibox-on-device-tail-suggestions",
     "owners": [ "cechen@google.com", "suggest-2g@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "omnibox-popup-row-content-configuration",
