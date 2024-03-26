@@ -1499,6 +1499,16 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Manage cards button pressed"/>
 </enum>
 
+<enum name="AutofillManuallyAddedAddressSurface">
+  <summary>
+    Describes the surface used by the user for adding a new address.
+  </summary>
+  <int value="0"
+      label="Context menu, after trigger manual fallback and having no
+             addresses stored."/>
+  <int value="1" label="Settings page."/>
+</enum>
+
 <enum name="AutofillOfferNotificationBubbleResult">
   <int value="0" label="User closed bubble via OK button"/>
   <int value="1" label="User closed bubble via corner X"/>
