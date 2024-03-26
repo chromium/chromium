@@ -279,6 +279,24 @@ Message::Message(uint32_t name,
               handles,
               estimated_payload_size) {}
 
+Message::Message(uint32_t name,
+                 uint32_t flags,
+                 MojoCreateMessageFlags create_message_flags,
+                 size_t estimated_payload_size)
+    : Message(name,
+              flags,
+              0,
+              0,
+              create_message_flags,
+              nullptr,
+              estimated_payload_size) {}
+
+Message::Message(uint32_t name, uint32_t flags, size_t estimated_payload_size)
+    : Message(name,
+              flags,
+              MOJO_CREATE_MESSAGE_FLAG_NONE,
+              estimated_payload_size) {}
+
 Message::Message(ScopedMessageHandle handle,
                  const internal::MessageHeaderV1& header)
     : handle_(std::move(handle)), transferable_(true) {

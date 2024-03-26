@@ -88,6 +88,16 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
           std::vector<ScopedHandle>* handles,
           size_t estimated_payload_size = 0);
 
+  // Constructor for the common case of unknown `payload_size`, unspecified
+  // `payload_interface_id_count`, and no `handles` vector.
+  Message(uint32_t name,
+          uint32_t flags,
+          MojoCreateMessageFlags create_message_flags,
+          size_t estimated_payload_size);
+
+  // Same as above, but the with default MojoCreateMessageFlags.
+  Message(uint32_t name, uint32_t flags, size_t estimated_payload_size);
+
   // Constructs a new Message object from an existing message handle. Used
   // exclusively for serializing an existing unserialized message.
   explicit Message(ScopedMessageHandle handle,

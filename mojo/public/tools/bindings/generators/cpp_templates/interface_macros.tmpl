@@ -94,13 +94,12 @@ base::OnceCallback<void(
 
 {%-   if method.unlimited_message_size %}
   mojo::Message {{message_object_name}}(
-      {{message_name}}, {{flags_text}}, 0, 0,
-      MOJO_CREATE_MESSAGE_FLAG_UNLIMITED_SIZE, nullptr,
+      {{message_name}}, {{flags_text}},
+      MOJO_CREATE_MESSAGE_FLAG_UNLIMITED_SIZE,
       estimated_payload_size);
 {%-   else %}
   mojo::Message {{message_object_name}}(
-      {{message_name}}, {{flags_text}}, 0, 0, nullptr,
-      estimated_payload_size);
+      {{message_name}}, {{flags_text}}, estimated_payload_size);
 {%-   endif %}
   mojo::internal::MessageFragment<
       {{params_struct|get_qualified_name_for_kind(internal=True)}}> params(
