@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
+#include "device/bluetooth/floss/bluetooth_gatt_characteristic_floss.h"
 #include "device/bluetooth/floss/bluetooth_gatt_service_floss.h"
 #include "device/bluetooth/floss/bluetooth_local_gatt_service_floss.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
@@ -23,8 +24,11 @@ BluetoothLocalGattCharacteristicFloss::Create(
     Properties properties,
     Permissions permissions,
     BluetoothLocalGattServiceFloss* service) {
+  const auto& [floss_properties, floss_permissions] =
+      BluetoothGattCharacteristicFloss::ConvertPropsAndPermsToFloss(
+          static_cast<uint8_t>(properties), static_cast<uint16_t>(permissions));
   auto* characteristic = new BluetoothLocalGattCharacteristicFloss(
-      uuid, properties, permissions, service);
+      uuid, floss_properties, floss_permissions, service);
   auto weak_ptr = characteristic->weak_ptr_factory_.GetWeakPtr();
   weak_ptr->index_ =
       service->AddCharacteristic(base::WrapUnique(characteristic));
@@ -59,12 +63,18 @@ device::BluetoothUUID BluetoothLocalGattCharacteristicFloss::GetUUID() const {
 
 device::BluetoothGattCharacteristic::Properties
 BluetoothLocalGattCharacteristicFloss::GetProperties() const {
-  return properties_;
+  const auto& [props, _] =
+      BluetoothGattCharacteristicFloss::ConvertPropsAndPermsFromFloss(
+          properties_, permissions_);
+  return props;
 }
 
 device::BluetoothGattCharacteristic::Permissions
 BluetoothLocalGattCharacteristicFloss::GetPermissions() const {
-  return permissions_;
+  const auto& [_, perms] =
+      BluetoothGattCharacteristicFloss::ConvertPropsAndPermsFromFloss(
+          properties_, permissions_);
+  return perms;
 }
 
 device::BluetoothLocalGattCharacteristic::NotificationStatus
@@ -72,10 +82,12 @@ BluetoothLocalGattCharacteristicFloss::NotifyValueChanged(
     const device::BluetoothDevice* device,
     const std::vector<uint8_t>& new_value,
     bool indicate) {
-  if (indicate && !(properties_ & PROPERTY_INDICATE)) {
+  if (indicate &&
+      !(properties_ & GattCharacteristic::GATT_CHAR_PROP_BIT_INDICATE)) {
     return INDICATE_PROPERTY_NOT_SET;
   }
-  if (!indicate && !(properties_ & PROPERTY_NOTIFY)) {
+  if (!indicate &&
+      !(properties_ & GattCharacteristic::GATT_CHAR_PROP_BIT_NOTIFY)) {
     return NOTIFY_PROPERTY_NOT_SET;
   }
   return service_->GetAdapter()->SendValueChanged(this, new_value)

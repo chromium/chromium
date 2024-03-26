@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
+#include "device/bluetooth/floss/bluetooth_gatt_characteristic_floss.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 
 namespace floss {
@@ -18,8 +19,11 @@ BluetoothLocalGattDescriptorFloss::Create(
     const device::BluetoothUUID& uuid,
     device::BluetoothGattCharacteristic::Permissions permissions,
     BluetoothLocalGattCharacteristicFloss* characteristic) {
-  auto* descriptor =
-      new BluetoothLocalGattDescriptorFloss(uuid, permissions, characteristic);
+  const auto& [_, floss_permissions] =
+      BluetoothGattCharacteristicFloss::ConvertPropsAndPermsToFloss(
+          /*properties=*/0, static_cast<uint16_t>(permissions));
+  auto* descriptor = new BluetoothLocalGattDescriptorFloss(
+      uuid, floss_permissions, characteristic);
   auto weak_ptr = descriptor->weak_ptr_factory_.GetWeakPtr();
   weak_ptr->index_ =
       characteristic->AddDescriptor(base::WrapUnique(descriptor));
@@ -53,7 +57,10 @@ device::BluetoothUUID BluetoothLocalGattDescriptorFloss::GetUUID() const {
 
 device::BluetoothGattCharacteristic::Permissions
 BluetoothLocalGattDescriptorFloss::GetPermissions() const {
-  return permissions_;
+  const auto& [_, perms] =
+      BluetoothGattCharacteristicFloss::ConvertPropsAndPermsFromFloss(
+          /*properties=*/0, permissions_);
+  return perms;
 }
 
 device::BluetoothLocalGattCharacteristic*

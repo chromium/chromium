@@ -74,7 +74,7 @@ class BluetoothLocalGattDescriptorFloss
       device::BluetoothGattCharacteristic::Permissions permissions,
       BluetoothLocalGattCharacteristicFloss* characteristic);
 
-  // Convert this descriptor to GattDescriptor struct.
+  // Convert this descriptor to DBUS |GattDescriptor| struct.
   GattDescriptor ToGattDescriptor();
 
   // Runs after the browser client has processed the read request and has sent a

@@ -86,7 +86,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
       Permissions permissions,
       BluetoothLocalGattServiceFloss* service);
 
-  // Convert this characteristic to GattCharacteristic struct.
+  // Convert this characteristic to DBUS |GattCharacteristic| struct.
   GattCharacteristic ToGattCharacteristic();
 
   // Adds a descriptor to this characteristic. Returns the index of the
