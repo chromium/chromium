@@ -110,9 +110,13 @@ class Adapter : public mojom::Adapter,
   void OnDeviceFetchedForInsecureServiceConnection(
       int request_id,
       device::BluetoothDevice* device);
+  void ProcessDeviceForInsecureServiceConnection(
+      int request_id,
+      device::BluetoothDevice* device,
+      bool disconnected);
   void ProcessPendingInsecureServiceConnectionRequest(
-      const std::string& address,
-      device::BluetoothDevice* device);
+      device::BluetoothDevice* device,
+      bool disconnected);
 
   void OnGattConnect(
       ConnectToDeviceCallback callback,

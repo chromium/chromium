@@ -243,7 +243,8 @@ void Adapter::ConnectToServiceInsecurely(
                       should_unbond_on_error, std::move(callback)));
 
   if (device) {
-    OnDeviceFetchedForInsecureServiceConnection(request_id, device);
+    ProcessDeviceForInsecureServiceConnection(request_id, device,
+                                              /*disconnected=*/false);
     return;
   }
 
@@ -352,8 +353,8 @@ void Adapter::DeviceChanged(device::BluetoothAdapter* adapter,
   // consider a null RSSI indicative of a device no longer being discoverable.
   // In this scenario, we fail any pending connection requests.
   if (!device->GetInquiryRSSI()) {
-    ProcessPendingInsecureServiceConnectionRequest(device->GetAddress(),
-                                                   /*device=*/nullptr);
+    ProcessPendingInsecureServiceConnectionRequest(device,
+                                                   /*disconnected=*/true);
   }
 
   for (auto& observer : observers_)
@@ -362,8 +363,8 @@ void Adapter::DeviceChanged(device::BluetoothAdapter* adapter,
 
 void Adapter::DeviceRemoved(device::BluetoothAdapter* adapter,
                             device::BluetoothDevice* device) {
-  ProcessPendingInsecureServiceConnectionRequest(device->GetAddress(),
-                                                 /*device=*/nullptr);
+  ProcessPendingInsecureServiceConnectionRequest(device,
+                                                 /*disconnected=*/true);
 
   for (auto& observer : observers_)
     observer->DeviceRemoved(Device::ConstructDeviceInfoStruct(device));
@@ -375,10 +376,10 @@ void Adapter::GattServicesDiscovered(device::BluetoothAdapter* adapter,
   // indicate that all services on the remote device, including SDP, are
   // resolved. Once service probing for a device within a cached request (in
   // |pending_connect_to_service_args_|) concludes, attempt socket creation
-  // again via OnDeviceFetchedForInsecureServiceConnection().
+  // again via ProcessDeviceForInsecureServiceConnection().
   if (device->IsGattServicesDiscoveryComplete()) {
-    ProcessPendingInsecureServiceConnectionRequest(device->GetAddress(),
-                                                   device);
+    ProcessPendingInsecureServiceConnectionRequest(device,
+                                                   /*disconnected=*/false);
   }
 }
 
@@ -390,9 +391,19 @@ void Adapter::AllowConnectionsForUuid(
 void Adapter::OnDeviceFetchedForInsecureServiceConnection(
     int request_id,
     device::BluetoothDevice* device) {
-  DCHECK(connect_to_service_request_map_.contains(request_id));
+  CHECK(device);
+  ProcessDeviceForInsecureServiceConnection(request_id, device,
+                                            /*disconnected=*/false);
+}
 
-  if (!device) {
+void Adapter::ProcessDeviceForInsecureServiceConnection(
+    int request_id,
+    device::BluetoothDevice* device,
+    bool disconnected) {
+  CHECK(connect_to_service_request_map_.contains(request_id));
+  CHECK(device);
+
+  if (disconnected) {
     ExecuteConnectToServiceCallback(request_id, /*result=*/nullptr);
     return;
   }
@@ -418,14 +429,16 @@ void Adapter::OnDeviceFetchedForInsecureServiceConnection(
 }
 
 void Adapter::ProcessPendingInsecureServiceConnectionRequest(
-    const std::string& address,
-    device::BluetoothDevice* device) {
+    device::BluetoothDevice* device,
+    bool disconnected) {
+  CHECK(device);
+  const std::string& address = device->GetAddress();
   auto it = connect_to_service_requests_pending_discovery_.begin();
   while (it != connect_to_service_requests_pending_discovery_.end()) {
     auto request_it = connect_to_service_request_map_.find(*it);
     DCHECK(request_it != connect_to_service_request_map_.end());
     if (address == request_it->second->address) {
-      OnDeviceFetchedForInsecureServiceConnection(*it, device);
+      ProcessDeviceForInsecureServiceConnection(*it, device, disconnected);
       it = connect_to_service_requests_pending_discovery_.erase(it);
     } else {
       ++it;
