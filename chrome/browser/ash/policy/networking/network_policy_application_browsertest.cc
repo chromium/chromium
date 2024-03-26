@@ -1670,9 +1670,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
 // Tests that application of policy settings does not wipe an already-configured
 // client certificate. This is a regression test for b/203015922.
-// TODO(crbug.com/1482522): Re-enable this test
-IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
-                       DISABLED_DoesNotWipeCertSettings) {
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, DoesNotWipeCertSettings) {
   const char* kCertKeyFilename = "client_3.pk8";
   const char* kCertFilename = "client_3.pem";
   const char* kCertIssuerCommonName = "E CA";
