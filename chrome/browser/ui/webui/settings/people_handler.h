@@ -183,7 +183,6 @@ class PeopleHandler : public SettingsPageUIHandler,
   void HandleSignout(const base::Value::List& args);
   void HandleTurnOffSync(bool delete_profile,
                          bool is_clear_primary_account_allowed);
-  void HandleSignoutNonSyncing(bool is_clear_primary_account_allowed);
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void HandlePauseSync(const base::Value::List& args);

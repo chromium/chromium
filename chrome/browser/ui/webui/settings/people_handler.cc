@@ -642,9 +642,9 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
   if (args[0].is_bool()) {
     delete_profile = args[0].GetBool();
   }
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   bool is_syncing =
-      IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
-          signin::ConsentLevel::kSync);
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   DCHECK(is_syncing || !delete_profile)
       << "Deleting the profile should only be offered if the user is "
          "syncing.";
@@ -655,9 +655,32 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
 
   if (is_syncing) {
     HandleTurnOffSync(delete_profile, is_clear_primary_account_allowed);
-  } else {
-    HandleSignoutNonSyncing(is_clear_primary_account_allowed);
+    return;
   }
+
+  if (!is_clear_primary_account_allowed) {
+    // 'Signout' should not be offered in the UI if clear primary account is
+    // not allowed.
+    NOTREACHED()
+        << "Signout should not be offered if clear primary account is not "
+           "allowed.";
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
+#else
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+  if (!browser) {
+    return;
+  }
+  browser->signin_view_controller()->SignoutOrReauthWithPrompt(
+      signin_metrics::AccessPoint::
+          ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT,
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
+      signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void PeopleHandler::HandleTurnOffSync(bool delete_profile,
@@ -728,44 +751,6 @@ void PeopleHandler::HandleTurnOffSync(bool delete_profile,
     webui::DeleteProfileAtPath(profile_path,
                                ProfileMetrics::DELETE_PROFILE_SETTINGS);
   }
-}
-
-void PeopleHandler::HandleSignoutNonSyncing(
-    bool is_clear_primary_account_allowed) {
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-
-  if (!is_clear_primary_account_allowed) {
-    // 'Signout' should not be offered in the UI if clear primary account is
-    // not allowed.
-    NOTREACHED()
-        << "Signout should not be offered if clear primary account is not "
-           "allowed.";
-    return;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
-#else
-  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
-  if (browser) {
-    // Clearing the primary account isn't sufficient to signout SAML accounts,
-    // see http://crbug.com/1114646.
-    browser->signin_view_controller()->ShowGaiaLogoutTab(
-        signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
-  }
-
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull)) {
-    // In Uno, Gaia logout tab invalidating the account will lead to a sign in
-    // paused state. Unset the primary account to ensure it is removed from
-    // chrome. The `AccountReconcilor` will revoke refresh tokens for accounts
-    // not in the Gaia cookie on next reconciliation.
-    identity_manager->GetPrimaryAccountMutator()
-        ->RemovePrimaryAccountButKeepTokens(
-            signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
