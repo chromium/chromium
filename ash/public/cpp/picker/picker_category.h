@@ -23,6 +23,7 @@ enum class ASH_PUBLIC_EXPORT PickerCategory {
   kEditor,
   kDatesTimes,
   kUnitsMaths,
+  kClipboard,
 };
 
 }  // namespace ash

@@ -24,7 +24,8 @@ TEST(PickerModel, AvailableCategoriesWithNoFocus) {
                   PickerCategory::kOpenTabs, PickerCategory::kBrowsingHistory,
                   PickerCategory::kBookmarks, PickerCategory::kDriveFiles,
                   PickerCategory::kLocalFiles, PickerCategory::kEditor,
-                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
+                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths,
+                  PickerCategory::kClipboard));
 }
 
 TEST(PickerModel, AvailableCategoriesWithNoSelectedText) {
@@ -39,7 +40,8 @@ TEST(PickerModel, AvailableCategoriesWithNoSelectedText) {
                   PickerCategory::kOpenTabs, PickerCategory::kBrowsingHistory,
                   PickerCategory::kBookmarks, PickerCategory::kDriveFiles,
                   PickerCategory::kLocalFiles, PickerCategory::kEditor,
-                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
+                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths,
+                  PickerCategory::kClipboard));
 }
 
 TEST(PickerModel, AvailableCategoriesWithSelectedText) {

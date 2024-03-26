@@ -42,6 +42,8 @@ std::u16string GetLabelForPickerCategory(PickerCategory category) {
       return l10n_util::GetStringUTF16(IDS_PICKER_DATES_TIMES_CATEGORY_LABEL);
     case PickerCategory::kUnitsMaths:
       return l10n_util::GetStringUTF16(IDS_PICKER_UNITS_MATHS_CATEGORY_LABEL);
+    case PickerCategory::kClipboard:
+      return l10n_util::GetStringUTF16(IDS_PICKER_CLIPBOARD_CATEGORY_LABEL);
   }
 }
 
@@ -83,6 +85,9 @@ std::u16string GetSearchFieldPlaceholderTextForPickerCategory(
     case PickerCategory::kUnitsMaths:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_UNITS_MATHS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
+    case PickerCategory::kClipboard:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_CLIPBOARD_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
   }
 }
 

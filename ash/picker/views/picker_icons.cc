@@ -43,6 +43,9 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
     case PickerCategory::kUnitsMaths:
       // TODO: b/322926823 - Use correct icons.
       return kKsCalculatorIcon;
+    case PickerCategory::kClipboard:
+      // TODO: b/322926823 - Use correct icons.
+      return kClipboardIcon;
   }
 }
 

@@ -27,6 +27,9 @@ ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category) {
     case PickerCategory::kDatesTimes:
     case PickerCategory::kUnitsMaths:
       return PickerCategoryType::kCalculations;
+    case PickerCategory::kClipboard:
+      // TODO: b/328682610: This is incorrect.
+      return PickerCategoryType::kLinks;
   }
 }
 

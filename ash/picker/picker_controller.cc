@@ -268,6 +268,7 @@ void PickerController::GetResultsForCategory(PickerCategory category,
     case PickerCategory::kEditor:
     case PickerCategory::kDatesTimes:
     case PickerCategory::kUnitsMaths:
+    case PickerCategory::kClipboard:
       break;
   }
   callback.Run({
