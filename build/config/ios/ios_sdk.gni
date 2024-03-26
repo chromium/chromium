@@ -4,7 +4,6 @@
 
 import("//build/config/ios/config.gni")
 import("//build/config/ios/ios_sdk_overrides.gni")
-import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
@@ -95,7 +94,7 @@ if (ios_sdk_path == "") {
       ios_sdk_developer_dir,
     ]
   }
-  if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
+  if (use_system_xcode && (use_remoteexec || use_siso)) {
     ios_sdk_info_args += [
       "--create_symlink_at",
       "sdk/xcode_links",

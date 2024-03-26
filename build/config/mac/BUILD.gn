@@ -6,7 +6,6 @@ import("//build/config/apple/symbols.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/mac/mac_sdk.gni")
 import("//build/config/sysroot.gni")
-import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/siso.gni")
 
@@ -88,7 +87,7 @@ config("mac_dynamic_flags") {
   }
 }
 
-# When building with Goma, all inputs must be relative to the build directory.
+# When building with RBE, all inputs must be relative to the build directory.
 # If using the system Xcode, which typically resides outside the build root, a
 # symlink to the SDK is created in the build directory, and the path to that
 # link is stored in $mac_sdk_path. If an action references a file in the SDK as
@@ -100,8 +99,8 @@ config("mac_dynamic_flags") {
 #
 # The symbolic link for $mac_sdk_path is set up by
 # //build/config/apple/sdk_info.py in //build/config/mac/mac_sdk.gni.
-if (use_system_xcode && (use_goma || use_remoteexec || use_siso) &&
-    target_os == "mac" && current_toolchain == default_toolchain) {
+if (use_system_xcode && (use_remoteexec || use_siso) && target_os == "mac" &&
+    current_toolchain == default_toolchain) {
   action("sdk_inputs") {
     script = "//build/noop.py"
     outputs = [

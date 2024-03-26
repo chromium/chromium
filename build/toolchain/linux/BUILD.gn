@@ -272,7 +272,6 @@ gcc_toolchain("mipsel") {
     # reclient does not support gcc.
     use_remoteexec = false
     is_clang = false
-    use_goma = false
   }
 }
 
@@ -294,7 +293,6 @@ gcc_toolchain("mips64el") {
     # reclient does not support gcc.
     use_remoteexec = false
     is_clang = false
-    use_goma = false
   }
 }
 
