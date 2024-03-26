@@ -230,14 +230,17 @@ SourceBuilder& SourceBuilder::SetDebugCookieSet(bool debug_cookie_set) {
 }
 
 StorableSource SourceBuilder::Build() const {
-  return StorableSource(reporting_origin_, registration_, source_origin_,
+  StorableSource source(reporting_origin_, registration_, source_origin_,
                         source_type_, is_within_fenced_frame_);
+  source.set_debug_cookie_set(debug_cookie_set_);
+  return source;
 }
 
 StoredSource SourceBuilder::BuildStored() const {
   base::Time expiry_time = source_time_ + registration_.expiry;
   StoredSource source = *StoredSource::Create(
-      CommonSourceInfo(source_origin_, reporting_origin_, source_type_),
+      CommonSourceInfo(source_origin_, reporting_origin_, source_type_,
+                       debug_cookie_set_),
       registration_.source_event_id, registration_.destination_set,
       source_time_, expiry_time, registration_.trigger_specs,
       source_time_ + registration_.aggregatable_report_window,
@@ -245,8 +248,7 @@ StoredSource SourceBuilder::BuildStored() const {
       registration_.filter_data, registration_.debug_key,
       registration_.aggregation_keys, attribution_logic_, active_state_,
       source_id_, aggregatable_budget_consumed_, randomized_response_rate_,
-      registration_.trigger_data_matching, registration_.event_level_epsilon,
-      debug_cookie_set_);
+      registration_.trigger_data_matching, registration_.event_level_epsilon);
   source.dedup_keys() = dedup_keys_;
   source.aggregatable_dedup_keys() = aggregatable_dedup_keys_;
   return source;
@@ -529,7 +531,7 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
         source.attribution_logic(), source.active_state(), source.dedup_keys(),
         source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
         source.randomized_response_rate(), source.trigger_data_matching(),
-        source.event_level_epsilon(), source.debug_cookie_set());
+        source.event_level_epsilon());
   };
   return tie(a) == tie(b);
 }
@@ -639,7 +641,8 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
   return out << "{source_origin=" << source.source_origin()
              << "reporting_origin=" << source.reporting_origin()
-             << ",source_type=" << source.source_type() << "}";
+             << ",source_type=" << source.source_type()
+             << ",debug_cookie_set=" << source.debug_cookie_set() << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,

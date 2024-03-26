@@ -634,7 +634,6 @@ void AttributionManagerImpl::RecordPendingAggregatableReportsTimings() {
 
 void AttributionManagerImpl::OnSourceStored(
     std::optional<uint64_t> cleared_debug_key,
-    bool is_debug_cookie_set,
     StoreSourceResult result) {
   CHECK(IsReady());
 
@@ -654,7 +653,7 @@ void AttributionManagerImpl::OnSourceStored(
 
   NotifySourcesChanged();
 
-  MaybeSendVerboseDebugReport(is_debug_cookie_set, result);
+  MaybeSendVerboseDebugReport(result);
 }
 
 void AttributionManagerImpl::HandleTrigger(
@@ -781,12 +780,13 @@ void AttributionManagerImpl::ProcessNextEvent(bool registration_allowed,
   absl::visit(
       base::Overloaded{
           [&](StorableSource& source) {
+            source.set_debug_cookie_set(is_debug_cookie_set &&
+                                        registration_allowed);
             if (registration_allowed) {
-              StoreSource(std::move(source), is_debug_cookie_set);
+              StoreSource(std::move(source));
             } else {
               OnSourceStored(
                   /*cleared_debug_key=*/std::nullopt,
-                  /*is_debug_cookie_set=*/false,
                   StoreSourceResult(
                       std::move(source),
                       StoreSourceResult::ProhibitedByBrowserPolicy()));
@@ -813,19 +813,17 @@ void AttributionManagerImpl::ProcessNextEvent(bool registration_allowed,
   pending_events_.pop_front();
 }
 
-void AttributionManagerImpl::StoreSource(StorableSource source,
-                                         bool is_debug_cookie_set) {
+void AttributionManagerImpl::StoreSource(StorableSource source) {
   std::optional<uint64_t> cleared_debug_key;
-  if (!is_debug_cookie_set) {
+  if (!source.common_info().debug_cookie_set()) {
     cleared_debug_key =
         std::exchange(source.registration().debug_key, std::nullopt);
   }
 
   attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
-      .WithArgs(std::move(source), is_debug_cookie_set)
+      .WithArgs(std::move(source))
       .Then(base::BindOnce(&AttributionManagerImpl::OnSourceStored,
-                           weak_factory_.GetWeakPtr(), cleared_debug_key,
-                           is_debug_cookie_set));
+                           weak_factory_.GetWeakPtr(), cleared_debug_key));
 }
 
 void AttributionManagerImpl::AddPendingAggregatableReportTiming(
@@ -1338,7 +1336,6 @@ void AttributionManagerImpl::NotifyReportsChanged() {
 }
 
 void AttributionManagerImpl::MaybeSendVerboseDebugReport(
-    bool is_debug_cookie_set,
     const StoreSourceResult& result) {
   if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
     return;
@@ -1355,8 +1352,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
   };
 
   if (std::optional<AttributionDebugReport> debug_report =
-          AttributionDebugReport::Create(is_operation_allowed,
-                                         is_debug_cookie_set, result)) {
+          AttributionDebugReport::Create(is_operation_allowed, result)) {
     report_sender_->SendReport(
         std::move(*debug_report),
         base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,

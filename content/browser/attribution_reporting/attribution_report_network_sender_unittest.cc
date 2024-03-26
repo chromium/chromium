@@ -799,9 +799,11 @@ TEST_F(AttributionReportNetworkSenderTest,
 
   std::optional<AttributionDebugReport> report = AttributionDebugReport::Create(
       /*is_operation_allowed=*/[]() { return true; },
-      /*is_debug_cookie_set=*/true,
       StoreSourceResult(
-          SourceBuilder().SetDebugReporting(true).Build(),
+          SourceBuilder()
+              .SetDebugReporting(true)
+              .SetDebugCookieSet(true)
+              .Build(),
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
   ASSERT_TRUE(report);
 
@@ -830,9 +832,11 @@ TEST_F(AttributionReportNetworkSenderTest,
 
   std::optional<AttributionDebugReport> report = AttributionDebugReport::Create(
       /*is_operation_allowed=*/[]() { return true; },
-      /*is_debug_cookie_set=*/true,
       StoreSourceResult(
-          SourceBuilder().SetDebugReporting(true).Build(),
+          SourceBuilder()
+              .SetDebugReporting(true)
+              .SetDebugCookieSet(true)
+              .Build(),
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
   ASSERT_TRUE(report);
 

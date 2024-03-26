@@ -391,10 +391,10 @@ GURL AttributionDebugReport::ReportUrl() const {
 // static
 std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     base::FunctionRef<bool()> is_operation_allowed,
-    bool is_debug_cookie_set,
     const StoreSourceResult& result) {
   const StorableSource& source = result.source();
-  if (!source.registration().debug_reporting || !is_debug_cookie_set ||
+  if (!source.registration().debug_reporting ||
+      !source.common_info().debug_cookie_set() ||
       source.is_within_fenced_frame() || !is_operation_allowed()) {
     return std::nullopt;
   }
@@ -435,7 +435,7 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     return std::nullopt;
   }
 
-  if (result.source() && !result.source()->debug_cookie_set()) {
+  if (result.source() && !result.source()->common_info().debug_cookie_set()) {
     return std::nullopt;
   }
 

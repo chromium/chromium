@@ -191,7 +191,7 @@ class CONTENT_EXPORT AttributionManagerImpl
   void MaybeEnqueueEvent(SourceOrTriggerRFH);
   void ProcessEvents();
   void ProcessNextEvent(bool registration_allowed, bool is_debug_cookie_set);
-  void StoreSource(StorableSource source, bool is_debug_cookie_set);
+  void StoreSource(StorableSource source);
   void StoreTrigger(AttributionTrigger trigger, bool is_debug_cookie_set);
 
   void GetReportsToSend();
@@ -222,7 +222,6 @@ class CONTENT_EXPORT AttributionManagerImpl
   void MarkReportCompleted(AttributionReport::Id report_id);
 
   void OnSourceStored(std::optional<uint64_t> cleared_debug_key,
-                      bool is_debug_cookie_set,
                       StoreSourceResult result);
   void OnReportStored(std::optional<uint64_t> cleared_debug_key,
                       bool is_debug_cookie_set,
@@ -242,8 +241,7 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   bool IsReportAllowed(const AttributionReport&) const;
 
-  void MaybeSendVerboseDebugReport(bool is_debug_cookie_set,
-                                   const StoreSourceResult& result);
+  void MaybeSendVerboseDebugReport(const StoreSourceResult& result);
 
   void MaybeSendVerboseDebugReport(bool is_debug_cookie_set,
                                    const CreateReportResult& result);

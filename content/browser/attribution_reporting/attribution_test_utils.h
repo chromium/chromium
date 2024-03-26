@@ -403,7 +403,8 @@ MATCHER_P(SourceDebugKeyIs, matcher, "") {
 }
 
 MATCHER_P(SourceDebugCookieSetIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.debug_cookie_set(), result_listener);
+  return ExplainMatchResult(matcher, arg.common_info().debug_cookie_set(),
+                            result_listener);
 }
 
 MATCHER_P(SourceFilterDataIs, matcher, "") {

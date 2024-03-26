@@ -2728,9 +2728,10 @@ TEST_F(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {
 
     OpenDatabase();
 
-    storage()->StoreSource(
-        SourceBuilder().SetDebugKey(test_case.debug_key).Build(),
-        /*debug_cookie_set=*/true);
+    storage()->StoreSource(SourceBuilder()
+                               .SetDebugKey(test_case.debug_key)
+                               .SetDebugCookieSet(true)
+                               .Build());
     ASSERT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
     CloseDatabase();

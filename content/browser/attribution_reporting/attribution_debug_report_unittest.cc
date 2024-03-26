@@ -70,7 +70,6 @@ bool OperationProhibited() {
 TEST(AttributionDebugReportTest, NoDebugReporting_NoReportReturned) {
   EXPECT_FALSE(AttributionDebugReport::Create(
       &OperationAllowed,
-      /*is_debug_cookie_set=*/false,
       StoreSourceResult(
           SourceBuilder().Build(),
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3))));
@@ -87,7 +86,6 @@ TEST(AttributionDebugReportTest, NoDebugReporting_NoReportReturned) {
 TEST(AttributionDebugReportTest, OperationProhibited_NoReportReturned) {
   EXPECT_FALSE(AttributionDebugReport::Create(
       &OperationProhibited,
-      /*is_debug_cookie_set=*/false,
       StoreSourceResult(
           SourceBuilder().SetDebugReporting(true).Build(),
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3))));
@@ -105,9 +103,11 @@ TEST(AttributionDebugReportTest,
      SourceDestinationLimitError_ValidReportReturned) {
   std::optional<AttributionDebugReport> report = AttributionDebugReport::Create(
       &OperationAllowed,
-      /*is_debug_cookie_set=*/true,
       StoreSourceResult(
-          SourceBuilder().SetDebugReporting(true).Build(),
+          SourceBuilder()
+              .SetDebugReporting(true)
+              .SetDebugCookieSet(true)
+              .Build(),
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
   ASSERT_TRUE(report);
 
@@ -132,7 +132,6 @@ TEST(AttributionDebugReportTest, WithinFencedFrame_NoDebugReport) {
 
   EXPECT_FALSE(AttributionDebugReport::Create(
       &OperationAllowed,
-      /*is_debug_cookie_set=*/false,
       StoreSourceResult(
           SourceBuilder()
               .SetDebugReporting(true)
@@ -273,6 +272,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
       StoreSourceResult result(SourceBuilder()
                                    .SetDebugReporting(true)
                                    .SetDebugKey(test_case.debug_key)
+                                   .SetDebugCookieSet(is_debug_cookie_set)
                                    .Build(),
                                test_case.result);
 
@@ -280,8 +280,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
                              << ", result: " << result.status());
 
       std::optional<AttributionDebugReport> report =
-          AttributionDebugReport::Create(&OperationAllowed, is_debug_cookie_set,
-                                         std::move(result));
+          AttributionDebugReport::Create(&OperationAllowed, std::move(result));
       if (is_debug_cookie_set) {
         EXPECT_EQ(report.has_value(),
                   test_case.expected_report_body != nullptr);
@@ -300,10 +299,10 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
     std::optional<AttributionDebugReport> report =
         AttributionDebugReport::Create(
             &OperationAllowed,
-            /*is_debug_cookie_set=*/true,
             StoreSourceResult(
                 SourceBuilder()
                     .SetDebugReporting(true)
+                    .SetDebugCookieSet(true)
                     .SetDestinationSites({
                         net::SchemefulSite::Deserialize("https://c.test"),
                         net::SchemefulSite::Deserialize("https://d.test"),

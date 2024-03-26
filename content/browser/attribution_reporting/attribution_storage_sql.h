@@ -157,8 +157,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   };
 
   // AttributionStorage:
-  StoreSourceResult StoreSource(StorableSource source,
-                                bool debug_cookie_set) override;
+  StoreSourceResult StoreSource(StorableSource source) override;
   CreateReportResult MaybeCreateAndStoreReport(AttributionTrigger) override;
   std::vector<AttributionReport> GetAttributionReports(
       base::Time max_report_time,

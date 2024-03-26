@@ -96,7 +96,7 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
           }),
       source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
       source.trigger_data_matching(), source.event_level_epsilon(),
-      source.debug_cookie_set(), attributability);
+      source.common_info().debug_cookie_set(), attributability);
 }
 
 void ForwardSourcesToWebUI(

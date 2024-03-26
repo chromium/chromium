@@ -1383,8 +1383,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   std::optional<AttributionDebugReport> report = AttributionDebugReport::Create(
       /*is_operation_allowed=*/[]() { return true; },
-      /*is_debug_cookie_set=*/true,
-      StoreSourceResult(SourceBuilder().SetDebugReporting(true).Build(),
+      StoreSourceResult(SourceBuilder()
+                            .SetDebugReporting(true)
+                            .SetDebugCookieSet(true)
+                            .Build(),
                         StoreSourceResult::InternalError()));
   ASSERT_TRUE(report);
 

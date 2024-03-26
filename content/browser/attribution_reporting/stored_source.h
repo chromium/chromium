@@ -66,8 +66,7 @@ class CONTENT_EXPORT StoredSource {
       int64_t aggregatable_budget_consumed,
       double randomized_response_rate,
       attribution_reporting::mojom::TriggerDataMatching,
-      attribution_reporting::EventLevelEpsilon,
-      bool debug_cookie_set);
+      attribution_reporting::EventLevelEpsilon);
 
   ~StoredSource();
 
@@ -142,8 +141,6 @@ class CONTENT_EXPORT StoredSource {
     return trigger_data_matching_;
   }
 
-  bool debug_cookie_set() const { return debug_cookie_set_; }
-
   attribution_reporting::EventLevelEpsilon event_level_epsilon() const {
     return event_level_epsilon_;
   }
@@ -167,8 +164,7 @@ class CONTENT_EXPORT StoredSource {
                int64_t aggregatable_budget_consumed,
                double randomized_response_rate,
                attribution_reporting::mojom::TriggerDataMatching,
-               attribution_reporting::EventLevelEpsilon,
-               bool debug_cookie_set);
+               attribution_reporting::EventLevelEpsilon);
 
   CommonSourceInfo common_info_;
 
@@ -203,8 +199,6 @@ class CONTENT_EXPORT StoredSource {
   attribution_reporting::mojom::TriggerDataMatching trigger_data_matching_;
 
   attribution_reporting::EventLevelEpsilon event_level_epsilon_;
-
-  bool debug_cookie_set_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

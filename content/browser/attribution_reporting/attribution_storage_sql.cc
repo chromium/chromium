@@ -419,13 +419,13 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
 
   std::optional<StoredSource> stored_source = StoredSource::Create(
       CommonSourceInfo(std::move(*source_origin), std::move(*reporting_origin),
-                       *source_type),
+                       *source_type, debug_cookie_set),
       source_event_id, std::move(*destination_set), source_time, expiry_time,
       std::move(*trigger_specs), aggregatable_report_window_time,
       max_event_level_reports, priority, std::move(*filter_data), debug_key,
       std::move(*aggregation_keys), *attribution_logic, *active_state,
       source_id, aggregatable_budget_consumed, randomized_response_rate,
-      trigger_data_matching, event_level_epsilon, debug_cookie_set);
+      trigger_data_matching, event_level_epsilon);
   if (!stored_source.has_value()) {
     // TODO(crbug.com/1498497): Consider enumerating errors from StoredSource.
     return base::unexpected(ReportCorruptionStatusSetAndIds(
@@ -504,11 +504,11 @@ bool AttributionStorageSql::DeactivateSources(
   return transaction.Commit();
 }
 
-StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source,
-                                                     bool debug_cookie_set) {
+StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CHECK(!source.registration().debug_key.has_value() || debug_cookie_set);
+  CHECK(!source.registration().debug_key.has_value() ||
+        source.common_info().debug_cookie_set());
 
   const auto make_result = [&](StoreSourceResult::Result&& result) {
     return StoreSourceResult(std::move(source), std::move(result));
@@ -671,10 +671,11 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source,
 
   statement.BindBlob(14, SerializeAggregationKeys(reg.aggregation_keys));
   statement.BindBlob(15, SerializeFilterData(reg.filter_data));
-  statement.BindBlob(16, SerializeReadOnlySourceData(
-                             reg.trigger_specs, reg.max_event_level_reports,
-                             randomized_response_data.rate(),
-                             reg.trigger_data_matching, debug_cookie_set));
+  statement.BindBlob(
+      16, SerializeReadOnlySourceData(
+              reg.trigger_specs, reg.max_event_level_reports,
+              randomized_response_data.rate(), reg.trigger_data_matching,
+              common_info.debug_cookie_set()));
 
   if (!statement.Run()) {
     return make_result(StoreSourceResult::InternalError());
@@ -705,7 +706,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source,
       reg.priority, reg.filter_data, reg.debug_key, reg.aggregation_keys,
       attribution_logic, *active_state, source_id,
       /*aggregatable_budget_consumed=*/0, randomized_response_data.rate(),
-      reg.trigger_data_matching, reg.event_level_epsilon, debug_cookie_set);
+      reg.trigger_data_matching, reg.event_level_epsilon);
 
   if (!stored_source.has_value() ||
       !rate_limit_table_.AddRateLimitForSource(&db_, *stored_source)) {

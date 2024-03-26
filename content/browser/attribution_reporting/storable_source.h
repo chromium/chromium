@@ -48,6 +48,10 @@ class CONTENT_EXPORT StorableSource {
 
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
+  void set_debug_cookie_set(bool value) {
+    common_info_.set_debug_cookie_set(value);
+  }
+
   friend bool operator==(const StorableSource&,
                          const StorableSource&) = default;
 

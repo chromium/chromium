@@ -2967,14 +2967,14 @@ TEST_F(AttributionStorageTest, GetAttributionDataKeysSet) {
 }
 
 TEST_F(AttributionStorageTest, SourceDebugKey_RoundTrips) {
-  storage()->StoreSource(SourceBuilder().SetDebugKey(33).Build(),
-                         /*debug_cookie_set=*/true);
+  storage()->StoreSource(
+      SourceBuilder().SetDebugKey(33).SetDebugCookieSet(true).Build());
   EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(SourceDebugKeyIs(33)));
 }
 
 TEST_F(AttributionStorageTest, TriggerDebugKey_RoundTrips) {
-  storage()->StoreSource(SourceBuilder().SetDebugKey(22).Build(),
-                         /*debug_cookie_set=*/true);
+  storage()->StoreSource(
+      SourceBuilder().SetDebugKey(22).SetDebugCookieSet(true).Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder().SetDebugKey(33).Build()));
@@ -3019,24 +3019,24 @@ TEST_F(AttributionStorageTest, MaxReportingOriginsPerSource) {
       SourceBuilder()
           .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r1.test"))
           .SetDebugKey(1)
-          .Build(),
-      /*debug_cookie_set=*/true);
+          .SetDebugCookieSet(true)
+          .Build());
   ASSERT_EQ(result.status(), StorableSource::Result::kSuccess);
 
   result = storage()->StoreSource(
       SourceBuilder()
           .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r2.test"))
           .SetDebugKey(2)
-          .Build(),
-      /*debug_cookie_set=*/true);
+          .SetDebugCookieSet(true)
+          .Build());
   ASSERT_EQ(result.status(), StorableSource::Result::kSuccess);
 
   result = storage()->StoreSource(
       SourceBuilder()
           .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r3.test"))
           .SetDebugKey(3)
-          .Build(),
-      /*debug_cookie_set=*/true);
+          .SetDebugCookieSet(true)
+          .Build());
   ASSERT_EQ(result.status(),
             StorableSource::Result::kExcessiveReportingOrigins);
 
