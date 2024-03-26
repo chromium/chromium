@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] permissions policy "payment" can be enabled in cross-origin iframe using allow="payment" attribute
+  assert_equals: undefined. expected "OK" but got "NotSupportedError#The user agent does not support public key credentials."
+Harness: the test ran to completion.
+
