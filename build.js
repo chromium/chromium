@@ -48,13 +48,13 @@ if (!REPLAY_LOCAL_DRIVER_DIR) {
   let driverArchive = `${currentPlatform()}-recordreplay${archSuffix}.tgz`;
   let downloadArchive = driverArchive;
   let driverRevisionOverride = DRIVER_REVISION;
+  driverRevisionOverride = driverRevisionOverride.substring(0, 12);
   if (driverRevisionIsSet) {
-    if (driverRevisionOverride.length < 12) {
+    if (driverRevisionOverride.length === 12) {
       throw new Error(
-        `Invalid DRIVER_REVISION was "${driverRevisionOverride}" but must have a length of at least 12`
+        `Invalid DRIVER_REVISION was "${driverRevisionOverride}" but must have a length of exactly 12`
       );
     }
-    driverRevisionOverride = driverRevisionOverride.substring(0, 12);
     downloadArchive = `${currentPlatform()}-recordreplay-${driverRevisionOverride}${archSuffix}.tgz`;
   }
   spawnChecked(
