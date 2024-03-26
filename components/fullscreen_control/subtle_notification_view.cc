@@ -258,5 +258,9 @@ void SubtleNotificationView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetNameChecked(accessible_name);
 }
 
+std::u16string SubtleNotificationView::GetInstructionTextForTest() const {
+  return instruction_view_->GetText();
+}
+
 BEGIN_METADATA(SubtleNotificationView)
 END_METADATA
