@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
-import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 
-import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {assert} from '//resources/js/assert.js';
 
 import {DialogChoice} from './office_fallback.mojom-webui.js';
 import {OfficeFallbackBrowserProxy} from './office_fallback_browser_proxy.js';

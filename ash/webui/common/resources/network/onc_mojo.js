@@ -8,11 +8,11 @@
  * strings and for debugging. They are not intended to be drectly user facing.
  */
 
-import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {ActivationStateType, ApnProperties, AuthenticationType, ConfigProperties, DeviceStateProperties as MojomDeviceStateProperties, HiddenSsidMode, InhibitReason, IPConfigProperties, ManagedApnList, ManagedBoolean, ManagedInt32, ManagedProperties, ManagedString, ManagedStringList, ManagedSubjectAltNameMatchList, MatchType, NetworkStateProperties as MojomNetworkStateProperties, ProxyMode, SecurityType, SIMInfo, SIMLockStatus, SubjectAltName, SubjectAltName_Type, TetherStateProperties, TrafficCounterProperties, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {IPAddress} from 'chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-webui.js';
+import {assert, assertNotReached} from '//resources/ash/common/assert.js';
+import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {ActivationStateType, ApnProperties, AuthenticationType, ConfigProperties, DeviceStateProperties as MojomDeviceStateProperties, HiddenSsidMode, InhibitReason, IPConfigProperties, ManagedApnList, ManagedBoolean, ManagedInt32, ManagedProperties, ManagedString, ManagedStringList, ManagedSubjectAltNameMatchList, MatchType, NetworkStateProperties as MojomNetworkStateProperties, ProxyMode, SecurityType, SIMInfo, SIMLockStatus, SubjectAltName, SubjectAltName_Type, TetherStateProperties, TrafficCounterProperties, VpnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {IPAddress} from '//resources/mojo/services/network/public/mojom/ip_address.mojom-webui.js';
 
 
 

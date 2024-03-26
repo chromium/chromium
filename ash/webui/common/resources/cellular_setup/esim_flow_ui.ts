@@ -13,16 +13,16 @@ import './profile_discovery_list_page.js';
 import './confirmation_code_page_legacy.js';
 import './confirmation_code_page.js';
 
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import {hasActiveCellularNetwork} from '//resources/ash/common/network/cellular_utils.js';
+import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
+import {NetworkListenerBehavior} from '//resources/ash/common/network/network_listener_behavior.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {ESimManagerInterface, ESimOperationResult, ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileInstallMethod, ProfileInstallResult, ProfileState} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {FilterType, NetworkStateProperties, NO_LIMIT} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {hasActiveCellularNetwork} from 'chrome://resources/ash/common/network/cellular_utils.js';
-import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {ESimManagerInterface, ESimOperationResult, ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileInstallMethod, ProfileInstallResult, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
-import {FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {ButtonBarState, ButtonState} from './cellular_types.js';

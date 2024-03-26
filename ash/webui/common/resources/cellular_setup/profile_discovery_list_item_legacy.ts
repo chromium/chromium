@@ -15,9 +15,9 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './cellular_setup_icons.html.js';
 
+import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
+import {ESimProfileProperties, ESimProfileRemote} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getTemplate} from './profile_discovery_list_item_legacy.html.js';
 

@@ -22,9 +22,10 @@ build_webui("build") {
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
-    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ash/webui/common/resources/cr_elements:build_ts",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+  webui_context_type = "relative"
 }

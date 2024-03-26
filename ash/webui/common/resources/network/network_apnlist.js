@@ -17,8 +17,8 @@ import './network_shared.css.js';
 import {assert} from '//resources/ash/common/assert.js';
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {OncMojo} from '//resources/ash/common/network/onc_mojo.js';
+import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnSource, ApnState, ApnType, ManagedApnProperties, ManagedProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnSource, ApnState, ApnType, ManagedApnProperties, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {getTemplate} from './network_apnlist.html.js';
 

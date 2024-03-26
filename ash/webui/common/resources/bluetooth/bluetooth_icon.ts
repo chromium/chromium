@@ -8,10 +8,10 @@
  */
 
 import './bluetooth_icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {BluetoothDeviceProperties, DeviceType} from '//resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BluetoothDeviceProperties, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {getTemplate} from './bluetooth_icon.html.js';
 import {hasDefaultImage} from './bluetooth_utils.js';

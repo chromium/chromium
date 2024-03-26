@@ -7,7 +7,7 @@
  * events.
  */
 
-import {CrosNetworkConfigObserver, CrosNetworkConfigObserverReceiver, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfigObserver, CrosNetworkConfigObserverReceiver, NetworkStateProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 

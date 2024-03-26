@@ -7,21 +7,21 @@
  * APNs
  */
 
-import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
+import '//resources/ash/common/cr_elements/localized_link/localized_link.js';
 import './network_shared.css.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import 'chrome://resources/ash/common/network/apn_list_item.js';
-import 'chrome://resources/ash/common/network/apn_detail_dialog.js';
-import 'chrome://resources/ash/common/network/apn_selection_dialog.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import '//resources/ash/common/network/apn_list_item.js';
+import '//resources/ash/common/network/apn_detail_dialog.js';
+import '//resources/ash/common/network/apn_selection_dialog.js';
 import '//resources/ash/common/cr_elements/icons.html.js';
 
 import {assert} from '//resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {ApnDetailDialog} from '//resources/ash/common/network/apn_detail_dialog.js';
+import {ApnDetailDialogMode, ApnEventData, isAttachApn, isDefaultApn} from '//resources/ash/common/network/cellular_utils.js';
+import {ApnProperties, ApnSource, ApnState, ApnType, ManagedCellularProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ApnDetailDialogMode, ApnEventData, isAttachApn, isDefaultApn} from 'chrome://resources/ash/common/network/cellular_utils.js';
-import {ApnProperties, ApnSource, ApnState, ApnType, ManagedCellularProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {getTemplate} from './apn_list.html.js';
 

@@ -11,12 +11,12 @@ import './network_icons.html.js';
 import '//resources/ash/common/cr_elements/cr_hidden_style.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {HotspotState} from '//resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {ActivationStateType, SecurityType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, DeviceStateType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {HotspotState} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
-import {ActivationStateType, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {getTemplate} from './network_icon.html.js';
 import {OncMojo} from './onc_mojo.js';

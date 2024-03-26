@@ -9,9 +9,9 @@
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './network_health_container.js';
 
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import {RoutineResult, RoutineVerdict} from '//resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {RoutineResult, RoutineVerdict} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 
 import {Icons, Routine} from './network_diagnostics_types.js';
 import {getTemplate} from './routine_group.html.js';

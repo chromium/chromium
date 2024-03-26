@@ -15,8 +15,8 @@ import '//resources/ash/common/cr_elements/localized_link/localized_link.js';
 
 import {CrScrollableMixin} from '//resources/ash/common/cr_elements/cr_scrollable_mixin.js';
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import {BluetoothDeviceProperties} from '//resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {getTemplate} from './bluetooth_pairing_device_selection_page.html.js';
 import {ButtonBarState, ButtonState, DeviceItemState} from './bluetooth_types.js';

@@ -7,10 +7,10 @@ import './provisioning_page.js';
 import './final_page.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
+import {ActivationDelegateReceiver, ActivationResult, CarrierPortalHandlerRemote, CarrierPortalStatus, CellularMetadata, CellularSetupInterface} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {ActivationDelegateReceiver, ActivationResult, CarrierPortalHandlerRemote, CarrierPortalStatus, CellularMetadata, CellularSetupInterface} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {ButtonState} from './cellular_types.js';

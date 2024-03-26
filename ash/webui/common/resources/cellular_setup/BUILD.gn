@@ -75,6 +75,7 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
+  webui_context_type = "relative"
   generate_grdp = true
   grd_resource_path_prefix = "ash/common/cellular_setup"
 }

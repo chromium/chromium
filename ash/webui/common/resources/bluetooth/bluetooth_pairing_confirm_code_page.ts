@@ -12,7 +12,7 @@ import './bluetooth_base_page.js';
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './bluetooth_pairing_confirm_code_page.html.js';

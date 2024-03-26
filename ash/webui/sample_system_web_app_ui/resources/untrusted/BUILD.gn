@@ -29,5 +29,6 @@ build_webui("build") {
   ts_composite = true
   ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
 
+  webui_context_type = "untrusted"
   grit_output_dir = "$root_gen_dir/ash/webui"
 }

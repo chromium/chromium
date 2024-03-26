@@ -77,13 +77,14 @@ build_webui("build") {
   ts_composite = true
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
 
+  webui_context_type = "trusted"
   ts_extra_deps = [ "//ash/webui/common/resources:copy_checked_in_dts_files" ]
 
   grit_output_dir = "$root_gen_dir/ash/webui"

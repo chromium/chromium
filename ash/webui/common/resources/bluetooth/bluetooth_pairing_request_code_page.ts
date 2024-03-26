@@ -12,11 +12,11 @@ import './bluetooth_base_page.js';
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
+import {BluetoothDeviceProperties} from '//resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
-import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {getTemplate} from './bluetooth_pairing_request_code_page.html.js';
 import {ButtonBarState, ButtonState, PairingAuthType} from './bluetooth_types.js';

@@ -13,8 +13,8 @@ import '//resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {CrScrollableBehavior, CrScrollableBehaviorInterface} from '//resources/ash/common/cr_scrollable_behavior.js';
 import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from '//resources/ash/common/list_property_update_behavior.js';
+import {GlobalPolicy} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {GlobalPolicy} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {getTemplate} from './network_list.html.js';
 import {NetworkList} from './network_list_types.js';

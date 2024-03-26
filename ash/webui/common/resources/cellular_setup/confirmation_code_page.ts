@@ -12,10 +12,10 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './base_page.js';
 
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
+import {ESimProfileProperties} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {ESimProfileProperties} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getTemplate} from './confirmation_code_page.html.js';
 

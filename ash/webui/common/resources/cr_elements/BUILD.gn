@@ -93,6 +93,7 @@ build_webui("build") {
     "//tools/typescript/definitions/settings_private.d.ts",
   ]
 
+  webui_context_type = "relative"
   generate_grdp = true
   grd_resource_path_prefix = "ash/common/cr_elements"
 }

@@ -22,10 +22,10 @@ import {getESimProfileProperties} from '//resources/ash/common/cellular_setup/es
 import {FocusRowBehavior} from '//resources/ash/common/focus_row_behavior.js';
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
+import {ActivationStateType, CrosNetworkConfigInterface, GlobalPolicy, SecurityType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType, OncSource, PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {ActivationStateType, CrosNetworkConfigInterface, GlobalPolicy, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';

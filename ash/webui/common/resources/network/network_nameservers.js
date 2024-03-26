@@ -15,9 +15,9 @@ import '//resources/ash/common/cr_elements/md_select.css.js';
 import './network_shared.css.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
+import {ManagedProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {IPConfigType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {IPConfigType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
 import {getTemplate} from './network_nameservers.html.js';
