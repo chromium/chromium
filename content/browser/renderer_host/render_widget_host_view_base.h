@@ -152,6 +152,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       const blink::WebInputEvent& event) override;
   void PreProcessTouchEvent(const blink::WebTouchEvent& event) override {}
   void PreProcessMouseEvent(const blink::WebMouseEvent& event) override {}
+  gfx::PointF TransformRootPointToViewCoordSpace(
+      const gfx::PointF& point) override;
   bool TransformPointToLocalCoordSpace(const gfx::PointF& point,
                                        const viz::SurfaceId& original_surface,
                                        gfx::PointF* transformed_point) override;
@@ -224,8 +226,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // This only needs to be overridden by RenderWidgetHostViewBase subclasses
   // that handle content embedded within other RenderWidgetHostViews.
   gfx::PointF TransformPointToRootCoordSpaceF(
-      const gfx::PointF& point) override;
-  gfx::PointF TransformRootPointToViewCoordSpace(
       const gfx::PointF& point) override;
 
   // Returns the value for whether the auto-resize has been enabled or not.

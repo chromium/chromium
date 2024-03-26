@@ -122,6 +122,11 @@ class CONTENT_EXPORT RenderWidgetHostViewInput : public StylusInterface {
   virtual gfx::PointF TransformPointToRootCoordSpaceF(
       const gfx::PointF& point) = 0;
 
+  // Converts a point in the root view's coordinate space to the coordinate
+  // space of whichever view is used to call this method.
+  virtual gfx::PointF TransformRootPointToViewCoordSpace(
+      const gfx::PointF& point) = 0;
+
   // Transform a point that is in the coordinate space of a Surface that is
   // embedded within the RenderWidgetHostViewBase's Surface to the
   // coordinate space of an embedding, or embedded, Surface. Typically this

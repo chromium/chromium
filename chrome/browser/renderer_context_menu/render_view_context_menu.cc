@@ -4602,13 +4602,7 @@ void RenderViewContextMenu::PluginActionAt(
   if (!plugin_rfh)
     plugin_rfh = source_web_contents_->GetPrimaryMainFrame();
 
-  // TODO(crbug.com/776807): See if this needs to be done for OOPIFs as well.
-  // Calculate the local location in view coordinates inside the plugin before
-  // executing the plugin action.
-  gfx::Point local_location = gfx::ToFlooredPoint(
-      plugin_rfh->GetView()->TransformRootPointToViewCoordSpace(
-          gfx::PointF(location)));
-  plugin_rfh->ExecutePluginActionAtLocalLocation(local_location, plugin_action);
+  plugin_rfh->ExecutePluginActionAtLocalLocation(location, plugin_action);
 
   if (execute_plugin_action_callback_)
     std::move(execute_plugin_action_callback_).Run(plugin_rfh, plugin_action);

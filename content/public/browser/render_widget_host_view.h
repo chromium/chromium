@@ -101,11 +101,6 @@ class CONTENT_EXPORT RenderWidgetHostView {
         TransformPointToRootCoordSpaceF(gfx::PointF(point)));
   }
 
-  // Converts a point in the root view's coordinate space to the coordinate
-  // space of whichever view is used to call this method.
-  virtual gfx::PointF TransformRootPointToViewCoordSpace(
-      const gfx::PointF& point) = 0;
-
   // Retrieves the native view used to contain plugins and identify the
   // renderer in IPC messages.
   virtual gfx::NativeView GetNativeView() = 0;

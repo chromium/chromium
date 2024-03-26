@@ -442,7 +442,7 @@ void RenderFrameDevToolsAgentHost::InspectElement(RenderFrameHost* frame_host,
   // so we need to transform the coordinates from the root space
   // to the local frame root widget's space.
   if (host->frame_host_) {
-    if (RenderWidgetHostView* view = host->frame_host_->GetView()) {
+    if (RenderWidgetHostViewBase* view = host->frame_host_->GetView()) {
       point = gfx::ToRoundedPoint(
           view->TransformRootPointToViewCoordSpace(gfx::PointF(point)));
     }

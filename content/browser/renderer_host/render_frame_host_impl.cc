@@ -2728,8 +2728,10 @@ void RenderFrameHostImpl::ExecuteJavaScriptForTests(
 }
 
 void RenderFrameHostImpl::ExecutePluginActionAtLocalLocation(
-    const gfx::Point& local_location,
+    const gfx::Point& location,
     blink::mojom::PluginActionType plugin_action) {
+  gfx::Point local_location = gfx::ToFlooredPoint(
+      GetView()->TransformRootPointToViewCoordSpace(gfx::PointF(location)));
   GetAssociatedLocalFrame()->PluginActionAt(local_location, plugin_action);
 }
 
@@ -5115,7 +5117,7 @@ RenderWidgetHostImpl* RenderFrameHostImpl::GetRenderWidgetHost() {
   return nullptr;
 }
 
-RenderWidgetHostView* RenderFrameHostImpl::GetView() {
+RenderWidgetHostViewBase* RenderFrameHostImpl::GetView() {
   return GetRenderWidgetHost()->GetView();
 }
 

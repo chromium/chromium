@@ -398,7 +398,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   GlobalRenderFrameHostId GetGlobalId() const override;
   GlobalRenderFrameHostToken GetGlobalFrameToken() const override;
   RenderWidgetHostImpl* GetRenderWidgetHost() override;
-  RenderWidgetHostView* GetView() override;
+  RenderWidgetHostViewBase* GetView() override;
   RenderFrameHostImpl* GetParent() const override;
   RenderFrameHostImpl* GetParentOrOuterDocument() const override;
   RenderFrameHostImpl* GetParentOrOuterDocumentOrEmbedder() const override;
@@ -451,7 +451,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       JavaScriptResultCallback callback,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) override;
   void ExecutePluginActionAtLocalLocation(
-      const gfx::Point& local_location,
+      const gfx::Point& location,
       blink::mojom::PluginActionType plugin_action) override;
   void ActivateFindInPageResultForAccessibility(int request_id) override;
   void InsertVisualStateCallback(VisualStateCallback callback) override;
