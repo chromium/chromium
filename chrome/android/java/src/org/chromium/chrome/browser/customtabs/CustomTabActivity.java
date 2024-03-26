@@ -115,7 +115,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     private void maybeCreateHistoryTabHelper(Tab tab) {
-        String appId = mIntentDataProvider.getClientPackageName();
+        String appId = getCallingPackageIdentitySharing();
         if (appId != null) HistoryTabHelper.from(tab).setAppId(appId, tab.getWebContents());
     }
 
@@ -323,7 +323,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                 HistoryManagerUtils.showAppSpecificHistoryManager(
                         this,
                         getTabModelSelector().isIncognitoSelected(),
-                        getIntentDataProvider().getClientPackageName());
+                        getCallingPackageIdentitySharing());
                 CustomTabHistoryIPHController historyIPH =
                         mBaseCustomTabRootUiCoordinator.getHistoryIPHController();
                 if (historyIPH != null) {

@@ -294,6 +294,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.IdentityShared" enum="Boolean"
+    expires_after="2024-09-01">
+  <owner>jinsukkim@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Boolean histogram denoting whether the package name is
+    available by the sender sharing its identity using the new API introduced in
+    Android U. This means we can confirm the package name was passed by the
+    defined host app. Emitted when the Custom Tab is launched.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.IncognitoCCTCallerId" enum="IncognitoCCTCallerId"
     expires_after="2024-08-04">
   <owner>arabm@google.com</owner>

@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.KeyboardShortcuts;
+import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -547,7 +548,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 isMenuIconAtStart,
                 mBaseCustomTabRootUiCoordinator::isPageInsightsHubEnabled,
                 mBaseCustomTabRootUiCoordinator.getReadAloudControllerSupplier(),
-                mIntentDataProvider.getClientPackageName() != null);
+                getCallingPackageIdentitySharing() != null);
+    }
+
+    protected String getCallingPackageIdentitySharing() {
+        return LaunchIntentDispatcher.getCallingPackageIdentitySharing(this);
     }
 
     @Override

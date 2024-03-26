@@ -2650,8 +2650,7 @@ public class CustomTabActivityTest {
                     intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, "spoofed");
                     Activity activity = Mockito.mock(Activity.class);
 
-                    ComponentName component = new ComponentName("com.foo.bar", "className");
-                    when(activity.getCallingActivity()).thenReturn(component);
+                    when(activity.getCallingPackage()).thenReturn("com.foo.bar");
                     PowerManager powerManager =
                             (PowerManager)
                                     ContextUtils.getApplicationContext()
