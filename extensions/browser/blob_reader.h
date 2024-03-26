@@ -21,9 +21,9 @@
 class BlobReader : public blink::mojom::BlobReaderClient,
                    public mojo::DataPipeDrainer::Client {
  public:
-  // |blob_data| contains the portion of the Blob requested. |blob_total_size|
-  // is the total size of the Blob, and may be larger than |blob_data->size()|.
-  // |blob_total_size| is -1 if it cannot be determined.
+  // `blob_data` contains the portion of the Blob requested. `blob_total_size`
+  // is the total size of the Blob, and may be larger than `blob_data->size()`.
+  // `blob_total_size` is 0 if it cannot be determined.
   using BlobReadCallback =
       base::OnceCallback<void(std::string blob_data, int64_t blob_total_size)>;
 
