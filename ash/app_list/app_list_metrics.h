@@ -163,7 +163,10 @@ enum class AppListUserAction {
   // User navigated to the bottom of the app list UI.
   kNavigatedToBottomOfAppList = 6,
 
-  kMaxValue = kNavigatedToBottomOfAppList,
+  // User launched an app from list of apps collections UI.
+  kAppLauncherFromAppsCollections = 7,
+
+  kMaxValue = kAppLauncherFromAppsCollections,
 };
 
 // The possible states for a search control category. The values should match
@@ -183,6 +186,12 @@ enum class SearchCategoryEnableState {
   kDisabled = 2,
 
   kMaxValue = kDisabled,
+};
+
+enum class AppEntity {
+  kDefaultApp = 0,
+  kThirdPartyApp = 1,
+  kMaxValue = kThirdPartyApp,
 };
 
 using CategoryEnableStateMap =
@@ -220,6 +229,7 @@ struct AppLaunchedMetricParams {
   AppListViewState app_list_view_state = AppListViewState::kClosed;
   bool is_tablet_mode = false;
   bool app_list_shown = false;
+  bool is_apps_collections_page = false;
   std::optional<base::TimeTicks> launcher_show_timestamp;
 };
 
@@ -235,6 +245,10 @@ void RecordAppListUserJourneyTime(AppListShowSource source,
 
 // Records metrics periodically (see interval in UserMetricsRecorder).
 void RecordPeriodicAppListMetrics();
+
+ASH_EXPORT void RecordAppListByCollectionLaunched(
+    AppCollection collection,
+    bool is_apps_collections_page);
 
 ASH_EXPORT void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
                                          AppListViewState app_list_state,

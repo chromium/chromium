@@ -96,6 +96,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="AppUIComponent">
+  <variant name=".AppsCollections" summary="Apps Collections"/>
   <variant name=".Desktop" summary="Desktop"/>
   <variant name=".ProductivityLauncherAppGrid"
       summary="App - Productivity Launcher"/>
@@ -1661,6 +1662,23 @@ chromium-metrics-reviews@google.com.
     The type of app clicked in the launcher on ChromeOS, recorded after the icon
     is clicked, before it is launched.
   </summary>
+</histogram>
+
+<histogram name="Apps.AppListBubble.{AppListPage}.AppLaunchesByEntity"
+    enum="AppListEntity" expires_after="2025-03-18">
+  <owner>anasalazar@google.com</owner>
+  <owner>anooshree@google.com</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The number of apps launched from the bubble launcher for each apps page.
+    This is incremented each time an app is launched. Each bucket represents the
+    entity that the apps belongs to (Default apps or Third-Party apps).
+  </summary>
+  <token key="AppListPage">
+    <variant name="AppCollectionsPage" summary=""/>
+    <variant name="AppsPage" summary=""/>
+  </token>
 </histogram>
 
 <histogram name="Apps.AppListBubbleAppMovingType" enum="AppListAppMovingType"

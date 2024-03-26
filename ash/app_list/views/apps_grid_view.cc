@@ -3606,6 +3606,9 @@ void AppsGridView::OnAppListItemViewActivated(
 
   base::RecordAction(base::UserMetricsAction("AppList_ClickOnApp"));
 
+  RecordAppListByCollectionLaunched(pressed_item_view->item()->collection_id(),
+                                    /*is_apps_collections_page=*/false);
+
   // Avoid using |item->id()| as the parameter. In some rare situations,
   // activating the item may destruct it. Using the reference to an object
   // which may be destroyed during the procedure as the function parameter

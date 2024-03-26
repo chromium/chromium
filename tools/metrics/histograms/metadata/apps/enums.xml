@@ -87,6 +87,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Local file recently modified by user"/>
 </enum>
 
+<enum name="AppListEntity">
+  <int value="0" label="Default Apps"/>
+  <int value="1" label="Third-Party Apps"/>
+</enum>
+
 <enum name="AppListFederatedActions">
   <int value="0" label="Impression"/>
   <int value="1" label="Launch"/>
@@ -558,6 +563,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Continue section task opened"/>
   <int value="5" label="Suggestion chip opened"/>
   <int value="6" label="Scrolled to apps grid bottom"/>
+  <int value="7" label="App launched from apps collections"/>
 </enum>
 
 <enum name="NoteTakingAppLaunchResult">

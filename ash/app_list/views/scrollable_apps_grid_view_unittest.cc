@@ -25,6 +25,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
@@ -1204,5 +1205,36 @@ TEST_P(ScrollableAppsGridViewWithNudgeTest, VerifyVisibleRangeByDefault) {
 INSTANTIATE_TEST_SUITE_P(All,
                          ScrollableAppsGridViewWithNudgeTest,
                          testing::Bool());
+
+TEST_P(ScrollableAppsGridViewTest, RecordMetricsForAppLaunchByEntity) {
+  base::HistogramTester histograms;
+  GetAppListTestHelper()->AddAppListItemsWithCollection(
+      AppCollection::kEntertainment, 1);
+  AddAppListItem("id1");
+  ShowAppList();
+
+  histograms.ExpectUniqueSample(
+      "Apps.AppListBubble.AppsPage.AppLaunchesByEntity", AppEntity::kDefaultApp,
+      0);
+  histograms.ExpectUniqueSample(
+      "Apps.AppListBubble.AppsPage.AppLaunchesByEntity",
+      AppEntity::kThirdPartyApp, 0);
+
+  LeftClickOn(apps_grid_view_->GetItemViewAt(0));
+  histograms.ExpectBucketCount(
+      "Apps.AppListBubble.AppsPage.AppLaunchesByEntity", AppEntity::kDefaultApp,
+      1);
+  histograms.ExpectBucketCount(
+      "Apps.AppListBubble.AppsPage.AppLaunchesByEntity",
+      AppEntity::kThirdPartyApp, 0);
+
+  LeftClickOn(apps_grid_view_->GetItemViewAt(1));
+  histograms.ExpectBucketCount(
+      "Apps.AppListBubble.AppsPage.AppLaunchesByEntity", AppEntity::kDefaultApp,
+      1);
+  histograms.ExpectBucketCount(
+      "Apps.AppListBubble.AppsPage.AppLaunchesByEntity",
+      AppEntity::kThirdPartyApp, 1);
+}
 
 }  // namespace ash

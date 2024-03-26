@@ -264,6 +264,21 @@ void RecordPeriodicAppListMetrics() {
                            number_of_apps_in_non_system_folders);
 }
 
+void RecordAppListByCollectionLaunched(AppCollection collection,
+                                       bool is_apps_collections_page) {
+  AppEntity app_entity = collection == AppCollection::kUnknown
+                             ? AppEntity::kThirdPartyApp
+                             : AppEntity::kDefaultApp;
+  if (is_apps_collections_page) {
+    base::UmaHistogramEnumeration(
+        "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByEntity",
+        app_entity);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Apps.AppListBubble.AppsPage.AppLaunchesByEntity", app_entity);
+  }
+}
+
 void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
                               AppListViewState app_list_state,
                               bool is_tablet_mode,

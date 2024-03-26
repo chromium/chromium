@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/app_list/app_collections_constants.h"
+#include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
@@ -104,8 +105,11 @@ class AppsCollectionSectionView::GridDelegateImpl
   void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
                                   const ui::Event& event) override {
     const std::string id = pressed_item_view->item()->id();
-    view_delegate_->ActivateItem(id, event.flags(),
-                                 AppListLaunchedFrom::kLaunchedFromRecentApps);
+    view_delegate_->ActivateItem(
+        id, event.flags(), AppListLaunchedFrom::kLaunchedFromAppsCollections);
+    RecordAppListByCollectionLaunched(
+        pressed_item_view->item()->collection_id(),
+        /*is_apps_collections_page=*/true);
     // `this` may be deleted.
   }
 

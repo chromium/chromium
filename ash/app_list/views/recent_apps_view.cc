@@ -144,6 +144,9 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
     const std::string id = pressed_item_view->item()->id();
     view_delegate_->ActivateItem(id, event.flags(),
                                  AppListLaunchedFrom::kLaunchedFromRecentApps);
+    RecordAppListByCollectionLaunched(
+        pressed_item_view->item()->collection_id(),
+        /*is_apps_collections_page=*/false);
     // `this` may be deleted.
   }
 

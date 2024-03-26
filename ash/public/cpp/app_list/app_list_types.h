@@ -367,7 +367,8 @@ enum class AppListLaunchedFrom {
   kLaunchedFromRecentApps = 5,
   kLaunchedFromContinueTask = 6,
   kLaunchedFromQuickAppAccess = 7,
-  kMaxValue = kLaunchedFromQuickAppAccess,
+  kLaunchedFromAppsCollections = 8,
+  kMaxValue = kLaunchedFromAppsCollections,
 };
 
 // The UI representation of the app that's being launched. Currently all search

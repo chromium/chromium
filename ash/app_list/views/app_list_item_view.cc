@@ -1299,9 +1299,15 @@ void AppListItemView::OnContextMenuModelReceived(
   AppLaunchedMetricParams metric_params;
   switch (context_) {
     case Context::kAppsGridView:
-    case Context::kAppsCollection:
       app_type = AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_APP_GRID;
       metric_params.launched_from = AppListLaunchedFrom::kLaunchedFromGrid;
+      metric_params.launch_type = AppListLaunchType::kApp;
+      break;
+    case Context::kAppsCollection:
+      app_type =
+          AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_APPS_COLLECTIONS;
+      metric_params.launched_from =
+          AppListLaunchedFrom::kLaunchedFromAppsCollections;
       metric_params.launch_type = AppListLaunchType::kApp;
       break;
     case Context::kRecentAppsView:
@@ -1318,7 +1324,7 @@ void AppListItemView::OnContextMenuModelReceived(
       source_type, metric_params, app_type,
       base::BindOnce(&AppListItemView::OnMenuClosed,
                      weak_ptr_factory_.GetWeakPtr()),
-      view_delegate_->IsInTabletMode());
+      view_delegate_->IsInTabletMode(), item_weak_->collection_id());
 
   item_menu_model_adapter_->Run(
       anchor_rect, views::MenuAnchorPosition::kBubbleRight, run_types);
