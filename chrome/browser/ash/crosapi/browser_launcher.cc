@@ -771,6 +771,19 @@ bool BrowserLauncher::LaunchProcessForTesting(const LaunchParams& parameters) {
   return LaunchProcessWithParameters(parameters);
 }
 
+LaunchParams BrowserLauncher::CreateLaunchParamsForTesting(
+    const base::FilePath& chrome_path,
+    const LaunchParamsFromBackground& params,
+    bool launching_at_login_screen,
+    std::optional<int> startup_fd,
+    std::optional<int> read_pipe_fd,
+    mojo::PlatformChannel& channel,
+    browser_util::LacrosSelection lacros_selection) {
+  return CreateLaunchParams(chrome_path, params, launching_at_login_screen,
+                            startup_fd, read_pipe_fd, channel,
+                            lacros_selection);
+}
+
 base::ScopedFD BrowserLauncher::CreatePostLoginPipeForTesting() {
   base::ScopedFD read_pipe_fd;
   CHECK(base::CreatePipe(&read_pipe_fd, &postlogin_pipe_fd_));
@@ -925,7 +938,6 @@ LaunchParams BrowserLauncher::CreateLaunchParams(
 #if BUILDFLAG(ENABLE_NACL)
   SetUpForNacl(parameters.command_line);
 #endif
-  SetUpLacrosAdditionalParameters(params, parameters);
   SetUpForGpu(parameters.command_line);
   SetUpLogging(launching_at_login_screen,
                params.logfd.is_valid() ? std::optional(params.logfd.get())
@@ -943,6 +955,10 @@ LaunchParams BrowserLauncher::CreateLaunchParams(
       parameters.command_line);
 
   SetUpFeatures(params, parameters);
+
+  // Process additional parameters at the end so that /etc/chrome_dev.conf can
+  // override choices made by the SetUp* functions above.
+  SetUpLacrosAdditionalParameters(params, parameters);
 
   return parameters;
 }

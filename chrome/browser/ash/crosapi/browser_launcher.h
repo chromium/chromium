@@ -182,6 +182,16 @@ class BrowserLauncher {
   // Provides public API to call LaunchProcessWithParameters for testing.
   bool LaunchProcessForTesting(const LaunchParams& parameters);
 
+  // Provides public API to call CreateLaunchParamsForTesting for testing.
+  LaunchParams CreateLaunchParamsForTesting(
+      const base::FilePath& chrome_path,
+      const LaunchParamsFromBackground& params,
+      bool launching_at_login_screen,
+      std::optional<int> startup_fd,
+      std::optional<int> read_pipe_fd,
+      mojo::PlatformChannel& channel,
+      browser_util::LacrosSelection lacros_selection);
+
   // Creates postlogin pipe fd and returns the read fd. This is used to test
   // ResumeLaunch. Note that the reader is on the same process and does not
   // launch testing process.

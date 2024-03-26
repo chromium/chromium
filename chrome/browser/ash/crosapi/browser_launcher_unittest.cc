@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/posix/unix_domain_socket.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
@@ -144,6 +145,24 @@ TEST_F(BrowserLauncherTest, WithoutAdditionalParametersForCommandLine) {
   browser_launcher()->SetUpAdditionalParametersForTesting(params, parameters);
   EXPECT_EQ(parameters.command_line.GetSwitches().size(), 0u);
   EXPECT_EQ(parameters.options.environment.size(), 0u);
+}
+
+// A --vmodule value provided via --lacros-chrome-additional-args is preserved.
+TEST_F(BrowserLauncherTest, LacrosChromeAdditionalArgsVModule) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      ash::switches::kLacrosChromeAdditionalArgs, "--vmodule=foo");
+
+  base::ScopedFD dummy_fd1, dummy_fd2;
+  base::CreateSocketPair(&dummy_fd1, &dummy_fd2);
+  mojo::PlatformChannel dummy_channel;
+
+  BrowserLauncher::LaunchParamsFromBackground bg_params;
+  bg_params.logfd = std::move(dummy_fd1);
+  BrowserLauncher::LaunchParams params =
+      browser_launcher()->CreateLaunchParamsForTesting({}, bg_params, {}, {},
+                                                       {}, dummy_channel, {});
+
+  EXPECT_EQ(params.command_line.GetSwitchValueASCII("vmodule"), "foo");
 }
 
 TEST_F(BrowserLauncherTest, LaunchAndTriggerTerminate) {
