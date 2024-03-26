@@ -20,7 +20,7 @@ to set the default value. Can also be accessed through `try_.defaults`.
 load("./args.star", "args")
 load("./branches.star", "branches")
 load("./builders.star", "builders", "os")
-load("./orchestrator.star", "register_compilator", "register_orchestrator")
+load("./orchestrator.star", "SOURCELESS_BUILDER_CACHE_NAME", "register_compilator", "register_orchestrator")
 load("//project.star", "settings")
 
 def default_location_filters(builder_name = None):
@@ -85,7 +85,7 @@ def location_filters_without_defaults(tryjob_builder_proto):
 # with a builder cache.
 SOURCELESS_BUILDER_CACHES = [
     swarming.cache(
-        name = "unused_builder_cache",
+        name = SOURCELESS_BUILDER_CACHE_NAME,
         path = "builder",
         wait_for_warm_cache = None,
     ),
@@ -107,8 +107,8 @@ defaults = args.defaults(
     # argument, if the more-specific default has not been set it will fall back
     # to the standard default.
     compilator_cores = args.DEFAULT,
-    compilator_reclient_jobs = args.DEFAULT,
     orchestrator_cores = args.DEFAULT,
+    orchestrator_reclient_jobs = args.DEFAULT,
 )
 
 def tryjob(
@@ -392,6 +392,9 @@ def _orchestrator_builder(
         * cores: The orchestrator_cores module-level default.
         * executable: "recipe:chromium/orchestrator"
         * os: os.LINUX_DEFAULT
+        * reclient_instance: The orchestrator_reclient_instance module-level
+          default. (The reclient property is forwarded on to the compilator at
+          run-time).
         * service_account: "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com"
         * ssd: None
     """
@@ -414,10 +417,11 @@ def _orchestrator_builder(
     kwargs.setdefault("cores", defaults.orchestrator_cores.get())
     kwargs.setdefault("executable", "recipe:chromium/orchestrator")
 
-    kwargs.setdefault("reclient_instance", None)
     kwargs.setdefault("os", os.LINUX_DEFAULT)
     kwargs.setdefault("service_account", "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com")
     kwargs.setdefault("ssd", None)
+
+    kwargs.setdefault("reclient_jobs", defaults.orchestrator_reclient_jobs.get())
 
     ret = try_.builder(name = name, **kwargs)
     if ret:
@@ -445,10 +449,12 @@ def _compilator_builder(*, name, **kwargs):
     Args:
       name: The name of the compilator.
       **kwargs: Additional kwargs to be forwarded to try_.builder.
+        With the exception of builder_group, kwargs that would normally cause
+        properties to be set will result in an error. Properties should instead
+        be configured on the orchestrator.
         The following kwargs will have defaults applied if not set:
         * builderless: True on branches, False on main
         * cores: The compilator_cores module-level default.
-        * reclient_jobs: The compilator_reclient_jobs module-level default.
         * executable: "recipe:chromium/compilator"
         * ssd: True
     """
@@ -459,8 +465,11 @@ def _compilator_builder(*, name, **kwargs):
     kwargs.setdefault("builderless", not settings.is_main)
     kwargs.setdefault("cores", defaults.compilator_cores.get())
     kwargs.setdefault("executable", "recipe:chromium/compilator")
-    kwargs.setdefault("reclient_jobs", defaults.compilator_reclient_jobs.get())
     kwargs.setdefault("ssd", True)
+
+    kwargs["reclient_instance"] = None
+    kwargs["siso_enabled"] = False
+    kwargs["test_presentation"] = resultdb.test_presentation()
 
     ret = try_.builder(name = name, **kwargs)
     if ret:
