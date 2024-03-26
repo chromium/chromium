@@ -97,7 +97,7 @@ enum UsbLogState {
 
 // TODO(b/315002705): Replace this type with a mapped type that can infer
 // which shimless custom element is returned by `loadComponent`.
-type ShimlessCustomElementType = HTMLElement&{
+export type ShimlessCustomElementType = HTMLElement&{
   confirmExitButtonClicked?: boolean,
   hidden?: boolean,
   errorCode?: RmadErrorCode,

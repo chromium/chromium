@@ -7,7 +7,7 @@ import("../../build_webui_tests.gni")
 build_webui_tests("build_webui_tests") {
   ts_path_mappings = [
     "chrome://shimless-rma/*|" +
-        rebase_path("$root_gen_dir/ash/webui/shimless-rma/resources/tsc/*",
+        rebase_path("$root_gen_dir/ash/webui/shimless_rma/resources/tsc/*",
                     target_gen_dir),
     "chrome://webui-test/chromeos/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
@@ -15,7 +15,7 @@ build_webui_tests("build_webui_tests") {
   ]
 
   files = [
-    "all_inputs_disabled_test.js",
+    "all_inputs_disabled_test.ts",
     "critical_error_page_test.js",
     "fake_shimless_rma_service_test.js",
     "hardware_error_page_test.js",

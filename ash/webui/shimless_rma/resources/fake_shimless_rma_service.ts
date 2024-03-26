@@ -48,6 +48,7 @@ export type FakeShimlessRmaServiceInterface = ShimlessRmaServiceInterface&{
   setGetCalibrationComponentListResult(
       components: CalibrationComponentStatus[]): void,
   setGetSkuListResult(skus: bigint[]): void,
+  setGetSkuDescriptionListResult(skuDescriptions: string[]): void,
   enableAautomaticallyTriggerUpdateRoFirmwareObservation(): void,
   setGetOriginalSkuResult(skuIndex: number): void,
   enableAutomaticallyTriggerCalibrationObservation(): void,
