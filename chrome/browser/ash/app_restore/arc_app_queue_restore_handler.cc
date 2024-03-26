@@ -10,6 +10,7 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -513,8 +514,10 @@ bool ArcAppQueueRestoreHandler::CanLaunchApp() {
   bool is_under_memory_pressure = IsUnderMemoryPressure();
   if (is_under_memory_pressure)
     was_memory_pressured_ = true;
-
-  return !is_under_cpu_usage_limiting && !is_under_memory_pressure;
+  bool is_root_window_controller_initialized =
+      !RootWindowController::root_window_controllers().empty();
+  return !is_under_cpu_usage_limiting && !is_under_memory_pressure &&
+         is_root_window_controller_initialized;
 }
 
 bool ArcAppQueueRestoreHandler::IsUnderMemoryPressure() {
