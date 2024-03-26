@@ -148,6 +148,7 @@ void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // can be reinitialized they are explicitly cleared.
   output_queue_.reset();
   input_queue_.reset();
+  request_queue_.reset();
 
   device_->Close();
   if (!device_->Open()) {
@@ -166,6 +167,15 @@ void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
         DecoderStatus(DecoderStatus::Codes::kUnsupportedConfig)
             .AddCause(
                 V4L2Status(V4L2Status::Codes::kFailedFileCapabilitiesCheck)));
+    return;
+  }
+
+  request_queue_ = RequestQueue::Create(device_);
+  if (!request_queue_) {
+    std::move(init_cb).Run(
+        DecoderStatus(DecoderStatus::Codes::kNotInitialized)
+            .AddCause(
+                V4L2Status(V4L2Status::Codes::kFailedResourceAllocation)));
     return;
   }
 
@@ -360,7 +370,7 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(
   if (!output_queue_) {
     // The header needs to be parsed before the video resolution and format
     // can be decided.
-    if (!device_->SetHeaders(ctrls, base::ScopedFD(-1))) {
+    if (!request_queue_->SetHeadersForFormatNegotiation(ctrls)) {
       LogError(media_log_,
                "Failure to send the header necessary for output queue "
                "instantiation.");
@@ -403,11 +413,14 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(
   base::ScopedFD request_fd = device_->CreateRequestFD();
 
   if (input_queue_->SubmitCompressedFrameData(
-          ctrls, data, size, dec_surface->FrameID(), request_fd)) {
+          data, size, dec_surface->FrameID(), request_fd)) {
     surfaces_queued_.push(std::move(dec_surface));
-    ArmBufferMonitor();
 
-    return true;
+    if (request_queue_->QueueRequest(ctrls, request_fd)) {
+      ArmBufferMonitor();
+
+      return true;
+    }
   }
 
   LogError(media_log_, "Unable to submit compressed frame ",

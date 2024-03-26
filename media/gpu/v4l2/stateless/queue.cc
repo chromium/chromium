@@ -248,8 +248,7 @@ void InputQueue::Reclaim(Buffer& buffer) {
   }
 }
 
-bool InputQueue::SubmitCompressedFrameData(void* ctrls,
-                                           const void* data,
+bool InputQueue::SubmitCompressedFrameData(const void* data,
                                            size_t length,
                                            uint64_t frame_id,
                                            const base::ScopedFD& request_fd) {
@@ -292,20 +291,6 @@ bool InputQueue::SubmitCompressedFrameData(void* ctrls,
   // should be nothing preventing it from getting queued.
   if (!device_->QueueBuffer(buffer, request_fd)) {
     LOG(ERROR) << "Failed to queue buffer.";
-    return false;
-  }
-
-  // Headers submission failure should never happen. There is no way to
-  // recover from this error.
-  if (!device_->SetHeaders(ctrls, request_fd)) {
-    LOG(ERROR) << "Unable to set headers to V4L2 at fd: " << request_fd.get();
-    return false;
-  }
-
-  // Everything has been allocated and this is the final submission. To error
-  // out here would mean that the driver is not in a state to decode video.
-  if (!device_->QueueRequest(request_fd)) {
-    LOG(ERROR) << "Unable to queue request at fd :" << request_fd.get();
     return false;
   }
 
@@ -563,6 +548,49 @@ bool OutputQueue::QueueBufferByFrameID(uint64_t frame_id) {
 
 std::string OutputQueue::Description() {
   return "output";
+}
+
+// static
+std::unique_ptr<RequestQueue> RequestQueue::Create(
+    scoped_refptr<StatelessDevice> device) {
+  CHECK(device);
+
+  return std::make_unique<RequestQueue>(device);
+}
+
+RequestQueue::RequestQueue(scoped_refptr<StatelessDevice> device)
+    : device_(std::move(device)) {}
+
+RequestQueue::~RequestQueue() {}
+
+base::ScopedFD RequestQueue::CreateRequestFD() {
+  DVLOGF(4);
+  return device_->CreateRequestFD();
+}
+
+bool RequestQueue::QueueRequest(void* ctrls, const base::ScopedFD& request_fd) {
+  DVLOGF(4);
+
+  // Headers submission failure should never happen. There is no way to
+  // recover from this error.
+  if (!device_->SetHeaders(ctrls, request_fd)) {
+    LOG(ERROR) << "Unable to set headers to V4L2 at fd: " << request_fd.get();
+    return false;
+  }
+
+  // Everything has been allocated and this is the final submission. To error
+  // out here would mean that the driver is not in a state to decode video.
+  if (!device_->QueueRequest(request_fd)) {
+    LOG(ERROR) << "Unable to queue request at fd :" << request_fd.get();
+    return false;
+  }
+
+  return true;
+}
+
+bool RequestQueue::SetHeadersForFormatNegotiation(void* ctrls) {
+  DVLOGF(4);
+  return device_->SetHeaders(ctrls, base::ScopedFD(-1));
 }
 
 }  // namespace media

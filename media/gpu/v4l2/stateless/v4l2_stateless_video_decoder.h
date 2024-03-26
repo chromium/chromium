@@ -179,6 +179,9 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // Queue to hold uncompressed image buffers returned by the hardware
   std::unique_ptr<OutputQueue> output_queue_;
 
+  // Queue for interfacing with the request api
+  std::unique_ptr<RequestQueue> request_queue_;
+
   // Surfaces enqueued to V4L2 device. Since we are stateless, they are
   // guaranteed to be proceeded in FIFO order.
   base::queue<scoped_refptr<StatelessDecodeSurface>> surfaces_queued_;

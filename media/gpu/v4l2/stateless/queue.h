@@ -71,8 +71,7 @@ class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {
 
   // Pass all of the data necessary to decode a compressed frame off to the
   // driver.
-  bool SubmitCompressedFrameData(void* ctrls,
-                                 const void* data,
+  bool SubmitCompressedFrameData(const void* data,
                                  size_t length,
                                  uint64_t frame_id,
                                  const base::ScopedFD& request_fd);
@@ -146,6 +145,29 @@ class MEDIA_GPU_EXPORT OutputQueue : public BaseQueue {
   // placed in this map. The frame id to buffer index mapping is how the input
   // queue is mapped to the output queue.
   std::map<uint64_t, uint32_t> decoded_and_dequeued_frames_;
+};
+
+// The Request API closely ties the input and output queues together.
+class MEDIA_GPU_EXPORT RequestQueue {
+ public:
+  static std::unique_ptr<RequestQueue> Create(
+      scoped_refptr<StatelessDevice> device);
+
+  RequestQueue(scoped_refptr<StatelessDevice> device);
+  ~RequestQueue();
+
+  // Returns a request FD that was created by the driver.
+  base::ScopedFD CreateRequestFD();
+
+  // Pass only the data necessary for the driver to determine what output
+  // formats the decoded bitstream can provide.
+  bool SetHeadersForFormatNegotiation(void* ctrls);
+
+  // Pass all of the data that the request api needs to start decoding a frame.
+  bool QueueRequest(void* ctrls, const base::ScopedFD& request_fd);
+
+ private:
+  scoped_refptr<StatelessDevice> device_;
 };
 
 }  // namespace media
