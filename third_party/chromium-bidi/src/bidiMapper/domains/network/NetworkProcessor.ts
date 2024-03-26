@@ -74,7 +74,13 @@ export class NetworkProcessor {
   async continueRequest(
     params: Network.ContinueRequestParameters
   ): Promise<EmptyResult> {
-    const {url, method, headers, request: networkId} = params;
+    const {
+      url,
+      method,
+      headers: commandHeaders,
+      body,
+      request: networkId,
+    } = params;
 
     if (params.url !== undefined) {
       NetworkProcessor.parseUrlString(params.url);
@@ -84,13 +90,17 @@ export class NetworkProcessor {
       Network.InterceptPhase.BeforeRequestSent,
     ]);
 
-    const requestHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
-      cdpFetchHeadersFromBidiNetworkHeaders(headers);
+    const headers: Protocol.Fetch.HeaderEntry[] | undefined =
+      cdpFetchHeadersFromBidiNetworkHeaders(commandHeaders);
 
     // TODO: Set / expand.
     // ; Step 9. cookies
-    // ; Step 10. body
-    await request.continueRequest(url, method, requestHeaders);
+    await request.continueRequest({
+      url,
+      method,
+      headers,
+      postData: getCdpBodyFromBiDiBytesValue(body),
+    });
 
     return {};
   }
@@ -238,18 +248,11 @@ export class NetworkProcessor {
 
     const responseCode = statusCode ?? request.statusCode ?? 200;
 
-    let parsedBody: string | undefined;
-    if (body?.type === 'string') {
-      parsedBody = btoa(body.value);
-    } else if (body?.type === 'base64') {
-      parsedBody = body.value;
-    }
-
     await request.provideResponse({
       responseCode,
       responsePhrase,
       responseHeaders,
-      body: parsedBody,
+      body: getCdpBodyFromBiDiBytesValue(body),
     });
 
     return {};
@@ -434,4 +437,16 @@ function unescapeURLPattern(pattern: string) {
     isEscaped = false;
   }
   return result;
+}
+
+function getCdpBodyFromBiDiBytesValue(
+  body?: Network.BytesValue
+): string | undefined {
+  let parsedBody: string | undefined;
+  if (body?.type === 'string') {
+    parsedBody = btoa(body.value);
+  } else if (body?.type === 'base64') {
+    parsedBody = body.value;
+  }
+  return parsedBody;
 }

@@ -381,11 +381,12 @@ export class NetworkRequest {
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
-  async continueRequest(
-    url?: string,
-    method?: string,
-    headers?: Protocol.Fetch.HeaderEntry[]
-  ) {
+  async continueRequest({
+    url,
+    method,
+    headers,
+    postData,
+  }: Omit<Protocol.Fetch.ContinueRequestRequest, 'requestId'> = {}) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
     await this.cdpClient.sendCommand('Fetch.continueRequest', {
@@ -393,9 +394,7 @@ export class NetworkRequest {
       url,
       method,
       headers,
-      // TODO: Set?
-      // postData:,
-      // interceptResponse:,
+      postData,
     });
     this.#interceptPhase = undefined;
   }
@@ -541,6 +540,7 @@ export class NetworkRequest {
       this.#response.info?.headers
     );
 
+    // TODO: get headers from Fetch.requestPaused
     const authChallenges = this.#authChallenges(
       this.#response.info?.headers ?? {}
     );
