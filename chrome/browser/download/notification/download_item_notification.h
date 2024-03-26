@@ -112,8 +112,6 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
   bool IsScanning() const;
   bool AllowedToOpenWhileScanning() const;
 
-  bool IsGalleryAppPdfEditNotificationEligible() const;
-
   Browser* GetBrowser() const;
   Profile* profile() const;
 

@@ -211,6 +211,8 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
     case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
     case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::OPEN_WITH_MEDIA_APP:
+    case DownloadCommands::EDIT_WITH_MEDIA_APP:
       NOTREACHED();
       break;
   }

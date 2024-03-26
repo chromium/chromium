@@ -84,6 +84,11 @@ class DownloadItemModel : public DownloadUIModel,
   download::DownloadItem::InsecureDownloadStatus GetInsecureDownloadStatus()
       const override;
   void OpenUsingPlatformHandler() override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::optional<DownloadCommands::Command> MaybeGetMediaAppAction()
+      const override;
+  void OpenUsingMediaApp() override;
+#endif
   bool IsBeingRevived() const override;
   void SetIsBeingRevived(bool is_being_revived) override;
   const download::DownloadItem* GetDownloadItem() const override;

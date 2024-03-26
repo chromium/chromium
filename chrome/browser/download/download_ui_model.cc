@@ -509,6 +509,15 @@ DownloadUIModel::GetInsecureDownloadStatus() const {
 
 void DownloadUIModel::OpenUsingPlatformHandler() {}
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+std::optional<DownloadCommands::Command>
+DownloadUIModel::MaybeGetMediaAppAction() const {
+  return std::nullopt;
+}
+
+void DownloadUIModel::OpenUsingMediaApp() {}
+#endif
+
 bool DownloadUIModel::IsBeingRevived() const {
   return true;
 }
@@ -632,6 +641,8 @@ bool DownloadUIModel::IsCommandEnabled(
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
+    case DownloadCommands::OPEN_WITH_MEDIA_APP:
+    case DownloadCommands::EDIT_WITH_MEDIA_APP:
       NOTREACHED();
       return false;
     case DownloadCommands::CANCEL:
@@ -692,6 +703,8 @@ bool DownloadUIModel::IsCommandChecked(
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
     case DownloadCommands::CANCEL_DEEP_SCAN:
+    case DownloadCommands::OPEN_WITH_MEDIA_APP:
+    case DownloadCommands::EDIT_WITH_MEDIA_APP:
       return false;
   }
   return false;
@@ -760,6 +773,14 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
     case DownloadCommands::CANCEL_DEEP_SCAN:
+      break;
+    case DownloadCommands::OPEN_WITH_MEDIA_APP:
+    case DownloadCommands::EDIT_WITH_MEDIA_APP:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      OpenUsingMediaApp();
+#else
+      NOTREACHED();
+#endif
       break;
   }
 }

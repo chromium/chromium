@@ -2125,6 +2125,10 @@ are declared in tools/grit/grit_rule.gni.
                  desc="The name of the notification source, which is download manager here. Shown in the notification header.">
           Download manager
         </message>
+        <message name="IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN_AND_EDIT"
+                 desc="Download notifications: Label for action button on notification to open a file that can be edited, e.g. a PDF file that can be annotated.">
+          Open and edit
+        </message>
       </if>
       <message name="IDS_DOWNLOAD_STATUS_IN_PROGRESS"
                desc="Size and units downloaded, time remaining.">

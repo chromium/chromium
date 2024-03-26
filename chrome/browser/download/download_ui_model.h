@@ -335,6 +335,16 @@ class DownloadUIModel {
   // ShouldPreferOpeningInBrowser().
   virtual void OpenUsingPlatformHandler();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Returns the Media App action (open or edit) we should show for the item if
+  // one should be shown.
+  virtual std::optional<DownloadCommands::Command> MaybeGetMediaAppAction()
+      const;
+
+  // Open the download using the media app ('Gallery').
+  virtual void OpenUsingMediaApp();
+#endif
+
   // Whether the download was removed and this is currently being undone.
   virtual bool IsBeingRevived() const;
 

@@ -471,6 +471,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Opened in browser by default"/>
   <int value="2" label="Opened with plaform handler by user choice"/>
   <int value="3" label="Opened with an alternate rename handler"/>
+  <int value="4" label="Opened with the Media App on ChromeOS"/>
 </enum>
 
 <enum name="DownloadPassKitResult">

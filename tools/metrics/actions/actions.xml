@@ -9530,6 +9530,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DownloadNotification.Button_EditWithMediaApp">
+  <owner>yoshiki@chromium.org</owner>
+  <description>
+    User pushes a button to open a file on download notification. This is used
+    for files the Gallery app supports editing, e.g. PDF files. Also see
+    DownloadNotification.Button_OpenWithMediaApp.
+  </description>
+</action>
+
 <action name="DownloadNotification.Button_Keep">
   <owner>yoshiki@chromium.org</owner>
   <description>
@@ -9569,6 +9578,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DownloadNotification.Button_OpenWithMediaApp">
+  <owner>yoshiki@chromium.org</owner>
+  <description>
+    User pushes a button to open a file on download notification. This is used
+    for files the Gallery app does not support editing, e.g. audio files. Also
+    see DownloadNotification.Button_EditWithMediaApp.
+  </description>
+</action>
+
 <action name="DownloadNotification.Button_Pause">
   <owner>yoshiki@chromium.org</owner>
   <description>
@@ -9577,10 +9595,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="DownloadNotification.Button_PlatformOpen">
+  <obsolete>
+    Experiment ended Oct 2023, replaced by
+    DownloadNotification.Button_OpenWithMediaApp.
+  </obsolete>
   <owner>yoshiki@chromium.org</owner>
   <description>
-    User pushes a button to open a file on download notification. This is
-    currently used only for GalleryAppEditPdfNotification.
+    User pushes a button to open a file on download notification. Was used for
+    the GalleryAppEditPdfNotification experiment.
   </description>
 </action>
 

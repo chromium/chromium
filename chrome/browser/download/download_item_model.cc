@@ -63,6 +63,11 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "ui/views/vector_icons.h"
@@ -696,6 +701,36 @@ void DownloadItemModel::OpenUsingPlatformHandler() {
                      download_->GetMimeType());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+std::optional<DownloadCommands::Command>
+DownloadItemModel::MaybeGetMediaAppAction() const {
+  if (!base::FeatureList::IsEnabled(ash::features::kFileNotificationRevamp)) {
+    return std::nullopt;
+  }
+
+  std::string mime_type = GetMimeType();
+
+  if (mime_type == "application/pdf") {
+    return DownloadCommands::EDIT_WITH_MEDIA_APP;
+  }
+
+  if (base::StartsWith(mime_type, "audio/", base::CompareCase::SENSITIVE) ||
+      base::StartsWith(mime_type, "video/", base::CompareCase::SENSITIVE)) {
+    return DownloadCommands::OPEN_WITH_MEDIA_APP;
+  }
+
+  return std::nullopt;
+}
+
+void DownloadItemModel::OpenUsingMediaApp() {
+  ash::SystemAppLaunchParams params;
+  params.launch_paths.push_back(GetTargetFilePath());
+  ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA, params);
+
+  RecordDownloadOpen(DOWNLOAD_OPEN_METHOD_MEDIA_APP, GetMimeType());
+}
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 bool DownloadItemModel::IsCommandEnabled(
     const DownloadCommands* download_commands,
@@ -721,6 +756,18 @@ bool DownloadItemModel::IsCommandEnabled(
     case DownloadCommands::PAUSE:
       return !download_->IsSavePackageDownload() &&
              DownloadUIModel::IsCommandEnabled(download_commands, command);
+    case DownloadCommands::OPEN_WITH_MEDIA_APP:
+    case DownloadCommands::EDIT_WITH_MEDIA_APP: {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      std::optional<DownloadCommands::Command> media_app_command =
+          MaybeGetMediaAppAction();
+
+      return media_app_command == command && download_->CanOpenDownload() &&
+             !download_crx_util::IsExtensionDownload(*download_);
+#else
+      return false;
+#endif
+    }
     case DownloadCommands::CANCEL:
     case DownloadCommands::RESUME:
     case DownloadCommands::COPY_TO_CLIPBOARD:
@@ -779,6 +826,8 @@ bool DownloadItemModel::IsCommandChecked(
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
     case DownloadCommands::CANCEL_DEEP_SCAN:
+    case DownloadCommands::OPEN_WITH_MEDIA_APP:
+    case DownloadCommands::EDIT_WITH_MEDIA_APP:
       return false;
   }
   return false;
@@ -886,6 +935,8 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::COPY_TO_CLIPBOARD:
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
+    case DownloadCommands::OPEN_WITH_MEDIA_APP:
+    case DownloadCommands::EDIT_WITH_MEDIA_APP:
       DownloadUIModel::ExecuteCommand(download_commands, command);
       break;
     case DownloadCommands::DEEP_SCAN: {

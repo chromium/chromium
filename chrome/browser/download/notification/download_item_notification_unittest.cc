@@ -61,13 +61,8 @@ using testing::ValuesIn;
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kGalleryAppPdfEditNotificationTextParamName[] = "text";
-constexpr char kGalleryAppPdfEditNotificationTextParamValue[] =
-    "testCommandLabel";
-#endif
-
-const base::FilePath kTestPdfFilePath("test.pdf");
+const char kPdfMimeType[] = "application/pdf";
+const char kMp3MimeType[] = "audio/mpeg";
 
 const base::FilePath::CharType kDownloadItemTargetPathString[] =
     FILE_PATH_LITERAL("/tmp/TITLE.bin");
@@ -419,99 +414,55 @@ TEST_F(DownloadItemNotificationTest, DeepScanning) {
   download_item_notification_->Click(std::nullopt, std::nullopt);
 }
 
-// Test that PLATFORM_ACTION is added for pdf file if
-// kGalleryAppPdfEditNotification flag is enabled on CHROMEOS_ASH. It should not
+// Test that EDIT_WITH_MEDIA_APP is added for pdf file if
+// kFileNotificationRevamp feature is enabled on CHROMEOS_ASH. It should not
 // be added for other build configs.
-TEST_F(DownloadItemNotificationTest, GalleryAppPdfEditNotification) {
+TEST_F(DownloadItemNotificationTest, NotificationActionsForPdf) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      ash::features::kGalleryAppPdfEditNotification,
-      {{kGalleryAppPdfEditNotificationTextParamName,
-        kGalleryAppPdfEditNotificationTextParamValue}});
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kFileNotificationRevamp);
 #endif
 
   ON_CALL(*download_item_, GetState)
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   ON_CALL(*download_item_, IsDone).WillByDefault(Return(true));
-  ON_CALL(*download_item_, GetTargetFilePath)
-      .WillByDefault(testing::ReturnRef(kTestPdfFilePath));
+  ON_CALL(*download_item_, GetMimeType).WillByDefault(Return(kPdfMimeType));
 
   CreateDownloadItemNotification();
   auto actions = GetExtraActions();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_TRUE(base::Contains(*actions, DownloadCommands::PLATFORM_OPEN));
-  EXPECT_EQ(u"testCommandLabel",
-            GetCommandLabel(DownloadCommands::PLATFORM_OPEN));
+  EXPECT_TRUE(base::Contains(*actions, DownloadCommands::EDIT_WITH_MEDIA_APP));
+  EXPECT_EQ(u"Open and edit",
+            GetCommandLabel(DownloadCommands::EDIT_WITH_MEDIA_APP));
 #else
-  EXPECT_FALSE(base::Contains(*actions, DownloadCommands::PLATFORM_OPEN));
+  EXPECT_FALSE(base::Contains(*actions, DownloadCommands::EDIT_WITH_MEDIA_APP));
 #endif
 }
 
+// Test that OPEN_WITH_MEDIA_APP is added for audio file if
+// kFileNotificationRevamp feature is enabled on CHROMEOS_ASH. It should not
+// be added for other build configs.
+TEST_F(DownloadItemNotificationTest, NotificationActionsForAudio) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Test that PLATFORM_OPEN is not added if a user's default app for pdf file is
-// not the Gallery app.
-TEST_F(DownloadItemNotificationTest,
-       GalleryAppPdfEditNotificationDefaultNonGallery) {
-  constexpr char kNonGalleryAppTaskId[] = "non-gallery-app|app|open";
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      ash::features::kGalleryAppPdfEditNotification,
-      {{kGalleryAppPdfEditNotificationTextParamName,
-        kGalleryAppPdfEditNotificationTextParamValue}});
-
-  base::Value::Dict suffix_dict;
-  suffix_dict.Set(".pdf", kNonGalleryAppTaskId);
-  profile_->GetTestingPrefService()->SetDict(prefs::kDefaultTasksBySuffix,
-                                             std::move(suffix_dict));
-  base::Value::Dict mime_dict;
-  mime_dict.Set("application/pdf", kNonGalleryAppTaskId);
-  profile_->GetTestingPrefService()->SetDict(prefs::kDefaultTasksByMimeType,
-                                             std::move(mime_dict));
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kFileNotificationRevamp);
+#endif
 
   ON_CALL(*download_item_, GetState)
       .WillByDefault(Return(download::DownloadItem::COMPLETE));
   ON_CALL(*download_item_, IsDone).WillByDefault(Return(true));
-  ON_CALL(*download_item_, GetTargetFilePath)
-      .WillByDefault(testing::ReturnRef(kTestPdfFilePath));
+  ON_CALL(*download_item_, GetMimeType).WillByDefault(Return(kMp3MimeType));
 
   CreateDownloadItemNotification();
   auto actions = GetExtraActions();
-  EXPECT_FALSE(base::Contains(*actions, DownloadCommands::PLATFORM_OPEN));
-}
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Test that PLATFORM_OPEN is not added if a policy-set default app for pdf file
-// is not the Gallery app.
-TEST_F(DownloadItemNotificationTest,
-       GalleryAppPdfEditNotificationPolicyDefaultNonGallery) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      ash::features::kGalleryAppPdfEditNotification,
-      {{kGalleryAppPdfEditNotificationTextParamName,
-        kGalleryAppPdfEditNotificationTextParamValue}});
-
-  constexpr char kChromeAppId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-
-  InstallChromeApp(kChromeAppId);
-
-  profile_->GetTestingPrefService()->SetDict(
-      prefs::kDefaultHandlersForFileExtensions,
-      base::Value::Dict().Set(".pdf", kChromeAppId));
-
-  ON_CALL(*download_item_, GetState)
-      .WillByDefault(Return(download::DownloadItem::COMPLETE));
-  ON_CALL(*download_item_, IsDone).WillByDefault(Return(true));
-  ON_CALL(*download_item_, GetTargetFilePath)
-      .WillByDefault(testing::ReturnRef(kTestPdfFilePath));
-
-  CreateDownloadItemNotification();
-  auto actions = GetExtraActions();
-  EXPECT_FALSE(base::Contains(*actions, DownloadCommands::PLATFORM_OPEN));
-}
+  EXPECT_TRUE(base::Contains(*actions, DownloadCommands::OPEN_WITH_MEDIA_APP));
+  EXPECT_EQ(u"Open", GetCommandLabel(DownloadCommands::OPEN_WITH_MEDIA_APP));
+#else
+  EXPECT_FALSE(base::Contains(*actions, DownloadCommands::OPEN_WITH_MEDIA_APP));
 #endif
+}
 
 }  // namespace test
