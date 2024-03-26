@@ -9,11 +9,20 @@ directories.
 Design doc: https://docs.google.com/document/d/1W3V81l94slAC_rPcTKWXgv3YxRxtlSIAxi3yj6NsbBw/edit?usp=sharing
 """
 
-from collections import defaultdict
 import logging
 import re
 import typing
-from typing import List, NamedTuple, Optional, Tuple, Union
+from collections import defaultdict
+from dataclasses import dataclass, field
+from typing import (
+    List,
+    Mapping,
+    MutableMapping,
+    NamedTuple,
+    Optional,
+    Tuple,
+    Union,
+)
 
 from blinkpy.common import path_finder
 from blinkpy.common.checkout.git import CommitRange
@@ -74,13 +83,16 @@ class ImportNotifier:
                                              typing.get_args(TestType))
         self.finder = path_finder.PathFinder(host.filesystem)
         self.owners_extractor = DirectoryOwnersExtractor(host)
-        self.new_failures_by_directory = defaultdict(list)
+        self.new_failures_by_directory = defaultdict(DirectoryFailures)
 
-    def main(self, dry_run: bool = False):
+    def main(self, dry_run: bool = False) -> Mapping[str, BuganizerIssue]:
         """Files bug reports for new failures.
 
         Arguments:
             dry_run: If True, no bugs will be actually filed to crbug.com.
+
+        Returns:
+            A map from a WPT directory to a new bug filed.
 
         Raises:
             GerritError: A network failure when calling Gerrit.
@@ -99,7 +111,7 @@ class ImportNotifier:
         _log.info(f'Identifying failures for {repo}@{import_rev} ({cl.url})')
         if self._bugs_already_filed(cl):
             _log.info(f'Bugs have already been filed.')
-            return
+            return {}
         wpt_start_rev, _ = self._latest_wpt_revision_in_range(
             f'{import_rev}~1')
 
@@ -110,8 +122,10 @@ class ImportNotifier:
                                                   CLRevisionID(cl.number))
         filed_bugs = self.file_bugs(bugs, dry_run)
         if filed_bugs:
-            cl.post_comment(self.COMMENT_PREAMBLE +
-                            ', '.join(bug.link for bug in filed_bugs))
+            cl.post_comment(
+                self.COMMENT_PREAMBLE +
+                ', '.join(sorted(bug.link for bug in filed_bugs.values())))
+        return filed_bugs
 
     def _latest_wpt_revision_in_range(
             self,
@@ -169,9 +183,9 @@ class ImportNotifier:
                                                import_range.start)
             lines_after = self._read_baseline(changed_file, import_range.end)
             if self.more_failures_in_baseline(lines_before, lines_after):
-                self.new_failures_by_directory[directory].append(
-                    TestFailure.from_file(test, changed_file,
-                                          f'{cl_revision}/'))
+                failures = self.new_failures_by_directory[directory]
+                failures.baseline_failures.append(
+                    BaselineFailure(test, f'{cl_revision}/{changed_file}'))
 
     def more_failures_in_baseline(
         self,
@@ -238,9 +252,8 @@ class ImportNotifier:
             for line in change.lines_added:
                 directory = self.find_directory_for_bug(line.test)
                 if directory:
-                    failure = TestFailure.from_expectation_line(
-                        line.test, line.to_string())
-                    self.new_failures_by_directory[directory].append(failure)
+                    failures = self.new_failures_by_directory[directory]
+                    failures.exp_by_file[abs_changed_file].append(line)
 
     def _read_exp_lines(self, path: str,
                         ref: str) -> List[typ_types.Expectation]:
@@ -254,7 +267,7 @@ class ImportNotifier:
         self,
         wpt_range: CommitRange,
         cl_revision: CLRevisionID,
-    ) -> List[BuganizerIssue]:
+    ) -> Mapping[str, BuganizerIssue]:
         """Files bug reports for new failures.
 
         Arguments:
@@ -264,11 +277,11 @@ class ImportNotifier:
             cl_revision: Issue number of the imported CL.
 
         Returns:
-            A list of issues that should be filed.
+            A map from a WPT directory to its corresponding issue to file.
         """
         checks_url = CHECKS_URL_TEMPLATE.format(cl_revision.issue, '1')
         imported_commits = self.local_wpt.commits_in_range(*wpt_range)
-        bugs = []
+        bugs = {}
         for directory, failures in self.new_failures_by_directory.items():
             summary = '[WPT] New failures introduced in {} by import {}'.format(
                 directory, cl_revision)
@@ -293,8 +306,7 @@ class ImportNotifier:
             prologue = ('WPT import {} introduced new failures in {}:\n\n'
                         'List of new failures:\n'.format(
                             cl_revision, directory))
-            failure_list = ''.join(f'{failure.message}\n'
-                                   for failure in failures)
+            failure_list = str(failures)
             checks = '\nSee {} for details.\n'.format(checks_url)
 
             expectations_statement = (
@@ -315,6 +327,9 @@ class ImportNotifier:
                 'If you do not want to receive these reports, please add '
                 '"wpt { notify: NO }"  to the relevant DIR_METADATA file.')
 
+            # TODO(https://crbug.com/40631540): Format the description with
+            # `textwrap.dedent(f'...')` so it's easier to tell what the final
+            # formatted message looks like.
             description = (prologue + failure_list + checks +
                            expectations_statement + range_statement +
                            commit_list + links_list + epilogue)
@@ -327,7 +342,7 @@ class ImportNotifier:
                 cc=cc)
             _log.info("WPT-NOTIFY enabled in %s; adding the bug to the pending list." % full_directory)
             _log.info(f'{bug}')
-            bugs.append(bug)
+            bugs[directory] = bug
         return bugs
 
     def format_commit_list(self, imported_commits, directory):
@@ -381,7 +396,7 @@ class ImportNotifier:
         return short_directory
 
     def file_bugs(self,
-                  bugs: List[BuganizerIssue],
+                  bugs: Mapping[str, BuganizerIssue],
                   dry_run: bool = False) -> List[BuganizerIssue]:
         """Files a list of bugs to Buganizer.
 
@@ -390,8 +405,8 @@ class ImportNotifier:
             dry_run: A boolean, whether we are in dry run mode.
 
         Returns:
-            A list of bugs actually filed successfully (i.e., may be shorter
-            than the input bug list).
+            A map from a WPT directory to a bug actually filed successfully
+            (i.e., this map may be smaller than the input map).
         """
         if dry_run:
             _log.info(
@@ -400,12 +415,12 @@ class ImportNotifier:
             return []
 
         _log.info('Filing %d bugs in the pending list to Buganizer', len(bugs))
-        filed_bugs = []
-        for index, bug in enumerate(bugs, start=1):
+        filed_bugs = {}
+        for index, (directory, bug) in enumerate(bugs.items(), start=1):
             try:
                 bug = self._buganizer_client.NewIssue(bug)
                 _log.info(f'[{index}] Filed bug: {bug.link}')
-                filed_bugs.append(bug)
+                filed_bugs[directory] = bug
             except BuganizerError as error:
                 _log.exception('Failed to file bug', exc_info=error)
         return filed_bugs
@@ -427,24 +442,36 @@ class ImportNotifierError(Exception):
     """Represents an unsuccessful notification attempt."""
 
 
-class TestFailure(NamedTuple):
-    """A simple abstraction of a new test failure for the notifier."""
-    message: str
+class BaselineFailure(NamedTuple):
     test: str
+    url: str
 
-    @classmethod
-    def from_file(cls, test: str, baseline_path: str,
-                  gerrit_url_with_ps: str) -> 'TestFailure':
+    def __str__(self) -> str:
         message = ''
-        platform = re.search(r'/platform/([^/]+)/', baseline_path)
+        platform = re.search(r'/platform/([^/]+)/', self.url)
         if platform:
             message += '[ {} ] '.format(platform.group(1).capitalize())
-        message += f'{test} new failing tests: '
-        message += gerrit_url_with_ps + baseline_path
-        return cls(message, test)
+        message += f'{self.test} new failing tests: {self.url}'
+        return message
 
-    @classmethod
-    def from_expectation_line(cls, test: str, line: str) -> 'TestFailure':
-        if line.startswith(WPTExpectationsUpdater.UMBRELLA_BUG):
-            line = line[len(WPTExpectationsUpdater.UMBRELLA_BUG):].lstrip()
-        return cls(line, test)
+
+@dataclass
+class DirectoryFailures:
+    """A thin container for new failures under a WPT directory.
+
+    This corresponds 1-1 to a filed bug.
+    """
+    exp_by_file: MutableMapping[str, List[typ_types.Expectation]] = field(
+        default_factory=lambda: defaultdict(list))
+    baseline_failures: List[BaselineFailure] = field(default_factory=list)
+
+    def __str__(self) -> str:
+        lines = [str(failure) for failure in self.baseline_failures]
+        for path in sorted(self.exp_by_file):
+            for exp in self.exp_by_file[path]:
+                line = exp.to_string()
+                if line.startswith(WPTExpectationsUpdater.UMBRELLA_BUG):
+                    line = line[len(WPTExpectationsUpdater.UMBRELLA_BUG
+                                    ):].lstrip()
+                lines.append(line)
+        return '\n'.join(lines) + '\n'
