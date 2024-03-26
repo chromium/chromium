@@ -4898,8 +4898,9 @@ void RenderProcessHostImpl::CreateMetricsAllocator() {
 }
 
 void RenderProcessHostImpl::ShareMetricsMemoryRegion() {
-  HistogramController::GetInstance()->SetHistogramMemory<RenderProcessHost>(
-      this, std::move(metrics_memory_region_));
+  HistogramController::GetInstance()->SetHistogramMemory(
+      this, std::move(metrics_memory_region_),
+      HistogramController::ChildProcessMode::kGetHistogramData);
 }
 
 ChildProcessTerminationInfo RenderProcessHostImpl::GetChildTerminationInfo(
@@ -4980,7 +4981,7 @@ void RenderProcessHostImpl::ProcessDied(
 
   compositing_mode_reporter_.reset();
 
-  HistogramController::GetInstance()->NotifyChildDied<RenderProcessHost>(this);
+  HistogramController::GetInstance()->NotifyChildDied(this);
   // This object is not deleted at this point and might be reused later.
   // TODO(darin): clean this up
 }
@@ -5378,6 +5379,12 @@ void RenderProcessHostImpl::OnProcessLaunchFailed(int error_code) {
   PopulateTerminationInfoRendererFields(&info);
 #endif  // BUILDFLAG(IS_ANDROID)
   ProcessDied(info);
+}
+
+void RenderProcessHostImpl::BindChildHistogramFetcherFactory(
+    mojo::PendingReceiver<content::mojom::ChildHistogramFetcherFactory>
+        factory) {
+  BindReceiver(std::move(factory));
 }
 
 // static

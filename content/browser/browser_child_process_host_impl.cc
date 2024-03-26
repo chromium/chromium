@@ -447,6 +447,12 @@ void BrowserChildProcessHostImpl::OnBadMessageReceived(
   TerminateOnBadMessageReceived(log_message);
 }
 
+void BrowserChildProcessHostImpl::BindChildHistogramFetcherFactory(
+    mojo::PendingReceiver<content::mojom::ChildHistogramFetcherFactory>
+        factory) {
+  GetHost()->BindReceiver(std::move(factory));
+}
+
 void BrowserChildProcessHostImpl::TerminateOnBadMessageReceived(
     const std::string& error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -601,15 +607,22 @@ void BrowserChildProcessHostImpl::CreateMetricsAllocator() {
 }
 
 void BrowserChildProcessHostImpl::ShareMetricsAllocatorToProcess() {
+  // Only get histograms from content process types; skip "embedder" process
+  // types.
+  HistogramController::ChildProcessMode histogram_mode =
+      data_.process_type >= PROCESS_TYPE_CONTENT_END
+          ? HistogramController::ChildProcessMode::kPingOnly
+          : HistogramController::ChildProcessMode::kGetHistogramData;
+
   if (metrics_allocator_) {
-    HistogramController::GetInstance()->SetHistogramMemory<ChildProcessHost>(
-        GetHost(), std::move(metrics_shared_region_));
+    HistogramController::GetInstance()->SetHistogramMemory(
+        this, std::move(metrics_shared_region_), histogram_mode);
     DVLOG(1) << "metrics_shared_region_ has been moved: " << "pid=" << data_.id
              << "; process_type="
              << GetProcessTypeNameInEnglish(data_.process_type);
   } else {
-    HistogramController::GetInstance()->SetHistogramMemory<ChildProcessHost>(
-        GetHost(), base::UnsafeSharedMemoryRegion());
+    HistogramController::GetInstance()->SetHistogramMemory(
+        this, base::UnsafeSharedMemoryRegion(), histogram_mode);
   }
 }
 

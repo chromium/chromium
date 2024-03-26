@@ -13,15 +13,13 @@
 #include "base/memory/singleton.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/timer/timer.h"
-#include "content/common/histogram_fetcher.mojom-shared.h"
+#include "content/browser/metrics/histogram_child_process.h"
 #include "content/common/histogram_fetcher.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
 class HistogramSubscriber;
-class ChildProcessHost;
-class RenderProcessHost;
 
 // HistogramController is used on the browser process to collect histogram data.
 // Only the browser UI thread is allowed to interact with the
@@ -60,32 +58,33 @@ class HistogramController {
       int sequence_number,
       const std::vector<std::string>& pickled_histograms);
 
-  template <class T>
-  void SetHistogramMemory(T*, base::UnsafeSharedMemoryRegion);
+  enum class ChildProcessMode {
+    // This child process should be included when gathering non-persistent
+    // histogram data from child processes.
+    kGetHistogramData,
+
+    // This child process should only be included in pings, but histogram data
+    // should not be collected.
+    kPingOnly,
+  };
+  void SetHistogramMemory(HistogramChildProcess* host,
+                          base::UnsafeSharedMemoryRegion shared_region,
+                          ChildProcessMode mode);
 
   // Some hosts can be re-used before Mojo recognizes that their connections
   // are invalid because the previous child process died.
-  template <class T>
-  void NotifyChildDied(T*);
+  void NotifyChildDied(HistogramChildProcess* host);
 
  private:
   friend struct base::LeakySingletonTraits<HistogramController>;
 
   raw_ptr<HistogramSubscriber> subscriber_;
 
-  template <class T>
-  using ChildHistogramFetcherMap =
-      std::map<T*, mojo::Remote<content::mojom::ChildHistogramFetcher>>;
-
-  template <class T>
   void InsertChildHistogramFetcherInterface(
-      T* host,
+      HistogramChildProcess* host,
       mojo::Remote<content::mojom::ChildHistogramFetcher>
-          child_histogram_fetcher);
-
-  template <class T>
-  content::mojom::ChildHistogramFetcher* GetChildHistogramFetcherInterface(
-      T* host);
+          child_histogram_fetcher,
+      ChildProcessMode mode);
 
   // Calls PingChildProcess() on ~10% of child processes. Not all child
   // processes are pinged so as to avoid possibly "waking up" too many and
@@ -103,15 +102,13 @@ class HistogramController {
   // PingChildProcess()).
   void Pong(mojom::UmaPingCallSource call_source);
 
-  template <class T>
-  void RemoveChildHistogramFetcherInterface(MayBeDangling<T> host);
+  void RemoveChildHistogramFetcherInterface(
+      MayBeDangling<HistogramChildProcess> host);
 
-  // Specialize this template for each ChildHistogramFetcherMap defined below.
-  template <class T>
-  ChildHistogramFetcherMap<T>& GetChildHistogramFetcherMap();
-
-  ChildHistogramFetcherMap<RenderProcessHost> renderer_histogram_fetchers_;
-  ChildHistogramFetcherMap<ChildProcessHost> child_histogram_fetchers_;
+  struct ChildHistogramFetcher;
+  using ChildHistogramFetcherMap =
+      std::map<HistogramChildProcess*, ChildHistogramFetcher>;
+  ChildHistogramFetcherMap child_histogram_fetchers_;
 
   // Used to call PingAllChildProcesses() every 5 minutes.
   base::RepeatingTimer timer_;

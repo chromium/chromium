@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/child_process_launcher.h"
+#include "content/browser/metrics/histogram_child_process.h"
 #include "content/browser/tracing/tracing_service_controller.h"
 #include "content/common/buildflags.h"
 #include "content/common/child_process.mojom.h"
@@ -58,6 +59,7 @@ class BrowserMessageFilter;
 class BrowserChildProcessHostImpl
     : public BrowserChildProcessHost,
       public ChildProcessHostDelegate,
+      public HistogramChildProcess,
 #if BUILDFLAG(IS_WIN)
       public base::win::ObjectWatcher::Delegate,
 #endif
@@ -102,6 +104,11 @@ class BrowserChildProcessHostImpl
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
   void OnBadMessageReceived(const IPC::Message& message) override;
+
+  // HistogramChildProcess implementation:
+  void BindChildHistogramFetcherFactory(
+      mojo::PendingReceiver<content::mojom::ChildHistogramFetcherFactory>
+          factory) override;
 
   // Terminates the process and logs a stack trace after a bad message was
   // received from the child process.

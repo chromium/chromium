@@ -34,6 +34,7 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/blob_storage/file_backed_blob_factory_worker_impl.h"
 #include "content/browser/child_process_launcher.h"
+#include "content/browser/metrics/histogram_child_process.h"
 #include "content/browser/renderer_host/media/aec_dump_manager_impl.h"
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
 #include "content/browser/storage_partition_impl.h"
@@ -189,7 +190,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
       public ChildProcessLauncher::Client,
       public mojom::RendererHost,
       public blink::mojom::DomStorageProvider,
-      public memory_instrumentation::mojom::CoordinatorConnector
+      public memory_instrumentation::mojom::CoordinatorConnector,
+      public HistogramChildProcess
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
     ,
       public media::stable::mojom::StableVideoDecoderTracker
@@ -366,6 +368,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
       const std::string& untrusted_javascript_call_stack);
 
   void InterruptJavaScriptIsolateAndCollectCallStack();
+
+  // HistogramChildProcess implementation:
+  void BindChildHistogramFetcherFactory(
+      mojo::PendingReceiver<content::mojom::ChildHistogramFetcherFactory>
+          factory) override;
 
   // Call this function when it is evident that the child process is actively
   // performing some operation, for example if we just received an IPC message.
