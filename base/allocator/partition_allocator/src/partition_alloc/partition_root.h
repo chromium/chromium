@@ -500,13 +500,12 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // |type_name == nullptr|: ONLY FOR TESTS except internal uses.
   // You should provide |type_name| to make debugging easier.
   template <AllocFlags flags = AllocFlags::kNone>
-  PA_NOINLINE PA_MALLOC_FN PA_MALLOC_ALIGNED void* Alloc(
-      size_t requested_size,
-      const char* type_name = nullptr) {
+  PA_NOINLINE PA_MALLOC_FN void* Alloc(size_t requested_size,
+                                       const char* type_name = nullptr) {
     return AllocInline<flags>(requested_size, type_name);
   }
   template <AllocFlags flags = AllocFlags::kNone>
-  PA_ALWAYS_INLINE PA_MALLOC_FN PA_MALLOC_ALIGNED void* AllocInline(
+  PA_ALWAYS_INLINE PA_MALLOC_FN void* AllocInline(
       size_t requested_size,
       const char* type_name = nullptr) {
     return AllocInternal<flags>(requested_size, internal::PartitionPageSize(),
@@ -515,7 +514,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   // AllocInternal exposed for testing.
   template <AllocFlags flags = AllocFlags::kNone>
-  PA_NOINLINE PA_MALLOC_FN PA_MALLOC_ALIGNED void* AllocInternalForTesting(
+  PA_NOINLINE PA_MALLOC_FN void* AllocInternalForTesting(
       size_t requested_size,
       size_t slot_span_alignment,
       const char* type_name) {
@@ -524,16 +523,14 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   template <AllocFlags alloc_flags = AllocFlags::kNone,
             FreeFlags free_flags = FreeFlags::kNone>
-  PA_NOINLINE PA_MALLOC_ALIGNED void* Realloc(void* ptr,
-                                              size_t new_size,
-                                              const char* type_name) {
+  PA_NOINLINE void* Realloc(void* ptr, size_t new_size, const char* type_name) {
     return ReallocInline<alloc_flags, free_flags>(ptr, new_size, type_name);
   }
   template <AllocFlags alloc_flags = AllocFlags::kNone,
             FreeFlags free_flags = FreeFlags::kNone>
-  PA_ALWAYS_INLINE PA_MALLOC_ALIGNED void* ReallocInline(void* ptr,
-                                                         size_t new_size,
-                                                         const char* type_name);
+  PA_ALWAYS_INLINE void* ReallocInline(void* ptr,
+                                       size_t new_size,
+                                       const char* type_name);
 
   template <FreeFlags flags = FreeFlags::kNone>
   PA_NOINLINE void Free(void* object) {
@@ -965,14 +962,13 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // alignment, otherwise a sub-optimal allocation strategy is used to
   // guarantee the higher-order alignment.
   template <AllocFlags flags>
-  PA_ALWAYS_INLINE PA_MALLOC_FN PA_MALLOC_ALIGNED void* AllocInternal(
-      size_t requested_size,
-      size_t slot_span_alignment,
-      const char* type_name);
+  PA_ALWAYS_INLINE PA_MALLOC_FN void* AllocInternal(size_t requested_size,
+                                                    size_t slot_span_alignment,
+                                                    const char* type_name);
 
   // Same as |AllocInternal()|, but don't handle allocation hooks.
   template <AllocFlags flags = AllocFlags::kNone>
-  PA_ALWAYS_INLINE PA_MALLOC_FN PA_MALLOC_ALIGNED void* AllocInternalNoHooks(
+  PA_ALWAYS_INLINE PA_MALLOC_FN void* AllocInternalNoHooks(
       size_t requested_size,
       size_t slot_span_alignment);
   // Allocates a memory slot, without initializing extras.
