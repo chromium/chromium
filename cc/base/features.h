@@ -120,10 +120,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimResourcesFlushInBackground);
 // Enabled 03/2024, kept to run a holdback experiment.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimResourcesDelayedFlushInBackground);
 
-// Try to play a longer list of ops before giving up in solid color analysis for
-// tiles.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMoreAggressiveSolidColorDetection);
-
 // Allow CC FrameRateEstimater to reduce the frame rate to half of the default
 // if the condition meets the requirement.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReducedFrameRateEstimation);

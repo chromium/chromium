@@ -59,7 +59,6 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
 
     raw_ptr<ImageProvider> image_provider = nullptr;
   };
-  constexpr static int kDefault = 1;
 
   RasterSource(const RasterSource&) = delete;
   RasterSource& operator=(const RasterSource&) = delete;
@@ -85,10 +84,14 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   // this raster source, as well as the solid color value.
   //
   // If max_ops_to_analyze is set, changes the default maximum number of
-  // operations to analyze before giving up.
+  // operations to analyze before giving up. Careful: even very simple lists can
+  // have more than one operation, so 1 may not be the value you're looking
+  // for. For instance, solid color tiles generated for views have 3
+  // operations. See comments in TileManager::AssignGpuMemoryToTils() for
+  // details.
   bool PerformSolidColorAnalysis(gfx::Rect content_rect,
                                  SkColor4f* color,
-                                 int max_ops_to_analyze = kDefault) const;
+                                 int max_ops_to_analyze = 1) const;
 
   // Returns true iff the whole raster source is of solid color.
   bool IsSolidColor() const;

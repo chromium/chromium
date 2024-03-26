@@ -897,15 +897,12 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
       // in case other operations creep in, while being low enough that
       // performing the analysis is not too costly (and besides, long paint op
       // lists are unlikely to result in easily identifiable solid colored
-      // tiles). This was shows to improve memory usage without regressing
+      // tiles). This was shown to improve memory usage without regressing
       // performance.
-      int max_ops_to_analyze = base::FeatureList::IsEnabled(
-                                   features::kMoreAggressiveSolidColorDetection)
-                                   ? 5
-                                   : RasterSource::kDefault;
+      constexpr int kMaxOpsToAnalyze = 5;
       bool is_solid_color =
           prioritized_tile.raster_source()->PerformSolidColorAnalysis(
-              tile->enclosing_layer_rect(), &color, max_ops_to_analyze);
+              tile->enclosing_layer_rect(), &color, kMaxOpsToAnalyze);
       if (is_solid_color) {
         tile->draw_info().set_solid_color(color);
         client_->NotifyTileStateChanged(tile);

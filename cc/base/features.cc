@@ -127,10 +127,6 @@ BASE_FEATURE(kReclaimResourcesDelayedFlushInBackground,
              "ReclaimResourcesDelayedFlushInBackground",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMoreAggressiveSolidColorDetection,
-             "MoreAggressiveSolidColorDetection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kReducedFrameRateEstimation,
              "kReducedFrameRateEstimation",
              base::FEATURE_ENABLED_BY_DEFAULT);
