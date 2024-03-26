@@ -1,4 +1,0 @@
-Verifies that RequestHTMLView's iframe src is URI encoded
-iframe.src: data:text/html,%3Cbody%3E%3Cp%3Eoctothorp:%20%23%3C/p%3E%3Cp%3Ehello%20world!%3Cp%3E%253Cp%253EURI%2520encoded%2520tag!%253C%252Fp%253E%3C/body%3E
-decoded iframe.src: data:text/html,<body><p>octothorp: #</p><p>hello world!<p>%3Cp%3EURI%20encoded%20tag!%3C%2Fp%3E</body>
-
