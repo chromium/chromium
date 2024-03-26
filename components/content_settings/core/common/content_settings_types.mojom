@@ -408,4 +408,8 @@ enum ContentSettingsType {
   // Pointer Lock API allows a site to hide the cursor and have exclusive access
   // to mouse inputs.
   POINTER_LOCK,
+
+  // Website setting which is used for UnusedSitePermissionsService to store
+  // auto-revoked notification permissions from abusive sites.
+  REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
 };

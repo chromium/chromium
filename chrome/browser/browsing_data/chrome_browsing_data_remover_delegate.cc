@@ -860,6 +860,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         delete_end_, website_settings_filter);
 
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
+        ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
+        delete_begin_, delete_end_, website_settings_filter);
+
+    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
         ContentSettingsType::PRIVATE_NETWORK_GUARD, delete_begin_, delete_end_,
         website_settings_filter);
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(

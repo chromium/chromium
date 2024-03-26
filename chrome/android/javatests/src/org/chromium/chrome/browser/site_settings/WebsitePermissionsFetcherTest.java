@@ -670,7 +670,7 @@ public class WebsitePermissionsFetcherTest {
         // If the ContentSettingsType.MAX_VALUE value changes *and* a new value has been exposed on
         // Android, then please update this code block to include a test for your new type.
         // Otherwise, just update count in the assert.
-        assertEquals(105, ContentSettingsType.MAX_VALUE);
+        assertEquals(106, ContentSettingsType.MAX_VALUE);
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.COOKIES,
