@@ -23,6 +23,9 @@ declare_args() {
 
   # Path to a PrivacyInfo.xcprivacy file to be included in the application.
   ios_chrome_privacy_manifest = ""
+
+  # Path to an orderfile to be used when building the application binary.
+  ios_chrome_orderfile = ""
 }
 
 # If fast_app_terminate_enabled is not enabled, default to true,
@@ -740,7 +743,9 @@ chrome_app("chrome") {
   entitlements_target = ":entitlements"
   info_plist_target = ":info_plist"
   bundle_identifier = "$chromium_bundle_id"
-  orderfile_path = "//ios/chrome/app/Chromium.order"
+  if (ios_chrome_orderfile != "") {
+    orderfile_path = ios_chrome_orderfile
+  }
 
   bundle_deps = [
     "//ios/chrome/app/resources",

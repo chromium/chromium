@@ -110,8 +110,8 @@ if (target_environment == "catalyst") {
 
 if (ios_chrome_generate_order_file) {
   assert(
-      !enable_stripping && is_debug,
-      "An orderfile should only be generated if enable_stripping is false and is_debug is true to ensure all function calls are included.")
+      !enable_stripping && !is_debug,
+      "An orderfile should only be generated if enable_stripping is false and is_debug is false to ensure all function calls are included.")
 
   # Disable all extensions as the order file is only generated based on running
   # the primary application.
