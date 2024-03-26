@@ -12,12 +12,14 @@ ts_library("build_ts") {
   visibility = [
     ":build_bundle",
 
-    # TODO(crbug.com/1503223): Currently Limiting only to cr_elements for the
-    # initial experimentation phase, and some tests that need to refer to
-    # CrLitElement. Update when the migration enters its next phase.
+    # TODO(crbug.com/1503223): Currently Limiting only to cr_elements/ and
+    # cr_components/for the initial experimentation phase, and some tests that
+    # need to refer to CrLitElement. Update when the migration enters its next
+    # phase.
     "//chrome/test/data/webui/cr_elements:build_ts",
     "//chrome/test/data/webui/extensions:build_ts",
     "//chrome/test/data/webui/history:build_ts",
+    "//ui/webui/resources/cr_components/managed_dialog:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
   ]
   composite = true
