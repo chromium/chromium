@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_MODAL_DIALOG_VIEW_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_MODAL_DIALOG_VIEW_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "content/common/content_export.h"
