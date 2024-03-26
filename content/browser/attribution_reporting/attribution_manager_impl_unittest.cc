@@ -473,8 +473,6 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
 }
 
 TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportSent) {
-  base::HistogramTester histograms;
-
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -1665,7 +1663,6 @@ TEST_F(AttributionManagerImplTest, HandleSource_RecordsMetric) {
 }
 
 TEST_F(AttributionManagerImplTest, OnReportSent_NotifiesObservers) {
-  base::HistogramTester histograms;
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
   attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
   EXPECT_THAT(StoredReports(), SizeIs(1));
@@ -2428,12 +2425,14 @@ TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
   cookie_checker_->AddOriginWithDebugCookieSet(
       url::Origin::Create(GURL("https://r1.test")));
 
-  MockAttributionObserver observer;
-  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
-      &observer);
-  observation.Observe(attribution_manager_.get());
-
   for (const auto& test_case : kDebugKeyTestCases) {
+    SCOPED_TRACE(test_case.name);
+
+    MockAttributionObserver observer;
+    base::ScopedObservation<AttributionManager, AttributionObserver>
+        observation(&observer);
+    observation.Observe(attribution_manager_.get());
+
     const auto reporting_origin =
         *SuitableOrigin::Deserialize(test_case.reporting_origin);
     MockAttributionReportingContentBrowserClient browser_client;
@@ -2472,10 +2471,9 @@ TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
 
     EXPECT_THAT(
         StoredSources(),
-        ElementsAre(
-            AllOf(SourceDebugKeyIs(test_case.expected_debug_key),
-                  SourceDebugCookieSetIs(test_case.expected_debug_cookie_set))))
-        << test_case.name;
+        ElementsAre(AllOf(
+            SourceDebugKeyIs(test_case.expected_debug_key),
+            SourceDebugCookieSetIs(test_case.expected_debug_cookie_set))));
 
     attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
                                     /*filter=*/base::NullCallback(),
@@ -2489,12 +2487,14 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
   cookie_checker_->AddOriginWithDebugCookieSet(
       url::Origin::Create(GURL("https://r1.test")));
 
-  MockAttributionObserver observer;
-  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
-      &observer);
-  observation.Observe(attribution_manager_.get());
-
   for (const auto& test_case : kDebugKeyTestCases) {
+    SCOPED_TRACE(test_case.name);
+
+    MockAttributionObserver observer;
+    base::ScopedObservation<AttributionManager, AttributionObserver>
+        observation(&observer);
+    observation.Observe(attribution_manager_.get());
+
     const auto reporting_origin =
         *SuitableOrigin::Deserialize(test_case.reporting_origin);
 
@@ -2534,7 +2534,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
                                            .Build(),
                                        kFrameId);
 
-    EXPECT_THAT(StoredSources(), SizeIs(1)) << test_case.name;
+    EXPECT_THAT(StoredSources(), SizeIs(1));
     EXPECT_CALL(observer, OnTriggerHandled(test_case.expected_cleared_key, _));
     attribution_manager_->HandleTrigger(
         TriggerBuilder()
@@ -2545,8 +2545,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
     EXPECT_THAT(
         StoredReports(),
         ElementsAre(AllOf(ReportSourceIs(SourceDebugKeyIs(std::nullopt)),
-                          TriggerDebugKeyIs(test_case.expected_debug_key))))
-        << test_case.name;
+                          TriggerDebugKeyIs(test_case.expected_debug_key))));
 
     attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
                                     /*filter=*/base::NullCallback(),
@@ -2574,6 +2573,8 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
   };
 
   for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+
     MockAttributionObserver observer;
     base::ScopedObservation<AttributionManager, AttributionObserver>
         observation(&observer);
@@ -2590,7 +2591,7 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
             .Build(),
         kFrameId);
 
-    EXPECT_THAT(StoredSources(), SizeIs(1)) << test_case.name;
+    EXPECT_THAT(StoredSources(), SizeIs(1));
 
     if (test_case.send_expected) {
       EXPECT_CALL(*aggregation_service_, AssembleReport)
@@ -2629,7 +2630,7 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
             .Build(),
         kFrameId);
     // one event-level-report, one aggregatable report.
-    EXPECT_THAT(StoredReports(), SizeIs(2)) << test_case.name;
+    EXPECT_THAT(StoredReports(), SizeIs(2));
 
     attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
                                     /*filter=*/base::NullCallback(),
