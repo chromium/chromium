@@ -99,10 +99,9 @@ void JNI_JavaExceptionReporter_ReportJavaException(
   }
 }
 
-void JNI_JavaExceptionReporter_ReportJavaStackTrace(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& stack_trace) {
-  SetJavaException(ConvertJavaStringToUTF8(stack_trace).c_str());
+void JNI_JavaExceptionReporter_ReportJavaStackTrace(JNIEnv* env,
+                                                    std::string& stack_trace) {
+  SetJavaException(stack_trace.c_str());
   base::debug::DumpWithoutCrashing();
   SetJavaException(nullptr);
 }

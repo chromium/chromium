@@ -10,6 +10,7 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.TraceEvent;
@@ -303,7 +304,10 @@ public class TaskRunnerImpl implements TaskRunner {
         void destroy(long nativeTaskRunnerAndroid);
 
         void postDelayedTask(
-                long nativeTaskRunnerAndroid, Runnable task, long delay, String runnableClassName);
+                long nativeTaskRunnerAndroid,
+                Runnable task,
+                long delay,
+                @JniType("std::string") String runnableClassName);
 
         boolean belongsToCurrentThread(long nativeTaskRunnerAndroid);
     }

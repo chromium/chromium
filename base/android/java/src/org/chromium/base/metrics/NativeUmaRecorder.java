@@ -5,6 +5,7 @@
 package org.chromium.base.metrics;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -155,20 +156,21 @@ import java.util.Map;
 
         /**
          * Records that the user performed an action. See {@code base::RecordComputedActionAt}.
-         * <p>
-         * Uses relative time, because Java and native code can use different clocks.
+         *
+         * <p>Uses relative time, because Java and native code can use different clocks.
          *
          * @param name Name of the user-generated event.
          * @param millisSinceEvent difference between now and the time when the event was observed.
-         *         Should be positive.
+         *     Should be positive.
          */
-        void recordUserAction(String name, long millisSinceEvent);
+        void recordUserAction(@JniType("std::string") String name, long millisSinceEvent);
 
-        int getHistogramValueCountForTesting(String name, int sample, long snapshotPtr);
+        int getHistogramValueCountForTesting(
+                @JniType("std::string") String name, int sample, long snapshotPtr);
 
-        int getHistogramTotalCountForTesting(String name, long snapshotPtr);
+        int getHistogramTotalCountForTesting(@JniType("std::string") String name, long snapshotPtr);
 
-        long[] getHistogramSamplesForTesting(String name);
+        long[] getHistogramSamplesForTesting(@JniType("std::string") String name);
 
         long createHistogramSnapshotForTesting();
 

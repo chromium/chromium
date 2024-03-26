@@ -88,7 +88,7 @@ public class TraceEvent implements AutoCloseable {
             boolean earlyTracingActive = EarlyTraceEvent.enabled();
             if ((sEnabled || earlyTracingActive) && mCurrentTarget != null) {
                 if (sEnabled) {
-                    TraceEventJni.get().endToplevel(mCurrentTarget);
+                    TraceEventJni.get().endToplevel();
                 } else {
                     EarlyTraceEvent.end(mCurrentTarget, /* isToplevel= */ true);
                 }
@@ -540,7 +540,7 @@ public class TraceEvent implements AutoCloseable {
     public static void finishAsync(String name, long id) {
         EarlyTraceEvent.finishAsync(name, id);
         if (sEnabled) {
-            TraceEventJni.get().finishAsync(name, id);
+            TraceEventJni.get().finishAsync(id);
         }
     }
 
@@ -602,7 +602,7 @@ public class TraceEvent implements AutoCloseable {
     public static void end(String name, String arg, long flow) {
         EarlyTraceEvent.end(name, /* isToplevel= */ false);
         if (sEnabled) {
-            TraceEventJni.get().end(name, arg, flow);
+            TraceEventJni.get().end(arg, flow);
         }
     }
 
@@ -633,15 +633,15 @@ public class TraceEvent implements AutoCloseable {
 
         void beginWithIntArg(String name, int arg);
 
-        void end(String name, String arg, long flow);
+        void end(String arg, long flow);
 
         void beginToplevel(String target);
 
-        void endToplevel(String target);
+        void endToplevel();
 
         void startAsync(String name, long id);
 
-        void finishAsync(String name, long id);
+        void finishAsync(long id);
 
         boolean viewHierarchyDumpEnabled();
 

@@ -5,6 +5,7 @@
 package org.chromium.base;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 /** This class provides java side access to the native PathService. */
@@ -23,6 +24,6 @@ public abstract class PathService {
 
     @NativeMethods
     interface Natives {
-        void override(int what, String path);
+        void override(int what, @JniType("std::string") String path);
     }
 }

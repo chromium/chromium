@@ -214,12 +214,11 @@ jlong JNI_NativeUmaRecorder_RecordSparseHistogram(
   return reinterpret_cast<jlong>(histogram);
 }
 
-void JNI_NativeUmaRecorder_RecordUserAction(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& j_user_action_name,
-    jlong j_millis_since_event) {
+void JNI_NativeUmaRecorder_RecordUserAction(JNIEnv* env,
+                                            std::string& user_action_name,
+                                            jlong j_millis_since_event) {
   // Time values coming from Java need to be synchronized with TimeTick clock.
-  RecordComputedActionSince(ConvertJavaStringToUTF8(env, j_user_action_name),
+  RecordComputedActionSince(user_action_name,
                             Milliseconds(j_millis_since_event));
 }
 
@@ -229,10 +228,9 @@ void JNI_NativeUmaRecorder_RecordUserAction(
 // targets - see http://crbug.com/415945.
 jint JNI_NativeUmaRecorder_GetHistogramValueCountForTesting(
     JNIEnv* env,
-    const JavaParamRef<jstring>& histogram_name,
+    std::string& name,
     jint sample,
     jlong snapshot_ptr) {
-  std::string name = android::ConvertJavaStringToUTF8(env, histogram_name);
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   if (histogram == nullptr) {
     // No samples have been recorded for this histogram (yet?).
@@ -252,9 +250,8 @@ jint JNI_NativeUmaRecorder_GetHistogramValueCountForTesting(
 
 jint JNI_NativeUmaRecorder_GetHistogramTotalCountForTesting(
     JNIEnv* env,
-    const JavaParamRef<jstring>& histogram_name,
+    std::string& name,
     jlong snapshot_ptr) {
-  std::string name = android::ConvertJavaStringToUTF8(env, histogram_name);
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   if (histogram == nullptr) {
     // No samples have been recorded for this histogram.
@@ -274,10 +271,8 @@ jint JNI_NativeUmaRecorder_GetHistogramTotalCountForTesting(
 // Returns an array with 3 entries for each bucket, representing (min, max,
 // count).
 ScopedJavaLocalRef<jlongArray>
-JNI_NativeUmaRecorder_GetHistogramSamplesForTesting(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& histogram_name) {
-  std::string name = android::ConvertJavaStringToUTF8(env, histogram_name);
+JNI_NativeUmaRecorder_GetHistogramSamplesForTesting(JNIEnv* env,
+                                                    std::string& name) {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   std::vector<int64_t> buckets;
 

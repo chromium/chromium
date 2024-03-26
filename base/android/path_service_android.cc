@@ -11,11 +11,8 @@
 namespace base {
 namespace android {
 
-void JNI_PathService_Override(JNIEnv* env,
-                              jint what,
-                              const JavaParamRef<jstring>& path) {
-  FilePath file_path(ConvertJavaStringToUTF8(env, path));
-  PathService::Override(what, file_path);
+void JNI_PathService_Override(JNIEnv* env, jint what, std::string& path) {
+  PathService::Override(what, FilePath(path));
 }
 
 }  // namespace android

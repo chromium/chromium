@@ -5,12 +5,10 @@
 package org.chromium.base.metrics;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-/**
- * Java API which exposes the registered histograms on the native side as
- * JSON test.
- */
+/** Java API which exposes the registered histograms on the native side as JSON test. */
 @JNINamespace("base::android")
 public final class StatisticsRecorderAndroid {
     private StatisticsRecorderAndroid() {}
@@ -26,6 +24,7 @@ public final class StatisticsRecorderAndroid {
 
     @NativeMethods
     interface Natives {
-        String toJson(@JSONVerbosityLevel int verbosityLevel);
+        @JniType("std::string")
+        String toJson(@JSONVerbosityLevel @JniType("JSONVerbosityLevel") int verbosityLevel);
     }
 }

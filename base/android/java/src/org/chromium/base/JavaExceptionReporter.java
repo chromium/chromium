@@ -8,14 +8,15 @@ import androidx.annotation.UiThread;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 /**
  * This UncaughtExceptionHandler will create a breakpad minidump when there is an uncaught
  * exception.
  *
- * The exception's stack trace will be added to the minidump's data. This allows java-only crashes
- * to be reported in the same way as other native crashes.
+ * <p>The exception's stack trace will be added to the minidump's data. This allows java-only
+ * crashes to be reported in the same way as other native crashes.
  */
 @JNINamespace("base::android")
 public class JavaExceptionReporter implements Thread.UncaughtExceptionHandler {
@@ -87,6 +88,6 @@ public class JavaExceptionReporter implements Thread.UncaughtExceptionHandler {
     interface Natives {
         void reportJavaException(boolean crashAfterReport, Throwable e);
 
-        void reportJavaStackTrace(String stackTrace);
+        void reportJavaStackTrace(@JniType("std::string") String stackTrace);
     }
 }
