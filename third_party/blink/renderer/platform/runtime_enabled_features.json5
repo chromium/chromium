@@ -2854,10 +2854,6 @@
       status: "experimental",
     },
     {
-      name: "PastingBlocksSVGUseNonLocalHrefs",
-      status: "stable",
-    },
-    {
       name: "PaymentApp",
       depends_on: ["PaymentRequest"],
       public: true,

@@ -912,9 +912,7 @@ static bool ContainsStyleElements(const DocumentFragment& fragment) {
 static bool StripSVGUseNonLocalHrefs(Node& node) {
   if (auto* use = DynamicTo<SVGUseElement>(node)) {
     SVGURLReferenceResolver resolver(use->HrefString(), use->GetDocument());
-    if ((RuntimeEnabledFeatures::PastingBlocksSVGUseNonLocalHrefsEnabled() &&
-         !resolver.IsLocal()) ||
-        resolver.AbsoluteUrl().ProtocolIsData()) {
+    if (!resolver.IsLocal() || resolver.AbsoluteUrl().ProtocolIsData()) {
       node.remove();
     }
     return true;
