@@ -26,18 +26,23 @@
 
 namespace {
 
+// Chrome logo with 40pt size.
+NSString* const kChromeIcon40pt = @"chrome_icon_40";
 // Line width for the bottom separator.
 constexpr CGFloat kLineWidth = 1.;
-// The horizontal space between the safe area edges and the view elements.
-constexpr CGFloat kHorizontalInsets = -48.;
 // Space between the Chrome logo and the top of the screen.
-constexpr CGFloat kTopSpacing = 40.;
-// Space between the elements of the top stack view and around the primary
-// button.
-constexpr CGFloat kDefaultMargin = 16.;
+constexpr CGFloat kLogoTopMargin = 24.;
 // Logo dimensions.
-constexpr CGFloat kLogoSize = 50.;
-// Stack view margin.
+constexpr CGFloat kLogoSize = 40.;
+// Margin between the logo and the title.
+constexpr CGFloat kLogoTitleMargin = 16.;
+// Margin between the title and the subtitle.
+constexpr CGFloat kTitleSubtitleMargin = 8.;
+// Margin between the subtitle and search engine stack view.
+constexpr CGFloat kSubtitleSearchEngineStackMargin = 20.;
+// Margin above and below the button.
+constexpr CGFloat kButtonMargin = 16.;
+// Stack view margin for compact vertical size.
 constexpr CGFloat kStackViewMargin = 24.;
 
 // URL for the "Learn more" link.
@@ -64,29 +69,19 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
 @end
 
 @implementation SearchEngineChoiceViewController {
-  // The screen's title
-  NSString* _titleString;
   // Button to confirm the default search engine selection.
   UIButton* _primaryButton;
-  // View that contains all the UI elements above the search engine table.
-  UIStackView* _topZoneStackView;
-  // The chrome logo.
-  UIImageView* _logoView;
   // The view title.
   UILabel* _titleLabel;
-  // Some informational text above the search engines table.
-  UITextView* _subtitleTextView;
-  // Separator between the search engines table and the primary button.
-  UIView* _separatorView;
   // Scrollable content containing everything above the primary button.
   UIScrollView* _scrollView;
-  UIView* _scrollContentView;
   // Whether the choice screen is being displayed for the FRE.
   BOOL _isForFRE;
+  // Whether the scroll view reached the bottom at least once.
   BOOL _didReachBottom;
-  // Search engine element chosen by the user.
-  SnippetSearchEngineElement* _chosenSearchEngineElement;
+  // Contains the list of search engine buttons.
   UIStackView* _searchEngineStackView;
+  // Contains the selected search engine button.
   SnippetSearchEngineButton* _selectedSearchEngineButton;
   // Wether `-[SearchEngineChoiceViewController viewWillAppear]` was called.
   BOOL _viewWillAppearCalled;
@@ -114,38 +109,29 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
 
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
-  _scrollContentView = [[UIView alloc] init];
-  _scrollContentView.translatesAutoresizingMaskIntoConstraints = NO;
+  // Add main scroll view with its content view.
+  UIView* scrollContentView = [[UIView alloc] init];
+  scrollContentView.translatesAutoresizingMaskIntoConstraints = NO;
+  _scrollView = [[UIScrollView alloc] init];
+  [self.view addSubview:_scrollView];
+  _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  _scrollView.accessibilityIdentifier = kSearchEngineChoiceScrollViewIdentifier;
+  _scrollView.delegate = self;
+  [_scrollView addSubview:scrollContentView];
 
-  _topZoneStackView = [[UIStackView alloc] init];
-  [_scrollContentView addSubview:_topZoneStackView];
-  _topZoneStackView.axis = UILayoutConstraintAxisVertical;
-  _topZoneStackView.spacing = kDefaultMargin;
-  _topZoneStackView.distribution = UIStackViewDistributionEqualSpacing;
-  _topZoneStackView.alignment = UIStackViewAlignmentCenter;
-  _topZoneStackView.translatesAutoresizingMaskIntoConstraints = NO;
-
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  _logoView = [[UIImageView alloc]
-      initWithImage:MakeSymbolMulticolor(CustomSymbolWithPointSize(
-                        kMulticolorChromeballSymbol, kLogoSize))];
-#else
-  _logoView = [[UIImageView alloc]
-      initWithImage:CustomSymbolWithPointSize(kChromeProductSymbol, kLogoSize)];
-#endif
-  [_topZoneStackView addArrangedSubview:_logoView];
-  if (self.traitCollection.verticalSizeClass ==
-      UIUserInterfaceSizeClassCompact) {
-    _logoView.hidden = YES;
-  }
-  _logoView.translatesAutoresizingMaskIntoConstraints = NO;
+  // Need to use a regular png instead of custom symbol to have a better control
+  // on the size and the margin of the logo.
+  UIImage* logoImage = [UIImage imageNamed:kChromeIcon40pt];
+  UIImageView* logoImageView = [[UIImageView alloc] initWithImage:logoImage];
+  [scrollContentView addSubview:logoImageView];
+  logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
 
   _titleLabel = [[UILabel alloc] init];
-  // Add semantic group to have a coherent behaviour with the table view and
-  // the primary button, this is related to VoiceOver.
+  // Add semantic group, so the user can skip all the search engine stack view,
+  // and jump to the primary button, using VoiceOver.
   _titleLabel.accessibilityContainerType =
       UIAccessibilityContainerTypeSemanticGroup;
-  [_topZoneStackView addArrangedSubview:_titleLabel];
+  [scrollContentView addSubview:_titleLabel];
   [_titleLabel
       setText:l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE)];
   [_titleLabel setTextColor:[UIColor colorNamed:kSolidBlackColor]];
@@ -178,18 +164,22 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
       IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK_A11Y_LABEL);
   [subtitleText appendAttributedString:learnMoreAttributedString];
 
-  _subtitleTextView = [[UITextView alloc] init];
-  [_topZoneStackView addArrangedSubview:_subtitleTextView];
-  [_subtitleTextView setAttributedText:subtitleText];
-  [_subtitleTextView
+  UITextView* subtitleTextView = [[UITextView alloc] init];
+  [scrollContentView addSubview:subtitleTextView];
+  [subtitleTextView setAttributedText:subtitleText];
+  [subtitleTextView
       setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]];
-  _subtitleTextView.backgroundColor = nil;
-  _subtitleTextView.adjustsFontForContentSizeCategory = YES;
-  [_subtitleTextView setTextAlignment:NSTextAlignmentCenter];
-  _subtitleTextView.delegate = self;
-  _subtitleTextView.scrollEnabled = NO;
-  _subtitleTextView.editable = NO;
-  _subtitleTextView.translatesAutoresizingMaskIntoConstraints = NO;
+  subtitleTextView.backgroundColor = nil;
+  subtitleTextView.adjustsFontForContentSizeCategory = YES;
+  [subtitleTextView setTextAlignment:NSTextAlignmentCenter];
+  subtitleTextView.delegate = self;
+  // Disable and hide scrollbar.
+  subtitleTextView.textContainerInset = UIEdgeInsetsMake(0, 0, 0, 0);
+  subtitleTextView.scrollEnabled = NO;
+  subtitleTextView.showsVerticalScrollIndicator = NO;
+  subtitleTextView.showsHorizontalScrollIndicator = NO;
+  subtitleTextView.editable = NO;
+  subtitleTextView.translatesAutoresizingMaskIntoConstraints = NO;
 
   _searchEngineStackView = [[UIStackView alloc] init];
   // Add semantic group, so the user can skip all the search engine stack view,
@@ -202,23 +192,15 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   _searchEngineStackView.layer.masksToBounds = YES;
   _searchEngineStackView.translatesAutoresizingMaskIntoConstraints = NO;
   _searchEngineStackView.axis = UILayoutConstraintAxisVertical;
-  [_scrollContentView addSubview:_searchEngineStackView];
+  [scrollContentView addSubview:_searchEngineStackView];
 
-  _scrollView = [[UIScrollView alloc] init];
-  _scrollView.accessibilityIdentifier = kSearchEngineChoiceScrollViewIdentifier;
-  _scrollView.delegate = self;
-  [_scrollView addSubview:_scrollContentView];
-  [self.view addSubview:_scrollView];
-  _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
-
-  _separatorView = [[UIView alloc] init];
-  [self.view addSubview:_separatorView];
-  _separatorView.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-  [self.view bringSubviewToFront:_separatorView];
-  _separatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  UIView* separatorView = [[UIView alloc] init];
+  [self.view addSubview:separatorView];
+  separatorView.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+  [self.view bringSubviewToFront:separatorView];
+  separatorView.translatesAutoresizingMaskIntoConstraints = NO;
 
   _primaryButton = CreateMorePrimaryButton();
-
   [self.view addSubview:_primaryButton];
   [_primaryButton addTarget:self
                      action:@selector(primaryButtonAction)
@@ -234,61 +216,78 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
     [_scrollView.widthAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.widthAnchor],
-    [_scrollView.bottomAnchor constraintEqualToAnchor:_separatorView.topAnchor],
+    [_scrollView.centerXAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor],
 
     // Scroll content view constraints.
-    [_scrollContentView.topAnchor
+    [scrollContentView.topAnchor
         constraintEqualToAnchor:_scrollView.contentLayoutGuide.topAnchor],
-    [_scrollContentView.widthAnchor
-        constraintEqualToAnchor:_scrollView.widthAnchor],
-    [_scrollContentView.bottomAnchor
+    [scrollContentView.bottomAnchor
         constraintEqualToAnchor:_scrollView.contentLayoutGuide.bottomAnchor],
-    [_scrollContentView.heightAnchor
+    [scrollContentView.heightAnchor
         constraintGreaterThanOrEqualToAnchor:_scrollView.heightAnchor],
+    [scrollContentView.centerXAnchor
+        constraintEqualToAnchor:_scrollView.centerXAnchor],
+    [scrollContentView.widthAnchor
+        constraintEqualToAnchor:_scrollView.widthAnchor],
 
-    [_topZoneStackView.topAnchor
-        constraintEqualToAnchor:_scrollContentView.topAnchor
-                       constant:kTopSpacing],
-    [_topZoneStackView.widthAnchor
-        constraintEqualToAnchor:_scrollContentView.widthAnchor
-                       constant:kHorizontalInsets],
+    // Logo.
+    [logoImageView.topAnchor constraintEqualToAnchor:scrollContentView.topAnchor
+                                            constant:kLogoTopMargin],
+    [logoImageView.heightAnchor constraintEqualToConstant:kLogoSize],
+    [logoImageView.centerXAnchor
+        constraintEqualToAnchor:scrollContentView.centerXAnchor],
+    [logoImageView.widthAnchor constraintEqualToConstant:kLogoSize],
 
-    [_logoView.widthAnchor constraintEqualToConstant:kLogoSize],
-    [_logoView.heightAnchor constraintEqualToConstant:kLogoSize],
+    // Title.
+    [_titleLabel.topAnchor constraintEqualToAnchor:logoImageView.bottomAnchor
+                                          constant:kLogoTitleMargin],
+    [_titleLabel.leadingAnchor
+        constraintEqualToAnchor:_searchEngineStackView.leadingAnchor],
+    [_titleLabel.trailingAnchor
+        constraintEqualToAnchor:_searchEngineStackView.trailingAnchor],
 
-    [_primaryButton.bottomAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
-                       constant:-kDefaultMargin],
-    [_primaryButton.widthAnchor constraintEqualToAnchor:self.view.widthAnchor
-                                               constant:kHorizontalInsets],
+    // SubtitleTextView.
+    [subtitleTextView.topAnchor constraintEqualToAnchor:_titleLabel.bottomAnchor
+                                               constant:kTitleSubtitleMargin],
+    [subtitleTextView.leadingAnchor
+        constraintEqualToAnchor:_searchEngineStackView.leadingAnchor],
+    [subtitleTextView.trailingAnchor
+        constraintEqualToAnchor:_searchEngineStackView.trailingAnchor],
 
-    [_separatorView.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
-    [_separatorView.heightAnchor constraintEqualToConstant:kLineWidth],
-    [_separatorView.bottomAnchor
-        constraintEqualToAnchor:_primaryButton.topAnchor
-                       constant:-kDefaultMargin],
-
+    // Search engine stack view.
     [_searchEngineStackView.topAnchor
-        constraintEqualToAnchor:_subtitleTextView.bottomAnchor],
+        constraintEqualToAnchor:subtitleTextView.bottomAnchor
+                       constant:kSubtitleSearchEngineStackMargin],
     [_searchEngineStackView.bottomAnchor
-        constraintLessThanOrEqualToAnchor:_scrollContentView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:scrollContentView.bottomAnchor
                                  constant:-kStackViewMargin],
     [_searchEngineStackView.leadingAnchor
-        constraintEqualToAnchor:_scrollContentView.leadingAnchor
+        constraintEqualToAnchor:scrollContentView.leadingAnchor
                        constant:kStackViewMargin],
     [_searchEngineStackView.trailingAnchor
-        constraintEqualToAnchor:_scrollContentView.trailingAnchor
+        constraintEqualToAnchor:scrollContentView.trailingAnchor
                        constant:-kStackViewMargin],
+    [_searchEngineStackView.centerXAnchor
+        constraintEqualToAnchor:scrollContentView.centerXAnchor],
 
-    [self.view.centerXAnchor
-        constraintEqualToAnchor:_primaryButton.centerXAnchor],
-    [self.view.centerXAnchor
-        constraintEqualToAnchor:_topZoneStackView.centerXAnchor],
-    [self.view.centerXAnchor
-        constraintEqualToAnchor:_separatorView.centerXAnchor],
-    [self.view.centerXAnchor constraintEqualToAnchor:_scrollView.centerXAnchor],
-    [_scrollView.centerXAnchor
-        constraintEqualToAnchor:_scrollContentView.centerXAnchor],
+    // Separator.
+    [separatorView.topAnchor constraintEqualToAnchor:_scrollView.bottomAnchor],
+    [separatorView.heightAnchor constraintEqualToConstant:kLineWidth],
+    [separatorView.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
+    [separatorView.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+
+    // Primary button.
+    [_primaryButton.topAnchor constraintEqualToAnchor:separatorView.bottomAnchor
+                                             constant:kButtonMargin],
+    [_primaryButton.bottomAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
+                       constant:-kButtonMargin],
+    [_primaryButton.widthAnchor
+        constraintEqualToAnchor:_searchEngineStackView.widthAnchor],
+    [_primaryButton.centerXAnchor
+        constraintEqualToAnchor:_searchEngineStackView.centerXAnchor],
   ]];
   [self updatePrimaryActionButton];
   [self loadSearchEngineButtons];
@@ -413,29 +412,6 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
               interaction:(UITextItemInteraction)interaction {
   [self.actionDelegate showLearnMore];
   return NO;
-}
-
-#pragma mark - UIContentContainer
-
-- (void)willTransitionToTraitCollection:(UITraitCollection*)newCollection
-              withTransitionCoordinator:
-                  (id<UIViewControllerTransitionCoordinator>)coordinator {
-  [super willTransitionToTraitCollection:newCollection
-               withTransitionCoordinator:coordinator];
-  switch (newCollection.verticalSizeClass) {
-      // `hidden` is not an animatable property so we use `alpha` to make the
-      // transition smooth.
-    case UIUserInterfaceSizeClassRegular:
-      _logoView.alpha = 1;
-      _logoView.hidden = NO;
-      break;
-    case UIUserInterfaceSizeClassCompact:
-      _logoView.alpha = 0;
-      _logoView.hidden = YES;
-      break;
-    default:
-      break;
-  };
 }
 
 @end

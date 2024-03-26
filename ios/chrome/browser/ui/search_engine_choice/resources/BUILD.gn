@@ -1,0 +1,18 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+import("//build/config/ios/rules.gni")
+
+group("resources") {
+  deps = [ ":chrome_icon_40" ]
+}
+
+imageset("chrome_icon_40") {
+  sources = [
+    "chrome_icon_40.imageset/Contents.json",
+    "chrome_icon_40.imageset/chrome_icon_40@2x.png",
+    "chrome_icon_40.imageset/chrome_icon_40@3x.png",
+  ]
+}
