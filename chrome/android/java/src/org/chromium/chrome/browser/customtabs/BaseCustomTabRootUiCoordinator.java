@@ -459,9 +459,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     // Google Bottom bar
-    private @Nullable GoogleBottomBarCoordinator maybeCreateGoogleBottomBarComponents() {
-        // TODO - add intent check once flag is provided through intent extra
-        if (!GoogleBottomBarCoordinator.isFeatureEnabled()) {
+    private @Nullable GoogleBottomBarCoordinator maybeCreateGoogleBottomBarComponents(
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        if (!isGoogleBottomBarEnabled(intentDataProvider)) {
             return null;
         }
 
@@ -470,9 +470,17 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     public @Nullable GoogleBottomBarCoordinator getGoogleBottomBarCoordinator() {
         if (mGoogleBottomBarCoordinator == null) {
-            mGoogleBottomBarCoordinator = maybeCreateGoogleBottomBarComponents();
+            mGoogleBottomBarCoordinator =
+                    maybeCreateGoogleBottomBarComponents(mIntentDataProvider.get());
         }
         return mGoogleBottomBarCoordinator;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static boolean isGoogleBottomBarEnabled(BrowserServicesIntentDataProvider intentDataProvider) {
+        return GoogleBottomBarCoordinator.isFeatureEnabled()
+                && CustomTabsConnection.getInstance()
+                        .shouldEnableGoogleBottomBarForIntent(intentDataProvider);
     }
 
     @Override

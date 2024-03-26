@@ -65,4 +65,39 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                 "PageInsightsHub should be disabled",
                 BaseCustomTabRootUiCoordinator.isPageInsightsHubEnabled(null));
     }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR)
+    public void testGoogleBottomBarEnabled_cctGoogleBottomBarTrue() throws Exception {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        assertTrue(
+                "Google Bottom Bar should be enabled",
+                BaseCustomTabRootUiCoordinator.isGoogleBottomBarEnabled(null));
+
+        // The method should return false if any one of the conditions is not met .
+
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(false);
+        assertFalse(
+                "Google Bottom Bar should be disabled",
+                BaseCustomTabRootUiCoordinator.isGoogleBottomBarEnabled(null));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR)
+    public void testGoogleBottomBarEnabled_cctGoogleBottomBarFalse() throws Exception {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+
+        // The method returns false if the flag is set to false
+
+        assertFalse(
+                "Google Bottom Bar should be disabled",
+                BaseCustomTabRootUiCoordinator.isGoogleBottomBarEnabled(null));
+    }
 }
