@@ -49,8 +49,17 @@ experimental_credentials_helper_args={args}
 LUCI_AUTH_CREDSHELPER_FLAGS = """
 experimental_credentials_helper={credshelper}
 experimental_credentials_helper_args={args}
-""".format(credshelper=os.path.join("luci-auth"),
-           args="token -scopes-context -json-output - -json-format reclient")
+""".format(
+    credshelper=os.path.join("luci-auth"),
+    args=" ".join([
+        "token",
+        "-scopes-context",
+        "-json-output=-",
+        "-json-format=reclient",
+        "-lifetime=5m",
+    ]),
+)
+
 
 def ClangRevision():
     sys.path.insert(0, os.path.join(CHROMIUM_SRC, "tools", "clang", "scripts"))
