@@ -1792,6 +1792,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/test/android:chrome_java_integration_test_support",
       "//chrome/test/android:chrome_java_test_pagecontroller",
       "//chrome/test/android:chrome_java_transit",
+      "//chrome/test/android:live_signin_test_util_public_impl_java",
       "//chrome/test/android/test_trusted_web_activity:test_trusted_web_activity_java",
       "//components/autofill/android:autofill_features_java",
       "//components/autofill/android:autofill_java",

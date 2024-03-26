@@ -1503,47 +1503,10 @@ if (is_android) {
         "${target_gen_dir}/android_browsertests_manifest/AndroidManifest.xml"
     android_manifest_dep = ":android_browsertests_manifest"
 
-    deps = [
-      ":android_browsertests_assets",
-      ":android_browsertests_java",
-      ":browser_tests_runner",
-      ":chrome_test_launcher",
-      ":sync_integration_test_support",
-      ":sync_integration_test_support_java",
-      ":test_support",
-      ":test_support_java",
-      ":test_support_ui_android",
-      "//chrome:chrome_android_core",
-      "//chrome/android:delegate_public_impl_java",
-      "//chrome/browser/android/webapk:webapk_sources",
-      "//components/bookmarks/browser",
-      "//components/browser_sync:switches",
-      "//components/password_manager/core/browser/sharing",
-      "//components/plus_addresses",
-      "//components/plus_addresses:test_support",
-      "//components/plus_addresses/webdata",
-      "//components/reading_list/core:test_support",
-      "//components/reading_list/features:flags",
-      "//components/sync:test_support",
-      "//components/sync_bookmarks",
-      "//components/sync_device_info:test_support",
-      "//components/sync_preferences:common_syncable_prefs_database",
-      "//components/undo",
-      "//content/test:android_test_message_pump_support",
-      "//testing/android/native_test:native_test_support",
-    ]
-
-    sources = sync_integration_tests_sources +
-              [ "android/browsertests_apk/android_browsertests_jni_onload.cc" ]
-
-    data = [
-      "//chrome/test/data/sync/",
-      "$root_gen_dir/chrome/android/chrome_apk_paks/chrome_100_percent.pak",
-      "$root_gen_dir/chrome/android/chrome_apk_paks/locales/en-US.pak",
-      "$root_gen_dir/chrome/android/chrome_apk_paks/resources.pak",
-      "$root_gen_dir/components/components_resources.pak",
-      "$root_gen_dir/components/dev_ui_components_resources.pak",
-    ]
+    deps = android_sync_integration_tests_deps +
+           [ "//chrome/test/android:live_signin_test_util_public_impl_java" ]
+    sources = sync_integration_tests_sources
+    data = android_sync_integration_tests_data
   }
 
   static_library("test_support_ui_android") {
@@ -11687,8 +11650,6 @@ if (is_android) {
       "//third_party/junit",
     ]
 
-    # TODO(crbug.com/40189294): Configurably add upstream or downstream impl
-    deps += [ "//chrome/test/android:live_signin_test_util_public_impl_java" ]
     sources = [ "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestSigninUtils.java" ]
   }
 
@@ -11988,8 +11949,8 @@ if (!is_android) {
     if (is_mac) {
       # Dictionary sync is disabled on Mac.
       sources -= [
-        "../browser/sync/test/integration/single_client_dictionary_sync_test.cc",
-        "../browser/sync/test/integration/two_client_dictionary_sync_test.cc",
+        "//chrome/browser/sync/test/integration/single_client_dictionary_sync_test.cc",
+        "//chrome/browser/sync/test/integration/two_client_dictionary_sync_test.cc",
       ]
 
       data_deps += [
@@ -12006,21 +11967,21 @@ if (!is_android) {
     }
     if (is_chromeos_ash) {
       sources += [
-        "../browser/sync/test/integration/ash_apps_toggle_sharing_sync_test.cc",
-        "../browser/sync/test/integration/ash_custom_passphrase_sharing_sync_test.cc",
-        "../browser/sync/test/integration/ash_lacros_sync_test.cc",
-        "../browser/sync/test/integration/ash_trusted_vault_keys_sharing_sync_test.cc",
-        "../browser/sync/test/integration/single_client_app_list_sync_test.cc",
-        "../browser/sync/test/integration/single_client_arc_package_sync_test.cc",
-        "../browser/sync/test/integration/single_client_os_preferences_sync_test.cc",
-        "../browser/sync/test/integration/single_client_printers_sync_test.cc",
-        "../browser/sync/test/integration/single_client_wifi_configuration_sync_test.cc",
-        "../browser/sync/test/integration/single_client_workspace_desk_sync_test.cc",
-        "../browser/sync/test/integration/two_client_app_list_sync_test.cc",
-        "../browser/sync/test/integration/two_client_arc_package_sync_test.cc",
-        "../browser/sync/test/integration/two_client_os_preferences_sync_test.cc",
-        "../browser/sync/test/integration/two_client_printers_sync_test.cc",
-        "../browser/sync/test/integration/two_client_workspace_desk_sync_test.cc",
+        "//chrome/browser/sync/test/integration/ash_apps_toggle_sharing_sync_test.cc",
+        "//chrome/browser/sync/test/integration/ash_custom_passphrase_sharing_sync_test.cc",
+        "//chrome/browser/sync/test/integration/ash_lacros_sync_test.cc",
+        "//chrome/browser/sync/test/integration/ash_trusted_vault_keys_sharing_sync_test.cc",
+        "//chrome/browser/sync/test/integration/single_client_app_list_sync_test.cc",
+        "//chrome/browser/sync/test/integration/single_client_arc_package_sync_test.cc",
+        "//chrome/browser/sync/test/integration/single_client_os_preferences_sync_test.cc",
+        "//chrome/browser/sync/test/integration/single_client_printers_sync_test.cc",
+        "//chrome/browser/sync/test/integration/single_client_wifi_configuration_sync_test.cc",
+        "//chrome/browser/sync/test/integration/single_client_workspace_desk_sync_test.cc",
+        "//chrome/browser/sync/test/integration/two_client_app_list_sync_test.cc",
+        "//chrome/browser/sync/test/integration/two_client_arc_package_sync_test.cc",
+        "//chrome/browser/sync/test/integration/two_client_os_preferences_sync_test.cc",
+        "//chrome/browser/sync/test/integration/two_client_printers_sync_test.cc",
+        "//chrome/browser/sync/test/integration/two_client_workspace_desk_sync_test.cc",
       ]
       deps += [
         "//chromeos/ash/components/browser_context_helper",
