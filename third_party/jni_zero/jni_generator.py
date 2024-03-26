@@ -150,7 +150,7 @@ def JavaTypeToCForCalledByNativeParam(java_type):
   if converted_type := java_type.converted_type():
     if java_type.is_primitive():
       return converted_type
-    return f'const {converted_type}&'
+    return f'{converted_type} const&'
   if java_type.is_primitive():
     if c_type == 'jint':
       return 'JniIntWrapper'

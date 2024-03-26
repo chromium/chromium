@@ -31,7 +31,7 @@ JavaHandlerThread::JavaHandlerThread(const char* name,
           name,
           Java_JavaHandlerThread_create(
               AttachCurrentThread(),
-              ConvertUTF8ToJavaString(AttachCurrentThread(), name),
+              name,
               base::internal::ThreadTypeToNiceValue(thread_type))) {}
 
 JavaHandlerThread::JavaHandlerThread(

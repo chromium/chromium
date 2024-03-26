@@ -19,7 +19,7 @@ def conversion_declarations(java_to_cpp_types, cpp_to_java_types):
     T = java_type.converted_type()
     J = java_type.to_cpp()
     declarations.add(f'template<> jni_zero::ScopedJavaLocalRef<{J}> '
-                     f'ToJniType<{T}, {J}>(JNIEnv*, const {T}&);')
+                     f'ToJniType<{T}, {J}>(JNIEnv*, {T} const&);')
 
   if not declarations:
     return ''

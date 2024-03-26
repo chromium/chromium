@@ -270,7 +270,7 @@ static jni_zero::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(
 static std::string Java_SampleForTests_getFirstString(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& obj,
-    const std::vector<std::string>& array) {
+    std::vector<const char*> const& array) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
@@ -283,7 +283,7 @@ static std::string Java_SampleForTests_getFirstString(
       "([Ljava/lang/String;)Ljava/lang/String;",
       &cached_method_id);
   jni_zero::ScopedJavaLocalRef<jobjectArray> array_converted =
-      jni_zero::ConvertArray<std::vector<std::string>>::ToJniType<jstring>(env, array,
+      jni_zero::ConvertArray<std::vector<const char*>>::ToJniType<jstring>(env, array,
       jni_zero::g_string_class);
   auto ret = env->CallObjectMethod(
       obj.obj(),

@@ -28,6 +28,13 @@ BASE_EXPORT ScopedJavaLocalRef<jstring> ToJniType<std::string, jstring>(
 }
 
 template <>
+BASE_EXPORT ScopedJavaLocalRef<jstring> ToJniType<const char*>(
+    JNIEnv* env,
+    const char* const& input) {
+  return base::android::ConvertUTF8ToJavaString(env, input);
+}
+
+template <>
 BASE_EXPORT std::u16string FromJniType<std::u16string, jstring>(
     JNIEnv* env,
     const JavaRef<jstring>& input) {

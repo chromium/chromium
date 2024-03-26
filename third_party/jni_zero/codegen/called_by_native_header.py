@@ -34,7 +34,7 @@ def _param_type_cpp(java_type):
   if converted_type := java_type.converted_type():
     if java_type.is_primitive():
       return converted_type
-    return f'const {converted_type}&'
+    return f'{converted_type} const&'
   ret = java_type.to_cpp()
   if java_type.is_primitive():
     if ret == 'jint':

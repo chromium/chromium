@@ -45,6 +45,12 @@ ScopedJavaLocalRef<jstring> ToJniType<std::u16string>(
     const std::u16string& input) {
   return {};
 }
+template <>
+ScopedJavaLocalRef<jstring> ToJniType<const char*>(
+    JNIEnv* env,
+    const char * const& input) {
+  return {};
+}
 
 // Specialized conversions for std::optional<std::basic_string<T>> since jstring
 // is a nullable type but std::basic_string<T> is not.
@@ -338,7 +344,7 @@ int main() {
   ScopedJavaLocalRef<jobject> my_created_object =
       jni_zero::tests::Java_SampleForTests_Constructor(env, 1, 2);
 
-  std::vector<std::string> string_vector = {"Test"};
+  std::vector<const char*> string_vector = {"Test"};
   std::string first_string =
       jni_zero::tests::Java_SampleForTests_getFirstString(
           env, my_created_object, string_vector);

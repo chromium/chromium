@@ -110,7 +110,7 @@ class SampleForTests {
     // Tests @JniType for @CalledByNative methods.
     @CalledByNative
     @JniType("std::string")
-    public String getFirstString(@JniType("std::vector<std::string>") String[] array) {
+    public String getFirstString(@JniType("std::vector<const char*>") String[] array) {
         return array[0];
     }
 

@@ -10,6 +10,7 @@ import android.os.Looper;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -30,7 +31,7 @@ public class JavaHandlerThread {
     }
 
     @CalledByNative
-    private static JavaHandlerThread create(String name, int priority) {
+    private static JavaHandlerThread create(@JniType("const char*") String name, int priority) {
         return new JavaHandlerThread(name, priority);
     }
 
