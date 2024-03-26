@@ -43,6 +43,11 @@
 #include "base/mac/mac_util.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
+#include "chromeos/services/machine_learning/public/cpp/service_connection.h"
+#endif
+
 namespace webnn::test {
 
 namespace {
@@ -318,7 +323,7 @@ class WebNNGraphImplBackendTest : public testing::Test {
 void WebNNGraphImplBackendTest::SetUp() {
   if (base::mac::MacOSVersion() < 13'00'00) {
     GTEST_SKIP() << "Skipping test because WebNN is not supported on Mac OS "
-                  << base::mac::MacOSVersion();
+                 << base::mac::MacOSVersion();
   }
   const std::string_view current_test_name =
       ::testing::UnitTest::GetInstance()->current_test_info()->name();
@@ -326,8 +331,7 @@ void WebNNGraphImplBackendTest::SetUp() {
       "BuildAndComputeSingleOperatorElementWiseBinary",
   });
   if (!kSupportedTests.contains(current_test_name)) {
-    GTEST_SKIP()
-        << "Skipping test because the operator is not yet supported.";
+    GTEST_SKIP() << "Skipping test because the operator is not yet supported.";
   }
 }
 #endif  // BUILDFLAG(IS_MAC)
@@ -337,13 +341,35 @@ class WebNNGraphImplBackendTest : public testing::Test {
  public:
   WebNNGraphImplBackendTest()
       : scoped_feature_list_(
-            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
+            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {
+#if BUILDFLAG(IS_CHROMEOS)
+    chromeos::machine_learning::ServiceConnection::
+        UseFakeServiceConnectionForTesting(&fake_service_connection_);
+    chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
+#endif
+  }
 
   void SetUp() override;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  template <typename DataType>
+  void SetComputeResult(std::string output_name,
+                        std::vector<DataType> output_data) {
+    base::flat_map<std::string, std::vector<uint8_t>> output_tensors;
+    auto output_data_in_byte = base::as_bytes(base::make_span(output_data));
+    output_tensors[output_name] = std::vector<uint8_t>(
+        output_data_in_byte.begin(), output_data_in_byte.end());
+    fake_service_connection_.SetOutputWebPlatformModelCompute(output_tensors);
+  }
+#endif
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
+#if BUILDFLAG(IS_CHROMEOS)
+  chromeos::machine_learning::FakeServiceConnectionImpl
+      fake_service_connection_;
+#endif
 };
 
 void WebNNGraphImplBackendTest::SetUp() {
@@ -1561,7 +1587,11 @@ struct ElementWiseBinaryTester {
   OperandInfo<I> rhs;
   mojom::ElementWiseBinary::Kind kind;
   OperandInfo<O> output;
-  void Test() {
+  void Test(WebNNGraphImplBackendTest& helper) {
+#if BUILDFLAG(IS_CHROMEOS)
+    helper.SetComputeResult("output", output.values);
+#endif
+
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
     uint64_t lhs_operand_id =
@@ -1603,7 +1633,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {},
                    .values = {7}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator add.
   {
@@ -1618,7 +1648,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {7, 7, 7, 7, 7, 7}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator add using
   // broadcasting from 0-D scalar.
@@ -1634,7 +1664,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {2, 3, 4, 5, 6, 7}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator add using
   // broadcasting.
@@ -1650,7 +1680,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 2},
                    .values = {2, 12, 3, 13, 4, 14, 5, 15, 6, 16, 7, 17}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator div.
   {
@@ -1665,7 +1695,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {0.5, 1, 1.5, 2, 2.5, 3}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator div using
   // broadcasting.
@@ -1681,7 +1711,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 2},
                    .values = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1, 1, 1, 1, 1, 1}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator max.
   {
@@ -1696,7 +1726,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {6, 5, 4, 4, 5, 6}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator max using
   // broadcasting.
@@ -1712,7 +1742,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {6, 6, 6, 4, 5, 6}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator min.
   {
@@ -1727,7 +1757,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {1, 2, 3, 3, 2, 1}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator min using
   // broadcasting.
@@ -1743,7 +1773,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 3, 2, 1},
                    .values = {1, 1, 2, 1, 2, 1}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator mul.
   {
@@ -1758,7 +1788,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {6, 10, 12, 12, 10, 6}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator mul using
   // broadcasting.
@@ -1774,7 +1804,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {6, 12, 18, 20, 25, 30}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator pow.
   {
@@ -1789,7 +1819,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {1, 4, 3, 4, 25, 6}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator pow using
   // broadcasting.
@@ -1805,7 +1835,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {1, 4, 3, 4, 25, 6}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator sub.
   {
@@ -1820,7 +1850,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {0, 0, 2, 2, 4, 4}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator sub using
   // broadcasting.
@@ -1836,7 +1866,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {-1, 0, 1, 2, 3, 4}}}
-        .Test();
+        .Test(*this);
   }
   // TODO(https://issues.chromium.org/41481333): Enable these tests on Mac,
   // after adding support for other binary operators.
@@ -1858,7 +1888,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kUint8,
                    .dimensions = {1, 2, 3, 1},
                    .values = {0, 0, 0, 1, 0, 0}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator equal using
   // broadcasting.
@@ -1875,7 +1905,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kUint8,
                    .dimensions = {1, 2, 3, 1},
                    .values = {0, 1, 0, 0, 0, 0}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator greater.
   {
@@ -1891,7 +1921,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kUint8,
                    .dimensions = {1, 2, 3, 1},
                    .values = {0, 1, 0, 0, 1, 1}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator greater using
   // broadcasting.
@@ -1908,7 +1938,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kUint8,
                    .dimensions = {1, 2, 3, 1},
                    .values = {0, 0, 1, 1, 1, 1}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing graph with single operator greaterOrEqual.
   {
@@ -1924,7 +1954,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kUint8,
                    .dimensions = {1, 2, 3, 1},
                    .values = {0, 0, 0, 1, 1, 1}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator
   // greaterOrEqual using broadcasting.
@@ -1941,7 +1971,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kUint8,
                    .dimensions = {1, 2, 3, 1},
                    .values = {0, 1, 0, 1, 1, 1}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator lesser.
   {
@@ -1957,7 +1987,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kUint8,
                    .dimensions = {1, 2, 3, 1},
                    .values = {1, 1, 0, 1, 0, 0}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator lesser using
   // broadcasting.
@@ -1974,7 +2004,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kUint8,
                    .dimensions = {1, 2, 3, 1},
                    .values = {1, 0, 1, 0, 0, 0}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator lesserOrEqual.
   {
@@ -1990,7 +2020,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kUint8,
                    .dimensions = {1, 2, 3, 1},
                    .values = {1, 1, 0, 1, 0, 0}}}
-        .Test();
+        .Test(*this);
   }
   // Test building and computing a graph with single operator lesserOrEqual
   // using broadcasting.
@@ -2007,7 +2037,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kUint8,
                    .dimensions = {1, 2, 3, 1},
                    .values = {1, 1, 1, 1, 0, 0}}}
-        .Test();
+        .Test(*this);
   }
 #endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
 #endif  // !BUILDFLAG(IS_MAC)
@@ -2018,7 +2048,11 @@ struct ElementWiseUnaryTester {
   OperandInfo<T> input;
   mojom::ElementWiseUnary::Kind kind;
   OperandInfo<O> output;
-  void Test() {
+  void Test(WebNNGraphImplBackendTest& helper) {
+#if BUILDFLAG(IS_CHROMEOS)
+    helper.SetComputeResult("output", output.values);
+#endif
+
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
         builder.BuildInput("input", input.dimensions, input.type);
@@ -2076,49 +2110,49 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kUint8,
                    .dimensions = {1, 2, 3, 1},
                    .values = {1, 0, 1, 0, 0, 0}}}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<float>{
         .input = test_operand_info_float32_scalar,
         .kind = mojom::ElementWiseUnary::Kind::kIdentity,
         .output = test_operand_info_float32_scalar}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<float>{
         .input = test_operand_info_float32,
         .kind = mojom::ElementWiseUnary::Kind::kIdentity,
         .output = test_operand_info_float32}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<float16>{
         .input = test_operand_info_float16,
         .kind = mojom::ElementWiseUnary::Kind::kIdentity,
         .output = test_operand_info_float16}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<int32_t>{
         .input = test_operand_info_int32,
         .kind = mojom::ElementWiseUnary::Kind::kIdentity,
         .output = test_operand_info_int32}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<int8_t>{
         .input = test_operand_info_int8,
         .kind = mojom::ElementWiseUnary::Kind::kIdentity,
         .output = test_operand_info_int8}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<uint8_t>{
         .input = test_operand_info_uint8,
         .kind = mojom::ElementWiseUnary::Kind::kIdentity,
         .output = test_operand_info_uint8}
-        .Test();
+        .Test(*this);
   }
 #endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
 
@@ -2132,7 +2166,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {},
                    .values = {2}}}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<float>{
@@ -2143,7 +2177,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {0, 2, 5, 4, 8, 7}}}
-        .Test();
+        .Test(*this);
   }
 
   // TODO(https://crbug.com/326356909): Enable these tests when using TFLite,
@@ -2158,7 +2192,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 2, 3, 1},
                    .values = Float16FromFloat32({0, 2, 5, 4, 8, 7})}}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<float>{
@@ -2169,7 +2203,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {0, 1, 0, 1, 1, -1}}}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<float16>{
@@ -2180,7 +2214,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 2, 3, 1},
                    .values = Float16FromFloat32({0, 1, 0, 1, 1, -1})}}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<float>{
@@ -2192,7 +2226,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .dimensions = {1, 2, 3, 1},
                    .values = {1, 0.25, 0.5, 0.0625, 0.015625,
                               std::numeric_limits<float>::infinity()}}}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<float16>{
@@ -2205,7 +2239,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = Float16FromFloat32(
                        {1, 0.25, 0.5, 0.0625, 0.015625,
                         std::numeric_limits<float>::infinity()})}}
-        .Test();
+        .Test(*this);
   }
 #endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
 
@@ -2218,7 +2252,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {1, 4, 2, 16, 64, 0}}}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<float>{
@@ -2229,7 +2263,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2, 3},
                    .values = {-1, 0, 2, -2, 0, 3}}}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<float>{
@@ -2240,7 +2274,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2, 2},
                    .values = {cos(1.f), cos(-2.f), cos(3.f), cos(-4.f)}}}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<float>{
@@ -2251,7 +2285,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2, 2},
                    .values = {exp(1.f), exp(-2.f), exp(3.f), exp(-4.f)}}}
-        .Test();
+        .Test(*this);
   }
 
   // TODO(https://crbug.com/326356909): Enable these tests when using TFLite,
@@ -2266,7 +2300,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 2, 3, 1},
                    .values = Float16FromFloat32({-2, 0, 1, -3, 0, 2})}}
-        .Test();
+        .Test(*this);
   }
 #endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
 
@@ -2279,7 +2313,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {3},
                    .values = {log(0.f), log(3.f), log(10.f)}}}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<float>{
@@ -2290,7 +2324,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 1},
                    .values = {1, 0, -1.1, 2.2, 0, -2}}}
-        .Test();
+        .Test(*this);
   }
   {
     ElementWiseUnaryTester<float>{
@@ -2301,7 +2335,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2, 2},
                    .values = {sin(1.f), sin(-2.f), sin(3.f), sin(-4.f)}}}
-        .Test();
+        .Test(*this);
   }
 
   // TODO(https://crbug.com/326356909): Enable these tests when using TFLite,
@@ -2316,7 +2350,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2, 2},
                    .values = {tan(1.f), tan(-2.f), tan(3.f), tan(-4.f)}}}
-        .Test();
+        .Test(*this);
   }
 #endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
 }
@@ -2475,7 +2509,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_float32,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_float16}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2483,7 +2517,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_float32,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_int32}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2491,7 +2525,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_float32,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_uint32}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2499,7 +2533,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_float32,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_int8}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2507,7 +2541,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_float32,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_uint8}
-          .Test();
+          .Test(*this);
     }
   }
   // Test all combinations from float16 data type.
@@ -2517,14 +2551,14 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_float16,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_float32}
-          .Test();
+          .Test(*this);
     }
     {
       ElementWiseUnaryTester<float16, int32_t>{
           .input = test_operand_info_float16,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_int32}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2532,7 +2566,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_float16,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_uint32}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2540,7 +2574,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_float16,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_int8}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2548,7 +2582,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_float16,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_uint8}
-          .Test();
+          .Test(*this);
     }
   }
   // Test all combinations from int32 data type.
@@ -2558,7 +2592,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_int32,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_float32}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2566,7 +2600,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_int32,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_float16}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2574,7 +2608,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_int32,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_uint32}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2582,7 +2616,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_int32,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_int8}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2590,7 +2624,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_int32,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_uint8}
-          .Test();
+          .Test(*this);
     }
   }
   // Test all combinations from uint32 data type.
@@ -2600,7 +2634,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_uint32,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_float32}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2608,7 +2642,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_uint32,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_float16}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2616,7 +2650,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_uint32,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_int32}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2624,7 +2658,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_uint32,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_int8}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2632,7 +2666,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_uint32,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_uint8}
-          .Test();
+          .Test(*this);
     }
   }
   // Test all combinations from int8_t data type.
@@ -2642,7 +2676,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_int8,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_float32}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2650,7 +2684,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_int8,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_float16}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2658,7 +2692,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_int8,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_int32}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2666,7 +2700,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_int8,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_uint32}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2674,7 +2708,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_int8,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_uint8}
-          .Test();
+          .Test(*this);
     }
   }
   // Test all combinations from uint8_t data type.
@@ -2684,7 +2718,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_uint8,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_float32}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2692,7 +2726,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_uint8,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_float16}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2700,7 +2734,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_uint8,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_int32}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2708,7 +2742,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_uint8,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_uint32}
-          .Test();
+          .Test(*this);
     }
 
     {
@@ -2716,7 +2750,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
           .input = test_operand_info_uint8,
           .kind = mojom::ElementWiseUnary::Kind::kCast,
           .output = test_operand_info_int8}
-          .Test();
+          .Test(*this);
     }
   }
 }
@@ -6195,6 +6229,12 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsFirstOperator) {
 
 // Test building and computing a graph with single operator concat.
 TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConcat) {
+  std::vector<float> expected_output = {-1, -2, -3, -4, -5, -6, 0,  0,
+                                        0,  0,  0,  0,  1,  2,  3,  4,
+                                        5,  6,  7,  8,  9,  10, 11, 12};
+#if BUILDFLAG(IS_CHROMEOS)
+  SetComputeResult("output", expected_output);
+#endif
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id1 = builder.BuildInput(
@@ -6237,8 +6277,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConcat) {
   //   [[ 7  8  9]
   //    [10 11 12]]]] with shape (1, 4, 2, 3)
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
-            std::vector<float>({-1, -2, -3, -4, -5, -6, 0, 0, 0, 0,  0,  0,
-                                1,  2,  3,  4,  5,  6,  7, 8, 9, 10, 11, 12}));
+            expected_output);
 }
 
 // Test building and computing a graph with float 16 data type in the
@@ -6309,6 +6348,12 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeReshapeConcatAndClamp) {
 //               \           /
 //                   concat
 TEST_F(WebNNGraphImplBackendTest, BuildAndComputeConcatWithConstants) {
+  std::vector<float> expected_output = {0,  0,  0,  1,  2,  3,
+                                        -1, -2, -3, -4, -5, -6};
+#if BUILDFLAG(IS_CHROMEOS)
+  SetComputeResult("output", expected_output);
+#endif
+
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -6352,7 +6397,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeConcatWithConstants) {
   //   [[-1 -2 -3]
   //    [-4 -5 -6]]]] with shape (1, 2, 2, 3)
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
-            std::vector<float>({0, 0, 0, 1, 2, 3, -1, -2, -3, -4, -5, -6}));
+            expected_output);
 }
 
 template <typename T>

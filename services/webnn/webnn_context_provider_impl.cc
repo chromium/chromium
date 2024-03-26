@@ -29,7 +29,11 @@
 #endif
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "services/webnn/tflite/context_impl_cros.h"
+#else
 #include "services/webnn/tflite/context_impl.h"
+#endif
 #endif
 
 namespace webnn {
@@ -84,23 +88,39 @@ base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
 }  // namespace
 
 WebNNContextProviderImpl::WebNNContextProviderImpl(
+#if !BUILDFLAG(IS_CHROMEOS)
     scoped_refptr<gpu::SharedContextState> shared_context_state,
-    gpu::GpuFeatureInfo gpu_feature_info)
+    gpu::GpuFeatureInfo gpu_feature_info
+#endif
+    )
+#if !BUILDFLAG(IS_CHROMEOS)
     : shared_context_state_(std::move(shared_context_state)),
-      gpu_feature_info_(std::move(gpu_feature_info)) {}
+      gpu_feature_info_(std::move(gpu_feature_info))
+#endif
+{
+}
 
 WebNNContextProviderImpl::~WebNNContextProviderImpl() = default;
 
 // static
 void WebNNContextProviderImpl::Create(
-    mojo::PendingReceiver<WebNNContextProvider> receiver,
+    mojo::PendingReceiver<WebNNContextProvider> receiver
+#if !BUILDFLAG(IS_CHROMEOS)
+    ,
     scoped_refptr<gpu::SharedContextState> shared_context_state,
-    gpu::GpuFeatureInfo gpu_feature_info) {
+    gpu::GpuFeatureInfo gpu_feature_info
+#endif
+) {
+#if BUILDFLAG(IS_CHROMEOS)
+  mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
+      std::make_unique<WebNNContextProviderImpl>(), std::move(receiver));
+#else
   CHECK_NE(shared_context_state, nullptr);
   mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
       std::make_unique<WebNNContextProviderImpl>(
           std::move(shared_context_state), std::move(gpu_feature_info)),
       std::move(receiver));
+#endif
 }
 
 // static
@@ -119,7 +139,10 @@ void WebNNContextProviderImpl::CreateForTesting(
 
   mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
       std::make_unique<WebNNContextProviderImpl>(
-          /*shared_context_state=*/nullptr, std::move(gpu_feature_info)),
+#if !BUILDFLAG(IS_CHROMEOS)
+          /*shared_context_state=*/nullptr, std::move(gpu_feature_info)
+#endif
+              ),
       std::move(receiver));
 }
 
@@ -147,8 +170,13 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #if BUILDFLAG(WEBNN_USE_TFLITE)
   // The remote sent to the renderer.
   mojo::PendingRemote<mojom::WebNNContext> blink_remote;
-  impls_.push_back(base::WrapUnique<WebNNContextImpl>(new tflite::ContextImpl(
-      blink_remote.InitWithNewPipeAndPassReceiver(), this)));
+  auto receiver = blink_remote.InitWithNewPipeAndPassReceiver();
+#if BUILDFLAG(IS_CHROMEOS)
+  auto* context_impl = new tflite::ContextImplCrOS(std::move(receiver), this);
+#else
+  auto* context_impl = new tflite::ContextImpl(std::move(receiver), this);
+#endif
+  impls_.push_back(base::WrapUnique<WebNNContextImpl>(context_impl));
   std::move(callback).Run(
       mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
 #elif BUILDFLAG(IS_WIN)

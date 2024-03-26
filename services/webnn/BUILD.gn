@@ -114,18 +114,35 @@ component("webnn_service") {
 
   if (webnn_use_tflite) {
     sources += [
-      "tflite/context_impl.cc",
-      "tflite/context_impl.h",
-      "tflite/graph_impl.cc",
-      "tflite/graph_impl.h",
       "tflite/op_resolver.cc",
       "tflite/op_resolver.h",
     ]
+    if (is_chromeos) {
+      sources += [
+        "tflite/context_impl_cros.cc",
+        "tflite/context_impl_cros.h",
+        "tflite/graph_impl_cros.cc",
+        "tflite/graph_impl_cros.h",
+      ]
+    } else {
+      sources += [
+        "tflite/context_impl.cc",
+        "tflite/context_impl.h",
+        "tflite/graph_impl.cc",
+        "tflite/graph_impl.h",
+      ]
+    }
+
     deps += [
       ":tflite_graph_builder",
+      "//components/ml/mojom",
       "//third_party/tflite",
       "//third_party/tflite:buildflags",
     ]
+
+    if (is_chromeos) {
+      deps += [ "//chromeos/services/machine_learning/public/cpp" ]
+    }
   }
 
   defines = [ "IS_WEBNN_SERVICE_IMPL" ]
@@ -177,6 +194,13 @@ source_set("tests") {
       "//third_party/fp16",
       "//ui/gl",
       "//ui/gl/init",
+    ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//chromeos/services/machine_learning/public/cpp",
+      "//chromeos/services/machine_learning/public/cpp:stub",
     ]
   }
 }
