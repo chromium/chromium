@@ -57,17 +57,6 @@ LayoutUnit BlockSizeFromAspectRatio(const BoxStrut& border_padding,
                                     EBoxSizing box_sizing,
                                     LayoutUnit inline_size);
 
-// Returns if the given |Length| is unresolvable, e.g. the length is %-based
-// and resolving against an indefinite size. For block lengths we also consider
-// 'auto', 'min-content', 'max-content', 'fit-content' and 'none' (for
-// max-block-size) as unresolvable.
-CORE_EXPORT bool InlineLengthUnresolvable(const ConstraintSpace&,
-                                          const Length&);
-CORE_EXPORT bool BlockLengthUnresolvable(
-    const ConstraintSpace&,
-    const Length&,
-    const LayoutUnit* override_percentage_resolution_size = nullptr);
-
 // Resolve means translate a Length to a LayoutUnit.
 //  - |ConstraintSpace| the information given by the parent, e.g. the
 //    available-size.

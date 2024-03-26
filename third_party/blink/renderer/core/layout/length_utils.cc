@@ -25,68 +25,6 @@
 
 namespace blink {
 
-// Check if we shouldn't resolve a percentage/calc()/-webkit-fill-available
-// if we are in the intrinsic sizes phase.
-bool InlineLengthUnresolvable(const ConstraintSpace& constraint_space,
-                              const Length& length) {
-  // TODO(https://crbug.com/313072): This should be refactored to handle
-  // new things that calc-size() can hold (in particular, the
-  // possibility that we might need to check conditions for both
-  // percentages and intrinsic sizing keywords without doing a
-  // possibly-false early return for one of them), and the possibility
-  // introduced by calc-size() that a calc expression might *not* have
-  // a percent.
-
-  // TODO(https://crbug.com/313072): calc-size() doesn't work correctly
-  // when this function returns true.
-
-  if (length.HasPercent()) {
-    return constraint_space.PercentageResolutionInlineSize() == kIndefiniteSize;
-  }
-
-  if (length.IsFillAvailable())
-    return constraint_space.AvailableSize().inline_size == kIndefiniteSize;
-
-  if (length.IsFitContent())
-    return constraint_space.AvailableSize().inline_size == kIndefiniteSize;
-
-  return false;
-}
-
-// When the containing block size to resolve against is indefinite, we
-// cannot resolve percentages / calc() / -webkit-fill-available.
-bool BlockLengthUnresolvable(
-    const ConstraintSpace& constraint_space,
-    const Length& length,
-    const LayoutUnit* override_percentage_resolution_size) {
-  // TODO(https://crbug.com/313072): This should be refactored to handle
-  // new things that calc-size() can hold (in particular, the
-  // possibility that we might need to check conditions for both
-  // percentages and intrinsic sizing keywords without doing a
-  // possibly-false early return for one of them), and the possibility
-  // introduced by calc-size() that a calc expression might *not* have
-  // a percent.
-
-  // TODO(https://crbug.com/313072): calc-size() doesn't work correctly
-  // when this function returns true.
-
-  if (length.IsAuto() || length.IsMinContent() || length.IsMaxContent() ||
-      length.IsMinIntrinsic() || length.IsFitContent() || length.IsNone())
-    return true;
-  if (length.HasPercent()) {
-    const LayoutUnit percentage_resolution_size =
-        override_percentage_resolution_size
-            ? *override_percentage_resolution_size
-            : constraint_space.PercentageResolutionBlockSize();
-    return percentage_resolution_size == kIndefiniteSize;
-  }
-
-  if (length.IsFillAvailable())
-    return constraint_space.AvailableSize().block_size == kIndefiniteSize;
-
-  return false;
-}
-
 LayoutUnit ResolveInlineLengthInternal(
     const ConstraintSpace& constraint_space,
     const ComputedStyle& style,
