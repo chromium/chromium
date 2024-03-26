@@ -1,0 +1,45 @@
+ci/WebKit Win10
+ci/Win Builder
+ci/Win Builder (dbg)
+ci/Win x64 Builder
+ci/Win x64 Builder (dbg)
+ci/Win10 Tests x64
+ci/Win10 Tests x64 (dbg)
+ci/Win11 Tests x64
+ci/Windows deterministic
+ci/chromeos-amd64-generic-lacros-dbg
+ci/lacros-amd64-generic-rel
+ci/lacros-amd64-generic-rel-gtest
+ci/lacros-amd64-generic-rel-non-skylab
+ci/lacros-arm-archive-rel
+ci/lacros-arm-generic-rel
+ci/lacros-arm-generic-rel-skylab
+ci/lacros-arm64-generic-rel-skylab
+ci/lacros64-archive-rel
+ci/linux-lacros-builder-rel
+ci/linux-lacros-dbg
+ci/linux-lacros-rel-dangling-ptr-fyi
+ci/linux-lacros-tester-rel
+ci/win-archive-rel
+ci/win-arm64-dbg
+ci/win-arm64-rel
+ci/win-official
+ci/win11-arm64-dbg-tests
+ci/win11-arm64-rel-tests
+ci/win32-archive-rel
+ci/win32-official
+try/lacros-amd64-generic-rel-gtest
+try/lacros-amd64-generic-rel-gtest-and-tast
+try/lacros-amd64-generic-rel-gtest-and-tast-compilator
+try/lacros-amd64-generic-rel-gtest-compilator
+try/lacros-amd64-generic-rel-non-skylab
+try/lacros-arm-generic-rel-skylab
+try/lacros-arm64-generic-rel-skylab
+try/linux-lacros-rel-dangling-ptr-fyi
+try/win-arm64-compile-dbg
+try/win-arm64-dbg
+try/win-arm64-rel
+try/win-arm64-rel-compilator
+try/win-clobber-rel
+try/win11-rel
+try/win32-clobber-rel

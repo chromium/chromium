@@ -27,6 +27,7 @@ lucicfg.config(
         "builders/*/*/*",
         "builders/*/*/*/*",
         "builders/gn_args_locations.json",
+        "builder-owners/*.txt",
         "cq-builders.md",
         "cq-usage/default.cfg",
         "cq-usage/full.cfg",
@@ -283,6 +284,7 @@ branches.exec("//subprojects/webrtc/subproject.star")
 exec("//generators/cq-usage.star")
 branches.exec("//generators/cq-builders-md.star")
 
+exec("//generators/builder-owners.star")
 exec("//generators/sort-consoles.star")
 
 # Execute validators after eveything except the outage file so that we're

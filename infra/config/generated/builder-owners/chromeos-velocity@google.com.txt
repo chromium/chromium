@@ -1,0 +1,4 @@
+ci/chromeos-jacuzzi-rel
+ci/chromeos-octopus-rel
+try/chromeos-jacuzzi-rel
+try/chromeos-octopus-rel
