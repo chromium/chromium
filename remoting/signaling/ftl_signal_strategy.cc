@@ -112,6 +112,9 @@ FtlSignalStrategy::Core::Core(
 
 FtlSignalStrategy::Core::~Core() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (registration_manager_) {
+    registration_manager_->SignOut();
+  }
   Disconnect();
 }
 
@@ -139,10 +142,6 @@ void FtlSignalStrategy::Core::Connect() {
 
 void FtlSignalStrategy::Core::Disconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (registration_manager_->IsSignedIn()) {
-    registration_manager_->SignOut();
-  }
 
   if (receive_message_subscription_) {
     local_address_ = SignalingAddress();
@@ -434,6 +433,7 @@ void FtlSignalStrategy::Core::HandleProtobufHttpStatusError(
   if (status.error_code() == ProtobufHttpStatus::Code::UNAUTHENTICATED ||
       status.error_code() == ProtobufHttpStatus::Code::PERMISSION_DENIED) {
     oauth_token_getter_->InvalidateCache();
+    registration_manager_->SignOut();
   }
   Disconnect();
 }
