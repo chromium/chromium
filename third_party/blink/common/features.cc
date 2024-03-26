@@ -1056,6 +1056,10 @@ const base::FeatureParam<int> kFledgeCustomMaxAuctionAdComponentsValue{
     &kFledgeCustomMaxAuctionAdComponents, "FledgeAdComponentLimit",
     kMaxAdAuctionAdComponentsDefault};
 
+BASE_FEATURE(kFledgeAlwaysReuseBidderContext,
+             "FledgeAlwaysReuseBidderContext",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kFledgeAlwaysReuseSellerContext,
              "FledgeAlwaysReuseSellerContext",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -1297,7 +1297,10 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       break;
     case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
       execution_mode_string = "frozen-context";
-      should_deep_freeze = true;
+      if (!base::FeatureList::IsEnabled(
+              blink::features::kFledgeAlwaysReuseBidderContext)) {
+        should_deep_freeze = true;
+      }
       if (context_recycler_for_frozen_context_) {
         context_recycler = context_recycler_for_frozen_context_.get();
         reused_context = true;
@@ -1311,6 +1314,11 @@ BidderWorklet::V8State::RunGenerateBidOnce(
 
   base::UmaHistogramBoolean("Ads.InterestGroup.Auction.ContextReused",
                             reused_context);
+
+  if (!context_recycler && context_recycler_for_always_reuse_feature_) {
+    context_recycler = context_recycler_for_always_reuse_feature_.get();
+    reused_context = true;
+  }
 
   // See if we can reuse a context for k-anon re-run. The group-by-origin and
   // frozen context mode would do that, too, so this is only a fallback for
@@ -1348,18 +1356,24 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     context_recycler = fresh_context_recycler.get();
 
     // Save the context for next time (if applicable).
-    switch (bidder_worklet_non_shared_params.execution_mode) {
-      case blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode:
-        context_recycler_for_origin_group_mode_ =
-            std::move(fresh_context_recycler);
-        join_origin_for_origin_group_mode_ = interest_group_join_origin;
-        break;
-      case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
-        context_recycler_for_frozen_context_ =
-            std::move(fresh_context_recycler);
-        break;
-      case blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode:
-        break;
+    if (base::FeatureList::IsEnabled(
+            blink::features::kFledgeAlwaysReuseBidderContext)) {
+      context_recycler_for_always_reuse_feature_ =
+          std::move(fresh_context_recycler);
+    } else {
+      switch (bidder_worklet_non_shared_params.execution_mode) {
+        case blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode:
+          context_recycler_for_origin_group_mode_ =
+              std::move(fresh_context_recycler);
+          join_origin_for_origin_group_mode_ = interest_group_join_origin;
+          break;
+        case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
+          context_recycler_for_frozen_context_ =
+              std::move(fresh_context_recycler);
+          break;
+        case blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode:
+          break;
+      }
     }
   }
 

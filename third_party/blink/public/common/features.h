@@ -573,6 +573,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kFledgeCustomMaxAuctionAdComponentsValue;
 
+// Reuse a single V8 context to generate all bids in a bidder worklet.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeAlwaysReuseBidderContext);
 // Reuse a single V8 context to score all ads in a seller worklet.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeAlwaysReuseSellerContext);
 

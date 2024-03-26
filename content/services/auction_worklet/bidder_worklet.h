@@ -584,9 +584,17 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     // SharedStorageBindings, which have raw pointers to it.
     mojo::Remote<mojom::AuctionSharedStorageHost> shared_storage_host_remote_;
 
+    // ContextRecycler and corresponding joining origin for
+    // "group-by-origin" execution mode.
     std::unique_ptr<ContextRecycler> context_recycler_for_origin_group_mode_;
     url::Origin join_origin_for_origin_group_mode_;
+
+    // ContextRecycler for "frozen-context" execution mode.
     std::unique_ptr<ContextRecycler> context_recycler_for_frozen_context_;
+
+    // If FledgeAlwaysReuseBidderContext is enabled, the execution mode is
+    // ignored and the context below is always reused.
+    std::unique_ptr<ContextRecycler> context_recycler_for_always_reuse_feature_;
 
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };

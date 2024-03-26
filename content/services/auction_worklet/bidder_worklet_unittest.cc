@@ -8365,6 +8365,60 @@ TEST_F(BidderWorkletTest, ExecutionModeFrozenContextFails) {
   EXPECT_TRUE(bids_.empty());
 }
 
+TEST_F(BidderWorkletTest, AlwaysReuseBidderContext) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeAlwaysReuseBidderContext);
+  const char kScript[] = R"(
+    const incrementer = (function() {
+           let a = 1;
+           return function() { a += 1; return a; };
+         })();
+    function generateBid() {
+      return {ad: ["ad"], bid:incrementer(), render:"https://response.test/"};
+    }
+  )";
+
+  mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        kScript);
+
+  // This will not fail because the execution mode is ignored. A frozen context
+  // is not actually used.
+  execution_mode_ = blink::mojom::InterestGroup::ExecutionMode::kFrozenContext;
+  join_origin_ = url::Origin::Create(GURL("https://url.test/"));
+  GenerateBid(bidder_worklet.get());
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  load_script_run_loop_->Run();
+  ASSERT_EQ(1u, bids_.size());
+  EXPECT_EQ(2, bids_[0]->bid);
+
+  // The context will still be reused when we switch to a different mode.
+  execution_mode_ =
+      blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode;
+  GenerateBid(bidder_worklet.get());
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  load_script_run_loop_->Run();
+  ASSERT_EQ(1u, bids_.size());
+  EXPECT_EQ(3, bids_[0]->bid);
+  execution_mode_ =
+      blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+  GenerateBid(bidder_worklet.get());
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  load_script_run_loop_->Run();
+  ASSERT_EQ(1u, bids_.size());
+  EXPECT_EQ(4, bids_[0]->bid);
+
+  // The context will still be reused when using a different origin in
+  // kGroupedByOriginMode.
+  join_origin_ = url::Origin::Create(GURL("https://url2.test/"));
+  GenerateBid(bidder_worklet.get());
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  load_script_run_loop_->Run();
+  ASSERT_EQ(1u, bids_.size());
+  EXPECT_EQ(5, bids_[0]->bid);
+}
+
 // Test that cancelling the worklet before it runs but after the execution was
 // queued actually cancels the execution. This is done by trying to run a
 // while(true) {} script with a timeout that's bigger than the test timeout, so
