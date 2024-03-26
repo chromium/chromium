@@ -120,7 +120,7 @@ chrome.test.runTests([
         windowIds.push(winId);
       },
       function done() {
-        chrome.tabs.getAllInWindow(windowIds[0], callbackPass(function(tabs) {
+        chrome.tabs.query({windowId:windowIds[0]}, callbackPass(function(tabs) {
           assertEq(pages.length, tabs.length);
           tabs.forEach(function(tab) {
             firstWindowTabIds.push(tab.id);

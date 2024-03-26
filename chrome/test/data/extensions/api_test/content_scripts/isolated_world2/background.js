@@ -11,10 +11,12 @@ chrome.runtime.onConnect.addListener(function(port) {
   });
 });
 
-chrome.tabs.getAllInWindow(null, function(tabs) {
-  chrome.test.log("Got tabs: " + JSON.stringify(tabs));
+chrome.windows.getCurrent(null, function(window) {
+  chrome.tabs.query({windowId:window.id}, function(tabs) {
+    chrome.test.log("Got tabs: " + JSON.stringify(tabs));
 
-  // The last tab is the one that the other extension should have run scripts
-  // in.
-  chrome.tabs.executeScript(tabs.pop().id, {file: "a.js"});
+    // The last tab is the one that the other extension should have run scripts
+    // in.
+    chrome.tabs.executeScript(tabs.pop().id, {file: "a.js"});
+  });
 });

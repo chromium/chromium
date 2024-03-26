@@ -79,7 +79,7 @@ chrome.test.runTests([
       createWindow(["chrome://newtab/"], {}, pass(function(winId, tabIds) {
         secondWindowId = winId;
       }));
-      chrome.tabs.getAllInWindow(firstWindowId, pass(function(tabs) {
+      chrome.tabs.query({windowId:firstWindowId}, pass(function(tabs) {
         assertEq(pages.length, tabs.length);
         for (var i in tabs) {
           assertEq(pages[i], tabs[i].url || tabs[i].pendingUrl);
@@ -102,7 +102,7 @@ chrome.test.runTests([
   function windowsOnCreated() {
     chrome.test.listenOnce(chrome.windows.onCreated, function(window) {
       windowEventsWindow = window;
-      chrome.tabs.getAllInWindow(window.id, pass(function(tabs) {
+      chrome.tabs.query({windowId:window.id}, pass(function(tabs) {
         assertEq(pageUrl("a"), tabs[0].url || tabs[0].pendingUrl);
       }));
     });

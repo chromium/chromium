@@ -24,9 +24,9 @@ chrome.test.runTests([
       // The opener should now be set...
       chrome.test.assertNe(null, testWindow.opener);
       // ...and the test window should only have one tab (because it was
-      // targetted via the "target-window" name).
-      chrome.tabs.getAllInWindow(
-          testWindowId,
+      // targeted via the "target-window" name).
+      chrome.tabs.query(
+          {windowId:testWindowId},
           chrome.test.callbackPass(function(tabs) {
             chrome.test.assertEq(1, tabs.length);
             chrome.test.assertEq(

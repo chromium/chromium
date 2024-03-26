@@ -73,7 +73,7 @@ chrome.test.runTests([
             secondWindowId = winId;
           }));
         }));
-        chrome.tabs.getAllInWindow(firstWindowId, pass(function(tabs) {
+        chrome.tabs.query({windowId:firstWindowId}, pass(function(tabs) {
           assertEq(pages.length, tabs.length);
           assertTrue(newTabUrls.includes(tabs[0].url));
           for (var i = 1; i < tabs.length; i++) {
@@ -87,14 +87,14 @@ chrome.test.runTests([
   function move() {
     // Check that the tab/window state is what we expect after doing moves.
     function checkMoveResults() {
-      chrome.tabs.getAllInWindow(firstWindowId, pass(function(tabs) {
+      chrome.tabs.query({windowId:firstWindowId}, pass(function(tabs) {
         assertEq(4, tabs.length);
         assertTrue(newTabUrls.includes(tabs[0].url));
         assertEq(pageUrl("a"), tabs[1].url);
         assertEq(pageUrl("e"), tabs[2].url);
         assertEq(pageUrl("c"), tabs[3].url);
 
-        chrome.tabs.getAllInWindow(secondWindowId, pass(function(tabs) {
+        chrome.tabs.query({windowId:secondWindowId}, pass(function(tabs) {
           assertEq(3, tabs.length);
           assertEq(pageUrl("b"), tabs[0].url);
           assertTrue(newTabUrls.includes(tabs[1].url));
@@ -121,13 +121,13 @@ chrome.test.runTests([
   function moveWithNegativeIndex() {
     // Check that the tab/window state is what we expect after doing moves.
     function checkMoveResults() {
-      chrome.tabs.getAllInWindow(firstWindowId, pass(function(tabs) {
+      chrome.tabs.query({windowId:firstWindowId}, pass(function(tabs) {
         assertEq(3, tabs.length);
         assertTrue(newTabUrls.includes(tabs[0].url));
         assertEq(pageUrl("a"), tabs[1].url);
         assertEq(pageUrl("c"), tabs[2].url);
 
-        chrome.tabs.getAllInWindow(secondWindowId, pass(function(tabs) {
+        chrome.tabs.query({windowId:secondWindowId}, pass(function(tabs) {
           assertEq(4, tabs.length);
           assertEq(pageUrl("b"), tabs[0].url);
           assertTrue(newTabUrls.includes(tabs[1].url));
@@ -147,8 +147,7 @@ chrome.test.runTests([
 
   function remove() {
     chrome.tabs.remove(moveTabIds["d"], pass(function() {
-      chrome.tabs.getAllInWindow(secondWindowId,
-                                 pass(function(tabs) {
+      chrome.tabs.query({windowId:secondWindowId}, pass(function(tabs) {
         assertEq(3, tabs.length);
         assertEq(pageUrl("b"), tabs[0].url);
         assertTrue(newTabUrls.includes(tabs[1].url));

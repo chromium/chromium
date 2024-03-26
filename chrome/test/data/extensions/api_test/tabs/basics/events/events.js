@@ -185,7 +185,7 @@ chrome.test.runTests([
       assertEq("normal", window.type);
       assertTrue(!window.incognito);
       windowEventsWindow = window;
-      chrome.tabs.getAllInWindow(window.id, pass(function(tabs) {
+      chrome.tabs.query({windowId:window.id}, pass(function(tabs) {
         assertEq(pageUrl("a"), tabs[0].pendingUrl || tabs[0].url);
       }));
     });

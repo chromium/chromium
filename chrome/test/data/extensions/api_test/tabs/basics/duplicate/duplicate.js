@@ -30,7 +30,7 @@ chrome.test.runTests([
   },
 
   function totalTab() {
-    chrome.tabs.getAllInWindow(firstWindowId,
+    chrome.tabs.query({windowId:firstWindowId},
       pass(function(tabs) {
         assertEq(tabs.length, 2);
         assertEq(tabs[0].url, tabs[1].url);
