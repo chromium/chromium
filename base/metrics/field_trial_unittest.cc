@@ -1180,6 +1180,7 @@ MULTIPROCESS_TEST_MAIN(CreateTrialsInChildProcess) {
   return 0;
 }
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(FieldTrialListTest, PassFieldTrialSharedMemoryOnCommandLine) {
   // Setup some field trial state.
   test::ScopedFeatureList scoped_feature_list1;
@@ -1224,6 +1225,7 @@ TEST_F(FieldTrialListTest, PassFieldTrialSharedMemoryOnCommandLine) {
       process, TestTimeouts::action_timeout(), &exit_code));
   EXPECT_EQ(0, exit_code);
 }
+#endif
 
 // Verify that the field trial shared memory handle is really read-only, and
 // does not allow writable mappings.

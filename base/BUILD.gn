@@ -2157,7 +2157,6 @@ component("base") {
         "mac/mach_port_rendezvous.cc",
         "mac/mach_port_rendezvous.h",
         "process/kill_mac.cc",
-        "process/launch_ios.cc",
         "process/memory_mac.mm",
         "process/port_provider_mac.cc",
         "process/port_provider_mac.h",
@@ -2168,7 +2167,13 @@ component("base") {
         "sync_socket_posix.cc",
         "synchronization/waitable_event_watcher_mac.cc",
       ]
-      libs += [ "bsm" ]
+
+      # We include launch_mac on simulator builds so unittests can fork.
+      if (target_environment == "simulator") {
+        sources += [ "process/launch_mac.cc" ]
+      } else {
+        sources += [ "process/launch_ios.cc" ]
+      }
     } else {
       sources += [
         "process/launch_ios.cc",
@@ -3642,9 +3647,12 @@ test("base_unittests") {
   if (use_blink) {
     sources += [
       "allocator/partition_allocator/src/partition_alloc/tagging_unittest.cc",
-      "memory/shared_memory_switch_unittest.cc",
       "metrics/histogram_shared_memory_unittest.cc",
     ]
+
+    if (!is_ios) {
+      sources += [ "memory/shared_memory_switch_unittest.cc" ]
+    }
 
     data_deps += [ "//base/test:test_proto_descriptor" ]
     data += [ "$root_gen_dir/base/test/test_proto.descriptor" ]

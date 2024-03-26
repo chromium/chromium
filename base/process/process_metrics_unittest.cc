@@ -46,7 +46,7 @@
 #include <sys/mman.h>
 #endif
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#if BUILDFLAG(IS_MAC)
 #include <mach/mach.h>
 
 #include "base/apple/mach_logging.h"
@@ -136,13 +136,13 @@ class TestChildLauncher {
   CommandLine command_line_ = GetMultiProcessTestChildBaseCommandLine();
   Process child_process_;
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#if BUILDFLAG(IS_MAC)
   class TestChildPortProvider;
   std::unique_ptr<TestChildPortProvider> port_provider_;
 #endif
 };
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#if BUILDFLAG(IS_MAC)
 
 // Adapted from base/mac/mach_port_rendezvous_unittest.cc and
 // https://mw.foldr.org/posts/computers/macosx/task-info-fun-with-mach/
@@ -671,7 +671,7 @@ TEST_F(SystemMetricsTest, TestNoNegativeCpuUsage) {
   prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
 }
 
-#if !BUILDFLAG(IS_APPLE) || BUILDFLAG(USE_BLINK)
+#if !BUILDFLAG(IS_APPLE)
 
 // Subprocess to test the child CPU usage.
 MULTIPROCESS_TEST_MAIN(CPUUsageChildMain) {
@@ -707,7 +707,7 @@ TEST_F(SystemMetricsTest, MeasureChildCpuUsage) {
 #endif
 }
 
-#endif  // !BUILDFLAG(IS_APPLE) || BUILDFLAG(USE_BLINK)
+#endif  // !BUILDFLAG(IS_APPLE)
 
 TEST_F(SystemMetricsTest, InvalidProcessCpuUsage) {
 #if BUILDFLAG(IS_MAC)
@@ -868,8 +868,7 @@ TEST(ProcessMetricsTest, DISABLED_GetNumberOfThreads) {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    (BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_BLINK))
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 namespace {
 
 // Keep these in sync so the GetChildOpenFdCount test can refer to correct test
@@ -985,7 +984,7 @@ TEST(ProcessMetricsTest, GetOpenFdCount) {
   EXPECT_GT(new_fd_count, 0);
   EXPECT_EQ(new_fd_count, fd_count + 1);
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
