@@ -273,6 +273,8 @@ void RecordAppListByCollectionLaunched(AppCollection collection,
     base::UmaHistogramEnumeration(
         "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByEntity",
         app_entity);
+    base::UmaHistogramEnumeration(
+        "Apps.AppList.AppsCollections.AppLaunchesByCategory", collection);
   } else {
     base::UmaHistogramEnumeration(
         "Apps.AppListBubble.AppsPage.AppLaunchesByEntity", app_entity);

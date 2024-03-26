@@ -113,14 +113,17 @@ class ASH_PUBLIC_EXPORT IconColor {
   int hue_ = kHueInvalid;
 };
 
+// The different available AppsCollections.
+// Note: Do not change the order of these as they are used for metrics.
 enum class AppCollection {
   kUnknown = 0,
-  kEssentials,
-  kProductivity,
-  kCreativity,
-  kEntertainment,
-  kOem,
-  kUtilities,
+  kEssentials = 1,
+  kProductivity = 2,
+  kCreativity = 3,
+  kEntertainment = 4,
+  kOem = 5,
+  kUtilities = 6,
+  kMaxValue = kUtilities,
 };
 
 // A structure holding the common information which is sent between ash and,

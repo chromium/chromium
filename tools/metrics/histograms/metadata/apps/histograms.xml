@@ -492,6 +492,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.AppsCollections.AppLaunchesByCategory"
+    enum="AppListAppCollections" expires_after="2025-03-18">
+  <owner>anasalazar@google.com</owner>
+  <owner>anooshree@google.com</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The number of apps launched from Apps Collection divided by category. This
+    is incremented each time an app is launched. Each bucket represents a
+    different category.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.AppsCollections.DismissedReason"
     enum="AppsCollectionsDismissedReason" expires_after="2025-03-15">
   <owner>anasalazar@google.com</owner>

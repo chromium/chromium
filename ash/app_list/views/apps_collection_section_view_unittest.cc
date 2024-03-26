@@ -317,4 +317,76 @@ TEST_F(AppsCollectionSectionViewTest, RecordMetricsForAppLaunchByEntity) {
       AppEntity::kThirdPartyApp, 1);
 }
 
+TEST_F(AppsCollectionSectionViewTest, RecordMetricsForAppLaunchByCategory) {
+  base::HistogramTester histograms;
+  AddAppListItemWithCollection("id1", AppCollection::kEntertainment);
+  AddAppListItemWithCollection("id2", AppCollection::kProductivity);
+  AddAppListItemWithCollection("id3", AppCollection::kProductivity);
+  AddAppListItemWithCollection("id4", AppCollection::kUnknown);
+
+  ShowAppList();
+
+  AppsCollectionSectionView* entertainment_collection =
+      GetViewForCollection(AppCollection::kEntertainment);
+  ASSERT_TRUE(entertainment_collection);
+  ASSERT_EQ(entertainment_collection->GetItemViewCount(), 1u);
+
+  AppsCollectionSectionView* productivity_collection =
+      GetViewForCollection(AppCollection::kProductivity);
+  ASSERT_TRUE(productivity_collection);
+  ASSERT_EQ(productivity_collection->GetItemViewCount(), 2u);
+
+  AppsCollectionSectionView* unknown_collection =
+      GetViewForCollection(AppCollection::kUnknown);
+  ASSERT_TRUE(unknown_collection);
+  ASSERT_EQ(unknown_collection->GetItemViewCount(), 1u);
+
+  histograms.ExpectTotalCount(
+      "Apps.AppList.AppsCollections.AppLaunchesByCategory", 0);
+
+  LeftClickOn(GetAppItemAtIndex(entertainment_collection, 0));
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.AppLaunchesByCategory",
+      AppCollection::kEntertainment, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.AppLaunchesByCategory",
+      AppCollection::kProductivity, 0);
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.AppLaunchesByCategory",
+      AppCollection::kUnknown, 0);
+
+  LeftClickOn(GetAppItemAtIndex(productivity_collection, 0));
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.AppLaunchesByCategory",
+      AppCollection::kEntertainment, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.AppLaunchesByCategory",
+      AppCollection::kProductivity, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.AppLaunchesByCategory",
+      AppCollection::kUnknown, 0);
+
+  LeftClickOn(GetAppItemAtIndex(unknown_collection, 0));
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.AppLaunchesByCategory",
+      AppCollection::kEntertainment, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.AppLaunchesByCategory",
+      AppCollection::kProductivity, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.AppLaunchesByCategory",
+      AppCollection::kUnknown, 1);
+
+  LeftClickOn(GetAppItemAtIndex(productivity_collection, 1));
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.AppLaunchesByCategory",
+      AppCollection::kEntertainment, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.AppLaunchesByCategory",
+      AppCollection::kProductivity, 2);
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.AppLaunchesByCategory",
+      AppCollection::kUnknown, 1);
+}
+
 }  // namespace ash

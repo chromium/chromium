@@ -59,6 +59,16 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="kAppAlreadyInstalled"/>
 </enum>
 
+<enum name="AppListAppCollections">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Essentials"/>
+  <int value="2" label="Productivity"/>
+  <int value="3" label="Creativity"/>
+  <int value="4" label="Entertainment"/>
+  <int value="5" label="OEM"/>
+  <int value="6" label="Utilities"/>
+</enum>
+
 <enum name="AppListAppMovingType">
   <int value="0" label="MOVE_BY_DRAG_INTO_FOLDER"/>
   <int value="1" label="MOVE_BY_DRAG_OUT_OF_FOLDER"/>
