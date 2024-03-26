@@ -53,7 +53,7 @@ views::View* GlanceableTrayBubble::GetTasksView() {
   return GetGlanceableTrayBubbleView()->GetTasksView();
 }
 
-ClassroomBubbleStudentView* GlanceableTrayBubble::GetClassroomStudentView() {
+views::View* GlanceableTrayBubble::GetClassroomStudentView() {
   return GetGlanceableTrayBubbleView()->GetClassroomStudentView();
 }
 

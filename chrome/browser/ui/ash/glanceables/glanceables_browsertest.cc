@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
+#include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
 #include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
@@ -19,7 +20,6 @@
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
 #include "ash/system/status_area_widget_test_helper.h"
-#include "ash/system/unified/classroom_bubble_student_view.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/glanceable_tray_bubble.h"
 #include "ash/test/ash_test_util.h"
@@ -43,6 +43,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
@@ -180,7 +181,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
     return current_items;
   }
 
-  ClassroomBubbleStudentView* GetStudentView() const {
+  views::View* GetStudentView() const {
     return GetGlanceableTrayBubble()->GetClassroomStudentView();
   }
 

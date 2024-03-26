@@ -11,6 +11,7 @@
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
+#include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/public/cpp/session/user_info.h"
@@ -21,7 +22,6 @@
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
-#include "ash/system/unified/classroom_bubble_student_view.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -387,7 +387,7 @@ void GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded(
       base::ranges::find(scroll_contents->children(), calendar_view_) -
       scroll_contents->children().begin();
   classroom_bubble_student_view_ = scroll_contents->AddChildViewAt(
-      std::make_unique<ClassroomBubbleStudentView>(), calendar_view_index);
+      std::make_unique<GlanceablesClassroomStudentView>(), calendar_view_index);
 
   AdjustChildrenFocusOrder();
 }

@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_UNIFIED_GLANCEABLE_TRAY_BUBBLE_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_GLANCEABLE_TRAY_BUBBLE_VIEW_H_
 
+#include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
 #include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/system/screen_layout_observer.h"
 #include "ash/system/tray/tray_bubble_view.h"
@@ -27,7 +28,6 @@ struct TaskList;
 }  // namespace api
 
 class CalendarView;
-class ClassroomBubbleStudentView;
 class Shelf;
 
 // The bubble associated with the `GlanceableTrayBubble`. This bubble is the
@@ -45,7 +45,7 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   void InitializeContents();
 
   views::View* GetTasksView() { return tasks_bubble_view_; }
-  ClassroomBubbleStudentView* GetClassroomStudentView() {
+  views::View* GetClassroomStudentView() {
     return classroom_bubble_student_view_;
   }
   CalendarView* GetCalendarView() { return calendar_view_; }
@@ -104,7 +104,8 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
 
   // Child bubble view for the student classrooms glanceable. Owned by
   // this view.
-  raw_ptr<ClassroomBubbleStudentView> classroom_bubble_student_view_ = nullptr;
+  raw_ptr<GlanceablesClassroomStudentView> classroom_bubble_student_view_ =
+      nullptr;
 
   // The parent container of `calendar_view_`. Only exists if the glanceables
   // calendar flag is on.
