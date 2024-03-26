@@ -322,6 +322,19 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
 
   views::ViewAccessibilityUtils::Merge(/*source*/ data_, /*destination*/ *data);
 
+  // The ignored state depends on more than just the kIgnored state of the data,
+  // for instance it also depends on if the view has been pruned from the tree.
+  // And since some of those states we keep track of in member variables, we
+  // need to add this check here at the end so that if those states were set, we
+  // add the kIgnored state to the final AXNodeData.
+  // TODO(accessibility): We'll eventually want to replace this with a more
+  // robust and less ambiguous system, such as what Blink does on the render
+  // side. We might need something like ComputeIsHidden(), which could try to
+  // mimic what Blink does when computing 'ignoredness' of a node.
+  if (ViewAccessibility::GetIsIgnored()) {
+    data->AddState(ax::mojom::State::kIgnored);
+  }
+
   // Nothing should be added beyond this point. Reach out to the Chromium
   // accessibility team in Slack, or to benjamin.beaudry@microsoft.com if you
   // absolutely need to add something past this point.
@@ -411,6 +424,24 @@ void ViewAccessibility::SetProperties(
       SetDescription(description.value());
     }
   }
+}
+
+void ViewAccessibility::SetIsLeaf(bool value) {
+  if (value == IsLeaf()) {
+    return;
+  }
+
+  if (value) {
+    PruneSubtree();
+  } else {
+    UnpruneSubtree();
+  }
+
+  is_leaf_ = value;
+}
+
+bool ViewAccessibility::GetIsPruned() const {
+  return pruned_;
 }
 
 void ViewAccessibility::SetCharacterOffsets(
@@ -670,7 +701,8 @@ void ViewAccessibility::SetIsIgnored(bool is_ignored) {
 }
 
 bool ViewAccessibility::GetIsIgnored() const {
-  return data_.HasState(ax::mojom::State::kIgnored);
+  return data_.HasState(ax::mojom::State::kIgnored) ||
+         ViewAccessibility::IsChildOfLeaf() || GetIsPruned();
 }
 
 void ViewAccessibility::OverrideNativeWindowTitle(const std::string& title) {
@@ -682,11 +714,11 @@ void ViewAccessibility::OverrideNativeWindowTitle(const std::u16string& title) {
 }
 
 void ViewAccessibility::OverrideIsLeaf(bool value) {
-  is_leaf_ = value;
+  overridden_is_leaf_ = value;
 }
 
 bool ViewAccessibility::IsLeaf() const {
-  return is_leaf_;
+  return overridden_is_leaf_;
 }
 
 bool ViewAccessibility::IsChildOfLeaf() const {
@@ -826,4 +858,29 @@ void ViewAccessibility::set_accessibility_events_callback(
   accessibility_events_callback_ = std::move(callback);
 }
 
+void ViewAccessibility::PruneSubtree() {
+  internal::ScopedChildrenLock lock(view_);
+  for (auto& child : view_->children()) {
+    child->GetViewAccessibility().pruned_ = true;
+    child->GetViewAccessibility().PruneSubtree();
+  }
+  // TODO(javiercon): Add logic in AXVirtualView to prune its children, and
+  // handle that here.
+}
+
+void ViewAccessibility::UnpruneSubtree() {
+  internal::ScopedChildrenLock lock(view_);
+  for (auto& child : view_->children()) {
+    // If we encounter a node that has already been explicitly set to be a leaf,
+    // don't unprune it/its subtree. Otherwise we could end up in situations
+    // where we have a node that is set to be a leaf, but has unpruned children.
+    if (child->GetViewAccessibility().ViewAccessibility::IsLeaf()) {
+      continue;
+    }
+    child->GetViewAccessibility().pruned_ = false;
+    child->GetViewAccessibility().UnpruneSubtree();
+  }
+  // TODO(javiercon): Add logic in AXVirtualView to prune its children, and
+  // handle that here.
+}
 }  // namespace views

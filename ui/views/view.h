@@ -2510,6 +2510,31 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   base::RepeatingClosureList notify_view_controller_callback_list_;
 };
 
+namespace internal {
+
+#if DCHECK_IS_ON()
+class ScopedChildrenLock {
+ public:
+  explicit ScopedChildrenLock(const View* view);
+
+  ScopedChildrenLock(const ScopedChildrenLock&) = delete;
+  ScopedChildrenLock& operator=(const ScopedChildrenLock&) = delete;
+
+  ~ScopedChildrenLock();
+
+ private:
+  base::AutoReset<bool> reset_;
+};
+#else
+class ScopedChildrenLock {
+ public:
+  explicit ScopedChildrenLock(const View* view);
+  ~ScopedChildrenLock();
+};
+#endif
+
+}  // namespace internal
+
 class VIEWS_EXPORT BaseActionViewInterface : public ActionViewInterface {
  public:
   explicit BaseActionViewInterface(View* action_view);

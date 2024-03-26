@@ -131,25 +131,13 @@ const View* GetHierarchyRoot(const View* view) {
 namespace internal {
 
 #if DCHECK_IS_ON()
-class ScopedChildrenLock {
- public:
-  explicit ScopedChildrenLock(const View* view)
-      : reset_(&view->iterating_, true) {}
+ScopedChildrenLock::ScopedChildrenLock(const View* view)
+    : reset_(&view->iterating_, true) {}
 
-  ScopedChildrenLock(const ScopedChildrenLock&) = delete;
-  ScopedChildrenLock& operator=(const ScopedChildrenLock&) = delete;
-
-  ~ScopedChildrenLock() = default;
-
- private:
-  base::AutoReset<bool> reset_;
-};
+ScopedChildrenLock::~ScopedChildrenLock() = default;
 #else
-class ScopedChildrenLock {
- public:
-  explicit ScopedChildrenLock(const View* view) {}
-  ~ScopedChildrenLock() {}
-};
+ScopedChildrenLock::ScopedChildrenLock(const View* view) {}
+ScopedChildrenLock::~ScopedChildrenLock() {}
 #endif
 
 }  // namespace internal

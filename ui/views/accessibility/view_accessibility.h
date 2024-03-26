@@ -123,6 +123,22 @@ class VIEWS_EXPORT ViewAccessibility {
       std::optional<ax::mojom::DescriptionFrom> description_from =
           std::nullopt);
 
+  // Sets/gets whether or not this view's descendants should be included in
+  // the accessibility tree. It is the functional equivalent of calling
+  // `SetAccessibleIsIgnored` on each and every view descendant of this
+  // view. The default value is false, which is appropriate for most views.
+  // Note that you should not set this property if a view has no descendants.
+  // It is essential that you do not set this property to true on containers
+  // which have one or more descendants which are focusable or otherwise
+  // interactive as this would make those descendants completely inaccessible.
+  // If no value has been set, the "leafiness" of this view will be based on
+  // the type of children (if any).
+  void SetIsLeaf(bool value);
+
+  // Returns true if we heuristically pruned (ignored) this view from the
+  // accessibility tree.
+  bool GetIsPruned() const;
+
   void SetCharacterOffsets(const std::vector<int32_t>& offsets);
 
   void SetWordStarts(const std::vector<int32_t>& offsets);
@@ -242,6 +258,8 @@ class VIEWS_EXPORT ViewAccessibility {
   // Note that this attribute does not cross widget boundaries, i.e. if a sub
   // widget is a descendant of this View, it will not be marked hidden. This
   // should not happen in practice as widgets are not children of Views.
+  // Deprecated. Use ViewAccessibility::SetIsLeaf instead.
+  // See https://crbug.com/324485311.
   void OverrideIsLeaf(bool value);
   virtual bool IsLeaf() const;
 
@@ -385,7 +403,16 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // If set to true, anything that is a descendant of this view will be hidden
   // from accessibility.
+  // DEPRECATED: This is being replaced by is_leaf_.
+  // TODO(javiercon): Remove this once OverrideIsLeaf is removed.
+  bool overridden_is_leaf_ = false;
+
+  // If set to true, anything that is a descendant of this view will be hidden
+  // from accessibility by 'pruning' it from the tree, and setting `pruned_` to
+  // true.
   bool is_leaf_ = false;
+
+  bool pruned_ = false;
 
   // Used by the Views system to help some assistive technologies, such as
   // screen readers, transition focus from one widget to another.
@@ -407,6 +434,13 @@ class VIEWS_EXPORT ViewAccessibility {
   // owns an ViewsAXTreeManager. For other Views, this should be nullptr.
   std::unique_ptr<views::ViewsAXTreeManager> ax_tree_manager_;
 #endif
+
+  // Prune/Unprune all descendant views from the accessibility tree. We prune
+  // for two reasons: 1) The view has been explicitly marked as a leaf node, 2)
+  // The view is focusable and lacks focusable descendants (e.g. a button with a
+  // label and/or an image).
+  void PruneSubtree();
+  void UnpruneSubtree();
 
   bool ignore_missing_widget_for_testing_ = false;
 };
