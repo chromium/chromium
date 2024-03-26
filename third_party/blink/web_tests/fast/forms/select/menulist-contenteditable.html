@@ -29,8 +29,9 @@ promise_test(async () => {
     ]
   }]);
   eventSender.keyDown('X');
-  assert_equals(internals.shadowRoot(select).textContent,
-      document.querySelector('option').textContent);
+  assert_equals(
+    internals.shadowRoot(select).querySelector('div').textContent,
+    document.querySelector('option').textContent);
 }, 'Text label in a menulist SELECT should not be editable');
 </script>
 </body>

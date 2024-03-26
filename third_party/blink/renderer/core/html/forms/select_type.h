@@ -65,7 +65,7 @@ class SelectType : public GarbageCollected<SelectType> {
   virtual void ManuallyAssignSlots() = 0;
   virtual HTMLButtonElement* SlottedButton() const = 0;
   virtual bool IsAppearanceBikeshed() const = 0;
-  virtual Element& InnerElement() const;
+  virtual Element& InnerElementForAppearanceAuto() const;
   virtual void ShowPopup(PopupMenu::ShowEventType type);
   virtual void HidePopup();
   virtual void PopupDidHide();

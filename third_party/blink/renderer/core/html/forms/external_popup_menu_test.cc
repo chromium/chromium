@@ -341,7 +341,7 @@ TEST_F(ExternalPopupMenuTest, DidAcceptIndex) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(select->PopupIsVisible());
-  ASSERT_EQ("2", select->InnerElement().innerText().Utf8());
+  ASSERT_EQ("2", select->InnerElementForAppearanceAuto().innerText().Utf8());
   EXPECT_EQ(2, select->selectedIndex());
 }
 
@@ -364,7 +364,7 @@ TEST_F(ExternalPopupMenuTest, DidAcceptIndices) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(select->PopupIsVisible());
-  EXPECT_EQ("2", select->InnerElement().innerText());
+  EXPECT_EQ("2", select->InnerElementForAppearanceAuto().innerText());
   EXPECT_EQ(2, select->selectedIndex());
 }
 

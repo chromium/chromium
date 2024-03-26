@@ -348,7 +348,8 @@ LayoutUnit MenuListIntrinsicBlockSize(const HTMLSelectElement& select,
     return kIndefiniteSize;
   const SimpleFontData* font_data = box.StyleRef().GetFont().PrimaryFont();
   DCHECK(font_data);
-  const LayoutBox* inner_box = select.InnerElement().GetLayoutBox();
+  const LayoutBox* inner_box =
+      select.InnerElementForAppearanceAuto().GetLayoutBox();
   return (font_data ? font_data->GetFontMetrics().Height() : 0) +
          (inner_box ? inner_box->BorderAndPaddingLogicalHeight()
                     : LayoutUnit());
@@ -1315,7 +1316,7 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
     return kIndefiniteSize;
   }
   if (const auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
-    if (!select->SlottedButton()) {
+    if (!select->IsAppearanceBikeshed()) {
       if (select->UsesMenuList()) {
         return MenuListIntrinsicBlockSize(*select, *this);
       }

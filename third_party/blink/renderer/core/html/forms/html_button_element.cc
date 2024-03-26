@@ -293,6 +293,11 @@ HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
   if (auto* select = DynamicTo<HTMLSelectElement>(parentNode())) {
     return select;
   }
+  if (auto* root = ContainingShadowRoot()) {
+    if (auto* select = DynamicTo<HTMLSelectElement>(root->host())) {
+      return select;
+    }
+  }
   return nullptr;
 }
 

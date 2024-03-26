@@ -1278,8 +1278,8 @@ void HTMLSelectElement::UpdateUserAgentShadowTree(ShadowRoot& root) {
   select_type_->CreateShadowSubtree(root);
 }
 
-Element& HTMLSelectElement::InnerElement() const {
-  return select_type_->InnerElement();
+Element& HTMLSelectElement::InnerElementForAppearanceAuto() const {
+  return select_type_->InnerElementForAppearanceAuto();
 }
 
 AXObject* HTMLSelectElement::PopupRootAXObject() const {
@@ -1319,8 +1319,9 @@ const ComputedStyle* HTMLSelectElement::ItemComputedStyle(
 LayoutUnit HTMLSelectElement::ClientPaddingLeft() const {
   DCHECK(UsesMenuList());
   auto* this_box = GetLayoutBox();
-  if (!this_box || !InnerElement().GetLayoutBox())
+  if (!this_box || !InnerElementForAppearanceAuto().GetLayoutBox()) {
     return LayoutUnit();
+  }
   LayoutTheme& theme = LayoutTheme::GetTheme();
   const ComputedStyle& style = this_box->StyleRef();
   int inner_padding =
@@ -1333,8 +1334,9 @@ LayoutUnit HTMLSelectElement::ClientPaddingLeft() const {
 LayoutUnit HTMLSelectElement::ClientPaddingRight() const {
   DCHECK(UsesMenuList());
   auto* this_box = GetLayoutBox();
-  if (!this_box || !InnerElement().GetLayoutBox())
+  if (!this_box || !InnerElementForAppearanceAuto().GetLayoutBox()) {
     return LayoutUnit();
+  }
   LayoutTheme& theme = LayoutTheme::GetTheme();
   const ComputedStyle& style = this_box->StyleRef();
   int inner_padding =

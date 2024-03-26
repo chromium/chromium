@@ -356,9 +356,11 @@ void HTMLOptionElement::ChildrenChanged(const ChildrenChange& change) {
 void HTMLOptionElement::DidChangeTextContent() {
   if (HTMLDataListElement* data_list = OwnerDataListElement()) {
     data_list->OptionElementChildrenChanged();
-  } else if (HTMLSelectElement* select = OwnerSelectElement()) {
+  }
+  if (HTMLSelectElement* select = OwnerSelectElement()) {
     select->OptionElementChildrenChanged(*this);
-  } else if (HTMLSelectListElement* select_list = OwnerSelectList()) {
+  }
+  if (HTMLSelectListElement* select_list = OwnerSelectList()) {
     select_list->OptionElementChildrenChanged(*this);
   }
   UpdateLabel();

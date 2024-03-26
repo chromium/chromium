@@ -68,17 +68,22 @@ bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
                                        const ComputedStyle& style) const {
   const auto* select = DynamicTo<HTMLSelectElement>(GetNode());
   if (UNLIKELY(select && select->UsesMenuList())) {
-    // For a size=1 <select>, we only render the active option label through the
-    // InnerElement. We do not allow adding layout objects for options and
-    // optgroups.
     if (select->IsAppearanceBikeshed()) {
-      // For stylable select, we want children to be renderable so that we can
-      // render the author provided <button> element. However, we don't want the
-      // <option>s to be rendered if they will be displayed in a native popup.
       CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
-      return !IsA<HTMLOptionElement>(object->GetNode());
+      if (IsA<HTMLOptionElement>(object->GetNode())) {
+        // TODO(crbug.com/1511354): Remove this when <option>s are slotted into
+        // the UA <datalist>, which will be hidden by default as a popover.
+        return false;
+      }
+      // For appearance:bikeshed <select>, we want to render all children.
+      // However, the InnerElement is only used for rendering in
+      // appearance:auto, so don't include that one.
+      return object->GetNode() != &select->InnerElementForAppearanceAuto();
     } else {
-      return object->GetNode() == &select->InnerElement();
+      // For a size=1 appearance:auto <select>, we only render the active option
+      // label through the InnerElement. We do not allow adding layout objects
+      // for options and optgroups.
+      return object->GetNode() == &select->InnerElementForAppearanceAuto();
     }
   }
   return LayoutBlock::IsChildAllowed(object, style);

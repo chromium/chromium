@@ -3589,7 +3589,8 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
     // We don't retrieve the element's value attribute on purpose. The value
     // attribute might be sanitized and might be different from what is actually
     // displayed inside the <select> element on screen.
-    return select_element->InnerElement().GetInnerTextWithoutUpdate();
+    return select_element->InnerElementForAppearanceAuto()
+        .GetInnerTextWithoutUpdate();
   }
 
   if (IsAtomicTextField()) {

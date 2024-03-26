@@ -198,7 +198,9 @@ class CORE_EXPORT HTMLSelectElement final
                                        NodeCloningData&) override;
 
   // These should be called only if UsesMenuList().
-  Element& InnerElement() const;
+  // TODO(crbug.com/1511354): Audit usage of InnerElementForAppearanceAuto to
+  // make sure it correctly handles the appearance:bikeshed case.
+  Element& InnerElementForAppearanceAuto() const;
   AXObject* PopupRootAXObject() const;
 
   bool IsRichlyEditableForAccessibility() const override { return false; }

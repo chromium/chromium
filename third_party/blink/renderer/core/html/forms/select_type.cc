@@ -117,7 +117,7 @@ class MenuListSelectType final : public SelectType {
   void ManuallyAssignSlots() override;
   HTMLButtonElement* SlottedButton() const override;
   bool IsAppearanceBikeshed() const override;
-  Element& InnerElement() const override;
+  Element& InnerElementForAppearanceAuto() const override;
   void ShowPopup(PopupMenu::ShowEventType type) override;
   void HidePopup() override;
   void PopupDidHide() override;
@@ -144,6 +144,7 @@ class MenuListSelectType final : public SelectType {
   Member<PopupUpdater> popup_updater_;
   Member<const ComputedStyle> option_style_;
   Member<HTMLSlotElement> button_slot_;
+  Member<HTMLButtonElement> default_button_;
   Member<HTMLSlotElement> datalist_slot_;
   Member<HTMLSlotElement> option_slot_;
   Member<MenuListInnerElement> inner_element_;
@@ -159,6 +160,7 @@ void MenuListSelectType::Trace(Visitor* visitor) const {
   visitor->Trace(popup_updater_);
   visitor->Trace(option_style_);
   visitor->Trace(button_slot_);
+  visitor->Trace(default_button_);
   visitor->Trace(datalist_slot_);
   visitor->Trace(option_slot_);
   visitor->Trace(inner_element_);
@@ -195,6 +197,8 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
           break;
         }
       }
+    } else if (event.target() == default_button_) {
+      target_is_button = true;
     }
     if (!target_is_button) {
       return false;
@@ -388,23 +392,11 @@ bool MenuListSelectType::HandlePopupOpenKeyboardEvent() {
 void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
   Document& doc = select_->GetDocument();
 
-  ContainerNode* inner_element_container = &root;
-  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
-    button_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
-    button_slot_->SetIdAttribute(shadow_element_names::kSelectButton);
-    root.appendChild(button_slot_);
-    inner_element_container = button_slot_.Get();
-
-    datalist_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
-    datalist_slot_->SetIdAttribute(shadow_element_names::kSelectDatalist);
-    root.appendChild(datalist_slot_);
-  }
-
   inner_element_ = MakeGarbageCollected<MenuListInnerElement>(doc);
   inner_element_->setAttribute(html_names::kAriaHiddenAttr, keywords::kTrue);
-  // Make sure InnerElement() always has a Text node.
+  // Make sure InnerElementForAppearanceAuto() always has a Text node.
   inner_element_->appendChild(Text::Create(doc, g_empty_string));
-  inner_element_container->appendChild(inner_element_);
+  root.AppendChild(inner_element_);
 
   // Even in MenuList mode, slotting <option>s is necessary to have
   // ComputedStyles for <option>s. LayoutFlexibleBox::IsChildAllowed() rejects
@@ -414,6 +406,21 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
   option_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
   option_slot_->SetIdAttribute(shadow_element_names::kSelectOptions);
   root.appendChild(option_slot_);
+
+  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    button_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
+    button_slot_->SetIdAttribute(shadow_element_names::kSelectButton);
+    root.appendChild(button_slot_);
+
+    default_button_ = MakeGarbageCollected<HTMLButtonElement>(doc);
+    default_button_->setAttribute(html_names::kTypeAttr,
+                                  AtomicString("popover"));
+    button_slot_->AppendChild(default_button_);
+
+    datalist_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
+    datalist_slot_->SetIdAttribute(shadow_element_names::kSelectDatalist);
+    root.appendChild(datalist_slot_);
+  }
 }
 
 void MenuListSelectType::ManuallyAssignSlots() {
@@ -437,7 +444,6 @@ void MenuListSelectType::ManuallyAssignSlots() {
   if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
     button_slot_->Assign(buttons);
     datalist_slot_->Assign(first_datalist);
-    select_->GetShadowRoot()->SetDelegatesFocus(buttons.size());
   }
 }
 
@@ -460,7 +466,7 @@ bool MenuListSelectType::IsAppearanceBikeshed() const {
   return false;
 }
 
-Element& MenuListSelectType::InnerElement() const {
+Element& MenuListSelectType::InnerElementForAppearanceAuto() const {
   return *inner_element_;
 }
 
@@ -659,6 +665,10 @@ void MenuListSelectType::DidRecalcStyle(const StyleRecalcChange change) {
       // appearance:auto mode. We also call SetNeedsReattachLayoutTree every
       // time that the size and multiple attributes are changed.
       select_->SetNeedsReattachLayoutTree();
+
+      // In appearance:bikeshed mode, we want the child button to get focus
+      // instead of the <select> itself.
+      select_->GetShadowRoot()->SetDelegatesFocus(is_appearance_bikeshed);
     }
   }
 
@@ -708,7 +718,7 @@ String MenuListSelectType::UpdateTextStyleInternal() {
   }
   option_style_ = option_style;
 
-  auto& inner_element = select_->InnerElement();
+  auto& inner_element = select_->InnerElementForAppearanceAuto();
   const ComputedStyle* inner_style = inner_element.GetComputedStyle();
   if (inner_style && option_style &&
       ((option_style->Direction() != inner_style->Direction() ||
@@ -733,7 +743,14 @@ String MenuListSelectType::UpdateTextStyleInternal() {
 }
 
 void MenuListSelectType::UpdateTextStyleAndContent() {
-  select_->InnerElement().firstChild()->setNodeValue(UpdateTextStyleInternal());
+  String text = UpdateTextStyleInternal();
+  select_->InnerElementForAppearanceAuto().firstChild()->setNodeValue(text);
+  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    // Copy the text of the selected <option> into the fallback <button> so that
+    // the user can see what the selected option is, just like the
+    // appearance:auto case.
+    default_button_->setTextContent(text);
+  }
   if (auto* box = select_->GetLayoutBox()) {
     if (auto* cache = select_->GetDocument().ExistingAXObjectCache())
       cache->TextChanged(box);
@@ -1619,7 +1636,7 @@ void SelectType::ListBoxOnChange() {}
 
 void SelectType::ClearLastOnChangeSelection() {}
 
-Element& SelectType::InnerElement() const {
+Element& SelectType::InnerElementForAppearanceAuto() const {
   NOTREACHED();
   // Returning select_ doesn't make sense, but we need to return an element
   // to compile this source. This function must not be called.

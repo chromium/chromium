@@ -1017,8 +1017,10 @@ TEST_F(VisibleUnitsTest, SnapForwardWithSelect) {
             MostForwardCaretPosition(PositionInFlatTree(select, 1)));
   EXPECT_EQ(PositionInFlatTree::BeforeNode(select),
             MostForwardCaretPosition(PositionInFlatTree(select, 2)));
-  EXPECT_EQ(PositionInFlatTree::AfterNode(select),
+  EXPECT_EQ(PositionInFlatTree::BeforeNode(select),
             MostForwardCaretPosition(PositionInFlatTree(select, 3)));
+  EXPECT_EQ(PositionInFlatTree::AfterNode(select),
+            MostForwardCaretPosition(PositionInFlatTree(select, 4)));
 
   EXPECT_EQ(
       PositionInFlatTree::AfterNode(select),

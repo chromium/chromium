@@ -64,15 +64,17 @@ Input before setting suggested values:
 |     <shadow:root>
 |       "TX"
 |   <shadow:root>
-|     <slot>
-|       id="select-button"
-|       <div>
-|         aria-hidden="true"
-|         ""
-|     <slot>
-|       id="select-datalist"
+|     <div>
+|       aria-hidden="true"
+|       ""
 |     <slot>
 |       id="select-options"
+|     <slot>
+|       id="select-button"
+|       <button>
+|         type="popover"
+|     <slot>
+|       id="select-datalist"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "
@@ -160,15 +162,18 @@ Input after setting suggestedValue:
 |     <shadow:root>
 |       "TX"
 |   <shadow:root>
+|     <div>
+|       aria-hidden="true"
+|       "TX"
+|     <slot>
+|       id="select-options"
 |     <slot>
 |       id="select-button"
-|       <div>
-|         aria-hidden="true"
+|       <button>
+|         type="popover"
 |         "TX"
 |     <slot>
 |       id="select-datalist"
-|     <slot>
-|       id="select-options"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "
@@ -254,15 +259,17 @@ After resetting suggestedValue value:
 |     <shadow:root>
 |       "TX"
 |   <shadow:root>
-|     <slot>
-|       id="select-button"
-|       <div>
-|         aria-hidden="true"
-|         ""
-|     <slot>
-|       id="select-datalist"
+|     <div>
+|       aria-hidden="true"
+|       ""
 |     <slot>
 |       id="select-options"
+|     <slot>
+|       id="select-button"
+|       <button>
+|         type="popover"
+|     <slot>
+|       id="select-datalist"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+
+<!-- This test makes sure that we have the same rendering in appearance:auto
+     regardless of whether the new button or datalist elements are provided. -->
+
+<select>
+  <option>option</option>
+</select>
+
+<select>
+  <button>button</button>
+  <option>option</option>
+</select>
+
+<select>
+  <datalist>
+    <option>option</option>
+  </datalist>
+</select>
+
+<select>
+  <button>button</button>
+  <datalist>
+    <option>option</option>
+  </datalist>
+</select>

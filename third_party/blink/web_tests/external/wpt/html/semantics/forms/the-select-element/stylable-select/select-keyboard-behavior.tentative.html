@@ -49,9 +49,7 @@ const Space = ' ';
 const form = document.querySelector('form');
 const notform = document.getElementById('notform');
 
-// TODO(http://crbug.com/1511354): Uncomment "defaultbutton" when the default
-// button for appearance:bikeshed is implemented.
-for (const id of [/*'defaultbutton',*/ 'custombutton']) {
+for (const id of ['defaultbutton', 'custombutton']) {
   const select = document.getElementById(id);
 
   async function closeListbox() {
