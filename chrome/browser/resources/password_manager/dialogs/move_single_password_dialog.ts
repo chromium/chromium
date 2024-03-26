@@ -76,12 +76,10 @@ export class MoveSinglePasswordDialogElement extends
     assert(this.isOptedInForAccountStorage);
     PasswordManagerImpl.getInstance().movePasswordsToAccount(
         [this.password.id]);
-    this.dispatchEvent(new CustomEvent('password-moved', {
+    this.dispatchEvent(new CustomEvent('passwords-moved', {
       bubbles: true,
       composed: true,
-      detail: {
-        accountEmail: this.accountEmail,
-      },
+      detail: {accountEmail: this.accountEmail, numberOfPasswords: 1},
     }));
 
     this.$.dialog.close();

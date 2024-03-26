@@ -28,6 +28,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {PasswordsMovedEvent} from '../password_manager_app.js';
 import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
 import {PasswordSharingActions, recordPasswordSharingInteraction} from '../sharing/metrics_utils.js';
 import {ShowPasswordMixin} from '../show_password_mixin.js';
@@ -42,12 +43,11 @@ export const PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID =
 
 export type PasswordRemovedEvent =
     CustomEvent<{removedFromStores: chrome.passwordsPrivate.PasswordStoreSet}>;
-export type PasswordMovedEvent = CustomEvent<{accountEmail: string}>;
 
 declare global {
   interface HTMLElementEventMap {
     'password-removed': PasswordRemovedEvent;
-    'password-moved': PasswordMovedEvent;
+    'passwords-moved': PasswordsMovedEvent;
   }
 }
 

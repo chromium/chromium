@@ -114,6 +114,15 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
     assert(this.isOptedInForAccountStorage);
     PasswordManagerImpl.getInstance().movePasswordsToAccount(
         this.selectedPasswordIds_);
+    this.dispatchEvent(new CustomEvent('passwords-moved', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        accountEmail: this.accountEmail,
+        numberOfPasswords: this.selectedPasswordIds_.length,
+      },
+    }));
+
     this.$.dialog.close();
   }
 

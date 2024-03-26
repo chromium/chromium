@@ -329,8 +329,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       // depending on the build.
       {"passwordManagerTitle",
        IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE},
-      {"passwordMovedToastMessage",
-       IDS_PASSWORD_MANAGER_UI_PASSWORD_MOVED_TOAST_MESSAGE},
       {"passwordNoteCharacterCount",
        IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT},
       {"passwordNoteCharacterCountWarning",
@@ -619,6 +617,9 @@ void AddPluralStrings(content::WebUI* web_ui) {
   plural_string_handler->AddLocalizedString(
       "deviceOnlyListItemAriaLabel",
       IDS_PASSWORD_MANAGER_UI_PASSWORD_LIST_ITEM_ARIA_LABEL);
+  plural_string_handler->AddLocalizedString(
+      "passwordsMovedToastMessage",
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_MOVED_TOAST_MESSAGE);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 
