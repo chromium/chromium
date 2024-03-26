@@ -357,11 +357,8 @@ void TabAndroid::InitWebContents(
 
 void TabAndroid::InitializeAutofillIfNecessary(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(autofill::AutofillProvider::FromWebContents(web_contents_.get()));
   if (autofill::ContentAutofillClient::FromWebContents(web_contents_.get())) {
-    return;
-  }
-  // The AutofillProvider object is already created by the AutofillProvider.
-  if (autofill::AutofillProvider::FromWebContents(web_contents_.get())) {
     return;
   }
   android_autofill::AndroidAutofillClient::CreateForWebContents(

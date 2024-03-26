@@ -1778,6 +1778,7 @@ class TabImpl implements Tab {
      * @return true if the the provider is available for the given WebContents.
      */
     private boolean prepareAutofillProvider(WebContents newWebContents) {
+        assert isInitialized();
         if (!providesAutofillStructure()) {
             mAutofillProvider = null;
             return false; // Autofill provider can't be prepared.
