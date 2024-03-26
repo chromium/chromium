@@ -77,11 +77,11 @@ void NearbyPresence::StartScan(mojom::ScanRequestPtr scan_request,
                              [id_to_session_id_map_[id]])
                    .Run(std::move(session_id_to_scan_session_remote_map_
                                       [id_to_session_id_map_[id]]),
-                        CovertStatusToMojomStatus(status));
+                        ConvertStatusToMojom(status));
              } else {
                std::move(session_id_to_results_callback_map_
                              [id_to_session_id_map_[id]])
-                   .Run(mojo::NullRemote(), CovertStatusToMojomStatus(status));
+                   .Run(mojo::NullRemote(), ConvertStatusToMojom(status));
                session_id_to_scan_session_remote_map_.erase(
                    id_to_session_id_map_[id]);
                id_to_session_id_map_.erase(id);
@@ -112,7 +112,7 @@ void NearbyPresence::StartScan(mojom::ScanRequestPtr scan_request,
         << session_id_or_status.status();
     std::move(callback).Run(
         std::move(mojo::NullRemote()),
-        CovertStatusToMojomStatus(session_id_or_status.status()));
+        ConvertStatusToMojom(session_id_or_status.status()));
     return;
   }
 
@@ -194,8 +194,7 @@ void NearbyPresence::UpdateLocalDeviceMetadataAndGenerateCredentials(
                         UpdateLocalDeviceMetadataAndGenerateCredentialsCallback&>(
                         cb)),
                 /*credentials=*/std::move(mojo_credentials), /*status=*/
-                CovertStatusToMojomStatus(
-                    status_or_shared_credentials.status())));
+                ConvertStatusToMojom(status_or_shared_credentials.status())));
       }});
 }
 
@@ -239,7 +238,7 @@ void NearbyPresence::UpdateRemoteSharedCredentials(
                      std::move(
                          const_cast<UpdateRemoteSharedCredentialsCallback&>(
                              cb)),
-                     CovertStatusToMojomStatus(status)));
+                     ConvertStatusToMojom(status)));
            }});
 }
 
@@ -273,7 +272,7 @@ void NearbyPresence::GetLocalSharedCredentials(
                      std::move(
                          const_cast<GetLocalSharedCredentialsCallback&>(cb)),
                      /*credentials=*/std::move(mojo_credentials), /*status=*/
-                     CovertStatusToMojomStatus(
+                     ConvertStatusToMojom(
                          status_or_shared_credentials.status())));
            }});
 }

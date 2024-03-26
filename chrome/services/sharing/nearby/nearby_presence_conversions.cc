@@ -114,8 +114,7 @@ mojom::IdentityType ConvertIdentityTypeToMojom(
   }
 }
 
-mojo_base::mojom::AbslStatusCode CovertStatusToMojomStatus(
-    absl::Status status) {
+mojo_base::mojom::AbslStatusCode ConvertStatusToMojom(absl::Status status) {
   switch (status.code()) {
     case absl::StatusCode::kOk:
       return mojo_base::mojom::AbslStatusCode::kOk;
