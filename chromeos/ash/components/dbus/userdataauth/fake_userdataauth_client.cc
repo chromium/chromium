@@ -683,6 +683,16 @@ void FakeUserDataAuthClient::RemoveFingerprintAuthObserver(
   fingerprint_observers_.RemoveObserver(observer);
 }
 
+void FakeUserDataAuthClient::AddPrepareAuthFactorProgressObserver(
+    PrepareAuthFactorProgressObserver* observer) {
+  progress_observers_.AddObserver(observer);
+}
+
+void FakeUserDataAuthClient::RemovePrepareAuthFactorProgressObserver(
+    PrepareAuthFactorProgressObserver* observer) {
+  progress_observers_.RemoveObserver(observer);
+}
+
 void FakeUserDataAuthClient::IsMounted(
     const ::user_data_auth::IsMountedRequest& request,
     IsMountedCallback callback) {

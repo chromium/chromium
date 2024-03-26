@@ -39,12 +39,27 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
 
   class FingerprintAuthObserver : public base::CheckedObserver {
    public:
+    // Used for the legacy fingerprint auth scan signal.
     virtual void OnFingerprintScan(
         const ::user_data_auth::FingerprintScanResult& result) {}
+    // Used for the legacy fingerprint enroll scan signal.
     virtual void OnEnrollScanDone(
         const ::user_data_auth::FingerprintScanResult& result,
         bool is_complete,
         int percent_complete) {}
+  };
+
+  // Processes sub messages embedded in the PrepareAuthFactorProgress signal
+  // received.
+  class PrepareAuthFactorProgressObserver : public base::CheckedObserver {
+   public:
+    // Called when a fingerprint auth message is received.
+    virtual void OnFingerprintAuthScan(
+        const ::user_data_auth::AuthScanDone& result) {}
+
+    // Called when a enroll progress is received.
+    virtual void OnFingerprintEnrollProgress(
+        const ::user_data_auth::AuthEnrollmentProgress& result) {}
   };
 
   using IsMountedCallback =
@@ -148,13 +163,21 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   // Removes an observer if added.
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Removes a fingerprint auth observer if added.
+  // Adds a fingerprint auth observer.
   virtual void AddFingerprintAuthObserver(
       FingerprintAuthObserver* observer) = 0;
 
   // Removes a fingerprint auth observer if added.
   virtual void RemoveFingerprintAuthObserver(
       FingerprintAuthObserver* observer) = 0;
+
+  // Adds a PrepareAuthFactorProgress observer.
+  virtual void AddPrepareAuthFactorProgressObserver(
+      PrepareAuthFactorProgressObserver* observer) = 0;
+
+  // Removes a PrepareAuthFactorProgress observer if added.
+  virtual void RemovePrepareAuthFactorProgressObserver(
+      PrepareAuthFactorProgressObserver* observer) = 0;
 
   // Actual DBus Methods:
 
@@ -304,14 +327,16 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       GetAuthSessionStatusCallback callback) = 0;
 
   // This is called to enable asynchronous auth factors (like Fingerprint).
-  // Note that called need to add FingerprintAuthObserver before this call.
+  // Note that caller needs to add PrepareAuthFactorProgressObserver before this
+  // call.
   virtual void PrepareAuthFactor(
       const ::user_data_auth::PrepareAuthFactorRequest& request,
       PrepareAuthFactorCallback callback) = 0;
 
   // Counterpart for `PrepareAuthFactor`, method is called to disable particular
   // asynchronous auth factor (like Fingerprint).
-  // Note that called need to remove FingerprintAuthObserver after this call.
+  // Note that caller needs to remove PrepareAuthFactorProgressObserver after
+  // this call.
   virtual void TerminateAuthFactor(
       const ::user_data_auth::TerminateAuthFactorRequest& request,
       TerminateAuthFactorCallback callback) = 0;

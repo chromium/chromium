@@ -99,6 +99,16 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
     fp_observer_list_.RemoveObserver(observer);
   }
 
+  void AddPrepareAuthFactorProgressObserver(
+      PrepareAuthFactorProgressObserver* observer) override {
+    progress_observer_list_.AddObserver(observer);
+  }
+
+  void RemovePrepareAuthFactorProgressObserver(
+      PrepareAuthFactorProgressObserver* observer) override {
+    progress_observer_list_.RemoveObserver(observer);
+  }
+
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override {
     proxy_->WaitForServiceToBeAvailable(std::move(callback));
@@ -443,6 +453,35 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
     }
   }
 
+  void OnPrepareAuthFactorProgress(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    ::user_data_auth::PrepareAuthFactorProgress proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      LOG(ERROR) << "Failed to parse PrepareAuthFactorProgress protobuf from "
+                    "UserDataAuth signal";
+      return;
+    }
+    if (proto.purpose() == ::user_data_auth::PURPOSE_ADD_AUTH_FACTOR &&
+        proto.add_progress().auth_factor_type() ==
+            ::user_data_auth::AUTH_FACTOR_TYPE_FINGERPRINT) {
+      for (auto& observer : progress_observer_list_) {
+        observer.OnFingerprintEnrollProgress(
+            proto.add_progress().biometrics_progress());
+      }
+    } else if (proto.purpose() ==
+                   ::user_data_auth::PURPOSE_AUTHENTICATE_AUTH_FACTOR &&
+               proto.auth_progress().auth_factor_type() ==
+                   ::user_data_auth::AUTH_FACTOR_TYPE_FINGERPRINT) {
+      for (auto& observer : progress_observer_list_) {
+        observer.OnFingerprintAuthScan(
+            proto.auth_progress().biometrics_progress());
+      }
+    } else {
+      LOG(ERROR) << "Received a unrecognized PrepareAuthFactorProgress signal";
+      return;
+    }
+  }
+
   // Connects the dbus signals.
   void ConnectToSignals() {
     proxy_->ConnectToSignal(
@@ -470,6 +509,13 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
         base::BindRepeating(&UserDataAuthClientImpl::OnAuthEnrollmentProgress,
                             weak_factory_.GetWeakPtr()),
         base::BindOnce(&OnSignalConnected));
+    proxy_->ConnectToSignal(
+        ::user_data_auth::kUserDataAuthInterface,
+        ::user_data_auth::kPrepareAuthFactorProgressSignal,
+        base::BindRepeating(
+            &UserDataAuthClientImpl::OnPrepareAuthFactorProgress,
+            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&OnSignalConnected));
   }
 
   // D-Bus proxy for cryptohomed, not owned.
@@ -478,8 +524,11 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
   // List of observers for dbus signals.
   base::ObserverList<Observer> observer_list_;
 
-  // List of observers for dbus signals related to fingerprint.
+  // List of observers for dbus signals related to legacy fingerprint.
   base::ObserverList<FingerprintAuthObserver> fp_observer_list_;
+
+  // List of observers for dbus signals related to fingerprint.
+  base::ObserverList<PrepareAuthFactorProgressObserver> progress_observer_list_;
 
   base::WeakPtrFactory<UserDataAuthClientImpl> weak_factory_{this};
 };

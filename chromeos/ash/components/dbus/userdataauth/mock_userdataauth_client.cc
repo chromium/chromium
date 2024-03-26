@@ -36,4 +36,14 @@ void MockUserDataAuthClient::RemoveFingerprintAuthObserver(
   NOTIMPLEMENTED();
 }
 
+void MockUserDataAuthClient::AddPrepareAuthFactorProgressObserver(
+    PrepareAuthFactorProgressObserver* observer) {
+  NOTIMPLEMENTED();
+}
+
+void MockUserDataAuthClient::RemovePrepareAuthFactorProgressObserver(
+    PrepareAuthFactorProgressObserver* observer) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace ash

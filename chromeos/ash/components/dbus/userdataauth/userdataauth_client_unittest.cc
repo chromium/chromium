@@ -41,6 +41,38 @@ bool ProtobufEquals(const google::protobuf::MessageLite& a,
   return a_serialized == b_serialized;
 }
 
+// Returns a PrepareAuthFactorProgress proto representing a success fingerprint
+// enroll scan with the desired |percent_complete|.
+::user_data_auth::PrepareAuthFactorProgress PrepareFpAuthFactorForAdd(
+    int percent_complete) {
+  ::user_data_auth::PrepareAuthFactorProgress progress;
+  progress.set_purpose(::user_data_auth::PURPOSE_ADD_AUTH_FACTOR);
+  auto* add_progress = progress.mutable_add_progress();
+  add_progress->set_auth_factor_type(
+      ::user_data_auth::AUTH_FACTOR_TYPE_FINGERPRINT);
+  auto* enroll_progress = add_progress->mutable_biometrics_progress();
+  enroll_progress->mutable_scan_result()->set_fingerprint_result(
+      ::user_data_auth::FINGERPRINT_SCAN_RESULT_SUCCESS);
+  enroll_progress->set_done(percent_complete == 100);
+  enroll_progress->mutable_fingerprint_progress()->set_percent_complete(
+      percent_complete);
+  return progress;
+}
+
+// Returns a PrepareAuthFactorProgress proto representing a fingerprint auth
+// scan.
+::user_data_auth::PrepareAuthFactorProgress PrepareFpAuthFactorForAuth(
+    ::user_data_auth::FingerprintScanResult result) {
+  ::user_data_auth::PrepareAuthFactorProgress progress;
+  progress.set_purpose(::user_data_auth::PURPOSE_AUTHENTICATE_AUTH_FACTOR);
+  auto* auth_progress = progress.mutable_auth_progress();
+  auth_progress->set_auth_factor_type(
+      ::user_data_auth::AUTH_FACTOR_TYPE_FINGERPRINT);
+  auto* result_progress = auth_progress->mutable_biometrics_progress();
+  result_progress->mutable_scan_result()->set_fingerprint_result(result);
+  return progress;
+}
+
 // Create a callback that would copy the input argument passed to it into |out|.
 // This is used mostly to create a callback that would catch the reply from
 // dbus.
@@ -77,7 +109,7 @@ class TestObserver : public UserDataAuthClient::Observer {
   int dircrypto_progress_count() const { return dircrypto_progress_count_; }
 
  private:
-  // The protobuf that came with the signal when the last low disk space_ event
+  // The protobuf that came with the signal when the last low disk space event
   // came.
   ::user_data_auth::LowDiskSpace last_low_disk_space_;
 
@@ -90,6 +122,37 @@ class TestObserver : public UserDataAuthClient::Observer {
 
   // The number of times the DircryptoMigrationProgress signal is triggered.
   int dircrypto_progress_count_ = 0;
+};
+
+// The test observer that only observe fingerprint related progress messages.
+class TestFingerprintObserver
+    : public UserDataAuthClient::PrepareAuthFactorProgressObserver {
+ public:
+  void OnFingerprintAuthScan(
+      const ::user_data_auth::AuthScanDone& result) override {
+    last_auth_scan_done_.CopyFrom(result);
+    auth_scan_done_count_++;
+  }
+  void OnFingerprintEnrollProgress(
+      const ::user_data_auth::AuthEnrollmentProgress& progress) override {
+    last_enroll_progress_.CopyFrom(progress);
+    enroll_progress_count_++;
+  }
+
+  int auth_scan_done_count() const { return auth_scan_done_count_; }
+  int enroll_progress_count() const { return enroll_progress_count_; }
+  const ::user_data_auth::AuthScanDone& last_auth_scan_done() const {
+    return last_auth_scan_done_;
+  }
+  const ::user_data_auth::AuthEnrollmentProgress& last_enroll_progress() const {
+    return last_enroll_progress_;
+  }
+
+ private:
+  int auth_scan_done_count_ = 0;
+  int enroll_progress_count_ = 0;
+  ::user_data_auth::AuthScanDone last_auth_scan_done_;
+  ::user_data_auth::AuthEnrollmentProgress last_enroll_progress_;
 };
 
 }  // namespace
@@ -139,6 +202,11 @@ class UserDataAuthClientTest : public testing::Test {
                     ::user_data_auth::kUserDataAuthInterface,
                     ::user_data_auth::kAuthEnrollmentProgressSignal, _, _))
         .WillOnce(SaveArg<2>(&auth_enrollment_callback_));
+    EXPECT_CALL(*proxy_,
+                DoConnectToSignal(
+                    ::user_data_auth::kUserDataAuthInterface,
+                    ::user_data_auth::kPrepareAuthFactorProgressSignal, _, _))
+        .WillOnce(SaveArg<2>(&prepare_auth_factor_progress_callback_));
 
     UserDataAuthClient::Initialize(bus_.get());
 
@@ -170,6 +238,17 @@ class UserDataAuthClientTest : public testing::Test {
     // Emit the signal.
     ASSERT_FALSE(dircrypto_progress_callback_.is_null());
     dircrypto_progress_callback_.Run(&signal);
+  }
+
+  void EmitPrepareAuthFactorProgressSignal(
+      const ::user_data_auth::PrepareAuthFactorProgress& progress) {
+    dbus::Signal signal(::user_data_auth::kUserDataAuthInterface,
+                        ::user_data_auth::kPrepareAuthFactorProgressSignal);
+    dbus::MessageWriter writer(&signal);
+    writer.AppendProtoAsArrayOfBytes(progress);
+    // Emit the signal.
+    ASSERT_FALSE(low_disk_space_callback_.is_null());
+    prepare_auth_factor_progress_callback_.Run(&signal);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -261,6 +340,10 @@ class UserDataAuthClientTest : public testing::Test {
   // Callback that delivers the cryptohome AuthEnrollmentProgress signal to the
   // client when called.
   dbus::ObjectProxy::SignalCallback auth_enrollment_callback_;
+
+  // Callback that delivers the cryptohome AuthEnrollmentProgress signal to the
+  // client when called.
+  dbus::ObjectProxy::SignalCallback prepare_auth_factor_progress_callback_;
 };
 
 TEST_F(UserDataAuthClientTest, IsMounted) {
@@ -446,6 +529,66 @@ TEST_F(UserDataAuthClientTest, DircryptoMigrationProgressSignal) {
   client_->RemoveObserver(&observer);
   EmitDircryptoMigrationProgressSignal(progress1);
   EXPECT_EQ(observer.dircrypto_progress_count(), 2);
+}
+
+TEST_F(UserDataAuthClientTest, PrepareAuthFactorForAddProgressSignal) {
+  TestFingerprintObserver observer;
+  client_->AddPrepareAuthFactorProgressObserver(&observer);
+
+  ::user_data_auth::PrepareAuthFactorProgress progress1 =
+      PrepareFpAuthFactorForAdd(50);
+  ::user_data_auth::PrepareAuthFactorProgress progress2 =
+      PrepareFpAuthFactorForAdd(100);
+
+  // Basic validity check, emit a signal and check.
+  EmitPrepareAuthFactorProgressSignal(progress1);
+  EXPECT_EQ(observer.enroll_progress_count(), 1);
+  EXPECT_EQ(
+      observer.last_enroll_progress().fingerprint_progress().percent_complete(),
+      50);
+  EXPECT_EQ(observer.last_enroll_progress().done(), false);
+
+  // Try again to see nothing is stuck.
+  EmitPrepareAuthFactorProgressSignal(progress2);
+  EXPECT_EQ(observer.enroll_progress_count(), 2);
+  EXPECT_EQ(
+      observer.last_enroll_progress().fingerprint_progress().percent_complete(),
+      100);
+  EXPECT_EQ(observer.last_enroll_progress().done(), true);
+
+  // Remove the observer to check that it no longer gets triggered.
+  client_->RemovePrepareAuthFactorProgressObserver(&observer);
+  EmitPrepareAuthFactorProgressSignal(progress2);
+  EXPECT_EQ(observer.enroll_progress_count(), 2);
+}
+
+TEST_F(UserDataAuthClientTest, PrepareAuthFactorForAuthenticateProgressSignal) {
+  TestFingerprintObserver observer;
+  client_->AddPrepareAuthFactorProgressObserver(&observer);
+
+  ::user_data_auth::PrepareAuthFactorProgress progress1 =
+      PrepareFpAuthFactorForAuth(
+          ::user_data_auth::FINGERPRINT_SCAN_RESULT_SUCCESS);
+  ::user_data_auth::PrepareAuthFactorProgress progress2 =
+      PrepareFpAuthFactorForAuth(
+          ::user_data_auth::FINGERPRINT_SCAN_RESULT_LOCKOUT);
+
+  // Basic validity check, emit a signal and check.
+  EmitPrepareAuthFactorProgressSignal(progress1);
+  EXPECT_EQ(observer.auth_scan_done_count(), 1);
+  EXPECT_EQ(observer.last_auth_scan_done().scan_result().fingerprint_result(),
+            ::user_data_auth::FINGERPRINT_SCAN_RESULT_SUCCESS);
+
+  // Try again to see nothing is stuck.
+  EmitPrepareAuthFactorProgressSignal(progress2);
+  EXPECT_EQ(observer.auth_scan_done_count(), 2);
+  EXPECT_EQ(observer.last_auth_scan_done().scan_result().fingerprint_result(),
+            ::user_data_auth::FINGERPRINT_SCAN_RESULT_LOCKOUT);
+
+  // Remove the observer to check that it no longer gets triggered.
+  client_->RemovePrepareAuthFactorProgressObserver(&observer);
+  EmitPrepareAuthFactorProgressSignal(progress2);
+  EXPECT_EQ(observer.auth_scan_done_count(), 2);
 }
 
 }  // namespace ash

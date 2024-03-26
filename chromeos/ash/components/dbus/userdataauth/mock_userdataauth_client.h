@@ -25,6 +25,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
   void AddFingerprintAuthObserver(FingerprintAuthObserver* observer) override;
   void RemoveFingerprintAuthObserver(
       FingerprintAuthObserver* observer) override;
+  void AddPrepareAuthFactorProgressObserver(
+      PrepareAuthFactorProgressObserver* observer) override;
+  void RemovePrepareAuthFactorProgressObserver(
+      PrepareAuthFactorProgressObserver* observer) override;
 
   MOCK_METHOD(void,
               IsMounted,
