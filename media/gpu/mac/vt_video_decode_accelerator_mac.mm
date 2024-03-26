@@ -43,6 +43,7 @@
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/limits.h"
@@ -2211,9 +2212,14 @@ bool VTVideoDecodeAccelerator::ProcessFrame(const Frame& frame) {
 
     DVLOG(3) << "ProvidePictureBuffers(" << kNumPictureBuffers
              << frame.image_size.ToString() << ")";
+#if BUILDFLAG(IS_MAC)
+    const GLenum texture_target =
+        gpu::GetMacOSSpecificTextureTargetForCurrentGLImplementation();
+#else
+    const GLenum texture_target = GL_TEXTURE_2D;
+#endif
     client_->ProvidePictureBuffers(kNumPictureBuffers, picture_format_,
-                                   frame.image_size,
-                                   gpu::GetPlatformSpecificTextureTarget());
+                                   frame.image_size, texture_target);
     return false;
   }
   return SendFrame(frame);
