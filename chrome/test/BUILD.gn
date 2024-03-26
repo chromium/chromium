@@ -15,8 +15,7 @@ import("//chrome/browser/buildflags.gni")
 import("//chrome/browser/downgrade/buildflags.gni")
 import("//chrome/browser/page_load_metrics/integration_tests/jsdeps.gni")
 import("//chrome/browser/page_load_metrics/integration_tests/sources.gni")
-import(
-    "//chrome/browser/sync/test/integration/sync_integration_tests_sources.gni")
+import("//chrome/browser/sync/test/integration/sync_integration_tests.gni")
 import("//chrome/common/features.gni")
 
 import("//chrome/services/speech/buildflags/buildflags.gni")
