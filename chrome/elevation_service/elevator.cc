@@ -21,9 +21,14 @@
 #include "base/version_info/channel.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/win_util.h"
+#include "build/branding_buildflags.h"
 #include "chrome/elevation_service/caller_validation.h"
 #include "chrome/elevation_service/elevated_recovery_impl.h"
 #include "chrome/install_static/install_util.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/elevation_service/internal/elevation_service_internal.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace elevation_service {
 
@@ -75,6 +80,15 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
   if (!length)
     return E_INVALIDARG;
 
+  std::string plaintext_str(reinterpret_cast<char*>(plaintext), length);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  auto pre_process_result = PreProcessData(plaintext_str);
+  if (!pre_process_result.has_value()) {
+    return pre_process_result.error();
+  }
+  plaintext_str.swap(*pre_process_result);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   HRESULT hr = ::CoImpersonateClient();
   if (FAILED(hr))
     return hr;
@@ -98,9 +112,7 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
 
     std::string data_to_encrypt;
     AppendStringWithLength(data, data_to_encrypt);
-    AppendStringWithLength(
-        std::string(reinterpret_cast<char*>(plaintext), length),
-        data_to_encrypt);
+    AppendStringWithLength(plaintext_str, data_to_encrypt);
 
     DATA_BLOB input = {};
     input.cbData = base::checked_cast<DWORD>(data_to_encrypt.length());
@@ -203,6 +215,13 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
     }
     plaintext_str = PopFromStringFront(mutable_plaintext);
   }
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  auto post_process_result = PostProcessData(plaintext_str);
+  if (!post_process_result.has_value()) {
+    return post_process_result.error();
+  }
+  plaintext_str.swap(*post_process_result);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   *plaintext =
       ::SysAllocStringByteLen(plaintext_str.c_str(), plaintext_str.length());

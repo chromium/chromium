@@ -92,6 +92,10 @@ source_set("lib") {
     "//third_party/zlib/google:zip",
   ]
 
+  if (is_chrome_branded) {
+    deps += [ "//chrome/elevation_service/internal" ]
+  }
+
   public_deps = [ ":public_headers" ]
 
   libs = [
@@ -141,6 +145,10 @@ test("elevation_service_unittests") {
     "//testing/gtest",
     "//third_party/zlib/google:zip",
   ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chrome/elevation_service/internal:unittests" ]
+  }
 
   data_deps = [
     ":elevation_service",
