@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check_is_test.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,6 +23,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -127,9 +129,6 @@ struct UploadState {
     }
   };
 
-  // Highest sequence id that has been posted for upload.
-  int64_t last_sequence_id;
-
   // Time when the next request will be allowed.
   // This is essentially the cache value of the backoff->GetReleaseTime().
   // When the time is reached, one request is allowed, backoff is updated as if
@@ -138,6 +137,30 @@ struct UploadState {
 
   // Current backoff entry for this priority.
   std::unique_ptr<::net::BackoffEntry> backoff_entry;
+
+  // Cached records received from Storage (without those confirmed by the
+  // server), ordered by `sequence_id`, `priority` and `generation_id` are
+  // identical and match the `UploadState` key. Logically the events form a
+  // queue, but may need to be inserted in the middle, so we use a `flat_map`
+  // which keeps records sorted by `sequence_id`.
+  base::flat_map<int64_t /*sequence_id*/, EncryptedRecord> cached_records;
+
+  // Total memory reservation for all cached records.
+  ScopedReservation scoped_reservation;
+
+  // Highest sequence id that has been successfully sent to server
+  // (but not confirmed, so it remains in `cached_records_`). Events until
+  // `last_sequence_id` (inclusive) are not sent to the server.
+  // `last_sequence_id` is reset upon upload job completion (if successful,
+  // to the last confirmed event, otherwise to -1.
+  int64_t last_sequence_id = -1;
+
+  // Current upload job in flight (nullptr is none).
+  std::unique_ptr<policy::DeviceManagementService::Job> job;
+
+  // Deadline timer of the currently running job (if any).
+  // When the timer fires, the job is cancelled.
+  std::unique_ptr<base::OneShotTimer> job_timer;
 };
 // Unordered map of all the queues states.
 using UploadStateMap =
@@ -148,9 +171,7 @@ UploadStateMap* state_map() {
   return map.get();
 }
 
-UploadState* GetState(Priority priority,
-                      int64_t generation_id,
-                      int64_t sequence_id) {
+UploadState* GetState(Priority priority, int64_t generation_id) {
   auto key = std::make_pair(priority, generation_id);
   auto state_it = state_map()->find(key);
   if (state_it == state_map()->end()) {
@@ -159,8 +180,7 @@ UploadState* GetState(Priority priority,
     state_it = state_map()
                    ->emplace(std::make_pair(
                        std::move(key),
-                       UploadState{.last_sequence_id = sequence_id,
-                                   .backoff_entry = GetBackoffEntry(priority)}))
+                       UploadState{.backoff_entry = GetBackoffEntry(priority)}))
                    .first;
     state_it->second.earliest_retry_timestamp =
         state_it->second.backoff_entry->GetReleaseTime();
@@ -169,30 +189,50 @@ UploadState* GetState(Priority priority,
 }
 
 // Builds uploading payload.
-// Returns dictionary (null in case of failure) and matching memory
-// reservation.
+// Returns dictionary (null in case of failure), matching memory reservation
+// and last seq id included in request.
 void BuildPayload(
     bool is_generation_guid_required,
     bool need_encryption_key,
     int config_file_version,
-    std::vector<EncryptedRecord> records,
+    int64_t last_sequence_id,
+    const base::flat_map<int64_t, EncryptedRecord>& records,
     ScopedReservation scoped_reservation,
     base::OnceCallback<void(std::optional<base::Value::Dict> /*payload_result*/,
-                            ScopedReservation /*scoped_reservation*/)>
-        create_job_cb) {
+                            ScopedReservation /*scoped_reservation*/,
+                            int64_t /*last_sequence_id*/)> create_job_cb) {
   // Prepare request builder.
   UploadEncryptedReportingRequestBuilder request_builder{
       is_generation_guid_required, need_encryption_key, config_file_version};
-  // Hand over all records to it.
-  for (auto& record : records) {
-    request_builder.AddRecord(std::move(record), scoped_reservation);
+  // Copy records to it, as long as memory reservation allows.
+  for (const auto& [seq_id, record] : records) {
+    // Skip records that already have been sent to server.
+    if (seq_id <= last_sequence_id) {
+      continue;
+    }
+    // Stop if seq ids are not sequential.
+    if (last_sequence_id >= 0 && seq_id != last_sequence_id + 1) {
+      break;
+    }
+    // Reserve memory for a copy of the record.
+    ScopedReservation record_reservation(record.ByteSizeLong(),
+                                         scoped_reservation);
+    if (!record_reservation.reserved()) {
+      break;  // Out of memory.
+    }
+    // Bump up last seq id.
+    last_sequence_id = seq_id;
+    // Make a copy of the record and hand it over to the builder.
+    request_builder.AddRecord(EncryptedRecord(record), record_reservation);
+    scoped_reservation.HandOver(record_reservation);
   }
   // Assign random UUID as the request id for server side log correlation
   const auto request_id = base::Token::CreateRandom().ToString();
   request_builder.SetRequestId(request_id);
   // Build payload and create job.
-  return std::move(create_job_cb)
-      .Run(request_builder.Build(), std::move(scoped_reservation));
+  std::move(create_job_cb)
+      .Run(request_builder.Build(), std::move(scoped_reservation),
+           last_sequence_id);
 }
 
 // Manages reporting payload sizes of single uploads via UMA.
@@ -351,69 +391,114 @@ void EncryptedReportingClient::UploadReport(
     ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const base::TimeDelta delay = WhenIsAllowedToProceed(records);
+  Priority priority = Priority::UNDEFINED_PRIORITY;
+  int64_t generation_id = -1L;
+  if (!records.empty()) {
+    const auto& last_sequence_info = records.crbegin()->sequence_information();
+    priority = last_sequence_info.priority();
+    generation_id = last_sequence_info.generation_id();
+  }
+  auto* const state = GetState(priority, generation_id);
+  // Update the cache with `records` - add new records that are absent, skip
+  // duplicates.
+  size_t total_added_memory = 0uL;
+  for (auto& record : records) {
+    if (record.sequence_information().priority() != priority ||
+        record.sequence_information().generation_id() != generation_id) {
+      LOG(WARNING) << "Sequencing mismatch! Record skipped.";
+      record.Clear();
+      continue;
+    }
+    const auto [it, success] = state->cached_records.insert(std::make_pair(
+        record.sequence_information().sequencing_id(), std::move(record)));
+    if (!success) {
+      // `record` is already in cache, skip it.
+      continue;
+    }
+    // `record` is new, move it to cache.
+    total_added_memory += it->second.ByteSizeLong();
+  }
+
+  // Reset memory usage to newly added records only.
+  scoped_reservation.Reduce(total_added_memory);
+  if (scoped_reservation.reserved()) {
+    // Something has been added to cache.
+    state->scoped_reservation.HandOver(scoped_reservation);
+  }
+
+  // Determine whether we can upload or need a delay, based on the cached state.
+  const base::TimeDelta delay = WhenIsAllowedToProceed(priority, generation_id);
   if (delay.is_positive()) {
     // Reject upload.
     std::move(callback).Run(base::unexpected(
         Status(error::OUT_OF_RANGE, "Too many upload requests")));
     return;
   }
-  // Accept upload.
-  AccountForAllowedJob(records);
 
-  // Perform upload.
-  // TODO(b/327243582): Move the latter to actual upload from UploadState cache.
-  PerformUpload(need_encryption_key, config_file_version, std::move(records),
-                std::move(scoped_reservation), std::move(callback));
+  // Perform upload, if none is running.
+  MaybePerformUpload(need_encryption_key, config_file_version, priority,
+                     generation_id, std::move(callback));
 }
 
-void EncryptedReportingClient::PerformUpload(
-    bool need_encryption_key,
-    int config_file_version,
-    std::vector<EncryptedRecord> records,
-    ScopedReservation scoped_reservation,
-    ResponseCallback callback) {
+void EncryptedReportingClient::MaybePerformUpload(bool need_encryption_key,
+                                                  int config_file_version,
+                                                  Priority priority,
+                                                  int64_t generation_id,
+                                                  ResponseCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* const state = GetState(priority, generation_id);
+  if (state->job) {
+    // Job already in flight, do nothing.
+    std::move(callback).Run(base::unexpected(
+        Status(error::ALREADY_EXISTS, "Job already in flight")));
+    return;
+  }
+
   // Construct payload on thread pool, then resume action on the current thread.
   // Perform Build on a thread pool, and upload result on UI.
-  Priority priority = Priority::UNDEFINED_PRIORITY;
-  int64_t last_generation_id = -1L;
-  int64_t last_sequence_id = -1L;
-  if (!records.empty()) {
-    const auto& last_sequence_info = records.crbegin()->sequence_information();
-    priority = last_sequence_info.priority();
-    last_generation_id = last_sequence_info.generation_id();
-    last_sequence_id = last_sequence_info.sequencing_id();
-  }
   auto create_job_cb = base::BindPostTaskToCurrentDefault(base::BindOnce(
       &EncryptedReportingClient::CreateUploadJob,
-      weak_ptr_factory_.GetWeakPtr(),
+      weak_ptr_factory_.GetWeakPtr(), priority, generation_id,
       base::BindOnce(&EncryptedReportingClient::AccountForUploadResponse,
-                     priority, last_generation_id, last_sequence_id),
+                     priority, generation_id),
       std::move(callback)));
   base::ThreadPool::PostTask(
-      FROM_HERE, {},
+      FROM_HERE,
       base::BindOnce(&BuildPayload, GenerationGuidIsRequired(),
                      need_encryption_key, config_file_version,
-                     std::move(records), std::move(scoped_reservation),
+                     state->last_sequence_id, state->cached_records,
+                     ScopedReservation(0uL, state->scoped_reservation),
                      std::move(create_job_cb)));
 }
 
+// static
 void EncryptedReportingClient::CreateUploadJob(
+    base::WeakPtr<EncryptedReportingClient> self,
+    Priority priority,
+    int64_t generation_id,
     policy::EncryptedReportingJobConfiguration::UploadResponseCallback
         response_cb,
     ResponseCallback callback,
     std::optional<base::Value::Dict> payload_result,
-    ScopedReservation scoped_reservation) {
+    ScopedReservation scoped_reservation,
+    int64_t last_sequence_id) {
+  if (!self) {
+    std::move(callback).Run(base::unexpected(
+        Status(error::UNAVAILABLE, "Client has been destructed")));
+    return;
+  }
+
   if (!payload_result.has_value()) {
     std::move(callback).Run(base::unexpected(
         Status(error::FAILED_PRECONDITION, "Failure to build request")));
     return;
   }
 
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  policy::DeviceManagementService* const device_management_service =
-      delegate_->device_management_service();
-  if (!device_management_service) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+  // Accept upload.
+  self->AccountForAllowedJob(priority, generation_id, last_sequence_id);
+
+  if (!self->delegate_->device_management_service()) {
     std::move(callback).Run(base::unexpected(
         Status(error::NOT_FOUND,
                "Device management service required, but not found")));
@@ -425,7 +510,7 @@ void EncryptedReportingClient::CreateUploadJob(
     request_payload_size = GetPayloadSize(payload_result.value());
   }
 
-  if (context_.empty()) {
+  if (self->context_.empty()) {
     std::move(callback).Run(base::unexpected(
         Status(error::FAILED_PRECONDITION, "Upload context not preset")));
     return;
@@ -433,23 +518,39 @@ void EncryptedReportingClient::CreateUploadJob(
 
   auto config = std::make_unique<policy::EncryptedReportingJobConfiguration>(
       g_browser_process->shared_url_loader_factory(),
-      device_management_service->configuration()
+      self->delegate_->device_management_service()
+          ->configuration()
           ->GetEncryptedReportingServerUrl(),
-      std::move(payload_result.value()), dm_token_, client_id_,
+      std::move(payload_result.value()), self->dm_token_, self->client_id_,
       std::move(response_cb),
-      base::BindOnce(&EncryptedReportingClient::OnReportUploadCompleted,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(scoped_reservation), request_payload_size,
-                     payload_size_per_hour_uma_reporter_.GetWeakPtr(),
+      base::BindOnce(&EncryptedReportingClient::OnReportUploadCompleted, self,
+                     priority, generation_id, std::move(scoped_reservation),
+                     request_payload_size,
+                     self->payload_size_per_hour_uma_reporter_.GetWeakPtr(),
                      std::move(callback)));
 
-  config->UpdateContext(context_.Clone());
+  config->UpdateContext(self->context_.Clone());
 
-  auto job = device_management_service->CreateJob(std::move(config));
-  request_jobs_.emplace(std::move(job));
+  // Create and track the new upload job.
+  auto* const state = GetState(priority, generation_id);
+  state->job = self->delegate_->device_management_service()->CreateJob(
+      std::move(config));
+  state->job_timer = std::make_unique<base::OneShotTimer>();
+  state->job_timer->Start(FROM_HERE, kReportingUploadDeadline,
+                          base::BindOnce(
+                              [](Priority priority, int64_t generation_id) {
+                                auto* const state =
+                                    GetState(priority, generation_id);
+                                state->job.reset();
+                              },
+                              priority, generation_id));
 }
 
+// static
 void EncryptedReportingClient::OnReportUploadCompleted(
+    base::WeakPtr<EncryptedReportingClient> self,
+    Priority priority,
+    int64_t generation_id,
     ScopedReservation scoped_reservation,
     std::optional<int> request_payload_size,
     base::WeakPtr<PayloadSizePerHourUmaReporter>
@@ -459,10 +560,23 @@ void EncryptedReportingClient::OnReportUploadCompleted(
     policy::DeviceManagementStatus status,
     int response_code,
     std::optional<base::Value::Dict> response) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (job) {
-    request_jobs_.erase(job);
+  if (!self) {
+    std::move(callback).Run(base::unexpected(
+        Status(error::UNAVAILABLE, "Client has been destructed")));
+    return;
   }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+
+  auto* const state = GetState(priority, generation_id);
+  // Make sure the job is destruct by the end of this method.
+  auto self_destruct_job = std::move(state->job);
+  // Cancel timer.
+  state->job_timer.reset();
+
+  // Reset `last_sequence_id` in case any failure is detected.
+  state->last_sequence_id = -1;
+
   if (response_code == ::net::HTTP_TOO_MANY_REQUESTS) {
     std::move(callback).Run(base::unexpected(
         Status(error::OUT_OF_RANGE, "Too many upload requests")));
@@ -472,7 +586,9 @@ void EncryptedReportingClient::OnReportUploadCompleted(
     std::move(callback).Run(base::unexpected(
         Status(error::DATA_LOSS,
                base::StrCat(
-                   {"Response code: ", base::NumberToString(response_code)}))));
+                   {"Response code: ", base::NumberToString(response_code), " ",
+                    ::net::GetHttpReasonPhrase(
+                        static_cast<::net::HttpStatusCode>(response_code))}))));
     return;
   }
   if (!response.has_value()) {
@@ -506,42 +622,44 @@ void EncryptedReportingClient::OnReportUploadCompleted(
     }
   }
 
-  UploadResponseParser response_parser(
-      EncryptedReportingClient::GenerationGuidIsRequired(),
-      std::move(response.value()));
+  // Invoke callbacks pending response.
+  UploadResponseParser response_parser(GenerationGuidIsRequired(),
+                                       std::move(response.value()));
+  // Accept confirmation from the server.
+  if (const auto last_sequence_info =
+          response_parser.last_successfully_uploaded_record_sequence_info();
+      last_sequence_info.has_value()) {
+    const int64_t last_sequence_id = last_sequence_info.value().sequencing_id();
+    if (state->last_sequence_id < last_sequence_id ||
+        response_parser.force_confirm_flag()) {
+      state->last_sequence_id = last_sequence_id;
+    }
+  }
+  // Forward results to the pending callback.
   std::move(callback).Run(std::move(response_parser));
 }
 
 // static
 base::TimeDelta EncryptedReportingClient::WhenIsAllowedToProceed(
-    const std::vector<EncryptedRecord>& records) {
+    Priority priority,
+    int64_t generation_id) {
+  // Retrieve state.
+  const auto* const state = GetState(priority, generation_id);
   // If there are no records, allow upload (it will not overload the server).
-  if (records.empty()) {
+  if (state->cached_records.empty()) {
     return base::TimeDelta();  // 0 - allowed right away.
   }
-  // Now pick up the state.
-  const auto& last_sequence_info = records.crbegin()->sequence_information();
-  const auto* const state = GetState(last_sequence_info.priority(),
-                                     last_sequence_info.generation_id(),
-                                     last_sequence_info.sequencing_id());
+
   // Use and update previously recorded state, base upload decision on it.
-  if (state->last_sequence_id > last_sequence_info.sequencing_id()) {
+  if (state->last_sequence_id > state->cached_records.rbegin()->first) {
     // Sequence id decreased, the upload is outdated, reject it forever.
     return base::TimeDelta::Max();
   }
-  if (state->last_sequence_id < last_sequence_info.sequencing_id()) {
-    // Sequence id increased, keep validating.
-    switch (last_sequence_info.priority()) {
-      case Priority::SECURITY:
-        // For SECURITY events the request is allowed.
-        return base::TimeDelta();  // 0 - allowed right away.
-      default: {
-        // For all other priorities we will act like in case of request’s
-        // last_sequence_id is == last_sequence_id above - observing the
-        // backoff time expiration.
-      }
-    }
+  if (priority == Priority::SECURITY) {
+    // For SECURITY events the request is allowed.
+    return base::TimeDelta();  // 0 - allowed right away.
   }
+
   // Allow upload only if earliest retry time has passed.
   // Return delta till the allowed time - if positive, upload is going to be
   // rejected.
@@ -550,21 +668,15 @@ base::TimeDelta EncryptedReportingClient::WhenIsAllowedToProceed(
 }
 
 // static
-void EncryptedReportingClient::AccountForAllowedJob(
-    const std::vector<EncryptedRecord>& records) {
-  Priority priority = Priority::UNDEFINED_PRIORITY;
-  int64_t last_generation_id = -1L;
-  int64_t last_sequence_id = -1L;
-  if (!records.empty()) {
-    const auto& last_sequence_info = records.crbegin()->sequence_information();
-    priority = last_sequence_info.priority();
-    last_generation_id = last_sequence_info.generation_id();
-    last_sequence_id = last_sequence_info.sequencing_id();
+void EncryptedReportingClient::AccountForAllowedJob(Priority priority,
+                                                    int64_t generation_id,
+                                                    int64_t last_sequence_id) {
+  auto* const state = GetState(priority, generation_id);
+  // Update state to reflect `last_sequence_id` (we never allow upload with
+  // lower sequence_id).
+  if (state->last_sequence_id < last_sequence_id) {
+    state->last_sequence_id = last_sequence_id;
   }
-  auto* const state = GetState(priority, last_generation_id, last_sequence_id);
-  // Update state to reflect highest sequence_id_ (we never allow upload with
-  // lower sequence_id_).
-  state->last_sequence_id = last_sequence_id;
   // Calculate delay as exponential backoff (based on the retry_count).
   // Update backoff under assumption that this request fails.
   // If it is responded successfully, we will reset it.
@@ -575,11 +687,10 @@ void EncryptedReportingClient::AccountForAllowedJob(
 // static
 void EncryptedReportingClient::AccountForUploadResponse(Priority priority,
                                                         int64_t generation_id,
-                                                        int64_t sequence_id,
                                                         int net_error,
                                                         int response_code) {
   // Analyze the net error and update upload state for possible future retries.
-  auto* const state = GetState(priority, generation_id, sequence_id);
+  auto* const state = GetState(priority, generation_id);
   if (net_error != ::net::OK) {
     // Network error
   } else if (IsIrrecoverableError(response_code)) {

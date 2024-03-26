@@ -63,6 +63,7 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
   void SetUp() override {
     memory_resource_ =
         base::MakeRefCounted<ResourceManager>(4u * 1024LLu * 1024LLu);  // 4 MiB
+    test_env_ = std::make_unique<ReportingServerConnector::TestEnvironment>();
     service_provider_ = std::make_unique<TestEncryptedReportingUploadProvider>(
         base::BindRepeating(
             &EncryptedReportingUploadProviderTest::ReportSuccessfulUpload,
@@ -80,6 +81,7 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    test_env_.reset();
     EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
   }
 
@@ -97,7 +99,7 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
   // Must be initialized before any other class member.
   content::BrowserTaskEnvironment task_environment_;
 
-  ReportingServerConnector::TestEnvironment test_env_;
+  std::unique_ptr<ReportingServerConnector::TestEnvironment> test_env_;
   EncryptedRecord record_;
 
   scoped_refptr<ResourceManager> memory_resource_;
@@ -125,11 +127,11 @@ TEST_F(EncryptedReportingUploadProviderTest,
   EXPECT_OK(status) << status;
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
-  base::Value::Dict request_body = test_env_.request_body(0);
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1));
+  base::Value::Dict request_body = test_env_->request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
 
-  test_env_.SimulateResponseForRequest(0);
+  test_env_->SimulateResponseForRequest(0);
 
   auto uploaded_result = uploaded_event.result();
   EXPECT_THAT(std::get<0>(uploaded_result),

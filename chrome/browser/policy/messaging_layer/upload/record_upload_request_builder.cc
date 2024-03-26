@@ -104,14 +104,21 @@ UploadEncryptedReportingRequestBuilder::SetRequestId(
 
 std::optional<base::Value::Dict>
 UploadEncryptedReportingRequestBuilder::Build() {
-  // Ensure that if result_ has value, then it must not have a non-string
-  // requestId.
-  CHECK(!(result_.has_value() &&
-          result_->Find(reporting::json_keys::kRequestId) &&
-          !result_->FindString(reporting::json_keys::kRequestId)));
-  if (result_.has_value() &&
-      result_->FindString(reporting::json_keys::kRequestId) == nullptr) {
-    SetRequestId(base::Token::CreateRandom().ToString());
+  if (result_.has_value()) {
+    if (result_->empty()) {
+      // Request is empty.
+      return std::nullopt;
+    }
+    if (result_->size() == 1u &&
+        result_->Find(reporting::json_keys::kRequestId) != nullptr) {
+      // Nothing but request id in the request.
+      return std::nullopt;
+    }
+    if (result_->FindString(reporting::json_keys::kRequestId) == nullptr) {
+      CHECK(!result_->Find(reporting::json_keys::kRequestId))
+          << "Non-string request id";
+      SetRequestId(base::Token::CreateRandom().ToString());
+    }
   }
   return std::move(result_);
 }

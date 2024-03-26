@@ -43,7 +43,7 @@ namespace ash {
 namespace {
 
 static constexpr uint64_t kDefaultMemoryAllocation =
-    16u * 1024uLL * 1024uLL;  // 16 MiB by default
+    64u * 1024uLL * 1024uLL;  // 64 MiB by default
 
 void SendStatusAsResponse(
     std::unique_ptr<dbus::Response> response,

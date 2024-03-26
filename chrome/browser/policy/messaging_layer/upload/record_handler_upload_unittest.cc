@@ -188,6 +188,7 @@ class RecordHandlerUploadTest : public ::testing::Test {
     test_storage_ = base::MakeRefCounted<test::TestStorageModule>();
     test_reporting_ = ReportingClient::TestEnvironment::CreateWithStorageModule(
         test_storage_);
+    test_env_ = std::make_unique<ReportingServerConnector::TestEnvironment>();
 
     handler_ = std::make_unique<RecordHandlerImpl>(
         base::SequencedTaskRunner::GetCurrentDefault(),
@@ -228,6 +229,7 @@ class RecordHandlerUploadTest : public ::testing::Test {
 
   void TearDown() override {
     handler_.reset();
+    test_env_.reset();
     test_storage_.reset();
     test_reporting_.reset();
 
@@ -237,11 +239,12 @@ class RecordHandlerUploadTest : public ::testing::Test {
   void VerifyUploadRequestAndRespond() {
     task_environment_.RunUntilIdle();
 
-    ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
-    base::Value::Dict request_body = test_env_.request_body(0);
+    ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(),
+                SizeIs(1));
+    base::Value::Dict request_body = test_env_->request_body(0);
     EXPECT_THAT(request_body, IsDataUploadRequestValid());
 
-    test_env_.SimulateResponseForRequest(0);
+    test_env_->SimulateResponseForRequest(0);
   }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -254,7 +257,7 @@ class RecordHandlerUploadTest : public ::testing::Test {
           policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 
   FileUploadJob::TestEnvironment manager_test_env_;
-  ReportingServerConnector::TestEnvironment test_env_;
+  std::unique_ptr<ReportingServerConnector::TestEnvironment> test_env_;
 
   scoped_refptr<test::TestStorageModule> test_storage_;
   std::unique_ptr<ReportingClient::TestEnvironment> test_reporting_;

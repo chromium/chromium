@@ -167,7 +167,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
                           base::Unretained(&encryption_key_attached));
 
-  ReportingServerConnector::TestEnvironment test_env;
+  auto test_env = std::make_unique<ReportingServerConnector::TestEnvironment>();
 
   static constexpr char matched_record_template[] =
 #if BUILDFLAG(IS_CHROMEOS)
@@ -215,8 +215,8 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   EXPECT_TRUE(enqueue_result.ok());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env.url_loader_factory()->pending_requests(), SizeIs(1));
-  base::Value::Dict request_body = test_env.request_body(0);
+  ASSERT_THAT(*test_env->url_loader_factory()->pending_requests(), SizeIs(1));
+  base::Value::Dict request_body = test_env->request_body(0);
   EXPECT_THAT(request_body, AllOf(IsDataUploadRequestValid(),
                                   DoesRequestContainRecord(base::StringPrintf(
                                       matched_record_template, 0)),
@@ -243,7 +243,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
                       .SetForceConfirm(force_confirm())
                       .Build();
   ASSERT_OK(response) << response.error();
-  test_env.SimulateCustomResponseForRequest(0, std::move(*response));
+  test_env->SimulateCustomResponseForRequest(0, std::move(*response));
 
   auto upload_success_result = upload_success_event.result();
   EXPECT_THAT(std::get<0>(upload_success_result),

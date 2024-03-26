@@ -51,12 +51,15 @@
 
 using testing::Eq;
 using testing::Ge;
+using testing::Lt;
 using testing::Property;
 using testing::SizeIs;
 using testing::StartsWith;
 using testing::StrEq;
 
 namespace reporting {
+
+namespace {
 
 constexpr char kDmToken[] = "fake-dm-token";
 constexpr char kClientId[] = "fake-client-id";
@@ -91,6 +94,7 @@ class FakeDelegate : public EncryptedReportingClient::Delegate {
  private:
   const raw_ptr<policy::DeviceManagementService> device_management_service_;
 };
+}  // namespace
 
 class EncryptedReportingClientTest : public ::testing::Test {
  protected:
@@ -137,7 +141,6 @@ class EncryptedReportingClientTest : public ::testing::Test {
 
   base::Value::Dict GetRequestBody(size_t index, bool expect_dm_token = true) {
     CHECK_LT(index, url_loader_factory_.pending_requests()->size());
-
     const network::ResourceRequest& request =
         (*url_loader_factory_.pending_requests())[index].request;
     if (expect_dm_token) {
@@ -160,6 +163,7 @@ class EncryptedReportingClientTest : public ::testing::Test {
 
   void SimulateCustomResponseForRequest(size_t index,
                                         StatusOr<base::Value::Dict> response) {
+    ASSERT_THAT(index, Lt(url_loader_factory_.pending_requests()->size()));
     const std::string& pending_request_url =
         (*url_loader_factory_.pending_requests())[index].request.url.spec();
     EXPECT_THAT(pending_request_url, StartsWith(kServerUrl));
@@ -176,15 +180,20 @@ class EncryptedReportingClientTest : public ::testing::Test {
       test::TestEvent<StatusOr<UploadResponseParser>>& response_event) const {
     auto actual_response = response_event.result();
     CHECK(actual_response.has_value()) << actual_response.error();
-    CHECK(actual_response.value()
-              .last_successfully_uploaded_record_sequence_info()
-              .has_value());
-    EXPECT_THAT(
-        actual_response.value()
+    if (actual_response.value()
             .last_successfully_uploaded_record_sequence_info()
-            .value()
-            .sequencing_id(),
-        Eq(payload_records_.rbegin()->sequence_information().sequencing_id()));
+            .has_value()) {
+      EXPECT_THAT(actual_response.value()
+                      .last_successfully_uploaded_record_sequence_info()
+                      .value()
+                      .sequencing_id(),
+                  Eq(payload_records_.rbegin()
+                         ->sequence_information()
+                         .sequencing_id()));
+    } else {
+      // No confirmation - at least envcryption key is to be expected.
+      EXPECT_TRUE(actual_response.value().encryption_settings().has_value());
+    }
     return std::move(actual_response.value());
   }
 
@@ -218,6 +227,7 @@ TEST_F(EncryptedReportingClientTest, RegularUploads) {
   encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
                                             kClientId);
 
+  // Send record #10 for upload.
   {
     AddRecordToPayload();
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
@@ -229,15 +239,231 @@ TEST_F(EncryptedReportingClientTest, RegularUploads) {
         std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
+    // Simulate server-side processing, generate response confirming #10.
     auto request_body = GetRequestBody(/*index=*/0);
     EXPECT_THAT(request_body, IsDataUploadRequestValid());
     auto response = ResponseBuilder(std::move(request_body)).Build();
     ASSERT_TRUE(response.has_value());
-    SimulateCustomResponseForRequest(0, std::move(response));
+    SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
     base::IgnoreResult(GetAndValidateResponse(response_event));
   }
 
+  // Send record #11 for upload.
+  // Avoid rate limiting by time.
+  task_environment_.FastForwardBy(base::Minutes(1));
+  {
+    AddRecordToPayload();
+    ScopedReservation scoped_reservation(RecordsSize(payload_records_),
+                                         memory_resource_);
+    ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<UploadResponseParser>> response_event;
+    encrypted_reporting_client->UploadReport(
+        need_encryption_key_, config_file_version_, payload_records_,
+        std::move(scoped_reservation), response_event.cb());
+    task_environment_.RunUntilIdle();
+
+    // Simulate server-side processing, generate response confirming #11.
+    auto request_body = GetRequestBody(/*index=*/0);
+    EXPECT_THAT(request_body, IsDataUploadRequestValid());
+    auto response = ResponseBuilder(std::move(request_body)).Build();
+    ASSERT_TRUE(response.has_value());
+    SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
+
+    base::IgnoreResult(GetAndValidateResponse(response_event));
+  }
+}
+
+TEST_F(EncryptedReportingClientTest, TimedOutUploadWithSameRecords) {
+  auto encrypted_reporting_client = EncryptedReportingClient::Create(
+      std::make_unique<FakeDelegate>(device_management_service_.get()));
+  encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
+                                            kClientId);
+
+  // Send record #10 for upload.
+  {
+    AddRecordToPayload();
+    ScopedReservation scoped_reservation(RecordsSize(payload_records_),
+                                         memory_resource_);
+    ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<UploadResponseParser>> response_event;
+    encrypted_reporting_client->UploadReport(
+        need_encryption_key_, config_file_version_, payload_records_,
+        std::move(scoped_reservation), response_event.cb());
+    task_environment_.RunUntilIdle();
+
+    // Simulate server-side processing, generate response.
+    auto request_body = GetRequestBody(/*index=*/0);
+    EXPECT_THAT(request_body, IsDataUploadRequestValid());
+    auto response = ResponseBuilder(std::move(request_body)).Build();
+    ASSERT_TRUE(response.has_value());
+    // Do not send the response, let the job time out.
+    task_environment_.FastForwardBy(
+        EncryptedReportingClient::kReportingUploadDeadline);
+
+    const auto& actual_response = response_event.result();
+    EXPECT_FALSE(actual_response.has_value());
+  }
+
+  // Send record #10 for upload again.
+  // Avoid rate limiting by time.
+  task_environment_.FastForwardBy(base::Minutes(1));
+  {
+    ScopedReservation scoped_reservation(RecordsSize(payload_records_),
+                                         memory_resource_);
+    ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<UploadResponseParser>> response_event;
+    encrypted_reporting_client->UploadReport(
+        need_encryption_key_, config_file_version_, payload_records_,
+        std::move(scoped_reservation), response_event.cb());
+    task_environment_.RunUntilIdle();
+
+    // Simulate server-side processing, generate response.
+    // Skip the first request (from the cancelled jobs), respond to the last!
+    auto request_body = GetRequestBody(/*index=*/1);
+    EXPECT_THAT(request_body, IsDataUploadRequestValid());
+    auto response = ResponseBuilder(std::move(request_body)).Build();
+    ASSERT_TRUE(response.has_value());
+    SimulateCustomResponseForRequest(/*index=*/1, std::move(response));
+
+    base::IgnoreResult(GetAndValidateResponse(response_event));
+  }
+}
+
+TEST_F(EncryptedReportingClientTest, TimedOutUploadWithAddedRecord) {
+  auto encrypted_reporting_client = EncryptedReportingClient::Create(
+      std::make_unique<FakeDelegate>(device_management_service_.get()));
+  encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
+                                            kClientId);
+
+  // Send record #10 for upload.
+  {
+    AddRecordToPayload();
+    ScopedReservation scoped_reservation(RecordsSize(payload_records_),
+                                         memory_resource_);
+    ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<UploadResponseParser>> response_event;
+    encrypted_reporting_client->UploadReport(
+        need_encryption_key_, config_file_version_, payload_records_,
+        std::move(scoped_reservation), response_event.cb());
+    task_environment_.RunUntilIdle();
+
+    // Simulate server-side processing, generate response.
+    auto request_body = GetRequestBody(/*index=*/0);
+    EXPECT_THAT(request_body, IsDataUploadRequestValid());
+    auto response = ResponseBuilder(std::move(request_body)).Build();
+    ASSERT_TRUE(response.has_value());
+    // Do not respond, let the job time out.
+    task_environment_.FastForwardBy(
+        EncryptedReportingClient::kReportingUploadDeadline);
+
+    const auto& actual_response = response_event.result();
+    EXPECT_FALSE(actual_response.has_value());
+  }
+
+  // Send record #11 for upload
+  // Avoid rate limiting by time.
+  task_environment_.FastForwardBy(base::Minutes(1));
+  {
+    AddRecordToPayload();
+    ScopedReservation scoped_reservation(RecordsSize(payload_records_),
+                                         memory_resource_);
+    ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<UploadResponseParser>> response_event;
+    encrypted_reporting_client->UploadReport(
+        need_encryption_key_, config_file_version_, payload_records_,
+        std::move(scoped_reservation), response_event.cb());
+    task_environment_.RunUntilIdle();
+
+    // Skip the first request (from the cancelled jobs), respond to the last!
+    auto request_body = GetRequestBody(/*index=*/1);
+    EXPECT_THAT(request_body, IsDataUploadRequestValid());
+    auto response = ResponseBuilder(std::move(request_body)).Build();
+    ASSERT_TRUE(response.has_value());
+    SimulateCustomResponseForRequest(/*index=*/1, std::move(response));
+
+    base::IgnoreResult(GetAndValidateResponse(response_event));
+  }
+}
+
+TEST_F(EncryptedReportingClientTest, KeyRequestAlone) {
+  auto encrypted_reporting_client = EncryptedReportingClient::Create(
+      std::make_unique<FakeDelegate>(device_management_service_.get()));
+  encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
+                                            kClientId);
+
+  // Send key request with no records.
+  {
+    ScopedReservation scoped_reservation(0uL, memory_resource_);
+    test::TestEvent<StatusOr<UploadResponseParser>> response_event;
+    encrypted_reporting_client->UploadReport(
+        /*need_encryption_key=*/true, config_file_version_,
+        std::vector<EncryptedRecord>(), std::move(scoped_reservation),
+        response_event.cb());
+    task_environment_.RunUntilIdle();
+
+    // Request is created and delivered.
+    auto request_body = GetRequestBody(/*index=*/0);
+    EXPECT_THAT(request_body, IsEncryptionKeyRequestUploadRequestValid());
+    auto response = ResponseBuilder(std::move(request_body)).Build();
+    ASSERT_TRUE(response.has_value());
+    SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
+
+    base::IgnoreResult(GetAndValidateResponse(response_event));
+  }
+
+  // Can repeat immediately - no throttling when there are no records.
+  {
+    ScopedReservation scoped_reservation(0uL, memory_resource_);
+    test::TestEvent<StatusOr<UploadResponseParser>> response_event;
+    encrypted_reporting_client->UploadReport(
+        /*need_encryption_key=*/true, config_file_version_,
+        std::vector<EncryptedRecord>(), std::move(scoped_reservation),
+        response_event.cb());
+    task_environment_.RunUntilIdle();
+
+    // Request is created and delivered.
+    auto request_body = GetRequestBody(/*index=*/0);
+    EXPECT_THAT(request_body, IsEncryptionKeyRequestUploadRequestValid());
+    auto response = ResponseBuilder(std::move(request_body)).Build();
+    ASSERT_TRUE(response.has_value());
+    SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
+
+    base::IgnoreResult(GetAndValidateResponse(response_event));
+  }
+}
+
+TEST_F(EncryptedReportingClientTest, ForceConfirmAndRetract) {
+  auto encrypted_reporting_client = EncryptedReportingClient::Create(
+      std::make_unique<FakeDelegate>(device_management_service_.get()));
+  encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
+                                            kClientId);
+
+  // Send record #10 for upload.
+  {
+    AddRecordToPayload();
+    ScopedReservation scoped_reservation(RecordsSize(payload_records_),
+                                         memory_resource_);
+    ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<UploadResponseParser>> response_event;
+    encrypted_reporting_client->UploadReport(
+        need_encryption_key_, config_file_version_, payload_records_,
+        std::move(scoped_reservation), response_event.cb());
+    task_environment_.RunUntilIdle();
+
+    // Simulate server-side processing, generate response with force flag.
+    auto request_body = GetRequestBody(/*index=*/0);
+    EXPECT_THAT(request_body, IsDataUploadRequestValid());
+    auto response =
+        ResponseBuilder(std::move(request_body)).SetForceConfirm(true).Build();
+    ASSERT_TRUE(response.has_value());
+    SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
+
+    const auto& actual_response = GetAndValidateResponse(response_event);
+    EXPECT_TRUE(actual_response.force_confirm_flag());
+  }
+
+  // Send record #11 for upload.
   // Avoid rate limiting by time.
   task_environment_.FastForwardBy(base::Minutes(1));
 
@@ -252,68 +478,14 @@ TEST_F(EncryptedReportingClientTest, RegularUploads) {
         std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
+    // Simulate server-side processing, generate response.
     auto request_body = GetRequestBody(/*index=*/0);
     EXPECT_THAT(request_body, IsDataUploadRequestValid());
     auto response = ResponseBuilder(std::move(request_body)).Build();
     ASSERT_TRUE(response.has_value());
-    SimulateCustomResponseForRequest(0, std::move(response));
+    SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
     base::IgnoreResult(GetAndValidateResponse(response_event));
-  }
-}
-
-TEST_F(EncryptedReportingClientTest, ForceConfirmAndRetract) {
-  auto encrypted_reporting_client = EncryptedReportingClient::Create(
-      std::make_unique<FakeDelegate>(device_management_service_.get()));
-  encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
-                                            kClientId);
-
-  {
-    AddRecordToPayload();
-    ScopedReservation scoped_reservation(RecordsSize(payload_records_),
-                                         memory_resource_);
-    ASSERT_TRUE(scoped_reservation.reserved());
-    test::TestEvent<StatusOr<UploadResponseParser>> response_event;
-    encrypted_reporting_client->UploadReport(
-        need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
-    task_environment_.RunUntilIdle();
-
-    auto request_body = GetRequestBody(/*index=*/0);
-    EXPECT_THAT(request_body, IsDataUploadRequestValid());
-    auto response =
-        ResponseBuilder(std::move(request_body)).SetForceConfirm(true).Build();
-    ASSERT_TRUE(response.has_value());
-    SimulateCustomResponseForRequest(0, std::move(response));
-
-    const auto& actual_response = GetAndValidateResponse(response_event);
-    EXPECT_TRUE(actual_response.force_confirm_flag());
-  }
-
-  // Avoid rate limiting by time, but still reject the upload because of lower
-  // sequence id.
-  task_environment_.FastForwardBy(base::Minutes(1));
-  DecrementSequenceId(1L);
-
-  {
-    AddRecordToPayload();
-    ScopedReservation scoped_reservation(RecordsSize(payload_records_),
-                                         memory_resource_);
-    ASSERT_TRUE(scoped_reservation.reserved());
-    test::TestEvent<StatusOr<UploadResponseParser>> response_event;
-    encrypted_reporting_client->UploadReport(
-        need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), response_event.cb());
-
-    // Sequence ID decreased, upload is rejected.
-    const auto& actual_response = response_event.result();
-    ASSERT_FALSE(actual_response.has_value());
-    EXPECT_THAT(actual_response,
-                Property(&StatusOr<UploadResponseParser>::error,
-                         AllOf(Property(&Status::code, Eq(error::OUT_OF_RANGE)),
-                               Property(&Status::error_message,
-                                        StrEq("Too many upload requests")))))
-        << actual_response.error();
   }
 }
 
@@ -323,6 +495,7 @@ TEST_F(EncryptedReportingClientTest, ServiceUnavailable) {
   encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
                                             kClientId);
 
+  // Send record #10 for processing. No connection to the service.
   AddRecordToPayload();
   ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                        memory_resource_);
@@ -350,6 +523,7 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
   encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
                                             kClientId);
 
+  // Send record #10 for upload.
   {
     AddRecordToPayload();
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
@@ -361,16 +535,18 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
         std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
+    // Simulate server-side processing, generate response.
     auto request_body = GetRequestBody(/*index=*/0);
     EXPECT_THAT(request_body, IsDataUploadRequestValid());
     auto response = ResponseBuilder(std::move(request_body)).Build();
     ASSERT_TRUE(response.has_value());
-    SimulateCustomResponseForRequest(0, std::move(response));
+    SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
     base::IgnoreResult(GetAndValidateResponse(response_event));
   }
 
-  // Repeat the same upload, get it rejected by rate limiter.
+  // Send record #11 for upload.
+  // Get upload rejected by rate limiter, even though it has a new record.
   task_environment_.FastForwardBy(base::Seconds(1));
   {
     AddRecordToPayload();
@@ -401,6 +577,7 @@ TEST_F(EncryptedReportingClientTest, UploadSucceedsWithoutDeviceInfo) {
       std::make_unique<FakeDelegate>(device_management_service_.get()));
   encrypted_reporting_client->PresetUploads(context_.Clone(), "", "");
 
+  // Send record #10 for upload.
   AddRecordToPayload();
   ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                        memory_resource_);
@@ -411,11 +588,12 @@ TEST_F(EncryptedReportingClientTest, UploadSucceedsWithoutDeviceInfo) {
       std::move(scoped_reservation), response_event.cb());
   task_environment_.RunUntilIdle();
 
+  // Simulate server-side processing, generate response.
   auto request_body = GetRequestBody(/*index=*/0, /*expect_dm_token=*/false);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body)).Build();
   ASSERT_TRUE(response.has_value());
-  SimulateCustomResponseForRequest(0, std::move(response));
+  SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
   base::IgnoreResult(GetAndValidateResponse(response_event));
 }
@@ -430,13 +608,15 @@ TEST_F(EncryptedReportingClientTest, IdenticalUploadRetriesThrottled) {
 
   base::TimeDelta expected_delay_after = base::Seconds(10);
   for (size_t i = 0; i < kTotalRetries; ++i) {
+    // Add one more record for upload.
     AddRecordToPayload();
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
 
-    auto allowed_delay =
-        encrypted_reporting_client->WhenIsAllowedToProceed(payload_records_);
+    auto allowed_delay = encrypted_reporting_client->WhenIsAllowedToProceed(
+        payload_records_.rbegin()->sequence_information().priority(),
+        payload_records_.rbegin()->sequence_information().generation_id());
     if (i == 0) {
       // First upload allowed immediately.
       EXPECT_FALSE(allowed_delay.is_positive());
@@ -448,13 +628,23 @@ TEST_F(EncryptedReportingClientTest, IdenticalUploadRetriesThrottled) {
       // Move forward to allow.
       task_environment_.FastForwardBy(allowed_delay - base::Seconds(1));
       EXPECT_TRUE(
-          encrypted_reporting_client->WhenIsAllowedToProceed(payload_records_)
+          encrypted_reporting_client
+              ->WhenIsAllowedToProceed(
+                  payload_records_.rbegin()->sequence_information().priority(),
+                  payload_records_.rbegin()
+                      ->sequence_information()
+                      .generation_id())
               .is_positive());
       task_environment_.FastForwardBy(base::Seconds(1));
     }
 
     EXPECT_FALSE(
-        encrypted_reporting_client->WhenIsAllowedToProceed(payload_records_)
+        encrypted_reporting_client
+            ->WhenIsAllowedToProceed(
+                payload_records_.rbegin()->sequence_information().priority(),
+                payload_records_.rbegin()
+                    ->sequence_information()
+                    .generation_id())
             .is_positive());
 
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
@@ -463,15 +653,19 @@ TEST_F(EncryptedReportingClientTest, IdenticalUploadRetriesThrottled) {
         std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
+    // Simulate server-side processing, generate response.
     auto request_body = GetRequestBody(/*index=*/0);
     EXPECT_THAT(request_body, IsDataUploadRequestValid());
     auto response = ResponseBuilder(std::move(request_body)).Build();
     ASSERT_TRUE(response.has_value());
-    SimulateCustomResponseForRequest(0, std::move(response));
+    SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
     base::IgnoreResult(GetAndValidateResponse(response_event));
 
-    encrypted_reporting_client->AccountForAllowedJob(payload_records_);
+    encrypted_reporting_client->AccountForAllowedJob(
+        payload_records_.rbegin()->sequence_information().priority(),
+        payload_records_.rbegin()->sequence_information().generation_id(),
+        payload_records_.rbegin()->sequence_information().sequencing_id());
   }
 }
 
@@ -485,13 +679,15 @@ TEST_F(EncryptedReportingClientTest, UploadsSequenceThrottled) {
 
   base::TimeDelta expected_delay_after = base::Seconds(10);
   for (size_t i = 0; i < kTotalRetries; ++i) {
+    // Add one more record for upload.
     AddRecordToPayload();
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
 
-    auto allowed_delay =
-        encrypted_reporting_client->WhenIsAllowedToProceed(payload_records_);
+    auto allowed_delay = encrypted_reporting_client->WhenIsAllowedToProceed(
+        payload_records_.rbegin()->sequence_information().priority(),
+        payload_records_.rbegin()->sequence_information().generation_id());
     if (i == 0) {
       // First upload allowed immediately.
       EXPECT_FALSE(allowed_delay.is_positive());
@@ -503,13 +699,23 @@ TEST_F(EncryptedReportingClientTest, UploadsSequenceThrottled) {
       // Move forward to allow.
       task_environment_.FastForwardBy(allowed_delay - base::Seconds(1));
       EXPECT_TRUE(
-          encrypted_reporting_client->WhenIsAllowedToProceed(payload_records_)
+          encrypted_reporting_client
+              ->WhenIsAllowedToProceed(
+                  payload_records_.rbegin()->sequence_information().priority(),
+                  payload_records_.rbegin()
+                      ->sequence_information()
+                      .generation_id())
               .is_positive());
       task_environment_.FastForwardBy(base::Seconds(1));
     }
 
     EXPECT_FALSE(
-        encrypted_reporting_client->WhenIsAllowedToProceed(payload_records_)
+        encrypted_reporting_client
+            ->WhenIsAllowedToProceed(
+                payload_records_.rbegin()->sequence_information().priority(),
+                payload_records_.rbegin()
+                    ->sequence_information()
+                    .generation_id())
             .is_positive());
 
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
@@ -518,15 +724,19 @@ TEST_F(EncryptedReportingClientTest, UploadsSequenceThrottled) {
         std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
+    // Simulate server-side processing, generate response.
     auto request_body = GetRequestBody(/*index=*/0);
     EXPECT_THAT(request_body, IsDataUploadRequestValid());
     auto response = ResponseBuilder(std::move(request_body)).Build();
     ASSERT_TRUE(response.has_value());
-    SimulateCustomResponseForRequest(0, std::move(response));
+    SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
     base::IgnoreResult(GetAndValidateResponse(response_event));
 
-    encrypted_reporting_client->AccountForAllowedJob(payload_records_);
+    encrypted_reporting_client->AccountForAllowedJob(
+        payload_records_.rbegin()->sequence_information().priority(),
+        payload_records_.rbegin()->sequence_information().generation_id(),
+        payload_records_.rbegin()->sequence_information().sequencing_id());
   }
 }
 
@@ -539,6 +749,7 @@ TEST_F(EncryptedReportingClientTest, SecurityUploadsSequenceNotThrottled) {
                                             kClientId);
 
   for (size_t i = 0; i < kTotalRetries; ++i) {
+    // Add one more SECURITY record for upload.
     AddRecordToPayload(Priority::SECURITY);
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
@@ -546,7 +757,12 @@ TEST_F(EncryptedReportingClientTest, SecurityUploadsSequenceNotThrottled) {
 
     // New SECURITY event upload is allowed immediately.
     EXPECT_FALSE(
-        encrypted_reporting_client->WhenIsAllowedToProceed(payload_records_)
+        encrypted_reporting_client
+            ->WhenIsAllowedToProceed(
+                payload_records_.rbegin()->sequence_information().priority(),
+                payload_records_.rbegin()
+                    ->sequence_information()
+                    .generation_id())
             .is_positive());
 
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
@@ -555,15 +771,19 @@ TEST_F(EncryptedReportingClientTest, SecurityUploadsSequenceNotThrottled) {
         std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
+    // Simulate server-side processing, generate response.
     auto request_body = GetRequestBody(/*index=*/0);
     EXPECT_THAT(request_body, IsDataUploadRequestValid());
     auto response = ResponseBuilder(std::move(request_body)).Build();
     ASSERT_TRUE(response.has_value());
-    SimulateCustomResponseForRequest(0, std::move(response));
+    SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
     base::IgnoreResult(GetAndValidateResponse(response_event));
 
-    encrypted_reporting_client->AccountForAllowedJob(payload_records_);
+    encrypted_reporting_client->AccountForAllowedJob(
+        payload_records_.rbegin()->sequence_information().priority(),
+        payload_records_.rbegin()->sequence_information().generation_id(),
+        payload_records_.rbegin()->sequence_information().sequencing_id());
   }
 }
 
@@ -576,13 +796,15 @@ TEST_F(EncryptedReportingClientTest, FailedUploadsSequenceThrottled) {
                                             kClientId);
 
   for (size_t i = 0; i < kTotalRetries; ++i) {
+    // Add one more record for upload.
     AddRecordToPayload();
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
 
-    auto allowed_delay =
-        encrypted_reporting_client->WhenIsAllowedToProceed(payload_records_);
+    auto allowed_delay = encrypted_reporting_client->WhenIsAllowedToProceed(
+        payload_records_.rbegin()->sequence_information().priority(),
+        payload_records_.rbegin()->sequence_information().generation_id());
     if (i == 0) {
       // The very first upload is allowed.
       EXPECT_FALSE(allowed_delay.is_positive());
@@ -592,13 +814,23 @@ TEST_F(EncryptedReportingClientTest, FailedUploadsSequenceThrottled) {
       // Move forward to allow.
       task_environment_.FastForwardBy(allowed_delay - base::Seconds(1));
       EXPECT_TRUE(
-          encrypted_reporting_client->WhenIsAllowedToProceed(payload_records_)
+          encrypted_reporting_client
+              ->WhenIsAllowedToProceed(
+                  payload_records_.rbegin()->sequence_information().priority(),
+                  payload_records_.rbegin()
+                      ->sequence_information()
+                      .generation_id())
               .is_positive());
       task_environment_.FastForwardBy(base::Seconds(1));
     }
 
     EXPECT_FALSE(
-        encrypted_reporting_client->WhenIsAllowedToProceed(payload_records_)
+        encrypted_reporting_client
+            ->WhenIsAllowedToProceed(
+                payload_records_.rbegin()->sequence_information().priority(),
+                payload_records_.rbegin()
+                    ->sequence_information()
+                    .generation_id())
             .is_positive());
 
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
@@ -607,6 +839,7 @@ TEST_F(EncryptedReportingClientTest, FailedUploadsSequenceThrottled) {
         std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
+    // Simulate server-side processing, generate response.
     auto request_body = GetRequestBody(/*index=*/0);
     EXPECT_THAT(request_body, IsDataUploadRequestValid());
     const std::string& pending_request_url =
@@ -619,7 +852,10 @@ TEST_F(EncryptedReportingClientTest, FailedUploadsSequenceThrottled) {
     const auto& actual_response = response_event.result();
     ASSERT_FALSE(actual_response.has_value());
 
-    encrypted_reporting_client->AccountForAllowedJob(payload_records_);
+    encrypted_reporting_client->AccountForAllowedJob(
+        payload_records_.rbegin()->sequence_information().priority(),
+        payload_records_.rbegin()->sequence_information().generation_id(),
+        payload_records_.rbegin()->sequence_information().sequencing_id());
   }
 }
 }  // namespace reporting

@@ -128,6 +128,7 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
         }));
     test_reporting_ =
         ReportingClient::TestEnvironment::CreateWithStorageModule();
+    test_env_ = std::make_unique<ReportingServerConnector::TestEnvironment>();
 
     memory_resource_ =
         base::MakeRefCounted<ResourceManager>(4u * 1024LLu * 1024LLu);  // 4 MiB
@@ -136,6 +137,7 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
   void TearDown() override {
     handler_.reset();
     test_reporting_.reset();
+    test_env_.reset();
     EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
   }
 
@@ -152,7 +154,7 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
           policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 
   FileUploadJob::TestEnvironment manager_test_env_;
-  ReportingServerConnector::TestEnvironment test_env_;
+  std::unique_ptr<ReportingServerConnector::TestEnvironment> test_env_;
 
   std::unique_ptr<ReportingClient::TestEnvironment> test_reporting_;
 
@@ -207,14 +209,14 @@ TEST_P(RecordHandlerImplTest, UploadRecords) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
-  auto request_body = test_env_.request_body(0);
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
+  auto request_body = test_env_->request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))
                       .SetForceConfirm(force_confirm_by_server)
                       .Build();
   ASSERT_TRUE(response.has_value());
-  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+  test_env_->SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   if (need_encryption_key()) {
     EXPECT_THAT(
@@ -242,15 +244,15 @@ TEST_P(RecordHandlerImplTest, MissingPriorityField) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
-  auto request_body = test_env_.request_body(0);
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
+  auto request_body = test_env_->request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))
                       .SetForceConfirm(force_confirm_by_server)
                       .Build();
   ASSERT_TRUE(response.has_value());
   response->RemoveByDottedPath("lastSucceedUploadedRecord.priority");
-  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+  test_env_->SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
   EXPECT_THAT(result.error(),
@@ -271,8 +273,8 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
-  auto request_body = test_env_.request_body(0);
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
+  auto request_body = test_env_->request_body(0);
   EXPECT_THAT(request_body,
               RequestValidityMatcherBuilder<>::CreateDataUpload()
                   .RemoveMatcher("sequence-information-record-matcher")
@@ -282,7 +284,7 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
                       .Build();
   ASSERT_TRUE(response.has_value());
   response->SetByDottedPath("lastSucceedUploadedRecord.priority", "abc");
-  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+  test_env_->SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
   EXPECT_THAT(result.error(),
@@ -304,8 +306,8 @@ TEST_P(RecordHandlerImplTest, ContainsGenerationGuid) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
-  auto request_body = test_env_.request_body(0);
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
+  auto request_body = test_env_->request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))
                       .SetForceConfirm(force_confirm_by_server)
@@ -322,7 +324,7 @@ TEST_P(RecordHandlerImplTest, ContainsGenerationGuid) {
               StrEq(kGenerationGuid));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+  test_env_->SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
   EXPECT_OK(result) << result.error();
@@ -342,8 +344,8 @@ TEST_P(RecordHandlerImplTest, ValidGenerationGuid) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
-  auto request_body = test_env_.request_body(0);
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
+  auto request_body = test_env_->request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))
                       .SetForceConfirm(force_confirm_by_server)
@@ -356,7 +358,7 @@ TEST_P(RecordHandlerImplTest, ValidGenerationGuid) {
   response->SetByDottedPath("lastSucceedUploadedRecord.generationGuid",
                             base::Uuid::GenerateRandomV4().AsLowercaseString());
 
-  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+  test_env_->SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
   EXPECT_OK(result) << result.error();
@@ -377,8 +379,8 @@ TEST_P(RecordHandlerImplTest, InvalidGenerationGuid) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
-  auto request_body = test_env_.request_body(0);
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
+  auto request_body = test_env_->request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))
                       .SetForceConfirm(force_confirm_by_server)
@@ -389,7 +391,7 @@ TEST_P(RecordHandlerImplTest, InvalidGenerationGuid) {
   response->SetByDottedPath("lastSucceedUploadedRecord.generationGuid",
                             "invalid-generation-guid");
 
-  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+  test_env_->SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
   EXPECT_THAT(result.error(),
@@ -417,8 +419,8 @@ TEST_P(RecordHandlerImplTest, MissingGenerationGuidFromManagedDeviceIsOk) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
-  auto request_body = test_env_.request_body(0);
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
+  auto request_body = test_env_->request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))
                       .SetForceConfirm(force_confirm_by_server)
@@ -430,7 +432,7 @@ TEST_P(RecordHandlerImplTest, MissingGenerationGuidFromManagedDeviceIsOk) {
   // updated for some time.
   response->RemoveByDottedPath("lastSucceedUploadedRecord.generationGuid");
 
-  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+  test_env_->SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
   EXPECT_OK(result) << result.error();
@@ -458,8 +460,8 @@ TEST_P(RecordHandlerImplTest,
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
-  auto request_body = test_env_.request_body(0);
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
+  auto request_body = test_env_->request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))
                       .SetForceConfirm(force_confirm_by_server)
@@ -470,7 +472,7 @@ TEST_P(RecordHandlerImplTest,
   // the device to an unmanaged state at the beginning of the test.
   response->RemoveByDottedPath("lastSucceedUploadedRecord.generationGuid");
 
-  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+  test_env_->SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
   EXPECT_FALSE(result.has_value());
@@ -497,7 +499,7 @@ TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
   // The result should show an error and UploadEncryptedReport should not have
   // been even called, because UploadEncryptedReportingRequestBuilder::Build()
   // should fail in this situation.
-  EXPECT_THAT(*test_env_.url_loader_factory()->pending_requests(), IsEmpty());
+  EXPECT_THAT(*test_env_->url_loader_factory()->pending_requests(), IsEmpty());
 
   const auto result = responder_event.result();
   EXPECT_THAT(result.error(),
@@ -516,11 +518,11 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
-  auto request_body = test_env_.request_body(0);
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
+  auto request_body = test_env_->request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
 
-  test_env_.SimulateCustomResponseForRequest(
+  test_env_->SimulateCustomResponseForRequest(
       0, base::unexpected(Status(error::INTERNAL, "Test injected error")));
 
   const auto result = response_event.result();
@@ -553,28 +555,28 @@ TEST_P(RecordHandlerImplTest, DISABLED_UploadsGapRecordOnServerFailure) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
-  auto request_body = test_env_.request_body(0);
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
+  auto request_body = test_env_->request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response =
       ResponseBuilder(std::move(request_body)).SetSuccess(false).Build();
   ASSERT_TRUE(response.has_value());
-  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+  test_env_->SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   // Gap records upload.
   task_environment_.RunUntilIdle();
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
-  request_body = test_env_.request_body(0);
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
+  request_body = test_env_->request_body(0);
   EXPECT_THAT(request_body, IsGapUploadRequestValid());
 
   response = ResponseBuilder(std::move(request_body))
                  .SetForceConfirm(force_confirm_by_server)
                  .Build();
   ASSERT_TRUE(response.has_value());
-  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+  test_env_->SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   // No more uploads expected.
-  EXPECT_THAT(*test_env_.url_loader_factory()->pending_requests(), IsEmpty());
+  EXPECT_THAT(*test_env_->url_loader_factory()->pending_requests(), IsEmpty());
 
   const auto result = response_event.result();
   EXPECT_THAT(result, ResponseEquals(expected_response));
@@ -607,10 +609,10 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
-  EXPECT_THAT(test_env_.request_body(0), IsDataUploadRequestValid());
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
+  EXPECT_THAT(test_env_->request_body(0), IsDataUploadRequestValid());
 
-  test_env_.SimulateCustomResponseForRequest(0, base::Value::Dict());
+  test_env_->SimulateCustomResponseForRequest(0, base::Value::Dict());
 
   const auto result = response_event.result();
   EXPECT_THAT(result.error(),
@@ -635,14 +637,14 @@ TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
                           base::DoNothing());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
-  auto request_body = test_env_.request_body(0);
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
+  auto request_body = test_env_->request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))
                       .SetForceConfirm(force_confirm_by_server)
                       .Build();
   ASSERT_TRUE(response.has_value());
-  test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
+  test_env_->SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   // We need to wait until the upload operation is marked complete (after it
   // triggers the response callback) so we can avoid leaking unmanaged

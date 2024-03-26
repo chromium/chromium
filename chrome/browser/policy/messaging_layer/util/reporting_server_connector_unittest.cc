@@ -53,6 +53,21 @@ using testing::WithArg;
 
 namespace reporting {
 
+namespace {
+
+constexpr int kGenerationId = 1;
+constexpr char kGenerationGuid[] = "ABCD";
+constexpr char kEncryptedRecord[] = "encrypted-record";
+
+size_t RecordsSize(const std::vector<EncryptedRecord>& records) {
+  size_t size = 0;
+  for (const auto& record : records) {
+    size += record.ByteSizeLong();
+  }
+  return size;
+}
+}  // namespace
+
 // Test ReportingServerConnector(). Because the function essentially obtains
 // cloud_policy_client through a series of linear function calls, it's not
 // meaningful to check whether the CloudPolicyClient matches the expectation,
@@ -62,20 +77,42 @@ namespace reporting {
 class ReportingServerConnectorTest : public ::testing::Test {
  protected:
   void SetUp() override {
+    test_env_ = std::make_unique<ReportingServerConnector::TestEnvironment>();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     install_attributes_.Get()->SetCloudManaged("fake-domain-name",
                                                "fake-device-id");
 #endif
   }
 
+  void TearDown() override {
+    test_env_.reset();
+    EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
+  }
+
   void VerifyDmTokenHeader() {
     // Verify request header contains dm token
     const net::HttpRequestHeaders& headers =
-        test_env_.url_loader_factory()->GetPendingRequest(0)->request.headers;
+        test_env_->url_loader_factory()->GetPendingRequest(0)->request.headers;
     ASSERT_TRUE(headers.HasHeader(policy::dm_protocol::kAuthHeader));
     std::string auth_header;
     headers.GetHeader(policy::dm_protocol::kAuthHeader, &auth_header);
     EXPECT_THAT(auth_header, HasSubstr(kFakeDmToken));
+  }
+
+  void ComposePayload(int64_t count, Priority priority = Priority::SLOW_BATCH) {
+    for (int64_t sequence_id = 0; sequence_id < count; ++sequence_id) {
+      payload_records_.emplace_back();
+
+      EncryptedRecord& encrypted_record = payload_records_.back();
+      encrypted_record.set_encrypted_wrapped_record(kEncryptedRecord);
+
+      SequenceInformation* const sequence_information =
+          encrypted_record.mutable_sequence_information();
+      sequence_information->set_generation_id(kGenerationId);
+      sequence_information->set_generation_guid(kGenerationGuid);
+      sequence_information->set_sequencing_id(sequence_id);
+      sequence_information->set_priority(priority);
+    }
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -84,7 +121,9 @@ class ReportingServerConnectorTest : public ::testing::Test {
   ash::ScopedStubInstallAttributes install_attributes_;
 #endif
 
-  ReportingServerConnector::TestEnvironment test_env_;
+  std::unique_ptr<ReportingServerConnector::TestEnvironment> test_env_;
+
+  std::vector<EncryptedRecord> payload_records_;
 
   scoped_refptr<ResourceManager> memory_resource_ =
       base::MakeRefCounted<ResourceManager>(4uL * 1024uL * 1024uL);
@@ -92,6 +131,8 @@ class ReportingServerConnectorTest : public ::testing::Test {
 
 TEST_F(ReportingServerConnectorTest,
        ExecuteUploadEncryptedReportingOnUIThread) {
+  ComposePayload(1);
+
   // Call `ReportingServerConnector::UploadEncryptedReport` from the UI.
   test::TestEvent<StatusOr<UploadResponseParser>> response_event;
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -100,22 +141,25 @@ TEST_F(ReportingServerConnectorTest,
           &ReportingServerConnector::UploadEncryptedReport,
           /*need_encryption_key=*/false,
           /*config_file_version=*/0,
-          /*records=*/std::vector<EncryptedRecord>(),
-          /*scoped_reservation=*/ScopedReservation(0u, memory_resource_),
+          /*records=*/payload_records_,
+          /*scoped_reservation=*/
+          ScopedReservation(RecordsSize(payload_records_), memory_resource_),
           response_event.cb()));
 
   task_environment_.RunUntilIdle();
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1));
 
   VerifyDmTokenHeader();
 
-  test_env_.SimulateResponseForRequest(0);
+  test_env_->SimulateResponseForRequest(0);
 
   EXPECT_TRUE(response_event.result().has_value());
 }
 
 TEST_F(ReportingServerConnectorTest,
        ExecuteUploadEncryptedReportingOnArbitraryThread) {
+  ComposePayload(1);
+
   // Call `ReportingServerConnector::UploadEncryptedReport` from the
   // thread pool.
   test::TestEvent<StatusOr<UploadResponseParser>> response_event;
@@ -125,16 +169,17 @@ TEST_F(ReportingServerConnectorTest,
           &ReportingServerConnector::UploadEncryptedReport,
           /*need_encryption_key=*/false,
           /*config_file_version=*/0,
-          /*records=*/std::vector<EncryptedRecord>(),
-          /*scoped_reservation=*/ScopedReservation(0u, memory_resource_),
+          /*records=*/payload_records_,
+          /*scoped_reservation=*/
+          ScopedReservation(RecordsSize(payload_records_), memory_resource_),
           response_event.cb()));
 
   task_environment_.RunUntilIdle();
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1));
 
   VerifyDmTokenHeader();
 
-  test_env_.SimulateResponseForRequest(0);
+  test_env_->SimulateResponseForRequest(0);
 
   EXPECT_TRUE(response_event.result().has_value());
 }
@@ -162,6 +207,7 @@ TEST_F(ReportingServerConnectorTest, UploadFromUnmanagedDevice) {
 
   // Call `ReportingServerConnector::UploadEncryptedReport` from the
   // thread pool.
+  ComposePayload(1);
   test::TestEvent<StatusOr<UploadResponseParser>> response_event;
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -169,19 +215,20 @@ TEST_F(ReportingServerConnectorTest, UploadFromUnmanagedDevice) {
           &ReportingServerConnector::UploadEncryptedReport,
           /*need_encryption_key=*/false,
           /*config_file_version=*/0,
-          /*records=*/std::vector<EncryptedRecord>(),
-          /*scoped_reservation=*/ScopedReservation(0u, memory_resource_),
+          /*records=*/payload_records_,
+          /*scoped_reservation=*/
+          ScopedReservation(RecordsSize(payload_records_), memory_resource_),
           response_event.cb()));
 
   task_environment_.RunUntilIdle();
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1));
 
   // Verify request header DOES NOT contain a dm token
   const net::HttpRequestHeaders& headers =
-      test_env_.url_loader_factory()->GetPendingRequest(0)->request.headers;
+      test_env_->url_loader_factory()->GetPendingRequest(0)->request.headers;
   EXPECT_FALSE(headers.HasHeader(policy::dm_protocol::kAuthHeader));
 
-  test_env_.SimulateResponseForRequest(0);
+  test_env_->SimulateResponseForRequest(0);
 
   EXPECT_TRUE(response_event.result().has_value());
 }
