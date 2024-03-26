@@ -1,4 +1,8 @@
 <style>
+  :host {
+    --sea-pen-top-container-min-height: 172px;
+  }
+
   #topContainer {
     background-color: var(--cros-sys-app_base_shaded);
     display: grid;
@@ -17,7 +21,7 @@
       'leftspacerbottom imagegrid rightspacerbottom';
     grid-template-columns: minmax(10px, 1fr) minmax(568px, 920px) minmax(10px, 1fr);
     height: 100%;
-    min-height: var(--sea-pen-router-min-height);
+    min-height: calc(var(--sea-pen-router-min-height) - var(--sea-pen-top-container-min-height));
     position: relative;
     width: 100%;
   }
@@ -26,12 +30,12 @@
   sea-pen-template-query,
   ::slotted(wallpaper-selected) {
     grid-area: middle;
-    min-height: 172px;
+    min-height: var(--sea-pen-top-container-min-height);
   }
 
   sea-pen-input-query,
   ::slotted(wallpaper-selected) {
-    height: 172px;
+    height: var(--sea-pen-top-container-min-height);
   }
 
   #bottomInnerContainer {
