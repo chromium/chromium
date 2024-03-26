@@ -563,17 +563,6 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   const base::TimeTicks measurement_interval_end = base::TimeTicks::Now();
   CHECK(!measurement_interval_start.is_null());
   CHECK(!measurement_interval_end.is_null());
-  // TODO(https://crbug.com/326201232): Turn this back into a CHECK or remove it
-  // after figuring out why it's being hit in production sometimes.
-  if (process_node->GetLaunchTime() > measurement_interval_start) {
-    SCOPED_CRASH_KEY_NUMBER(
-        "CPUMeasurement", "process_start",
-        (process_node->GetLaunchTime() - base::TimeTicks()).InNanoseconds());
-    SCOPED_CRASH_KEY_NUMBER(
-        "CPUMeasurement", "interval_start",
-        (measurement_interval_start - base::TimeTicks()).InNanoseconds());
-    base::debug::DumpWithoutCrashing();
-  }
   if (measurement_interval_start == measurement_interval_end) {
     // No time has passed to measure.
     return;
