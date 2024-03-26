@@ -313,8 +313,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.Limits.VariationKeySize.{Size}" units="KiB"
-    expires_after="2024-11-01">
-  <owner>dalerogerson@google.com</owner>
+    expires_after="2025-03-01">
+  <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The number of kilobytes of the variations crash keys, recorded every time
