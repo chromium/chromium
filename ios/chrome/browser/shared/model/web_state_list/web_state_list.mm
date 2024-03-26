@@ -852,7 +852,11 @@ void WebStateList::UpdateGroupVisualDataImpl(
   DCHECK(group);
   DCHECK(ContainsGroup(group));
 
-  if (group->visual_data() == visual_data) {
+  // `TabGroupVisualData` comparison does not account for `is_collapsed()` but
+  // this API should allow modifying `is_collapsed()` and notify observers
+  // accordingly.
+  if (group->visual_data() == visual_data &&
+      group->visual_data().is_collapsed() == visual_data.is_collapsed()) {
     return;
   }
 
