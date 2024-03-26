@@ -5456,7 +5456,6 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
     bool& had_load_complete_messages,
     bool& need_to_send_location_changes) {
   HashSet<int32_t> already_serialized_ids;
-  int redundant_serialization_count = 0;
 
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kLayoutClean);
@@ -5521,10 +5520,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
       DCHECK(id);
       // Kept here for convenient debugging:
       // DVLOG(1) << "*** AX Serialize: " << ObjectFromAXID(id)->ToString(true);
-      auto result = already_serialized_ids.insert(node_data.id);
-      if (!result.is_new_entry) {
-        redundant_serialization_count++;
-      }
+      already_serialized_ids.insert(node_data.id);
     }
 
     DCHECK(already_serialized_ids.Contains(obj->AXObjectID()))
@@ -5543,10 +5539,6 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
       update.AccumulateSize(node_data_size);
     }
   }
-
-  UMA_HISTOGRAM_COUNTS_10000(
-      "Accessibility.Performance.AXObjectCacheImpl.RedundantSerializations",
-      redundant_serialization_count);
 
   if (RuntimeEnabledFeatures::AccessibilitySerializationSizeMetricsEnabled()) {
     LogNodeDataSizeDistribution(node_data_size);
