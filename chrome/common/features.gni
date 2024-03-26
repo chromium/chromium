@@ -47,6 +47,12 @@ declare_args() {
   chrome_certificate_policies_supported =
       is_mac || is_win || is_linux || is_android
 
+  # Platforms for which Chrome supports a certificate management UI that
+  # shows the Chrome Root Store. This is specific to the v2 UI that is
+  # supported on all desktop platforms, as opposed to the v1 UI which is only
+  # supported on platforms using NSS (Linux and CrOS).
+  chrome_root_store_cert_management_ui = is_win || is_mac || is_linux
+
   # Enables support for background apps.
   enable_background_contents = !is_android
   enable_background_mode = !is_android && !is_chromeos
@@ -116,5 +122,6 @@ chrome_grit_defines = [
   "is_official_build=$is_official_build",
   "safe_browsing_mode=$safe_browsing_mode",
   "optimize_webui=$optimize_webui",
+  "chrome_root_store_cert_management_ui=$chrome_root_store_cert_management_ui",
   "use_nss_certs=$use_nss_certs",
 ]

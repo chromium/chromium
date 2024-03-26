@@ -2,25 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//crypto/features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(use_nss_certs)
+assert(use_nss_certs || chrome_root_store_cert_management_ui)
 
 build_webui("build") {
   grd_prefix = "cr_components_certificate_manager"
 
-  web_component_files = [
-    "ca_trust_edit_dialog.ts",
-    "certificate_delete_confirmation_dialog.ts",
-    "certificate_entry.ts",
-    "certificate_list.ts",
-    "certificate_manager.ts",
-    "certificate_password_decryption_dialog.ts",
-    "certificate_password_encryption_dialog.ts",
-    "certificate_subentry.ts",
-    "certificates_error_dialog.ts",
-  ]
+  web_component_files = []
+  non_web_component_files = []
+
+  if (use_nss_certs) {
+    web_component_files += [
+      "ca_trust_edit_dialog.ts",
+      "certificate_delete_confirmation_dialog.ts",
+      "certificate_entry.ts",
+      "certificate_list.ts",
+      "certificate_manager.ts",
+      "certificate_password_decryption_dialog.ts",
+      "certificate_password_encryption_dialog.ts",
+      "certificate_subentry.ts",
+      "certificates_error_dialog.ts",
+    ]
+    non_web_component_files += [
+      "certificate_manager_types.ts",
+      "certificates_browser_proxy.ts",
+    ]
+  }
+
+  if (chrome_root_store_cert_management_ui) {
+    web_component_files += [ "certificate_manager_v2.ts" ]
+  }
 
   if (is_chromeos) {
     web_component_files += [
@@ -28,14 +42,6 @@ build_webui("build") {
       "certificate_provisioning_entry.ts",
       "certificate_provisioning_list.ts",
     ]
-  }
-
-  non_web_component_files = [
-    "certificate_manager_types.ts",
-    "certificates_browser_proxy.ts",
-  ]
-
-  if (is_chromeos) {
     non_web_component_files += [ "certificate_provisioning_browser_proxy.ts" ]
   }
 

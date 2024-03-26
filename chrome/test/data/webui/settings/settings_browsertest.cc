@@ -856,7 +856,9 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS)
             blink::features::kWebPrinting,
 #endif
-            features::kSafetyHub},
+            features::kEnableCertManagementUIV2,
+            features::kSafetyHub,
+        },
         {});
     scoped_feature_list2_.InitAndEnableFeatureWithParameters(
         features::kFedCm, {
@@ -898,6 +900,11 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTestNoTestingConfig, PrivacyPage) {
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacySandbox) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacySandbox')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, CertificateManagementV2) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('CertificateManagementV2')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, CookiesSubpage) {
@@ -1130,8 +1137,11 @@ class SettingsSecurityPageTest : public SettingsBrowserTest {
  protected:
   SettingsSecurityPageTest() {
     scoped_feature_list_.InitWithFeatures(
-        {safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection,
-         safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection},
+        {
+            safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection,
+            safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection,
+            features::kEnableCertManagementUIV2,
+        },
         {});
   }
 

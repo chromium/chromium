@@ -305,6 +305,16 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
+      // <if expr="chrome_root_store_cert_management_ui">
+      enableCertManagementUIV2_: {
+        type: Boolean,
+        readOnly: true,
+        value: function() {
+          return loadTimeData.getBoolean('enableCertManagementUIV2');
+        },
+      },
+      // </if>
+
       isNotificationAllowed_: Boolean,
       isLocationAllowed_: Boolean,
       notificationPermissionsReviewHeader_: String,
@@ -349,6 +359,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private isNotificationAllowed_: boolean;
   private isLocationAllowed_: boolean;
   private showDedicatedCpssSetting_: boolean;
+  // <if expr="chrome_root_store_cert_management_ui">
+  private enableCertManagementUIV2_: boolean;
+  // </if>
 
   override ready() {
     super.ready();

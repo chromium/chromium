@@ -7,6 +7,10 @@ import("//crypto/features.gni")
 import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
+if (use_blink) {
+  import("//chrome/common/features.gni")
+}
+
 generate_grd("build_grd") {
   grd_prefix = "webui"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
@@ -76,10 +80,13 @@ generate_grd("build_grd") {
       "$target_gen_dir/cr_components/most_visited/resources.grdp",
     ]
 
-    if (use_nss_certs) {
-      public_deps += [ "cr_components/certificate_manager:build_grdp" ]
-      grdp_files +=
-          [ "$target_gen_dir/cr_components/certificate_manager/resources.grdp" ]
+    if (use_blink) {
+      if (use_nss_certs || chrome_root_store_cert_management_ui) {
+        public_deps += [ "cr_components/certificate_manager:build_grdp" ]
+        grdp_files += [
+          "$target_gen_dir/cr_components/certificate_manager/resources.grdp",
+        ]
+      }
     }
 
     if (!is_android) {

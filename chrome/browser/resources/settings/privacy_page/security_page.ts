@@ -96,6 +96,19 @@ export class SettingsSecurityPageElement extends
         notify: true,
       },
 
+      // <if expr="chrome_root_store_cert_management_ui">
+      /**
+       * Whether we should show the new cert management UI.
+       */
+      enableCertManagementUIV2_: {
+        type: Boolean,
+        readOnly: true,
+        value: function() {
+          return loadTimeData.getBoolean('enableCertManagementUIV2');
+        },
+      },
+      // </if>
+
       /**
        * Whether the secure DNS setting should be displayed.
        */
@@ -215,6 +228,9 @@ export class SettingsSecurityPageElement extends
       },
     };
   }
+  // <if expr="chrome_root_store_cert_management_ui">
+  private enableCertManagementUIV2_: boolean;
+  // </if>
   private showSecureDnsSetting_: boolean;
 
   // <if expr="is_chromeos">
@@ -241,6 +257,7 @@ export class SettingsSecurityPageElement extends
 
   private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
     assert(!oldConfig);
+    // TODO(crbug.com/1477317): fix this for new cert management UI.
     // <if expr="use_nss_certs">
     if (routes.CERTIFICATES) {
       this.focusConfig.set(routes.CERTIFICATES.path, () => {
@@ -510,6 +527,14 @@ export class SettingsSecurityPageElement extends
     // <if expr="is_win or is_macosx">
     this.browserProxy_.showManageSslCertificates();
     // </if>
+    this.metricsBrowserProxy_.recordSettingsPageHistogram(
+        PrivacyElementInteractions.MANAGE_CERTIFICATES);
+  }
+
+  private onNewManageCertificatesClick_() {
+    // Use the same route and histogram as the old NSS-only cert management
+    // page.
+    Router.getInstance().navigateTo(routes.CERTIFICATES);
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.MANAGE_CERTIFICATES);
   }

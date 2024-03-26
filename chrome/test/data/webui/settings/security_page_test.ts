@@ -83,20 +83,18 @@ suite('Main', function() {
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
-  // <if expr="is_macosx or is_win">
-  test('NativeCertificateManager', function() {
-    page.shadowRoot!.querySelector<HTMLElement>('#manageCertificates')!.click();
-    return testPrivacyBrowserProxy.whenCalled('showManageSslCertificates');
-  });
-  // </if>
-
   test('ChromeRootStorePage', async function() {
     const row =
         page.shadowRoot!.querySelector<HTMLElement>('#chromeCertificates');
-    assertTrue(!!row);
+    // <if expr="is_chromeos">
+    assertTrue(!!row, 'Chrome Root Store Help Center link not found');
     row.click();
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('chromeRootStoreHelpCenterURL'));
+    // </if>
+    // <if expr="not is_chromeos">
+    assertFalse(!!row, 'Chrome Root Store Help Center link unexpectedly found');
+    // </if>
   });
 
   // <if expr="not chromeos_lacros">
@@ -105,7 +103,7 @@ suite('Main', function() {
   // moment and is never called from Lacros-Chrome. This should be revisited
   // when there is a solution for the client certificates settings page on
   // Lacros-Chrome.
-  test('LogManageCerfificatesClick', async function() {
+  test('LogManageCertificatesClick', async function() {
     page.shadowRoot!.querySelector<HTMLElement>('#manageCertificates')!.click();
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
@@ -258,6 +256,9 @@ suite('SecurityPageHappinessTrackingSurveys', function() {
 
 suite('FlagsDisabled', function() {
   let page: SettingsSecurityPageElement;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testPrivacyBrowserProxy: TestPrivacyPageBrowserProxy;
+  let openWindowProxy: TestOpenWindowProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -265,10 +266,17 @@ suite('FlagsDisabled', function() {
       enableFriendlierSafeBrowsingSettings: false,
       enableHashPrefixRealTimeLookups: false,
       enableHttpsFirstModeNewSettings: false,
+      enableCertManagementUIV2: false,
     });
   });
 
   setup(function() {
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+    testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
+    PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-security-page');
     page.prefs = pagePrefs();
@@ -279,6 +287,36 @@ suite('FlagsDisabled', function() {
   teardown(function() {
     page.remove();
   });
+
+  // <if expr="is_macosx or is_win">
+  test('NativeCertificateManager', function() {
+    page.shadowRoot!.querySelector<HTMLElement>('#manageCertificates')!.click();
+    return testPrivacyBrowserProxy.whenCalled('showManageSslCertificates');
+  });
+  // </if>
+
+  test('ChromeRootStorePage', async function() {
+    const row =
+        page.shadowRoot!.querySelector<HTMLElement>('#chromeCertificates');
+    assertTrue(!!row);
+    row.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('chromeRootStoreHelpCenterURL'));
+  });
+
+  // <if expr="not chromeos_lacros">
+  // TODO(crbug.com/1148302): This class directly calls
+  // `CreateNSSCertDatabaseGetterForIOThread()` that causes crash at the
+  // moment and is never called from Lacros-Chrome. This should be revisited
+  // when there is a solution for the client certificates settings page on
+  // Lacros-Chrome.
+  test('LogManageCertificatesClick', async function() {
+    page.shadowRoot!.querySelector<HTMLElement>('#manageCertificates')!.click();
+    const result =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.MANAGE_CERTIFICATES, result);
+  });
+  // </if>
 
   test('ManageSecurityKeysSubpageHidden', function() {
     assertFalse(isChildVisible(page, '#security-keys-subpage-trigger'));

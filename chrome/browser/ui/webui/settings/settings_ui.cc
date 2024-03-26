@@ -223,6 +223,16 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   AddSettingsPageUIHandler(std::make_unique<NativeCertificatesHandler>());
 #endif  // BUILDFLAG(USE_NSS_CERTS)
+
+// Chrome Certificate Management UI V2. Not on for ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+  html_source->AddBoolean("enableCertManagementUIV2", false);
+#elif BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  html_source->AddBoolean(
+      "enableCertManagementUIV2",
+      base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS)
   AddSettingsPageUIHandler(
       chromeos::cert_provisioning::CertificateProvisioningUiHandler::

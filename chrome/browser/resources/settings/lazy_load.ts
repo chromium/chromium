@@ -58,7 +58,9 @@ import './people_page/sync_page.js';
 // <if expr="use_nss_certs">
 import 'chrome://resources/cr_components/certificate_manager/certificate_manager.js';
 // </if>
-
+// <if expr="chrome_root_store_cert_management_ui">
+import 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.js';
+// </if>
 // Sections
 import './a11y_page/a11y_page.js';
 import './downloads_page/downloads_page.js';
