@@ -414,7 +414,6 @@ export class Camera extends View implements CameraViewUI {
         return;
       }
 
-      state.set(state.State.TAKING, true);
       this.shutterType = shutterType;
       // Refocus the visible shutter button for ChromeVox.
       this.focusShutterButton();
@@ -433,6 +432,7 @@ export class Camera extends View implements CameraViewUI {
         // Translate the camera frame rotation back to the UI rotation, which is
         // what we need to rotate the captured video with.
         this.outputVideoRotation = (360 - cameraFrameRotation) % 360;
+        state.set(state.State.TAKING, true);
         await timertick.start();
         const [captureDone] = await this.cameraManager.startCapture();
         await captureDone;
