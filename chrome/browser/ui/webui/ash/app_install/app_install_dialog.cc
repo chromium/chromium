@@ -4,13 +4,17 @@
 
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"
 
+#include <cmath>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/webapps/common/constants.h"
+#include "ui/gfx/font_list.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/gfx/text_utils.h"
 
 namespace ash::app_install {
 
@@ -84,8 +88,9 @@ base::WeakPtr<AppInstallDialog> AppInstallDialog::GetWeakPtr() {
 
 namespace {
 constexpr int kMinimumDialogHeight = 282;
-// Description height is 18px per line of text + 24px padding.
-constexpr int kDescriptionHeight = 42;
+constexpr int kDescriptionContainerWidth = 408;
+constexpr int kDescriptionLineHeight = 18;
+constexpr int kDescriptionVerticalPadding = 24;
 constexpr int kScreenshotHeight = 256;
 constexpr int kDividerHeight = 1;
 }  // namespace
@@ -95,9 +100,13 @@ void AppInstallDialog::GetDialogSize(gfx::Size* size) const {
   // TODO(b/329515116): Adjust height for long URLs that wrap multiple
   // lines.
   if (dialog_args_->description.length()) {
-    // TODO(b/329515116): This code assumes the description fits on a
-    // single line. Figure out how many lines the description is.
-    height += kDescriptionHeight;
+    // TODO(b/329515116): Ensure the font matches what is used in the dialog.
+    const gfx::FontList font_list;
+    float description_width = gfx::GetStringWidth(
+        base::UTF8ToUTF16(dialog_args_->description), font_list);
+    int num_lines = std::ceil(description_width / kDescriptionContainerWidth);
+    height +=
+        ((kDescriptionLineHeight * num_lines) + kDescriptionVerticalPadding);
   }
   if (!dialog_args_->screenshot_urls.empty()) {
     // TODO(b/329515116): Account for different sized screenshots.
