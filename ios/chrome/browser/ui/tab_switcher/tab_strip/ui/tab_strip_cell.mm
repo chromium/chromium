@@ -6,15 +6,6 @@
 
 @implementation TabStripCell
 
-#pragma mark - UICollectionViewCell
-
-- (instancetype)initWithFrame:(CGRect)frame {
-  if ((self = [super initWithFrame:frame])) {
-    self.isAccessibilityElement = YES;
-  }
-  return self;
-}
-
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.title = nil;
