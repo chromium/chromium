@@ -18,7 +18,6 @@
 #include "ash/shell.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -51,6 +50,14 @@ BirchModel::BirchModel() {
 BirchModel::~BirchModel() {
   SimpleGeolocationProvider::GetInstance()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
+}
+
+void BirchModel::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void BirchModel::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 // static
@@ -140,6 +147,9 @@ void BirchModel::SetClientAndInit(BirchClient* client) {
         /*on_init_callback=*/base::BindOnce(
             &BirchModel::MaybeRespondToDataFetchRequest,
             base::Unretained(this)));
+    for (auto& observer : observers_) {
+      observer.OnBirchClientSet();
+    }
   } else {
     item_remover_.reset();
   }

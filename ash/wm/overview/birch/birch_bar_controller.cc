@@ -4,7 +4,6 @@
 
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 
-#include "ash/birch/birch_model.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
@@ -17,10 +16,15 @@
 namespace ash {
 
 BirchBarController::BirchBarController() {
-  // Fetching data from model.
-  Shell::Get()->birch_model()->RequestBirchDataFetch(
-      base::BindOnce(&BirchBarController::OnItemsFecthedFromModel,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (!Shell::Get()->birch_model()->birch_client()) {
+    // Observe birch model and wait until client is set before requesting data.
+    birch_model_observer_.Observe(Shell::Get()->birch_model());
+  } else {
+    // Fetching data from model.
+    Shell::Get()->birch_model()->RequestBirchDataFetch(
+        base::BindOnce(&BirchBarController::OnItemsFecthedFromModel,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 BirchBarController::~BirchBarController() {
@@ -138,6 +142,16 @@ void BirchBarController::InitBar(BirchBarView* bar_view) {
 
 void BirchBarController::OnChipContextMenuClosed() {
   chip_menu_model_adapter_.reset();
+}
+
+void BirchBarController::OnBirchClientSet() {
+  // No longer need to observe the birch model once client is set.
+  birch_model_observer_.Reset();
+
+  // Fetching data from model.
+  Shell::Get()->birch_model()->RequestBirchDataFetch(
+      base::BindOnce(&BirchBarController::OnItemsFecthedFromModel,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace ash

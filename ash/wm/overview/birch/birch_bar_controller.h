@@ -8,10 +8,12 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/birch/birch_model.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -24,12 +26,12 @@ class BirchItem;
 
 // The controller used to manage the birch bar in every `OverviewGrid`. It will
 // fetch data from `BirchModel` and distribute the data to birch bars.
-class BirchBarController {
+class BirchBarController : public BirchModel::Observer {
  public:
   BirchBarController();
   BirchBarController(const BirchBarController&) = delete;
   BirchBarController& operator=(const BirchBarController&) = delete;
-  ~BirchBarController();
+  ~BirchBarController() override;
 
   // Gets the instance of the controller. It can be nullptr when the Overview
   // session is shutting down.
@@ -64,6 +66,9 @@ class BirchBarController {
   // Called when the context menu is closed.
   void OnChipContextMenuClosed();
 
+  // BirchModel::Observer:
+  void OnBirchClientSet() override;
+
   // Birch items fetched from model.
   std::vector<std::unique_ptr<BirchItem>> items_;
 
@@ -74,6 +79,9 @@ class BirchBarController {
 
   // Indicates if the data fetching process completes or not.
   bool data_fetch_complete_ = false;
+
+  base::ScopedObservation<BirchModel, BirchModel::Observer>
+      birch_model_observer_{this};
 
   base::WeakPtrFactory<BirchBarController> weak_ptr_factory_{this};
 };

@@ -14,6 +14,7 @@
 #include "ash/birch/birch_item.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -31,10 +32,21 @@ class BirchItemRemover;
 class ASH_EXPORT BirchModel : public SessionObserver,
                               public SimpleGeolocationProvider::Observer {
  public:
+  // BirchModel Observers are notified when the BirchClient has been set.
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    virtual void OnBirchClientSet() = 0;
+  };
+
   BirchModel();
   BirchModel(const BirchModel&) = delete;
   BirchModel& operator=(const BirchModel&) = delete;
   ~BirchModel() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -205,6 +217,9 @@ class ASH_EXPORT BirchModel : public SessionObserver,
 
   // Used to filter out items which have previously been removed by the user.
   std::unique_ptr<BirchItemRemover> item_remover_;
+
+  // A list of current BirchModel::Observers.
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash

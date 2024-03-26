@@ -137,6 +137,21 @@ base::Time TimeFromString(const char* time_string) {
   return time;
 }
 
+class TestModelObserver : public BirchModel::Observer {
+ public:
+  TestModelObserver() { Shell::Get()->birch_model()->AddObserver(this); }
+  ~TestModelObserver() override {
+    Shell::Get()->birch_model()->RemoveObserver(this);
+  }
+
+  void OnBirchClientSet() override { birch_client_set_ = true; }
+
+  bool birch_client_set() const { return birch_client_set_; }
+
+ private:
+  bool birch_client_set_ = false;
+};
+
 }  // namespace
 
 class BirchModelTest : public AshTestBase {
@@ -1126,6 +1141,18 @@ TEST_F(BirchModelTest, DuplicateFileAndAttachmentItem) {
   EXPECT_EQ(all_items[0]->title(), u"Ongoing Event Attachment 1");
   EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kFile);
   EXPECT_EQ(all_items[1]->title(), u"Recently Edited File 2");
+}
+
+TEST_F(BirchModelTest, SetClientObservation) {
+  BirchModel* model = Shell::Get()->birch_model();
+  TestModelObserver test_observer;
+
+  // BirchClient has not been set since observation has started.
+  EXPECT_FALSE(test_observer.birch_client_set());
+
+  // Set the client and expect model observer to be notified.
+  model->SetClientAndInit(&stub_birch_client_);
+  EXPECT_TRUE(test_observer.birch_client_set());
 }
 
 }  // namespace ash
