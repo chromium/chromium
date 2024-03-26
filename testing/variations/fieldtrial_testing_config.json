@@ -6489,6 +6489,21 @@
             ]
         }
     ],
+    "EnableADPFGpuCompositorThread": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableADPFGpuCompositorThread"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableADPFRendererMain": [
         {
             "platforms": [
