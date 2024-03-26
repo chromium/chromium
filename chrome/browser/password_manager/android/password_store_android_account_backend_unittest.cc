@@ -2138,6 +2138,45 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, NoEvictIfM4FlagEnabled) {
   EXPECT_FALSE(backend().IsAbleToSavePasswords());
 }
 
+TEST_F(PasswordStoreAndroidAccountBackendTest,
+       CallOnSyncEnabledDisabledCallbackOnSyncChanges) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
+  EnableSyncForTestAccount();
+
+  base::MockRepeatingClosure mock_callback;
+  backend().InitBackend(/*affiliated_match_helper=*/nullptr,
+                        /*remote_form_changes_received=*/base::DoNothing(),
+                        /*sync_enabled_or_disabled_cb=*/mock_callback.Get(),
+                        /*completion=*/base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+
+  EXPECT_CALL(mock_callback, Run);
+
+  DisableSyncFeature();
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidAccountBackendTest,
+       DoesnNotCallOnSyncEnabledDisabledCallbackOnSyncChanges) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
+  EnableSyncForTestAccount();
+
+  base::MockRepeatingClosure mock_callback;
+  backend().InitBackend(/*affiliated_match_helper=*/nullptr,
+                        /*remote_form_changes_received=*/base::DoNothing(),
+                        /*sync_enabled_or_disabled_cb=*/mock_callback.Get(),
+                        /*completion=*/base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+
+  EXPECT_CALL(mock_callback, Run).Times(0);
+
+  DisableSyncFeature();
+  RunUntilIdle();
+}
+
 // Test suite to verify there is no unenrollment for most of the errors except
 // Passphrase. Each backend operation is checked by a separate test.
 class PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest

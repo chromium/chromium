@@ -193,14 +193,9 @@ void PasswordStoreAndroidAccountBackend::InitBackend(
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
   Init(std::move(remote_form_changes_received));
-  // The android backend doesn't currently support notifying the store of
-  // sync changes. This currently only wired via the built-in backend being
-  // notified by the `PasswordSyncBridge` and generally
-  // applies to the account store. Support needs to be specifically implemented
-  // if desired. See crbug.com/1004777.
-  CHECK(!sync_enabled_or_disabled_cb);
   CHECK(completion);
   affiliated_match_helper_ = affiliated_match_helper;
+  sync_enabled_or_disabled_cb_ = std::move(sync_enabled_or_disabled_cb);
   std::move(completion).Run(/*success*/ true);
 }
 
@@ -476,6 +471,15 @@ void PasswordStoreAndroidAccountBackend::
 }
 
 void PasswordStoreAndroidAccountBackend::OnPasswordsSyncStateChanged() {
+  // Invoke `sync_enabled_or_disabled_cb_` only if M4 feature flag is enabled
+  // since Chrome no longer actively syncs passwords post M4.
+  if (sync_enabled_or_disabled_cb_ &&
+      base::FeatureList::IsEnabled(
+          features::kUnifiedPasswordManagerSyncOnlyInGMSCore)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, sync_enabled_or_disabled_cb_);
+  }
+
   // Reply with a recoverable error, because this isn't a persistent issue,
   // only a transient state
   ClearAllTasksAndReplyWithReason(

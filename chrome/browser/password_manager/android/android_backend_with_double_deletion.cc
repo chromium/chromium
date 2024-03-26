@@ -35,12 +35,20 @@ void AndroidBackendWithDoubleDeletion::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
+  // `sync_enabled_or_disabled_cb` can be invoked by `built_in_backend_` only if
+  // M4 feature flag is disabled. After M4 is enabled LoginDatabase has no
+  // connection to the sync engine, preventing any internal changes on sync
+  // events.
   built_in_backend_->InitBackend(affiliated_match_helper, base::DoNothing(),
-                                 base::DoNothing(), base::DoNothing());
+                                 sync_enabled_or_disabled_cb,
+                                 base::DoNothing());
 
-  android_backend_->InitBackend(affiliated_match_helper,
-                                std::move(remote_form_changes_received),
-                                base::NullCallback(), std::move(completion));
+  // `sync_enabled_or_disabled_cb` can be invoked by `android_backend_` only if
+  // M4 feature flag is enabled. The callback is invoked when sync status
+  // changes are detected.
+  android_backend_->InitBackend(
+      affiliated_match_helper, std::move(remote_form_changes_received),
+      std::move(sync_enabled_or_disabled_cb), std::move(completion));
 }
 
 void AndroidBackendWithDoubleDeletion::Shutdown(

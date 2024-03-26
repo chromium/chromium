@@ -126,6 +126,8 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
 
   bool should_disable_saving_due_to_error_ = false;
 
+  base::RepeatingClosure sync_enabled_or_disabled_cb_;
+
   base::WeakPtrFactory<PasswordStoreAndroidAccountBackend> weak_ptr_factory_{
       this};
 };
