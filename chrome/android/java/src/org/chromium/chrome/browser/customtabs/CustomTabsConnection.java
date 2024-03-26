@@ -1970,8 +1970,17 @@ public class CustomTabsConnection {
         return false;
     }
 
+    /** Specifies what content should be presented by the CustomTabs instance in location bar. */
+    public int getTitleVisibilityState(BrowserServicesIntentDataProvider intentData) {
+        if (shouldEnableOmniboxForIntent(intentData)) {
+            return CustomTabsIntent.NO_TITLE;
+        }
+        return intentData.getTitleVisibilityState();
+    }
+
     /**
      * Whether PageInsight Hub is enabled by the launching Intent. False by default.
+     *
      * @param intentData {@link BrowserServicesIntentDataProvider} built from the Intent that
      *     launched this CCT.
      */

@@ -123,7 +123,8 @@ public class CustomTabToolbarCoordinator {
         mCloseButtonVisibilityManager.onToolbarInitialized(manager);
 
         manager.setShowTitle(
-                mIntentDataProvider.getTitleVisibilityState() == CustomTabsIntent.SHOW_PAGE_TITLE);
+                mConnection.getTitleVisibilityState(mIntentDataProvider)
+                        == CustomTabsIntent.SHOW_PAGE_TITLE);
         if (mConnection.shouldHideDomainForSession(mIntentDataProvider.getSession())) {
             manager.setUrlBarHidden(true);
         }
