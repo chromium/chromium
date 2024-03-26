@@ -756,6 +756,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/omnibox/on_device_head_test_deep_model.bin",
     "//components/test/data/omnibox/on_device_head_test_model_index.bin",
     "//components/test/data/omnibox/test_tail_model.tflite",
+    "//components/test/data/omnibox/vocab_i18n_test.txt",
     "//components/test/data/omnibox/vocab_test.txt",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +

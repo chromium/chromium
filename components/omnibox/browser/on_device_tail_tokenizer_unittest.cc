@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -15,31 +16,27 @@
 
 using ::testing::ElementsAreArray;
 
-namespace {
-
-base::FilePath GetTestVocabFilePath() {
-  base::FilePath file_path;
-  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
-  file_path =
-      file_path.AppendASCII("components/test/data/omnibox/vocab_test.txt");
-
-  return file_path;
-}
-
-}  // namespace
-
 class OnDeviceTailTokenizerTest : public ::testing::Test {
  public:
   OnDeviceTailTokenizerTest() { tokenizer_.Reset(); }
 
  protected:
+  void InitializeTokenizer(const std::string filename) {
+    base::FilePath file_path;
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
+    file_path =
+        file_path.AppendASCII("components/test/data/omnibox/" + filename);
+
+    ASSERT_TRUE(base::PathExists(file_path));
+    tokenizer_.Init(file_path);
+    EXPECT_TRUE(tokenizer_.IsReady());
+  }
+
   OnDeviceTailTokenizer tokenizer_;
 };
 
 TEST_F(OnDeviceTailTokenizerTest, IsTokenPrintable) {
-  tokenizer_.Init(GetTestVocabFilePath());
-
-  EXPECT_TRUE(tokenizer_.IsReady());
+  InitializeTokenizer("vocab_test.txt");
 
   EXPECT_TRUE(tokenizer_.IsTokenPrintable(33));
   EXPECT_TRUE(tokenizer_.IsTokenPrintable(260));
@@ -49,11 +46,9 @@ TEST_F(OnDeviceTailTokenizerTest, IsTokenPrintable) {
 }
 
 TEST_F(OnDeviceTailTokenizerTest, CreatePrefixTokenization) {
-  tokenizer_.Init(GetTestVocabFilePath());
-
-  EXPECT_TRUE(tokenizer_.IsReady());
-
   {
+    SCOPED_TRACE("Test for ASCII vocab #1.");
+    InitializeTokenizer("vocab_test.txt");
     OnDeviceTailTokenizer::Tokenization tokenization;
     // Expect tokens ["n", "j", " ", "do", "c"].
     // See OnDeviceTailTokenizer::EncodeRawString for details and simplified
@@ -66,6 +61,8 @@ TEST_F(OnDeviceTailTokenizerTest, CreatePrefixTokenization) {
   }
 
   {
+    SCOPED_TRACE("Test for ASCII vocab #2.");
+    InitializeTokenizer("vocab_test.txt");
     OnDeviceTailTokenizer::Tokenization tokenization;
     // Expect tokens ["re", "mi", "t", "ly", " ", "log", "in"].
     tokenizer_.CreatePrefixTokenization("remitly login", &tokenization);
@@ -76,6 +73,8 @@ TEST_F(OnDeviceTailTokenizerTest, CreatePrefixTokenization) {
   }
 
   {
+    SCOPED_TRACE("Test for ASCII vocab #3.");
+    InitializeTokenizer("vocab_test.txt");
     OnDeviceTailTokenizer::Tokenization tokenization;
     // Expect tokens
     // ["us", " ", "pa", "ss", "po", "rt", " ", "ap", "pl", "ica", "tio", "n"]
@@ -87,13 +86,25 @@ TEST_F(OnDeviceTailTokenizerTest, CreatePrefixTokenization) {
     EXPECT_EQ("n", tokenization.constraint_prefix);
     EXPECT_EQ("us passport applicatio", tokenization.unambiguous_prefix);
   }
+
+  {
+    SCOPED_TRACE("Test for i18n languages.");
+    InitializeTokenizer("vocab_i18n_test.txt");
+    OnDeviceTailTokenizer::Tokenization tokenization;
+    // Expect tokens
+    // ["us", "ल्", "वावि", "てる",  "a", "वा"]
+    tokenizer_.CreatePrefixTokenization("usल्वाविてるaवा", &tokenization);
+    EXPECT_THAT(tokenization.unambiguous_ids,
+                testing::ElementsAreArray({257, 259, 260, 263, 264, 97}));
+    EXPECT_EQ("वा", tokenization.constraint_prefix);
+    EXPECT_EQ("usल्वाविてるa", tokenization.unambiguous_prefix);
+  }
 }
 
 TEST_F(OnDeviceTailTokenizerTest, TokenizePrevQuery) {
-  tokenizer_.Init(GetTestVocabFilePath());
-
-  EXPECT_TRUE(tokenizer_.IsReady());
   {
+    SCOPED_TRACE("Test for ASCII vocab #1.");
+    InitializeTokenizer("vocab_test.txt");
     OnDeviceTailTokenizer::TokenIds token_ids;
     tokenizer_.TokenizePrevQuery("facebook", &token_ids);
 
@@ -104,6 +115,8 @@ TEST_F(OnDeviceTailTokenizerTest, TokenizePrevQuery) {
   }
 
   {
+    SCOPED_TRACE("Test for ASCII vocab #2.");
+    InitializeTokenizer("vocab_test.txt");
     OnDeviceTailTokenizer::TokenIds token_ids;
     tokenizer_.TokenizePrevQuery("matching gym outfits", &token_ids);
 
@@ -113,5 +126,18 @@ TEST_F(OnDeviceTailTokenizerTest, TokenizePrevQuery) {
     EXPECT_THAT(token_ids, ElementsAreArray({364, 116, 488, 375, 32, 103, 121,
                                              109, 32, 533, 320, 443}));
     EXPECT_EQ("ma", tokenizer_.IdToToken(token_ids[0]));
+  }
+
+  {
+    SCOPED_TRACE("Test for i18n languages.");
+    InitializeTokenizer("vocab_i18n_test.txt");
+    OnDeviceTailTokenizer::TokenIds token_ids;
+    tokenizer_.TokenizePrevQuery("usल्वाविてるaवा", &token_ids);
+
+    // Expect tokens:
+    // ["us", "ल्", "वावि", "てる",  "a", "वा"]
+    EXPECT_EQ(6, (int)token_ids.size());
+    EXPECT_THAT(token_ids, ElementsAreArray({259, 260, 263, 264, 97, 261}));
+    EXPECT_EQ("us", tokenizer_.IdToToken(token_ids[0]));
   }
 }
