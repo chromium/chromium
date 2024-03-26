@@ -1,7 +1,8 @@
 {
   "$build/chromium_orchestrator": {
     "compilator": "win-arm64-rel-compilator",
-    "compilator_watcher_git_revision": "27c191f304c8d7329a393d8a69020fc14032c3c3"
+    "compilator_watcher_git_revision": "27c191f304c8d7329a393d8a69020fc14032c3c3",
+    "propagate_properties_to_compilator": true
   },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
@@ -95,6 +96,12 @@
       "overall"
     ],
     "use_clang_coverage": true
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 500,
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
   },
   "$build/siso": {
     "configs": [
