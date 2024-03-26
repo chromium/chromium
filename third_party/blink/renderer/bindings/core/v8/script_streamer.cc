@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 
+#include <atomic>
 #include <memory>
 #include <utility>
 
@@ -60,7 +61,6 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
-#include "third_party/libc++/src/include/__atomic/atomic.h"
 
 namespace blink {
 namespace {
