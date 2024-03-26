@@ -9077,7 +9077,8 @@
                     "params": {
                         "IOSDockingPromoExperimentType": "1",
                         "IOSDockingPromoNewUserInactiveThresholdHours": "24",
-                        "IOSDockingPromoOldUserInactiveThresholdHours": "72"
+                        "IOSDockingPromoOldUserInactiveThresholdHours": "72",
+                        "IOSDockingPromoUsesStartUtilities": "true"
                     },
                     "enable_features": [
                         "IOSDockingPromo"
@@ -9088,7 +9089,8 @@
                     "params": {
                         "IOSDockingPromoExperimentType": "1",
                         "IOSDockingPromoNewUserInactiveThresholdHours": "12",
-                        "IOSDockingPromoOldUserInactiveThresholdHours": "24"
+                        "IOSDockingPromoOldUserInactiveThresholdHours": "24",
+                        "IOSDockingPromoUsesStartUtilities": "true"
                     },
                     "enable_features": [
                         "IOSDockingPromo"
@@ -9099,7 +9101,8 @@
                     "params": {
                         "IOSDockingPromoExperimentType": "1",
                         "IOSDockingPromoNewUserInactiveThresholdHours": "6",
-                        "IOSDockingPromoOldUserInactiveThresholdHours": "12"
+                        "IOSDockingPromoOldUserInactiveThresholdHours": "12",
+                        "IOSDockingPromoUsesStartUtilities": "true"
                     },
                     "enable_features": [
                         "IOSDockingPromo"
