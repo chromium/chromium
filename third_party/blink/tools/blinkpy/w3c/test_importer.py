@@ -11,14 +11,18 @@ If this script is given the argument --auto-update, it will also:
 """
 
 import argparse
-from functools import cached_property
 import json
 import logging
+import textwrap
+from functools import cached_property
+from typing import List, Mapping, Optional, Set
 
+from blinkpy.common.checkout.git import CommitRange
 from blinkpy.common.net.git_cl import GitCL
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_utils import configure_logging
+from blinkpy.w3c.buganizer import BuganizerClient, BuganizerIssue
 from blinkpy.w3c.chromium_exportable_commits import exportable_commits_over_last_n_commits
 from blinkpy.w3c.common import read_credentials, is_testharness_baseline, is_file_exportable, WPT_GH_URL
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
@@ -28,6 +32,8 @@ from blinkpy.w3c.test_copier import TestCopier
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.w3c.wpt_github import WPTGitHub
 from blinkpy.w3c.wpt_manifest import WPTManifest, BASE_MANIFEST_NAME
+from blinkpy.web_tests.models import typ_types
+from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.port.base import Port
 
 # Settings for how often to check try job results and how long to wait.
@@ -58,11 +64,6 @@ class TestImporter:
         # Another Git instance with local WPT as CWD, which can only be
         # instantiated after the working directory is created.
         self.wpt_git = None
-        # A set of rebaselined tests and a dictionary of new test expectations
-        # mapping failing tests to platforms to
-        # wpt_expectations_updater.SimpleTestResult.
-        self.rebaselined_tests = set()
-        self.new_test_expectations = {}
         self.verbose = False
         self.wpt_manifests = wpt_manifests
 
@@ -121,7 +122,8 @@ class TestImporter:
         # File bugs for the previous imported CL. This is done at the start so
         # that manually revived CLs still receive bugs.
         gerrit_api = GerritAPI.from_credentials(self.host, credentials)
-        self.send_notifications(local_wpt, gerrit_api, options.auto_file_bugs)
+        self.file_and_record_bugs(local_wpt, gerrit_api,
+                                  options.auto_file_bugs)
 
         if options.revision is not None:
             _log.info('Checking out %s', options.revision)
@@ -184,7 +186,9 @@ class TestImporter:
         if not options.auto_upload and not options.auto_update:
             return 0
 
-        self._upload_cl()
+        directory_owners = self.get_directory_owners()
+        description = self._cl_description(directory_owners)
+        self._upload_cl(description)
         _log.info('Issue: %s', self.git_cl.run(['issue']).strip())
 
         try:
@@ -547,21 +551,17 @@ class TestImporter:
     def _upload_patchset(self, message):
         self.git_cl.run(['upload', '--bypass-hooks', '-f', '-t', message])
 
-    def _upload_cl(self):
+    def _upload_cl(self,
+                   description: str,
+                   extra_args: Optional[List[str]] = None):
         _log.info('Uploading change list.')
-        directory_owners = self.get_directory_owners()
-        description = self._cl_description(directory_owners)
-
-        temp_file, temp_path = self.fs.open_text_tempfile()
-        temp_file.write(description)
-        temp_file.close()
-
-        try:
-            self.git_cl.run([
-                'upload', '--bypass-hooks', '-f', '--message-file', temp_path
-            ])
-        finally:
-            self.fs.remove(temp_path)
+        self.git_cl.run([
+            'upload',
+            '--bypass-hooks',
+            '-f',
+            f'--message={description}',
+            *(extra_args or []),
+        ])
 
     def get_directory_owners(self):
         """Returns a mapping of email addresses to owners of changed tests."""
@@ -650,27 +650,124 @@ class TestImporter:
         adds new expectation lines to TestExpectations and downloads new
         baselines based on the try job results.
         """
-        tests_to_rebaseline, self.new_test_expectations = (
+        tests_to_rebaseline, _ = (
             self.expectations_updater.update_expectations())
         # commit local changes so that rebaseline tool will be happy
         if self.project_git.has_working_directory_changes():
             message = 'Update test expectations'
             self._commit_changes(message)
-
         self.expectations_updater.download_text_baselines(
             list(tests_to_rebaseline))
-        self.rebaselined_tests = sorted(tests_to_rebaseline)
 
-    def send_notifications(self,
-                           local_wpt: LocalWPT,
-                           gerrit_api: GerritAPI,
-                           auto_file_bugs: bool = True):
+    def file_and_record_bugs(
+        self,
+        local_wpt: LocalWPT,
+        gerrit_api: GerritAPI,
+        buganizer_client: Optional[BuganizerClient] = None,
+        auto_file_bugs: bool = True,
+    ):
+        """File bugs for the last imported CL and add them to TestExpectations.
+
+        Notes:
+            The starting commit log should look like:
+              (HEAD -> update_wpt, origin/main) <tip-of-tree>
+
+            where `update_wpt` was created by the `wpt_import.py` recipe. If
+            this method creates a fixup CL, the commit log afterwards should
+            look like:
+              (HEAD -> wpt-import, update_wpt) [wpt-import] Update `TestExpectations` ...
+              (origin/main) <tip-of-tree>
+        """
         _log.info('Filing bugs for the last WPT import')
         from blinkpy.w3c.import_notifier import ImportNotifier
         # Construct the notifier here so that any errors won't affect the import.
         notifier = ImportNotifier(self.host, self.project_git, local_wpt,
-                                  gerrit_api)
-        notifier.main(dry_run=(not auto_file_bugs))
+                                  gerrit_api, buganizer_client)
+        bugs_by_dir = notifier.main(dry_run=(not auto_file_bugs))
+        referenced_bugs = self._update_bugs_in_expectations(
+            notifier, bugs_by_dir)
+
+        if self.project_git.has_working_directory_changes():
+            self.project_git.add_list([self.finder.path_from_web_tests()])
+            description = textwrap.dedent(f"""\
+                [wpt-import] Update `TestExpectations` with bugs for new failures
+
+                Bug: {', '.join(map(str, sorted(referenced_bugs)))}
+                """)
+            self._commit_changes(description)
+            assert not self.project_git.has_working_directory_changes()
+            # Immediately send the fixup CL to CQ+2. The chained CQ votes
+            # feature of CV should automatically rebase the `Import wpt@...`
+            # CL on tip-of-tree after the fixup CL lands.
+            self._upload_cl(description, [
+                '--send-mail',
+                '--enable-auto-submit',
+                f'--reviewers={RUBBER_STAMPER_BOT}',
+            ])
+            # Get back on an issue-less branch for the `Import wpt@...` CL.
+            self.project_git.new_branch('import-wpt')
+
+        diff_from_tracking = self.project_git.changed_files(
+            CommitRange('@{u}', 'HEAD'))
+        assert not diff_from_tracking, diff_from_tracking
+
+    def _update_bugs_in_expectations(
+        self,
+        notifier,
+        bugs_by_dir: Mapping[str, BuganizerIssue],
+    ) -> Set[int]:
+        expectations = TestExpectations(
+            notifier.default_port,
+            notifier.default_port.all_expectations_dict())
+        referenced_bugs = set()
+        for directory, bug in bugs_by_dir.items():
+            assert bug.issue_id, bug
+            failures = notifier.new_failures_by_directory[directory]
+            for path, target_lines in failures.exp_by_file.items():
+                for target_line in target_lines:
+                    # It's possible that the expectation added previously no
+                    # longer exists in its current form (e.g., might be
+                    # consolidated with similar lines).
+                    if self._update_bug_in_exp_line(expectations, bug, path,
+                                                    target_line):
+                        referenced_bugs.add(bug.issue_id)
+        expectations.commit_changes()
+        return referenced_bugs
+
+    def _update_bug_in_exp_line(
+        self,
+        expectations: TestExpectations,
+        bug: BuganizerIssue,
+        path: str,
+        target_line: typ_types.Expectation,
+    ) -> Optional[typ_types.Expectation]:
+        """Add a bug for a matching line, if any, in a given file.
+
+        Also removes the umbrella bug, if present.
+
+        Returns:
+            The new line if the update was done.
+        """
+        for current_line in expectations.get_expectations_from_file(
+                path, target_line.test):
+            if (current_line.tags != target_line.tags
+                    or current_line.results != target_line.results):
+                continue
+            bugs = set(current_line.reason.split())
+            if not bugs <= {WPTExpectationsUpdater.UMBRELLA_BUG}:
+                continue
+            # Avoid `bug.link`, which includes `https://...` prefix.
+            new_line = typ_types.Expectation(f'crbug.com/{bug.issue_id}',
+                                             current_line.test,
+                                             current_line.tags,
+                                             current_line.results,
+                                             current_line.lineno)
+            expectations.remove_expectations(path, [current_line])
+            expectations.add_expectations(path, [new_line], new_line.lineno)
+            # There can't be another expectation with the same tags, results,
+            # and test name for this file.
+            return new_line
+        return None
 
     def update_testlist_with_idlharness_changes(self, testlist_path):
         """Update testlist file to include idlharness test changes
