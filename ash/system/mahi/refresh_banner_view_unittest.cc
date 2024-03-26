@@ -8,8 +8,8 @@
 #include <string>
 
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/mahi/fake_mahi_manager.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -23,33 +23,31 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
 namespace {
+
+// Aliases ---------------------------------------------------------------------
+
+using ::testing::NiceMock;
+using ::testing::Return;
+
+}  // namespace
 
 class RefreshBannerViewTest : public views::ViewsTestBase {
  public:
-  RefreshBannerViewTest() {
-    scoped_manager_setter_ =
-        std::make_unique<chromeos::ScopedMahiManagerSetter>(
-            &fake_mahi_manager_);
-  }
-  RefreshBannerViewTest(const RefreshBannerViewTest&) = delete;
-  RefreshBannerViewTest& operator=(const RefreshBannerViewTest&) = delete;
-  ~RefreshBannerViewTest() override = default;
-
-  void SetContentTitle(const std::u16string& content_title) {
-    fake_mahi_manager_.set_content_title(content_title);
-  }
+  MockMahiManager& mock_mahi_manager() { return mock_mahi_manager_; }
 
  private:
-  FakeMahiManager fake_mahi_manager_;
-  std::unique_ptr<chromeos::ScopedMahiManagerSetter> scoped_manager_setter_;
+  NiceMock<MockMahiManager> mock_mahi_manager_;
+  chromeos::ScopedMahiManagerSetter scoped_manager_setter_{&mock_mahi_manager_};
 };
 
 TEST_F(RefreshBannerViewTest, ShowsCorrectTitle) {
   RefreshBannerView banner_view;
 
-  const std::u16string kContentTitle = u"New content";
-  SetContentTitle(kContentTitle);
+  const std::u16string kContentTitle(u"New content");
+  ON_CALL(mock_mahi_manager(), GetContentTitle)
+      .WillByDefault(Return(kContentTitle));
   banner_view.Show();
 
   EXPECT_EQ(
@@ -122,5 +120,4 @@ TEST_F(RefreshBannerViewTest, ShowImmediatelyAfterHide) {
   EXPECT_TRUE(banner_view->GetVisible());
 }
 
-}  // namespace
 }  // namespace ash

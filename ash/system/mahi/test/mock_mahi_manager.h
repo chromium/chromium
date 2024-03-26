@@ -1,0 +1,50 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_SYSTEM_MAHI_TEST_MOCK_MAHI_MANAGER_H_
+#define ASH_SYSTEM_MAHI_TEST_MOCK_MAHI_MANAGER_H_
+
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+
+#include "testing/gmock/include/gmock/gmock.h"
+
+namespace ash {
+
+// A mock class for testing.
+class MockMahiManager : public chromeos::MahiManager {
+ public:
+  MockMahiManager();
+  MockMahiManager(const MockMahiManager&) = delete;
+  MockMahiManager& operator=(const MockMahiManager&) = delete;
+  ~MockMahiManager() override;
+
+  // chromeos::MahiManager:
+  MOCK_METHOD(void,
+              AnswerQuestion,
+              (const std::u16string&, bool, MahiAnswerQuestionCallback),
+              (override));
+  MOCK_METHOD(gfx::ImageSkia, GetContentIcon, (), (override));
+  MOCK_METHOD(std::u16string, GetContentTitle, (), (override));
+  MOCK_METHOD(void, GetOutlines, (MahiOutlinesCallback), (override));
+  MOCK_METHOD(void,
+              GetSuggestedQuestion,
+              (MahiGetSuggestedQuestionCallback),
+              (override));
+  MOCK_METHOD(void, GetSummary, (MahiSummaryCallback), (override));
+  MOCK_METHOD(void, GoToOutlineContent, (int), (override));
+  MOCK_METHOD(void,
+              OnContextMenuClicked,
+              (crosapi::mojom::MahiContextMenuRequestPtr),
+              (override));
+  MOCK_METHOD(void, OpenFeedbackDialog, (), (override));
+  MOCK_METHOD(void, OpenMahiPanel, (int64_t), (override));
+  MOCK_METHOD(void,
+              SetCurrentFocusedPageInfo,
+              (crosapi::mojom::MahiPageInfoPtr),
+              (override));
+};
+
+}  // namespace ash
+
+#endif  // ASH_SYSTEM_MAHI_TEST_MOCK_MAHI_MANAGER_H_
