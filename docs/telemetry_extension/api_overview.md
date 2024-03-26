@@ -616,7 +616,7 @@ extension-event based interface in M119. The interface is described in
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | button | InputTouchButton | The input button that was interacted with |
-| button | InputTouchButtonState | The new state of the button |
+| state | InputTouchButtonState | The new state of the button |
 
 ### TouchPointInfo
 | Property Name | Type | Description |
