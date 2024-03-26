@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {ActionChoice, Button, ButtonPressObserverInterface, GraphicsTablet, GraphicsTabletObserverInterface, GraphicsTabletSettings, InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, SixPackShortcutModifier, Stylus, StylusObserverInterface, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
+import {ActionChoice, Button, ButtonPressObserverInterface, GraphicsTablet, GraphicsTabletObserverInterface, GraphicsTabletSettings, InputDeviceSettingsProviderInterface, Keyboard, KeyboardBrightnessObserverInterface, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, SixPackShortcutModifier, Stylus, StylusObserverInterface, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -88,6 +88,8 @@ export class FakeInputDeviceSettingsProvider implements
   private stylusObservers: StylusObserverInterface[] = [];
   private graphicsTabletObservers: GraphicsTabletObserverInterface[] = [];
   private buttonPressObservers: ButtonPressObserverInterface[] = [];
+  private keyboardBrightnessObserver: KeyboardBrightnessObserverInterface|null =
+      null;
   private observedIds: number[] = [];
   private callCounts_ = {
     setGraphicsTabletSettings: 0,
@@ -325,6 +327,11 @@ export class FakeInputDeviceSettingsProvider implements
 
   observeButtonPresses(observer: ButtonPressObserverInterface): void {
     this.buttonPressObservers.push(observer);
+  }
+
+  observeKeyboardBrightness(observer: KeyboardBrightnessObserverInterface):
+      void {
+    this.keyboardBrightnessObserver = observer;
   }
 
   getActionsForMouseButtonCustomization(): Promise<{options: ActionChoice[]}> {

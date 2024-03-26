@@ -183,6 +183,11 @@ export interface GraphicsTabletObserverInterface {
   onGraphicsTabletListUpdated(graphicsTablet: GraphicsTablet[]): void;
 }
 
+export interface KeyboardBrightnessObserverInterface {
+  // Fired when the keyboard brightness is changed.
+  onKeyboardBrightnessChanged(percent: number): void;
+}
+
 export type ButtonPressObserverInterface =
     InputDeviceSettingsProviderTypes.ButtonPressObserverInterface;
 

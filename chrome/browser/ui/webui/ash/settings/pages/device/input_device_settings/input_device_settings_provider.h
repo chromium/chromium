@@ -9,6 +9,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,7 +23,8 @@ namespace ash::settings {
 class InputDeviceSettingsProvider
     : public mojom::InputDeviceSettingsProvider,
       public InputDeviceSettingsController::Observer,
-      public views::WidgetObserver {
+      public views::WidgetObserver,
+      public chromeos::PowerManagerClient::Observer {
  public:
   InputDeviceSettingsProvider();
   InputDeviceSettingsProvider(const InputDeviceSettingsProvider& other) =
@@ -51,6 +53,8 @@ class InputDeviceSettingsProvider
       override;
   void ObserveButtonPresses(
       mojo::PendingRemote<mojom::ButtonPressObserver> observer) override;
+  void ObserveKeyboardBrightness(
+      mojo::PendingRemote<mojom::KeyboardBrightnessObserver> observer) override;
 
   void RestoreDefaultKeyboardRemappings(uint32_t device_id) override;
   void SetKeyboardSettings(uint32_t device_id,
@@ -111,6 +115,10 @@ class InputDeviceSettingsProvider
   void GetActionsForGraphicsTabletButtonCustomization(
       GetActionsForGraphicsTabletButtonCustomizationCallback callback) override;
 
+  // chromeos::PowerManagerClient observer:
+  void KeyboardBrightnessChanged(
+      const power_manager::BacklightBrightnessChange& change) override;
+
   // views::WidgetObserver:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
@@ -145,6 +153,7 @@ class InputDeviceSettingsProvider
   mojo::RemoteSet<mojom::GraphicsTabletSettingsObserver>
       graphics_tablet_settings_observers_;
   mojo::RemoteSet<mojom::ButtonPressObserver> button_press_observers_;
+  mojo::Remote<mojom::KeyboardBrightnessObserver> keyboard_brightness_observer_;
 
   raw_ptr<views::Widget> widget_ = nullptr;
 

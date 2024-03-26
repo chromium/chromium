@@ -20,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom.h"
+#include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -282,6 +283,24 @@ class FakeButtonPressObserver : public mojom::ButtonPressObserver {
   ::ash::mojom::ButtonPtr last_pressed_button_;
 };
 
+class FakeKeyboardBrightnessObserver
+    : public mojom::KeyboardBrightnessObserver {
+ public:
+  void OnKeyboardBrightnessChanged(double percent) override {
+    keyboard_brightness_ = percent;
+    ++num_times_called_;
+  }
+  double keyboard_brightness() { return keyboard_brightness_; }
+
+  int num_times_called() { return num_times_called_; }
+
+  mojo::Receiver<mojom::KeyboardBrightnessObserver> receiver{this};
+
+ private:
+  int num_times_called_ = 0;
+  double keyboard_brightness_ = 0;
+};
+
 class FakeInputDeviceSettingsController
     : public MockInputDeviceSettingsController {
  public:
@@ -466,9 +485,11 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
 
   void SetUp() override {
     feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    feature_list_->InitWithFeatures({features::kInputDeviceSettingsSplit,
-                                     features::kPeripheralCustomization},
-                                    {});
+    feature_list_->InitWithFeatures(
+        {features::kInputDeviceSettingsSplit,
+         features::kPeripheralCustomization,
+         features::kEnableKeyboardBacklightControlInSettings},
+        {});
     views::ViewsTestBase::SetUp();
     widget_ = CreateTestWidget();
     widget_->Show();
@@ -1006,6 +1027,24 @@ TEST_F(InputDeviceSettingsProviderTest, ButtonPressObserverTest) {
   provider_->OnCustomizablePenButtonPressed(kGraphicsTablet1, *expected_button);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(*expected_button, fake_observer.last_pressed_button());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, KeyboardBrightnessObserverTest) {
+  FakeKeyboardBrightnessObserver fake_observer;
+  provider_->ObserveKeyboardBrightness(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  double expected_brightness = 66.6;
+
+  power_manager::BacklightBrightnessChange brightness_change;
+  brightness_change.set_percent(expected_brightness);
+  brightness_change.set_cause(
+      power_manager::BacklightBrightnessChange_Cause_USER_REQUEST);
+  provider_->KeyboardBrightnessChanged(brightness_change);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(expected_brightness, fake_observer.keyboard_brightness());
+  EXPECT_EQ(1, fake_observer.num_times_called());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, ButtonPressObserverFollowsWindowFocus) {

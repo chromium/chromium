@@ -15,6 +15,7 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom-forward.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -149,23 +150,38 @@ InputDeviceSettingsProvider::InputDeviceSettingsProvider() {
   if (features::IsInputDeviceSettingsSplitEnabled()) {
     controller->AddObserver(this);
   }
+
+  if (features::IsKeyboardBacklightControlInSettingsEnabled()) {
+    chromeos::PowerManagerClient* power_manager_client =
+        chromeos::PowerManagerClient::Get();
+    if (power_manager_client) {
+      // power_manager_client may be NULL in unittests.
+      power_manager_client->AddObserver(this);
+    }
+  }
 }
 
 InputDeviceSettingsProvider::~InputDeviceSettingsProvider() {
   auto* controller = InputDeviceSettingsController::Get();
-  if (!controller) {
-    return;
-  }
 
-  if (features::IsPeripheralCustomizationEnabled()) {
+  if (features::IsPeripheralCustomizationEnabled() && controller) {
     controller->StopObservingButtons();
     if (widget_) {
       widget_->RemoveObserver(this);
     }
   }
 
-  if (features::IsInputDeviceSettingsSplitEnabled()) {
+  if (features::IsInputDeviceSettingsSplitEnabled() && controller) {
     controller->RemoveObserver(this);
+  }
+
+  if (features::IsKeyboardBacklightControlInSettingsEnabled()) {
+    chromeos::PowerManagerClient* power_manager_client =
+        chromeos::PowerManagerClient::Get();
+    if (power_manager_client) {
+      // power_manager_client may be NULL in unittests.
+      power_manager_client->RemoveObserver(this);
+    }
   }
 }
 
@@ -202,6 +218,14 @@ void InputDeviceSettingsProvider::HandleObserving() {
 
   for (const auto& id : observing_devices_) {
     InputDeviceSettingsController::Get()->StartObservingButtons(id);
+  }
+}
+
+void InputDeviceSettingsProvider::KeyboardBrightnessChanged(
+    const power_manager::BacklightBrightnessChange& change) {
+  if (keyboard_brightness_observer_.is_bound()) {
+    keyboard_brightness_observer_->OnKeyboardBrightnessChanged(
+        change.percent());
   }
 }
 
@@ -372,6 +396,13 @@ void InputDeviceSettingsProvider::ObserveButtonPresses(
     mojo::PendingRemote<mojom::ButtonPressObserver> observer) {
   DCHECK(features::IsPeripheralCustomizationEnabled());
   button_press_observers_.Add(std::move(observer));
+}
+
+void InputDeviceSettingsProvider::ObserveKeyboardBrightness(
+    mojo::PendingRemote<mojom::KeyboardBrightnessObserver> observer) {
+  DCHECK(features::IsKeyboardBacklightControlInSettingsEnabled());
+  keyboard_brightness_observer_.reset();
+  keyboard_brightness_observer_.Bind(std::move(observer));
 }
 
 void InputDeviceSettingsProvider::OnCustomizableMouseButtonPressed(
