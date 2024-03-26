@@ -62,6 +62,7 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/eol_incentive_util.h"
+#include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -290,11 +291,6 @@ void AboutHandler::RegisterMessages() {
                                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui()->RegisterMessageCallback(
-      "openExtendedUpdatesDialog",
-      base::BindRepeating(&AboutHandler::HandleOpenExtendedUpdatesDialog,
-                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
       "openDiagnostics",
       base::BindRepeating(&AboutHandler::HandleOpenDiagnostics,
                           base::Unretained(this)));
@@ -376,6 +372,14 @@ void AboutHandler::RegisterMessages() {
       "openProductLicenseOther",
       base::BindRepeating(&AboutHandler::HandleOpenProductLicenseOther,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "isExtendedUpdatesOptInEligible",
+      base::BindRepeating(&AboutHandler::HandleIsExtendedUpdatesOptInEligible,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "openExtendedUpdatesDialog",
+      base::BindRepeating(&AboutHandler::HandleOpenExtendedUpdatesDialog,
+                          base::Unretained(this)));
 #endif
 #if BUILDFLAG(IS_MAC)
   web_ui()->RegisterMessageCallback(
@@ -397,10 +401,17 @@ void AboutHandler::OnJavascriptAllowed() {
   policy_registrar_ = std::make_unique<policy::PolicyChangeRegistrar>(
       g_browser_process->policy_service(),
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
+// TODO(b/330932781): Investigate and fix mismatched BUILDFLAG and comment.
 #if BUILDFLAG(IS_CHROMEOS)
   policy_registrar_->Observe(
       policy::key::kDeviceAutoUpdateDisabled,
       base::BindRepeating(&AboutHandler::OnDeviceAutoUpdatePolicyChanged,
+                          weak_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  policy_registrar_->Observe(
+      policy::key::kDeviceExtendedAutoUpdateEnabled,
+      base::BindRepeating(&AboutHandler::OnDeviceExtendedUpdatePolicyChanged,
                           weak_factory_.GetWeakPtr()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -480,12 +491,6 @@ void AboutHandler::HandleOpenHelpPage(const base::Value::List& args) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void AboutHandler::HandleOpenExtendedUpdatesDialog(
-    const base::Value::List& args) {
-  DCHECK(args.empty());
-  ash::extended_updates::ExtendedUpdatesDialog::Show();
-}
-
 void AboutHandler::HandleOpenDiagnostics(const base::Value::List& args) {
   DCHECK(args.empty());
   chrome::ShowDiagnosticsApp(profile_);
@@ -686,6 +691,7 @@ void AboutHandler::OnGetEndOfLifeInfo(
     std::string callback_id,
     ash::UpdateEngineClient::EolInfo eol_info) {
   base::Value::Dict response;
+
   if (!eol_info.eol_date.is_null()) {
     bool has_eol_passed = eol_info.eol_date <= clock_->Now();
     response.Set("hasEndOfLife", has_eol_passed);
@@ -722,6 +728,16 @@ void AboutHandler::OnGetEndOfLifeInfo(
     response.Set("shouldShowEndOfLifeIncentive", false);
     response.Set("shouldShowOfferText", false);
   }
+
+  if (!eol_info.extended_date.is_null()) {
+    bool extended_date_passed = eol_info.extended_date <= clock_->Now();
+    response.Set("isExtendedDatePassed", extended_date_passed);
+    response.Set("isExtendedOptInRequired", eol_info.extended_opt_in_required);
+  } else {
+    response.Set("isExtendedDatePassed", false);
+    response.Set("isExtendedOptInRequired", false);
+  }
+
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
@@ -784,6 +800,31 @@ void AboutHandler::HandleOpenProductLicenseOther(
       GURL(chrome::kChromeUICreditsURL),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);
+}
+
+void AboutHandler::HandleIsExtendedUpdatesOptInEligible(
+    const base::Value::List& args) {
+  CHECK_EQ(4U, args.size());
+  ash::ExtendedUpdatesController::Params params{
+      .eol_passed = args[1].GetBool(),
+      .extended_date_passed = args[2].GetBool(),
+      .opt_in_required = args[3].GetBool(),
+  };
+  bool eligible =
+      ash::ExtendedUpdatesController::Get()->IsOptInEligible(profile_, params);
+  ResolveJavascriptCallback(args[0], base::Value(eligible));
+}
+
+void AboutHandler::HandleOpenExtendedUpdatesDialog(
+    const base::Value::List& args) {
+  CHECK(args.empty());
+  ash::extended_updates::ExtendedUpdatesDialog::Show();
+}
+
+void AboutHandler::OnDeviceExtendedUpdatePolicyChanged(
+    const base::Value* previous_policy,
+    const base::Value* current_policy) {
+  FireWebUIListener("extended-updates-policy-changed");
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -9,7 +9,7 @@ import {AboutPageBrowserProxyImpl, BrowserChannel, IronIconElement, LifetimeBrow
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -573,6 +573,8 @@ suite('<os-about-page> AllBuilds', () => {
         aboutPageEndOfLifeMessage: '',
         shouldShowEndOfLifeIncentive: false,
         shouldShowOfferText: false,
+        isExtendedUpdatesDatePassed: false,
+        isExtendedUpdatesOptInRequired: false,
       });
       await initPage();
       await assertHasEndOfLife(true);
@@ -584,6 +586,8 @@ suite('<os-about-page> AllBuilds', () => {
         aboutPageEndOfLifeMessage: '',
         shouldShowEndOfLifeIncentive: false,
         shouldShowOfferText: false,
+        isExtendedUpdatesDatePassed: false,
+        isExtendedUpdatesOptInRequired: false,
       });
       await initPage();
       await assertHasEndOfLife(false);
@@ -612,6 +616,8 @@ suite('<os-about-page> AllBuilds', () => {
         aboutPageEndOfLifeMessage: '',
         shouldShowEndOfLifeIncentive: false,
         shouldShowOfferText: false,
+        isExtendedUpdatesDatePassed: false,
+        isExtendedUpdatesOptInRequired: false,
       });
       await initPage();
       await assertEndOfLifeIncentive(false);
@@ -623,6 +629,8 @@ suite('<os-about-page> AllBuilds', () => {
         aboutPageEndOfLifeMessage: '',
         shouldShowEndOfLifeIncentive: true,
         shouldShowOfferText: false,
+        isExtendedUpdatesDatePassed: false,
+        isExtendedUpdatesOptInRequired: false,
       });
       await initPage();
       await assertEndOfLifeIncentive(true);
@@ -784,7 +792,6 @@ suite('<os-about-page> AllBuilds', () => {
     });
   });
 
-  // TODO(b/322418004): Update and expand tests when adding actual logic.
   suite('Extended Updates', () => {
     const EXTENDED_UPDATES_ICON = 'os-settings:about-update-complete';
 
@@ -805,15 +812,40 @@ suite('<os-about-page> AllBuilds', () => {
       assertEquals(visible, isVisible(button));
     }
 
+    function getLastEligibilityArgs(): boolean[] {
+      return aboutBrowserProxy.getArgs('isExtendedUpdatesOptInEligible').at(-1);
+    }
+
+    function fireExtendedUpdatesPolicyChanged(): void {
+      // This policy only changes when the user opts in,
+      // which in turn makes the device no longer eligible for opt-in,
+      // so we update the return value to false here.
+      aboutBrowserProxy.setExtendedUpdatesOptInEligible(false);
+      webUIListenerCallback('extended-updates-policy-changed');
+    }
+
     test('is not shown by default', async () => {
       await initPage();
       assertExtendedUpdatesVisibility(false);
       assertTrue(isVisible(page.$.checkForUpdatesButton));
     });
 
-    test('is shown when enabled', async () => {
+    test('is shown when eligible and up to date', async () => {
+      aboutBrowserProxy.setExtendedUpdatesOptInEligible(true);
+
       await initPage();
-      page.set('showExtendedUpdatesOption_', true);
+      assertExtendedUpdatesVisibility(false);
+
+      fireStatusChanged(UpdateStatus.CHECKING);
+      assertExtendedUpdatesVisibility(false);
+
+      fireStatusChanged(UpdateStatus.UPDATING);
+      assertExtendedUpdatesVisibility(false);
+
+      fireStatusChanged(UpdateStatus.NEARLY_UPDATED);
+      assertExtendedUpdatesVisibility(false);
+
+      fireStatusChanged(UpdateStatus.UPDATED);
       assertExtendedUpdatesVisibility(true);
       assertFalse(isVisible(page.$.checkForUpdatesButton));
 
@@ -828,6 +860,79 @@ suite('<os-about-page> AllBuilds', () => {
       assertTrue(isVisible(extendedUpdatesButton));
       extendedUpdatesButton.click();
       await aboutBrowserProxy.whenCalled('openExtendedUpdatesDialog');
+    });
+
+    test('is not shown after opting in', async () => {
+      aboutBrowserProxy.setExtendedUpdatesOptInEligible(true);
+      await initPage();
+      fireStatusChanged(UpdateStatus.CHECKING);
+      fireStatusChanged(UpdateStatus.UPDATED);
+      assertExtendedUpdatesVisibility(true);
+
+      fireExtendedUpdatesPolicyChanged();
+      await aboutBrowserProxy.whenCalled('isExtendedUpdatesOptInEligible');
+      assertExtendedUpdatesVisibility(false);
+    });
+
+    suite('when', () => {
+      interface ExtendedUpdatesTestCase {
+        eolPassed: boolean;
+        extDatePassed: boolean;
+        optInRequired: boolean;
+        expectedVisibility: boolean;
+      }
+      [{
+        eolPassed: true,
+        extDatePassed: true,
+        optInRequired: true,
+        expectedVisibility: false,
+      },
+       {
+         eolPassed: false,
+         extDatePassed: true,
+         optInRequired: true,
+         expectedVisibility: true,
+       },
+       {
+         eolPassed: false,
+         extDatePassed: false,
+         optInRequired: true,
+         expectedVisibility: false,
+       },
+       {
+         eolPassed: false,
+         extDatePassed: true,
+         optInRequired: false,
+         expectedVisibility: false,
+       },
+      ].forEach((tc: ExtendedUpdatesTestCase) => {
+        test(
+            `eol has ${tc.eolPassed ? '' : 'not '}passed, ` +
+                `extended date has ${tc.extDatePassed ? '' : 'not '}passed, ` +
+                `and opt-in is ${tc.optInRequired ? '' : 'not '}required, ` +
+                `is ${tc.expectedVisibility ? '' : 'not '}visible`,
+            async () => {
+              aboutBrowserProxy.setEndOfLifeInfo({
+                hasEndOfLife: tc.eolPassed,
+                aboutPageEndOfLifeMessage: '',
+                shouldShowEndOfLifeIncentive: false,
+                shouldShowOfferText: false,
+                isExtendedUpdatesDatePassed: tc.extDatePassed,
+                isExtendedUpdatesOptInRequired: tc.optInRequired,
+              });
+              aboutBrowserProxy.setExtendedUpdatesOptInEligible(
+                  tc.expectedVisibility);
+
+              await initPage();
+              fireStatusChanged(UpdateStatus.CHECKING);
+              fireStatusChanged(UpdateStatus.UPDATED);
+
+              assertDeepEquals(
+                  [tc.eolPassed, tc.extDatePassed, tc.optInRequired],
+                  getLastEligibilityArgs());
+              assertExtendedUpdatesVisibility(tc.expectedVisibility);
+            });
+      });
     });
   });
 });

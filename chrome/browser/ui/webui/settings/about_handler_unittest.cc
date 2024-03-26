@@ -3,9 +3,15 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/webui/settings/about_handler.h"
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
+#include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
+#include "chrome/browser/ash/extended_updates/test/mock_extended_updates_controller.h"
+#include "chrome/browser/ash/extended_updates/test/scoped_extended_updates_controller.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -13,7 +19,11 @@
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::NotNull;
+using ::testing::Return;
 
 namespace chromeos {
 namespace settings {
@@ -55,32 +65,37 @@ class AboutHandlerTest : public testing::Test {
 
   void TearDown() override {
     handler_.reset();
+    fake_update_engine_client_ = nullptr;
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
     ash::ConciergeClient::Shutdown();
     ash::UpdateEngineClient::Shutdown();
   }
 
-  const content::TestWebUI::CallData& CallDataAtIndex(size_t index) {
-    return *web_ui_.call_data()[index];
+  const base::Value& CallWebUIMessage(const std::string& message,
+                                      base::Value::List args = {}) {
+    size_t initial_call_count = web_ui_.call_data().size();
+
+    base::Value::List message_args;
+    message_args.Append("handlerFunctionName");
+    for (base::Value& arg : args) {
+      message_args.Append(std::move(arg));
+    }
+    web_ui_.HandleReceivedMessage(message, message_args);
+    task_environment_.RunUntilIdle();
+
+    EXPECT_EQ(initial_call_count + 1u, web_ui_.call_data().size());
+
+    const content::TestWebUI::CallData& call_data =
+        *web_ui_.call_data()[initial_call_count];
+    EXPECT_EQ("cr.webUIResponse", call_data.function_name());
+    EXPECT_EQ("handlerFunctionName", call_data.arg1()->GetString());
+    return *call_data.arg3();
   }
 
   std::string CallGetEndOfLifeInfoAndReturnString(bool has_eol_passed) {
-    size_t call_data_count_before_call = web_ui_.call_data().size();
-
-    base::Value::List args;
-    args.Append("handlerFunctionName");
-    web_ui_.HandleReceivedMessage("getEndOfLifeInfo", args);
-    task_environment_.RunUntilIdle();
-
-    EXPECT_EQ(call_data_count_before_call + 1u, web_ui_.call_data().size());
-
-    const content::TestWebUI::CallData& call_data =
-        CallDataAtIndex(call_data_count_before_call);
-    EXPECT_EQ("cr.webUIResponse", call_data.function_name());
-    EXPECT_EQ("handlerFunctionName", call_data.arg1()->GetString());
-    EXPECT_EQ(has_eol_passed,
-              *call_data.arg3()->GetDict().FindBool("hasEndOfLife"));
-    return *call_data.arg3()->GetDict().FindString("aboutPageEndOfLifeMessage");
+    const auto& response = CallWebUIMessage("getEndOfLifeInfo").GetDict();
+    EXPECT_EQ(has_eol_passed, *response.FindBool("hasEndOfLife"));
+    return *response.FindString("aboutPageEndOfLifeMessage");
   }
 
   void SetCurrentTimeToUtc(const char* utc_date_string) {
@@ -100,8 +115,7 @@ class AboutHandlerTest : public testing::Test {
   TestingProfile profile_;
   content::TestWebUI web_ui_;
   std::unique_ptr<TestAboutHandler> handler_;
-  raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged>
-      fake_update_engine_client_;
+  raw_ptr<ash::FakeUpdateEngineClient> fake_update_engine_client_;
   std::unique_ptr<base::SimpleTestClock> clock_;
 };
 
@@ -136,6 +150,72 @@ TEST_F(AboutHandlerTest, DeferredUpdateMessageInAboutPage) {
   EXPECT_EQ(0, fake_update_engine_client_->apply_deferred_update_count());
   web_ui_.HandleReceivedMessage("applyDeferredUpdate", base::Value::List());
   EXPECT_EQ(1, fake_update_engine_client_->apply_deferred_update_count());
+}
+
+TEST_F(AboutHandlerTest, GetEndOfLifeInfoWithoutExtendedUpdatesDate) {
+  SetCurrentTimeToUtc("15 March 2020");
+  SetEolDateUtc("30 Oct 2023");
+
+  const auto& response = CallWebUIMessage("getEndOfLifeInfo").GetDict();
+
+  EXPECT_FALSE(*response.FindBool("isExtendedDatePassed"));
+  EXPECT_FALSE(*response.FindBool("isExtendedOptInRequired"));
+}
+
+TEST_F(AboutHandlerTest, GetEndOfLifeInfoWithExtendedUpdatesDatePassed) {
+  SetCurrentTimeToUtc("15 March 2020");
+  base::Time eol_date, extended_date;
+  ASSERT_TRUE(base::Time::FromUTCString("30 Oct 2023", &eol_date));
+  ASSERT_TRUE(base::Time::FromUTCString("4 June 2019", &extended_date));
+  fake_update_engine_client_->set_eol_info({
+      .eol_date = eol_date,
+      .extended_date = extended_date,
+      .extended_opt_in_required = true,
+  });
+
+  const auto& response = CallWebUIMessage("getEndOfLifeInfo").GetDict();
+
+  EXPECT_TRUE(*response.FindBool("isExtendedDatePassed"));
+  EXPECT_TRUE(*response.FindBool("isExtendedOptInRequired"));
+}
+
+TEST_F(AboutHandlerTest, GetEndOfLifeInfoWithExtendedUpdatesDateNotPassed) {
+  SetCurrentTimeToUtc("15 March 2020");
+  base::Time eol_date, extended_date;
+  ASSERT_TRUE(base::Time::FromUTCString("30 Oct 2023", &eol_date));
+  ASSERT_TRUE(base::Time::FromUTCString("4 June 2021", &extended_date));
+  fake_update_engine_client_->set_eol_info({
+      .eol_date = eol_date,
+      .extended_date = extended_date,
+      .extended_opt_in_required = true,
+  });
+
+  const auto& response = CallWebUIMessage("getEndOfLifeInfo").GetDict();
+
+  EXPECT_FALSE(*response.FindBool("isExtendedDatePassed"));
+  EXPECT_TRUE(*response.FindBool("isExtendedOptInRequired"));
+}
+
+TEST_F(AboutHandlerTest, HandleIsExtendedUpdatesOptInEligible) {
+  ash::ExtendedUpdatesController::Params params{
+      .eol_passed = false,
+      .extended_date_passed = true,
+      .opt_in_required = true,
+  };
+
+  ash::MockExtendedUpdatesController mock_controller;
+  EXPECT_CALL(mock_controller, IsOptInEligible(NotNull(), params))
+      .WillOnce(Return(true));
+
+  ash::ScopedExtendedUpdatesController scoped_controller(&mock_controller);
+
+  bool eligible = CallWebUIMessage("isExtendedUpdatesOptInEligible",
+                                   base::Value::List()
+                                       .Append(params.eol_passed)
+                                       .Append(params.extended_date_passed)
+                                       .Append(params.opt_in_required))
+                      .GetBool();
+  EXPECT_TRUE(eligible);
 }
 
 }  // namespace

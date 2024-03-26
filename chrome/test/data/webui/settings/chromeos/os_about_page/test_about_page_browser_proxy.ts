@@ -34,11 +34,14 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
     aboutPageEndOfLifeMessage: '',
     shouldShowEndOfLifeIncentive: false,
     shouldShowOfferText: false,
+    isExtendedUpdatesDatePassed: false,
+    isExtendedUpdatesOptInRequired: false,
   };
   private hasInternetConnection_ = true;
   private managedAutoUpdateEnabled_ = true;
   private consumerAutoUpdateEnabled_ = true;
   private firmwareUpdateCount_ = 0;
+  private extendedUpdatesOptInEligible_ = false;
 
   constructor() {
     super([
@@ -67,6 +70,7 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
       'isManagedAutoUpdateEnabled',
       'isConsumerAutoUpdateEnabled',
       'setConsumerAutoUpdate',
+      'isExtendedUpdatesOptInEligible',
       'openExtendedUpdatesDialog',
     ]);
   }
@@ -247,6 +251,19 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
   setConsumerAutoUpdate(enable: boolean): void {
     this.consumerAutoUpdateEnabled_ = enable;
     this.methodCalled('setConsumerAutoUpdate');
+  }
+
+  setExtendedUpdatesOptInEligible(eligible: boolean): void {
+    this.extendedUpdatesOptInEligible_ = eligible;
+  }
+
+  isExtendedUpdatesOptInEligible(
+      eolPassed: boolean, extendedDatePassed: boolean,
+      extendedOptInRequired: boolean): Promise<boolean> {
+    this.methodCalled(
+        'isExtendedUpdatesOptInEligible', eolPassed, extendedDatePassed,
+        extendedOptInRequired);
+    return Promise.resolve(this.extendedUpdatesOptInEligible_);
   }
 
   openExtendedUpdatesDialog(): void {

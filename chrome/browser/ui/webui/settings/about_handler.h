@@ -84,9 +84,6 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   void HandleOpenHelpPage(const base::Value::List& args);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Opens the Extended Updates dialog. |args| must be empty.
-  void HandleOpenExtendedUpdatesDialog(const base::Value::List& args);
-
   // Checks if ReleaseNotes is enabled.
   void HandleGetEnabledReleaseNotes(const base::Value::List& args);
 
@@ -204,6 +201,21 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 
   void HandleSetConsumerAutoUpdate(const base::Value::List& args);
   void HandleOpenProductLicenseOther(const base::Value::List& args);
+
+  // Handles the check for extended updates eligibility.
+  // |args| should have 4 values:
+  //   - [string] Name of the callback function
+  //   - [bool] Whether eol has passed
+  //   - [bool] Whether extended updates date has passed
+  //   - [bool] Whether opt-in is required for extended updates
+  void HandleIsExtendedUpdatesOptInEligible(const base::Value::List& args);
+
+  // Opens the Extended Updates dialog. |args| must be empty.
+  void HandleOpenExtendedUpdatesDialog(const base::Value::List& args);
+
+  // Called when extended updates policy value is changed.
+  void OnDeviceExtendedUpdatePolicyChanged(const base::Value* previous_policy,
+                                           const base::Value* current_policy);
 
   // Whether the end of life incentive includes an offer.
   bool eol_incentive_shows_offer_ = false;

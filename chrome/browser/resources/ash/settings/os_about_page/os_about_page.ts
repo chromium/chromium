@@ -275,10 +275,39 @@ export class OsAboutPageElement extends OsAboutPageBase {
 
       /**
        * Controls whether the extended updates opt-in option is shown.
-       *
-       * TODO(b/322418004): Implement logic.
        */
       showExtendedUpdatesOption_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowExtendedUpdatesOption_(' +
+            'isExtendedUpdatesOptInEligible_,' +
+            'hasCheckedForUpdates_,' +
+            'currentUpdateStatusEvent_)',
+      },
+
+      /**
+       * Whether the device is eligible to opt into extended updates.
+       * Value is obtained from the extended updates controller.
+       */
+      isExtendedUpdatesOptInEligible_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether extended updates date has passed.
+       * Value is derived from update engine.
+       */
+      isExtendedUpdatesDatePassed_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether user opt-in is required to receive extended updates.
+       * Value is updated from update engine.
+       */
+      isExtendedUpdatesOptInRequired_: {
         type: Boolean,
         value: false,
       },
@@ -292,6 +321,9 @@ export class OsAboutPageElement extends OsAboutPageBase {
       'updateShowButtonContainer_(showRelaunch_, showCheckUpdates_,' +
           'showExtendedUpdatesOption_)',
       'handleCrostiniEnabledChanged_(prefs.crostini.enabled.value)',
+      'updateIsExtendedUpdatesOptInEligible_(' +
+          'hasEndOfLife_, isExtendedUpdatesDatePassed_,' +
+          'isExtendedUpdatesOptInRequired_)',
     ];
   }
 
@@ -325,6 +357,9 @@ export class OsAboutPageElement extends OsAboutPageBase {
   private isPendingOsUpdateDeepLink_: boolean;
   private isRevampWayfindingEnabled_: boolean;
   private showExtendedUpdatesOption_: boolean;
+  private isExtendedUpdatesOptInEligible_: boolean;
+  private isExtendedUpdatesDatePassed_: boolean;
+  private isExtendedUpdatesOptInRequired_: boolean;
 
   private aboutBrowserProxy_: AboutPageBrowserProxy;
 
@@ -363,6 +398,9 @@ export class OsAboutPageElement extends OsAboutPageBase {
       this.eolMessageWithMonthAndYear_ = result.aboutPageEndOfLifeMessage || '';
       this.showEolIncentive_ = !!result.shouldShowEndOfLifeIncentive;
       this.shouldShowOfferText_ = !!result.shouldShowOfferText;
+      this.isExtendedUpdatesDatePassed_ = !!result.isExtendedUpdatesDatePassed;
+      this.isExtendedUpdatesOptInRequired_ =
+          !!result.isExtendedUpdatesOptInRequired;
     });
 
     this.aboutBrowserProxy_.checkInternetConnection().then(result => {
@@ -412,6 +450,9 @@ export class OsAboutPageElement extends OsAboutPageBase {
         'tpm-firmware-update-status-changed',
         this.onTpmFirmwareUpdateStatusChanged_.bind(this));
     this.aboutBrowserProxy_.refreshTpmFirmwareUpdateStatus();
+    this.addWebUiListener(
+        'extended-updates-policy-changed',
+        this.onExtendedUpdatesPolicyChanged_.bind(this));
   }
 
   private onUpdateStatusChanged_(event: UpdateStatusChangedEvent): void {
@@ -822,6 +863,25 @@ export class OsAboutPageElement extends OsAboutPageBase {
           this.i18n('aboutFirmwareUpToDateDescription');
     }
     return null;
+  }
+
+  private computeShowExtendedUpdatesOption_(): boolean {
+    return this.isExtendedUpdatesOptInEligible_ && this.hasCheckedForUpdates_ &&
+        this.checkStatus_(UpdateStatus.UPDATED);
+  }
+
+  private updateIsExtendedUpdatesOptInEligible_(): void {
+    this.aboutBrowserProxy_
+        .isExtendedUpdatesOptInEligible(
+            this.hasEndOfLife_, this.isExtendedUpdatesDatePassed_,
+            this.isExtendedUpdatesOptInRequired_)
+        .then(result => {
+          this.isExtendedUpdatesOptInEligible_ = result;
+        });
+  }
+
+  private onExtendedUpdatesPolicyChanged_(): void {
+    this.updateIsExtendedUpdatesOptInEligible_();
   }
 
   private onExtendedUpdatesButtonClick_(): void {
