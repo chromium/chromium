@@ -517,5 +517,85 @@ TEST_F(WallpaperPrefManagerTest, ShouldSyncIn) {
                                                  /*is_oobe=*/true));
 }
 
+// Verifies that creating a wallpaper info from prefs with an invalid layout
+// enum fails.
+TEST_F(WallpaperPrefManagerTest, GetSyncedWallpaperInfo_InvalidLayoutEnum) {
+  profile_helper_->RegisterPrefsForAccount(account_id_1);
+
+  WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
+  base::Value wallpaper_info_dict = CreateWallpaperInfoDict(info);
+
+  // Mangles pref data with invalid layout.
+  int invalid_layout = 1000;
+  wallpaper_info_dict.GetDict().Set(
+      WallpaperPrefManager::kNewWallpaperLayoutNodeName, invalid_layout);
+
+  PrefService* syncable_prefs =
+      profile_helper_->GetUserPrefServiceSyncable(account_id_1);
+  DCHECK(syncable_prefs);
+  ScopedDictPrefUpdate wallpaper_update(syncable_prefs,
+                                        prefs::kSyncableWallpaperInfo);
+  wallpaper_update->Set(account_id_1.GetUserEmail(),
+                        std::move(wallpaper_info_dict));
+  WallpaperInfo actual_info;
+  EXPECT_FALSE(
+      pref_manager_->GetSyncedWallpaperInfo(account_id_1, &actual_info));
+}
+
+// Verifies that creating a wallpaper info from prefs with an invalid wallpaper
+// type fails.
+TEST_F(WallpaperPrefManagerTest, GetSyncedWallpaperInfo_InvalidWallpaperType) {
+  profile_helper_->RegisterPrefsForAccount(account_id_1);
+
+  WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
+  base::Value wallpaper_info_dict = CreateWallpaperInfoDict(info);
+
+  // Mangles pref data with invalid wallpaper type.
+  int invalid_wallpaper_type = 1000;
+  wallpaper_info_dict.GetDict().Set(
+      WallpaperPrefManager::kNewWallpaperTypeNodeName, invalid_wallpaper_type);
+
+  PrefService* syncable_prefs =
+      profile_helper_->GetUserPrefServiceSyncable(account_id_1);
+  DCHECK(syncable_prefs);
+  ScopedDictPrefUpdate wallpaper_update(syncable_prefs,
+                                        prefs::kSyncableWallpaperInfo);
+  wallpaper_update->Set(account_id_1.GetUserEmail(),
+                        std::move(wallpaper_info_dict));
+  WallpaperInfo actual_info;
+  EXPECT_FALSE(
+      pref_manager_->GetSyncedWallpaperInfo(account_id_1, &actual_info));
+}
+
+// Verifies that creating a wallpaper info from prefs with an invalid online
+// variant type succeeds.
+TEST_F(WallpaperPrefManagerTest,
+       GetSyncedWallpaperInfo_InvalidOnlineVariantType) {
+  profile_helper_->RegisterPrefsForAccount(account_id_1);
+
+  WallpaperInfo info = InfoWithType(WallpaperType::kOnline);
+  std::vector<OnlineWallpaperVariant> variants;
+  // Mangles pref data with invalid wallpaper type.
+  variants.emplace_back(kAssetId, GURL(kDummyUrl),
+                        static_cast<backdrop::Image::ImageType>(
+                            backdrop::Image::IMAGE_TYPE_LIGHT_MODE + 1000));
+  info.variants = variants;
+  info.collection_id = "_test_collection_id";
+  info.asset_id = kAssetId;
+  info.unit_id = kAssetId;
+  base::Value wallpaper_info_dict = CreateWallpaperInfoDict(info);
+
+  PrefService* syncable_prefs =
+      profile_helper_->GetUserPrefServiceSyncable(account_id_1);
+  DCHECK(syncable_prefs);
+  ScopedDictPrefUpdate wallpaper_update(syncable_prefs,
+                                        prefs::kSyncableWallpaperInfo);
+  wallpaper_update->Set(account_id_1.GetUserEmail(),
+                        std::move(wallpaper_info_dict));
+  WallpaperInfo actual_info;
+  EXPECT_TRUE(
+      pref_manager_->GetSyncedWallpaperInfo(account_id_1, &actual_info));
+}
+
 }  // namespace
 }  // namespace ash

@@ -56,6 +56,9 @@ constexpr bool IsAllowedInPrefs(WallpaperType type) {
     case WallpaperType::kSeaPen:
       return true;
   }
+  LOG(ERROR) << __func__
+             << " Unknown wallpaper type: " << base::to_underlying(type);
+  return false;
 }
 
 constexpr bool IsWallpaperTypeSyncable(WallpaperType type) {
@@ -76,6 +79,9 @@ constexpr bool IsWallpaperTypeSyncable(WallpaperType type) {
     case WallpaperType::kCount:
       return false;
   }
+  LOG(WARNING) << __func__
+               << " Unknown wallpaper type: " << base::to_underlying(type);
+  return false;
 }
 
 // Populates online wallpaper related info in |info|.
@@ -187,6 +193,10 @@ bool GetWallpaperInfo(const AccountId& account_id,
   // check whether file_path is a null pointer before setting user_file_path.
   info->user_file_path = file_path ? *file_path : "";
   info->layout = static_cast<WallpaperLayout>(layout.value());
+  if (info->layout >= WallpaperLayout::NUM_WALLPAPER_LAYOUT) {
+    LOG(WARNING) << "Invalid WallpaperLayout=" << info->layout << " in prefs";
+    return false;
+  }
   // TODO(skau): Switch to TimeFromValue
   info->date =
       base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(date_val));
