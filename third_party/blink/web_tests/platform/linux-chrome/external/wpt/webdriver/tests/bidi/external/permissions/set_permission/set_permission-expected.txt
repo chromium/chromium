@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_set_permission_user_context
-  TypeError: set_permission() got an unexpected keyword argument 'user_context'
-Harness: the test ran to completion.
