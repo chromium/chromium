@@ -713,6 +713,12 @@ FillingProduct AutofillExternalDelegate::GetMainFillingProduct() const {
     if (FillingProduct product =
             GetFillingProductFromPopupItemId(popup_item_id);
         product != FillingProduct::kNone) {
+      // Plus address filling product is not considered a stand-alone filling
+      // product.
+      // TODO(b/331364160): Consider removing separate filling product.
+      if (product == FillingProduct::kPlusAddresses) {
+        return FillingProduct::kAddress;
+      }
       return product;
     }
   }

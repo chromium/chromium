@@ -419,6 +419,26 @@ TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
   EXPECT_EQ(external_delegate().GetMainFillingProduct(),
             FillingProduct::kAddress);
 
+  // Show create plus address suggestion in the popup.
+  external_delegate().OnSuggestionsReturned(
+      queried_field().global_id(),
+      {test::CreateAutofillSuggestion(PopupItemId::kCreateNewPlusAddress,
+                                      u"create new plus address"),
+       test::CreateAutofillSuggestion(PopupItemId::kAutofillOptions,
+                                      u"manage address methods")});
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(),
+            FillingProduct::kAddress);
+
+  // Show fill plus address suggestion in the popup.
+  external_delegate().OnSuggestionsReturned(
+      queried_field().global_id(),
+      {test::CreateAutofillSuggestion(PopupItemId::kFillExistingPlusAddress,
+                                      u"fill existing plus address"),
+       test::CreateAutofillSuggestion(PopupItemId::kAutofillOptions,
+                                      u"manage address methods")});
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(),
+            FillingProduct::kAddress);
+
   // Show credit card suggestion in the popup.
   external_delegate().OnSuggestionsReturned(
       queried_field().global_id(),
@@ -458,14 +478,6 @@ TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
                                       u"generated text")});
   EXPECT_EQ(external_delegate().GetMainFillingProduct(),
             FillingProduct::kCompose);
-
-  // Show plus addresses suggestion in the popup.
-  external_delegate().OnSuggestionsReturned(
-      queried_field().global_id(),
-      {test::CreateAutofillSuggestion(PopupItemId::kFillExistingPlusAddress,
-                                      u"existing plus address")});
-  EXPECT_EQ(external_delegate().GetMainFillingProduct(),
-            FillingProduct::kPlusAddresses);
 
   // Show only autocomplete suggestion in the popup.
   external_delegate().OnSuggestionsReturned(
