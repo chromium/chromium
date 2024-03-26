@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -398,7 +399,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     return prefs::IsCreditCardFIDOAuthEnabled(autofill_client_.GetPrefs());
   }
 
-  UnmaskAuthFlowType getUnmaskAuthFlowType() {
+  UnmaskAuthFlowType GetUnmaskAuthFlowType() {
     return test_api(credit_card_access_manager()).unmask_auth_flow_type();
   }
 
@@ -464,10 +465,27 @@ class CreditCardAccessManagerTest : public testing::Test {
 
     const CardUnmaskChallengeOption& challenge_option =
         response.card_unmask_challenge_options[selected_index];
+
+    payments::PaymentsWindowManager::Vcn3dsContext vcn_3ds_context;
+    if (challenge_option.type ==
+        CardUnmaskChallengeOptionType::kThreeDomainSecure) {
+      EXPECT_CALL(*static_cast<payments::MockPaymentsWindowManager*>(
+                      autofill_client_.GetPaymentsWindowManager()),
+                  InitVcn3dsAuthentication)
+          .Times(1)
+          .WillOnce(
+              [&vcn_3ds_context](
+                  payments::PaymentsWindowManager::Vcn3dsContext context) {
+                vcn_3ds_context = std::move(context);
+              });
+    }
+
     test_api(credit_card_access_manager())
         .OnUserAcceptedAuthenticationSelectionDialog(
             challenge_option.id.value());
 
+    // TODO(b/329523854): Check that the challenge selection acceptance was
+    // handled correctly using mocks instead of test classes.
     switch (challenge_option.type) {
       case CardUnmaskChallengeOptionType::kCvc: {
         CreditCardCvcAuthenticator* cvc_authenticator =
@@ -508,7 +526,11 @@ class CreditCardAccessManagerTest : public testing::Test {
             u"a******b@google.com");
         break;
       case CardUnmaskChallengeOptionType::kThreeDomainSecure:
-        // TODO(crbug.com/1521960): Verify kThreeDomainSecure fields.
+        EXPECT_EQ(vcn_3ds_context.context_token, response.context_token);
+        EXPECT_EQ(vcn_3ds_context.card, *virtual_card);
+        EXPECT_EQ(vcn_3ds_context.challenge_option.type,
+                  CardUnmaskChallengeOptionType::kThreeDomainSecure);
+        EXPECT_TRUE(vcn_3ds_context.user_consent_already_given);
         break;
       case CardUnmaskChallengeOptionType::kUnknownType:
         NOTREACHED();
@@ -2754,7 +2776,7 @@ TEST_F(CreditCardAccessManagerTest,
 
   // Ensure the auth flow type is CVC because no unmask detail response is
   // returned and local pref denotes that user is opted out.
-  EXPECT_EQ(getUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvc);
+  EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvc);
   // Also ensure that since local pref is disabled, we will directly fall back
   // to CVC instead of falling back after time out. Ensure that
   // CardChosenBeforePreflightCallReturned is logged to opted-out histogram.
@@ -2800,7 +2822,7 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutAfterUnmaskSucceeds) {
   EXPECT_FALSE(IsCreditCardFIDOAuthEnabled());
   // Also ensure the auth flow type is CVC because the local pref and payments
   // mismatch indicates that user intended to opt out.
-  EXPECT_EQ(getUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvc);
+  EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvc);
 
   // Mock cvc auth success.
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
@@ -2838,7 +2860,7 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutAfterUnmaskFails) {
   EXPECT_FALSE(IsCreditCardFIDOAuthEnabled());
   // Ensure the auth flow type is CVC because the local pref and payments
   // mismatch indicates that user intended to opt out.
-  EXPECT_EQ(getUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvc);
+  EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvc);
 
   // Mock cvc auth failure.
   EXPECT_TRUE(GetRealPanForCVCAuth(
@@ -2875,7 +2897,7 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutFailure) {
   EXPECT_FALSE(IsCreditCardFIDOAuthEnabled());
   // Also ensure the auth flow type is CVC because the local pref and payments
   // mismatch indicates that user intended to opt out.
-  EXPECT_EQ(getUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvc);
+  EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvc);
 
   // Mock cvc auth success.
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
@@ -3798,7 +3820,7 @@ TEST_F(CreditCardAccessManagerTest,
 // Ensures the virtual card risk-based unmasking flow type is set to
 // kThreeDomainSecure when only the 3DS challenge option is returned.
 TEST_F(CreditCardAccessManagerTest,
-       RiskBasedVirtualCardUnmasking_only3dsChallengeReturned) {
+       RiskBasedVirtualCardUnmasking_Only3dsChallengeReturned) {
 #if BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillEnableVirtualCards};
@@ -3816,13 +3838,25 @@ TEST_F(CreditCardAccessManagerTest,
   response.context_token = "fake_context_token";
   response.card_unmask_challenge_options = test::GetCardUnmaskChallengeOptions(
       {CardUnmaskChallengeOptionType::kThreeDomainSecure});
+
+  EXPECT_CALL(*static_cast<payments::MockPaymentsWindowManager*>(
+                  autofill_client_.GetPaymentsWindowManager()),
+              InitVcn3dsAuthentication)
+      .Times(1)
+      .WillOnce([&](payments::PaymentsWindowManager::Vcn3dsContext context) {
+        EXPECT_EQ(context.context_token, response.context_token);
+        EXPECT_EQ(context.card, *virtual_card);
+        EXPECT_EQ(context.challenge_option.type,
+                  CardUnmaskChallengeOptionType::kThreeDomainSecure);
+        EXPECT_FALSE(context.user_consent_already_given);
+      });
   credit_card_access_manager()
       .OnVirtualCardRiskBasedAuthenticationResponseReceived(
           AutofillClient::PaymentsRpcResult::kSuccess, response);
 
   // If VCN 3DS is the only challenge option returned, verify that flow type is
   // kThreeDomainSecure.
-  EXPECT_EQ(getUnmaskAuthFlowType(), UnmaskAuthFlowType::kThreeDomainSecure);
+  EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kThreeDomainSecure);
 }
 
 // Ensures the virtual card risk-based unmasking response is handled correctly
@@ -3873,7 +3907,7 @@ TEST_F(CreditCardAccessManagerTest,
         // VCN 3DS is one of the challenge options returned in the challenge
         // selection dialog, and user selected the 3DS challenge option. Verify
         // that flow type is kThreeDomainSecureConsentAlreadyGiven.
-        EXPECT_EQ(getUnmaskAuthFlowType(),
+        EXPECT_EQ(GetUnmaskAuthFlowType(),
                   UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven);
         break;
       case CardUnmaskChallengeOptionType::kEmailOtp:

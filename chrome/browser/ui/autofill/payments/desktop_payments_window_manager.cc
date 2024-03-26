@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -39,7 +40,13 @@ void DesktopPaymentsWindowManager::InitVcn3dsAuthentication(
   CHECK(!context.completion_callback.is_null());
   flow_type_ = FlowType::kVcn3ds;
   vcn_3ds_context_ = std::move(context);
-  CreatePopup(vcn_3ds_context_->challenge_option.url_to_open);
+  if (vcn_3ds_context_->user_consent_already_given) {
+    CreatePopup(vcn_3ds_context_->challenge_option.url_to_open);
+  } else {
+    // TODO(b/41490740): Implement the context.user_consent_already_given false
+    // case.
+    NOTREACHED_NORETURN();
+  }
 }
 
 void DesktopPaymentsWindowManager::WebContentsDestroyed() {

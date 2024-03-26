@@ -65,6 +65,7 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
       context.context_token = kTestContextToken;
       context.challenge_option.url_to_open = GURL(kVcn3dsTestUrl);
       context.completion_callback = authentication_complete_callback_.Get();
+      context.user_consent_already_given = true;
       ON_CALL(authentication_complete_callback_, Run)
           .WillByDefault(
               [this](PaymentsWindowManager::Vcn3dsAuthenticationResponse

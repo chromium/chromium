@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
@@ -216,6 +217,10 @@ class TestAutofillClientTemplate : public T {
   }
 
   payments::PaymentsWindowManager* GetPaymentsWindowManager() override {
+    if (!payments_window_manager_) {
+      payments_window_manager_ = std::make_unique<
+          testing::NiceMock<payments::MockPaymentsWindowManager>>();
+    }
     return payments_window_manager_.get();
   }
 

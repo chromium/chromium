@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/webauthn_callback_types.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -412,7 +413,7 @@ void CreditCardAccessManager::CacheUnmaskedCardInfo(const CreditCard& card,
   unmasked_card_cache_[identifier] = card_info;
 }
 
-bool areVirtualCardsSupported() {
+bool AreVirtualCardsSupported() {
 #if BUILDFLAG(IS_IOS)
   return base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCards);
 #else
@@ -421,7 +422,7 @@ bool areVirtualCardsSupported() {
 }
 
 void CreditCardAccessManager::StartAuthenticationFlow(bool fido_auth_enabled) {
-  if (areVirtualCardsSupported()) {
+  if (AreVirtualCardsSupported()) {
     if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
       StartAuthenticationFlowForVirtualCard(fido_auth_enabled);
     } else {
@@ -627,11 +628,24 @@ void CreditCardAccessManager::Authenticate(
       break;
     }
     case UnmaskAuthFlowType::kThreeDomainSecure:
-      // TODO(crbug.com/1521960): Triggering the Chrome UI for user consent.
+    case UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven: {
+      CHECK(card_);
+      CHECK(selected_challenge_option_);
+      payments::PaymentsWindowManager::Vcn3dsContext vcn_3ds_context;
+      vcn_3ds_context.context_token =
+          virtual_card_unmask_response_details_.context_token;
+      vcn_3ds_context.card = *card_;
+      vcn_3ds_context.challenge_option = *selected_challenge_option_;
+      vcn_3ds_context.completion_callback = base::BindOnce(
+          &CreditCardAccessManager::OnVcn3dsAuthenticationComplete,
+          weak_ptr_factory_.GetWeakPtr());
+      vcn_3ds_context.user_consent_already_given =
+          unmask_auth_flow_type_ ==
+          UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven;
+      client_->GetPaymentsWindowManager()->InitVcn3dsAuthentication(
+          std::move(vcn_3ds_context));
       break;
-    case UnmaskAuthFlowType::kThreeDomainSecureConsentAlreadyGiven:
-      // TODO(crbug.com/1521960): Triggering the 3DS pop-up.
-      break;
+    }
     case UnmaskAuthFlowType::kNone:
       // Run into other unexpected types.
       NOTREACHED();

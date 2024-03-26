@@ -50,10 +50,21 @@ class PaymentsWindowManager {
     Vcn3dsContext& operator=(Vcn3dsContext&&);
     ~Vcn3dsContext();
 
+    // The virtual card that is currently being authenticated with a VCN 3DS
+    // authentication flow.
     CreditCard card;
+    // The context token that was returned from the Payments Server for the
+    // ongoing VCN authentication flow.
     std::string context_token;
+    // The challenge option that was returned from the server which contains
+    // details required for the VCN 3DS authentication flow.
     CardUnmaskChallengeOption challenge_option;
+    // Callback that will be run when the VCN 3DS authentication completed.
     OnVcn3dsAuthenticationCompleteCallback completion_callback;
+    // Boolean that denotes whether the user already provided consent for the
+    // VCN 3DS authentication pop-up. If false, user consent must be achieved
+    // before triggering a VCN 3DS authentication pop-up.
+    bool user_consent_already_given = false;
   };
 
   // The error type of the 3DS authentication inside of the pop-up.
