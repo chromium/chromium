@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace ash {
 
@@ -58,6 +59,14 @@ void FakePatchPanelClient::NotifySocketConnectionEvent(
 void FakePatchPanelClient::NotifyARCVPNSocketConnectionEvent(
     const patchpanel::SocketConnectionEvent& msg) {}
 
+void FakePatchPanelClient::TagSocket(int socket_fd,
+                                     std::optional<int> network_id,
+                                     std::optional<VpnRoutingPolicy> vpn_policy,
+                                     TagSocketCallback callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
+}
+
 void FakePatchPanelClient::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
@@ -67,8 +76,9 @@ void FakePatchPanelClient::RemoveObserver(Observer* observer) {
 }
 
 void FakePatchPanelClient::NotifyNetworkConfigurationChanged() {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.NetworkConfigurationChanged();
+  }
 }
 
 void FakePatchPanelClient::SetFeatureFlag(

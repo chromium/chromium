@@ -32,6 +32,10 @@ class COMPONENT_EXPORT(PATCHPANEL) FakePatchPanelClient
       const patchpanel::SocketConnectionEvent& msg) override;
   void NotifyARCVPNSocketConnectionEvent(
       const patchpanel::SocketConnectionEvent& msg) override;
+  void TagSocket(int socket_fd,
+                 std::optional<int> network_id,
+                 std::optional<VpnRoutingPolicy> vpn_policy,
+                 TagSocketCallback callback) override;
   void SetFeatureFlag(patchpanel::SetFeatureFlagRequest::FeatureFlag flag,
                       bool enabled) override;
 
