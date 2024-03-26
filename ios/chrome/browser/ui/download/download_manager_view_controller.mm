@@ -818,6 +818,8 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
         kDownloadManagerDownloadAccessibilityIdentifier;
   }
   self.downloadButton.configuration = downloadButtonConfiguration;
+  self.closeButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_DOWNLOAD_MANAGER_CLOSE_DOWNLOAD_ACCESSIBILITY_LABEL);
 }
 
 // Sets up views for the state `kDownloadManagerStateInProgress`.
@@ -847,6 +849,8 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
       break;
     }
   }
+  self.closeButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_DOWNLOAD_MANAGER_CANCEL_DOWNLOAD_ACCESSIBILITY_LABEL);
 
   self.progressView.progress = _progress;
 }
@@ -872,6 +876,8 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
       self.detailLabel.numberOfLines = 0;
       break;
   }
+  self.closeButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_DOWNLOAD_MANAGER_CLOSE_DOWNLOAD_ACCESSIBILITY_LABEL);
 }
 
 // Sets up views for the state `kDownloadManagerStateFailed`.
@@ -882,6 +888,8 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
       l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_COULDNT_DOWNLOAD);
   self.detailLabel.text = _fileName;
   self.detailLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+  self.closeButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_DOWNLOAD_MANAGER_CLOSE_DOWNLOAD_ACCESSIBILITY_LABEL);
 }
 
 // Sets up views for the state `kDownloadManagerStateFailedNotResumable`.
@@ -892,6 +900,8 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
       l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_CANNOT_BE_RETRIED);
   self.detailLabel.text = _fileName;
   self.detailLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+  self.closeButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_DOWNLOAD_MANAGER_CLOSE_DOWNLOAD_ACCESSIBILITY_LABEL);
 }
 
 // Check where to put the action button.

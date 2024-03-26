@@ -1403,11 +1403,17 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DOWNLOAD_MANAGER_CANCEL_CONFIRMATION" desc="Alert title to confirm download cancellation [Length: 30em] [iOS only]">
         Stop Download?
       </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_CANCEL_DOWNLOAD_ACCESSIBILITY_LABEL" desc="Accessibility label of the button to close the download bar when in progress (so cancel). [iOS only]">
+        Cancel Download
+      </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_CANNOT_BE_RETRIED" desc="Label displaying that downloading a file has failed and cannot be retried. [Length: 25em] [iOS only]">
           Download failed and cannot be retried.
       </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_CANNOT_DETERMINE_FILE_SIZE" desc="Message displayed when the size of the file to be downloaded is unknown. [Length: 30em] [iOS only]">
         Cannot determine file size.
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_CLOSE_DOWNLOAD_ACCESSIBILITY_LABEL" desc="Accessibility label of the button to close the download bar. [iOS only]">
+        Close Download
       </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_CONTINUE" desc="The title of Continue button in the Stop Download? confirmation dialog [30em]">
         Continue
