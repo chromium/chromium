@@ -592,10 +592,10 @@ public class StripLayoutHelperTest {
         assertTrue("Start divider should be hidden.", tabs[3].isStartDividerVisible());
         assertTrue("Start divider should be visible.", tabs[4].isStartDividerVisible());
 
-        // Verify end divider visible for 1st, 3rd and 5th tab.
+        // Verify end divider visible for 1st and 5th tab.
         assertTrue("End divider should be visible.", tabs[0].isEndDividerVisible());
         assertFalse("End divider should be hidden.", tabs[1].isEndDividerVisible());
-        assertTrue("End divider should be visible.", tabs[2].isEndDividerVisible());
+        assertFalse("End divider should be hidden.", tabs[2].isEndDividerVisible());
         assertFalse("End divider should be hidden.", tabs[3].isEndDividerVisible());
         assertTrue("End divider should be visible.", tabs[4].isEndDividerVisible());
     }
@@ -1127,6 +1127,60 @@ public class StripLayoutHelperTest {
 
         // Assert: scroller position is not modified.
         assertEquals(1000, mStripLayoutHelper.getScrollerForTesting().getFinalX());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testInReorderMode_SkipTabGroupMarginAndAutoScroll_TabGroupIndicators() {
+        // Initialize.
+        initializeTest(false, false, 5);
+        groupTabs(0, 2);
+        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+
+        // Rebuild views.
+        mStripLayoutHelper.rebuildStripViews();
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        ((StripLayoutTab) views[2]).setTrailingMargin(75.f);
+
+        // Set required tab values and update layout.
+        for (int i = 0; i < views.length; i++) {
+            if (views[i] instanceof StripLayoutTab tab) {
+                tab.setHeight(1.f);
+                tab.setDrawY(0.f);
+            }
+        }
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Start reorder mode on the third tab.
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(2);
+
+        // Verify that we enter reorder mode.
+        assertTrue("Should in reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
+
+        float initialPosition = 48.f; // offsetXLeft(10) + groupTitle(42) + deltaOffset(-4)
+        float delta = 140.4f; // tabWidth(168.4) - tabOverlap(28);
+
+        // Assert: tab position should not changed.
+        for (int i = 1; i < views.length; i++) {
+            if (views[i] instanceof StripLayoutTab tab) {
+                assertEquals(
+                        "Tab position should not changed.", initialPosition, tab.getIdealX(), 0.f);
+            }
+            initialPosition += delta;
+        }
+
+        // Assert: ScrollOffset should not changed.
+        assertEquals(
+                "scrollOffset should not changed.", 0.f, mStripLayoutHelper.getScrollOffset(), 0.f);
+
+        // Assert: StripStartMargin should not changed.
+        assertEquals(
+                "StripStartMargin should not changed.",
+                0.f,
+                mStripLayoutHelper.getStripStartMarginForReorderForTesting(),
+                0.f);
     }
 
     @Test

@@ -1286,18 +1286,29 @@ public class StripLayoutHelper
         // Divider is never shown for the first tab.
         mStripTabs[0].setStartDividerVisible(false);
         setTabContainerVisible(mStripTabs[0], selectedIndex == 0, hoveredIndex == 0);
-        // End divider for first tab is only shown in reorder mode when tab has trailing margin and
-        // container is not visible.
-        boolean endDividerVisible =
-                mInReorderMode
-                        && mStripTabs[0].getContainerOpacity() == TAB_OPACITY_HIDDEN
-                        && mStripTabs[0].getTrailingMargin() > 0;
+        boolean endDividerVisible;
+        if (ChromeFeatureList.sTabStripGroupIndicators.isEnabled()) {
+            // Show end divider before the group title when first tab and next tab are in different
+            // tab groups.
+            endDividerVisible =
+                    mStripTabs[0].getContainerOpacity() == TAB_OPACITY_HIDDEN
+                            && isStripTabInTabGroup(mStripTabs[1])
+                            && getStripTabRootId(mStripTabs[0]) != getStripTabRootId(mStripTabs[1]);
+        } else {
+            // End divider for first tab is only shown in reorder mode when tab has trailing margin
+            // and container is not visible.
+            endDividerVisible =
+                    mInReorderMode
+                            && mStripTabs[0].getContainerOpacity() == TAB_OPACITY_HIDDEN
+                            && mStripTabs[0].getTrailingMargin() > 0;
+        }
         mStripTabs[0].setEndDividerVisible(endDividerVisible);
 
         for (int i = 1; i < mStripTabs.length; i++) {
             // TODO(crbug.com/1524186): Update so tabs are "aware" of adjacent non-tab objects.
             final StripLayoutTab prevTab = mStripTabs[i - 1];
             final StripLayoutTab currTab = mStripTabs[i];
+            final StripLayoutTab nextTab = i < (mStripTabs.length - 1) ? mStripTabs[i + 1] : null;
             boolean currTabSelected = selectedIndex == i;
             boolean currTabHovered = hoveredIndex == i;
 
@@ -1325,14 +1336,45 @@ public class StripLayoutHelper
              */
             boolean currTabHasMargin = currTab.getTrailingMargin() > 0;
             boolean currIsLastTab = i == (mStripTabs.length - 1);
-            endDividerVisible = currContainerHidden && (currTabHasMargin || currIsLastTab);
+            int currTabRootId = getStripTabRootId(currTab);
+            int nextTabRootId = getStripTabRootId(nextTab);
+            boolean nextTabIsInDifferentGroup =
+                    nextTabRootId != -1
+                            ? isStripTabInTabGroup(nextTab) && currTabRootId != nextTabRootId
+                            : false;
+
+            // For Tab Group Indicators, show end divider before a group title when the next tab is
+            // in a different tab group. Tab group trailing margin is removed, since we no longer
+            // show additional space between tab groups on the tab strip during reorder mode,
+            // aligning with desktop.
+            if (ChromeFeatureList.sTabStripGroupIndicators.isEnabled()) {
+                endDividerVisible =
+                        currContainerHidden && (nextTabIsInDifferentGroup || currIsLastTab);
+            } else {
+                endDividerVisible = currContainerHidden && (currTabHasMargin || currIsLastTab);
+            }
             currTab.setEndDividerVisible(endDividerVisible);
         }
     }
 
+    private int getStripTabRootId(StripLayoutTab stripTab) {
+        if (mModel == null || stripTab == null || getTabById(stripTab.getId()) == null) {
+            return Tab.INVALID_TAB_ID;
+        }
+        return getTabById(stripTab.getId()).getRootId();
+    }
+
+    private boolean isStripTabInTabGroup(StripLayoutTab stripTab) {
+        if (stripTab == null || getTabById(stripTab.getId()) == null) {
+            return false;
+        }
+        return mTabGroupModelFilter.isTabInTabGroup(getTabById(stripTab.getId()));
+    }
+
     /**
-     * Checks whether a tab at the edge of the strip is partially hidden, in which case the
-     * close button will be hidden to avoid accidental clicks.
+     * Checks whether a tab at the edge of the strip is partially hidden, in which case the close
+     * button will be hidden to avoid accidental clicks.
+     *
      * @param tab The tab to check.
      * @param index The index of the tab.
      * @return Whether the close button should be shown for this tab.
@@ -2638,8 +2680,8 @@ public class StripLayoutHelper
                 float tabWidth = mMultiStepTabCloseAnimRunning ? mCachedTabWidth : tab.getWidth();
                 delta = (tabWidth - mTabOverlapWidth) * tab.getWidthWeight();
 
-                // TODO(crbug.com/329529831): Remove trailing margin for tab group bottom indicator.
-                if (mInReorderMode || mTabGroupMarginAnimRunning) {
+                // For Tab Group Indicators, skip trailing margin to match desktop behavior.
+                if ((mInReorderMode || mTabGroupMarginAnimRunning)) {
                     delta += tab.getTrailingMargin();
                 }
             } else {
@@ -2919,6 +2961,10 @@ public class StripLayoutHelper
         return mInReorderMode;
     }
 
+    public float getStripStartMarginForReorderForTesting() {
+        return mStripStartMarginForReorder;
+    }
+
     public void startReorderModeAtIndexForTesting(int index) {
         StripLayoutTab tab = mStripTabs[index];
         updateStrip();
@@ -3016,15 +3062,15 @@ public class StripLayoutHelper
         setCompositorButtonsVisible(false);
 
         // 3. The selected tab will already be visible, so update tab group and background
-        // container. For Tab Group Indicators, skip background container highlight to match desktop
-        // behavior.
+        // container. For Tab Group Indicators, skip background container highlight and autoscroll
+        // to match desktop behavior.
         if (!ChromeFeatureList.sTabStripGroupIndicators.isEnabled()) {
             Tab tab = getTabById(mInteractingTab.getId());
             if (mTabGroupModelFilter.isTabInTabGroup(tab)) {
                 setTabGroupBackgroundContainersVisible(tab.getRootId(), true);
             }
+            computeAndUpdateTabGroupMargins(true, animationList);
         }
-        computeAndUpdateTabGroupMargins(true, animationList);
 
         return animationList;
     }
@@ -3615,7 +3661,11 @@ public class StripLayoutHelper
             // 3.c. Re-compute tab group margins if necessary.
             float oldIdealX = mInteractingTab.getIdealX();
             float oldOffset = mScrollOffset;
-            computeAndUpdateTabGroupMargins(false, null);
+
+            // Skip setting tab group margins for Tab Group Indicators.
+            if (!ChromeFeatureList.sTabStripGroupIndicators.isEnabled()) {
+                computeAndUpdateTabGroupMargins(false, null);
+            }
 
             // 3.d. Since we just moved the tab we're dragging, adjust its offset so it stays in
             // the same apparent position.
