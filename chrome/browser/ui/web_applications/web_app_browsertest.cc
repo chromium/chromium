@@ -1324,7 +1324,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
 
   // Make the window small so that we don't hit the edge when creating a new
   // one that is offset.
-  first_browser->window()->SetBounds(gfx::Rect(0, 0, 50, 50));
+  ui_test_utils::SetAndWaitForBounds(*first_browser, gfx::Rect(0, 0, 50, 50));
 
   Browser* second_browser = LaunchWebAppBrowserAndWait(app_id);
   EXPECT_NE(nullptr, second_browser);
