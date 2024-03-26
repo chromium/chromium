@@ -25,6 +25,7 @@
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_manager_base.h"
 
 namespace ash {
 
@@ -85,26 +86,33 @@ bool HasContentForSection(const HoldingSpaceItemViewsSection* section) {
 // bounds, TopAlignedBoxLayout will ensure that children still receive their
 // preferred sizes. This prevents layout jank that would otherwise occur when
 // the host view's bounds are being animated due to content changes.
-class TopAlignedBoxLayout : public views::BoxLayout {
+class TopAlignedBoxLayout : public views::LayoutManagerBase {
  public:
-  TopAlignedBoxLayout(const gfx::Insets& insets, int spacing)
-      : views::BoxLayout(views::BoxLayout::Orientation::kVertical,
-                         insets,
-                         spacing) {}
+  TopAlignedBoxLayout(const gfx::Insets& insets, int spacing) {
+    box_layout_ = AddOwnedLayout(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical, insets, spacing));
+  }
 
  private:
-  // views::BoxLayout:
-  void LayoutImpl() override {
-    if (host_view()->height() >= host_view()->GetPreferredSize().height()) {
-      views::BoxLayout::LayoutImpl();
-      return;
+  // views::LayoutManagerBase:
+  views::ProposedLayout CalculateProposedLayout(
+      const views::SizeBounds& size_bounds) const override {
+    if (!size_bounds.is_fully_bounded() ||
+        size_bounds.height().value() >=
+            host_view()->GetPreferredSize({}).height()) {
+      return box_layout_->GetProposedLayout(size_bounds, PassKey());
     }
 
-    gfx::Rect contents_bounds(host_view()->GetContentsBounds());
-    contents_bounds.Inset(inside_border_insets());
+    views::ProposedLayout layout;
+    layout.host_size =
+        gfx::Size(size_bounds.width().value(), size_bounds.height().value());
+
+    gfx::Rect contents_bounds(gfx::Point(0, 0), layout.host_size);
+    contents_bounds.Inset(host_view()->GetInsets() +
+                          box_layout_->inside_border_insets());
 
     const int width = contents_bounds.width();
-    const int child_spacing = between_child_spacing();
+    const int child_spacing = box_layout_->between_child_spacing();
 
     std::vector<std::pair<views::View*, int>> children_with_heights;
 
@@ -113,11 +121,13 @@ class TopAlignedBoxLayout : public views::BoxLayout {
     // vertical overflow of `contents_bounds`.
     int available_height = contents_bounds.height();
     for (views::View* child : host_view()->children()) {
-      if (!child->GetVisible())
+      if (!child->GetVisible()) {
         continue;
+      }
 
-      if (!children_with_heights.empty())
+      if (!children_with_heights.empty()) {
         available_height -= child_spacing;
+      }
 
       const int preferred_height = child->GetHeightForWidth(width);
       children_with_heights.emplace_back(child, preferred_height);
@@ -143,14 +153,20 @@ class TopAlignedBoxLayout : public views::BoxLayout {
         available_height += ceded_height;
       }
 
-      if (top > contents_bounds.y())
+      if (top > contents_bounds.y()) {
         top += child_spacing;
+      }
 
-      child->SetBounds(left, top, width, height);
+      layout.child_layouts.emplace_back(child, true,
+                                        gfx::Rect(left, top, width, height));
 
       top += height;
     }
+
+    return layout;
   }
+
+  raw_ptr<views::BoxLayout> box_layout_;
 };
 
 }  // namespace
