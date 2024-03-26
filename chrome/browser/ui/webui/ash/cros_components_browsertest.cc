@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
@@ -64,12 +66,12 @@ class CrosComponentsUIConfig : public content::WebUIConfig {
 
 struct ComponentTestData {
   // The URL of the component.
-  base::StringPiece script_src;
+  std::string_view script_src;
   // The name of the custom element.
-  base::StringPiece component_name;
+  std::string_view component_name;
   // Used to generate the test name. GTest names are only allowed to use
   // alphanumeric characters.
-  base::StringPiece gtest_name;
+  std::string_view gtest_name;
 };
 
 // Used by GTest to generate the test name.

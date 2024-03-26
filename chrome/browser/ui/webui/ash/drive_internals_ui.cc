@@ -12,6 +12,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -228,7 +229,7 @@ std::pair<ino_t, Value::List> GetServiceLogContents(const FilePath& log_path,
         continue;
       }
 
-      base::StringPiece log_line = line;
+      std::string_view log_line = line;
       size_t severity_index = 0;
       if (base::MatchPattern(log_line.substr(0, pattern_length),
                              kTimestampPattern) &&

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -253,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, DictationLocalesCalculation) {
     std::string application_locale;
     std::vector<std::string> ime_locales;
     std::string preferred_languages;
-    std::set<base::StringPiece> expected_recommended_prefixes;
+    std::set<std::string_view> expected_recommended_prefixes;
   } kTestCases[] = {
       {"en-US", {}, "", {"en"}},
       {"en", {}, "", {"en"}},
@@ -301,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, DictationLocalesCalculation) {
         GetWebUIListenerArgumentListValue("dictation-locales-set", argument));
     for (const base::Value& it : *argument) {
       const base::Value::Dict& dict = it.GetDict();
-      base::StringPiece language_code =
+      std::string_view language_code =
           language::SplitIntoMainAndTail(*(dict.FindString("value"))).first;
       // Only expect some locales to be recommended based on application and
       // IME languages.

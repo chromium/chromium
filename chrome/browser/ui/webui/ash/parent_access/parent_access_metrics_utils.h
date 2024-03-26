@@ -7,8 +7,8 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 
 namespace parent_access {
@@ -24,7 +24,7 @@ constexpr char kParentAccessWidgetErrorHistogramBase[] =
 // Returns the title string for a histogram given a title base and flow
 // type.
 std::string GetHistogramTitleForFlowType(
-    base::StringPiece parent_access_histogram_base,
+    std::string_view parent_access_histogram_base,
     std::optional<parent_access_ui::mojom::ParentAccessParams::FlowType>
         flow_type);
 }  // namespace parent_access

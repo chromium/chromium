@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_page_handler.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -40,7 +40,7 @@ std::vector<base::FilePath> GetChildFoldersBlocking(
                                   base::FileEnumerator::DIRECTORIES);
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
-    base::StringPiece child_path(path.value());
+    std::string_view child_path(path.value());
 
     // Paths are absolute in the form /home/chronos/u-HASH/MyFiles/..., to avoid
     // exposing all the unnecessary parts to the end user remove the prefix that
@@ -77,7 +77,7 @@ void ManageMirrorSyncPageHandler::GetChildFolders(
     return;
   }
 
-  base::StringPiece path_piece(path.value());
+  std::string_view path_piece(path.value());
   if (path_piece[0] != '/') {
     LOG(ERROR) << "Supplied directory doesn't have leading slash";
     std::move(callback).Run({});

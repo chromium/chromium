@@ -6,6 +6,7 @@
 
 #include <map>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "ash/components/arc/arc_features.h"
@@ -101,10 +102,10 @@ bool ReadNameFromStatus(pid_t pid, pid_t tid, std::string* out_name) {
   }
   base::StringTokenizer tokenizer(status, "\n");
   while (tokenizer.GetNext()) {
-    base::StringPiece value_str(tokenizer.token_piece());
+    std::string_view value_str(tokenizer.token_piece());
     if (!base::StartsWith(value_str, "Name:"))
       continue;
-    std::vector<base::StringPiece> split_value_str = base::SplitStringPiece(
+    std::vector<std::string_view> split_value_str = base::SplitStringPiece(
         value_str, "\t", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     DCHECK_EQ(2U, split_value_str.size());
     *out_name = std::string(split_value_str[1]);

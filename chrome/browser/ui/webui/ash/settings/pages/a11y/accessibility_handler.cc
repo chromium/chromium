@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/accessibility_handler.h"
 
 #include <set>
+#include <string_view>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -259,7 +260,7 @@ void AccessibilityHandler::MaybeAddDictationLocales() {
 
   // Get application locale.
   std::string application_locale = g_browser_process->GetApplicationLocale();
-  std::pair<base::StringPiece, base::StringPiece> application_lang_and_locale =
+  std::pair<std::string_view, std::string_view> application_lang_and_locale =
       language::SplitIntoMainAndTail(application_locale);
 
   // Get IME locales
@@ -274,12 +275,12 @@ void AccessibilityHandler::MaybeAddDictationLocales() {
   // Get enabled preferred UI languages.
   std::string preferred_languages =
       profile_->GetPrefs()->GetString(language::prefs::kPreferredLanguages);
-  std::vector<base::StringPiece> enabled_languages =
+  std::vector<std::string_view> enabled_languages =
       base::SplitStringPiece(preferred_languages, ",", base::TRIM_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
 
   // Combine these into one set for recommending Dication languages.
-  std::set<base::StringPiece> ui_languages;
+  std::set<std::string_view> ui_languages;
   ui_languages.insert(application_lang_and_locale.first);
   for (auto& ime_language : ime_languages) {
     ui_languages.insert(language::SplitIntoMainAndTail(ime_language).first);
@@ -300,7 +301,7 @@ void AccessibilityHandler::MaybeAddDictationLocales() {
 
     // We can recommend languages that match the current application
     // locale, IME languages or enabled preferred languages.
-    std::pair<base::StringPiece, base::StringPiece> lang_and_locale =
+    std::pair<std::string_view, std::string_view> lang_and_locale =
         language::SplitIntoMainAndTail(locale.first);
     bool is_recommended = base::Contains(ui_languages, lang_and_locale.first);
 

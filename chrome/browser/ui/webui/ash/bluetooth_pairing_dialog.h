@@ -7,8 +7,8 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
@@ -36,14 +36,14 @@ class BluetoothPairingDialog : public SystemWebDialogDelegate {
   // manages its own lifetime, for more information see
   // chrome/browser/ui/webui/ash/system_web_dialog_delegate.h.
   static SystemWebDialogDelegate* ShowDialog(
-      std::optional<base::StringPiece> device_address = std::nullopt);
+      std::optional<std::string_view> device_address = std::nullopt);
 
   ~BluetoothPairingDialog() override;
 
  protected:
   BluetoothPairingDialog(
       const std::string& dialog_id,
-      std::optional<base::StringPiece> canonical_device_address);
+      std::optional<std::string_view> canonical_device_address);
 
  private:
   // SystemWebDialogDelegate

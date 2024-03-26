@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/scalable_iph/scalable_iph_debug_ui.h"
 
 #include <sstream>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/fixed_flat_set.h"
@@ -29,7 +30,7 @@ constexpr char kPreTagBegin[] = "<pre>";
 constexpr char kPreTagEnd[] = "</pre>";
 constexpr char kNewline[] = "\n";
 
-constexpr auto kSupportedPaths = base::MakeFixedFlatSet<base::StringPiece>(
+constexpr auto kSupportedPaths = base::MakeFixedFlatSet<std::string_view>(
     {kLoggingPath, kRecordFiveMinTickEventPath});
 
 std::string WrapWithPreTags(const std::string& content) {

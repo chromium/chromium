@@ -94,7 +94,7 @@ class FakePpdProvider : public chromeos::PpdProvider {
                            ResolvePpdReferenceCallback cb) override {}
   void ResolvePpd(const Printer::PpdReference& reference,
                   ResolvePpdCallback cb) override {}
-  void ResolvePpdLicense(base::StringPiece effective_make_and_model,
+  void ResolvePpdLicense(std::string_view effective_make_and_model,
                          ResolvePpdLicenseCallback cb) override {}
   void ReverseLookup(const std::string& effective_make_and_model,
                      ReverseLookupCallback cb) override {}
