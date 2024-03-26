@@ -142,7 +142,7 @@ class NET_EXPORT_PRIVATE SOCKSClientSocket : public StreamSocket {
   bool was_ever_used_ = false;
 
   // Used to resolve the hostname to which the SOCKS proxy will connect.
-  raw_ptr<HostResolver, DanglingUntriaged> host_resolver_;
+  raw_ptr<HostResolver> host_resolver_;
   SecureDnsPolicy secure_dns_policy_;
   std::unique_ptr<HostResolver::ResolveHostRequest> resolve_host_request_;
   const HostPortPair destination_;
