@@ -267,7 +267,7 @@ struct PendingStructureChanges {
   // is that an update may request destruction of a subtree rooted at an
   // AXID more than once, not that a specific subtree is being destroyed
   // more than once.
-  int32_t destroy_subtree_count;
+  int32_t destroy_subtree_count = 0;
 
   // Keep track of the number of times this node will be destroyed.
   // An example of when this count may be larger than 1 is if updates were
@@ -275,7 +275,7 @@ struct PendingStructureChanges {
   // again within the same |AXTreeUpdate|. The important takeaway here is that
   // an AXID may request destruction more than once, not that a specific node
   // is being destroyed more than once.
-  int32_t destroy_node_count;
+  int32_t destroy_node_count = 0;
 
   // Keep track of the number of times this node will be created.
   // An example of when this count may be larger than 1 is if updates were
@@ -283,7 +283,7 @@ struct PendingStructureChanges {
   // again within the same |AXTreeUpdate|. The important takeaway here is that
   // an AXID may request creation more than once, not that a specific node is
   // being created more than once.
-  int32_t create_node_count;
+  int32_t create_node_count = 0;
 
   // Keep track of whether this node exists in the tree as of the last pending
   // update that was processed.
@@ -317,10 +317,7 @@ enum class AXTreePendingStructureStatus {
 // Intermediate state to keep track of during a tree update.
 struct AXTreeUpdateState {
   AXTreeUpdateState(const AXTree& tree, const AXTreeUpdate& pending_tree_update)
-      : pending_update_status(AXTreePendingStructureStatus::kNotStarted),
-        root_will_be_created(false),
-        pending_tree_update(pending_tree_update),
-        tree(tree) {}
+      : pending_tree_update(pending_tree_update), tree(tree) {}
 
   // Returns whether this update removes |node|.
   bool IsRemovedNode(const AXNode* node) const {
@@ -568,7 +565,8 @@ struct AXTreeUpdateState {
 
   // Indicates the status for calculating what changes will occur during
   // an update before the update applies changes.
-  AXTreePendingStructureStatus pending_update_status;
+  AXTreePendingStructureStatus pending_update_status =
+      AXTreePendingStructureStatus::kNotStarted;
 
   // Keeps track of the existing tree's root node id when calculating what
   // changes will occur during an update before the update applies changes.
@@ -578,7 +576,7 @@ struct AXTreeUpdateState {
   // This may occur either when the root node does not exist before applying
   // updates to the tree (new tree), or if the root is the |node_id_to_clear|
   // and will be destroyed before applying AXNodeData updates to the tree.
-  bool root_will_be_created;
+  bool root_will_be_created = false;
 
   // During an update, this keeps track of all node IDs that have been
   // implicitly referenced as part of this update, but haven't been updated yet.

@@ -1970,7 +1970,7 @@ TEST(AXEventGeneratorTest, StringPropertyChanges) {
       {ax::mojom::StringAttribute::kPlaceholder, "a", "b"},
   };
   for (auto&& attrib : attributes) {
-    initial_state.nodes.push_back({});
+    initial_state.nodes.emplace_back();
     initial_state.nodes.back().id = initial_state.nodes.size();
     initial_state.nodes.back().AddStringAttribute(attrib.id, attrib.old_value);
     initial_state.nodes[0].child_ids.push_back(initial_state.nodes.size());
@@ -2012,7 +2012,7 @@ TEST(AXEventGeneratorTest, IntPropertyChanges) {
       {ax::mojom::IntAttribute::kSetSize, 1, 2},
   };
   for (auto&& attrib : attributes) {
-    initial_state.nodes.push_back({});
+    initial_state.nodes.emplace_back();
     initial_state.nodes.back().id = initial_state.nodes.size();
     initial_state.nodes.back().AddIntAttribute(attrib.id, attrib.old_value);
     initial_state.nodes[0].child_ids.push_back(initial_state.nodes.size());
@@ -2052,7 +2052,7 @@ TEST(AXEventGeneratorTest, IntListPropertyChanges) {
       {ax::mojom::IntListAttribute::kLabelledbyIds, {1}, {2}},
   };
   for (auto&& attrib : attributes) {
-    initial_state.nodes.push_back({});
+    initial_state.nodes.emplace_back();
     initial_state.nodes.back().id = initial_state.nodes.size();
     initial_state.nodes.back().AddIntListAttribute(attrib.id, attrib.old_value);
     initial_state.nodes[0].child_ids.push_back(initial_state.nodes.size());

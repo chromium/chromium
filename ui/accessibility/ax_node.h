@@ -72,7 +72,7 @@ class AX_EXPORT AXNode final {
 
     ChildIteratorBase(const NodeType* parent, NodeType* child);
     ChildIteratorBase(const ChildIteratorBase& it);
-    ~ChildIteratorBase() {}
+    ~ChildIteratorBase() = default;
     bool operator==(const ChildIteratorBase& rhs) const;
     bool operator!=(const ChildIteratorBase& rhs) const;
     ChildIteratorBase& operator++();

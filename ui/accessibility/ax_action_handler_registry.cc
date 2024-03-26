@@ -104,8 +104,8 @@ void AXActionHandlerRegistry::RemoveAXTreeID(AXTreeID ax_tree_id) {
     observer.TreeRemoved(ax_tree_id);
 }
 
-AXActionHandlerRegistry::AXActionHandlerRegistry() {}
+AXActionHandlerRegistry::AXActionHandlerRegistry() = default;
 
-AXActionHandlerRegistry::~AXActionHandlerRegistry() {}
+AXActionHandlerRegistry::~AXActionHandlerRegistry() = default;
 
 }  // namespace ui

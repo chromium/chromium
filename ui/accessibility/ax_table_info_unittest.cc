@@ -82,12 +82,12 @@ void MakeRowHeader(AXNodeData* cell,
 
 class AXTableInfoTest : public testing::Test {
  public:
-  AXTableInfoTest() {}
+  AXTableInfoTest() = default;
 
   AXTableInfoTest(const AXTableInfoTest&) = delete;
   AXTableInfoTest& operator=(const AXTableInfoTest&) = delete;
 
-  ~AXTableInfoTest() override {}
+  ~AXTableInfoTest() override = default;
 
  protected:
   AXTableInfo* GetTableInfo(AXTree* tree, AXNode* node) {

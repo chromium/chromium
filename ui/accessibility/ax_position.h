@@ -4576,12 +4576,10 @@ class AXPosition {
 
  protected:
   AXPosition()
-      : kind_(AXPositionKind::NULL_POSITION),
-        tree_id_(AXTreeIDUnknown()),
+      : tree_id_(AXTreeIDUnknown()),
         anchor_id_(kInvalidAXNodeID),
         child_index_(INVALID_INDEX),
-        text_offset_(INVALID_OFFSET),
-        affinity_(ax::mojom::TextAffinity::kDownstream) {}
+        text_offset_(INVALID_OFFSET) {}
 
   // We explicitly don't copy any cached members.
   AXPosition(const AXPosition& other)
@@ -4590,8 +4588,7 @@ class AXPosition {
         anchor_id_(other.anchor_id_),
         child_index_(other.child_index_),
         text_offset_(other.text_offset_),
-        affinity_(other.affinity_),
-        name_() {}
+        affinity_(other.affinity_) {}
 
   // Returns the character offset inside our anchor's parent at which our text
   // starts.
@@ -5831,7 +5828,7 @@ class AXPosition {
     return text_position;
   }
 
-  AXPositionKind kind_;
+  AXPositionKind kind_ = AXPositionKind::NULL_POSITION;
   // TODO(crbug.com/1362839): use weak pointers for the AXTree, so that
   // AXPosition can be used without AXTreeManager support (and also faster than
   // the slow AXTreeID).
@@ -5860,7 +5857,7 @@ class AXPosition {
   // leaf text position before the soft line break would be pointing to the
   // end of its anchor node, whilst a leaf text position after the soft line
   // break would be pointing to the start of the next node.
-  ax::mojom::TextAffinity affinity_;
+  ax::mojom::TextAffinity affinity_ = ax::mojom::TextAffinity::kDownstream;
 
   //
   // Cached members that should be lazily created on first use.

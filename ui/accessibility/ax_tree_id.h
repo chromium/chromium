@@ -17,11 +17,9 @@ template <typename DataViewType, typename T>
 struct UnionTraits;
 }
 
-namespace ax {
-namespace mojom {
+namespace ax::mojom {
 class AXTreeIDDataView;
 }
-}  // namespace ax
 
 namespace ui {
 

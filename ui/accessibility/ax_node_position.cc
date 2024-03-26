@@ -117,8 +117,7 @@ AXNodePosition::AXNodePosition() = default;
 
 AXNodePosition::~AXNodePosition() = default;
 
-AXNodePosition::AXNodePosition(const AXNodePosition& other)
-    : AXPosition<AXNodePosition, AXNode>(other) {}
+AXNodePosition::AXNodePosition(const AXNodePosition& other) = default;
 
 AXNodePosition::AXPositionInstance AXNodePosition::Clone() const {
   return AXPositionInstance(new AXNodePosition(*this));

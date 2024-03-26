@@ -90,11 +90,11 @@ AXTreeUpdate MakeTreeUpdateFromIgnoredChanges(AXSerializableTree& tree0,
                                               AXSerializableTree& tree1) {
   AXTreeUpdate update = SerializeEntireTree(tree1);
   AXTreeUpdate result;
-  for (size_t i = 0; i < update.nodes.size(); i++) {
-    AXNode* tree0_node = tree0.GetFromId(update.nodes[i].id);
-    AXNode* tree1_node = tree1.GetFromId(update.nodes[i].id);
+  for (auto& node : update.nodes) {
+    AXNode* tree0_node = tree0.GetFromId(node.id);
+    AXNode* tree1_node = tree1.GetFromId(node.id);
     if (tree0_node->IsIgnored() != tree1_node->IsIgnored())
-      result.nodes.push_back(update.nodes[i]);
+      result.nodes.push_back(node);
   }
   return result;
 }
