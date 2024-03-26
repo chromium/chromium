@@ -200,42 +200,42 @@ class PairAsyncIterable {
   PairAsyncIterable(const PairAsyncIterable&) = delete;
   PairAsyncIterable& operator=(const PairAsyncIterable&) = delete;
 
+  template <typename... ArgsAndExceptionState>
   AsyncIteratorType* keysForBinding(
       ScriptState* script_state,
-      std::convertible_to<InitArgs> auto&&... args,
-      ExceptionState& exception_state) {
+      ArgsAndExceptionState&&... args_and_exception_state) {
     const auto kind = IterationSource::Kind::kKey;
     IterationSource* source = CreateIterationSource(
-        script_state, kind, std::forward<decltype(args)>(args)...,
-        exception_state);
+        script_state, kind,
+        std::forward<ArgsAndExceptionState>(args_and_exception_state)...);
     if (!source) {
       return nullptr;
     }
     return MakeGarbageCollected<AsyncIteratorType>(source);
   }
 
+  template <typename... ArgsAndExceptionState>
   AsyncIteratorType* valuesForBinding(
       ScriptState* script_state,
-      std::convertible_to<InitArgs> auto&&... args,
-      ExceptionState& exception_state) {
+      ArgsAndExceptionState&&... args_and_exception_state) {
     const auto kind = IterationSource::Kind::kValue;
     IterationSource* source = CreateIterationSource(
-        script_state, kind, std::forward<decltype(args)>(args)...,
-        exception_state);
+        script_state, kind,
+        std::forward<ArgsAndExceptionState>(args_and_exception_state)...);
     if (!source) {
       return nullptr;
     }
     return MakeGarbageCollected<AsyncIteratorType>(source);
   }
 
+  template <typename... ArgsAndExceptionState>
   AsyncIteratorType* entriesForBinding(
       ScriptState* script_state,
-      std::convertible_to<InitArgs> auto&&... args,
-      ExceptionState& exception_state) {
+      ArgsAndExceptionState&&... args_and_exception_state) {
     const auto kind = IterationSource::Kind::kKeyValue;
     IterationSource* source = CreateIterationSource(
-        script_state, kind, std::forward<decltype(args)>(args)...,
-        exception_state);
+        script_state, kind,
+        std::forward<ArgsAndExceptionState>(args_and_exception_state)...);
     if (!source) {
       return nullptr;
     }
@@ -274,14 +274,14 @@ class ValueAsyncIterable {
   ValueAsyncIterable(const ValueAsyncIterable&) = delete;
   ValueAsyncIterable& operator=(const ValueAsyncIterable&) = delete;
 
+  template <typename... ArgsAndExceptionState>
   AsyncIteratorType* valuesForBinding(
       ScriptState* script_state,
-      std::convertible_to<InitArgs> auto&&... args,
-      ExceptionState& exception_state) {
+      ArgsAndExceptionState&&... args_and_exception_state) {
     const auto kind = IterationSource::Kind::kValue;
     IterationSource* source = CreateIterationSource(
-        script_state, kind, std::forward<decltype(args)>(args)...,
-        exception_state);
+        script_state, kind,
+        std::forward<ArgsAndExceptionState>(args_and_exception_state)...);
     if (!source) {
       return nullptr;
     }
