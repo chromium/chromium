@@ -122,6 +122,7 @@ TEST_F(PickerClientImplTest, StartCrosSearch) {
   PickerClientImpl client(&controller, user_manager());
   AddSearchToHistory(profile(), GURL("http://foo.com/history"));
   AddBookmarks(profile(), u"Foobaz", GURL("http://foo.com/bookmarks"));
+  AddTab(browser(), GURL("http://foo.com/tab"));
   base::test::TestFuture<void> test_done;
 
   NiceMock<MockSearchResultsCallback> mock_search_callback;
@@ -136,6 +137,12 @@ TEST_F(PickerClientImplTest, StartCrosSearch) {
                        Field("url",
                              &ash::PickerSearchResult::BrowsingHistoryData::url,
                              GURL("http://foo.com/history")))),
+               Property(
+                   "data", &ash::PickerSearchResult::data,
+                   VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(
+                       Field("url",
+                             &ash::PickerSearchResult::BrowsingHistoryData::url,
+                             GURL("http://foo.com/tab")))),
                Property(
                    "data", &ash::PickerSearchResult::data,
                    VariantWith<
