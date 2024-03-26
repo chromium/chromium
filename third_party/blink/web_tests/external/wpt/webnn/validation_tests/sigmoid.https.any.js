@@ -5,3 +5,6 @@
 'use strict';
 
 validateInputFromAnotherBuilder('sigmoid');
+
+validateUnaryOperation(
+    'sigmoid', floatingPointTypes, /*alsoBuildActivation=*/ true);

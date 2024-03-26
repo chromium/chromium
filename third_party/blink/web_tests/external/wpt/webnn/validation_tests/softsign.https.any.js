@@ -5,3 +5,6 @@
 'use strict';
 
 validateInputFromAnotherBuilder('softsign');
+
+validateUnaryOperation(
+    'softsign', floatingPointTypes, /*alsoBuildActivation=*/ true);

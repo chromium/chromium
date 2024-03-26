@@ -5,3 +5,6 @@
 'use strict';
 
 validateInputFromAnotherBuilder('relu');
+
+validateUnaryOperation(
+    'relu', allWebNNOperandDataTypes, /*alsoBuildActivation=*/ true);

@@ -607,11 +607,9 @@ MLOperand* BuildUnaryOperator(
   // as its input tensor.
   if (!data_type_constraint.Has(
           BlinkOperandTypeToComponent(input->DataType()))) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        String::Format(
-            "The input data type must be one of the %s types.",
-            webnn::DataTypeConstraintToString(data_type_constraint).c_str()));
+    exception_state.ThrowTypeError(String::Format(
+        "The input data type must be one of the %s types.",
+        webnn::DataTypeConstraintToString(data_type_constraint).c_str()));
     return nullptr;
   }
 
@@ -621,8 +619,7 @@ MLOperand* BuildUnaryOperator(
   auto output = MLOperand::ValidateAndCreateOutput(builder, input->DataType(),
                                                    input->Dimensions(), unary);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   unary->Connect({input}, {output.value()});
@@ -639,11 +636,9 @@ MLOperand* BuildElementWiseUnaryOperator(
   // as its input tensor.
   if (!data_type_constraint.Has(
           BlinkOperandTypeToComponent(input->DataType()))) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        String::Format(
-            "The input data type must be one of the %s types.",
-            webnn::DataTypeConstraintToString(data_type_constraint).c_str()));
+    exception_state.ThrowTypeError(String::Format(
+        "The input data type must be one of the %s types.",
+        webnn::DataTypeConstraintToString(data_type_constraint).c_str()));
     return nullptr;
   }
 
@@ -653,8 +648,7 @@ MLOperand* BuildElementWiseUnaryOperator(
   auto output = MLOperand::ValidateAndCreateOutput(builder, input->DataType(),
                                                    input->Dimensions(), unary);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   unary->Connect({input}, {output.value()});

@@ -5,3 +5,6 @@
 'use strict';
 
 validateInputFromAnotherBuilder('tanh');
+
+validateUnaryOperation(
+    'tanh', floatingPointTypes, /*alsoBuildActivation=*/ true);
