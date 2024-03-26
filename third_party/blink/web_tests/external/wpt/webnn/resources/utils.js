@@ -13,20 +13,33 @@ const TypedArrayDict = {
   int64: BigInt64Array,
 };
 
-const getTypedArrayData = (type, data) => {
+// The maximum index to validate for the output's expected value.
+const kMaximumIndexToValidate = 1000;
+
+const getTypedArrayData = (type, size, data) => {
   let outData;
+
   if (type === 'float16') {
+    if (typeof (data) === 'number' && size > 1) {
+      return new TypedArrayDict[type](size).fill(toHalf(data));
+    }
     // workaround to convert Float16 to Uint16
     outData = new TypedArrayDict[type](data.length);
     for (let i = 0; i < data.length; i++) {
       outData[i] = toHalf(data[i]);
     }
   } else if (type === 'int64') {
+    if (typeof (data) === 'number' && size > 1) {
+      return new TypedArrayDict[type](size).fill(BigInt(data));
+    }
     outData = new TypedArrayDict[type](data.length);
     for (let i = 0; i < data.length; i++) {
       outData[i] = BigInt(data[i]);
     }
   } else {
+    if (typeof (data) === 'number' && size > 1) {
+      return new TypedArrayDict[type](size).fill(data);
+    }
     outData = new TypedArrayDict[type](data);
   }
   return outData;
@@ -76,6 +89,13 @@ const getExpectedDataAndType = (resources, outputName) => {
   let ret;
   for (let subResources of resources) {
     if (subResources.name === outputName) {
+      if (typeof (subResources.data) === 'number' && subResources.shape &&
+          sizeOfShape(subResources.shape) > 1) {
+        const size =
+            Math.min(kMaximumIndexToValidate, sizeOfShape(subResources.shape));
+        ret = [new Array(size).fill(subResources.data), subResources.type];
+        break;
+      }
       ret = [subResources.data, subResources.type];
       break;
     }
@@ -522,6 +542,9 @@ const checkResults = (operationName, namedOutputOperands, outputs, resources) =>
     // the outputs of split() or gru() is a sequence
     for (let operandName in namedOutputOperands) {
       outputData = outputs[operandName];
+      if (outputData.length > kMaximumIndexToValidate) {
+        outputData = outputData.subarray(0, kMaximumIndexToValidate);
+      }
       // for some operations which may have multi outputs of different types
       [expectedData, operandType] = getExpectedDataAndType(expected, operandName);
       tolerance = getPrecisonTolerance(operationName, metricType, resources);
@@ -529,7 +552,17 @@ const checkResults = (operationName, namedOutputOperands, outputs, resources) =>
     }
   } else {
     outputData = outputs[expected.name];
-    expectedData = expected.data;
+    if (outputData.length > kMaximumIndexToValidate) {
+      outputData = outputData.subarray(0, kMaximumIndexToValidate);
+    }
+    if (typeof (expected.data) === 'number' && expected.shape &&
+        sizeOfShape(expected.shape) > 1) {
+      const size =
+          Math.min(kMaximumIndexToValidate, sizeOfShape(expected.shape));
+      expectedData = new Array(size).fill(expected.data);
+    } else {
+      expectedData = expected.data;
+    }
     operandType = expected.type;
     tolerance = getPrecisonTolerance(operationName, metricType, resources);
     doAssert(operationName, outputData, expectedData, tolerance, operandType, metricType)
@@ -543,7 +576,11 @@ const checkResults = (operationName, namedOutputOperands, outputs, resources) =>
  * @returns {MLOperand} A constant operand
  */
 const createConstantOperand = (builder, resources) => {
-  const bufferView = new TypedArrayDict[resources.type](resources.data);
+  const bufferView = (typeof (resources.data) === 'number' &&
+                      sizeOfShape(resources.shape) > 1) ?
+      new TypedArrayDict[resources.type](sizeOfShape(resources.shape))
+          .fill(resources.data) :
+      new TypedArrayDict[resources.type](resources.data);
   return builder.constant({dataType: resources.type, type: resources.type, dimensions: resources.shape}, bufferView);
 };
 
@@ -801,14 +838,17 @@ const buildGraph = (operationName, builder, resources, buildFunc) => {
     // the inputs of concat() is a sequence
     for (let subInput of resources.inputs) {
       if (!subInput.hasOwnProperty('constant') || !subInput.constant) {
-        inputs[subInput.name] = getTypedArrayData(subInput.type, subInput.data);
+        inputs[subInput.name] = getTypedArrayData(
+            subInput.type, sizeOfShape(subInput.shape), subInput.data);
       }
     }
   } else {
     for (let inputName in resources.inputs) {
       const subTestByName = resources.inputs[inputName];
       if (!subTestByName.hasOwnProperty('constant') || !subTestByName.constant) {
-        inputs[inputName] = getTypedArrayData(subTestByName.type, subTestByName.data);
+        inputs[inputName] = getTypedArrayData(
+            subTestByName.type, sizeOfShape(subTestByName.shape),
+            subTestByName.data);
       }
     }
   }

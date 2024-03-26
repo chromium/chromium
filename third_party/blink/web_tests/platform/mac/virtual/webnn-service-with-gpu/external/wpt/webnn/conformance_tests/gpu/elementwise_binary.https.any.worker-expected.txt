@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] add float32 1D constant tensors
   promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
 [FAIL] add float32 1D tensors
@@ -18,6 +18,8 @@ Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: assert_array_approx_equals_ulp: test add float32 actual -61.28125 should be close enough to expected -61.3144416809082 by the acceptable 1 ULP distance, but they have 8701 ULP distance expected true got false
 [FAIL] add float32 broadcast 4D to 4D
   assert_true: assert_array_approx_equals_ulp: test add float32 actual -102.625 should be close enough to expected -102.69488525390625 by the acceptable 1 ULP distance, but they have 9160 ULP distance expected true got false
+[FAIL] add float32 large inputs
+  assert_true: assert_array_approx_equals_ulp: test add float32 actual 166.5 should be close enough to expected 166.57718752610668 by the acceptable 1 ULP distance, but they have 5059 ULP distance expected true got false
 [FAIL] sub float32 1D constant tensors
   promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
 [FAIL] sub float32 broadcast 1D to 4D

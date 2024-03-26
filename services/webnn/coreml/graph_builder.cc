@@ -367,7 +367,7 @@ base::expected<void, std::string> GraphBuilder::WriteWeightsToFile(
       return base::unexpected(kWriteFileErrorMessage);
     }
 
-    if (!weights_file.WriteAtCurrentPosAndCheck(buffer.byte_span())) {
+    if (!weights_file.WriteAtCurrentPosAndCheck(base::make_span(buffer))) {
       return base::unexpected(kWriteFileErrorMessage);
     }
     RETURN_IF_ERROR(AddConstantFileValue(key, current_offset, *operand, block));
