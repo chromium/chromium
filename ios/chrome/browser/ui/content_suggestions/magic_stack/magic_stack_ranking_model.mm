@@ -54,8 +54,7 @@
   // YES if the module ranking has been received from the SegmentationService.
   BOOL _magicStackOrderFromSegmentationReceived;
   // The latest Magic Stack module order sent up to the consumer. This includes
-  // any omissions due to filtering from `_magicStackOrderFromSegmentation` (or
-  // `magicStackOrder:` if kSegmentationPlatformIosModuleRanker is disabled) and
+  // any omissions due to filtering from `_magicStackOrderFromSegmentation` and
   // any additions beyond `_magicStackOrderFromSegmentation` (e.g. Set Up List).
   NSArray<NSNumber*>* _latestMagicStackOrder;
   // Module mediators.
@@ -123,13 +122,7 @@
 #pragma mark - Public
 
 - (void)fetchLatestMagicStackRanking {
-  if (base::FeatureList::IsEnabled(segmentation_platform::features::
-                                       kSegmentationPlatformIosModuleRanker)) {
     [self fetchMagicStackModuleRankingFromSegmentationPlatform];
-  } else {
-    _latestMagicStackOrder = [self magicStackOrder];
-    [self.consumer setMagicStackOrder:_latestMagicStackOrder];
-  }
   if (!IsIOSMagicStackCollectionViewEnabled()) {
     if (IsTabResumptionEnabled() && _tabResumptionMediator.itemConfig) {
       [self.consumer
@@ -238,11 +231,7 @@
     return;
   }
 
-  _latestMagicStackOrder =
-      base::FeatureList::IsEnabled(
-          segmentation_platform::features::kSegmentationPlatformIosModuleRanker)
-          ? [self segmentationMagicStackOrder]
-          : [self magicStackOrder];
+  _latestMagicStackOrder = [self segmentationMagicStackOrder];
   for (NSUInteger index = 0; index < [_latestMagicStackOrder count]; index++) {
     ContentSuggestionsModuleType type =
         (ContentSuggestionsModuleType)[_latestMagicStackOrder[index] intValue];
@@ -513,50 +502,10 @@
   return magicStackOrder;
 }
 
-// Returns an array that represents the order of the modules to be shown in the
-// Magic Stack. In theory this should not ever be used, but is a fallback list
-// in case the segmentation ranking is not turned on.
-// TODO(crbug.com/326104853): Remove after MagicStack is launched.
-- (NSArray<NSNumber*>*)magicStackOrder {
-  NSMutableArray* magicStackModules = [NSMutableArray array];
-  if (IsTabResumptionEnabled() &&
-      !tab_resumption_prefs::IsTabResumptionDisabled(_localState) &&
-      _tabResumptionMediator.itemConfig) {
-    [magicStackModules
-        addObject:@(int(ContentSuggestionsModuleType::kTabResumption))];
-  }
-  if ([_setUpListMediator shouldShowSetUpList]) {
-    [self addSetUpListToMagicStackOrder:magicStackModules];
-  }
-  if (ShouldPutMostVisitedSitesInMagicStack()) {
-    [magicStackModules
-        addObject:@(int(ContentSuggestionsModuleType::kMostVisited))];
-  }
-  [magicStackModules
-      addObject:@(int(ContentSuggestionsModuleType::kShortcuts))];
-
-  if (IsSafetyCheckMagicStackEnabled() &&
-      !safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState)) {
-    [self addSafetyCheckToMagicStackOrder:magicStackModules];
-  }
-
-  if (IsIOSParcelTrackingEnabled() &&
-      !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
-      [magicStackModules
-          addObject:@(int(ContentSuggestionsModuleType::kParcelTracking))];
-  }
-
-  return magicStackModules;
-}
-
 // Returns NO if client is expecting the order from Segmentation and it has not
 // returned yet.
 - (BOOL)isMagicStackOrderReady {
-  if (base::FeatureList::IsEnabled(segmentation_platform::features::
-                                       kSegmentationPlatformIosModuleRanker)) {
     return _magicStackOrderFromSegmentationReceived;
-  }
-  return YES;
 }
 
 // Shows the tab resumption tile with the given `item` configuration.
@@ -577,11 +526,7 @@
   if (!self.consumer) {
     return;
   }
-  _latestMagicStackOrder =
-      base::FeatureList::IsEnabled(
-          segmentation_platform::features::kSegmentationPlatformIosModuleRanker)
-          ? [self segmentationMagicStackOrder]
-          : [self magicStackOrder];
+  _latestMagicStackOrder = [self segmentationMagicStackOrder];
   if ([self isMagicStackOrderReady]) {
     // Only indicate the need for an explicit insertion if the tab resumption
     // item was received after building the initial Magic Stack order or getting
@@ -606,17 +551,7 @@
 // that case.
 - (NSUInteger)indexForMagicStackModule:
     (ContentSuggestionsModuleType)moduleType {
-  NSUInteger index = [_latestMagicStackOrder indexOfObject:@(int(moduleType))];
-  if (index == NSNotFound) {
-    // It is possible that a feature is enabled but the segmentation model being
-    // used didn't return the feature's module (i.e. first browser session after
-    // enabling a feature, so the latest model will not be downloaded until the
-    // following session since experiment models are tied via finch). It is also
-    // possible that the segmentation result has not returned yet.
-    CHECK(base::FeatureList::IsEnabled(
-        segmentation_platform::features::kSegmentationPlatformIosModuleRanker));
-  }
-  return index;
+  return [_latestMagicStackOrder indexOfObject:@(int(moduleType))];
 }
 
 @end

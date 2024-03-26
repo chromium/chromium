@@ -240,15 +240,10 @@ std::unique_ptr<Config> IosModuleRanker::GetConfig() {
           features::kSegmentationPlatformIosModuleRanker)) {
     return nullptr;
   }
-  bool serve_default_config = base::GetFieldTrialParamByFeatureAsBool(
-      features::kSegmentationPlatformIosModuleRanker, kDefaultModelEnabledParam,
-      true);
   auto config = std::make_unique<Config>();
   config->segmentation_key = kIosModuleRankerKey;
   config->segmentation_uma_name = kIosModuleRankerUmaName;
-  config->AddSegmentId(kSegmentId, serve_default_config
-                                       ? std::make_unique<IosModuleRanker>()
-                                       : nullptr);
+  config->AddSegmentId(kSegmentId, std::make_unique<IosModuleRanker>());
   config->auto_execute_and_cache = false;
   return config;
 }

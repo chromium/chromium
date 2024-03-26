@@ -113,18 +113,6 @@ void TapSecondaryActionButton() {
       [self isRunningTest:@selector
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
     config.features_enabled.push_back(kIOSMagicStackCollectionView);
-    std::string enable_magic_stack_segmentation_arg =
-        "--enable-features=" +
-        std::string(segmentation_platform::features::
-                        kSegmentationPlatformIosModuleRanker.name) +
-        ":" + segmentation_platform::kDefaultModelEnabledParam + "/true" + "," +
-        kMagicStack.name;
-    if ([self isRunningTest:@selector
-              (testMagicStackCompactedSetUpListCompleteAllItems)]) {
-      enable_magic_stack_segmentation_arg +=
-          ":" + std::string(kSetUpListCompactedTimeThresholdDays) + "/" + "0";
-    }
-    config.additional_args.push_back(enable_magic_stack_segmentation_arg);
     config.features_disabled.push_back(kContentPushNotifications);
     config.features_disabled.push_back(kIOSTipsNotifications);
   }
