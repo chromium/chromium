@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
@@ -96,6 +97,17 @@ void ShowEndingMomentNudge() {
   nudge_data.click_callback =
       base::BindRepeating(&FocusModeTray::ShowBubble, base::Unretained(tray));
   AnchoredNudgeManager::Get()->Show(nudge_data);
+
+  auto current_session = FocusModeController::Get()->current_session();
+  CHECK(current_session);
+  const std::u16string duration_string =
+      focus_mode_util::GetDurationString(current_session->session_duration(),
+                                         /*digital_format=*/false);
+  Shell::Get()
+      ->accessibility_controller()
+      ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE_ALERT,
+          duration_string));
 }
 
 void HideEndingMomentNudge() {
@@ -205,10 +217,27 @@ void FocusModeController::OnActiveUserSessionChanged(
 
 void FocusModeController::ExtendSessionDuration() {
   CHECK(current_session_);
+
+  const bool was_in_ending_moment = in_ending_moment();
   const base::Time now = base::Time::Now();
   // We call this with `now` to make sure that all the actions taken are synced
   // to the same time, since the state depends on `now`.
   current_session_->ExtendSession(now);
+
+  std::string message;
+  if (was_in_ending_moment) {
+    message = l10n_util::GetStringUTF8(
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_ALERT);
+  } else {
+    const std::u16string duration_string = focus_mode_util::GetDurationString(
+        current_session_->GetTimeRemaining(now), /*digital_format=*/false);
+    message = l10n_util::GetStringFUTF8(
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_INCREASE_TEN_MINUTES_BUTTON_ALERT,
+        duration_string);
+  }
+  Shell::Get()
+      ->accessibility_controller()
+      ->TriggerAccessibilityAlertWithMessage(message);
 
   const auto session_snapshot = current_session_->GetSnapshot(now);
   for (auto& observer : observers_) {

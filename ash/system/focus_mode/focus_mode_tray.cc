@@ -112,8 +112,8 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
                                  ui::ImageModel::FromVectorIcon(
                                      kRadioButtonUncheckedIcon,
                                      cros_tokens::kCrosSysPrimary, kIconSize));
-    radio_button_->SetAccessibleName(l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_RADIO_BUTTON));
+    radio_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_RADIO_BUTTON, title));
 
     task_title_ = AddChildView(std::make_unique<views::Label>());
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,

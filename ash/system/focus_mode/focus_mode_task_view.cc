@@ -204,7 +204,7 @@ FocusModeTaskView::FocusModeTaskView() {
       std::make_unique<views::ImageButton>(base::BindRepeating(
           &FocusModeTaskView::OnCompleteTask, base::Unretained(this))));
   radio_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_RADIO_BUTTON));
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_VIEW_RADIO_BUTTON));
   views::FocusRing::Install(radio_button_);
   views::FocusRing::Get(radio_button_)
       ->SetColorId(cros_tokens::kCrosSysFocusRing);

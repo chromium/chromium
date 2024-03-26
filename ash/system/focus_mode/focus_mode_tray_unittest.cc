@@ -316,19 +316,21 @@ TEST_F(FocusModeTrayTest, BubbleTabbingAndAccessibility) {
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
   views::FocusManager* focus_manager =
       GetBubbleView()->GetWidget()->GetFocusManager();
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON),
-            focus_manager->GetFocusedView()->GetAccessibleName());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME),
+      focus_manager->GetFocusedView()->GetAccessibleName());
 
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
   EXPECT_EQ(
       l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME),
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_INCREASE_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME),
       focus_manager->GetFocusedView()->GetAccessibleName());
 
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_RADIO_BUTTON),
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_RADIO_BUTTON,
+                base::UTF8ToUTF16(task_name)),
             focus_manager->GetFocusedView()->GetAccessibleName());
 }
 

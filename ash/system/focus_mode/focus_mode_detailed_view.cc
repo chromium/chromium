@@ -499,7 +499,7 @@ void FocusModeDetailedView::CreateToggleView() {
               focus_mode_histogram_names::ToggleSource::kFocusPanel),
           l10n_util::GetStringUTF16(
               in_focus_session
-                  ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON
+                  ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_LABEL
                   : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON),
           PillButton::Type::kPrimaryLargeWithoutIcon, /*icon=*/nullptr)
           .release());
@@ -525,12 +525,8 @@ void FocusModeDetailedView::UpdateToggleButtonAccessibility(
     return;
   }
 
-  const std::u16string duration_string = focus_mode_util::GetDurationString(
-      FocusModeController::Get()->GetActualEndTime() - base::Time::Now(),
-      /*digital_format=*/false);
-  toggle_button->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME,
-      duration_string));
+  toggle_button->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME));
   toggle_button->SetTooltipText(toggle_button->GetAccessibleName());
 }
 

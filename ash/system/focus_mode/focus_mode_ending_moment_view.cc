@@ -110,6 +110,8 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
               IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_LABEL),
           PillButton::Type::kSecondaryWithoutIcon,
           /*icon=*/nullptr));
+  extend_session_duration_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME));
 }
 
 void FocusModeEndingMomentView::SetExtendButtonEnabled(bool enabled) {

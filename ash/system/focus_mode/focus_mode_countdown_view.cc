@@ -135,8 +135,10 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
             base::Unretained(focus_mode_controller),
             focus_mode_histogram_names::ToggleSource::kContextualPanel),
         l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON),
+            IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_LABEL),
         PillButton::Type::kPrimaryWithoutIcon, /*icon=*/nullptr));
+    end_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME));
   }
 
   extend_session_duration_button_ =
@@ -149,7 +151,7 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
                               : PillButton::Type::kSecondaryLargeWithoutIcon,
           /*icon=*/nullptr));
   extend_session_duration_button_->SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME));
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_INCREASE_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME));
   views::InkDrop::Get(extend_session_duration_button_)
       ->SetMode(views::InkDropHost::InkDropMode::OFF);
 }
