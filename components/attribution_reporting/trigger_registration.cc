@@ -12,6 +12,7 @@
 #include "base/functional/function_ref.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -58,7 +59,7 @@ ParseAggregationCoordinator(const base::Value* value) {
   }
   auto aggregation_coordinator_origin =
       SuitableOrigin::Create(*aggregation_coordinator);
-  DCHECK(aggregation_coordinator_origin.has_value());
+  CHECK(aggregation_coordinator_origin.has_value(), base::NotFatalUntil::M128);
   return *aggregation_coordinator_origin;
 }
 

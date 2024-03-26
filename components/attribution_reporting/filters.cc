@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -220,7 +221,7 @@ FilterData::FilterData() = default;
 
 FilterData::FilterData(FilterValues filter_values)
     : filter_values_(std::move(filter_values)) {
-  DCHECK(IsValidForSource(filter_values_));
+  CHECK(IsValidForSource(filter_values_), base::NotFatalUntil::M128);
 }
 
 FilterData::~FilterData() = default;
@@ -344,7 +345,8 @@ FilterConfig::FilterConfig(FilterValues filter_values,
                            std::optional<base::TimeDelta> lookback_window)
     : lookback_window_(lookback_window),
       filter_values_(std::move(filter_values)) {
-  DCHECK(!lookback_window_.has_value() || lookback_window_->is_positive());
+  CHECK(!lookback_window_.has_value() || lookback_window_->is_positive(),
+        base::NotFatalUntil::M128);
 }
 
 FilterConfig::~FilterConfig() = default;

@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
+#include "base/not_fatal_until.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "url/origin.h"
 
@@ -69,17 +70,17 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
   SuitableOrigin& operator=(SuitableOrigin&&);
 
   const url::Origin& operator*() const& {
-    DCHECK(IsValid());
+    CHECK(IsValid(), base::NotFatalUntil::M128);
     return origin_;
   }
 
   url::Origin&& operator*() && {
-    DCHECK(IsValid());
+    CHECK(IsValid(), base::NotFatalUntil::M128);
     return std::move(origin_);
   }
 
   const url::Origin* operator->() const& {
-    DCHECK(IsValid());
+    CHECK(IsValid(), base::NotFatalUntil::M128);
     return &origin_;
   }
 
@@ -87,7 +88,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
   // this type in places currently requiring `url::Origin`s with
   // guaranteed preconditions.
   operator const url::Origin&() const {  // NOLINT
-    DCHECK(IsValid());
+    CHECK(IsValid(), base::NotFatalUntil::M128);
     return origin_;
   }
 

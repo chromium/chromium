@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/containers/flat_tree.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
@@ -124,7 +125,7 @@ AggregatableValues::AggregatableValues() = default;
 
 AggregatableValues::AggregatableValues(Values values, FilterPair filters)
     : values_(std::move(values)), filters_(std::move(filters)) {
-  DCHECK(IsValid(values_));
+  CHECK(IsValid(values_), base::NotFatalUntil::M128);
 }
 
 AggregatableValues::~AggregatableValues() = default;
@@ -142,7 +143,8 @@ AggregatableValues& AggregatableValues::operator=(AggregatableValues&&) =
 base::Value::Dict AggregatableValues::ToJson() const {
   base::Value::Dict values_dict;
   for (const auto& [key, value] : values_) {
-    DCHECK(base::IsValueInRangeForNumericType<int>(value));
+    CHECK(base::IsValueInRangeForNumericType<int>(value),
+          base::NotFatalUntil::M128);
     values_dict.Set(key, static_cast<int>(value));
   }
 

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -122,7 +123,7 @@ AggregatableTriggerData::AggregatableTriggerData(absl::uint128 key_piece,
     : key_piece_(key_piece),
       source_keys_(std::move(source_keys)),
       filters_(std::move(filters)) {
-  DCHECK(AreSourceKeysValid(source_keys_));
+  CHECK(AreSourceKeysValid(source_keys_), base::NotFatalUntil::M128);
 }
 
 AggregatableTriggerData::~AggregatableTriggerData() = default;

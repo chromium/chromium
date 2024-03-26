@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/types/expected.h"
 #include "components/attribution_reporting/os_registration_error.mojom-shared.h"
 #include "net/http/structured_headers.h"
@@ -40,7 +41,7 @@ ParseOsSourceOrTriggerHeader(const net::structured_headers::List& list) {
       continue;
     }
 
-    DCHECK_EQ(parameterized_member.member.size(), 1u);
+    CHECK_EQ(parameterized_member.member.size(), 1u, base::NotFatalUntil::M128);
     const auto& parameterized_item = parameterized_member.member.front();
 
     if (!parameterized_item.item.is_string()) {
