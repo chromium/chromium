@@ -564,6 +564,17 @@ interesting attributes supported today.
   and processing an urgent message. At present, this attribute only affects
   channel associated messages in the renderer process.
 
+* **`[EstimateSize]`**:
+  The `EstimateSize` attribute can be used to tag methods with large
+  payload sizes that tend to cause frequent reallocations during
+  serialization. This attribute instructs Mojo to track the history of
+  recent allocation sizes for the method. With this information, Mojo
+  can make better decisions about subsequent allocations, rather than
+  gradually expanding the serialization buffer. Since the tracking
+  adds a small amount of runtime overhead, use the `EstimateSize` tag
+  selectively – only for frequently-called methods with large payloads
+  that may trigger many allocations.
+
 ## Generated Code For Target Languages
 
 When the bindings generator successfully processes an input Mojom file, it emits
