@@ -109,7 +109,7 @@ TEST_F(ScriptPromiseResolverTest, resolve) {
 
   {
     ScriptState::Scope scope(GetScriptState());
-    EXPECT_TRUE(resolver->Promise().IsEmpty());
+    EXPECT_FALSE(resolver->Promise().IsEmpty());
   }
 
   EXPECT_EQ(String(), on_fulfilled);
@@ -162,7 +162,7 @@ TEST_F(ScriptPromiseResolverTest, reject) {
 
   {
     ScriptState::Scope scope(GetScriptState());
-    EXPECT_TRUE(resolver->Promise().IsEmpty());
+    EXPECT_FALSE(resolver->Promise().IsEmpty());
   }
 
   EXPECT_EQ(String(), on_fulfilled);

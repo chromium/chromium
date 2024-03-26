@@ -176,7 +176,7 @@ class CORE_EXPORT ScriptPromiseResolver
     kPending,
     kResolving,
     kRejecting,
-    kDetached,
+    kDone,
   };
 
   template <typename IDLType, typename BlinkType>

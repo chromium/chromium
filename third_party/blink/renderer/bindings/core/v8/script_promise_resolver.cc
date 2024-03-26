@@ -47,7 +47,7 @@ ScriptPromiseResolver::ScriptPromiseResolver(
       script_state_(script_state),
       exception_context_(exception_context) {
   if (!GetExecutionContext()) {
-    state_ = kDetached;
+    state_ = kDone;
     resolver_.Reset();
   }
   script_url_ = GetCurrentScriptUrl(script_state->GetIsolate());
@@ -62,10 +62,10 @@ void ScriptPromiseResolver::Dispose() {
   //  - this resolver is destructed before it is resolved, rejected,
   //    detached, the V8 isolate is terminated or the associated
   //    ExecutionContext is stopped.
-  const bool is_properly_detached =
-      state_ == kDetached || !is_promise_called_ ||
-      !GetScriptState()->ContextIsValid() || !GetExecutionContext() ||
-      GetExecutionContext()->IsContextDestroyed();
+  const bool is_properly_detached = state_ == kDone || !is_promise_called_ ||
+                                    !GetScriptState()->ContextIsValid() ||
+                                    !GetExecutionContext() ||
+                                    GetExecutionContext()->IsContextDestroyed();
   if (!is_properly_detached && !suppress_detach_check_) {
     // This is here to make it easier to track down which promise resolvers are
     // being abandoned. See https://crbug.com/873980.
@@ -137,9 +137,10 @@ void ScriptPromiseResolver::RejectWithWasmCompileError(const String& message) {
 }
 
 void ScriptPromiseResolver::Detach() {
-  if (state_ == kDetached)
-    return;
-  state_ = kDetached;
+  // Reset state even if we're already kDone. The resolver_ will not have been
+  // reset yet if this was marked kDone due to resolve/reject, and an explicit
+  // Detach() should really clear everything.
+  state_ = kDone;
   resolver_.Reset();
   value_.Reset();
 }
@@ -184,7 +185,9 @@ void ScriptPromiseResolver::ResolveOrRejectImmediately() {
                                    value_.Get(script_state_->GetIsolate()));
   }
 
-  Detach();
+  // Don't reset `resolver_`, so that Promise() still works.
+  state_ = kDone;
+  value_.Reset();
 }
 
 void ScriptPromiseResolver::ScheduleResolveOrReject() {
