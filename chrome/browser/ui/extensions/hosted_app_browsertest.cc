@@ -193,7 +193,6 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
         features::kHttpsUpgrades,
     };
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
     base::Extend(disabled, ash::standalone_browser::GetFeatureRefs());
 #endif
     scoped_feature_list_.InitWithFeatures(/*enabled_features=*/{}, disabled);

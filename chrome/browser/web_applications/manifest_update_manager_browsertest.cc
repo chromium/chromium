@@ -344,7 +344,6 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
       : update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
             AppIdentityUpdate::kSkipped)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
     scoped_feature_list_.InitWithFeatures(
         {}, ash::standalone_browser::GetFeatureRefs());
 #endif

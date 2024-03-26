@@ -133,7 +133,6 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
       disabled_features.push_back(features::kWebAppUniversalInstall);
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
     const std::vector<base::test::FeatureRef> lacros_disable_flags =
         ash::standalone_browser::GetFeatureRefs();
     disabled_features.insert(disabled_features.end(),

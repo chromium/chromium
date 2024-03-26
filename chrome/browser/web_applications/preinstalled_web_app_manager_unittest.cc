@@ -82,7 +82,6 @@ class PreinstalledWebAppManagerTest : public testing::Test {
  public:
   PreinstalledWebAppManagerTest() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
     scoped_feature_list_.InitWithFeatures(
         {}, /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
 #endif
