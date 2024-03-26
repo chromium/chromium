@@ -573,6 +573,10 @@
 	path = third_party/android_prebuilts/build_tools
 	url = https://android.googlesource.com/platform/prebuilts/build-tools
 	gclient-condition = checkout_android_prebuilts_build_tools
+[submodule "chromeos/ash/resources/internal"]
+	path = chromeos/ash/resources/internal
+	url = https://chrome-internal.googlesource.com/chrome/chromeos/ash/resources/internal
+	gclient-condition = checkout_src_internal and checkout_chromeos
 [submodule "chromeos/assistant/internal"]
 	path = chromeos/assistant/internal
 	url = https://chrome-internal.googlesource.com/chrome/assistant

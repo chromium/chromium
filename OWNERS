@@ -41,6 +41,7 @@ per-file WATCHLISTS=*
 
 # git submodules
 per-file build/fuchsia/internal=*
+per-file chromeos/ash/resources/internal=*
 per-file chromeos/assistant/internal=*
 per-file clank=*
 per-file content/test/data/plugin=*
