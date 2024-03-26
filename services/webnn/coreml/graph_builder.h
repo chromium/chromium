@@ -16,6 +16,8 @@
 
 namespace webnn::coreml {
 
+const char kPlaceholderInputName[] = "placeholder";
+
 // Get name identifiers used in CoreML model files for input/output operands.
 std::string GetCoreMLNameFromInput(const std::string& input_name);
 std::string GetCoreMLNameFromOutput(const std::string& output_name);
@@ -82,6 +84,9 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, std::string> AddInput(
       uint64_t input_id,
       CoreML::Specification::MILSpec::Function& main_function);
+  void AddPlaceholderInput(
+      CoreML::Specification::MILSpec::Function& main_function,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, std::string> AddOutput(uint64_t output_id);
   [[nodiscard]] base::expected<void, std::string> AddOperationForBinary(
       const mojom::ElementWiseBinary& operation,

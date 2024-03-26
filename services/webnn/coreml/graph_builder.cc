@@ -68,7 +68,15 @@ const char kManifestVersionValue[] = "1.0.0";
 const char kManifestModelIdentifierKey[] = "rootModelIdentifier";
 
 // model op related consts.
+const char kPlaceholderOuputName[] = "placeholder_output";
 const char kOpConstTypeName[] = "const";
+const char kOpAddTypeName[] = "add";
+const char kOpMultiplyTypeName[] = "mul";
+const char kOpDivideTypeName[] = "real_div";
+const char kOpSubtractTypeName[] = "sub";
+const char kOpMaximumTypeName[] = "maximum";
+const char kOpMinimumTypeName[] = "minimum";
+const char kOpPowerTypeName[] = "pow";
 
 // Hard coded path used in the model file to point at the weight path.
 const char kWeightsRelativeFilePath[] = "@model_path/weights/weights.bin";
@@ -291,6 +299,10 @@ GraphBuilder::~GraphBuilder() = default;
     RETURN_IF_ERROR(AddInput(input_id, main_function));
   }
 
+  if (graph_info.input_operands.empty()) {
+    AddPlaceholderInput(main_function, block);
+  }
+
   RETURN_IF_ERROR(SetupMlPackageDirStructure(working_directory));
 
   base::ElapsedTimer ml_weights_write_timer;
@@ -394,6 +406,47 @@ const base::FilePath& GraphBuilder::GetModelFilePath() {
   return ml_package_dir_;
 }
 
+void GraphBuilder::AddPlaceholderInput(
+    CoreML::Specification::MILSpec::Function& main_function,
+    CoreML::Specification::MILSpec::Block& block) {
+  auto* mutable_description = ml_model_.mutable_description();
+  auto* feature_description = mutable_description->add_input();
+
+  auto* feature_type = feature_description->mutable_type();
+  auto* array_feature_type = feature_type->mutable_multiarraytype();
+  array_feature_type->set_datatype(
+      CoreML::Specification::ArrayFeatureType_ArrayDataType::
+          ArrayFeatureType_ArrayDataType_FLOAT16);
+
+  array_feature_type->add_shape(1);
+  feature_description->mutable_name()->assign(kPlaceholderInputName);
+
+  const mojom::Operand operand{mojom::Operand::Kind::kInput,
+                               mojom::Operand::DataType::kFloat16,
+                               {1},
+                               kPlaceholderInputName};
+
+  CoreML::Specification::MILSpec::NamedValueType& input_for_main_function =
+      *main_function.add_inputs();
+  input_for_main_function.set_name(kPlaceholderInputName);
+  auto& value_type = *input_for_main_function.mutable_type();
+  PopulateValueType(operand, value_type);
+
+  // The model compute only succeeds when the placeholder is used in one op.
+  CoreML::Specification::MILSpec::Operation* placeholder_op =
+      block.add_operations();
+  (*placeholder_op->mutable_inputs())["x"].add_arguments()->set_name(
+      kPlaceholderInputName);
+  (*placeholder_op->mutable_inputs())["y"].add_arguments()->set_name(
+      kPlaceholderInputName);
+  placeholder_op->set_type(kOpAddTypeName);
+  CoreML::Specification::MILSpec::NamedValueType& outputs =
+      *placeholder_op->add_outputs();
+  outputs.set_name(kPlaceholderOuputName);
+  auto& output_value_type = *outputs.mutable_type();
+  PopulateValueType(operand, output_value_type);
+}
+
 [[nodiscard]] base::expected<void, std::string> GraphBuilder::AddInput(
     uint64_t input_id,
     CoreML::Specification::MILSpec::Function& main_function) {
@@ -448,31 +501,31 @@ base::expected<void, std::string> GraphBuilder::AddOperationForBinary(
 
   switch (operation.kind) {
     case mojom::ElementWiseBinary::Kind::kAdd: {
-      op->set_type("add");
+      op->set_type(kOpAddTypeName);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kDiv: {
-      op->set_type("real_div");
+      op->set_type(kOpDivideTypeName);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kMul: {
-      op->set_type("mul");
+      op->set_type(kOpMultiplyTypeName);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kSub: {
-      op->set_type("sub");
+      op->set_type(kOpSubtractTypeName);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kMax: {
-      op->set_type("maximum");
+      op->set_type(kOpMaximumTypeName);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kMin: {
-      op->set_type("minimum");
+      op->set_type(kOpMinimumTypeName);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kPow: {
-      op->set_type("pow");
+      op->set_type(kOpPowerTypeName);
       break;
     }
     default:

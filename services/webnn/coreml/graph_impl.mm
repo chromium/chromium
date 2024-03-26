@@ -313,6 +313,20 @@ void GraphImpl::ComputeImpl(
     feature_values[feature_name] = feature_value;
   }
 
+  if (named_inputs.empty()) {
+    NSString* placeholder_name = base::SysUTF8ToNSString(kPlaceholderInputName);
+    [feature_names addObject:placeholder_name];
+    NSError* error;
+    MLMultiArray* placeholder_input =
+        [[MLMultiArray alloc] initWithShape:@[ @1 ]
+                                   dataType:MLMultiArrayDataTypeFloat16
+                                      error:&error];
+    placeholder_input[0] = @0;
+    CHECK(!error);
+    feature_values[placeholder_name] =
+        [MLFeatureValue featureValueWithMultiArray:placeholder_input];
+  }
+
   // Run the MLModel
   WebNNMLFeatureProvider* feature_provider =
       [[WebNNMLFeatureProvider alloc] initWithFeatures:feature_names
