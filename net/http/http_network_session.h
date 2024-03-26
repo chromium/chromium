@@ -187,7 +187,7 @@ struct NET_EXPORT HttpNetworkSessionContext {
   raw_ptr<CertVerifier> cert_verifier;
   raw_ptr<TransportSecurityState> transport_security_state;
   raw_ptr<SCTAuditingDelegate> sct_auditing_delegate;
-  raw_ptr<ProxyResolutionService, DanglingUntriaged> proxy_resolution_service;
+  raw_ptr<ProxyResolutionService> proxy_resolution_service;
   raw_ptr<ProxyDelegate> proxy_delegate;
   raw_ptr<const HttpUserAgentSettings> http_user_agent_settings;
   raw_ptr<SSLConfigService> ssl_config_service;
@@ -326,8 +326,7 @@ class NET_EXPORT HttpNetworkSession {
   const raw_ptr<ReportingService> reporting_service_;
   const raw_ptr<NetworkErrorLoggingService> network_error_logging_service_;
 #endif
-  const raw_ptr<ProxyResolutionService, DanglingUntriaged>
-      proxy_resolution_service_;
+  const raw_ptr<ProxyResolutionService> proxy_resolution_service_;
   const raw_ptr<SSLConfigService> ssl_config_service_;
 
   HttpAuthCache http_auth_cache_;

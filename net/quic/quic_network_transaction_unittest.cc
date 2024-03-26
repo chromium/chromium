@@ -7348,6 +7348,13 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
   const std::u16string kBaz(u"baz");
   const std::u16string kFoo(u"foo");
 
+  session_params_.enable_quic = true;
+  proxy_resolution_service_ =
+      ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
+          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+              ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
+          TRAFFIC_ANNOTATION_FOR_TESTS);
+
   // On the second pass, the body read of the auth challenge is synchronous, so
   // IsConnectedAndIdle returns false.  The socket should still be drained and
   // reused. See http://crbug.com/544255.
@@ -7362,13 +7369,6 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
         quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
         context_.clock(), kDefaultServerHostName, quic::Perspective::IS_SERVER,
         false);
-
-    session_params_.enable_quic = true;
-    proxy_resolution_service_ =
-        ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-            {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-                ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
-            TRAFFIC_ANNOTATION_FOR_TESTS);
 
     MockQuicData mock_quic_data(version_);
 
