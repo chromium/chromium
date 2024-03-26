@@ -5,6 +5,7 @@
 #include "net/http/transport_security_state_test_util.h"
 
 #include <iterator>
+#include <string_view>
 
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -39,7 +40,7 @@ ScopedTransportSecurityStateSource::ScopedTransportSecurityStateSource(
       continue;
     // Currently only one PKP report URI is supported.
     if (last_report_uri)
-      DCHECK_EQ(base::StringPiece(last_report_uri), pinset->report_uri);
+      DCHECK_EQ(std::string_view(last_report_uri), pinset->report_uri);
     else
       last_report_uri = pinset->report_uri;
     pkp_report_uri_ =

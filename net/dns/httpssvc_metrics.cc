@@ -4,6 +4,8 @@
 
 #include "net/dns/httpssvc_metrics.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram.h"
@@ -77,12 +79,11 @@ void HttpssvcMetrics::SaveForHttps(enum HttpssvcDnsRcode rcode,
   https_resolve_time_ = https_resolve_time;
 }
 
-std::string HttpssvcMetrics::BuildMetricName(
-    base::StringPiece leaf_name) const {
-  base::StringPiece type_str = "RecordHttps";
-  base::StringPiece secure = secure_ ? "Secure" : "Insecure";
+std::string HttpssvcMetrics::BuildMetricName(std::string_view leaf_name) const {
+  std::string_view type_str = "RecordHttps";
+  std::string_view secure = secure_ ? "Secure" : "Insecure";
   // This part is just a legacy from old experiments but now meaningless.
-  base::StringPiece expectation = "ExpectNoerror";
+  std::string_view expectation = "ExpectNoerror";
 
   // Example metric name:
   // Net.DNS.HTTPSSVC.RecordHttps.Secure.ExpectNoerror.DnsRcode

@@ -12,6 +12,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -207,7 +208,7 @@ DnsResourceRecord BuildTestDnsRecord(std::string name,
                                      base::TimeDelta ttl = base::Days(1));
 
 DnsResourceRecord BuildTestCnameRecord(std::string name,
-                                       base::StringPiece canonical_name,
+                                       std::string_view canonical_name,
                                        base::TimeDelta ttl = base::Days(1));
 
 DnsResourceRecord BuildTestAddressRecord(std::string name,
@@ -220,7 +221,7 @@ DnsResourceRecord BuildTestTextRecord(std::string name,
 
 DnsResourceRecord BuildTestHttpsAliasRecord(
     std::string name,
-    base::StringPiece alias_name,
+    std::string_view alias_name,
     base::TimeDelta ttl = base::Days(1));
 
 std::pair<uint16_t, std::string> BuildTestHttpsServiceAlpnParam(
@@ -240,7 +241,7 @@ std::pair<uint16_t, std::string> BuildTestHttpsServicePortParam(uint16_t port);
 DnsResourceRecord BuildTestHttpsServiceRecord(
     std::string name,
     uint16_t priority,
-    base::StringPiece service_name,
+    std::string_view service_name,
     const std::map<uint16_t, std::string>& params,
     base::TimeDelta ttl = base::Days(1));
 

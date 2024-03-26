@@ -10,6 +10,7 @@
 
 #include <cstring>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "net/dns/public/dns_protocol.h"
@@ -85,7 +85,7 @@ bool GetTimeDeltaForConnectionTypeFromFieldTrial(
   std::string group = base::FieldTrialList::FindFullName(field_trial);
   if (group.empty())
     return false;
-  std::vector<base::StringPiece> group_parts = base::SplitStringPiece(
+  std::vector<std::string_view> group_parts = base::SplitStringPiece(
       group, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (type < 0)
     return false;

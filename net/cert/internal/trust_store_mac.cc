@@ -6,6 +6,8 @@
 
 #include <Security/Security.h>
 
+#include <string_view>
+
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/atomicops.h"
@@ -404,7 +406,7 @@ class TrustDomainCacheFullCerts {
 
  private:
   void HistogramTrustDomainCertCount(size_t count) const {
-    base::StringPiece domain_name;
+    std::string_view domain_name;
     switch (domain_) {
       case kSecTrustSettingsDomainUser:
         domain_name = "User";

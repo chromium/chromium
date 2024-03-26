@@ -4,6 +4,7 @@
 
 #include "net/websockets/websocket_http3_handshake_stream.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -242,7 +243,7 @@ const std::set<std::string>& WebSocketHttp3HandshakeStream::GetDnsAliases()
 }
 
 // TODO(momoka): Implement this.
-base::StringPiece WebSocketHttp3HandshakeStream::GetAcceptChViaAlps() const {
+std::string_view WebSocketHttp3HandshakeStream::GetAcceptChViaAlps() const {
   return {};
 }
 

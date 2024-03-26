@@ -11,6 +11,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "base/immediate_crash.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/byte_conversions.h"
-#include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
 #include "net/dns/dns_names_util.h"
 #include "net/dns/public/dns_protocol.h"
@@ -33,7 +33,7 @@ namespace {
 bool ReadNextServiceParam(std::optional<uint16_t> last_key,
                           base::BigEndianReader& reader,
                           uint16_t* out_param_key,
-                          base::StringPiece* out_param_value) {
+                          std::string_view* out_param_value) {
   DCHECK(out_param_key);
   DCHECK(out_param_value);
 
@@ -43,7 +43,7 @@ bool ReadNextServiceParam(std::optional<uint16_t> last_key,
   if (last_key.has_value() && last_key.value() >= key)
     return false;
 
-  base::StringPiece value;
+  std::string_view value;
   if (!reader.ReadU16LengthPrefixed(&value))
     return false;
 
@@ -52,7 +52,7 @@ bool ReadNextServiceParam(std::optional<uint16_t> last_key,
   return true;
 }
 
-bool ParseMandatoryKeys(base::StringPiece param_value,
+bool ParseMandatoryKeys(std::string_view param_value,
                         std::set<uint16_t>* out_parsed) {
   DCHECK(out_parsed);
 
@@ -79,7 +79,7 @@ bool ParseMandatoryKeys(base::StringPiece param_value,
   return true;
 }
 
-bool ParseAlpnIds(base::StringPiece param_value,
+bool ParseAlpnIds(std::string_view param_value,
                   std::vector<std::string>* out_parsed) {
   DCHECK(out_parsed);
 
@@ -88,7 +88,7 @@ bool ParseAlpnIds(base::StringPiece param_value,
   std::vector<std::string> alpn_ids;
   // Do/while to require at least one ID.
   do {
-    base::StringPiece alpn_id;
+    std::string_view alpn_id;
     if (!reader.ReadU8LengthPrefixed(&alpn_id))
       return false;
     if (alpn_id.size() < 1)
@@ -103,7 +103,7 @@ bool ParseAlpnIds(base::StringPiece param_value,
 }
 
 template <size_t ADDRESS_SIZE>
-bool ParseIpAddresses(base::StringPiece param_value,
+bool ParseIpAddresses(std::string_view param_value,
                       std::vector<IPAddress>* out_addresses) {
   DCHECK(out_addresses);
 
@@ -128,7 +128,7 @@ bool ParseIpAddresses(base::StringPiece param_value,
 
 // static
 std::unique_ptr<HttpsRecordRdata> HttpsRecordRdata::Parse(
-    base::StringPiece data) {
+    std::string_view data) {
   if (!HasValidSize(data, kType))
     return nullptr;
 
@@ -181,7 +181,7 @@ AliasFormHttpsRecordRdata::AliasFormHttpsRecordRdata(std::string alias_name)
 
 // static
 std::unique_ptr<AliasFormHttpsRecordRdata> AliasFormHttpsRecordRdata::Parse(
-    base::StringPiece data) {
+    std::string_view data) {
   auto reader = base::BigEndianReader::FromStringPiece(data);
 
   uint16_t priority;
@@ -199,7 +199,7 @@ std::unique_ptr<AliasFormHttpsRecordRdata> AliasFormHttpsRecordRdata::Parse(
   std::optional<uint16_t> last_param_key;
   while (reader.remaining() > 0) {
     uint16_t param_key;
-    base::StringPiece param_value;
+    std::string_view param_value;
     if (!ReadNextServiceParam(last_param_key, reader, &param_key, &param_value))
       return nullptr;
     last_param_key = param_key;
@@ -289,7 +289,7 @@ bool ServiceFormHttpsRecordRdata::IsAlias() const {
 
 // static
 std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
-    base::StringPiece data) {
+    std::string_view data) {
   auto reader = base::BigEndianReader::FromStringPiece(data);
 
   uint16_t priority;
@@ -315,7 +315,7 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
   }
 
   uint16_t param_key = 0;
-  base::StringPiece param_value;
+  std::string_view param_value;
   if (!ReadNextServiceParam(std::nullopt /* last_key */, reader, &param_key,
                             &param_value)) {
     return nullptr;

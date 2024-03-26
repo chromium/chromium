@@ -9,13 +9,13 @@
 #include <Security/SecKey.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/checked_math.h"
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/ssl_private_key_test_util.h"
@@ -51,7 +51,7 @@ std::string TestKeyToString(const testing::TestParamInfo<TestKey>& params) {
 }
 
 base::apple::ScopedCFTypeRef<SecKeyRef> SecKeyFromPKCS8(
-    base::StringPiece pkcs8) {
+    std::string_view pkcs8) {
   CBS cbs;
   CBS_init(&cbs, reinterpret_cast<const uint8_t*>(pkcs8.data()), pkcs8.size());
   bssl::UniquePtr<EVP_PKEY> openssl_key(EVP_parse_private_key(&cbs));

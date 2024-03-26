@@ -4,10 +4,11 @@
 
 #include "net/test/revocation_builder.h"
 
+#include <string_view>
+
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/hash/sha1.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "net/cert/asn1_util.h"
@@ -32,7 +33,7 @@ std::string Sha1() {
 
 // Adds bytes (specified as a StringPiece) to the given CBB.
 // The argument ordering follows the boringssl CBB_* api style.
-bool CBBAddBytes(CBB* cbb, base::StringPiece bytes) {
+bool CBBAddBytes(CBB* cbb, std::string_view bytes) {
   return CBB_add_bytes(cbb, reinterpret_cast<const uint8_t*>(bytes.data()),
                        bytes.size());
 }
@@ -82,7 +83,7 @@ std::string PKeyToSPK(const EVP_PKEY* pkey) {
   }
   std::string spki = FinishCBB(cbb.get());
 
-  base::StringPiece spk;
+  std::string_view spk;
   if (!asn1::ExtractSubjectPublicKeyFromSPKI(spki, &spk)) {
     ADD_FAILURE();
     return std::string();

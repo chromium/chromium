@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <memory>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/at_exit.h"
@@ -15,7 +16,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -401,7 +401,7 @@ std::string GetMD5ForResponseBody(disk_cache::Entry* entry) {
     }
 
     bytes_read += rv;
-    base::MD5Update(&ctx, base::StringPiece(buffer->data(), rv));
+    base::MD5Update(&ctx, std::string_view(buffer->data(), rv));
   }
 
   NOTREACHED();

@@ -8,6 +8,7 @@
 
 #include <cstring>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -17,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
@@ -147,7 +147,7 @@ class MockHttpStream : public HttpStream {
     return *nullset_result;
   }
 
-  base::StringPiece GetAcceptChViaAlps() const override { return {}; }
+  std::string_view GetAcceptChViaAlps() const override { return {}; }
 
   // Methods to tweak/observer mock behavior:
   void set_stall_reads_forever() { stall_reads_forever_ = true; }

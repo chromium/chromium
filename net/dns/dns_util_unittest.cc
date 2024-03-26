@@ -4,6 +4,8 @@
 
 #include "net/dns/dns_util.h"
 
+#include <string_view>
+
 #include "base/test/scoped_feature_list.h"
 #include "net/dns/dns_test_util.h"
 #include "net/dns/public/dns_over_https_config.h"
@@ -17,7 +19,7 @@ namespace net {
 namespace {
 // Returns the DoH provider entry in `DohProviderEntry::GetList()` that matches
 // `provider`. Crashes if there is no matching entry.
-const DohProviderEntry& GetDohProviderEntry(base::StringPiece provider) {
+const DohProviderEntry& GetDohProviderEntry(std::string_view provider) {
   auto provider_list = DohProviderEntry::GetList();
   auto it =
       base::ranges::find(provider_list, provider, &DohProviderEntry::provider);

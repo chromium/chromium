@@ -10,11 +10,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "crypto/ec_private_key.h"
 #include "net/base/completion_once_callback.h"
@@ -119,7 +119,7 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   //
   // The output will look like: "HEX\r\n[payload]\r\n"
   // where HEX is a length in hexdecimal (without the "0x" prefix).
-  static int EncodeChunk(base::StringPiece payload,
+  static int EncodeChunk(std::string_view payload,
                          char* output,
                          size_t output_size);
 

@@ -7,9 +7,9 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 namespace net {
@@ -19,7 +19,7 @@ namespace net {
 // `nullptr` on error. On success, sets `*ech_config_list` to an ECHConfigList
 // containing the generated ECHConfig.
 bssl::UniquePtr<SSL_ECH_KEYS> MakeTestEchKeys(
-    base::StringPiece public_name,
+    std::string_view public_name,
     size_t max_name_len,
     std::vector<uint8_t>* ech_config_list);
 

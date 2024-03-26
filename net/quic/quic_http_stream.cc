@@ -5,6 +5,7 @@
 #include "net/quic/quic_http_stream.h"
 
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -342,7 +343,7 @@ const std::set<std::string>& QuicHttpStream::GetDnsAliases() const {
   return dns_aliases_;
 }
 
-base::StringPiece QuicHttpStream::GetAcceptChViaAlps() const {
+std::string_view QuicHttpStream::GetAcceptChViaAlps() const {
   if (!request_info_) {
     return {};
   }
@@ -580,7 +581,7 @@ int QuicHttpStream::DoSendBody() {
   int len = request_body_buf_->BytesRemaining();
   if (len > 0 || eof) {
     next_state_ = STATE_SEND_BODY_COMPLETE;
-    base::StringPiece data(request_body_buf_->data(), len);
+    std::string_view data(request_body_buf_->data(), len);
     return stream_->WriteStreamData(
         data, eof,
         base::BindOnce(&QuicHttpStream::OnIOComplete,

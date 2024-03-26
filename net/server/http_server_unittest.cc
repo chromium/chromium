@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -165,7 +166,7 @@ class TestHttpClient {
     DCHECK_LE(0, body_size);
     auto headers =
         base::MakeRefCounted<HttpResponseHeaders>(HttpUtil::AssembleRawHeaders(
-            base::StringPiece(response.data(), end_of_headers)));
+            std::string_view(response.data(), end_of_headers)));
     return body_size >= headers->GetContentLength();
   }
 

@@ -8,8 +8,8 @@
 #define NET_TEST_GTEST_UTIL_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/test/mock_log.h"
 #include "net/base/net_errors.h"
 #include "net/test/scoped_disable_exit_on_dfatal.h"
@@ -50,7 +50,7 @@ class StringPieceHasSubstrMatcher {
   StringPieceHasSubstrMatcher& operator=(const StringPieceHasSubstrMatcher&) =
       default;
 
-  bool MatchAndExplain(base::StringPiece s,
+  bool MatchAndExplain(std::string_view s,
                        ::testing::MatchResultListener* listener) const {
     return s.find(substring_) != std::string::npos;
   }

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <numeric>
+#include <string_view>
 #include <utility>
 
 #include "base/big_endian.h"
@@ -14,14 +15,13 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/dns/public/dns_protocol.h"
 
 namespace net {
 
 namespace {
-std::string SerializeEdeOpt(uint16_t info_code, base::StringPiece extra_text) {
+std::string SerializeEdeOpt(uint16_t info_code, std::string_view extra_text) {
   std::string buf(2 + extra_text.size(), '\0');
 
   base::BigEndianWriter writer(buf.data(), buf.size());
@@ -57,7 +57,7 @@ OptRecordRdata::EdeOpt::~EdeOpt() = default;
 std::unique_ptr<OptRecordRdata::EdeOpt> OptRecordRdata::EdeOpt::Create(
     std::string data) {
   uint16_t info_code;
-  base::StringPiece extra_text;
+  std::string_view extra_text;
   auto edeReader = base::BigEndianReader::FromStringPiece(data);
 
   // size must be at least 2: info_code + optional extra_text
@@ -190,14 +190,14 @@ bool OptRecordRdata::operator!=(const OptRecordRdata& other) const {
 }
 
 // static
-std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(base::StringPiece data) {
+std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(std::string_view data) {
   auto rdata = std::make_unique<OptRecordRdata>();
   rdata->buf_.assign(data.begin(), data.end());
 
   auto reader = base::BigEndianReader::FromStringPiece(data);
   while (reader.remaining() > 0) {
     uint16_t opt_code, opt_data_size;
-    base::StringPiece opt_data_sp;
+    std::string_view opt_data_sp;
 
     if (!(reader.ReadU16(&opt_code) && reader.ReadU16(&opt_data_size) &&
           reader.ReadPiece(&opt_data_sp, opt_data_size))) {
@@ -251,7 +251,7 @@ bool OptRecordRdata::IsEqual(const RecordRdata* other) const {
 }
 
 void OptRecordRdata::AddOpt(std::unique_ptr<Opt> opt) {
-  base::StringPiece opt_data = opt->data();
+  std::string_view opt_data = opt->data();
 
   // Resize buffer to accommodate new OPT.
   const size_t orig_rdata_size = buf_.size();

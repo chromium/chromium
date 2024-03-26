@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -80,7 +81,7 @@ std::string EcdsaWithSha1() {
 
 // Adds bytes (specified as a StringPiece) to the given CBB.
 // The argument ordering follows the boringssl CBB_* api style.
-bool CBBAddBytes(CBB* cbb, base::StringPiece bytes) {
+bool CBBAddBytes(CBB* cbb, std::string_view bytes) {
   return CBB_add_bytes(cbb, reinterpret_cast<const uint8_t*>(bytes.data()),
                        bytes.size());
 }
@@ -175,7 +176,7 @@ std::unique_ptr<CertBuilder> CertBuilder::FromStaticCert(CRYPTO_BUFFER* cert,
   // function as the |issuer| of another CertBuilder.
   builder->cert_ = bssl::UpRef(cert);
   builder->key_ = bssl::UpRef(key);
-  base::StringPiece subject_tlv;
+  std::string_view subject_tlv;
   CHECK(asn1::ExtractSubjectFromDERCert(
       x509_util::CryptoBufferAsStringPiece(cert), &subject_tlv));
   builder->subject_tlv_ = std::string(subject_tlv);
@@ -271,7 +272,7 @@ CertBuilder::DefaultSignatureAlgorithmForKey(EVP_PKEY* key) {
 
 // static
 bool CertBuilder::SignData(bssl::SignatureAlgorithm signature_algorithm,
-                           base::StringPiece tbs_data,
+                           std::string_view tbs_data,
                            EVP_PKEY* key,
                            CBB* out_signature) {
   if (!key)
@@ -327,7 +328,7 @@ bool CertBuilder::SignData(bssl::SignatureAlgorithm signature_algorithm,
 
 // static
 bool CertBuilder::SignDataWithDigest(const EVP_MD* digest,
-                                     base::StringPiece tbs_data,
+                                     std::string_view tbs_data,
                                      EVP_PKEY* key,
                                      CBB* out_signature) {
   const uint8_t* tbs_bytes = reinterpret_cast<const uint8_t*>(tbs_data.data());
@@ -371,7 +372,7 @@ std::string CertBuilder::MakeRandomHexString(size_t num_bytes) {
 
 // static
 std::vector<uint8_t> CertBuilder::BuildNameWithCommonNameOfType(
-    base::StringPiece common_name,
+    std::string_view common_name,
     unsigned common_name_tag) {
   // See RFC 4519.
   static const uint8_t kCommonName[] = {0x55, 0x04, 0x03};
@@ -598,7 +599,7 @@ void CertBuilder::SetIssuerTLV(base::span<const uint8_t> issuer_tlv) {
   Invalidate();
 }
 
-void CertBuilder::SetSubjectCommonName(base::StringPiece common_name) {
+void CertBuilder::SetSubjectCommonName(std::string_view common_name) {
   SetSubjectTLV(
       BuildNameWithCommonNameOfType(common_name, CBS_ASN1_UTF8STRING));
   Invalidate();
@@ -609,7 +610,7 @@ void CertBuilder::SetSubjectTLV(base::span<const uint8_t> subject_tlv) {
   Invalidate();
 }
 
-void CertBuilder::SetSubjectAltName(base::StringPiece dns_name) {
+void CertBuilder::SetSubjectAltName(std::string_view dns_name) {
   SetSubjectAltNames({std::string(dns_name)}, {});
 }
 
@@ -919,19 +920,19 @@ void CertBuilder::SetSignatureAlgorithm(
 }
 
 void CertBuilder::SetSignatureAlgorithmTLV(
-    base::StringPiece signature_algorithm_tlv) {
+    std::string_view signature_algorithm_tlv) {
   SetOuterSignatureAlgorithmTLV(signature_algorithm_tlv);
   SetTBSSignatureAlgorithmTLV(signature_algorithm_tlv);
 }
 
 void CertBuilder::SetOuterSignatureAlgorithmTLV(
-    base::StringPiece signature_algorithm_tlv) {
+    std::string_view signature_algorithm_tlv) {
   outer_signature_algorithm_tlv_ = std::string(signature_algorithm_tlv);
   Invalidate();
 }
 
 void CertBuilder::SetTBSSignatureAlgorithmTLV(
-    base::StringPiece signature_algorithm_tlv) {
+    std::string_view signature_algorithm_tlv) {
   tbs_signature_algorithm_tlv_ = std::string(signature_algorithm_tlv);
   Invalidate();
 }
@@ -1236,7 +1237,7 @@ void CertBuilder::InitFromCert(const bssl::der::Input& cert) {
   }
 }
 
-void CertBuilder::BuildTBSCertificate(base::StringPiece signature_algorithm_tlv,
+void CertBuilder::BuildTBSCertificate(std::string_view signature_algorithm_tlv,
                                       std::string* out) {
   bssl::ScopedCBB cbb;
   CBB tbs_cert, version, extensions_context, extensions;

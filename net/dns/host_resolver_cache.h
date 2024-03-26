@@ -10,12 +10,12 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
@@ -77,7 +77,7 @@ class NET_EXPORT HostResolverCache final {
   // Returns nullptr on cache miss (no active result matches the given
   // criteria).
   const HostResolverInternalResult* Lookup(
-      base::StringPiece domain_name,
+      std::string_view domain_name,
       const NetworkAnonymizationKey& network_anonymization_key,
       DnsQueryType query_type = DnsQueryType::UNSPECIFIED,
       HostResolverSource source = HostResolverSource::ANY,
@@ -97,7 +97,7 @@ class NET_EXPORT HostResolverCache final {
   // Returns nullopt on cache miss (no active or stale result matches the given
   // criteria).
   std::optional<StaleLookupResult> LookupStale(
-      base::StringPiece domain_name,
+      std::string_view domain_name,
       const NetworkAnonymizationKey& network_anonymization_key,
       DnsQueryType query_type = DnsQueryType::UNSPECIFIED,
       HostResolverSource source = HostResolverSource::ANY,
@@ -156,7 +156,7 @@ class NET_EXPORT HostResolverCache final {
   struct KeyRef {
     ~KeyRef() = default;
 
-    base::StringPiece domain_name;
+    std::string_view domain_name;
     const raw_ref<const NetworkAnonymizationKey> network_anonymization_key;
   };
 
@@ -212,7 +212,7 @@ class NET_EXPORT HostResolverCache final {
 
   // Get all matching results, from most to least recently added.
   std::vector<EntryMap::const_iterator> LookupInternal(
-      base::StringPiece domain_name,
+      std::string_view domain_name,
       const NetworkAnonymizationKey& network_anonymization_key,
       DnsQueryType query_type,
       HostResolverSource source,

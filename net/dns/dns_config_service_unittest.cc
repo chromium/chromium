@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/cancelable_callback.h"
@@ -13,7 +14,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -172,7 +172,7 @@ MockHostsParserFactory::GetFactory() {
       });
 }
 
-DnsHosts::value_type CreateHostsEntry(base::StringPiece name,
+DnsHosts::value_type CreateHostsEntry(std::string_view name,
                                       AddressFamily family,
                                       IPAddress address) {
   DnsHostsKey key = std::pair(std::string(name), family);

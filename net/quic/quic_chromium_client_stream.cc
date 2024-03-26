@@ -4,6 +4,7 @@
 
 #include "net/quic/quic_chromium_client_stream.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -249,7 +250,7 @@ int QuicChromiumClientStream::Handle::WriteHeaders(
 }
 
 int QuicChromiumClientStream::Handle::WriteStreamData(
-    base::StringPiece data,
+    std::string_view data,
     bool fin,
     CompletionOnceCallback callback) {
   ScopedBoolSaver saver(&may_invoke_callbacks_, false);

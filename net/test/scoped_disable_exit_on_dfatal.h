@@ -5,6 +5,8 @@
 #ifndef NET_TEST_SCOPED_DISABLE_EXIT_ON_DFATAL_H_
 #define NET_TEST_SCOPED_DISABLE_EXIT_ON_DFATAL_H_
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,8 +32,8 @@ class ScopedDisableExitOnDFatal {
   // Called when there is a check failure.
   static void LogAssertHandler(const char* file,
                                int line,
-                               const base::StringPiece message,
-                               const base::StringPiece stack_trace);
+                               const std::string_view message,
+                               const std::string_view stack_trace);
 
   logging::ScopedLogAssertHandler assert_handler_;
 };

@@ -6,6 +6,7 @@
 #define NET_QUIC_DEDICATED_WEB_TRANSPORT_HTTP3_CLIENT_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -142,7 +143,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   void SetErrorIfNecessary(int error);
   void SetErrorIfNecessary(int error,
                            quic::QuicErrorCode quic_error,
-                           base::StringPiece details);
+                           std::string_view details);
 
   const GURL url_;
   const url::Origin origin_;

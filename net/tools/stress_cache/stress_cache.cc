@@ -15,6 +15,7 @@
 // application level crashes, edit stress_support.h.
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/at_exit.h"
@@ -380,8 +381,8 @@ bool StartCrashThread() {
 
 void CrashHandler(const char* file,
                   int line,
-                  const base::StringPiece str,
-                  const base::StringPiece stack_trace) {
+                  const std::string_view str,
+                  const std::string_view stack_trace) {
   g_crashing = true;
   base::debug::BreakDebugger();
 }

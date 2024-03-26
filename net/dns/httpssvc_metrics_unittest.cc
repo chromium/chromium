@@ -6,12 +6,12 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -31,14 +31,14 @@ class HttpssvcMetricsTest : public ::testing::TestWithParam<bool> {
   }
 
   template <typename T>
-  void ExpectSample(base::StringPiece name, std::optional<T> sample) const {
+  void ExpectSample(std::string_view name, std::optional<T> sample) const {
     if (sample)
       histo().ExpectUniqueSample(name, *sample, 1);
     else
       histo().ExpectTotalCount(name, 0);
   }
 
-  void ExpectSample(base::StringPiece name,
+  void ExpectSample(std::string_view name,
                     std::optional<base::TimeDelta> sample) const {
     std::optional<int64_t> sample_ms;
     if (sample)

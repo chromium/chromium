@@ -10,9 +10,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_source.h"
@@ -97,7 +97,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
   // Called when a GOAWAY frame has been parsed.
   virtual void OnGoAway(spdy::SpdyStreamId last_accepted_stream_id,
                         spdy::SpdyErrorCode error_code,
-                        base::StringPiece debug_data) = 0;
+                        std::string_view debug_data) = 0;
 
   // Called when a WINDOW_UPDATE frame has been parsed.
   virtual void OnWindowUpdate(spdy::SpdyStreamId stream_id,
@@ -111,7 +111,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
   // Called when an ALTSVC frame has been parsed.
   virtual void OnAltSvc(
       spdy::SpdyStreamId stream_id,
-      base::StringPiece origin,
+      std::string_view origin,
       const spdy::SpdyAltSvcWireFormat::AlternativeServiceVector&
           altsvc_vector) = 0;
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/containers/queue.h"
 #include "base/files/file.h"
@@ -885,8 +886,7 @@ TEST_F(DiskCacheBackendTest, ExternalFiles) {
   auto buffer1 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   CacheTestFillBuffer(buffer1->data(), kSize, false);
   ASSERT_TRUE(base::WriteFile(
-      filename,
-      base::StringPiece(buffer1->data(), static_cast<size_t>(kSize))));
+      filename, std::string_view(buffer1->data(), static_cast<size_t>(kSize))));
 
   // Now let's create a file with the cache.
   disk_cache::Entry* entry;

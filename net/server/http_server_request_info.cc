@@ -4,6 +4,8 @@
 
 #include "net/server/http_server_request_info.h"
 
+#include <string_view>
+
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
@@ -32,7 +34,7 @@ bool HttpServerRequestInfo::HasHeaderValue(
   DCHECK_EQ(base::ToLowerASCII(header_value), header_value);
   std::string complete_value = base::ToLowerASCII(GetHeaderValue(header_name));
 
-  for (base::StringPiece cur :
+  for (std::string_view cur :
        base::SplitStringPiece(complete_value, ",", base::KEEP_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
     if (base::TrimString(cur, " \t", base::TRIM_ALL) == header_value)

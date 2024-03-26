@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -15,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
@@ -65,7 +65,7 @@ namespace {
 
 // Parses a URL into the scheme, host, and path components required for a
 // SPDY request.
-void ParseUrl(base::StringPiece url,
+void ParseUrl(std::string_view url,
               std::string* scheme,
               std::string* host,
               std::string* path) {
@@ -221,14 +221,14 @@ class PriorityGetter : public BufferedSpdyFramerVisitorInterface {
                    spdy::SpdyErrorCode error_code) override {}
   void OnGoAway(spdy::SpdyStreamId last_accepted_stream_id,
                 spdy::SpdyErrorCode error_code,
-                base::StringPiece debug_data) override {}
+                std::string_view debug_data) override {}
   void OnWindowUpdate(spdy::SpdyStreamId stream_id,
                       int delta_window_size) override {}
   void OnPushPromise(spdy::SpdyStreamId stream_id,
                      spdy::SpdyStreamId promised_stream_id,
                      spdy::Http2HeaderBlock headers) override {}
   void OnAltSvc(spdy::SpdyStreamId stream_id,
-                base::StringPiece origin,
+                std::string_view origin,
                 const spdy::SpdyAltSvcWireFormat::AlternativeServiceVector&
                     altsvc_vector) override {}
   bool OnUnknownFrame(spdy::SpdyStreamId stream_id,
@@ -584,7 +584,7 @@ SpdyTestUtil::SpdyTestUtil(bool use_priority_header)
 
 SpdyTestUtil::~SpdyTestUtil() = default;
 
-void SpdyTestUtil::AddUrlToHeaderBlock(base::StringPiece url,
+void SpdyTestUtil::AddUrlToHeaderBlock(std::string_view url,
                                        spdy::Http2HeaderBlock* headers) const {
   std::string scheme, host, path;
   ParseUrl(url, &scheme, &host, &path);
@@ -612,33 +612,33 @@ void SpdyTestUtil::AddPriorityToHeaderBlock(
 
 // static
 spdy::Http2HeaderBlock SpdyTestUtil::ConstructGetHeaderBlock(
-    base::StringPiece url) {
+    std::string_view url) {
   return ConstructHeaderBlock("GET", url, nullptr);
 }
 
 // static
 spdy::Http2HeaderBlock SpdyTestUtil::ConstructGetHeaderBlockForProxy(
-    base::StringPiece url) {
+    std::string_view url) {
   return ConstructGetHeaderBlock(url);
 }
 
 // static
 spdy::Http2HeaderBlock SpdyTestUtil::ConstructHeadHeaderBlock(
-    base::StringPiece url,
+    std::string_view url,
     int64_t content_length) {
   return ConstructHeaderBlock("HEAD", url, nullptr);
 }
 
 // static
 spdy::Http2HeaderBlock SpdyTestUtil::ConstructPostHeaderBlock(
-    base::StringPiece url,
+    std::string_view url,
     int64_t content_length) {
   return ConstructHeaderBlock("POST", url, &content_length);
 }
 
 // static
 spdy::Http2HeaderBlock SpdyTestUtil::ConstructPutHeaderBlock(
-    base::StringPiece url,
+    std::string_view url,
     int64_t content_length) {
   return ConstructHeaderBlock("PUT", url, &content_length);
 }
@@ -653,7 +653,7 @@ std::string SpdyTestUtil::ConstructSpdyReplyString(
     if (key[0] == ':')
       key = key.substr(1);
     for (const std::string& value :
-         base::SplitString(it->second, base::StringPiece("\0", 1),
+         base::SplitString(it->second, std::string_view("\0", 1),
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
       reply_string += key + ": " + value + "\n";
     }
@@ -918,7 +918,7 @@ spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyDataFrame(int stream_id,
 
 spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyDataFrame(
     int stream_id,
-    base::StringPiece data,
+    std::string_view data,
     bool fin) {
   spdy::SpdyDataIR data_ir(stream_id, data);
   data_ir.set_fin(fin);
@@ -928,7 +928,7 @@ spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyDataFrame(
 
 spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyDataFrame(
     int stream_id,
-    base::StringPiece data,
+    std::string_view data,
     bool fin,
     int padding_length) {
   spdy::SpdyDataIR data_ir(stream_id, data);
@@ -942,7 +942,7 @@ spdy::SpdySerializedFrame SpdyTestUtil::ConstructWrappedSpdyFrame(
     const spdy::SpdySerializedFrame& frame,
     int stream_id) {
   return ConstructSpdyDataFrame(
-      stream_id, base::StringPiece(frame.data(), frame.size()), false);
+      stream_id, std::string_view(frame.data(), frame.size()), false);
 }
 
 spdy::SpdySerializedFrame SpdyTestUtil::SerializeFrame(
@@ -965,8 +965,8 @@ void SpdyTestUtil::UpdateWithStreamDestruction(int stream_id) {
 
 // static
 spdy::Http2HeaderBlock SpdyTestUtil::ConstructHeaderBlock(
-    base::StringPiece method,
-    base::StringPiece url,
+    std::string_view method,
+    std::string_view url,
     int64_t* content_length) {
   std::string scheme, host, path;
   ParseUrl(url, &scheme, &host, &path);

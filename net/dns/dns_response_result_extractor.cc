@@ -14,6 +14,7 @@
 #include <ostream>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "base/numerics/ostream_operators.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -156,7 +156,7 @@ std::vector<HostPortPair> SortServiceTargets(
 // TODO(crbug.com/1381506): Consider altering chain TTLs so that each TTL is
 // less than or equal to all previous links in the chain.
 ExtractionError ValidateNamesAndAliases(
-    base::StringPiece query_name,
+    std::string_view query_name,
     const AliasMap& aliases,
     const std::vector<std::unique_ptr<const RecordParsed>>& data_records,
     std::string& out_final_chain_name) {
@@ -477,7 +477,7 @@ bool RecordIsAlias(const RecordParsed* record) {
 }
 
 ResultsOrError ExtractHttpsResults(const DnsResponse& response,
-                                   base::StringPiece original_domain_name,
+                                   std::string_view original_domain_name,
                                    uint16_t request_port,
                                    base::Time now,
                                    base::TimeTicks now_ticks) {
@@ -637,7 +637,7 @@ DnsResponseResultExtractor::~DnsResponseResultExtractor() = default;
 
 ResultsOrError DnsResponseResultExtractor::ExtractDnsResults(
     DnsQueryType query_type,
-    base::StringPiece original_domain_name,
+    std::string_view original_domain_name,
     uint16_t request_port) const {
   DCHECK(!original_domain_name.empty());
 

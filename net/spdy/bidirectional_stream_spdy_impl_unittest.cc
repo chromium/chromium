@@ -5,11 +5,11 @@
 #include "net/spdy/bidirectional_stream_spdy_impl.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "base/timer/timer.h"
@@ -299,7 +299,7 @@ TEST_F(BidirectionalStreamSpdyImplTest, SimplePostRequest) {
   spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyPost(
       kDefaultUrl, 1, kBodyDataSize, LOW, nullptr, 0));
   spdy::SpdySerializedFrame data_frame(spdy_util_.ConstructSpdyDataFrame(
-      1, base::StringPiece(kBodyData, kBodyDataSize), /*fin=*/true));
+      1, std::string_view(kBodyData, kBodyDataSize), /*fin=*/true));
   MockWrite writes[] = {
       CreateMockWrite(req, 0), CreateMockWrite(data_frame, 3),
   };
@@ -537,7 +537,7 @@ TEST_F(BidirectionalStreamSpdyImplTest, RequestDetectBrokenConnection) {
   spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyPost(
       kDefaultUrl, 1, kBodyDataSize, LOW, nullptr, 0));
   spdy::SpdySerializedFrame data_frame(spdy_util_.ConstructSpdyDataFrame(
-      1, base::StringPiece(kBodyData, kBodyDataSize), /*fin=*/true));
+      1, std::string_view(kBodyData, kBodyDataSize), /*fin=*/true));
   MockWrite writes[] = {
       CreateMockWrite(req, 0),
       CreateMockWrite(data_frame, 3),

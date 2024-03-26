@@ -8,6 +8,7 @@
 #include <limits>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -387,7 +388,7 @@ void TestBothLoopbackIPs(const std::string& host) {
 // Returns the DoH provider entry in `DohProviderEntry::GetList()` that matches
 // `provider`. Crashes if there is no matching entry.
 const DohProviderEntry& GetDohProviderEntryForTesting(
-    base::StringPiece provider) {
+    std::string_view provider) {
   auto provider_list = DohProviderEntry::GetList();
   auto it =
       base::ranges::find(provider_list, provider, &DohProviderEntry::provider);
@@ -3844,7 +3845,7 @@ DnsConfig CreateUpgradableDnsConfig() {
   config.secure_dns_mode = SecureDnsMode::kAutomatic;
   config.allow_dns_over_https_upgrade = true;
 
-  auto ProviderHasAddr = [](base::StringPiece provider, const IPAddress& addr) {
+  auto ProviderHasAddr = [](std::string_view provider, const IPAddress& addr) {
     return base::Contains(GetDohProviderEntryForTesting(provider).ip_addresses,
                           addr);
   };
@@ -13847,7 +13848,7 @@ TEST_F(HostResolverManagerDnsTest, HostResolverCacheContainsAliasChains) {
                             features::kSplitHostCacheByNetworkIsolationKey},
       /*disabled_features=*/{});
 
-  constexpr base::StringPiece kHost = "host.test";
+  constexpr std::string_view kHost = "host.test";
 
   MockDnsClientRuleList rules;
   DnsResponse a_response = BuildTestDnsResponse(
@@ -13905,7 +13906,7 @@ TEST_F(HostResolverManagerDnsTest,
                             features::kSplitHostCacheByNetworkIsolationKey},
       /*disabled_features=*/{});
 
-  constexpr base::StringPiece kHost = "host.test";
+  constexpr std::string_view kHost = "host.test";
   constexpr base::TimeDelta kTtl = base::Minutes(30);
 
   MockDnsClientRuleList rules;
@@ -13969,7 +13970,7 @@ TEST_F(HostResolverManagerDnsTest,
                             features::kSplitHostCacheByNetworkIsolationKey},
       /*disabled_features=*/{});
 
-  constexpr base::StringPiece kHost = "host.test";
+  constexpr std::string_view kHost = "host.test";
 
   MockDnsClientRuleList rules;
   // No SOA authority record, so NODATA error is not cacheable.

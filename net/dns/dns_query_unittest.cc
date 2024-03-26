@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -72,8 +73,7 @@ TEST(DnsQueryTest, Constructor) {
   EXPECT_THAT(AsTuple(q1.io_buffer()), ElementsAreArray(query_data));
   EXPECT_THAT(q1.qname(), ElementsAreArray(kQName));
 
-  base::StringPiece question(reinterpret_cast<const char*>(query_data) + 12,
-                             21);
+  std::string_view question(reinterpret_cast<const char*>(query_data) + 12, 21);
   EXPECT_EQ(question, q1.question());
 }
 
@@ -83,8 +83,8 @@ TEST(DnsQueryTest, CopiesAreIndependent) {
   DnsQuery q2(q1);
 
   EXPECT_EQ(q1.id(), q2.id());
-  EXPECT_EQ(base::StringPiece(q1.io_buffer()->data(), q1.io_buffer()->size()),
-            base::StringPiece(q2.io_buffer()->data(), q2.io_buffer()->size()));
+  EXPECT_EQ(std::string_view(q1.io_buffer()->data(), q1.io_buffer()->size()),
+            std::string_view(q2.io_buffer()->data(), q2.io_buffer()->size()));
   EXPECT_NE(q1.io_buffer(), q2.io_buffer());
 }
 
@@ -131,8 +131,7 @@ TEST(DnsQueryTest, EDNS0) {
 
   EXPECT_THAT(AsTuple(q1.io_buffer()), ElementsAreArray(query_data));
 
-  base::StringPiece question(reinterpret_cast<const char*>(query_data) + 12,
-                             21);
+  std::string_view question(reinterpret_cast<const char*>(query_data) + 12, 21);
   EXPECT_EQ(question, q1.question());
 }
 

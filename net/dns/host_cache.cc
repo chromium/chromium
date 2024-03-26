@@ -12,6 +12,7 @@
 #include <ostream>
 #include <set>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <unordered_set>
 #include <utility>
@@ -24,7 +25,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/time/default_tick_clock.h"
 #include "base/types/optional_util.h"
 #include "base/value_iterators.h"
@@ -169,7 +169,7 @@ void MergeContainers(T& target, const T& source) {
 
 // Used to reject empty and IP literal (whether or not surrounded by brackets)
 // hostnames.
-bool IsValidHostname(base::StringPiece hostname) {
+bool IsValidHostname(std::string_view hostname) {
   if (hostname.empty())
     return false;
 
@@ -832,7 +832,7 @@ void HostCache::Set(const Key& key,
 }
 
 const HostCache::Key* HostCache::GetMatchingKeyForTesting(
-    base::StringPiece hostname,
+    std::string_view hostname,
     HostCache::Entry::Source* source_out,
     HostCache::EntryStaleness* stale_out) const {
   for (const EntryMap::value_type& entry : entries_) {

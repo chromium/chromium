@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/containers/span.h"
@@ -61,7 +62,7 @@ class HttpAuthHandlerNtlmPortableTest : public PlatformTest {
   }
 
   std::string CreateNtlmAuthHeader(base::span<const uint8_t> buffer) {
-    std::string output = base::Base64Encode(base::StringPiece(
+    std::string output = base::Base64Encode(std::string_view(
         reinterpret_cast<const char*>(buffer.data()), buffer.size()));
 
     return "NTLM " + output;

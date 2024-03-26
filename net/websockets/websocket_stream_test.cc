@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -176,7 +176,7 @@ class WebSocketStreamCreateTest
   // Set up mock data and start websockets request, either for WebSocket
   // upgraded from an HTTP/1 connection, or for a WebSocket request over HTTP/2.
   void CreateAndConnectStandard(
-      base::StringPiece url,
+      std::string_view url,
       const std::vector<std::string>& sub_protocols,
       const WebSocketExtraHeaders& send_additional_request_headers,
       const WebSocketExtraHeaders& extra_request_headers,
@@ -341,7 +341,7 @@ class WebSocketStreamCreateTest
   // Like CreateAndConnectStandard(), but allow for arbitrary response body.
   // Only for HTTP/1-based WebSockets.
   void CreateAndConnectCustomResponse(
-      base::StringPiece url,
+      std::string_view url,
       const std::vector<std::string>& sub_protocols,
       const WebSocketExtraHeaders& send_additional_request_headers,
       const WebSocketExtraHeaders& extra_request_headers,
@@ -370,7 +370,7 @@ class WebSocketStreamCreateTest
   // string.  This can save space in case of a very large response.
   // Only for HTTP/1-based WebSockets.
   void CreateAndConnectStringResponse(
-      base::StringPiece url,
+      std::string_view url,
       const std::vector<std::string>& sub_protocols,
       const std::string& extra_response_headers,
       bool has_storage_access = false) {
@@ -393,7 +393,7 @@ class WebSocketStreamCreateTest
 
   // Like CreateAndConnectStandard(), but take raw mock data.
   void CreateAndConnectRawExpectations(
-      base::StringPiece url,
+      std::string_view url,
       const std::vector<std::string>& sub_protocols,
       const HttpRequestHeaders& additional_headers,
       std::unique_ptr<SequencedSocketData> socket_data,
@@ -522,9 +522,9 @@ class CommonAuthTestHelper {
 // Data and methods for BasicAuth tests.
 class WebSocketStreamCreateBasicAuthTest : public WebSocketStreamCreateTest {
  protected:
-  void CreateAndConnectAuthHandshake(base::StringPiece url,
-                                     base::StringPiece base64_user_pass,
-                                     base::StringPiece response2) {
+  void CreateAndConnectAuthHandshake(std::string_view url,
+                                     std::string_view base64_user_pass,
+                                     std::string_view response2) {
     CreateAndConnectRawExpectations(
         url, NoSubProtocols(), HttpRequestHeaders(),
         helper_.BuildAuthSocketData(kUnauthorizedResponse,
@@ -532,7 +532,7 @@ class WebSocketStreamCreateBasicAuthTest : public WebSocketStreamCreateTest {
                                     std::string(response2)));
   }
 
-  static std::string RequestExpectation(base::StringPiece base64_user_pass) {
+  static std::string RequestExpectation(std::string_view base64_user_pass) {
     // Copy base64_user_pass to a std::string in case it is not nul-terminated.
     std::string base64_user_pass_string(base64_user_pass);
     return base::StringPrintf(

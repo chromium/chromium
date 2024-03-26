@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <memory>
+#include <string_view>
 #include <unordered_set>
 
 #include "base/pickle.h"
@@ -1920,7 +1921,7 @@ TEST(HttpResponseHeadersTest, TryToCreateWithNul) {
       "HTTP/1.1 200 OK\0"
       "Content-Type: application/octet-stream\0"};
   // The size must be specified explicitly to include the nul characters.
-  static constexpr base::StringPiece kHeadersWithNulsAsStringPiece(
+  static constexpr std::string_view kHeadersWithNulsAsStringPiece(
       kHeadersWithNuls, sizeof(kHeadersWithNuls));
   scoped_refptr<HttpResponseHeaders> headers =
       HttpResponseHeaders::TryToCreate(kHeadersWithNulsAsStringPiece);
@@ -2492,10 +2493,10 @@ TEST(HttpResponseHeadersBuilderTest, Version) {
 }
 
 struct BuilderStatusLineTestData {
-  const base::StringPiece status;
-  const base::StringPiece expected_status_line;
+  const std::string_view status;
+  const std::string_view expected_status_line;
   const int expected_response_code;
-  const base::StringPiece expected_status_text;
+  const std::string_view expected_status_text;
 };
 
 // Provide GTest with a method to print the BuilderStatusLineTestData, for ease
@@ -2574,8 +2575,8 @@ INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          testing::ValuesIn(kBuilderStatusLineTests));
 
 struct BuilderHeadersTestData {
-  const std::vector<std::pair<base::StringPiece, base::StringPiece>> headers;
-  const base::StringPiece expected_headers;
+  const std::vector<std::pair<std::string_view, std::string_view>> headers;
+  const std::string_view expected_headers;
 };
 
 // Provide GTest with a method to print the BuilderHeadersTestData, for ease of

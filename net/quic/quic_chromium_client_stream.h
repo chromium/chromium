@@ -10,6 +10,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -91,7 +92,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     // Writes |data| to the peer. Closes the write side if |fin| is true.
     // If the data could not be written immediately, returns ERR_IO_PENDING
     // and invokes |callback| asynchronously when the write completes.
-    int WriteStreamData(base::StringPiece data,
+    int WriteStreamData(std::string_view data,
                         bool fin,
                         CompletionOnceCallback callback);
 

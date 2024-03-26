@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -546,7 +547,7 @@ int HttpStreamParser::DoSendRequestReadBodyComplete(int result) {
       sent_last_chunk_ = true;
     }
     // Encode the buffer as 1 chunk.
-    const base::StringPiece payload(request_body_read_buf_->data(), result);
+    const std::string_view payload(request_body_read_buf_->data(), result);
     request_body_send_buf_->Clear();
     result = EncodeChunk(payload,
                          request_body_send_buf_->data(),
@@ -1019,7 +1020,7 @@ int HttpStreamParser::ParseResponseHeaders(int end_offset) {
   if (response_header_start_offset_ != std::string::npos) {
     received_bytes_ += end_offset;
     headers = HttpResponseHeaders::TryToCreate(
-        base::StringPiece(read_buf_->StartOfBuffer(), end_offset));
+        std::string_view(read_buf_->StartOfBuffer(), end_offset));
     if (!headers)
       return net::ERR_INVALID_HTTP_RESPONSE;
     has_seen_status_line_ = true;
@@ -1033,7 +1034,7 @@ int HttpStreamParser::ParseResponseHeaders(int end_offset) {
       return ERR_INVALID_HTTP_RESPONSE;
     }
 
-    base::StringPiece scheme = request_->url.scheme_piece();
+    std::string_view scheme = request_->url.scheme_piece();
     if (url::DefaultPortForScheme(scheme.data(), scheme.length()) !=
         request_->url.EffectiveIntPort()) {
       // If the port is not the default for the scheme, assume it's not a real
@@ -1045,7 +1046,7 @@ int HttpStreamParser::ParseResponseHeaders(int end_offset) {
       // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/qS63pYso4P0
       if (read_buf_->offset() < 3 || scheme != "http" ||
           !base::EqualsCaseInsensitiveASCII(
-              base::StringPiece(read_buf_->StartOfBuffer(), 3), "icy")) {
+              std::string_view(read_buf_->StartOfBuffer(), 3), "icy")) {
         return ERR_INVALID_HTTP_RESPONSE;
       }
     }
@@ -1187,7 +1188,7 @@ void HttpStreamParser::GetSSLCertRequestInfo(
     stream_socket_->GetSSLCertRequestInfo(cert_request_info);
 }
 
-int HttpStreamParser::EncodeChunk(base::StringPiece payload,
+int HttpStreamParser::EncodeChunk(std::string_view payload,
                                   char* output,
                                   size_t output_size) {
   if (output_size < payload.size() + kChunkHeaderFooterSize)

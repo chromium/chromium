@@ -6,10 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -22,8 +22,8 @@ namespace net {
 namespace {
 
 void NetLogInvalidHeader(const NetLogWithSource& net_log,
-                         base::StringPiece header_name,
-                         base::StringPiece header_value,
+                         std::string_view header_name,
+                         std::string_view header_value,
                          const char* error_message) {
   net_log.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_INVALID_HEADER,
                    [&](NetLogCaptureMode capture_mode) {
@@ -37,7 +37,7 @@ void NetLogInvalidHeader(const NetLogWithSource& net_log,
                    });
 }
 
-bool ContainsUppercaseAscii(base::StringPiece str) {
+bool ContainsUppercaseAscii(std::string_view str) {
   return base::ranges::any_of(str, base::IsAsciiUpper<char>);
 }
 
@@ -61,14 +61,13 @@ spdy::Http2HeaderBlock HeaderCoalescer::release_headers() {
   return std::move(headers_);
 }
 
-bool HeaderCoalescer::AddHeader(base::StringPiece key,
-                                base::StringPiece value) {
+bool HeaderCoalescer::AddHeader(std::string_view key, std::string_view value) {
   if (key.empty()) {
     NetLogInvalidHeader(net_log_, key, value, "Header name must not be empty.");
     return false;
   }
 
-  base::StringPiece key_name = key;
+  std::string_view key_name = key;
   if (key[0] == ':') {
     if (regular_header_seen_) {
       NetLogInvalidHeader(net_log_, key, value,
@@ -123,6 +122,5 @@ bool HeaderCoalescer::AddHeader(base::StringPiece key,
   headers_.AppendValueOrAddHeader(key, value);
   return true;
 }
-
 
 }  // namespace net

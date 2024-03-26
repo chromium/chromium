@@ -7,8 +7,8 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "net/third_party/quiche/src/quiche/common/structured_headers.h"
 
 namespace net::structured_headers {
@@ -25,23 +25,23 @@ using ListOfLists = quiche::structured_headers::ListOfLists;
 using List = quiche::structured_headers::List;
 using Parameters = quiche::structured_headers::Parameters;
 
-inline std::optional<ParameterizedItem> ParseItem(base::StringPiece str) {
+inline std::optional<ParameterizedItem> ParseItem(std::string_view str) {
   return quiche::structured_headers::ParseItem(str);
 }
-inline std::optional<Item> ParseBareItem(base::StringPiece str) {
+inline std::optional<Item> ParseBareItem(std::string_view str) {
   return quiche::structured_headers::ParseBareItem(str);
 }
 inline std::optional<ParameterisedList> ParseParameterisedList(
-    base::StringPiece str) {
+    std::string_view str) {
   return quiche::structured_headers::ParseParameterisedList(str);
 }
-inline std::optional<ListOfLists> ParseListOfLists(base::StringPiece str) {
+inline std::optional<ListOfLists> ParseListOfLists(std::string_view str) {
   return quiche::structured_headers::ParseListOfLists(str);
 }
-inline std::optional<List> ParseList(base::StringPiece str) {
+inline std::optional<List> ParseList(std::string_view str) {
   return quiche::structured_headers::ParseList(str);
 }
-inline std::optional<Dictionary> ParseDictionary(base::StringPiece str) {
+inline std::optional<Dictionary> ParseDictionary(std::string_view str) {
   return quiche::structured_headers::ParseDictionary(str);
 }
 

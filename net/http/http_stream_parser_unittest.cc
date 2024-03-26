@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "net/base/chunked_upload_data_stream.h"
@@ -291,12 +291,12 @@ TEST(HttpStreamParser, InitAsynchronousUploadDataStream) {
 TEST(HttpStreamParser, EncodeChunk_EmptyPayload) {
   char output[kOutputSize];
 
-  const base::StringPiece kPayload = "";
-  const base::StringPiece kExpected = "0\r\n\r\n";
+  const std::string_view kPayload = "";
+  const std::string_view kExpected = "0\r\n\r\n";
   const int num_bytes_written =
       HttpStreamParser::EncodeChunk(kPayload, output, sizeof(output));
   ASSERT_EQ(kExpected.size(), static_cast<size_t>(num_bytes_written));
-  EXPECT_EQ(kExpected, base::StringPiece(output, num_bytes_written));
+  EXPECT_EQ(kExpected, std::string_view(output, num_bytes_written));
 }
 
 TEST(HttpStreamParser, EncodeChunk_ShortPayload) {
@@ -308,7 +308,7 @@ TEST(HttpStreamParser, EncodeChunk_ShortPayload) {
   const int num_bytes_written =
       HttpStreamParser::EncodeChunk(kPayload, output, sizeof(output));
   ASSERT_EQ(kExpected.size(), static_cast<size_t>(num_bytes_written));
-  EXPECT_EQ(kExpected, base::StringPiece(output, num_bytes_written));
+  EXPECT_EQ(kExpected, std::string_view(output, num_bytes_written));
 }
 
 TEST(HttpStreamParser, EncodeChunk_LargePayload) {
@@ -320,7 +320,7 @@ TEST(HttpStreamParser, EncodeChunk_LargePayload) {
   const int num_bytes_written =
       HttpStreamParser::EncodeChunk(kPayload, output, sizeof(output));
   ASSERT_EQ(kExpected.size(), static_cast<size_t>(num_bytes_written));
-  EXPECT_EQ(kExpected, base::StringPiece(output, num_bytes_written));
+  EXPECT_EQ(kExpected, std::string_view(output, num_bytes_written));
 }
 
 TEST(HttpStreamParser, EncodeChunk_FullPayload) {
@@ -332,7 +332,7 @@ TEST(HttpStreamParser, EncodeChunk_FullPayload) {
   const int num_bytes_written =
       HttpStreamParser::EncodeChunk(kPayload, output, sizeof(output));
   ASSERT_EQ(kExpected.size(), static_cast<size_t>(num_bytes_written));
-  EXPECT_EQ(kExpected, base::StringPiece(output, num_bytes_written));
+  EXPECT_EQ(kExpected, std::string_view(output, num_bytes_written));
 }
 
 TEST(HttpStreamParser, EncodeChunk_TooLargePayload) {
@@ -1211,9 +1211,9 @@ TEST(HttpStreamParser, WebSocket101Response) {
   EXPECT_TRUE(response_info.headers->HasHeaderValue("Connection", "Upgrade"));
   EXPECT_TRUE(response_info.headers->HasHeaderValue("Upgrade", "websocket"));
   EXPECT_EQ(read_buffer->capacity(), read_buffer->offset());
-  EXPECT_EQ("a fake websocket frame",
-            base::StringPiece(read_buffer->StartOfBuffer(),
-                              read_buffer->capacity()));
+  EXPECT_EQ(
+      "a fake websocket frame",
+      std::string_view(read_buffer->StartOfBuffer(), read_buffer->capacity()));
 
   EXPECT_EQ(CountWriteBytes(writes), parser.sent_bytes());
   EXPECT_EQ(CountReadBytes(reads) -
@@ -1247,12 +1247,12 @@ class SimpleGetRunner {
 
   // The data used to back |string_piece| must stay alive until all mock data
   // has been read.
-  void AddRead(base::StringPiece string_piece) {
+  void AddRead(std::string_view string_piece) {
     reads_.emplace_back(SYNCHRONOUS, string_piece.data(), string_piece.length(),
                         sequence_number_++);
   }
 
-  void AddAsyncRead(base::StringPiece string_piece) {
+  void AddAsyncRead(std::string_view string_piece) {
     reads_.emplace_back(ASYNC, string_piece.data(), string_piece.length(),
                         sequence_number_++);
   }
@@ -2317,10 +2317,10 @@ TEST(HttpStreamParser, ReceiveOneByteAtATime) {
 
   SimpleGetRunner get_runner;
   for (size_t i = 0; i < kResponseHeaders.length(); ++i) {
-    get_runner.AddRead(base::StringPiece(kResponseHeaders.data() + i, 1));
+    get_runner.AddRead(std::string_view(kResponseHeaders.data() + i, 1));
   }
   for (size_t i = 0; i < kResponseBody.length(); ++i) {
-    get_runner.AddRead(base::StringPiece(kResponseBody.data() + i, 1));
+    get_runner.AddRead(std::string_view(kResponseBody.data() + i, 1));
   }
   // EOF
   get_runner.AddRead("");

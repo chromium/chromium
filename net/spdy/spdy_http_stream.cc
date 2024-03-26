@@ -8,6 +8,7 @@
 #include <list>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -591,7 +592,7 @@ const std::set<std::string>& SpdyHttpStream::GetDnsAliases() const {
   return dns_aliases_;
 }
 
-base::StringPiece SpdyHttpStream::GetAcceptChViaAlps() const {
+std::string_view SpdyHttpStream::GetAcceptChViaAlps() const {
   if (!request_info_) {
     return {};
   }

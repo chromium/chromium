@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "net/base/net_errors.h"
@@ -117,7 +118,7 @@ class NET_EXPORT StreamSocket : public Socket {
   // Get data received from peer in ALPS TLS extension.
   // Returns a (possibly empty) value if a TLS version supporting ALPS was used
   // and ALPS was negotiated, nullopt otherwise.
-  virtual std::optional<base::StringPiece> GetPeerApplicationSettings() const;
+  virtual std::optional<std::string_view> GetPeerApplicationSettings() const;
 
   // Gets the SSL connection information of the socket.  Returns false if
   // SSL was not used by this socket.

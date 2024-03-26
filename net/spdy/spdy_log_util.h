@@ -5,7 +5,8 @@
 #ifndef NET_SPDY_SPDY_LOG_UTIL_H_
 #define NET_SPDY_SPDY_LOG_UTIL_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/http/http_log_util.h"
@@ -19,7 +20,7 @@ namespace net {
 // according to |capture_mode|.
 NET_EXPORT_PRIVATE base::Value ElideGoAwayDebugDataForNetLog(
     NetLogCaptureMode capture_mode,
-    base::StringPiece debug_data);
+    std::string_view debug_data);
 
 // Given a spdy::Http2HeaderBlock, return its base::Value::List representation.
 NET_EXPORT_PRIVATE base::Value::List ElideHttp2HeaderBlockForNetLog(

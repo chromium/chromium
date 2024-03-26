@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/format_macros.h"
@@ -22,7 +23,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -110,7 +110,7 @@ const char* const kNonUpdatedHeaderPrefixes[] = {
   "x-webkit-"
 };
 
-bool ShouldUpdateHeader(base::StringPiece name) {
+bool ShouldUpdateHeader(std::string_view name) {
   for (const auto* header : kNonUpdatedHeaders) {
     if (base::EqualsCaseInsensitiveASCII(name, header))
       return false;
@@ -122,18 +122,18 @@ bool ShouldUpdateHeader(base::StringPiece name) {
   return true;
 }
 
-bool HasEmbeddedNulls(base::StringPiece str) {
+bool HasEmbeddedNulls(std::string_view str) {
   return str.find('\0') != std::string::npos;
 }
 
-void CheckDoesNotHaveEmbeddedNulls(base::StringPiece str) {
+void CheckDoesNotHaveEmbeddedNulls(std::string_view str) {
   // Care needs to be taken when adding values to the raw headers string to
   // make sure it does not contain embeded NULLs. Any embeded '\0' may be
   // understood as line terminators and change how header lines get tokenized.
   CHECK(!HasEmbeddedNulls(str));
 }
 
-void RemoveLeadingSpaces(base::StringPiece* s) {
+void RemoveLeadingSpaces(std::string_view* s) {
   s->remove_prefix(std::min(s->find_first_not_of(' '), s->size()));
 }
 
@@ -143,7 +143,7 @@ void RemoveLeadingSpaces(base::StringPiece* s) {
 // and append " 404 Not found" to `append_to`. The odd calling convention is
 // necessary to avoid extra copies in the implementation of
 // HttpResponseHeaders::ParseStatusLine().
-int ParseStatus(base::StringPiece status, std::string& append_to) {
+int ParseStatus(std::string_view status, std::string& append_to) {
   // Skip whitespace. Tabs are not skipped, for backwards compatibility.
   RemoveLeadingSpaces(&status);
 
@@ -172,7 +172,7 @@ int ParseStatus(base::StringPiece status, std::string& append_to) {
 
   // Trim trailing whitespace. Tabs are not trimmed.
   const size_t last_non_space_pos = status.find_last_not_of(' ');
-  if (last_non_space_pos != base::StringPiece::npos) {
+  if (last_non_space_pos != std::string_view::npos) {
     status.remove_suffix(status.size() - last_non_space_pos - 1);
   }
 
@@ -214,7 +214,7 @@ struct HttpResponseHeaders::ParsedHeader {
 //-----------------------------------------------------------------------------
 
 HttpResponseHeaders::Builder::Builder(HttpVersion version,
-                                      base::StringPiece status)
+                                      std::string_view status)
     : version_(version), status_(status) {
   DCHECK(version == HttpVersion(1, 0) || version == HttpVersion(1, 1) ||
          version == HttpVersion(2, 0));
@@ -260,8 +260,8 @@ HttpResponseHeaders::HttpResponseHeaders(base::PickleIterator* iter)
 HttpResponseHeaders::HttpResponseHeaders(
     BuilderPassKey,
     HttpVersion version,
-    base::StringPiece status,
-    base::span<const std::pair<base::StringPiece, base::StringPiece>> headers)
+    std::string_view status,
+    base::span<const std::pair<std::string_view, std::string_view>> headers)
     : http_version_(version) {
   // This must match the behaviour of Parse(). We don't use Parse() because
   // avoiding the overhead of parsing is the point of this constructor.
@@ -345,7 +345,7 @@ HttpResponseHeaders::HttpResponseHeaders(
 }
 
 scoped_refptr<HttpResponseHeaders> HttpResponseHeaders::TryToCreate(
-    base::StringPiece headers) {
+    std::string_view headers) {
   // Reject strings with nulls.
   if (HasEmbeddedNulls(headers) ||
       headers.size() > std::numeric_limits<int>::max()) {
@@ -486,7 +486,7 @@ void HttpResponseHeaders::MergeWithHeaders(std::string raw_headers,
   Parse(raw_headers);
 }
 
-void HttpResponseHeaders::RemoveHeader(base::StringPiece name) {
+void HttpResponseHeaders::RemoveHeader(std::string_view name) {
   // Copy up to the null byte.  This just copies the status line.
   std::string new_raw_headers(raw_headers_.c_str());
   new_raw_headers.push_back('\0');
@@ -541,8 +541,8 @@ void HttpResponseHeaders::RemoveHeaderLine(const std::string& name,
   Parse(new_raw_headers);
 }
 
-void HttpResponseHeaders::AddHeader(base::StringPiece name,
-                                    base::StringPiece value) {
+void HttpResponseHeaders::AddHeader(std::string_view name,
+                                    std::string_view value) {
   DCHECK(HttpUtil::IsValidHeaderName(name));
   DCHECK(HttpUtil::IsValidHeaderValue(value));
 
@@ -560,8 +560,8 @@ void HttpResponseHeaders::AddHeader(base::StringPiece name,
   Parse(new_raw_headers);
 }
 
-void HttpResponseHeaders::SetHeader(base::StringPiece name,
-                                    base::StringPiece value) {
+void HttpResponseHeaders::SetHeader(std::string_view name,
+                                    std::string_view value) {
   RemoveHeader(name);
   AddHeader(name, value);
 }
@@ -658,7 +658,7 @@ void HttpResponseHeaders::Parse(const std::string& raw_input) {
   DCHECK_EQ('\0', raw_headers_[raw_headers_.size() - 1]);
 }
 
-bool HttpResponseHeaders::GetNormalizedHeader(base::StringPiece name,
+bool HttpResponseHeaders::GetNormalizedHeader(std::string_view name,
                                               std::string* value) const {
   // If you hit this assertion, please use EnumerateHeader instead!
   DCHECK(!HttpUtil::IsNonCoalescingHeader(name));
@@ -735,7 +735,7 @@ bool HttpResponseHeaders::EnumerateHeaderLines(size_t* iter,
 }
 
 bool HttpResponseHeaders::EnumerateHeader(size_t* iter,
-                                          base::StringPiece name,
+                                          std::string_view name,
                                           std::string* value) const {
   size_t i;
   if (!iter || !*iter) {
@@ -760,8 +760,8 @@ bool HttpResponseHeaders::EnumerateHeader(size_t* iter,
   return true;
 }
 
-bool HttpResponseHeaders::HasHeaderValue(base::StringPiece name,
-                                         base::StringPiece value) const {
+bool HttpResponseHeaders::HasHeaderValue(std::string_view name,
+                                         std::string_view value) const {
   // The value has to be an exact match.  This is important since
   // 'cache-control: no-cache' != 'cache-control: no-cache="foo"'
   size_t iter = 0;
@@ -773,7 +773,7 @@ bool HttpResponseHeaders::HasHeaderValue(base::StringPiece name,
   return false;
 }
 
-bool HttpResponseHeaders::HasHeader(base::StringPiece name) const {
+bool HttpResponseHeaders::HasHeader(std::string_view name) const {
   return FindHeader(0, name) != std::string::npos;
 }
 
@@ -868,7 +868,7 @@ void HttpResponseHeaders::ParseStatusLine(
 }
 
 size_t HttpResponseHeaders::FindHeader(size_t from,
-                                       base::StringPiece search) const {
+                                       std::string_view search) const {
   for (size_t i = from; i < parsed_.size(); ++i) {
     if (parsed_[i].is_continuation())
       continue;
@@ -882,9 +882,9 @@ size_t HttpResponseHeaders::FindHeader(size_t from,
 }
 
 bool HttpResponseHeaders::GetCacheControlDirective(
-    base::StringPiece directive,
+    std::string_view directive,
     base::TimeDelta* result) const {
-  static constexpr base::StringPiece name("cache-control");
+  static constexpr std::string_view name("cache-control");
   std::string value;
 
   size_t directive_size = directive.size();
@@ -1001,7 +1001,7 @@ void HttpResponseHeaders::AddNonCacheableHeaders(HeaderSet* result) const {
       // assuming the header is not empty, lowercase and insert into set
       if (item_end > item) {
         result->insert(
-            base::ToLowerASCII(base::StringPiece(&*item, item_end - item)));
+            base::ToLowerASCII(std::string_view(&*item, item_end - item)));
       }
 
       // Continue to next item.
@@ -1530,7 +1530,7 @@ bool HttpResponseHeaders::IsChunkEncoded() const {
          HasHeaderValue("Transfer-Encoding", "chunked");
 }
 
-bool HttpResponseHeaders::IsCookieResponseHeader(base::StringPiece name) {
+bool HttpResponseHeaders::IsCookieResponseHeader(std::string_view name) {
   for (const char* cookie_header : kCookieResponseHeaders) {
     if (base::EqualsCaseInsensitiveASCII(cookie_header, name))
       return true;

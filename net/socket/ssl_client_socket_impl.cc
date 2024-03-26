@@ -11,6 +11,7 @@
 #include <cstring>
 #include <map>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -25,7 +26,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -146,7 +146,7 @@ base::Value::Dict NetLogSSLMessageParams(bool is_write,
   return dict;
 }
 
-bool HostIsIPAddressNoBrackets(base::StringPiece host) {
+bool HostIsIPAddressNoBrackets(std::string_view host) {
   // Note this cannot directly call url::HostIsIPAddress, because that function
   // expects bracketed IPv6 literals. By the time hosts reach SSLClientSocket,
   // brackets have been removed.
@@ -304,9 +304,9 @@ std::vector<uint8_t> SSLClientSocketImpl::GetECHRetryConfigs() {
   return std::vector<uint8_t>(retry_configs, retry_configs + retry_configs_len);
 }
 
-int SSLClientSocketImpl::ExportKeyingMaterial(base::StringPiece label,
+int SSLClientSocketImpl::ExportKeyingMaterial(std::string_view label,
                                               bool has_context,
-                                              base::StringPiece context,
+                                              std::string_view context,
                                               unsigned char* out,
                                               unsigned int outlen) {
   if (!IsConnected())
@@ -455,7 +455,7 @@ NextProto SSLClientSocketImpl::GetNegotiatedProtocol() const {
   return negotiated_protocol_;
 }
 
-std::optional<base::StringPiece>
+std::optional<std::string_view>
 SSLClientSocketImpl::GetPeerApplicationSettings() const {
   if (!SSL_has_application_settings(ssl_.get())) {
     return std::nullopt;
@@ -464,7 +464,7 @@ SSLClientSocketImpl::GetPeerApplicationSettings() const {
   const uint8_t* out_data;
   size_t out_len;
   SSL_get0_peer_application_settings(ssl_.get(), &out_data, &out_len);
-  return base::StringPiece{reinterpret_cast<const char*>(out_data), out_len};
+  return std::string_view{reinterpret_cast<const char*>(out_data), out_len};
 }
 
 bool SSLClientSocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
@@ -905,8 +905,7 @@ int SSLClientSocketImpl::DoHandshakeComplete(int result) {
   unsigned alpn_len = 0;
   SSL_get0_alpn_selected(ssl_.get(), &alpn_proto, &alpn_len);
   if (alpn_len > 0) {
-    base::StringPiece proto(reinterpret_cast<const char*>(alpn_proto),
-                            alpn_len);
+    std::string_view proto(reinterpret_cast<const char*>(alpn_proto), alpn_len);
     negotiated_protocol_ = NextProtoFromString(proto);
   }
 
@@ -1045,7 +1044,7 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
     return HandleVerifyResult();
   }
 
-  base::StringPiece ech_name_override = GetECHNameOverride();
+  std::string_view ech_name_override = GetECHNameOverride();
   if (!ech_name_override.empty()) {
     // If ECH was offered but not negotiated, BoringSSL will ask to verify a
     // different name than the origin. If verification succeeds, we continue the
@@ -1076,14 +1075,14 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
   const uint8_t* ocsp_response_raw;
   size_t ocsp_response_len;
   SSL_get0_ocsp_response(ssl_.get(), &ocsp_response_raw, &ocsp_response_len);
-  base::StringPiece ocsp_response(
+  std::string_view ocsp_response(
       reinterpret_cast<const char*>(ocsp_response_raw), ocsp_response_len);
 
   const uint8_t* sct_list_raw;
   size_t sct_list_len;
   SSL_get0_signed_cert_timestamp_list(ssl_.get(), &sct_list_raw, &sct_list_len);
-  base::StringPiece sct_list(reinterpret_cast<const char*>(sct_list_raw),
-                             sct_list_len);
+  std::string_view sct_list(reinterpret_cast<const char*>(sct_list_raw),
+                            sct_list_len);
 
   cert_verification_result_ = context_->cert_verifier()->Verify(
       CertVerifier::RequestParams(
@@ -1738,11 +1737,11 @@ int SSLClientSocketImpl::MapLastOpenSSLError(
   return net_error;
 }
 
-base::StringPiece SSLClientSocketImpl::GetECHNameOverride() const {
+std::string_view SSLClientSocketImpl::GetECHNameOverride() const {
   const char* data;
   size_t len;
   SSL_get0_ech_name_override(ssl_.get(), &data, &len);
-  return base::StringPiece(data, len);
+  return std::string_view(data, len);
 }
 
 bool SSLClientSocketImpl::IsAllowedBadCert(X509Certificate* cert,

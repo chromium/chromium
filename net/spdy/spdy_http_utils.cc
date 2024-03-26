@@ -5,12 +5,12 @@
 #include "net/spdy/spdy_http_utils.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
@@ -39,8 +39,8 @@ constexpr size_t kExpectedRawHeaderSize = 4035;
 
 // Add header `name` with `value` to `headers`. `name` must not already exist in
 // `headers`.
-void AddUniqueSpdyHeader(base::StringPiece name,
-                         base::StringPiece value,
+void AddUniqueSpdyHeader(std::string_view name,
+                         std::string_view value,
                          spdy::Http2HeaderBlock* headers) {
   auto insert_result = headers->insert({name, value});
   CHECK_EQ(insert_result, spdy::Http2HeaderBlock::InsertResult::kInserted);
@@ -82,7 +82,7 @@ SpdyHeadersToHttpResponseHeadersUsingRawString(
   const auto status = it->second;
 
   std::string raw_headers =
-      base::StrCat({"HTTP/1.1 ", status, base::StringPiece("\0", 1)});
+      base::StrCat({"HTTP/1.1 ", status, std::string_view("\0", 1)});
   raw_headers.reserve(kExpectedRawHeaderSize);
   for (const auto& [name, value] : headers) {
     DCHECK_GT(name.size(), 0u);
@@ -103,14 +103,14 @@ SpdyHeadersToHttpResponseHeadersUsingRawString(
     size_t end = 0;
     do {
       end = value.find('\0', start);
-      base::StringPiece tval;
+      std::string_view tval;
       if (end != value.npos) {
         tval = value.substr(start, (end - start));
       } else {
         tval = value.substr(start);
       }
       base::StrAppend(&raw_headers,
-                      {name, ":", tval, base::StringPiece("\0", 1)});
+                      {name, ":", tval, std::string_view("\0", 1)});
       start = end + 1;
     } while (end != value.npos);
   }
@@ -162,10 +162,10 @@ SpdyHeadersToHttpResponseHeadersUsingBuilder(
     //    Set-Cookie: bar\0
     size_t start = 0;
     size_t end = 0;
-    std::optional<base::StringPiece> location_value;
+    std::optional<std::string_view> location_value;
     do {
       end = value.find('\0', start);
-      base::StringPiece tval;
+      std::string_view tval;
       if (end != value.npos) {
         tval = value.substr(start, (end - start));
 
@@ -181,7 +181,7 @@ SpdyHeadersToHttpResponseHeadersUsingBuilder(
       }
       if (location_value.has_value() && start > 0) {
         DCHECK(base::EqualsCaseInsensitiveASCII(name, "location"));
-        base::StringPiece trimmed_value = HttpUtil::TrimLWS(tval);
+        std::string_view trimmed_value = HttpUtil::TrimLWS(tval);
         if (trimmed_value != location_value.value()) {
           return base::unexpected(ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION);
         }
@@ -302,11 +302,11 @@ NET_EXPORT_PRIVATE void ConvertHeaderBlockToHttpRequestHeaders(
     const spdy::Http2HeaderBlock& spdy_headers,
     HttpRequestHeaders* http_headers) {
   for (const auto& it : spdy_headers) {
-    base::StringPiece key = it.first;
+    std::string_view key = it.first;
     if (key[0] == ':') {
       key.remove_prefix(1);
     }
-    std::vector<base::StringPiece> values = base::SplitStringPiece(
+    std::vector<std::string_view> values = base::SplitStringPiece(
         it.second, "\0", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     for (const auto& value : values) {
       http_headers->SetHeader(key, value);

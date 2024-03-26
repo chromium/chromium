@@ -5,6 +5,7 @@
 #include "net/dns/nsswitch_reader.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -54,16 +54,17 @@ std::string ReadNsswitch() {
   return "";
 }
 
-base::StringPiece SkipRestOfLine(base::StringPiece text) {
-  base::StringPiece::size_type line_end = text.find('\n');
-  if (line_end == base::StringPiece::npos)
+std::string_view SkipRestOfLine(std::string_view text) {
+  std::string_view::size_type line_end = text.find('\n');
+  if (line_end == std::string_view::npos) {
     return "";
+  }
   return text.substr(line_end);
 }
 
 // In case of multiple entries for `database_name`, finds only the first.
-base::StringPiece FindDatabase(base::StringPiece text,
-                               base::StringPiece database_name) {
+std::string_view FindDatabase(std::string_view text,
+                              std::string_view database_name) {
   DCHECK(!text.empty());
   DCHECK(!database_name.empty());
   DCHECK(!database_name.starts_with("#"));
@@ -78,9 +79,10 @@ base::StringPiece FindDatabase(base::StringPiece text,
       DCHECK(!text.starts_with("#"));
 
       text = text.substr(database_name.size());
-      base::StringPiece::size_type line_end = text.find('\n');
-      if (line_end != base::StringPiece::npos)
+      std::string_view::size_type line_end = text.find('\n');
+      if (line_end != std::string_view::npos) {
         text = text.substr(0, line_end);
+      }
 
       return base::TrimWhitespaceASCII(text, base::TrimPositions::TRIM_ALL);
     }
@@ -91,17 +93,17 @@ base::StringPiece FindDatabase(base::StringPiece text,
   return "";
 }
 
-NsswitchReader::ServiceAction TokenizeAction(base::StringPiece action_column) {
+NsswitchReader::ServiceAction TokenizeAction(std::string_view action_column) {
   DCHECK(!action_column.empty());
-  DCHECK_EQ(action_column.find(']'), base::StringPiece::npos);
+  DCHECK_EQ(action_column.find(']'), std::string_view::npos);
   DCHECK_EQ(action_column.find_first_of(base::kWhitespaceASCII),
-            base::StringPiece::npos);
+            std::string_view::npos);
 
   NsswitchReader::ServiceAction result = {/*negated=*/false,
                                           NsswitchReader::Status::kUnknown,
                                           NsswitchReader::Action::kUnknown};
 
-  std::vector<base::StringPiece> split = base::SplitStringPiece(
+  std::vector<std::string_view> split = base::SplitStringPiece(
       action_column, "=", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (split.size() != 2)
     return result;
@@ -133,10 +135,10 @@ NsswitchReader::ServiceAction TokenizeAction(base::StringPiece action_column) {
 }
 
 std::vector<NsswitchReader::ServiceAction> TokenizeActions(
-    base::StringPiece actions) {
+    std::string_view actions) {
   DCHECK(!actions.empty());
   DCHECK_NE(actions.front(), '[');
-  DCHECK_EQ(actions.find(']'), base::StringPiece::npos);
+  DCHECK_EQ(actions.find(']'), std::string_view::npos);
   DCHECK(!base::IsAsciiWhitespace(actions.front()));
 
   std::vector<NsswitchReader::ServiceAction> result;
@@ -152,10 +154,10 @@ std::vector<NsswitchReader::ServiceAction> TokenizeActions(
 }
 
 NsswitchReader::ServiceSpecification TokenizeService(
-    base::StringPiece service_column) {
+    std::string_view service_column) {
   DCHECK(!service_column.empty());
   DCHECK_EQ(service_column.find_first_of(base::kWhitespaceASCII),
-            base::StringPiece::npos);
+            std::string_view::npos);
   DCHECK_NE(service_column.front(), '[');
 
   if (base::EqualsCaseInsensitiveASCII(service_column, "files")) {
@@ -206,15 +208,15 @@ NsswitchReader::ServiceSpecification TokenizeService(
 
 // Returns the actions string without brackets. `out_num_bytes` returns number
 // of bytes in the actions including brackets and trailing whitespace.
-base::StringPiece GetActionsStringAndRemoveBrackets(base::StringPiece database,
-                                                    size_t& out_num_bytes) {
+std::string_view GetActionsStringAndRemoveBrackets(std::string_view database,
+                                                   size_t& out_num_bytes) {
   DCHECK(!database.empty());
   DCHECK_EQ(database.front(), '[');
 
   size_t action_end = database.find(']');
 
-  base::StringPiece actions;
-  if (action_end == base::StringPiece::npos) {
+  std::string_view actions;
+  if (action_end == std::string_view::npos) {
     actions = database.substr(1);
     out_num_bytes = database.size();
   } else {
@@ -241,7 +243,7 @@ base::StringPiece GetActionsStringAndRemoveBrackets(base::StringPiece database,
 }
 
 std::vector<NsswitchReader::ServiceSpecification> TokenizeDatabase(
-    base::StringPiece database) {
+    std::string_view database) {
   std::vector<NsswitchReader::ServiceSpecification> tokenized;
 
   while (!database.empty()) {
@@ -260,7 +262,7 @@ std::vector<NsswitchReader::ServiceSpecification> TokenizeDatabase(
       }
 
       size_t num_actions_bytes = 0;
-      base::StringPiece actions =
+      std::string_view actions =
           GetActionsStringAndRemoveBrackets(database, num_actions_bytes);
 
       if (num_actions_bytes == database.size()) {
@@ -279,8 +281,8 @@ std::vector<NsswitchReader::ServiceSpecification> TokenizeDatabase(
     } else {
       size_t column_end = database.find_first_of(base::kWhitespaceASCII);
 
-      base::StringPiece service_column;
-      if (column_end == base::StringPiece::npos) {
+      std::string_view service_column;
+      if (column_end == std::string_view::npos) {
         service_column = database;
         database = "";
       } else {
@@ -337,7 +339,7 @@ NsswitchReader::ReadAndParseHosts() {
   if (file.empty())
     return GetDefaultHosts();
 
-  base::StringPiece hosts = FindDatabase(file, "hosts:");
+  std::string_view hosts = FindDatabase(file, "hosts:");
   if (hosts.empty())
     return GetDefaultHosts();
 

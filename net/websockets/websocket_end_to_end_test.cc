@@ -13,6 +13,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -27,7 +28,6 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -96,7 +96,7 @@ using test_server::HttpResponse;
 static const char kEchoServer[] = "echo-with-no-extension";
 
 // Simplify changing URL schemes.
-GURL ReplaceUrlScheme(const GURL& in_url, base::StringPiece scheme) {
+GURL ReplaceUrlScheme(const GURL& in_url, std::string_view scheme) {
   GURL::Replacements replacements;
   replacements.SetSchemeStr(scheme);
   return in_url.ReplaceComponents(replacements);

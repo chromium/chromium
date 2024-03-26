@@ -9,6 +9,7 @@
 #include <cstring>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/big_endian.h"
@@ -644,7 +645,7 @@ TEST(DnsNamesUtilTest, NetworkToDottedNameShouldRejectTooLongCompleteName) {
 }
 
 TEST(DnsNamesUtilTest, ValidDnsNames) {
-  constexpr base::StringPiece kGoodHostnames[] = {
+  constexpr std::string_view kGoodHostnames[] = {
       "www.noodles.blorg",   "1www.noodles.blorg",    "www.2noodles.blorg",
       "www.n--oodles.blorg", "www.noodl_es.blorg",    "www.no-_odles.blorg",
       "www_.noodles.blorg",  "www.noodles.blorg.",    "_privet._tcp.local",
@@ -652,7 +653,7 @@ TEST(DnsNamesUtilTest, ValidDnsNames) {
       "www.nood(les).blorg", "noo dl(es)._tcp.local",
   };
 
-  for (base::StringPiece good_hostname : kGoodHostnames) {
+  for (std::string_view good_hostname : kGoodHostnames) {
     EXPECT_TRUE(IsValidDnsName(good_hostname));
     EXPECT_TRUE(IsValidDnsRecordName(good_hostname));
   }

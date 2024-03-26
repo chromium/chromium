@@ -4,6 +4,7 @@
 
 #include "net/dns/public/doh_provider_entry.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -17,9 +18,9 @@ namespace net {
 
 namespace {
 
-std::set<IPAddress> ParseIPs(const std::set<base::StringPiece>& ip_strs) {
+std::set<IPAddress> ParseIPs(const std::set<std::string_view>& ip_strs) {
   std::set<IPAddress> ip_addresses;
-  for (base::StringPiece ip_str : ip_strs) {
+  for (std::string_view ip_str : ip_strs) {
     IPAddress ip_address;
     bool success = ip_address.AssignFromIPLiteral(ip_str);
     DCHECK(success);
@@ -30,7 +31,7 @@ std::set<IPAddress> ParseIPs(const std::set<base::StringPiece>& ip_strs) {
 
 DnsOverHttpsServerConfig ParseValidDohTemplate(
     std::string server_template,
-    const std::set<base::StringPiece>& endpoint_ip_strs) {
+    const std::set<std::string_view>& endpoint_ip_strs) {
   std::set<IPAddress> endpoint_ips = ParseIPs(endpoint_ip_strs);
 
   std::vector<std::vector<IPAddress>> endpoints;
@@ -313,7 +314,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
 DohProviderEntry DohProviderEntry::ConstructForTesting(
     std::string provider,
     const base::Feature* feature,
-    std::set<base::StringPiece> dns_over_53_server_ip_strs,
+    std::set<std::string_view> dns_over_53_server_ip_strs,
     std::set<std::string> dns_over_tls_hostnames,
     std::string dns_over_https_template,
     std::string ui_name,
@@ -333,7 +334,7 @@ DohProviderEntry::~DohProviderEntry() = default;
 DohProviderEntry::DohProviderEntry(
     std::string provider,
     const base::Feature* feature,
-    std::set<base::StringPiece> dns_over_53_server_ip_strs,
+    std::set<std::string_view> dns_over_53_server_ip_strs,
     std::set<std::string> dns_over_tls_hostnames,
     std::string dns_over_https_template,
     std::string ui_name,
@@ -341,7 +342,7 @@ DohProviderEntry::DohProviderEntry(
     bool display_globally,
     std::set<std::string> display_countries,
     LoggingLevel logging_level,
-    std::set<base::StringPiece> dns_over_https_server_ip_strs)
+    std::set<std::string_view> dns_over_https_server_ip_strs)
     : provider(std::move(provider)),
       feature(*feature),
       ip_addresses(ParseIPs(dns_over_53_server_ip_strs)),

@@ -4,10 +4,11 @@
 
 #include "net/dns/host_resolver_dns_task.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"
 #include "net/base/features.h"
 #include "net/dns/address_sorter.h"
@@ -26,7 +27,7 @@ namespace net {
 
 namespace {
 
-DnsResponse CreateFakeEmptyResponse(base::StringPiece hostname,
+DnsResponse CreateFakeEmptyResponse(std::string_view hostname,
                                     DnsQueryType query_type) {
   std::optional<std::vector<uint8_t>> qname =
       dns_names_util::DottedNameToNetwork(

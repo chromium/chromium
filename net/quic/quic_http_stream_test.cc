@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -133,8 +134,8 @@ std::vector<TestParams> GetTestParams() {
 // key-value pairs has exactly one entry with |key| and that entry has value
 // |expected_value|.
 bool CheckHeader(const base::Value::Dict& params,
-                 base::StringPiece key,
-                 base::StringPiece expected_value) {
+                 std::string_view key,
+                 std::string_view expected_value) {
   const base::Value::List* headers = params.FindList("headers");
   if (!headers) {
     return false;

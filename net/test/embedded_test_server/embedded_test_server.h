@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -18,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/address_list.h"
@@ -377,13 +377,13 @@ class EmbeddedTestServer {
   // Equivalent of StartAndReturnHandle(), but requires manual Shutdown() by
   // the caller.
   [[nodiscard]] bool Start(int port = 0,
-                           base::StringPiece address = "127.0.0.1");
+                           std::string_view address = "127.0.0.1");
 
   // Starts listening for incoming connections but will not yet accept them.
   // Returns whether a listening socket has been successfully created.
   [[nodiscard]] bool InitializeAndListen(
       int port = 0,
-      base::StringPiece address = "127.0.0.1");
+      std::string_view address = "127.0.0.1");
 
   // Starts the Accept IO Thread and begins accepting connections.
   [[nodiscard]] EmbeddedTestServerHandle
@@ -415,12 +415,12 @@ class EmbeddedTestServer {
   // Returns a URL to the server based on the given relative URL, which
   // should start with '/'. For example: GetURL("/path?query=foo") =>
   // http://127.0.0.1:<port>/path?query=foo.
-  GURL GetURL(base::StringPiece relative_url) const;
+  GURL GetURL(std::string_view relative_url) const;
 
   // Similar to the above method with the difference that it uses the supplied
   // |hostname| for the URL instead of 127.0.0.1. The hostname should be
   // resolved to 127.0.0.1.
-  GURL GetURL(base::StringPiece hostname, base::StringPiece relative_url) const;
+  GURL GetURL(std::string_view hostname, std::string_view relative_url) const;
 
   // Convenience function equivalent to calling url::Origin::Create(base_url()).
   // Will use the GetURL() variant that takes a hostname as the base URL, if
@@ -478,7 +478,7 @@ class EmbeddedTestServer {
   void ServeFilesFromDirectory(const base::FilePath& directory);
 
   // Serves files relative to DIR_SRC_TEST_DATA_ROOT.
-  void ServeFilesFromSourceDirectory(base::StringPiece relative);
+  void ServeFilesFromSourceDirectory(std::string_view relative);
   void ServeFilesFromSourceDirectory(const base::FilePath& relative);
 
   // Registers the default handlers and serve additional files from the

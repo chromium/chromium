@@ -8,12 +8,12 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/big_endian.h"
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_names_util.h"
@@ -341,7 +341,7 @@ TEST(DnsRecordParserTest, ReadRecord) {
   EXPECT_EQ(dns_protocol::kClassIN, record.klass);
   EXPECT_EQ(0x00201355u, record.ttl);
   EXPECT_EQ(4u, record.rdata.length());
-  EXPECT_EQ(base::StringPiece("\x7f\x02\x04\x01"), record.rdata);
+  EXPECT_EQ(std::string_view("\x7f\x02\x04\x01"), record.rdata);
   EXPECT_TRUE(parser.AtEnd());
 
   // Test truncated record.

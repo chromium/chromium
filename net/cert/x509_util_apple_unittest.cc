@@ -4,6 +4,8 @@
 
 #include "net/cert/x509_util_apple.h"
 
+#include <string_view>
+
 #include "base/containers/span.h"
 #include "build/build_config.h"
 #include "net/cert/x509_certificate.h"
@@ -71,7 +73,7 @@ TEST(X509UtilTest, CreateSecCertificateArrayForX509CertificateErrors) {
   ASSERT_TRUE(ok_cert);
 
   bssl::UniquePtr<CRYPTO_BUFFER> bad_cert =
-      x509_util::CreateCryptoBuffer(base::StringPiece("invalid"));
+      x509_util::CreateCryptoBuffer(std::string_view("invalid"));
   ASSERT_TRUE(bad_cert);
 
   scoped_refptr<X509Certificate> ok_cert2(

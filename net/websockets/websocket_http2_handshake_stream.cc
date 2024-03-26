@@ -5,6 +5,7 @@
 #include "net/websockets/websocket_http2_handshake_stream.h"
 
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -250,7 +251,7 @@ const std::set<std::string>& WebSocketHttp2HandshakeStream::GetDnsAliases()
   return dns_aliases_;
 }
 
-base::StringPiece WebSocketHttp2HandshakeStream::GetAcceptChViaAlps() const {
+std::string_view WebSocketHttp2HandshakeStream::GetAcceptChViaAlps() const {
   return {};
 }
 

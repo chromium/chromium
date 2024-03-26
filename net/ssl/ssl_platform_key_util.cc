@@ -4,9 +4,10 @@
 
 #include "net/ssl/ssl_platform_key_util.h"
 
+#include <string_view>
+
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "crypto/openssl_util.h"
@@ -56,7 +57,7 @@ bssl::UniquePtr<EVP_PKEY> GetClientCertPublicKey(
     const X509Certificate* certificate) {
   crypto::OpenSSLErrStackTracer tracker(FROM_HERE);
 
-  base::StringPiece spki;
+  std::string_view spki;
   if (!asn1::ExtractSPKIFromDERCert(
           x509_util::CryptoBufferAsStringPiece(certificate->cert_buffer()),
           &spki)) {

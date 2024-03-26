@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include <limits>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "net/base/parse_number.h"
@@ -25,7 +25,7 @@ enum MaxAgeParsing { REQUIRE_MAX_AGE, DO_NOT_REQUIRE_MAX_AGE };
 // seconds into a uint32_t. The string may contain an arbitrarily large number,
 // which will be clipped to a supplied limit and which is guaranteed to fit
 // within a 32-bit unsigned integer. False is returned on any parse error.
-bool MaxAgeToLimitedInt(base::StringPiece s, uint32_t limit, uint32_t* result) {
+bool MaxAgeToLimitedInt(std::string_view s, uint32_t limit, uint32_t* result) {
   ParseIntError error;
   if (!ParseUint32(s, ParseIntFormat::NON_NEGATIVE, result, &error)) {
     if (error == ParseIntError::FAILED_OVERFLOW) {
@@ -95,7 +95,7 @@ bool ParseHSTSHeader(const std::string& value,
   tokenizer.set_quote_chars("\"");
   std::string unquoted;
   while (tokenizer.GetNext()) {
-    base::StringPiece token = tokenizer.token_piece();
+    std::string_view token = tokenizer.token_piece();
     DCHECK(!tokenizer.token_is_delim() || token.length() == 1);
     switch (state) {
       case START:

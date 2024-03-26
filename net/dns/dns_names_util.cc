@@ -9,12 +9,12 @@
 #include <cstring>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/big_endian.h"
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
 #include "net/base/url_util.h"
 #include "net/dns/public/dns_protocol.h"
@@ -24,13 +24,13 @@
 
 namespace net::dns_names_util {
 
-bool IsValidDnsName(base::StringPiece dotted_form_name) {
+bool IsValidDnsName(std::string_view dotted_form_name) {
   return DottedNameToNetwork(dotted_form_name,
                              /*require_valid_internet_hostname=*/false)
       .has_value();
 }
 
-bool IsValidDnsRecordName(base::StringPiece dotted_form_name) {
+bool IsValidDnsRecordName(std::string_view dotted_form_name) {
   IPAddress ip_address;
   return IsValidDnsName(dotted_form_name) &&
          !HostStringIsLocalhost(dotted_form_name) &&
@@ -40,7 +40,7 @@ bool IsValidDnsRecordName(base::StringPiece dotted_form_name) {
 
 // Based on DJB's public domain code.
 std::optional<std::vector<uint8_t>> DottedNameToNetwork(
-    base::StringPiece dotted_form_name,
+    std::string_view dotted_form_name,
     bool require_valid_internet_hostname) {
   // Use full IsCanonicalizedHostCompliant() validation if not
   // `is_unrestricted`. All subsequent validity checks should not apply unless
@@ -121,7 +121,7 @@ std::optional<std::string> NetworkToDottedName(
 }
 
 std::optional<std::string> NetworkToDottedName(
-    base::StringPiece dns_network_wire_name,
+    std::string_view dns_network_wire_name,
     bool require_complete) {
   auto reader = base::BigEndianReader::FromStringPiece(dns_network_wire_name);
   return NetworkToDottedName(reader, require_complete);
@@ -138,7 +138,7 @@ std::optional<std::string> NetworkToDottedName(base::BigEndianReader& reader,
         dns_protocol::kLabelPointer)
       return std::nullopt;
 
-    base::StringPiece label;
+    std::string_view label;
     if (!reader.ReadU8LengthPrefixed(&label))
       return std::nullopt;
 
@@ -170,7 +170,7 @@ std::optional<std::string> NetworkToDottedName(base::BigEndianReader& reader,
   return ret;
 }
 
-std::string UrlCanonicalizeNameIfAble(base::StringPiece name) {
+std::string UrlCanonicalizeNameIfAble(std::string_view name) {
   std::string canonicalized;
   url::StdStringCanonOutput output(&canonicalized);
   url::CanonHostInfo host_info;

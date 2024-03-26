@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -665,7 +666,7 @@ bool TransportSecurityState::GetStaticPKPState(const std::string& host,
     normalized_host.erase(trailing_dot_found + 1);
     normalized_host = base::ToLowerASCII(normalized_host);
 
-    base::StringPiece search_hostname = normalized_host;
+    std::string_view search_hostname = normalized_host;
     while (true) {
       auto iter = host_pins_->find(search_hostname);
       // Only consider this a match if either include_subdomains is set, or

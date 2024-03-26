@@ -13,6 +13,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <unordered_set>
 #include <utility>
@@ -46,7 +47,6 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -156,7 +156,7 @@ const uint8_t kIPv6ProbeAddress[] = {0x20, 0x01, 0x48, 0x60, 0x48, 0x60,
                                      0x00, 0x00, 0x88, 0x88};
 
 // True if |hostname| ends with either ".local" or ".local.".
-bool ResemblesMulticastDNSName(base::StringPiece hostname) {
+bool ResemblesMulticastDNSName(std::string_view hostname) {
   return hostname.ends_with(".local") || hostname.ends_with(".local.");
 }
 
@@ -213,7 +213,7 @@ PrioritizedDispatcher::Limits GetDispatcherLimits(
   // The format of the group name is a list of non-negative integers separated
   // by ':'. Each of the elements in the list corresponds to an element in
   // |reserved_slots|, except the last one which is the |total_jobs|.
-  std::vector<base::StringPiece> group_parts = base::SplitStringPiece(
+  std::vector<std::string_view> group_parts = base::SplitStringPiece(
       group, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (group_parts.size() != NUM_PRIORITIES + 1) {
     NOTREACHED();
@@ -285,7 +285,7 @@ int GetPortForGloballyReachableCheck() {
 
 //-----------------------------------------------------------------------------
 
-bool ResolveLocalHostname(base::StringPiece host,
+bool ResolveLocalHostname(std::string_view host,
                           std::vector<IPEndPoint>* address_list) {
   address_list->clear();
   if (!IsLocalHostname(host))
@@ -996,7 +996,7 @@ void HostResolverManager::StartBootstrapFollowup(
 }
 
 std::optional<HostCache::Entry> HostResolverManager::ServeFromHosts(
-    base::StringPiece hostname,
+    std::string_view hostname,
     DnsQueryTypeSet query_types,
     bool default_family_due_to_no_ipv6,
     const std::deque<TaskType>& tasks) {
@@ -1053,7 +1053,7 @@ std::optional<HostCache::Entry> HostResolverManager::ServeFromHosts(
 }
 
 std::optional<HostCache::Entry> HostResolverManager::ServeLocalhost(
-    base::StringPiece hostname,
+    std::string_view hostname,
     DnsQueryTypeSet query_types,
     bool default_family_due_to_no_ipv6) {
   DCHECK(!query_types.Has(DnsQueryType::UNSPECIFIED));

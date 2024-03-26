@@ -4,6 +4,7 @@
 
 #include "net/server/http_server.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -77,7 +78,7 @@ void HttpServer::AcceptWebSocket(
 
 void HttpServer::SendOverWebSocket(
     int connection_id,
-    base::StringPiece data,
+    std::string_view data,
     NetworkTrafficAnnotationTag traffic_annotation) {
   HttpConnection* connection = FindConnection(connection_id);
   if (connection == nullptr)

@@ -4,6 +4,7 @@
 
 #include "net/quic/dedicated_web_transport_http3_client.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -826,7 +827,7 @@ void DedicatedWebTransportHttp3Client::SetErrorIfNecessary(int error) {
 void DedicatedWebTransportHttp3Client::SetErrorIfNecessary(
     int error,
     quic::QuicErrorCode quic_error,
-    base::StringPiece details) {
+    std::string_view details) {
   if (!error_) {
     error_ = WebTransportError(error, quic_error, details,
                                safe_to_report_error_details_);

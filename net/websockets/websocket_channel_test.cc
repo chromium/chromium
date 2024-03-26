@@ -11,6 +11,7 @@
 #include <iostream>
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "net/base/auth.h"
@@ -85,7 +85,7 @@ std::ostream& operator<<(std::ostream& os, const WebSocketFrame& frame) {
   os << "{" << frame.header << ", ";
   if (frame.payload) {
     return os << "\""
-              << base::StringPiece(frame.payload, frame.header.payload_length)
+              << std::string_view(frame.payload, frame.header.payload_length)
               << "\"}";
   }
   return os << "NULL}";
@@ -783,14 +783,14 @@ struct WebSocketStreamCreationCallbackArgumentSaver {
   std::unique_ptr<WebSocketStream::ConnectDelegate> connect_delegate;
 };
 
-std::vector<char> AsVector(base::StringPiece s) {
+std::vector<char> AsVector(std::string_view s) {
   return std::vector<char>(s.begin(), s.end());
 }
 
-// Converts a base::StringPiece to a IOBuffer. For test purposes, it is
+// Converts a std::string_view to a IOBuffer. For test purposes, it is
 // convenient to be able to specify data as a string, but the
 // WebSocketEventInterface requires the IOBuffer type.
-scoped_refptr<IOBuffer> AsIOBuffer(base::StringPiece s) {
+scoped_refptr<IOBuffer> AsIOBuffer(std::string_view s) {
   auto buffer = base::MakeRefCounted<IOBufferWithSize>(s.size());
   base::ranges::copy(s, buffer->data());
   return buffer;

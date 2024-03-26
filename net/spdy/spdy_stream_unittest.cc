@@ -11,13 +11,13 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/request_priority.h"
 #include "net/base/session_usage.h"
@@ -50,7 +50,7 @@ namespace {
 
 const char kPostBody[] = "\0hello!\xff";
 const size_t kPostBodyLength = std::size(kPostBody);
-const base::StringPiece kPostBodyStringPiece(kPostBody, kPostBodyLength);
+const std::string_view kPostBodyStringPiece(kPostBody, kPostBodyLength);
 
 // Creates a MockRead from the given serialized frame except for the last byte.
 MockRead ReadFrameExceptForLastByte(const spdy::SpdySerializedFrame& frame) {
@@ -266,7 +266,7 @@ TEST_F(SpdyStreamTest, BrokenConnectionDetectionSuccessfulRequest) {
 class StreamDelegateWithTrailers : public test::StreamDelegateWithBody {
  public:
   StreamDelegateWithTrailers(const base::WeakPtr<SpdyStream>& stream,
-                             base::StringPiece data)
+                             std::string_view data)
       : StreamDelegateWithBody(stream, data) {}
 
   ~StreamDelegateWithTrailers() override = default;

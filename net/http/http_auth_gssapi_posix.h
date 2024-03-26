@@ -6,11 +6,11 @@
 #define NET_HTTP_HTTP_AUTH_GSSAPI_POSIX_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/native_library.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
@@ -178,7 +178,7 @@ class NET_EXPORT_PRIVATE GSSAPISharedLibrary : public GSSAPILibrary {
   //   2. The library must export the functions we need.
   base::NativeLibrary LoadSharedLibrary(const NetLogWithSource& net_log);
   bool BindMethods(base::NativeLibrary lib,
-                   base::StringPiece library_name,
+                   std::string_view library_name,
                    const NetLogWithSource& net_log);
 
   bool initialized_ = false;
@@ -306,7 +306,7 @@ NET_EXPORT_PRIVATE base::Value::Dict GetGssStatusCodeValue(
 // yielded an empty message.
 NET_EXPORT_PRIVATE base::Value::Dict GetGssStatusValue(
     GSSAPILibrary* gssapi_lib,
-    base::StringPiece method,
+    std::string_view method,
     OM_uint32 major_status,
     OM_uint32 minor_status);
 

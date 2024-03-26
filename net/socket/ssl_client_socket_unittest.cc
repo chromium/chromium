@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -21,7 +22,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1236,7 +1236,7 @@ class SSLClientSocketZeroRTTTest : public SSLClientSocketTest {
     return callback_.GetResult(ssl_socket_->Connect(callback_.callback()));
   }
 
-  int WriteAndWait(base::StringPiece request) {
+  int WriteAndWait(std::string_view request) {
     auto request_buffer =
         base::MakeRefCounted<IOBufferWithSize>(request.size());
     memcpy(request_buffer->data(), request.data(), request.size());
@@ -2696,7 +2696,7 @@ TEST_P(SSLClientSocketCertRequestInfoTest, CertKeyTypes) {
 // supported.
 TEST_P(SSLClientSocketVersionTest, ConnectSignedCertTimestampsTLSExtension) {
   // Encoding of SCT List containing 'test'.
-  base::StringPiece sct_ext("\x00\x06\x00\x04test", 8);
+  std::string_view sct_ext("\x00\x06\x00\x04test", 8);
 
   SSLServerConfig server_config = GetServerConfig();
   server_config.signed_cert_timestamp_list =
@@ -4641,7 +4641,7 @@ TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTEarlyDataBeforeServerHello) {
   FakeBlockingStreamSocket* socket = MakeClient(true);
   socket->BlockReadResult();
   ASSERT_THAT(Connect(), IsOk());
-  constexpr base::StringPiece kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
+  constexpr std::string_view kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
   EXPECT_EQ(static_cast<int>(kRequest.size()), WriteAndWait(kRequest));
 
   // Release the ServerHello. Now reads complete.
@@ -4674,7 +4674,7 @@ TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTEarlyDataAfterServerHello) {
   base::RunLoop().RunUntilIdle();
 
   // Now write to the socket.
-  constexpr base::StringPiece kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
+  constexpr std::string_view kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
   EXPECT_EQ(static_cast<int>(kRequest.size()), WriteAndWait(kRequest));
 
   // Although the socket was created in early data state and the client never
@@ -4701,7 +4701,7 @@ TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTConfirmedAfterRead) {
   FakeBlockingStreamSocket* socket = MakeClient(true);
   socket->BlockReadResult();
   ASSERT_THAT(Connect(), IsOk());
-  constexpr base::StringPiece kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
+  constexpr std::string_view kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
   EXPECT_EQ(static_cast<int>(kRequest.size()), WriteAndWait(kRequest));
 
   socket->UnblockReadResult();
@@ -4870,7 +4870,7 @@ TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTReject) {
   FakeBlockingStreamSocket* socket = MakeClient(true);
   socket->BlockReadResult();
   ASSERT_THAT(Connect(), IsOk());
-  constexpr base::StringPiece kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
+  constexpr std::string_view kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
   EXPECT_EQ(static_cast<int>(kRequest.size()), WriteAndWait(kRequest));
   socket->UnblockReadResult();
 
@@ -4906,7 +4906,7 @@ TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTWrongVersion) {
   FakeBlockingStreamSocket* socket = MakeClient(true);
   socket->BlockReadResult();
   ASSERT_THAT(Connect(), IsOk());
-  constexpr base::StringPiece kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
+  constexpr std::string_view kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
   EXPECT_EQ(static_cast<int>(kRequest.size()), WriteAndWait(kRequest));
   socket->UnblockReadResult();
 
@@ -4952,7 +4952,7 @@ TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTConfirmHandshake) {
   socket->UnblockReadResult();
   ASSERT_THAT(callback.GetResult(ERR_IO_PENDING), IsOk());
 
-  constexpr base::StringPiece kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
+  constexpr std::string_view kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
   EXPECT_EQ(static_cast<int>(kRequest.size()), WriteAndWait(kRequest));
 
   auto buf = base::MakeRefCounted<IOBufferWithSize>(4096);
@@ -4983,7 +4983,7 @@ TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTReadBeforeWrite) {
             ssl_socket()->Read(buf.get(), 4096, read_callback.callback()));
 
   // Write() completes, even though reads are blocked.
-  constexpr base::StringPiece kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
+  constexpr std::string_view kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
   EXPECT_EQ(static_cast<int>(kRequest.size()), WriteAndWait(kRequest));
 
   // Release the ServerHello, etc. The Read() now completes.
@@ -5011,7 +5011,7 @@ TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTDoubleConfirmHandshake) {
   // After the handshake is confirmed, ConfirmHandshake should return
   // synchronously.
   ASSERT_THAT(ssl_socket()->ConfirmHandshake(callback.callback()), IsOk());
-  constexpr base::StringPiece kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
+  constexpr std::string_view kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
   EXPECT_EQ(static_cast<int>(kRequest.size()), WriteAndWait(kRequest));
 
   auto buf = base::MakeRefCounted<IOBufferWithSize>(4096);
@@ -5033,7 +5033,7 @@ TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTParallelReadConfirm) {
   socket->BlockReadResult();
   ASSERT_THAT(Connect(), IsOk());
 
-  constexpr base::StringPiece kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
+  constexpr std::string_view kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
   EXPECT_EQ(static_cast<int>(kRequest.size()), WriteAndWait(kRequest));
 
   // The ServerHello is blocked, so ConfirmHandshake should not complete.
@@ -5644,7 +5644,7 @@ TEST_F(SSLClientSocketZeroRTTTest, EarlyDataReasonNoResume) {
   FakeBlockingStreamSocket* socket = MakeClient(true);
   socket->BlockReadResult();
   ASSERT_THAT(Connect(), IsOk());
-  constexpr base::StringPiece kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
+  constexpr std::string_view kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
   EXPECT_EQ(static_cast<int>(kRequest.size()), WriteAndWait(kRequest));
   socket->UnblockReadResult();
 
@@ -5691,7 +5691,7 @@ TEST_F(SSLClientSocketZeroRTTTest, EarlyDataReasonReadServerHello) {
   base::HistogramTester histograms;
   MakeClient(true);
   ASSERT_THAT(Connect(), IsOk());
-  constexpr base::StringPiece kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
+  constexpr std::string_view kRequest = "GET /zerortt HTTP/1.0\r\n\r\n";
   EXPECT_EQ(static_cast<int>(kRequest.size()), WriteAndWait(kRequest));
 
   auto buf = base::MakeRefCounted<IOBufferWithSize>(4096);

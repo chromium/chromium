@@ -14,6 +14,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -22,7 +23,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -382,7 +382,7 @@ class NET_EXPORT HostResolverManager
   // attempt a system lookup, then try to resolve the query using the HOSTS
   // file.
   std::optional<HostCache::Entry> ServeFromHosts(
-      base::StringPiece hostname,
+      std::string_view hostname,
       DnsQueryTypeSet query_types,
       bool default_family_due_to_no_ipv6,
       const std::deque<TaskType>& tasks);
@@ -390,7 +390,7 @@ class NET_EXPORT HostResolverManager
   // Iff |key| is for a localhost name (RFC 6761) and address DNS query type,
   // returns a results entry with the loopback IP.
   std::optional<HostCache::Entry> ServeLocalhost(
-      base::StringPiece hostname,
+      std::string_view hostname,
       DnsQueryTypeSet query_types,
       bool default_family_due_to_no_ipv6);
 
@@ -596,7 +596,7 @@ class NET_EXPORT HostResolverManager
 // TODO(tfarina): It would be better to change the tests so this function
 // gets exercised indirectly through HostResolverManager.
 NET_EXPORT_PRIVATE bool ResolveLocalHostname(
-    base::StringPiece host,
+    std::string_view host,
     std::vector<IPEndPoint>* address_list);
 
 }  // namespace net

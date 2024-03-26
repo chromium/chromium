@@ -9,13 +9,13 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/connection_endpoint_metadata.h"
@@ -32,19 +32,19 @@ namespace net {
 namespace {
 
 // base::Value keys
-constexpr base::StringPiece kValueDomainNameKey = "domain_name";
-constexpr base::StringPiece kValueQueryTypeKey = "query_type";
-constexpr base::StringPiece kValueTypeKey = "type";
-constexpr base::StringPiece kValueSourceKey = "source";
-constexpr base::StringPiece kValueTimedExpirationKey = "timed_expiration";
-constexpr base::StringPiece kValueEndpointsKey = "endpoints";
-constexpr base::StringPiece kValueStringsKey = "strings";
-constexpr base::StringPiece kValueHostsKey = "hosts";
-constexpr base::StringPiece kValueMetadatasKey = "metadatas";
-constexpr base::StringPiece kValueMetadataWeightKey = "metadata_weight";
-constexpr base::StringPiece kValueMetadataValueKey = "metadata_value";
-constexpr base::StringPiece kValueErrorKey = "error";
-constexpr base::StringPiece kValueAliasTargetKey = "alias_target";
+constexpr std::string_view kValueDomainNameKey = "domain_name";
+constexpr std::string_view kValueQueryTypeKey = "query_type";
+constexpr std::string_view kValueTypeKey = "type";
+constexpr std::string_view kValueSourceKey = "source";
+constexpr std::string_view kValueTimedExpirationKey = "timed_expiration";
+constexpr std::string_view kValueEndpointsKey = "endpoints";
+constexpr std::string_view kValueStringsKey = "strings";
+constexpr std::string_view kValueHostsKey = "hosts";
+constexpr std::string_view kValueMetadatasKey = "metadatas";
+constexpr std::string_view kValueMetadataWeightKey = "metadata_weight";
+constexpr std::string_view kValueMetadataValueKey = "metadata_value";
+constexpr std::string_view kValueErrorKey = "error";
+constexpr std::string_view kValueAliasTargetKey = "alias_target";
 
 // Returns `domain_name` as-is if it could not be canonicalized.
 std::string MaybeCanonicalizeName(std::string domain_name) {

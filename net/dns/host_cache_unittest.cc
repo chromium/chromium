@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -85,7 +85,7 @@ MATCHER_P(EntryContentsEqual,
   return arg.ContentsEqual(entry);
 }
 
-IPAddress MakeIP(base::StringPiece literal) {
+IPAddress MakeIP(std::string_view literal) {
   IPAddress ret;
   CHECK(ret.AssignFromIPLiteral(literal));
   return ret;

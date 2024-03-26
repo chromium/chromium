@@ -8,11 +8,11 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
-#include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -120,12 +120,12 @@ class CertBuilder {
   // Signs |tbs_data| with |key| using |signature_algorithm| appending the
   // signature onto |out_signature| and returns true if successful.
   static bool SignData(bssl::SignatureAlgorithm signature_algorithm,
-                       base::StringPiece tbs_data,
+                       std::string_view tbs_data,
                        EVP_PKEY* key,
                        CBB* out_signature);
 
   static bool SignDataWithDigest(const EVP_MD* digest,
-                                 base::StringPiece tbs_data,
+                                 std::string_view tbs_data,
                                  EVP_PKEY* key,
                                  CBB* out_signature);
 
@@ -141,7 +141,7 @@ class CertBuilder {
   // Builds a DER encoded X.501 Name TLV containing a commonName of
   // |common_name| with type |common_name_tag|.
   static std::vector<uint8_t> BuildNameWithCommonNameOfType(
-      base::StringPiece common_name,
+      std::string_view common_name,
       unsigned common_name_tag);
 
   // Set the version of the certificate. Note that only V3 certificates may
@@ -196,13 +196,13 @@ class CertBuilder {
 
   // Sets the subject to a Name with a single commonName attribute with
   // the value |common_name| tagged as a UTF8String.
-  void SetSubjectCommonName(base::StringPiece common_name);
+  void SetSubjectCommonName(std::string_view common_name);
 
   // Sets the subject to |subject_tlv|.
   void SetSubjectTLV(base::span<const uint8_t> subject_tlv);
 
   // Sets the SAN for the certificate to a single dNSName.
-  void SetSubjectAltName(base::StringPiece dns_name);
+  void SetSubjectAltName(std::string_view dns_name);
 
   // Sets the SAN for the certificate to the given dns names and ip addresses.
   void SetSubjectAltNames(const std::vector<std::string>& dns_names,
@@ -274,15 +274,15 @@ class CertBuilder {
   // |SetSignatureAlgorithm|. If this method is not called, the signature
   // algorithm written to the output will be chosen to match the signature
   // algorithm used to sign the certificate.
-  void SetSignatureAlgorithmTLV(base::StringPiece signature_algorithm_tlv);
+  void SetSignatureAlgorithmTLV(std::string_view signature_algorithm_tlv);
 
   // Set only the outer Certificate signatureAlgorithm TLV. See
   // SetSignatureAlgorithmTLV comment for general notes.
-  void SetOuterSignatureAlgorithmTLV(base::StringPiece signature_algorithm_tlv);
+  void SetOuterSignatureAlgorithmTLV(std::string_view signature_algorithm_tlv);
 
   // Set only the tbsCertificate signature TLV. See SetSignatureAlgorithmTLV
   // comment for general notes.
-  void SetTBSSignatureAlgorithmTLV(base::StringPiece signature_algorithm_tlv);
+  void SetTBSSignatureAlgorithmTLV(std::string_view signature_algorithm_tlv);
 
   void SetSerialNumber(uint64_t serial_number);
   void SetRandomSerialNumber();
@@ -403,7 +403,7 @@ class CertBuilder {
   void InitFromCert(const bssl::der::Input& cert);
 
   // Assembles the CertBuilder into a TBSCertificate.
-  void BuildTBSCertificate(base::StringPiece signature_algorithm_tlv,
+  void BuildTBSCertificate(std::string_view signature_algorithm_tlv,
                            std::string* out);
 
   void BuildSctListExtension(const std::string& pre_tbs_certificate,

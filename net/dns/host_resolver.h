@@ -12,10 +12,10 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
@@ -69,7 +69,7 @@ class NET_EXPORT HostResolver {
     bool HasScheme() const;
     const std::string& GetScheme() const;
     std::string GetHostname() const;  // With brackets for IPv6 literals.
-    base::StringPiece GetHostnameWithoutBrackets() const;
+    std::string_view GetHostnameWithoutBrackets() const;
     uint16_t GetPort() const;
 
     std::string ToString() const;
@@ -285,14 +285,14 @@ class NET_EXPORT HostResolver {
     // See HostResolver::CreateResolver.
     virtual std::unique_ptr<HostResolver> CreateResolver(
         HostResolverManager* manager,
-        base::StringPiece host_mapping_rules,
+        std::string_view host_mapping_rules,
         bool enable_caching);
 
     // See HostResolver::CreateStandaloneResolver.
     virtual std::unique_ptr<HostResolver> CreateStandaloneResolver(
         NetLog* net_log,
         const ManagerOptions& options,
-        base::StringPiece host_mapping_rules,
+        std::string_view host_mapping_rules,
         bool enable_caching);
   };
 
@@ -469,7 +469,7 @@ class NET_EXPORT HostResolver {
   // requests.  See MappedHostResolver for details.
   static std::unique_ptr<HostResolver> CreateResolver(
       HostResolverManager* manager,
-      base::StringPiece host_mapping_rules = "",
+      std::string_view host_mapping_rules = "",
       bool enable_caching = true);
 
   // Creates a HostResolver independent of any global HostResolverManager. Only
@@ -480,7 +480,7 @@ class NET_EXPORT HostResolver {
   static std::unique_ptr<HostResolver> CreateStandaloneResolver(
       NetLog* net_log,
       std::optional<ManagerOptions> options = std::nullopt,
-      base::StringPiece host_mapping_rules = "",
+      std::string_view host_mapping_rules = "",
       bool enable_caching = true);
   // Same, but explicitly returns the implementing ContextHostResolver. Only
   // used by tests and by StaleHostResolver in Cronet. No mapping rules can be
@@ -500,7 +500,7 @@ class NET_EXPORT HostResolver {
       NetLog* net_log,
       handles::NetworkHandle network,
       std::optional<ManagerOptions> options = std::nullopt,
-      base::StringPiece host_mapping_rules = "",
+      std::string_view host_mapping_rules = "",
       bool enable_caching = true);
 
   // Helpers for interacting with HostCache and ProcResolver.

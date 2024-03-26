@@ -6,10 +6,10 @@
 
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/websockets/websocket_frame.h"
@@ -22,7 +22,7 @@ namespace {
 
 constexpr int kIterations = 100000;
 constexpr int kLongPayloadSize = 1 << 16;
-constexpr base::StringPiece kMaskingKey = "\xFE\xED\xBE\xEF";
+constexpr std::string_view kMaskingKey = "\xFE\xED\xBE\xEF";
 
 static constexpr char kMetricPrefixWebSocketFrame[] = "WebSocketFrameMask.";
 static constexpr char kMetricMaskTimeMs[] = "mask_time";

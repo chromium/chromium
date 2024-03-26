@@ -16,8 +16,8 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/idempotency.h"
 #include "net/base/net_error_details.h"
@@ -212,7 +212,7 @@ class NET_EXPORT_PRIVATE HttpStream {
   // ALPS extension, or the empty string if the server did not send one.  Unlike
   // Accept-CH header fields received in HTTP responses, this value is available
   // before any requests are made.
-  virtual base::StringPiece GetAcceptChViaAlps() const = 0;
+  virtual std::string_view GetAcceptChViaAlps() const = 0;
 
   // If `this` is using a Quic stream, set the `connection_error` of the Quic
   // stream. Otherwise returns nullopt.

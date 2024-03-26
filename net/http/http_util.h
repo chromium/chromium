@@ -10,10 +10,10 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -73,11 +73,10 @@ class NET_EXPORT HttpUtil {
   // |*last_byte_position| = inclusive position of the last byte of the range
   // |*instance_length| = size in bytes of the object requested
   // If this method returns false, then all of the outputs will be -1.
-  static bool ParseContentRangeHeaderFor206(
-      base::StringPiece content_range_spec,
-      int64_t* first_byte_position,
-      int64_t* last_byte_position,
-      int64_t* instance_length);
+  static bool ParseContentRangeHeaderFor206(std::string_view content_range_spec,
+                                            int64_t* first_byte_position,
+                                            int64_t* last_byte_position,
+                                            int64_t* instance_length);
 
   // Parses a Retry-After header that is either an absolute date/time or a
   // number of seconds in the future. Interprets absolute times as relative to
@@ -97,29 +96,29 @@ class NET_EXPORT HttpUtil {
 
   // Returns true if the request method is "safe" (per section 4.2.1 of
   // RFC 7231).
-  static bool IsMethodSafe(base::StringPiece method);
+  static bool IsMethodSafe(std::string_view method);
 
   // Returns true if the request method is idempotent (per section 4.2.2 of
   // RFC 7231).
-  static bool IsMethodIdempotent(base::StringPiece method);
+  static bool IsMethodIdempotent(std::string_view method);
 
   // Returns true if it is safe to allow users and scripts to specify a header
   // with a given |name| and |value|.
   // See https://fetch.spec.whatwg.org/#forbidden-request-header.
   // Does not check header validity.
-  static bool IsSafeHeader(base::StringPiece name, base::StringPiece value);
+  static bool IsSafeHeader(std::string_view name, std::string_view value);
 
   // Returns true if |name| is a valid HTTP header name.
-  static bool IsValidHeaderName(base::StringPiece name);
+  static bool IsValidHeaderName(std::string_view name);
 
   // Returns false if |value| contains NUL or CRLF. This method does not perform
   // a fully RFC-2616-compliant header value validation.
-  static bool IsValidHeaderValue(base::StringPiece value);
+  static bool IsValidHeaderValue(std::string_view value);
 
   // Multiple occurances of some headers cannot be coalesced into a comma-
   // separated list since their values are (or contain) unquoted HTTP-date
   // values, which may contain a comma (see RFC 2616 section 3.3.1).
-  static bool IsNonCoalescingHeader(base::StringPiece name);
+  static bool IsNonCoalescingHeader(std::string_view name);
 
   // Return true if the character is HTTP "linear white space" (SP | HT).
   // This definition corresponds with the HTTP_LWS macro, and does not match
@@ -127,7 +126,7 @@ class NET_EXPORT HttpUtil {
   //
   // ALWAYS_INLINE to force inlining even when compiled with -Oz in Clang.
   ALWAYS_INLINE static bool IsLWS(char c) {
-    constexpr base::StringPiece kWhiteSpaceCharacters(HTTP_LWS);
+    constexpr std::string_view kWhiteSpaceCharacters(HTTP_LWS);
     // Clang performs this optimization automatically at -O3, but Android is
     // compiled at -Oz, so we need to do it by hand.
     static_assert(kWhiteSpaceCharacters == " \t");
@@ -137,12 +136,12 @@ class NET_EXPORT HttpUtil {
   // Trim HTTP_LWS chars from the beginning and end of the string.
   static void TrimLWS(std::string::const_iterator* begin,
                       std::string::const_iterator* end);
-  static base::StringPiece TrimLWS(base::StringPiece string);
+  static std::string_view TrimLWS(std::string_view string);
 
   // Whether the character is a valid |tchar| as defined in RFC 7230 Sec 3.2.6.
   static bool IsTokenChar(char c);
   // Whether the string is a valid |token| as defined in RFC 7230 Sec 3.2.6.
-  static bool IsToken(base::StringPiece str);
+  static bool IsToken(std::string_view str);
 
   // Whether the character is a control character (CTL) as defined in RFC 5234
   // Appendix B.1.
@@ -151,24 +150,24 @@ class NET_EXPORT HttpUtil {
   }
 
   // Whether the string is a valid |parmname| as defined in RFC 5987 Sec 3.2.1.
-  static bool IsParmName(base::StringPiece str);
+  static bool IsParmName(std::string_view str);
 
   // RFC 2616 Sec 2.2:
   // quoted-string = ( <"> *(qdtext | quoted-pair ) <"> )
   // Unquote() strips the surrounding quotemarks off a string, and unescapes
   // any quoted-pair to obtain the value contained by the quoted-string.
   // If the input is not quoted, then it works like the identity function.
-  static std::string Unquote(base::StringPiece str);
+  static std::string Unquote(std::string_view str);
 
   // Similar to Unquote(), but additionally validates that the string being
   // unescaped actually is a valid quoted string. Returns false for an empty
   // string, a string without quotes, a string with mismatched quotes, and
   // a string with unescaped embeded quotes.
-  [[nodiscard]] static bool StrictUnquote(base::StringPiece str,
+  [[nodiscard]] static bool StrictUnquote(std::string_view str,
                                           std::string* out);
 
   // The reverse of Unquote() -- escapes and surrounds with "
-  static std::string Quote(base::StringPiece str);
+  static std::string Quote(std::string_view str);
 
   // Returns the start of the status line, or std::string::npos if no status
   // line was found. This allows for 4 bytes of junk to precede the status line
@@ -204,7 +203,7 @@ class NET_EXPORT HttpUtil {
   //
   // TODO(crbug.com/671799): Should remove or internalize this to
   //                         HttpResponseHeaders.
-  static std::string AssembleRawHeaders(base::StringPiece buf);
+  static std::string AssembleRawHeaders(std::string_view buf);
 
   // Converts assembled "raw headers" back to the HTTP response format. That is
   // convert each \0 occurence to CRLF. This is used by DevTools.
@@ -320,7 +319,7 @@ class NET_EXPORT HttpUtil {
     std::string name() const {
       return std::string(name_begin_, name_end_);
     }
-    base::StringPiece name_piece() const {
+    std::string_view name_piece() const {
       return base::MakeStringPiece(name_begin_, name_end_);
     }
 
@@ -333,7 +332,7 @@ class NET_EXPORT HttpUtil {
     std::string values() const {
       return std::string(values_begin_, values_end_);
     }
-    base::StringPiece values_piece() const {
+    std::string_view values_piece() const {
       return base::MakeStringPiece(values_begin_, values_end_);
     }
 
@@ -377,7 +376,7 @@ class NET_EXPORT HttpUtil {
     std::string value() const {
       return std::string(value_begin_, value_end_);
     }
-    base::StringPiece value_piece() const {
+    std::string_view value_piece() const {
       return base::MakeStringPiece(value_begin_, value_end_);
     }
 
@@ -437,7 +436,7 @@ class NET_EXPORT HttpUtil {
     std::string::const_iterator name_begin() const { return name_begin_; }
     std::string::const_iterator name_end() const { return name_end_; }
     std::string name() const { return std::string(name_begin_, name_end_); }
-    base::StringPiece name_piece() const {
+    std::string_view name_piece() const {
       return base::MakeStringPiece(name_begin_, name_end_);
     }
 
@@ -452,7 +451,7 @@ class NET_EXPORT HttpUtil {
       return value_is_quoted_ ? unquoted_value_ : std::string(value_begin_,
                                                               value_end_);
     }
-    base::StringPiece value_piece() const {
+    std::string_view value_piece() const {
       return value_is_quoted_ ? unquoted_value_
                               : base::MakeStringPiece(value_begin_, value_end_);
     }

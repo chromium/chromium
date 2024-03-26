@@ -5,13 +5,14 @@
 #include "net/test/ssl_test_util.h"
 
 #include <string>
+#include <string_view>
 
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 
 namespace net {
 
 bssl::UniquePtr<SSL_ECH_KEYS> MakeTestEchKeys(
-    base::StringPiece public_name,
+    std::string_view public_name,
     size_t max_name_len,
     std::vector<uint8_t>* ech_config_list) {
   bssl::ScopedEVP_HPKE_KEY key;

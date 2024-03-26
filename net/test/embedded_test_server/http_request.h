@@ -11,8 +11,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/ssl/ssl_info.h"
 #include "url/gurl.h"
@@ -44,7 +44,7 @@ struct HttpRequest {
     // Allow using StringPiece instead of string for `find()`.
     using is_transparent = void;
 
-    bool operator()(base::StringPiece left, base::StringPiece right) const {
+    bool operator()(std::string_view left, std::string_view right) const {
       return base::CompareCaseInsensitiveASCII(left, right) < 0;
     }
   };
@@ -110,7 +110,7 @@ class HttpRequestParser {
   ~HttpRequestParser();
 
   // Adds chunk of data into the internal buffer.
-  void ProcessChunk(base::StringPiece data);
+  void ProcessChunk(std::string_view data);
 
   // Parses the http request (including data - if provided).
   // If returns ACCEPTED, then it means that the whole request has been found
@@ -125,7 +125,7 @@ class HttpRequestParser {
 
   // Returns `METHOD_UNKNOWN` if `token` is not a recognized method. Methods are
   // case-sensitive.
-  static HttpMethod GetMethodType(base::StringPiece token);
+  static HttpMethod GetMethodType(std::string_view token);
 
  private:
   // Parses headers and returns ACCEPTED if whole request was parsed. Otherwise

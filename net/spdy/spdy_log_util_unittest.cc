@@ -4,6 +4,8 @@
 
 #include "net/spdy/spdy_log_util.h"
 
+#include <string_view>
+
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -11,7 +13,7 @@ namespace net {
 
 std::string ElideGoAwayDebugDataForNetLogAsString(
     NetLogCaptureMode capture_mode,
-    base::StringPiece debug_data) {
+    std::string_view debug_data) {
   auto value = ElideGoAwayDebugDataForNetLog(capture_mode, debug_data);
   if (!value.is_string()) {
     ADD_FAILURE() << "'value' should be string.";

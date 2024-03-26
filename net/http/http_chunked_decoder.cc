@@ -45,11 +45,11 @@
 #include "net/http/http_chunked_decoder.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/base/net_errors.h"
 
@@ -104,8 +104,8 @@ int HttpChunkedDecoder::ScanForChunkRemaining(const char* buf, int buf_len) {
 
   int bytes_consumed = 0;
 
-  size_t index_of_lf = base::StringPiece(buf, buf_len).find('\n');
-  if (index_of_lf != base::StringPiece::npos) {
+  size_t index_of_lf = std::string_view(buf, buf_len).find('\n');
+  if (index_of_lf != std::string_view::npos) {
     buf_len = static_cast<int>(index_of_lf);
     if (buf_len && buf[buf_len - 1] == '\r')  // Eliminate a preceding CR.
       buf_len--;
@@ -131,9 +131,10 @@ int HttpChunkedDecoder::ScanForChunkRemaining(const char* buf, int buf_len) {
       chunk_terminator_remaining_ = false;
     } else if (buf_len > 0) {
       // Ignore any chunk-extensions.
-      size_t index_of_semicolon = base::StringPiece(buf, buf_len).find(';');
-      if (index_of_semicolon != base::StringPiece::npos)
+      size_t index_of_semicolon = std::string_view(buf, buf_len).find(';');
+      if (index_of_semicolon != std::string_view::npos) {
         buf_len = static_cast<int>(index_of_semicolon);
+      }
 
       if (!ParseChunkSize(buf, buf_len, &chunk_remaining_)) {
         DLOG(ERROR) << "Failed parsing HEX from: " <<
@@ -198,7 +199,7 @@ bool HttpChunkedDecoder::ParseChunkSize(const char* start,
 
   // Be more restrictive than HexStringToInt64;
   // don't allow inputs with leading "-", "+", "0x", "0X"
-  base::StringPiece chunk_size(start, len);
+  std::string_view chunk_size(start, len);
   if (!base::ranges::all_of(chunk_size, base::IsHexDigit<char>)) {
     return false;
   }

@@ -4,6 +4,8 @@
 
 #include "net/test/url_request/url_request_mock_http_job.h"
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
@@ -165,8 +167,8 @@ void URLRequestMockHTTPJob::SetHeadersAndStart(const std::string& raw_headers) {
   // Handle CRLF line-endings.
   base::ReplaceSubstringsAfterOffset(&raw_headers_, 0, "\r\n", "\n");
   // ParseRawHeaders expects \0 to end each header line.
-  base::ReplaceSubstringsAfterOffset(
-      &raw_headers_, 0, "\n", base::StringPiece("\0", 1));
+  base::ReplaceSubstringsAfterOffset(&raw_headers_, 0, "\n",
+                                     std::string_view("\0", 1));
   total_received_bytes_ += raw_headers_.size();
   URLRequestTestJobBackedByFile::Start();
 }

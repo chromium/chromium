@@ -5,6 +5,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
@@ -47,7 +48,7 @@ HttpRequestParser::HttpRequestParser()
 
 HttpRequestParser::~HttpRequestParser() = default;
 
-void HttpRequestParser::ProcessChunk(base::StringPiece data) {
+void HttpRequestParser::ProcessChunk(std::string_view data) {
   buffer_.append(data);
   DCHECK_LE(buffer_.size() + data.size(), kRequestSizeLimit) <<
       "The HTTP request is too large.";
@@ -243,7 +244,7 @@ std::unique_ptr<HttpRequest> HttpRequestParser::GetRequest() {
 }
 
 // static
-HttpMethod HttpRequestParser::GetMethodType(base::StringPiece token) {
+HttpMethod HttpRequestParser::GetMethodType(std::string_view token) {
   if (token == "GET") {
     return METHOD_GET;
   } else if (token == "HEAD") {

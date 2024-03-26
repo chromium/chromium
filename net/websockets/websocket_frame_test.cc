@@ -10,11 +10,11 @@
 #include <algorithm>
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/aligned_memory.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,7 +53,7 @@ TEST(WebSocketFrameHeaderTest, FrameLengths) {
 }
 
 TEST(WebSocketFrameHeaderTest, FrameLengthsWithMasking) {
-  static constexpr base::StringPiece kMaskingKey = "\xDE\xAD\xBE\xEF";
+  static constexpr std::string_view kMaskingKey = "\xDE\xAD\xBE\xEF";
   static_assert(kMaskingKey.size() == WebSocketFrameHeader::kMaskingKeyLength,
                 "incorrect masking key size");
 
@@ -202,7 +202,7 @@ TEST(WebSocketFrameHeaderTest, InsufficientBufferSize) {
 
 TEST(WebSocketFrameTest, MaskPayload) {
   struct TestCase {
-    const base::StringPiece masking_key;
+    const std::string_view masking_key;
     uint64_t frame_offset;
     const char* input;
     const char* output;
@@ -257,7 +257,7 @@ TEST(WebSocketFrameTest, MaskPayloadAlignment) {
       WebSocketFrameHeader::kMaskingKeyLength;
   static const size_t kScratchBufferSize =
       kMaxVectorAlignment + kMaxVectorSize * 2;
-  static constexpr base::StringPiece kTestMask = "\xd2\xba\x5a\xbe";
+  static constexpr std::string_view kTestMask = "\xd2\xba\x5a\xbe";
   // We use 786 bits of random input to reduce the risk of correlated errors.
   static const char kTestInput[] = {
     "\x3d\x77\x1d\x1b\x19\x8c\x48\xa3\x19\x6d\xf7\xcc\x39\xe7\x57\x0b"

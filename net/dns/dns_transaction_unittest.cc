@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -76,7 +77,7 @@ base::TimeDelta kFallbackPeriod = base::Seconds(1);
 
 const char kMockHostname[] = "mock.http";
 
-std::vector<uint8_t> DomainFromDot(base::StringPiece dotted_name) {
+std::vector<uint8_t> DomainFromDot(std::string_view dotted_name) {
   std::optional<std::vector<uint8_t>> dns_name =
       dns_names_util::DottedNameToNetwork(dotted_name);
   CHECK(dns_name.has_value());

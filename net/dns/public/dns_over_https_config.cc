@@ -7,6 +7,7 @@
 #include <iterator>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/json/json_reader.h"
@@ -22,7 +23,7 @@ namespace net {
 
 namespace {
 
-std::vector<std::string> SplitGroup(base::StringPiece group) {
+std::vector<std::string> SplitGroup(std::string_view group) {
   // Templates in a group are whitespace-separated.
   return SplitString(group, base::kWhitespaceASCII, base::TRIM_WHITESPACE,
                      base::SPLIT_WANT_NONEMPTY);
@@ -38,7 +39,7 @@ std::vector<std::optional<DnsOverHttpsServerConfig>> ParseTemplates(
   return parsed;
 }
 
-constexpr base::StringPiece kJsonKeyServers("servers");
+constexpr std::string_view kJsonKeyServers("servers");
 
 std::optional<DnsOverHttpsConfig> FromValue(base::Value::Dict value) {
   base::Value::List* servers_value = value.FindList(kJsonKeyServers);
@@ -58,7 +59,7 @@ std::optional<DnsOverHttpsConfig> FromValue(base::Value::Dict value) {
   return DnsOverHttpsConfig(servers);
 }
 
-std::optional<DnsOverHttpsConfig> FromJson(base::StringPiece json) {
+std::optional<DnsOverHttpsConfig> FromJson(std::string_view json) {
   std::optional<base::Value> value = base::JSONReader::Read(json);
   if (!value || !value->is_dict())
     return std::nullopt;
@@ -102,7 +103,7 @@ std::optional<DnsOverHttpsConfig> DnsOverHttpsConfig::FromTemplatesForTesting(
 
 // static
 std::optional<DnsOverHttpsConfig> DnsOverHttpsConfig::FromString(
-    base::StringPiece doh_config) {
+    std::string_view doh_config) {
   std::optional<DnsOverHttpsConfig> parsed = FromJson(doh_config);
   if (parsed && !parsed->servers().empty())
     return parsed;
@@ -114,7 +115,7 @@ std::optional<DnsOverHttpsConfig> DnsOverHttpsConfig::FromString(
 
 // static
 DnsOverHttpsConfig DnsOverHttpsConfig::FromStringLax(
-    base::StringPiece doh_config) {
+    std::string_view doh_config) {
   if (std::optional<DnsOverHttpsConfig> parsed = FromJson(doh_config)) {
     return *parsed;
   }
@@ -134,7 +135,7 @@ bool DnsOverHttpsConfig::operator==(const DnsOverHttpsConfig& other) const {
 std::string DnsOverHttpsConfig::ToString() const {
   if (base::ranges::all_of(servers(), &DnsOverHttpsServerConfig::IsSimple)) {
     // Return the templates on separate lines.
-    std::vector<base::StringPiece> strings;
+    std::vector<std::string_view> strings;
     strings.reserve(servers().size());
     base::ranges::transform(servers(), std::back_inserter(strings),
                             &DnsOverHttpsServerConfig::server_template_piece);

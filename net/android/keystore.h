@@ -9,11 +9,11 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 
 // Misc functions to access the Android platform KeyStore.
 
@@ -37,11 +37,11 @@ std::string GetPrivateKeyClassName(const base::android::JavaRef<jobject>& key);
 
 // Returns whether |key| supports the signature algorithm |algorithm|.
 bool PrivateKeySupportsSignature(const base::android::JavaRef<jobject>& key,
-                                 base::StringPiece algorithm);
+                                 std::string_view algorithm);
 
 // Returns whether |key| supports the encryption algorithm |algorithm|.
 bool PrivateKeySupportsCipher(const base::android::JavaRef<jobject>& key,
-                              base::StringPiece algorithm);
+                              std::string_view algorithm);
 
 // Compute the signature of a given input using a private key. For more
 // details, please read the comments for the signWithPrivateKey method in
@@ -53,7 +53,7 @@ bool PrivateKeySupportsCipher(const base::android::JavaRef<jobject>& key,
 // |signature| will receive the signature on success.
 // Returns true on success, false on failure.
 bool SignWithPrivateKey(const base::android::JavaRef<jobject>& private_key,
-                        base::StringPiece algorithm,
+                        std::string_view algorithm,
                         base::span<const uint8_t> input,
                         std::vector<uint8_t>* signature);
 
@@ -66,7 +66,7 @@ bool SignWithPrivateKey(const base::android::JavaRef<jobject>& private_key,
 // |ciphertext| will receive the ciphertext on success.
 // Returns true on success, false on failure.
 bool EncryptWithPrivateKey(const base::android::JavaRef<jobject>& private_key,
-                           base::StringPiece algorithm,
+                           std::string_view algorithm,
                            base::span<const uint8_t> input,
                            std::vector<uint8_t>* ciphertext);
 

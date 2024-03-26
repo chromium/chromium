@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -28,7 +29,7 @@ class HostCache;
 // Destruction cancels the task and prevents any callbacks from being invoked.
 class HostResolverNat64Task {
  public:
-  HostResolverNat64Task(base::StringPiece hostname,
+  HostResolverNat64Task(std::string_view hostname,
                         NetworkAnonymizationKey network_anonymization_key,
                         NetLogWithSource net_log,
                         ResolveContext* resolve_context,

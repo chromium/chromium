@@ -8,12 +8,12 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/dns_over_https_server_config.h"
@@ -69,7 +69,7 @@ struct NET_EXPORT DohProviderEntry {
   static DohProviderEntry ConstructForTesting(
       std::string provider,
       const base::Feature* feature,
-      std::set<base::StringPiece> dns_over_53_server_ip_strs,
+      std::set<std::string_view> dns_over_53_server_ip_strs,
       std::set<std::string> dns_over_tls_hostnames,
       std::string dns_over_https_template,
       std::string ui_name,
@@ -92,7 +92,7 @@ struct NET_EXPORT DohProviderEntry {
       // Disallow implicit copying of the `feature` parameter because there
       // cannot be more than one `base::Feature` for a given feature name.
       const base::Feature* feature,
-      std::set<base::StringPiece> dns_over_53_server_ip_strs,
+      std::set<std::string_view> dns_over_53_server_ip_strs,
       std::set<std::string> dns_over_tls_hostnames,
       std::string dns_over_https_template,
       std::string ui_name,
@@ -100,7 +100,7 @@ struct NET_EXPORT DohProviderEntry {
       bool display_globally,
       std::set<std::string> display_countries,
       LoggingLevel logging_level,
-      std::set<base::StringPiece> dns_over_https_server_ip_strs = {});
+      std::set<std::string_view> dns_over_https_server_ip_strs = {});
 };
 
 }  // namespace net

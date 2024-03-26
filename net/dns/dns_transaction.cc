@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -29,7 +30,6 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -413,8 +413,8 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
       std::string url_string;
       std::unordered_map<string, string> parameters;
       std::string encoded_query;
-      base::Base64UrlEncode(base::StringPiece(query_->io_buffer()->data(),
-                                              query_->io_buffer()->size()),
+      base::Base64UrlEncode(std::string_view(query_->io_buffer()->data(),
+                                             query_->io_buffer()->size()),
                             base::Base64UrlEncodePolicy::OMIT_PADDING,
                             &encoded_query);
       parameters.emplace("dns", encoded_query);

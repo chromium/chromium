@@ -5,6 +5,7 @@
 #include "net/spdy/buffered_spdy_framer.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
@@ -86,7 +87,7 @@ class TestBufferedSpdyVisitor : public BufferedSpdyFramerVisitorInterface {
 
   void OnGoAway(spdy::SpdyStreamId last_accepted_stream_id,
                 spdy::SpdyErrorCode error_code,
-                base::StringPiece debug_data) override {
+                std::string_view debug_data) override {
     goaway_count_++;
     goaway_last_accepted_stream_id_ = last_accepted_stream_id;
     goaway_error_code_ = error_code;
@@ -113,7 +114,7 @@ class TestBufferedSpdyVisitor : public BufferedSpdyFramerVisitorInterface {
   }
 
   void OnAltSvc(spdy::SpdyStreamId stream_id,
-                base::StringPiece origin,
+                std::string_view origin,
                 const spdy::SpdyAltSvcWireFormat::AlternativeServiceVector&
                     altsvc_vector) override {
     altsvc_count_++;

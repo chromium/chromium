@@ -7,6 +7,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time_delta_from_string.h"
 #include "base/values.h"
 #include "net/base/address_list.h"
@@ -106,7 +106,7 @@ bool EndpointResultIsNonProtocol(const HostResolverEndpointResult& result) {
 }
 
 void GetTimeDeltaFromDictString(const base::Value::Dict& args,
-                                base::StringPiece key,
+                                std::string_view key,
                                 base::TimeDelta* out) {
   const std::string* value_string = args.FindString(key);
   if (!value_string)
@@ -156,9 +156,9 @@ std::string HostResolver::Host::GetHostname() const {
   }
 }
 
-base::StringPiece HostResolver::Host::GetHostnameWithoutBrackets() const {
+std::string_view HostResolver::Host::GetHostnameWithoutBrackets() const {
   if (absl::holds_alternative<url::SchemeHostPort>(host_)) {
-    base::StringPiece hostname = absl::get<url::SchemeHostPort>(host_).host();
+    std::string_view hostname = absl::get<url::SchemeHostPort>(host_).host();
     if (hostname.size() > 2 && hostname.front() == '[' &&
         hostname.back() == ']') {
       return hostname.substr(1, hostname.size() - 2);
@@ -267,7 +267,7 @@ HostResolver::ResolveHostRequest::GetExperimentalResultsForTesting() const {
 
 std::unique_ptr<HostResolver> HostResolver::Factory::CreateResolver(
     HostResolverManager* manager,
-    base::StringPiece host_mapping_rules,
+    std::string_view host_mapping_rules,
     bool enable_caching) {
   return HostResolver::CreateResolver(manager, host_mapping_rules,
                                       enable_caching);
@@ -276,7 +276,7 @@ std::unique_ptr<HostResolver> HostResolver::Factory::CreateResolver(
 std::unique_ptr<HostResolver> HostResolver::Factory::CreateStandaloneResolver(
     NetLog* net_log,
     const ManagerOptions& options,
-    base::StringPiece host_mapping_rules,
+    std::string_view host_mapping_rules,
     bool enable_caching) {
   return HostResolver::CreateStandaloneResolver(
       net_log, options, host_mapping_rules, enable_caching);
@@ -341,7 +341,7 @@ handles::NetworkHandle HostResolver::GetTargetNetworkForTesting() const {
 // static
 std::unique_ptr<HostResolver> HostResolver::CreateResolver(
     HostResolverManager* manager,
-    base::StringPiece host_mapping_rules,
+    std::string_view host_mapping_rules,
     bool enable_caching) {
   DCHECK(manager);
 
@@ -363,7 +363,7 @@ std::unique_ptr<HostResolver> HostResolver::CreateResolver(
 std::unique_ptr<HostResolver> HostResolver::CreateStandaloneResolver(
     NetLog* net_log,
     std::optional<ManagerOptions> options,
-    base::StringPiece host_mapping_rules,
+    std::string_view host_mapping_rules,
     bool enable_caching) {
   std::unique_ptr<ContextHostResolver> resolver =
       CreateStandaloneContextResolver(net_log, std::move(options),
@@ -399,7 +399,7 @@ HostResolver::CreateStandaloneNetworkBoundResolver(
     NetLog* net_log,
     handles::NetworkHandle target_network,
     std::optional<ManagerOptions> options,
-    base::StringPiece host_mapping_rules,
+    std::string_view host_mapping_rules,
     bool enable_caching) {
 #if BUILDFLAG(IS_ANDROID)
   // Note that the logic below uses Android APIs that don't work on a sandboxed

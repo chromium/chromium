@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -305,7 +306,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
   void OnClose(int status);
 
   // Called by the SpdySession to log stream related errors.
-  void LogStreamError(int error, base::StringPiece description);
+  void LogStreamError(int error, std::string_view description);
 
   // If this stream is active, reset it, and close it otherwise. In
   // either case the stream is deleted.

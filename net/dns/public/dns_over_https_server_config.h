@@ -7,8 +7,8 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
@@ -42,7 +42,7 @@ class NET_EXPORT DnsOverHttpsServerConfig {
   bool operator<(const DnsOverHttpsServerConfig& other) const;
 
   const std::string& server_template() const;
-  base::StringPiece server_template_piece() const;
+  std::string_view server_template_piece() const;
   bool use_post() const;
   const Endpoints& endpoints() const;
 

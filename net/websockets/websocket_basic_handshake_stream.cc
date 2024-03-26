@@ -8,6 +8,7 @@
 
 #include <array>
 #include <set>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
@@ -83,7 +84,7 @@ std::string GenerateHandshakeChallenge() {
 }
 
 GetHeaderResult GetSingleHeaderValue(const HttpResponseHeaders* headers,
-                                     base::StringPiece name,
+                                     std::string_view name,
                                      std::string* value) {
   size_t iter = 0;
   size_t num_values = 0;
@@ -415,7 +416,7 @@ const std::set<std::string>& WebSocketBasicHandshakeStream::GetDnsAliases()
   return state_.GetDnsAliases();
 }
 
-base::StringPiece WebSocketBasicHandshakeStream::GetAcceptChViaAlps() const {
+std::string_view WebSocketBasicHandshakeStream::GetAcceptChViaAlps() const {
   return {};
 }
 

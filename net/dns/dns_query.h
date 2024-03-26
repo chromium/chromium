@@ -10,11 +10,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_export.h"
 
@@ -88,7 +88,7 @@ class NET_EXPORT_PRIVATE DnsQuery {
 
   // Returns the Question section of the query.  Used when matching the
   // response.
-  base::StringPiece question() const;
+  std::string_view question() const;
 
   // Returns the size of the question section.
   size_t question_size() const;

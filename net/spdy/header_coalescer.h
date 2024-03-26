@@ -5,7 +5,8 @@
 #ifndef NET_SPDY_HEADER_COALESCER_H_
 #define NET_SPDY_HEADER_COALESCER_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "net/base/net_export.h"
 #include "net/log/net_log_with_source.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
@@ -31,7 +32,7 @@ class NET_EXPORT_PRIVATE HeaderCoalescer
 
  private:
   // Helper to add a header. Return true on success.
-  bool AddHeader(base::StringPiece key, base::StringPiece value);
+  bool AddHeader(std::string_view key, std::string_view value);
 
   spdy::Http2HeaderBlock headers_;
   bool headers_valid_ = true;

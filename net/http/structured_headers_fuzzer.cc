@@ -4,11 +4,13 @@
 
 #include "net/http/structured_headers.h"
 
+#include <string_view>
+
 namespace net {
 namespace structured_headers {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::StringPiece input(reinterpret_cast<const char*>(data), size);
+  std::string_view input(reinterpret_cast<const char*>(data), size);
   ParseItem(input);
   ParseListOfLists(input);
   ParseParameterisedList(input);

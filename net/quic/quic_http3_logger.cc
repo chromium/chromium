@@ -5,13 +5,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "net/http/http_log_util.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
@@ -41,20 +41,20 @@ base::Value::Dict NetLogPriorityUpdateParams(
       .Set("priority_field_value", frame.priority_field_value);
 }
 
-base::Value::Dict NetLogTwoIntParams(base::StringPiece name1,
+base::Value::Dict NetLogTwoIntParams(std::string_view name1,
                                      uint64_t value1,
-                                     base::StringPiece name2,
+                                     std::string_view name2,
                                      uint64_t value2) {
   return base::Value::Dict()
       .Set(name1, NetLogNumberValue(value1))
       .Set(name2, NetLogNumberValue(value2));
 }
 
-base::Value::Dict NetLogThreeIntParams(base::StringPiece name1,
+base::Value::Dict NetLogThreeIntParams(std::string_view name1,
                                        uint64_t value1,
-                                       base::StringPiece name2,
+                                       std::string_view name2,
                                        uint64_t value2,
-                                       base::StringPiece name3,
+                                       std::string_view name3,
                                        uint64_t value3) {
   return base::Value::Dict()
       .Set(name1, NetLogNumberValue(value1))
@@ -67,8 +67,8 @@ base::Value::List ElideQuicHeaderListForNetLog(
     NetLogCaptureMode capture_mode) {
   base::Value::List headers_list;
   for (const auto& header : headers) {
-    base::StringPiece key = header.first;
-    base::StringPiece value = header.second;
+    std::string_view key = header.first;
+    std::string_view value = header.second;
     headers_list.Append(NetLogStringValue(
         base::StrCat({key, ": ",
                       ElideHeaderValueForNetLog(capture_mode, std::string(key),

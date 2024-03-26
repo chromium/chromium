@@ -4,6 +4,7 @@
 
 #include "net/socket/transport_client_socket_pool.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -1019,7 +1020,7 @@ void TransportClientSocketPool::ReleaseSocket(
   group->DecrementActiveSocketCount();
 
   bool can_resuse_socket = false;
-  base::StringPiece not_reusable_reason;
+  std::string_view not_reusable_reason;
   if (!socket->IsConnectedAndIdle()) {
     if (!socket->IsConnected()) {
       not_reusable_reason = kClosedConnectionReturnedToPool;

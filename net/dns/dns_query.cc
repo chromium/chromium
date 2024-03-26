@@ -5,6 +5,7 @@
 #include "net/dns/dns_query.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/big_endian.h"
@@ -71,7 +72,7 @@ std::unique_ptr<OptRecordRdata> AddPaddingIfNecessary(
   std::unique_ptr<OptRecordRdata> merged_opt_rdata;
   if (opt_rdata) {
     merged_opt_rdata = OptRecordRdata::Create(
-        base::StringPiece(opt_rdata->buf().data(), opt_rdata->buf().size()));
+        std::string_view(opt_rdata->buf().data(), opt_rdata->buf().size()));
   } else {
     merged_opt_rdata = std::make_unique<OptRecordRdata>();
   }
@@ -223,9 +224,9 @@ uint16_t DnsQuery::qtype() const {
           .first<2u>());
 }
 
-base::StringPiece DnsQuery::question() const {
+std::string_view DnsQuery::question() const {
   auto s = io_buffer_->span().subspan(kHeaderSize, QuestionSize(qname_size_));
-  return base::StringPiece(s.begin(), s.end());
+  return std::string_view(s.begin(), s.end());
 }
 
 size_t DnsQuery::question_size() const {
@@ -270,7 +271,7 @@ bool DnsQuery::ReadName(base::BigEndianReader* reader, std::string* out) {
 
     out->append(reinterpret_cast<char*>(&label_length), 1);
 
-    base::StringPiece label;
+    std::string_view label;
     if (!reader->ReadPiece(&label, label_length)) {
       return false;
     }

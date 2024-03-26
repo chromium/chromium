@@ -11,11 +11,11 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "crypto/ec_private_key.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/proxy_server.h"
@@ -269,7 +269,7 @@ class SpdyTestUtil {
   ~SpdyTestUtil();
 
   // Add the appropriate headers to put |url| into |block|.
-  void AddUrlToHeaderBlock(base::StringPiece url,
+  void AddUrlToHeaderBlock(std::string_view url,
                            spdy::Http2HeaderBlock* headers) const;
 
   // Add the appropriate priority header if PriorityHeaders is enabled.
@@ -277,16 +277,16 @@ class SpdyTestUtil {
                                 bool priority_incremental,
                                 spdy::Http2HeaderBlock* headers) const;
 
-  static spdy::Http2HeaderBlock ConstructGetHeaderBlock(base::StringPiece url);
+  static spdy::Http2HeaderBlock ConstructGetHeaderBlock(std::string_view url);
   static spdy::Http2HeaderBlock ConstructGetHeaderBlockForProxy(
-      base::StringPiece url);
+      std::string_view url);
   static spdy::Http2HeaderBlock ConstructHeadHeaderBlock(
-      base::StringPiece url,
+      std::string_view url,
       int64_t content_length);
   static spdy::Http2HeaderBlock ConstructPostHeaderBlock(
-      base::StringPiece url,
+      std::string_view url,
       int64_t content_length);
-  static spdy::Http2HeaderBlock ConstructPutHeaderBlock(base::StringPiece url,
+  static spdy::Http2HeaderBlock ConstructPutHeaderBlock(std::string_view url,
                                                         int64_t content_length);
 
   // Construct an expected SPDY reply string from the given headers.
@@ -445,12 +445,12 @@ class SpdyTestUtil {
 
   // Constructs a single SPDY data frame with the given content.
   spdy::SpdySerializedFrame ConstructSpdyDataFrame(int stream_id,
-                                                   base::StringPiece data,
+                                                   std::string_view data,
                                                    bool fin);
 
   // Constructs a single SPDY data frame with the given content and padding.
   spdy::SpdySerializedFrame ConstructSpdyDataFrame(int stream_id,
-                                                   base::StringPiece data,
+                                                   std::string_view data,
                                                    bool fin,
                                                    int padding_length);
 
@@ -472,8 +472,8 @@ class SpdyTestUtil {
  private:
   // |content_length| may be NULL, in which case the content-length
   // header will be omitted.
-  static spdy::Http2HeaderBlock ConstructHeaderBlock(base::StringPiece method,
-                                                     base::StringPiece url,
+  static spdy::Http2HeaderBlock ConstructHeaderBlock(std::string_view method,
+                                                     std::string_view url,
                                                      int64_t* content_length);
 
   // Multiple SpdyFramers are required to keep track of header compression

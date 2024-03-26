@@ -7,6 +7,7 @@
 #include <dlfcn.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/android/build_info.h"
@@ -45,8 +46,8 @@ std::vector<std::string> GetUserAddedRoots() {
 }
 
 void VerifyX509CertChain(const std::vector<std::string>& cert_chain,
-                         base::StringPiece auth_type,
-                         base::StringPiece host,
+                         std::string_view auth_type,
+                         std::string_view host,
                          CertVerifyStatusAndroid* status,
                          bool* is_issued_by_known_root,
                          std::vector<std::string>* verified_chain) {
@@ -84,7 +85,7 @@ void ClearTestRootCertificates() {
   Java_AndroidNetworkLibrary_clearTestRootCertificates(env);
 }
 
-bool IsCleartextPermitted(base::StringPiece host) {
+bool IsCleartextPermitted(std::string_view host) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> host_string = ConvertUTF8ToJavaString(env, host);
   return Java_AndroidNetworkLibrary_isCleartextPermitted(env, host_string);
@@ -97,8 +98,7 @@ bool HaveOnlyLoopbackAddresses() {
   return Java_AndroidNetworkLibrary_haveOnlyLoopbackAddresses(env);
 }
 
-bool GetMimeTypeFromExtension(base::StringPiece extension,
-                              std::string* result) {
+bool GetMimeTypeFromExtension(std::string_view extension, std::string* result) {
   JNIEnv* env = AttachCurrentThread();
 
   ScopedJavaLocalRef<jstring> extension_string =

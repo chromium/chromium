@@ -5,6 +5,7 @@
 #include "net/quic/dedicated_web_transport_http3_client.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -52,7 +53,7 @@ class MockVisitor : public WebTransportClientVisitor {
 
   MOCK_METHOD0(OnIncomingBidirectionalStreamAvailable, void());
   MOCK_METHOD0(OnIncomingUnidirectionalStreamAvailable, void());
-  MOCK_METHOD1(OnDatagramReceived, void(base::StringPiece));
+  MOCK_METHOD1(OnDatagramReceived, void(std::string_view));
   MOCK_METHOD0(OnCanCreateNewOutgoingBidirectionalStream, void());
   MOCK_METHOD0(OnCanCreateNewOutgoingUnidirectionalStream, void());
   MOCK_METHOD1(OnDatagramProcessed, void(std::optional<quic::MessageStatus>));

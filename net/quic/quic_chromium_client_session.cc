@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -171,7 +172,7 @@ void LogMigrateToSocketStatus(bool success) {
 
 void RecordConnectionCloseErrorCode(const quic::QuicConnectionCloseFrame& frame,
                                     quic::ConnectionCloseSource source,
-                                    base::StringPiece hostname,
+                                    std::string_view hostname,
                                     bool handshake_confirmed,
                                     bool has_ech_config_list) {
   bool is_google_host = IsGoogleHost(hostname);
@@ -224,7 +225,7 @@ void RecordConnectionCloseErrorCode(const quic::QuicConnectionCloseFrame& frame,
 
 base::Value::Dict NetLogQuicMigrationFailureParams(
     quic::QuicConnectionId connection_id,
-    base::StringPiece reason) {
+    std::string_view reason) {
   return base::Value::Dict()
       .Set("connection_id", connection_id.ToString())
       .Set("reason", reason);
@@ -1361,7 +1362,7 @@ bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
   return true;
 }
 
-base::StringPiece QuicChromiumClientSession::GetAcceptChViaAlps(
+std::string_view QuicChromiumClientSession::GetAcceptChViaAlps(
     const url::SchemeHostPort& scheme_host_port) const {
   auto it = accept_ch_entries_received_via_alps_.find(scheme_host_port);
   if (it == accept_ch_entries_received_via_alps_.end()) {

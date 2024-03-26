@@ -7,9 +7,9 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/dns_over_https_server_config.h"
@@ -39,11 +39,11 @@ class NET_EXPORT DnsOverHttpsConfig {
   // Constructs a Config from its text form if valid.  Returns `nullopt` if the
   // input is empty or invalid (even partly invalid).
   static std::optional<DnsOverHttpsConfig> FromString(
-      base::StringPiece doh_config);
+      std::string_view doh_config);
 
   // Constructs a DnsOverHttpsConfig from its text form, skipping any invalid
   // templates in the whitespace-separated form.  The result may be empty.
-  static DnsOverHttpsConfig FromStringLax(base::StringPiece doh_config);
+  static DnsOverHttpsConfig FromStringLax(std::string_view doh_config);
 
   bool operator==(const DnsOverHttpsConfig& other) const;
 

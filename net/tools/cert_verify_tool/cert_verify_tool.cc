@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <iostream>
+#include <string_view>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
@@ -217,7 +218,7 @@ class DummySystemTrustStore : public net::SystemTrustStore {
 };
 
 std::unique_ptr<net::SystemTrustStore> CreateSystemTrustStore(
-    base::StringPiece impl_name,
+    std::string_view impl_name,
     RootStoreType root_store_type) {
   switch (root_store_type) {
 #if BUILDFLAG(IS_FUCHSIA)
@@ -246,7 +247,7 @@ std::unique_ptr<net::SystemTrustStore> CreateSystemTrustStore(
 
 // Creates an subclass of CertVerifyImpl based on its name, or returns nullptr.
 std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
-    base::StringPiece impl_name,
+    std::string_view impl_name,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
     scoped_refptr<net::CRLSet> crl_set,
     RootStoreType root_store_type) {

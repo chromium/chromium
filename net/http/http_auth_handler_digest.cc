@@ -5,13 +5,13 @@
 #include "net/http/http_auth_handler_digest.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -239,8 +239,8 @@ bool HttpAuthHandlerDigest::ParseChallenge(
   return true;
 }
 
-bool HttpAuthHandlerDigest::ParseChallengeProperty(base::StringPiece name,
-                                                   base::StringPiece value) {
+bool HttpAuthHandlerDigest::ParseChallengeProperty(std::string_view name,
+                                                   std::string_view value) {
   if (base::EqualsCaseInsensitiveASCII(name, "realm")) {
     std::string realm;
     if (!ConvertToUtf8AndNormalize(value, kCharsetLatin1, &realm)) {
@@ -364,10 +364,10 @@ class HttpAuthHandlerDigest::DigestContext {
         break;
     }
   }
-  void Update(base::StringPiece s) {
+  void Update(std::string_view s) {
     CHECK(EVP_DigestUpdate(md_ctx_.get(), s.data(), s.size()));
   }
-  void Update(std::initializer_list<base::StringPiece> sps) {
+  void Update(std::initializer_list<std::string_view> sps) {
     for (const auto sp : sps) {
       Update(sp);
     }

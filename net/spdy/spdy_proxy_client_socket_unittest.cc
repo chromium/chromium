@@ -4,13 +4,13 @@
 
 #include "net/spdy/spdy_proxy_client_socket.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
@@ -501,8 +501,8 @@ spdy::SpdySerializedFrame SpdyProxyClientSocketTest::ConstructBodyFrame(
     const char* data,
     int length,
     bool fin) {
-  return spdy_util_.ConstructSpdyDataFrame(
-      kStreamId, base::StringPiece(data, length), fin);
+  return spdy_util_.ConstructSpdyDataFrame(kStreamId,
+                                           std::string_view(data, length), fin);
 }
 
 // ----------- Connect

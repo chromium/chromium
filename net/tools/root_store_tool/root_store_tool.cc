@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/at_exit.h"
 #include "base/base_paths.h"
@@ -21,7 +22,6 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,7 +41,7 @@ namespace {
 // Returns a map from hex-encoded SHA-256 hash to DER certificate, or
 // `std::nullopt` if not found.
 std::optional<std::map<std::string, std::string>> DecodeCerts(
-    base::StringPiece in) {
+    std::string_view in) {
   // TODO(https://crbug.com/1216547): net/cert/pem.h has a much nicer API, but
   // it would require some build refactoring to avoid a circular dependency.
   // This is assuming that the chrome trust store code goes in

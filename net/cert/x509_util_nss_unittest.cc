@@ -4,6 +4,8 @@
 
 #include "net/cert/x509_util_nss.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/time/time.h"
@@ -133,7 +135,7 @@ TEST(X509UtilTest, CreateCERTCertificateListFromX509CertificateErrors) {
   ASSERT_TRUE(ok_cert);
 
   bssl::UniquePtr<CRYPTO_BUFFER> bad_cert =
-      x509_util::CreateCryptoBuffer(base::StringPiece("invalid"));
+      x509_util::CreateCryptoBuffer(std::string_view("invalid"));
   ASSERT_TRUE(bad_cert);
 
   scoped_refptr<X509Certificate> ok_cert2(

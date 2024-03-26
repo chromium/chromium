@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -21,7 +22,6 @@
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
@@ -317,7 +317,7 @@ EmbeddedTestServerHandle EmbeddedTestServer::StartAndReturnHandle(int port) {
   return result ? EmbeddedTestServerHandle(this) : EmbeddedTestServerHandle();
 }
 
-bool EmbeddedTestServer::Start(int port, base::StringPiece address) {
+bool EmbeddedTestServer::Start(int port, std::string_view address) {
   bool success = InitializeAndListen(port, address);
   if (success)
     StartAcceptingConnections();
@@ -325,7 +325,7 @@ bool EmbeddedTestServer::Start(int port, base::StringPiece address) {
 }
 
 bool EmbeddedTestServer::InitializeAndListen(int port,
-                                             base::StringPiece address) {
+                                             std::string_view address) {
   DCHECK(!Started());
 
   const int max_tries = 5;
@@ -557,7 +557,7 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
       size_t frame_size = spdy::kFrameHeaderSize;
       // Figure out size and generate origins
       for (const auto& pair : alps_accept_ch_) {
-        base::StringPiece hostname = pair.first;
+        std::string_view hostname = pair.first;
         std::string accept_ch = pair.second;
 
         GURL url = hostname.empty() ? GetURL("/") : GetURL(hostname, "/");
@@ -572,8 +572,8 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
       spdy::SpdyFrameBuilder builder(frame_size);
       builder.BeginNewFrame(spdy::SpdyFrameType::ACCEPT_CH, 0, 0);
       for (const auto& pair : origin_accept_ch) {
-        base::StringPiece origin = pair.first;
-        base::StringPiece accept_ch = pair.second;
+        std::string_view origin = pair.first;
+        std::string_view accept_ch = pair.second;
 
         builder.WriteUInt16(origin.size());
         builder.WriteBytes(origin.data(), origin.size());
@@ -708,14 +708,14 @@ void EmbeddedTestServer::HandleRequest(
   response_ptr->SendResponse(delegate);
 }
 
-GURL EmbeddedTestServer::GetURL(base::StringPiece relative_url) const {
+GURL EmbeddedTestServer::GetURL(std::string_view relative_url) const {
   DCHECK(Started()) << "You must start the server first.";
   DCHECK(relative_url.starts_with("/")) << relative_url;
   return base_url_.Resolve(relative_url);
 }
 
-GURL EmbeddedTestServer::GetURL(base::StringPiece hostname,
-                                base::StringPiece relative_url) const {
+GURL EmbeddedTestServer::GetURL(std::string_view hostname,
+                                std::string_view relative_url) const {
   GURL local_url = GetURL(relative_url);
   GURL::Replacements replace_host;
   replace_host.SetHostStr(hostname);
@@ -858,7 +858,7 @@ void EmbeddedTestServer::ServeFilesFromDirectory(
 }
 
 void EmbeddedTestServer::ServeFilesFromSourceDirectory(
-    base::StringPiece relative) {
+    std::string_view relative) {
   base::FilePath test_data_dir;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   ServeFilesFromDirectory(test_data_dir.AppendASCII(relative));

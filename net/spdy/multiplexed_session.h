@@ -5,7 +5,8 @@
 #ifndef NET_SPDY_MULTIPLEXED_SESSION_H_
 #define NET_SPDY_MULTIPLEXED_SESSION_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_stream.h"
@@ -38,7 +39,7 @@ class NET_EXPORT_PRIVATE MultiplexedSession {
   // Note that this uses url::SchemeHostPort instead of url::Origin because this
   // is based around network authorities, as opposed to general RFC 6454
   // origins.
-  virtual base::StringPiece GetAcceptChViaAlps(
+  virtual std::string_view GetAcceptChViaAlps(
       const url::SchemeHostPort& scheme_host_port) const = 0;
 };
 
@@ -68,7 +69,7 @@ class NET_EXPORT_PRIVATE MultiplexedSessionHandle {
   // Note that this uses url::SchemeHostPort instead of url::Origin because this
   // is based around network authorities, as opposed to general RFC 6454
   // origins.
-  virtual base::StringPiece GetAcceptChViaAlps(
+  virtual std::string_view GetAcceptChViaAlps(
       const url::SchemeHostPort& scheme_host_port) const;
 
  private:

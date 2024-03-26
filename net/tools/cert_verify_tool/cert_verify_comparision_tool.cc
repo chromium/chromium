@@ -6,6 +6,7 @@
 // the platform verifier and the builtin verifier. Currently only tested on
 // Windows.
 #include <iostream>
+#include <string_view>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
@@ -121,7 +122,7 @@ class CertVerifyImpl {
 
 // Creates an subclass of CertVerifyImpl based on its name, or returns nullptr.
 std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
-    base::StringPiece impl_name,
+    std::string_view impl_name,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher) {
 #if !(BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || \
       BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(CHROME_ROOT_STORE_ONLY))
@@ -245,7 +246,7 @@ int RunCert(base::File* input_file,
     return -1;
   }
 
-  std::vector<base::StringPiece> der_cert_chain;
+  std::vector<std::string_view> der_cert_chain;
   for (int i = 0; i < cert_chain.der_certs_size(); i++) {
     der_cert_chain.push_back(cert_chain.der_certs(i));
   }

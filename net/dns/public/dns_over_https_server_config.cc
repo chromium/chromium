@@ -7,12 +7,12 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/third_party/uri_template/uri_template.h"
 #include "url/url_canon.h"
@@ -36,8 +36,8 @@ std::optional<std::string> GetHttpsHost(const std::string& url) {
   if (!is_valid)
     return std::nullopt;
   const url::Component& scheme_range = canonical_parsed.scheme;
-  base::StringPiece scheme =
-      base::StringPiece(canonical).substr(scheme_range.begin, scheme_range.len);
+  std::string_view scheme =
+      std::string_view(canonical).substr(scheme_range.begin, scheme_range.len);
   if (scheme != url::kHttpsScheme)
     return std::nullopt;
   const url::Component& host_range = canonical_parsed.host;
@@ -70,9 +70,9 @@ bool IsValidDohTemplate(const std::string& server_template, bool* use_post) {
   return true;
 }
 
-constexpr base::StringPiece kJsonKeyTemplate("template");
-constexpr base::StringPiece kJsonKeyEndpoints("endpoints");
-constexpr base::StringPiece kJsonKeyIps("ips");
+constexpr std::string_view kJsonKeyTemplate("template");
+constexpr std::string_view kJsonKeyEndpoints("endpoints");
+constexpr std::string_view kJsonKeyIps("ips");
 
 }  // namespace
 
@@ -124,7 +124,7 @@ const std::string& DnsOverHttpsServerConfig::server_template() const {
   return server_template_;
 }
 
-base::StringPiece DnsOverHttpsServerConfig::server_template_piece() const {
+std::string_view DnsOverHttpsServerConfig::server_template_piece() const {
   return server_template_;
 }
 

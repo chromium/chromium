@@ -5,6 +5,7 @@
 #include "net/spdy/header_coalescer.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "net/log/net_log.h"
@@ -24,9 +25,9 @@ class HeaderCoalescerTest : public ::testing::Test {
   HeaderCoalescerTest()
       : header_coalescer_(kMaxHeaderListSizeForTest, net_log_with_source_) {}
 
-  void ExpectEntry(base::StringPiece expected_header_name,
-                   base::StringPiece expected_header_value,
-                   base::StringPiece expected_error_message) {
+  void ExpectEntry(std::string_view expected_header_name,
+                   std::string_view expected_header_value,
+                   std::string_view expected_error_message) {
     auto entry_list = net_log_observer_.GetEntries();
     ASSERT_EQ(1u, entry_list.size());
     EXPECT_EQ(entry_list[0].type,

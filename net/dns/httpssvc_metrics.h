@@ -7,10 +7,10 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 
@@ -65,7 +65,7 @@ class NET_EXPORT_PRIVATE HttpssvcMetrics {
                     base::TimeDelta https_resolve_time);
 
  private:
-  std::string BuildMetricName(base::StringPiece leaf_name) const;
+  std::string BuildMetricName(std::string_view leaf_name) const;
 
   // Records all the aggregated metrics to UMA.
   void RecordMetrics();

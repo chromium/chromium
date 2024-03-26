@@ -4,6 +4,8 @@
 
 #include "net/http/http_no_vary_search_data.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/types/expected.h"
@@ -142,7 +144,7 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
   static constexpr const char* kKeyOrder = "key-order";
   static constexpr const char* kParams = "params";
   static constexpr const char* kExcept = "except";
-  constexpr base::StringPiece kValidKeys[] = {kKeyOrder, kParams, kExcept};
+  constexpr std::string_view kValidKeys[] = {kKeyOrder, kParams, kExcept};
 
   base::flat_set<std::string> no_vary_params;
   base::flat_set<std::string> vary_params;

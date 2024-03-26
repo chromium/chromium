@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cmath>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -3308,7 +3308,7 @@ TEST_P(SpdyNetworkTransactionTest, ResponseHeaders) {
     int extra_header_count;
     const char* extra_headers[4];
     size_t expected_header_count;
-    base::StringPiece expected_headers[8];
+    std::string_view expected_headers[8];
   } test_cases[] = {
       // No extra headers.
       {0, {}, 1, {"hello", "bye"}},
@@ -5769,7 +5769,7 @@ TEST_P(SpdyNetworkTransactionTest, WindowUpdateSent) {
   for (size_t remaining = kTargetSize; remaining != 0;) {
     size_t frame_size = std::min(remaining, body_data.size());
     body_frames.push_back(spdy_util_.ConstructSpdyDataFrame(
-        1, base::StringPiece(body_data.data(), frame_size), false));
+        1, std::string_view(body_data.data(), frame_size), false));
     reads.push_back(
         CreateMockRead(body_frames.back(), writes.size() + reads.size()));
     remaining -= frame_size;
@@ -5835,7 +5835,7 @@ TEST_P(SpdyNetworkTransactionTest, WindowUpdateSent) {
             trans->Read(buf.get(), kTargetSize, CompletionOnceCallback()));
   EXPECT_EQ(static_cast<int>(stream_max_recv_window_size),
             stream->stream()->recv_window_size());
-  EXPECT_THAT(base::StringPiece(buf->data(), kTargetSize), Each(Eq('x')));
+  EXPECT_THAT(std::string_view(buf->data(), kTargetSize), Each(Eq('x')));
 
   // Allow scheduled WINDOW_UPDATE frames to write.
   base::RunLoop().RunUntilIdle();
@@ -6024,15 +6024,14 @@ TEST_P(SpdyNetworkTransactionTest, FlowControlStallResume) {
 
   // Last frame in each upload data buffer.
   spdy::SpdySerializedFrame body2(spdy_util_.ConstructSpdyDataFrame(
-      1,
-      base::StringPiece(content.data(), kBufferSize % kMaxSpdyFrameChunkSize),
+      1, std::string_view(content.data(), kBufferSize % kMaxSpdyFrameChunkSize),
       false));
 
   // The very last frame before the stalled frames.
   spdy::SpdySerializedFrame body3(spdy_util_.ConstructSpdyDataFrame(
       1,
-      base::StringPiece(content.data(), initial_window_size % kBufferSize %
-                                            kMaxSpdyFrameChunkSize),
+      std::string_view(content.data(), initial_window_size % kBufferSize %
+                                           kMaxSpdyFrameChunkSize),
       false));
 
   // Data frames to be sent once WINDOW_UPDATE frame is received.
@@ -6173,15 +6172,14 @@ TEST_P(SpdyNetworkTransactionTest, FlowControlStallResumeAfterSettings) {
 
   // Last frame in each upload data buffer.
   spdy::SpdySerializedFrame body2(spdy_util_.ConstructSpdyDataFrame(
-      1,
-      base::StringPiece(content.data(), kBufferSize % kMaxSpdyFrameChunkSize),
+      1, std::string_view(content.data(), kBufferSize % kMaxSpdyFrameChunkSize),
       false));
 
   // The very last frame before the stalled frames.
   spdy::SpdySerializedFrame body3(spdy_util_.ConstructSpdyDataFrame(
       1,
-      base::StringPiece(content.data(), initial_window_size % kBufferSize %
-                                            kMaxSpdyFrameChunkSize),
+      std::string_view(content.data(), initial_window_size % kBufferSize %
+                                           kMaxSpdyFrameChunkSize),
       false));
 
   // Data frames to be sent once WINDOW_UPDATE frame is received.
@@ -6334,15 +6332,14 @@ TEST_P(SpdyNetworkTransactionTest, FlowControlNegativeSendWindowSize) {
 
   // Last frame in each upload data buffer.
   spdy::SpdySerializedFrame body2(spdy_util_.ConstructSpdyDataFrame(
-      1,
-      base::StringPiece(content.data(), kBufferSize % kMaxSpdyFrameChunkSize),
+      1, std::string_view(content.data(), kBufferSize % kMaxSpdyFrameChunkSize),
       false));
 
   // The very last frame before the stalled frames.
   spdy::SpdySerializedFrame body3(spdy_util_.ConstructSpdyDataFrame(
       1,
-      base::StringPiece(content.data(), initial_window_size % kBufferSize %
-                                            kMaxSpdyFrameChunkSize),
+      std::string_view(content.data(), initial_window_size % kBufferSize %
+                                           kMaxSpdyFrameChunkSize),
       false));
 
   // Data frames to be sent once WINDOW_UPDATE frame is received.
@@ -8660,7 +8657,7 @@ TEST_P(SpdyNetworkTransactionTest, GreaseSettings) {
   // Get last setting parameter.
   const base::Value& greased_setting = (*settings)[settings->size() - 1];
   ASSERT_TRUE(greased_setting.is_string());
-  base::StringPiece greased_setting_string(greased_setting.GetString());
+  std::string_view greased_setting_string(greased_setting.GetString());
 
   const std::string kExpectedPrefix = "[id:";
   EXPECT_EQ(kExpectedPrefix,

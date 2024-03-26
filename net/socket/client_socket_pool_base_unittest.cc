@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -84,9 +85,9 @@ const int kDefaultMaxSocketsPerGroup = 2;
 constexpr base::TimeDelta kUnusedIdleSocketTimeout = base::Seconds(10);
 
 ClientSocketPool::GroupId TestGroupId(
-    base::StringPiece host,
+    std::string_view host,
     int port = 80,
-    base::StringPiece scheme = url::kHttpScheme,
+    std::string_view scheme = url::kHttpScheme,
     PrivacyMode privacy_mode = PrivacyMode::PRIVACY_MODE_DISABLED,
     NetworkAnonymizationKey network_anonymization_key =
         NetworkAnonymizationKey()) {

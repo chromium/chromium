@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <iterator>
 #include <ostream>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -130,8 +130,8 @@ void GetFrameTypeForOpcode(WebSocketFrameHeader::OpCode opcode,
 }
 
 base::Value::Dict NetLogFailParam(uint16_t code,
-                                  base::StringPiece reason,
-                                  base::StringPiece message) {
+                                  std::string_view reason,
+                                  std::string_view message) {
   base::Value::Dict dict;
   dict.Set("code", code);
   dict.Set("reason", reason);

@@ -6,11 +6,11 @@
 #define NET_HTTP_HTTP_RAW_REQUEST_HEADERS_H_
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -39,14 +39,14 @@ class NET_EXPORT HttpRawRequestHeaders {
 
   void Assign(HttpRawRequestHeaders other) { *this = std::move(other); }
 
-  void Add(base::StringPiece key, base::StringPiece value);
-  void set_request_line(base::StringPiece line) {
+  void Add(std::string_view key, std::string_view value);
+  void set_request_line(std::string_view line) {
     request_line_ = std::string(line);
   }
 
   const HeaderVector& headers() const { return headers_; }
   const std::string& request_line() const { return request_line_; }
-  bool FindHeaderForTest(base::StringPiece key, std::string* value) const;
+  bool FindHeaderForTest(std::string_view key, std::string* value) const;
 
  private:
   HeaderVector headers_;

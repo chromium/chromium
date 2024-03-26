@@ -5,6 +5,7 @@
 #include "net/quic/quic_chromium_client_stream.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -341,7 +342,7 @@ TEST_P(QuicChromiumClientStreamTest, Handle) {
               WritevData(stream_->id(), _, _, _, quic::NOT_RETRANSMISSION, _))
       .WillOnce(Return(quic::QuicConsumedData(kDataLen, true)));
   TestCompletionCallback callback;
-  EXPECT_EQ(OK, handle_->WriteStreamData(base::StringPiece(kData1, kDataLen),
+  EXPECT_EQ(OK, handle_->WriteStreamData(std::string_view(kData1, kDataLen),
                                          true, callback.callback()));
 
   EXPECT_FALSE(handle_->IsOpen());
@@ -359,7 +360,7 @@ TEST_P(QuicChromiumClientStreamTest, Handle) {
   EXPECT_EQ(0u, handle_->NumBytesConsumed());
 
   EXPECT_EQ(ERR_CONNECTION_CLOSED,
-            handle_->WriteStreamData(base::StringPiece(kData1, kDataLen), true,
+            handle_->WriteStreamData(std::string_view(kData1, kDataLen), true,
                                      callback.callback()));
 
   std::vector<scoped_refptr<IOBuffer>> buffers = {
@@ -717,7 +718,7 @@ TEST_P(QuicChromiumClientStreamTest, WriteStreamData) {
               WritevData(stream_->id(), _, _, _, quic::NOT_RETRANSMISSION, _))
       .WillOnce(Return(quic::QuicConsumedData(kDataLen, true)));
   TestCompletionCallback callback;
-  EXPECT_EQ(OK, handle_->WriteStreamData(base::StringPiece(kData1, kDataLen),
+  EXPECT_EQ(OK, handle_->WriteStreamData(std::string_view(kData1, kDataLen),
                                          true, callback.callback()));
 }
 
@@ -732,7 +733,7 @@ TEST_P(QuicChromiumClientStreamTest, WriteStreamDataAsync) {
       .WillOnce(Return(quic::QuicConsumedData(0, false)));
   TestCompletionCallback callback;
   EXPECT_EQ(ERR_IO_PENDING,
-            handle_->WriteStreamData(base::StringPiece(kData1, kDataLen), true,
+            handle_->WriteStreamData(std::string_view(kData1, kDataLen), true,
                                      callback.callback()));
   ASSERT_FALSE(callback.have_result());
 

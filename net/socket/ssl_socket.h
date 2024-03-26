@@ -5,7 +5,8 @@
 #ifndef NET_SOCKET_SSL_SOCKET_H_
 #define NET_SOCKET_SSL_SOCKET_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "net/base/net_export.h"
 #include "net/socket/stream_socket.h"
 
@@ -22,9 +23,9 @@ public:
  // RFC and |context| is ignored.  The call will fail with an error if
  // the socket is not connected or the SSL implementation does not
  // support the operation.
- virtual int ExportKeyingMaterial(base::StringPiece label,
+ virtual int ExportKeyingMaterial(std::string_view label,
                                   bool has_context,
-                                  base::StringPiece context,
+                                  std::string_view context,
                                   unsigned char* out,
                                   unsigned int outlen) = 0;
 };

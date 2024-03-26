@@ -6,6 +6,8 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include <string_view>
+
 #include "base/notreached.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_endpoint.h"
@@ -83,9 +85,9 @@ class FailingSSLClientSocket : public SSLClientSocket {
   void ApplySocketTag(const net::SocketTag& tag) override {}
 
   // SSLSocket implementation:
-  int ExportKeyingMaterial(base::StringPiece label,
+  int ExportKeyingMaterial(std::string_view label,
                            bool has_context,
-                           base::StringPiece context,
+                           std::string_view context,
                            unsigned char* out,
                            unsigned int outlen) override {
     NOTREACHED();

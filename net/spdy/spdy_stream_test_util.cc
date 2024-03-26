@@ -5,9 +5,9 @@
 #include "net/spdy/spdy_stream_test_util.h"
 
 #include <cstddef>
+#include <string_view>
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "net/spdy/spdy_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -143,7 +143,7 @@ void StreamDelegateConsumeData::OnDataReceived(
 
 StreamDelegateSendImmediate::StreamDelegateSendImmediate(
     const base::WeakPtr<SpdyStream>& stream,
-    base::StringPiece data)
+    std::string_view data)
     : StreamDelegateBase(stream), data_(data) {}
 
 StreamDelegateSendImmediate::~StreamDelegateSendImmediate() = default;
@@ -160,7 +160,7 @@ void StreamDelegateSendImmediate::OnHeadersReceived(
 
 StreamDelegateWithBody::StreamDelegateWithBody(
     const base::WeakPtr<SpdyStream>& stream,
-    base::StringPiece data)
+    std::string_view data)
     : StreamDelegateBase(stream),
       buf_(base::MakeRefCounted<StringIOBuffer>(std::string(data))) {}
 

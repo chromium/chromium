@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -14,7 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "net/http/http_status_code.h"
@@ -102,18 +102,18 @@ class BasicHttpResponse : public HttpResponse {
 
   // The content of the response.
   const std::string& content() const { return content_; }
-  void set_content(base::StringPiece content) {
+  void set_content(std::string_view content) {
     content_ = std::string{content};
   }
 
   // The content type.
   const std::string& content_type() const { return content_type_; }
-  void set_content_type(base::StringPiece content_type) {
+  void set_content_type(std::string_view content_type) {
     content_type_ = std::string{content_type};
   }
 
   // Adds a custom header.
-  void AddCustomHeader(base::StringPiece key, base::StringPiece value) {
+  void AddCustomHeader(std::string_view key, std::string_view value) {
     custom_headers_.emplace_back(key, value);
   }
 

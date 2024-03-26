@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <string>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
@@ -15,7 +16,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -166,7 +166,7 @@ base::Value::Dict GetGssStatusCodeValue(GSSAPILibrary* gssapi_lib,
       continue;
     }
 
-    base::StringPiece message_string{
+    std::string_view message_string{
         static_cast<const char*>(message_buffer.value),
         std::min(kMaxMsgLength, message_buffer.length)};
 
@@ -183,7 +183,7 @@ base::Value::Dict GetGssStatusCodeValue(GSSAPILibrary* gssapi_lib,
 }
 
 base::Value::Dict GetGssStatusValue(GSSAPILibrary* gssapi_lib,
-                                    base::StringPiece method,
+                                    std::string_view method,
                                     OM_uint32 major_status,
                                     OM_uint32 minor_status) {
   base::Value::Dict params;
@@ -257,7 +257,7 @@ base::Value::Dict GetDisplayNameValue(GSSAPILibrary* gssapi_lib,
     return rv;
   }
   auto name_string =
-      base::StringPiece(reinterpret_cast<const char*>(name.value), name.length);
+      std::string_view(reinterpret_cast<const char*>(name.value), name.length);
   rv.Set("name", base::IsStringUTF8(name_string)
                      ? NetLogStringValue(name_string)
                      : NetLogBinaryValue(name.value, name.length));
@@ -321,8 +321,8 @@ base::Value::Dict GetContextStateAsValue(GSSAPILibrary* gssapi_lib,
 namespace {
 
 // Return a NetLog value for the result of loading a library.
-base::Value::Dict LibraryLoadResultParams(base::StringPiece library_name,
-                                          base::StringPiece load_result) {
+base::Value::Dict LibraryLoadResultParams(std::string_view library_name,
+                                          std::string_view load_result) {
   base::Value::Dict params;
   params.Set("library_name", library_name);
   if (!load_result.empty())
@@ -423,8 +423,8 @@ base::NativeLibrary GSSAPISharedLibrary::LoadSharedLibrary(
 
 namespace {
 
-base::Value::Dict BindFailureParams(base::StringPiece library_name,
-                                    base::StringPiece method) {
+base::Value::Dict BindFailureParams(std::string_view library_name,
+                                    std::string_view method) {
   base::Value::Dict params;
   params.Set("library_name", library_name);
   params.Set("method", method);
@@ -432,7 +432,7 @@ base::Value::Dict BindFailureParams(base::StringPiece library_name,
 }
 
 void* BindUntypedMethod(base::NativeLibrary lib,
-                        base::StringPiece library_name,
+                        std::string_view library_name,
                         const char* method,
                         const NetLogWithSource& net_log) {
   void* ptr = base::GetFunctionPointerFromNativeLibrary(lib, method);
@@ -445,7 +445,7 @@ void* BindUntypedMethod(base::NativeLibrary lib,
 
 template <typename T>
 bool BindMethod(base::NativeLibrary lib,
-                base::StringPiece library_name,
+                std::string_view library_name,
                 const char* method,
                 T* receiver,
                 const NetLogWithSource& net_log) {
@@ -457,7 +457,7 @@ bool BindMethod(base::NativeLibrary lib,
 }  // namespace
 
 bool GSSAPISharedLibrary::BindMethods(base::NativeLibrary lib,
-                                      base::StringPiece name,
+                                      std::string_view name,
                                       const NetLogWithSource& net_log) {
   bool ok = true;
   // It's unlikely for BindMethods() to fail if LoadNativeLibrary() succeeded. A
@@ -810,7 +810,7 @@ int MapInitSecContextStatusToError(OM_uint32 major_status) {
 }
 
 base::Value::Dict ImportNameErrorParams(GSSAPILibrary* library,
-                                        base::StringPiece spn,
+                                        std::string_view spn,
                                         OM_uint32 major_status,
                                         OM_uint32 minor_status) {
   base::Value::Dict params;

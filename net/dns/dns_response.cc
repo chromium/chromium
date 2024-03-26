@@ -9,6 +9,7 @@
 #include <limits>
 #include <numeric>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -416,7 +417,7 @@ DnsResponse& DnsResponse::operator=(DnsResponse&& other) = default;
 DnsResponse::~DnsResponse() = default;
 
 bool DnsResponse::InitParse(size_t nbytes, const DnsQuery& query) {
-  const base::StringPiece question = query.question();
+  const std::string_view question = query.question();
 
   // Response includes question, it should be at least that size.
   if (nbytes < kHeaderSize + question.size() || nbytes > io_buffer_size_) {
@@ -442,7 +443,7 @@ bool DnsResponse::InitParse(size_t nbytes, const DnsQuery& query) {
 
   // Match the question section.
   if (question !=
-      base::StringPiece(io_buffer_->data() + kHeaderSize, question.size())) {
+      std::string_view(io_buffer_->data() + kHeaderSize, question.size())) {
     return false;
   }
 
@@ -545,7 +546,7 @@ uint16_t DnsResponse::GetSingleQType() const {
   return qtypes().front();
 }
 
-base::StringPiece DnsResponse::GetSingleDottedName() const {
+std::string_view DnsResponse::GetSingleDottedName() const {
   DCHECK_EQ(dotted_qnames().size(), 1u);
   return dotted_qnames().front();
 }
@@ -569,7 +570,7 @@ bool DnsResponse::WriteHeader(base::BigEndianWriter* writer,
 
 bool DnsResponse::WriteQuestion(base::BigEndianWriter* writer,
                                 const DnsQuery& query) {
-  base::StringPiece question = query.question();
+  std::string_view question = query.question();
   return writer->WriteBytes(question.data(), question.size());
 }
 
@@ -577,7 +578,7 @@ bool DnsResponse::WriteRecord(base::BigEndianWriter* writer,
                               const DnsResourceRecord& record,
                               bool validate_record,
                               bool validate_name_as_internet_hostname) {
-  if (record.rdata != base::StringPiece(record.owned_rdata)) {
+  if (record.rdata != std::string_view(record.owned_rdata)) {
     VLOG(1) << "record.rdata should point to record.owned_rdata.";
     return false;
   }

@@ -12,9 +12,9 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/dns_protocol.h"
@@ -32,7 +32,7 @@ class NET_EXPORT_PRIVATE HttpsRecordRdata : public RecordRdata {
   static const uint16_t kType = dns_protocol::kTypeHttps;
 
   // Returns `nullptr` on malformed input.
-  static std::unique_ptr<HttpsRecordRdata> Parse(base::StringPiece data);
+  static std::unique_ptr<HttpsRecordRdata> Parse(std::string_view data);
 
   HttpsRecordRdata(const HttpsRecordRdata& rdata) = delete;
   HttpsRecordRdata& operator=(const HttpsRecordRdata& rdata) = delete;
@@ -57,12 +57,12 @@ class NET_EXPORT_PRIVATE AliasFormHttpsRecordRdata : public HttpsRecordRdata {
  public:
   explicit AliasFormHttpsRecordRdata(std::string alias_name);
   static std::unique_ptr<AliasFormHttpsRecordRdata> Parse(
-      base::StringPiece data);
+      std::string_view data);
 
   bool IsEqual(const HttpsRecordRdata* other) const override;
   bool IsAlias() const override;
 
-  base::StringPiece alias_name() const { return alias_name_; }
+  std::string_view alias_name() const { return alias_name_; }
 
  private:
   AliasFormHttpsRecordRdata() = default;
@@ -92,7 +92,7 @@ class NET_EXPORT_PRIVATE ServiceFormHttpsRecordRdata : public HttpsRecordRdata {
                               std::vector<IPAddress> ipv6_hint,
                               std::map<uint16_t, std::string> unparsed_params);
   static std::unique_ptr<ServiceFormHttpsRecordRdata> Parse(
-      base::StringPiece data);
+      std::string_view data);
 
   ~ServiceFormHttpsRecordRdata() override;
 
@@ -100,13 +100,13 @@ class NET_EXPORT_PRIVATE ServiceFormHttpsRecordRdata : public HttpsRecordRdata {
   bool IsAlias() const override;
 
   HttpsRecordPriority priority() const { return priority_; }
-  base::StringPiece service_name() const { return service_name_; }
+  std::string_view service_name() const { return service_name_; }
   const std::set<uint16_t>& mandatory_keys() const { return mandatory_keys_; }
   const std::vector<std::string>& alpn_ids() const { return alpn_ids_; }
   bool default_alpn() const { return default_alpn_; }
   std::optional<uint16_t> port() const { return port_; }
   const std::vector<IPAddress>& ipv4_hint() const { return ipv4_hint_; }
-  base::StringPiece ech_config() const { return ech_config_; }
+  std::string_view ech_config() const { return ech_config_; }
   const std::vector<IPAddress>& ipv6_hint() const { return ipv6_hint_; }
   const std::map<uint16_t, std::string>& unparsed_params() const {
     return unparsed_params_;
