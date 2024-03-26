@@ -52,8 +52,8 @@ class BlobMediaDataSource : public chrome::mojom::MediaDataSource {
   }
 
   void OnBlobReaderDone(chrome::mojom::MediaDataSource::ReadCallback callback,
-                        std::unique_ptr<std::string> data,
-                        int64_t size) {
+                        std::string data,
+                        int64_t /*size*/) {
     callback_.Run(std::move(callback), std::move(data));
   }
 

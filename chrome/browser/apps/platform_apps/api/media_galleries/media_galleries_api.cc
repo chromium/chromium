@@ -659,13 +659,13 @@ void MediaGalleriesGetMetadataFunction::OnPreferencesInit(
 void MediaGalleriesGetMetadataFunction::GetMetadata(
     MediaGalleries::GetMetadataType metadata_type,
     const std::string& blob_uuid,
-    std::unique_ptr<std::string> blob_header,
+    std::string blob_header,
     int64_t total_blob_length) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::string mime_type;
   bool mime_type_sniffed =
-      net::SniffMimeTypeFromLocalData(*blob_header, &mime_type);
+      net::SniffMimeTypeFromLocalData(blob_header, &mime_type);
 
   if (!mime_type_sniffed) {
     Respond(Error("Could not determine MIME type."));

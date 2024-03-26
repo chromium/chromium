@@ -36,7 +36,7 @@ class FileManagerPrivateInternalGetContentMimeTypeFunction
 
   void SniffMimeType(  // Sniffs the content mime type of those bytes.
       const std::string& blob_uuid,
-      std::unique_ptr<std::string> sniff_bytes,
+      std::string sniff_bytes,
       int64_t length);
 };
 
@@ -65,7 +65,7 @@ class FileManagerPrivateInternalGetContentMetadataFunction
       const std::string& blob_uuid,
       const std::string& mime_type,
       bool include_images,
-      std::unique_ptr<std::string> sniff_bytes,
+      std::string sniff_bytes,
       int64_t length);
 
   void ParseBlob(  // Sends the blob to the utility process safe parser.

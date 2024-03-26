@@ -118,9 +118,8 @@ class LocalMediaDataSource : public chrome::mojom::MediaDataSource {
     // TODO(xingliu): Handle file IO error when success is false, the IPC
     // channel for chrome::mojom::MediaParser should be closed.
     DCHECK(ipc_read_callback_);
-    media_data_callback_.Run(
-        std::move(ipc_read_callback_),
-        std::make_unique<std::string>(buffer.begin(), buffer.end()));
+    media_data_callback_.Run(std::move(ipc_read_callback_),
+                             std::string(buffer.begin(), buffer.end()));
   }
 
   base::FilePath file_path_;

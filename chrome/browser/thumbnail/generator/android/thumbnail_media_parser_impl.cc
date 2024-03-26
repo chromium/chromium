@@ -288,10 +288,11 @@ void ThumbnailMediaParserImpl::OnDecoderConnectionError() {
 
 void ThumbnailMediaParserImpl::OnMediaDataReady(
     chrome::mojom::MediaDataSource::ReadCallback callback,
-    std::unique_ptr<std::string> data) {
+    std::string data) {
   // TODO(xingliu): Change media_parser.mojom to move the data instead of copy.
-  if (media_parser())
-    std::move(callback).Run(std::vector<uint8_t>(data->begin(), data->end()));
+  if (media_parser()) {
+    std::move(callback).Run(std::vector<uint8_t>(data.begin(), data.end()));
+  }
 }
 
 void ThumbnailMediaParserImpl::NotifyComplete(SkBitmap bitmap) {

@@ -24,9 +24,8 @@ class BlobReader : public blink::mojom::BlobReaderClient,
   // |blob_data| contains the portion of the Blob requested. |blob_total_size|
   // is the total size of the Blob, and may be larger than |blob_data->size()|.
   // |blob_total_size| is -1 if it cannot be determined.
-  typedef base::OnceCallback<void(std::unique_ptr<std::string> blob_data,
-                                  int64_t blob_total_size)>
-      BlobReadCallback;
+  using BlobReadCallback =
+      base::OnceCallback<void(std::string blob_data, int64_t blob_total_size)>;
 
   static void Read(mojo::PendingRemote<blink::mojom::Blob> blob,
                    BlobReadCallback callback,
@@ -75,7 +74,7 @@ class BlobReader : public blink::mojom::BlobReaderClient,
   std::unique_ptr<mojo::DataPipeDrainer> data_pipe_drainer_;
 
   std::optional<uint64_t> blob_length_;
-  std::unique_ptr<std::string> blob_data_;
+  std::string blob_data_;
   bool data_complete_ = false;
 };
 

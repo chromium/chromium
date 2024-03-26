@@ -69,7 +69,7 @@ void SafeMediaMetadataParser::ParseMediaMetadataDone(
 
 void SafeMediaMetadataParser::OnMediaDataReady(
     chrome::mojom::MediaDataSource::ReadCallback callback,
-    std::unique_ptr<std::string> data) {
+    std::string data) {
   if (media_parser())
-    std::move(callback).Run(std::vector<uint8_t>(data->begin(), data->end()));
+    std::move(callback).Run(std::vector<uint8_t>(data.begin(), data.end()));
 }

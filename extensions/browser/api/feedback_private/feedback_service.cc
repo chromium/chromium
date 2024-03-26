@@ -169,10 +169,9 @@ void FeedbackService::FetchAttachedFileAndScreenshot(
   if (must_attach_file) {
     auto populate_attached_file = base::BindOnce(
         [](scoped_refptr<feedback::FeedbackData> feedback_data,
-           std::unique_ptr<std::string> data, int64_t length) {
+           std::string data, int64_t /*length*/) {
           feedback_data->set_attached_file_uuid(std::string());
-          if (data)
-            feedback_data->AttachAndCompressFileData(std::move(*data));
+          feedback_data->AttachAndCompressFileData(std::move(data));
         },
         feedback_data);
 
@@ -184,10 +183,9 @@ void FeedbackService::FetchAttachedFileAndScreenshot(
   if (must_attach_screenshot) {
     auto populate_screenshot = base::BindOnce(
         [](scoped_refptr<feedback::FeedbackData> feedback_data,
-           std::unique_ptr<std::string> data, int64_t length) {
+           std::string data, int64_t /*length*/) {
           feedback_data->set_screenshot_uuid(std::string());
-          if (data)
-            feedback_data->set_image(std::move(*data));
+          feedback_data->set_image(std::move(data));
         },
         feedback_data);
     BlobReader::Read(

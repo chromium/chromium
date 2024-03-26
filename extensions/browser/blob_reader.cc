@@ -91,22 +91,17 @@ void BlobReader::OnCalculatedSize(uint64_t total_size,
 }
 
 void BlobReader::OnDataAvailable(const void* data, size_t num_bytes) {
-  if (!blob_data_)
-    blob_data_ = std::make_unique<std::string>();
-  blob_data_->append(static_cast<const char*>(data), num_bytes);
+  blob_data_.append(static_cast<const char*>(data), num_bytes);
 }
 
 void BlobReader::OnDataComplete() {
   data_complete_ = true;
-  if (!blob_data_)
-    blob_data_ = std::make_unique<std::string>();
   if (blob_length_)
     Succeeded();
 }
 
 void BlobReader::Failed() {
   blob_length_ = 0;
-  blob_data_ = std::make_unique<std::string>();
   std::move(callback_).Run();
 }
 
