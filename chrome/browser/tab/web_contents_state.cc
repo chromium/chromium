@@ -259,7 +259,7 @@ bool ExtractNavigationEntries(
     int* current_entry_index,
     std::vector<sessions::SerializedNavigationEntry>* navigations) {
   int entry_count;
-  base::Pickle pickle = base::Pickle::WithData(buffer);
+  base::Pickle pickle = base::Pickle::WithUnownedBuffer(buffer);
   base::PickleIterator iter(pickle);
   if (!iter.ReadBool(is_off_the_record) || !iter.ReadInt(&entry_count) ||
       !iter.ReadInt(current_entry_index)) {
@@ -294,7 +294,8 @@ bool ExtractNavigationEntries(
         LOG(ERROR) << "Failed to restore tab entry from byte array.";
         return false;  // It's dangerous to keep deserializing now, give up.
       }
-      base::Pickle tab_navigation_pickle = base::Pickle::WithData(*tab_entry);
+      base::Pickle tab_navigation_pickle =
+          base::Pickle::WithUnownedBuffer(*tab_entry);
       base::PickleIterator tab_navigation_pickle_iterator(
           tab_navigation_pickle);
       sessions::SerializedNavigationEntry nav;

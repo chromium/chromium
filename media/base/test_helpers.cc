@@ -741,7 +741,7 @@ bool VerifyFakeVideoBufferForTest(const DecoderBuffer& buffer,
                                   const VideoDecoderConfig& config) {
   // Check if the input |buffer| matches the |config|.
   base::span<const uint8_t> span(buffer.data(), buffer.data_size());
-  base::Pickle pickle = base::Pickle::WithData(span);
+  base::Pickle pickle = base::Pickle::WithUnownedBuffer(span);
   base::PickleIterator iterator(pickle);
   std::string header;
   int width = 0;

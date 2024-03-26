@@ -220,7 +220,7 @@ bool DatabaseCheckHelper::ScanDatabase() {
       // value: "<pickled FileInfo>"
       FileInfo file_info;
       if (!FileInfoFromPickle(
-              base::Pickle::WithData(base::as_byte_span(itr->value())),
+              base::Pickle::WithUnownedBuffer(base::as_byte_span(itr->value())),
               &file_info)) {
         return false;
       }
@@ -479,7 +479,8 @@ bool SandboxDirectoryDatabase::GetFileInfo(FileId file_id, FileInfo* info) {
       db_->Get(leveldb::ReadOptions(), file_key, &file_data_string);
   if (status.ok()) {
     bool success = FileInfoFromPickle(
-        base::Pickle::WithData(base::as_byte_span(file_data_string)), info);
+        base::Pickle::WithUnownedBuffer(base::as_byte_span(file_data_string)),
+        info);
     if (!success)
       return false;
     if (!VerifyDataPath(info->data_path)) {

@@ -1360,7 +1360,7 @@ void VolumeManager::OnClipboardDataChanged() {
   }
 
   base::Pickle pickle =
-      base::Pickle::WithData(base::as_byte_span(web_custom_data));
+      base::Pickle::WithUnownedBuffer(base::as_byte_span(web_custom_data));
   std::vector<ui::FileInfo> file_info =
       file_manager::util::ParseFileSystemSources(
           base::OptionalToPtr(data->source()), pickle);

@@ -213,7 +213,8 @@ ReadCacheResult ReadInspectionResultsCache(
   if (!ReadFileToString(file_path, &contents))
     return ReadCacheResult::kFailReadFile;
 
-  base::Pickle pickle = base::Pickle::WithData(base::as_byte_span(contents));
+  base::Pickle pickle =
+      base::Pickle::WithUnownedBuffer(base::as_byte_span(contents));
   InspectionResultsCache temporary_result;
   ReadCacheResult read_result = DeserializeInspectionResultsCache(
       min_time_stamp, pickle, &temporary_result);

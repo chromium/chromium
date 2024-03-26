@@ -207,7 +207,7 @@ void ProxyLocaltimeCallToBrowser(time_t input,
   if (r == -1)
     return;
 
-  base::Pickle reply = base::Pickle::WithData(
+  base::Pickle reply = base::Pickle::WithUnownedBuffer(
       base::span(reply_buf, base::checked_cast<size_t>(r)));
   base::PickleIterator iter(reply);
   if (!ReadTimeStruct(&iter, output, timezone_out, timezone_out_len)) {

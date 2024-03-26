@@ -230,7 +230,8 @@ bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer buffer) {
                       /* data_dst = */ nullptr, &data);
 
   if (!data.empty()) {
-    base::Pickle pickle = base::Pickle::WithData(base::as_byte_span(data));
+    base::Pickle pickle =
+        base::Pickle::WithUnownedBuffer(base::as_byte_span(data));
     if (ReadFromPickle(&pickle))
       return true;
   }

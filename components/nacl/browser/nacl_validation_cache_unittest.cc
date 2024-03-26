@@ -164,7 +164,7 @@ TEST_F(NaClValidationCacheTest, SerializeDeserializeTruncated) {
   base::span<const uint8_t> full_payload = base::make_span(pickle);
   base::span<const uint8_t> truncated_payload =
       full_payload.subspan(0, full_payload.size() - 20);
-  base::Pickle truncated = base::Pickle::WithData(truncated_payload);
+  base::Pickle truncated = base::Pickle::WithUnownedBuffer(truncated_payload);
   ASSERT_FALSE(cache2.Deserialize(&truncated));
   ASSERT_EQ(0u, cache2.size());
 }
@@ -184,14 +184,15 @@ TEST_F(NaClValidationCacheTest, DeserializeBadKey) {
 TEST_F(NaClValidationCacheTest, DeserializeNothing) {
   cache1.SetKnownToValidate(sig1);
   base::Pickle pickle =
-      base::Pickle::WithData(base::as_byte_span(std::string()));
+      base::Pickle::WithUnownedBuffer(base::as_byte_span(std::string()));
   ASSERT_FALSE(cache1.Deserialize(&pickle));
   ASSERT_EQ(0u, cache1.size());
 }
 
 TEST_F(NaClValidationCacheTest, DeserializeJunk) {
   cache1.SetKnownToValidate(sig1);
-  base::Pickle pickle = base::Pickle::WithData(base::as_byte_span(key1));
+  base::Pickle pickle =
+      base::Pickle::WithUnownedBuffer(base::as_byte_span(key1));
   ASSERT_FALSE(cache1.Deserialize(&pickle));
   ASSERT_EQ(0u, cache1.size());
 }

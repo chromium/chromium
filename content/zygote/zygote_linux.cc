@@ -247,8 +247,8 @@ bool Zygote::HandleRequestFromBrowser(int fd) {
     return false;
   }
 
-  base::Pickle pickle =
-      base::Pickle::WithData(base::span(buf, base::checked_cast<size_t>(len)));
+  base::Pickle pickle = base::Pickle::WithUnownedBuffer(
+      base::span(buf, base::checked_cast<size_t>(len)));
   base::PickleIterator iter(pickle);
 
   int kind;
@@ -513,7 +513,7 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
     if (len > 0) {
       CHECK(recv_fds.empty());
 
-      base::Pickle pickle = base::Pickle::WithData(
+      base::Pickle pickle = base::Pickle::WithUnownedBuffer(
           base::span(buf, base::checked_cast<size_t>(len)));
       base::PickleIterator iter(pickle);
 

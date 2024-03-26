@@ -430,7 +430,7 @@ void PersistentSystemProfile::MergeUpdateRecords(
         }
 
         base::Pickle pickler =
-            base::Pickle::WithData(base::as_byte_span(record));
+            base::Pickle::WithUnownedBuffer(base::as_byte_span(record));
         base::PickleIterator iter(pickler);
         base::StringPiece trial;
         base::StringPiece group;

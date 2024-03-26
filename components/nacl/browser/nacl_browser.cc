@@ -353,7 +353,8 @@ void NaClBrowser::OnValidationCacheLoaded(const std::string *data) {
     // No file found.
     validation_cache_.Reset();
   } else {
-    base::Pickle pickle = base::Pickle::WithData(base::as_byte_span(*data));
+    base::Pickle pickle =
+        base::Pickle::WithUnownedBuffer(base::as_byte_span(*data));
     validation_cache_.Deserialize(&pickle);
   }
   validation_cache_state_ = NaClResourceReady;

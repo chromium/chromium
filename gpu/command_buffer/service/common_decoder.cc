@@ -423,7 +423,8 @@ bool CommonDecoder::ReadColorSpace(uint32_t shm_id,
   }
 
   base::span<const uint8_t> color_space_data(data, data + color_space_size);
-  base::Pickle color_space_pickle = base::Pickle::WithData(color_space_data);
+  base::Pickle color_space_pickle =
+      base::Pickle::WithUnownedBuffer(color_space_data);
   base::PickleIterator iterator(color_space_pickle);
   if (!IPC::ParamTraits<gfx::ColorSpace>::Read(&color_space_pickle, &iterator,
                                                color_space)) {

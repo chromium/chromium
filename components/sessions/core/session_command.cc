@@ -40,7 +40,7 @@ bool SessionCommand::GetPayload(void* dest, size_t count) const {
 }
 
 base::Pickle SessionCommand::PayloadAsPickle() const {
-  return base::Pickle::WithData(base::as_byte_span(contents_));
+  return base::Pickle::WithUnownedBuffer(base::as_byte_span(contents_));
 }
 
 }  // namespace sessions

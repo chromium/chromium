@@ -522,7 +522,7 @@ void CertificateStoreImpl::GetIdentityInner(
 
   scoped_refptr<net::X509Certificate> certificate = nullptr;
   if (local_proto_identity->has_certificate()) {
-    base::Pickle pickle = base::Pickle::WithData(
+    base::Pickle pickle = base::Pickle::WithUnownedBuffer(
         base::as_byte_span(local_proto_identity->certificate()));
     base::PickleIterator iter(pickle);
     certificate = net::X509Certificate::CreateFromPickle(&iter);

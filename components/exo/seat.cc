@@ -359,7 +359,7 @@ void Seat::OnWebCustomDataRead(
     base::OnceClosure callback,
     const std::string& mime_type,
     const std::vector<uint8_t>& data) {
-  base::Pickle pickle = base::Pickle::WithData(data);
+  base::Pickle pickle = base::Pickle::WithUnownedBuffer(data);
   writer->WritePickledData(pickle,
                            ui::ClipboardFormatType::WebCustomDataType());
   std::move(callback).Run();

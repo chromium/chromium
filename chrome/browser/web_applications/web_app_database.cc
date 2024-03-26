@@ -332,7 +332,8 @@ std::string FilePathToProto(const base::FilePath& path) {
 }
 
 std::optional<base::FilePath> ProtoToFilePath(const std::string& bytes) {
-  const base::Pickle pickle = base::Pickle::WithData(base::as_byte_span(bytes));
+  const base::Pickle pickle =
+      base::Pickle::WithUnownedBuffer(base::as_byte_span(bytes));
   base::PickleIterator pickle_iterator(pickle);
 
   base::FilePath path;

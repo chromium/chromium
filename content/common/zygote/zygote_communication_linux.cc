@@ -175,7 +175,7 @@ pid_t ZygoteCommunication::ForkRequest(
     char buf[kMaxReplyLength];
     const ssize_t len = ReadReply(buf, sizeof(buf));
 
-    base::Pickle reply_pickle = base::Pickle::WithData(
+    base::Pickle reply_pickle = base::Pickle::WithUnownedBuffer(
         base::as_bytes(base::span(buf, base::checked_cast<size_t>(len))));
     base::PickleIterator iter(reply_pickle);
     if (len <= 0 || !iter.ReadInt(&pid))
@@ -303,7 +303,7 @@ base::TerminationStatus ZygoteCommunication::GetTerminationStatus(
   } else if (len == 0) {
     LOG(WARNING) << "Socket closed prematurely.";
   } else {
-    base::Pickle read_pickle = base::Pickle::WithData(
+    base::Pickle read_pickle = base::Pickle::WithUnownedBuffer(
         base::as_bytes(base::span(buf, base::checked_cast<size_t>(len))));
     int tmp_status, tmp_exit_code;
     base::PickleIterator iter(read_pickle);

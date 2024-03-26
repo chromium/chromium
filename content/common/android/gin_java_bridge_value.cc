@@ -70,7 +70,7 @@ bool GinJavaBridgeValue::ContainsGinJavaBridgeValue(const base::Value* value) {
     return false;
   if (value->GetBlob().size() < sizeof(Header))
     return false;
-  base::Pickle pickle = base::Pickle::WithData(value->GetBlob());
+  base::Pickle pickle = base::Pickle::WithUnownedBuffer(value->GetBlob());
   // Broken binary value: payload or header size is wrong
   if (!pickle.data() || pickle.size() - pickle.payload_size() != sizeof(Header))
     return false;
@@ -131,7 +131,7 @@ GinJavaBridgeValue::GinJavaBridgeValue(Type type) :
 }
 
 GinJavaBridgeValue::GinJavaBridgeValue(const base::Value* value)
-    : pickle_(base::Pickle::WithData(value->GetBlob())) {
+    : pickle_(base::Pickle::WithUnownedBuffer(value->GetBlob())) {
   DCHECK(ContainsGinJavaBridgeValue(value));
 }
 

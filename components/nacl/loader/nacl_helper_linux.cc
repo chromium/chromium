@@ -384,7 +384,7 @@ bool HandleZygoteRequest(int zygote_ipc_fd,
     return false;
   }
 
-  base::Pickle read_pickle = base::Pickle::WithData(
+  base::Pickle read_pickle = base::Pickle::WithUnownedBuffer(
       base::span(buf, base::checked_cast<size_t>(msglen)));
   base::PickleIterator read_iter(read_pickle);
   int command_type;

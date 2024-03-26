@@ -533,7 +533,7 @@ void ServiceWorkerResourceReaderImpl::DidReadHttpResponseInfo(
   }
 
   // Deserialize the http info structure, ensuring we got headers.
-  base::Pickle pickle = base::Pickle::WithData(base::as_bytes(
+  base::Pickle pickle = base::Pickle::WithUnownedBuffer(base::as_bytes(
       base::span(buffer->data(), base::checked_cast<size_t>(status))));
   auto http_info = std::make_unique<net::HttpResponseInfo>();
   bool response_truncated = false;

@@ -114,7 +114,7 @@ std::vector<std::string> GetNetworkContextsParentDirectories() {
   }
 
   base::Pickle dirs_pickle =
-      base::Pickle::WithData(base::as_byte_span(dirs_str));
+      base::Pickle::WithUnownedBuffer(base::as_byte_span(dirs_str));
   base::PickleIterator dirs_pickle_iter(dirs_pickle);
 
   std::vector<std::string> dirs;

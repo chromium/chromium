@@ -474,7 +474,7 @@ bool HttpCache::ParseResponseInfo(const char* data,
                                   int len,
                                   HttpResponseInfo* response_info,
                                   bool* response_truncated) {
-  base::Pickle pickle = base::Pickle::WithData(
+  base::Pickle pickle = base::Pickle::WithUnownedBuffer(
       base::as_bytes(base::span(data, base::checked_cast<size_t>(len))));
   return response_info->InitFromPickle(pickle, response_truncated);
 }
