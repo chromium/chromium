@@ -32,12 +32,10 @@ namespace commerce {
 commerce::ProductSpecificationsService*
 ProductSpecificationsServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  // Not available in incognito mode.
-  if (context->IsOffTheRecord()) {
-    return nullptr;
-  }
-  return static_cast<commerce::ProductSpecificationsService*>(
-      GetInstance()->GetServiceForBrowserContext(context, true));
+  // Disable ProductSpecificationsService to unblock build b/331400350.
+  // Will follow up with a change that puts ProductSpecificationsService
+  // behind its own flag.
+  return nullptr;
 }
 
 // static

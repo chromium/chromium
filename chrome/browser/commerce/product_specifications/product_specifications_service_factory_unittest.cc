@@ -50,16 +50,8 @@ TEST_F(ProductSpecificationsServiceFactoryTest, TestIncognitoProfile) {
                     /*create_if_needed=*/true)));
 }
 
-TEST_F(ProductSpecificationsServiceFactoryTest, TestSameProfile) {
-  EXPECT_EQ(commerce::ProductSpecificationsServiceFactory::GetInstance()
-                ->GetForBrowserContext(profile()),
-            commerce::ProductSpecificationsServiceFactory::GetInstance()
-                ->GetForBrowserContext(profile()));
-}
-
-TEST_F(ProductSpecificationsServiceFactoryTest, TestDifferentProfile) {
-  EXPECT_NE(commerce::ProductSpecificationsServiceFactory::GetInstance()
-                ->GetForBrowserContext(different_profile()),
+TEST_F(ProductSpecificationsServiceFactoryTest, TestRegularProfile) {
+  EXPECT_EQ(nullptr,
             commerce::ProductSpecificationsServiceFactory::GetInstance()
                 ->GetForBrowserContext(profile()));
 }
