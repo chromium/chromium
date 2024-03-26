@@ -44,14 +44,9 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_{lens::features::kLensOverlay};
 };
 
-// TODO(https://crbug.com/329708692): Flaky on Linux and Lacros.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_CaptureScreenshot DISABLED_CaptureScreenshot
-#else
-#define MAYBE_CaptureScreenshot CaptureScreenshot
-#endif
+// TODO(https://crbug.com/329708692): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_CaptureScreenshot) {
+                       DISABLED_CaptureScreenshot) {
   // State should start in off.
   auto* controller =
       browser()->tab_strip_model()->GetActiveTab()->lens_overlay_controller();
