@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -114,6 +115,22 @@ base::OnceClosure& ManifestUpdateAppliedCallbackForTesting() {
   static base::NoDestructor<base::OnceClosure> callback;
   return *callback;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool UseSystemThemeColor(const webapps::AppId& app_id,
+                         const web_app::WebAppRegistrar& registrar,
+                         const ash::SystemWebAppDelegate* system_app) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return false;
+  }
+  if (system_app && system_app->UseSystemThemeColor()) {
+    return true;
+  }
+  // TODO(http://b/331208955): Remove after migration.
+  const auto* web_app = registrar.GetAppById(app_id);
+  return web_app && web_app::WillBeSystemWebApp(app_id, web_app->GetSources());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -405,10 +422,8 @@ std::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // System Apps with dynamic color ignore manifest and pull theme color from
-  // the OS.
-  if (system_app() && system_app()->UseSystemThemeColor() &&
-      chromeos::features::IsJellyEnabled()) {
+  // With jelly enabled, some system apps prefer system colors over manifest.
+  if (UseSystemThemeColor(app_id(), registrar(), system_app())) {
     return ash::GetSystemThemeColor();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -444,17 +459,14 @@ std::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
       web_contents_color ? web_contents_color : manifest_color;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (system_app()) {
-    if (chromeos::features::IsJellyEnabled() &&
-        system_app()->UseSystemThemeColor()) {
-      // With jelly enabled, some system apps prefer system color over manifest.
-      SkColor os_color = ash::GetSystemBackgroundColor();
-      result = web_contents_color ? web_contents_color : os_color;
-    } else if (system_app()->PreferManifestBackgroundColor()) {
-      // Some system web apps prefer their web content background color to be
-      // ignored in favour of their manifest background color.
-      result = manifest_color ? manifest_color : web_contents_color;
-    }
+  if (UseSystemThemeColor(app_id(), registrar(), system_app())) {
+    // With jelly enabled, some system apps prefer system colors over manifest.
+    SkColor os_color = ash::GetSystemBackgroundColor();
+    result = web_contents_color ? web_contents_color : os_color;
+  } else if (system_app() && system_app()->PreferManifestBackgroundColor()) {
+    // Some system web apps prefer their web content background color to be
+    // ignored in favour of their manifest background color.
+    result = manifest_color ? manifest_color : web_contents_color;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
