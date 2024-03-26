@@ -42,8 +42,18 @@ void OnServerResponseOrErrorReceived(
 
   if (manta_response->output_data_size() < 1 ||
       !manta_response->output_data(0).has_text()) {
+    std::string message = std::string();
+
+    // Tries to find more information from filtered_data
+    if (manta_response->filtered_data_size() > 0 &&
+        manta_response->filtered_data(0).is_output_data()) {
+      message = base::StringPrintf(
+          "filtered output for: %s",
+          proto::FilteredReason_Name(manta_response->filtered_data(0).reason())
+              .c_str());
+    }
     std::move(callback).Run(base::Value::Dict(),
-                            {MantaStatusCode::kBlockedOutputs, std::string()});
+                            {MantaStatusCode::kBlockedOutputs, message});
     return;
   }
 

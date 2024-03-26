@@ -94,8 +94,24 @@ message OutputData {
   optional uint32 generation_seed = 6;
 }
 
+enum FilteredReason {
+  UNSPECIFIED = 0;
+  TEXT_SAFETY = 2;
+  TEXT_LOW_QUALITY = 3;
+  TEXT_BLOCKLIST = 4;
+
+  reserved 1, 5, 6, 7;
+}
+
+message FilteredData {
+  reserved 1;
+  optional bool is_output_data = 2;
+  optional FilteredReason reason = 3;
+}
+
 message Response {
-  reserved 2, 3;
+  reserved 3;
 
   repeated OutputData output_data = 1;
+  repeated FilteredData filtered_data = 2;
 }
