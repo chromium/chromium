@@ -19,35 +19,14 @@
       }
     }
 
-    html.loading::before,
-    html.loading body::before {
-      box-sizing: border-box;
-      content: '';
-      display: block;
-    }
-
-    html.loading::before {
-      background: var(--md-toolbar-color);
-      height: var(--md-toolbar-height);
-    }
-
     /* Mimics the developer mode toolbar until the real one loads. Note:
      * .in-dev-mode is applied by i18n{loadTimeClasses}. */
     html.loading.in-dev-mode body::before {
-      background-color: #fff;
-      border-bottom: 1px solid #e0e0e0;  /* --google-grey-300 */
-      height: 54px;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      html.loading.in-dev-mode body::before {
-        background: none;
-      }
-
-      html.loading::before,
-      html.loading.in-dev-mode body::before {
-        border-bottom: var(--md-toolbar-border);
-      }
+      box-sizing: border-box;
+      content: '';
+      display: block;
+      border-bottom: var(--md-toolbar-border);
+      height: calc(var(--md-toolbar-height) + 58px);
     }
 
     html,

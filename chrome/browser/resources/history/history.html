@@ -32,10 +32,7 @@
       }
     }
 
-    /* Minimal styling required to display app shim. TODO(dbeam): do we really
-     * need all this HTML/CSS just to show "History"? Other pages just show 56px
-     * of [blue] border on top without text and this seems fine (maybe even
-     * desired when the hamburger menu shifts the text on narrow screens. */
+    /* Minimal styling required to display app shim. */
     .loading history-app {
       visibility: hidden;
     }
@@ -45,59 +42,21 @@
     }
 
     .loading #app-shim {
-      bottom: 0;
-      display: flex;
-      flex-direction: column;
-      font-size: 123%;
-      height: 100%;
-      left: 0;
+      display: block;
       position: absolute;
-      right: 0;
-      top: 0;
-    }
-
-    #app-shim span {
-      display: flex;
-    }
-
-    #loading-toolbar {
-      align-items: center;
-      background: var(--md-toolbar-color);
-      border-bottom: var(--md-toolbar-border);
-      box-sizing: border-box;
-      color: #fff;
-      height: var(--md-toolbar-height);
-      letter-spacing: .25px;
-      padding-inline-start: 24px;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      #loading-toolbar {
-        color: rgb(232, 234, 237);  /* --google-grey-200 */
-      }
-    }
-
-    #loading-message {
-      align-items: center;
+      inset: 0;
+      font-size: 123%;
       color: var(--md-loading-message-color);
-      flex: 1;
       font-weight: 500;
-      justify-content: center;
+      align-content: center;
+      text-align: center;
     }
   </style>
 </head>
-
 <body class="loading">
   <history-app id="history-app"></history-app>
-
-  <div id="app-shim">
-    <span id="loading-toolbar">$i18n{title}</span>
-    <span id="loading-message">$i18n{loading}</span>
-  </div>
-
+  <div id="app-shim">$i18n{loading}</div>
   <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
-
   <script type="module" src="history.js"></script>
 </body>
-
 </html>
