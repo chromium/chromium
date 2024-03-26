@@ -15,9 +15,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * PageInfoBottomSheetMediator is responsible for retrieving, refreshing and attaching page info.
- */
+/** PageInfoBottomSheetMediator is responsible for retrieving, and attaching page info. */
 class PageInfoBottomSheetMediator extends EmptyBottomSheetObserver {
 
     private final PropertyModel mModel;
@@ -45,13 +43,24 @@ class PageInfoBottomSheetMediator extends EmptyBottomSheetObserver {
                                 PageInfoBottomSheetProperties.ON_CANCEL_CLICKED,
                                 this::onCancelClicked)
                         .with(
-                                PageInfoBottomSheetProperties.ON_REFRESH_CLICKED,
-                                this::onRefreshClicked)
+                                PageInfoBottomSheetProperties.ON_POSITIVE_FEEDBACK_CLICKED,
+                                this::onPositiveFeedbackClicked)
+                        .with(
+                                PageInfoBottomSheetProperties.ON_NEGATIVE_FEEDBACK_CLICKED,
+                                this::onNegativeFeedbackClicked)
                         .with(PageInfoBottomSheetProperties.STATE, PageInfoState.INITIALIZING)
                         .build();
 
         mBottomSheetController.addObserver(this);
         mPageInfoDelegate.getContentSupplier().addObserver(this::onContentsChanged);
+    }
+
+    private void onNegativeFeedbackClicked(View view) {
+        mPageInfoDelegate.onNegativeFeedback();
+    }
+
+    private void onPositiveFeedbackClicked(View view) {
+        mPageInfoDelegate.onPositiveFeedback();
     }
 
     private void onContentsChanged(PageInfoContents contents) {
@@ -94,10 +103,6 @@ class PageInfoBottomSheetMediator extends EmptyBottomSheetObserver {
     private void onCancelClicked(View view) {
         mPageInfoDelegate.onCancel();
         destroySheet();
-    }
-
-    private void onRefreshClicked(View view) {
-        mPageInfoDelegate.onRefresh();
     }
 
     @Override

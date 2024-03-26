@@ -328,7 +328,7 @@ public class PageInfoSharingControllerUnitTest {
                             View summaryTextView =
                                     bottomSheetContent
                                             .getContentView()
-                                            .findViewById(R.id.sheet_content);
+                                            .findViewById(R.id.summary_text);
                             View acceptButton =
                                     bottomSheetContent
                                             .getContentView()
@@ -339,8 +339,8 @@ public class PageInfoSharingControllerUnitTest {
                             // Streaming results should be concatenated and shown on the bottom
                             // sheet.
                             ViewMatchers.assertThat(summaryTextView, withText("Web page summary"));
-                            // Accept button should be disabled during streaming.
-                            ViewMatchers.assertThat(acceptButton, not(isEnabled()));
+                            // Accept button should be hidden during streaming.
+                            ViewMatchers.assertThat(acceptButton, not(ViewMatchers.isDisplayed()));
                         });
     }
 
@@ -410,7 +410,7 @@ public class PageInfoSharingControllerUnitTest {
                             View summaryTextView =
                                     bottomSheetContent
                                             .getContentView()
-                                            .findViewById(R.id.sheet_content);
+                                            .findViewById(R.id.summary_text);
                             View acceptButton =
                                     bottomSheetContent
                                             .getContentView()

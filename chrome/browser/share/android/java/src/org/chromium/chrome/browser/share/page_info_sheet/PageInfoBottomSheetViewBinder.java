@@ -17,15 +17,24 @@ class PageInfoBottomSheetViewBinder {
         if (PageInfoBottomSheetProperties.STATE == propertyKey) {
             @PageInfoState int currentState = model.get(PageInfoBottomSheetProperties.STATE);
 
-            view.mLoadingIndicator.setVisibility(
-                    currentState == PageInfoState.INITIALIZING ? View.VISIBLE : View.GONE);
-            view.mContentText.setVisibility(
-                    currentState != PageInfoState.INITIALIZING ? View.VISIBLE : View.GONE);
-            view.mAcceptButton.setEnabled(currentState == PageInfoState.SUCCESS);
-            view.mAcceptButton.setVisibility(
-                    currentState != PageInfoState.ERROR ? View.VISIBLE : View.GONE);
-            view.mRefreshButton.setVisibility(
-                    currentState == PageInfoState.SUCCESS ? View.VISIBLE : View.GONE);
+            int visibleWhenInitializing =
+                    currentState == PageInfoState.INITIALIZING ? View.VISIBLE : View.GONE;
+            int visibleWhenNotInitializing =
+                    currentState != PageInfoState.INITIALIZING ? View.VISIBLE : View.GONE;
+            int visibleWhenSuccessful =
+                    currentState == PageInfoState.SUCCESS ? View.VISIBLE : View.GONE;
+
+            // Views only shown when initializing.
+            view.mLoadingIndicator.setVisibility(visibleWhenInitializing);
+            // Views hidden only when initializing.
+            view.mContentText.setVisibility(visibleWhenNotInitializing);
+            // Views shown only when successful.
+            view.mAcceptButton.setVisibility(visibleWhenSuccessful);
+            view.mCancelButton.setVisibility(visibleWhenSuccessful);
+            view.mPositiveFeedbackButton.setVisibility(visibleWhenSuccessful);
+            view.mNegativeFeedbackButton.setVisibility(visibleWhenSuccessful);
+            view.mLearnMoreText.setVisibility(visibleWhenSuccessful);
+            view.mFeedbackDivider.setVisibility(visibleWhenSuccessful);
         } else if (PageInfoBottomSheetProperties.CONTENT_TEXT == propertyKey) {
             view.mContentText.setText(model.get(PageInfoBottomSheetProperties.CONTENT_TEXT));
         } else if (PageInfoBottomSheetProperties.ON_ACCEPT_CLICKED == propertyKey) {
@@ -34,9 +43,14 @@ class PageInfoBottomSheetViewBinder {
         } else if (PageInfoBottomSheetProperties.ON_CANCEL_CLICKED == propertyKey) {
             view.mCancelButton.setOnClickListener(
                     model.get(PageInfoBottomSheetProperties.ON_CANCEL_CLICKED));
-        } else if (PageInfoBottomSheetProperties.ON_REFRESH_CLICKED == propertyKey) {
-            view.mRefreshButton.setOnClickListener(
-                    model.get(PageInfoBottomSheetProperties.ON_REFRESH_CLICKED));
+            view.mBackButton.setOnClickListener(
+                    model.get(PageInfoBottomSheetProperties.ON_CANCEL_CLICKED));
+        } else if (PageInfoBottomSheetProperties.ON_POSITIVE_FEEDBACK_CLICKED == propertyKey) {
+            view.mPositiveFeedbackButton.setOnClickListener(
+                    model.get(PageInfoBottomSheetProperties.ON_POSITIVE_FEEDBACK_CLICKED));
+        } else if (PageInfoBottomSheetProperties.ON_NEGATIVE_FEEDBACK_CLICKED == propertyKey) {
+            view.mNegativeFeedbackButton.setOnClickListener(
+                    model.get(PageInfoBottomSheetProperties.ON_NEGATIVE_FEEDBACK_CLICKED));
         }
     }
 }

@@ -95,6 +95,12 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
         }
 
         @Override
+        public void onPositiveFeedback() {}
+
+        @Override
+        public void onNegativeFeedback() {}
+
+        @Override
         public ObservableSupplier<PageInfoContents> getContentSupplier() {
             return mPageInfoSupplier;
         }

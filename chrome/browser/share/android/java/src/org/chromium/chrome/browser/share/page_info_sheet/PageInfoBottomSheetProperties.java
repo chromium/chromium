@@ -27,12 +27,16 @@ final class PageInfoBottomSheetProperties {
             new ReadableObjectPropertyKey<>();
     static final ReadableObjectPropertyKey<OnClickListener> ON_CANCEL_CLICKED =
             new ReadableObjectPropertyKey<>();
-    static final ReadableObjectPropertyKey<OnClickListener> ON_REFRESH_CLICKED =
+
+    static final ReadableObjectPropertyKey<OnClickListener> ON_POSITIVE_FEEDBACK_CLICKED =
+            new ReadableObjectPropertyKey<>();
+
+    static final ReadableObjectPropertyKey<OnClickListener> ON_NEGATIVE_FEEDBACK_CLICKED =
             new ReadableObjectPropertyKey<>();
 
     /**
      * Possible states for the bottom sheet UI, used to show and hide different elements inside the
-     * bottom sheet (e.g. loading indicator, refresh button).
+     * bottom sheet (e.g. loading indicator, feedback buttons).
      */
     @IntDef({
         PageInfoState.INITIALIZING,
@@ -59,7 +63,12 @@ final class PageInfoBottomSheetProperties {
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                STATE, CONTENT_TEXT, ON_ACCEPT_CLICKED, ON_CANCEL_CLICKED, ON_REFRESH_CLICKED
+                STATE,
+                CONTENT_TEXT,
+                ON_ACCEPT_CLICKED,
+                ON_CANCEL_CLICKED,
+                ON_POSITIVE_FEEDBACK_CLICKED,
+                ON_NEGATIVE_FEEDBACK_CLICKED,
             };
 
     static PropertyModel.Builder defaultModelBuilder() {

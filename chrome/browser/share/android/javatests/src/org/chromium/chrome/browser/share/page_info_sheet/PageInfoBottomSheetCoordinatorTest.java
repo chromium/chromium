@@ -5,10 +5,7 @@
 package org.chromium.chrome.browser.share.page_info_sheet;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -77,19 +74,28 @@ public class PageInfoBottomSheetCoordinatorTest {
                             // Get UI elements from bottom sheet.
                             View acceptButton = getView(R.id.accept_button);
                             View cancelButton = getView(R.id.cancel_button);
-                            View refreshButton = getView(R.id.refresh_button);
                             View loadingIndicator = getView(R.id.loading_indicator);
-                            View contentTextView = getView(R.id.sheet_content);
+                            View contentTextView = getView(R.id.summary_text);
+                            View positiveFeedbackButton = getView(R.id.positive_feedback_button);
+                            View negativeFeedbackButton = getView(R.id.negative_feedback_button);
 
                             // Initially the accept and cancel buttons should be disabled.
-                            assertFalse(
-                                    "Accept button shouldn't be enabled", acceptButton.isEnabled());
-                            assertTrue("Cancel button should be enabled", cancelButton.isEnabled());
-                            // Refresh button should not be visible until finished.
-                            assertNotEquals(
-                                    "Refresh button should be hidden",
-                                    View.VISIBLE,
-                                    refreshButton.getVisibility());
+                            assertEquals(
+                                    "Accept button shouldn't be visible",
+                                    View.GONE,
+                                    acceptButton.getVisibility());
+                            assertEquals(
+                                    "Cancel button should be visible",
+                                    View.GONE,
+                                    cancelButton.getVisibility());
+                            assertEquals(
+                                    "Positive feedback button shouldn't be visible",
+                                    View.GONE,
+                                    positiveFeedbackButton.getVisibility());
+                            assertEquals(
+                                    "Negative feedback button shouldn't be visible",
+                                    View.GONE,
+                                    negativeFeedbackButton.getVisibility());
                             // Loading indicator should be visible initially.
                             assertEquals(
                                     "Loading indicator should be visible",
@@ -119,24 +125,33 @@ public class PageInfoBottomSheetCoordinatorTest {
 
                             View acceptButton = getView(R.id.accept_button);
                             View cancelButton = getView(R.id.cancel_button);
-                            View refreshButton = getView(R.id.refresh_button);
                             View loadingIndicator = getView(R.id.loading_indicator);
-                            TextView contentTextView = (TextView) getView(R.id.sheet_content);
+                            View positiveFeedbackButton = getView(R.id.positive_feedback_button);
+                            View negativeFeedbackButton = getView(R.id.negative_feedback_button);
+                            TextView contentTextView = (TextView) getView(R.id.summary_text);
 
                             // Update page info while still loading.
                             mPageInfoContentsSupplier.set(
                                     new PageInfoContents(
                                             /* resultContents= */ "Foo", /* isLoading= */ true));
 
-                            // Accept/cancel button should be disabled while loading.
-                            assertFalse(
-                                    "Accept button should be disabled", acceptButton.isEnabled());
-                            assertTrue("Cancel button should be enabled", cancelButton.isEnabled());
-                            // Refresh button should not be visible until finished.
-                            assertNotEquals(
-                                    "Refresh button shouldn't be visible",
-                                    View.VISIBLE,
-                                    refreshButton.getVisibility());
+                            // Accept/cancel button should be hidden while loading.
+                            assertEquals(
+                                    "Accept button should be hidden",
+                                    View.GONE,
+                                    acceptButton.getVisibility());
+                            assertEquals(
+                                    "Cancel button should be hidden",
+                                    View.GONE,
+                                    cancelButton.getVisibility());
+                            assertEquals(
+                                    "Positive feedback button shouldn't be visible",
+                                    View.GONE,
+                                    positiveFeedbackButton.getVisibility());
+                            assertEquals(
+                                    "Negative feedback button shouldn't be visible",
+                                    View.GONE,
+                                    negativeFeedbackButton.getVisibility());
                             // Loading indicator should be hidden.
                             assertEquals(
                                     "Loading indicator shouldn't be visible",
@@ -170,9 +185,10 @@ public class PageInfoBottomSheetCoordinatorTest {
 
                             View acceptButton = getView(R.id.accept_button);
                             View cancelButton = getView(R.id.cancel_button);
-                            View refreshButton = getView(R.id.refresh_button);
                             View loadingIndicator = getView(R.id.loading_indicator);
-                            TextView contentTextView = (TextView) getView(R.id.sheet_content);
+                            View positiveFeedbackButton = getView(R.id.positive_feedback_button);
+                            View negativeFeedbackButton = getView(R.id.negative_feedback_button);
+                            TextView contentTextView = (TextView) getView(R.id.summary_text);
 
                             // Update page info twice, the second update indicating we're finished
                             // loading.
@@ -183,14 +199,23 @@ public class PageInfoBottomSheetCoordinatorTest {
                                     new PageInfoContents(
                                             /* resultContents= */ "Bar", /* isLoading= */ false));
 
-                            // Accept/Cancel buttons should now be enabled.
-                            assertTrue("Accept button should be enabled", acceptButton.isEnabled());
-                            assertTrue("Cancel button should be enabled", cancelButton.isEnabled());
-                            // Refresh button should now be visible.
+                            // Accept/Cancel buttons should now be VISIBLE.
                             assertEquals(
-                                    "Refresh button should be visible",
+                                    "Accept button should be enabled",
                                     View.VISIBLE,
-                                    refreshButton.getVisibility());
+                                    acceptButton.getVisibility());
+                            assertEquals(
+                                    "Cancel button should be enabled",
+                                    View.VISIBLE,
+                                    cancelButton.getVisibility());
+                            assertEquals(
+                                    "Positive feedback button should be visible",
+                                    View.VISIBLE,
+                                    positiveFeedbackButton.getVisibility());
+                            assertEquals(
+                                    "Negative feedback button should be visible",
+                                    View.VISIBLE,
+                                    negativeFeedbackButton.getVisibility());
                             // Loading indicator should be hidden.
                             assertEquals(
                                     "Loading indicator should be hidden",
@@ -224,7 +249,9 @@ public class PageInfoBottomSheetCoordinatorTest {
 
                             View acceptButton = getView(R.id.accept_button);
                             View cancelButton = getView(R.id.cancel_button);
-                            View refreshButton = getView(R.id.refresh_button);
+                            View backButton = getView(R.id.back_button);
+                            View positiveFeedbackButton = getView(R.id.positive_feedback_button);
+                            View negativeFeedbackButton = getView(R.id.negative_feedback_button);
 
                             // Set state to success to enable buttons.
                             mPageInfoContentsSupplier.set(
@@ -236,15 +263,18 @@ public class PageInfoBottomSheetCoordinatorTest {
                             // Click cancel button twice.
                             cancelButton.performClick();
                             cancelButton.performClick();
-                            // Click refresh button thrice.
-                            refreshButton.performClick();
-                            refreshButton.performClick();
-                            refreshButton.performClick();
+                            // Back button should invoke the cancel callback.
+                            backButton.performClick();
+                            // Click feedback buttons.
+                            positiveFeedbackButton.performClick();
+                            negativeFeedbackButton.performClick();
+                            negativeFeedbackButton.performClick();
 
                             // Ensure delegate received click events as expected.
                             verify(mPageInfoDelegate, times(1)).onAccept();
-                            verify(mPageInfoDelegate, times(2)).onCancel();
-                            verify(mPageInfoDelegate, times(3)).onRefresh();
+                            verify(mPageInfoDelegate, times(3)).onCancel();
+                            verify(mPageInfoDelegate, times(1)).onPositiveFeedback();
+                            verify(mPageInfoDelegate, times(2)).onNegativeFeedback();
                         });
     }
 
@@ -264,25 +294,23 @@ public class PageInfoBottomSheetCoordinatorTest {
 
                             View acceptButton = getView(R.id.accept_button);
                             View cancelButton = getView(R.id.cancel_button);
-                            View refreshButton = getView(R.id.refresh_button);
                             View loadingIndicator = getView(R.id.loading_indicator);
-                            TextView contentTextView = (TextView) getView(R.id.sheet_content);
+                            TextView contentTextView = (TextView) getView(R.id.summary_text);
 
                             // Set state to error.
                             mPageInfoContentsSupplier.set(
                                     new PageInfoContents(
                                             /* errorMessage= */ "Something went wrong"));
 
-                            // Accept button should be disabled.
-                            assertFalse(
-                                    "Accept button should be disabled", acceptButton.isEnabled());
-                            // Cancel button should be enabled.
-                            assertTrue("Cancel button should be enabled", cancelButton.isEnabled());
-                            // Refresh button should not be visible.
-                            assertNotEquals(
-                                    "Refresh button should not be visible",
-                                    View.VISIBLE,
-                                    refreshButton.getVisibility());
+                            // Accept and cancel buttons should be hidden.
+                            assertEquals(
+                                    "Accept button shouldn't be visible",
+                                    View.GONE,
+                                    acceptButton.getVisibility());
+                            assertEquals(
+                                    "Cancel button shouldn't be visible",
+                                    View.GONE,
+                                    cancelButton.getVisibility());
                             // Loading indicator should be hidden.
                             assertEquals(
                                     "Loading indicator shouldn't be visible",
