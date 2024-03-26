@@ -227,54 +227,6 @@ struct ExpectedReportWaiter {
   }
 };
 
-struct ExpectedDebugReportWaiter {
-  ExpectedDebugReportWaiter(GURL report_url,
-                            std::string expected_body_serialized,
-                            net::EmbeddedTestServer* server)
-      : expected_url(std::move(report_url)),
-        expected_body_serialized(std::move(expected_body_serialized)),
-        response(std::make_unique<net::test_server::ControllableHttpResponse>(
-            server,
-            expected_url.path())) {}
-
-  GURL expected_url;
-  std::string expected_body_serialized;
-
-  std::unique_ptr<net::test_server::ControllableHttpResponse> response;
-
-  // Waits for a report to be received matching the report url. Verifies that
-  // the report url and report body were set correctly.
-  void WaitForReport() {
-    if (!response->http_request()) {
-      response->WaitForRequest();
-    }
-
-    // The embedded test server resolves all urls to 127.0.0.1, so get the real
-    // request host from the request headers.
-    const net::test_server::HttpRequest& request = *response->http_request();
-    DCHECK(base::Contains(request.headers, "Host"));
-    const GURL& request_url = request.GetURL();
-    GURL header_url = GURL("https://" + request.headers.at("Host"));
-    std::string host = header_url.host();
-    GURL::Replacements replace_host;
-    replace_host.SetHostStr(host);
-
-    EXPECT_EQ(base::test::ParseJson(request.content),
-              base::test::ParseJson(expected_body_serialized));
-
-    // Clear the port as it is assigned by the EmbeddedTestServer at runtime.
-    replace_host.SetPortStr("");
-
-    // Compare the expected report url with a URL formatted with the host
-    // defined in the headers. This would not match |expected_url| if the host
-    // for report url was not set properly.
-    EXPECT_EQ(expected_url, request_url.ReplaceComponents(replace_host));
-
-    EXPECT_TRUE(base::Contains(request.headers, "User-Agent"));
-    EXPECT_EQ(request.headers.at("Content-Type"), "application/json");
-  }
-};
-
 }  // namespace
 
 class InterestGroupEnabledContentBrowserClient
