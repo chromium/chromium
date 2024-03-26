@@ -39,7 +39,7 @@ class SampleForTests {
 
     public void startExample() {
         // Calls C++ Init(...) method and holds a pointer to the C++ class.
-        mNativeCPPObject = SampleForTestsJni.get().init(this, "myParam");
+        mNativeCPPObject = SampleForTestsJni.get().init(this, "myParam", new byte[0]);
     }
 
     public void doStuff() {
@@ -265,7 +265,10 @@ class SampleForTests {
         // The caller of this method should store it, and supply it as a the nativeCPPClass param to
         // subsequent native method calls (see the methods below that take an "int native..." as
         // first param).
-        long init(SampleForTests caller, String param);
+        long init(
+                SampleForTests caller,
+                String param,
+                @JniType("jni_zero::ByteArrayView") byte[] bytes);
 
         // This defines a function binding to the associated C++ class member function. The name is
         // derived from |nativeDestroy| and |nativeCPPClass| to arrive at CPPClass::Destroy() (i.e.

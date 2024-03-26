@@ -5,11 +5,12 @@
 package org.chromium.base;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 /**
- * This class provides an interface to the native class for writing
- * important data files without risking data loss.
+ * This class provides an interface to the native class for writing important data files without
+ * risking data loss.
  */
 @JNINamespace("base::android")
 public class ImportantFileWriterAndroid {
@@ -29,6 +30,8 @@ public class ImportantFileWriterAndroid {
 
     @NativeMethods
     interface Natives {
-        boolean writeFileAtomically(String fileName, byte[] data);
+        boolean writeFileAtomically(
+                @JniType("std::string") String fileName,
+                @JniType("jni_zero::ByteArrayView") byte[] data);
     }
 }

@@ -594,6 +594,37 @@ class JavaObjectArrayReader {
   friend iterator;
 };
 
+// Use as: @JniType("jni_zero::ByteArrayView") byte[].
+// Callers must ensure that the passed in array reference outlives this wrapper.
+class ByteArrayView {
+ public:
+  ByteArrayView(JNIEnv* env, jbyteArray array)
+      : env_(env),
+        array_(array),
+        length_(env->GetArrayLength(array)),
+        bytes_(env->GetByteArrayElements(array, nullptr)) {}
+
+  ~ByteArrayView() {
+    env_->ReleaseByteArrayElements(array_, bytes_, JNI_ABORT);
+  }
+
+  ByteArrayView(const ByteArrayView&) = delete;
+  ByteArrayView(ByteArrayView&& other) = delete;
+  ByteArrayView& operator=(const ByteArrayView&) = delete;
+
+  size_t length() const { return static_cast<size_t>(length_); }
+  jbyte* bytes() const { return bytes_; }
+  const char* chars() const { return reinterpret_cast<char*>(bytes_); }
+  std::string_view string_view() const {
+    return std::string_view(chars(), length());
+  }
+
+ private:
+  JNIEnv* env_;
+  jbyteArray array_;
+  jsize length_;
+  jbyte* bytes_;
+};
 
 // Attaches the current thread to the VM (if necessary) and return the JNIEnv*.
 JNI_ZERO_COMPONENT_BUILD_EXPORT JNIEnv* AttachCurrentThread();
@@ -782,6 +813,15 @@ struct ConvertArray<std::vector<ScopedJavaLocalRef<jobject>>> {
       env->SetObjectArrayElement(joa, static_cast<jsize>(i), vec[i].obj());
     }
     return ScopedJavaLocalRef<jobjectArray>(env, joa);
+  }
+};
+
+// Specialization for ByteArrayView.
+template <>
+struct ConvertArray<ByteArrayView> {
+  static ByteArrayView FromJniType(JNIEnv* env,
+                                   const JavaRef<jbyteArray>& array) {
+    return ByteArrayView(env, array.obj());
   }
 };
 

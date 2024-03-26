@@ -121,8 +121,9 @@ ScopedJavaLocalRef<jstring> CPPClass::ReturnAString(
 // Static free functions declared and called directly from java.
 static jlong JNI_SampleForTests_Init(JNIEnv* env,
                                      const JavaParamRef<jobject>& caller,
-                                     const JavaParamRef<jstring>& param) {
-  return 0;
+                                     const JavaParamRef<jstring>& param,
+                                     jni_zero::ByteArrayView& bytes) {
+  return static_cast<jlong>(bytes.length());
 }
 
 static jdouble JNI_SampleForTests_GetDoubleFunction(
