@@ -14,7 +14,7 @@
 @protocol InactiveTabsInfoConsumer;
 class PrefService;
 class TabsCloser;
-@class SnapshotStorage;
+@class LegacySnapshotStorage;
 @protocol TabCollectionConsumer;
 class WebStateList;
 
@@ -35,7 +35,7 @@ class WebStateList;
 // - `tabsCloser`: the object used to implement "close all" and "undo".
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                          prefService:(PrefService*)prefService
-                     snapshotStorage:(SnapshotStorage*)snapshotStorage
+                     snapshotStorage:(LegacySnapshotStorage*)snapshotStorage
                           tabsCloser:(std::unique_ptr<TabsCloser>)tabsCloser
     NS_DESIGNATED_INITIALIZER;
 

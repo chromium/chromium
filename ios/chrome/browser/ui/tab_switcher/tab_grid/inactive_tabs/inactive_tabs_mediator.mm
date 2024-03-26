@@ -17,8 +17,8 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage_observer.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage_observer.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/model/tabs_closer.h"
@@ -84,12 +84,12 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 @interface InactiveTabsMediator () <CRWWebStateObserver,
                                     PrefObserverDelegate,
-                                    SnapshotStorageObserver,
+                                    LegacySnapshotStorageObserver,
                                     WebStateListObserving> {
   // The list of inactive tabs.
   raw_ptr<WebStateList> _webStateList;
   // The snapshot storage of _webStateList.
-  __weak SnapshotStorage* _snapshotStorage;
+  __weak LegacySnapshotStorage* _snapshotStorage;
   // The observers of _webStateList.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
   std::unique_ptr<ScopedWebStateListObservation> _scopedWebStateListObservation;
@@ -113,7 +113,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                          prefService:(PrefService*)prefService
-                     snapshotStorage:(SnapshotStorage*)snapshotStorage
+                     snapshotStorage:(LegacySnapshotStorage*)snapshotStorage
                           tabsCloser:(std::unique_ptr<TabsCloser>)tabsCloser {
   CHECK(IsInactiveTabsAvailable());
   CHECK(webStateList);
@@ -224,9 +224,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
 }
 
-#pragma mark - SnapshotStorageObserver
+#pragma mark - LegacySnapshotStorageObserver
 
-- (void)snapshotStorage:(SnapshotStorage*)snapshotStorage
+- (void)snapshotStorage:(LegacySnapshotStorage*)snapshotStorage
     didUpdateSnapshotForID:(SnapshotID)snapshotID {
   web::WebState* webState = nullptr;
   for (int i = 0; i < _webStateList->count(); i++) {

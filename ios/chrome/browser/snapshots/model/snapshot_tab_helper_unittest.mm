@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -96,7 +96,7 @@ class SnapshotTabHelperTest : public PlatformTest {
     EXPECT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
     base::FilePath directory_name = scoped_temp_directory_.GetPath();
     snapshot_storage_ =
-        [[SnapshotStorage alloc] initWithStoragePath:directory_name];
+        [[LegacySnapshotStorage alloc] initWithStoragePath:directory_name];
     SnapshotTabHelper::FromWebState(&web_state_)
         ->SetSnapshotStorage(snapshot_storage_);
 
@@ -140,7 +140,7 @@ class SnapshotTabHelperTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_directory_;
   TabHelperSnapshotGeneratorDelegate* delegate_ = nil;
-  SnapshotStorage* snapshot_storage_ = nil;
+  LegacySnapshotStorage* snapshot_storage_ = nil;
   web::FakeWebState web_state_;
 };
 
@@ -359,7 +359,7 @@ TEST_F(SnapshotTabHelperTest, ClosingWebStateDoesNotRemoveSnapshot) {
   SnapshotTabHelper::CreateForWebState(web_state.get());
   SnapshotID snapshot_id =
       SnapshotTabHelper::FromWebState(web_state.get())->GetSnapshotID();
-  [(SnapshotStorage*)[partialMock reject]
+  [(LegacySnapshotStorage*)[partialMock reject]
       removeImageWithSnapshotID:snapshot_id];
 
   // Use @try/@catch as -reject raises an exception.

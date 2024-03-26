@@ -7,8 +7,8 @@
 #import "base/functional/bind.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_generator.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
 #import "ios/web/public/thread/web_thread.h"
 
 @implementation SnapshotManager {

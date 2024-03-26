@@ -32,6 +32,10 @@
   return snapshot_id_.identifier();
 }
 
+- (BOOL)valid {
+  return snapshot_id_.valid();
+}
+
 - (NSUInteger)hash {
   return std::hash<int32_t>{}(self.identifier);
 }

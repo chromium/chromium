@@ -44,9 +44,9 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage_observer.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage_observer.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service.h"
@@ -131,7 +131,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 }  // namespace
 
 @interface BaseGridMediator () <CRWWebStateObserver,
-                                SnapshotStorageObserver,
+                                LegacySnapshotStorageObserver,
                                 WebStateListObserving>
 // The browser state from the browser.
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
@@ -469,9 +469,9 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   [self.consumer replaceItem:item withReplacementItem:item];
 }
 
-#pragma mark - SnapshotStorageObserver
+#pragma mark - LegacySnapshotStorageObserver
 
-- (void)snapshotStorage:(SnapshotStorage*)snapshotStorage
+- (void)snapshotStorage:(LegacySnapshotStorage*)snapshotStorage
     didUpdateSnapshotForID:(SnapshotID)snapshotID {
   web::WebState* webState = nullptr;
   for (int i = self.webStateList->pinned_tabs_count();
@@ -1060,7 +1060,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 }
 
 // Returns a SnapshotStorage for the current browser.
-- (SnapshotStorage*)snapshotStorage {
+- (LegacySnapshotStorage*)snapshotStorage {
   if (!self.browser) {
     return nil;
   }

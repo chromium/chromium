@@ -13,8 +13,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
@@ -26,9 +26,9 @@ void MoveSnapshot(SnapshotID snapshot_id,
                   Browser* source_browser,
                   Browser* destination_browser) {
   DCHECK(snapshot_id.valid());
-  SnapshotStorage* source_storage =
+  LegacySnapshotStorage* source_storage =
       SnapshotBrowserAgent::FromBrowser(source_browser)->snapshot_storage();
-  SnapshotStorage* destination_storage =
+  LegacySnapshotStorage* destination_storage =
       SnapshotBrowserAgent::FromBrowser(destination_browser)
           ->snapshot_storage();
   [source_storage migrateImageWithSnapshotID:snapshot_id

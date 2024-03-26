@@ -11,7 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 
 namespace {
@@ -120,8 +120,9 @@ void SnapshotBrowserAgent::SetSessionID(const std::string& identifier) {
   const base::FilePath storage_path =
       browser_state_path.Append(kSnapshots).Append(identifier);
 
-  snapshot_storage_ = [[SnapshotStorage alloc] initWithStoragePath:storage_path
-                                                        legacyPath:legacy_path];
+  snapshot_storage_ =
+      [[LegacySnapshotStorage alloc] initWithStoragePath:storage_path
+                                              legacyPath:legacy_path];
 }
 
 void SnapshotBrowserAgent::PerformStorageMaintenance() {

@@ -15,9 +15,9 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -95,7 +95,7 @@ class BrowserUtilTest : public PlatformTest {
 
   // Returns the cached snapshot for the given snapshot ID in the given snapshot
   // cache.
-  UIImage* GetSnapshot(SnapshotStorage* snapshot_storage,
+  UIImage* GetSnapshot(LegacySnapshotStorage* snapshot_storage,
                        SnapshotID snapshot_id) {
     CHECK(snapshot_storage);
     base::RunLoop run_loop;
@@ -202,7 +202,7 @@ TEST_F(BrowserUtilTest, TestMovedSnapshot) {
   SnapshotBrowserAgent* agent =
       SnapshotBrowserAgent::FromBrowser(browser_.get());
   agent->SetSessionID(kIdentifier0);
-  SnapshotStorage* snapshot_storage = agent->snapshot_storage();
+  LegacySnapshotStorage* snapshot_storage = agent->snapshot_storage();
   ASSERT_NE(nil, snapshot_storage);
   UIImage* snapshot = UIImageWithSizeAndSolidColor({10, 20}, UIColor.redColor);
   SnapshotTabHelper* snapshot_tab_helper =
@@ -216,7 +216,8 @@ TEST_F(BrowserUtilTest, TestMovedSnapshot) {
   SnapshotBrowserAgent* other_agent =
       SnapshotBrowserAgent::FromBrowser(other_browser_.get());
   other_agent->SetSessionID(kIdentifier1);
-  SnapshotStorage* other_snapshot_storage = other_agent->snapshot_storage();
+  LegacySnapshotStorage* other_snapshot_storage =
+      other_agent->snapshot_storage();
   ASSERT_NE(nil, other_snapshot_storage);
   ASSERT_EQ(nil, GetSnapshot(other_snapshot_storage, snapshot_id));
 

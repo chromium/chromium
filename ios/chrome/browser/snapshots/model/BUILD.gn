@@ -9,20 +9,20 @@ source_set("model") {
     "legacy_image_file_manager.h",
     "legacy_snapshot_generator.h",
     "legacy_snapshot_lru_cache.h",
+    "legacy_snapshot_storage+Testing.h",
+    "legacy_snapshot_storage.h",
+    "legacy_snapshot_storage_observer.h",
     "snapshot_browser_agent.h",
-    "snapshot_storage+Testing.h",
-    "snapshot_storage.h",
-    "snapshot_storage_observer.h",
     "snapshot_tab_helper.h",
   ]
   sources = [
     "legacy_image_file_manager.mm",
     "legacy_snapshot_generator.mm",
     "legacy_snapshot_lru_cache.mm",
+    "legacy_snapshot_storage.mm",
     "snapshot_browser_agent.mm",
     "snapshot_manager.h",
     "snapshot_manager.mm",
-    "snapshot_storage.mm",
     "snapshot_tab_helper.mm",
   ]
   deps = [
@@ -72,11 +72,15 @@ swift_source_set("model_swift") {
     "snapshot_generator.swift",
     "snapshot_generator_delegate.swift",
     "snapshot_lru_cache.swift",
+    "snapshot_storage.swift",
+    "snapshot_storage_observer.swift",
   ]
   deps = [
     ":features",
     ":model_common",
     "//base",
+    "//ios/chrome/browser/shared/public/metrics:metrics_bridge",
+    "//ios/chrome/browser/shared/ui/util:util_bridge",
   ]
 }
 
