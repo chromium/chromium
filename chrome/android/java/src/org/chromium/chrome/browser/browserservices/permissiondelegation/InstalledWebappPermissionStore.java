@@ -13,7 +13,6 @@ import androidx.annotation.WorkerThread;
 import androidx.browser.trusted.Token;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
@@ -85,11 +84,9 @@ public class InstalledWebappPermissionStore {
     public InstalledWebappPermissionStore() {
         // On some versions of Android, creating the Preferences object involves a disk read (to
         // check if the Preferences directory exists, not even to read the actual Preferences).
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            mPreferences =
-                    ContextUtils.getApplicationContext()
-                            .getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
-        }
+        mPreferences =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
     }
 
     /**
@@ -146,11 +143,9 @@ public class InstalledWebappPermissionStore {
     public Set<String> getStoredOrigins() {
         // In case the pre-emptive disk read in initStorage hasn't occurred by the time we actually
         // need the value.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            // The set returned by getStringSet must not be modified. The consistency of the stored
-            // data is not guaranteed if you do, nor is your ability to modify the instance at all.
-            return new HashSet<>(mPreferences.getStringSet(KEY_ALL_ORIGINS, new HashSet<>()));
-        }
+        // The set returned by getStringSet must not be modified. The consistency of the stored
+        // data is not guaranteed if you do, nor is your ability to modify the instance at all.
+        return new HashSet<>(mPreferences.getStringSet(KEY_ALL_ORIGINS, new HashSet<>()));
     }
 
     /**

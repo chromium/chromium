@@ -28,7 +28,6 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceGroup;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
@@ -573,9 +572,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
                     }
                 });
 
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            getPreferenceScreen().addPreference(savePasswordsSwitch);
-        }
+        getPreferenceScreen().addPreference(savePasswordsSwitch);
 
         // Note: setting the switch state before the preference is added to the screen results in
         // some odd behavior where the switch state doesn't always match the internal enabled state

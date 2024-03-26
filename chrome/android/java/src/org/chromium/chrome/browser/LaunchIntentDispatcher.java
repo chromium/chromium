@@ -28,7 +28,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
@@ -210,19 +209,17 @@ public class LaunchIntentDispatcher {
         Intent searchIntent = new Intent(Intent.ACTION_WEB_SEARCH);
         searchIntent.putExtra(SearchManager.QUERY, query);
 
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            if (PackageManagerUtils.canResolveActivity(
-                    searchIntent, PackageManager.GET_RESOLVED_FILTER)) {
-                mActivity.startActivity(searchIntent);
-            } else {
-                // Phone doesn't have a WEB_SEARCH action handler, open Search Activity with
-                // the given query.
-                Intent searchActivityIntent = new Intent(Intent.ACTION_MAIN);
-                searchActivityIntent.setClass(
-                        ContextUtils.getApplicationContext(), SearchActivity.class);
-                searchActivityIntent.putExtra(SearchManager.QUERY, query);
-                mActivity.startActivity(searchActivityIntent);
-            }
+        if (PackageManagerUtils.canResolveActivity(
+                searchIntent, PackageManager.GET_RESOLVED_FILTER)) {
+            mActivity.startActivity(searchIntent);
+        } else {
+            // Phone doesn't have a WEB_SEARCH action handler, open Search Activity with
+            // the given query.
+            Intent searchActivityIntent = new Intent(Intent.ACTION_MAIN);
+            searchActivityIntent.setClass(
+                    ContextUtils.getApplicationContext(), SearchActivity.class);
+            searchActivityIntent.putExtra(SearchManager.QUERY, query);
+            mActivity.startActivity(searchActivityIntent);
         }
         return true;
     }
@@ -380,15 +377,13 @@ public class LaunchIntentDispatcher {
 
         // Allow disk writes during startActivity() to avoid strict mode violations on some
         // Samsung devices, see https://crbug.com/796548.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            if (TwaSplashController.handleIntent(mActivity, launchIntent)) {
-                return true;
-            }
-
-            mActivity.startActivity(launchIntent, null);
-            RecordHistogram.recordBooleanHistogram("CustomTabs.IdentityShared", identityShared);
+        if (TwaSplashController.handleIntent(mActivity, launchIntent)) {
             return true;
         }
+
+        mActivity.startActivity(launchIntent, null);
+        RecordHistogram.recordBooleanHistogram("CustomTabs.IdentityShared", identityShared);
+        return true;
     }
 
     /**

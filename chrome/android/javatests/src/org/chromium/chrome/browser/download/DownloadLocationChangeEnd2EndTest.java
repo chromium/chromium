@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.PathUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -213,17 +212,15 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
     private void simulateDownloadDirectories(boolean hasSDCard) {
         ArrayList<DirectoryOption> dirs = new ArrayList<>();
 
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+        dirs.add(
+                buildDirectoryOption(
+                        DirectoryOption.DownloadLocationDirectoryType.DEFAULT,
+                        PathUtils.getExternalStorageDirectory()));
+        if (hasSDCard) {
             dirs.add(
                     buildDirectoryOption(
-                            DirectoryOption.DownloadLocationDirectoryType.DEFAULT,
-                            PathUtils.getExternalStorageDirectory()));
-            if (hasSDCard) {
-                dirs.add(
-                        buildDirectoryOption(
-                                DirectoryOption.DownloadLocationDirectoryType.ADDITIONAL,
-                                PathUtils.getDataDirectory()));
-            }
+                            DirectoryOption.DownloadLocationDirectoryType.ADDITIONAL,
+                            PathUtils.getDataDirectory()));
         }
 
         DownloadDirectoryProvider.getInstance()

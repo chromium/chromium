@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -205,32 +204,30 @@ public class TabUmaTest {
     // Create a TabState object with random bytes of content that makes the TabState
     // restoration deliberately fail.
     private TabState createTabState() throws Exception {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            File file = mTemporaryFolder.newFile("tabStateByteBufferTestFile");
-            try (FileOutputStream fileOutputStream = new FileOutputStream(file);
-                    DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream)) {
-                dataOutputStream.write(new byte[] {1, 2, 3});
-            }
-
-            TabState state = new TabState();
-            try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                state.contentsState =
-                        new WebContentsState(
-                                fileInputStream
-                                        .getChannel()
-                                        .map(
-                                                FileChannel.MapMode.READ_ONLY,
-                                                fileInputStream.getChannel().position(),
-                                                file.length()));
-                state.contentsState.setVersion(2);
-                state.timestampMillis = 10L;
-                state.parentId = 1;
-                state.themeColor = 4;
-                state.openerAppId = "test";
-                state.tabLaunchTypeAtCreation = null;
-                state.rootId = 1;
-            }
-            return state;
+        File file = mTemporaryFolder.newFile("tabStateByteBufferTestFile");
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file);
+                DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream)) {
+            dataOutputStream.write(new byte[] {1, 2, 3});
         }
+
+        TabState state = new TabState();
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            state.contentsState =
+                    new WebContentsState(
+                            fileInputStream
+                                    .getChannel()
+                                    .map(
+                                            FileChannel.MapMode.READ_ONLY,
+                                            fileInputStream.getChannel().position(),
+                                            file.length()));
+            state.contentsState.setVersion(2);
+            state.timestampMillis = 10L;
+            state.parentId = 1;
+            state.themeColor = 4;
+            state.openerAppId = "test";
+            state.tabLaunchTypeAtCreation = null;
+            state.rootId = 1;
+        }
+        return state;
     }
 }

@@ -21,7 +21,6 @@ import androidx.appcompat.app.AlertDialog;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
@@ -260,13 +259,12 @@ public class ExportFlow implements ExportFlowInterface {
 
     /**
      * Returns the path to the directory where serialized passwords are stored.
+     *
      * @return A subdirectory of the cache, where serialized passwords are stored.
      */
     @VisibleForTesting
     public static String getTargetDirectory() {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            return ContextUtils.getApplicationContext().getCacheDir() + PASSWORDS_CACHE_DIR;
-        }
+        return ContextUtils.getApplicationContext().getCacheDir() + PASSWORDS_CACHE_DIR;
     }
 
     @Override

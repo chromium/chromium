@@ -8,7 +8,6 @@ import android.app.Activity;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
@@ -72,10 +71,8 @@ public class WebappActivityCoordinator
         // Initialize the WebappRegistry and warm up the shared preferences for this web app. No-ops
         // if the registry and this web app are already initialized. Must override Strict Mode to
         // avoid a violation.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            WebappRegistry.getInstance();
-            WebappRegistry.warmUpSharedPrefsForId(mWebappInfo.id());
-        }
+        WebappRegistry.getInstance();
+        WebappRegistry.warmUpSharedPrefsForId(mWebappInfo.id());
     }
 
     /** Invoked to add deferred startup tasks to queue. */

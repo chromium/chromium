@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -49,7 +48,7 @@ public final class ServicificationBackgroundServiceTest {
 
     private static final String APP_CHROME_DIR = "app_chrome";
     private static final String SPARE_FILE_NAME = "BrowserMetrics-spare.pma";
-    private static final String TAG = "ServicificationStartupTest";
+    private static final String TAG = "ServicifiStartupTest";
 
     @Before
     public void setUp() {
@@ -79,33 +78,29 @@ public final class ServicificationBackgroundServiceTest {
             return;
         }
 
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            try {
-                mMappedSpareFile = new RandomAccessFile(mSpareFile, "rw");
+        try {
+            mMappedSpareFile = new RandomAccessFile(mSpareFile, "rw");
 
-                MappedByteBuffer mappedByteBuffer =
-                        mMappedSpareFile
-                                .getChannel()
-                                .map(FileChannel.MapMode.READ_WRITE, 0, ALLOC_SIZE);
+            MappedByteBuffer mappedByteBuffer =
+                    mMappedSpareFile
+                            .getChannel()
+                            .map(FileChannel.MapMode.READ_WRITE, 0, ALLOC_SIZE);
 
-                mappedByteBuffer.put(0, (byte) 0);
-                mappedByteBuffer.force();
-                Assert.assertTrue(Byte.compare(mappedByteBuffer.get(0), (byte) 0) == 0);
-            } catch (Exception e) {
-                Log.d(TAG, "Fail to create memory-mapped file: %s", SPARE_FILE_NAME);
-            }
+            mappedByteBuffer.put(0, (byte) 0);
+            mappedByteBuffer.force();
+            Assert.assertTrue(Byte.compare(mappedByteBuffer.get(0), (byte) 0) == 0);
+        } catch (Exception e) {
+            Log.d(TAG, "Fail to create memory-mapped file: %s", SPARE_FILE_NAME);
         }
     }
 
     private void closeBrowserMetricsSpareFile() {
         if (mMappedSpareFile == null) return;
 
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            try {
-                mMappedSpareFile.close();
-            } catch (IOException e) {
-                Log.d(TAG, "Fail to close memory-mapped file: %s", SPARE_FILE_NAME);
-            }
+        try {
+            mMappedSpareFile.close();
+        } catch (IOException e) {
+            Log.d(TAG, "Fail to close memory-mapped file: %s", SPARE_FILE_NAME);
         }
     }
 

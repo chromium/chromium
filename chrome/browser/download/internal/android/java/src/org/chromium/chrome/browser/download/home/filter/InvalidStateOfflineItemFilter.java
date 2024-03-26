@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.download.home.filter;
 import android.os.Environment;
 
 import org.chromium.base.ContentUriUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 
@@ -52,9 +51,7 @@ public class InvalidStateOfflineItemFilter extends OfflineItemFilter {
 
         // Check if the file path contains the external public directory.
         File primaryDir = null;
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            primaryDir = Environment.getExternalStorageDirectory();
-        }
+        primaryDir = Environment.getExternalStorageDirectory();
         if (primaryDir == null || path == null) return false;
         String primaryPath = primaryDir.getAbsolutePath();
         return primaryPath == null ? false : path.contains(primaryPath);

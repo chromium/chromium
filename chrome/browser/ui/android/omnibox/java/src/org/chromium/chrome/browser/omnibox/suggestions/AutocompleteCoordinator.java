@@ -18,7 +18,6 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -188,12 +187,9 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
 
             @Override
             public void inflate() {
-                OmniboxSuggestionsDropdown dropdown;
-                try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                    dropdown =
-                            new OmniboxSuggestionsDropdown(
-                                    context, mRecycledViewPool, mForcePhoneStyleOmnibox);
-                }
+                OmniboxSuggestionsDropdown dropdown =
+                        new OmniboxSuggestionsDropdown(
+                                context, mRecycledViewPool, mForcePhoneStyleOmnibox);
 
                 dropdown.getViewGroup().setClipToPadding(false);
                 dropdown.setAdapter(mAdapter);

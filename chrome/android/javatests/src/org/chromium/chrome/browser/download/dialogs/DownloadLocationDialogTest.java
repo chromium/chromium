@@ -29,7 +29,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -110,16 +109,14 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
                 () -> {
                     // Create fake directory options.
                     ArrayList<DirectoryOption> dirs = new ArrayList<>();
-                    try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                        dirs.add(
-                                buildDirectoryOption(
-                                        DirectoryOption.DownloadLocationDirectoryType.DEFAULT,
-                                        PRIMARY_STORAGE_PATH));
-                        dirs.add(
-                                buildDirectoryOption(
-                                        DirectoryOption.DownloadLocationDirectoryType.ADDITIONAL,
-                                        SECONDARY_STORAGE_PATH));
-                    }
+                    dirs.add(
+                            buildDirectoryOption(
+                                    DirectoryOption.DownloadLocationDirectoryType.DEFAULT,
+                                    PRIMARY_STORAGE_PATH));
+                    dirs.add(
+                            buildDirectoryOption(
+                                    DirectoryOption.DownloadLocationDirectoryType.ADDITIONAL,
+                                    SECONDARY_STORAGE_PATH));
                     DownloadDirectoryProvider.getInstance()
                             .setDirectoryProviderForTesting(
                                     new TestDownloadDirectoryProvider(dirs));

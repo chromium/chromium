@@ -13,7 +13,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -48,9 +47,7 @@ public class ChromeBackupWatcher {
         SharedPreferencesManager sharedPrefs = ChromeSharedPreferences.getInstance();
         // If we have never done a backup do one immediately.
         if (!sharedPrefs.readBoolean(ChromePreferenceKeys.BACKUP_FIRST_BACKUP_DONE, false)) {
-            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                mBackupManager.dataChanged();
-            }
+            mBackupManager.dataChanged();
             sharedPrefs.writeBoolean(ChromePreferenceKeys.BACKUP_FIRST_BACKUP_DONE, true);
         }
         ContextUtils.getAppSharedPreferences()
@@ -79,8 +76,6 @@ public class ChromeBackupWatcher {
 
     @CalledByNative
     private void onBackupPrefsChanged() {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            mBackupManager.dataChanged();
-        }
+        mBackupManager.dataChanged();
     }
 }

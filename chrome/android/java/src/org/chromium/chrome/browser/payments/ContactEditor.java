@@ -32,7 +32,6 @@ import android.util.Patterns;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
@@ -386,11 +385,8 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     private static boolean isPhoneValid(@Nullable String phone) {
         // TODO(crbug.com/999286): PhoneNumberUtils internally trigger
         // disk reads for certain devices/configurations.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return phone != null
-                    && PhoneNumberUtils.isGlobalPhoneNumber(
-                            PhoneNumberUtils.stripSeparators(phone));
-        }
+        return phone != null
+                && PhoneNumberUtils.isGlobalPhoneNumber(PhoneNumberUtils.stripSeparators(phone));
     }
 
     private EditorFieldValidator getEmailValidator() {

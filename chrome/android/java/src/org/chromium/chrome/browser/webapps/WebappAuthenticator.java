@@ -9,7 +9,6 @@ import android.util.Log;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.StrictModeContext;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,18 +43,14 @@ public class WebappAuthenticator {
 
     /**
      * @see #getMacForUrl
-     *
      * @param url The URL to validate.
      * @param mac The bytes of a previously-calculated MAC.
-     *
      * @return true if the MAC is a valid MAC for the URL, false otherwise.
      */
     public static boolean isUrlValid(String url, byte[] mac) {
         byte[] goodMac;
         // TODO(crbug.com/525785): Temporarily allowing disk access until more permanent fix is in.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            goodMac = getMacForUrl(url);
-        }
+        goodMac = getMacForUrl(url);
         if (goodMac == null) {
             return false;
         }

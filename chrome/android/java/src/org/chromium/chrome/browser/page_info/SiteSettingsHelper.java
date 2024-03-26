@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -66,8 +65,6 @@ public class SiteSettingsHelper {
 
     private static void launchIntent(Context context, Intent intent) {
         // Disabling StrictMode to avoid violations (https://crbug.com/819410).
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            context.startActivity(intent);
-        }
+        context.startActivity(intent);
     }
 }

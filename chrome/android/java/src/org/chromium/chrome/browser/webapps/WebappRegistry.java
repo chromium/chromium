@@ -18,7 +18,6 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -515,13 +514,8 @@ public class WebappRegistry {
     }
 
     private static SharedPreferences openSharedPreferences() {
-        // TODO(peconn): Don't open general WebappRegistry preferences when we just need the
-        // InstalledWebappPermissionStore.
-        // This is required to fix https://crbug.com/952841.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return ContextUtils.getApplicationContext()
-                    .getSharedPreferences(REGISTRY_FILE_NAME, Context.MODE_PRIVATE);
-        }
+        return ContextUtils.getApplicationContext()
+                .getSharedPreferences(REGISTRY_FILE_NAME, Context.MODE_PRIVATE);
     }
 
     private void clearStoragesForTesting() {

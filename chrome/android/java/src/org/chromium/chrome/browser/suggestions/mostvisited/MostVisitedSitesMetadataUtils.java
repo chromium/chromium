@@ -13,7 +13,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
@@ -110,19 +109,18 @@ public class MostVisitedSitesMetadataUtils {
 
     /**
      * Restore the suggestion lists from the disk and deserialize them on UI thread.
-     * @return Suggestion lists
-     * IOException: If there is any problem when restoring file or deserialize data, remove the
-     * stale files and throw an exception, then the UI thread will know there is no cache file and
-     * show something else.
+     *
+     * @return Suggestion lists IOException: If there is any problem when restoring file or
+     *     deserialize data, remove the stale files and throw an exception, then the UI thread will
+     *     know there is no cache file and show something else.
      */
     public static List<Tile> restoreFileToSuggestionListsOnUiThread() throws IOException {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            return restoreFileToSuggestionLists();
-        }
+        return restoreFileToSuggestionLists();
     }
 
     /**
      * Asynchronously serialize the suggestion lists and save it into the disk.
+     *
      * @param suggestionTiles The site suggestion tiles.
      * @param callback Callback function after saving file.
      */
@@ -263,16 +261,14 @@ public class MostVisitedSitesMetadataUtils {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static File getOrCreateTopSitesDirectory() {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            synchronized (DIR_CREATION_LOCK) {
-                if (sStateDirectory == null) {
-                    sStateDirectory =
-                            ContextUtils.getApplicationContext()
-                                    .getDir(sStateDirName, Context.MODE_PRIVATE);
-                }
+        synchronized (DIR_CREATION_LOCK) {
+            if (sStateDirectory == null) {
+                sStateDirectory =
+                        ContextUtils.getApplicationContext()
+                                .getDir(sStateDirName, Context.MODE_PRIVATE);
             }
-            return sStateDirectory;
         }
+        return sStateDirectory;
     }
 
     private void updatePendingToCurrent() {

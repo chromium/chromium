@@ -14,7 +14,6 @@ import org.junit.runners.model.InitializationError;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.RestrictionSkipCheck;
@@ -137,10 +136,7 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
                 Method currentViewerMethod = daydreamApiClass.getMethod("getCurrentViewerType");
                 // Getting the current viewer type may result in a disk write in VrCore, so allow
                 // that to prevent StrictMode errors.
-                Integer viewerType;
-                try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-                    viewerType = (Integer) currentViewerMethod.invoke(daydreamApiInstance);
-                }
+                Integer viewerType = (Integer) currentViewerMethod.invoke(daydreamApiInstance);
                 Method closeMethod = daydreamApiClass.getMethod("close");
                 closeMethod.invoke(daydreamApiInstance);
                 // 1 is the viewer type constant for Daydream headsets. We could use reflection to

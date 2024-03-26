@@ -14,7 +14,6 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.tab.Tab;
@@ -198,16 +197,9 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
         assert rootPath != null;
         assert !rootPath.isEmpty();
 
-        boolean exists = false;
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            File zipPath =
-                    new File(
-                            rootPath,
-                            (new StringBuilder()).append(tabId).append(".zip").toString());
-            exists = zipPath.exists();
-        }
-
-        return exists;
+        File zipPath =
+                new File(rootPath, (new StringBuilder()).append(tabId).append(".zip").toString());
+        return zipPath.exists();
     }
 
     public void captureTab(Tab tab, Callback<Boolean> successCallback) {

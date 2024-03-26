@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.StrictModeContext;
 
 import java.io.File;
 
@@ -50,11 +49,8 @@ public class TabStateDirectory {
             if (sTabbedModeStateDirectory == null) {
                 sTabbedModeStateDirectory =
                         new File(getOrCreateBaseStateDirectory(), TABBED_MODE_DIRECTORY);
-                try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-                    if (!sTabbedModeStateDirectory.exists()
-                            && !sTabbedModeStateDirectory.mkdirs()) {
-                        Log.e(TAG, "Failed to create state folder: " + sTabbedModeStateDirectory);
-                    }
+                if (!sTabbedModeStateDirectory.exists() && !sTabbedModeStateDirectory.mkdirs()) {
+                    Log.e(TAG, "Failed to create state folder: " + sTabbedModeStateDirectory);
                 }
             }
         }
@@ -70,11 +66,8 @@ public class TabStateDirectory {
             if (sCustomTabsStateDirectory == null) {
                 sCustomTabsStateDirectory =
                         new File(getOrCreateBaseStateDirectory(), CUSTOM_TABS_DIRECTORY);
-                try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-                    if (!sCustomTabsStateDirectory.exists()
-                            && !sCustomTabsStateDirectory.mkdirs()) {
-                        Log.e(TAG, "Failed to create state folder: " + sCustomTabsStateDirectory);
-                    }
+                if (!sCustomTabsStateDirectory.exists() && !sCustomTabsStateDirectory.mkdirs()) {
+                    Log.e(TAG, "Failed to create state folder: " + sCustomTabsStateDirectory);
                 }
             }
         }

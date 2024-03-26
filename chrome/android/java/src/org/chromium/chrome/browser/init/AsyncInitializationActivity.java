@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -374,10 +373,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             return false;
         }
 
-        // Some Samsung devices load fonts from disk, crbug.com/691706.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            super.onCreate(transformSavedInstanceStateForOnCreate(savedInstanceState));
-        }
+        super.onCreate(transformSavedInstanceStateForOnCreate(savedInstanceState));
         mOnCreateTimestampMs = SystemClock.elapsedRealtime();
         mSavedInstanceState = savedInstanceState;
 

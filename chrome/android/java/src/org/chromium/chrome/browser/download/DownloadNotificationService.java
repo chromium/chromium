@@ -25,7 +25,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -612,16 +611,13 @@ public class DownloadNotificationService {
     @VisibleForTesting
     void updateNotification(int id, Notification notification) {
         // TODO(b/65052774): Add back NOTIFICATION_NAMESPACE when able to.
-        // Disabling StrictMode to avoid violations (crbug.com/789134).
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            mNotificationManager.notify(
-                    new NotificationWrapper(
-                            notification,
-                            new NotificationMetadata(
-                                    NotificationUmaTracker.SystemNotificationType.DOWNLOAD_FILES,
-                                    /* tag= */ null,
-                                    id)));
-        }
+        mNotificationManager.notify(
+                new NotificationWrapper(
+                        notification,
+                        new NotificationMetadata(
+                                NotificationUmaTracker.SystemNotificationType.DOWNLOAD_FILES,
+                                /* tag= */ null,
+                                id)));
     }
 
     private void updateNotification(

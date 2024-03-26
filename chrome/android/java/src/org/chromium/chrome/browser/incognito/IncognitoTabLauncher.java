@@ -18,7 +18,6 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
@@ -87,9 +86,7 @@ public class IncognitoTabLauncher extends Activity {
         chromeLauncherIntent.putExtra(
                 IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, true);
 
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            startActivity(chromeLauncherIntent);
-        }
+        startActivity(chromeLauncherIntent);
 
         finish();
     }

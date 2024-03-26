@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 
@@ -21,9 +20,7 @@ public class ReengagementActivity extends Activity {
         if (ReengagementNotificationController.LAUNCH_NTP_ACTION.equals(action)) {
             Intent intent =
                     IntentHandler.createTrustedOpenNewTabIntent(this, /* incognito= */ false);
-            try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-                startActivity(intent);
-            }
+            startActivity(intent);
         }
         finish();
     }

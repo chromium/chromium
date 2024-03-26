@@ -12,7 +12,6 @@ import android.util.Pair;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.StrictModeContext;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.autofill.FieldType;
@@ -239,13 +238,9 @@ public class AutofillAddress extends EditableOption {
             completionStatus |= CompletionStatus.INVALID_RECIPIENT;
         }
 
-        // TODO(crbug.com/999286): PhoneNumberUtils internally trigger disk reads for certain
-        //                         devices/configurations.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            if (!PhoneNumberUtils.isGlobalPhoneNumber(
-                    PhoneNumberUtils.stripSeparators(profile.getPhoneNumber().toString()))) {
-                completionStatus |= CompletionStatus.INVALID_PHONE_NUMBER;
-            }
+        if (!PhoneNumberUtils.isGlobalPhoneNumber(
+                PhoneNumberUtils.stripSeparators(profile.getPhoneNumber().toString()))) {
+            completionStatus |= CompletionStatus.INVALID_PHONE_NUMBER;
         }
 
         List<Integer> requiredFields =

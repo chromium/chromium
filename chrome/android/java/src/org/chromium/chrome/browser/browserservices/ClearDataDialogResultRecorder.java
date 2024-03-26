@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TWA_D
 
 import dagger.Lazy;
 
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -50,18 +49,14 @@ public class ClearDataDialogResultRecorder {
                             ? TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_UNINSTALL
                             : TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_CLEAR_DATA;
 
-            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                mPrefsManager.get().writeInt(key, mPrefsManager.get().readInt(key) + 1);
-            }
+            mPrefsManager.get().writeInt(key, mPrefsManager.get().readInt(key) + 1);
         }
     }
 
     /** Make recordings that were deferred in order to not load native. */
     public void makeDeferredRecordings() {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            recordDismissals(TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_UNINSTALL, true);
-            recordDismissals(TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_CLEAR_DATA, false);
-        }
+        recordDismissals(TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_UNINSTALL, true);
+        recordDismissals(TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_CLEAR_DATA, false);
     }
 
     private void recordDismissals(String prefKey, boolean triggeredByUninstall) {

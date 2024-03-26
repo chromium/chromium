@@ -30,7 +30,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -199,10 +198,8 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             try {
                 // TODO(dtrainor): Make asynchronous and have a callback to update the menu.
                 // https://crbug.com/729737
-                try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                    directShareIcon = pm.getActivityIcon(component);
-                    directShareTitle = pm.getActivityInfo(component, 0).loadLabel(pm);
-                }
+                directShareIcon = pm.getActivityIcon(component);
+                directShareTitle = pm.getActivityInfo(component, 0).loadLabel(pm);
             } catch (NameNotFoundException exception) {
                 // Use the default null values.
             }

@@ -18,7 +18,6 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -78,9 +77,7 @@ public class WebApkDataProvider {
         // we're encoding only a single small icon (the app icon) and the code path is
         // triggered only when the device is offline. We therefore shouldn't bother
         // jumping through hoops to make it fast.
-        try (StrictModeContext ignored = StrictModeContext.allowSlowCalls()) {
-            result.mIcon = webAppInfo.icon().encoded();
-        }
+        result.mIcon = webAppInfo.icon().encoded();
 
         return result;
     }
@@ -108,9 +105,7 @@ public class WebApkDataProvider {
             Canvas canvas = new Canvas(bitmap);
             d.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
             d.draw(canvas);
-            try (StrictModeContext ignored = StrictModeContext.allowSlowCalls()) {
-                result.mIcon = BitmapHelper.encodeBitmapAsString(bitmap);
-            }
+            result.mIcon = BitmapHelper.encodeBitmapAsString(bitmap);
         } catch (PackageManager.NameNotFoundException e) {
             return null;
         }

@@ -16,7 +16,6 @@ import android.widget.ImageView;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
@@ -150,15 +149,12 @@ public class WebappSplashController implements SplashDelegate {
         ImageView splashView = new ImageView(appContext);
         splashView.setBackgroundColor(backgroundColor);
 
-        Bitmap splashBitmap = null;
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            splashBitmap =
-                    FileUtils.queryBitmapFromContentProvider(
-                            appContext,
-                            Uri.parse(
-                                    WebApkCommonUtils.generateSplashContentProviderUri(
-                                            mWebappInfo.webApkPackageName())));
-        }
+        Bitmap splashBitmap =
+                FileUtils.queryBitmapFromContentProvider(
+                        appContext,
+                        Uri.parse(
+                                WebApkCommonUtils.generateSplashContentProviderUri(
+                                        mWebappInfo.webApkPackageName())));
         if (splashBitmap != null) {
             splashView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             splashView.setImageBitmap(splashBitmap);
