@@ -5148,7 +5148,8 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
   if (saved_response_->result != AuctionResult::kSuccess) {
     return;
   }
-  if (!saved_response_->bid) {
+  // We require a bid for component auctions. Otherwise we use a fake value.
+  if (parent_ && !saved_response_->bid) {
     saved_response_->result = AuctionResult::kInvalidServerResponse;
     errors_.emplace_back("runAdAuction(): Missing bid value");
     return;
@@ -5163,7 +5164,7 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
   std::unique_ptr<Bid> bid =
       buyer_helpers_[0]->TryToCreateBidFromServerResponse(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          saved_response_->bid.value(), saved_response_->bid_currency,
+          saved_response_->bid.value_or(0.0001), saved_response_->bid_currency,
           saved_response_->ad_metadata,
           /*ad_descriptor=*/
           blink::AdDescriptor(saved_response_->ad_render_url),
