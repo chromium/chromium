@@ -52,6 +52,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1669,8 +1670,17 @@ void CookieMonster::SetCanonicalCookie(
     SetCookiesCallback callback,
     std::optional<CookieAccessResult> cookie_access_result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // TODO(crbug.com/1482799): Check cc.StatusType() isn't kUnknown outside of
-  // tests.
+// TODO(crbug.com/1482799): Fix macos specific issue with CHECK_IS_TEST crashing
+// network service process.
+#if !BUILDFLAG(IS_MAC)
+  // Only tests should be adding new cookies with source type kUnknown. If this
+  // line causes a fatal track down the callsite and have it correctly set the
+  // source type to kOther (or kHTTP/kScript where applicable). See
+  // CookieSourceType in net/cookies/cookie_constants.h for more.
+  if (cc->SourceType() == CookieSourceType::kUnknown) {
+    CHECK_IS_TEST(base::NotFatalUntil::M126);
+  }
+#endif
 
   bool delegate_treats_url_as_trustworthy =
       cookie_access_delegate() &&

@@ -6,6 +6,7 @@
 #define BASE_CHECK_IS_TEST_H_
 
 #include "base/base_export.h"
+#include "base/not_fatal_until.h"
 
 // Code paths taken in tests are sometimes different from those taken in
 // production. This might be because the respective tests do not initialize some
@@ -33,11 +34,17 @@
 //   }
 //
 // `CHECK_IS_TEST` is thread safe.
+//
+// An optional base::NotFatalUntil argument can be provided to make the
+// instance non-fatal (dumps without crashing) before a provided milestone.
+// See base/check.h for details.
 
-#define CHECK_IS_TEST() base::internal::check_is_test_impl()
+#define CHECK_IS_TEST(...) base::internal::check_is_test_impl(__VA_ARGS__)
 
 namespace base::internal {
-BASE_EXPORT void check_is_test_impl();
+BASE_EXPORT void check_is_test_impl(
+    base::NotFatalUntil fatal_milestone =
+        base::NotFatalUntil::NoSpecifiedMilestoneInternal);
 }  // namespace base::internal
 
 #endif  // BASE_CHECK_IS_TEST_H_
