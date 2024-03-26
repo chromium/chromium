@@ -51,11 +51,30 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
     return nullptr;
   }
 
-  // Per-spec, reloads are excluded from the `auto` value which sets the
-  // boolean opt in. If a value specific to reloads is added, we'll need a
-  // finer-grained opt-in from the renderer.
-  if (navigation_request.GetReloadType() != ReloadType::NONE) {
-    return nullptr;
+  // https://drafts.csswg.org/css-view-transitions-2/#valdef-view-transition-navigation-auto
+  // `auto` is currently the only value and corresponds to enabling the boolean
+  // opt in.
+  switch (navigation_request.common_params().navigation_type) {
+    case blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
+    // Note: RESTORE is used for history traversals after a session restore so
+    // treat these as history traversal. The initial restore itself has no
+    // outgoing page so won't reach here.
+    case blink::mojom::NavigationType::RESTORE:
+    case blink::mojom::NavigationType::RESTORE_WITH_POST:
+      break;
+    case blink::mojom::NavigationType::DIFFERENT_DOCUMENT:
+      if (navigation_request.browser_initiated()) {
+        return nullptr;
+      }
+      break;
+    case blink::mojom::NavigationType::RELOAD:
+    case blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE:
+      return nullptr;
+    case blink::mojom::NavigationType::SAME_DOCUMENT:
+    case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
+      // Same document navigations should already be excluded by
+      // `ShouldDispatchPageSwapEvent`.
+      NOTREACHED();
   }
 
   return base::WrapUnique(

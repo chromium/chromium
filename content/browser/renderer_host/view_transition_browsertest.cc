@@ -6,6 +6,7 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -118,13 +119,33 @@ IN_PROC_BROWSER_TEST_F(ViewTransitionBrowserTest,
                   ->HasViewTransitionResourcesForTesting());
 }
 
+// Ensure a browser-initiated navigation (i.e. typing URL into omnibox) does
+// not trigger a view transitions.
+IN_PROC_BROWSER_TEST_F(ViewTransitionBrowserTest,
+                       NoOpOnBrowserInitiatedNavigations) {
+  // Start with a page which has an opt-in for VT.
+  GURL test_url(
+      embedded_test_server()->GetURL("/view_transitions/basic-vt-opt-in.html"));
+  ASSERT_TRUE(NavigateToURL(shell()->web_contents(), test_url));
+
+  GURL test_url_next(embedded_test_server()->GetURL(
+      "/view_transitions/basic-vt-opt-in.html?next"));
+  ASSERT_TRUE(NavigateToURL(shell()->web_contents(), test_url_next));
+  WaitForCopyableViewInWebContents(shell()->web_contents());
+
+  EXPECT_EQ(false, EvalJs(shell()->web_contents(), "had_incoming_transition"));
+}
+
 class ViewTransitionBrowserTestTraverse
     : public ViewTransitionBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
   bool BFCacheEnabled() const { return GetParam(); }
 
-  bool NavigateBack(GURL back_url) {
+  bool NavigateBack(GURL back_url, WebContents* contents = nullptr) {
+    if (!contents) {
+      contents = shell()->web_contents();
+    }
     // We need to trigger the navigation *after* executing the script below so
     // the event handlers the script relies on are set before they're dispatched
     // by the navigation.
@@ -134,10 +155,10 @@ class ViewTransitionBrowserTestTraverse
     // during the navigation.
     auto trigger_navigation = base::BindOnce(
         &ViewTransitionBrowserTestTraverse::TriggerBackNavigation,
-        base::Unretained(this), back_url);
+        base::Unretained(this), back_url, contents);
 
     auto result =
-        EvalJs(shell()->web_contents(),
+        EvalJs(contents,
                JsReplace(
                    R"(
     (async () => {
@@ -164,14 +185,14 @@ class ViewTransitionBrowserTestTraverse
     return result.ExtractBool();
   }
 
-  void TriggerBackNavigation(GURL back_url) {
+  void TriggerBackNavigation(GURL back_url, WebContents* web_contents) {
     if (BFCacheEnabled()) {
-      TestActivationManager manager(shell()->web_contents(), back_url);
-      shell()->web_contents()->GetController().GoBack();
+      TestActivationManager manager(web_contents, back_url);
+      web_contents->GetController().GoBack();
       manager.WaitForNavigationFinished();
     } else {
-      TestNavigationManager manager(shell()->web_contents(), back_url);
-      shell()->web_contents()->GetController().GoBack();
+      TestNavigationManager manager(web_contents, back_url);
+      web_contents->GetController().GoBack();
       ASSERT_TRUE(manager.WaitForNavigationFinished());
     }
   }
@@ -200,6 +221,60 @@ IN_PROC_BROWSER_TEST_P(ViewTransitionBrowserTestTraverse,
       shell()->web_contents()->GetController());
   ASSERT_TRUE(nav_controller.CanGoBack());
   ASSERT_TRUE(NavigateBack(test_url));
+}
+
+// A session restore (e.g. "Duplicate Tab", "Undo Close Tab") uses RESTORE
+// navigation types when traversing the session history. Ensure these
+// navigations trigger a view transition.
+IN_PROC_BROWSER_TEST_P(ViewTransitionBrowserTestTraverse,
+                       TransitionOnSessionRestoreTraversal) {
+  // A restored session will never have its session history in BFCache so
+  // there's no need to run a BFCache version of the test.
+  if (BFCacheEnabled()) {
+    GTEST_SKIP();
+  }
+
+  // Start with a page which has an opt-in for VT.
+  GURL url_a(
+      embedded_test_server()->GetURL("/view_transitions/basic-vt-opt-in.html"));
+  ASSERT_TRUE(NavigateToURL(shell()->web_contents(), url_a));
+
+  // Navigate to another page with an opt-in. (There's no transition due to
+  // being browser-initiated)
+  GURL url_b(embedded_test_server()->GetURL(
+      "/view_transitions/basic-vt-opt-in.html?next"));
+  ASSERT_TRUE(NavigateToURL(shell()->web_contents(), url_b));
+
+  // Clone the tab and load the page. Note: the cloned web contents must be put
+  // into a window to generate BeginFrames which are required since a view
+  // transition will not trigger unless a frame has been generated and the page
+  // revealed.
+  std::unique_ptr<WebContents> new_tab = shell()->web_contents()->Clone();
+  WebContentsImpl* new_tab_impl = static_cast<WebContentsImpl*>(new_tab.get());
+  shell()->AddNewContents(nullptr, std::move(new_tab), url_b,
+                          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                          blink::mojom::WindowFeatures(), false, nullptr);
+  NavigationController& new_controller = new_tab_impl->GetController();
+
+  {
+    TestNavigationObserver clone_observer(new_tab_impl);
+    new_controller.LoadIfNecessary();
+    clone_observer.Wait();
+  }
+
+  // Ensure the page has been revealed before navigating back so that a
+  // transition will be triggered.
+  WaitForCopyableViewInWebContents(new_tab_impl);
+
+  // TODO(crbug.com/331226127) Intentionally ignore the return value as the
+  // navigation API (erroneously?) doesn't fire events for restored traversals.
+  NavigateBack(url_a, new_tab_impl);
+
+  // Ensure a frame has been generated so that the reveal event would have been
+  // fired.
+  WaitForCopyableViewInWebContents(new_tab_impl);
+
+  EXPECT_EQ(true, EvalJs(new_tab_impl, "had_incoming_transition"));
 }
 
 INSTANTIATE_TEST_SUITE_P(P,
