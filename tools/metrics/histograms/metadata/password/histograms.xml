@@ -994,16 +994,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.BulkCheck.TimePerCredential" units="ms"
-    expires_after="2024-05-05">
-  <owner>vasilii@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>
-    The average time per credential when the password bulk check completed
-    successfully.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.BulkCheck.UserAction"
     enum="PasswordCheckInteraction" expires_after="2024-09-01">
   <owner>vsemeniuk@google.com</owner>

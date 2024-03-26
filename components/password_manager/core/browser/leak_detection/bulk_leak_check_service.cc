@@ -41,8 +41,6 @@ BulkLeakCheckService::MetricsReporter::~MetricsReporter() {
 
   base::UmaHistogramMediumTimes("PasswordManager.BulkCheck.Time",
                                 timer_since_start_.Elapsed());
-  base::UmaHistogramTimes("PasswordManager.BulkCheck.TimePerCredential",
-                          timer_since_start_.Elapsed() / credential_count_);
   base::UmaHistogramCounts1000("PasswordManager.BulkCheck.CheckedCredentials",
                                credential_count_);
   base::UmaHistogramCounts100("PasswordManager.BulkCheck.LeaksFound",

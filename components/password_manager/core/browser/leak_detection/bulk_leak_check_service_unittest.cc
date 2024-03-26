@@ -351,8 +351,6 @@ TEST_F(BulkLeakCheckServiceTest, CheckFinished) {
                                         0, 1);
   histogram_tester().ExpectUniqueSample("PasswordManager.BulkCheck.Time",
                                         kMockElapsedTime, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.BulkCheck.TimePerCredential", kMockElapsedTime / 2, 1);
 
   service().RemoveObserver(&observer);
 }
@@ -390,8 +388,6 @@ TEST_F(BulkLeakCheckServiceTest, CheckFinishedWithLeakedCredential) {
                                         1, 1);
   histogram_tester().ExpectUniqueSample("PasswordManager.BulkCheck.Time",
                                         kMockElapsedTime, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.BulkCheck.TimePerCredential", kMockElapsedTime / 2, 1);
 
   service().RemoveObserver(&observer);
 }
@@ -408,8 +404,6 @@ TEST_F(BulkLeakCheckServiceTest, TwoChecksAfterEachOther) {
                                         1, 1);
     histogram_tester.ExpectUniqueSample("PasswordManager.BulkCheck.Time",
                                         kMockElapsedTime, 1);
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.BulkCheck.TimePerCredential", kMockElapsedTime, 1);
   }
   {
     base::HistogramTester histogram_tester;
@@ -420,8 +414,6 @@ TEST_F(BulkLeakCheckServiceTest, TwoChecksAfterEachOther) {
                                         0, 1);
     histogram_tester.ExpectUniqueSample("PasswordManager.BulkCheck.Time",
                                         kMockElapsedTime, 1);
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.BulkCheck.TimePerCredential", kMockElapsedTime / 2, 1);
   }
 }
 
