@@ -95,10 +95,6 @@ void MahiPanelWidget::SetRefreshViewVisible(bool visible) {
     return;
   }
 
-  if (refresh_view_->GetVisible() == visible) {
-    return;
-  }
-
   visible ? refresh_view_->Show() : refresh_view_->Hide();
 }
 

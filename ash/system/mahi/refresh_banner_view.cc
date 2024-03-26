@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
@@ -118,6 +119,7 @@ RefreshBannerView::RefreshBannerView() {
                        .SetType(IconButton::Type::kSmallProminentFloating)
                        .Build());
   icon_button->SetIconColor(cros_tokens::kCrosSysSystemOnPrimaryContainer);
+  icon_button->SetFocusBehavior(views::View::FocusBehavior::NEVER);
 }
 
 RefreshBannerView::~RefreshBannerView() = default;
@@ -131,6 +133,14 @@ void RefreshBannerView::Show() {
 
   title_label_->SetText(l10n_util::GetStringFUTF16(
       IDS_ASH_MAHI_REFRESH_BANNER_LABEL_TEXT, manager->GetContentTitle()));
+
+  // Abort all running animations before showing the banner, to prevent fade
+  // out animations from hiding the banner again right after it is shown.
+  CHECK(layer());
+  layer()->GetAnimator()->AbortAllAnimations();
+
+  // TODO(b/331109652): Determine whether the banner should still animate if it
+  // was already visible.
   SetVisible(true);
   gfx::Transform transform;
   transform.Translate(
@@ -147,6 +157,10 @@ void RefreshBannerView::Show() {
 }
 
 void RefreshBannerView::Hide() {
+  if (!GetVisible()) {
+    return;
+  }
+
   views::AnimationBuilder()
       .OnEnded(base::BindOnce(
           [](base::WeakPtr<views::View> view) {
