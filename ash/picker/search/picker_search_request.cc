@@ -84,9 +84,7 @@ PickerSearchRequest::PickerSearchRequest(
 
     date_search_start_ = base::TimeTicks::Now();
     // Date results is currently synchronous.
-    for (const auto& result : PickerDateSearch(base::Time::Now(), query)) {
-      HandleDateSearchResults(result);
-    }
+    HandleDateSearchResults(PickerDateSearch(base::Time::Now(), query));
 
     // Math results is currently synchronous.
     HandleMathSearchResults(PickerMathSearch(query));
@@ -228,17 +226,13 @@ void PickerSearchRequest::HandleEmojiSearchResults(
 }
 
 void PickerSearchRequest::HandleDateSearchResults(
-    std::optional<PickerSearchResult> result) {
+    std::vector<PickerSearchResult> results) {
   if (date_search_start_.has_value()) {
     base::TimeDelta elapsed = base::TimeTicks::Now() - *date_search_start_;
     base::UmaHistogramTimes("Ash.Picker.Search.DateProvider.QueryTime",
                             elapsed);
   }
 
-  std::vector<PickerSearchResult> results;
-  if (result.has_value()) {
-    results.push_back(*std::move(result));
-  }
   HandleSearchSourceResults(PickerSearchSource::kDate, std::move(results));
 }
 

@@ -22,6 +22,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/emoji/emoji_search.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -735,6 +736,46 @@ TEST_F(PickerSearchRequestTest, DoesNotRecordGifMetricsIfNoResponse) {
   }
 
   histogram.ExpectTotalCount("Ash.Picker.Search.GifProvider.QueryTime", 0);
+}
+
+TEST_F(PickerSearchRequestTest, PublishesDateResultsOnlyOnce) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(search_results_callback, Call(PickerSearchSource::kDate, _))
+      .Times(1);
+  // Fast forward the clock to a Sunday (day_of_week = 0).
+  base::Time::Exploded exploded;
+  task_environment().GetMockClock()->Now().LocalExplode(&exploded);
+  task_environment().AdvanceClock(base::Days(7 - exploded.day_of_week));
+  task_environment().GetMockClock()->Now().LocalExplode(&exploded);
+  ASSERT_EQ(0, exploded.day_of_week);
+
+  PickerSearchRequest request(
+      u"next Friday", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      &client(), &emoji_search(), kAllCategories);
+}
+
+TEST_F(PickerSearchRequestTest, RecordsDateMetricsOnlyOnce) {
+  base::HistogramTester histogram;
+  NiceMock<MockSearchResultsCallback> search_results_callback;
+  // Fast forward the clock to a Sunday (day_of_week = 0).
+  base::Time::Exploded exploded;
+  task_environment().GetMockClock()->Now().LocalExplode(&exploded);
+  task_environment().AdvanceClock(base::Days(7 - exploded.day_of_week));
+  task_environment().GetMockClock()->Now().LocalExplode(&exploded);
+  ASSERT_EQ(0, exploded.day_of_week);
+
+  {
+    PickerSearchRequest request(
+        u"next Friday", std::nullopt,
+        base::BindRepeating(&MockSearchResultsCallback::Call,
+                            base::Unretained(&search_results_callback)),
+        &client(), &emoji_search(), kAllCategories);
+  }
+
+  histogram.ExpectTotalCount("Ash.Picker.Search.DateProvider.QueryTime", 1);
 }
 
 TEST_F(PickerSearchRequestTest, OnlyStartCrosSearchForCertainCategories) {

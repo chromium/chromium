@@ -64,7 +64,7 @@ class ASH_EXPORT PickerSearchRequest {
   void HandleGifSearchResults(std::string query,
                               std::vector<PickerSearchResult> results);
   void HandleEmojiSearchResults(emoji::EmojiSearchResult results);
-  void HandleDateSearchResults(std::optional<PickerSearchResult> result);
+  void HandleDateSearchResults(std::vector<PickerSearchResult> results);
   void HandleMathSearchResults(std::optional<PickerSearchResult> result);
 
   const raw_ref<PickerClient> client_;
