@@ -299,6 +299,10 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         if (tabStripWidth <= 0) return;
 
         boolean showTabStrip = tabStripWidth >= mTabStripTransitionThreshold;
+        if (ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled() && !showTabStrip) {
+            // Do not hide tab strip when TLSO is enabled.
+            return;
+        }
         if (showTabStrip == mTabStripVisible) return;
 
         // Update the min size for the control container. This is needed one-layout-before browser

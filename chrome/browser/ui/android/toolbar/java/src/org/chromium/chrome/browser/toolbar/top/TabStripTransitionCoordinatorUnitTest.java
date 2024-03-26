@@ -5,9 +5,12 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -39,10 +42,15 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObscuringHandler.Target;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
@@ -56,6 +64,7 @@ import java.util.concurrent.TimeUnit;
 /** Unit test for {@link TabStripTransitionCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "w600dp", shadows = ShadowLooper.class)
+@DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
 public class TabStripTransitionCoordinatorUnitTest {
     private static final int TEST_TAB_STRIP_HEIGHT = 40;
     private static final int TEST_TOOLBAR_HEIGHT = 56;
@@ -67,6 +76,8 @@ public class TabStripTransitionCoordinatorUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenario =
             new ActivityScenarioRule<>(TestActivity.class);
+
+    @Rule public Features.JUnitProcessor mFeatures = new JUnitProcessor();
 
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private ControlContainer mControlContainer;
@@ -228,6 +239,18 @@ public class TabStripTransitionCoordinatorUnitTest {
                 "Height request should go through when tab and toolbar are obscured.",
                 0,
                 mObserver.heightRequested);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
+    public void hideTabStripDisabledByTabStripLayoutOptimizations() {
+        setDeviceWidthDp(NARROW_WINDOW_WIDTH);
+        Assert.assertEquals(
+                "Hide transition is blocked by TabStripLayoutOptimizations.",
+                NOTHING_OBSERVED,
+                mObserver.heightRequested);
+
+        verify(mSpyControlContainer, times(0)).setMinimumHeight(anyInt());
     }
 
     @Test

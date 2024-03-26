@@ -65,8 +65,7 @@ public final class ToolbarFeatures {
      *     is enabled.
      */
     public static boolean isDynamicTopChromeEnabled() {
-        return ChromeFeatureList.sDynamicTopChrome.isEnabled()
-                && !ChromeFeatureList.sTabStripLayoutOptimization.isEnabled();
+        return ChromeFeatureList.sDynamicTopChrome.isEnabled();
     }
 
     /** Returns if we are using optimized window layout for tab strip. */
