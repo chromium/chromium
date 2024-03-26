@@ -3052,8 +3052,7 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
 
     // The data of the document should be a valid PDF as this code should be
     // called as the print job is about to start printing.
-    EXPECT_TRUE(LooksLikePdf(base::span<const char>(
-        print_data->front_as<const char>(), print_data->size())));
+    EXPECT_TRUE(LooksLikePdf(*print_data));
 
     TestPrintViewManager::ContentAnalysisBeforePrintingDocument(
         std::move(scanning_data), print_data, page_size, content_area, offsets);

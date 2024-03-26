@@ -6,6 +6,7 @@
 #define PRINTING_PRINTING_UTILS_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <string>
 #include <string_view>
@@ -80,7 +81,7 @@ gfx::Rect GetPrintableAreaDeviceUnits(HDC hdc);
 // Helper for tests and DCHECKs to validate that `maybe_pdf_data` suggests a PDF
 // document. This includes checking a minimal size and magic bytes.
 COMPONENT_EXPORT(PRINTING_BASE)
-bool LooksLikePdf(base::span<const char> maybe_pdf_data);
+bool LooksLikePdf(base::span<const uint8_t> maybe_pdf_data);
 
 // Determine the document format type appropriate to generate for printing.
 COMPONENT_EXPORT(PRINTING_BASE)

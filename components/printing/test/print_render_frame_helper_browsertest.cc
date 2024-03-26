@@ -1354,7 +1354,7 @@ class PrintRenderFrameHelperPreviewTest
 
       auto mapped = param.content->metafile_data_region.Map();
       ASSERT_TRUE(mapped.IsValid());
-      EXPECT_TRUE(LooksLikePdf(mapped.GetMemoryAsSpan<const char>()));
+      EXPECT_TRUE(LooksLikePdf(mapped.GetMemoryAsSpan<const uint8_t>()));
     }
   }
 

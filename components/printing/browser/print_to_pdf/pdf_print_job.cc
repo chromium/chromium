@@ -85,7 +85,7 @@ void PdfPrintJob::OnDidPrintWithParams(
   }
 
   // If the printed data already looks like a PDF, report it now.
-  if (printing::LooksLikePdf(region.Map().GetMemoryAsSpan<char>())) {
+  if (printing::LooksLikePdf(region.Map().GetMemoryAsSpan<const uint8_t>())) {
     ReportMemoryRegion(region);
     return;
   }
@@ -120,7 +120,7 @@ void PdfPrintJob::OnCompositeDocumentToPdfDone(
 void PdfPrintJob::ReportMemoryRegion(
     const base::ReadOnlySharedMemoryRegion& region) {
   DCHECK(region.IsValid());
-  DCHECK(printing::LooksLikePdf(region.Map().GetMemoryAsSpan<char>()));
+  DCHECK(printing::LooksLikePdf(region.Map().GetMemoryAsSpan<const uint8_t>()));
 
   base::ReadOnlySharedMemoryMapping mapping = region.Map();
   if (!mapping.IsValid()) {

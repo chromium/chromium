@@ -162,7 +162,7 @@ gfx::Rect GetPrintableAreaDeviceUnits(HDC hdc) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-bool LooksLikePdf(base::span<const char> maybe_pdf_data) {
+bool LooksLikePdf(base::span<const uint8_t> maybe_pdf_data) {
   return maybe_pdf_data.size() >= 50u &&
          std::memcmp(maybe_pdf_data.data(), "%PDF-", 5) == 0;
 }

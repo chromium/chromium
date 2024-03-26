@@ -570,7 +570,7 @@ bool PrintViewManagerBase::OnComposePdfDoneImpl(
   }
 
   DCHECK(region.IsValid());
-  DCHECK(LooksLikePdf(region.Map().GetMemoryAsSpan<char>()));
+  DCHECK(LooksLikePdf(region.Map().GetMemoryAsSpan<const uint8_t>()));
   scoped_refptr<base::RefCountedSharedMemoryMapping> data =
       base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region);
   if (!data)
