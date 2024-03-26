@@ -191,7 +191,7 @@ TEST_F(SiteDataCacheFacadeTest, OnURLsDeleted_Partial_OriginNotReferenced) {
 
   auto* mock_cache_raw = SetUpMockCache();
   mock_cache_raw->SetClearSiteDataForOriginsExpectations({kOrigin1, kOrigin2});
-  data_cache_facade.OnURLsDeleted(nullptr, deletion_info);
+  data_cache_facade.OnHistoryDeletions(nullptr, deletion_info);
   mock_cache_raw->WaitForExpectations();
 }
 
@@ -217,7 +217,7 @@ TEST_F(SiteDataCacheFacadeTest, OnURLsDeleted_Partial_OriginStillReferenced) {
   // |kOrigin2| shouldn't be removed as there's still some references to it
   // in the history.
   mock_cache_raw->SetClearSiteDataForOriginsExpectations({kOrigin1});
-  data_cache_facade.OnURLsDeleted(nullptr, deletion_info);
+  data_cache_facade.OnHistoryDeletions(nullptr, deletion_info);
   mock_cache_raw->WaitForExpectations();
 }
 
@@ -229,8 +229,8 @@ TEST_F(SiteDataCacheFacadeTest, OnURLsDeleted_Full) {
 
   auto* mock_cache_raw = SetUpMockCache();
   mock_cache_raw->SetClearAllSiteDataExpectations();
-  data_cache_facade.OnURLsDeleted(nullptr,
-                                  history::DeletionInfo::ForAllHistory());
+  data_cache_facade.OnHistoryDeletions(nullptr,
+                                       history::DeletionInfo::ForAllHistory());
   mock_cache_raw->WaitForExpectations();
 }
 

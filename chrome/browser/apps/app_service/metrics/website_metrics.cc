@@ -236,8 +236,9 @@ void WebsiteMetrics::OnWindowActivated(ActivationReason reason,
   SetWindowActivated(gained_active);
 }
 
-void WebsiteMetrics::OnURLsDeleted(history::HistoryService* history_service,
-                                   const history::DeletionInfo& deletion_info) {
+void WebsiteMetrics::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
   if (deletion_info.is_from_expiration()) {
     // This is an auto-expiration of history that happens after 90 days. Any
     // data recorded here must be newer than this threshold, so ignore the

@@ -792,8 +792,9 @@ static bool DeletionsDiffer(const URLRows& deleted_rows,
   return false;
 }
 
-void BrowsingHistoryService::OnURLsDeleted(HistoryService* history_service,
-                                           const DeletionInfo& deletion_info) {
+void BrowsingHistoryService::OnHistoryDeletions(
+    HistoryService* history_service,
+    const DeletionInfo& deletion_info) {
   if (deletion_info.IsAllHistory() ||
       DeletionsDiffer(deletion_info.deleted_rows(), urls_to_be_deleted_))
     driver_->HistoryDeleted();

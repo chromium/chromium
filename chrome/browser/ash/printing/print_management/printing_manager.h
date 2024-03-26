@@ -74,8 +74,8 @@ class PrintingManager : public chromeos::printing::printing_manager::mojom::
   void Shutdown() override;
 
   // history::HistoryServiceObserver:
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
   // CupsPrintJobManager::Observer impls
   void OnPrintJobCreated(base::WeakPtr<CupsPrintJob> job) override;

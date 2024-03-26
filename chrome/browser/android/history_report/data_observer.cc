@@ -105,8 +105,9 @@ void DataObserver::OnURLVisited(history::HistoryService* history_service,
   stop_reporting_callback_.Run();
 }
 
-void DataObserver::OnURLsDeleted(history::HistoryService* history_service,
-                                 const history::DeletionInfo& deletion_info) {
+void DataObserver::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
   if (deletion_info.IsAllHistory()) {
     delta_file_service_->Clear();
     data_cleared_callback_.Run();

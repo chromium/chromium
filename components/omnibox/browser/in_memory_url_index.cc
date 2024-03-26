@@ -160,7 +160,7 @@ void InMemoryURLIndex::OnURLsModified(history::HistoryService* history_service,
   }
 }
 
-void InMemoryURLIndex::OnURLsDeleted(
+void InMemoryURLIndex::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   if (deletion_info.IsAllHistory()) {

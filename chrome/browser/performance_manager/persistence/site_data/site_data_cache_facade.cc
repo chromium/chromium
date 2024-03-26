@@ -100,7 +100,7 @@ void SiteDataCacheFacade::WaitUntilCacheInitializedForTesting() {
   run_loop.Run();
 }
 
-void SiteDataCacheFacade::OnURLsDeleted(
+void SiteDataCacheFacade::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

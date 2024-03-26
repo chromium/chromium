@@ -225,8 +225,8 @@ class HistoryFuzzyProvider : public HistoryProvider,
                     const history::VisitRow& new_visit) override;
 
   // Removes deleted (or all) URLs from trie.
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
   // Record UMA histogram data for measuring usefulness of sub-providers.
   void RecordMatchConversion(const char* name, int count);

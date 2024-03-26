@@ -1636,8 +1636,9 @@ TEST_F(HistorySyncBridgeTest, UntracksEntityOnIndividualDeletion) {
   backend()->RemoveURLAndVisits(url_row1.id());
 
   bridge()->OnVisitDeleted(visit_row1);
-  bridge()->OnURLsDeleted(/*history_backend=*/nullptr, /*all_history=*/false,
-                          /*expired=*/false, {url_row1}, /*favicon_urls=*/{});
+  bridge()->OnHistoryDeletions(
+      /*history_backend=*/nullptr, /*all_history=*/false,
+      /*expired=*/false, {url_row1}, /*favicon_urls=*/{});
   // The metadata for the first (deleted) entity should be gone, but the
   // metadata for the second entity should still exist.
   EXPECT_EQ(GetPersistedEntityMetadata().size(), 1u);
@@ -1677,8 +1678,9 @@ TEST_F(HistorySyncBridgeTest,
   backend()->RemoveURLAndVisits(url_row1.id());
 
   bridge()->OnVisitDeleted(visit_row1);
-  bridge()->OnURLsDeleted(/*history_backend=*/nullptr, /*all_history=*/false,
-                          /*expired=*/false, {url_row1}, /*favicon_urls=*/{});
+  bridge()->OnHistoryDeletions(
+      /*history_backend=*/nullptr, /*all_history=*/false,
+      /*expired=*/false, {url_row1}, /*favicon_urls=*/{});
   // The metadata for the first (deleted) entity should be gone, but the
   // metadata for the second entity should still exist.
   EXPECT_EQ(GetPersistedEntityMetadata().size(), 1u);
@@ -1711,9 +1713,10 @@ TEST_F(HistorySyncBridgeTest, UntracksAllEntitiesOnAllHistoryDeletion) {
   backend()->Clear();
   // Deleting all history does *not* result in OnVisitDeleted() calls, and also
   // does not include the actual deleted URLs in OnURLsDeleted().
-  bridge()->OnURLsDeleted(/*history_backend=*/nullptr, /*all_history=*/true,
-                          /*expired=*/false, /*deleted_rows=*/{},
-                          /*favicon_urls=*/{});
+  bridge()->OnHistoryDeletions(/*history_backend=*/nullptr,
+                               /*all_history=*/true,
+                               /*expired=*/false, /*deleted_rows=*/{},
+                               /*favicon_urls=*/{});
 
   EXPECT_TRUE(GetPersistedEntityMetadata().empty());
 }
@@ -1752,9 +1755,10 @@ TEST_F(HistorySyncBridgeTest,
   backend()->Clear();
   // Deleting all history does *not* result in OnVisitDeleted() calls, and also
   // does not include the actual deleted URLs in OnURLsDeleted().
-  bridge()->OnURLsDeleted(/*history_backend=*/nullptr, /*all_history=*/true,
-                          /*expired=*/false, /*deleted_rows=*/{},
-                          /*favicon_urls=*/{});
+  bridge()->OnHistoryDeletions(/*history_backend=*/nullptr,
+                               /*all_history=*/true,
+                               /*expired=*/false, /*deleted_rows=*/{},
+                               /*favicon_urls=*/{});
 
   EXPECT_TRUE(GetPersistedEntityMetadata().empty());
 }

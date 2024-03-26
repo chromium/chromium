@@ -694,7 +694,7 @@ void HistoryFuzzyProvider::OnURLVisited(
   }
 }
 
-void HistoryFuzzyProvider::OnURLsDeleted(
+void HistoryFuzzyProvider::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   // Note, this implementation is conservative in terms of user privacy; it

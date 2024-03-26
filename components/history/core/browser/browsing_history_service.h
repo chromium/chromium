@@ -247,8 +247,8 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   void RemoveWebHistoryComplete(bool success);
 
   // HistoryServiceObserver implementation.
-  void OnURLsDeleted(HistoryService* history_service,
-                     const DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(HistoryService* history_service,
+                          const DeletionInfo& deletion_info) override;
 
   // WebHistoryServiceObserver implementation.
   void OnWebHistoryDeleted() override;

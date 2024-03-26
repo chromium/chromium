@@ -518,7 +518,7 @@ TEST_F(DiscountsStorageTest, TestOnURLsDeleted_DeleteAll) {
   EXPECT_CALL(*proto_db_, DeleteAllContent).Times(1);
   EXPECT_CALL(*proto_db_, DeleteOneEntry).Times(0);
 
-  storage_->OnURLsDeleted(nullptr, history::DeletionInfo::ForAllHistory());
+  storage_->OnHistoryDeletions(nullptr, history::DeletionInfo::ForAllHistory());
 }
 
 TEST_F(DiscountsStorageTest, TestOnURLsDeleted_DeleteUrls) {
@@ -526,10 +526,11 @@ TEST_F(DiscountsStorageTest, TestOnURLsDeleted_DeleteUrls) {
   EXPECT_CALL(*proto_db_, DeleteOneEntry(kDeleteUrl1, _)).Times(1);
   EXPECT_CALL(*proto_db_, DeleteOneEntry(kDeleteUrl2, _)).Times(1);
 
-  storage_->OnURLsDeleted(nullptr, history::DeletionInfo::ForUrls(
-                                       {history::URLRow(GURL(kDeleteUrl1)),
-                                        history::URLRow(GURL(kDeleteUrl2))},
-                                       {}));
+  storage_->OnHistoryDeletions(
+      nullptr,
+      history::DeletionInfo::ForUrls({history::URLRow(GURL(kDeleteUrl1)),
+                                      history::URLRow(GURL(kDeleteUrl2))},
+                                     {}));
 }
 
 }  // namespace commerce

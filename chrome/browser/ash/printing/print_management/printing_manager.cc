@@ -99,8 +99,8 @@ void PrintingManager::GetDeletePrintJobHistoryAllowedByPolicy(
   return std::move(callback).Run(IsHistoryDeletionAllowedByPolicy());
 }
 
-void PrintingManager::OnURLsDeleted(HistoryService* history_service,
-                                    const DeletionInfo& deletion_info) {
+void PrintingManager::OnHistoryDeletions(HistoryService* history_service,
+                                         const DeletionInfo& deletion_info) {
   // We only handle deletion of all history because it is an explicit action by
   // user to explicitly remove all their history-related content.
   if (!IsHistoryDeletionAllowedByPolicy() || !deletion_info.IsAllHistory()) {

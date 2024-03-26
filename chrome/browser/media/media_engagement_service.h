@@ -75,8 +75,8 @@ class MediaEngagementService : public KeyedService,
       const;
 
   // Overridden from history::HistoryServiceObserver:
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
   // KeyedService support:
   void Shutdown() override;

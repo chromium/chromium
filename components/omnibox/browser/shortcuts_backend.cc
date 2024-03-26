@@ -418,7 +418,7 @@ void ShortcutsBackend::ShutdownOnUIThread() {
   template_url_service_ = nullptr;
 }
 
-void ShortcutsBackend::OnURLsDeleted(
+void ShortcutsBackend::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   if (!initialized())

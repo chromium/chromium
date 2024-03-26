@@ -21,7 +21,7 @@ SubresourceFilterHistoryObserver::~SubresourceFilterHistoryObserver() = default;
 
 // Instructs |settings_manager_| to clear the relevant site metadata on URLs
 // being deleted from history.
-void SubresourceFilterHistoryObserver::OnURLsDeleted(
+void SubresourceFilterHistoryObserver::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   if (deletion_info.IsAllHistory()) {

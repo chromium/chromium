@@ -131,8 +131,8 @@ class FormDataImporter : public PersonalDataManagerObserver,
   void OnPersonalDataChanged() override;
 
   // history::HistoryServiceObserver
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
   // See `FormAssociator::GetFormAssociations()`.
   std::optional<FormStructure::FormAssociations> GetFormAssociations(

@@ -775,7 +775,7 @@ void BrowsingTopicsServiceImpl::OnTopicsDataAccessibleSinceUpdated() {
   }
 }
 
-void BrowsingTopicsServiceImpl::OnURLsDeleted(
+void BrowsingTopicsServiceImpl::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   if (!browsing_topics_state_loaded_) {

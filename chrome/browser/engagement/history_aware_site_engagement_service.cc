@@ -29,7 +29,7 @@ void HistoryAwareSiteEngagementService::Shutdown() {
   history_service_observation_.Reset();
 }
 
-void HistoryAwareSiteEngagementService::OnURLsDeleted(
+void HistoryAwareSiteEngagementService::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   std::multiset<GURL> origins;

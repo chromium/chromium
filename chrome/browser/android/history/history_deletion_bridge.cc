@@ -50,7 +50,7 @@ HistoryDeletionBridge::HistoryDeletionBridge(const JavaRef<jobject>& jobj)
 
 HistoryDeletionBridge::~HistoryDeletionBridge() = default;
 
-void HistoryDeletionBridge::OnURLsDeleted(
+void HistoryDeletionBridge::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

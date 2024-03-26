@@ -127,7 +127,7 @@ void HistoryEmbeddingsService::Shutdown() {
   storage_.Reset();
 }
 
-void HistoryEmbeddingsService::OnURLsDeleted(
+void HistoryEmbeddingsService::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   // TODO(b/329495955): Implement actual cleanup of storage for this deletion.

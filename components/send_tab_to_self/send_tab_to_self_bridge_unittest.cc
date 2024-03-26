@@ -375,8 +375,8 @@ TEST_F(SendTabToSelfBridgeTest, LocalHistoryDeletion) {
   EXPECT_CALL(*processor(), Delete("guid1", _));
   EXPECT_CALL(*processor(), Delete("guid2", _));
 
-  bridge()->OnURLsDeleted(nullptr, history::DeletionInfo::ForUrls(
-                                       urls_to_remove, std::set<GURL>()));
+  bridge()->OnHistoryDeletions(nullptr, history::DeletionInfo::ForUrls(
+                                            urls_to_remove, std::set<GURL>()));
   EXPECT_EQ(1ul, bridge()->GetAllGuids().size());
 }
 

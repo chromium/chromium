@@ -196,7 +196,7 @@ std::vector<DiscountInfo> DiscountsStorage::GetUnexpiredDiscountsFromProto(
   return infos;
 }
 
-void DiscountsStorage::OnURLsDeleted(
+void DiscountsStorage::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   if (deletion_info.IsAllHistory()) {

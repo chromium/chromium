@@ -1751,7 +1751,7 @@ void HistoryService::NotifyDeletions(const DeletionInfo& deletion_info) {
   }
 
   for (HistoryServiceObserver& observer : observers_)
-    observer.OnURLsDeleted(this, deletion_info);
+    observer.OnHistoryDeletions(this, deletion_info);
 }
 
 void HistoryService::NotifyHistoryServiceLoaded() {

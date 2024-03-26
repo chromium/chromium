@@ -990,7 +990,7 @@ TEST_F(CartServiceTest, TestOnHistoryDeletion) {
   task_environment_.RunUntilIdle();
   run_loop[1].Run();
 
-  service_->OnURLsDeleted(
+  service_->OnHistoryDeletions(
       HistoryServiceFactory::GetForProfile(profile_.get(),
                                            ServiceAccessType::EXPLICIT_ACCESS),
       history::DeletionInfo(history::DeletionTimeRange::Invalid(), false,
@@ -2615,7 +2615,7 @@ TEST_F(CartServiceCouponTest,
 TEST_F(CartServiceCouponTest, TestClearCoupons) {
   EXPECT_CALL(coupon_service_, DeleteAllFreeListingCoupons()).Times(1);
 
-  service_->OnURLsDeleted(
+  service_->OnHistoryDeletions(
       HistoryServiceFactory::GetForProfile(profile_.get(),
                                            ServiceAccessType::EXPLICIT_ACCESS),
       history::DeletionInfo(history::DeletionTimeRange::Invalid(), false,

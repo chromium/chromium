@@ -30,8 +30,8 @@ class ScreenTimeHistoryDeleter : public KeyedService,
 
  private:
   // history::HistoryServiceObserver:
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
   raw_ptr<history::HistoryService> history_service_;
   STWebHistory* screen_time_history_;

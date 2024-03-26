@@ -1006,7 +1006,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, WindowedWebApp) {
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
 }
 
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnHistoryDeletions) {
   // Setup: two browsers with one tabs each.
   auto* browser1 = CreateBrowser();
   auto* window1 = browser1->window()->GetNativeWindow();
@@ -1035,12 +1035,12 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
   VerifyUrlInfo(GURL("https://b.example.org"),
                 /*is_activated=*/true, /*promotable=*/false);
 
-  // Simulate OnURLsDeleted is called for an expiration. Nothing should be
+  // Simulate OnHistoryDeletions is called for an expiration. Nothing should be
   // cleared.
   auto info = history::DeletionInfo(
       history::DeletionTimeRange(base::Time(), base::Time::Now()),
       /*is_from_expiration=*/true, {}, {}, std::optional<std::set<GURL>>());
-  website_metrics()->OnURLsDeleted(nullptr, info);
+  website_metrics()->OnHistoryDeletions(nullptr, info);
   EXPECT_EQ(2u, window_to_web_contents().size());
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
   EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
@@ -1066,9 +1066,9 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
   VerifyUrlInfoInPref(GURL("https://b.example.org"),
                       /*promotable=*/false);
 
-  // Simulate OnURLsDeleted again for an expiration. The prefs should not be
-  // affected
-  website_metrics()->OnURLsDeleted(nullptr, info);
+  // Simulate OnHistoryDeletions again for an expiration. The prefs should not
+  // be affected
+  website_metrics()->OnHistoryDeletions(nullptr, info);
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
   EXPECT_EQ(2u, url_infos().size());
   EXPECT_EQ(webcontents_to_ukm_key()[tab_app1], GURL("https://a.example.org"));
@@ -1078,10 +1078,10 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
   VerifyUrlInfoInPref(GURL("https://b.example.org"),
                       /*promotable=*/false);
 
-  // Simulate OnURLsDeleted for a non-expiration and ensure prefs and
+  // Simulate OnHistoryDeletions for a non-expiration and ensure prefs and
   // in-memory usage data is cleared.
-  website_metrics()->OnURLsDeleted(nullptr,
-                                   history::DeletionInfo::ForAllHistory());
+  website_metrics()->OnHistoryDeletions(nullptr,
+                                        history::DeletionInfo::ForAllHistory());
   EXPECT_EQ(2u, window_to_web_contents().size());
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
   EXPECT_TRUE(webcontents_to_ukm_key().empty());

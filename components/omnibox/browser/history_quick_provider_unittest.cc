@@ -52,8 +52,8 @@ class WaitForURLsDeletedObserver : public history::HistoryServiceObserver {
 
  private:
   // history::HistoryServiceObserver:
-  void OnURLsDeleted(history::HistoryService* service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* service,
+                          const history::DeletionInfo& deletion_info) override;
 
   // Weak. Owned by our owner.
   raw_ptr<base::RunLoop> runner_;
@@ -64,7 +64,7 @@ WaitForURLsDeletedObserver::WaitForURLsDeletedObserver(base::RunLoop* runner)
 
 WaitForURLsDeletedObserver::~WaitForURLsDeletedObserver() = default;
 
-void WaitForURLsDeletedObserver::OnURLsDeleted(
+void WaitForURLsDeletedObserver::OnHistoryDeletions(
     history::HistoryService* service,
     const history::DeletionInfo& deletion_info) {
   runner_->Quit();

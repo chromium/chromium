@@ -124,7 +124,7 @@ BrowsingDataHistoryObserverService::BrowsingDataHistoryObserverService(
 
 BrowsingDataHistoryObserverService::~BrowsingDataHistoryObserverService() {}
 
-void BrowsingDataHistoryObserverService::OnURLsDeleted(
+void BrowsingDataHistoryObserverService::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   if (!deletion_info.is_from_expiration())

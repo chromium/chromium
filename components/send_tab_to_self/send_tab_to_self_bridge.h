@@ -87,8 +87,8 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   std::vector<TargetDeviceInfo> GetTargetDeviceInfoSortedList() override;
 
   // history::HistoryServiceObserver:
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
   // syncer::DeviceInfoTracker::Observer overrides.
   void OnDeviceInfoChange() override;

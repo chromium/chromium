@@ -1273,7 +1273,8 @@ TEST_F(PersonalDataManagerTest, ClearFullBrowsingHistory) {
 
   history::DeletionInfo deletion_info = history::DeletionInfo::ForAllHistory();
 
-  personal_data_->OnURLsDeleted(/*history_service=*/nullptr, deletion_info);
+  personal_data_->OnHistoryDeletions(/*history_service=*/nullptr,
+                                     deletion_info);
 
   EXPECT_FALSE(adm.IsNewProfileImportBlockedForDomain(domain));
 }
@@ -1299,7 +1300,8 @@ TEST_F(PersonalDataManagerTest, ClearUrlsFromBrowsingHistory) {
   history::DeletionInfo deletion_info =
       history::DeletionInfo::ForUrls(deleted_urls, {});
 
-  personal_data_->OnURLsDeleted(/*history_service=*/nullptr, deletion_info);
+  personal_data_->OnHistoryDeletions(/*history_service=*/nullptr,
+                                     deletion_info);
 
   // The strikes for `domain` should be deleted, but the strikes for
   // `another_domain` should not.
@@ -1337,7 +1339,8 @@ TEST_F(PersonalDataManagerTest, ClearUrlsFromBrowsingHistoryInTimeRange) {
       deleted_urls, {},
       std::make_optional<std::set<GURL>>({first_url, second_url}));
 
-  personal_data_->OnURLsDeleted(/*history_service=*/nullptr, deletion_info);
+  personal_data_->OnHistoryDeletions(/*history_service=*/nullptr,
+                                     deletion_info);
 
   // The strikes for `first_url` should be deleted because the strikes have been
   // added within the deletion time range.

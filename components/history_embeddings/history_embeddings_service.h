@@ -64,8 +64,8 @@ class HistoryEmbeddingsService : public KeyedService,
   void Shutdown() override;
 
   // history::HistoryServiceObserver:
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(HistoryEmbeddingsTest,

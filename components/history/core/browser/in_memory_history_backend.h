@@ -78,8 +78,8 @@ class InMemoryHistoryBackend : public HistoryServiceObserver {
                     const history::VisitRow& new_visit) override;
   void OnURLsModified(HistoryService* history_service,
                       const URLRows& changed_urls) override;
-  void OnURLsDeleted(HistoryService* history_service,
-                     const DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(HistoryService* history_service,
+                          const DeletionInfo& deletion_info) override;
   void OnKeywordSearchTermUpdated(HistoryService* history_service,
                                   const URLRow& row,
                                   KeywordID keyword_id,

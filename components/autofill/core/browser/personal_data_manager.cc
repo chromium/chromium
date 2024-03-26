@@ -215,7 +215,7 @@ void PersonalDataManager::Shutdown() {
   address_data_cleaner_.reset();
 }
 
-void PersonalDataManager::OnURLsDeleted(
+void PersonalDataManager::OnHistoryDeletions(
     history::HistoryService* /* history_service */,
     const history::DeletionInfo& deletion_info) {
   if (!deletion_info.is_from_expiration() && deletion_info.IsAllHistory()) {

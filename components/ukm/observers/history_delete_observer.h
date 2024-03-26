@@ -26,8 +26,8 @@ class HistoryDeleteObserver : public history::HistoryServiceObserver {
   void ObserveServiceForDeletions(history::HistoryService* history_service);
 
   // history::HistoryServiceObserver
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
   void HistoryServiceBeingDeleted(
       history::HistoryService* history_service) override;
 

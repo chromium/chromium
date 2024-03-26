@@ -691,7 +691,7 @@ void ResourcePrefetchPredictor::LearnLcpp(const GURL& url,
   }
 }
 
-void ResourcePrefetchPredictor::OnURLsDeleted(
+void ResourcePrefetchPredictor::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

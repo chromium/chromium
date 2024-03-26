@@ -810,11 +810,11 @@ void HistorySyncBridge::OnURLsModified(HistoryBackend* history_backend,
   }
 }
 
-void HistorySyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
-                                      bool all_history,
-                                      bool expired,
-                                      const URLRows& deleted_rows,
-                                      const std::set<GURL>& favicon_urls) {
+void HistorySyncBridge::OnHistoryDeletions(HistoryBackend* history_backend,
+                                           bool all_history,
+                                           bool expired,
+                                           const URLRows& deleted_rows,
+                                           const std::set<GURL>& favicon_urls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If individual URLs get deleted, we're notified about their removed visits

@@ -95,8 +95,8 @@ class BrowsingTopicsServiceImpl
   // On history deletion, the top topics of history epochs will be invalidated
   // if the deletion time range overlaps with the time range of the underlying
   // data used to derive the topics.
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
   // Called when the outstanding calculation completes. It's going to reset
   // `topics_calculator_`, add the new `epoch_topics` to `browsing_topics_`, and

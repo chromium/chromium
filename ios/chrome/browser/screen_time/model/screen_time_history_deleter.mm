@@ -35,7 +35,7 @@ void ScreenTimeHistoryDeleter::Shutdown() {
   screen_time_history_ = nil;
 }
 
-void ScreenTimeHistoryDeleter::OnURLsDeleted(
+void ScreenTimeHistoryDeleter::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   if (deletion_info.IsAllHistory()) {

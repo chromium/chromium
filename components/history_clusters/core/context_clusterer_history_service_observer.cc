@@ -306,11 +306,11 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
   }
 }
 
-void ContextClustererHistoryServiceObserver::OnURLsDeleted(
+void ContextClustererHistoryServiceObserver::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   TRACE_EVENT0("browser",
-               "ContextClusteringHistoryServiceObserver::OnURLsDeleted");
+               "ContextClusteringHistoryServiceObserver::OnHistoryDeletions");
   ScopedVisitProcessingTimer urls_deleted_processing_timer(
       VisitProcessingStage::kUrlsDeleted);
 

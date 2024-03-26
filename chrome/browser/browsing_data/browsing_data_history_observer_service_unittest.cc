@@ -59,7 +59,7 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
       {} /* deleted_rows */, {} /* favicon_urls */,
       restrict_urls /* restrict_urls */);
 
-  service.OnURLsDeleted(nullptr /* history_service */, deletion_info);
+  service.OnHistoryDeletions(nullptr /* history_service */, deletion_info);
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "MerchantViewer.DataManager.DeleteMerchantViewerDataForTimeRange", 0, 1);
@@ -87,7 +87,7 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
       {} /* deleted_rows */, {} /* favicon_urls */);
   deletion_info.set_deleted_urls_origin_map(std::move(origin_map));
 
-  service.OnURLsDeleted(nullptr /* history_service */, deletion_info);
+  service.OnHistoryDeletions(nullptr /* history_service */, deletion_info);
 
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(

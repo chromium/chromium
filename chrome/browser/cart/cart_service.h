@@ -124,8 +124,8 @@ class CartService : public history::HistoryServiceObserver,
   // module has happened. 2) Help identify whether to load discount URL.
   void PrepareForNavigation(const GURL& cart_url, bool is_navigating);
   // history::HistoryServiceObserver:
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
   // Returns whether a discount with |rule_id| is used or not.
   bool IsDiscountUsed(const std::string& rule_id);
   // Records timestamp of the latest fetch for discount.

@@ -235,7 +235,7 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
         urls.empty() ? history::DeletionInfo::ForAllHistory()
                      : history::DeletionInfo::ForUrls(CreateURLRows(urls),
                                                       /*favicon_urls=*/{});
-    observer_->OnURLsDeleted(history_service_.get(), deletion_info);
+    observer_->OnHistoryDeletions(history_service_.get(), deletion_info);
   }
 
   // Move clock forward by `time_delta`.

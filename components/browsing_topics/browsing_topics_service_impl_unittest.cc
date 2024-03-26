@@ -149,9 +149,10 @@ class TesterBrowsingTopicsService : public BrowsingTopicsServiceImpl {
     BrowsingTopicsServiceImpl::OnTopicsDataAccessibleSinceUpdated();
   }
 
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override {
-    BrowsingTopicsServiceImpl::OnURLsDeleted(history_service, deletion_info);
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override {
+    BrowsingTopicsServiceImpl::OnHistoryDeletions(history_service,
+                                                  deletion_info);
   }
 
   // The number of calculations that have started, including those that have
@@ -928,8 +929,8 @@ TEST_F(BrowsingTopicsServiceImplTest,
       /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
       /*restrict_urls=*/std::nullopt);
 
-  browsing_topics_service_->OnURLsDeleted(history_service_.get(),
-                                          deletion_info);
+  browsing_topics_service_->OnHistoryDeletions(history_service_.get(),
+                                               deletion_info);
 
   EXPECT_EQ(browsing_topics_state().epochs().size(), 2u);
   EXPECT_FALSE(browsing_topics_state().epochs()[0].empty());
@@ -969,8 +970,8 @@ TEST_F(BrowsingTopicsServiceImplTest,
       /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
       /*restrict_urls=*/std::nullopt);
 
-  browsing_topics_service_->OnURLsDeleted(history_service_.get(),
-                                          deletion_info);
+  browsing_topics_service_->OnHistoryDeletions(history_service_.get(),
+                                               deletion_info);
 
   EXPECT_EQ(browsing_topics_state().epochs().size(), 2u);
   EXPECT_TRUE(browsing_topics_state().epochs()[0].empty());
@@ -1006,8 +1007,8 @@ TEST_F(BrowsingTopicsServiceImplTest, Recalculate) {
       history::DeletionTimeRange(start_time, start_time + 2 * kOneTestDay),
       /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
       /*restrict_urls=*/std::nullopt);
-  browsing_topics_service_->OnURLsDeleted(history_service_.get(),
-                                          deletion_info);
+  browsing_topics_service_->OnHistoryDeletions(history_service_.get(),
+                                               deletion_info);
 
   // The calculation shouldn't finish at the originally expected time, as it was
   // dropped and a new calculation has started.

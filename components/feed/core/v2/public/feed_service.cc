@@ -79,8 +79,8 @@ class FeedService::HistoryObserverImpl
   HistoryObserverImpl& operator=(const HistoryObserverImpl&) = delete;
 
   // history::HistoryServiceObserver.
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override {
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override {
     if (internal::ShouldClearFeed(
             identity_manager_->HasPrimaryAccount(
                 GetConsentLevelNeededForPersonalizedFeed()),

@@ -566,8 +566,8 @@ void TopSitesImpl::SetTopSitesFromHistory(
   SetTopSites(std::move(merged_list), CALL_LOCATION_FROM_OTHER_PLACES);
 }
 
-void TopSitesImpl::OnURLsDeleted(HistoryService* history_service,
-                                 const DeletionInfo& deletion_info) {
+void TopSitesImpl::OnHistoryDeletions(HistoryService* history_service,
+                                      const DeletionInfo& deletion_info) {
   if (!loaded_)
     return;
 

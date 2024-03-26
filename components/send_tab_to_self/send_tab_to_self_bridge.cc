@@ -389,7 +389,7 @@ void SendTabToSelfBridge::MarkEntryOpened(const std::string& guid) {
   Commit(std::move(batch));
 }
 
-void SendTabToSelfBridge::OnURLsDeleted(
+void SendTabToSelfBridge::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   // We only care about actual user (or sync) deletions.

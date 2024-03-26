@@ -740,7 +740,7 @@ void AutocompleteActionPredictor::Shutdown() {
   history_service_observation_.Reset();
 }
 
-void AutocompleteActionPredictor::OnURLsDeleted(
+void AutocompleteActionPredictor::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   DCHECK(initialized_);

@@ -69,11 +69,11 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   void OnURLsModified(HistoryBackend* history_backend,
                       const URLRows& changed_urls,
                       bool is_from_expiration) override;
-  void OnURLsDeleted(HistoryBackend* history_backend,
-                     bool all_history,
-                     bool expired,
-                     const URLRows& deleted_rows,
-                     const std::set<GURL>& favicon_urls) override;
+  void OnHistoryDeletions(HistoryBackend* history_backend,
+                          bool all_history,
+                          bool expired,
+                          const URLRows& deleted_rows,
+                          const std::set<GURL>& favicon_urls) override;
   void OnVisitUpdated(const VisitRow& visit_row,
                       VisitUpdateReason reason) override;
   void OnVisitDeleted(const VisitRow& visit_row) override;

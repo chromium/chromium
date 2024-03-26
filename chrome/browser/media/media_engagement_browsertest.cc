@@ -266,7 +266,7 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
   void EraseHistory() {
     history::URLRows urls;
     urls.push_back(history::URLRow(http_server_.GetURL("/")));
-    GetService()->OnURLsDeleted(
+    GetService()->OnHistoryDeletions(
         nullptr, history::DeletionInfo::ForUrls(urls, std::set<GURL>()));
   }
 

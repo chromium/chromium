@@ -306,7 +306,7 @@ void UsageStatsBridge::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kUsageStatsEnabled, false);
 }
 
-void UsageStatsBridge::OnURLsDeleted(
+void UsageStatsBridge::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   // We ignore expirations since they're not user-initiated.
