@@ -747,13 +747,26 @@ void ComposeSession::OpenSignInPage() {
       /* is_renderer_initiated= */ false));
 }
 
+bool ComposeSession::CanShowFeedbackPage() {
+  if (skip_feedback_ui_for_testing_) {
+    return false;
+  }
+
+  OptimizationGuideKeyedService* opt_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  if (!opt_guide_keyed_service ||
+      !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForLogging(
+          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE)) {
+    return false;
+  }
+
+  return true;
+}
+
 void ComposeSession::OpenFeedbackPage(std::string feedback_id) {
   base::Value::Dict feedback_metadata;
   feedback_metadata.Set("log_id", feedback_id);
-
-  if (allow_feedback_for_testing_) {
-    return;
-  }
 
   chrome::ShowFeedbackPage(
       web_contents_->GetLastCommittedURL(),
@@ -772,18 +785,6 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
     // If there is no recent State there is nothing that we should be applying
     // feedback to.
     return;
-  }
-
-  // TODO(b/314199871): Remove test bypass once this check becomes mock-able.
-  if (!allow_feedback_for_testing_) {
-    OptimizationGuideKeyedService* opt_guide_keyed_service =
-        OptimizationGuideKeyedServiceFactory::GetForProfile(
-            Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
-    if (!opt_guide_keyed_service ||
-        !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForLogging(
-            optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE)) {
-      return;
-    }
   }
 
   // Add to most_recent_ok_state_ in case of undos.
@@ -805,13 +806,15 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
       quality->set_user_feedback(user_feedback);
     }
     if (feedback == compose::mojom::UserFeedback::kUserFeedbackNegative) {
-      // Open the Feedback Page for a thumbs down using current request log.
-      std::string feedback_id = most_recent_ok_state_->modeling_log_entry()
-                                    ->log_ai_data_request()
-                                    ->model_execution_info()
-                                    .execution_id();
       session_events_.has_thumbs_down = true;
-      OpenFeedbackPage(feedback_id);
+      if (CanShowFeedbackPage()) {
+        // Open the Feedback Page for a thumbs down using current request log.
+        std::string feedback_id = most_recent_ok_state_->modeling_log_entry()
+                                      ->log_ai_data_request()
+                                      ->model_execution_info()
+                                      .execution_id();
+        OpenFeedbackPage(feedback_id);
+      }
     } else if (feedback ==
                compose::mojom::UserFeedback::kUserFeedbackPositive) {
       session_events_.has_thumbs_up = true;
@@ -1038,6 +1041,6 @@ void ComposeSession::set_current_msbb_state(bool msbb_enabled) {
   }
 }
 
-void ComposeSession::SetAllowFeedbackForTesting(bool allowed) {
-  allow_feedback_for_testing_ = allowed;
+void ComposeSession::SetSkipFeedbackUiForTesting(bool allowed) {
+  skip_feedback_ui_for_testing_ = allowed;
 }

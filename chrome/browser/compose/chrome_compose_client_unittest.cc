@@ -2617,7 +2617,7 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackPositive) {
           }));
 
   ShowDialogAndBindMojo();
-  client().GetSessionForActiveComposeField()->SetAllowFeedbackForTesting(true);
+  client().GetSessionForActiveComposeField()->SetSkipFeedbackUiForTesting(true);
 
   page_handler()->Compose("a user typed this", false);
   ASSERT_TRUE(compose_future.Take());
@@ -2660,7 +2660,7 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackNegative) {
           }));
 
   ShowDialogAndBindMojo();
-  client().GetSessionForActiveComposeField()->SetAllowFeedbackForTesting(true);
+  client().GetSessionForActiveComposeField()->SetSkipFeedbackUiForTesting(true);
 
   page_handler()->Compose("a user typed this", false);
   ASSERT_TRUE(compose_future.Take());

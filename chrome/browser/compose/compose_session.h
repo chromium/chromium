@@ -154,6 +154,11 @@ class ComposeSession
   void InitializeWithText(const std::optional<std::string>& text,
                           const bool text_selected);
 
+  // Returns true if the feedback page can be shown. If
+  // |skip_feedback_ui_for_testing_| is true then this always returns false and
+  // the optimization guide checks are not done.
+  bool CanShowFeedbackPage();
+
   // Opens the Chrome Feedback UI for Compose. |feedback_id| is returned from
   // OptimizationGuideModel result.
   void OpenFeedbackPage(std::string feedback_id);
@@ -196,7 +201,7 @@ class ComposeSession
 
   void SetCloseReason(compose::ComposeSessionCloseReason close_reason);
 
-  void SetAllowFeedbackForTesting(bool allowed);
+  void SetSkipFeedbackUiForTesting(bool allowed);
 
  private:
   void ProcessError(compose::EvalLocation eval_location,
@@ -340,7 +345,7 @@ class ComposeSession
 
   base::Token session_id_;
 
-  bool allow_feedback_for_testing_ = false;
+  bool skip_feedback_ui_for_testing_ = false;
 
   base::WeakPtrFactory<ComposeSession> weak_ptr_factory_;
 };
