@@ -176,7 +176,8 @@ chrome.fileSystemProvider.UnmountRequestedOptions;
  *   modificationTime: boolean,
  *   mimeType: boolean,
  *   thumbnail: boolean,
- *   cloudIdentifier: boolean
+ *   cloudIdentifier: boolean,
+ *   cloudFileInfo: boolean
  * }}
  * @see https://developer.chrome.com/extensions/fileSystemProvider#type-GetMetadataRequestedOptions
  */
