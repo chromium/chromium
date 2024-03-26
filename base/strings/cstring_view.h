@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <concepts>
 #include <cstddef>
+#include <iosfwd>
 #include <string>
 #include <string_view>
 
@@ -16,7 +17,6 @@
 #include "base/containers/checked_iterators.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/is_basic_cstring_view.h"
 #include "base/types/to_address.h"
 #include "build/build_config.h"
 
@@ -34,7 +34,7 @@ namespace base {
 // * u32cstring_view provides a view of a `const char32_t*`.
 // * wcstring_view provides a view of a `const wchar_t*`.
 template <class Char>
-class basic_cstring_view {
+class basic_cstring_view final {
   static_assert(!std::is_const_v<Char>);
   static_assert(!std::is_reference_v<Char>);
 
@@ -333,6 +333,80 @@ class basic_cstring_view {
     return std::basic_string_view<Char>(*this).ends_with(character);
   }
 
+  // Returns the first position in the cstring view at which `search` is found,
+  // starting from the offset `pos`. If `pos` is not specified, the entire
+  // cstring view is searched. Returns `npos` if `search` is not found or if
+  // `pos` is out of range.
+  constexpr size_t find(std::basic_string_view<Char> search,
+                        size_t pos = 0u) const noexcept {
+    return std::basic_string_view<Char>(*this).find(search, pos);
+  }
+  constexpr size_t find(Char search, size_t pos = 0u) const noexcept {
+    return std::basic_string_view<Char>(*this).find(search, pos);
+  }
+
+  // Returns the last position in the cstring view at which `search` is found,
+  // starting from the offset `pos`. If `pos` is not specified or is out of
+  // range, the entire cstring view is searched. Returns `npos` if `search` is
+  // not found.
+  constexpr size_t rfind(std::basic_string_view<Char> search,
+                         size_t pos = npos) const noexcept {
+    return std::basic_string_view<Char>(*this).rfind(search, pos);
+  }
+  constexpr size_t rfind(Char search, size_t pos = npos) const noexcept {
+    return std::basic_string_view<Char>(*this).rfind(search, pos);
+  }
+
+  // Returns the first position in the cstring view at any character in the
+  // `search` is found, starting from the offset `pos`. If `pos` is not
+  // specified, the entire cstring view is searched. Returns `npos` if `search`
+  // is not found or if `pos` is out of range.
+  constexpr size_t find_first_of(std::basic_string_view<Char> search,
+                                 size_t pos = 0u) const noexcept {
+    return std::basic_string_view<Char>(*this).find_first_of(search, pos);
+  }
+  constexpr size_t find_first_of(Char search, size_t pos = 0u) const noexcept {
+    return std::basic_string_view<Char>(*this).find_first_of(search, pos);
+  }
+
+  // Returns the last position in the cstring view at any character in the
+  // `search` is found, starting from the offset `pos`. If `pos` is not
+  // specified or is out of range, the entire cstring view is searched. Returns
+  // `npos` if `search` is not found.
+  constexpr size_t find_last_of(std::basic_string_view<Char> search,
+                                size_t pos = npos) const noexcept {
+    return std::basic_string_view<Char>(*this).find_last_of(search, pos);
+  }
+  constexpr size_t find_last_of(Char search, size_t pos = npos) const noexcept {
+    return std::basic_string_view<Char>(*this).find_last_of(search, pos);
+  }
+
+  // Returns the first position in the cstring view that is not equal to any
+  // character in the `search`, starting from the offset `pos`. If `pos` is not
+  // specified, the entire cstring view is searched. Returns `npos` if every
+  // character is part of `search` or if `pos` is out of range.
+  constexpr size_t find_first_not_of(std::basic_string_view<Char> search,
+                                     size_t pos = 0u) const noexcept {
+    return std::basic_string_view<Char>(*this).find_first_not_of(search, pos);
+  }
+  constexpr size_t find_first_not_of(Char search,
+                                     size_t pos = 0u) const noexcept {
+    return std::basic_string_view<Char>(*this).find_first_not_of(search, pos);
+  }
+
+  // Returns the last position in the cstring view that is not equal to any
+  // character in the `search`, starting from the offset `pos`. If `pos` is not
+  // specified or is out of range, the entire cstring view is searched.  Returns
+  // `npos` if every character is part of `search`.
+  constexpr size_t find_last_not_of(std::basic_string_view<Char> search,
+                                    size_t pos = npos) const noexcept {
+    return std::basic_string_view<Char>(*this).find_last_not_of(search, pos);
+  }
+  constexpr size_t find_last_not_of(Char search,
+                                    size_t pos = npos) const noexcept {
+    return std::basic_string_view<Char>(*this).find_last_not_of(search, pos);
+  }
+
   // Compare two cstring views for equality, comparing the string contents.
   friend constexpr bool operator==(basic_cstring_view l, basic_cstring_view r) {
     return std::ranges::equal(l, r);
@@ -364,6 +438,18 @@ class basic_cstring_view {
     return UNSAFE_BUFFERS(std::basic_string_view<Char>(ptr_, len_));
   }
 
+  // Converts from cstring_view to std::string. This allocates a new string
+  // backing and copies into it.
+  //
+  // The std::string type implicitly constructs from `const char*` however it
+  // does not implicitly construct from std::string_view. This type sits between
+  // these two, and opts towards making heap allocations explicit by requiring
+  // an explicit conversion.
+  constexpr explicit operator std::basic_string<Char>() const noexcept {
+    // SAFETY: The cstring view provides that `ptr_ + len_` to be valid.
+    return UNSAFE_BUFFERS(std::basic_string<Char>(ptr_, len_));
+  }
+
  private:
   // An empty string literal for the `Char` type.
   static constexpr Char kEmpty[] = {Char{0}};
@@ -377,12 +463,6 @@ class basic_cstring_view {
   // position of the NUL terminator in the string allocation.
   size_t len_;
 };
-
-namespace internal {
-// Internal type matcher for cstring views based on basic_cstring_view.
-template <class T>
-struct IsBasicCStringView;
-}  // namespace internal
 
 // cstring_view provides a view of a NUL-terminated string. It is a replacement
 // for all use of `const char*`, in order to provide bounds checks and prevent
@@ -417,14 +497,29 @@ using u32cstring_view = basic_cstring_view<char32_t>;
 using wcstring_view = basic_cstring_view<wchar_t>;
 #endif
 
+// Writes the contents of the cstring view to the stream.
+template <class Char, class Traits>
+std::basic_ostream<Char, Traits>& operator<<(
+    std::basic_ostream<Char, Traits>& os,
+    basic_cstring_view<Char> view) {
+  return os << std::basic_string_view<Char>(view);
+}
+
 }  // namespace base
 
-template <class T>
-  requires(base::internal::IsBasicCStringView<T>::value)
-inline constexpr bool std::ranges::enable_borrowed_range<T> = true;
+template <class Char>
+struct std::hash<base::basic_cstring_view<Char>> {
+  size_t operator()(const base::basic_cstring_view<Char>& t) const noexcept {
+    return std::hash<std::basic_string_view<Char>>()(t);
+  }
+};
 
-template <class T>
-  requires(base::internal::IsBasicCStringView<T>::value)
-inline constexpr bool std::ranges::enable_view<T> = true;
+template <class Char>
+inline constexpr bool
+    std::ranges::enable_borrowed_range<base::basic_cstring_view<Char>> = true;
+
+template <class Char>
+inline constexpr bool std::ranges::enable_view<base::basic_cstring_view<Char>> =
+    true;
 
 #endif  // BASE_STRINGS_CSTRING_VIEW_H_

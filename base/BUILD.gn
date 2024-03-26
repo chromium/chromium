@@ -633,7 +633,6 @@ component("base") {
     "strings/cstring_view.h",
     "strings/escape.cc",
     "strings/escape.h",
-    "strings/is_basic_cstring_view.h",
     "strings/latin1_string_conversions.cc",
     "strings/latin1_string_conversions.h",
     "strings/levenshtein_distance.cc",

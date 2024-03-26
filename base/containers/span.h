@@ -23,7 +23,6 @@
 #include "base/containers/checked_iterators.h"
 #include "base/containers/dynamic_extent.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/is_basic_cstring_view.h"
 #include "base/template_util.h"
 #include "base/types/to_address.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
@@ -74,10 +73,6 @@ struct ExtentImpl<T[N]> : size_constant<N> {};
 
 template <typename T, size_t N>
 struct ExtentImpl<std::array<T, N>> : size_constant<N> {};
-
-template <typename T>
-  requires(internal::IsBasicCStringView<T>::value)
-struct ExtentImpl<T> : size_constant<dynamic_extent> {};
 
 template <typename T, size_t N>
 struct ExtentImpl<base::span<T, N>> : size_constant<N> {};

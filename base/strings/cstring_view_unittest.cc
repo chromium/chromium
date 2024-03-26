@@ -11,6 +11,7 @@
 
 #include <concepts>
 #include <limits>
+#include <sstream>
 #include <type_traits>
 
 namespace base {
@@ -589,6 +590,350 @@ TEST(CStringViewTest, EndsWith) {
 #if BUILDFLAG(IS_WIN)
   static_assert(wcstring_view(L"hello").ends_with(L'o'));
 #endif
+}
+
+TEST(CStringViewTest, Find) {
+  // OOB `pos` will return npos. The NUL is never searched.
+  static_assert(cstring_view("hello").find('h', 1000u) == cstring_view::npos);
+  static_assert(cstring_view("hello").find('\0', 5u) == cstring_view::npos);
+
+  // Searching for a Char.
+  static_assert(cstring_view("hello").find('e') == 1u);
+  static_assert(cstring_view("hello").find('z') == cstring_view::npos);
+  static_assert(cstring_view("hello").find('l') == 2u);
+  static_assert(cstring_view("hello").find('l', 3u) == 3u);
+
+  static_assert(u16cstring_view(u"hello").find(u'e') == 1u);
+  static_assert(u16cstring_view(u"hello").find(u'z') == cstring_view::npos);
+  static_assert(u16cstring_view(u"hello").find(u'l') == 2u);
+  static_assert(u16cstring_view(u"hello").find(u'l', 3u) == 3u);
+
+  static_assert(u32cstring_view(U"hello").find(U'e') == 1u);
+  static_assert(u32cstring_view(U"hello").find(U'z') == cstring_view::npos);
+  static_assert(u32cstring_view(U"hello").find(U'l') == 2u);
+  static_assert(u32cstring_view(U"hello").find(U'l', 3u) == 3u);
+
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello").find(L'e') == 1u);
+  static_assert(wcstring_view(L"hello").find(L'z') == cstring_view::npos);
+  static_assert(wcstring_view(L"hello").find(L'l') == 2u);
+  static_assert(wcstring_view(L"hello").find(L'l', 3u) == 3u);
+#endif
+
+  // Searching for a string.
+  static_assert(cstring_view("hello hello").find("lo") == 3u);
+  static_assert(cstring_view("hello hello").find("lol") == cstring_view::npos);
+  static_assert(u16cstring_view(u"hello hello").find(u"lo") == 3u);
+  static_assert(u16cstring_view(u"hello hello").find(u"lol") ==
+                cstring_view::npos);
+  static_assert(u32cstring_view(U"hello hello").find(U"lo") == 3u);
+  static_assert(u32cstring_view(U"hello hello").find(U"lol") ==
+                cstring_view::npos);
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello hello").find(L"lo") == 3u);
+  static_assert(wcstring_view(L"hello hello").find(L"lol") ==
+                cstring_view::npos);
+#endif
+}
+
+TEST(CStringViewTest, Rfind) {
+  // OOB `pos` will clamp to the end of the view. The NUL is never searched.
+  static_assert(cstring_view("hello").rfind('h', 0u) == 0u);
+  static_assert(cstring_view("hello").rfind('h', 1000u) == 0u);
+  static_assert(cstring_view("hello").rfind('\0', 5u) == cstring_view::npos);
+
+  // Searching for a Char.
+  static_assert(cstring_view("hello").rfind('e') == 1u);
+  static_assert(cstring_view("hello").rfind('z') == cstring_view::npos);
+  static_assert(cstring_view("hello").rfind('l') == 3u);
+  static_assert(cstring_view("hello").rfind('l', 2u) == 2u);
+
+  static_assert(u16cstring_view(u"hello").rfind(u'e') == 1u);
+  static_assert(u16cstring_view(u"hello").rfind(u'z') == cstring_view::npos);
+  static_assert(u16cstring_view(u"hello").rfind(u'l') == 3u);
+  static_assert(u16cstring_view(u"hello").rfind(u'l', 2u) == 2u);
+
+  static_assert(u32cstring_view(U"hello").rfind(U'e') == 1u);
+  static_assert(u32cstring_view(U"hello").rfind(U'z') == cstring_view::npos);
+  static_assert(u32cstring_view(U"hello").rfind(U'l') == 3u);
+  static_assert(u32cstring_view(U"hello").rfind(U'l', 2u) == 2u);
+
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello").rfind(L'e') == 1u);
+  static_assert(wcstring_view(L"hello").rfind(L'z') == cstring_view::npos);
+  static_assert(wcstring_view(L"hello").rfind(L'l') == 3u);
+  static_assert(wcstring_view(L"hello").rfind(L'l', 2u) == 2u);
+#endif
+
+  // Searching for a string.
+  static_assert(cstring_view("hello hello").rfind("lo") == 9u);
+  static_assert(cstring_view("hello hello").rfind("lol") == cstring_view::npos);
+  static_assert(u16cstring_view(u"hello hello").rfind(u"lo") == 9u);
+  static_assert(u16cstring_view(u"hello hello").rfind(u"lol") ==
+                cstring_view::npos);
+  static_assert(u32cstring_view(U"hello hello").rfind(U"lo") == 9u);
+  static_assert(u32cstring_view(U"hello hello").rfind(U"lol") ==
+                cstring_view::npos);
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello hello").rfind(L"lo") == 9u);
+  static_assert(wcstring_view(L"hello hello").rfind(L"lol") ==
+                cstring_view::npos);
+#endif
+}
+
+TEST(CStringViewTest, FindFirstOf) {
+  // OOB `pos` will return npos. The NUL is never searched.
+  static_assert(cstring_view("hello").find_first_of('h', 1000u) ==
+                cstring_view::npos);
+  static_assert(cstring_view("hello").find_first_of('\0', 5u) ==
+                cstring_view::npos);
+
+  // Searching for a Char.
+  static_assert(cstring_view("hello").find_first_of('e') == 1u);
+  static_assert(cstring_view("hello").find_first_of('z') == cstring_view::npos);
+  static_assert(cstring_view("hello").find_first_of('l') == 2u);
+  static_assert(cstring_view("hello").find_first_of('l', 3u) == 3u);
+
+  static_assert(u16cstring_view(u"hello").find_first_of(u'e') == 1u);
+  static_assert(u16cstring_view(u"hello").find_first_of(u'z') ==
+                cstring_view::npos);
+  static_assert(u16cstring_view(u"hello").find_first_of(u'l') == 2u);
+  static_assert(u16cstring_view(u"hello").find_first_of(u'l', 3u) == 3u);
+
+  static_assert(u32cstring_view(U"hello").find_first_of(U'e') == 1u);
+  static_assert(u32cstring_view(U"hello").find_first_of(U'z') ==
+                cstring_view::npos);
+  static_assert(u32cstring_view(U"hello").find_first_of(U'l') == 2u);
+  static_assert(u32cstring_view(U"hello").find_first_of(U'l', 3u) == 3u);
+
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello").find_first_of(L'e') == 1u);
+  static_assert(wcstring_view(L"hello").find_first_of(L'z') ==
+                cstring_view::npos);
+  static_assert(wcstring_view(L"hello").find_first_of(L'l') == 2u);
+  static_assert(wcstring_view(L"hello").find_first_of(L'l', 3u) == 3u);
+#endif
+
+  // Searching for a string.
+  static_assert(cstring_view("hello hello").find_first_of("ol") == 2u);
+  static_assert(cstring_view("hello hello").find_first_of("zz") ==
+                cstring_view::npos);
+  static_assert(u16cstring_view(u"hello hello").find_first_of(u"ol") == 2u);
+  static_assert(u16cstring_view(u"hello hello").find_first_of(u"zz") ==
+                cstring_view::npos);
+  static_assert(u32cstring_view(U"hello hello").find_first_of(U"ol") == 2u);
+  static_assert(u32cstring_view(U"hello hello").find_first_of(U"zz") ==
+                cstring_view::npos);
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello hello").find_first_of(L"ol") == 2u);
+  static_assert(wcstring_view(L"hello hello").find_first_of(L"zz") ==
+                cstring_view::npos);
+#endif
+}
+
+TEST(CStringViewTest, FindLastOf) {
+  // OOB `pos` will clamp to the end of the view. The NUL is never searched.
+  static_assert(cstring_view("hello").find_last_of('h', 0u) == 0u);
+  static_assert(cstring_view("hello").find_last_of('h', 1000u) == 0u);
+  static_assert(cstring_view("hello").find_last_of('\0', 5u) ==
+                cstring_view::npos);
+
+  // Searching for a Char.
+  static_assert(cstring_view("hello").find_last_of('e') == 1u);
+  static_assert(cstring_view("hello").find_last_of('z') == cstring_view::npos);
+  static_assert(cstring_view("hello").find_last_of('l') == 3u);
+  static_assert(cstring_view("hello").find_last_of('l', 2u) == 2u);
+
+  static_assert(u16cstring_view(u"hello").find_last_of(u'e') == 1u);
+  static_assert(u16cstring_view(u"hello").find_last_of(u'z') ==
+                cstring_view::npos);
+  static_assert(u16cstring_view(u"hello").find_last_of(u'l') == 3u);
+  static_assert(u16cstring_view(u"hello").find_last_of(u'l', 2u) == 2u);
+
+  static_assert(u32cstring_view(U"hello").find_last_of(U'e') == 1u);
+  static_assert(u32cstring_view(U"hello").find_last_of(U'z') ==
+                cstring_view::npos);
+  static_assert(u32cstring_view(U"hello").find_last_of(U'l') == 3u);
+  static_assert(u32cstring_view(U"hello").find_last_of(U'l', 2u) == 2u);
+
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello").find_last_of(L'e') == 1u);
+  static_assert(wcstring_view(L"hello").find_last_of(L'z') ==
+                cstring_view::npos);
+  static_assert(wcstring_view(L"hello").find_last_of(L'l') == 3u);
+  static_assert(wcstring_view(L"hello").find_last_of(L'l', 2u) == 2u);
+#endif
+
+  // Searching for a string.
+  static_assert(cstring_view("hello hello").find_last_of("lo") == 10u);
+  static_assert(cstring_view("hello hello").find_last_of("zz") ==
+                cstring_view::npos);
+  static_assert(u16cstring_view(u"hello hello").find_last_of(u"lo") == 10u);
+  static_assert(u16cstring_view(u"hello hello").find_last_of(u"zz") ==
+                cstring_view::npos);
+  static_assert(u32cstring_view(U"hello hello").find_last_of(U"lo") == 10u);
+  static_assert(u32cstring_view(U"hello hello").find_last_of(U"zz") ==
+                cstring_view::npos);
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello hello").find_last_of(L"lo") == 10u);
+  static_assert(wcstring_view(L"hello hello").find_last_of(L"zz") ==
+                cstring_view::npos);
+#endif
+}
+
+TEST(CStringViewTest, FindFirstNotOf) {
+  // OOB `pos` will return npos. The NUL is never searched.
+  static_assert(cstring_view("hello").find_first_not_of('a', 1000u) ==
+                cstring_view::npos);
+  static_assert(cstring_view("hello").find_first_not_of('a', 5u) ==
+                cstring_view::npos);
+
+  // Searching for a Char.
+  static_assert(cstring_view("hello").find_first_not_of('h') == 1u);
+  static_assert(cstring_view("hello").find_first_not_of('e') == 0u);
+  static_assert(cstring_view("hello").find_first_not_of("eloh") ==
+                cstring_view::npos);
+
+  static_assert(u16cstring_view(u"hello").find_first_not_of(u'h') == 1u);
+  static_assert(u16cstring_view(u"hello").find_first_not_of(u'e') == 0u);
+  static_assert(u16cstring_view(u"hello").find_first_not_of(u"eloh") ==
+                cstring_view::npos);
+
+  static_assert(u32cstring_view(U"hello").find_first_not_of(U'h') == 1u);
+  static_assert(u32cstring_view(U"hello").find_first_not_of(U'e') == 0u);
+  static_assert(u32cstring_view(U"hello").find_first_not_of(U"eloh") ==
+                cstring_view::npos);
+
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello").find_first_not_of(L'h') == 1u);
+  static_assert(wcstring_view(L"hello").find_first_not_of(L'e') == 0u);
+  static_assert(wcstring_view(L"hello").find_first_not_of(L"eloh") ==
+                cstring_view::npos);
+#endif
+
+  // Searching for a string.
+  static_assert(cstring_view("hello hello").find_first_not_of("eh") == 2u);
+  static_assert(cstring_view("hello hello").find_first_not_of("hello ") ==
+                cstring_view::npos);
+  static_assert(u16cstring_view(u"hello hello").find_first_not_of(u"eh") == 2u);
+  static_assert(u16cstring_view(u"hello hello").find_first_not_of(u"hello ") ==
+                cstring_view::npos);
+  static_assert(u32cstring_view(U"hello hello").find_first_not_of(U"eh") == 2u);
+  static_assert(u32cstring_view(U"hello hello").find_first_not_of(U"hello ") ==
+                cstring_view::npos);
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello hello").find_first_not_of(L"eh") == 2u);
+  static_assert(wcstring_view(L"hello hello").find_first_not_of(L"hello ") ==
+                cstring_view::npos);
+#endif
+}
+
+TEST(CStringViewTest, FindLastNotOf) {
+  // OOB `pos` will clamp to the end of the view. The NUL is never searched.
+  static_assert(cstring_view("hello").find_last_not_of('a', 1000u) == 4u);
+  static_assert(cstring_view("hello").find_last_not_of('a', 5u) == 4u);
+
+  // Searching for a Char.
+  static_assert(cstring_view("hello").find_last_not_of('l') == 4u);
+  static_assert(cstring_view("hello").find_last_not_of('o') == 3u);
+  static_assert(cstring_view("hello").find_last_not_of("eloh") ==
+                cstring_view::npos);
+
+  static_assert(u16cstring_view(u"hello").find_last_not_of(u'l') == 4u);
+  static_assert(u16cstring_view(u"hello").find_last_not_of(u'o') == 3u);
+  static_assert(u16cstring_view(u"hello").find_last_not_of(u"eloh") ==
+                cstring_view::npos);
+
+  static_assert(u32cstring_view(U"hello").find_last_not_of(U'l') == 4u);
+  static_assert(u32cstring_view(U"hello").find_last_not_of(U'o') == 3u);
+  static_assert(u32cstring_view(U"hello").find_last_not_of(U"eloh") ==
+                cstring_view::npos);
+
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello").find_last_not_of(L'l') == 4u);
+  static_assert(wcstring_view(L"hello").find_last_not_of(L'o') == 3u);
+  static_assert(wcstring_view(L"hello").find_last_not_of(L"eloh") ==
+                cstring_view::npos);
+#endif
+
+  // Searching for a string.
+  static_assert(cstring_view("hello hello").find_last_not_of("lo") == 7u);
+  static_assert(cstring_view("hello hello").find_last_not_of("hello ") ==
+                cstring_view::npos);
+  static_assert(u16cstring_view(u"hello hello").find_last_not_of(u"lo") == 7u);
+  static_assert(u16cstring_view(u"hello hello").find_last_not_of(u"hello ") ==
+                cstring_view::npos);
+  static_assert(u32cstring_view(U"hello hello").find_last_not_of(U"lo") == 7u);
+  static_assert(u32cstring_view(U"hello hello").find_last_not_of(U"hello ") ==
+                cstring_view::npos);
+#if BUILDFLAG(IS_WIN)
+  static_assert(wcstring_view(L"hello hello").find_last_not_of(L"lo") == 7u);
+  static_assert(wcstring_view(L"hello hello").find_last_not_of(L"hello ") ==
+                cstring_view::npos);
+#endif
+}
+
+TEST(CStringViewTest, ToString) {
+  // Streaming support like std::string_view.
+  std::ostringstream s;
+  s << cstring_view("hello");
+  EXPECT_EQ(s.str(), "hello");
+
+#if BUILDFLAG(IS_WIN)
+  std::wostringstream sw;
+  sw << wcstring_view(L"hello");
+  EXPECT_EQ(sw.str(), L"hello");
+#endif
+
+  // Gtest printing support.
+  EXPECT_EQ(testing::PrintToString(cstring_view("hello")), "hello");
+}
+
+TEST(CStringViewTest, Hash) {
+  [[maybe_unused]] auto s = std::hash<cstring_view>()(cstring_view("hello"));
+  static_assert(std::same_as<size_t, decltype(s)>);
+
+  [[maybe_unused]] auto s16 =
+      std::hash<u16cstring_view>()(u16cstring_view(u"hello"));
+  static_assert(std::same_as<size_t, decltype(s)>);
+
+  [[maybe_unused]] auto s32 =
+      std::hash<u32cstring_view>()(u32cstring_view(U"hello"));
+  static_assert(std::same_as<size_t, decltype(s)>);
+
+#if BUILDFLAG(IS_WIN)
+  [[maybe_unused]] auto sw =
+      std::hash<wcstring_view>()(wcstring_view(L"hello"));
+  static_assert(std::same_as<size_t, decltype(s)>);
+#endif
+}
+
+TEST(CStringViewTest, IntoStdStringView) {
+  // string_view implicitly constructs from const char*, and so also from
+  // cstring_view.
+  std::string_view sc = "hello";
+  std::string_view s = cstring_view("hello");
+  EXPECT_EQ(s, sc);
+
+  static_assert(std::string_view(cstring_view("hello")) == "hello");
+}
+
+TEST(CStringViewTest, IntoStdString) {
+  // string implicitly constructs from const char*, but not from
+  // std::string_view or cstring_view.
+  static_assert(std::convertible_to<const char*, std::string>);
+  static_assert(!std::convertible_to<std::string_view, std::string>);
+  static_assert(!std::convertible_to<cstring_view, std::string>);
+
+  static_assert(std::constructible_from<std::string, const char*>);
+  static_assert(std::constructible_from<std::string, std::string_view>);
+  static_assert(std::constructible_from<std::string, cstring_view>);
+
+  auto sv = std::string(std::string_view("hello"));
+  auto cs = std::string(cstring_view("hello"));
+  EXPECT_EQ(cs, sv);
+
+  static_assert(std::string(cstring_view("hello")) == "hello");
 }
 
 TEST(CStringViewTest, Example_CtorLiteral) {
