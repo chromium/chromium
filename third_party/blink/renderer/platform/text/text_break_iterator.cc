@@ -26,6 +26,8 @@
 #include <unicode/uchar.h>
 #include <unicode/uvernum.h>
 
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/break_iterator_data_inline_header.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -111,6 +113,9 @@ static const UChar kAsciiLineBreakTableLastChar = 127;
 
 #define F 0xFF
 
+// Check if the generated table match the `kAsciiLineBreakTable` table.
+#define CHECK_ASCII_LINE_BRAEK_TABLE 0
+
 // Line breaking table for printable ASCII characters. Line breaking
 // opportunities in this table are as below:
 // - before opening punctuations such as '(', '<', '[', '{' after certain
@@ -160,6 +165,24 @@ static const unsigned char kAsciiLineBreakTable[][(kAsciiLineBreakTableLastChar 
     { B(0, 0, 0, 0, 0, 0, 0, 0), B(0, 0, 0, 0, 0, 0, 0, 0), 0, B(0, 0, 0, 0, 0, 0, 0, 0), 0, 0, 0, B(0, 0, 0, 0, 0, 0, 0, 0), 0, 0, 0, B(0, 0, 0, 0, 0, 0, 0, 0) }, // DEL
 };
 // clang-format on
+
+#if CHECK_ASCII_LINE_BRAEK_TABLE
+void CheckAsciiLineBreakTable() {
+  for (UChar ch2 = kAsciiLineBreakTableFirstChar;
+       ch2 <= kAsciiLineBreakTableLastChar; ++ch2) {
+    for (UChar ch1 = kAsciiLineBreakTableFirstChar;
+         ch1 <= kAsciiLineBreakTableLastChar; ++ch1) {
+      const UChar i2 = ch2 - kAsciiLineBreakTableFirstChar;
+      const bool ascii =
+          kAsciiLineBreakTable[ch1 - kAsciiLineBreakTableFirstChar][i2 / 8] &
+          (1 << (i2 % 8));
+      const bool fast = GetFastLineBreak(ch1, ch2);
+      CHECK_EQ(ascii, fast)
+          << String::Format("%02X/%02X (%c/%c)", ch1, ch2, ch1, ch2);
+    }
+  }
+}
+#endif  // CHECK_ASCII_LINE_BRAEK_TABLE
 
 #define BA_LB_COUNT U_LB_COUNT
 // Line breaking table for CSS word-break: break-all. This table differs from
@@ -275,7 +298,13 @@ static inline bool ShouldKeepAfterKeepAll(UChar last_ch,
 }
 
 inline bool NeedsLineBreakIterator(UChar ch) {
-  return ch > kAsciiLineBreakTableLastChar && ch != kNoBreakSpaceCharacter;
+  if (UNLIKELY(!RuntimeEnabledFeatures::BreakIteratorDataGeneratorEnabled())) {
+    return ch > kAsciiLineBreakTableLastChar && ch != kNoBreakSpaceCharacter;
+  }
+  static_assert(kFastLineBreakMaxChar >= kAsciiLineBreakTableLastChar);
+  static_assert(kNoBreakSpaceCharacter <= kFastLineBreakMaxChar,
+                "Include NBSP for the performance.");
+  return ch > kFastLineBreakMaxChar;
 }
 
 template <typename CharacterType>
@@ -320,31 +349,61 @@ struct LazyLineBreakIterator::Context {
     last = current;
   }
 
-  bool ShouldBreakFast() const {
+  bool ShouldBreakFast(bool disable_soft_hyphen) const {
+#if CHECK_ASCII_LINE_BRAEK_TABLE
+    DEFINE_STATIC_LOCAL(bool, is_check_done, (false));
+    if (!is_check_done) {
+      is_check_done = true;
+      CheckAsciiLineBreakTable();
+      LOG(INFO) << "CheckAsciiLineBreakTable() completed.";
+    }
+#endif  // CHECK_ASCII_LINE_BRAEK_TABLE
+
     const UChar last_ch = last.ch;
     const UChar ch = current.ch;
-    if (UNLIKELY(last_ch < kAsciiLineBreakTableFirstChar ||
-                 ch < kAsciiLineBreakTableFirstChar)) {
+    static_assert(kFastLineBreakMinChar == kAsciiLineBreakTableFirstChar);
+    if (UNLIKELY(last_ch < kFastLineBreakMinChar ||
+                 ch < kFastLineBreakMinChar)) {
       return false;
     }
 
     // Don't allow line breaking between '-' and a digit if the '-' may mean a
     // minus sign in the context, while allow breaking in 'ABCD-1234' and
     // '1234-5678' which may be in long URLs.
-    static_assert('-' >= kAsciiLineBreakTableFirstChar);
+    static_assert('-' >= kFastLineBreakMinChar);
     if (last_ch == '-' && IsASCIIDigit(ch)) {
       return IsASCIIAlphanumeric(last_last_ch);
     }
 
-    // If both `last_ch` and `ch` are ASCII characters, use a lookup table for
-    // enhanced speed and for compatibility with other browsers (see comments
-    // for asciiLineBreakTable for details).
-    if (last_ch <= kAsciiLineBreakTableLastChar &&
-        ch <= kAsciiLineBreakTableLastChar) {
-      const unsigned char* table_row =
-          kAsciiLineBreakTable[last_ch - kAsciiLineBreakTableFirstChar];
-      int ch_index = ch - kAsciiLineBreakTableFirstChar;
-      return table_row[ch_index / 8] & (1 << (ch_index % 8));
+    if (UNLIKELY(
+            !RuntimeEnabledFeatures::BreakIteratorDataGeneratorEnabled())) {
+      // If both `last_ch` and `ch` are ASCII characters, use a lookup table for
+      // enhanced speed and for compatibility with other browsers (see comments
+      // for asciiLineBreakTable for details).
+      if (last_ch <= kAsciiLineBreakTableLastChar &&
+          ch <= kAsciiLineBreakTableLastChar) {
+        const unsigned char* table_row =
+            kAsciiLineBreakTable[last_ch - kAsciiLineBreakTableFirstChar];
+        int ch_index = ch - kAsciiLineBreakTableFirstChar;
+        return table_row[ch_index / 8] & (1 << (ch_index % 8));
+      }
+
+      // Otherwise defer to the Unicode algorithm by returning false.
+      return false;
+    }
+
+    // If both characters are in the fast line break table, use it for enhanced
+    // speed. For ASCII characters, it is also for compatibility. The table is
+    // generated at the build time, see the `LineBreakData` class.
+    if (last_ch <= kFastLineBreakMaxChar && ch <= kFastLineBreakMaxChar) {
+      if (!GetFastLineBreak(last_ch, ch)) {
+        return false;
+      }
+      static_assert(kSoftHyphenCharacter <= kFastLineBreakMaxChar);
+      if (UNLIKELY(disable_soft_hyphen && last_ch == kSoftHyphenCharacter)) {
+        return false;
+      }
+      return true;
     }
 
     // Otherwise defer to the Unicode algorithm by returning false.
@@ -393,7 +452,7 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
         break;
     }
 
-    if (context.ShouldBreakFast()) {
+    if (context.ShouldBreakFast(disable_soft_hyphen_)) {
       return i;
     }
 

@@ -510,6 +510,11 @@
       status: "experimental",
     },
     {
+      // crbug.com/41485013
+      name: "BreakIteratorDataGenerator",
+      status: "stable",
+    },
+    {
       name: "BrowserVerifiedUserActivationKeyboard",
       base_feature: "none",
       public: true,
