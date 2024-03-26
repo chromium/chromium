@@ -264,7 +264,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
 
   IdentityProviderDisplayData CreateIdentityProviderDisplayData(
       const std::vector<std::pair<std::string, LoginState>>& account_infos,
-      bool has_login_status_mismatch = false) {
+      bool has_login_status_mismatch = false,
+      bool request_permission = true) {
     std::vector<content::IdentityRequestAccount> accounts;
     for (const auto& account_info : account_infos) {
       accounts.emplace_back(account_info.first, "", "", "", GURL(),
@@ -275,16 +276,20 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     return IdentityProviderDisplayData(
         u"", content::IdentityProviderMetadata(),
         content::ClientMetadata(GURL(), GURL(), GURL()), std::move(accounts),
-        /*request_permission=*/true, has_login_status_mismatch);
+        request_permission, has_login_status_mismatch);
   }
 
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShow(
       const std::vector<content::IdentityRequestAccount>& accounts,
       SignInMode sign_in_mode,
-      blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget) {
+      blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget,
+      const std::optional<content::IdentityProviderData>& new_account_idp =
+          std::nullopt,
+      bool request_permission = true) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), account_selection_view_.get());
-    Show(*controller, accounts, sign_in_mode, rp_mode);
+    Show(*controller, accounts, sign_in_mode, rp_mode, new_account_idp,
+         request_permission);
     return controller;
   }
 
@@ -293,13 +298,14 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
             SignInMode sign_in_mode,
             blink::mojom::RpMode rp_mode,
             const std::optional<content::IdentityProviderData>&
-                new_account_idp = std::nullopt) {
+                new_account_idp = std::nullopt,
+            bool request_permission = true) {
     controller.Show(
         kTopFrameEtldPlusOne,
         std::make_optional<std::string>(kIframeEtldPlusOne),
         {{kIdpEtldPlusOne, accounts, content::IdentityProviderMetadata(),
           content::ClientMetadata(GURL(), GURL(), GURL()),
-          blink::mojom::RpContext::kSignIn, /*request_permission=*/true,
+          blink::mojom::RpContext::kSignIn, request_permission,
           /*has_login_status_mismatch=*/false}},
         sign_in_mode, rp_mode, new_account_idp);
   }
@@ -1709,4 +1715,32 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   CreateAndShowPopupWindow(*controller);
   // This should not crash.
   controller->CloseModalDialog();
+}
+
+// Tests that if the dialog skips requesting permission, the verifying sheet is
+// shown.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       SkipRequestPermissionShowsVerifying) {
+  const char kAccountId[] = "account_id";
+  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
+      {{kAccountId, LoginState::kSignUp}}, /*has_login_status_mismatch=*/false,
+      /*request_permission=*/false);
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts, SignInMode::kExplicit, blink::mojom::RpMode::kWidget,
+      /*new_account_idp=*/std::nullopt, /*request_permission=*/false);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
 }

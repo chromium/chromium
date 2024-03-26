@@ -559,19 +559,13 @@ void FedCmAccountSelectionView::OnAccountSelected(
     return;
   }
 
-  // Return early if the dialog doesn't need to ask for the user's permission to
-  // share their id/email/name/picture.
-  if (!idp_display_data.request_permission) {
-    delegate_->OnAccountSelected(idp_display_data.idp_metadata.config_url,
-                                 account);
-    return;
-  }
-
-  // At this point, we should request permission. If the account is a returning
-  // user or if the account is selected from UI which shows the disclosure text,
-  // they have already granted permission.
+  // If the account is a returning user or if the account is selected from UI
+  // which shows the disclosure text or if the dialog doesn't need to ask for
+  // the user's permission to share their id/email/name/picture, show the
+  // verifying sheet.
   if (account.login_state != Account::LoginState::kSignUp ||
-      state_ == State::REQUEST_PERMISSION) {
+      state_ == State::REQUEST_PERMISSION ||
+      !idp_display_data.request_permission) {
     state_ = State::VERIFYING;
     ShowVerifyingSheet(account, idp_display_data);
     return;

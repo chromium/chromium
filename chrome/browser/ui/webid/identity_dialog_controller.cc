@@ -109,27 +109,23 @@ void IdentityDialogController::ShowLoadingDialog(
 
 void IdentityDialogController::OnLoginToIdP(const GURL& idp_config_url,
                                             const GURL& idp_login_url) {
+  CHECK(on_login_);
   std::move(on_login_).Run(idp_config_url, idp_login_url);
 }
 
 void IdentityDialogController::OnMoreDetails() {
+  CHECK(on_more_details_);
   std::move(on_more_details_).Run();
 }
 
 void IdentityDialogController::OnAccountsDisplayed() {
+  CHECK(on_accounts_displayed_);
   std::move(on_accounts_displayed_).Run();
-}
-
-std::string IdentityDialogController::GetTitle() const {
-  return account_view_->GetTitle();
-}
-
-std::optional<std::string> IdentityDialogController::GetSubtitle() const {
-  return account_view_->GetSubtitle();
 }
 
 void IdentityDialogController::OnAccountSelected(const GURL& idp_config_url,
                                                  const Account& account) {
+  CHECK(on_account_selection_);
   on_dismiss_.Reset();
   std::move(on_account_selection_)
       .Run(idp_config_url, account.id,
@@ -140,10 +136,20 @@ void IdentityDialogController::OnAccountSelected(const GURL& idp_config_url,
 void IdentityDialogController::OnDismiss(DismissReason dismiss_reason) {
   // |OnDismiss| can be called after |OnAccountSelected| which sets the callback
   // to null.
-  if (on_dismiss_) {
-    on_account_selection_.Reset();
-    std::move(on_dismiss_).Run(dismiss_reason);
+  if (!on_dismiss_) {
+    return;
   }
+
+  on_account_selection_.Reset();
+  std::move(on_dismiss_).Run(dismiss_reason);
+}
+
+std::string IdentityDialogController::GetTitle() const {
+  return account_view_->GetTitle();
+}
+
+std::optional<std::string> IdentityDialogController::GetSubtitle() const {
+  return account_view_->GetSubtitle();
 }
 
 gfx::NativeView IdentityDialogController::GetNativeView() {
