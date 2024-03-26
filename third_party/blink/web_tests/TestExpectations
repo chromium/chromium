@@ -7124,3 +7124,5 @@ crbug.com/330668788 [ Debug Linux ] external/wpt/html/semantics/embedded-content
 
 # Gardener 2024-03-26
 crbug.com/331244082 [ Win ] virtual/threaded/external/wpt/css/css-animations/display-none-dont-cancel-pseudo.tentative.html [ Failure Pass ]
+crbug.com/331291856 [ Mac ] storage/indexeddb/key-cursor-request-cycle.html [ Failure Pass ]
+crbug.com/331291856 [ Mac ] storage/indexeddb/cursor-request-cycle.html [ Failure Pass ]
