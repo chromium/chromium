@@ -1,7 +1,7 @@
 Name: sqlite
 URL: https://sqlite.org/
-Version: 3.43.2
-CPEPrefix: cpe:/a:sqlite:sqlite:3.43.2
+Version: 3.45.2
+CPEPrefix: cpe:/a:sqlite:sqlite:3.45.2
 Included In Release: Yes
 Security Critical: Yes
 Shipped: yes
