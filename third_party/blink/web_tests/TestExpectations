@@ -6841,6 +6841,10 @@ crbug.com/40944477 fast/events/scroll-event-handler-count.html [ Failure Pass Ti
 crbug.com/40264022 external/wpt/webtransport/echo-large-bidirectional-streams.https.any.serviceworker.html [ Failure Pass Timeout ] # Flaky
 crbug.com/40280906 virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-load-api.https.html [ Failure Pass Timeout ] # Flaky
 
+crbug.com/329703412 external/wpt/css/css-anchor-position/position-visibility-anchors-valid.tentative.html [ Failure ]
+crbug.com/329703412 external/wpt/css/css-anchor-position/position-visibility-anchors-visible.tentative.html [ Failure ]
+crbug.com/329703412 external/wpt/css/css-anchor-position/position-visibility-no-overflow.tentative.html [ Failure ]
+
 # Test infra bug
 crbug.com/326459000 virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/pageswap-push-from-click.html [ Timeout ]
 crbug.com/326459000 virtual/pageswap/external/wpt/html/browsers/browsing-the-web/history-traversal/pageswap/pageswap-push-from-click.html [ Timeout ]
