@@ -403,20 +403,6 @@ bool FlexLayoutAlgorithm::DoesItemStretch(const BlockNode& child) const {
          ItemPosition::kStretch;
 }
 
-bool FlexLayoutAlgorithm::IsItemCrossAxisLengthDefinite(
-    const BlockNode& child,
-    const Length& length) const {
-  // We don't consider inline value of 'auto' for the cross-axis min/main/max
-  // size to be definite. Block value of 'auto' is always indefinite.
-  // TODO(https://crbug.com/313072): This (and surrounding) tests should
-  // be HasAuto rather than IsAuto to account for calc-size().
-  if (length.IsAuto())
-    return false;
-  if (MainAxisIsInlineAxis(child))
-    return !BlockLengthUnresolvable(BuildSpaceForFlexBasis(child), length);
-  return !InlineLengthUnresolvable(BuildSpaceForFlexBasis(child), length);
-}
-
 bool FlexLayoutAlgorithm::DoesItemCrossSizeComputeToAuto(
     const BlockNode& child) const {
   const ComputedStyle& child_style = child.Style();
@@ -424,15 +410,6 @@ bool FlexLayoutAlgorithm::DoesItemCrossSizeComputeToAuto(
     return child_style.Height().IsAuto();
   }
   return child_style.Width().IsAuto();
-}
-
-bool FlexLayoutAlgorithm::AspectRatioProvidesMainSize(
-    const BlockNode& child) const {
-  const Length& cross_axis_length =
-      is_horizontal_flow_ ? child.Style().Height() : child.Style().Width();
-  return child.HasAspectRatio() &&
-         (IsItemCrossAxisLengthDefinite(child, cross_axis_length) ||
-          WillChildCrossSizeBeContainerCrossSize(child));
 }
 
 bool FlexLayoutAlgorithm::WillChildCrossSizeBeContainerCrossSize(
@@ -716,6 +693,15 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
           MinMaxSizesFunc);
     }
 
+    auto InlineSizeFunc = [&]() -> LayoutUnit {
+      DCHECK(!MainAxisIsInlineAxis(child));
+      const ConstraintSpace child_space =
+          BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
+      return CalculateInitialFragmentGeometry(child_space, child,
+                                              /* break_token */ nullptr)
+          .border_box_size.inline_size;
+    };
+
     const LayoutResult* layout_result = nullptr;
     auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
       if (!layout_result) {
@@ -738,12 +724,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       DCHECK(!MainAxisIsInlineAxis(child));
 
       if (child.HasAspectRatio() && !child.IsReplaced()) {
-        const ConstraintSpace child_space =
-            BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
-        const LayoutUnit inline_size =
-            CalculateInitialFragmentGeometry(child_space, child,
-                                             /* break_token */ nullptr)
-                .border_box_size.inline_size;
+        const LayoutUnit inline_size = InlineSizeFunc();
         if (inline_size != kIndefiniteSize) {
           return BlockSizeFromAspectRatio(
               border_padding_in_child_writing_mode, child.GetAspectRatio(),
@@ -924,13 +905,27 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
     const BoxStrut scrollbars = ComputeScrollbarsForNonAnonymous(child);
 
-    // https://drafts.csswg.org/css-flexbox/#definite-sizes
-    // If the flex container has a definite main size, a flex item's
-    // post-flexing main size is treated as definite, even though it can rely
-    // on the indefinite sizes of any flex items in the same line.
+    auto AspectRatioProvidesBlockMainSize = [&]() -> bool {
+      if (MainAxisIsInlineAxis(child)) {
+        return false;
+      }
+      if (child.IsReplaced()) {
+        return false;
+      }
+      return child.HasAspectRatio() && InlineSizeFunc() != kIndefiniteSize;
+    };
+
+    // For flex-items whose main-axis is the block-axis we treat the initial
+    // block-size as indefinite if:
+    //  - The flex container has an indefinite main-size.
+    //  - The used flex-basis is indefinite.
+    //  - The aspect-ratio doesn't provide the main-size.
+    //
+    // See: // https://drafts.csswg.org/css-flexbox/#definite-sizes
     const bool is_initial_block_size_indefinite =
-        is_column_ && ChildAvailableSize().block_size == kIndefiniteSize &&
-        is_used_flex_basis_indefinite && !AspectRatioProvidesMainSize(child);
+        is_column_ && !MainAxisIsInlineAxis(child) &&
+        ChildAvailableSize().block_size == kIndefiniteSize &&
+        is_used_flex_basis_indefinite && !AspectRatioProvidesBlockMainSize();
 
     const auto container_writing_direction =
         GetConstraintSpace().GetWritingDirection();
