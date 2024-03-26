@@ -274,8 +274,13 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // Requests the current thermal state.
   virtual void RequestThermalState() = 0;
 
-  // Requests suspend of the system.
-  virtual void RequestSuspend() = 0;
+  // Requests suspend of the system. If |duration_secs| is non-zero, an alarm
+  // will be set to wake up the system after this many seconds (a dark resume).
+  // |flavor| is a platform-specific flavor of suspend (to RAM, disk, etc.).
+  // |wakeup_count| is an optional wakeup count to pass to powerd.
+  virtual void RequestSuspend(std::optional<uint64_t> wakeup_count,
+                              int32_t duration_secs,
+                              power_manager::RequestSuspendFlavor flavor) = 0;
 
   // Requests restart of the system. |description| contains a human-readable
   // string describing the source of the request that will be logged by powerd.

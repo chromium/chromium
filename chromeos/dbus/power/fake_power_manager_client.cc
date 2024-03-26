@@ -192,7 +192,10 @@ void FakePowerManagerClient::RequestAllPeripheralBatteryUpdate() {}
 
 void FakePowerManagerClient::RequestThermalState() {}
 
-void FakePowerManagerClient::RequestSuspend() {
+void FakePowerManagerClient::RequestSuspend(
+    std::optional<uint64_t> wakeup_count,
+    int32_t duration_secs,
+    power_manager::RequestSuspendFlavor flavor) {
   ++num_request_suspend_calls_;
 }
 

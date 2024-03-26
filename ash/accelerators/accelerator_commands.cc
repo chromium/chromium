@@ -1133,7 +1133,9 @@ void StopScreenRecording() {
 }
 
 void Suspend() {
-  chromeos::PowerManagerClient::Get()->RequestSuspend();
+  chromeos::PowerManagerClient::Get()->RequestSuspend(
+      /*wakeup_count=*/std::nullopt, /*duration_secs=*/0,
+      power_manager::REQUEST_SUSPEND_DEFAULT);
 }
 
 void SwitchToNextIme() {

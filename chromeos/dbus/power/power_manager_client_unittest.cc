@@ -79,6 +79,45 @@ MATCHER_P3(IsSuspendReadiness, method_name, suspend_id, delay_id, "") {
   return true;
 }
 
+// Matcher that verifies a |RequestSuspend| dbus::MethodCall.
+MATCHER_P4(IsRequestSuspend, method_name, count, duration, flavor, "") {
+  if (arg->GetMember() != method_name) {
+    *result_listener << "has member " << arg->GetMember();
+    return false;
+  }
+  dbus::MessageReader reader(arg);
+  uint64_t read_count;
+  if (!reader.PopUint64(&read_count)) {
+    *result_listener << "missing value 1 (count)";
+    return false;
+  }
+  if (read_count != count) {
+    *result_listener << "expected count = " << count << ", got " << read_count;
+    return false;
+  }
+  int32_t read_duration;
+  if (!reader.PopInt32(&read_duration)) {
+    *result_listener << "missing value 2 (duration)";
+    return false;
+  }
+  if (read_duration != duration) {
+    *result_listener << "expected duration = " << duration << ", got "
+                     << read_duration;
+    return false;
+  }
+  uint32_t read_flavor;
+  if (!reader.PopUint32(&read_flavor)) {
+    *result_listener << "missing value 1 (count)";
+    return false;
+  }
+  if (read_flavor != flavor) {
+    *result_listener << "expected flavor = " << flavor << ", got "
+                     << read_flavor;
+    return false;
+  }
+  return true;
+}
+
 // Matcher that verifies that a dbus::MethodCall has member |method_name|.
 MATCHER_P(IsRequestRestart, method_name, "") {
   if (arg->GetMember() != method_name) {
@@ -728,6 +767,30 @@ TEST_F(PowerManagerClientTest, ChangeThermalState) {
   }
 
   base::PowerMonitor::RemovePowerThermalObserver(&observer);
+}
+
+// Test that |RequestSuspend| calls the DBus method with the same name.
+TEST_F(PowerManagerClientTest, RequestSuspend) {
+  const uint64_t expected_count = -1ULL;
+  const int32_t expected_duration = 5;
+  const auto expected_flavor = power_manager::REQUEST_SUSPEND_DEFAULT;
+
+  EXPECT_CALL(*proxy_.get(),
+              DoCallMethod(IsRequestSuspend("RequestSuspend", expected_count,
+                                            expected_duration, expected_flavor),
+                           _, _));
+  client_->RequestSuspend(std::nullopt, expected_duration, expected_flavor);
+
+  const uint64_t expected_count2 = 18446744073709550592ULL;
+  const int32_t expected_duration2 = -5;
+  const auto expected_flavor2 = power_manager::REQUEST_SUSPEND_TO_DISK;
+  EXPECT_CALL(
+      *proxy_.get(),
+      DoCallMethod(IsRequestSuspend("RequestSuspend", expected_count2,
+                                    expected_duration2, expected_flavor2),
+                   _, _));
+  client_->RequestSuspend(expected_count2, expected_duration2,
+                          expected_flavor2);
 }
 
 // Test that |RequestRestart| calls |RestartRequested| method for observers.

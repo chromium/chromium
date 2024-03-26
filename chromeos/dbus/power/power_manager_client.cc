@@ -389,9 +389,22 @@ class PowerManagerClientImpl : public PowerManagerClient {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void RequestSuspend() override {
-    POWER_LOG(USER) << "RequestSuspend";
-    SimpleMethodCallToPowerManager(power_manager::kRequestSuspendMethod);
+  void RequestSuspend(std::optional<uint64_t> wakeup_count,
+                      int32_t duration_secs,
+                      power_manager::RequestSuspendFlavor flavor) override {
+    auto wakeup_count_value = wakeup_count.value_or(-1ULL);
+    POWER_LOG(USER) << "RequestSuspend: wakeup_count=" << wakeup_count_value
+                    << ", duration_secs=" << duration_secs
+                    << ", flavor=" << flavor;
+    dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
+                                 power_manager::kRequestSuspendMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint64(wakeup_count_value);
+    writer.AppendInt32(duration_secs);
+    writer.AppendUint32(flavor);
+    power_manager_proxy_->CallMethod(&method_call,
+                                     dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                     base::DoNothing());
   }
 
   void RequestRestart(power_manager::RequestRestartReason reason,

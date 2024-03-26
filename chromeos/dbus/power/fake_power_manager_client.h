@@ -117,7 +117,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void RequestStatusUpdate() override;
   void RequestAllPeripheralBatteryUpdate() override;
   void RequestThermalState() override;
-  void RequestSuspend() override;
+  void RequestSuspend(std::optional<uint64_t> wakeup_count,
+                      int32_t duration_secs,
+                      power_manager::RequestSuspendFlavor flavor) override;
   void RequestRestart(power_manager::RequestRestartReason reason,
                       const std::string& description) override;
   void RequestShutdown(power_manager::RequestShutdownReason reason,

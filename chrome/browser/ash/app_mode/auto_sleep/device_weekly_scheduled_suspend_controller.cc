@@ -165,8 +165,9 @@ void DeviceWeeklyScheduledSuspendController::
 
 void DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalStart(
     base::TimeDelta duration) {
-  // TODO(b/330664145): Use the `duration` when calling `RequestSuspend`.
-  chromeos::PowerManagerClient::Get()->RequestSuspend();
+  chromeos::PowerManagerClient::Get()->RequestSuspend(
+      /*wakeup_count=*/std::nullopt, duration.InSeconds(),
+      power_manager::REQUEST_SUSPEND_DEFAULT);
 }
 
 void DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalEnd() {
