@@ -99,21 +99,8 @@ test(function () {
     `);
     let rule = document.styleSheets[0].cssRules[0];
     rule.navigation = "auto";
-    assert_equals(rule.navigation, "auto");
-  });
-}, "`navigation` descriptor can be set.");
-
-test(function () {
-  resetStateAndTest(() => {
-    document.styleSheets[0].insertRule(`
-      @view-transition {
-        navigation: none;
-      }
-    `);
-    let rule = document.styleSheets[0].cssRules[0];
-    rule.navigation = "foo";
     assert_equals(rule.navigation, "none");
   });
-}, "Cannot set invalid value to `navigation` descriptor");
+}, "`navigation` descriptor cannot be set.");
 
 </script>

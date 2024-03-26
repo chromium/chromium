@@ -17,7 +17,6 @@ class CORE_EXPORT StyleRuleViewTransition : public StyleRuleBase {
   ~StyleRuleViewTransition();
 
   const CSSValue* GetNavigation() const;
-  void SetNavigation(const CSSValue* new_value);
 
   StyleRuleViewTransition* Copy() const {
     return MakeGarbageCollected<StyleRuleViewTransition>(*this);

@@ -4,14 +4,14 @@
 <link rel="author" href="mailto:bokan@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<style>
+<style id="vt-style">
 @view-transition {
     navigation: none;
 }
 </style>
 <script>
 function optIn() {
-    document.styleSheets[0].cssRules[0].navigation = 'auto';
+  document.querySelector("#vt-style").innerHTML = `@view-transition { navigation: auto }`;
 }
 const params = new URLSearchParams(location.search);
 const is_new_page = params.has('new');

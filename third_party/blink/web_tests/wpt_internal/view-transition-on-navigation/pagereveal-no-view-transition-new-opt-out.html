@@ -7,7 +7,7 @@
 <link rel="author" href="mailto:bokan@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<style>
+<style id="vt-style">
   @view-transition {
     navigation: auto;
   }
@@ -22,7 +22,7 @@ if (is_starting_page) {
   }));
 } else {
   // Remove the opt-in from the destination page.
-  document.styleSheets[0].cssRules[0].navigation = 'none';
+  document.querySelector("#vt-style").remove();
   promise_test(async () => {
     const pagereveal = await new Promise(resolve => {
       addEventListener('pagereveal', e => resolve(e));

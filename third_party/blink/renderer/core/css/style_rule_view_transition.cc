@@ -26,10 +26,6 @@ const CSSValue* StyleRuleViewTransition::GetNavigation() const {
   return navigation_.Get();
 }
 
-void StyleRuleViewTransition::SetNavigation(const CSSValue* new_value) {
-  navigation_ = new_value;
-}
-
 void StyleRuleViewTransition::TraceAfterDispatch(
     blink::Visitor* visitor) const {
   visitor->Trace(layer_);
