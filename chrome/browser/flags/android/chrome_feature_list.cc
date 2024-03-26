@@ -217,7 +217,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kGridTabSwitcherAndroidAnimations,
     &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
-    &kInstantStart,
     &kLensOnQuickActionSearchWidget,
     &kLogoPolish,
     &kMagicStackAndroid,
@@ -668,8 +667,6 @@ BASE_FEATURE(kIncognitoReauthenticationForAndroid,
 BASE_FEATURE(kIncognitoScreenshot,
              "IncognitoScreenshot",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kInstantStart, "InstantStart", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLogoPolish, "LogoPolish", base::FEATURE_DISABLED_BY_DEFAULT);
 

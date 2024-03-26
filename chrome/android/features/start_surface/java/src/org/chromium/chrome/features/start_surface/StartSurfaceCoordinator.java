@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
@@ -72,7 +71,6 @@ import org.chromium.chrome.features.tasks.TasksView;
 import org.chromium.chrome.features.tasks.TasksViewBinder;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -273,7 +271,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         createStartSurface();
         Runnable initializeMVTilesRunnable = this::initializeMVTiles;
         View logoContainerView = mView.findViewById(R.id.logo_container);
-        ViewGroup feedPlaceholderParentView = mView.findViewById(R.id.tasks_surface_body);
 
         mStartSurfaceMediator =
                 new StartSurfaceMediator(
@@ -298,7 +295,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                         mParentTabSupplier,
                         logoContainerView,
                         backPressManager,
-                        feedPlaceholderParentView,
                         mActivityLifecycleDispatcher,
                         mProfileSupplier);
 
@@ -572,15 +568,14 @@ public class StartSurfaceCoordinator implements StartSurface {
                             /* moduleDelegate= */ null);
         }
         View mvTilesContainer = mView.findViewById(R.id.mv_tiles_container);
+        // TODO(b/331250449): clean up |shouldShowSkeletonUIPreNative| since it is always false now.
         mMostVisitedCoordinator =
                 new MostVisitedTilesCoordinator(
                         mActivity,
                         mActivityLifecycleDispatcher,
                         mvTilesContainer,
                         mWindowAndroid,
-                        TabUiFeatureUtilities.supportInstantStart(
-                                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
-                                mActivity),
+                        /* shouldShowSkeletonUIPreNative= */ false,
                         /* isScrollableMVTEnabled= */ true,
                         Integer.MAX_VALUE,
                         /* snapshotTileGridChangedRunnable= */ null,

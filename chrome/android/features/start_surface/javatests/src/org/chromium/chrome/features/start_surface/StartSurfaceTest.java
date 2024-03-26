@@ -27,7 +27,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS;
-import static org.chromium.chrome.features.start_surface.StartSurfaceMediator.FEED_VISIBILITY_CONSISTENCY;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_BASE_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_SINGLE_ENABLED_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.getStartSurfaceLayoutType;
@@ -36,7 +35,6 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForStableView;
 
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -89,7 +87,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.features.tasks.SingleTabSwitcherMediator;
@@ -145,9 +142,6 @@ public class StartSurfaceTest {
 
     @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
 
-    /** Whether feature {@link ChromeFeatureList#INSTANT_START} is enabled. */
-    private final boolean mUseInstantStart;
-
     /**
      * Whether feature {@link ChromeFeatureList#START_SURFACE_RETURN_TIME} is enabled as
      * "immediately". When immediate return is enabled, the Start surface is showing when Chrome is
@@ -159,10 +153,7 @@ public class StartSurfaceTest {
     private LayoutStateProvider.LayoutStateObserver mLayoutObserver;
     @LayoutType private int mCurrentlyActiveLayout;
 
-    public StartSurfaceTest(boolean useInstantStart, boolean immediateReturn) {
-        ChromeFeatureList.sInstantStart.setForTesting(useInstantStart);
-
-        mUseInstantStart = useInstantStart;
+    public StartSurfaceTest(boolean immediateReturn) {
         mImmediateReturn = immediateReturn;
     }
 
@@ -171,12 +162,6 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.setUpStartSurfaceTests(mImmediateReturn, mActivityTestRule);
 
         mLayoutChangedCallbackHelper = new CallbackHelper();
-
-        if (isInstantReturn()) {
-            // Assume start surface is shown immediately, and the LayoutStateObserver may miss the
-            // first onFinishedShowing event.
-            mCurrentlyActiveLayout = StartSurfaceTestUtils.getStartSurfaceLayoutType();
-        }
 
         mLayoutObserver =
                 new LayoutStateProvider.LayoutStateObserver() {
@@ -237,14 +222,6 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
 
-        if (isInstantReturn() && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // TODO(crbug.com/1139515): Fix incognito_toggle_tabs visibility AssertionFailedError
-            // issue.
-            // TODO(crbug.com/1092642): Fix androidx.test.espresso.PerformException issue when
-            // performing a single click on position: 0. See code below.
-            return;
-        }
-
         onView(withId(R.id.incognito_toggle_tabs)).check(matches(withEffectiveVisibility(GONE)));
 
         onViewWaiting(withId(R.id.single_tab_view)).perform(click());
@@ -273,11 +250,8 @@ public class StartSurfaceTest {
         onView(withId(R.id.single_tab_view)).check(matches(isDisplayed()));
         onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
 
-        if (!isInstantReturn()) {
-            // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
-            onView(withId(R.id.incognito_toggle_tabs))
-                    .check(matches(withEffectiveVisibility(GONE)));
-        }
+        // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
+        onView(withId(R.id.incognito_toggle_tabs)).check(matches(withEffectiveVisibility(GONE)));
         onViewWaiting(allOf(withId(R.id.tab_title_view), withText(not(is("")))));
 
         StartSurfaceTestUtils.clickTabSwitcherButton(cta);
@@ -287,12 +261,6 @@ public class StartSurfaceTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         HISTOGRAM_START_SURFACE_MODULE_CLICK,
                         ModuleTypeOnStartAndNtp.TAB_SWITCHER_BUTTON));
-
-        if (isInstantReturn()) {
-            // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
-            // omnibox.
-            return;
-        }
 
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
@@ -398,11 +366,6 @@ public class StartSurfaceTest {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), cta, false, false);
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
-        if (isInstantReturn()) {
-            // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
-            // omnibox.
-            return;
-        }
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         TabUiTestHelper.enterTabSwitcher(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
@@ -424,11 +387,6 @@ public class StartSurfaceTest {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), cta, false, false);
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
-        if (isInstantReturn()) {
-            // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
-            // omnibox.
-            return;
-        }
         mActivityTestRule.loadUrl("about:blank");
         CriteriaHelper.pollUiThread(
                 () ->
@@ -480,14 +438,11 @@ public class StartSurfaceTest {
         mActivityTestRule.waitForActivityNativeInitializationComplete();
         StartSurfaceTestUtils.waitForDeferredStartup(mActivityTestRule);
 
-        boolean isInstantStart =
-                TabUiFeatureUtilities.supportInstantStart(false, mActivityTestRule.getActivity());
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         StartSurfaceConfiguration.getHistogramName(
-                                AsyncInitializationActivity.FIRST_DRAW_COMPLETED_TIME_MS_UMA,
-                                isInstantStart)));
+                                AsyncInitializationActivity.FIRST_DRAW_COMPLETED_TIME_MS_UMA)));
         int expectedRecordCount = mImmediateReturn ? 1 : 0;
 
         CriteriaHelper.pollUiThread(
@@ -496,8 +451,7 @@ public class StartSurfaceTest {
                             RecordHistogram.getHistogramTotalCountForTesting(
                                     StartSurfaceConfiguration.getHistogramName(
                                             ExploreSurfaceCoordinator
-                                                    .FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA,
-                                            isInstantStart)),
+                                                    .FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA)),
                             is(expectedRecordCount));
                 });
 
@@ -507,8 +461,7 @@ public class StartSurfaceTest {
                 expectedRecordCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         StartSurfaceConfiguration.getHistogramName(
-                                SingleTabSwitcherMediator.SINGLE_TAB_TITLE_AVAILABLE_TIME_UMA,
-                                isInstantStart)));
+                                SingleTabSwitcherMediator.SINGLE_TAB_TITLE_AVAILABLE_TIME_UMA)));
 
         Assert.assertEquals(
                 expectedRecordCount,
@@ -526,21 +479,8 @@ public class StartSurfaceTest {
                 expectedRecordCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         StartSurfaceConfiguration.getHistogramName(
-                                ExploreSurfaceCoordinator.FEED_STREAM_CREATED_TIME_MS_UMA,
-                                isInstantStart)));
+                                ExploreSurfaceCoordinator.FEED_STREAM_CREATED_TIME_MS_UMA)));
 
-        Assert.assertEquals(
-                isInstantReturn() ? 1 : 0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        StartSurfaceConfiguration.getHistogramName(
-                                FeedPlaceholderCoordinator.FEEDS_PLACEHOLDER_SHOWN_TIME_UMA,
-                                true)));
-        Assert.assertEquals(
-                expectedRecordCount,
-                RecordHistogram.getHistogramTotalCountForTesting(FEED_VISIBILITY_CONSISTENCY));
-        Assert.assertEquals(
-                expectedRecordCount,
-                RecordHistogram.getHistogramValueCountForTesting(FEED_VISIBILITY_CONSISTENCY, 1));
         int showAtStartup = mImmediateReturn ? 1 : 0;
         Assert.assertEquals(
                 1,
@@ -602,12 +542,6 @@ public class StartSurfaceTest {
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
         assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
-
-        if (isInstantReturn()) {
-            // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
-            // omnibox.
-            return;
-        }
 
         /** Verifies the case of start surface -> a tab -> tab switcher -> start surface. */
         onViewWaiting(withId(R.id.single_tab_view)).perform(click());
@@ -718,12 +652,6 @@ public class StartSurfaceTest {
 
         // Launches the first site in mv tiles.
         StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount= */ 1);
-
-        if (isInstantReturn() && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // Fix the issue that failed to perform a single click on the tab switcher button.
-            // See code below.
-            return;
-        }
 
         Tab tab = cta.getActivityTab();
         StartSurfaceTestUtils.pressHomePageButton(cta);
@@ -858,14 +786,6 @@ public class StartSurfaceTest {
 
         // The renderer process initialized by spareTab is used.
         Assert.assertEquals(1, RenderProcessHostUtils.getCurrentRenderProcessCount());
-    }
-
-    /**
-     * @return Whether both features {@link ChromeFeatureList#INSTANT_START} and {@link
-     *     ChromeFeatureList#START_SURFACE_RETURN_TIME} are enabled.
-     */
-    private boolean isInstantReturn() {
-        return mUseInstantStart && mImmediateReturn;
     }
 
     /** Tests that on navigation from start surface using MV tiles should use spare tab. */
@@ -1071,7 +991,7 @@ public class StartSurfaceTest {
     @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testStartSurfaceBackgroundColorAfterPolish() {
-        if (!mImmediateReturn || mUseInstantStart) return;
+        if (!mImmediateReturn) return;
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);

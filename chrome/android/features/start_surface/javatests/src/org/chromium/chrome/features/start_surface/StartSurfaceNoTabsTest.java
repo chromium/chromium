@@ -81,9 +81,7 @@ public class StartSurfaceNoTabsTest {
 
     private final boolean mImmediateReturn;
 
-    public StartSurfaceNoTabsTest(boolean useInstantStart, boolean immediateReturn) {
-        ChromeFeatureList.sInstantStart.setForTesting(useInstantStart);
-
+    public StartSurfaceNoTabsTest(boolean immediateReturn) {
         mImmediateReturn = immediateReturn;
     }
 

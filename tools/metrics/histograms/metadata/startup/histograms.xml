@@ -55,21 +55,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.CachedFeedVisibilityConsistency"
-    enum="BooleanConsistent" expires_after="2024-05-07">
-  <owner>hanxi@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records whether or not the cached Feed visibility in the SharedPreferences
-    is consistent with the Feed visibility user preference on the disk. It's
-    recorded when overview mode is shown because of Return to Tab Switcher, and
-    only on cold start. By recording this histogram, the number of mismatches
-    between the criteria of whether the Feed placeholder of Instant Start
-    pre-native is shown and the criteria of whether Feed articles after native
-    initialization are shown is recorded.
-  </summary>
-</histogram>
-
 <histogram
     name="Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground"
     enum="Boolean" expires_after="2024-07-28">
@@ -384,9 +369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Startup.Android.FeedContentFirstLoadedTime"
-    units="ms" expires_after="2024-05-07">
-<!-- Name completed by histogram_suffixes name="JavaStartMode" -->
-
+    units="ms" expires_after="2024-09-15">
   <owner>hanxi@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -397,22 +380,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.FeedsLoadingPlaceholderShown.Instant"
-    units="ms" expires_after="2024-05-07">
-  <owner>hanxi@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records the time duration from a cold start till the Feeds loading
-    placeholder is shown on the StartSurface. This placeholder is only shown
-    when the feature flag InstantStart is enabled and StartSurface is shown at
-    launch due to &quot;return to tab switcher&quot; feature.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Startup.Android.FeedStreamCreatedTime" units="ms"
-    expires_after="2024-05-07">
-<!-- Name completed by histogram_suffixes name="JavaStartMode" -->
-
+    expires_after="2024-09-15">
   <owner>hanxi@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -424,8 +393,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Startup.Android.FirstDrawCompletedTime" units="ms"
     expires_after="2024-09-15">
-<!-- Name completed by histogram_suffixes name="JavaStartMode" -->
-
   <owner>hanxi@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -444,7 +411,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.IsHomepagePolicyManagerInitialized"
-    enum="Boolean" expires_after="2024-07-07">
+    enum="Boolean" expires_after="2024-09-15">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -467,7 +434,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.IsLastVisibleTimeLogged" enum="Boolean"
-    expires_after="2024-07-07">
+    expires_after="2024-09-15">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -477,7 +444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.LastVisitedTabIsSRPWhenOverviewShownAtLaunch"
-    enum="Boolean" expires_after="2024-05-07">
+    enum="Boolean" expires_after="2024-09-15">
   <owner>hanxi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -521,9 +488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Startup.Android.SingleTabTitleAvailableTime"
-    units="ms" expires_after="2024-05-07">
-<!-- Name completed by histogram_suffixes name="JavaStartMode" -->
-
+    units="ms" expires_after="2024-09-15">
   <owner>hanxi@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>

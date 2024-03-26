@@ -100,9 +100,6 @@ public class StartSurfaceTabSwitcherTest {
 
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
-    /** Whether feature {@link ChromeFeatureList#INSTANT_START} is enabled. */
-    private final boolean mUseInstantStart;
-
     /**
      * Whether feature {@link ChromeFeatureList#START_SURFACE_RETURN_TIME} is enabled as
      * "immediately". When immediate return is enabled, the Start surface is showing when Chrome is
@@ -114,10 +111,7 @@ public class StartSurfaceTabSwitcherTest {
     private LayoutStateProvider.LayoutStateObserver mLayoutObserver;
     @LayoutType private int mCurrentlyActiveLayout;
 
-    public StartSurfaceTabSwitcherTest(boolean useInstantStart, boolean immediateReturn) {
-        ChromeFeatureList.sInstantStart.setForTesting(useInstantStart);
-
-        mUseInstantStart = useInstantStart;
+    public StartSurfaceTabSwitcherTest(boolean immediateReturn) {
         mImmediateReturn = immediateReturn;
     }
 
@@ -127,12 +121,6 @@ public class StartSurfaceTabSwitcherTest {
         StartSurfaceTestUtils.setUpStartSurfaceTests(mImmediateReturn, mActivityTestRule);
 
         mLayoutChangedCallbackHelper = new CallbackHelper();
-
-        if (isInstantReturn()) {
-            // Assume start surface is shown immediately, and the LayoutStateObserver may miss the
-            // first onFinishedShowing event.
-            mCurrentlyActiveLayout = StartSurfaceTestUtils.getStartSurfaceLayoutType();
-        }
 
         mLayoutObserver =
                 new LayoutStateProvider.LayoutStateObserver() {
@@ -169,11 +157,6 @@ public class StartSurfaceTabSwitcherTest {
                     mLayoutChangedCallbackHelper,
                     mCurrentlyActiveLayout,
                     mActivityTestRule.getActivity());
-            if (isInstantReturn()) {
-                // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
-                // omnibox.
-                return;
-            }
             // Single surface is shown as homepage. Clicks "more_tabs" button to get into tab
             // switcher.
             onViewWaiting(withId(R.id.primary_tasks_surface_view));
@@ -353,11 +336,6 @@ public class StartSurfaceTabSwitcherTest {
                     Assert.assertNotEquals(tab1.getTitle(), tab2.getTitle());
                 });
 
-        if (isInstantReturn()) {
-            // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
-            // omnibox.
-            return;
-        }
         // Enter the Tab switcher.
         TabUiTestHelper.enterTabSwitcher(cta);
         int ancestorViewId = TabUiTestHelper.getTabSwitcherAncestorId(cta);
@@ -382,13 +360,5 @@ public class StartSurfaceTabSwitcherTest {
         TextView title2 = secondViewHolder.itemView.findViewById(R.id.tab_title);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> Assert.assertEquals(tab2.getTitle(), title2.getText()));
-    }
-
-    /**
-     * @return Whether both features {@link ChromeFeatureList#INSTANT_START} and {@link
-     *     ChromeFeatureList#START_SURFACE_RETURN_TIME} are enabled.
-     */
-    private boolean isInstantReturn() {
-        return mUseInstantStart && mImmediateReturn;
     }
 }

@@ -100,9 +100,7 @@ public class ExploreSurfaceViewBinderTest {
                                     tabStripHeightSupplier);
                     mExploreSurfaceCoordinator =
                             mExploreSurfaceCoordinatorFactory.create(
-                                    false,
-                                    /* isPlaceholderShown= */ false,
-                                    NewTabPageLaunchOrigin.UNKNOWN);
+                                    false, NewTabPageLaunchOrigin.UNKNOWN);
                     mFeedSurfaceView = mExploreSurfaceCoordinator.getView();
                 });
     }

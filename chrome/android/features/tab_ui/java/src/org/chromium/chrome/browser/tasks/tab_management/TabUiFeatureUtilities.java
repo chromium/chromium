@@ -139,17 +139,9 @@ public class TabUiFeatureUtilities {
     }
 
     /**
-     * @return Whether the instant start is supported.
-     */
-    public static boolean supportInstantStart(boolean isTablet, Context context) {
-        return ChromeFeatureList.sInstantStart.isEnabled()
-                && !isTablet
-                && !SysUtils.isLowEndDevice();
-    }
-
-    /**
      * @return whether tab drag is enabled (either via drag as window or drag as tab).
-     * TODO(crbug.com/1485628) - merge both flags and use device property instead to differentiate.
+     *     TODO(crbug.com/1485628) - merge both flags and use device property instead to
+     *     differentiate.
      */
     public static boolean isTabDragEnabled() {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) {

@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
@@ -126,10 +125,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
                             moduleDelegate);
             mMediator = null;
         }
-        if (ChromeFeatureList.sInstantStart.isEnabled()) {
-            new TabAttributeCache(tabModelSelector);
-        }
-
         // Most of these interfaces should be unused. They are invalid implementations.
         mTabListDelegate =
                 new TabSwitcher.TabListDelegate() {

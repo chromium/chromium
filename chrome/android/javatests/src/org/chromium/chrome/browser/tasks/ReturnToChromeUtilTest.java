@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.tasks;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS_PARAM;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStatesAndMetadataFile;
@@ -22,17 +20,12 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.CommandLine;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -63,15 +56,12 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Tests for {@link ReturnToChromeUtil}. Tests the functionality of return to chrome features that
  * open overview mode if the timeout has passed.
  */
-@RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @EnableFeatures({
     ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study",
@@ -83,12 +73,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 })
 @DoNotBatch(reason = "This test suite tests Clank's startup.")
 public class ReturnToChromeUtilTest {
-    @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
-            Arrays.asList(
-                    new ParameterSet().value(false).name("NoInstant"),
-                    new ParameterSet().value(true).name("Instant"));
-
     private static final String BASE_PARAMS =
             "force-fieldtrial-params=Study.Group:" + START_SURFACE_RETURN_TIME_SECONDS_PARAM + "/0";
 
@@ -120,15 +104,9 @@ public class ReturnToChromeUtilTest {
 
     private final AtomicBoolean mInflated = new AtomicBoolean();
 
-    private final boolean mUseInstantStart;
     ReturnToChromeUtil.ReturnToChromeBackPressHandler mBackPressHandler;
 
-    public ReturnToChromeUtilTest(boolean useInstantStart) {
-        mUseInstantStart = useInstantStart;
-        ChromeFeatureList.sInstantStart.setForTesting(useInstantStart);
-        if (mUseInstantStart) {
-            CommandLine.getInstance().appendSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION);
-        }
+    public ReturnToChromeUtilTest() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ApplicationStatus.registerStateListenerForAllActivities(
@@ -148,10 +126,6 @@ public class ReturnToChromeUtilTest {
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1081754.
     public void testTabSwitcherModeTriggeredWithinThreshold_WarmStart_FromIncognito_NON_V2()
             throws Exception {
-
-        // TODO(crbug.com/1095637): Make it work for instant start.
-        assumeFalse(ChromeFeatureList.sInstantStart.isEnabled());
-
         testTabSwitcherModeTriggeredBeyondThreshold();
 
         ChromeTabUtils.newTabFromMenu(
@@ -193,9 +167,6 @@ public class ReturnToChromeUtilTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @DisabledTest(message = "https://crbug.com/1023079, crbug.com/1063984")
     public void testInitialScrollIndex() throws Exception {
-        // Instant start is not applicable since we need to create tabs and restart.
-        assumeTrue(!mUseInstantStart);
-
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
@@ -259,11 +230,7 @@ public class ReturnToChromeUtilTest {
         mActivityTestRule.prepareUrlIntent(intent, url);
         Assert.assertFalse(mInflated.get());
         mActivityTestRule.launchActivity(intent);
-        if (mUseInstantStart) {
-            CriteriaHelper.pollUiThread(mInflated::get);
-        } else {
-            mActivityTestRule.waitForActivityNativeInitializationComplete();
-        }
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
         mBackPressHandler =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
@@ -279,16 +246,6 @@ public class ReturnToChromeUtilTest {
     }
 
     private void waitTabModelRestoration() {
-        if (mUseInstantStart) {
-            Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
-
-            CommandLine.getInstance().removeSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION);
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () ->
-                            mActivityTestRule
-                                    .getActivity()
-                                    .startDelayedNativeInitializationForTests());
-        }
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
         Assert.assertTrue(LibraryLoader.getInstance().isInitialized());

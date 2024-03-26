@@ -21,8 +21,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -351,56 +349,6 @@ public class PseudoTabUnitTest {
 
         doReturn(false).when(mTab1).isIncognito();
         Assert.assertFalse(realTab.isIncognito());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.INSTANT_START})
-    public void getRelatedTabs_noProvider_single() {
-        doReturn(false).when(mTabModelSelector).isTabStateInitialized();
-
-        PseudoTab tab1 = PseudoTab.fromTabId(TAB1_ID);
-        List<PseudoTab> related =
-                PseudoTab.getRelatedTabs(
-                        ContextUtils.getApplicationContext(), tab1, mTabModelSelector);
-        Assert.assertEquals(1, related.size());
-        Assert.assertEquals(TAB1_ID, related.get(0).getId());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.INSTANT_START})
-    public void getRelatedTabs_noProvider_group() {
-        doReturn(false).when(mTabModelSelector).isTabStateInitialized();
-
-        TabAttributeCache.setRootIdForTesting(TAB1_ID, TAB1_ID);
-        TabAttributeCache.setRootIdForTesting(TAB2_ID, TAB1_ID);
-        PseudoTab tab1 = PseudoTab.fromTabId(TAB1_ID);
-        PseudoTab.fromTabId(TAB2_ID);
-
-        List<PseudoTab> related =
-                PseudoTab.getRelatedTabs(
-                        ContextUtils.getApplicationContext(), tab1, mTabModelSelector);
-        Assert.assertEquals(2, related.size());
-        Assert.assertEquals(TAB1_ID, related.get(0).getId());
-        Assert.assertEquals(TAB2_ID, related.get(1).getId());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.INSTANT_START})
-    public void getRelatedTabs_noProvider_badGroup() {
-        doReturn(false).when(mTabModelSelector).isTabStateInitialized();
-
-        TabAttributeCache.setRootIdForTesting(TAB1_ID, TAB1_ID);
-        TabAttributeCache.setRootIdForTesting(TAB2_ID, Tab.INVALID_TAB_ID);
-        TabAttributeCache.setRootIdForTesting(TAB3_ID, TAB3_ID);
-        PseudoTab tab1 = PseudoTab.fromTabId(TAB1_ID);
-        PseudoTab.fromTabId(TAB2_ID);
-        PseudoTab.fromTabId(TAB3_ID);
-
-        List<PseudoTab> related =
-                PseudoTab.getRelatedTabs(
-                        ContextUtils.getApplicationContext(), tab1, mTabModelSelector);
-        Assert.assertEquals(1, related.size());
-        Assert.assertEquals(TAB1_ID, related.get(0).getId());
     }
 
     @Test

@@ -17,7 +17,6 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.S
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.sClassParamsForStartSurfaceTest;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
-import android.os.Build;
 import android.view.View;
 
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -96,9 +95,6 @@ public class StartSurfaceBackButtonTest {
 
     @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
 
-    /** Whether feature {@link ChromeFeatureList#INSTANT_START} is enabled. */
-    private final boolean mUseInstantStart;
-
     /**
      * Whether feature {@link ChromeFeatureList#START_SURFACE_RETURN_TIME} is enabled as
      * "immediately". When immediate return is enabled, the Start surface is showing when Chrome is
@@ -111,10 +107,7 @@ public class StartSurfaceBackButtonTest {
     @LayoutType private int mCurrentlyActiveLayout;
     private FakeMostVisitedSites mMostVisitedSites;
 
-    public StartSurfaceBackButtonTest(boolean useInstantStart, boolean immediateReturn) {
-        ChromeFeatureList.sInstantStart.setForTesting(useInstantStart);
-
-        mUseInstantStart = useInstantStart;
+    public StartSurfaceBackButtonTest(boolean immediateReturn) {
         mImmediateReturn = immediateReturn;
     }
 
@@ -122,12 +115,6 @@ public class StartSurfaceBackButtonTest {
     public void setUp() throws IOException {
         StartSurfaceTestUtils.setUpStartSurfaceTests(mImmediateReturn, mActivityTestRule);
         mLayoutChangedCallbackHelper = new CallbackHelper();
-
-        if (isInstantReturn()) {
-            // Assume start surface is shown immediately, and the LayoutStateObserver may miss the
-            // first onFinishedShowing event.
-            mCurrentlyActiveLayout = StartSurfaceTestUtils.getStartSurfaceLayoutType();
-        }
 
         mLayoutObserver =
                 new LayoutStateProvider.LayoutStateObserver() {
@@ -261,12 +248,6 @@ public class StartSurfaceBackButtonTest {
 
         // Launches the first site in mv tiles.
         StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount= */ 1);
-
-        if (isInstantReturn() && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // Fix the issue that failed to perform a single click on the tab switcher button.
-            // See code below.
-            return;
-        }
 
         // Enters the tab switcher, and choose the new tab. After the tab is opening, press back.
         // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
@@ -416,7 +397,7 @@ public class StartSurfaceBackButtonTest {
     public void testBackButtonOnIncognitoTabOpenedFromStart() throws ExecutionException {
         // This is a test for crbug.com/1315915 to make sure when clicking back button on the
         // incognito tab opened from Start, the non-incognito homepage should show.
-        Assume.assumeTrue(mImmediateReturn && !mUseInstantStart);
+        Assume.assumeTrue(mImmediateReturn);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
@@ -476,13 +457,5 @@ public class StartSurfaceBackButtonTest {
 
         // Back gesture on the start surface puts Chrome background.
         ChromeApplicationTestUtils.waitUntilChromeInBackground();
-    }
-
-    /**
-     * @return Whether both features {@link ChromeFeatureList#INSTANT_START} and {@link
-     *     ChromeFeatureList#START_SURFACE_RETURN_TIME} are enabled.
-     */
-    private boolean isInstantReturn() {
-        return mUseInstantStart && mImmediateReturn;
     }
 }

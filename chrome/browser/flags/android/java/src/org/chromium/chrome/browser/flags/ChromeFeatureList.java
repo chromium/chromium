@@ -310,7 +310,6 @@ public abstract class ChromeFeatureList {
     public static final String INCOGNITO_REAUTHENTICATION_FOR_ANDROID =
             "IncognitoReauthenticationForAndroid";
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
-    public static final String INSTANT_START = "InstantStart";
     public static final String INTEREST_FEED_V2_HEARTS = "InterestFeedV2Hearts";
     public static final String IP_PROTECTION_UX = "IpProtectionUx";
     public static final String KID_FRIENDLY_CONTENT_FEED = "KidFriendlyContentFeed";
@@ -581,7 +580,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(GRID_TAB_SWITCHER_ANDROID_ANIMATIONS, false);
     public static final CachedFlag sIncognitoReauthenticationForAndroid =
             newCachedFlag(INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
-    public static final CachedFlag sInstantStart = newCachedFlag(INSTANT_START, false);
     public static final CachedFlag sLogoPolish = newCachedFlag(LOGO_POLISH, false);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, false);
     public static final CachedFlag sMultiInstanceApplicationStatusCleanup =
@@ -709,7 +707,6 @@ public abstract class ChromeFeatureList {
                     sFullscreenInsetsApiMigrationOnAutomotive,
                     sGridTabSwitcherAndroidAnimations,
                     sIncognitoReauthenticationForAndroid,
-                    sInstantStart,
                     sLogoPolish,
                     sMagicStackAndroid,
                     sMultiInstanceApplicationStatusCleanup,

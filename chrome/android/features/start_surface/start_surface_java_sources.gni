@@ -10,7 +10,6 @@ start_surface_java_sources = [
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceFeedLifecycleManager.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceNavigationDelegate.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceViewBinder.java",
-  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/FeedPlaceholderCoordinator.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/MostVisitedSuggestionsUiDelegate.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurface.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceCoordinator.java",

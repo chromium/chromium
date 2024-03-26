@@ -23,12 +23,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -43,12 +41,10 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.OnTabSelectingListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherViewObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
@@ -292,42 +288,21 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         mSelectedTabDidNotChangedAfterShown = true;
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
-        if (ChromeFeatureList.sInstantStart.isEnabled()
-                && !mTabModelSelector.isTabStateInitialized()) {
-            mAddNormalTabModelObserverPending = true;
+        mTabModelSelector
+                .getTabModelFilterProvider()
+                .addTabModelFilterObserver(mNormalTabModelObserver);
+        TabModel normalTabModel = mTabModelSelector.getModel(false);
 
-            PseudoTab activeTab;
-            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                activeTab = PseudoTab.getActiveTabFromStateFile(mContext);
-            }
-            if (activeTab != null) {
-                maybeNotifyDataAvailable(activeTab.getUrl());
+        int selectedTabIndex = normalTabModel.index();
+        if (selectedTabIndex != TabList.INVALID_TAB_INDEX) {
+            assert normalTabModel.getCount() > 0;
 
-                mPropertyModel.set(TITLE, activeTab.getTitle());
-                if (mIsSurfacePolishEnabled) {
-                    mPropertyModel.set(URL, getDomainUrl(activeTab.getUrl()));
-                }
-                if (mTabTitleAvailableTime == null) {
-                    mTabTitleAvailableTime = SystemClock.elapsedRealtime();
-                }
-            }
-        } else {
-            mTabModelSelector
-                    .getTabModelFilterProvider()
-                    .addTabModelFilterObserver(mNormalTabModelObserver);
-            TabModel normalTabModel = mTabModelSelector.getModel(false);
+            Tab activeTab = normalTabModel.getTabAt(selectedTabIndex);
+            maybeNotifyDataAvailable(activeTab.getUrl());
+            updateSelectedTab(activeTab);
 
-            int selectedTabIndex = normalTabModel.index();
-            if (selectedTabIndex != TabList.INVALID_TAB_INDEX) {
-                assert normalTabModel.getCount() > 0;
-
-                Tab activeTab = normalTabModel.getTabAt(selectedTabIndex);
-                maybeNotifyDataAvailable(activeTab.getUrl());
-                updateSelectedTab(activeTab);
-
-                if (mTabTitleAvailableTime == null) {
-                    mTabTitleAvailableTime = SystemClock.elapsedRealtime();
-                }
+            if (mTabTitleAvailableTime == null) {
+                mTabTitleAvailableTime = SystemClock.elapsedRealtime();
             }
         }
         mPropertyModel.set(IS_VISIBLE, true);
@@ -391,8 +366,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
 
         StartSurfaceConfiguration.recordHistogram(
                 SINGLE_TAB_TITLE_AVAILABLE_TIME_UMA,
-                mTabTitleAvailableTime - activityCreationTimeMs,
-                TabUiFeatureUtilities.supportInstantStart(false, mContext));
+                mTabTitleAvailableTime - activityCreationTimeMs);
     }
 
     @Override

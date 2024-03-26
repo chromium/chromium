@@ -35,7 +35,6 @@ import android.content.res.Resources;
 import android.graphics.Point;
 import android.text.Editable;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
@@ -77,7 +76,6 @@ import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -157,13 +155,6 @@ class StartSurfaceMediator
     @Nullable private final ModuleDelegateCreator mModuleDelegateCreator;
     private boolean mShouldIgnoreTabSelecting;
 
-    // Boolean histogram used to record whether cached
-    // ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE is consistent with
-    // Pref.ARTICLES_LIST_VISIBLE.
-    @VisibleForTesting
-    static final String FEED_VISIBILITY_CONSISTENCY =
-            "Startup.Android.CachedFeedVisibilityConsistency";
-
     private static final int LAST_SHOW_TIME_NOT_SET = -1;
     @Nullable private ExploreSurfaceCoordinatorFactory mExploreSurfaceCoordinatorFactory;
 
@@ -200,21 +191,6 @@ class StartSurfaceMediator
      */
     private boolean mPendingObserver;
 
-    /**
-     * The value of {@link Pref#ARTICLES_LIST_VISIBLE} on Startup. Getting this value for recording
-     * the consistency of {@link ChromePreferenceKeys#FEED_ARTICLES_LIST_VISIBLE} with {@link
-     * Pref#ARTICLES_LIST_VISIBLE}.
-     */
-    private Boolean mFeedVisibilityPrefOnStartUp;
-
-    /**
-     * The value of {@link ChromePreferenceKeys#FEED_ARTICLES_LIST_VISIBLE} on Startup. Getting this
-     * value for recording the consistency with {@link Pref#ARTICLES_LIST_VISIBLE}.
-     */
-    @Nullable private Boolean mFeedVisibilityInSharedPreferenceOnStartUp;
-
-    private FeedPlaceholderCoordinator mFeedPlaceholderCoordinator;
-    private boolean mHasFeedPlaceholderShown;
     private boolean mHideOverviewOnTabSelecting = true;
     private StartSurface.OnTabSelectingListener mOnTabSelectingListener;
     private TabSwitcher mTabSwitcherModule;
@@ -241,7 +217,6 @@ class StartSurfaceMediator
             Supplier<Tab> parentTabSupplier,
             View logoContainerView,
             @Nullable BackPressManager backPressManager,
-            ViewGroup feedPlaceholderParentView,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ObservableSupplier<Profile> profileSupplier) {
         mTabSwitcherModule = tabSwitcherModule;
@@ -289,14 +264,6 @@ class StartSurfaceMediator
                 mPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
                 mPropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE, false);
                 mPropertyModel.set(IS_LENS_BUTTON_VISIBLE, false);
-            }
-
-            // Show feed loading image if necessary.
-            if (shouldShowFeedPlaceholder()) {
-                assert feedPlaceholderParentView != null;
-                mFeedPlaceholderCoordinator =
-                        new FeedPlaceholderCoordinator(context, feedPlaceholderParentView, false);
-                mHasFeedPlaceholderShown = true;
             }
 
             mIsIncognito = mTabModelSelector.isIncognitoSelected();
@@ -604,7 +571,6 @@ class StartSurfaceMediator
         if (mTabSwitcherModule != null) {
             mTabSwitcherModule.initWithNative();
         }
-        mFeedVisibilityPrefOnStartUp = prefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE);
 
         // Trigger the creation of spare tab for StartSurface after the native is initialized to
         // speed up navigation from start.
@@ -842,10 +808,6 @@ class StartSurfaceMediator
     }
 
     void onHide() {
-        if (mFeedPlaceholderCoordinator != null) {
-            mFeedPlaceholderCoordinator.destroy();
-            mFeedPlaceholderCoordinator = null;
-        }
         if (mTabSwitcherModule != null) {
             mTabSwitcherModule.getTabListDelegate().postHiding();
         }
@@ -873,17 +835,6 @@ class StartSurfaceMediator
             if (exploreSurfaceCoordinator != null) {
                 exploreSurfaceCoordinator.onOverviewShownAtLaunch(activityCreationTimeMs);
             }
-        }
-
-        assert mPropertyModel == null || mFeedVisibilityInSharedPreferenceOnStartUp != null;
-        if (mFeedVisibilityPrefOnStartUp != null) {
-            RecordHistogram.recordBooleanHistogram(
-                    FEED_VISIBILITY_CONSISTENCY,
-                    mFeedVisibilityPrefOnStartUp.equals(
-                            mFeedVisibilityInSharedPreferenceOnStartUp));
-        }
-        if (mFeedPlaceholderCoordinator != null) {
-            mFeedPlaceholderCoordinator.onOverviewShownAtLaunch(activityCreationTimeMs);
         }
     }
 
@@ -985,20 +936,6 @@ class StartSurfaceMediator
     @Override
     public void onLogoVisibilityChanged() {
         updateTopToolbarPlaceholderHeight();
-    }
-
-    @VisibleForTesting
-    public boolean shouldShowFeedPlaceholder() {
-        if (mFeedVisibilityInSharedPreferenceOnStartUp == null) {
-            mFeedVisibilityInSharedPreferenceOnStartUp =
-                    ReturnToChromeUtil.getFeedArticlesVisibility();
-        }
-
-        return mIsStartSurfaceEnabled
-                && ChromeFeatureList.sInstantStart.isEnabled()
-                && ReturnToChromeUtil.getFeedArticlesVisibility()
-                && !mHadWarmStart
-                && !mHasFeedPlaceholderShown;
     }
 
     /** This interface builds the feed surface coordinator when showing if needed. */
@@ -1241,7 +1178,7 @@ class StartSurfaceMediator
     private void createAndSetExploreSurfaceCoordinator() {
         ExploreSurfaceCoordinator exploreSurfaceCoordinator =
                 mExploreSurfaceCoordinatorFactory.create(
-                        ColorUtils.inNightMode(mContext), mHasFeedPlaceholderShown, mLaunchOrigin);
+                        ColorUtils.inNightMode(mContext), mLaunchOrigin);
         mPropertyModel.set(EXPLORE_SURFACE_COORDINATOR, exploreSurfaceCoordinator);
         FeedReliabilityLogger feedReliabilityLogger =
                 exploreSurfaceCoordinator.getFeedReliabilityLogger();

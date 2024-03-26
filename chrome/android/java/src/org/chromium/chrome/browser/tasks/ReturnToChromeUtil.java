@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
-import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
@@ -52,9 +51,6 @@ import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -80,7 +76,6 @@ import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -872,32 +867,6 @@ public final class ReturnToChromeUtil {
                                 .readInt(
                                         ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE)
                         == ActiveTabState.NTP);
-    }
-
-    /**
-     * Add an observer to keep {@link ChromePreferenceKeys#FEED_ARTICLES_LIST_VISIBLE} consistent
-     * with {@link Pref#ARTICLES_LIST_VISIBLE}.
-     */
-    public static void addFeedVisibilityObserver() {
-        updateFeedVisibility();
-        PrefChangeRegistrar prefChangeRegistrar = new PrefChangeRegistrar();
-        prefChangeRegistrar.addObserver(
-                Pref.ARTICLES_LIST_VISIBLE, ReturnToChromeUtil::updateFeedVisibility);
-    }
-
-    private static void updateFeedVisibility() {
-        Profile profile = ProfileManager.getLastUsedRegularProfile();
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(
-                        ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE,
-                        FeedFeatures.isFeedEnabled(profile)
-                                && UserPrefs.get(profile).getBoolean(Pref.ARTICLES_LIST_VISIBLE));
-    }
-
-    /** Returns whether the Feed articles are visible. */
-    public static boolean getFeedArticlesVisibility() {
-        return ChromeSharedPreferences.getInstance()
-                .readBoolean(ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, true);
     }
 
     /** Returns whether to move logo out of toolbar from Start surface. */

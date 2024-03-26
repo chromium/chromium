@@ -26,7 +26,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.INSTANT_START;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.BOTTOM_BAR_HEIGHT;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.EXPLORE_SURFACE_COORDINATOR;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_EXPLORE_SURFACE_VISIBLE;
@@ -238,7 +237,7 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(mTab).when(mTabModelSelector).getCurrentTab();
         doReturn(mExploreSurfaceCoordinator)
                 .when(mExploreSurfaceCoordinatorFactory)
-                .create(anyBoolean(), anyBoolean(), anyInt());
+                .create(anyBoolean(), anyInt());
         doReturn(mFeedReliabilityLogger)
                 .when(mExploreSurfaceCoordinator)
                 .getFeedReliabilityLogger();
@@ -731,7 +730,7 @@ public class StartSurfaceMediatorUnitTest {
         assertFalse(mediator.isHomepageShown());
 
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
-        when(mExploreSurfaceCoordinatorFactory.create(anyBoolean(), anyBoolean(), anyInt()))
+        when(mExploreSurfaceCoordinatorFactory.create(anyBoolean(), anyInt()))
                 .thenReturn(mExploreSurfaceCoordinator);
         showHomepageAndVerify(mediator);
         carouselTabSwitcherModuleController
@@ -867,26 +866,6 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(
                 mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN),
                 equalTo(mvTilesContainerTopMargin));
-    }
-
-    @Test
-    @EnableFeatures(INSTANT_START)
-    public void feedPlaceholderFromWarmStart() {
-        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-
-        StartSurfaceMediator mediator =
-                createStartSurfaceMediator(/* hadWarmStart= */ true, /* useMagicStack= */ false);
-        assertFalse(mediator.shouldShowFeedPlaceholder());
-
-        mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
-        when(mExploreSurfaceCoordinatorFactory.create(anyBoolean(), anyBoolean(), anyInt()))
-                .thenReturn(mExploreSurfaceCoordinator);
-        showHomepageAndVerify(mediator);
-
-        assertThat(
-                mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR),
-                equalTo(mExploreSurfaceCoordinator));
     }
 
     @Test
@@ -1323,7 +1302,6 @@ public class StartSurfaceMediatorUnitTest {
                 mParentTabSupplier,
                 mLogoContainerView,
                 mBackPressManager,
-                /* feedPlaceholderParentView= */ null,
                 mActivityLifecycleDispatcher,
                 mProfileSupplier);
     }

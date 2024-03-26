@@ -98,10 +98,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Utility methods and classes for testing Start Surface. */
 public class StartSurfaceTestUtils {
-    public static final String INSTANT_START_TEST_BASE_PARAMS =
-            "force-fieldtrial-params=Study.Group:"
-                    + StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS_PARAM
-                    + "/0";
     public static final String START_SURFACE_TEST_SINGLE_ENABLED_PARAMS =
             "force-fieldtrial-params=Study.Group:"
                     + "open_ntp_instead_of_start/false/open_start_as_homepage/true";
@@ -114,10 +110,8 @@ public class StartSurfaceTestUtils {
                     + "/0";
     public static List<ParameterSet> sClassParamsForStartSurfaceTest =
             Arrays.asList(
-                    new ParameterSet().value(false, false).name("NoInstant_NoReturn"),
-                    new ParameterSet().value(true, false).name("Instant_NoReturn"),
-                    new ParameterSet().value(false, true).name("NoInstant_Return"),
-                    new ParameterSet().value(true, true).name("Instant_Return"));
+                    new ParameterSet().value(false).name("NoReturn"),
+                    new ParameterSet().value(true).name("Return"));
 
     private static final long MAX_TIMEOUT_MS = 30000L;
 

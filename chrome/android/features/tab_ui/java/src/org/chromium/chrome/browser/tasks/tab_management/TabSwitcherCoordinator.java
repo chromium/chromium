@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
-import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsOrchestrator;
@@ -95,7 +94,6 @@ public class TabSwitcherCoordinator
     private final TabSwitcherMessageManager mMessageManager;
     private final TabListEditorManager mTabListEditorManager;
     private TabSuggestionsOrchestrator mTabSuggestionsOrchestrator;
-    private TabAttributeCache mTabAttributeCache;
     private ViewGroup mContainer;
     private TabCreatorManager mTabCreatorManager;
     private boolean mIsInitialized;
@@ -315,10 +313,6 @@ public class TabSwitcherCoordinator
                     };
             mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
                     mTabSwitcherMenuActionHandler);
-
-            if (ChromeFeatureList.sInstantStart.isEnabled()) {
-                mTabAttributeCache = new TabAttributeCache(mTabModelSelector);
-            }
 
             mLifecycleDispatcher = lifecycleDispatcher;
             mLifecycleDispatcher.register(this);
@@ -602,9 +596,6 @@ public class TabSwitcherCoordinator
         mMediator.destroy();
         mMessageManager.destroy();
         mLifecycleDispatcher.unregister(this);
-        if (mTabAttributeCache != null) {
-            mTabAttributeCache.destroy();
-        }
         if (mPriceAnnotationsPrefListener != null) {
             ContextUtils.getAppSharedPreferences()
                     .unregisterOnSharedPreferenceChangeListener(mPriceAnnotationsPrefListener);

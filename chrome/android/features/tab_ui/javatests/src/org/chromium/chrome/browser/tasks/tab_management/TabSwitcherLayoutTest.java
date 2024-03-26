@@ -1647,33 +1647,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.INSTANT_START,
-        ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"
-    })
-    // TODO(crbug.com/1112557): Remove this test when critical tests in StartSurfaceLayoutTest are
-    // running with InstantStart on.
-    public void testSetup_WithInstantStart() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-
-        // Verify TabModelObserver is correctly setup by checking if tab switcher changes with tab
-        // closure.
-        closeFirstTabInTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 0);
-
-        // Verify TabGroupModelFilter is correctly setup by checking if tab switcher changes with
-        // tab grouping.
-        createTabs(cta, false, 3);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-        mergeAllNormalTabsToAGroup(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-    }
-
-    @Test
-    @MediumTest
     public void testUndoGroupClosureInTabSwitcher() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();

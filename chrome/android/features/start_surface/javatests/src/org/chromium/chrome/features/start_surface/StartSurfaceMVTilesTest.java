@@ -10,7 +10,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assume.assumeFalse;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_SINGLE_ENABLED_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.sClassParamsForStartSurfaceTest;
@@ -29,7 +28,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -102,9 +100,6 @@ public class StartSurfaceMVTilesTest {
 
     @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
 
-    /** Whether feature {@link ChromeFeatureList#INSTANT_START} is enabled. */
-    private final boolean mUseInstantStart;
-
     /**
      * Whether feature {@link ChromeFeatureList#START_SURFACE_RETURN_TIME} is enabled as
      * "immediately". When immediate return is enabled, the Start surface is showing when Chrome is
@@ -117,10 +112,7 @@ public class StartSurfaceMVTilesTest {
     @LayoutType private int mCurrentlyActiveLayout;
     private FakeMostVisitedSites mMostVisitedSites;
 
-    public StartSurfaceMVTilesTest(boolean useInstantStart, boolean immediateReturn) {
-        ChromeFeatureList.sInstantStart.setForTesting(useInstantStart);
-
-        mUseInstantStart = useInstantStart;
+    public StartSurfaceMVTilesTest(boolean immediateReturn) {
         mImmediateReturn = immediateReturn;
     }
 
@@ -131,12 +123,6 @@ public class StartSurfaceMVTilesTest {
         StartSurfaceTestUtils.setUpStartSurfaceTests(mImmediateReturn, mActivityTestRule);
 
         mLayoutChangedCallbackHelper = new CallbackHelper();
-
-        if (isInstantReturn()) {
-            // Assume start surface is shown immediately, and the LayoutStateObserver may miss the
-            // first onFinishedShowing event.
-            mCurrentlyActiveLayout = StartSurfaceTestUtils.getStartSurfaceLayoutType();
-        }
 
         mLayoutObserver =
                 new LayoutStateProvider.LayoutStateObserver() {
@@ -184,8 +170,6 @@ public class StartSurfaceMVTilesTest {
     }
 
     private void testTapMVTilesInSingleSurfaceImpl() {
-        assumeFalse(isInstantReturn());
-
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
@@ -270,7 +254,6 @@ public class StartSurfaceMVTilesTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testOpenTileInIncognitoTabWithContextMenu() throws ExecutionException {
-        Assume.assumeFalse("https://crbug.com/1210554", mUseInstantStart && mImmediateReturn);
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
@@ -290,14 +273,6 @@ public class StartSurfaceMVTilesTest {
     }
 
     /* MV tiles context menu tests ends. */
-
-    /**
-     * @return Whether both features {@link ChromeFeatureList#INSTANT_START} and {@link
-     *     ChromeFeatureList#START_SURFACE_RETURN_TIME} are enabled.
-     */
-    private boolean isInstantReturn() {
-        return mUseInstantStart && mImmediateReturn;
-    }
 
     private View getTileViewFor(SiteSuggestion suggestion) {
         onViewWaiting(allOf(withId(R.id.mv_tiles_layout), isDisplayed()));

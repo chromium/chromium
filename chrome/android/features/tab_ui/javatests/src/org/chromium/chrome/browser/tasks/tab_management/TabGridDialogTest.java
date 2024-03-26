@@ -1459,25 +1459,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.INSTANT_START})
-    @DisabledTest(message = "crbug.com/1522195")
-    public void testSetup_WithInstantStart() {
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        prepareTabsWithThumbnail(sActivityTestRule, 2, 0, "about:blank");
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-        mergeAllNormalTabsToAGroup(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-        openDialogFromTabSwitcherAndVerify(cta, 2, null);
-
-        // Verify TabModelObserver is correctly setup by checking if tab grid dialog changes with
-        // tab closure.
-        closeFirstTabInDialog();
-        verifyShowingDialog(cta, 1, null);
-    }
-
-    @Test
-    @MediumTest
     public void testAdjustBackGroundViewAccessibilityImportance() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);

@@ -100,21 +100,20 @@ class ExploreSurfaceCoordinatorFactory {
 
     /**
      * Creates the {@link ExploreSurfaceCoordinator} for the specified mode.
+     *
      * @param isInNightMode Whether or not the feed surface is going to display in night mode.
      * @param launchOrigin Where the feed was launched from.
      * @return The {@link ExploreSurfaceCoordinator}.
      */
     ExploreSurfaceCoordinator create(
-            boolean isInNightMode,
-            boolean isPlaceholderShown,
-            @NewTabPageLaunchOrigin int launchOrigin) {
+            boolean isInNightMode, @NewTabPageLaunchOrigin int launchOrigin) {
         Profile profile = ProfileManager.getLastUsedRegularProfile();
 
         return new ExploreSurfaceCoordinator(
                 profile,
                 mActivity,
                 isInNightMode,
-                isPlaceholderShown,
+                /* isPlaceholderShown= */ false,
                 mBottomSheetController,
                 mScrollableContainerDelegate,
                 launchOrigin,

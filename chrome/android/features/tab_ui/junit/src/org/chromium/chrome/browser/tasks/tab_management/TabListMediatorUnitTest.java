@@ -34,7 +34,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.INSTANT_START;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.FOR_TESTING;
@@ -881,68 +880,6 @@ public class TabListMediatorUnitTest {
         mMediatorTabModelObserver.willCloseTab(
                 prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL), false, true);
 
-        assertThat(mModel.size(), equalTo(2));
-    }
-
-    @Test
-    @EnableFeatures(INSTANT_START)
-    public void tabAddition_RestoreNotComplete() {
-        mMediator.resetWithListOfTabs(null, false);
-
-        // Mock that tab restoring stage is started.
-        doReturn(false).when(mTabGroupModelFilter).isTabModelRestored();
-        initAndAssertAllProperties();
-
-        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(0);
-        doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(1);
-        doReturn(newTab).when(mTabGroupModelFilter).getTabAt(2);
-        doReturn(3).when(mTabGroupModelFilter).getCount();
-        doReturn(Arrays.asList(newTab)).when(mTabGroupModelFilter).getRelatedTabList(eq(TAB3_ID));
-        assertThat(mModel.size(), equalTo(2));
-
-        mMediatorTabModelObserver.didAddTab(
-                newTab, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_FOREGROUND, false);
-
-        // When tab restoring stage is not yet finished, this tab info should not be added to
-        // property model.
-        assertThat(mModel.size(), equalTo(2));
-    }
-
-    @Test
-    @EnableFeatures(INSTANT_START)
-    public void tabAddition_Restore() {
-        mMediator.resetWithListOfTabs(null, false);
-
-        // Mock that tab restoring stage is started.
-        doReturn(false).when(mTabGroupModelFilter).isTabModelRestored();
-        initAndAssertAllProperties();
-        // Mock that tab restoring stage is over.
-        doReturn(true).when(mTabGroupModelFilter).isTabModelRestored();
-        TabListMediator.TabActionListener actionListenerBeforeUpdate =
-                mModel.get(1).model.get(TabProperties.TAB_SELECTED_LISTENER);
-
-        // Mock that newTab was in the same group with tab, and now it is restored.
-        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        List<Tab> tabs = Arrays.asList(mTab2, newTab);
-        doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(0);
-        doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(1);
-        doReturn(2).when(mTabGroupModelFilter).getCount();
-        doReturn(1).when(mTabGroupModelFilter).indexOf(newTab);
-        doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(eq(TAB3_ID));
-        doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(eq(TAB2_ID));
-        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab2);
-        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(newTab);
-        assertThat(mModel.size(), equalTo(2));
-
-        mMediatorTabModelObserver.didAddTab(
-                newTab, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_FOREGROUND, false);
-
-        TabListMediator.TabActionListener actionListenerAfterUpdate =
-                mModel.get(1).model.get(TabProperties.TAB_SELECTED_LISTENER);
-        // The selection listener should be updated which indicates that corresponding property
-        // model is updated.
-        assertThat(actionListenerBeforeUpdate, not(actionListenerAfterUpdate));
         assertThat(mModel.size(), equalTo(2));
     }
 

@@ -15,12 +15,10 @@ import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoUtils.LogoSizeForLogoPolish;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /**
- * Flag configuration for Start Surface. Source of truth for whether it should be enabled and
- * which variation should be used.
+ * Flag configuration for Start Surface. Source of truth for whether it should be enabled and which
+ * variation should be used.
  */
 public class StartSurfaceConfiguration {
     private static final String TAG = "StartSurfaceConfig";
@@ -124,8 +122,6 @@ public class StartSurfaceConfiguration {
                     ChromeFeatureList.LOGO_POLISH, LOGO_POLISH_MEDIUM_SIZE_PARAM, false);
 
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
-    private static final String INSTANT_START_SUBFIX = ".Instant";
-    private static final String REGULAR_START_SUBFIX = ".NoInstant";
 
     /**
      * @return Whether the Start Surface feature flag is enabled.
@@ -178,27 +174,21 @@ public class StartSurfaceConfiguration {
      * Records histograms of showing the StartSurface. Nothing will be recorded if timeDurationMs
      * isn't valid.
      */
-    public static void recordHistogram(String name, long timeDurationMs, boolean isInstantStart) {
+    public static void recordHistogram(String name, long timeDurationMs) {
         if (timeDurationMs < 0) return;
-        Log.i(TAG, "Recorded %s = %d ms", getHistogramName(name, isInstantStart), timeDurationMs);
-        RecordHistogram.recordTimesHistogram(
-                getHistogramName(name, isInstantStart), timeDurationMs);
+
+        String histogramName = getHistogramName(name);
+        Log.i(TAG, "Recorded %s = %d ms", histogramName, timeDurationMs);
+        RecordHistogram.recordTimesHistogram(histogramName, timeDurationMs);
     }
 
     @VisibleForTesting
-    public static String getHistogramName(String name, boolean isInstantStart) {
-        return STARTUP_UMA_PREFIX
-                + name
-                + (isInstantStart ? INSTANT_START_SUBFIX : REGULAR_START_SUBFIX);
+    public static String getHistogramName(String name) {
+        return STARTUP_UMA_PREFIX + name;
     }
 
     @CalledByNative
     private static boolean isBehaviouralTargetingEnabled() {
         return false;
-    }
-
-    static void setFeedVisibilityForTesting(boolean isVisible) {
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, isVisible);
     }
 }

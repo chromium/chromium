@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
@@ -180,30 +179,23 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
     @Override
     public final void setContentViewAndLoadLibrary(Runnable onInflationCompleteCallback) {
-        boolean enableInstantStart = isInstantStartEnabled() && !mHadWarmStart;
         mOnInflationCompleteCallback = onInflationCompleteCallback;
-        if (enableInstantStart) {
-            triggerLayoutInflation();
-        }
 
-        // Start loading libraries. It happens before triggerLayoutInflation() for regular startup,
-        // but after triggerLayoutInflation() for instant start because we prioritize a Java UI and
-        // not rendering web content. This "hides" library loading behind UI inflation and prevents
-        // stalling UI thread. See https://crbug.com/796957 for details. Note that for optimal
-        // performance AsyncInitTaskRunner.startBackgroundTasks() needs to start warmup renderer
-        // only after library is loaded.
+        // Start loading libraries. It happens before triggerLayoutInflation(). This "hides" library
+        // loading behind UI inflation and prevents stalling UI thread.
+        // See https://crbug.com/796957 for details. Note that for optimal performance
+        // AsyncInitTaskRunner.startBackgroundTasks() needs to start warm up renderer only after
+        // library is loaded.
 
         if (!mStartupDelayed) {
             // Kick off long running IO tasks that can be done in parallel.
             mNativeInitializationController.startBackgroundTasks(shouldAllocateChildConnection());
         }
 
-        if (!enableInstantStart) {
-            triggerLayoutInflation();
-        }
+        triggerLayoutInflation();
     }
 
-    /** Controls the parameter of {@link NativeInitializationController#startBackgroundTasks}.*/
+    /** Controls the parameter of {@link NativeInitializationController#startBackgroundTasks}. */
     @VisibleForTesting
     public boolean shouldAllocateChildConnection() {
         // If a spare WebContents exists, a child connection has already been allocated that will be
@@ -214,17 +206,8 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @Override
     public final void postInflationStartup() {
         performPostInflationStartup();
-        dispatchOnInflationComplete();
-        mLifecycleDispatcher.dispatchPostInflationStartup();
-    }
-
-    /**
-     * This function allows subclasses overriding and adding additional tasks between calling
-     * mLifecycleDispatcher.dispatchOnInflationComplete() and
-     * mLifecycleDispatcher.dispatchPostInflationStartup().
-     */
-    protected void dispatchOnInflationComplete() {
         mLifecycleDispatcher.dispatchOnInflationComplete();
+        mLifecycleDispatcher.dispatchPostInflationStartup();
     }
 
     /**
@@ -241,8 +224,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
                     mFirstDrawComplete = true;
                     StartSurfaceConfiguration.recordHistogram(
                             FIRST_DRAW_COMPLETED_TIME_MS_UMA,
-                            SystemClock.elapsedRealtime() - getOnCreateTimestampMs(),
-                            isInstantStartEnabled());
+                            SystemClock.elapsedRealtime() - getOnCreateTimestampMs());
                     if (!mStartupDelayed) {
                         onFirstDrawComplete();
                     }
@@ -789,11 +771,6 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
      */
     public boolean isTablet() {
         return mIsTablet;
-    }
-
-    /** Returns whether the instant start is enabled. */
-    protected boolean isInstantStartEnabled() {
-        return TabUiFeatureUtilities.supportInstantStart(isTablet(), this);
     }
 
     /**

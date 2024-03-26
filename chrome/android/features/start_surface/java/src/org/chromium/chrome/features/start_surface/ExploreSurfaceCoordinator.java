@@ -69,6 +69,8 @@ public class ExploreSurfaceCoordinator {
     private long mActivityCreationTimeMs;
     private long mStreamCreatedTimeMs;
 
+    // TODO(b/331250449): clean up isPlaceholderShown since it is only true with instant start
+    // enabled.
     public ExploreSurfaceCoordinator(
             Profile profile,
             Activity activity,
@@ -153,9 +155,7 @@ public class ExploreSurfaceCoordinator {
             mHasPendingUmaRecording = true;
         }
         StartSurfaceConfiguration.recordHistogram(
-                FEED_STREAM_CREATED_TIME_MS_UMA,
-                mStreamCreatedTimeMs - activityCreationTimeMs,
-                mIsPlaceholderShownInitially);
+                FEED_STREAM_CREATED_TIME_MS_UMA, mStreamCreatedTimeMs - activityCreationTimeMs);
     }
 
     private boolean maybeRecordContentLoadingTime() {
@@ -163,8 +163,7 @@ public class ExploreSurfaceCoordinator {
 
         StartSurfaceConfiguration.recordHistogram(
                 FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA,
-                mContentFirstAvailableTimeMs - mActivityCreationTimeMs,
-                mIsPlaceholderShownInitially);
+                mContentFirstAvailableTimeMs - mActivityCreationTimeMs);
         return true;
     }
 
