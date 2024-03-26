@@ -77,12 +77,14 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
   // processed.
   virtual void RoundTripQueue() = 0;
 
-  // Returns the current configuration state of the window. This is initially
-  // set to values provided by the client, until we get an actual configure from
-  // the server.
-  // See the comment to the member of WaylandWindow `applied_state_`
-  // in `ui/ozone/platform/wayland/host/wayland_window.h` for more info.
-  virtual PlatformWindowDelegate::State GetLatchedState() const = 0;
+  // Returns true if there are any in flight requests for state updates.
+  virtual bool HasInFlightRequestsForState() const = 0;
+
+  // Returns the latest viz sequence ID for the currently applied state.
+  virtual int64_t GetVizSequenceIdForAppliedState() const = 0;
+
+  // Returns the latest viz sequence ID for the currently latched state.
+  virtual int64_t GetVizSequenceIdForLatchedState() const = 0;
 
   // Signals the underneath platform to shows a preview for the given window
   // snap direction. `allow_haptic_feedback` indicates if it should send haptic

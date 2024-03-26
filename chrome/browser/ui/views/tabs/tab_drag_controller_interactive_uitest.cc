@@ -4264,36 +4264,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
 
 namespace {
 
-// Calls `SetBounds` on a browser window, and waits for the bounds to be set
-// server-side.
-//
-// NOTE: This function assumes that the server will respect our choice of
-// bounds. For example, if we place the window outside the edge of the screen,
-// the server will modify its bounds - in that case this function will fail.
-
-// NOTE: This function also assumes that the window's bounds were never
-// previously set to `bounds`. If they were previously set to be `bounds`, then
-// to another value, then back to `bounds`, it may grab the latched state for
-// the first setting, instead of the last one.
-void SetBoundsSync(BrowserWindow* window, const gfx::Rect& bounds) {
-  window->SetBounds(bounds);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* host = static_cast<aura::WindowTreeHostPlatform*>(
-      window->GetNativeWindow()->GetHost());
-  auto* wayland_extension = ui::GetWaylandExtension(*host->platform_window());
-
-  // Wait until the server has processed all currently issued requests.
-  wayland_extension->RoundTripQueue();
-
-  // Wait for latched state to reflect the bounds change.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return wayland_extension->GetLatchedState().bounds_dip == bounds;
-  }));
-  wayland_extension->RoundTripQueue();
-#endif
-}
-
 // Invoked from the nested run loop.
 void DragTabToWindowInSeparateDisplayStep2(
     DetachToBrowserTabDragControllerTest* test,
@@ -4329,7 +4299,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   // Move the second browser to the second display.
   display::Screen* screen = display::Screen::GetScreen();
   Display second_display = ui_test_utils::GetSecondaryDisplay(screen);
-  SetBoundsSync(browser2->window(), second_display.work_area());
+  ui_test_utils::SetAndWaitForBounds(*browser2, second_display.work_area());
   EXPECT_EQ(
       second_display.id(),
       screen->GetDisplayNearestWindow(browser2->window()->GetNativeWindow())
@@ -4450,13 +4420,13 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   Display second_display = ui_test_utils::GetSecondaryDisplay(screen);
   gfx::Rect work_area = second_display.work_area();
   work_area.set_width(work_area.width() / 2);
-  SetBoundsSync(browser()->window(), work_area);
+  ui_test_utils::SetAndWaitForBounds(*browser(), work_area);
   // It's possible the window will not fit in half the screen, in which case we
   // will position the windows as well as we can.
   work_area.set_x(browser()->window()->GetBounds().right());
   // Sanity check: second browser should still be on the second display.
   ASSERT_LT(work_area.x(), second_display.work_area().right());
-  SetBoundsSync(browser2->window(), work_area);
+  ui_test_utils::SetAndWaitForBounds(*browser2, work_area);
   EXPECT_EQ(
       second_display.id(),
       screen->GetDisplayNearestWindow(browser()->window()->GetNativeWindow())
@@ -4578,7 +4548,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   // Move the second browser to the second display.
   display::Screen* screen = display::Screen::GetScreen();
   const std::pair<Display, Display> displays = GetDisplays(screen);
-  SetBoundsSync(browser2->window(), displays.second.work_area());
+  ui_test_utils::SetAndWaitForBounds(*browser2, displays.second.work_area());
   EXPECT_EQ(
       displays.second.id(),
       screen->GetDisplayNearestWindow(browser2->window()->GetNativeWindow())

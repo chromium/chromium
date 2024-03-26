@@ -162,8 +162,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   gfx::RoundedCornersF GetWindowCornersRadii() override;
   void SetShadowCornersRadii(const gfx::RoundedCornersF& radii) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  PlatformWindowDelegate::State GetLatchedState() const override;
   void RoundTripQueue() override;
+  bool HasInFlightRequestsForState() const override;
+  int64_t GetVizSequenceIdForAppliedState() const override;
+  int64_t GetVizSequenceIdForLatchedState() const override;
   void ShowSnapPreview(WaylandWindowSnapDirection snap,
                        bool allow_haptic_feedback) override;
   void CommitSnap(WaylandWindowSnapDirection snap, float snap_ratio) override;

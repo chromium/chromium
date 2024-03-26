@@ -1410,6 +1410,7 @@ void WaylandWindow::LatchStateRequest(const StateRequest& req) {
   // Latch the most up to date state we have a frame back for.
   auto old_state = latched_state_;
   latched_state_ = req.state;
+  latest_latched_viz_seq_ = std::max(req.viz_seq, latest_latched_viz_seq_);
   auto old_latched_insets = latched_insets_;
   latched_insets_ = GetDecorationInsetsInDIP();
 
@@ -1468,6 +1469,7 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   // old and new states are the same, or it only changes the origin of the
   // bounds.
   latest.viz_seq = delegate()->OnStateUpdate(old, latest.state);
+  latest_applied_viz_seq_ = std::max(latest.viz_seq, latest_applied_viz_seq_);
 
   // If we have state requests which don't require synchronization to latch, or
   // if no frames will be produced, ack them immediately. Using -2 (or any

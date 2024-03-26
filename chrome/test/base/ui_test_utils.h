@@ -201,6 +201,13 @@ void WaitForAutocompleteDone(Browser* browser);
 // Returns success or not.
 bool WaitForMinimized(Browser* browser);
 
+// See comment on views::WaitForAsyncWidgetRequests.
+void WaitForAsyncWidgetRequests(Browser& browser);
+
+// SetAndWaitForBounds sets the given `bounds` on `browser` and waits until the
+// bounds update will be observable from all parts of the client.
+void SetAndWaitForBounds(Browser& browser, const gfx::Rect& bounds);
+
 // Waits for fullscreen state to be updated.
 // There're two variation of fullscreen concepts, browser fullscreen and
 // tab fullscreen. Due to fullscreen implementation, fullscreen state may

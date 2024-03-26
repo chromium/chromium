@@ -462,6 +462,14 @@ class WaylandWindow : public PlatformWindow,
                                        : in_flight_requests_.back().state;
   }
 
+  int64_t latest_applied_viz_seq() const { return latest_applied_viz_seq_; }
+
+  int64_t latest_latched_viz_seq() const { return latest_latched_viz_seq_; }
+
+  bool HasInFlightRequestsForState() const {
+    return !in_flight_requests_.empty();
+  }
+
   // PendingConfigureState describes the content of a configure sent from the
   // wayland server.
   struct PendingConfigureState {
@@ -658,11 +666,13 @@ class WaylandWindow : public PlatformWindow,
   // 4. Latched - the frame corresponding to this state came back, we can ack
   //    the configure if there was one
   PlatformWindowDelegate::State applied_state_;
+  int64_t latest_applied_viz_seq_ = -1;
 
   // The current configuration state of the window. This is initially set to
   // values provided by the client, until we get an actual configure from the
   // server. See the comments on applied_state_ for further explanation.
   PlatformWindowDelegate::State latched_state_;
+  int64_t latest_latched_viz_seq_ = -1;
 
   // Stores the insets in DIP at the time of the last latched state.
   gfx::Insets latched_insets_;

@@ -90,6 +90,7 @@
 #endif
 
 #if defined(TOOLKIT_VIEWS)
+#include "ui/views/test/widget_test_api.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #endif
@@ -485,14 +486,27 @@ bool WaitForMinimized(Browser* browser) {
   return minimize_waiter.Wait();
 }
 
+void WaitForAsyncWidgetRequests(Browser& browser) {
+  auto* widget = views::Widget::GetWidgetForNativeWindow(
+      browser.window()->GetNativeWindow());
+  CHECK(widget);
+  views::WaitForAsyncWidgetRequests(*widget);
+}
+
+void SetAndWaitForBounds(Browser& browser, const gfx::Rect& bounds) {
+  auto* window = browser.window();
+  window->SetBounds(bounds);
+  WaitForAsyncWidgetRequests(browser);
+}
+
 FullscreenWaiter::FullscreenWaiter(Browser* browser,
                                    FullscreenWaiter::Expectation expectation)
     : expectation_(std::move(expectation)),
       controller_(browser->exclusive_access_manager()->fullscreen_controller()),
       // Sometimes, the wait is called on a sequeunce, e.g.
       // as a part of interactive_ui_tests's RunTestSequence.
-      // To handle that case, we can process pending task posted to the sequence
-      // in nested RunLoop.
+      // To handle that case, we can process pending task posted to the
+      // sequence in nested RunLoop.
       run_loop_(base::RunLoop::Type::kNestableTasksAllowed),
       satisfied_(IsSatisfied()) {
   observation_.Observe(controller_);

@@ -904,12 +904,20 @@ void WaylandToplevelWindow::SetShadowCornersRadii(
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-PlatformWindowDelegate::State WaylandToplevelWindow::GetLatchedState() const {
-  return latched_state();
-}
-
 void WaylandToplevelWindow::RoundTripQueue() {
   connection()->RoundTripQueue();
+}
+
+bool WaylandToplevelWindow::HasInFlightRequestsForState() const {
+  return WaylandWindow::HasInFlightRequestsForState();
+}
+
+int64_t WaylandToplevelWindow::GetVizSequenceIdForAppliedState() const {
+  return latest_applied_viz_seq();
+}
+
+int64_t WaylandToplevelWindow::GetVizSequenceIdForLatchedState() const {
+  return latest_latched_viz_seq();
 }
 
 void WaylandToplevelWindow::ShowSnapPreview(
