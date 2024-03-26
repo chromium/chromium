@@ -9,6 +9,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
@@ -63,28 +64,35 @@ views::Widget::InitParams CreateWidgetInitParams() {
 
 ReadWriteCardsUiController::ReadWriteCardsUiController() = default;
 
-ReadWriteCardsUiController::~ReadWriteCardsUiController() = default;
+ReadWriteCardsUiController::~ReadWriteCardsUiController() {
+  if (quick_answers_view_) {
+    OnViewIsDeleting(quick_answers_view_);
+  }
+}
 
-views::View* ReadWriteCardsUiController::SetQuickAnswersView(
-    std::unique_ptr<views::View> view) {
+ReadWriteCardsView* ReadWriteCardsUiController::SetQuickAnswersView(
+    std::unique_ptr<ReadWriteCardsView> view) {
   CreateWidgetIfNeeded();
 
-  CHECK(!quick_answers_view_.view());
+  CHECK(!quick_answers_view_);
 
   views::View* contents_view = widget_->GetContentsView();
-  quick_answers_view_.SetView(contents_view->AddChildView(std::move(view)));
+  quick_answers_view_ = contents_view->AddChildView(std::move(view));
+  quick_answers_view_->AddObserver(this);
 
   UpdateWidgetBounds();
 
-  return quick_answers_view_.view();
+  return quick_answers_view_;
 }
 
 void ReadWriteCardsUiController::RemoveQuickAnswersView() {
-  if (!quick_answers_view_.view()) {
+  if (!quick_answers_view_) {
     return;
   }
 
-  widget_->GetContentsView()->RemoveChildViewT(quick_answers_view_.view());
+  widget_->GetContentsView()->RemoveChildViewT(
+      quick_answers_view_.ExtractAsDangling());
+  quick_answers_view_ = nullptr;
   MaybeHideWidget();
 
   if (widget_) {
@@ -120,7 +128,7 @@ void ReadWriteCardsUiController::RemoveMahiView() {
 }
 
 views::View* ReadWriteCardsUiController::GetQuickAnswersViewForTest() {
-  return quick_answers_view_.view();
+  return quick_answers_view_;
 }
 
 views::View* ReadWriteCardsUiController::GetMahiViewForTest() {
@@ -158,9 +166,23 @@ void ReadWriteCardsUiController::SetContextMenuBounds(
     const gfx::Rect& context_menu_bounds) {
   context_menu_bounds_ = context_menu_bounds;
 
+  if (quick_answers_view_) {
+    quick_answers_view_->SetContextMenuBounds(context_menu_bounds);
+  }
+
   if (widget_) {
     UpdateWidgetBounds();
   }
+}
+
+void ReadWriteCardsUiController::OnViewIsDeleting(views::View* observed_view) {
+  if (!quick_answers_view_) {
+    return;
+  }
+
+  CHECK_EQ(quick_answers_view_, observed_view);
+  quick_answers_view_->RemoveObserver(this);
+  quick_answers_view_ = nullptr;
 }
 
 void ReadWriteCardsUiController::CreateWidgetIfNeeded() {
@@ -186,7 +208,7 @@ void ReadWriteCardsUiController::CreateWidgetIfNeeded() {
 }
 
 void ReadWriteCardsUiController::MaybeHideWidget() {
-  if (quick_answers_view_.view() || mahi_view_.view()) {
+  if (quick_answers_view_ || mahi_view_.view()) {
     return;
   }
 

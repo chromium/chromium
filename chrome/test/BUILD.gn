@@ -8674,6 +8674,7 @@ test("unit_tests") {
       "//chrome/browser/screen_ai:unit_tests",
       "//chrome/browser/ui/ash/holding_space:test_support",
       "//chrome/browser/ui/chromeos/read_write_cards",
+      "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_view",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/views/editor_menu:utils",
       "//chrome/browser/ui/views/editor_menu:views",

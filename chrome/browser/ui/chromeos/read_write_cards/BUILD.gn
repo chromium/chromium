@@ -4,12 +4,25 @@
 
 assert(is_chromeos)
 
+source_set("read_write_cards_view") {
+  sources = [
+    "read_write_cards_view.cc",
+    "read_write_cards_view.h",
+  ]
+  deps = [
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
 source_set("read_write_cards") {
   sources = [
     "read_write_cards_ui_controller.cc",
     "read_write_cards_ui_controller.h",
   ]
   deps = [
+    ":read_write_cards_view",
     "//base",
     "//ui/aura",
     "//ui/base",

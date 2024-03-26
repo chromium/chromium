@@ -120,12 +120,11 @@ END_METADATA
 // -------------------------------------------------------------
 
 UserConsentView::UserConsentView(
-    const gfx::Rect& anchor_view_bounds,
+    const gfx::Rect& context_menu_bounds,
     const std::u16string& intent_type,
     const std::u16string& intent_text,
     base::WeakPtr<QuickAnswersUiController> controller)
-    : anchor_view_bounds_(anchor_view_bounds),
-      event_handler_(this),
+    : event_handler_(this),
       controller_(std::move(controller)),
       focus_search_(this,
                     base::BindRepeating(&UserConsentView::GetFocusableViews,
@@ -154,8 +153,8 @@ UserConsentView::UserConsentView(
 UserConsentView::~UserConsentView() = default;
 
 gfx::Size UserConsentView::CalculatePreferredSize() const {
-  // View should match width of the anchor.
-  auto width = anchor_view_bounds_.width();
+  // View should match width of the context menu.
+  auto width = context_menu_bounds().width();
   return gfx::Size(width, GetHeightForWidth(width));
 }
 
@@ -189,6 +188,10 @@ void UserConsentView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_DESC_TEMPLATE,
       l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT));
   node_data->SetDescription(desc_text);
+}
+
+void UserConsentView::UpdateBounds() {
+  PreferredSizeChanged();
 }
 
 std::vector<views::View*> UserConsentView::GetFocusableViews() {
@@ -245,7 +248,9 @@ void UserConsentView::InitContent() {
   // Set the maximum width of the label to the width it would need to be for the
   // UserConsentView to be the same width as the anchor, so its preferred size
   // will be calculated correctly.
-  int maximum_width = GetActualLabelWidth(anchor_view_bounds_.width());
+  // TODO(b/331271987): Remove the usage of `context_menu_bounds()` in this view
+  // (use layout manager instead).
+  int maximum_width = GetActualLabelWidth(context_menu_bounds().width());
   title_->SetMaximumWidthSingleLine(maximum_width);
 
   // Description.
@@ -279,7 +284,7 @@ void UserConsentView::InitButtonBar() {
                           controller_, false),
       l10n_util::GetStringUTF16(
           IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_NO_THANKS_BUTTON),
-      ShouldUseCompactButtonLayout(anchor_view_bounds_.width()));
+      ShouldUseCompactButtonLayout(context_menu_bounds().width()));
   no_thanks_button_ = button_bar->AddChildView(std::move(no_thanks_button));
 
   // Allow button
@@ -297,7 +302,7 @@ void UserConsentView::InitButtonBar() {
           &event_handler_, controller_),
       l10n_util::GetStringUTF16(
           IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_ALLOW_BUTTON),
-      ShouldUseCompactButtonLayout(anchor_view_bounds_.width()));
+      ShouldUseCompactButtonLayout(context_menu_bounds().width()));
   allow_button->SetStyle(ui::ButtonStyle::kProminent);
   allow_button_ = button_bar->AddChildView(std::move(allow_button));
 }

@@ -7,13 +7,17 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace chromeos::mahi {
 
@@ -22,11 +26,35 @@ namespace {
 constexpr int kQuickAnswersAndMahiSpacing = 10;
 constexpr int kDefaultWidth = 100;
 
-std::unique_ptr<views::View> CreateViewWithHeight(int height) {
-  std::unique_ptr<views::View> view = std::make_unique<views::View>();
+class TestReadWriteCardsView : public ReadWriteCardsView {
+  METADATA_HEADER(TestReadWriteCardsView, ReadWriteCardsView)
+
+ public:
+  TestReadWriteCardsView() = default;
+
+  TestReadWriteCardsView(const TestReadWriteCardsView&) = delete;
+  TestReadWriteCardsView& operator=(const TestReadWriteCardsView&) = delete;
+
+  ~TestReadWriteCardsView() override = default;
+
+  // ReadWriteCardsView:
+  void UpdateBounds() override { update_bounds_called_ = true; }
+
+  bool update_bounds_called() { return update_bounds_called_; }
+
+ private:
+  bool update_bounds_called_ = false;
+};
+
+std::unique_ptr<TestReadWriteCardsView> CreateViewWithHeight(int height) {
+  std::unique_ptr<TestReadWriteCardsView> view =
+      std::make_unique<TestReadWriteCardsView>();
   view->SetPreferredSize(gfx::Size(kDefaultWidth, height));
   return view;
 }
+
+BEGIN_METADATA(TestReadWriteCardsView)
+END_METADATA
 
 }  // namespace
 
@@ -56,10 +84,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(ReadWriteCardsUiControllerTest, SetQuickAnswersView) {
   ReadWriteCardsUiController controller;
-  EXPECT_FALSE(controller.widget_for_test());
+  ASSERT_FALSE(controller.widget_for_test());
 
-  views::View* test_view =
-      controller.SetQuickAnswersView(std::make_unique<views::View>());
+  views::View* test_view = controller.SetQuickAnswersView(
+      std::make_unique<TestReadWriteCardsView>());
 
   EXPECT_TRUE(controller.widget_for_test());
   EXPECT_TRUE(controller.widget_for_test()->IsVisible());
@@ -90,8 +118,8 @@ TEST_P(ReadWriteCardsUiControllerTest, SetQuickAnswersAndMahiView) {
   ReadWriteCardsUiController controller;
   EXPECT_FALSE(controller.widget_for_test());
 
-  views::View* test_quick_answers_view =
-      controller.SetQuickAnswersView(std::make_unique<views::View>());
+  views::View* test_quick_answers_view = controller.SetQuickAnswersView(
+      std::make_unique<TestReadWriteCardsView>());
 
   views::View* test_mahi_view =
       controller.SetMahiView(std::make_unique<views::View>());
@@ -109,8 +137,8 @@ TEST_P(ReadWriteCardsUiControllerTest, SetQuickAnswersAndMahiView) {
   EXPECT_FALSE(controller.GetQuickAnswersViewForTest());
   EXPECT_EQ(test_mahi_view, controller.GetMahiViewForTest());
 
-  test_quick_answers_view =
-      controller.SetQuickAnswersView(std::make_unique<views::View>());
+  test_quick_answers_view = controller.SetQuickAnswersView(
+      std::make_unique<TestReadWriteCardsView>());
 
   EXPECT_TRUE(controller.widget_for_test());
   EXPECT_TRUE(controller.widget_for_test()->IsVisible());
@@ -129,6 +157,22 @@ TEST_P(ReadWriteCardsUiControllerTest, SetQuickAnswersAndMahiView) {
 
   EXPECT_FALSE(controller.widget_for_test());
   EXPECT_FALSE(controller.GetQuickAnswersViewForTest());
+}
+
+TEST_P(ReadWriteCardsUiControllerTest, ViewUpdateBounds) {
+  ReadWriteCardsUiController controller;
+  EXPECT_FALSE(controller.widget_for_test());
+
+  ReadWriteCardsView* test_view = controller.SetQuickAnswersView(
+      std::make_unique<TestReadWriteCardsView>());
+  TestReadWriteCardsView* read_write_cards_view =
+      views::AsViewClass<TestReadWriteCardsView>(test_view);
+
+  EXPECT_FALSE(read_write_cards_view->update_bounds_called());
+
+  controller.SetContextMenuBounds(
+      gfx::Rect(gfx::Point(500, 250), gfx::Size(kDefaultWidth, 140)));
+  EXPECT_TRUE(read_write_cards_view->update_bounds_called());
 }
 
 TEST_P(ReadWriteCardsUiControllerTest, WidgetBoundsDefault) {
