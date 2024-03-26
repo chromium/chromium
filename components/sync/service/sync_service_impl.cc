@@ -652,12 +652,6 @@ void SyncServiceImpl::Shutdown() {
   // (Note that destroying the ObserverList triggers its "check_empty" check.)
   observers_.reset();
 
-  // TODO(crbug.com/1182175): Recreating the ObserverList here shouldn't be
-  // necessary (it's not allowed to add observers after Shutdown()), but some
-  // tests call Shutdown() twice, which breaks in NotifyShutdown() if the
-  // ObserverList doesn't exist.
-  observers_.emplace();
-
   auth_manager_.reset();
 }
 
@@ -920,18 +914,21 @@ SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
 }
 
 void SyncServiceImpl::NotifyObservers() {
+  CHECK(observers_);
   for (SyncServiceObserver& observer : *observers_) {
     observer.OnStateChanged(this);
   }
 }
 
 void SyncServiceImpl::NotifySyncCycleCompleted() {
+  CHECK(observers_);
   for (SyncServiceObserver& observer : *observers_) {
     observer.OnSyncCycleCompleted(this);
   }
 }
 
 void SyncServiceImpl::NotifyShutdown() {
+  CHECK(observers_);
   for (SyncServiceObserver& observer : *observers_) {
     observer.OnSyncShutdown(this);
   }
@@ -1446,16 +1443,19 @@ void SyncServiceImpl::ReportDataTypeErrorForTest(ModelType type) {
 
 void SyncServiceImpl::AddObserver(SyncServiceObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(observers_);
   observers_->AddObserver(observer);
 }
 
 void SyncServiceImpl::RemoveObserver(SyncServiceObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(observers_);
   observers_->RemoveObserver(observer);
 }
 
 bool SyncServiceImpl::HasObserver(const SyncServiceObserver* observer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(observers_);
   return observers_->HasObserver(observer);
 }
 

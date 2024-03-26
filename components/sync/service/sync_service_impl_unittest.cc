@@ -125,7 +125,7 @@ class SyncServiceImplTest : public ::testing::Test {
 
   void TearDown() override {
     // Kill the service before the profile.
-    ShutdownAndDeleteService();
+    ShutdownAndReleaseService();
   }
 
   void SignInWithoutSyncConsent() {
@@ -196,11 +196,11 @@ class SyncServiceImplTest : public ::testing::Test {
     service_->Initialize();
   }
 
-  void ShutdownAndDeleteService() {
+  std::unique_ptr<SyncServiceImpl> ShutdownAndReleaseService() {
     if (service_) {
       service_->Shutdown();
     }
-    service_.reset();
+    return std::move(service_);
   }
 
   void PopulatePrefsForInitialSyncFeatureSetupComplete() {
@@ -495,7 +495,7 @@ TEST_F(SyncServiceImplTest, AbortedByShutdown) {
   ASSERT_EQ(SyncService::TransportState::INITIALIZING,
             service()->GetTransportState());
 
-  ShutdownAndDeleteService();
+  ShutdownAndReleaseService();
 }
 
 // Certain SyncServiceImpl tests don't apply to Chrome OS, for example
@@ -1482,7 +1482,7 @@ TEST_F(SyncServiceImplTest, ConfigureDataTypeManagerReason) {
   service()->GetSetupInProgressHandle();
   EXPECT_EQ(CONFIGURE_REASON_RECONFIGURATION,
             data_type_manager()->last_configure_reason_for_test());
-  ShutdownAndDeleteService();
+  ShutdownAndReleaseService();
 
   // Nth sync.
   PopulatePrefsForInitialSyncFeatureSetupComplete();
@@ -1500,7 +1500,7 @@ TEST_F(SyncServiceImplTest, ConfigureDataTypeManagerReason) {
   service()->GetSetupInProgressHandle();
   EXPECT_EQ(CONFIGURE_REASON_RECONFIGURATION,
             data_type_manager()->last_configure_reason_for_test());
-  ShutdownAndDeleteService();
+  ShutdownAndReleaseService();
 }
 
 // Regression test for crbug.com/1043642, can be removed once
@@ -1509,8 +1509,8 @@ TEST_F(SyncServiceImplTest, ShouldProvideDisableReasonsAfterShutdown) {
   SignInWithSyncConsent();
   InitializeService();
   base::RunLoop().RunUntilIdle();
-  service()->Shutdown();
-  EXPECT_FALSE(service()->GetDisableReasons().Empty());
+  std::unique_ptr<SyncServiceImpl> service = ShutdownAndReleaseService();
+  EXPECT_FALSE(service->GetDisableReasons().Empty());
 }
 
 TEST_F(SyncServiceImplTest, ShouldSendDataTypesToSyncInvalidationsService) {
@@ -1761,7 +1761,7 @@ TEST_F(SyncServiceImplTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_CALL(*sync_invalidations_service(), StopListeningPermanently())
       .Times(0);
-  ShutdownAndDeleteService();
+  ShutdownAndReleaseService();
 }
 
 TEST_F(SyncServiceImplTest,

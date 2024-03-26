@@ -36,7 +36,7 @@
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
-#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_sync_service.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #endif
@@ -74,16 +74,8 @@ class SyncServiceFactoryTest : public testing::Test {
   }
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  SyncServiceFactoryTest() {
-    // Fake network stack is required for WIFI_CONFIGURATIONS datatype.
-    ash::NetworkHandler::Initialize();
-  }
-  ~SyncServiceFactoryTest() override { ash::NetworkHandler::Shutdown(); }
-#else
   SyncServiceFactoryTest() = default;
   ~SyncServiceFactoryTest() override = default;
-#endif
 
   // Returns the collection of default datatypes.
   syncer::ModelTypeSet DefaultDatatypes() {
@@ -207,13 +199,15 @@ class SyncServiceFactoryTest : public testing::Test {
 
   Profile* profile() { return profile_.get(); }
 
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
-
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Fake network stack is required for WIFI_CONFIGURATIONS datatype. It's also
+  // used by `network_config_helper_`
+  ash::NetworkHandlerTestHelper network_handler_test_helper_;
+
   // Sets up  and  tears down the Chrome OS networking mojo service as needed
   // for the WIFI_CONFIGURATIONS sync service.
   ash::network_config::CrosNetworkConfigTestHelper network_config_helper_;
@@ -237,6 +231,4 @@ TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDefault) {
   for (syncer::ModelType type : default_types) {
     EXPECT_TRUE(types.Has(type)) << type << " not found in datatypes map";
   }
-  sync_service->Shutdown();
-  RunUntilIdle();
 }
