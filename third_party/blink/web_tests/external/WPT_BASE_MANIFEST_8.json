@@ -461206,6 +461206,13 @@
         {}
        ]
       ],
+      "table-rows-with-zero-columns.html": [
+       "da9e0098a7a1e6657887539448c5e1b2c1f14b5b",
+       [
+        null,
+        {}
+       ]
+      ],
       "table-width-redistribution-fixed-padding.html": [
        "097ddacfc3139105f0d80689e0c03ac722a00aeb",
        [
@@ -671648,7 +671655,7 @@
       ]
      ],
      "gemm.https.any.js": [
-      "8d6be4fe8042a9bf045d3680167771b00fc0a7aa",
+      "77ce6383ccf6a7eabee082d201e525f20ca5ce93",
       [
        "webnn/validation_tests/gemm.https.any.html",
        {
