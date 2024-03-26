@@ -17,7 +17,7 @@ load("//project.star", "settings")
 load("./args.star", "args")
 load("./branches.star", "branches")
 load("./builder_config.star", "builder_config")
-load("./builders.star", "builders", "os", "os_category")
+load("./builders.star", "builders", "os")
 
 defaults = args.defaults(
     extends = builders.defaults,
@@ -135,14 +135,6 @@ def ci_builder(
         if branches.matches(branch_selector, platform = platform)
     })
     sheriff_rotations = args.listify(sheriff_rotations, branch_sheriff_rotations)
-
-    goma_enable_ats = defaults.get_value_from_kwargs("goma_enable_ats", kwargs)
-    if goma_enable_ats == args.COMPUTE:
-        os = defaults.get_value_from_kwargs("os", kwargs)
-
-        # in CI, enable ATS on windows.
-        if os and os.category == os_category.WINDOWS:
-            kwargs["goma_enable_ats"] = True
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it

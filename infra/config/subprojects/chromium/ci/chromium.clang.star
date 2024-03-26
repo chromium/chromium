@@ -21,7 +21,7 @@ ci.defaults.set(
     cores = 32,
     os = os.LINUX_DEFAULT,
     sheriff_rotations = sheriff_rotations.CHROMIUM_CLANG,
-    # Because these run ToT Clang, goma is not used.
+    # Because these run ToT Clang, reclient is not used.
     # Naturally the runtime will be ~4-8h on average, depending on config.
     # CFI builds will take even longer - around 11h.
     execution_timeout = 14 * time.hour,

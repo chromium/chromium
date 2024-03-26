@@ -20,9 +20,9 @@ defaults are provided for the `bucket` and `executable` arguments, removing the
 need to create a wrapper function just to set those default values for a bucket.
 Can also be accessed through `builders.defaults`.
 
-The `cpu`, `os`, and `goma` module members are structs that provide constants
+The `cpu`, and `os` module members are structs that provide constants
 for use with the corresponding arguments to `builder`. Can also be accessed
-through `builders.cpu`, `builders.os` and `builders.goma` respectively.
+through `builders.cpu` and `builders.os` respectively.
 """
 
 load("//project.star", "settings")
@@ -95,26 +95,6 @@ os = struct(
     WINDOWS_ANY = os_enum(os_category.WINDOWS, "Windows"),
 )
 
-# The constants to be used for the goma_backend and goma_jobs parameters of the
-# builder function
-goma = struct(
-    backend = struct(
-        RBE_PROD = {
-            "server_host": "goma.chromium.org",
-            "rpc_extra_params": "?prod",
-        },
-        RBE_STAGING = {
-            "server_host": "staging-goma.chromium.org",
-            "rpc_extra_params": "?staging",
-        },
-    ),
-    jobs = struct(
-        # This is for 4 cores mac. -j40 is too small, especially for clobber
-        # builder.
-        J80 = 80,
-    ),
-)
-
 reclient = struct(
     instance = struct(
         DEFAULT_TRUSTED = "rbe-chromium-trusted",
@@ -180,23 +160,6 @@ _DEFAULT_BUILDERLESS_OS_CATEGORIES = [os_category.LINUX, os_category.WINDOWS]
 # Macs all have SSDs, so it doesn't make sense to use the default behavior of
 # setting ssd:0 dimension
 _EXCLUDE_BUILDERLESS_SSD_OS_CATEGORIES = [os_category.MAC]
-
-def _goma_property(*, goma_backend, goma_enable_ats, goma_jobs):
-    goma_properties = {}
-
-    goma_backend = defaults.get_value("goma_backend", goma_backend)
-    if goma_backend == None:
-        return None
-    goma_properties.update(goma_backend)
-
-    if goma_enable_ats != None:
-        goma_properties["enable_ats"] = goma_enable_ats
-
-    goma_jobs = defaults.get_value("goma_jobs", goma_jobs)
-    if goma_jobs != None:
-        goma_properties["jobs"] = goma_jobs
-
-    return goma_properties
 
 def _code_coverage_property(
         *,
@@ -369,9 +332,6 @@ defaults = args.defaults(
     cpu = None,
     disallow_gce = False,
     fully_qualified_builder_dimension = False,
-    goma_backend = None,
-    goma_enable_ats = args.COMPUTE,
-    goma_jobs = None,
     console_view = args.COMPUTE,
     list_view = args.COMPUTE,
     os = None,
@@ -458,9 +418,6 @@ def builder(
         xcode = args.DEFAULT,
         console_view_entry = None,
         list_view = args.DEFAULT,
-        goma_backend = args.DEFAULT,
-        goma_enable_ats = args.DEFAULT,
-        goma_jobs = args.DEFAULT,
         coverage_gs_bucket = args.DEFAULT,
         use_clang_coverage = args.DEFAULT,
         use_java_coverage = args.DEFAULT,
@@ -620,22 +577,6 @@ def builder(
         disallow_gce: A boolean indicating whether the builder can run on GCE
             machines. If True, emits a 'gce:0' dimension. By default, gce is
             allowed.
-        goma_backend: a member of the `goma.backend` enum indicating the goma
-            backend the builder should use. Will be incorporated into the
-            '$build/goma' property. By default, considered None.
-        goma_enable_ats: a boolean indicating whether ats should be enabled for
-            goma or args.COMPUTE if ats should be enabled where it is needed.
-            If True or False are explicitly set, the 'enable_ats' field will be
-            set in the '$build/goma' property.  By default, args.COMPUTE is set
-            and 'enable_ats' fields is set only if ats need to be enabled by
-            default. The 'enable_ats' on Windows will control cross compiling in
-            server side. cross compile if `enable_ats` is False.
-            Note: if goma_enable_ats is not set, goma recipe modules sets
-            GOMA_ARBITRARY_TOOLCHAIN_SUPPORT=true on windows by default.
-        goma_jobs: a member of the `goma.jobs` enum indicating the number of
-            jobs to be used by the builder. Sets the 'jobs' field of the
-            '$build/goma' property will be set according to the enum member. By
-            default, the 'jobs' considered None.
         coverage_gs_bucket: a string specifying the GS bucket to upload
             coverage data to. Will be copied to '$build/code_coverage' property.
             By default, considered None.
@@ -772,9 +713,6 @@ def builder(
     if "sheriff_rotations" in properties:
         fail('Setting "sheriff_rotations" property is not supported: ' +
              "use sheriff_rotations instead")
-    if "$build/goma" in properties:
-        fail('Setting "$build/goma" property is not supported: ' +
-             "use goma_backend, goma_enable_ats and goma_jobs instead")
     if "$build/code_coverage" in properties:
         fail('Setting "$build/code_coverage" property is not supported: ' +
              "use coverage_gs_bucket, use_clang_coverage, use_java_coverage, " +
@@ -863,22 +801,6 @@ def builder(
     disallow_gce = defaults.get_value("disallow_gce", disallow_gce)
     if disallow_gce:
         dimensions["gce"] = "0"
-
-    goma_enable_ats = defaults.get_value("goma_enable_ats", goma_enable_ats)
-
-    # Enable ATS on linux by default.
-    if goma_enable_ats == args.COMPUTE:
-        if os and os.category == os_category.LINUX:
-            goma_enable_ats = True
-        else:
-            goma_enable_ats = None
-    gp = _goma_property(
-        goma_backend = goma_backend,
-        goma_enable_ats = goma_enable_ats,
-        goma_jobs = goma_jobs,
-    )
-    if gp != None:
-        properties["$build/goma"] = gp
 
     code_coverage = _code_coverage_property(
         coverage_gs_bucket = coverage_gs_bucket,
@@ -1121,7 +1043,6 @@ builders = struct(
     builder = builder,
     cpu = cpu,
     defaults = defaults,
-    goma = goma,
     os = os,
     sheriff_rotations = sheriff_rotations,
     free_space = free_space,
