@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "ui/aura/client/capture_client.h"
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
@@ -552,5 +553,38 @@ TEST_F(DesktopWindowTreeHostPlatformTest, ShowInitiallyMinimizedWidget) {
   EXPECT_TRUE(widget->IsActive());
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
+
+class VisibilityObserver : public aura::WindowObserver {
+ public:
+  VisibilityObserver() = default;
+  int shown() const { return shown_; }
+  void OnWindowVisibilityChanging(aura::Window*, bool visible) override {
+    if (visible) {
+      shown_++;
+    }
+  }
+
+ private:
+  int shown_ = 0;
+};
+
+TEST_F(DesktopWindowTreeHostPlatformTest, ContentWindowShownOnce) {
+  std::unique_ptr<Widget> widget = CreateWidgetWithNativeWidget();
+  widget->Show();
+
+  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  VisibilityObserver observer;
+  host_platform->GetContentWindow()->AddObserver(&observer);
+
+  widget->Hide();
+  widget->SetOpacity(0.f);
+  widget->Show();
+
+  // Show is only called once.
+  EXPECT_EQ(observer.shown(), 1);
+
+  host_platform->GetContentWindow()->RemoveObserver(&observer);
+}
 
 }  // namespace views
