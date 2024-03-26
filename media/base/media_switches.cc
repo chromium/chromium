@@ -770,19 +770,6 @@ BASE_FEATURE(kSpecCompliantCanPlayThrough,
              "SpecCompliantCanPlayThrough",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable support for choosing a version prior to the bundled CDM if
-// Component Update selects it.
-BASE_FEATURE(kSupportCdmComponentDowngrade,
-             "SupportCdmComponentDowngrade",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             // TODO(b/329869597): Dowgrading doesn't work on LaCros. See bug
-             // for details.
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
-
 // Disables the real audio output stream after silent audio has been delivered
 // for too long. Should save quite a bit of power in the muted video case.
 BASE_FEATURE(kSuspendMutedAudio,
