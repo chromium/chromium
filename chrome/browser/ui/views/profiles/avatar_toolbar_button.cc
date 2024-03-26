@@ -111,11 +111,21 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
 AvatarToolbarButton::~AvatarToolbarButton() = default;
 
 void AvatarToolbarButton::UpdateIcon() {
+  // If widget isn't set, the button doesn't have access to the theme provider
+  // to set colors. Defer updating until AddedToWidget(). This may get called as
+  // a result of OnUserIdentityChanged() called from the constructor when the
+  // button is not yet added to the ToolbarView's hierarchy.
   if (!GetWidget()) {
     return;
   }
 
-  UpdateIconWithoutObservers();
+  const int icon_size = GetIconSize();
+  for (auto state : kButtonStates) {
+    SetImageModel(
+        state, delegate_->GetAvatarIcon(icon_size, GetForegroundColor(state)));
+  }
+
+  SetInsets();
 
   for (auto& observer : observer_list_) {
     observer.OnIconUpdated();
@@ -142,24 +152,6 @@ void AvatarToolbarButton::Layout(PassKey) {
   gfx::Size image_size = image->GetImage().size();
   image_size.Enlarge(1, 1);
   image->SetSize(image_size);
-}
-
-void AvatarToolbarButton::UpdateIconWithoutObservers() {
-  // If widget isn't set, the button doesn't have access to the theme provider
-  // to set colors. Defer updating until AddedToWidget(). This may get called as
-  // a result of OnUserIdentityChanged() called from the constructor when the
-  // button is not yet added to the ToolbarView's hierarchy.
-  if (!GetWidget()) {
-    return;
-  }
-
-  const int icon_size = GetIconSize();
-  for (auto state : kButtonStates) {
-    SetImageModel(
-        state, delegate_->GetAvatarIcon(icon_size, GetForegroundColor(state)));
-  }
-
-  SetInsets();
 }
 
 void AvatarToolbarButton::UpdateText() {

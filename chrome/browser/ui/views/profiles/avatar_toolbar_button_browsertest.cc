@@ -1222,7 +1222,7 @@ class AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
-                       SigninPaused) {
+                       SigninPaused_ThenReauth) {
   SigninAndWait(u"test@gmail.com");
 
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
@@ -1237,3 +1237,22 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
 
   EXPECT_EQ(avatar->GetText(), std::u16string());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
+                       SigninPaused_ThenSignout) {
+  SigninAndWait(u"test@gmail.com");
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+
+  SimulateSigninError();
+
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+
+  Signout();
+
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+}
+#endif
