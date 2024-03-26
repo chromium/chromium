@@ -89,21 +89,12 @@ public class FoldTransitionController {
         }
 
         if (mLayoutManagerSupplier.hasValue()) {
-            // Start surface used a TAB_SWITCHER LayoutType before the START_SURFACE_REFACTOR
-            // feature was supported. Therefore, it is safe to assume that the Tab switcher layout
-            // is actually visible only when the Start surface home page is not showing, and the Tab
-            // switcher visibility state will be saved to the instance state only in this case.
-            // TODO(https://crbug.com/1315676): Clean up the logic once the START_SURFACE_REFACTOR
-            // flag is enabled by default.
-            if (mLayoutManagerSupplier.get().isLayoutVisible(LayoutType.TAB_SWITCHER)
-                    || mLayoutManagerSupplier.get().isLayoutVisible(LayoutType.START_SURFACE)) {
-                if (mStartSurfaceSupplier.hasValue()
-                        && mStartSurfaceSupplier.get().isHomepageShown()) {
-                    saveHomeSurfaceState(
-                            savedInstanceState, mStartSurfaceSupplier.get(), isIncognito);
-                } else {
-                    savedInstanceState.putBoolean(TAB_SWITCHER_VISIBILITY_STATE, true);
-                }
+            if (mLayoutManagerSupplier.get().isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+                savedInstanceState.putBoolean(TAB_SWITCHER_VISIBILITY_STATE, true);
+            } else if (mLayoutManagerSupplier.get().isLayoutVisible(LayoutType.START_SURFACE)
+                    && mStartSurfaceSupplier.hasValue()
+                    && mStartSurfaceSupplier.get().isHomepageShown()) {
+                saveHomeSurfaceState(savedInstanceState, mStartSurfaceSupplier.get(), isIncognito);
             }
         }
     }

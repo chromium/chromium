@@ -279,20 +279,12 @@ public class FoldTransitionControllerUnitTest {
         verify(mSavedInstanceState, never()).putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
         verify(mSavedInstanceState, times(2)).putBoolean(TAB_SWITCHER_VISIBILITY_STATE, true);
 
-        // Tests the case when Start surface is showing with "Start surface refactor" disabled.
-        doReturn(true).when(mStartSurface).isHomepageShown();
-        doReturn(true).when(mLayoutManager).isLayoutVisible(LayoutType.TAB_SWITCHER);
-        mFoldTransitionController.saveUiState(mSavedInstanceState, true, false);
-        verify(mSavedInstanceState).putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
-        verify(mSavedInstanceState, times(2)).putBoolean(TAB_SWITCHER_VISIBILITY_STATE, true);
-
-        // Sets the layout when "Start surface refactor" is enabled.
         doReturn(false).when(mLayoutManager).isLayoutVisible(LayoutType.TAB_SWITCHER);
         doReturn(true).when(mLayoutManager).isLayoutVisible(LayoutType.START_SURFACE);
         // Tests the case when Start surface is showing with "Start surface refactor" enabled:
         doReturn(true).when(mStartSurface).isHomepageShown();
         mFoldTransitionController.saveUiState(mSavedInstanceState, true, false);
-        verify(mSavedInstanceState, times(2)).putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
+        verify(mSavedInstanceState).putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
         verify(mSavedInstanceState, times(2)).putBoolean(TAB_SWITCHER_VISIBILITY_STATE, true);
     }
 
