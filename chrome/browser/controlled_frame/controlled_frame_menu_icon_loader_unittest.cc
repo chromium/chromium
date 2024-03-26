@@ -4,6 +4,8 @@
 
 #include "chrome/browser/controlled_frame/controlled_frame_menu_icon_loader.h"
 
+#include <string_view>
+
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -33,7 +35,7 @@
 namespace controlled_frame {
 
 namespace {
-constexpr base::StringPiece kIconPath = "/icon2.png";
+constexpr std::string_view kIconPath = "/icon2.png";
 const int kTestWebViewInstanceId = 1;
 }  // namespace
 
