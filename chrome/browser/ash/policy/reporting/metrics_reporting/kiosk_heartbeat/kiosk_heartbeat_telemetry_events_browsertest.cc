@@ -124,15 +124,10 @@ IN_PROC_BROWSER_TEST_F(KioskHeartbeatEventsBrowserTest, ReportKioskHeartbeats) {
   ::chromeos::MissiveClientTestObserver missive_observer(
       base::BindRepeating(&IsKioskHeartbeatTelemetryEvent));
 
-  // Force telemetry collection by advancing the timer and verify data that is
-  // being enqueued via ERP.
-  test::MockClock::Get().Advance(
-      metrics::kDefaultHeartbeatTelemetryCollectionRate);
-
   // Consume all queued tasks so that policy is synched and collector started.
   base::RunLoop().RunUntilIdle();
 
-  // Fail if no heartbeat is received and GetNextEnqueuedRecord will block.
+  // Fail if no heartbeat is queued immediately.
   ASSERT_TRUE(missive_observer.HasNewEnqueuedRecord())
       << "No new KioskHeartbeat record enqueued to ERP. Failing";
 
@@ -143,6 +138,15 @@ IN_PROC_BROWSER_TEST_F(KioskHeartbeatEventsBrowserTest, ReportKioskHeartbeats) {
   ASSERT_TRUE(metric_data.ParseFromString(record.data()));
   EXPECT_TRUE(metric_data.has_timestamp_ms());
   EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
+
+  // Fast-forward so that another heartbeat should be enqueued.
+  test::MockClock::Get().Advance(
+      metrics::kDefaultHeartbeatTelemetryCollectionRate);
+
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(missive_observer.HasNewEnqueuedRecord())
+      << "No new KioskHeartbeat record enqueued to ERP. Failing";
 }
 }  // namespace
 }  // namespace reporting
