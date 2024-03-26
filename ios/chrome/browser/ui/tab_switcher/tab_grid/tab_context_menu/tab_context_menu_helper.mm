@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/web/public/web_state.h"
@@ -241,13 +242,19 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   ActionFactory* actionFactory =
       [[ActionFactory alloc] initWithScenario:scenario];
 
+  const TabGroup* group = cell.itemIdentifier.tabGroupItem.tabGroup;
+  CHECK(group);
+  __weak __typeof(self) weakSelf = self;
+
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
+  [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
+                  [weakSelf.contextMenuDelegate
+                      editTabGroup:group
+                         incognito:weakSelf.incognito];
+                }]];
   // TODO(crbug.com/1501837): Add the blocks to every action in the tab group
   // context menu.
-
-  [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:nil]];
-
   [menuElements
       addObject:[actionFactory actionToAddNewTabInGroupWithBlock:nil]];
   [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:nil]];

@@ -33,9 +33,9 @@ class WebStateID;
                                       browser:(Browser*)browser
                                      tabGroup:(const TabGroup*)tabGroup
     NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_CREATE_TAB_GROUP_COORDINATOR_H_

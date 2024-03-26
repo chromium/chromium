@@ -1379,13 +1379,26 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a new tab group outside the Tab "
          "Groups experiment.";
-  // TODO(crbug.com/1501837): Display the tab group creation view.
   std::set<web::WebStateID> webStateIDSet = {identifier};
   if (incognito) {
     [_incognitoGridCoordinator showTabGroupCreationForTabs:webStateIDSet];
   } else {
     [_regularGridCoordinator showTabGroupCreationForTabs:webStateIDSet];
   }
+}
+
+- (void)editTabGroup:(const TabGroup*)group incognito:(BOOL)incognito {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+      << "You should not be able to edit a tab group outside the Tab Groups "
+         "experiment.";
+
+  BaseGridCoordinator* coordinator;
+  if (incognito) {
+    coordinator = _incognitoGridCoordinator;
+  } else {
+    coordinator = _regularGridCoordinator;
+  }
+  [coordinator showTabGroupEditionForGroup:group];
 }
 
 - (void)closeTabWithIdentifier:(web::WebStateID)identifier

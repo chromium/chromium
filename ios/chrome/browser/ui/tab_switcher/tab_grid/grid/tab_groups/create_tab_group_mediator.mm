@@ -103,19 +103,24 @@
 
 #pragma mark - TabGroupCreationMutator
 
+// TODO(crbug.com/1501837): Rename the function to better match what it does.
 - (void)createNewGroupWithTitle:(NSString*)title
                           color:(tab_groups::TabGroupColorId)colorID
                      completion:(void (^)())completion {
-  std::set<int> tabIndexes;
-  for (web::WebStateID identifier : _identifiers) {
-    int index = GetWebStateIndex(_webStateList, WebStateSearchCriteria{
-                                                    .identifier = identifier,
-                                                });
-    tabIndexes.insert(index);
-  }
   tab_groups::TabGroupVisualData visualData =
       tab_groups::TabGroupVisualData(base::SysNSStringToUTF16(title), colorID);
-  _webStateList->CreateGroup(tabIndexes, visualData);
+  if (_tabGroup) {
+    _webStateList->UpdateGroupVisualData(_tabGroup, visualData);
+  } else {
+    std::set<int> tabIndexes;
+    for (web::WebStateID identifier : _identifiers) {
+      int index = GetWebStateIndex(_webStateList, WebStateSearchCriteria{
+                                                      .identifier = identifier,
+                                                  });
+      tabIndexes.insert(index);
+    }
+    _webStateList->CreateGroup(tabIndexes, visualData);
+  }
   completion();
 }
 
