@@ -4302,6 +4302,7 @@ enum WebFeature {
   kV8ModelManager_DefaultGenericSessionOptions_Method = 4927,
 
   kQuirksModeCursorHandApplied = 4928,
+  kSkippedPreloadScanning = 4929,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -3513,6 +3513,12 @@
       status: "experimental",
     },
     {
+      // If enabled, HTMLPreloadScanner will be skipped.
+      name: "SkipPreloadScanning",
+      origin_trial_feature_name: "SkipPreloadScanning",
+      base_feature: "SkipPreloadScanning",
+    },
+    {
       // Skips the browser touch event filter, ensuring that events that reach
       // the queue and would otherwise be filtered out will instead be passed
       // onto the renderer compositor process as long as the page hasn't timed

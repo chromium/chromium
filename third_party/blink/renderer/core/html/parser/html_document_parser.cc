@@ -191,6 +191,12 @@ bool BackgroundScanMainFrameOnly() {
 bool IsPreloadScanningEnabled(Document* document) {
   if (BackgroundScanMainFrameOnly() && !document->IsInOutermostMainFrame())
     return false;
+  if (const auto* context = document->GetExecutionContext()) {
+    if (RuntimeEnabledFeatures::SkipPreloadScanningEnabled(context)) {
+      UseCounter::Count(document, WebFeature::kSkippedPreloadScanning);
+      return false;
+    }
+  }
   return document->GetSettings() &&
          document->GetSettings()->GetDoHtmlPreloadScanning();
 }

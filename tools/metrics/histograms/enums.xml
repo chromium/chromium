@@ -11399,6 +11399,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4926" label="V8Animation_Progress_AttributeGetter"/>
   <int value="4927" label="V8ModelManager_DefaultGenericSessionOptions_Method"/>
   <int value="4928" label="QuirksModeCursorHandApplied"/>
+  <int value="4929" label="SkippedPreloadScanning"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
