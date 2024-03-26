@@ -58,6 +58,7 @@ import org.chromium.base.UserData;
 import org.chromium.blink.mojom.EventType;
 import org.chromium.blink.mojom.FocusType;
 import org.chromium.blink.mojom.HandwritingGestureResult;
+import org.chromium.blink.mojom.InputCursorAnchorInfo;
 import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.blink_public.web.WebInputEventModifier;
 import org.chromium.blink_public.web.WebTextInputMode;
@@ -72,6 +73,10 @@ import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.mojo.bindings.Router;
+import org.chromium.mojo.system.MessagePipeHandle;
+import org.chromium.mojo.system.MojoException;
+import org.chromium.mojo.system.impl.CoreImpl;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -204,9 +209,32 @@ public class ImeAdapterImpl
         private static final UserDataFactory<ImeAdapterImpl> INSTANCE = ImeAdapterImpl::new;
     }
 
+    private final class ImeRenderWidgetHostImpl
+            implements org.chromium.blink.mojom.ImeRenderWidgetHost {
+        private final MessagePipeHandle mHandle;
+        private final Router mRouter;
+
+        ImeRenderWidgetHostImpl(MessagePipeHandle handle) {
+            mHandle = handle;
+            mRouter = org.chromium.blink.mojom.ImeRenderWidgetHost.MANAGER.bind(this, mHandle);
+        }
+
+        @Override
+        public void updateCursorAnchorInfo(InputCursorAnchorInfo cursorAnchorInfo) {
+            ImeAdapterImpl.this.updateCursorAnchorInfo(cursorAnchorInfo);
+        }
+
+        @Override
+        public void onConnectionError(MojoException e) {}
+
+        @Override
+        public void close() {}
+    }
+
     /**
-     * Get {@link ImeAdapter} object used for the give WebContents.
-     * {@link #create()} should precede any calls to this.
+     * Get {@link ImeAdapter} object used for the give WebContents. {@link #create()} should precede
+     * any calls to this.
+     *
      * @param webContents {@link WebContents} object.
      * @return {@link ImeAdapter} object.
      */
@@ -301,6 +329,10 @@ public class ImeAdapterImpl
                             SelectRangeGesture.class,
                             DeleteRangeGesture.class);
             outAttrs.setSupportedHandwritingGestures(supportedGestures);
+        }
+
+        if (mNativeImeAdapterAndroid != 0) {
+            ImeAdapterImplJni.get().setUpImeRenderWidgetHost(mNativeImeAdapterAndroid);
         }
         return inputConnection;
     }
@@ -1388,16 +1420,43 @@ public class ImeAdapterImpl
     }
 
     /**
+     * Update the cached CursorAnchorInfo data. This may or may not trigger an update to the
+     * platform.
+     *
+     * @param cursorAnchorInfo the Blink representation of CursorAnchorInfo. Null attributes imply
+     *     that no update is needed.
+     */
+    void updateCursorAnchorInfo(InputCursorAnchorInfo cursorAnchorInfo) {
+        mCursorAnchorInfoController.updateCursorAnchorInfoData(
+                cursorAnchorInfo, getContainerView());
+    }
+
+    /**
+     * This connects the native mojo receiver to its Java implementation. We don't need to keep a
+     * reference to the ImeRenderWidgetHost implementation as Mojo will. The implementation does
+     * however have a reference to this so that it can call methods on the ImeAdapter.
+     *
+     * @param nativeHandle the native Mojo receiver's pipe as a native pointer.
+     */
+    @CalledByNative
+    private void bindImeRenderHost(long nativeHandle) {
+        MessagePipeHandle handle =
+                CoreImpl.getInstance().acquireNativeHandle(nativeHandle).toMessagePipeHandle();
+        new ImeRenderWidgetHostImpl(handle);
+    }
+
+    /**
      * Notified when a frame has been produced by the renderer and all the associated metadata.
+     *
      * @param scaleFactor device scale factor.
      * @param contentOffsetYPix Y offset below the browser controls.
      * @param hasInsertionMarker Whether the insertion marker is visible or not.
      * @param insertionMarkerHorizontal X coordinates (in view-local DIP pixels) of the insertion
-     *                                  marker if it exists. Will be ignored otherwise.
+     *     marker if it exists. Will be ignored otherwise.
      * @param insertionMarkerTop Y coordinates (in view-local DIP pixels) of the top of the
-     *                           insertion marker if it exists. Will be ignored otherwise.
-     * @param insertionMarkerBottom Y coordinates (in view-local DIP pixels) of the bottom of
-     *                              the insertion marker if it exists. Will be ignored otherwise.
+     *     insertion marker if it exists. Will be ignored otherwise.
+     * @param insertionMarkerBottom Y coordinates (in view-local DIP pixels) of the bottom of the
+     *     insertion marker if it exists. Will be ignored otherwise.
      */
     @CalledByNative
     private void updateFrameInfo(
@@ -1633,6 +1692,8 @@ public class ImeAdapterImpl
                 boolean monitorRequest);
 
         void advanceFocusForIME(long nativeImeAdapterAndroid, ImeAdapterImpl caller, int focusType);
+
+        void setUpImeRenderWidgetHost(long nativeImeAdapterAndroid);
 
         // Stylus Writing
         void handleStylusWritingGestureAction(

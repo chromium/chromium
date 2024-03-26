@@ -1268,7 +1268,10 @@ void RenderWidgetHostViewAndroid::OnImeCompositionRangeChanged(
     bool character_bounds_changed,
     const std::optional<std::vector<gfx::Rect>>& line_bounds) {
   DCHECK_EQ(text_input_manager_, text_input_manager);
-  if (!ime_adapter_android_) {
+  // Don't pass data to Java if using the new pipeline.
+  if (!ime_adapter_android_ ||
+      base::FeatureList::IsEnabled(
+          blink::features::kCursorAnchorInfoMojoPipe)) {
     return;
   }
 

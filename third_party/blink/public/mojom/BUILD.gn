@@ -100,6 +100,7 @@ mojom("mojom_platform") {
     "input/focus_type.mojom",
     "input/gesture_event.mojom",
     "input/handwriting_gesture_result.mojom",
+    "input/ime_host.mojom",
     "input/input_event.mojom",
     "input/input_event_result.mojom",
     "input/input_handler.mojom",

@@ -1163,6 +1163,10 @@
       status: "test"
     },
     {
+      name: "CursorAnchorInfoMojoPipe",
+      // No status as this will be controlled by the matching Chromium feature.
+    },
+    {
       // https://html.spec.whatwg.org/#dom-customelementregistry-getname
       name: "CustomElementsGetName",
       status: "stable",

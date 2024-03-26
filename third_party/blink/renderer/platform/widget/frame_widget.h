@@ -163,6 +163,9 @@ class PLATFORM_EXPORT FrameWidget {
   // Return the visible line bounds in screen coordinates.
   virtual Vector<gfx::Rect>& GetVisibleLineBoundsOnScreen() = 0;
 
+  // Called to send new cursor anchor info data to the browser.
+  virtual void UpdateCursorAnchorInfo() = 0;
+
   // Update the current visible line bounds for the focused element.
   virtual void UpdateLineBounds() = 0;
 

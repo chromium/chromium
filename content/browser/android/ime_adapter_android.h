@@ -50,6 +50,8 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
                     WebContents* web_contents);
   ~ImeAdapterAndroid() override;
 
+  void SetUpImeRenderWidgetHost(JNIEnv* env);
+
   // Called from java -> native
   bool SendKeyEvent(
       JNIEnv* env,

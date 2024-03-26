@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/input/ime_host.mojom.h"
 #include "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "ui/base/ime/ime_text_span.h"
@@ -447,6 +448,24 @@ void ImeAdapterAndroid::OnStylusWritingGestureActionCompleted(
     Java_ImeAdapterImpl_onStylusWritingGestureActionCompleted(env, obj, id,
                                                               (int)result);
   }
+}
+
+void ImeAdapterAndroid::SetUpImeRenderWidgetHost(JNIEnv* env) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kCursorAnchorInfoMojoPipe)) {
+    return;
+  }
+  auto* input_handler = GetFocusedFrameWidgetInputHandler();
+  if (!input_handler) {
+    return;
+  }
+  // Use a pending remote so we can pass it to Blink.
+  mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost> ime_render_widget_host;
+  auto receiver = ime_render_widget_host.InitWithNewPipeAndPassReceiver();
+  ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
+  Java_ImeAdapterImpl_bindImeRenderHost(env, obj,
+                                        receiver.PassPipe().release().value());
+  input_handler->PassImeRenderWidgetHost(std::move(ime_render_widget_host));
 }
 
 void ImeAdapterAndroid::AdvanceFocusForIME(JNIEnv* env,
