@@ -12,7 +12,7 @@
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_test_util.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
-#include "ash/public/cpp/picker/picker_client.h"
+#include "ash/public/cpp/picker/mock_picker_client.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -20,6 +20,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -90,27 +91,18 @@ class PickerControllerTest : public AshTestBase {
 // A PickerClient implementation used for testing.
 // Automatically sets itself as the client when it's created, and unsets itself
 // when it's destroyed.
-class TestPickerClient : public PickerClient {
+class TestPickerClient : public MockPickerClient {
  public:
   explicit TestPickerClient(PickerController* controller)
       : controller_(controller) {
     controller_->SetClient(this);
+    // Set default behaviours. These can be overridden with `WillOnce` and
+    // `WillRepeatedly`.
+    ON_CALL(*this, GetSharedURLLoaderFactory)
+        .WillByDefault(
+            base::MakeRefCounted<network::TestSharedURLLoaderFactory>);
   }
   ~TestPickerClient() override { controller_->SetClient(nullptr); }
-
-  scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
-      override {
-    return base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
-  }
-
-  void FetchGifSearch(const std::string& query,
-                      FetchGifsCallback callback) override {}
-  void StopGifSearch() override {}
-  void StartCrosSearch(const std::u16string& query,
-                       std::optional<PickerCategory> category,
-                       CrosSearchResultsCallback callback) override {}
-  void StopCrosQuery() override {}
-  void ShowEditor() override {}
 
  private:
   raw_ptr<PickerController> controller_ = nullptr;

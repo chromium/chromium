@@ -578,6 +578,8 @@ source_set("test_support") {
   sources = [
     "personalization_app/time_of_day_test_utils.cc",
     "personalization_app/time_of_day_test_utils.h",
+    "picker/mock_picker_client.cc",
+    "picker/mock_picker_client.h",
     "test/in_process_data_decoder.cc",
     "test/in_process_data_decoder.h",
     "test/mock_in_session_auth_token_provider.cc",

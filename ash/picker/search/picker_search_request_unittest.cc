@@ -13,13 +13,12 @@
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_web_view.h"
+#include "ash/public/cpp/picker/mock_picker_client.h"
 #include "ash/public/cpp/picker/picker_category.h"
-#include "ash/public/cpp/picker/picker_client.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
@@ -60,40 +59,24 @@ constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
     PickerCategory::kBookmarks,
 }};
 
-// TODO: b/329756078 - Deduplicate this with the `MockPickerClient` in
+// TODO: b/329756078 - Deduplicate this with the `MockSearchPickerClient` in
 // `picker_search_controller_unittest`.
-class MockPickerClient : public PickerClient {
+class MockSearchPickerClient : public MockPickerClient {
  public:
-  MockPickerClient() {
+  MockSearchPickerClient() {
     // Set default behaviours. These can be overridden with `WillOnce` and
     // `WillRepeatedly`.
     ON_CALL(*this, StartCrosSearch)
         .WillByDefault(SaveArg<2>(&cros_search_callback_));
     ON_CALL(*this, FetchGifSearch)
         .WillByDefault(
-            Invoke(this, &MockPickerClient::FetchGifSearchToSetCallback));
+            Invoke(this, &MockSearchPickerClient::FetchGifSearchToSetCallback));
+    ON_CALL(*this, GetSharedURLLoaderFactory).WillByDefault([]() {
+      ADD_FAILURE()
+          << "GetSharedURLLoaderFactory should not be called in this unittest";
+      return nullptr;
+    });
   }
-
-  scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
-      override {
-    ADD_FAILURE()
-        << "GetSharedURLLoaderFactory should not be called in this unittest";
-    return nullptr;
-  }
-
-  MOCK_METHOD(void,
-              FetchGifSearch,
-              (const std::string& query, FetchGifsCallback callback),
-              (override));
-  MOCK_METHOD(void, StopGifSearch, (), (override));
-  MOCK_METHOD(void,
-              StartCrosSearch,
-              (const std::u16string& query,
-               std::optional<PickerCategory> category,
-               CrosSearchResultsCallback callback),
-              (override));
-  MOCK_METHOD(void, StopCrosQuery, (), (override));
-  MOCK_METHOD(void, ShowEditor, (), (override));
 
   // Set by the default `StartCrosSearch` behaviour. If the behaviour is
   // overridden, this may not be set on a `StartCrosSearch` callback.
@@ -132,14 +115,14 @@ class PickerSearchRequestTest : public testing::Test {
     return task_environment_;
   }
 
-  MockPickerClient& client() { return client_; }
+  MockSearchPickerClient& client() { return client_; }
 
   emoji::EmojiSearch& emoji_search() { return emoji_search_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  NiceMock<MockPickerClient> client_;
+  NiceMock<MockSearchPickerClient> client_;
   emoji::EmojiSearch emoji_search_;
 };
 
