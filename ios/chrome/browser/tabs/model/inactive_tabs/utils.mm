@@ -112,13 +112,18 @@ void MoveTabsAccordingToPolicy(Browser* source_browser,
       continue;
     }
 
-    // Don't consider tabs presenting the NTP nor pinned tabs as inactive.
+    // Don't consider tabs presenting the NTP, pinned tabs or tabs in a group as
+    // inactive.
     if (move_policy.policy == MovePolicy::kInactiveOnly) {
       if (IsVisibleURLNewTabPage(web_state)) {
         continue;
       }
 
       if (index < source_list->pinned_tabs_count()) {
+        continue;
+      }
+
+      if (source_list->GetGroupOfWebStateAt(index)) {
         continue;
       }
     }

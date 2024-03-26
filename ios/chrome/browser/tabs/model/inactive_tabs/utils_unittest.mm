@@ -637,3 +637,43 @@ TEST_F(InactiveTabsUtilsTest,
   histogram_tester_.ExpectUniqueSample(
       "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive", 1, 1);
 }
+
+TEST_F(InactiveTabsUtilsTest, DoNotMoveTabInGroupToInactive) {
+  // No inactive tabs on iPad.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  base::test::ScopedFeatureList feature_list;
+  std::map<std::string, std::string> parameters;
+  parameters[kTabInactivityThresholdParameterName] =
+      kTabInactivityThresholdOneWeekParam;
+  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
+                                                  parameters);
+
+  WebStateList* active_web_state_list = browser_active_->GetWebStateList();
+  WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
+
+  EXPECT_EQ(active_web_state_list->count(), 0);
+  EXPECT_EQ(inactive_web_state_list->count(), 0);
+
+  AddInactiveTab(active_web_state_list, base::Days(10));
+  AddInactiveTab(active_web_state_list, base::Days(12));
+  AddInactiveTab(active_web_state_list, base::Days(15));
+
+  EXPECT_EQ(active_web_state_list->count(), 3);
+  EXPECT_EQ(inactive_web_state_list->count(), 0);
+
+  active_web_state_list->CreateGroup({0}, {});
+
+  EXPECT_EQ(active_web_state_list->count(), 3);
+  EXPECT_EQ(inactive_web_state_list->count(), 0);
+
+  MoveTabsFromActiveToInactive(browser_active_.get(), browser_inactive_.get());
+
+  EXPECT_EQ(active_web_state_list->count(), 1);
+  EXPECT_EQ(inactive_web_state_list->count(), 2);
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive", 0, 1);
+}
