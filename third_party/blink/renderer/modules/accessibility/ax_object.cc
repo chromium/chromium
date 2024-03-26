@@ -2897,7 +2897,16 @@ String AXObject::GetValueForControl() const {
   return String();
 }
 
+String AXObject::GetValueForControl(AXObjectSet& visited) const {
+  return String();
+}
+
 String AXObject::SlowGetValueForControlIncludingContentEditable() const {
+  return String();
+}
+
+String AXObject::SlowGetValueForControlIncludingContentEditable(
+    AXObjectSet& visited) const {
   return String();
 }
 

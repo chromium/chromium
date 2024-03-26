@@ -3558,6 +3558,11 @@ AXObject* AXNodeObject::ChooserPopup() const {
 }
 
 String AXNodeObject::GetValueForControl() const {
+  AXObjectSet visited;
+  return GetValueForControl(visited);
+}
+
+String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
   // TODO(crbug.com/1165853): Remove this method completely and compute value on
   // the browser side.
   Node* node = GetNode();
@@ -3684,7 +3689,6 @@ String AXNodeObject::GetValueForControl() const {
     }
 
     // An ARIA combobox can get value from inner contents.
-    AXObjectSet visited;
     return TextFromDescendants(visited, nullptr, false);
   }
 
@@ -3692,6 +3696,12 @@ String AXNodeObject::GetValueForControl() const {
 }
 
 String AXNodeObject::SlowGetValueForControlIncludingContentEditable() const {
+  AXObjectSet visited;
+  return SlowGetValueForControlIncludingContentEditable(visited);
+}
+
+String AXNodeObject::SlowGetValueForControlIncludingContentEditable(
+    AXObjectSet& visited) const {
   if (IsNonAtomicTextField()) {
     Element* element = GetElement();
     return element ? element->GetInnerTextWithoutUpdate() : String();
@@ -6579,7 +6589,7 @@ String AXNodeObject::GetValueContributionToName(AXObjectSet& visited) const {
       // doesn't precisely fit for combobox, but a clarification is coming; see
       // https://github.com/w3c/accname/issues/232 and
       // https://github.com/w3c/accname/issues/200.
-      return SlowGetValueForControlIncludingContentEditable();
+      return SlowGetValueForControlIncludingContentEditable(visited);
     } else {
       StringBuilder accumulated_text;
       for (const auto& child : selected_options) {
