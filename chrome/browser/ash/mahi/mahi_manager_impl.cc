@@ -193,7 +193,9 @@ void MahiManagerImpl::OnGetPageContentForSummary(
     return;
   }
 
+  // Assign current panel content and clear the current panel QA
   current_panel_content_ = std::move(mahi_content_ptr);
+  current_panel_qa_.clear();
 
   CHECK(mahi_provider_);
   mahi_provider_->Summarize(
@@ -257,8 +259,10 @@ void MahiManagerImpl::OnGetPageContentForQA(
     return;
   }
 
+  // Assign current panel content and clear the current panel QA
   current_panel_content_ = std::move(mahi_content_ptr);
   current_panel_qa_.clear();
+
   mahi_provider_->QuestionAndAnswer(
       base::UTF16ToUTF8(current_panel_content_->page_content),
       current_panel_qa_, base::UTF16ToUTF8(question),
