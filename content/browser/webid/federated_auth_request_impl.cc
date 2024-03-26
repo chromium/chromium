@@ -1586,6 +1586,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
         idp_data_for_display_,
         ready_to_display_accounts_dialog_time_ - start_time_);
   }
+  bool did_succeed_for_at_least_one_idp =
+      fetch_data_.did_succeed_for_at_least_one_idp;
 
   fetch_data_ = FetchData();
 
@@ -1638,7 +1640,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
                      weak_ptr_factory_.GetWeakPtr()));
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 
-  if (identity_selection_type_ == kExplicit) {
+  if (identity_selection_type_ == kExplicit &&
+      did_succeed_for_at_least_one_idp) {
     // We omit recording the accounts dialog shown metric for auto re-authn
     // because the metric is used to detect IDPs flashing UI. Auto re-authn
     // verifying UI cannot be flashed since it is destroyed automatically after
@@ -1728,8 +1731,17 @@ void FederatedAuthRequestImpl::OnIdpMismatch(
 
   // Invoke the accounts dialog flow if there is at least one account or more
   // than one IDP for which we should show the mismatch dialog.
+  // TODO(crbug.com/331426009): make this code clearer by creating a separate
+  // method for showing multiple mismatch UI.
   if (fetch_data_.did_succeed_for_at_least_one_idp || idp_infos_.size() > 1u) {
     MaybeShowAccountsDialog();
+    // If there are no successful IDPs, this is the multi IDP case where all are
+    // mismatch.
+    if (!fetch_data_.did_succeed_for_at_least_one_idp) {
+      mismatch_dialog_shown_time_ = base::TimeTicks::Now();
+      has_shown_mismatch_ = true;
+      devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
+    }
     return;
   }
 
@@ -1751,6 +1763,11 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
   DCHECK(render_frame_host().GetPage().IsPrimary());
 
   fetch_data_ = FetchData();
+
+  // Set `idp_data_for_display_` so it is always the case that we can rely on it
+  // to know which IDPs have been seen in the UI.
+  CHECK(idp_info->data.has_value());
+  idp_data_for_display_ = {*idp_info->data};
 
   std::optional<std::string> iframe_for_display = GetIframeOriginForDisplay(
       GetEmbeddingOrigin(), origin(),
@@ -2174,6 +2191,7 @@ void FederatedAuthRequestImpl::ShowModalDialog(const GURL& idp_config_url,
   // flow.
   if (mismatch_dialog_shown_time_.has_value()) {
     fedcm_metrics_->RecordMismatchDialogShownDuration(
+        idp_data_for_display_,
         base::TimeTicks::Now() - mismatch_dialog_shown_time_.value());
     mismatch_dialog_shown_time_ = std::nullopt;
   }
@@ -2421,6 +2439,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
 
   if (mismatch_dialog_shown_time_.has_value()) {
     fedcm_metrics_->RecordMismatchDialogShownDuration(
+        idp_data_for_display_,
         base::TimeTicks::Now() - mismatch_dialog_shown_time_.value());
     mismatch_dialog_shown_time_ = std::nullopt;
   }

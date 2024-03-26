@@ -222,7 +222,9 @@ class CONTENT_EXPORT FedCmMetrics {
 
   // Records the duration from when a mismatch dialog is shown to when it is
   // destroyed or user triggers IDP sign-in pop-up window.
-  void RecordMismatchDialogShownDuration(base::TimeDelta duration);
+  void RecordMismatchDialogShownDuration(
+      const std::vector<IdentityProviderData>& providers,
+      base::TimeDelta duration);
 
   // Records the reason that closed accounts dialog without selecting any
   // accounts. Unlike RecordCancelOnDialogTime() this metric is recorded in

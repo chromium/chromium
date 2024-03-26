@@ -168,7 +168,9 @@ void FedCmMetrics::RecordAccountsDialogShownDuration(
       base::Milliseconds(1), base::Minutes(10), 50);
 }
 
-void FedCmMetrics::RecordMismatchDialogShownDuration(base::TimeDelta duration) {
+void FedCmMetrics::RecordMismatchDialogShownDuration(
+    const std::vector<IdentityProviderData>& providers,
+    base::TimeDelta duration) {
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetTiming_MismatchDialogShownDuration(
         ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
@@ -178,8 +180,12 @@ void FedCmMetrics::RecordMismatchDialogShownDuration(base::TimeDelta duration) {
   ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
   RecordUkm(fedcm_builder);
 
-  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
-  RecordUkm(fedcm_idp_builder);
+  for (const auto& provider : providers) {
+    // We should only reach this if all `providers` are a mismatch.
+    ukm::builders::Blink_FedCmIdp fedcm_idp_builder(
+        GetOrCreateProviderSourceId(provider.idp_metadata.config_url));
+    RecordUkm(fedcm_idp_builder);
+  }
 
   // Samples are at most 10 minutes. This metric is used to determine a
   // reasonable minimum duration for the mismatch dialog to be shown to

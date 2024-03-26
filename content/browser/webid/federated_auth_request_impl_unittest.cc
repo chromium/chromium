@@ -1290,7 +1290,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
     for (const ukm::mojom::UkmEntry* const entry : entries) {
       if (ukm_recorder()->GetEntryMetric(entry, metric_name)) {
-        FAIL() << "Unexpected UKM was recorded in " << entry_name;
+        FAIL() << "Unexpectedly found " << metric_name << " UKM in "
+               << entry_name;
       }
     }
     SUCCEED();
@@ -4308,9 +4309,14 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpWithAllIdpsMismatch) {
   config.idp_info[kProviderTwoUrlFull].accounts_response.parse_status =
       IdpNetworkRequestManager::ParseStatus::kInvalidResponseError;
   // Need to change the accounts dialog action since we won't get any accounts.
-  config.accounts_dialog_action = AccountsDialogAction::kNone;
+  config.accounts_dialog_action = AccountsDialogAction::kClose;
 
-  RunAuthDontWaitForCallback(kDefaultMultiIdpRequestParameters, config);
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kShouldEmbargo,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  RunAuthTest(kDefaultMultiIdpRequestParameters, expectations, config);
 
   EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 2u);
   EXPECT_TRUE(displayed_accounts().empty());
@@ -4319,6 +4325,19 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpWithAllIdpsMismatch) {
   EXPECT_EQ(mismatch_idps[0], "idp.example");
   EXPECT_EQ(mismatch_idps[1], "idp2.example");
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.AccountsDialogShownDuration2", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.MismatchDialogShownDuration", 1);
+
+  ExpectNoUKMPresence("Timing.AccountsDialogShownDuration");
+
+  ExpectUKMCount("Timing.MismatchDialogShownDuration", FedCmEntry::kEntryName,
+                 1);
+  ExpectUKMCount("Timing.MismatchDialogShownDuration",
+                 FedCmIdpEntry::kEntryName, 2);
+  CheckAllFedCmSessionIDs();
 }
 
 TEST_F(FederatedAuthRequestImplTest, MultiIdpWithOneIdpMismatch) {
