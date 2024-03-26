@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/capture/mojom/video_effects_manager.mojom-forward.h"
@@ -48,11 +49,15 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
 
   // mojom::VideoEffectsService implementation:
   void CreateEffectsProcessor(
+      const std::string& device_id,
       mojo::PendingRemote<media::mojom::VideoEffectsManager> manager,
       mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor) override;
 
  private:
-  std::vector<std::unique_ptr<VideoEffectsProcessorImpl>> processors_;
+  // Mapping from the device ID to processor implementation. Device ID is only
+  // used to deduplicate processor creation requests.
+  base::flat_map<std::string, std::unique_ptr<VideoEffectsProcessorImpl>>
+      processors_;
 
   mojo::Receiver<mojom::VideoEffectsService> receiver_;
   std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider_;

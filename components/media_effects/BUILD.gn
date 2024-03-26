@@ -1,4 +1,8 @@
 source_set("media_effects") {
+  public_deps = [
+    "//media/capture/mojom:video_effects_manager",
+    "//services/video_effects/public/mojom:mojom",
+  ]
   deps = [
     "//base",
     "//components/keyed_service/content",
@@ -32,6 +36,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/user_prefs/test:test_support",
     "//content/test:test_support",
+    "//services/video_effects/test:test_support",
     "//testing/gtest",
     "//third_party/mediapipe",
   ]

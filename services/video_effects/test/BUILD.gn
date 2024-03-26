@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_video_effects_processor.cc",
+    "fake_video_effects_processor.h",
+    "fake_video_effects_service.cc",
+    "fake_video_effects_service.h",
+  ]
+
+  public_deps = [
+    "//base/test:test_support",
+    "//services/video_effects/public/mojom",
+  ]
+}
