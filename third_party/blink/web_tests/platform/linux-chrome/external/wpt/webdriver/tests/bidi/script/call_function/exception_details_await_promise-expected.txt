@@ -1,6 +1,0 @@
-This is a wdspec test.
-[FAIL] test_exception_details[(new Set([1,2]))[Symbol.iterator]()-expected30]
-  AssertionError
-[FAIL] test_exception_details[(new Map([[1,2]]))[Symbol.iterator]()-expected31]
-  AssertionError
-Harness: the test ran to completion.

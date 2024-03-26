@@ -1223,16 +1223,6 @@ var mapperTab = (function () {
 	                void this.#releaseObject(objectId).catch((error) => this.#logger?.(log_js_1$b.LogType.debugError, error));
 	            }
 	        }
-	        if (cdpValue.result.type === 'object') {
-	            switch (cdpValue.result.subtype) {
-	                case 'generator':
-	                case 'iterator':
-	                    bidiValue.type = cdpValue.result.subtype;
-	                    delete bidiValue['value'];
-	                    break;
-	                // Intentionally left blank.
-	            }
-	        }
 	        return bidiValue;
 	    }
 	    /**
@@ -1303,7 +1293,7 @@ var mapperTab = (function () {
 	            origin: this.origin,
 	        };
 	    }
-	    async evaluate(expression, awaitPromise, resultOwnership, serializationOptions, userActivation = false) {
+	    async evaluate(expression, awaitPromise, resultOwnership = "none" /* Script.ResultOwnership.None */, serializationOptions = {}, userActivation = false) {
 	        const cdpEvaluateResult = await this.cdpClient.sendCommand('Runtime.evaluate', {
 	            contextId: this.executionContextId,
 	            expression,
@@ -1417,7 +1407,9 @@ var mapperTab = (function () {
 	            text: (await this.stringifyObject(exception)) || cdpExceptionDetails.text,
 	        };
 	    }
-	    async callFunction(functionDeclaration, thisLocalValue, argumentsLocalValues, awaitPromise, resultOwnership, serializationOptions, userActivation = false) {
+	    async callFunction(functionDeclaration, awaitPromise, thisLocalValue = {
+	        type: 'undefined',
+	    }, argumentsLocalValues = [], resultOwnership = "none" /* Script.ResultOwnership.None */, serializationOptions = {}, userActivation = false) {
 	        const callFunctionAndSerializeScript = `(...args) => {
       function callFunction(f, args) {
         const deserializedThis = args.shift();
@@ -2057,11 +2049,11 @@ var mapperTab = (function () {
 	            .targetUnblockedOrThrow();
 	        return await super.evaluate(expression, awaitPromise, resultOwnership, serializationOptions, userActivation);
 	    }
-	    async callFunction(functionDeclaration, thisLocalValue, argumentsLocalValues, awaitPromise, resultOwnership, serializationOptions, userActivation) {
+	    async callFunction(functionDeclaration, awaitPromise, thisLocalValue, argumentsLocalValues, resultOwnership, serializationOptions, userActivation) {
 	        await this.#browsingContextStorage
 	            .getContext(this.#browsingContextId)
 	            .targetUnblockedOrThrow();
-	        return await super.callFunction(functionDeclaration, thisLocalValue, argumentsLocalValues, awaitPromise, resultOwnership, serializationOptions, userActivation);
+	        return await super.callFunction(functionDeclaration, awaitPromise, thisLocalValue, argumentsLocalValues, resultOwnership, serializationOptions, userActivation);
 	    }
 	}
 	WindowRealm$1.WindowRealm = WindowRealm;
@@ -2086,7 +2078,7 @@ var mapperTab = (function () {
 	BrowsingContextImpl$1.serializeOrigin = BrowsingContextImpl$1.BrowsingContextImpl = void 0;
 	const chromium_bidi_js_1$1 = chromiumBidi;
 	const protocol_js_1$h = protocol;
-	const assert_js_1$7 = assert$1;
+	const assert_js_1$6 = assert$1;
 	const Deferred_js_1$2 = Deferred$1;
 	const log_js_1$a = log$1;
 	const unitConversions_js_1 = unitConversions;
@@ -2221,7 +2213,7 @@ var mapperTab = (function () {
 	        this.directChildren.map((child) => child.dispose());
 	    }
 	    get #defaultRealm() {
-	        (0, assert_js_1$7.assert)(this.#maybeDefaultRealm, `No default realm for browsing context ${this.#id}`);
+	        (0, assert_js_1$6.assert)(this.#maybeDefaultRealm, `No default realm for browsing context ${this.#id}`);
 	        return this.#maybeDefaultRealm;
 	    }
 	    get cdpTarget() {
@@ -2262,7 +2254,7 @@ var mapperTab = (function () {
 	                browsingContextId: this.id,
 	                sandbox,
 	            });
-	            (0, assert_js_1$7.assert)(maybeSandboxes.length !== 0);
+	            (0, assert_js_1$6.assert)(maybeSandboxes.length !== 0);
 	        }
 	        // It's possible for more than one sandbox to be created due to provisional
 	        // frames. In this case, it's always the first one (i.e. the oldest one)
@@ -2621,10 +2613,10 @@ var mapperTab = (function () {
 	            }
 	        }
 	        const realm = await this.getOrCreateSandbox(undefined);
-	        const originResult = await realm.callFunction(script, { type: 'undefined' }, [], false, "none" /* Script.ResultOwnership.None */, {}, false);
-	        (0, assert_js_1$7.assert)(originResult.type === 'success');
+	        const originResult = await realm.callFunction(script, false);
+	        (0, assert_js_1$6.assert)(originResult.type === 'success');
 	        const origin = deserializeDOMRect(originResult.result);
-	        (0, assert_js_1$7.assert)(origin);
+	        (0, assert_js_1$6.assert)(origin);
 	        const rect = params.clip
 	            ? getIntersectionRect(await this.#parseRect(params.clip), origin)
 	            : origin;
@@ -2731,11 +2723,11 @@ var mapperTab = (function () {
 	                const sandbox = await this.getOrCreateSandbox(undefined);
 	                const result = await sandbox.callFunction(String((element) => {
 	                    return element instanceof Element;
-	                }), { type: 'undefined' }, [clip.element], false, "none" /* Script.ResultOwnership.None */, {});
+	                }), false, { type: 'undefined' }, [clip.element]);
 	                if (result.type === 'exception') {
 	                    throw new protocol_js_1$h.NoSuchElementException(`Element '${clip.element.sharedId}' was not found`);
 	                }
-	                (0, assert_js_1$7.assert)(result.result.type === 'boolean');
+	                (0, assert_js_1$6.assert)(result.result.type === 'boolean');
 	                if (!result.result.value) {
 	                    throw new protocol_js_1$h.NoSuchElementException(`Node '${clip.element.sharedId}' is not an Element`);
 	                }
@@ -2748,8 +2740,8 @@ var mapperTab = (function () {
 	                            height: rect.height,
 	                            width: rect.width,
 	                        };
-	                    }), { type: 'undefined' }, [clip.element], false, "none" /* Script.ResultOwnership.None */, {});
-	                    (0, assert_js_1$7.assert)(result.type === 'success');
+	                    }), false, { type: 'undefined' }, [clip.element]);
+	                    (0, assert_js_1$6.assert)(result.type === 'success');
 	                    const rect = deserializeDOMRect(result.result);
 	                    if (!rect) {
 	                        throw new protocol_js_1$h.UnableToCaptureScreenException(`Could not get bounding box for Element '${clip.element.sharedId}'`);
@@ -2938,7 +2930,7 @@ var mapperTab = (function () {
 	            // The returned object is an array of nodes, so no need in deeper JS serialization.
 	            maxObjectDepth: 1,
 	        };
-	        const locatorResult = await realm.callFunction(locatorDelegate.functionDeclaration, { type: 'undefined' }, locatorDelegate.argumentsLocalValues, false, "none" /* Script.ResultOwnership.None */, serializationOptions, false);
+	        const locatorResult = await realm.callFunction(locatorDelegate.functionDeclaration, false, { type: 'undefined' }, locatorDelegate.argumentsLocalValues, "none" /* Script.ResultOwnership.None */, serializationOptions);
 	        if (locatorResult.type !== 'success') {
 	            this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Failed locateNodesByLocator', locatorResult);
 	            // Heuristic to detect invalid selector for different types of selectors.
@@ -3098,7 +3090,7 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(logHelper, "__esModule", { value: true });
 	logHelper.getRemoteValuesText = logHelper.logMessageFormatter = void 0;
-	const assert_js_1$6 = assert$1;
+	const assert_js_1$5 = assert$1;
 	const specifiers = ['%s', '%d', '%i', '%f', '%o', '%O', '%c'];
 	function isFormatSpecifier(str) {
 	    return specifiers.some((spec) => str.includes(spec));
@@ -3119,7 +3111,7 @@ var mapperTab = (function () {
 	        if (isFormatSpecifier(token)) {
 	            const arg = argValues.shift();
 	            // raise an exception when less value is provided
-	            (0, assert_js_1$6.assert)(arg, `Less value is provided: "${getRemoteValuesText(args, false)}"`);
+	            (0, assert_js_1$5.assert)(arg, `Less value is provided: "${getRemoteValuesText(args, false)}"`);
 	            if (token === '%s') {
 	                output += stringFromArg(arg);
 	            }
@@ -3726,7 +3718,17 @@ var mapperTab = (function () {
 	    }
 	    async handleUserPrompt(params) {
 	        const context = this.#browsingContextStorage.getContext(params.context);
-	        await context.handleUserPrompt(params);
+	        try {
+	            await context.handleUserPrompt(params);
+	        }
+	        catch (error) {
+	            // Heuristically determine the error
+	            // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/page_handler.cc;l=1085?q=%22No%20dialog%20is%20showing%22&ss=chromium
+	            if (error.message?.includes('No dialog is showing')) {
+	                throw new protocol_js_1$f.NoSuchAlertException('No dialog is showing');
+	            }
+	            throw error;
+	        }
 	        return {};
 	    }
 	    async close(params) {
@@ -4837,7 +4839,7 @@ var mapperTab = (function () {
 	Object.defineProperty(ActionDispatcher$1, "__esModule", { value: true });
 	ActionDispatcher$1.ActionDispatcher = void 0;
 	const protocol_js_1$e = protocol;
-	const assert_js_1$5 = assert$1;
+	const assert_js_1$4 = assert$1;
 	const InputSource_js_1$1 = InputSource;
 	const keyUtils_js_1 = keyUtils;
 	const USKeyboardLayout_js_1 = USKeyboardLayout;
@@ -4851,21 +4853,21 @@ var mapperTab = (function () {
 	}).toString();
 	async function getElementCenter(context, element) {
 	    const sandbox = await context.getOrCreateSandbox(undefined);
-	    const result = await sandbox.callFunction(CALCULATE_IN_VIEW_CENTER_PT_DECL, { type: 'undefined' }, [element], false, "none" /* Script.ResultOwnership.None */, {});
+	    const result = await sandbox.callFunction(CALCULATE_IN_VIEW_CENTER_PT_DECL, false, { type: 'undefined' }, [element]);
 	    if (result.type === 'exception') {
 	        throw new protocol_js_1$e.NoSuchElementException(`Origin element ${element.sharedId} was not found`);
 	    }
-	    (0, assert_js_1$5.assert)(result.result.type === 'array');
-	    (0, assert_js_1$5.assert)(result.result.value?.[0]?.type === 'number');
-	    (0, assert_js_1$5.assert)(result.result.value?.[1]?.type === 'number');
+	    (0, assert_js_1$4.assert)(result.result.type === 'array');
+	    (0, assert_js_1$4.assert)(result.result.value?.[0]?.type === 'number');
+	    (0, assert_js_1$4.assert)(result.result.value?.[1]?.type === 'number');
 	    const { result: { value: [{ value: x }, { value: y }], }, } = result;
 	    return { x: x, y: y };
 	}
 	class ActionDispatcher {
 	    static isMacOS = async (context) => {
-	        const result = await (await context.getOrCreateSandbox(undefined)).callFunction(IS_MAC_DECL, { type: 'undefined' }, [], false, "none" /* Script.ResultOwnership.None */, {});
-	        (0, assert_js_1$5.assert)(result.type !== 'exception');
-	        (0, assert_js_1$5.assert)(result.result.type === 'boolean');
+	        const result = await (await context.getOrCreateSandbox(undefined)).callFunction(IS_MAC_DECL, false);
+	        (0, assert_js_1$4.assert)(result.type !== 'exception');
+	        (0, assert_js_1$4.assert)(result.result.type === 'boolean');
 	        return result.result.value;
 	    };
 	    #tickStart = 0;
@@ -5680,13 +5682,13 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(InputStateManager$1, "__esModule", { value: true });
 	InputStateManager$1.InputStateManager = void 0;
-	const assert_js_1$4 = assert$1;
+	const assert_js_1$3 = assert$1;
 	const InputState_js_1 = InputState$1;
 	// We use a weak map here as specified here:
 	// https://www.w3.org/TR/webdriver/#dfn-browsing-context-input-state-map
 	class InputStateManager extends WeakMap {
 	    get(context) {
-	        (0, assert_js_1$4.assert)(context.isTopLevelContext());
+	        (0, assert_js_1$3.assert)(context.isTopLevelContext());
 	        if (!this.has(context)) {
 	            this.set(context, new InputState_js_1.InputState());
 	        }
@@ -5714,7 +5716,7 @@ var mapperTab = (function () {
 	 * limitations under the License.
 	 */
 	const protocol_js_1$c = protocol;
-	const assert_js_1$3 = assert$1;
+	const assert_js_1$2 = assert$1;
 	const ActionDispatcher_js_1 = ActionDispatcher$1;
 	const InputStateManager_js_1 = InputStateManager$1;
 	class InputProcessor {
@@ -5761,12 +5763,12 @@ var mapperTab = (function () {
 	                    return 3 /* ErrorCode.Multiple */;
 	                }
 	                return;
-	            }), params.element, [{ type: 'number', value: params.files.length }], false, "none" /* Script.ResultOwnership.None */, {}, false);
+	            }), false, params.element, [{ type: 'number', value: params.files.length }]);
 	        }
 	        catch {
 	            throw new protocol_js_1$c.NoSuchElementException(`Could not find element ${params.element.sharedId}`);
 	        }
-	        (0, assert_js_1$3.assert)(result.type === 'success');
+	        (0, assert_js_1$2.assert)(result.type === 'success');
 	        if (result.result.type === 'number') {
 	            switch (result.result.value) {
 	                case 0 /* ErrorCode.Object */: {
@@ -5802,7 +5804,7 @@ var mapperTab = (function () {
 	                // Dispatch events for this case because it should behave akin to a user action.
 	                this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
 	                this.dispatchEvent(new Event('change', { bubbles: true }));
-	            }), params.element, [], false, "none" /* Script.ResultOwnership.None */, {}, false);
+	            }), false, params.element);
 	            return {};
 	        }
 	        // Our goal here is to iterate over the input element files and get their
@@ -5811,13 +5813,13 @@ var mapperTab = (function () {
 	        for (let i = 0; i < params.files.length; ++i) {
 	            const result = await realm.callFunction(String(function getFiles(index) {
 	                return this.files?.item(index);
-	            }), params.element, [{ type: 'number', value: 0 }], false, "root" /* Script.ResultOwnership.Root */, {}, false);
-	            (0, assert_js_1$3.assert)(result.type === 'success');
+	            }), false, params.element, [{ type: 'number', value: 0 }], "root" /* Script.ResultOwnership.Root */);
+	            (0, assert_js_1$2.assert)(result.type === 'success');
 	            if (result.result.type !== 'object') {
 	                break;
 	            }
 	            const { handle } = result.result;
-	            (0, assert_js_1$3.assert)(handle !== undefined);
+	            (0, assert_js_1$2.assert)(handle !== undefined);
 	            const { path } = await realm.cdpClient.sendCommand('DOM.getFileInfo', {
 	                objectId: handle,
 	            });
@@ -5834,7 +5836,7 @@ var mapperTab = (function () {
 	            })) {
 	            const { objectId } = await realm.deserializeForCdp(params.element);
 	            // This cannot throw since this was just used in `callFunction` above.
-	            (0, assert_js_1$3.assert)(objectId !== undefined);
+	            (0, assert_js_1$2.assert)(objectId !== undefined);
 	            await realm.cdpClient.sendCommand('DOM.setFileInputFiles', {
 	                files: params.files,
 	                objectId,
@@ -5846,7 +5848,7 @@ var mapperTab = (function () {
 	                this.dispatchEvent(new Event('cancel', {
 	                    bubbles: true,
 	                }));
-	            }), params.element, [], false, "none" /* Script.ResultOwnership.None */, {}, false);
+	            }), false, params.element);
 	        }
 	        return {};
 	    }
@@ -6204,7 +6206,6 @@ var mapperTab = (function () {
 	Object.defineProperty(NetworkProcessor$1, "__esModule", { value: true });
 	NetworkProcessor$1.NetworkProcessor = void 0;
 	const protocol_js_1$b = protocol;
-	const assert_js_1$2 = assert$1;
 	const NetworkUtils_js_1$3 = NetworkUtils;
 	/** Dispatches Network domain commands. */
 	class NetworkProcessor {
@@ -6215,7 +6216,7 @@ var mapperTab = (function () {
 	        this.#networkStorage = networkStorage;
 	    }
 	    async addIntercept(params) {
-	        this.#browsingContextStorage.verifyContextsList(params.contexts);
+	        this.#browsingContextStorage.verifyTopLevelContextsList(params.contexts);
 	        const urlPatterns = params.urlPatterns ?? [];
 	        const parsedUrlPatterns = NetworkProcessor.parseUrlPatterns(urlPatterns);
 	        const intercept = this.#networkStorage.addIntercept({
@@ -6233,18 +6234,17 @@ var mapperTab = (function () {
 	        };
 	    }
 	    async continueRequest(params) {
-	        const networkId = params.request;
+	        const { url, method, headers, request: networkId } = params;
 	        if (params.url !== undefined) {
 	            NetworkProcessor.parseUrlString(params.url);
 	        }
 	        const request = this.#getBlockedRequestOrFail(networkId, [
 	            "beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */,
 	        ]);
-	        const { url, method, headers } = params;
+	        const requestHeaders = (0, NetworkUtils_js_1$3.cdpFetchHeadersFromBidiNetworkHeaders)(headers);
 	        // TODO: Set / expand.
 	        // ; Step 9. cookies
 	        // ; Step 10. body
-	        const requestHeaders = (0, NetworkUtils_js_1$3.cdpFetchHeadersFromBidiNetworkHeaders)(headers);
 	        await request.continueRequest(url, method, requestHeaders);
 	        return {};
 	    }
@@ -6297,9 +6297,6 @@ var mapperTab = (function () {
 	            const { credentials } = params;
 	            username = credentials.username;
 	            password = credentials.password;
-	            // TODO: This should be invalid argument exception.
-	            // Spec may need to be updated.
-	            (0, assert_js_1$2.assert)(credentials.type === 'password', `Credentials type ${credentials.type} must be 'password'`);
 	        }
 	        const response = (0, NetworkUtils_js_1$3.cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction)(params.action);
 	        await request.continueWithAuth({
@@ -6321,7 +6318,7 @@ var mapperTab = (function () {
 	        return {};
 	    }
 	    async provideResponse(params) {
-	        const { statusCode, reasonPhrase, headers, body, request: networkId, } = params;
+	        const { statusCode, reasonPhrase: responsePhrase, headers, body, request: networkId, } = params;
 	        // TODO: Step 6
 	        // https://w3c.github.io/webdriver-bidi/#command-network-continueResponse
 	        const responseHeaders = (0, NetworkUtils_js_1$3.cdpFetchHeadersFromBidiNetworkHeaders)(headers);
@@ -6333,11 +6330,35 @@ var mapperTab = (function () {
 	            "responseStarted" /* Network.InterceptPhase.ResponseStarted */,
 	            "authRequired" /* Network.InterceptPhase.AuthRequired */,
 	        ]);
+	        // We need to pass through if the request is already in
+	        // AuthRequired phase
+	        if (request.interceptPhase === "authRequired" /* Network.InterceptPhase.AuthRequired */) {
+	            // We need to use `ProvideCredentials`
+	            // As `Default` may cancel the request
+	            await request.continueWithAuth({
+	                response: 'ProvideCredentials',
+	            });
+	            return {};
+	        }
+	        // If we con't modify the response
+	        // Just continue the request
+	        if (!body && !headers) {
+	            await request.continueRequest();
+	            return {};
+	        }
+	        const responseCode = statusCode ?? request.statusCode ?? 200;
+	        let parsedBody;
+	        if (body?.type === 'string') {
+	            parsedBody = btoa(body.value);
+	        }
+	        else if (body?.type === 'base64') {
+	            parsedBody = body.value;
+	        }
 	        await request.provideResponse({
-	            responseCode: statusCode ?? request.statusCode,
-	            responsePhrase: reasonPhrase,
+	            responseCode,
+	            responsePhrase,
 	            responseHeaders,
-	            body: body?.value, // TODO: Differ base64 / string
+	            body: parsedBody,
 	        });
 	        return {};
 	    }
@@ -6686,11 +6707,11 @@ var mapperTab = (function () {
 	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest */
 	    async failRequest(errorReason) {
 	        (0, assert_js_1$1.assert)(this.#fetchId, 'Network Interception not set-up.');
-	        this.#interceptPhase = undefined;
 	        await this.cdpClient.sendCommand('Fetch.failRequest', {
 	            requestId: this.#fetchId,
 	            errorReason,
 	        });
+	        this.#interceptPhase = undefined;
 	    }
 	    onRequestPaused(event) {
 	        this.#fetchId = event.requestId;
@@ -6747,7 +6768,6 @@ var mapperTab = (function () {
 	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
 	    async continueRequest(url, method, headers) {
 	        (0, assert_js_1$1.assert)(this.#fetchId, 'Network Interception not set-up.');
-	        this.#interceptPhase = undefined;
 	        await this.cdpClient.sendCommand('Fetch.continueRequest', {
 	            requestId: this.#fetchId,
 	            url,
@@ -6757,40 +6777,41 @@ var mapperTab = (function () {
 	            // postData:,
 	            // interceptResponse:,
 	        });
+	        this.#interceptPhase = undefined;
 	    }
 	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse */
 	    async continueResponse({ responseCode, responsePhrase, responseHeaders, } = {}) {
 	        (0, assert_js_1$1.assert)(this.#fetchId, 'Network Interception not set-up.');
-	        this.#interceptPhase = undefined;
 	        await this.cdpClient.sendCommand('Fetch.continueResponse', {
 	            requestId: this.#fetchId,
 	            responseCode,
 	            responsePhrase,
 	            responseHeaders,
 	        });
+	        this.#interceptPhase = undefined;
 	    }
 	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth */
 	    async continueWithAuth(authChallengeResponse = {
 	        response: 'Default',
 	    }) {
 	        (0, assert_js_1$1.assert)(this.#fetchId, 'Network Interception not set-up.');
-	        this.#interceptPhase = undefined;
 	        await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
 	            requestId: this.#fetchId,
 	            authChallengeResponse,
 	        });
+	        this.#interceptPhase = undefined;
 	    }
 	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
 	    async provideResponse({ responseCode, responsePhrase, responseHeaders, body, }) {
 	        (0, assert_js_1$1.assert)(this.#fetchId, 'Network Interception not set-up.');
-	        this.#interceptPhase = undefined;
 	        await this.cdpClient.sendCommand('Fetch.fulfillRequest', {
 	            requestId: this.#fetchId,
 	            responseCode,
 	            responsePhrase,
 	            responseHeaders,
-	            ...(body ? { body: btoa(body) } : {}), // TODO: Double-check if btoa usage is correct.
+	            body,
 	        });
+	        this.#interceptPhase = undefined;
 	    }
 	    get #context() {
 	        return (this.#response.paused?.frameId ??
@@ -6803,9 +6824,7 @@ var mapperTab = (function () {
 	    get statusCode() {
 	        return (this.#response.paused?.responseStatusCode ??
 	            this.#response.extraInfo?.statusCode ??
-	            this.#response.info?.status ??
-	            -1 // TODO: Throw an exception or use some other status code?
-	        );
+	            this.#response.info?.status);
 	    }
 	    #emitEvent(getEvent) {
 	        let event;
@@ -6863,7 +6882,7 @@ var mapperTab = (function () {
 	        return {
 	            url: this.url,
 	            protocol: this.#response.info?.protocol ?? '',
-	            status: this.statusCode,
+	            status: this.statusCode ?? -1, // TODO: Throw an exception or use some other status code?
 	            statusText: this.#response.info?.statusText ||
 	                this.#response.paused?.responseStatusText ||
 	                '',
@@ -7465,7 +7484,7 @@ var mapperTab = (function () {
 	        this.#logger = logger;
 	    }
 	    async addPreloadScript(params) {
-	        const contexts = this.#browsingContextStorage.verifyContextsList(params.contexts);
+	        const contexts = this.#browsingContextStorage.verifyTopLevelContextsList(params.contexts);
 	        const preloadScript = new PreloadScript_1.PreloadScript(params, this.#logger);
 	        this.#preloadScriptStorage.add(preloadScript);
 	        const cdpTargets = contexts.size === 0
@@ -7479,30 +7498,22 @@ var mapperTab = (function () {
 	        };
 	    }
 	    async removePreloadScript(params) {
-	        const bidiId = params.script;
-	        const scripts = this.#preloadScriptStorage.find({
-	            id: bidiId,
-	        });
+	        const { script: id } = params;
+	        const scripts = this.#preloadScriptStorage.find({ id });
 	        if (scripts.length === 0) {
-	            throw new protocol_1.NoSuchScriptException(`No preload script with BiDi ID '${bidiId}'`);
+	            throw new protocol_1.NoSuchScriptException(`No preload script with id '${id}'`);
 	        }
 	        await Promise.all(scripts.map((script) => script.remove()));
-	        this.#preloadScriptStorage.remove({
-	            id: bidiId,
-	        });
+	        this.#preloadScriptStorage.remove({ id });
 	        return {};
 	    }
 	    async callFunction(params) {
 	        const realm = await this.#getRealm(params.target);
-	        return await realm.callFunction(params.functionDeclaration, params.this ?? {
-	            type: 'undefined',
-	        }, // `this` is `undefined` by default.
-	        params.arguments ?? [], // `arguments` is `[]` by default.
-	        params.awaitPromise, params.resultOwnership ?? "none" /* Script.ResultOwnership.None */, params.serializationOptions ?? {}, params.userActivation ?? false);
+	        return await realm.callFunction(params.functionDeclaration, params.awaitPromise, params.this, params.arguments, params.resultOwnership, params.serializationOptions, params.userActivation);
 	    }
 	    async evaluate(params) {
 	        const realm = await this.#getRealm(params.target);
-	        return await realm.evaluate(params.expression, params.awaitPromise, params.resultOwnership ?? "none" /* Script.ResultOwnership.None */, params.serializationOptions ?? {}, params.userActivation ?? false);
+	        return await realm.evaluate(params.expression, params.awaitPromise, params.resultOwnership, params.serializationOptions, params.userActivation);
 	    }
 	    async disown(params) {
 	        const realm = await this.#getRealm(params.target);
@@ -7556,11 +7567,32 @@ var mapperTab = (function () {
 	SessionProcessor$1.SessionProcessor = void 0;
 	class SessionProcessor {
 	    #eventManager;
-	    constructor(eventManager) {
+	    #browserCdpClient;
+	    constructor(eventManager, browserCdpClient) {
 	        this.#eventManager = eventManager;
+	        this.#browserCdpClient = browserCdpClient;
 	    }
 	    status() {
 	        return { ready: false, message: 'already connected' };
+	    }
+	    async create(_params) {
+	        // Since mapper exists, there is a session already.
+	        // Still the mapper can handle capabilities for us.
+	        // Currently, only Puppeteer calls here but, eventually, every client
+	        // should delegrate capability processing here.
+	        const version = await this.#browserCdpClient.sendCommand('Browser.getVersion');
+	        return {
+	            sessionId: 'unknown',
+	            capabilities: {
+	                acceptInsecureCerts: false,
+	                browserName: version.product,
+	                browserVersion: version.revision,
+	                platformName: '',
+	                setWindowRect: false,
+	                webSocketUrl: '',
+	                userAgent: version.userAgent,
+	            },
+	        };
 	    }
 	    async subscribe(params, channel = null) {
 	        await this.#eventManager.subscribe(params.events, params.contexts ?? [null], channel);
@@ -7884,14 +7916,13 @@ var mapperTab = (function () {
 	        this.#networkProcessor = new NetworkProcessor_js_1.NetworkProcessor(browsingContextStorage, networkStorage);
 	        this.#permissionsProcessor = new PermissionsProcessor_js_1.PermissionsProcessor(browserCdpClient);
 	        this.#scriptProcessor = new ScriptProcessor_js_1.ScriptProcessor(browsingContextStorage, realmStorage, preloadScriptStorage, logger);
-	        this.#sessionProcessor = new SessionProcessor_js_1.SessionProcessor(eventManager);
+	        this.#sessionProcessor = new SessionProcessor_js_1.SessionProcessor(eventManager, browserCdpClient);
 	        this.#storageProcessor = new StorageProcessor_js_1.StorageProcessor(browserCdpClient, browsingContextStorage, logger);
 	        // keep-sorted end
 	    }
 	    async #processCommand(command) {
 	        switch (command.method) {
 	            case 'session.end':
-	            case 'session.new':
 	                // TODO: Implement.
 	                break;
 	            // Browser domain
@@ -7989,6 +8020,8 @@ var mapperTab = (function () {
 	            // keep-sorted end
 	            // Session domain
 	            // keep-sorted start block=yes
+	            case 'session.new':
+	                return await this.#sessionProcessor.create(command.params);
 	            case 'session.status':
 	                return this.#sessionProcessor.status();
 	            case 'session.subscribe':
@@ -8138,7 +8171,7 @@ var mapperTab = (function () {
 	        }
 	        return result;
 	    }
-	    verifyContextsList(contexts) {
+	    verifyTopLevelContextsList(contexts) {
 	        const foundContexts = new Set();
 	        if (!contexts) {
 	            return foundContexts;
@@ -14719,7 +14752,6 @@ var mapperTab = (function () {
 		        Script.SetRemoteValueSchema,
 		        Script.WeakMapRemoteValueSchema,
 		        Script.WeakSetRemoteValueSchema,
-		        Script.IteratorRemoteValueSchema,
 		        Script.GeneratorRemoteValueSchema,
 		        Script.ErrorRemoteValueSchema,
 		        Script.ProxyRemoteValueSchema,
@@ -14823,13 +14855,6 @@ var mapperTab = (function () {
 		(function (Script) {
 		    Script.WeakSetRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
 		        type: zod_1.default.literal('weakset'),
-		        handle: Script.HandleSchema.optional(),
-		        internalId: Script.InternalIdSchema.optional(),
-		    }));
-		})(Script || (exports.Script = Script = {}));
-		(function (Script) {
-		    Script.IteratorRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
-		        type: zod_1.default.literal('iterator'),
 		        handle: Script.HandleSchema.optional(),
 		        internalId: Script.InternalIdSchema.optional(),
 		    }));
