@@ -19,10 +19,11 @@
 #include <stdint.h>
 
 #include <limits>
+#include <optional>
 #include <type_traits>
 #include <utility>
 
-#include <optional>
+#include "base/types/cxx23_to_underlying.h"
 
 {%- if contains_only_enums %}
 #include "mojo/public/cpp/bindings/type_converter.h"

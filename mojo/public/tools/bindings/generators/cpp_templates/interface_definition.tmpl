@@ -98,9 +98,9 @@ constexpr {{constant.kind|cpp_pod_type}} {{interface.name}}::{{constant.name}};
 {{interface.name}}::IPCStableHashFunction {{interface.name}}::MessageToMethodInfo_(mojo::Message& message) {
 #if !BUILDFLAG(IS_FUCHSIA)
 {%- if interface.methods %}
-  switch (message.name()) {
+  switch (static_cast<messages::{{interface.name}}>(message.name())) {
 {%-   for method in interface.methods %}
-    case internal::k{{interface.name}}_{{method.name}}_Name: {
+    case messages::{{interface.name}}::k{{method.name}}: {
       return &{{interface.name}}::{{method.name}}_Sym::IPCStableHash;
     }
 {%-   endfor %}
@@ -116,16 +116,16 @@ const char* {{interface.name}}::MessageToMethodName_(mojo::Message& message) {
 {%- if interface.methods %}
   bool is_response = message.has_flag(mojo::Message::kFlagIsResponse);
   if (!is_response) {
-    switch (message.name()) {
+    switch (static_cast<messages::{{interface.name}}>(message.name())) {
 {%-   for method in interface.methods %}
-      case internal::k{{interface.name}}_{{method.name}}_Name:
+      case messages::{{interface.name}}::k{{method.name}}:
             return "Receive {{namespace_as_string}}::{{interface.name}}::{{method.name}}";
 {%-   endfor %}
     }
   } else {
-    switch (message.name()) {
+    switch (static_cast<messages::{{interface.name}}>(message.name())) {
 {%-   for method in interface.methods %}
-      case internal::k{{interface.name}}_{{method.name}}_Name:
+      case messages::{{interface.name}}::k{{method.name}}:
             return "Receive reply {{namespace_as_string}}::{{interface.name}}::{{method.name}}";
 {%-   endfor %}
     }
@@ -228,7 +228,8 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
   if (base::FeatureList::IsEnabled(mojo::features::kMojoPredictiveAllocation)) {
 {%-   for method in interface.methods %}
 {%-     if method.estimate_message_size %}
-{%-       set message_name = "internal::k%s_%s_Name"|format(interface.name, method.name) %}
+{%-       set message_name =
+              "base::to_underlying(messages::%s::k%s)"|format(interface.name, method.name) %}
     size_estimator_.EnablePredictiveAllocation({{message_name}});
 {%-     endif %}
 {%-   endfor %}
@@ -240,7 +241,7 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
 
 {%- for method in interface.methods %}
 {%-   set message_name =
-          "internal::k%s_%s_Name"|format(interface.name, method.name) %}
+          "base::to_underlying(messages::%s::k%s)"|format(interface.name, method.name) %}
 {%-   set params_struct = method.param_struct %}
 {%-   set params_description =
           "%s.%s request"|format(interface.name, method.name) %}
@@ -360,7 +361,7 @@ void {{proxy_name}}::{{method.name}}(
 {%- for method in interface.methods -%}
 {%-   if method.response_parameters != None %}
 {%-     set message_name =
-            "internal::k%s_%s_Name"|format(interface.name, method.name) %}
+            "base::to_underlying(messages::%s::k%s)"|format(interface.name, method.name) %}
 {%-     set response_params_struct = method.response_param_struct %}
 {%-     set params_description =
             "%s.%s response"|format(interface.name, method.name) %}
@@ -493,9 +494,9 @@ bool {{class_name}}StubDispatch::Accept(
     {{interface.name}}* impl,
     mojo::Message* message) {
 {%- if interface.methods %}
-  switch (message->header()->name) {
+  switch (static_cast<messages::{{class_name}}>(message->header()->name)) {
 {%-   for method in interface.methods %}
-    case internal::k{{class_name}}_{{method.name}}_Name: {
+    case messages::{{class_name}}::k{{method.name}}: {
 {%-     if method.response_parameters == None %}
       DCHECK(message->is_serialized());
       internal::{{class_name}}_{{method.name}}_Params_Data* params =
@@ -528,9 +529,9 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
   [[maybe_unused]] const bool message_is_sync =
       message->has_flag(mojo::Message::kFlagIsSync);
   [[maybe_unused]] const uint64_t request_id = message->request_id();
-  switch (message->header()->name) {
+  switch (static_cast<messages::{{class_name}}>(message->header()->name)) {
 {%-   for method in interface.methods %}
-    case internal::k{{class_name}}_{{method.name}}_Name: {
+    case messages::{{class_name}}::k{{method.name}}: {
 {%-     if method.response_parameters != None %}
       internal::{{class_name}}_{{method.name}}_Params_Data* params =
           reinterpret_cast<
@@ -589,7 +590,7 @@ static const mojo::internal::GenericValidationInfo k{{class_name}}ValidationInfo
 {%- elif interface.methods %}
 static const std::pair<uint32_t, mojo::internal::GenericValidationInfo> k{{class_name}}ValidationInfo[] = {
 {%-   for method in interface.methods %}
-    {internal::k{{class_name}}_{{method.name}}_Name,
+    {base::to_underlying(messages::{{class_name}}::k{{method.name}}),
      { {{request_validator(class_name, method)}},
 {%-     if method.response_parameters != None %}
       &internal::{{class_name}}_{{method.name}}_ResponseParams_Data::Validate}},
