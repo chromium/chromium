@@ -740,7 +740,7 @@ interface LocalFrameHost {
 
   // Notifies when the ViewTransition opt-in state for the current Document
   // changes.
-  // See https://github.com/WICG/view-transitions/blob/main/explainer.md#declarative-opt-in-to-transitions.
+  // See https://drafts.csswg.org/css-view-transitions-2/#view-transition-rule
   OnViewTransitionOptInChanged(
     ViewTransitionSameOriginOptIn view_transition_opt_in);
 

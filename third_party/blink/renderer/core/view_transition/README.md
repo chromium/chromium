@@ -13,6 +13,10 @@ on top of the content.
 For a detailed explanation, please see the
 [explainer](https://github.com/WICG/view-transitions/blob/main/README.md)
 
+The specification governing this feature is located in the following places:
+* [Level 1](https://drafts.csswg.org/css-view-transitions-1/)
+* [Level 2](https://drafts.csswg.org/css-view-transitions-2/)
+
 ## Code Structure
 
 A new method is exposed on window.document, called startViewTransition(). This is
@@ -184,11 +188,3 @@ than the current fixed viewport. Painting is offset within the snapshot so that
 page content is rendered at the correct location (i.e. the snapshot will paint
 the background color in the region overlaid by the URL bar).
 
-
-## Additional Notes
-
-Note that this project is in early stages of design and implementation. To
-follow the design evolution, please see [our github
-repo](https://github.com/WICG/view-transitions/). Furthermore, this
-README's Code Structure section will be updated as we make progress with our
-implementation.
