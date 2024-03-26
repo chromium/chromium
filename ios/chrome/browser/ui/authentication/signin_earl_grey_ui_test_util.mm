@@ -39,9 +39,8 @@ using chrome_test_util::IdentityCellMatcherForEmail;
 namespace {
 
 // Closes the managed account dialog when necessary, if `fakeIdentity` is a
-// managed account.
-void CloseManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity,
-                                    int acceptButtonLabelID) {
+// managed account. That dialog may be shown when User Policy is enabled.
+void CloseManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   // Don't expect a managed account dialog when the account isn't considered
   // managed.
   if ([fakeIdentity.userEmail hasSuffix:@"@gmail.com"]) {
@@ -56,29 +55,14 @@ void CloseManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity,
   // Verify whether there is a management dialog and interact with it to
   // complete the sign-in flow if present.
   id<GREYMatcher> acceptButton = [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:acceptButtonLabelID];
+      buttonWithAccessibilityLabelID:
+          IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL];
   BOOL hasDialog =
       [ChromeEarlGrey testUIElementAppearanceWithMatcher:acceptButton
                                                  timeout:base::Seconds(1)];
   if (hasDialog) {
     [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
   }
-}
-
-// Closes the managed account dialog for the Sync consent level when necessary,
-// if `fakeIdentity` is a managed account.
-void CloseSyncManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
-  CloseManagedAccountDialogIfAny(fakeIdentity,
-                                 IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON);
-}
-
-// Closes the managed account dialog for the Sign-in consent level when
-// necessary, if `fakeIdentity` is a managed account. That dialog may be shown
-// when User Policy is enabled.
-void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
-  CloseManagedAccountDialogIfAny(
-      fakeIdentity,
-      IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL);
 }
 
 // Taps the sign-in sheet confirmation if the user is not signed-in yet, and
@@ -94,7 +78,7 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
   }
 
   [ChromeEarlGreyUI waitForAppToIdle];
-  CloseSigninManagedAccountDialogIfAny(fakeIdentity);
+  CloseManagedAccountDialogIfAny(fakeIdentity);
   // If the history type isn't enabled yet, the history opt-in dialog should
   // show up now. Tap the "Yes, I'm In" button.
   if (![ChromeEarlGrey isSyncHistoryDataTypeSelected]) {
@@ -117,7 +101,7 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   if (!enableSync) {
     [ChromeEarlGrey signInWithoutSyncWithIdentity:fakeIdentity];
-    CloseSigninManagedAccountDialogIfAny(fakeIdentity);
+    CloseManagedAccountDialogIfAny(fakeIdentity);
     ConditionBlock condition = ^bool {
       return [[SigninEarlGrey primaryAccountGaiaID]
           isEqualToString:fakeIdentity.gaiaID];
@@ -130,8 +114,7 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
     return;
   }
 
-  if ([SigninEarlGrey isSignedOut] ||
-      ![ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+  if ([SigninEarlGrey isSignedOut]) {
     [SigninEarlGreyUI tapPrimarySignInButtonInRecentTabs];
     [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                             kIdentityButtonControlIdentifier)]
@@ -146,12 +129,7 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
                 kRecentTabsTabSyncOffButtonAccessibilityIdentifier)];
   }
 
-  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(fakeIdentity);
-  } else {
-    [SigninEarlGreyUI tapSigninConfirmationDialog];
-    CloseSyncManagedAccountDialogIfAny(fakeIdentity);
-  }
+  MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(fakeIdentity);
 
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(
@@ -172,7 +150,6 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
 }
 
 + (void)signOut {
-  CHECK([ChromeEarlGrey isReplaceSyncWithSigninEnabled]);
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
   // With ReplaceSyncWithSignin, we're now in the "manage sync" view, and
