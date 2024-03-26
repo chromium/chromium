@@ -2175,12 +2175,284 @@ public class StripLayoutHelperTest {
         float startX = mStripLayoutHelper.getLastReorderXForTesting();
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
-        // Verify interacting tab was merged into group at the third index immediately without
-        // hovering for the required time.
+        // Verify interacting tab was merged into group.
         tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        assertEquals("Third tab should still be the third tab.", thirdTab, tabs[2]);
         verify(mTabGroupModelFilter)
                 .mergeTabsToGroup(eq(thirdTab.getId()), eq(oldSecondTabId), eq(true));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testBottomIndicatorWidth_MergeToGroup_TabGroupIndicators() {
+        // Mock 5 tabs. Group the first two tabs.
+        initializeTest(false, false, true, 0, 5);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        StripLayoutTab thirdTab = tabs[2];
+        int oldSecondTabId = tabs[1].getId();
+        groupTabs(0, 2);
+
+        // Rebuild views.
+        mStripLayoutHelper.rebuildStripViews();
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+
+        // Assert: first view should be group title.
+        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
+
+        // Calculate tab and bottom indicator width.
+        float tabWidth = views[1].getWidth();
+        float expectedStartWidth = calculateExpectedBottomIndicatorWidth(tabWidth, 2, groupTitle);
+        float expectedEndWidth = calculateExpectedBottomIndicatorWidth(tabWidth, 3, groupTitle);
+        float threshold = tabWidth / 2 - 28.f;
+
+        // Assert: bottom indicator start width.
+        assertEquals(
+                "Bottom indicator start width is incorrect",
+                expectedStartWidth,
+                groupTitle.getBottomIndicatorWidth(),
+                0.f);
+
+        // Start reorder mode on third tab. Drag between tabs in group.
+        // -300 < -(tabWidth + marginWidth) = -(190 + 95) = -285
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(2);
+        float dragDistance = -200f;
+        float startX = mStripLayoutHelper.getLastReorderXForTesting();
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
+
+        // Verify interacting tab was merged into group.
+        verify(mTabGroupModelFilter)
+                .mergeTabsToGroup(eq(thirdTab.getId()), eq(oldSecondTabId), eq(true));
+        mStripLayoutHelper.maybeMergeToGroupForTabGroupIndicators(-threshold - 1, 2, false);
+        assertEquals(
+                "Bottom indicator end width is incorrect",
+                expectedEndWidth,
+                (groupTitle).getBottomIndicatorWidth(),
+                0.f);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testBottomIndicatorWidth_DragOutOfGroup_TabGroupIndicators() {
+        // Mock 5 tabs. Group the first two tabs.
+        initializeTest(false, false, true, 0, 5);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        StripLayoutTab thirdTab = tabs[2];
+        groupTabs(0, 3);
+
+        // Rebuild views.
+        mStripLayoutHelper.rebuildStripViews();
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+
+        // Assert: first view should be group title.
+        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
+
+        // Calculate tab and bottom indicator width.
+        float tabWidth = views[1].getWidth();
+        float expectedStartWidth = calculateExpectedBottomIndicatorWidth(tabWidth, 3, groupTitle);
+        float expectedEndWidth = calculateExpectedBottomIndicatorWidth(tabWidth, 2, groupTitle);
+
+        // Assert: bottom indicator start width.
+        assertEquals(
+                "Bottom indicator start width is incorrect",
+                expectedStartWidth,
+                groupTitle.getBottomIndicatorWidth(),
+                0.f);
+
+        // Start reorder on fifth tab. Drag right out of the tab group.
+        // 60 > marginWidth * flipThreshold = 95 * 0.53 = 51
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(2);
+        float dragDistance = 60f;
+        float startX = mStripLayoutHelper.getLastReorderXForTesting();
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
+
+        // Verify third tab was dragged out of group.
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(thirdTab.getId(), true);
+
+        // Act: End the animations to apply final values.
+        Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
+        runningAnimator.end();
+
+        assertEquals(
+                "Bottom indicator end width is incorrect",
+                expectedEndWidth,
+                (groupTitle).getBottomIndicatorWidth(),
+                0.f);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testBottomIndicatorWidthAfterTabResize_UngroupedTabClosed_TabGroupIndicators() {
+        // Arrange
+        int tabCount = 6;
+        initializeTest(false, false, false, 3, tabCount);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        groupTabs(0, 2);
+
+        // Rebuild views.
+        mStripLayoutHelper.rebuildStripViews();
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+
+        // Assert: first view should be group title.
+        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
+
+        // Update layout and set up animation.
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        setupForAnimations();
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Check initial bottom indicator width.
+        // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
+        // - groupTitleWidth(42) = 688.
+        // tabWidth = (availableSize(688) + 5 * overlap(28)) / 6 = 138
+        float expectedStartWidth = calculateExpectedBottomIndicatorWidth(138.f, 2, groupTitle);
+        assertEquals(
+                "Unexpected bottom indicator width before resize.",
+                expectedStartWidth,
+                (groupTitle).getBottomIndicatorWidth(),
+                0.1f);
+
+        // Act: Call on close tab button handler.
+        mStripLayoutHelper.handleCloseButtonClick(tabs[2], TIMESTAMP);
+
+        // Assert: Animations started.
+        assertTrue(
+                "MultiStepAnimations should have started.",
+                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
+
+        // Assert: Animations are still running.
+        assertTrue(
+                "MultiStepAnimations should still be running.",
+                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
+
+        // Act: Set animation time forward by 250ms for next set of animations.
+        mStripLayoutHelper.getRunningAnimatorForTesting().end();
+
+        // Act: End the animations to apply final values.
+        Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
+        runningAnimator.end();
+
+        // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
+        // - groupTitleWidth(42) = 688.
+        // ExpectedWidth = (availableSize(688) + 4 * overlap(28)) / 5 = 160
+        float expectedWidthAfterResize = 160.f;
+        StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        for (int i = 0; i < updatedTabs.length; i++) {
+            StripLayoutTab stripTab = updatedTabs[i];
+            assertEquals(
+                    "Unexpected tab width after resize.",
+                    expectedWidthAfterResize,
+                    stripTab.getWidth(),
+                    0.1f);
+        }
+        assertFalse(
+                "MultiStepAnimations should have ended.",
+                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
+
+        // Check bottom indicator end width.
+        float expectedEndWidth = calculateExpectedBottomIndicatorWidth(160.f, 2, groupTitle);
+        assertEquals(
+                "Unexpected bottom indicator width after resize.",
+                expectedEndWidth,
+                groupTitle.getBottomIndicatorWidth(),
+                0.1f);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testBottomIndicatorWidthAfterTabResize_GroupedTabClosed_TabGroupIndicators() {
+        // Arrange
+        int tabCount = 6;
+        initializeTest(false, false, false, 0, tabCount);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        groupTabs(0, 2);
+
+        // Rebuild views.
+        mStripLayoutHelper.rebuildStripViews();
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
+
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+
+        // Check initial bottom indicator width.
+        // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
+        // - groupTitleWidth(42) = 688.
+        // tabWidth = (availableSize(688) + 5 * overlap(28)) / 6 = 138
+        float expectedStartWidth = calculateExpectedBottomIndicatorWidth(138.f, 2, groupTitle);
+        assertEquals(
+                "Unexpected bottom indicator width before resize.",
+                expectedStartWidth,
+                groupTitle.getBottomIndicatorWidth(),
+                0.1f);
+
+        setupForAnimations();
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Act: Call on close tab button handler.
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
+        when(tabs[0].getId()).thenReturn(0);
+        tabModel.addTab(0);
+        tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
+        tabModel.setActive(true);
+        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.handleCloseButtonClick(tabs[0], TIMESTAMP);
+
+        // Assert: Animations started.
+        assertTrue(
+                "MultiStepAnimations should have started.",
+                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
+
+        assertTrue(
+                "MultiStepAnimations should still be running.",
+                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
+
+        // Act: Set animation time forward by 250ms for next set of animations.
+        mStripLayoutHelper.getRunningAnimatorForTesting().end();
+
+        // Act: End the animations to apply final values.
+        Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
+        runningAnimator.end();
+
+        // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
+        // - groupTitleWidth(42) = 688.
+        // ExpectedWidth = (availableSize(688) + 4 * overlap(28)) / 5  = 160.
+        float expectedWidthAfterResize = 160.f;
+        StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        for (int i = 0; i < updatedTabs.length; i++) {
+            StripLayoutTab stripTab = updatedTabs[i];
+            assertEquals(
+                    "Unexpected tab width after resize.",
+                    expectedWidthAfterResize,
+                    stripTab.getWidth(),
+                    0.1f);
+        }
+        assertFalse(
+                "MultiStepAnimations should have ended.",
+                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
+
+        // Check bottom indicator end width.
+        float expectedEndWidth = calculateExpectedBottomIndicatorWidth(160.f, 1, groupTitle);
+        assertEquals(
+                "Unexpected bottom indicator width after resize.",
+                expectedEndWidth,
+                groupTitle.getBottomIndicatorWidth(),
+                0.1f);
+    }
+
+    private float calculateExpectedBottomIndicatorWidth(
+            float tabWidth, float tabCount, StripLayoutGroupTitle groupTitle) {
+        // (tabWidth - tabOverlap(28.f)) * tabCount + groupTitleWidth -
+        // bottomIndicatorWidthOffset(23.f).
+        return (tabWidth - TAB_OVERLAP_WIDTH) * tabCount + groupTitle.getWidth() - 23.f;
     }
 
     @Test

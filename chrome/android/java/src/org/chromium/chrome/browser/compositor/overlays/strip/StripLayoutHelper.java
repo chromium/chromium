@@ -312,6 +312,7 @@ public class StripLayoutHelper
     // Animation states. True while the relevant animations are running, and false otherwise.
     private boolean mMultiStepTabCloseAnimRunning;
     private boolean mTabGroupMarginAnimRunning;
+    private boolean mTabResizeAnimRunning;
     private boolean mTabCreating;
 
     // TabModel info available before the tab state is actually initialized. Determined from frozen
@@ -680,11 +681,12 @@ public class StripLayoutHelper
             mLeftMargin = mLeftPadding;
             mRightMargin = mReservedEndMargin + mRightPadding;
         }
-        if (recalculateTabWidth) computeAndUpdateTabWidth(false, false);
+        if (recalculateTabWidth) computeAndUpdateTabWidth(false, false, null);
     }
 
     /**
      * Sets the left fade width based on which fade is showing.
+     *
      * @param fadeWidth The width of the left fade.
      */
     public void setLeftFadeWidth(float fadeWidth) {
@@ -1092,7 +1094,7 @@ public class StripLayoutHelper
         rebuildStripViews();
 
         // 2. Initialize the draw parameters.
-        computeAndUpdateTabWidth(false, false);
+        computeAndUpdateTabWidth(false, false, null);
         updateVisualTabOrdering();
 
         // 3. Scroll the strip to bring the selected tab to view and ensure that the active tab
@@ -1854,7 +1856,7 @@ public class StripLayoutHelper
                         if (runImprovedTabAnimations) {
                             // This removes any closed tabs from the tabModel.
                             finishAnimationsAndPushTabUpdates();
-                            resizeStripOnTabClose();
+                            resizeStripOnTabClose(getTabById(tab.getId()));
                         } else {
                             mMultiStepTabCloseAnimRunning = false;
                             // Resize the tabs appropriately.
@@ -1882,11 +1884,11 @@ public class StripLayoutHelper
         startAnimationList(tabClosingAnimators, listener);
     }
 
-    private void resizeStripOnTabClose() {
+    private void resizeStripOnTabClose(Tab closedTab) {
         List<Animator> tabStripAnimators = new ArrayList<>();
 
         // 1. Add tabs expanding animators to expand remaining tabs to fill scrollable area.
-        List<Animator> tabExpandAnimators = computeAndUpdateTabWidth(true, true);
+        List<Animator> tabExpandAnimators = computeAndUpdateTabWidth(true, true, closedTab);
         if (tabExpandAnimators != null) tabStripAnimators.addAll(tabExpandAnimators);
 
         // 2. Calculate new mScrollOffset and idealX for tab offset animation.
@@ -2258,25 +2260,34 @@ public class StripLayoutHelper
     }
 
     private void buildBottomIndicator() {
-        if (mStripTabs.length == 0) {
+        if (mStripTabs.length == 0 || mTabResizeAnimRunning) {
             return;
         }
         for (int i = 0; i < mStripGroupTitles.length; i++) {
             StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
 
-            // Calculate the number of tabs associated with this group title, as well as the width
-            // of the views linked with this group title.
-            int numOfTabsInGroup = getNumOfTabsInGroup(groupTitle);
-            float tabWidth = mCachedTabWidth - mTabOverlapWidth;
-            float totalTabWidth =
-                    tabWidth * numOfTabsInGroup - TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
-            float bottomIndicatorWidth = groupTitle.getWidth() + totalTabWidth;
+            // Calculate the bottom indicator width.
+            float bottomIndicatorWidth =
+                    calculateBottomIndicatorWidth(groupTitle, getNumOfTabsInGroup(groupTitle));
 
             // Update the bottom indicator width.
             if (groupTitle.getBottomIndicatorWidth() != bottomIndicatorWidth) {
                 groupTitle.setBottomIndicatorWidth(bottomIndicatorWidth);
             }
         }
+    }
+
+    /**
+     * @param The tab group title indicator {@link StripLayoutGroupTitle}.
+     * @return The total width of the group title and the number of tabs associated with it.
+     */
+    private float calculateBottomIndicatorWidth(
+            StripLayoutGroupTitle groupTitle, int numOfTabsInGroup) {
+        float tabWidth = mCachedTabWidth - mTabOverlapWidth;
+        float totalTabWidth = tabWidth * numOfTabsInGroup - TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
+        float bottomIndicatorWidth = groupTitle.getWidth() + totalTabWidth;
+
+        return bottomIndicatorWidth;
     }
 
     public int getNumOfTabsInGroup(StripLayoutGroupTitle stripLayoutGroupTitle) {
@@ -2343,7 +2354,7 @@ public class StripLayoutHelper
         if (delay) {
             resetResizeTimeout(true);
         } else {
-            animationList = computeAndUpdateTabWidth(animate, deferAnimations);
+            animationList = computeAndUpdateTabWidth(animate, deferAnimations, null);
         }
 
         return animationList;
@@ -2447,7 +2458,17 @@ public class StripLayoutHelper
         return numLiveTabs;
     }
 
-    private List<Animator> computeAndUpdateTabWidth(boolean animate, boolean deferAnimations) {
+    /**
+     * Computes and updates the tab width when resizing the tab strip.
+     *
+     * @param animate Whether to animate the update.
+     * @param deferAnimations Whether to defer animations.
+     * @param closedTab The tab that is closing. This value should be non-null, if the resize is
+     *     caused by tab closing.
+     * @return A list of animators for the tab width update.
+     */
+    private List<Animator> computeAndUpdateTabWidth(
+            boolean animate, boolean deferAnimations, Tab closedTab) {
         // Remove any queued resize messages.
         mStripTabEventHandler.removeMessages(MESSAGE_RESIZE);
 
@@ -2495,16 +2516,58 @@ public class StripLayoutHelper
             }
         }
 
-        // Build bottom indicator upon tab width change.
-        // TODO(crbug.com/329528219): Implement animations for the bottom indicator when a tab is
-        // created, closed, merged into a group, and moved out of a group.
-        buildBottomIndicator();
-
-        if (resizeAnimationList != null) {
-            if (deferAnimations) return resizeAnimationList;
-            startAnimationList(resizeAnimationList, null);
+        // Return early if there is no animation to run.
+        if (resizeAnimationList == null) {
+            buildBottomIndicator();
+            return null;
         }
+
+        // 6. Animate bottom indicator when tab width change.
+        for (int i = 0; i < mStripGroupTitles.length; i++) {
+            StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
+            float bottomIndicatorStartWidth = groupTitle.getBottomIndicatorWidth();
+            float bottomIndicatorEndWidth;
+
+            // When a grouped tab is closed, the bottom indicator end width needs to subtract the
+            // width of the closed tab.
+            if (closedTab != null && closedTab.getRootId() == groupTitle.getRootId()) {
+                bottomIndicatorEndWidth =
+                        calculateBottomIndicatorWidth(
+                                groupTitle, getNumOfTabsInGroup(groupTitle) - 1);
+            } else {
+                bottomIndicatorEndWidth =
+                        calculateBottomIndicatorWidth(groupTitle, getNumOfTabsInGroup(groupTitle));
+            }
+
+            // TODO(crbug.com/330585875) Use emphasized easing for animations.
+            resizeAnimationList.add(
+                    CompositorAnimator.ofFloatProperty(
+                            mUpdateHost.getAnimationHandler(),
+                            groupTitle,
+                            StripLayoutGroupTitle.BOTTOM_INDICATOR_WIDTH,
+                            bottomIndicatorStartWidth,
+                            bottomIndicatorEndWidth,
+                            ANIM_TAB_RESIZE_MS));
+        }
+
+        if (deferAnimations) return resizeAnimationList;
+        startAnimationList(resizeAnimationList, getTabResizeAnimatorListener());
+
         return null;
+    }
+
+    private AnimatorListener getTabResizeAnimatorListener() {
+        return new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mTabResizeAnimRunning = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mTabResizeAnimRunning = false;
+            }
+        };
     }
 
     private void updateStrip() {
@@ -3256,8 +3319,17 @@ public class StripLayoutHelper
         // title indicator. We likely need to scale this threshold with the title indicator length.
         if (Math.abs(offset) > mHalfTabWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE) {
             final int tabId = mInteractingTab.getId();
+
+            // Get the interacting group title.
+            Tab destinationTab = getTabById(mStripTabs[curIndex].getId());
+            StripLayoutGroupTitle groupTitle = findOrCreateGroupTitle(destinationTab.getRootId());
+
+            // Animate the bottom indicator when moving a tab out of the group.
+            List<Animator> animators =
+                    getBottomIndicatorAnimatorForMergeOrMoveOutOfGroup(groupTitle, true);
+            startAnimationList(animators, null);
+
             mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, towardEnd);
-            buildBottomIndicator();
             RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
             return curIndex;
         }
@@ -3323,7 +3395,8 @@ public class StripLayoutHelper
      * @return The new index for the interacting tab if it has been moved into a neighboring tab
      *     group and the INVALID_TAB_INDEX otherwise.
      */
-    private int maybeMergeToGroupForTabGroupIndicators(
+    @VisibleForTesting
+    protected int maybeMergeToGroupForTabGroupIndicators(
             float offset, int curIndex, boolean towardEnd) {
         float threshold = mHalfTabWidth - mTabOverlapWidth;
         if (Math.abs(offset) < threshold) {
@@ -3333,11 +3406,43 @@ public class StripLayoutHelper
         // Trigger a reorder
         int direction = towardEnd ? 1 : -1;
         StripLayoutTab destTab = mStripTabs[curIndex + direction];
+
+        // Get the interacting group title.
+        Tab destinationTab = getTabById(destTab.getId());
+        StripLayoutGroupTitle groupTitle = findOrCreateGroupTitle(destinationTab.getRootId());
+
+        // Animate bottom indicator when merging a new tab into group.
+        List<Animator> animators =
+                getBottomIndicatorAnimatorForMergeOrMoveOutOfGroup(groupTitle, false);
+        startAnimationList(animators, null);
+
         mTabGroupModelFilter.mergeTabsToGroup(mInteractingTab.getId(), destTab.getId(), true);
-        buildBottomIndicator();
+
         RecordUserAction.record("MobileToolbarReorderTab.TabAddedToGroup");
 
         return curIndex;
+    }
+
+    private List<Animator> getBottomIndicatorAnimatorForMergeOrMoveOutOfGroup(
+            StripLayoutGroupTitle groupTitle, boolean isMovingOutOfGroup) {
+        // Calculate the initial width and the target width for the bottom indicator.
+        float tabWidth = mCachedTabWidth - mTabOverlapWidth;
+        float startWidth =
+                calculateBottomIndicatorWidth(groupTitle, getNumOfTabsInGroup(groupTitle));
+        float endWidth = isMovingOutOfGroup ? startWidth - tabWidth : startWidth + tabWidth;
+
+        // Animate the bottom indicator.
+        List<Animator> animators = new ArrayList<>();
+        animators.add(
+                CompositorAnimator.ofFloatProperty(
+                        mUpdateHost.getAnimationHandler(),
+                        groupTitle,
+                        StripLayoutGroupTitle.BOTTOM_INDICATOR_WIDTH,
+                        startWidth,
+                        endWidth,
+                        ANIM_TAB_SLIDE_OUT_MS));
+
+        return animators;
     }
 
     private int updateHoveringOverGroup(float offset, int curIndex, boolean towardEnd) {
@@ -3789,7 +3894,7 @@ public class StripLayoutHelper
         public void handleMessage(Message m) {
             switch (m.what) {
                 case MESSAGE_RESIZE:
-                    computeAndUpdateTabWidth(true, false);
+                    computeAndUpdateTabWidth(true, false, null);
                     mUpdateHost.requestUpdate();
                     break;
                 case MESSAGE_UPDATE_SPINNER:
@@ -4219,7 +4324,7 @@ public class StripLayoutHelper
         mMultiStepTabCloseAnimRunning = true;
 
         // Resize the tab strip accordingly.
-        resizeStripOnTabClose();
+        resizeStripOnTabClose(getTabById(draggedTab.getId()));
     }
 
     void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {

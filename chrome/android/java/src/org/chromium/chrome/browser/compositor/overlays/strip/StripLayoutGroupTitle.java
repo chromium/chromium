@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import android.content.Context;
 import android.graphics.RectF;
+import android.util.FloatProperty;
 
 import androidx.annotation.ColorInt;
 
@@ -20,6 +21,21 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
  * onto the GL canvas.
  */
 public class StripLayoutGroupTitle extends StripLayoutView {
+
+    /** A property for animations to use for changing the width of the bottom indicator. */
+    public static final FloatProperty<StripLayoutGroupTitle> BOTTOM_INDICATOR_WIDTH =
+            new FloatProperty<>("bottomIndicatorWidth") {
+                @Override
+                public void setValue(StripLayoutGroupTitle object, float value) {
+                    object.setBottomIndicatorWidth(value);
+                }
+
+                @Override
+                public Float get(StripLayoutGroupTitle object) {
+                    return object.getBottomIndicatorWidth();
+                }
+            };
+
     // Position constants.
     private static final int MIN_VISUAL_WIDTH_DP = 24;
     private static final int MAX_VISUAL_WIDTH_DP = 156;
