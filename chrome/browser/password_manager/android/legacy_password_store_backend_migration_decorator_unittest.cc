@@ -134,34 +134,6 @@ class LegacyPasswordStoreBackendMigrationDecoratorTest : public testing::Test {
       backend_migration_decorator_;
 };
 
-TEST_F(
-    LegacyPasswordStoreBackendMigrationDecoratorTest,
-    MigrationPreferenceUnchangedWhenSyncDisabledAndEnabledWithoutClosingSettings) {
-  InitSyncService(/*is_password_sync_enabled=*/true);
-
-  constexpr int kCurrentMigrationVersion = 2;
-  constexpr double kCurrentLastMigrationAttemptTime = 100;
-  // Set up pref to indicate that initial migration is finished.
-  prefs().SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
-                     kCurrentMigrationVersion);
-  prefs().SetDouble(prefs::kTimeOfLastMigrationAttempt,
-                    kCurrentLastMigrationAttemptTime);
-
-  ChangeSyncSetting(/*is_password_sync_enabled=*/false);
-  // Change selected sync types to simulate selecting passwords again in sync
-  // settings.
-  ChangeSyncSetting(/*is_password_sync_enabled=*/true);
-
-  // Check that migration prefs are not reset.
-  EXPECT_EQ(kCurrentMigrationVersion,
-            prefs().GetInteger(
-                prefs::kCurrentMigrationVersionToGoogleMobileServices));
-  EXPECT_EQ(kCurrentLastMigrationAttemptTime,
-            prefs().GetDouble(prefs::kTimeOfLastMigrationAttempt));
-  EXPECT_EQ(false,
-            prefs().GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange));
-}
-
 TEST_F(LegacyPasswordStoreBackendMigrationDecoratorTest,
        OnSyncServiceInitializedPropagatedToAndroidBackend) {
   EXPECT_CALL(*android_backend(), OnSyncServiceInitialized(&sync_service()));

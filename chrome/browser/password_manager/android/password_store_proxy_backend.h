@@ -91,6 +91,8 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend,
   void RecordUpdateLoginAsyncCalledFromTheStore() override;
   base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
+  // syncer::SyncServiceObserver:
+  void OnStateChanged(syncer::SyncService* sync) override;
   void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
   // Forwards the (possible) forms changes caused by a remote event to the

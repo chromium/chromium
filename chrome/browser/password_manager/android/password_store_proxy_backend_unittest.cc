@@ -143,11 +143,13 @@ class PasswordStoreProxyBackendBaseTest : public testing::Test {
   void EnablePasswordSync() {
     sync_service_.GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false, {syncer::UserSelectableType::kPasswords});
+    sync_service_.FireStateChanged();
   }
 
   void DisablePasswordSync() {
     sync_service_.GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false, /*types=*/{});
+    sync_service_.FireStateChanged();
   }
 
   PasswordStoreBackend& proxy_backend() { return *proxy_backend_; }
@@ -392,6 +394,44 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
   histogram_tester.ExpectBucketCount(kStatusMetric, true, 1);
   histogram_tester.ExpectTotalCount(kCountMetric, 1);
   histogram_tester.ExpectBucketCount(kCountMetric, change_list.size(), 1);
+}
+
+TEST_F(PasswordStoreProxyBackendBaseTest,
+       InitialUPMMigrationPrefIsResetOnSyncInit) {
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+  DisablePasswordSync();
+
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+  proxy_backend().OnSyncServiceInitialized(sync_service());
+  EXPECT_EQ(0, prefs()->GetInteger(
+                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
+}
+
+TEST_F(PasswordStoreProxyBackendBaseTest,
+       InitialUPMMigrationPrefIsNotResetOnSyncInit) {
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+  EnablePasswordSync();
+
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+  proxy_backend().OnSyncServiceInitialized(sync_service());
+  EXPECT_EQ(1, prefs()->GetInteger(
+                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
+}
+
+TEST_F(PasswordStoreProxyBackendBaseTest,
+       InitialUPMMigrationPrefIsResetOnSyncChange) {
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+  EnablePasswordSync();
+
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
+  proxy_backend().OnSyncServiceInitialized(sync_service());
+
+  ASSERT_EQ(1, prefs()->GetInteger(
+                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
+
+  DisablePasswordSync();
+  EXPECT_EQ(0, prefs()->GetInteger(
+                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
 }
 
 // Holds the conditions affecting UPM eligibility and the backends

@@ -320,6 +320,12 @@ void PasswordStoreProxyBackend::OnSyncServiceInitialized(
   sync_service_->AddObserver(this);
   android_backend_->OnSyncServiceInitialized(sync_service);
   MaybeClearBuiltInBackend();
+
+  if (!IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
+    // Reset initial UPM migration if password sync is disabled.
+    prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
+                       0);
+  }
 }
 
 void PasswordStoreProxyBackend::RecordAddLoginAsyncCalledFromTheStore() {
@@ -360,6 +366,14 @@ PasswordStoreBackend* PasswordStoreProxyBackend::main_backend() {
 PasswordStoreBackend* PasswordStoreProxyBackend::shadow_backend() {
   return UsesAndroidBackendAsMainBackend() ? built_in_backend_.get()
                                            : android_backend_.get();
+}
+
+void PasswordStoreProxyBackend::OnStateChanged(syncer::SyncService* sync) {
+  if (!IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
+    // Reset initial UPM migration if password sync is disabled.
+    prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
+                       0);
+  }
 }
 
 void PasswordStoreProxyBackend::OnSyncShutdown(
