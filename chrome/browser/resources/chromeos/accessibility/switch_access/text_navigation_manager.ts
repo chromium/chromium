@@ -4,7 +4,7 @@
 
 import {EventGenerator} from '/common/event_generator.js';
 import {EventHandler} from '/common/event_handler.js';
-import {KeyCodeData} from '/common/key_code.js';
+import {KeyCode} from '/common/key_code.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {ActionManager} from './action_manager.js';
@@ -74,7 +74,7 @@ export class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(false /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCodeData.HOME.code, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.HOME, {ctrl: true});
   }
 
   /**
@@ -86,7 +86,7 @@ export class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(false /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCodeData.END.code, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.END, {ctrl: true});
   }
 
   /**
@@ -99,7 +99,7 @@ export class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(true /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCodeData.LEFT.code);
+    EventGenerator.sendKeyPress(KeyCode.LEFT);
   }
 
   /**
@@ -113,7 +113,7 @@ export class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(false /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCodeData.LEFT.code, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.LEFT, {ctrl: true});
   }
 
   /**
@@ -126,7 +126,7 @@ export class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(true /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCodeData.DOWN.code);
+    EventGenerator.sendKeyPress(KeyCode.DOWN);
   }
 
   /**
@@ -139,7 +139,7 @@ export class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(true /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCodeData.RIGHT.code);
+    EventGenerator.sendKeyPress(KeyCode.RIGHT);
   }
 
   /**
@@ -153,7 +153,7 @@ export class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(false /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCodeData.RIGHT.code, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.RIGHT, {ctrl: true});
   }
 
   /**
@@ -166,7 +166,7 @@ export class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(true /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCodeData.UP.code);
+    EventGenerator.sendKeyPress(KeyCode.UP);
   }
 
   /**
@@ -182,7 +182,7 @@ export class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(true /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCodeData.DOWN.code);
+    EventGenerator.sendKeyPress(KeyCode.DOWN);
   }
 
   static get clipboardHasData(): boolean {

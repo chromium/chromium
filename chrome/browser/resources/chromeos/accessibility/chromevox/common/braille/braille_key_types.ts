@@ -10,7 +10,7 @@
  * We define them here since they don't actually exist as bindings under
  * chrome.brailleDisplayPrivate.*.
  */
-import {KeyCodeData} from '/common/key_code.js';
+import {KeyCode} from '/common/key_code.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 interface Modifiers {
@@ -191,22 +191,22 @@ export const brailleDotsToModifiers: Record<number, Modifiers> = {
 
 /** Map from DOM level 4 key codes to legacy numeric key codes. */
 export const legacyKeyCodeMap: Record<string, number> = {
-  [DomKeyCode.BACKSPACE]: KeyCodeData.BACK.code,
-  [DomKeyCode.TAB]: KeyCodeData.TAB.code,
-  [DomKeyCode.ENTER]: KeyCodeData.RETURN.code,
-  [DomKeyCode.ESCAPE]: KeyCodeData.ESCAPE.code,
-  [DomKeyCode.HOME]: KeyCodeData.HOME.code,
-  [DomKeyCode.ARROW_LEFT]: KeyCodeData.LEFT.code,
-  [DomKeyCode.ARROW_UP]: KeyCodeData.UP.code,
-  [DomKeyCode.ARROW_RIGHT]: KeyCodeData.RIGHT.code,
-  [DomKeyCode.ARROW_DOWN]: KeyCodeData.DOWN.code,
-  [DomKeyCode.PAGE_UP]: KeyCodeData.PRIOR.code,
-  [DomKeyCode.PAGE_DOWN]: KeyCodeData.NEXT.code,
-  [DomKeyCode.END]: KeyCodeData.END.code,
-  [DomKeyCode.INSERT]: KeyCodeData.INSERT.code,
-  [DomKeyCode.DELETE]: KeyCodeData.DELETE.code,
-  [DomKeyCode.AUDIO_VOLUME_DOWN]: KeyCodeData.VOLUME_DOWN.code,
-  [DomKeyCode.AUDIO_VOLUME_UP]: KeyCodeData.VOLUME_UP.code,
+  [DomKeyCode.BACKSPACE]: KeyCode.BACK,
+  [DomKeyCode.TAB]: KeyCode.TAB,
+  [DomKeyCode.ENTER]: KeyCode.RETURN,
+  [DomKeyCode.ESCAPE]: KeyCode.ESCAPE,
+  [DomKeyCode.HOME]: KeyCode.HOME,
+  [DomKeyCode.ARROW_LEFT]: KeyCode.LEFT,
+  [DomKeyCode.ARROW_UP]: KeyCode.UP,
+  [DomKeyCode.ARROW_RIGHT]: KeyCode.RIGHT,
+  [DomKeyCode.ARROW_DOWN]: KeyCode.DOWN,
+  [DomKeyCode.PAGE_UP]: KeyCode.PRIOR,
+  [DomKeyCode.PAGE_DOWN]: KeyCode.NEXT,
+  [DomKeyCode.END]: KeyCode.END,
+  [DomKeyCode.INSERT]: KeyCode.INSERT,
+  [DomKeyCode.DELETE]: KeyCode.DELETE,
+  [DomKeyCode.AUDIO_VOLUME_DOWN]: KeyCode.VOLUME_DOWN,
+  [DomKeyCode.AUDIO_VOLUME_UP]: KeyCode.VOLUME_UP,
 };
 }
 

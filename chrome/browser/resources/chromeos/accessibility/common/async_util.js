@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Key} from './key_code.js';
+import {KeyCode} from './key_code.js';
 import {TestImportManager} from './testing/test_import_manager.js';
 
 /**
@@ -23,7 +23,7 @@ export class AsyncUtil {
   }
 
   /**
-   * @param {!Key.Code} keyCode
+   * @param {!KeyCode} keyCode
    * @return {!Promise<string>}
    */
   static async getLocalizedDomKeyStringForKeyCode(keyCode) {

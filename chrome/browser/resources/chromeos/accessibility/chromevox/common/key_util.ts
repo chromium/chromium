@@ -7,7 +7,7 @@
  * with keyboard events.
  */
 import {AsyncUtil} from '/common/async_util.js';
-import {KeyCodeData} from '/common/key_code.js';
+import {KeyCode} from '/common/key_code.js';
 
 import {KeySequence} from './key_sequence.js';
 import {Msgs} from './msgs.js';
@@ -91,12 +91,11 @@ export namespace KeyUtil {
    * @return A string representation of the key event.
    */
   export function keyCodeToString(keyCode: number): string {
-    if (keyCode === KeyCodeData.CONTROL.code) {
+    if (keyCode === KeyCode.CONTROL) {
       return 'Ctrl';
     }
-    const name = getNameForCode(keyCode);
-    if (name) {
-      return name;
+    if (KeyCode.name(keyCode)) {
+      return KeyCode.name(keyCode);
     }
 
     // Anything else
@@ -112,14 +111,14 @@ export namespace KeyUtil {
   export function modStringToKeyCode(keyString: string): number {
     switch (keyString) {
       case 'Ctrl':
-        return KeyCodeData.CONTROL.code;
+        return KeyCode.CONTROL;
       case 'Alt':
-        return KeyCodeData.ALT.code;
+        return KeyCode.ALT;
       case 'Shift':
-        return KeyCodeData.SHIFT.code;
+        return KeyCode.SHIFT;
       case 'Cmd':
       case 'Win':
-        return KeyCodeData.SEARCH.code;
+        return KeyCode.SEARCH;
     }
     return -1;
   }
@@ -164,32 +163,32 @@ export namespace KeyUtil {
   export function getReadableNameForKeyCode(keyCode: number): string {
     const msg = Msgs.getMsg.bind(Msgs);
     switch (keyCode) {
-      case KeyCodeData.BROWSER_BACK.code:
+      case KeyCode.BROWSER_BACK:
         return msg('back_key');
-      case KeyCodeData.BROWSER_FORWARD.code:
+      case KeyCode.BROWSER_FORWARD:
         return msg('forward_key');
-      case KeyCodeData.BROWSER_REFRESH.code:
+      case KeyCode.BROWSER_REFRESH:
         return msg('refresh_key');
-      case KeyCodeData.ZOOM.code:
+      case KeyCode.ZOOM:
         return msg('toggle_full_screen_key');
-      case KeyCodeData.MEDIA_LAUNCH_APP1.code:
+      case KeyCode.MEDIA_LAUNCH_APP1:
         return msg('window_overview_key');
-      case KeyCodeData.BRIGHTNESS_DOWN.code:
+      case KeyCode.BRIGHTNESS_DOWN:
         return msg('brightness_down_key');
-      case KeyCodeData.BRIGHTNESS_UP.code:
+      case KeyCode.BRIGHTNESS_UP:
         return msg('brightness_up_key');
-      case KeyCodeData.VOLUME_MUTE.code:
+      case KeyCode.VOLUME_MUTE:
         return msg('volume_mute_key');
-      case KeyCodeData.VOLUME_DOWN.code:
+      case KeyCode.VOLUME_DOWN:
         return msg('volume_down_key');
-      case KeyCodeData.VOLUME_UP.code:
+      case KeyCode.VOLUME_UP:
         return msg('volume_up_key');
-      case KeyCodeData.ASSISTANT.code:
+      case KeyCode.ASSISTANT:
         return msg('assistant_key');
-      case KeyCodeData.MEDIA_PLAY_PAUSE.code:
+      case KeyCode.MEDIA_PLAY_PAUSE:
         return msg('media_play_pause');
     }
-    return getNameForCode(keyCode) ?? '';
+    return KeyCode.name(keyCode);
   }
 
   /**
@@ -197,7 +196,7 @@ export namespace KeyUtil {
    * @return The platform specific sticky key keycode.
    */
   export function getStickyKeyCode(): number {
-    return KeyCodeData.SEARCH.code;
+    return KeyCode.SEARCH;
   }
 
   // TODO (clchen): Refactor this function away since it is no longer used.
@@ -266,8 +265,7 @@ export namespace KeyUtil {
             modifier = 'Ctrl';
             break;
           case 'searchKeyHeld':
-            const searchKey =
-                KeyUtil.getReadableNameForKeyCode(KeyCodeData.SEARCH.code);
+            const searchKey = KeyUtil.getReadableNameForKeyCode(KeyCode.SEARCH);
             modifier = searchKey;
             break;
           case 'altKey':
@@ -280,8 +278,7 @@ export namespace KeyUtil {
             modifier = 'Shift';
             break;
           case 'metaKey':
-            const metaKey =
-                KeyUtil.getReadableNameForKeyCode(KeyCodeData.SEARCH.code);
+            const metaKey = KeyUtil.getReadableNameForKeyCode(KeyCode.SEARCH);
             modifier = metaKey;
             break;
           case 'keyCode':
@@ -384,11 +381,4 @@ export namespace KeyUtil {
    * down.
    */
   export const maxSeqLength = 2;
-}
-
-function getNameForCode(keyCode: number): string | undefined {
-  const allData =
-      Object.values(KeyCodeData) as Array<{code: number, name: string}>;
-  return allData.filter(
-      (data: {code: number, name: string}) => data.code === keyCode)[0]?.name;
 }

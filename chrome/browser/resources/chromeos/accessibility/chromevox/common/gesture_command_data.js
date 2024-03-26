@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Key, KeyCode} from '/common/key_code.js';
+import {KeyCode} from '/common/key_code.js';
 
 import {Command} from './command.js';
 
@@ -18,9 +18,9 @@ export const GestureCommandData = {};
  *     commandDescriptionMsgId: (string|undefined),
  *     acceleratorAction:
  *     (chrome.accessibilityPrivate.AcceleratorAction|undefined),
- *     globalKey: ({keyCode: !Key.Code, modifiers:
+ *     globalKey: ({keyCode: !KeyCode, modifiers:
  *     (chrome.accessibilityPrivate.SyntheticKeyboardModifiers|undefined)}|undefined),
- *     menuKeyOverride: ({keyCode: !Key.Code, modifiers:
+ *     menuKeyOverride: ({keyCode: !KeyCode, modifiers:
  *     (chrome.accessibilityPrivate.SyntheticKeyboardModifiers|undefined)}|undefined)}>}
  * @const
  */

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Key} from './key_code.js';
+import {KeyCode} from './key_code.js';
 import {TestImportManager} from './testing/test_import_manager.js';
 
 export interface MouseClickParams {
@@ -32,7 +32,7 @@ export class EventGenerator {
    *     should be skipped.
    */
   static sendKeyPress(
-      keyCode: Key.Code,
+      keyCode: KeyCode,
       modifiers: chrome.accessibilityPrivate.SyntheticKeyboardModifiers = {},
       useRewriters = false): void {
     let type = chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN;
