@@ -29,6 +29,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/file_util.h"
+#include "ui/gfx/animation/animation.h"
 
 // static
 EmbeddedA11yManagerLacros* EmbeddedA11yManagerLacros::GetInstance() {
@@ -109,6 +110,12 @@ void EmbeddedA11yManagerLacros::Init() {
       crosapi::mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
       base::BindRepeating(
           &EmbeddedA11yManagerLacros::OnPdfOcrAlwaysActiveChanged,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  reduced_animations_enabled_observer_ = std::make_unique<CrosapiPrefObserver>(
+      crosapi::mojom::PrefPath::kAccessibilityReducedAnimationsEnabled,
+      base::BindRepeating(
+          &EmbeddedA11yManagerLacros::OnReducedAnimationsEnabledChanged,
           weak_ptr_factory_.GetWeakPtr()));
 
   EmbeddedA11yExtensionLoader::GetInstance()->Init();
@@ -235,6 +242,12 @@ void EmbeddedA11yManagerLacros::OnPdfOcrAlwaysActiveChanged(base::Value value) {
   CHECK(value.is_bool());
   pdf_ocr_always_active_enabled_ = value.GetBool();
   UpdatePdfOcrEnabledOnAllProfiles();
+}
+
+void EmbeddedA11yManagerLacros::OnReducedAnimationsEnabledChanged(
+    base::Value value) {
+  CHECK(value.is_bool());
+  gfx::Animation::SetPrefersReducedMotionForA11y(value.GetBool());
 }
 
 void EmbeddedA11yManagerLacros::OnFocusChangedInPage(

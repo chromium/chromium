@@ -83,6 +83,7 @@ class EmbeddedA11yManagerLacros
   void OnSwitchAccessEnabledChanged(base::Value value);
   void OnFocusHighlightEnabledChanged(base::Value value);
   void OnPdfOcrAlwaysActiveChanged(base::Value value);
+  void OnReducedAnimationsEnabledChanged(base::Value value);
 
   // Called when focus highlight feature is active and the focused node
   // changed.
@@ -97,6 +98,7 @@ class EmbeddedA11yManagerLacros
   std::unique_ptr<CrosapiPrefObserver> switch_access_enabled_observer_;
   std::unique_ptr<CrosapiPrefObserver> focus_highlight_enabled_observer_;
   std::unique_ptr<CrosapiPrefObserver> pdf_ocr_always_active_observer_;
+  std::unique_ptr<CrosapiPrefObserver> reduced_animations_enabled_observer_;
 
   // The current state of Ash features.
   bool chromevox_enabled_ = false;

@@ -40,6 +40,8 @@ std::string_view GetProfilePrefNameForPref(mojom::PrefPath path) {
            ash::prefs::kAccessibilitySpokenFeedbackEnabled},
           {mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
            ::prefs::kAccessibilityPdfOcrAlwaysActive},
+          {mojom::PrefPath::kAccessibilityReducedAnimationsEnabled,
+           ash::prefs::kAccessibilityReducedAnimationsEnabled},
           {mojom::PrefPath::kUserGeolocationAccessLevel,
            ash::prefs::kUserGeolocationAccessLevel},
           {mojom::PrefPath::kQuickAnswersEnabled,
@@ -307,7 +309,8 @@ std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
                    profile_prefs_registrar_.get(), AshPrefSource::kNormal,
                    pref_name};
     }
-    case mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive: {
+    case mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive:
+    case mojom::PrefPath::kAccessibilityReducedAnimationsEnabled: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
         return std::nullopt;
