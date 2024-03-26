@@ -31,6 +31,7 @@ class SerialTracker;
 class UiControls;
 struct WaylandDataDeviceManager;
 struct WaylandKeyboardExtension;
+class WaylandProtocolLogger;
 struct WaylandSeat;
 struct WaylandTextInputExtension;
 struct WaylandTextInputManager;
@@ -137,6 +138,7 @@ class Server : public OutputController::Delegate {
   std::unique_ptr<WaylandRemoteShellData> remote_shell_data_;
   std::unique_ptr<UiControls> ui_controls_holder_;
   std::unique_ptr<ClientTracker> client_tracker_;
+  std::unique_ptr<WaylandProtocolLogger> wayland_protocol_logger_;
 };
 
 }  // namespace wayland

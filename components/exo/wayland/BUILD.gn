@@ -55,6 +55,8 @@ source_set("wayland") {
     "wayland_pointer_delegate.h",
     "wayland_positioner.cc",
     "wayland_positioner.h",
+    "wayland_protocol_logger.cc",
+    "wayland_protocol_logger.h",
     "wayland_touch_delegate.cc",
     "wayland_touch_delegate.h",
     "wayland_watcher.cc",

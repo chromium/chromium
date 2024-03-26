@@ -55,6 +55,7 @@
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/surface_augmenter.h"
 #include "components/exo/wayland/wayland_dmabuf_feedback_manager.h"
+#include "components/exo/wayland/wayland_protocol_logger.h"
 #include "components/exo/wayland/wayland_watcher.h"
 #include "components/exo/wayland/wl_compositor.h"
 #include "components/exo/wayland/wl_data_device_manager.h"
@@ -254,6 +255,8 @@ Server::Server(Display* display,
   SetSecurityDelegate(wl_display_.get(), security_delegate_.get());
 
   client_tracker_ = std::make_unique<ClientTracker>(wl_display_.get());
+  wayland_protocol_logger_ =
+      std::make_unique<WaylandProtocolLogger>(wl_display_.get());
 }
 
 void Server::Initialize() {
