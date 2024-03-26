@@ -202,6 +202,14 @@ BASE_FEATURE(kOrca, "Orca", base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls enabling / disabling the orca feature for dogfood population.
 BASE_FEATURE(kOrcaDogfood, "OrcaDogfood", base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// Feature management flag used to gate preinstallation of the container app.
+// This flag is meant to be enabled by the feature management module.
+BASE_FEATURE(kFeatureManagementContainerAppPreinstall,
+             "FeatureManagementContainerAppPreinstall",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
 // Controls enabling / disabling the orca feature from the feature management
 // module.
 BASE_FEATURE(kFeatureManagementOrca,
@@ -319,7 +327,9 @@ bool IsContainerAppPreinstallEnabled() {
       "\xa1\x65\xcd\x65\x2a\x94\xed\xe6\x97\x7d\xcc\x5b\xcc\x94\x66\xd4\x0a\x90"
       "\x67\x65";
   // NOTE: Key may be provided via param or via standalone command-line switch.
-  return base::FeatureList::IsEnabled(kContainerAppPreinstall) &&
+  return base::FeatureList::IsEnabled(
+             kFeatureManagementContainerAppPreinstall) &&
+         base::FeatureList::IsEnabled(kContainerAppPreinstall) &&
          (base::SHA1HashString(kContainerAppPreinstallKey.Get()) == kKey ||
           base::SHA1HashString(switches::GetContainerAppPreinstallKey()) ==
               kKey);
