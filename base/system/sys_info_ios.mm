@@ -27,10 +27,6 @@ namespace base {
 
 #if BUILDFLAG(IS_IOS)
 namespace {
-// True if HardwareModelName() has been called. Used to detect attempts to set
-// the name after this point, which are likely errors.
-bool g_was_hardware_model_name_called = false;
-
 // Accessor for storage of overridden HardwareModelName.
 std::string& GetHardwareModelNameStorage() {
   static base::NoDestructor<std::string> instance;
@@ -102,8 +98,9 @@ std::string SysInfo::GetIOSBuildNumber() {
 
 // static
 void SysInfo::OverrideHardwareModelName(std::string name) {
-  // HardwareModelName() should not be called before overriding the value.
-  CHECK(!g_was_hardware_model_name_called);
+  // Normally, HardwareModelName() should not be called before overriding the
+  // value, but StartCrashController(), which eventually calls
+  // HardwareModelName(), is called before overriding the name.
   CHECK(!name.empty());
   GetHardwareModelNameStorage() = std::move(name);
 }
@@ -159,7 +156,6 @@ std::string SysInfo::HardwareModelName() {
   }
   return base::StringPrintf("iOS Simulator (%s)", model);
 #else
-  g_was_hardware_model_name_called = true;
   const std::string& override = GetHardwareModelNameStorage();
   if (!override.empty()) {
     return override;
