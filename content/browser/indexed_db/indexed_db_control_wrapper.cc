@@ -36,8 +36,9 @@ IndexedDBControlWrapper::IndexedDBControlWrapper(
 
   if (special_storage_policy) {
     storage_policy_observer_.emplace(
-        base::BindRepeating(&IndexedDBControlWrapper::ApplyPolicyUpdates,
-                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(
+            &IndexedDBControlWrapper::OnSpecialStoragePolicyUpdated,
+            base::Unretained(this)),
         io_task_runner, std::move(special_storage_policy));
   }
 }
@@ -55,70 +56,19 @@ void IndexedDBControlWrapper::BindIndexedDB(
     const base::UnguessableToken& client_token,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BindRemoteIfNeeded();
   if (storage_policy_observer_) {
     // TODO(https://crbug.com/1199077): Pass the real StorageKey once
     // StoragePolicyObserver is migrated.
     storage_policy_observer_->StartTrackingOrigin(
         bucket_locator.storage_key.origin());
   }
-  indexed_db_control_->BindIndexedDB(bucket_locator,
-                                     std::move(client_state_checker_remote),
-                                     client_token, std::move(receiver));
+  GetIndexedDBControl().BindIndexedDB(bucket_locator,
+                                      std::move(client_state_checker_remote),
+                                      client_token, std::move(receiver));
 }
 
-void IndexedDBControlWrapper::ForceClose(
-    storage::BucketId bucket_id,
-    storage::mojom::ForceCloseReason reason,
-    base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BindRemoteIfNeeded();
-  indexed_db_control_->ForceClose(bucket_id, reason, std::move(callback));
-}
-
-void IndexedDBControlWrapper::DownloadBucketData(
-    storage::BucketId bucket_id,
-    DownloadBucketDataCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BindRemoteIfNeeded();
-  indexed_db_control_->DownloadBucketData(bucket_id, std::move(callback));
-}
-
-void IndexedDBControlWrapper::GetAllBucketsDetails(
-    GetAllBucketsDetailsCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BindRemoteIfNeeded();
-  indexed_db_control_->GetAllBucketsDetails(std::move(callback));
-}
-
-void IndexedDBControlWrapper::SetForceKeepSessionState() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BindRemoteIfNeeded();
-  indexed_db_control_->SetForceKeepSessionState();
-}
-
-void IndexedDBControlWrapper::ApplyPolicyUpdates(
-    std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BindRemoteIfNeeded();
-  indexed_db_control_->ApplyPolicyUpdates(std::move(policy_updates));
-}
-
-void IndexedDBControlWrapper::BindTestInterface(
-    mojo::PendingReceiver<storage::mojom::IndexedDBControlTest> receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BindRemoteIfNeeded();
-  indexed_db_control_->BindTestInterface(std::move(receiver));
-}
-
-void IndexedDBControlWrapper::AddObserver(
-    mojo::PendingRemote<storage::mojom::IndexedDBObserver> observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BindRemoteIfNeeded();
-  indexed_db_control_->AddObserver(std::move(observer));
-}
-
-void IndexedDBControlWrapper::BindRemoteIfNeeded() {
+storage::mojom::IndexedDBControl&
+IndexedDBControlWrapper::GetIndexedDBControl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(
       !(indexed_db_control_.is_bound() && !indexed_db_control_.is_connected()))
@@ -127,6 +77,14 @@ void IndexedDBControlWrapper::BindRemoteIfNeeded() {
   if (!indexed_db_control_.is_bound()) {
     context_->BindControl(indexed_db_control_.BindNewPipeAndPassReceiver());
   }
+
+  return *indexed_db_control_;
+}
+
+void IndexedDBControlWrapper::OnSpecialStoragePolicyUpdated(
+    std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  GetIndexedDBControl().ApplyPolicyUpdates(std::move(policy_updates));
 }
 
 }  // namespace content

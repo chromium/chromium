@@ -175,10 +175,9 @@ void BucketHost::GetIdbFactory(
 
   auto [state_checker, token] =
       IndexedDBClientStateCheckerFactory::InitializePendingRemote(rfh_id);
-  bucket_manager_host_->GetStoragePartition()
-      ->GetIndexedDBControl()
-      .BindIndexedDB(bucket_info_.ToBucketLocator(), std::move(state_checker),
-                     token, std::move(receiver));
+  bucket_manager_host_->GetStoragePartition()->BindIndexedDB(
+      bucket_info_.ToBucketLocator(), std::move(state_checker), token,
+      std::move(receiver));
 }
 
 void BucketHost::GetCaches(

@@ -156,10 +156,10 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
   storage::mojom::IndexedDBControl& GetControl(Shell* browser = nullptr) {
     if (!browser)
       browser = shell();
-    StoragePartition* partition = browser->web_contents()
-                                      ->GetBrowserContext()
-                                      ->GetDefaultStoragePartition();
-    return partition->GetIndexedDBControl();
+    return browser->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
+        ->GetIndexedDBControl();
   }
 
   mojo::Remote<storage::mojom::IndexedDBControlTest> GetControlTest(
@@ -175,11 +175,11 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
     if (!browser) {
       browser = shell();
     }
-    StoragePartition* partition = browser->web_contents()
-                                      ->GetBrowserContext()
-                                      ->GetDefaultStoragePartition();
-    auto& control = partition->GetIndexedDBControl();
-    control.BindTestInterface(std::move(receiver));
+    browser->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
+        ->GetIndexedDBControl()
+        .BindTestInterface(std::move(receiver));
   }
 
   void SetQuota(int per_host_quota_kilobytes) {

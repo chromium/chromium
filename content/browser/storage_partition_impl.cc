@@ -1709,7 +1709,7 @@ StoragePartitionImpl::GetSharedStorageWorkletHostManager() {
 
 storage::mojom::IndexedDBControl& StoragePartitionImpl::GetIndexedDBControl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return *indexed_db_control_wrapper_.get();
+  return indexed_db_control_wrapper_->GetIndexedDBControl();
 }
 
 FileSystemAccessEntryFactory*
@@ -3191,6 +3191,17 @@ storage::mojom::Partition* StoragePartitionImpl::GetStorageServicePartition() {
 mojo::Remote<storage::mojom::StorageService>&
 StoragePartitionImpl::GetStorageServiceForTesting() {
   return GetStorageServiceRemote();
+}
+
+void StoragePartitionImpl::BindIndexedDB(
+    const storage::BucketLocator& bucket_locator,
+    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+        client_state_checker_remote,
+    const base::UnguessableToken& client_token,
+    mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
+  indexed_db_control_wrapper_->BindIndexedDB(
+      bucket_locator, std::move(client_state_checker_remote), client_token,
+      std::move(receiver));
 }
 
 mojo::ReceiverId StoragePartitionImpl::BindDomStorage(

@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/mojom/partition.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom-forward.h"
 #include "content/browser/background_sync/background_sync_context_impl.h"
@@ -394,6 +395,15 @@ class CONTENT_EXPORT StoragePartitionImpl
   // Exposes the shared top-level connection to the Storage Service, for tests.
   static mojo::Remote<storage::mojom::StorageService>&
   GetStorageServiceForTesting();
+
+  // Binds the mojo endpoint for an `IDBFactory` (which implements
+  // `window.indexedDB`).
+  void BindIndexedDB(
+      const storage::BucketLocator& bucket_locator,
+      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+          client_state_checker_remote,
+      const base::UnguessableToken& client_token,
+      mojo::PendingReceiver<blink::mojom::IDBFactory> receiver);
 
   // Called by each renderer process to bind its global DomStorage interface.
   // Returns the id of the created receiver.

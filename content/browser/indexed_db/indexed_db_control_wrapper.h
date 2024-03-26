@@ -15,13 +15,10 @@
 namespace content {
 
 // This wrapper is created, destroyed, and operated on the UI thread in the
-// browser process. It owns `IndexedDBContextImpl` and forwards all
-// `IndexedDBControl` calls to that context. It observes the
-// `special_storage_policy` and forwards policy updates to the context. In the
-// theoretical world where IndexedDBContextImpl lives in a separate process,
-// this class is necessary because `special_storage_policy` lives in the browser
-// process.
-class IndexedDBControlWrapper : public storage::mojom::IndexedDBControl {
+// browser process. Its main purpose is to observe the `special_storage_policy`
+// and forwards policy updates to the context, while also informing the policy
+// when an origin is actively using IDB.
+class IndexedDBControlWrapper {
  public:
   explicit IndexedDBControlWrapper(
       const base::FilePath& data_path,
@@ -37,32 +34,22 @@ class IndexedDBControlWrapper : public storage::mojom::IndexedDBControl {
   IndexedDBControlWrapper(const IndexedDBControlWrapper&) = delete;
   IndexedDBControlWrapper& operator=(const IndexedDBControlWrapper&) = delete;
 
-  ~IndexedDBControlWrapper() override;
+  ~IndexedDBControlWrapper();
 
-  // mojom::IndexedDBControl implementation:
   void BindIndexedDB(
       const storage::BucketLocator& bucket_locator,
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,
       const base::UnguessableToken& client_token,
-      mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
-  void ForceClose(storage::BucketId bucket_id,
-                  storage::mojom::ForceCloseReason reason,
-                  base::OnceClosure callback) override;
-  void DownloadBucketData(storage::BucketId bucket_id,
-                          DownloadBucketDataCallback callback) override;
-  void GetAllBucketsDetails(GetAllBucketsDetailsCallback callback) override;
-  void SetForceKeepSessionState() override;
-  void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>
-                              policy_updates) override;
-  void BindTestInterface(
-      mojo::PendingReceiver<storage::mojom::IndexedDBControlTest> receiver)
-      override;
-  void AddObserver(
-      mojo::PendingRemote<storage::mojom::IndexedDBObserver> observer) override;
+      mojo::PendingReceiver<blink::mojom::IDBFactory> receiver);
+
+  // Returns the mojom interface to the `IndexedDBContextImpl`, creating the
+  // context if it does not already exist.
+  storage::mojom::IndexedDBControl& GetIndexedDBControl();
 
  private:
-  void BindRemoteIfNeeded();
+  void OnSpecialStoragePolicyUpdated(
+      std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates);
 
   std::optional<storage::StoragePolicyObserver> storage_policy_observer_;
 
@@ -70,7 +57,6 @@ class IndexedDBControlWrapper : public storage::mojom::IndexedDBControl {
   std::unique_ptr<IndexedDBContextImpl> context_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<IndexedDBControlWrapper> weak_factory_{this};
 };
 
 }  // namespace content

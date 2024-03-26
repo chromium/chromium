@@ -259,8 +259,7 @@ void BrowserContext::SaveSessionState() {
           storage_partition->GetDOMStorageContext());
   dom_storage_context_proxy->SetForceKeepSessionState();
 
-  auto& indexed_db_control = storage_partition->GetIndexedDBControl();
-  indexed_db_control.SetForceKeepSessionState();
+  storage_partition->GetIndexedDBControl().SetForceKeepSessionState();
 }
 
 void BrowserContext::SetDownloadManagerForTesting(

@@ -88,9 +88,7 @@ void IndexedDBInternalsUI::GetAllBucketsAcrossAllStorageKeys(
 
   browser_context->ForEachLoadedStoragePartition(
       [&](StoragePartition* partition) {
-        storage::mojom::IndexedDBControl& control =
-            partition->GetIndexedDBControl();
-        control.GetAllBucketsDetails(base::BindOnce(
+        partition->GetIndexedDBControl().GetAllBucketsDetails(base::BindOnce(
             [](base::WeakPtr<IndexedDBInternalsUI> handler,
                base::RepeatingCallback<void(IdbPartitionMetadataPtr)>
                    collect_partitions,
