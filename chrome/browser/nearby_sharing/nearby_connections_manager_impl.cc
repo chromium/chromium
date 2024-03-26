@@ -955,7 +955,7 @@ void NearbyConnectionsManagerImpl::OnPayloadTransferUpdate(
     return;
   }
 
-  CD_LOG(INFO, Feature::NC)
+  CD_LOG(VERBOSE, Feature::NC)
       << "Writing incoming byte message to NearbyConnection.";
   connections_it->second->WriteMessage(
       payload_it->second->content->get_bytes()->bytes);
