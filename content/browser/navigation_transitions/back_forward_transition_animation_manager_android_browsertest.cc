@@ -121,6 +121,10 @@ static constexpr LayerTransforms kActivePageAtOrigin{
     .active_page = gfx::Transform::MakeTranslation(0.f, 0.f),
     .screenshot = std::nullopt};
 
+static constexpr LayerTransforms kBothLayersCentered{
+    .active_page = gfx::Transform::MakeTranslation(0.f, 0.f),
+    .screenshot = gfx::Transform::MakeTranslation(0.f, 0.f)};
+
 bool TwoSkColorApproximatelyEqual(const SkColor4f& a, const SkColor4f& b) {
   return base::IsApproximatelyEqual(a.fA, b.fA, kFloatTolerance) &&
          base::IsApproximatelyEqual(a.fB, b.fB, kFloatTolerance) &&
@@ -179,7 +183,8 @@ float GetProgress(GestureType gesture, SwipeEdge edge) {
 }
 
 void ExpectedLayerTransforms(WebContentsImpl* web_contents,
-                             const LayerTransforms& transforms) {
+                             const LayerTransforms& transforms,
+                             bool testing_crossfade = false) {
   const auto& layers =
       static_cast<WebContentsViewAndroid*>(web_contents->GetView())
           ->GetNativeView()
@@ -196,15 +201,19 @@ void ExpectedLayerTransforms(WebContentsImpl* web_contents,
         << transforms.active_page.ToString();
   } else {
     ASSERT_EQ(layers.size(), 2u);
-    ASSERT_EQ(layers[1].get(), GetAnimationManager(web_contents)
-                                   ->web_contents_view_android()
-                                   ->parent_for_web_page_widgets());
-    auto actual_screenshot = layers[0]->transform();
+    size_t screenshot_index = (testing_crossfade ? 1u : 0u);
+    size_t active_page_index = (testing_crossfade ? 0u : 1u);
+
+    ASSERT_EQ(layers[active_page_index].get(),
+              GetAnimationManager(web_contents)
+                  ->web_contents_view_android()
+                  ->parent_for_web_page_widgets());
+    auto actual_screenshot = layers[screenshot_index]->transform();
     EXPECT_TRANSFORM_NEAR(actual_screenshot, transforms.screenshot.value(),
                           kFloatTolerance)
         << "Screenshot: actual " << actual_screenshot.ToString() << " expected "
         << transforms.screenshot->ToString();
-    auto actual_active_page = layers[1]->transform();
+    auto actual_active_page = layers[active_page_index]->transform();
     EXPECT_TRANSFORM_NEAR(actual_active_page, transforms.active_page,
                           kFloatTolerance)
         << "Active page: actual " << actual_active_page.ToString()
@@ -246,10 +255,28 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
         waited_for_renderer_new_frame_) {
       std::move(waited_for_renderer_new_frame_).Run();
     }
+
     BackForwardTransitionAnimator::OnRenderFrameMetadataChangedAfterActivation(
         activation_time);
+
+    if (state() == State::kDisplayingCrossFadeAnimation) {
+      ExpectedLayerTransforms(wcva_->web_contents(), kBothLayersCentered,
+                              /*testing_crossfade=*/true);
+    }
   }
   void OnAnimate(base::TimeTicks frame_begin_time) override {
+    if (state() == State::kDisplayingCrossFadeAnimation &&
+        !seen_first_on_animate_for_cross_fade_) {
+      seen_first_on_animate_for_cross_fade_ = true;
+      ExpectedLayerTransforms(wcva_->web_contents(), kBothLayersCentered,
+                              /*testing_crossfade=*/true);
+      const auto& layers = GetChildrenLayersOfWebContentsView();
+      // The first OnAnimate for the cross-fade animation will set the scrim
+      // to 0.3, and opacity to 1.
+      ASSERT_EQ(layers.at(1)->children().size(), 1U);
+      ASSERT_EQ(layers.at(1)->children().at(0)->background_color().fA, 0.3f);
+      ASSERT_EQ(layers.at(1)->opacity(), 1.f);
+    }
     if (pause_on_animate_at_state_.has_value() &&
         pause_on_animate_at_state_.value() == state()) {
       return;
@@ -271,6 +298,13 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
         .screenshot = gfx::Transform::MakeTranslation(
             width * PhysicsModel::kScreenshotInitialPositionRatio, 0.f)};
     ExpectedLayerTransforms(wcva_->web_contents(), on_cancelled);
+
+    const auto& layers = GetChildrenLayersOfWebContentsView();
+    ASSERT_EQ(layers.size(), 2U);
+    ASSERT_EQ(layers.at(0)->children().size(), 1U);
+    // Screenshot should have the scrim.
+    EXPECT_EQ(layers.at(0)->children().at(0)->background_color().fA, 0.8f);
+
     BackForwardTransitionAnimator::OnCancelAnimationDisplayed();
   }
   void OnInvokeAnimationDisplayed() override {
@@ -282,7 +316,43 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
         .active_page = gfx::Transform::MakeTranslation(width, 0.f),
         .screenshot = gfx::Transform::MakeTranslation(0.f, 0.f)};
     ExpectedLayerTransforms(wcva_->web_contents(), on_invoked);
+
+    const auto& layers = GetChildrenLayersOfWebContentsView();
+    ASSERT_EQ(layers.size(), 2U);
+    ASSERT_EQ(layers.at(0)->children().size(), 1U);
+    // Scrim should be at the end of the first timeline.
+    EXPECT_EQ(layers.at(0)->children().at(0)->background_color().fA, 0.3f);
+
     BackForwardTransitionAnimator::OnInvokeAnimationDisplayed();
+
+    if (state() == State::kDisplayingCrossFadeAnimation) {
+      ExpectedLayerTransforms(wcva_->web_contents(), kBothLayersCentered,
+                              /*testing_crossfade=*/true);
+    }
+  }
+  void OnCrossFadeAnimationDisplayed() override {
+    if (on_cross_fade_animation_displayed_) {
+      std::move(on_cross_fade_animation_displayed_).Run();
+    }
+
+    // Both layers are centered to display the cross-fade.
+    ExpectedLayerTransforms(wcva_->web_contents(), kBothLayersCentered,
+                            /*testing_crossfade=*/true);
+
+    const auto& layers = GetChildrenLayersOfWebContentsView();
+    ASSERT_EQ(layers.size(), 2U);
+
+    // Opacities for cross-fade.
+    // Active page.
+    ASSERT_EQ(layers.at(0)->opacity(), 1.f);
+    // Screenshot page.
+    ASSERT_EQ(layers.at(1)->opacity(), 0.f);
+
+    // Screenshot shouldn't have any scrim over it.
+    ASSERT_EQ(layers.at(1)->children().size(), 1U);
+    EXPECT_EQ(layers.at(1)->children().at(0)->background_color().fA, 0.f);
+
+    BackForwardTransitionAnimator::OnCrossFadeAnimationDisplayed();
   }
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
     if (did_finish_navigation_callback_) {
@@ -299,6 +369,11 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
   void PauseAnimationAtDisplayingInvokeAnimation() {
     ASSERT_FALSE(pause_on_animate_at_state_.has_value()) << "Already paused.";
     pause_on_animate_at_state_ = State::kDisplayingInvokeAnimation;
+  }
+
+  void PauseAnimationAtDisplayingCrossFadeAnimation() {
+    ASSERT_FALSE(pause_on_animate_at_state_.has_value()) << "Already paused.";
+    pause_on_animate_at_state_ = State::kDisplayingCrossFadeAnimation;
   }
 
   void UnpauseAnimation() {
@@ -322,6 +397,10 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
     ExpectState(State::kWaitingForBeforeUnloadResponse);
   }
 
+  void ExpectWaitingForDisplayingCrossFadeAnimation() {
+    ExpectState(State::kDisplayingCrossFadeAnimation);
+  }
+
   void SetFinishedStateToDisplayingInvokeAnimation() {
     finished_state_ = State::kDisplayingInvokeAnimation;
   }
@@ -336,6 +415,10 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
     finished_state_ = State::kWaitingForNewRendererToDraw;
   }
 
+  void SetFinishedStateToDisplayingCrossFadeAnimation() {
+    finished_state_ = State::kDisplayingCrossFadeAnimation;
+  }
+
   void set_intercept_render_frame_metadata_changed(bool intercept) {
     intercept_render_frame_metadata_changed_ = intercept;
   }
@@ -346,6 +429,10 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
   void set_on_invoke_animation_displayed(base::OnceClosure callback) {
     ASSERT_FALSE(on_invoke_animation_displayed_);
     on_invoke_animation_displayed_ = std::move(callback);
+  }
+  void set_on_cross_fade_animation_displayed(base::OnceClosure callback) {
+    ASSERT_FALSE(on_cross_fade_animation_displayed_);
+    on_cross_fade_animation_displayed_ = std::move(callback);
   }
   void set_waited_for_renderer_new_frame(base::OnceClosure callback) {
     ASSERT_FALSE(waited_for_renderer_new_frame_);
@@ -373,6 +460,15 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
         << ToString(state()) << " vs " << ToString(expected);
   }
 
+  const std::vector<scoped_refptr<cc::slim::Layer>>&
+  GetChildrenLayersOfWebContentsView() const {
+    return static_cast<WebContentsViewAndroid*>(
+               static_cast<WebContentsImpl*>(web_contents())->GetView())
+        ->GetNativeView()
+        ->GetLayer()
+        ->children();
+  }
+
   const raw_ptr<WebContentsViewAndroid> wcva_;
 
   base::TimeDelta duration_between_frames_ = kLongDurationBetweenFrames;
@@ -383,10 +479,13 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
 
   bool intercept_render_frame_metadata_changed_ = false;
 
+  bool seen_first_on_animate_for_cross_fade_ = false;
+
   std::optional<State> pause_on_animate_at_state_;
 
   base::OnceClosure on_cancel_animation_displayed_;
   base::OnceClosure on_invoke_animation_displayed_;
+  base::OnceClosure on_cross_fade_animation_displayed_;
   base::OnceClosure waited_for_renderer_new_frame_;
   base::OnceClosure next_on_animate_callback_;
   base::OnceClosure did_finish_navigation_callback_;
@@ -664,9 +763,13 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   // because the invoke animation can sill be running when the navigation
   // finishes.
   TestFrameNavigationObserver back_to_red(web_contents());
+  base::RunLoop cross_fade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      cross_fade_displayed.QuitClosure());
   base::RunLoop destroyed;
   GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
   GetAnimationManager(web_contents())->OnGestureInvoked();
+  cross_fade_displayed.Run();
   destroyed.Run();
   back_to_red.Wait();
 
@@ -966,6 +1069,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   base::RunLoop invoke_played;
   GetAnimatorForTesting()->set_on_invoke_animation_displayed(
       invoke_played.QuitClosure());
+  base::RunLoop cross_fade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      cross_fade_displayed.QuitClosure());
   base::RunLoop destroyed;
   GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
 
@@ -989,6 +1095,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
                      base::Unretained(GetAnimatorForTesting()))));
   GetAnimatorForTesting()->OnRenderFrameMetadataChangedAfterActivation(
       base::TimeTicks());
+  cross_fade_displayed.Run();
   destroyed.Run();
   ExpectedLayerTransforms(web_contents(), kActivePageAtOrigin);
 }
@@ -1064,12 +1171,16 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   base::RunLoop invoke_played;
   GetAnimatorForTesting()->set_on_invoke_animation_displayed(
       invoke_played.QuitClosure());
+  base::RunLoop cross_fade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      cross_fade_displayed.QuitClosure());
   base::RunLoop destroyed;
   GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
 
   auto* animation_manager = GetAnimationManager(web_contents());
   animation_manager->OnGestureInvoked();
   invoke_played.Run();
+  cross_fade_displayed.Run();
   destroyed.Run();
   ExpectedLayerTransforms(web_contents(), kActivePageAtOrigin);
 
@@ -1095,6 +1206,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   base::RunLoop invoke_played;
   GetAnimatorForTesting()->set_on_invoke_animation_displayed(
       invoke_played.QuitClosure());
+  base::RunLoop cross_fade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      cross_fade_displayed.QuitClosure());
   base::RunLoop destroyed;
   GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
 
@@ -1122,6 +1236,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
 
   ASSERT_TRUE(back_nav_to_red.WaitForNavigationFinished());
   invoke_played.Run();
+  cross_fade_displayed.Run();
   destroyed.Run();
   ExpectedLayerTransforms(web_contents(), kActivePageAtOrigin);
 }
@@ -1140,6 +1255,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   expected.push_back({.gesture = GestureType::k60ViewportWidth});
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
+  base::RunLoop cross_fade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      cross_fade_displayed.QuitClosure());
   base::RunLoop destroyed;
   GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
   bool received_frame_while_waiting = false;
@@ -1170,6 +1288,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   }
 
   ASSERT_TRUE(back_to_red.WaitForNavigationFinished());
+  cross_fade_displayed.Run();
   destroyed.Run();
   ASSERT_FALSE(received_frame_while_waiting);
   ExpectedLayerTransforms(web_contents(), kActivePageAtOrigin);
@@ -1283,6 +1402,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   base::RunLoop invoke_played;
   GetAnimatorForTesting()->set_on_invoke_animation_displayed(
       invoke_played.QuitClosure());
+  bool cross_fade_displayed = false;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      base::BindLambdaForTesting([&]() { cross_fade_displayed = true; }));
 
   TestNavigationManager back_to_red(web_contents(), RedURL());
   auto* animation_manager = GetAnimationManager(web_contents());
@@ -1300,6 +1422,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   ASSERT_TRUE(ExecJs(web_contents(), "window.location.href = 'blue.html'"));
   ASSERT_TRUE(nav_to_blue.WaitForNavigationFinished());
   destroyed.Run();
+  ASSERT_FALSE(cross_fade_displayed);
 
   ExpectedLayerTransforms(web_contents(), kActivePageAtOrigin);
 
@@ -1335,9 +1458,13 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   TestFrameNavigationObserver back_to_red(web_contents());
+  base::RunLoop cross_fade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      cross_fade_displayed.QuitClosure());
   base::RunLoop destroyed;
   GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
   GetAnimationManager(web_contents())->OnGestureInvoked();
+  cross_fade_displayed.Run();
   destroyed.Run();
   back_to_red.Wait();
 
@@ -1373,9 +1500,13 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   TestFrameNavigationObserver back_to_red(web_contents());
+  base::RunLoop cross_fade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      cross_fade_displayed.QuitClosure());
   base::RunLoop destroyed;
   GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
   GetAnimationManager(web_contents())->OnGestureInvoked();
+  cross_fade_displayed.Run();
   destroyed.Run();
   back_to_red.Wait();
 
@@ -1524,6 +1655,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   base::RunLoop invoke_played;
   GetAnimatorForTesting()->set_on_invoke_animation_displayed(
       invoke_played.QuitClosure());
+  base::RunLoop cross_fade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      cross_fade_displayed.QuitClosure());
   bool cancel_displayed = false;
   GetAnimatorForTesting()->set_on_cancel_animation_displayed(
       base::BindLambdaForTesting([&]() { cancel_displayed = true; }));
@@ -1534,6 +1668,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimationManager(web_contents())->OnGestureInvoked();
 
   invoke_played.Run();
+  cross_fade_displayed.Run();
   did_finish_nav.Run();
   destroyed.Run();
   back_to_red.Wait();
@@ -1797,6 +1932,62 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
             GreenURL());
 }
 
+// Testing that, on the back nav from green.html to red.html, red.html redirects
+// to blue.html. while the cross-fading animation is playing from the red.html's
+// screenshot to the live page. We should abort the cross-fade animation when
+// the redirect to blue.html commits.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
+                       ClientRedirect_AnimatorDestroyedDuringCrossFade) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  std::vector<GestureAndScreenChanged> expected;
+  expected.push_back({.gesture = GestureType::kStart});
+  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  base::RunLoop invoke_played;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      invoke_played.QuitClosure());
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+
+  GURL client_redirect =
+      embedded_test_server()->GetURL("/red_redirect_to_blue.html#redirect");
+
+  ASSERT_EQ(web_contents()->GetController().GetEntryCount(), 2);
+  web_contents()->GetController().GetEntryAtIndex(0)->SetURL(client_redirect);
+
+  TestNavigationManager back_nav_to_red(web_contents(), client_redirect);
+  TestNavigationManager nav_to_blue(web_contents(), BlueURL());
+
+  GetAnimatorForTesting()->PauseAnimationAtDisplayingCrossFadeAnimation();
+  GetAnimatorForTesting()->SetFinishedStateToDisplayingCrossFadeAnimation();
+
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  ASSERT_TRUE(back_nav_to_red.WaitForNavigationFinished());
+  ASSERT_TRUE(back_nav_to_red.was_successful());
+  // Force a fake call in case we don't get a new frame from the new renderer if
+  // the client redirect happens so fast. This makes sure when the invoke
+  // animation finishes, we can directly advance to
+  // `kDisplayingCrossFadeAnimation`.
+  GetAnimatorForTesting()->OnRenderFrameMetadataChangedAfterActivation(
+      base::TimeTicks{});
+  invoke_played.Run();
+  GetAnimatorForTesting()->ExpectWaitingForDisplayingCrossFadeAnimation();
+
+  ASSERT_TRUE(nav_to_blue.WaitForNavigationFinished());
+  destroyed.Run();
+
+  ASSERT_EQ(web_contents()->GetController().GetEntryCount(), 2);
+  ASSERT_EQ(web_contents()->GetController().GetEntryAtIndex(0)->GetURL(),
+            BlueURL());
+  ASSERT_EQ(web_contents()->GetController().GetEntryAtIndex(1)->GetURL(),
+            GreenURL());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          BackForwardTransitionAnimationManagerBrowserTest,
                          ::testing::ValuesIn(kGestureNavTypes),
@@ -1949,9 +2140,13 @@ IN_PROC_BROWSER_TEST_P(
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   TestFrameNavigationObserver back_to_red(web_contents());
+  base::RunLoop cross_fade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      cross_fade_displayed.QuitClosure());
   base::RunLoop destroyed;
   GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
   GetAnimationManager(web_contents())->OnGestureInvoked();
+  cross_fade_displayed.Run();
   destroyed.Run();
   back_to_red.Wait();
 

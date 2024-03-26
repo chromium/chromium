@@ -7065,6 +7065,7 @@ data/private_aggregation/aggregatable_report_goldens/version_/private_key.txt
 data/private_aggregation/aggregatable_report_goldens/version_/public_key.json
 data/push_state.html
 data/red.html
+data/red_redirect_to_blue.html
 data/redirect301-csp-to-frame-ancestors-none
 data/redirect301-csp-to-frame-ancestors-none.mock-http-headers
 data/redirect301-csp-to-http
