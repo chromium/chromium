@@ -85,8 +85,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/tts_environment_android.h"
-#else
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #endif
 
 using AttributionReportType =
@@ -1671,14 +1669,8 @@ bool ContentBrowserClient::UseOutermostMainFrameOrEmbedderForSubCaptureTargets()
 #if !BUILDFLAG(IS_ANDROID)
 void ContentBrowserClient::BindVideoEffectsManager(
     const std::string& device_id,
-    BrowserContext* browser_context,
+    content::BrowserContext* browser_context,
     mojo::PendingReceiver<media::mojom::VideoEffectsManager>
-        video_effects_manager) {}
-
-void ContentBrowserClient::BindVideoEffectsProcessor(
-    const std::string& device_id,
-    BrowserContext* browser_context,
-    mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
         video_effects_manager) {}
 #endif  // !BUILDFLAG(IS_ANDROID)
 

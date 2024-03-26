@@ -90,7 +90,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "media/capture/mojom/video_effects_manager.mojom.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace net {
@@ -2804,17 +2803,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // effect settings.
   virtual void BindVideoEffectsManager(
       const std::string& device_id,
-      BrowserContext* browser_context,
+      content::BrowserContext* browser_context,
       mojo::PendingReceiver<media::mojom::VideoEffectsManager>
           video_effects_manager);
-
-  // Allows the embedder to correlate backend media services with profile-keyed
-  // effect settings.
-  virtual void BindVideoEffectsProcessor(
-      const std::string& device_id,
-      BrowserContext* browser_context,
-      mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Re-order audio device `infos` based on user preference. The ordering will

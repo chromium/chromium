@@ -28,18 +28,13 @@ VideoEffectsServiceImpl::VideoEffectsServiceImpl(
 VideoEffectsServiceImpl::~VideoEffectsServiceImpl() = default;
 
 void VideoEffectsServiceImpl::CreateEffectsProcessor(
-    const std::string& device_id,
     mojo::PendingRemote<media::mojom::VideoEffectsManager> manager,
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor) {
-  if (processors_.contains(device_id)) {
-    return;
-  }
-
   std::unique_ptr<VideoEffectsProcessorImpl> effects_processor =
       std::make_unique<VideoEffectsProcessorImpl>(std::move(manager),
                                                   std::move(processor));
 
-  processors_.insert(std::make_pair(device_id, std::move(effects_processor)));
+  processors_.push_back(std::move(effects_processor));
 }
 
 }  // namespace video_effects

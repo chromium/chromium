@@ -548,7 +548,6 @@ source_set("browser_sources") {
     "//services/tracing/public/cpp",
     "//services/tracing/public/mojom",
     "//services/video_capture/public/mojom",
-    "//services/video_effects/public/mojom:mojom",
     "//services/viz/public/mojom",
 
     # We expose skia headers in the public API.
