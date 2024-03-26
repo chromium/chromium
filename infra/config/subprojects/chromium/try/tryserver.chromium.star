@@ -23,6 +23,7 @@ try_.defaults.set(
     siso_configs = ["builder"],
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
+    siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
@@ -50,7 +51,6 @@ try_.builder(
     ),
     builderless = False,
     contact_team_email = "clank-engprod@google.com",
-    siso_enabled = True,
 )
 
 try_.builder(
