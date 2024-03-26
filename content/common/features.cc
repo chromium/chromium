@@ -50,16 +50,6 @@ BASE_FEATURE(kBeforeUnloadBrowserResponseQueue,
 #endif
 );
 
-// When enabled, attempts to navigate an iframe by an initiator that isn't
-// same-origin to the iframe's parent are blocked. Exceptions are: (i) same-
-// document navigations when the frame is already about:srcdoc, and (ii) when
-// an about:srcdoc frame reloads itself.
-// This feature is enabled by default, and is intended to be used as a
-// kill-switch if the new behaviour causes problems.
-BASE_FEATURE(kBlockCrossOriginInitiatedAboutSrcdocNavigations,
-             "BlockCrossOriginInitiatedAboutSrcdocNavigations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When this feature is enabled, requests to localhost initiated from non-secure
 // contexts in the `unknown` IP address space are blocked.
 //

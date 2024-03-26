@@ -103,6 +103,15 @@ class NamedFrameCreatedObserver : public content::WebContentsObserver {
     run_loop_.Quit();
   }
 
+  void RenderFrameDeleted(
+      content::RenderFrameHost* render_frame_host) override {
+    if (render_frame_host->GetFrameName() != frame_name_) {
+      return;
+    }
+
+    frame_ = nullptr;
+  }
+
   base::RunLoop run_loop_;
   raw_ptr<content::RenderFrameHost> frame_ = nullptr;
   std::string frame_name_;

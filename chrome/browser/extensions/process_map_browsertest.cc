@@ -16,6 +16,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -137,10 +138,22 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   // AddExtensionWithSandboxedWebpage, defined below so it's near the tests that
   // use it.
   void VerifyWhetherSubframesAreIsolated(
-      const GURL& webpage_url,
+      const GURL& frame_url,
       const std::string& content,
       bool expect_subframes_isolated_from_each_other,
-      bool expect_subframes_isolated_from_extension_page);
+      bool expect_sandboxed_subframe_isolated_from_extension_page,
+      bool expect_non_sandboxed_subframe_isolated_from_extension_page);
+
+  // Helper function for data: and srcdoc tests regarding resource access from
+  // sandboxed frames, defined below so it's near the tests that use it.
+  // Expects that `parent_script_template` contains a `%s` which this function
+  // will replace with the extension origin. `is_subframe_data_url` should be
+  // true if the `parent_script_template` is for a data url frame, so that this
+  // function doesn't have to infer that from the template.
+  void VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess(
+      const std::string& parent_script_template,
+      const bool is_subframe_data_url,
+      const bool expects_api_access);
 
   // Adds a new extension with a parent frame that in turn loads `url` in two
   // iframes, one of which is sandboxed. If `url` is about:srcdoc, then the
@@ -152,8 +165,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
         R"({
              "name": "Sandboxed Page",
              "manifest_version": 3,
-             "version": "0.1",
-             "host_permissions": [ "*://example.com/*" ]
+             "version": "0.1"
            })";
     auto extension_dir = std::make_unique<TestExtensionDir>();
     extension_dir->WriteManifest(kManifest);
@@ -174,6 +186,68 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
           url.spec().c_str(), url.spec().c_str());
     }
     extension_dir->WriteFile(FILE_PATH_LITERAL("parent.html"), page_content);
+    const Extension* extension = LoadExtension(extension_dir->UnpackedPath());
+    extension_dirs_.push_back(std::move(extension_dir));
+    return extension;
+  }
+
+  // Create an extension with a page that loads a non-extension page, which in
+  // turn contains an about:srcdoc subframe.
+  const Extension* AddExtensionWithNonExtensionSubframeWithSrcdocSubframe(
+      bool srcdoc_is_sandboxed) {
+    static constexpr char kManifest[] =
+        R"({
+             "name": "Sandboxed Page",
+             "manifest_version": 3,
+             "version": "0.1"
+           })";
+    auto extension_dir = std::make_unique<TestExtensionDir>();
+    extension_dir->WriteManifest(kManifest);
+
+    GURL non_extension_url = embedded_test_server()->GetURL(
+        "example.com", srcdoc_is_sandboxed ? "/iframe_sandboxed_srcdoc.html"
+                                           : "/iframe_srcdoc.html");
+    const char kPageContentTemplate[] =
+        R"(<html>
+             <body>
+               <iframe src="%s"></iframe>
+             </body>
+           </html>)";
+    extension_dir->WriteFile(
+        FILE_PATH_LITERAL("parent.html"),
+        base::StringPrintf(kPageContentTemplate,
+                           non_extension_url.spec().c_str()));
+    // Including a non-web-accessible extension resource for testing access.
+    extension_dir->WriteFile(FILE_PATH_LITERAL("data.json"),
+                             "{ \"answer\" : 42 }");
+    const Extension* extension = LoadExtension(extension_dir->UnpackedPath());
+    extension_dirs_.push_back(std::move(extension_dir));
+    return extension;
+  }
+
+  // Adds an extension with a page with a sandboxed subframe (that can be
+  // manipulated by individual tests), and a simple resource that the subframe
+  // might load.
+  const Extension* AddExtensionWithResource() {
+    static constexpr char kManifest[] =
+        R"({
+             "name": "Page With Sandboxed Subframe and Resource To Load",
+             "manifest_version": 3,
+             "version": "0.1"
+           })";
+    auto extension_dir = std::make_unique<TestExtensionDir>();
+    extension_dir->WriteManifest(kManifest);
+    std::string page_content =
+        R"(<html>
+             <iframe id='test_frame' sandbox="allow-scripts"></iframe>
+           </html>)";
+    extension_dir->WriteFile(FILE_PATH_LITERAL("parent.html"), page_content);
+    std::string resource_js = R"(let foo = "bar";)";
+    extension_dir->WriteFile(FILE_PATH_LITERAL("resource.js"), resource_js);
+    std::string page_requesting_resource_content =
+        R"(<script src="resource.js"></script>)";
+    extension_dir->WriteFile(FILE_PATH_LITERAL("page_requesting_resource.html"),
+                             page_requesting_resource_content);
     const Extension* extension = LoadExtension(extension_dir->UnpackedPath());
     extension_dirs_.push_back(std::move(extension_dir));
     return extension;
@@ -379,10 +453,31 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   bool ExtensionFrameIsSandboxed(content::RenderFrameHost* frame) {
     EXPECT_TRUE(frame->GetLastCommittedURL().SchemeIs(kExtensionScheme));
 
-    // Note: it's okay for `chrome` to be defined; it has various
-    // unstandardized, non-extension-process stuff (like chrome.csi). We just
-    // require the special APIs to be undefined.
-    return content::EvalJs(frame, "!chrome || !chrome.tabs;").ExtractBool();
+    return FrameHasOriginRestrictedSandboxed(frame) &&
+           !FrameHasAccessToExtensionApis(frame);
+  }
+
+  bool FrameHasOriginRestrictedSandboxed(content::RenderFrameHost* frame) {
+    return frame->IsSandboxed(network::mojom::WebSandboxFlags::kOrigin);
+  }
+
+  bool FrameHasAccessToExtensionApis(content::RenderFrameHost* frame) {
+    // Verify extension api access by actually running a simple api function.
+    static constexpr char api_access_script[] =
+        R"(
+          (async function hasAccessToExtensionAPIs() {
+            try {
+              let tabs = await chrome.tabs.query({});
+              return tabs && tabs.length && tabs.length != 0;
+            } catch(err) {
+              return false;
+            }
+          })();
+        )";
+    // Note: Calling ExtractBool on EvalJsResult below is expected to be safe as
+    // the script above will always return a boolean. But, if called on a
+    // sandboxed frame without 'allow-scripts' it will throw a CHECK.
+    return content::EvalJs(frame, api_access_script).ExtractBool();
   }
 
   // Iterates over every context type and checks if it could be hosted given the
@@ -429,6 +524,95 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   // of the test.
   std::vector<std::unique_ptr<TestExtensionDir>> extension_dirs_;
 };
+
+// Tests that extension E1 containing a sandboxed webpage A which then contains
+// extension E2 in a subframe results in the E2 frame being sandboxed.
+IN_PROC_BROWSER_TEST_F(
+    ProcessMapBrowserTest,
+    ExtensionFrameContainingSandboxedFrameContainingOtherExtensionFrame) {
+  GURL a_frame_url =
+      embedded_test_server()->GetURL("example.com", "/iframe_blank.html");
+  // Create extension 1 (E1).
+  static constexpr char kManifestE1[] =
+      R"({
+             "name": "E1",
+             "manifest_version": 3,
+             "version": "0.1"
+         })";
+  TestExtensionDir extension_dir1;
+  extension_dir1.WriteManifest(kManifestE1);
+  static constexpr char kPageWithSandboxedFrame[] =
+      R"(<html>
+             <h1>E1</h1>
+             <iframe sandbox="allow-scripts" src="%s"></iframe>
+          </html>)";
+  extension_dir1.WriteFile(
+      FILE_PATH_LITERAL("main.html"),
+      base::StringPrintf(kPageWithSandboxedFrame, a_frame_url.spec().c_str()));
+  const Extension* extension1 = LoadExtension(extension_dir1.UnpackedPath());
+
+  // Create extension 2 (E2).
+  static constexpr char kManifestE2[] =
+      R"({
+             "name": "E2",
+             "manifest_version": 3,
+             "version": "0.1",
+             "web_accessible_resources": [
+               {
+                 "resources": [ "main.html" ],
+                 "matches": [ "*://*/*" ]
+               }
+             ]
+         })";
+  TestExtensionDir extension_dir2;
+  extension_dir2.WriteManifest(kManifestE2);
+  extension_dir2.WriteFile(FILE_PATH_LITERAL("main.html"),
+                           "<html><h1>E2</h2></html>");
+  const Extension* extension2 = LoadExtension(extension_dir2.UnpackedPath());
+
+  // Load E1.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension1->GetResourceURL("main.html")));
+  content::WebContents* web_contents = GetActiveTab();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* sandboxed_a_frame =
+      content::ChildFrameAt(main_frame, 0);
+
+  // Navigate frame in A's subframe to E2.
+  GURL e2_main_url = extension2->GetResourceURL("main.html");
+  content::TestNavigationObserver observer(web_contents);
+  static constexpr char kScriptE2Load[] =
+      R"(
+        document.getElementById('test').src = $1;
+      )";
+  EXPECT_TRUE(content::ExecJs(sandboxed_a_frame,
+                              content::JsReplace(kScriptE2Load, e2_main_url)));
+  observer.Wait();
+
+  // Verify that the E2 is sandboxed.
+  content::RenderFrameHost* sandboxed_E2_frame =
+      content::ChildFrameAt(sandboxed_a_frame, 0);
+  ASSERT_NE(nullptr, sandboxed_E2_frame);
+  // The E2 frame has an origin-restricted sandbox flag.
+  EXPECT_TRUE(FrameHasOriginRestrictedSandboxed(sandboxed_E2_frame));
+  EXPECT_TRUE(sandboxed_E2_frame->GetLastCommittedOrigin().opaque());
+  EXPECT_TRUE(content::EvalJs(sandboxed_E2_frame, "window.origin == 'null';")
+                  .ExtractBool());
+  // The E2 frame has access to extension APIs.
+  // Note: this may change when we fix https://crbug.com/1376636.
+  EXPECT_TRUE(
+      process_map()->Contains(sandboxed_E2_frame->GetProcess()->GetID()));
+  EXPECT_TRUE(FrameHasAccessToExtensionApis(sandboxed_E2_frame));
+  // If isolated sandboxed frames are enabled, then the E2 frame is in a
+  // sandboxed SiteInstance.
+  EXPECT_EQ(content::SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled(),
+            content::HasSandboxedSiteInstance(sandboxed_E2_frame));
+
+  // Each frame will be in a separate process due to site isolation.
+  EXPECT_NE(main_frame->GetProcess(), sandboxed_a_frame->GetProcess());
+  EXPECT_NE(main_frame->GetProcess(), sandboxed_E2_frame->GetProcess());
+  EXPECT_NE(sandboxed_a_frame->GetProcess(), sandboxed_E2_frame->GetProcess());
+}
 
 // Tests that web pages are not considered privileged extension processes.
 IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
@@ -612,20 +796,26 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 }
 
 // The following defines a common test body used by the
-// Sandboxed*Are*Isolated tests that follow. `webpage_url` defines the page to
+// Sandboxed*Are*Isolated tests that follow. `frame_url` defines the page to
 // be loaded, and may be an regular (http/s) page, a data url, or an
 // about:srcdoc url. If it's about:srcdoc, the iframe srcdoc attribute will be
-// used, and set to the value of `content`. `expect_isolated` indicates whether
-// the subframes are expected to be isolated from each other, and if the
-// sandboxed frame should have a sandboxed SiteInstance. This function is
-// defined here to keep it close to the tests that use it, for easier reference.
+// used, and set to the value of `content`. `expect_isolated_from_each_other`
+// indicates whether the subframes are expected to be isolated from each other,
+// and if the sandboxed frame should have a sandboxed SiteInstance.
+// `expect_sandboxed_subframe_isolated_from_extension_page` indicates we
+// expect the sandboxed frame to be isolated from the extension mainframe,
+// and `expect_non_sandboxed_subframe_isolated_from_extension_page` indicates
+// that we expect the non-sandboxed subframe to be process isolated from the
+// extension mainframe. This function is defined here to keep it close to the
+// tests that use it, for easier reference.
 void ProcessMapBrowserTest::VerifyWhetherSubframesAreIsolated(
-    const GURL& webpage_url,
+    const GURL& frame_url,
     const std::string& content,
     bool expect_subframes_isolated_from_each_other,
-    bool expect_subframes_isolated_from_extension_page) {
+    bool expect_sandboxed_subframe_isolated_from_extension_page,
+    bool expect_non_sandboxed_subframe_isolated_from_extension_page) {
   const Extension* extension =
-      AddExtensionWithSandboxedWebpage(webpage_url, content);
+      AddExtensionWithSandboxedWebpage(frame_url, content);
   ASSERT_TRUE(extension);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -652,11 +842,14 @@ void ProcessMapBrowserTest::VerifyWhetherSubframesAreIsolated(
     EXPECT_EQ(sandboxed_frame_process_id, non_sandboxed_frame_process_id);
     EXPECT_FALSE(content::HasSandboxedSiteInstance(sandboxed_child_frame));
   }
-  if (expect_subframes_isolated_from_extension_page) {
+  if (expect_sandboxed_subframe_isolated_from_extension_page) {
     EXPECT_NE(main_frame_process_id, sandboxed_frame_process_id);
-    EXPECT_NE(main_frame_process_id, non_sandboxed_frame_process_id);
   } else {
     EXPECT_EQ(main_frame_process_id, sandboxed_frame_process_id);
+  }
+  if (expect_non_sandboxed_subframe_isolated_from_extension_page) {
+    EXPECT_NE(main_frame_process_id, non_sandboxed_frame_process_id);
+  } else {
     EXPECT_EQ(main_frame_process_id, non_sandboxed_frame_process_id);
   }
   EXPECT_FALSE(ExtensionFrameIsSandboxed(main_frame));
@@ -669,7 +862,7 @@ void ProcessMapBrowserTest::VerifyWhetherSubframesAreIsolated(
 // one for a web url, one for a data: url, and one for about:srcdoc.
 IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
                        SandboxedNonExtensionWebPagesAreIsolated) {
-  GURL webpage_url =
+  GURL frame_url =
       embedded_test_server()->GetURL("example.com", "/simple.html");
   bool expect_subframes_isolated_from_each_other =
       content::SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled();
@@ -677,37 +870,146 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   // frame should be in a sandboxed SiteInstance. Web-based content inside an
   // extension is always cross-process to the extension frame that contains it.
   VerifyWhetherSubframesAreIsolated(
-      webpage_url, /*content=*/std::string(),
+      frame_url, /*content=*/std::string(),
       expect_subframes_isolated_from_each_other,
-      /*expect_subframes_isolated_from_extension_page=*/true);
+      /*expect_sandboxed_subframe_isolated_from_extension_page=*/true,
+      /*expect_non_sandboxed_subframe_isolated_from_extension_page=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
-                       SandboxedDataFramesAreNotIsolated) {
-  GURL webpage_url("data:text/html, foo");
-  // Srcdoc/data-url content inside an extension is always same-process to the
-  // extension frame that contains it.
-  // TODO(crbug.com/1501910): Change `expect_subframes_isolated_from_each_other`
-  // and `expect_subframes_isolated_from_extension_page` to 'true' below when
-  // this issue is resolved.
+                       SandboxedDataFramesAreMaybeIsolated) {
+  GURL frame_url("data:text/html, foo");
+  // Srcdoc/data-url content inside a sandboxed frame in an extension is
+  // same-process to the extension frame that contains it, unless
+  // IsolateSandboxedIframes is enabled, in which case it is cross-process.
+  bool expect_subframes_isolated_from_each_other =
+      content::SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled();
+  bool expect_sandboxed_subframe_isolated_from_extension_page =
+      content::SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled();
   VerifyWhetherSubframesAreIsolated(
-      webpage_url, /*content=*/std::string(),
-      /*expect_subframes_isolated_from_each_other=*/false,
-      /*expect_subframes_isolated_from_extension_page=*/false);
+      frame_url, /*content=*/std::string(),
+      expect_subframes_isolated_from_each_other,
+      expect_sandboxed_subframe_isolated_from_extension_page,
+      /*expect_non_sandboxed_subframe_isolated_from_extension_page=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
-                       SandboxedSrcdocFramesAreNotIsolated) {
-  GURL webpage_url("about:srcdoc");
-  // Srcdoc/data-url content inside an extension is always same-process to the
-  // extension frame that contains it.
-  // TODO(crbug.com/1501910): Change `expect_subframes_isolated_from_each_other`
-  // and `expect_subframes_isolated_from_extension_page` to 'true' below when
-  // this issue is resolved.
+                       SandboxedSrcdocFramesAreMaybeIsolated) {
+  GURL frame_url("about:srcdoc");
+  // Srcdoc/data-url content inside a sandboxed frame in an extension is
+  // same-process to the extension frame that contains it, unless
+  // IsolateSandboxedIframes is enabled, in which case it is cross-process.
+  bool expect_subframes_isolated_from_each_other =
+      content::SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled();
+  bool expect_sandboxed_subframe_isolated_from_extension_page =
+      content::SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled();
   VerifyWhetherSubframesAreIsolated(
-      webpage_url, /*content=*/std::string("foo"),
-      /*expect_subframes_isolated_from_each_other=*/false,
-      /*expect_subframes_isolated_from_extension_page=*/false);
+      frame_url, /*content=*/std::string("foo"),
+      expect_subframes_isolated_from_each_other,
+      expect_sandboxed_subframe_isolated_from_extension_page,
+      /*expect_non_sandboxed_subframe_isolated_from_extension_page=*/false);
+}
+
+// Function implementation defined here to be close to the tests that use it.
+void ProcessMapBrowserTest::
+    VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess(
+        const std::string& parent_script_template,
+        const bool is_subframe_data_url,
+        const bool expects_api_access) {
+  const Extension* extension = AddExtensionWithResource();
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("parent.html")));
+
+  content::WebContents* web_contents = GetActiveTab();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  // Use JS to add content to the child frame.
+  const std::string parent_script =
+      base::StringPrintf(parent_script_template.c_str(),
+                         extension->origin().GetURL().spec().c_str());
+  content::TestNavigationObserver observer(web_contents);
+  EXPECT_TRUE(content::ExecJs(main_frame, parent_script));
+  observer.Wait();
+
+  content::RenderFrameHost* sandboxed_child_frame =
+      content::ChildFrameAt(main_frame, 0);
+  int sandboxed_frame_process_id = sandboxed_child_frame->GetProcess()->GetID();
+  // Sandboxed extension frames should still have access to other extension
+  // resources. Verify the extension script (resource.js) was properly loaded
+  // by looking for foo variable.
+  EXPECT_EQ("bar",
+            content::EvalJs(sandboxed_child_frame, "foo;").ExtractString());
+  // The sandboxed frame will appear to be privileged if it's same-process to
+  // the parent, even though it doesn't actually get API access.
+  if (content::SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
+    if (is_subframe_data_url) {
+      // With isolated sandboxed iframes, sandboxed data URL frames are put
+      // into a new process and are properly *not* classified as privileged
+      // processes.
+      EXPECT_FALSE(process_map()->IsPrivilegedExtensionProcess(
+          *extension, sandboxed_frame_process_id));
+    } else {
+      // Frames for other URLs are miscategorized as being privileged, even
+      // though they don't have API access.
+      // TODO(https://crbug.com/1376636): Make sure that all process-isolated
+      // sandboxed srcdoc frames don't get marked as privileged extension
+      // processes.
+      EXPECT_TRUE(process_map()->IsPrivilegedExtensionProcess(
+          *extension, sandboxed_frame_process_id));
+    }
+  } else {
+    // With sandboxed iframes turned off, everything runs in the same process
+    // as the extension, so it always shows up as a privileged process.
+    EXPECT_TRUE(process_map()->IsPrivilegedExtensionProcess(
+        *extension, sandboxed_frame_process_id));
+  }
+
+  // Verify expected api access.
+  EXPECT_EQ(expects_api_access,
+            FrameHasAccessToExtensionApis(sandboxed_child_frame));
+}
+
+// Tests that a data: url in a sandboxed frame in an extension still has access
+// to resources.
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
+                       SandboxedDataUrlStillHasAccessToExtensionResources) {
+  // The %s in the string below will be filled in with the extension's origin by
+  // VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess.
+  std::string parent_script_template =
+      R"(let test_frame = document.getElementById('test_frame');
+      test_frame.src =
+      'data:text/html, <script src="%sresource.js"></script>';)";
+  VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess(
+      parent_script_template, /*is_subframe_data_url=*/true,
+      /*expects_api_access=*/false);
+}
+
+// Tests that a srcdoc in a sandboxed frame in an extension still has access to
+// resources.
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
+                       SandboxedSrcdocStillHasAccessToExtensionResources) {
+  // The %s in the string below will be filled in with the extension's origin by
+  // VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess.
+  std::string parent_script_template =
+      R"(let test_frame = document.getElementById('test_frame');
+      test_frame.srcdoc = '<script src="%sresource.js"></script>';)";
+  VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess(
+      parent_script_template, /*is_subframe_data_url=*/false,
+      /*expects_api_access=*/false);
+}
+
+// Tests that an extension page in a sandboxed frame in an extension still has
+// access to resources.
+IN_PROC_BROWSER_TEST_F(
+    ProcessMapBrowserTest,
+    SandboxedExtensionPageStillHasAccessToExtensionResources) {
+  std::string parent_script_template =
+      R"(let test_frame = document.getElementById('test_frame');
+      test_frame.src = 'page_requesting_resource.html';)";
+  VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess(
+      parent_script_template, /*is_subframe_data_url=*/false,
+      /*expects_api_access=*/true);
 }
 
 // Tests that an extension inside a sandboxed subframe of another extension
@@ -768,12 +1070,11 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   EXPECT_EQ(e2_private_page_url, grand_child_frame->GetLastCommittedURL());
 }
 
-// Tests that sandboxed extension frames are considered privileged
-// extension processes, since they execute within the same process (even
-// though they don't have direct API access). This isn't a security bug
-// since any compromised renderer could just access an un-sandboxed context.
-// TODO(https://crbug.com/510122): This could change with out-of-process-
-// sandboxed-iframes.
+// At present, there's a default mode (which doesn't isolate the sandboxed
+// extension URL in a different process), and IsolatedSandboxedIframes mode
+// (which does isolate it in a different process but still gives it privileges).
+// TODO(https://crbug.com/1376636): Make sure that sandboxed extension frames
+// don't get marked as privileged extension processes.
 IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
                        IsPrivilegedExtensionProcess_SandboxedExtensionFrame) {
   const Extension* extension = AddExtensionWithSandboxedFrame();
@@ -792,13 +1093,140 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   int main_frame_process_id = main_frame->GetProcess()->GetID();
   int sandboxed_frame_process_id = sandboxed_frame->GetProcess()->GetID();
 
-  EXPECT_EQ(main_frame_process_id, sandboxed_frame_process_id);
+  if (content::SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
+    EXPECT_NE(main_frame_process_id, sandboxed_frame_process_id);
+  } else {
+    EXPECT_EQ(main_frame_process_id, sandboxed_frame_process_id);
+  }
 
   EXPECT_TRUE(process_map()->IsPrivilegedExtensionProcess(
       *extension, main_frame_process_id));
   EXPECT_TRUE(process_map()->IsPrivilegedExtensionProcess(
       *extension, sandboxed_frame_process_id));
 }
+
+// Test class to parameterize the srcdoc-blocking behavior, so tests run both
+// with and without it, and with and without sandboxing.
+// TODO(crbug.com/328279696): Once the blocking behavior is turned on
+// permanently, revise this class to just be parameterised on whether or not the
+// srcdoc frame is sandboxed.
+class ProcessMapAboutSrcdocBrowserTest
+    : public ProcessMapBrowserTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  ProcessMapAboutSrcdocBrowserTest() {
+    if (std::get<0>(GetParam())) {
+      feature_list_.InitAndEnableFeature(
+          features::kBlockCrossOriginInitiatedAboutSrcdocNavigations);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kBlockCrossOriginInitiatedAboutSrcdocNavigations);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// This test verifies that an about:srcdoc frame with a non-extension parent
+// cannot inherit an extension precursor origin that allows it to incorrectly
+// access extension resources. The srcdoc frame should also not inherit the
+// base URI of the extension.
+IN_PROC_BROWSER_TEST_P(ProcessMapAboutSrcdocBrowserTest,
+                       ExtensionCannotNavigateAboutSrcdocGrandchild) {
+  bool srcdoc_navigation_blocked = std::get<0>(GetParam());
+  bool srcdoc_is_sandboxed = std::get<1>(GetParam());
+  const Extension* extension =
+      AddExtensionWithNonExtensionSubframeWithSrcdocSubframe(
+          srcdoc_is_sandboxed);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("parent.html")));
+
+  content::WebContents* web_contents = GetActiveTab();
+  content::RenderFrameHost* extension_frame =
+      web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* non_extension_frame =
+      content::ChildFrameAt(extension_frame, 0);
+  content::RenderFrameHost* srcdoc_frame =
+      content::ChildFrameAt(non_extension_frame, 0);
+
+  // Verify that srcdoc frame has baseURI from it's parent.
+  std::string extension_base_uri =
+      EvalJs(extension_frame, "document.baseURI").ExtractString();
+  std::string non_extension_base_uri =
+      EvalJs(non_extension_frame, "document.baseURI").ExtractString();
+  std::string srcdoc_base_uri =
+      EvalJs(srcdoc_frame, "document.baseURI").ExtractString();
+  EXPECT_EQ(non_extension_base_uri, srcdoc_base_uri);
+
+  // Attempt to have `extension_frame` navigate the srcdoc frame to
+  // about:srcdoc.
+  content::TestNavigationObserver observer(web_contents, 1);
+  EXPECT_TRUE(
+      ExecJs(extension_frame, "frames[0][0].location.href = 'about:srcdoc';"));
+  observer.Wait();
+
+  // Verify that the srcdoc frame doesn't have the access to the extension's
+  // origin, or any privileges.
+  srcdoc_frame = content::ChildFrameAt(non_extension_frame, 0);
+  std::string new_srcdoc_base_uri =
+      EvalJs(srcdoc_frame, "document.baseURI").ExtractString();
+  if (srcdoc_navigation_blocked) {
+    // The srcdoc gets a baseURI for an error page, but at least it's not the
+    // extension's baseURI.
+    EXPECT_NE(extension_base_uri, new_srcdoc_base_uri);
+  } else if (srcdoc_is_sandboxed) {
+    // This occurs since at present we wipe the initiator base url sent by
+    // the extension, but since the srcdoc is cross-process it cannot retrieve
+    // the parent's base url directly.
+    EXPECT_EQ(std::string("about:srcdoc"), new_srcdoc_base_uri);
+  } else {
+    EXPECT_EQ(non_extension_base_uri, new_srcdoc_base_uri);
+  }
+  EXPECT_FALSE(content::EvalJs(srcdoc_frame, "!!chrome && !!chrome.tabs;")
+                   .ExtractBool());
+
+  EXPECT_FALSE(process_map()->Contains(srcdoc_frame->GetProcess()->GetID()));
+
+  // Make sure the resulting srcdoc frame cannot fetch() extension resources.
+  // The only way `success` in the JS below can become true is if the fetch()
+  // fails and the error is 'Failed to fetch'. If the fetch() succeeds and
+  // a response is received, the test fails.
+  const char jsTemplate[] = R"(
+      (async () => {
+         success = await fetch($1, { mode: 'no-cors'})
+                             .then(response => { return false; })
+                             .catch(err => {
+                                 return (err instanceof TypeError) &&
+                                        (err.message == 'Failed to fetch');
+                              });
+         return success;
+      })();
+  )";
+  GURL json_resource_url = extension->GetResourceURL("data.json");
+  EXPECT_TRUE(
+      EvalJs(srcdoc_frame, content::JsReplace(jsTemplate, json_resource_url))
+          .ExtractBool());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProcessMapAboutSrcdocBrowserTest,
+    testing::Values(std::make_tuple(false, false),
+                    std::make_tuple(false, true),
+                    std::make_tuple(true, false),
+                    std::make_tuple(true, true)),
+    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+      bool srcdoc_navigation_blocked = std::get<0>(info.param);
+      bool srcdoc_is_sandboxed = std::get<1>(info.param);
+      std::string label = base::StringPrintf(
+          "kBlockCrossOriginInitiatedAboutSrcdocNavigation_%s_%s",
+          srcdoc_navigation_blocked ? "Enabled" : "Disabled",
+          srcdoc_is_sandboxed ? "Sandboxed" : "NotSandboxed");
+      return label;
+    });
 
 // Tests the type of contexts that can be hosted in extension processes with
 // a sandboxed process frame.
@@ -821,7 +1249,11 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   content::RenderProcessHost& sandboxed_frame_process =
       *sandboxed_frame->GetProcess();
 
-  EXPECT_EQ(main_frame_process.GetID(), sandboxed_frame_process.GetID());
+  if (content::SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
+    EXPECT_NE(main_frame_process.GetID(), sandboxed_frame_process.GetID());
+  } else {
+    EXPECT_EQ(main_frame_process.GetID(), sandboxed_frame_process.GetID());
+  }
 
   RunCanProcessHostContextTypeChecks(
       extension, main_frame_process,
