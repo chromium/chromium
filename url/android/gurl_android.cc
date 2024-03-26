@@ -25,22 +25,31 @@ using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
+namespace jni_zero {
+
+// Convert from java GURL.java pointer to native GURL object.
+template <>
+COMPONENT_EXPORT(URL)
+GURL FromJniType<GURL>(JNIEnv* env, const JavaRef<jobject>& j_gurl) {
+  return *url::GURLAndroid::ToNativeGURL(env, j_gurl);
+}
+
+// Convert from native GURL object to a GURL.java object pointer.
+template <>
+COMPONENT_EXPORT(URL)
+ScopedJavaLocalRef<jobject> ToJniType<GURL>(JNIEnv* env, const GURL& gurl) {
+  return url::GURLAndroid::FromNativeGURL(env, gurl);
+}
+}  // namespace jni_zero
+
 namespace url {
 
 namespace {
 
-static GURL FromJString(JNIEnv* env, const JavaRef<jstring>& uri) {
-  if (!uri)
-    return GURL();
-  return GURL(base::android::ConvertJavaStringToUTF16(env, uri));
-}
-
-static std::unique_ptr<GURL> FromJavaGURL(JNIEnv* env,
-                                          const JavaRef<jstring>& j_spec,
+static std::unique_ptr<GURL> FromJavaGURL(const std::string& spec,
                                           bool is_valid,
                                           jlong parsed_ptr) {
   Parsed* parsed = reinterpret_cast<Parsed*>(parsed_ptr);
-  const std::string& spec = base::android::ConvertJavaStringToUTF8(env, j_spec);
   std::unique_ptr<GURL> gurl =
       std::make_unique<GURL>(spec.data(), parsed->Length(), *parsed, is_valid);
   delete parsed;
@@ -54,12 +63,9 @@ static void InitFromGURL(JNIEnv* env,
   // parsed indices will be wrong as the indices are in bytes while Java Strings
   // are always 16-bit.
   DCHECK(base::IsStringASCII(gurl.possibly_invalid_spec()));
-  Java_GURL_init(
-      env, target,
-      base::android::ConvertUTF8ToJavaString(env, gurl.possibly_invalid_spec()),
-      gurl.is_valid(),
-      ParsedAndroid::InitFromParsed(env,
-                                    gurl.parsed_for_possibly_invalid_spec()));
+  Java_GURL_init(env, target, gurl.possibly_invalid_spec(), gurl.is_valid(),
+                 ParsedAndroid::InitFromParsed(
+                     env, gurl.parsed_for_possibly_invalid_spec()));
 }
 
 // As |GetArrayLength| makes no guarantees about the returned value (e.g., it
@@ -129,43 +135,41 @@ ScopedJavaLocalRef<jobjectArray> GURLAndroid::ToJavaArrayOfGURLs(
 }
 
 static void JNI_GURL_GetOrigin(JNIEnv* env,
-                               const JavaParamRef<jstring>& j_spec,
+                               std::string& spec,
                                jboolean is_valid,
                                jlong parsed_ptr,
                                const JavaParamRef<jobject>& target) {
-  std::unique_ptr<GURL> gurl = FromJavaGURL(env, j_spec, is_valid, parsed_ptr);
+  std::unique_ptr<GURL> gurl = FromJavaGURL(spec, is_valid, parsed_ptr);
   InitFromGURL(env, gurl->DeprecatedGetOriginAsURL(), target);
 }
 
 static jboolean JNI_GURL_DomainIs(JNIEnv* env,
-                                  const JavaParamRef<jstring>& j_spec,
+                                  std::string& spec,
                                   jboolean is_valid,
                                   jlong parsed_ptr,
-                                  const JavaParamRef<jstring>& j_domain) {
-  std::unique_ptr<GURL> gurl = FromJavaGURL(env, j_spec, is_valid, parsed_ptr);
-  const std::string& domain =
-      base::android::ConvertJavaStringToUTF8(env, j_domain);
+                                  std::string& domain) {
+  std::unique_ptr<GURL> gurl = FromJavaGURL(spec, is_valid, parsed_ptr);
   return gurl->DomainIs(domain);
 }
 
 static void JNI_GURL_Init(JNIEnv* env,
-                          const base::android::JavaParamRef<jstring>& uri,
+                          std::string& spec,
                           const base::android::JavaParamRef<jobject>& target) {
-  const GURL& gurl = FromJString(env, uri);
+  auto gurl = GURL(spec);
   InitFromGURL(env, gurl, target);
 }
 
 static jlong JNI_GURL_CreateNative(JNIEnv* env,
-                                   const JavaParamRef<jstring>& j_spec,
+                                   std::string& spec,
                                    jboolean is_valid,
                                    jlong parsed_ptr) {
   return reinterpret_cast<intptr_t>(
-      FromJavaGURL(env, j_spec, is_valid, parsed_ptr).release());
+      FromJavaGURL(spec, is_valid, parsed_ptr).release());
 }
 
 static void JNI_GURL_ReplaceComponents(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_spec,
+    std::string& spec,
     jboolean is_valid,
     jlong parsed_ptr,
     const JavaParamRef<jstring>& j_username_replacement,
@@ -195,8 +199,7 @@ static void JNI_GURL_ReplaceComponents(
     replacements.SetPasswordStr(password);
   }
 
-  std::unique_ptr<GURL> original =
-      FromJavaGURL(env, j_spec, is_valid, parsed_ptr);
+  std::unique_ptr<GURL> original = FromJavaGURL(spec, is_valid, parsed_ptr);
   InitFromGURL(env, original->ReplaceComponents(replacements), j_result);
 }
 

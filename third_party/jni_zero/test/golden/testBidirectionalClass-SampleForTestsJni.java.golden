@@ -79,9 +79,9 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   }
 
   @Override
-  public int method(long nativeCPPClass, SampleForTests caller) {
+  public int method(long nativeCPPClass, SampleForTests caller, String[] strings) {
     assert nativeCPPClass != 0;
-    return (int) GEN_JNI.org_jni_1zero_SampleForTests_method(nativeCPPClass, caller);
+    return (int) GEN_JNI.org_jni_1zero_SampleForTests_method(nativeCPPClass, caller, strings);
   }
 
   @Override

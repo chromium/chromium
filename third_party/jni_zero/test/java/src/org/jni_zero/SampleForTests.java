@@ -47,7 +47,7 @@ class SampleForTests {
         // be done to:
         // * avoid leaks.
         // * using finalizers are not allowed to destroy the cpp class.
-        SampleForTestsJni.get().method(mNativeCPPObject, this);
+        SampleForTestsJni.get().method(mNativeCPPObject, this, new String[] {"test"});
     }
 
     // Just a comment to ensure we aren't reading comments:
@@ -307,7 +307,10 @@ class SampleForTests {
         // Similar to nativeDestroy above, this will cast nativeCPPClass into pointer of CPPClass
         // type and call its Method member function. Replace "CPPClass" with your particular class
         // name!
-        int method(long nativeCPPClass, SampleForTests caller);
+        int method(
+                long nativeCPPClass,
+                SampleForTests caller,
+                @JniType("std::vector<std::string>") String[] strings);
 
         // Similar to nativeMethod above, but here the C++ fully qualified class name is taken from
         // the annotation rather than parameter name, which can thus be chosen freely.

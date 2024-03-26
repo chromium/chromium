@@ -92,7 +92,9 @@ void CPPClass::Destroy(JNIEnv* env, const JavaParamRef<jobject>& caller) {
   delete this;
 }
 
-jint CPPClass::Method(JNIEnv* env, const JavaParamRef<jobject>& caller) {
+jint CPPClass::Method(JNIEnv* env,
+                      const JavaParamRef<jobject>& caller,
+                      std::vector<std::string>& strArray) {
   return 0;
 }
 

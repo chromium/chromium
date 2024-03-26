@@ -41,7 +41,9 @@ class CPPClass {
 
   void Destroy(JNIEnv* env, const jni_zero::JavaParamRef<jobject>& caller);
 
-  jint Method(JNIEnv* env, const jni_zero::JavaParamRef<jobject>& caller);
+  jint Method(JNIEnv* env,
+              const jni_zero::JavaParamRef<jobject>& caller,
+              std::vector<std::string>& strings);
 
   void AddStructB(JNIEnv* env,
                   const jni_zero::JavaParamRef<jobject>& caller,

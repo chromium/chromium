@@ -158,7 +158,7 @@ void FaviconHelper::Destroy(JNIEnv* env) {
 jboolean FaviconHelper::GetComposedFaviconImage(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_profile,
-    const base::android::JavaParamRef<jobjectArray>& j_urls,
+    std::vector<GURL>& gurls,
     jint j_desired_size_in_pixel,
     const base::android::JavaParamRef<jobject>&
         j_composed_favicon_image_callback) {
@@ -185,10 +185,7 @@ jboolean FaviconHelper::GetComposedFaviconImage(
       ScopedJavaGlobalRef<jobject>(j_composed_favicon_image_callback),
       desired_size_in_pixel);
 
-  std::vector<GURL> urls;
-  url::GURLAndroid::JavaGURLArrayToGURLVector(env, j_urls, &urls);
-
-  GetComposedFaviconImageInternal(favicon_service, urls,
+  GetComposedFaviconImageInternal(favicon_service, gurls,
                                   static_cast<int>(j_desired_size_in_pixel),
                                   std::move(callback_runner));
 
@@ -223,7 +220,7 @@ void ::FaviconHelper::OnJobFinished(int job_id) {
 jboolean FaviconHelper::GetLocalFaviconImageForURL(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
-    const JavaParamRef<jobject>& j_page_url,
+    GURL& page_url,
     jint j_desired_size_in_pixel,
     const JavaParamRef<jobject>& j_favicon_image_callback) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
@@ -245,8 +242,7 @@ jboolean FaviconHelper::GetLocalFaviconImageForURL(
                      weak_ptr_factory_.GetWeakPtr(),
                      ScopedJavaGlobalRef<jobject>(j_favicon_image_callback));
 
-  auto page_url = url::GURLAndroid::ToNativeGURL(env, j_page_url);
-  GetLocalFaviconImageForURLInternal(favicon_service, *page_url,
+  GetLocalFaviconImageForURLInternal(favicon_service, page_url,
                                      static_cast<int>(j_desired_size_in_pixel),
                                      std::move(callback_runner));
 
@@ -283,16 +279,13 @@ void FaviconHelper::GetLocalFaviconImageForURLInternal(
 jboolean FaviconHelper::GetForeignFaviconImageForURL(
     JNIEnv* env,
     const JavaParamRef<jobject>& jprofile,
-    const JavaParamRef<jobject>& j_page_url,
+    GURL& page_url,
     jint j_desired_size_in_pixel,
     const base::android::JavaParamRef<jobject>& j_favicon_image_callback) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   if (!profile) {
     return false;
   }
-
-  std::unique_ptr<GURL> page_url =
-      url::GURLAndroid::ToNativeGURL(env, j_page_url);
 
   favicon::HistoryUiFaviconRequestHandler* history_ui_favicon_request_handler =
       HistoryUiFaviconRequestHandlerFactory::GetForBrowserContext(profile);
@@ -301,7 +294,7 @@ jboolean FaviconHelper::GetForeignFaviconImageForURL(
     return false;
   }
   history_ui_favicon_request_handler->GetRawFaviconForPageURL(
-      *page_url, static_cast<int>(j_desired_size_in_pixel),
+      page_url, static_cast<int>(j_desired_size_in_pixel),
       base::BindOnce(&FaviconHelper::OnFaviconBitmapResultAvailable,
                      weak_ptr_factory_.GetWeakPtr(),
                      ScopedJavaGlobalRef<jobject>(j_favicon_image_callback)),
@@ -341,8 +334,6 @@ void FaviconHelper::OnFaviconBitmapResultAvailable(
   JNIEnv* env = AttachCurrentThread();
 
   // Convert favicon_image_result to java objects.
-  ScopedJavaLocalRef<jobject> j_icon_url =
-      url::GURLAndroid::FromNativeGURL(env, result.icon_url);
   ScopedJavaLocalRef<jobject> j_favicon_bitmap;
   if (result.is_valid()) {
     SkBitmap favicon_bitmap;
@@ -354,8 +345,8 @@ void FaviconHelper::OnFaviconBitmapResultAvailable(
   }
 
   // Call java side OnFaviconBitmapResultAvailable method.
-  Java_FaviconImageCallback_onFaviconAvailable(env, j_favicon_image_callback,
-                                               j_favicon_bitmap, j_icon_url);
+  Java_FaviconImageCallback_onFaviconAvailable(
+      env, j_favicon_image_callback, j_favicon_bitmap, result.icon_url);
 }
 
 void FaviconHelper::OnComposedFaviconBitmapResultsAvailable(
@@ -364,23 +355,18 @@ void FaviconHelper::OnComposedFaviconBitmapResultsAvailable(
     const std::vector<favicon_base::FaviconRawBitmapResult>& results) {
   JNIEnv* env = AttachCurrentThread();
   std::vector<SkBitmap> result_bitmaps;
-  std::vector<ScopedJavaLocalRef<jobject>> j_icon_url_vector;
+  std::vector<GURL> icon_url_vector;
   for (size_t i = 0; i < results.size(); i++) {
     favicon_base::FaviconRawBitmapResult result = results[i];
     if (!result.is_valid()) {
       continue;
     }
     SkBitmap favicon_bitmap;
-    const ScopedJavaLocalRef<jobject>& j_icon_url =
-        url::GURLAndroid::FromNativeGURL(env, result.icon_url);
-    j_icon_url_vector.push_back(j_icon_url);
+    icon_url_vector.push_back(result.icon_url);
     gfx::PNGCodec::Decode(result.bitmap_data->front(),
                           result.bitmap_data->size(), &favicon_bitmap);
     result_bitmaps.push_back(std::move(favicon_bitmap));
   }
-  ScopedJavaLocalRef<jobjectArray> j_icon_urls(
-      url::GURLAndroid::ToJavaArrayOfGURLs(env, j_icon_url_vector));
-
   ScopedJavaLocalRef<jobject> j_favicon_bitmap;
   if (!result_bitmaps.empty()) {
     std::unique_ptr<SkBitmap> composed_bitmap =
@@ -393,5 +379,5 @@ void FaviconHelper::OnComposedFaviconBitmapResultsAvailable(
 
   // Call java side OnComposedFaviconBitmapResultsAvailable method.
   Java_ComposedFaviconImageCallback_onComposedFaviconAvailable(
-      env, j_favicon_image_callback, j_favicon_bitmap, j_icon_urls);
+      env, j_favicon_image_callback, j_favicon_bitmap, icon_url_vector);
 }

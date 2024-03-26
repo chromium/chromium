@@ -13,6 +13,7 @@ import com.google.errorprone.annotations.DoNotMock;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -138,7 +139,7 @@ public class GURL {
     }
 
     @CalledByNative
-    private void init(String spec, boolean isValid, Parsed parsed) {
+    private void init(@JniType("std::string") String spec, boolean isValid, Parsed parsed) {
         mSpec = spec;
         mIsValid = isValid;
         mParsed = parsed;
@@ -398,25 +399,33 @@ public class GURL {
     @NativeMethods
     interface Natives {
         /** Initializes the provided |target| by parsing the provided |uri|. */
-        void init(String uri, GURL target);
+        void init(@JniType("std::string") String uri, GURL target);
 
         /**
          * Reconstructs the native GURL for this Java GURL and initializes |target| with its Origin.
          */
-        void getOrigin(String spec, boolean isValid, long nativeParsed, GURL target);
+        void getOrigin(
+                @JniType("std::string") String spec,
+                boolean isValid,
+                long nativeParsed,
+                GURL target);
 
         /** Reconstructs the native GURL for this Java GURL, and calls GURL.DomainIs. */
-        boolean domainIs(String spec, boolean isValid, long nativeParsed, String domain);
+        boolean domainIs(
+                @JniType("std::string") String spec,
+                boolean isValid,
+                long nativeParsed,
+                @JniType("std::string") String domain);
 
         /** Reconstructs the native GURL for this Java GURL, returning its native pointer. */
-        long createNative(String spec, boolean isValid, long nativeParsed);
+        long createNative(@JniType("std::string") String spec, boolean isValid, long nativeParsed);
 
         /**
          * Reconstructs the native GURL for this Java GURL and initializes |result| with the result
          * of ReplaceComponents.
          */
         void replaceComponents(
-                String spec,
+                @JniType("std::string") String spec,
                 boolean isValid,
                 long nativeParsed,
                 String username,

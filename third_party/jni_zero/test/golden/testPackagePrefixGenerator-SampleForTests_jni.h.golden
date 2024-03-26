@@ -166,10 +166,14 @@ JNI_BOUNDARY_EXPORT jint
     JNIEnv* env,
     jclass jcaller,
     jlong nativeCPPClass,
-    jobject caller) {
+    jobject caller,
+    jobjectArray strings) {
   CPPClass* native = reinterpret_cast<CPPClass*>(nativeCPPClass);
   CHECK_NATIVE_PTR(env, jcaller, native, "Method", 0);
-  return native->Method(env, jni_zero::JavaParamRef<jobject>(env, caller));
+  std::vector<std::string> strings_converted =
+      jni_zero::ConvertArray<std::vector<std::string>>::FromJniType<jstring>(env,
+      jni_zero::JavaParamRef<jobjectArray>(env, strings));
+  return native->Method(env, jni_zero::JavaParamRef<jobject>(env, caller), strings_converted);
 }
 
 JNI_BOUNDARY_EXPORT jdouble

@@ -6,6 +6,7 @@ package org.chromium.url;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import java.util.Objects;
@@ -62,8 +63,8 @@ public class Origin {
 
     @CalledByNative
     private Origin(
-            String scheme,
-            String host,
+            @JniType("std::string") String scheme,
+            @JniType("std::string") String host,
             short port,
             boolean isOpaque,
             long tokenHighBits,
@@ -141,8 +142,8 @@ public class Origin {
 
         /** Reconstructs the native Origin for this Java Origin, returning its native pointer. */
         long createNative(
-                String scheme,
-                String host,
+                @JniType("std::string") String scheme,
+                @JniType("std::string") String host,
                 short port,
                 boolean isOpaque,
                 long tokenHighBits,
