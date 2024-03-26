@@ -225,11 +225,239 @@ TEST(LinkedHashSetTest, MoveConstructAndAssignString) {
 
 struct CustomHashTraitsForInt : public IntHashTraits<int, INT_MAX, INT_MIN> {};
 
-TEST(LinkedHashSetTest, Iterator) {
+TEST(LinkedHashSetTest, BeginEnd) {
   using Set = LinkedHashSet<int, CustomHashTraitsForInt>;
   Set set;
-  EXPECT_TRUE(set.begin() == set.end());
-  EXPECT_TRUE(set.rbegin() == set.rend());
+  EXPECT_EQ(set.begin(), set.end());
+  EXPECT_EQ(set.rbegin(), set.rend());
+
+  set.insert(1);
+  EXPECT_EQ(*set.begin(), 1);
+  EXPECT_NE(set.begin(), set.end());
+  EXPECT_EQ(*set.rbegin(), 1);
+  EXPECT_NE(set.rbegin(), set.rend());
+
+  set.insert(2);
+  EXPECT_EQ(*set.begin(), 1);
+  EXPECT_NE(set.begin(), set.end());
+  EXPECT_EQ(*set.rbegin(), 2);
+  EXPECT_NE(set.rbegin(), set.rend());
+
+  set.insert(3);
+  EXPECT_EQ(*set.begin(), 1);
+  EXPECT_NE(set.begin(), set.end());
+  EXPECT_EQ(*set.rbegin(), 3);
+  EXPECT_NE(set.rbegin(), set.rend());
+
+  set.erase(2);
+  EXPECT_EQ(*set.begin(), 1);
+  EXPECT_NE(set.begin(), set.end());
+  EXPECT_EQ(*set.rbegin(), 3);
+  EXPECT_NE(set.rbegin(), set.rend());
+
+  set.erase(1);
+  EXPECT_EQ(*set.begin(), 3);
+  EXPECT_NE(set.begin(), set.end());
+  EXPECT_EQ(*set.rbegin(), 3);
+  EXPECT_NE(set.rbegin(), set.rend());
+
+  set.erase(3);
+  EXPECT_EQ(set.begin(), set.end());
+  EXPECT_EQ(set.rbegin(), set.rend());
+}
+
+TEST(LinkedHashSetTest, IteratorPre) {
+  using Set = LinkedHashSet<int, CustomHashTraitsForInt>;
+  Set set;
+
+  set.insert(1);
+  {
+    auto it = set.begin();
+    EXPECT_EQ(1, *it);
+    EXPECT_EQ(set.end(), ++it);
+  }
+  {
+    auto it = set.end();
+    EXPECT_EQ(1, *--it);
+    EXPECT_EQ(set.begin(), it);
+  }
+
+  set.insert(2);
+  {
+    auto it = set.begin();
+    EXPECT_EQ(1, *it);
+    EXPECT_EQ(2, *++it);
+    EXPECT_EQ(set.end(), ++it);
+  }
+  {
+    auto it = set.end();
+    EXPECT_EQ(2, *--it);
+    EXPECT_EQ(1, *--it);
+    EXPECT_EQ(set.begin(), it);
+  }
+
+  set.insert(3);
+  {
+    auto it = set.begin();
+    EXPECT_EQ(1, *it);
+    EXPECT_EQ(2, *++it);
+    EXPECT_EQ(3, *++it);
+    EXPECT_EQ(set.end(), ++it);
+  }
+  {
+    auto it = set.end();
+    EXPECT_EQ(3, *--it);
+    EXPECT_EQ(2, *--it);
+    EXPECT_EQ(1, *--it);
+    EXPECT_EQ(set.begin(), it);
+  }
+}
+
+TEST(LinkedHashSetTest, ReverseIteratorPre) {
+  using Set = LinkedHashSet<int, CustomHashTraitsForInt>;
+  Set set;
+
+  set.insert(1);
+  {
+    auto it = set.rbegin();
+    EXPECT_EQ(1, *it);
+    EXPECT_EQ(set.rend(), ++it);
+  }
+  {
+    auto it = set.rend();
+    EXPECT_EQ(1, *--it);
+    EXPECT_EQ(set.rbegin(), it);
+  }
+
+  set.insert(2);
+  {
+    auto it = set.rbegin();
+    EXPECT_EQ(2, *it);
+    EXPECT_EQ(1, *++it);
+    EXPECT_EQ(set.rend(), ++it);
+  }
+  {
+    auto it = set.rend();
+    EXPECT_EQ(1, *--it);
+    EXPECT_EQ(2, *--it);
+    EXPECT_EQ(set.rbegin(), it);
+  }
+
+  set.insert(3);
+  {
+    auto it = set.rbegin();
+    EXPECT_EQ(3, *it);
+    EXPECT_EQ(2, *++it);
+    EXPECT_EQ(1, *++it);
+    EXPECT_EQ(set.rend(), ++it);
+  }
+  {
+    auto it = set.rend();
+    EXPECT_EQ(1, *--it);
+    EXPECT_EQ(2, *--it);
+    EXPECT_EQ(3, *--it);
+    EXPECT_EQ(set.rbegin(), it);
+  }
+}
+
+TEST(LinkedHashSetTest, IteratorPost) {
+  using Set = LinkedHashSet<int, CustomHashTraitsForInt>;
+  Set set;
+
+  set.insert(1);
+  {
+    auto it = set.begin();
+    EXPECT_EQ(1, *it++);
+    EXPECT_EQ(set.end(), it);
+  }
+  {
+    auto it = set.end();
+    it--;
+    EXPECT_EQ(1, *it);
+    EXPECT_EQ(set.begin(), it);
+  }
+
+  set.insert(2);
+  {
+    auto it = set.begin();
+    EXPECT_EQ(1, *it++);
+    EXPECT_EQ(2, *it++);
+    EXPECT_EQ(set.end(), it);
+  }
+  {
+    auto it = set.end();
+    it--;
+    EXPECT_EQ(2, *it--);
+    EXPECT_EQ(1, *it);
+    EXPECT_EQ(set.begin(), it);
+  }
+
+  set.insert(3);
+  {
+    auto it = set.begin();
+    EXPECT_EQ(1, *it++);
+    EXPECT_EQ(2, *it++);
+    EXPECT_EQ(3, *it++);
+    EXPECT_EQ(set.end(), it);
+  }
+  {
+    auto it = set.end();
+    it--;
+    EXPECT_EQ(3, *it--);
+    EXPECT_EQ(2, *it--);
+    EXPECT_EQ(1, *it);
+    EXPECT_EQ(set.begin(), it);
+  }
+}
+
+TEST(LinkedHashSetTest, ReverseIteratorPost) {
+  using Set = LinkedHashSet<int, CustomHashTraitsForInt>;
+  Set set;
+
+  set.insert(1);
+  {
+    auto it = set.rbegin();
+    EXPECT_EQ(1, *it++);
+    EXPECT_EQ(set.rend(), it);
+  }
+  {
+    auto it = set.rend();
+    it--;
+    EXPECT_EQ(1, *it);
+    EXPECT_EQ(set.rbegin(), it);
+  }
+
+  set.insert(2);
+  {
+    auto it = set.rbegin();
+    EXPECT_EQ(2, *it++);
+    EXPECT_EQ(1, *it++);
+    EXPECT_EQ(set.rend(), it);
+  }
+  {
+    auto it = set.rend();
+    it--;
+    EXPECT_EQ(1, *it--);
+    EXPECT_EQ(2, *it);
+    EXPECT_EQ(set.rbegin(), it);
+  }
+
+  set.insert(3);
+  {
+    auto it = set.rbegin();
+    EXPECT_EQ(3, *it++);
+    EXPECT_EQ(2, *it++);
+    EXPECT_EQ(1, *it++);
+    EXPECT_EQ(set.rend(), it);
+  }
+  {
+    auto it = set.rend();
+    it--;
+    EXPECT_EQ(1, *it--);
+    EXPECT_EQ(2, *it--);
+    EXPECT_EQ(3, *it);
+    EXPECT_EQ(set.rbegin(), it);
+  }
 }
 
 TEST(LinkedHashSetTest, FrontAndBack) {

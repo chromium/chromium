@@ -35,6 +35,7 @@
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/template_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
@@ -1683,10 +1684,7 @@ void Vector<T, inlineCapacity, Allocator>::assign(const Collection& other) {
     resize(base::checked_cast<wtf_size_t>(other.size()));
   }
 
-  auto src = other.begin();
-  auto src_end = other.end();
-  for (wtf_size_t i = 0; src != src_end; ++src, ++i)
-    at(i) = *src;
+  base::ranges::copy(other, begin());
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>

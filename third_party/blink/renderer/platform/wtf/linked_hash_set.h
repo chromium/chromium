@@ -85,6 +85,9 @@ class LinkedHashSet {
   template <typename T>
   class IteratorWrapper {
    public:
+    IteratorWrapper(const IteratorWrapper&) = default;
+    IteratorWrapper& operator=(const IteratorWrapper&) = default;
+
     const Value& operator*() const { return *(iterator_.Get()); }
     const Value* operator->() const { return iterator_.Get(); }
 
@@ -98,8 +101,17 @@ class LinkedHashSet {
       return *this;
     }
 
-    IteratorWrapper& operator++(int) = delete;
-    IteratorWrapper& operator--(int) = delete;
+    IteratorWrapper operator++(int) {
+      auto copy = *this;
+      operator++();
+      return copy;
+    }
+
+    IteratorWrapper operator--(int) {
+      auto copy = *this;
+      operator--();
+      return copy;
+    }
 
     bool operator==(const IteratorWrapper& other) const {
       // No need to compare map_iterator_ here because it is not related to
