@@ -2638,19 +2638,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
         // The start surface is not the layout shown on startup, so wait
         // until it is shown before notifying the start surface that is was.
-        // TODO(1292661): We should allow the start surface to be the layout
-        // that the browser starts on to avoid logic like this.
-        // TODO(1315676): Clean up the check of LayoutType.TAB_SWITCHER once
-        // the refactoring is done. This is because only Start surface is
-        // allowed to shown on startup, not the Grid Tab switcher.
-        boolean isStartSurfaceLayoutShown = false;
         var layoutManager = getLayoutManager();
         @LayoutType int activeType = layoutManager.getActiveLayoutType();
         @LayoutType int nextType = layoutManager.getNextLayoutType();
-        isStartSurfaceLayoutShown =
-                activeType == LayoutType.START_SURFACE || nextType != LayoutType.START_SURFACE;
 
-        if (isStartSurfaceLayoutShown) {
+        if (activeType == LayoutType.START_SURFACE || nextType != LayoutType.START_SURFACE) {
             mStartSurfaceSupplier
                     .get()
                     .onOverviewShownAtLaunch(mOverviewShownOnStart, getOnCreateTimestampMs());
@@ -3355,7 +3347,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 .launchUrlFromExternalApp(loadUrlParams, externalAppId, forceNewTab, intent);
     }
 
-    // TODO(crbug.com/1315676): Once the refactor is finished, remove all StartSurfaceState codes.
     private void showOverview(@StartSurfaceState int state) {
         showOverview(state, NewTabPageLaunchOrigin.UNKNOWN);
     }
@@ -3365,7 +3356,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // showStartSurface(state). Let's do some auditing and clean up before perform the actual split.
     private void showOverview(
             @StartSurfaceState int state, @NewTabPageLaunchOrigin int launchOrigin) {
-        // TODO(crbug.com/1315676): Remove all StartSurfaceState relevant code.
         assert (state == StartSurfaceState.SHOWING_TABSWITCHER
                 || state == StartSurfaceState.SHOWING_HOMEPAGE
                 || state == StartSurfaceState.SHOWING_PREVIOUS

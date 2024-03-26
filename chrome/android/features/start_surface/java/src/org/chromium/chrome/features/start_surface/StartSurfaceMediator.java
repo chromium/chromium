@@ -139,7 +139,6 @@ class StartSurfaceMediator
     private final TabModelSelector mTabModelSelector;
     @Nullable private final PropertyModel mPropertyModel;
     private final boolean mIsStartSurfaceEnabled;
-    private final ObserverList<StartSurface.StateObserver> mStateObservers = new ObserverList<>();
     private final boolean mHadWarmStart;
     private final Runnable mInitializeMVTilesRunnable;
     private final Supplier<Tab> mParentTabSupplier;
@@ -682,8 +681,6 @@ class StartSurfaceMediator
             createAndSetExploreSurfaceCoordinator();
         }
 
-        // TODO(crbug.com/1315676): Remove this property key since overview should always be visible
-        // when show() is called.
         mPropertyModel.set(IS_SHOWING_OVERVIEW, true);
 
         if (mNormalTabModel != null) {
@@ -718,14 +715,6 @@ class StartSurfaceMediator
         mayRecordHomepageSessionBegin();
 
         maybeScheduleSpareTabCreation();
-    }
-
-    void addStateChangeObserver(StartSurface.StateObserver observer) {
-        mStateObservers.addObserver(observer);
-    }
-
-    void removeStateChangeObserver(StartSurface.StateObserver observer) {
-        mStateObservers.removeObserver(observer);
     }
 
     void setLaunchOrigin(@NewTabPageLaunchOrigin int launchOrigin) {

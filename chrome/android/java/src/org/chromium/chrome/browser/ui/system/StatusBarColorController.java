@@ -111,8 +111,6 @@ public class StatusBarColorController
     private @ColorInt int mStatusIndicatorColor;
     private @ColorInt int mStatusBarColorWithoutStatusIndicator;
     private OneshotSupplier<StartSurface> mStartSurfaceSupplier;
-    private StartSurface mStartSurface;
-    private StartSurface.StateObserver mStartSurfaceStateObserver;
 
     // Tab strip transition states.
     private boolean mTabStripHiddenOnTablet;

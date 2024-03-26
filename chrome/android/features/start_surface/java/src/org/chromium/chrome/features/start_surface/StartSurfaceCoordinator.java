@@ -349,9 +349,6 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Override
     public void show(boolean animate) {
-        if (!mUseMagicSpace) {
-            getSingleTabListDelegate().prepareTabSwitcherView();
-        }
         mStartSurfaceMediator.show(animate);
     }
 
@@ -376,16 +373,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         if (mView != null) {
             mView.removeHeaderOffsetChangeListener(onOffsetChangedListener);
         }
-    }
-
-    @Override
-    public void addStateChangeObserver(StateObserver observer) {
-        mStartSurfaceMediator.addStateChangeObserver(observer);
-    }
-
-    @Override
-    public void removeStateChangeObserver(StateObserver observer) {
-        mStartSurfaceMediator.removeStateChangeObserver(observer);
     }
 
     @Override
@@ -458,11 +445,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     @Override
     public boolean isHomepageShown() {
         return mStartSurfaceMediator.isHomepageShown();
-    }
-
-    @Override
-    public TabSwitcher.TabListDelegate getSingleTabListDelegate() {
-        return mIsStartSurfaceEnabled ? mTabSwitcherModule.getTabListDelegate() : null;
     }
 
     @Override

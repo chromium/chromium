@@ -44,45 +44,18 @@ public interface StartSurface {
     void onHide();
 
     /**
-     * An observer that is notified when the start surface internal state, excluding
-     * the states notified in {@link TabSwitcherViewObserver}, is changed.
-     */
-    // TODO(crbug.com/1315679): Replace this observer with LayoutStateObserver after the {@link
-    // ChromeFeatureList.START_SURFACE_REFACTOR} is enabled by default.
-    @Deprecated
-    interface StateObserver {
-        /**
-         * Called when the internal state is changed.
-         * @param startSurfaceState the {@link StartSurfaceState}.
-         * @param shouldShowTabSwitcherToolbar Whether or not should show the Tab switcher toolbar.
-         */
-        void onStateChanged(
-                @StartSurfaceState int startSurfaceState, boolean shouldShowTabSwitcherToolbar);
-    }
-
-    /**
      * @param onOffsetChangedListener Registers listener for the offset changes on top of the start
-     *         surface.
+     *     surface.
      */
     void addHeaderOffsetChangeListener(
             AppBarLayout.OnOffsetChangedListener onOffsetChangedListener);
 
     /**
      * @param onOffsetChangedListener Unregisters listener for the offset changes on top of the
-     *         start surface.
+     *     start surface.
      */
     void removeHeaderOffsetChangeListener(
             AppBarLayout.OnOffsetChangedListener onOffsetChangedListener);
-
-    /**
-     * @param observer Registers {@code observer} for the {@link StartSurfaceState} changes.
-     */
-    void addStateChangeObserver(StateObserver observer);
-
-    /**
-     * @param observer Unregisters {@code observer} for the {@link StartSurfaceState} changes.
-     */
-    void removeStateChangeObserver(StateObserver observer);
 
     /** Defines an interface to pass out tab selecting event. */
     interface OnTabSelectingListener extends TabSwitcher.OnTabSelectingListener {}
@@ -142,14 +115,6 @@ public interface StartSurface {
      * {@link StartSurfaceState#SHOWN_HOMEPAGE} when the refactoring is disabled.
      */
     boolean isHomepageShown();
-
-    /**
-     * Returns the TabListDelegate implementation that can be used to access the Tab list of the
-     * single tab switcher when start surface is enabled; when start surface is disabled, null
-     * should be returned.
-     */
-    // TODO(crbug.com/1315676): Remove this API after the refactoring is done.
-    TabSwitcher.TabListDelegate getSingleTabListDelegate();
 
     /**
      * @return {@link Supplier} that provides dialog visibility.
