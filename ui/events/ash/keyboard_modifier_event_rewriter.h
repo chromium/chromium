@@ -71,6 +71,7 @@ class KeyboardModifierEventRewriter : public EventRewriter {
 
  private:
   std::unique_ptr<Event> RewritePressKeyEvent(const KeyEvent& event);
+  std::optional<RemappedKey> RemapPressKey(const KeyEvent& event);
   std::unique_ptr<Event> RewriteReleaseKeyEvent(const KeyEvent& event);
   std::unique_ptr<KeyEvent> BuildRewrittenEvent(const KeyEvent& event,
                                                 const RemappedKey& remapped);
@@ -84,7 +85,8 @@ class KeyboardModifierEventRewriter : public EventRewriter {
   const raw_ptr<ash::input_method::ImeKeyboard> ime_keyboard_;
 
   // Map from physical keys to the affected modifiers on press.
-  std::map<internal::PhysicalKey, RemappedKey> pressed_modifier_keys_;
+  std::map<internal::PhysicalKey, RemappedKey> remapped_keys_;
+  std::map<internal::PhysicalKey, EventFlags> pressed_modifier_keys_;
   bool altgr_latch_ = false;
 };
 

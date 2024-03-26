@@ -18,6 +18,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
 
 namespace ui {
 namespace {
@@ -68,16 +69,6 @@ constexpr auto kRemappedKeyMap =
          {DomCode::LAUNCH_ASSISTANT, DomKey::LAUNCH_ASSISTANT, VKEY_ASSISTANT,
           EF_NONE}},
     });
-
-const KeyboardModifierEventRewriter::RemappedKey* FindRemappedKeyByDomCode(
-    DomCode code) {
-  for (const auto& entry : kRemappedKeyMap) {
-    if (entry.second.code == code) {
-      return &entry.second;
-    }
-  }
-  return nullptr;
-}
 
 constexpr KeyboardModifierEventRewriter::RemappedKey kAltGraphRemap = {
     std::nullopt,
@@ -167,44 +158,75 @@ EventDispatchDetails KeyboardModifierEventRewriter::RewriteEvent(
     case ET_KEY_RELEASED:
       rewritten_event = RewriteReleaseKeyEvent(*event.AsKeyEvent());
       break;
-    default:
-      // Do nothing,
-      break;
-  }
-
-  // Update flags by reconstructing them from the modifier key status.
-  {
-    int flags = rewritten_event ? rewritten_event->flags() : event.flags();
-    int rewritten_flags = RewriteModifierFlags(event.flags());
-    if (flags != rewritten_flags) {
-      if (!rewritten_event) {
+    default: {
+      // Update flags by reconstructing them from the modifier key status.
+      int flags = event.flags();
+      int rewritten_flags = RewriteModifierFlags(event.flags());
+      if (flags != rewritten_flags) {
         rewritten_event = event.Clone();
+        // Note: this updates DomKey to reflect the new flags.
+        rewritten_event->SetFlags(rewritten_flags);
       }
-      // Note: this updates DomKey to reflect the new flags.
-      rewritten_event->SetFlags(rewritten_flags);
+      break;
     }
   }
 
-  const Event& result_event = rewritten_event ? *rewritten_event : event;
-  if (result_event.type() == ET_KEY_PRESSED &&
-      !KeycodeConverter::IsDomKeyForModifier(
-          result_event.AsKeyEvent()->GetDomKey())) {
-    altgr_latch_ = false;
-  }
-  return continuation->SendEvent(&result_event);
+  return continuation->SendEvent(rewritten_event ? rewritten_event.get()
+                                                 : &event);
 }
 
 std::unique_ptr<Event> KeyboardModifierEventRewriter::RewritePressKeyEvent(
     const KeyEvent& event) {
-  int device_id = GetKeyboardDeviceIdProperty(event);
+  internal::PhysicalKey physical_key{event.code(),
+                                     GetKeyboardDeviceIdProperty(event)};
 
-  if (!delegate_->RewriteModifierKeys() || (event.flags() & EF_FINAL)) {
-    if (auto* remapped_key = FindRemappedKeyByDomCode(event.code())) {
-      pressed_modifier_keys_.insert_or_assign(
-          internal::PhysicalKey{event.code(), device_id}, *remapped_key);
-    }
-    return nullptr;
+  std::unique_ptr<KeyEvent> rewritten_event;
+  std::optional<RemappedKey> remapped = RemapPressKey(event);
+  if (remapped) {
+    remapped_keys_.insert_or_assign(physical_key, *remapped);
+    rewritten_event = BuildRewrittenEvent(event, *remapped);
   }
+
+  DomKey dom_key = (rewritten_event ? *rewritten_event : event).GetDomKey();
+  EventFlags modifier_flag = ModifierDomKeyToEventFlag(dom_key);
+  if (modifier_flag == EF_CAPS_LOCK_ON) {
+    // This is to be consistent with KeyboardEvdev::UpdateModifier.
+    modifier_flag = EF_MOD3_DOWN;
+  }
+  if (pressed_modifier_keys_.insert_or_assign(physical_key, modifier_flag)
+          .second) {
+    // Flip capslock state if needed. Note: do not on repeated events.
+    if ((rewritten_event ? *rewritten_event : event).code() ==
+        DomCode::CAPS_LOCK) {
+      ime_keyboard_->SetCapsLockEnabled(!ime_keyboard_->IsCapsLockEnabled());
+    }
+  }
+
+  int flags = (rewritten_event ? *rewritten_event : event).flags();
+  int rewritten_flags = RewriteModifierFlags(event.flags());
+  if (flags != rewritten_flags) {
+    if (!rewritten_event) {
+      rewritten_event.reset(event.Clone().release()->AsKeyEvent());
+    }
+    // Note: this updates DomKey to reflect the new flags.
+    rewritten_event->SetFlags(rewritten_flags);
+  }
+
+  const KeyEvent& result_event = rewritten_event ? *rewritten_event : event;
+  if (!KeycodeConverter::IsDomKeyForModifier(result_event.GetDomKey())) {
+    altgr_latch_ = false;
+  }
+
+  return rewritten_event;
+}
+
+std::optional<KeyboardModifierEventRewriter::RemappedKey>
+KeyboardModifierEventRewriter::RemapPressKey(const KeyEvent& event) {
+  if (!delegate_->RewriteModifierKeys() || (event.flags() & EF_FINAL)) {
+    return std::nullopt;
+  }
+
+  int device_id = GetKeyboardDeviceIdProperty(event);
 
   const RemappedKey* remapped_key = nullptr;
   switch (event.GetDomKey()) {
@@ -290,7 +312,7 @@ std::unique_ptr<Event> KeyboardModifierEventRewriter::RewritePressKeyEvent(
   }
 
   if (!remapped_key) {
-    return nullptr;
+    return std::nullopt;
   }
 
   // Adjust left/right modifier key positions.
@@ -299,29 +321,31 @@ std::unique_ptr<Event> KeyboardModifierEventRewriter::RewritePressKeyEvent(
       RelocateDomCode(event.code(), remapped_key->code);
   relocated_remapped_key.key_code =
       RelocateKeyboardCode(event.code(), remapped_key->key_code);
-
-  if (pressed_modifier_keys_
-          .insert_or_assign(internal::PhysicalKey{event.code(), device_id},
-                            relocated_remapped_key)
-          .second) {
-    // Flip capslock state if needed. Note: do not on repeated events.
-    if (relocated_remapped_key.code == DomCode::CAPS_LOCK) {
-      ime_keyboard_->SetCapsLockEnabled(!ime_keyboard_->IsCapsLockEnabled());
-    }
-  }
-  return BuildRewrittenEvent(event, relocated_remapped_key);
+  return relocated_remapped_key;
 }
 
 std::unique_ptr<Event> KeyboardModifierEventRewriter::RewriteReleaseKeyEvent(
     const KeyEvent& event) {
   int device_id = GetKeyboardDeviceIdProperty(event);
-  auto it = pressed_modifier_keys_.find(
-      internal::PhysicalKey{event.code(), device_id});
-  if (it == pressed_modifier_keys_.end()) {
-    return nullptr;
+  internal::PhysicalKey physical_key{event.code(), device_id};
+  pressed_modifier_keys_.erase(physical_key);
+
+  std::unique_ptr<KeyEvent> rewritten_event;
+  if (auto it = remapped_keys_.find(physical_key); it != remapped_keys_.end()) {
+    rewritten_event = BuildRewrittenEvent(event, it->second);
+    remapped_keys_.erase(it);
   }
-  auto rewritten_event = BuildRewrittenEvent(event, it->second);
-  pressed_modifier_keys_.erase(it);
+
+  int flags = (rewritten_event ? *rewritten_event : event).flags();
+  int rewritten_flags = RewriteModifierFlags(event.flags());
+  if (flags != rewritten_flags) {
+    if (!rewritten_event) {
+      rewritten_event.reset(event.Clone().release()->AsKeyEvent());
+    }
+    // Note: this updates DomKey to reflect the new flags.
+    rewritten_event->SetFlags(rewritten_flags);
+  }
+
   return rewritten_event;
 }
 
@@ -349,16 +373,15 @@ int KeyboardModifierEventRewriter::RewriteModifierFlags(int flags) const {
   // Bit mask of modifier flags to be rewritten.
   constexpr int kTargetModifierFlags = EF_CONTROL_DOWN | EF_ALT_DOWN |
                                        EF_COMMAND_DOWN | EF_ALTGR_DOWN |
-                                       EF_MOD3_DOWN;
+                                       EF_MOD3_DOWN | EF_CAPS_LOCK_ON;
   flags &= ~kTargetModifierFlags;
 
   // Recalculate modifier flags from the currently pressed keys.
-  for (const auto& [unused, pressed_modifier_key] : pressed_modifier_keys_) {
-    flags |= pressed_modifier_key.flags;
+  for (const auto& [unused, modifier] : pressed_modifier_keys_) {
+    flags |= modifier;
   }
 
   // Update CapsLock.
-  flags &= ~EF_CAPS_LOCK_ON;
   if (ime_keyboard_->IsCapsLockEnabled()) {
     flags |= EF_CAPS_LOCK_ON;
   }
