@@ -57,7 +57,7 @@ export class DestinationManager extends EventTarget {
   // TODO(b/323421684): Returns true if initial fetch has returned
   // and there are valid destinations available in the destination
   // cache.
-  hasInitialDestinationsLoaded(): boolean {
+  hasLoadedAnInitialDestination(): boolean {
     return this.initialDestinationsLoaded;
   }
 

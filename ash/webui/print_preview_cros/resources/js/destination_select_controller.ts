@@ -18,6 +18,6 @@ export class DestinationSelectController extends EventTarget {
 
   // Returns whether destination manager has fetched initial destinations.
   shouldShowLoading(): boolean {
-    return !this.destinationManager.hasInitialDestinationsLoaded();
+    return !this.destinationManager.hasLoadedAnInitialDestination();
   }
 }

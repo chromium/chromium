@@ -39,26 +39,26 @@ suite('DestinationSelectController', () => {
   });
 
   // Verify shouldShowLoading returns true if
-  // DestinationManager's `hasInitialDestinationsLoaded` call is false.
+  // DestinationManager's `hasLoadedAnInitialDestination` call is false.
   test(
       'shouldShowLoading returns true when destination manager has not ' +
           'received initial destinations',
       () => {
         const hasDestinationsFn = mockController.createFunctionMock(
-            destinationManager, 'hasInitialDestinationsLoaded');
+            destinationManager, 'hasLoadedAnInitialDestination');
         hasDestinationsFn.returnValue = false;
 
         assertTrue(controller.shouldShowLoading(), 'Is fetching destinations');
       });
 
   // Verify shouldShowLoading returns false if
-  // DestinationManager's `hasInitialDestinationsLoaded` call is true.
+  // DestinationManager's `hasLoadedAnInitialDestination` call is true.
   test(
       'shouldShowLoading returns false when destination manager has received ' +
           'initial destinations',
       () => {
         const hasDestinationsFn = mockController.createFunctionMock(
-            destinationManager, 'hasInitialDestinationsLoaded');
+            destinationManager, 'hasLoadedAnInitialDestination');
         hasDestinationsFn.returnValue = true;
 
         assertFalse(controller.shouldShowLoading(), 'Has fetched destinations');

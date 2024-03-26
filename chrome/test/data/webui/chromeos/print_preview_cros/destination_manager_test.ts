@@ -41,9 +41,9 @@ suite('DestinationManager', () => {
     assertNotEquals(instance1, instance2, 'Reset clears static instance');
   });
 
-  // Verify `hasInitialDestinationsLoaded` returns false by default.
-  test('on create hasInitialDestinationsLoaded is false', () => {
-    assertFalse(instance.hasInitialDestinationsLoaded());
+  // Verify `hasLoadedAnInitialDestination` returns false by default.
+  test('on create hasLoadedAnInitialDestination is false', () => {
+    assertFalse(instance.hasLoadedAnInitialDestination());
   });
 
   // Verify PDF printer included in destinations.
