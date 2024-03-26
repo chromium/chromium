@@ -35,6 +35,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -491,6 +492,16 @@ void BookmarkBubbleView::ShowBubble(
                                                 product_info.value()),
             views::BubbleDialogModelHost::FieldType::kControl),
         kPriceTrackingBookmarkViewElementId);
+
+    // When a user clicks to open bookmark bubble for a product page that is
+    // neither price tracked nor bookmarked, user will track the price of the
+    // product, and we'll record the UKM for this event.
+    // TODO(b/331277578): Move the track-by-default logic here.
+    if (!is_price_tracked && !already_bookmarked) {
+      commerce::metrics::RecordShoppingActionUKM(
+          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+          commerce::metrics::ShoppingAction::kPriceTracked);
+    }
   }
 
   // views:: land below, there's no agnostic reference to arrow / anchors /
