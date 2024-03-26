@@ -268,6 +268,9 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenQuickStartEnabled,
 
 IN_PROC_BROWSER_TEST_F(NetworkScreenQuickStartEnabled,
                        WifiCredentialsTransfered) {
+  // Prevent the test from waiting for the stabilization period.
+  network_screen()->set_no_quickstart_delay_for_testing();
+
   LoginDisplayHost::default_host()
       ->GetWizardContext()
       ->quick_start_setup_ongoing = true;
