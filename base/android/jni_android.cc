@@ -11,7 +11,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
 #include "base/android_runtime_jni_headers/Throwable_jni.h"
-#include "base/base_jni/JniAndroid_jni.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -19,6 +18,12 @@
 #include "build/robolectric_buildflags.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/jni_zero/jni_zero.h"
+
+#if BUILDFLAG(IS_ROBOLECTRIC)
+#include "base/base_robolectric_jni/JniAndroid_jni.h"  // nogncheck
+#else
+#include "base/base_jni/JniAndroid_jni.h"
+#endif
 
 namespace base {
 namespace android {

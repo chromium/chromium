@@ -4306,6 +4306,7 @@ if (is_android || is_robolectric) {
       "android/java/src/org/chromium/base/CommandLine.java",
       "android/java/src/org/chromium/base/JNIUtils.java",
       "android/java/src/org/chromium/base/JavaExceptionReporter.java",
+      "android/java/src/org/chromium/base/JniAndroid.java",
       "android/java/src/org/chromium/base/Token.java",
       "android/java/src/org/chromium/base/TraceEvent.java",
       "android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
