@@ -5664,7 +5664,8 @@ recursedeps = [
   # it has build files.
   'src/third_party/dawn',
   'src/third_party/devtools-frontend-internal',
-  'src/third_party/instrumented_libs',
+  # TODO:(b/331365997): instrumented_libs is breaking branching automation.
+  #'src/third_party/instrumented_libs',
   'src/third_party/openscreen/src',
   'src/third_party/vulkan-deps',
   'src/third_party/devtools-frontend/src',
