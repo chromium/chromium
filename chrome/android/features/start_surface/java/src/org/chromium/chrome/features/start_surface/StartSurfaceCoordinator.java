@@ -550,14 +550,12 @@ public class StartSurfaceCoordinator implements StartSurface {
                             /* moduleDelegate= */ null);
         }
         View mvTilesContainer = mView.findViewById(R.id.mv_tiles_container);
-        // TODO(b/331250449): clean up |shouldShowSkeletonUIPreNative| since it is always false now.
         mMostVisitedCoordinator =
                 new MostVisitedTilesCoordinator(
                         mActivity,
                         mActivityLifecycleDispatcher,
                         mvTilesContainer,
                         mWindowAndroid,
-                        /* shouldShowSkeletonUIPreNative= */ false,
                         /* isScrollableMVTEnabled= */ true,
                         Integer.MAX_VALUE,
                         /* snapshotTileGridChangedRunnable= */ null,

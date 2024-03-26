@@ -502,7 +502,6 @@ public class NewTabPageLayout extends LinearLayout {
                         activityLifecycleDispatcher,
                         mMvTilesContainerLayout,
                         mWindowAndroid,
-                        /* shouldShowSkeletonUIPreNative= */ false,
                         isScrollableMvtEnabled,
                         maxRows,
                         () -> mSnapshotTileGridChanged = true,

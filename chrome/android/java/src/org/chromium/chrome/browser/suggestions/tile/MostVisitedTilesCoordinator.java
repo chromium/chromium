@@ -55,19 +55,17 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
     /**
      * @param activity The app activity.
      * @param activityLifecycleDispatcher Dispatcher for activity lifecycle events,
-     *                                    e.g.configuration changes. We need this to adjust the
-     *                                    paddings and margins of the tile views.
+     *     e.g.configuration changes. We need this to adjust the paddings and margins of the tile
+     *     views.
      * @param mvTilesContainerLayout The container view of most visited tiles layout.
      * @param windowAndroid The current {@link WindowAndroid}
-     * @param shouldShowSkeletonUIPreNative Whether to show the background icon for pre-native
-     *                                      surface.
-     * @param isScrollableMVTEnabled Whether scrollable MVT is enabled. If true  {@link
-     *                               MostVisitedTilesCarouselLayout} is used; if false {@link
-     *                               MostVisitedTilesGridLayout} is used.
+     * @param isScrollableMVTEnabled Whether scrollable MVT is enabled. If true {@link
+     *     MostVisitedTilesCarouselLayout} is used; if false {@link MostVisitedTilesGridLayout} is
+     *     used.
      * @param maxRows The maximum number of rows to display. This will only be used for {@link
-     *                MostVisitedTilesGridLayout}.
+     *     MostVisitedTilesGridLayout}.
      * @param snapshotTileGridChangedRunnable The runnable called when the snapshot tile grid is
-     *                                        changed.
+     *     changed.
      * @param tileCountChangedRunnable The runnable called when the tile count is changed.
      */
     public MostVisitedTilesCoordinator(
@@ -75,7 +73,6 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             View mvTilesContainerLayout,
             WindowAndroid windowAndroid,
-            boolean shouldShowSkeletonUIPreNative,
             boolean isScrollableMVTEnabled,
             int maxRows,
             @Nullable Runnable snapshotTileGridChangedRunnable,
@@ -119,7 +116,6 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                         mvTilesContainerLayout.findViewById(R.id.tile_grid_placeholder_stub),
                         mRenderer,
                         propertyModel,
-                        shouldShowSkeletonUIPreNative,
                         isScrollableMVTEnabled,
                         isTablet,
                         snapshotTileGridChangedRunnable,

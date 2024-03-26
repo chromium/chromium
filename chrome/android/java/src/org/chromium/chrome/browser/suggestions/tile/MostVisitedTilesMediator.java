@@ -20,7 +20,6 @@ import android.view.ViewStub;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
@@ -36,11 +35,8 @@ import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServ
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.io.IOException;
-import java.util.List;
-
 /**
- *  Mediator for handling {@link MostVisitedTilesCarouselLayout} when {@link
+ * Mediator for handling {@link MostVisitedTilesCarouselLayout} when {@link
  * org.chromium.chrome.browser.flags.ChromeFeatureList#SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID} is
  * enabled or {@link MostVisitedTilesGridLayout} when the feature is disabled -related logic.
  */
@@ -82,7 +78,6 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
             ViewStub noMvPlaceholderStub,
             TileRenderer renderer,
             PropertyModel propertyModel,
-            boolean shouldShowSkeletonUIPreNative,
             boolean isScrollableMVTEnabled,
             boolean isTablet,
             @Nullable Runnable snapshotTileGridChangedRunnable,
@@ -113,8 +108,6 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_interval_tablet_polish);
 
         maybeSetPortraitIntervalPaddingsForCarousel();
-
-        if (shouldShowSkeletonUIPreNative) maybeShowMvTilesPreNative();
 
         mIsNtpAsHomeSurfaceOnTablet = isNtpAsHomeSurfaceEnabled && mIsTablet;
         mModel.set(IS_NTP_AS_HOME_SURFACE_ON_TABLET, mIsNtpAsHomeSurfaceOnTablet);
@@ -219,20 +212,6 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
 
     public void onSwitchToForeground() {
         mTileGroup.onSwitchToForeground(/* trackLoadTask= */ false);
-    }
-
-    /** Maybe render MV tiles skeleton icon pre-native. */
-    private void maybeShowMvTilesPreNative() {
-        if (mInitializationComplete) return;
-        try {
-            List<Tile> tiles =
-                    MostVisitedSitesMetadataUtils.restoreFileToSuggestionListsOnUiThread();
-            if (tiles == null) return;
-            mRenderer.renderTileSection(tiles, mMvTilesLayout, null);
-            updateTilesViewForCarouselLayout();
-        } catch (IOException e) {
-            Log.i(TAG, "No cached MV tiles file.");
-        }
     }
 
     private void updateTileIcon(Tile tile) {

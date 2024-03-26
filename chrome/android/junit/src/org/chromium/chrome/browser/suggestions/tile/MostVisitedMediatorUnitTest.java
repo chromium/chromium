@@ -453,7 +453,6 @@ public class MostVisitedMediatorUnitTest {
                         mNoMvPlaceholderStub,
                         mTileRenderer,
                         mModel,
-                        false,
                         isScrollableMVTEnabled,
                         isTablet,
                         mSnapshotTileGridChangedRunnable,

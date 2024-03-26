@@ -242,9 +242,6 @@ public class ToolbarPhone extends ToolbarLayout
     /** The current color of the location bar. */
     private @ColorInt int mCurrentLocationBarColor;
 
-    /** Whether the toolbar has a pending request to call {@link triggerUrlFocusAnimation()}. */
-    private boolean mPendingTriggerUrlFocusRequest;
-
     private PhoneCaptureStateToken mPhoneCaptureStateToken;
     private ButtonData mButtonData;
     private boolean mIsShowingStartSurfaceHomepage;
@@ -564,16 +561,6 @@ public class ToolbarPhone extends ToolbarLayout
                                 return getMenuButtonCoordinator().onEnterKeyPress();
                             }
                         });
-
-        // Calls the {@link triggerUrlFocusAnimation()} here to finish the pending focus request if
-        // it has been skipped in {@link onStartSurfaceStateChanged()}.
-        if (mPendingTriggerUrlFocusRequest) {
-            // This pending focus must be requested before native initialization when instant start
-            // is enabled, whether user clicks omnibox or not.
-            assert getToolbarDataProvider().isInOverviewAndShowingOmnibox();
-            mPendingTriggerUrlFocusRequest = false;
-            triggerUrlFocusAnimation(true);
-        }
 
         updateVisualsForLocationBarState();
     }

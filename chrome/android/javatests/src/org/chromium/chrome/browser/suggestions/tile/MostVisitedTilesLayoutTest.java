@@ -412,7 +412,6 @@ public class MostVisitedTilesLayoutTest {
                         mActivityLifecycleDispatcher,
                         containerLayout,
                         mWindowAndroid,
-                        false,
                         mEnableScrollableMVT,
                         TILE_GRID_ROWS,
                         null,
