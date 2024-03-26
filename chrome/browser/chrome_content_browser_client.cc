@@ -3657,11 +3657,20 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
         delegate->IsNightModeEnabled()
             ? blink::mojom::PreferredColorScheme::kDark
             : blink::mojom::PreferredColorScheme::kLight;
+    web_prefs->browser_preferred_color_scheme =
+        web_prefs->preferred_color_scheme;
   }
 #else
   // Update based on native theme scheme.
   web_prefs->preferred_color_scheme =
       ToBlinkPreferredColorScheme(native_theme->GetPreferredColorScheme());
+
+  // Update based on the ColorProvider associated with `web_contents`. Depends
+  // on the browser color mode settings.
+  web_prefs->browser_preferred_color_scheme =
+      web_contents->GetColorMode() == ui::ColorProviderKey::ColorMode::kLight
+          ? blink::mojom::PreferredColorScheme::kLight
+          : blink::mojom::PreferredColorScheme::kDark;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Reauth WebUI doesn't support dark mode yet because it shares the dialog

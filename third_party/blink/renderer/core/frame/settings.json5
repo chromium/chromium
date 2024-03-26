@@ -1092,6 +1092,19 @@
       type: "bool",
     },
 
+    // Preferred color scheme from the browser settings passed to the renderer
+    // for evaluating the used color scheme. Currently, only used for the
+    // scrollbars' used color scheme.
+    {
+      name: "browserPreferredColorScheme",
+      initial: "mojom::blink::PreferredColorScheme::kLight",
+      invalidate: ["ColorScheme"],
+      type: "mojom::blink::PreferredColorScheme",
+      include_paths: [
+        "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-shared.h"
+      ],
+    },
+
     // Preferred color scheme from the OS/application passed to the renderer for
     // evaluating the prefers-color-scheme media query.
     {

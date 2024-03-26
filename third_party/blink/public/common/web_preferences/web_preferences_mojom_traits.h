@@ -713,6 +713,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.in_forced_colors;
   }
 
+  static blink::mojom::PreferredColorScheme browser_preferred_color_scheme(
+      const blink::web_pref::WebPreferences& r) {
+    return r.browser_preferred_color_scheme;
+  }
+
   static blink::mojom::PreferredColorScheme preferred_color_scheme(
       const blink::web_pref::WebPreferences& r) {
     return r.preferred_color_scheme;

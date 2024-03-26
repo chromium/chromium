@@ -15,16 +15,21 @@ class Page;
 class Settings;
 class WebThemeEngine;
 
-// ColorSchemeHelper is used to update the values of PreferredColorScheme,
-// PreferredContrast and ForcedColors for testing. ColorSchemeHelper will reset
-// PreferredColorScheme, PreferredContrast and ForcedColors back to their
-// default values upon deconstruction.
+// ColorSchemeHelper is used to update the following values and eventually reset
+// the values back to their default upon deconstruction for testing.
+// Values include:
+//   - BrowserPreferredColorScheme,
+//   - PreferredColorScheme,
+//   - PreferredContrast,
+//   - ForcedColors.
 class ColorSchemeHelper {
  public:
   ColorSchemeHelper(Document& document);
   ColorSchemeHelper(Page& page);
   ~ColorSchemeHelper();
 
+  void SetBrowserPreferredColorScheme(
+      mojom::PreferredColorScheme browser_preferred_color_scheme);
   void SetPreferredColorScheme(
       mojom::PreferredColorScheme preferred_color_scheme);
   void SetPreferredContrast(mojom::PreferredContrast preferred_contrast);
@@ -34,6 +39,8 @@ class ColorSchemeHelper {
  private:
   WebThemeEngine* web_theme_engine_ = nullptr;
   Settings& settings_;
+  mojom::PreferredColorScheme default_browser_preferred_color_scheme_ =
+      mojom::PreferredColorScheme::kLight;
   mojom::PreferredColorScheme default_preferred_color_scheme_ =
       mojom::PreferredColorScheme::kLight;
   mojom::PreferredContrast default_preferred_contrast_ =

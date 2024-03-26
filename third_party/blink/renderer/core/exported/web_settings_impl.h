@@ -222,6 +222,8 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
 
   void SetForceDarkModeEnabled(bool) override;
   void SetInForcedColors(bool) override;
+  void SetBrowserPreferredColorScheme(
+      mojom::blink::PreferredColorScheme) override;
   void SetPreferredColorScheme(mojom::blink::PreferredColorScheme) override;
   void SetPreferredContrast(mojom::blink::PreferredContrast) override;
   void SetNavigationControls(NavigationControls) override;

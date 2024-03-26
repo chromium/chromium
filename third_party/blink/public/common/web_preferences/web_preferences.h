@@ -355,6 +355,12 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // when to apply system color overrides to author specified styles.
   bool in_forced_colors = false;
 
+  // The preferred color scheme set by the user's browser settings. The scheme
+  // is used to evaluate the used color scheme. Currently, only used for the
+  // scrollbars' used color scheme.
+  blink::mojom::PreferredColorScheme browser_preferred_color_scheme =
+      blink::mojom::PreferredColorScheme::kLight;
+
   // The preferred color scheme for the web content. The scheme is used to
   // evaluate the prefers-color-scheme media query and resolve UA color scheme
   // to be used based on the supported-color-schemes META tag and CSS property.

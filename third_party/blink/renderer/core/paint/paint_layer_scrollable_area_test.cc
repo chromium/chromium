@@ -78,6 +78,22 @@ class PaintLayerScrollableAreaTest : public PaintControllerPaintTest {
     return false;
   }
 
+  // Default browser preferred color scheme is light. The method sets both
+  // browser-based and the OS-based preferred color schemes to dark.
+  void SetPreferredColorSchemesToDark(ColorSchemeHelper& color_scheme_helper) {
+    color_scheme_helper.SetBrowserPreferredColorScheme(
+        mojom::blink::PreferredColorScheme::kDark);
+    color_scheme_helper.SetPreferredColorScheme(
+        mojom::blink::PreferredColorScheme::kDark);
+  }
+
+  void AssertDefaultPreferredColorSchemes() const {
+    ASSERT_EQ(GetDocument().GetPreferredColorScheme(),
+              mojom::blink::PreferredColorScheme::kLight);
+    ASSERT_EQ(GetDocument().GetSettings()->GetBrowserPreferredColorScheme(),
+              mojom::blink::PreferredColorScheme::kLight);
+  }
+
   void ExpectEqAllScrollControlsNeedPaintInvalidation(
       const PaintLayerScrollableArea* area,
       bool expectation) const {
@@ -1593,8 +1609,7 @@ TEST_P(PaintLayerScrollableAreaTest, UsedColorSchemeRootScrollbarsDark) {
     </div>
   )HTML");
 
-  ASSERT_EQ(GetDocument().GetPreferredColorScheme(),
-            mojom::blink::PreferredColorScheme::kLight);
+  AssertDefaultPreferredColorSchemes();
 
   const auto* root_scrollable_area = GetLayoutView().GetScrollableArea();
   ASSERT_TRUE(root_scrollable_area);
@@ -1615,6 +1630,20 @@ TEST_P(PaintLayerScrollableAreaTest, UsedColorSchemeRootScrollbarsDark) {
   // Change color scheme to dark.
   ColorSchemeHelper color_scheme_helper(GetDocument());
   color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Root scrollable area hasn't changed its value because the browser color
+  // scheme is light.
+  EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
+            mojom::blink::ColorScheme::kLight);
+  EXPECT_EQ(non_root_scrollable_area_dark->UsedColorSchemeScrollbars(),
+            mojom::blink::ColorScheme::kDark);
+  EXPECT_EQ(non_root_scrollable_area_normal->UsedColorSchemeScrollbars(),
+            mojom::blink::ColorScheme::kLight);
+
+  // Change browser preferred color scheme to dark.
+  color_scheme_helper.SetBrowserPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
   UpdateAllLifecyclePhasesForTest();
 
@@ -1642,8 +1671,7 @@ TEST_P(PaintLayerScrollableAreaTest,
     </style>
   )HTML");
 
-  ASSERT_EQ(GetDocument().GetPreferredColorScheme(),
-            mojom::blink::PreferredColorScheme::kLight);
+  AssertDefaultPreferredColorSchemes();
 
   const auto* root_scrollable_area = GetLayoutView().GetScrollableArea();
   ASSERT_TRUE(root_scrollable_area);
@@ -1651,10 +1679,8 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
             mojom::blink::ColorScheme::kLight);
 
-  // Change color scheme to dark.
   ColorSchemeHelper color_scheme_helper(GetDocument());
-  color_scheme_helper.SetPreferredColorScheme(
-      mojom::blink::PreferredColorScheme::kDark);
+  SetPreferredColorSchemesToDark(color_scheme_helper);
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
@@ -1671,8 +1697,7 @@ TEST_P(PaintLayerScrollableAreaTest, UsedColorSchemeRootScrollbarsHtmlLight) {
     </style>
   )HTML");
 
-  ASSERT_EQ(GetDocument().GetPreferredColorScheme(),
-            mojom::blink::PreferredColorScheme::kLight);
+  AssertDefaultPreferredColorSchemes();
 
   const auto* root_scrollable_area = GetLayoutView().GetScrollableArea();
   ASSERT_TRUE(root_scrollable_area);
@@ -1680,10 +1705,8 @@ TEST_P(PaintLayerScrollableAreaTest, UsedColorSchemeRootScrollbarsHtmlLight) {
   EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
             mojom::blink::ColorScheme::kLight);
 
-  // Change color scheme to dark.
   ColorSchemeHelper color_scheme_helper(GetDocument());
-  color_scheme_helper.SetPreferredColorScheme(
-      mojom::blink::PreferredColorScheme::kDark);
+  SetPreferredColorSchemesToDark(color_scheme_helper);
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
@@ -1700,8 +1723,7 @@ TEST_P(PaintLayerScrollableAreaTest, UsedColorSchemeRootScrollbarsBodyLight) {
     </style>
   )HTML");
 
-  ASSERT_EQ(GetDocument().GetPreferredColorScheme(),
-            mojom::blink::PreferredColorScheme::kLight);
+  AssertDefaultPreferredColorSchemes();
 
   const auto* root_scrollable_area = GetLayoutView().GetScrollableArea();
   ASSERT_TRUE(root_scrollable_area);
@@ -1725,8 +1747,7 @@ TEST_P(PaintLayerScrollableAreaTest,
     </div>
   )HTML");
 
-  ASSERT_EQ(GetDocument().GetPreferredColorScheme(),
-            mojom::blink::PreferredColorScheme::kLight);
+  AssertDefaultPreferredColorSchemes();
 
   const auto* non_root_scroller = GetLayoutBoxByElementId("normal");
   ASSERT_TRUE(non_root_scroller);
@@ -1759,8 +1780,7 @@ TEST_P(PaintLayerScrollableAreaTest,
     </div>
   )HTML");
 
-  ASSERT_EQ(GetDocument().GetPreferredColorScheme(),
-            mojom::blink::PreferredColorScheme::kLight);
+  AssertDefaultPreferredColorSchemes();
 
   const auto* root_scrollable_area = GetLayoutView().GetScrollableArea();
   ASSERT_TRUE(root_scrollable_area);
@@ -1768,10 +1788,8 @@ TEST_P(PaintLayerScrollableAreaTest,
       GetPaintLayerByElementId("normal")->GetScrollableArea();
   ASSERT_TRUE(non_root_scrollable_area);
 
-  // Change preferred color scheme to dark.
   ColorSchemeHelper color_scheme_helper(GetDocument());
-  color_scheme_helper.SetPreferredColorScheme(
-      mojom::blink::PreferredColorScheme::kDark);
+  SetPreferredColorSchemesToDark(color_scheme_helper);
   UpdateAllLifecyclePhasesForTest();
 
   // Set root element's color scheme to light.
@@ -1814,8 +1832,7 @@ TEST_P(PaintLayerScrollableAreaTest,
     </div>
   )HTML");
 
-  ASSERT_EQ(GetDocument().GetPreferredColorScheme(),
-            mojom::blink::PreferredColorScheme::kLight);
+  AssertDefaultPreferredColorSchemes();
 
   const auto* root_scrollable_area = GetLayoutView().GetScrollableArea();
   ASSERT_TRUE(root_scrollable_area);
@@ -1823,10 +1840,8 @@ TEST_P(PaintLayerScrollableAreaTest,
       GetPaintLayerByElementId("normal")->GetScrollableArea();
   ASSERT_TRUE(non_root_scrollable_area);
 
-  // Change preferred color scheme to dark.
   ColorSchemeHelper color_scheme_helper(GetDocument());
-  color_scheme_helper.SetPreferredColorScheme(
-      mojom::blink::PreferredColorScheme::kDark);
+  SetPreferredColorSchemesToDark(color_scheme_helper);
   UpdateAllLifecyclePhasesForTest();
 
   // Set root element's color scheme to normal.
@@ -1869,16 +1884,13 @@ TEST_P(PaintLayerScrollableAreaTest,
     </style>
   )HTML");
 
-  ASSERT_EQ(GetDocument().GetPreferredColorScheme(),
-            mojom::blink::PreferredColorScheme::kLight);
+  AssertDefaultPreferredColorSchemes();
 
   const auto* root_scrollable_area = GetLayoutView().GetScrollableArea();
   ASSERT_TRUE(root_scrollable_area);
 
-  // Change color scheme to dark.
   ColorSchemeHelper color_scheme_helper(GetDocument());
-  color_scheme_helper.SetPreferredColorScheme(
-      mojom::blink::PreferredColorScheme::kDark);
+  SetPreferredColorSchemesToDark(color_scheme_helper);
   UpdateAllLifecyclePhasesForTest();
 
   root_scrollable_area->UsedColorSchemeScrollbars();

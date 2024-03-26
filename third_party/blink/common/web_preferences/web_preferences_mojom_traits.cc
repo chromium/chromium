@@ -219,6 +219,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->require_transient_activation_for_html_fullscreen =
       data.require_transient_activation_for_html_fullscreen();
   out->in_forced_colors = data.in_forced_colors();
+  out->browser_preferred_color_scheme = data.browser_preferred_color_scheme();
   out->preferred_color_scheme = data.preferred_color_scheme();
   out->preferred_contrast = data.preferred_contrast();
   out->picture_in_picture_enabled = data.picture_in_picture_enabled();

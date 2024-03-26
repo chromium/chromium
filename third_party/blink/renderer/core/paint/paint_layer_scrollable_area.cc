@@ -1250,13 +1250,26 @@ mojom::blink::ScrollBehavior PaintLayerScrollableArea::ScrollBehaviorStyle()
 
 mojom::blink::ColorScheme PaintLayerScrollableArea::UsedColorSchemeScrollbars()
     const {
+  const auto* layout_box = GetLayoutBox();
+  CHECK(layout_box);
+
+  // Use dark color scheme for root non-overlay scrollbars if all of the
+  // following conditions are met:
+  //   - color scheme flags are normal (including cases when flags are not
+  //     specified),
+  //   - the preferred color scheme is dark (OS-based),
+  //   - the browser preferred color scheme is dark.
   if (IsGlobalRootNonOverlayScroller() &&
-      GetLayoutBox()->StyleRef().ColorSchemeFlagsIsNormal() &&
-      GetLayoutBox()->GetDocument().GetPreferredColorScheme() ==
-          mojom::blink::PreferredColorScheme::kDark) {
-    UseCounter::Count(GetLayoutBox()->GetDocument(),
-                      WebFeature::kUsedColorSchemeRootScrollbarsDark);
-    return mojom::blink::ColorScheme::kDark;
+      layout_box->StyleRef().ColorSchemeFlagsIsNormal()) {
+    const auto& document = layout_box->GetDocument();
+    if (document.GetPreferredColorScheme() ==
+            mojom::blink::PreferredColorScheme::kDark &&
+        document.GetSettings()->GetBrowserPreferredColorScheme() ==
+            mojom::blink::PreferredColorScheme::kDark) {
+      UseCounter::Count(GetLayoutBox()->GetDocument(),
+                        WebFeature::kUsedColorSchemeRootScrollbarsDark);
+      return mojom::blink::ColorScheme::kDark;
+    }
   }
 
   return GetLayoutBox()->StyleRef().UsedColorScheme();
