@@ -14,6 +14,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
@@ -133,6 +134,7 @@ class CAPTURE_EXPORT CameraHalDelegate final
 
  private:
   class SystemEventMonitorProxy;
+  class VCDInfoMonitorImpl;
   class VideoCaptureDeviceDelegateMap;
 
   void NotifyVideoCaptureDevicesChanged();
@@ -273,6 +275,8 @@ class CAPTURE_EXPORT CameraHalDelegate final
   std::vector<std::unique_ptr<CameraClientObserver>> local_client_observers_;
 
   std::unique_ptr<SystemEventMonitorProxy> system_event_monitor_proxy_;
+
+  base::SequenceBound<VCDInfoMonitorImpl> vcd_info_monitor_impl_;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 };

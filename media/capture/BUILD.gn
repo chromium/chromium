@@ -342,12 +342,14 @@ component("capture_lib") {
       "//media/capture/video/chromeos/mojom:cros_camera",
       "//media/capture/video/chromeos/mojom:jpeg_accelerator",
       "//media/capture/video/chromeos/mojom:system_event_monitor",
+      "//media/capture/video/chromeos/mojom:video_capture_device_info_monitor",
       "//third_party/libsync",
     ]
     data_deps = [
       ":camera_hal_dispatcher_mojo_policy",
       ":jpeg_accelerator_mojo_policy",
       ":system_event_monitor_mojo_policy",
+      ":video_capture_device_info_monitor_mojo_policy",
     ]
   }
 
@@ -577,5 +579,10 @@ copy("jpeg_accelerator_mojo_policy") {
 
 copy("system_event_monitor_mojo_policy") {
   sources = [ "video/chromeos/system_event_monitor.jsonc" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
+}
+
+copy("video_capture_device_info_monitor_mojo_policy") {
+  sources = [ "video/chromeos/video_capture_device_info_monitor.jsonc" ]
   outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
 }

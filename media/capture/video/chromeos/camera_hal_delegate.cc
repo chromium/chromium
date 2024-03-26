@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -31,8 +32,11 @@
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
 #include "media/capture/video/chromeos/mojom/system_event_monitor.mojom.h"
+#include "media/capture/video/chromeos/mojom/video_capture_device_info_monitor.mojom.h"
 #include "media/capture/video/chromeos/video_capture_device_chromeos_delegate.h"
 #include "media/capture/video/chromeos/video_capture_device_chromeos_halv3.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 
 namespace media {
@@ -245,6 +249,88 @@ class CameraHalDelegate::SystemEventMonitorProxy
       weak_ptr_factory_{this};
 };
 
+class CameraHalDelegate::VCDInfoMonitorImpl
+    : public cros::mojom::VideoCaptureDeviceInfoMonitor,
+      public chromeos::mojo_service_manager::mojom::ServiceProvider {
+ public:
+  VCDInfoMonitorImpl() {
+    if (!ash::mojo_service_manager::IsServiceManagerBound()) {
+      return;
+    }
+    vcd_info_observers_.set_disconnect_handler(base::BindRepeating(
+        &VCDInfoMonitorImpl::RemoveObserver, weak_factory_.GetWeakPtr()));
+    auto* proxy = ash::mojo_service_manager::GetServiceManagerProxy();
+    // TODO(b/315966244): Add service name to chromeos::mojo_services.
+    proxy->Register("VideoCaptureDeviceInfoMonitor",
+                    provider_receiver_.BindNewPipeAndPassRemote());
+  }
+
+  VCDInfoMonitorImpl(const VCDInfoMonitorImpl&) = delete;
+  VCDInfoMonitorImpl& operator=(const VCDInfoMonitorImpl&) = delete;
+
+  ~VCDInfoMonitorImpl() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  void AddCameraIdToDeviceIdMapping(int32_t camera_id, std::string device_id) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (camera_id_to_device_id_.find(camera_id) ==
+            camera_id_to_device_id_.end() ||
+        camera_id_to_device_id_[camera_id] != device_id) {
+      camera_id_to_device_id_[camera_id] = device_id;
+      for (auto& observer : vcd_info_observers_) {
+        observer->OnGetCameraIdToDeviceIdMapping(camera_id, device_id);
+      }
+    }
+  }
+
+  // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
+  void Request(
+      chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
+      mojo::ScopedMessagePipeHandle receiver) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    receiver_set_.Add(
+        this, mojo::PendingReceiver<cros::mojom::VideoCaptureDeviceInfoMonitor>(
+                  std::move(receiver)));
+  }
+
+  // cros::mojom::VideoCaptureDeviceInfoMonitor overrides.
+  void AddVideoCaptureDeviceInfoObserver(
+      mojo::PendingRemote<cros::mojom::VideoCaptureDeviceInfoObserver> observer)
+      override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    auto id = vcd_info_observers_.Add(std::move(observer));
+    for (const auto& [camera_id, device_id] : camera_id_to_device_id_) {
+      vcd_info_observers_.Get(id)->OnGetCameraIdToDeviceIdMapping(camera_id,
+                                                                  device_id);
+    }
+  }
+
+  void CleanMappings() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    camera_id_to_device_id_.clear();
+  }
+
+ private:
+  void RemoveObserver(mojo::RemoteSetElementId id) {
+    vcd_info_observers_.Remove(id);
+  }
+
+  base::flat_map<int32_t, std::string> camera_id_to_device_id_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  mojo::RemoteSet<cros::mojom::VideoCaptureDeviceInfoObserver>
+      vcd_info_observers_;
+
+  mojo::ReceiverSet<cros::mojom::VideoCaptureDeviceInfoMonitor> receiver_set_;
+
+  mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
+      provider_receiver_{this};
+
+  base::WeakPtrFactory<VCDInfoMonitorImpl> weak_factory_{this};
+};
+
 class CameraHalDelegate::VideoCaptureDeviceDelegateMap {
  public:
   VideoCaptureDeviceDelegateMap() = default;
@@ -300,6 +386,7 @@ CameraHalDelegate::CameraHalDelegate(
       camera_module_callbacks_(this),
       vcd_delegate_map_(new VideoCaptureDeviceDelegateMap()),
       system_event_monitor_proxy_(new SystemEventMonitorProxy(ui_task_runner)),
+      vcd_info_monitor_impl_(ui_task_runner),
       ui_task_runner_(std::move(ui_task_runner)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -545,8 +632,9 @@ void CameraHalDelegate::GetDevicesInfo(
       }
       desc.set_control_support(GetControlSupport(camera_info));
       device_id_to_camera_id_[desc.device_id] = camera_id;
-      auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
-      dispatcher->AddCameraIdToDeviceIdEntry(camera_id, desc.device_id);
+      vcd_info_monitor_impl_
+          .AsyncCall(&VCDInfoMonitorImpl::AddCameraIdToDeviceIdMapping)
+          .WithArgs(camera_id, desc.device_id);
       devices_info.emplace_back(desc);
       GetSupportedFormats(camera_info_[camera_id],
                           &devices_info.back().supported_formats);
@@ -558,7 +646,9 @@ void CameraHalDelegate::GetDevicesInfo(
             std::string(kVirtualPrefix) + base::NumberToString(camera_id);
         desc.set_display_name("Virtual Camera");
         device_id_to_camera_id_[desc.device_id] = camera_id;
-        dispatcher->AddCameraIdToDeviceIdEntry(camera_id, desc.device_id);
+        // We don't need to add virtual camera for mutli-stream to the camera_id
+        // <-> device_id map. Otherwise, it will overrides the device_id for the
+        // real device. Moreover, the multi-stream logic is going to be removed.
         devices_info.emplace_back(desc);
         GetSupportedFormats(camera_info_[camera_id],
                             &devices_info.back().supported_formats);
@@ -758,6 +848,7 @@ void CameraHalDelegate::ResetMojoInterfaceOnIpcThread() {
   base::AutoLock lock(camera_info_lock_);
   camera_info_.clear();
   pending_external_camera_info_.clear();
+  vcd_info_monitor_impl_.AsyncCall(&VCDInfoMonitorImpl::CleanMappings);
   NotifyVideoCaptureDevicesChanged();
 }
 

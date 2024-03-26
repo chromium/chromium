@@ -1,0 +1,32 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next min version: 1
+
+module cros.mojom;
+
+// VideoCaptureDeviceInfoObserver is an interface for
+// VideoCaptureDeviceInfoMonitor to notify observers that the devices info is
+// updated.
+//
+// Next method ID: 1
+interface VideoCaptureDeviceInfoObserver {
+  // Fired when the observer is added to `VideoCaptureDeviceInfoMonitor`
+  // or the device info corresponding to `camera_id` is updated.
+  // `device_id` represents an unique hardware identifier of the capture device
+  // with `camera_id`. It is of the form "[vid]:[pid]" when a USB device is
+  // detected.
+  OnGetCameraIdToDeviceIdMapping@0(int32 camera_id, string device_id);
+};
+
+// VideoCaptureDeviceInfoMonitor is an interface that helps observers observe
+// changes in video capture device information.
+//
+// Next method ID: 1
+interface VideoCaptureDeviceInfoMonitor {
+  // Add an observer which observes changes in video capture device
+  // information.
+  AddVideoCaptureDeviceInfoObserver@0(
+      pending_remote<VideoCaptureDeviceInfoObserver> observer);
+};

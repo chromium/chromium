@@ -34,6 +34,7 @@
 #include "media/capture/video/chromeos/mojom/cros_camera_client.mojom.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "media/capture/video/chromeos/mojom/effects_pipeline.mojom.h"
+#include "media/capture/video/chromeos/mojom/video_capture_device_info_monitor.mojom.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -179,6 +180,68 @@ bool CameraClientObserver::Authenticate(TokenManager* token_manager) {
   return true;
 }
 
+class CameraHalDispatcherImpl::VCDInfoObserverImpl
+    : public cros::mojom::VideoCaptureDeviceInfoObserver {
+ public:
+  using OnGetCameraIdToDeviceIdCallback =
+      base::RepeatingCallback<void(int32_t, const std::string&)>;
+  explicit VCDInfoObserverImpl(
+      OnGetCameraIdToDeviceIdCallback on_get_camera_id_to_device_id_callback)
+      : on_get_camera_id_to_device_id_callback_(
+            on_get_camera_id_to_device_id_callback) {
+    mojo_service_manager_observer_ = MojoServiceManagerObserver::Create(
+        // TODO(b/315966244): Add service name to chromeos::mojo_services.
+        "VideoCaptureDeviceInfoMonitor",
+        base::BindRepeating(
+            &VCDInfoObserverImpl::ConnectToVCDInfoMonitorService,
+            weak_factory_.GetWeakPtr()),
+        base::DoNothing());
+  }
+
+  ~VCDInfoObserverImpl() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  // cros::mojom::VideoCaptureDeviceInfoObserver overrides.
+  void OnGetCameraIdToDeviceIdMapping(int32_t camera_id,
+                                      const std::string& device_id) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    on_get_camera_id_to_device_id_callback_.Run(camera_id, device_id);
+  }
+
+  void ConnectToVCDInfoMonitorService() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    ash::mojo_service_manager::GetServiceManagerProxy()->Request(
+        // TODO(b/315966244): Add service name to chromeos::mojo_services.
+        "VideoCaptureDeviceInfoMonitor", std::nullopt,
+        vcd_info_monitor_.BindNewPipeAndPassReceiver().PassPipe());
+    vcd_info_monitor_->AddVideoCaptureDeviceInfoObserver(
+        observer_receiver_.BindNewPipeAndPassRemote());
+    vcd_info_monitor_.set_disconnect_handler(base::BindOnce(
+        &VCDInfoObserverImpl::ResetMojoInterface, base::Unretained(this)));
+  }
+
+  void ResetMojoInterface() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    vcd_info_monitor_.reset();
+    observer_receiver_.reset();
+  }
+
+ public:
+  OnGetCameraIdToDeviceIdCallback on_get_camera_id_to_device_id_callback_;
+
+  std::unique_ptr<MojoServiceManagerObserver> mojo_service_manager_observer_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  mojo::Remote<cros::mojom::VideoCaptureDeviceInfoMonitor> vcd_info_monitor_;
+
+  mojo::Receiver<cros::mojom::VideoCaptureDeviceInfoObserver>
+      observer_receiver_{this};
+
+  base::WeakPtrFactory<VCDInfoObserverImpl> weak_factory_{this};
+};
+
 // static
 CameraHalDispatcherImpl* CameraHalDispatcherImpl::GetInstance() {
   return base::Singleton<CameraHalDispatcherImpl>::get();
@@ -303,6 +366,11 @@ bool CameraHalDispatcherImpl::Start() {
       base::BindRepeating(&CameraHalDispatcherImpl::TryConnectToCameraService,
                           weak_factory_.GetWeakPtr()),
       base::DoNothing());
+
+  vcd_info_observer_impl_ = std::make_unique<VCDInfoObserverImpl>(
+      base::BindRepeating(&CameraHalDispatcherImpl::AddCameraIdToDeviceIdEntry,
+                          weak_factory_.GetWeakPtr()));
+
   if (ash::mojo_service_manager::IsServiceManagerBound()) {
     auto* proxy = ash::mojo_service_manager::GetServiceManagerProxy();
     proxy->Register(

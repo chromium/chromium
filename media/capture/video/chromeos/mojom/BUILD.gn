@@ -58,3 +58,7 @@ mojom("system_event_monitor") {
   # ChromeOS is still heavily reliant on legacy bindings.
   generate_legacy_js_bindings = true
 }
+
+mojom("video_capture_device_info_monitor") {
+  sources = [ "video_capture_device_info_monitor.mojom" ]
+}

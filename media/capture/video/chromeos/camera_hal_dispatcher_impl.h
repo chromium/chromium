@@ -208,7 +208,8 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void UnregisterPluginVmToken(const base::UnguessableToken& token);
 
   // Called by CameraHalDispatcher.
-  void AddCameraIdToDeviceIdEntry(int camera_id, const std::string& device_id);
+  void AddCameraIdToDeviceIdEntry(int32_t camera_id,
+                                  const std::string& device_id);
 
   // CameraHalDispatcher implementations.
   void RegisterClientWithToken(
@@ -255,6 +256,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   friend struct base::DefaultSingletonTraits<CameraHalDispatcherImpl>;
   // Allow the test to construct the class directly.
   friend class CameraHalDispatcherImplTest;
+  class VCDInfoObserverImpl;
 
   CameraHalDispatcherImpl();
   ~CameraHalDispatcherImpl() final;
@@ -426,6 +428,8 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       provider_receiver_{this};
 
   std::unique_ptr<MojoServiceManagerObserver> mojo_service_manager_observer_;
+
+  std::unique_ptr<VCDInfoObserverImpl> vcd_info_observer_impl_;
 
   base::WeakPtrFactory<CameraHalDispatcherImpl> weak_factory_{this};
 };
