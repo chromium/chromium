@@ -804,6 +804,44 @@ suite('sea pen', () => {
           /*timeoutMs=*/ 3001);
     }
   });
+
+  test('delete recent image', async () => {
+    const seaPenRouter = await getSeaPenRouter();
+    const recentImages = await waitUntil(
+        () => seaPenRouter.shadowRoot
+                  ?.querySelector<SeaPenRecentWallpapersElement>(
+                      'sea-pen-recent-wallpapers'),
+        'waiting for sea-pen-recent-wallpapers');
+    assertTrue(!!recentImages, 'recent images should exist');
+
+    let images = recentImages.shadowRoot?.querySelectorAll<HTMLElement>(
+        `.recent-image-container:not([hidden])`);
+    assertTrue(!!images, 'images should exist');
+    assertTrue(images.length > 0, 'there should be at least 1 recent image');
+    const numImages = images.length;
+
+    const menuButton =
+        recentImages.shadowRoot?.querySelector<CrIconButtonElement>(
+            `wallpaper-grid-item + .menu-icon-container
+        cr-icon-button`);
+    menuButton!.click();
+
+    const deleteButton = await waitUntil(
+        () => recentImages.shadowRoot?.querySelector<HTMLButtonElement>(
+            `wallpaper-grid-item ~ cr-action-menu .delete-wallpaper-option`),
+        'waiting for delete wallpaper button');
+    assertTrue(!!deleteButton, 'delete wallpaper button exists');
+    deleteButton!.click();
+
+    images = await waitUntil(
+        () =>
+            recentImages.shadowRoot?.querySelectorAll<WallpaperGridItemElement>(
+                `.recent-image-container:not([hidden])`),
+        'waiting for recent images');
+    assertTrue(!!images, 'images should still exist');
+    assertEquals(
+        numImages - 1, images.length, 'a recent image has been deleted');
+  });
 });
 
 suite('dynamic color', () => {
