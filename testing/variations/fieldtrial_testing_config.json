@@ -9111,6 +9111,21 @@
             ]
         }
     ],
+    "IOSEnableColorLensAndVoiceIconsInHomeScreenWidget": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "kEnableColorLensAndVoiceIconsInHomeScreenWidget"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSEnableViewportIntents": [
         {
             "platforms": [
