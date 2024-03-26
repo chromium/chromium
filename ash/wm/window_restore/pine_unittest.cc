@@ -35,6 +35,7 @@
 #include "ash/wm/window_restore/pine_screenshot_icon_row_view.h"
 #include "ash/wm/window_restore/pine_test_api.h"
 #include "ash/wm/window_restore/pine_test_base.h"
+#include "ash/wm/window_restore/window_restore_metrics.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -228,6 +229,7 @@ TEST_F(PineTest, NoScreenshotWithDifferentDisplayOrientation) {
   EXPECT_EQ(test_api.GetCurrentOrientation(),
             chromeos::OrientationType::kLandscapePrimary);
 
+  base::HistogramTester histogram_tester;
   base::ScopedTempDir temp_dir;
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -248,9 +250,14 @@ TEST_F(PineTest, NoScreenshotWithDifferentDisplayOrientation) {
   // The image inside `PineContentsData` should be null when the landscape image
   // is going to be shown inside a display in the portrait orientation.
   EXPECT_TRUE(pine_contents_data->image.isNull());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
+      testing::ElementsAre(base::Bucket(
+          ScreenshotOnShutdownStatus::kFailedOnDifferentOrientations, 1)));
 }
 
 TEST_F(PineTest, ScreenshotIconRowMaxElements) {
+  base::HistogramTester histogram_tester;
   base::ScopedTempDir temp_dir;
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -271,6 +278,8 @@ TEST_F(PineTest, ScreenshotIconRowMaxElements) {
   EXPECT_EQ(5u, screenshot_icon_row_view->children().size());
   EXPECT_EQ(5u, PineScreenshotIconRowViewTestApi(screenshot_icon_row_view)
                     .image_views_count());
+  histogram_tester.ExpectBucketCount(kDialogScreenshotVisibility, true, 1);
+  histogram_tester.ExpectBucketCount(kDialogScreenshotVisibility, false, 0);
 }
 
 TEST_F(PineTest, ScreenshotIconRowExceedMaxElements) {

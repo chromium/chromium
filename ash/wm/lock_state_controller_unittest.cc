@@ -27,6 +27,7 @@
 #include "ash/wm/session_state_animator.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/test/test_session_state_animator.h"
+#include "ash/wm/window_restore/window_restore_metrics.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_util.h"
 #include "base/barrier_closure.h"
@@ -1094,10 +1095,14 @@ class LockStateControllerPineTest : public LockStateControllerTest {
 // Tests that a pine image is taken when there are windows open.
 TEST_F(LockStateControllerPineTest, ShutdownWithWindows) {
   std::unique_ptr<aura::Window> window = CreateTestWindow();
+  base::HistogramTester histogram_tester;
 
   RequestShutdownWithoutFailTimer();
   // The pine image was taken and not empty.
   VerifyPineImageOnDisk();
+  EXPECT_THAT(histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
+              testing::ElementsAre(
+                  base::Bucket(ScreenshotOnShutdownStatus::kSucceeded, 1)));
 
   auto* local_state = Shell::Get()->local_state();
   // Pine screenshot related durations were recorded.
@@ -1115,7 +1120,12 @@ TEST_F(LockStateControllerPineTest, ShutdownWithoutWindows) {
   // Create an empty file to simulate an old pine image.
   ASSERT_TRUE(base::WriteFile(file_path(), ""));
 
+  base::HistogramTester histogram_tester;
   RequestShutdownWithoutFailTimer();
+  EXPECT_THAT(histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
+              testing::ElementsAre(base::Bucket(
+                  ScreenshotOnShutdownStatus::kFailedWithNoWindows, 1)));
+
   // Existing pine image was deleted.
   EXPECT_FALSE(base::PathExists(file_path()));
 }
@@ -1124,11 +1134,15 @@ TEST_F(LockStateControllerPineTest, ShutdownInOverview) {
   // Create an empty file to simulate an old pine image.
   ASSERT_TRUE(base::WriteFile(file_path(), ""));
 
+  base::HistogramTester histogram_tester;
   // Create a window and enter the overview before requesting shutdown.
   CreateTestWindow();
   EnterOverview();
 
   RequestShutdownWithoutFailTimer();
+  EXPECT_THAT(histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
+              testing::ElementsAre(base::Bucket(
+                  ScreenshotOnShutdownStatus::kFailedInOverview, 1)));
   // The pine image should not be taken if it is in overview when shutting down.
   // The existing pine image should be deleted as well.
   EXPECT_FALSE(base::PathExists(file_path()));
@@ -1138,12 +1152,16 @@ TEST_F(LockStateControllerPineTest, ShutdownInLockScreen) {
   // Create an empty file to simulate an old pine image.
   ASSERT_TRUE(base::WriteFile(file_path(), ""));
 
+  base::HistogramTester histogram_tester;
   // Create a window and go the lock screen before requesting shutdown.
   CreateTestWindowInShellWithId(0);
   GetSessionControllerClient()->LockScreen();
   EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
 
   RequestShutdownWithoutFailTimer();
+  EXPECT_THAT(histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
+              testing::ElementsAre(base::Bucket(
+                  ScreenshotOnShutdownStatus::kFailedInLockScreen, 1)));
   // The pine image should not be taken if it is in the lock screen. The
   // existing pine image should be deleted as well.
   EXPECT_FALSE(base::PathExists(file_path()));
@@ -1153,6 +1171,7 @@ TEST_F(LockStateControllerPineTest, ShutdownInHomeLauncher) {
   // Create an empty file to simulate an old pine image.
   ASSERT_TRUE(base::WriteFile(file_path(), ""));
 
+  base::HistogramTester histogram_tester;
   // Create a window and go to the home launcher page before requesting
   // shutdown.
   std::unique_ptr<aura::Window> window(CreateTestWindow());
@@ -1163,6 +1182,10 @@ TEST_F(LockStateControllerPineTest, ShutdownInHomeLauncher) {
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
 
   RequestShutdownWithoutFailTimer();
+  EXPECT_THAT(histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
+              testing::ElementsAre(base::Bucket(
+                  ScreenshotOnShutdownStatus::kFailedInHomeLauncher, 1)));
+
   // The pine image should not be taken if it is in the home launcher page when
   // shutting down. The existing image should be deleted as well.
   EXPECT_FALSE(base::PathExists(file_path()));
@@ -1172,12 +1195,16 @@ TEST_F(LockStateControllerPineTest, PinnedState) {
   // Create an empty file to simulate an old pine image.
   ASSERT_TRUE(base::WriteFile(file_path(), ""));
 
+  base::HistogramTester histogram_tester;
   // Create and pin a window before requesting shutdown.
   std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
   wm::ActivateWindow(pinned_window.get());
   window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
 
   RequestShutdownWithoutFailTimer();
+  EXPECT_THAT(histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
+              testing::ElementsAre(base::Bucket(
+                  ScreenshotOnShutdownStatus::kFailedInPinnedMode, 1)));
   // The pine image should not be taken when it is in pinned state. The existing
   // image should be deleted as well.
   EXPECT_FALSE(base::PathExists(file_path()));
@@ -1187,12 +1214,16 @@ TEST_F(LockStateControllerPineTest, AllWindowsMinimized) {
   // Create an empty file to simulate an old pine image.
   ASSERT_TRUE(base::WriteFile(file_path(), ""));
 
+  base::HistogramTester histogram_tester;
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
   std::unique_ptr<aura::Window> window2(CreateTestWindow());
   WindowState::Get(window1.get())->Minimize();
   WindowState::Get(window2.get())->Minimize();
 
   RequestShutdownWithoutFailTimer();
+  EXPECT_THAT(histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
+              testing::ElementsAre(base::Bucket(
+                  ScreenshotOnShutdownStatus::kFailedWithNoWindows, 1)));
   // The pine image should not be taken if all the windows inside the active
   // desk are minimized. The existing image should be deleted as well.
   EXPECT_FALSE(base::PathExists(file_path()));
@@ -1200,23 +1231,31 @@ TEST_F(LockStateControllerPineTest, AllWindowsMinimized) {
 
 // Tests that the pine image should be taken with only the floated window.
 TEST_F(LockStateControllerPineTest, ShutdownWithFloatWindow) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<aura::Window> floated_window = CreateAppWindow();
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
 
   RequestShutdownWithoutFailTimer();
+  EXPECT_THAT(histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
+              testing::ElementsAre(
+                  base::Bucket(ScreenshotOnShutdownStatus::kSucceeded, 1)));
   // The pine image was taken and not empty with the float window only.
   VerifyPineImageOnDisk();
 }
 
 // Tests that the pine image should be taken with only the always on top window.
 TEST_F(LockStateControllerPineTest, ShutdownWithAlwaysOnTopWindow) {
+  base::HistogramTester histogram_tester;
   aura::Window* top_container = Shell::GetContainer(
       Shell::GetPrimaryRootWindow(), kShellWindowId_AlwaysOnTopContainer);
   std::unique_ptr<aura::Window> window_always_on_top(
       aura::test::CreateTestWindowWithId(1, top_container));
 
   RequestShutdownWithoutFailTimer();
+  EXPECT_THAT(histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
+              testing::ElementsAre(
+                  base::Bucket(ScreenshotOnShutdownStatus::kSucceeded, 1)));
   // The pine image was taken and not empty with the always on top window only.
   VerifyPineImageOnDisk();
 }
@@ -1225,6 +1264,7 @@ TEST_F(LockStateControllerPineTest, TakeScreenshotTimeout) {
   // Create an empty file to simulate an old pine image.
   ASSERT_TRUE(base::WriteFile(file_path(), ""));
 
+  base::HistogramTester histogram_tester;
   std::unique_ptr<aura::Window> window(CreateTestWindow());
   base::RunLoop run_loop;
   lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
@@ -1238,6 +1278,10 @@ TEST_F(LockStateControllerPineTest, TakeScreenshotTimeout) {
   run_loop.Run();
   EXPECT_FALSE(base::PathExists(file_path()));
   EXPECT_TRUE(lock_state_test_api_->real_shutdown_timer_is_running());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
+      testing::ElementsAre(base::Bucket(
+          ScreenshotOnShutdownStatus::kFailedOnTakingScreenshotTimeout, 1)));
 }
 
 }  // namespace ash

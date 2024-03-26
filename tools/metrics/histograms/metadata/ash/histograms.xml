@@ -6047,8 +6047,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Pine.DialogScreenshotVisibility" enum="Boolean"
+    expires_after="2025-04-05">
+  <owner>minch@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Emitted true if the pine dialog is shown with a shutdown screenshot inside.
+    Emitted false if the pine dialog is shown with the app lists view inside.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Pine.OnboardingDialog.TurnRestoreOn" enum="Boolean"
-    expires_after="2024-12-31">
+    expires_after="2025-04-05">
   <owner>sammiequon@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -6059,8 +6070,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Pine.ScreenshotDecodeDuration" units="ms"
+    expires_after="2025-04-05">
+  <owner>minch@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    The amount of time it took to fetch the shutdown screenshot from the disk
+    and decode it.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Pine.ScreenshotEncodeAndSaveDuration" units="ms"
-    expires_after="2024-12-31">
+    expires_after="2025-04-05">
   <owner>minch@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
@@ -6069,8 +6091,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Pine.ScreenshotOnShutdownStatus"
+    enum="ScreenshotOnShutdownStatus" expires_after="2025-04-05">
+  <owner>minch@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Recorded the status on taking the screenshot on shutdown. The recorded enum
+    indicates it succeededs or failed with specific reason.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Pine.ScreenshotTakenDuration" units="ms"
-    expires_after="2024-12-31">
+    expires_after="2025-04-05">
   <owner>minch@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
   <summary>

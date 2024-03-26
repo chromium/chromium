@@ -17,8 +17,6 @@ namespace ash {
 
 // Public so it can be used by tests.
 inline constexpr char kEducationNudgeId[] = "PineEducationNudge";
-inline constexpr char kPineOnboardingHistogram[] =
-    "Ash.Pine.OnboardingDialog.TurnRestoreOn";
 
 struct PineContentsData;
 
@@ -77,7 +75,8 @@ class ASH_EXPORT PineController : public OverviewObserver,
   FRIEND_TEST_ALL_PREFIXES(PineTest, OnboardingMetrics);
 
   // Callback function for when the pine image is finished decoding.
-  void OnPineImageDecoded(const gfx::ImageSkia& pine_image);
+  void OnPineImageDecoded(base::TimeTicks start_time,
+                          const gfx::ImageSkia& pine_image);
 
   void StartPineOverviewSession();
 

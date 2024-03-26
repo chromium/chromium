@@ -30,6 +30,7 @@
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/session_state_animator_impl.h"
 #include "ash/wm/window_restore/pine_constants.h"
+#include "ash/wm/window_restore/window_restore_metrics.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
@@ -175,10 +176,24 @@ bool ShouldTakePineScreeshot() {
   auto* shell = Shell::Get();
   // Do not take the pine screenshot if it is in overview mode, lock screen,
   // home launcher or pinned mode.
-  if (shell->overview_controller()->InOverviewSession() ||
-      shell->session_controller()->IsScreenLocked() ||
-      shell->app_list_controller()->IsHomeScreenVisible() ||
-      shell->screen_pinning_controller()->IsPinned()) {
+  if (shell->overview_controller()->InOverviewSession()) {
+    RecordScreenshotOnShutdownStatus(
+        ScreenshotOnShutdownStatus::kFailedInOverview);
+    return false;
+  }
+  if (shell->session_controller()->IsScreenLocked()) {
+    RecordScreenshotOnShutdownStatus(
+        ScreenshotOnShutdownStatus::kFailedInLockScreen);
+    return false;
+  }
+  if (shell->app_list_controller()->IsHomeScreenVisible()) {
+    RecordScreenshotOnShutdownStatus(
+        ScreenshotOnShutdownStatus::kFailedInHomeLauncher);
+    return false;
+  }
+  if (shell->screen_pinning_controller()->IsPinned()) {
+    RecordScreenshotOnShutdownStatus(
+        ScreenshotOnShutdownStatus::kFailedInPinnedMode);
     return false;
   }
 
@@ -191,6 +206,8 @@ bool ShouldTakePineScreeshot() {
     // Do not take the screenshot if there is an incognito ash browser window or
     // a lacros window with the non-regular profile.
     if (!is_minimized && is_non_regular_profile_window) {
+      RecordScreenshotOnShutdownStatus(
+          ScreenshotOnShutdownStatus::kFailedWithIncognito);
       return false;
     }
     has_regular_unminimized_window |=
@@ -200,6 +217,10 @@ bool ShouldTakePineScreeshot() {
   // Take the screenshot if there are unminimized non-incognito windows inside
   // the active desk. Both the float and the always on top window will be
   // counted.
+  if (!has_regular_unminimized_window) {
+    RecordScreenshotOnShutdownStatus(
+        ScreenshotOnShutdownStatus::kFailedWithNoWindows);
+  }
   return has_regular_unminimized_window;
 }
 
@@ -845,6 +866,8 @@ void LockStateController::StartShutdownProcess(bool with_pre_animation) {
 void LockStateController::OnTakeScreenshotFailTimeout(bool with_pre_animation) {
   SavePineScreenshotDuration(local_state_, prefs::kPineScreenshotTakenDuration,
                              kTakeScreenshotFailTimeout);
+  RecordScreenshotOnShutdownStatus(
+      ScreenshotOnShutdownStatus::kFailedOnTakingScreenshotTimeout);
   mirror_wallpaper_layer_.reset();
   DeletePineImage(pine_image_callback_for_test_, GetShutdownPineImagePath());
   StartShutdownProcess(with_pre_animation);
@@ -887,6 +910,7 @@ void LockStateController::OnPineImageSaved(base::TimeTicks start_time) {
                              // time that the UI thread waits to get the reply
                              // from the `ThreadPool`.
                              base::TimeTicks::Now() - start_time);
+  RecordScreenshotOnShutdownStatus(ScreenshotOnShutdownStatus::kSucceeded);
   if (pine_image_callback_for_test_) {
     std::move(pine_image_callback_for_test_).Run();
   }

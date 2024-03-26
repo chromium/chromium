@@ -20,7 +20,7 @@
 #include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/pine_items_container_view.h"
 #include "ash/wm/window_restore/pine_screenshot_icon_row_view.h"
-#include "base/metrics/histogram_functions.h"
+#include "ash/wm/window_restore/window_restore_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -69,19 +69,6 @@ constexpr int kItemsViewContainerHeight = 240;
 constexpr int kScreenshotContainerMinHeight = 214;
 // Minimum height of the screenshot itself.
 constexpr int kScreenshotMinHeight = 88;
-
-constexpr char kHistogramTimeToAction[] = "Ash.Pine.TimeToAction";
-constexpr char kHistogramSuffixListview[] = ".Listview";
-constexpr char kHistogramSuffixScreenshot[] = ".Screenshot";
-
-void RecordTimeToAction(base::TimeTicks create_time, bool showing_listview) {
-  const std::string histogram_name =
-      std::string(kHistogramTimeToAction) + (showing_listview
-                                                 ? kHistogramSuffixListview
-                                                 : kHistogramSuffixScreenshot);
-  base::UmaHistogramMediumTimes(histogram_name,
-                                base::TimeTicks::Now() - create_time);
-}
 
 }  // namespace
 
@@ -216,6 +203,7 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
             pine_contents_data->apps_infos));
     icon_row_container->SetFlexForView(icon_row_spacer, 1);
   }
+  RecordDialogScreenshotVisibility(!showing_list_view_);
 
   // The height of the pine dialog is dynamic, depending on the height of the
   // screenshot. For the screenshot, its width is fixed as
@@ -293,7 +281,8 @@ void PineContentsView::OnRestoreButtonPressed() {
   if (PineContentsData* pine_contents_data =
           Shell::Get()->pine_controller()->pine_contents_data()) {
     if (pine_contents_data->restore_callback) {
-      RecordTimeToAction(creation_time_, showing_list_view_);
+      RecordTimeToAction(base::TimeTicks::Now() - creation_time_,
+                         showing_list_view_);
       // Destroys `this`.
       std::move(pine_contents_data->restore_callback).Run();
     }
@@ -304,7 +293,8 @@ void PineContentsView::OnCancelButtonPressed() {
   if (PineContentsData* pine_contents_data =
           Shell::Get()->pine_controller()->pine_contents_data()) {
     if (pine_contents_data->cancel_callback) {
-      RecordTimeToAction(creation_time_, showing_list_view_);
+      RecordTimeToAction(base::TimeTicks::Now() - creation_time_,
+                         showing_list_view_);
       // Destroys `this`.
       std::move(pine_contents_data->cancel_callback).Run();
     }

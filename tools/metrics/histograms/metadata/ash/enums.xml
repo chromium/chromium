@@ -1778,6 +1778,19 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="AlreadyAcceptedDialog"/>
 </enum>
 
+<enum name="ScreenshotOnShutdownStatus">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed as in overview"/>
+  <int value="2" label="Failed as in lock screen"/>
+  <int value="3" label="Failed as in home launcher"/>
+  <int value="4" label="Failed as screen is pinned"/>
+  <int value="5" label="Failed as incognito window"/>
+  <int value="6" label="Failed as no un-minimized windows opened"/>
+  <int value="7" label="Failed as it takes too long to take the screenshot"/>
+  <int value="8"
+      label="Failed as the screenshot and display have different orientations"/>
+</enum>
+
 <enum name="SeaPenTemplateId">
 <!-- Defined in ash/webui/common/mojom/sea_pen.mojom -->
 

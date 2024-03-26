@@ -26,12 +26,12 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_restore/pine_contents_data.h"
+#include "ash/wm/window_restore/window_restore_metrics.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_functions.h"
 #include "chromeos/ui/base/display_util.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
@@ -50,26 +50,6 @@ namespace {
 // have not yet passed since it was last shown.
 constexpr int kNudgeMaxShownCount = 3;
 constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
-
-// Records the UMA metrics for the pine screenshot taken on the last shutdown.
-// Resets the prefs used to store the metrics across shutdowns.
-void RecordPineScreenshotMetrics(PrefService* local_state) {
-  auto record_uma = [](PrefService* local_state, const std::string& name,
-                       const std::string& pref_name) -> void {
-    const base::TimeDelta duration = local_state->GetTimeDelta(pref_name);
-    // Don't record the metric if we don't have a value.
-    if (!duration.is_zero()) {
-      base::UmaHistogramTimes(name, duration);
-      // Reset the pref in case the next shutdown doesn't take the screenshot.
-      local_state->SetTimeDelta(pref_name, base::TimeDelta());
-    }
-  };
-
-  record_uma(local_state, "Ash.Pine.ScreenshotTakenDuration",
-             prefs::kPineScreenshotTakenDuration);
-  record_uma(local_state, "Ash.Pine.ScreenshotEncodeAndSaveDuration",
-             prefs::kPineScreenshotEncodeAndSaveDuration);
-}
 
 bool ShouldShowPineImage(const gfx::ImageSkia& pine_image) {
   if (pine_image.isNull()) {
@@ -251,10 +231,10 @@ void PineController::MaybeStartPineOverviewSession(
     return;
   }
 
-  RecordPineScreenshotMetrics(Shell::Get()->local_state());
+  RecordPineScreenshotDurations(Shell::Get()->local_state());
   image_util::DecodeImageFile(
       base::BindOnce(&PineController::OnPineImageDecoded,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
       GetShutdownPineImagePath(), data_decoder::mojom::ImageCodec::kPng);
 }
 
@@ -326,11 +306,16 @@ void PineController::OnWindowActivated(ActivationReason reason,
   }
 }
 
-void PineController::OnPineImageDecoded(const gfx::ImageSkia& pine_image) {
+void PineController::OnPineImageDecoded(base::TimeTicks start_time,
+                                        const gfx::ImageSkia& pine_image) {
   CHECK(pine_contents_data_);
+  RecordScreenshotDecodeDuration(base::TimeTicks::Now() - start_time);
 
   if (ShouldShowPineImage(pine_image)) {
     pine_contents_data_->image = pine_image;
+  } else {
+    RecordScreenshotOnShutdownStatus(
+        ScreenshotOnShutdownStatus::kFailedOnDifferentOrientations);
   }
 
   StartPineOverviewSession();
@@ -381,12 +366,12 @@ void PineController::OnOnboardingAcceptPressed(bool restore_on) {
       prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(full_restore::RestoreOption::kAskEveryTime));
   // We only record the action taken if the user had Restore off.
-  base::UmaHistogramBoolean(kPineOnboardingHistogram, true);
+  RecordOnboardingAction(/*restore=*/true);
 }
 
 void PineController::OnOnboardingCancelPressed() {
   // The cancel button would only exist if the user had Restore off.
-  base::UmaHistogramBoolean(kPineOnboardingHistogram, false);
+  RecordOnboardingAction(/*restore=*/false);
 }
 
 }  // namespace ash
