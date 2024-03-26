@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
@@ -85,7 +86,7 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
   }
 
   chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller() {
-    return read_write_cards_ui_controller_;
+    return read_write_cards_ui_controller_.get();
   }
 
   base::WeakPtr<QuickAnswersControllerImpl> GetWeakPtr();
@@ -130,7 +131,8 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
   // The last received `QuickAnswersSession` from client.
   std::unique_ptr<quick_answers::QuickAnswersSession> quick_answers_session_;
 
-  chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller_;
+  const raw_ref<chromeos::ReadWriteCardsUiController>
+      read_write_cards_ui_controller_;
 
   QuickAnswersVisibility visibility_ = QuickAnswersVisibility::kClosed;
 

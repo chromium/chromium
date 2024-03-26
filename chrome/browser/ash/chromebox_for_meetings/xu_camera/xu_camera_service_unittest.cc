@@ -271,9 +271,25 @@ TEST_F(CfMXuCameraServiceTest, XuCameraGetCtrlLenWithDevPathCtrlQuery) {
 }
 
 struct XuTestCase {
+  XuTestCase(std::string test_name,
+             mojom::WebcamIdPtr webcam_id,
+             mojom::CtrlTypePtr ctrl_type,
+             uint8_t expected_error_code,
+             std::vector<uint8_t> expected_data)
+      : test_name(test_name),
+        webcam_id(std::move(webcam_id)),
+        ctrl_type(std::move(ctrl_type)),
+        expected_error_code(expected_error_code),
+        expected_data(expected_data) {}
+  XuTestCase(const XuTestCase& other)
+      : test_name(other.test_name),
+        webcam_id(other.webcam_id.Clone()),
+        ctrl_type(other.ctrl_type.Clone()),
+        expected_error_code(other.expected_error_code),
+        expected_data(other.expected_data) {}
   std::string test_name;
-  const mojom::WebcamIdPtr& webcam_id;
-  const mojom::CtrlTypePtr& ctrl_type;
+  const mojom::WebcamIdPtr webcam_id;
+  const mojom::CtrlTypePtr ctrl_type;
   uint8_t expected_error_code;
   std::vector<uint8_t> expected_data;  // used only for GetCtrl tests
 };

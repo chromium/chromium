@@ -37,46 +37,49 @@ EditorManagerLacros::EditorManagerLacros()
     : lacros_observer_(this),
       panel_manager_remote_(GetPanelManagerRemote()),
       editor_observer_receiver_(&lacros_observer_) {
-  panel_manager_remote_->BindEditorObserver(
-      editor_observer_receiver_.BindNewPipeAndPassRemote());
+  (*panel_manager_remote_)
+      ->BindEditorObserver(
+          editor_observer_receiver_.BindNewPipeAndPassRemote());
 }
 
 EditorManagerLacros::~EditorManagerLacros() = default;
 
 void EditorManagerLacros::GetEditorPanelContext(
     base::OnceCallback<void(EditorContext)> callback) {
-  panel_manager_remote_->GetEditorPanelContext(
-      base::BindOnce(&EditorManagerLacros::OnEditorPanelContextResult,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  (*panel_manager_remote_)
+      ->GetEditorPanelContext(
+          base::BindOnce(&EditorManagerLacros::OnEditorPanelContextResult,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void EditorManagerLacros::OnPromoCardDismissed() {
-  panel_manager_remote_->OnPromoCardDismissed();
+  (*panel_manager_remote_)->OnPromoCardDismissed();
 }
 
 void EditorManagerLacros::OnPromoCardDeclined() {
-  panel_manager_remote_->OnPromoCardDeclined();
+  (*panel_manager_remote_)->OnPromoCardDeclined();
 }
 
 void EditorManagerLacros::StartEditingFlow() {
-  panel_manager_remote_->StartEditingFlow();
+  (*panel_manager_remote_)->StartEditingFlow();
 }
 
 void EditorManagerLacros::StartEditingFlowWithPreset(
     std::string_view text_query_id) {
-  panel_manager_remote_->StartEditingFlowWithPreset(std::string(text_query_id));
+  (*panel_manager_remote_)
+      ->StartEditingFlowWithPreset(std::string(text_query_id));
 }
 
 void EditorManagerLacros::StartEditingFlowWithFreeform(std::string_view text) {
-  panel_manager_remote_->StartEditingFlowWithFreeform(std::string(text));
+  (*panel_manager_remote_)->StartEditingFlowWithFreeform(std::string(text));
 }
 
 void EditorManagerLacros::OnEditorMenuVisibilityChanged(bool visible) {
-  panel_manager_remote_->OnEditorMenuVisibilityChanged(visible);
+  (*panel_manager_remote_)->OnEditorMenuVisibilityChanged(visible);
 }
 
 void EditorManagerLacros::LogEditorMode(EditorMode mode) {
-  panel_manager_remote_->LogEditorMode(ToMojoEditorMode(mode));
+  (*panel_manager_remote_)->LogEditorMode(ToMojoEditorMode(mode));
 }
 
 void EditorManagerLacros::AddObserver(EditorManager::Observer* observer) {

@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/views/editor_menu/editor_manager.h"
@@ -57,7 +58,8 @@ class EditorManagerLacros : public EditorManager {
 
   LacrosObserver lacros_observer_;
 
-  mojo::Remote<crosapi::mojom::EditorPanelManager>& panel_manager_remote_;
+  const raw_ref<mojo::Remote<crosapi::mojom::EditorPanelManager>>
+      panel_manager_remote_;
 
   mojo::Receiver<crosapi::mojom::EditorObserver> editor_observer_receiver_;
 

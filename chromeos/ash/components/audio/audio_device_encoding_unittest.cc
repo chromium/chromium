@@ -15,7 +15,7 @@ class AudioDeviceEncodingTest : public AudioDeviceSelectionTestBase {};
 // Test that EncodeAudioDeviceSet encodes an audio device set correctly.
 TEST_F(AudioDeviceEncodingTest, EncodeAudioDeviceSet) {
   struct {
-    const AudioDeviceList& devices;
+    const AudioDeviceList devices;
     const uint32_t expected_number;
   } items[] = {
       {{}, 0b0},
@@ -74,8 +74,8 @@ TEST_F(AudioDeviceEncodingTest, EncodeAudioDeviceSet) {
 // correctly.
 TEST_F(AudioDeviceEncodingTest, EncodeBeforeAndAfterAudioDeviceSets) {
   struct {
-    const AudioDeviceList& device_set_before;
-    const AudioDeviceList& device_set_after;
+    const AudioDeviceList device_set_before;
+    const AudioDeviceList device_set_after;
     const uint32_t expected_number;
   } items[] = {
       {{}, {}, 0},

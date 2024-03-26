@@ -48,7 +48,8 @@ void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
   // If there is selected text, we will show the condensed Mahi view alongside
   // quick answers.
   // TODO(b/324647147): Use condensed view here instead of `MahiMenuView`.
-  read_write_cards_ui_controller_.SetMahiView(std::make_unique<MahiMenuView>());
+  read_write_cards_ui_controller_->SetMahiView(
+      std::make_unique<MahiMenuView>());
 }
 
 void MahiMenuController::OnAnchorBoundsChanged(const gfx::Rect& anchor_bounds) {
@@ -65,7 +66,7 @@ void MahiMenuController::OnDismiss(bool is_other_command_executed) {
     menu_widget_.reset();
   }
 
-  read_write_cards_ui_controller_.RemoveMahiView();
+  read_write_cards_ui_controller_->RemoveMahiView();
 }
 
 base::WeakPtr<MahiMenuController> MahiMenuController::GetWeakPtr() {

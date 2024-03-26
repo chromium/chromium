@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -41,7 +42,7 @@ class MahiMenuController : public chromeos::ReadWriteCardController {
   base::WeakPtr<MahiMenuController> GetWeakPtr();
 
  private:
-  ReadWriteCardsUiController& read_write_cards_ui_controller_;
+  const raw_ref<ReadWriteCardsUiController> read_write_cards_ui_controller_;
   views::UniqueWidgetPtr menu_widget_;
   base::WeakPtrFactory<MahiMenuController> weak_factory_{this};
 };
