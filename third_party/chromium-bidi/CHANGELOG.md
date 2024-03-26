@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.15](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.14...chromium-bidi-v0.5.15) (2024-03-25)
+
+
+### Features
+
+* better support for `network.provideResponse` ([#2065](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2065)) ([99f81fe](https://github.com/GoogleChromeLabs/chromium-bidi/commit/99f81fe686663ac1cb5a084e72e6434dd97fd826))
+* implement readonly capabilities ([#2070](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2070)) ([a93aa60](https://github.com/GoogleChromeLabs/chromium-bidi/commit/a93aa60e49af1ef169c3814c9f89078ce0cd9de5))
+
+
+### Bug Fixes
+
+* continue blocking if CDP command fails ([#2068](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2068)) ([43e7f83](https://github.com/GoogleChromeLabs/chromium-bidi/commit/43e7f83f6430d8387b9685a15a21055b91983333))
+* don't encode body 2 times ([#2069](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2069)) ([aa20457](https://github.com/GoogleChromeLabs/chromium-bidi/commit/aa204578392152d271b20f70637e9978bcf24bed))
+* throw NoSuchAlertException for prompts ([#2055](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2055)) ([f67f79b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/f67f79b9c0a7ba11a7c2d2e05e764ca0e9d35319))
+
 ## [0.5.14](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.13...chromium-bidi-v0.5.14) (2024-03-21)
 
 
