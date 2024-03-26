@@ -11,9 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
@@ -23,6 +22,7 @@ class PackagedLicenseView;
 // It advertises the packaged license which allows user enroll device.
 class PackagedLicenseScreen
     : public BaseScreen,
+      public OobeMojoBinder<screens_oobe::mojom::PackagedLicensePageHandler>,
       public screens_oobe::mojom::PackagedLicensePageHandler {
  public:
   using TView = PackagedLicenseView;
@@ -59,10 +59,6 @@ class PackagedLicenseScreen
         exit_callback_, testing_callback);
   }
 
-  void BindReceiver(
-      mojo::PendingReceiver<screens_oobe::mojom::PackagedLicensePageHandler>
-          receiver);
-
   // BaseScreen
   bool MaybeSkip(WizardContext& context) override;
 
@@ -77,9 +73,6 @@ class PackagedLicenseScreen
   void OnEnrollClicked() override;
 
  private:
-  mojo::Receiver<screens_oobe::mojom::PackagedLicensePageHandler> page_handler_{
-      this};
-
   base::WeakPtr<PackagedLicenseView> view_;
 
   ScreenExitCallback exit_callback_;

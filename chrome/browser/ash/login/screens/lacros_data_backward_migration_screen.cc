@@ -17,8 +17,6 @@
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom.h"
 #include "chrome/common/chrome_paths.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
@@ -29,24 +27,13 @@ LacrosDataBackwardMigrationScreen::LacrosDataBackwardMigrationScreen(
     base::WeakPtr<LacrosDataBackwardMigrationScreenView> view)
     : BaseScreen(LacrosDataBackwardMigrationScreenView::kScreenId,
                  OobeScreenPriority::SCREEN_DEVICE_DEVELOPER_MODIFICATION),
+      OobeMojoBinder(this),
       view_(std::move(view)) {
   DCHECK(view_);
 }
 
 LacrosDataBackwardMigrationScreen::~LacrosDataBackwardMigrationScreen() =
     default;
-
-void LacrosDataBackwardMigrationScreen::BindRemoteAndReciever(
-    mojo::PendingRemote<screens_login::mojom::LacrosDataBackwardMigrationPage>
-        pending_page,
-    mojo::PendingReceiver<
-        screens_login::mojom::LacrosDataBackwardMigrationPageHandler>
-        receiver) {
-  page_handler_.reset();
-  page_.reset();
-  page_handler_.Bind(std::move(receiver));
-  page_.Bind(std::move(pending_page));
-}
 
 void LacrosDataBackwardMigrationScreen::ShowImpl() {
   if (!view_)
@@ -96,8 +83,8 @@ void LacrosDataBackwardMigrationScreen::ShowImpl() {
 }
 
 void LacrosDataBackwardMigrationScreen::OnProgress(int percent) {
-  if (page_.is_bound()) {
-    page_->SetProgressValue(percent);
+  if (GetRemote()->is_bound()) {
+    (*GetRemote())->SetProgressValue(percent);
   }
 }
 
@@ -118,8 +105,8 @@ void LacrosDataBackwardMigrationScreen::OnMigrated(
       chrome::AttemptRestart();
       break;
     case BrowserDataBackMigratorBase::Result::kFailed:
-      if (page_.is_bound()) {
-        page_->SetFailureStatus();
+      if (GetRemote()->is_bound()) {
+        (*GetRemote())->SetFailureStatus();
       }
       break;
   }

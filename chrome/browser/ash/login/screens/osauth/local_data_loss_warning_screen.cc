@@ -13,8 +13,6 @@
 #include "components/crash/core/app/crashpad.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/user_manager/user_manager.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 namespace {
@@ -54,18 +52,12 @@ LocalDataLossWarningScreen::LocalDataLossWarningScreen(
     const ScreenExitCallback& exit_callback)
     : BaseOSAuthSetupScreen(LocalDataLossWarningScreenView::kScreenId,
                             OobeScreenPriority::DEFAULT),
+      OobeMojoBinder(this),
       view_(std::move(view)),
       exit_callback_(exit_callback),
       mount_performer_(std::make_unique<MountPerformer>()) {}
 
 LocalDataLossWarningScreen::~LocalDataLossWarningScreen() = default;
-
-void LocalDataLossWarningScreen::BindReceiver(
-    mojo::PendingReceiver<
-        screens_osauth::mojom::LocalDataLossWarningPageHandler> receiver) {
-  page_handler_.reset();
-  page_handler_.Bind(std::move(receiver));
-}
 
 void LocalDataLossWarningScreen::ShowImpl() {
   bool can_go_back = context()->knowledge_factor_setup.data_loss_back_option !=

@@ -50,7 +50,7 @@ void OobeScreensHandlerFactory::CreateGaiaInfoScreenHandler(
   CHECK(WizardController::default_controller());
   GaiaInfoScreen* gaia_info =
       WizardController::default_controller()->GetScreen<GaiaInfoScreen>();
-  gaia_info->BindRemoteAndReciever(std::move(page), std::move(receiver));
+  gaia_info->BindRemoteAndReceiver(std::move(page), std::move(receiver));
 }
 
 void OobeScreensHandlerFactory::CreatePackagedLicensePageHandler(
@@ -73,7 +73,7 @@ void OobeScreensHandlerFactory::CreateLacrosDataBackwardMigrationScreenHandler(
   LacrosDataBackwardMigrationScreen* lacros_data_backward =
       WizardController::default_controller()
           ->GetScreen<LacrosDataBackwardMigrationScreen>();
-  lacros_data_backward->BindRemoteAndReciever(std::move(page),
+  lacros_data_backward->BindRemoteAndReceiver(std::move(page),
                                               std::move(receiver));
 }
 

@@ -8,9 +8,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
@@ -20,7 +19,10 @@ class LacrosDataBackwardMigrationScreenView;
 // directory. The screen is shown during login.
 class LacrosDataBackwardMigrationScreen
     : public BaseScreen,
-      public screens_login::mojom::LacrosDataBackwardMigrationPageHandler {
+      public screens_login::mojom::LacrosDataBackwardMigrationPageHandler,
+      public OobeMojoBinder<
+          screens_login::mojom::LacrosDataBackwardMigrationPageHandler,
+          screens_login::mojom::LacrosDataBackwardMigrationPage> {
  public:
   using TView = LacrosDataBackwardMigrationScreenView;
 
@@ -34,13 +36,6 @@ class LacrosDataBackwardMigrationScreen
 
   // Set `migrator_for_testing_`.
   static void SetMigratorForTesting(BrowserDataBackMigratorBase* migrator);
-
-  void BindRemoteAndReciever(
-      mojo::PendingRemote<screens_login::mojom::LacrosDataBackwardMigrationPage>
-          page,
-      mojo::PendingReceiver<
-          screens_login::mojom::LacrosDataBackwardMigrationPageHandler>
-          receiver);
 
  private:
   // BaseScreen:
@@ -58,10 +53,6 @@ class LacrosDataBackwardMigrationScreen
 
   // Called when migration is canceled by the user.
   void OnCanceled();
-
-  mojo::Remote<screens_login::mojom::LacrosDataBackwardMigrationPage> page_;
-  mojo::Receiver<screens_login::mojom::LacrosDataBackwardMigrationPageHandler>
-      page_handler_{this};
 
   base::WeakPtr<LacrosDataBackwardMigrationScreenView> view_;
   std::unique_ptr<BrowserDataBackMigratorBase> migrator_;

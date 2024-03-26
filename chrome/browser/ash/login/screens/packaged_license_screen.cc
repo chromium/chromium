@@ -12,8 +12,6 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
@@ -35,6 +33,7 @@ PackagedLicenseScreen::PackagedLicenseScreen(
     base::WeakPtr<PackagedLicenseView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(PackagedLicenseView::kScreenId, OobeScreenPriority::DEFAULT),
+      OobeMojoBinder(this),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
@@ -70,13 +69,6 @@ void PackagedLicenseScreen::ShowImpl() {
 }
 
 void PackagedLicenseScreen::HideImpl() {}
-
-void PackagedLicenseScreen::BindReceiver(
-    mojo::PendingReceiver<screens_oobe::mojom::PackagedLicensePageHandler>
-        receiver) {
-  page_handler_.reset();
-  page_handler_.Bind(std::move(receiver));
-}
 
 void PackagedLicenseScreen::OnEnrollClicked() {
   if (is_hidden()) {

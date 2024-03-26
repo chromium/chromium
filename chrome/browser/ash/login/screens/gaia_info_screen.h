@@ -11,17 +11,19 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_factory.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
 class GaiaInfoScreenView;
 
-class GaiaInfoScreen : public BaseScreen,
-                       public screens_common::mojom::GaiaInfoPageHandler {
+class GaiaInfoScreen
+    : public BaseScreen,
+      public screens_common::mojom::GaiaInfoPageHandler,
+      public OobeMojoBinder<screens_common::mojom::GaiaInfoPageHandler,
+                            screens_common::mojom::GaiaInfoPage> {
  public:
   using TView = GaiaInfoScreenView;
 
@@ -53,11 +55,6 @@ class GaiaInfoScreen : public BaseScreen,
 
   static std::string GetResultString(Result result);
 
-  void BindRemoteAndReciever(
-      mojo::PendingRemote<screens_common::mojom::GaiaInfoPage> page,
-      mojo::PendingReceiver<screens_common::mojom::GaiaInfoPageHandler>
-          receiver);
-
  private:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
@@ -69,10 +66,6 @@ class GaiaInfoScreen : public BaseScreen,
   void OnNextClicked(UserCreationFlowType user_flow) override;
 
   void SetQuickStartButtonVisibility(bool visible);
-
-  mojo::Remote<screens_common::mojom::GaiaInfoPage> page_;
-  mojo::Receiver<screens_common::mojom::GaiaInfoPageHandler> page_handler_{
-      this};
 
   base::WeakPtr<GaiaInfoScreenView> view_;
   ScreenExitCallback exit_callback_;

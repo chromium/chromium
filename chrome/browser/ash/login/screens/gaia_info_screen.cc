@@ -9,8 +9,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
@@ -34,6 +32,7 @@ std::string GaiaInfoScreen::GetResultString(Result result) {
 GaiaInfoScreen::GaiaInfoScreen(base::WeakPtr<GaiaInfoScreenView> view,
                                const ScreenExitCallback& exit_callback)
     : BaseScreen(GaiaInfoScreenView::kScreenId, OobeScreenPriority::DEFAULT),
+      OobeMojoBinder(this),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
@@ -76,16 +75,6 @@ void GaiaInfoScreen::ShowImpl() {
 
 void GaiaInfoScreen::HideImpl() {}
 
-void GaiaInfoScreen::BindRemoteAndReciever(
-    mojo::PendingRemote<screens_common::mojom::GaiaInfoPage> pending_page,
-    mojo::PendingReceiver<screens_common::mojom::GaiaInfoPageHandler>
-        receiver) {
-  page_handler_.reset();
-  page_.reset();
-  page_handler_.Bind(std::move(receiver));
-  page_.Bind(std::move(pending_page));
-}
-
 void GaiaInfoScreen::OnBackClicked() {
   if (is_hidden()) {
     return;
@@ -105,8 +94,8 @@ void GaiaInfoScreen::OnNextClicked(UserCreationFlowType user_flow) {
 }
 
 void GaiaInfoScreen::SetQuickStartButtonVisibility(bool visible) {
-  if (visible && page_.is_bound()) {
-    page_->SetQuickStartVisible();
+  if (visible && GetRemote()->is_bound()) {
+    (*GetRemote())->SetQuickStartVisible();
   }
 }
 
