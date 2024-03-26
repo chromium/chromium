@@ -770,6 +770,9 @@
   "chromeos/ash/resources/ash_resources.grd": {
     "includes": [5540],
   },
+  "chromeos/ash/resources/internal/ash_internal_strings.grd": {
+    "messages": [5550],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/camera_app_ui/ash_camera_app_resources.grd": {
     "META": {"sizes": {"includes": [300],}},
     "includes": [5560],

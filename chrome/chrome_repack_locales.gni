@@ -90,6 +90,10 @@ template("chrome_repack_locales") {
         "//chromeos/strings",
         "//remoting/resources",
       ]
+      if (is_chrome_branded) {
+        source_patterns += [ "${root_gen_dir}/chromeos/ash/resources/internal/strings/ash_internal_strings_" ]
+        deps += [ "//chromeos/ash/resources/internal/strings" ]
+      }
       compress = true
     }
     if (is_chromeos_lacros) {
