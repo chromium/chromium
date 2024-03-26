@@ -165,6 +165,10 @@ export class NetworkRequest {
     return Boolean(this.#request.info);
   }
 
+  isDataUrl(): boolean {
+    return this.url.startsWith('data:');
+  }
+
   #phaseChanged() {
     this.waitNextPhase.resolve();
     this.waitNextPhase = new Deferred();
@@ -200,6 +204,7 @@ export class NetworkRequest {
       // Flush redirects
       options.wasRedirected ||
       options.hasFailed ||
+      this.isDataUrl() ||
       Boolean(this.#request.extraInfo) ||
       // Requests from cache don't have extra info
       this.#servedFromCache ||

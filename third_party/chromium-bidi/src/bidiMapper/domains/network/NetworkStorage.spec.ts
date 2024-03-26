@@ -206,6 +206,16 @@ describe('NetworkStorage', () => {
         isBlocked: false,
       });
     });
+
+    it('should work with data url', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient, {
+        url: 'data:text/html,<div>yo</div>',
+      });
+
+      request.requestWillBeSent();
+      const event = await getEvent('network.beforeRequestSent');
+      expect(event).to.exist;
+    });
   });
 
   describe('network.responseStarted', () => {
