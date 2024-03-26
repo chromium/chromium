@@ -55,6 +55,8 @@ def _create_singleton_node_type(kind):
         get = get,
     )
 
+_ANONYMOUS_PREFIX = "<anonymous>"
+
 def _create_unscoped_node_type(kind, allow_empty_id = False):
     """Create an unscoped node type.
 
@@ -98,10 +100,10 @@ def _create_unscoped_node_type(kind, allow_empty_id = False):
     if allow_empty_id:
         def add(key_id = None, **kwargs):
             if key_id == None:
-                sequence_value = str(sequence.next(kind))
-                k = graph.key(_CHROMIUM_NS_KIND, "UNIQUE", kind, sequence_value)
-            else:
-                k = key(key_id)
+                key_id = "{}:{}".format(_ANONYMOUS_PREFIX, sequence.next(kind))
+            elif key_id.startswith(_ANONYMOUS_PREFIX):
+                fail("cannot specify a key ID with prefix \"{}\"".format(_ANONYMOUS_PREFIX))
+            k = key(key_id)
             graph.add_node(k, **kwargs)
             return k
     else:
