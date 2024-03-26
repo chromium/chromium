@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/containers/circular_deque.h"
 #include "base/files/file_util.h"
@@ -879,7 +880,7 @@ class HTML5FileWriter {
     // Create a temp file.
     base::FilePath temp_file;
     if (!base::CreateTemporaryFile(&temp_file) ||
-        !base::WriteFile(temp_file, base::StringPiece(data, length))) {
+        !base::WriteFile(temp_file, std::string_view(data, length))) {
       return false;
     }
     // Invoke the fileapi to copy it into the sandboxed filesystem.
