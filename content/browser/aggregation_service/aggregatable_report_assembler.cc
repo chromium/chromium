@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -77,7 +78,7 @@ AggregatableReportAssembler::PendingRequest::PendingRequest(
     : report_request(std::move(report_request)),
       callback(std::move(callback)),
       processing_url_keys(num_processing_urls) {
-  DCHECK(this->callback);
+  CHECK(this->callback, base::NotFatalUntil::M128);
 }
 
 AggregatableReportAssembler::PendingRequest::PendingRequest(
@@ -111,17 +112,21 @@ AggregatableReportAssembler::CreateForTesting(
 void AggregatableReportAssembler::AssembleReport(
     AggregatableReportRequest report_request,
     AssemblyCallback callback) {
-  DCHECK(base::ranges::is_sorted(report_request.processing_urls()));
+  CHECK(base::ranges::is_sorted(report_request.processing_urls()),
+        base::NotFatalUntil::M128);
   const size_t num_processing_urls = report_request.processing_urls().size();
-  DCHECK(AggregatableReport::IsNumberOfProcessingUrlsValid(
-      num_processing_urls, report_request.payload_contents().aggregation_mode));
+  CHECK(AggregatableReport::IsNumberOfProcessingUrlsValid(
+            num_processing_urls,
+            report_request.payload_contents().aggregation_mode),
+        base::NotFatalUntil::M128);
 
   const AggregationServicePayloadContents& contents =
       report_request.payload_contents();
 
   // Currently, this is the only supported operation.
-  DCHECK_EQ(contents.operation,
-            AggregationServicePayloadContents::Operation::kHistogram);
+  CHECK_EQ(contents.operation,
+           AggregationServicePayloadContents::Operation::kHistogram,
+           base::NotFatalUntil::M128);
 
   if (pending_requests_.size() >= kMaxSimultaneousRequests) {
     RecordAssemblyStatus(AssemblyStatus::kTooManySimultaneousRequests);
@@ -132,7 +137,7 @@ void AggregatableReportAssembler::AssembleReport(
   }
 
   int64_t id = unique_id_counter_++;
-  DCHECK(!base::Contains(pending_requests_, id));
+  CHECK(!base::Contains(pending_requests_, id), base::NotFatalUntil::M128);
 
   const PendingRequest& pending_request =
       pending_requests_
@@ -155,10 +160,12 @@ void AggregatableReportAssembler::OnPublicKeyFetched(
     size_t processing_url_index,
     std::optional<PublicKey> key,
     AggregationServiceKeyFetcher::PublicKeyFetchStatus status) {
-  DCHECK_EQ(key.has_value(),
-            status == AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk);
+  CHECK_EQ(key.has_value(),
+           status == AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk,
+           base::NotFatalUntil::M128);
   auto pending_request_it = pending_requests_.find(report_id);
-  DCHECK(pending_request_it != pending_requests_.end());
+  CHECK(pending_request_it != pending_requests_.end(),
+        base::NotFatalUntil::M128);
 
   PendingRequest& pending_request = pending_request_it->second;
 

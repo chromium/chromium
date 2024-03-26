@@ -212,7 +212,7 @@ bool AggregationServiceTool::WriteReportToFile(const base::Value& contents,
 
   std::string contents_json;
   JSONStringValueSerializer serializer(&contents_json);
-  DCHECK(serializer.Serialize(contents));
+  CHECK(serializer.Serialize(contents));
 
   return base::WriteFile(filename, contents_json);
 }

@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -38,7 +39,7 @@ AggregatableReportScheduler::AggregatableReportScheduler(
           new TimerDelegate(storage_context,
                             std::move(on_scheduled_report_time_reached))),
       timer_(base::WrapUnique(timer_delegate_.get())) {
-  DCHECK(storage_context);
+  CHECK(storage_context, base::NotFatalUntil::M128);
 }
 AggregatableReportScheduler::~AggregatableReportScheduler() {
   timer_delegate_ = nullptr;
@@ -67,7 +68,7 @@ void AggregatableReportScheduler::NotifyInProgressRequestSucceeded(
 bool AggregatableReportScheduler::NotifyInProgressRequestFailed(
     AggregationServiceStorage::RequestId request_id,
     int previous_failed_attempts) {
-  DCHECK_GE(previous_failed_attempts, 0);
+  CHECK_GE(previous_failed_attempts, 0, base::NotFatalUntil::M128);
   std::optional<base::TimeDelta> delay =
       GetFailedReportDelay(previous_failed_attempts + 1);
 
@@ -94,7 +95,7 @@ bool AggregatableReportScheduler::NotifyInProgressRequestFailed(
 
 std::optional<base::TimeDelta>
 AggregatableReportScheduler::GetFailedReportDelay(int failed_send_attempts) {
-  DCHECK_GT(failed_send_attempts, 0);
+  CHECK_GT(failed_send_attempts, 0, base::NotFatalUntil::M128);
 
   if (failed_send_attempts > kMaxRetries)
     return std::nullopt;
@@ -114,7 +115,7 @@ AggregatableReportScheduler::TimerDelegate::TimerDelegate(
       should_not_delay_reports_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kPrivateAggregationDeveloperMode)) {
-  DCHECK(storage_context);
+  CHECK(storage_context, base::NotFatalUntil::M128);
 }
 AggregatableReportScheduler::TimerDelegate::~TimerDelegate() = default;
 

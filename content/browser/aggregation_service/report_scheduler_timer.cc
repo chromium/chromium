@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
@@ -22,7 +23,7 @@ namespace content {
 
 ReportSchedulerTimer::ReportSchedulerTimer(std::unique_ptr<Delegate> delegate)
     : delegate_(std::move(delegate)) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M128);
 
   network::NetworkConnectionTracker* tracker = GetNetworkConnectionTracker();
   obs_.Observe(tracker);

@@ -22,6 +22,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
@@ -162,7 +163,7 @@ void AggregationServiceImpl::ClearData(
 }
 
 void AggregationServiceImpl::OnUserVisibleTaskComplete() {
-  DCHECK_GT(num_pending_user_visible_tasks_, 0);
+  CHECK_GT(num_pending_user_visible_tasks_, 0, base::NotFatalUntil::M128);
   --num_pending_user_visible_tasks_;
 
   // No more user visible tasks, so we can reset the priority.
@@ -217,8 +218,9 @@ void AggregationServiceImpl::OnReportAssemblyComplete(
     AggregatableReportRequest report_request,
     std::optional<AggregatableReport> report,
     AggregatableReportAssembler::AssemblyStatus status) {
-  DCHECK_EQ(report.has_value(),
-            status == AggregatableReportAssembler::AssemblyStatus::kOk);
+  CHECK_EQ(report.has_value(),
+           status == AggregatableReportAssembler::AssemblyStatus::kOk,
+           base::NotFatalUntil::M128);
   base::UmaHistogramLongTimes100(
       request_id.has_value()
           ? "PrivacySandbox.AggregationService.ScheduledRequests.AssemblyTime"

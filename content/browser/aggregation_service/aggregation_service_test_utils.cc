@@ -20,6 +20,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
@@ -359,7 +360,7 @@ std::vector<uint8_t> DecryptPayloadWithHpke(
       base::as_bytes(base::make_span(authenticated_info_str));
 
   // No null terminators should have been copied when concatenating the strings.
-  DCHECK(!base::Contains(authenticated_info_str, '\0'));
+  CHECK(!base::Contains(authenticated_info_str, '\0'));
 
   bssl::ScopedEVP_HPKE_CTX recipient_context;
   if (!EVP_HPKE_CTX_setup_recipient(
