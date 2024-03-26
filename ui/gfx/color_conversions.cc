@@ -24,19 +24,20 @@ constexpr float kD50_x = 0.9642f;
 constexpr float kD50_y = 1.0f;
 constexpr float kD50_z = 0.8251f;
 
-// Evaluate the specified transfer function using point symmetry around the
-// origin. This means that if the transfer function f is valid only for positive
-// numbers, let g be the extended transfer function for all reals, defined as
-// g(x) = sign(x) * f(abs(x)).
+// Evaluate the specified transfer function. This can be replaced by
+// skcms_TransferFunction_eval when b/331320414 is fixed.
 float skcmsTrFnEvalExt(const skcms_TransferFunction* fn, float x) {
-  if (x < 0) {
-    return -skcms_TransferFunction_eval(fn, -x);
-  } else {
-    return skcms_TransferFunction_eval(fn, x);
+  float sign = x < 0 ? -1 : 1;
+  x *= sign;
+  // TODO(b/331320414): Make skcms_TransferFunction_eval not assert on when
+  // this is the case.
+  if (x >= fn->d && fn->a * x + fn->b < 0) {
+    return sign * fn->e;
   }
+  return sign * skcms_TransferFunction_eval(fn, x);
 }
 
-// Same as the above but for the pow function.
+// Power function extended to all real numbers by point symmetry.
 float powExt(float x, float p) {
   if (x < 0) {
     return -powf(-x, p);

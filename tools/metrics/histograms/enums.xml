@@ -10888,9 +10888,9 @@ Called by update_use_counter_feature_enum.py.-->
       label="ServiceWorkerEventHandlerModifiedAfterInitialization"/>
   <int value="4470" label="AuthorizationCrossOrigin"/>
   <int value="4471" label="CSSColorMixFunction"/>
-  <int value="4472" label="CSSColorColorSpecifiedSpace"/>
-  <int value="4473" label="CSSColorLabOklab"/>
-  <int value="4474" label="CSSColorLchOklch"/>
+  <int value="4472" label="OBSOLETE_CSSColorColorSpecifiedSpace"/>
+  <int value="4473" label="OBSOLETE_CSSColorLabOklab"/>
+  <int value="4474" label="OBSOLETE_CSSColorLchOklch"/>
   <int value="4475" label="OBSOLETE_CreateNSResolverWithNonElements2"/>
   <int value="4476" label="GetDisplayMediaWithPreferCurrentTabTrue"/>
   <int value="4477" label="FencedFrameConfigAttribute"/>
@@ -11401,6 +11401,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4927" label="V8ModelManager_DefaultGenericSessionOptions_Method"/>
   <int value="4928" label="QuirksModeCursorHandApplied"/>
   <int value="4929" label="SkippedPreloadScanning"/>
+  <int value="4930" label="CSSColor_SpaceRGB"/>
+  <int value="4931" label="CSSColor_SpaceRGB_outOfRec2020"/>
+  <int value="4932" label="CSSColor_SpaceOkLxx"/>
+  <int value="4933" label="CSSColor_SpaceOkLxx_outOfRec2020"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
