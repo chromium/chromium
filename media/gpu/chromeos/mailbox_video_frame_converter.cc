@@ -417,7 +417,7 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
   } else {
     texture_target = gpu::NativeBufferNeedsPlatformSpecificTextureTarget(
                          *buffer_format, gfx::BufferPlane::DEFAULT)
-                         ? gpu::GetPlatformSpecificTextureTarget()
+                         ? GL_TEXTURE_EXTERNAL_OES
                          : GL_TEXTURE_2D;
   }
   mailbox_holders[0] =
