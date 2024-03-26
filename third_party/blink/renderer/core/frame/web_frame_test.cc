@@ -13859,7 +13859,7 @@ TEST_F(WebFrameSimTest, PageSizeType) {
   frame->PrintBegin(print_params, WebNode());
   // Initially empty @page rule.
   EXPECT_EQ(PageSizeType::kAuto,
-            main_frame->GetPageDescription(1).page_size_type);
+            main_frame->GetPageDescription(0).page_size_type);
   frame->PrintEnd();
 
   for (const auto& test : test_cases) {
@@ -13867,7 +13867,7 @@ TEST_F(WebFrameSimTest, PageSizeType) {
                             ASSERT_NO_EXCEPTION);
     frame->PrintBegin(print_params, WebNode());
     EXPECT_EQ(test.page_size_type,
-              main_frame->GetPageDescription(1).page_size_type);
+              main_frame->GetPageDescription(0).page_size_type);
     frame->PrintEnd();
   }
 }
