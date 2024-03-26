@@ -1217,12 +1217,6 @@ bool TestRecipeReplayer::ReplayRecordedActions(
     ++execution_state.index;
   }
 
-  // Dismiss the beforeUnloadDialog if the last page of the test has a
-  // beforeUnload function.
-  if (recipe.contains("dismissBeforeUnload")) {
-    NavigateAwayAndDismissBeforeUnloadDialog();
-  }
-
   return true;
 }
 
@@ -2280,16 +2274,6 @@ void TestRecipeReplayer::SimulateKeyPressWrapper(
   ui::DomCode code = ui::UsLayoutKeyboardCodeToDomCode(key_code);
   SimulateKeyPress(web_contents, key, code, key_code, false, false, false,
                    false);
-}
-
-void TestRecipeReplayer::NavigateAwayAndDismissBeforeUnloadDialog() {
-  content::PrepContentsForBeforeUnloadTest(GetWebContents());
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NO_WAIT);
-  javascript_dialogs::AppModalDialogController* alert =
-      ui_test_utils::WaitForAppModalDialog();
-  alert->view()->AcceptAppModalDialog();
 }
 
 bool TestRecipeReplayer::HasChromeStoredCredential(

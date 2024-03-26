@@ -404,7 +404,6 @@ class TestRecipeReplayer {
       IgnoreCase ignore_case = IgnoreCase(false));
   void SimulateKeyPressWrapper(content::WebContents* web_contents,
                                ui::DomKey key);
-  void NavigateAwayAndDismissBeforeUnloadDialog();
   bool HasChromeStoredCredential(const base::Value::Dict& action,
                                  bool* stored_cred);
   bool OverrideAutofillClock(const base::FilePath capture_file_path);
