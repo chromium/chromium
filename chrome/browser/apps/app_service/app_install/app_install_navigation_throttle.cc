@@ -125,39 +125,39 @@ ThrottleCheckResult AppInstallNavigationThrottle::WillStartRequest() {
   return HandleRequest();
 }
 
-// TODO(b/299825321): Make this require redirection from an Almanac server.
 ThrottleCheckResult AppInstallNavigationThrottle::WillRedirectRequest() {
   return HandleRequest();
 }
 
 ThrottleCheckResult AppInstallNavigationThrottle::HandleRequest() {
-  // TODO(b/304680258): Integration test this flow.
   const GURL& url = navigation_handle()->GetURL();
-  if (url.SchemeIs(chromeos::kAppInstallUriScheme) &&
-      url.path_piece() == kAppInstallPath) {
-    QueryParams query_params = ExtractQueryParams(url.query_piece());
-    // TODO(b/303350800): Generalize to work with all app types.
-    if (query_params.package_id.has_value() &&
-        (query_params.package_id->app_type() == AppType::kWeb ||
-         query_params.package_id->app_type() == AppType::kBorealis)) {
-      Profile* profile = Profile::FromBrowserContext(
-          navigation_handle()->GetWebContents()->GetBrowserContext());
-      auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
-      proxy->AppInstallService().InstallApp(
-          query_params.source, std::move(query_params.package_id.value()),
-          base::DoNothing());
-    }
+  if (!url.SchemeIs(chromeos::kAppInstallUriScheme) ||
+      url.path_piece() != kAppInstallPath) {
+    return content::NavigationThrottle::PROCEED;
+  }
 
-    if (!chromeos::features::IsCrosWebAppInstallDialogEnabled() &&
-        LinkCapturingNavigationThrottle::
-            IsEmptyDanglingWebContentsAfterLinkCapture(navigation_handle())) {
-      navigation_handle()->GetWebContents()->Close();
-    }
-
+  QueryParams query_params = ExtractQueryParams(url.query_piece());
+  // TODO(b/303350800): Generalize to work with all app types.
+  if (!query_params.package_id.has_value() ||
+      (query_params.package_id->app_type() != AppType::kWeb &&
+       query_params.package_id->app_type() != AppType::kBorealis)) {
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
   }
 
-  return content::NavigationThrottle::PROCEED;
+  Profile* profile = Profile::FromBrowserContext(
+      navigation_handle()->GetWebContents()->GetBrowserContext());
+  auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
+  proxy->AppInstallService().InstallApp(
+      query_params.source, std::move(query_params.package_id.value()),
+      base::DoNothing());
+
+  if (!chromeos::features::IsCrosWebAppInstallDialogEnabled() &&
+      LinkCapturingNavigationThrottle::
+          IsEmptyDanglingWebContentsAfterLinkCapture(navigation_handle())) {
+    navigation_handle()->GetWebContents()->Close();
+  }
+
+  return content::NavigationThrottle::CANCEL_AND_IGNORE;
 }
 
 }  // namespace apps
