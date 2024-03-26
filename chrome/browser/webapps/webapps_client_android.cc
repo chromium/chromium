@@ -131,7 +131,7 @@ bool WebappsClientAndroid::IsInstallationInProgress(
 }
 
 bool WebappsClientAndroid::CanShowAppBanners(
-    content::WebContents* web_contents) {
+    const content::WebContents* web_contents) {
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
   return tab && static_cast<android::TabWebContentsDelegateAndroid*>(
                     tab->web_contents()->GetDelegate())

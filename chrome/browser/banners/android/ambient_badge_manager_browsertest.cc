@@ -111,14 +111,14 @@ class TestAppBannerManager : public AppBannerManagerAndroid {
     return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   }
 
-  void MaybeShowAmbientBadge() override {
+  void MaybeShowAmbientBadge(
+      const InstallBannerConfig& install_config) override {
     ambient_badge_test_ = std::make_unique<TestAmbientBadgeManager>(
         web_contents(), mock_segmentation_, profile()->GetPrefs());
 
     ambient_badge_test_->WaitForState(target_badge_state_,
                                       std::move(on_badge_done_));
 
-    InstallBannerConfig install_config = GetCurrentInstallBannerConfig();
     std::unique_ptr<AddToHomescreenParams> a2hs_params =
         AppBannerManagerAndroid::CreateAddToHomescreenParams(
             install_config, native_java_app_data_for_testing(),
@@ -130,7 +130,7 @@ class TestAppBannerManager : public AppBannerManagerAndroid {
         install_config.GetWebOrNativeAppIdentifier(), std::move(a2hs_params),
         // TODO(b/323192242): See if these callbacks can be merged.
         base::BindOnce(&AppBannerManagerAndroid::ShowBannerFromBadge,
-                       GetAndroidWeakPtr()),
+                       GetAndroidWeakPtr(), install_config),
         // Create the params, then pass them to MaybeShow.
         base::BindOnce(&AppBannerManagerAndroid::CreateAddToHomescreenParams,
                        install_config, native_java_app_data_for_testing())
@@ -138,7 +138,8 @@ class TestAppBannerManager : public AppBannerManagerAndroid {
                 &PwaBottomSheetController::MaybeShow, web_contents(),
                 install_config.web_app_data, /*expand_sheet=*/false,
                 base::BindRepeating(&TestAppBannerManager::OnInstallEvent,
-                                    GetAndroidWeakPtr()))));
+                                    GetAndroidWeakPtr(),
+                                    install_config.validated_url))));
   }
 
  private:

@@ -13,6 +13,7 @@
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "components/webapps/browser/android/webapps_jni_headers/PwaBottomSheetControllerProvider_jni.h"
 #include "components/webapps/browser/android/webapps_jni_headers/PwaBottomSheetController_jni.h"
+#include "components/webapps/browser/banners/install_banner_config.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "components/webapps/common/constants.h"
@@ -54,10 +55,16 @@ jboolean JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
   auto* app_banner_manager = static_cast<AppBannerManagerAndroid*>(
       WebappsClient::Get()->GetAppBannerManager(web_contents));
 
+  std::optional<InstallBannerConfig> install_config =
+      app_banner_manager->GetCurrentBannerConfig();
+  if (!install_config.has_value()) {
+    return false;
+  }
+
   WebappInstallSource install_source = InstallableMetrics::GetInstallSource(
       web_contents, static_cast<InstallTrigger>(install_trigger));
   return app_banner_manager->MaybeShowPwaBottomSheetController(
-      /* expand_sheet= */ true, install_source);
+      /* expand_sheet= */ true, install_source, install_config.value());
 }
 
 // static

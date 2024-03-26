@@ -239,7 +239,7 @@ public class AppBannerManager {
 
         String getInstallableWebAppManifestId(WebContents webContents);
 
-        boolean onAppDetailsRetrieved(
+        void onAppDetailsRetrieved(
                 long nativeAppBannerManagerAndroid,
                 AppBannerManager caller,
                 int requestId,
