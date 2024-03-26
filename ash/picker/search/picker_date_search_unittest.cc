@@ -4,7 +4,10 @@
 
 #include "ash/picker/search/picker_date_search.h"
 
+#include <vector>
+
 #include "base/check.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -12,84 +15,172 @@
 namespace ash {
 namespace {
 
+using ::testing::Combine;
 using ::testing::Field;
 using ::testing::Optional;
+using ::testing::Pointwise;
 using ::testing::Property;
+using ::testing::Values;
 using ::testing::VariantWith;
 
-base::Time TimeFromString(const char* time_string) {
+base::Time TimeFromDateString(const std::string& time_string) {
   base::Time date;
-  bool result = base::Time::FromString(time_string, &date);
+  bool result = base::Time::FromString(time_string.c_str(), &date);
   CHECK(result);
   return date;
 }
 
-TEST(PickerDateSearchTest, NoResult) {
-  EXPECT_FALSE(PickerDateSearch(TimeFromString("23 Jan 2000 10:00 GMT"), u"abc")
-                   .has_value());
+MATCHER(ResultMatchesDate, "") {
+  const auto& [result, date] = arg;
+  return ExplainMatchResult(
+      Property("data", &PickerSearchResult::data,
+               VariantWith<PickerSearchResult::TextData>(
+                   Field("text", &PickerSearchResult::TextData::text, date))),
+      result, result_listener);
 }
 
-TEST(PickerDateSearchTest, ShowsTodaysDate) {
-  EXPECT_THAT(
-      PickerDateSearch(TimeFromString("23 Jan 2000 10:00 GMT"), u"today"),
-      Optional(Property(
-          "data", &PickerSearchResult::data,
-          VariantWith<PickerSearchResult::TextData>(
-              Field("text", &PickerSearchResult::TextData::text, u"Jan 23")))));
-}
+struct TestCase {
+  std::string_view date;
+  std::u16string_view query;
+  std::vector<std::u16string_view> expected_results;
+};
 
-TEST(PickerDateSearchTest, ShowsYesterdaysDate) {
-  EXPECT_THAT(
-      PickerDateSearch(TimeFromString("23 Jan 2000 10:00 GMT"), u"yesterday"),
-      Optional(Property(
-          "data", &PickerSearchResult::data,
-          VariantWith<PickerSearchResult::TextData>(
-              Field("text", &PickerSearchResult::TextData::text, u"Jan 22")))));
-}
+class PickerDateSearchTest
+    : public ::testing::TestWithParam<std::tuple<std::string_view, TestCase>> {
+};
 
-TEST(PickerDateSearchTest, ShowsTomorrowsDate) {
-  EXPECT_THAT(
-      PickerDateSearch(TimeFromString("23 Jan 2000 10:00 GMT"), u"tomorrow"),
-      Optional(Property(
-          "data", &PickerSearchResult::data,
-          VariantWith<PickerSearchResult::TextData>(
-              Field("text", &PickerSearchResult::TextData::text, u"Jan 24")))));
-}
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PickerDateSearchTest,
+    Combine(Values("00:00", "12:00", "23:59"),
+            Values(
+                // No result
+                TestCase{
+                    .date = "23 Jan 2000",
+                    .query = u"abc",
+                    .expected_results = {},
+                },
+                // Today
+                TestCase{
+                    .date = "23 Jan 2000",
+                    .query = u"today",
+                    .expected_results = {u"Jan 23"},
+                },
+                // Yesterday
+                TestCase{
+                    .date = "23 Jan 2000",
+                    .query = u"yesterday",
+                    .expected_results = {u"Jan 22"},
+                },
+                // Tomorrow
+                TestCase{
+                    .date = "23 Jan 2000",
+                    .query = u"tomorrow",
+                    .expected_results = {u"Jan 24"},
+                },
+                // X days from now
+                TestCase{
+                    .date = "23 Jan 2000",
+                    .query = u"10 days from now",
+                    .expected_results = {u"Feb 2"},
+                },
+                // X days ago
+                TestCase{
+                    .date = "23 Jan 2000",
+                    .query = u"five days ago",
+                    .expected_results = {u"Jan 18"},
+                },
+                // X weeks from now
+                TestCase{
+                    .date = "23 Jan 2000",
+                    .query = u"three weeks from now",
+                    .expected_results = {u"Feb 13"},
+                },
+                // X weeks ago
+                TestCase{
+                    .date = "23 Jan 2000",
+                    .query = u"2 weeks ago",
+                    .expected_results = {u"Jan 9"},
+                },
+                // search for Friday on Tuesday
+                TestCase{
+                    .date = "19 Mar 2024",
+                    .query = u"Friday",
+                    .expected_results = {u"Mar 22"},
+                },
+                // search for this Friday on Tuesday
+                TestCase{
+                    .date = "19 Mar 2024",
+                    .query = u"this Friday",
+                    .expected_results = {u"Mar 22"},
+                },
+                // search for next Friday on Tuesday
+                TestCase{
+                    .date = "19 Mar 2024",
+                    .query = u"next Friday",
+                    .expected_results = {u"Mar 22", u"Mar 29"},
+                },
+                // search for last Friday on Tuesday
+                TestCase{
+                    .date = "19 Mar 2024",
+                    .query = u"last Friday",
+                    .expected_results = {u"Mar 15"},
+                },
+                // search for Tuesday on Friday
+                TestCase{
+                    .date = "22 Mar 2024",
+                    .query = u"Tuesday",
+                    .expected_results = {u"Mar 19", u"Mar 26"},
+                },
+                // search for this Tuesday on Friday
+                TestCase{
+                    .date = "22 Mar 2024",
+                    .query = u"this Tuesday",
+                    .expected_results = {u"Mar 19", u"Mar 26"},
+                },
+                // search for next Tuesday on Friday
+                TestCase{
+                    .date = "22 Mar 2024",
+                    .query = u"next Tuesday",
+                    .expected_results = {u"Mar 26"},
+                },
+                // search for last Tuesday on Friday
+                TestCase{
+                    .date = "22 Mar 2024",
+                    .query = u"last Tuesday",
+                    .expected_results = {u"Mar 19", u"Mar 12"},
+                },
+                // search for Monday on Monday
+                TestCase{
+                    .date = "18 Mar 2024",
+                    .query = u"Monday",
+                    .expected_results = {u"Mar 18"},
+                },
+                // search for this Monday on Monday
+                TestCase{
+                    .date = "18 Mar 2024",
+                    .query = u"this Monday",
+                    .expected_results = {u"Mar 18"},
+                },
+                // search for next Monday on Monday
+                TestCase{
+                    .date = "18 Mar 2024",
+                    .query = u"next Monday",
+                    .expected_results = {u"Mar 25"},
+                },
+                // search for last Monday on Monday
+                TestCase{
+                    .date = "18 Mar 2024",
+                    .query = u"last Monday",
+                    .expected_results = {u"Mar 11"},
+                })));
 
-TEST(PickerDateSearchTest, ShowsDateXDaysFromNow) {
-  EXPECT_THAT(PickerDateSearch(TimeFromString("23 Jan 2000 10:00 GMT"),
-                               u"10 days from now"),
-              Optional(Property("data", &PickerSearchResult::data,
-                                VariantWith<PickerSearchResult::TextData>(Field(
-                                    "text", &PickerSearchResult::TextData::text,
-                                    u"Feb 2")))));
-}
-
-TEST(PickerDateSearchTest, ShowsDateXDaysAgo) {
-  EXPECT_THAT(PickerDateSearch(TimeFromString("23 Jan 2000 10:00 GMT"),
-                               u"five days ago"),
-              Optional(Property("data", &PickerSearchResult::data,
-                                VariantWith<PickerSearchResult::TextData>(Field(
-                                    "text", &PickerSearchResult::TextData::text,
-                                    u"Jan 18")))));
-}
-
-TEST(PickerDateSearchTest, ShowsDateXWeeksFromNow) {
-  EXPECT_THAT(PickerDateSearch(TimeFromString("23 Jan 2000 10:00 GMT"),
-                               u"three weeks from now"),
-              Optional(Property("data", &PickerSearchResult::data,
-                                VariantWith<PickerSearchResult::TextData>(Field(
-                                    "text", &PickerSearchResult::TextData::text,
-                                    u"Feb 13")))));
-}
-
-TEST(PickerDateSearchTest, ShowsDateXWeeksAgo) {
-  EXPECT_THAT(
-      PickerDateSearch(TimeFromString("23 Jan 2000 10:00 GMT"), u"2 weeks ago"),
-      Optional(Property(
-          "data", &PickerSearchResult::data,
-          VariantWith<PickerSearchResult::TextData>(
-              Field("text", &PickerSearchResult::TextData::text, u"Jan 9")))));
+TEST_P(PickerDateSearchTest, ReturnsExpectedDates) {
+  std::string_view time = std::get<0>(GetParam());
+  const auto& [date, query, expected_results] = std::get<1>(GetParam());
+  EXPECT_THAT(PickerDateSearch(
+                  TimeFromDateString(base::StrCat({date, " ", time})), query),
+              Pointwise(ResultMatchesDate(), expected_results));
 }
 }  // namespace
 }  // namespace ash

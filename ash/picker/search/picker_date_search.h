@@ -5,8 +5,8 @@
 #ifndef ASH_PICKER_SEARCH_PICKER_DATE_SEARCH_H_
 #define ASH_PICKER_SEARCH_PICKER_DATE_SEARCH_H_
 
-#include <optional>
 #include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
@@ -17,7 +17,7 @@ class Time;
 
 namespace ash {
 
-ASH_EXPORT std::optional<PickerSearchResult> PickerDateSearch(
+ASH_EXPORT std::vector<PickerSearchResult> PickerDateSearch(
     const base::Time& now,
     std::u16string_view query);
 

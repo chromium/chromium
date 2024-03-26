@@ -84,7 +84,9 @@ PickerSearchRequest::PickerSearchRequest(
 
     date_search_start_ = base::TimeTicks::Now();
     // Date results is currently synchronous.
-    HandleDateSearchResults(PickerDateSearch(base::Time::Now(), query));
+    for (const auto& result : PickerDateSearch(base::Time::Now(), query)) {
+      HandleDateSearchResults(result);
+    }
 
     // Math results is currently synchronous.
     HandleMathSearchResults(PickerMathSearch(query));
