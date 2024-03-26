@@ -10,7 +10,8 @@
   #global-policy,
   #tethering-capabilities-div,
   #tethering-status-div,
-  #tethering-config-div {
+  #tethering-config-div,
+  #wifi-direct-capabilities-div {
     white-space: pre-wrap;
   }
 
@@ -218,6 +219,11 @@
 
   <template is="dom-if" if="[[isWifiDirectEnabled_]]">
     <div class="tabpanel" id="wifi-direct">
+      <h2>$i18n{wifiDirectCapabilitiesLabel}</h2>
+      <div id="wifi-direct-capabilities-div"></div>
+      <cr-button class="action-button" on-click="getWifiDirectCapabilities_">
+        $i18n{refreshWifiDirectCapabilitiesButtonText}
+      </cr-button>
     </div>
   </template>
 </iron-pages>

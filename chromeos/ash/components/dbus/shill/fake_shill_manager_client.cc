@@ -1239,6 +1239,20 @@ void FakeShillManagerClient::SetDefaultProperties() {
                shill::kTetheringIdleReasonInitialState);
   SetManagerProperty(shill::kTetheringStatusProperty,
                      base::Value(std::move(tethering_state)));
+
+  auto wifi_direct_capabilities =
+      base::Value::Dict()
+          .Set(shill::kP2PCapabilitiesP2PSupportedProperty, true)
+          .Set(shill::kP2PCapabilitiesGroupReadinessProperty,
+               shill::kP2PCapabilitiesGroupReadinessReady)
+          .Set(shill::kP2PCapabilitiesClientReadinessProperty,
+               shill::kP2PCapabilitiesClientReadinessReady)
+          .Set(shill::kP2PCapabilitiesSupportedChannelsProperty,
+               base::Value::List().Append(1).Append(2))
+          .Set(shill::kP2PCapabilitiesPreferredChannelsProperty,
+               base::Value::List().Append(1));
+  SetManagerProperty(shill::kP2PCapabilitiesProperty,
+                     base::Value(std::move(wifi_direct_capabilities)));
 }
 
 void FakeShillManagerClient::PassNullopt(

@@ -158,6 +158,9 @@ class NetworkUiElement extends NetworkUiElementBase {
       this.getTetheringConfig_();
       this.getTetheringStatus_();
     }
+    if (this.isWifiDirectEnabled_) {
+      this.getWifiDirectCapabilities_();
+    }
     this.getHostname_();
     this.selectTabFromHash_();
     window.addEventListener('hashchange', this.onHashChange_);
@@ -361,6 +364,14 @@ class NetworkUiElement extends NetworkUiElementBase {
     resultDiv.classList.toggle('error', result !== 'success');
     this.getTetheringStatus_();
     this.tetheringChangeInProgress_ = false;
+  }
+
+  private async getWifiDirectCapabilities_() {
+    const result = await this.browserProxy_.getWifiDirectCapabilities();
+    const div = this.shadowRoot!.querySelector('#wifi-direct-capabilities-div');
+    if (div) {
+      div.textContent = stringifyJson(result);
+    }
   }
 
   private onHostnameChanged_(_: Event) {
