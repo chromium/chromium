@@ -127,9 +127,6 @@ actions {
               m_buyer_cumulative_timeouts {
                 old: 1
               }
-              m_reporting_timeout {
-                old: 1
-              }
               m_per_buyer_group_limits {
               }
               m_all_buyers_group_limit: 65535

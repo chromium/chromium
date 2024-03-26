@@ -455,7 +455,7 @@ If modifying AuctionConfig fields, please make sure to also modify:
 * Mojo serialization in:
     third_party/blink/public/common/interest_group/auction_config_mojom_traits.h
     third_party/blink/common/interest_group/auction_config_mojom_traits.cc
-* Fuzzer test in:
+* Fuzzer test (only needed for new promise or required fields) in:
     content/test/data/fuzzer_corpus/ad_auction_service_mojolpm_fuzzer/basic_auction.textproto
 * NumPromises() if it's a Promise.
 * SerializeAuctionConfigForDevtools() (in devtools_serialization.cc)
