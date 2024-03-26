@@ -676,9 +676,20 @@ class AppMenu::ZoomView : public AppMenuView {
     // Need to set a font list for the zoom label width calculations.
     zoom_label->SetFontList(MenuConfig::instance().font_list);
 
+    // TODO(accessibility): an alert role below is necessary because it
+    // guarantees and forces screen readers across platforms to read out.
+    // However, it is not ideal because an alert role, according to ARIA
+    // standards, gets treated like a live region. Thus, it may be read out on
+    // creation and mutation. Screen readers also prefixes the read out with
+    // 'alert' giving zoom read outs questionable priority.
+    //
+    // Do not do this for ChromeOS and investigate whether it is possible to do
+    // so for all other platforms.
+#if !BUILDFLAG(IS_CHROMEOS)
     // An accessibility role of kAlert will ensure that any updates to the zoom
     // level can be picked up by screen readers.
     zoom_label->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
     zoom_label_ = AddChildView(std::move(zoom_label));
 
@@ -722,7 +733,7 @@ class AppMenu::ZoomView : public AppMenuView {
     // The max width for `zoom_label_` should not be valid until the calls into
     // UpdateZoomControls().
     DCHECK(!zoom_label_max_width_.has_value());
-    UpdateZoomControls();
+    UpdateZoomControls(/*on_construction=*/true);
   }
   ZoomView(const ZoomView&) = delete;
   ZoomView& operator=(const ZoomView&) = delete;
@@ -790,7 +801,7 @@ class AppMenu::ZoomView : public AppMenuView {
     UpdateZoomControls();
   }
 
-  void UpdateZoomControls() {
+  void UpdateZoomControls(bool on_construction = false) {
     WebContents* contents = GetActiveWebContents();
     int zoom = 100;
     if (contents) {
@@ -802,9 +813,11 @@ class AppMenu::ZoomView : public AppMenuView {
       decrement_button_->SetEnabled(zoom > contents->GetMinimumZoomPercent());
     }
     zoom_label_->SetText(base::FormatPercent(zoom));
-    // An alert notification will ensure that the zoom label is always announced
-    // even if is not focusable.
-    zoom_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    if (!on_construction) {
+      // An alert notification will ensure that the zoom label is always
+      // announced even if is not focusable.
+      zoom_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    }
     zoom_label_max_width_.reset();
   }
 

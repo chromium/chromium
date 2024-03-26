@@ -214,18 +214,6 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
    */
   onAlert_(evt) {
     const node = evt.target;
-
-    if (node.role === RoleType.ALERT && node.root.role === RoleType.DESKTOP) {
-      // Exclude alerts in the desktop tree that are inside of menus.
-      let ancestor = node;
-      while (ancestor) {
-        if (ancestor.role === RoleType.MENU) {
-          return;
-        }
-        ancestor = ancestor.parent;
-      }
-    }
-
     const range = CursorRange.fromNode(node);
     const output = new Output();
     // Whenever chromevox is running together with dictation, we want to
