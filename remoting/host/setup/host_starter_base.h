@@ -57,13 +57,15 @@ class HostStarterBase : public HostStarter {
 
  protected:
   Params& params() { return start_host_params_; }
+  std::optional<std::string>& existing_host_id() { return existing_host_id_; }
 
   // Methods used to implement the registration process described in the class
   // comment. They are listed in the order in which they are called.
   void OnExistingConfigLoaded(std::optional<base::Value::Dict> config);
   void OnUserTokensRetrieved(const std::string& access_token,
                              const std::string& refresh_token);
-  virtual void RegisterNewHost(const std::string& access_token) = 0;
+  virtual void RegisterNewHost(const std::string& access_token,
+                               const std::string& public_key) = 0;
   void OnNewHostRegistered(const std::string& directory_id,
                            const std::string& owner_account_email,
                            const std::string& service_account_email,

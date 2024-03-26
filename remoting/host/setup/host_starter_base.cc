@@ -88,7 +88,7 @@ void HostStarterBase::OnExistingConfigLoaded(
             base::BindOnce(&HostStarterBase::OnUserTokensRetrieved, weak_ptr_),
             base::BindOnce(&HostStarterBase::HandleError, weak_ptr_));
   } else {
-    RegisterNewHost(std::string());
+    RegisterNewHost(std::string(), key_pair_->GetPublicKey());
   }
 }
 
@@ -98,7 +98,7 @@ void HostStarterBase::OnUserTokensRetrieved(const std::string& access_token,
 
   // We don't need a `refresh_token` for the user so ignore it even if the
   // authorization_code was created with the offline param.
-  RegisterNewHost(access_token);
+  RegisterNewHost(access_token, key_pair_->GetPublicKey());
 }
 
 void HostStarterBase::OnNewHostRegistered(
@@ -145,13 +145,13 @@ void HostStarterBase::OnNewHostRegistered(
 
   oauth_helper_.emplace(url_loader_factory_)
       .FetchTokens(
-          start_host_params_.owner_email, start_host_params_.auth_code,
+          service_account_email, authorization_code,
           {
               .client_id = google_apis::GetOAuth2ClientID(
                   google_apis::CLIENT_REMOTING_HOST),
               .client_secret = google_apis::GetOAuth2ClientSecret(
                   google_apis::CLIENT_REMOTING_HOST),
-              .redirect_uri = start_host_params_.redirect_url,
+              // Service account requests do not set |redirect_uri|.
           },
           base::BindOnce(&HostStarterBase::OnServiceAccountTokensRetrieved,
                          weak_ptr_),

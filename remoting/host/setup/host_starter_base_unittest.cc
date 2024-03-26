@@ -30,7 +30,9 @@ constexpr char kGetTokensResponse[] = R"({
             "expires_in": 3600,
             "token_type": "Bearer"
          })";
-constexpr char kGetUserEmailResponse[] = R"({"email": "user@test.com"})";
+constexpr char kGetUserEmailResponseForUser[] = R"({"email": "user@test.com"})";
+constexpr char kGetUserEmailResponseForServiceAccount[] =
+    R"({"email": "robot@chromoting.com"})";
 
 // Known values for testing config file generation.
 constexpr char kTestUserEmail[] = "user@test.com";
@@ -130,7 +132,8 @@ class TestHostStarter : public HostStarterBase {
  public:
   TestHostStarter(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      scoped_refptr<DaemonController> daemon_controller);
+      scoped_refptr<DaemonController> daemon_controller,
+      base::OnceClosure configure_gaia_for_service_account);
 
   TestHostStarter(const TestHostStarter&) = delete;
   TestHostStarter& operator=(const TestHostStarter&) = delete;
@@ -138,7 +141,8 @@ class TestHostStarter : public HostStarterBase {
   ~TestHostStarter() override;
 
   // HostStarterBase implementation.
-  void RegisterNewHost(const std::string& access_token) override;
+  void RegisterNewHost(const std::string& access_token,
+                       const std::string& public_key) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_removed) override;
   void ReportError(const std::string& error_message,
                    base::OnceClosure on_done) override;
@@ -162,18 +166,28 @@ class TestHostStarter : public HostStarterBase {
   std::string owner_account_email_{kTestUserEmail};
   std::string service_account_email_{kTestRobotEmail};
   std::string robot_authorization_code_{kTestRobotAuthCode};
+
+  base::OnceClosure configure_gaia_for_service_account_;
 };
 
 TestHostStarter::TestHostStarter(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    scoped_refptr<DaemonController> daemon_controller)
-    : HostStarterBase(url_loader_factory) {
+    scoped_refptr<DaemonController> daemon_controller,
+    base::OnceClosure configure_gaia_for_service_account)
+    : HostStarterBase(url_loader_factory),
+      configure_gaia_for_service_account_(
+          std::move(configure_gaia_for_service_account)) {
   SetDaemonControllerForTest(daemon_controller);
 }
 
 TestHostStarter::~TestHostStarter() = default;
 
-void TestHostStarter::RegisterNewHost(const std::string& access_token) {
+void TestHostStarter::RegisterNewHost(const std::string& access_token,
+                                      const std::string& public_key) {
+  // Set up the TestUrlLoaderFactory so it will provide service account
+  // responses rather than user account responses.
+  std::move(configure_gaia_for_service_account_).Run();
+
   user_access_token_ = access_token;
   OnNewHostRegistered(directory_id_, owner_account_email_,
                       service_account_email_, robot_authorization_code_);
@@ -209,6 +223,9 @@ class HostStarterBaseTest : public testing::Test {
   void RunUntilQuit();
   void CompletionHandler(HostStarter::Result result);
 
+  void ConfigureGaiaResponseForUser();
+  void ConfigureGaiaResponseForServiceAccount();
+
   TestHostStarter& test_host_starter() { return *test_host_starter_; }
   std::optional<HostStarter::Result>& start_result() { return start_result_; }
   TestDaemonControllerDelegate& test_daemon_controller_delegate() {
@@ -237,17 +254,15 @@ HostStarterBaseTest::HostStarterBaseTest() = default;
 HostStarterBaseTest::~HostStarterBaseTest() = default;
 
 void HostStarterBaseTest::SetUp() {
-  test_url_loader_factory_.AddResponse(
-      GaiaUrls::GetInstance()->oauth2_token_url().spec(), kGetTokensResponse);
-  test_url_loader_factory_.AddResponse(
-      GaiaUrls::GetInstance()->oauth_user_info_url().spec(),
-      kGetUserEmailResponse);
   shared_url_loader_factory_ = test_url_loader_factory_.GetSafeWeakWrapper();
   test_daemon_controller_delegate_ = new TestDaemonControllerDelegate();
   scoped_refptr<DaemonController> daemon_controller(new DaemonController(
       base::WrapUnique(test_daemon_controller_delegate_.get())));
   test_host_starter_ = std::make_unique<TestHostStarter>(
-      shared_url_loader_factory_, daemon_controller);
+      shared_url_loader_factory_, daemon_controller,
+      base::BindOnce(
+          &HostStarterBaseTest::ConfigureGaiaResponseForServiceAccount,
+          base::Unretained(this)));
   quit_closure_ = task_environment_.QuitClosure();
 }
 
@@ -269,12 +284,30 @@ void HostStarterBaseTest::CompletionHandler(HostStarter::Result result) {
   quit_closure_.Run();
 }
 
+void HostStarterBaseTest::ConfigureGaiaResponseForUser() {
+  test_url_loader_factory_.AddResponse(
+      GaiaUrls::GetInstance()->oauth2_token_url().spec(), kGetTokensResponse);
+  test_url_loader_factory_.AddResponse(
+      GaiaUrls::GetInstance()->oauth_user_info_url().spec(),
+      kGetUserEmailResponseForUser);
+}
+
+void HostStarterBaseTest::ConfigureGaiaResponseForServiceAccount() {
+  test_url_loader_factory_.AddResponse(
+      GaiaUrls::GetInstance()->oauth2_token_url().spec(), kGetTokensResponse);
+  test_url_loader_factory_.AddResponse(
+      GaiaUrls::GetInstance()->oauth_user_info_url().spec(),
+      kGetUserEmailResponseForServiceAccount);
+}
+
 TEST_F(HostStarterBaseTest, StartHostUsingOAuth) {
   HostStarter::Params params;
   params.pin = "123456";
   params.name = kTestMachineName;
   params.auth_code = "auth_me_dude";
   params.redirect_url = "/redirect";
+
+  ConfigureGaiaResponseForUser();
 
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
@@ -380,6 +413,8 @@ TEST_F(HostStarterBaseTest, MismatchedOwnerEmail) {
   params.owner_email = "not-the-person-who-generated-the-auth-code@fraud.com";
   params.auth_code = "auth_me_dude";
   params.redirect_url = "/redirect";
+
+  ConfigureGaiaResponseForUser();
 
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
