@@ -768,15 +768,16 @@ void WebStateList::ActivateWebStateAtImpl(int index) {
 
   web::WebState* old_active_web_state = GetActiveWebState();
   SetActiveIndex(index);
+  web::WebState* new_active_web_state = GetActiveWebState();
 
   const TabGroup* group =
       index != kInvalidIndex ? GetGroupOfWebStateAt(index) : nullptr;
   const WebStateListChangeStatusOnly status_only_change(
-      old_active_web_state, index, /*pinned_state_changed=*/false, group,
+      new_active_web_state, index, /*pinned_state_changed=*/false, group,
       group);
   const WebStateListStatus status = {
       .old_active_web_state = old_active_web_state,
-      .new_active_web_state = GetActiveWebState()};
+      .new_active_web_state = new_active_web_state};
   for (auto& observer : observers_) {
     observer.WebStateListDidChange(this, status_only_change, status);
   }

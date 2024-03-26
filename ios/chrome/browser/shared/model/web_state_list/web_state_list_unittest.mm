@@ -58,6 +58,7 @@ class WebStateListTestObserver : public WebStateListObserver {
     web_state_activated_count_ = 0;
     pinned_state_changed_count_ = 0;
     status_only_count_ = 0;
+    status_only_web_state_ = nullptr;
     status_only_old_group_ = nullptr;
     status_only_new_group_ = nullptr;
     group_created_count_ = 0;
@@ -134,6 +135,11 @@ class WebStateListTestObserver : public WebStateListObserver {
 
   // Returns the number of status only changes.
   int status_only_count() const { return status_only_count_; }
+
+  // Returns the web state mentioned in a WebStateListChangeStatusOnly.
+  web::WebState* status_only_web_state() const {
+    return status_only_web_state_;
+  }
 
   // Returns the old group mentioned in a WebStateListChangeStatusOnly.
   const TabGroup* status_only_old_group() const {
@@ -242,6 +248,7 @@ class WebStateListTestObserver : public WebStateListObserver {
         if (status_only_change.pinned_state_changed()) {
           ++pinned_state_changed_count_;
         }
+        status_only_web_state_ = status_only_change.web_state();
         status_only_old_group_ = status_only_change.old_group();
         status_only_new_group_ = status_only_change.new_group();
         // The activation is handled after this switch statement.
@@ -340,6 +347,7 @@ class WebStateListTestObserver : public WebStateListObserver {
   int web_state_activated_count_ = 0;
   int pinned_state_changed_count_ = 0;
   int status_only_count_ = 0;
+  raw_ptr<web::WebState> status_only_web_state_ = nullptr;
   raw_ptr<const TabGroup> status_only_old_group_ = nullptr;
   raw_ptr<const TabGroup> status_only_new_group_ = nullptr;
   int group_created_count_ = 0;
@@ -739,6 +747,24 @@ TEST_F(WebStateListTest, InsertActivate) {
   ASSERT_EQ(1, web_state_list_.count());
   EXPECT_EQ(web_state_list_.GetWebStateAt(0),
             web_state_list_.GetActiveWebState());
+}
+
+// Tests that activating a WebState sends the proper notification.
+TEST_F(WebStateListTest, ActivateNotifies) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "| a* b c"));
+
+  observer_.ResetStatistics();
+  web_state_list_.ActivateWebStateAt(1);
+
+  EXPECT_EQ("| a b* c", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(1, observer_.status_only_count());
+  EXPECT_EQ(1, observer_.web_state_activated_count());
+  EXPECT_EQ(web_state_list_.GetWebStateAt(1),
+            observer_.status_only_web_state());
+  EXPECT_EQ(nullptr, observer_.status_only_old_group());
+  EXPECT_EQ(nullptr, observer_.status_only_new_group());
 }
 
 // Tests finding a known webstate.
@@ -2659,6 +2685,8 @@ TEST_F(WebStateListTest, ActivateWebStateAt_NoGroup) {
   EXPECT_EQ("| a*", builder.GetWebStateListDescription(web_state_list_));
   EXPECT_EQ(1, observer_.status_only_count());
   EXPECT_EQ(1, observer_.web_state_activated_count());
+  EXPECT_EQ(web_state_list_.GetWebStateAt(0),
+            observer_.status_only_web_state());
   EXPECT_EQ(nullptr, observer_.status_only_old_group());
   EXPECT_EQ(nullptr, observer_.status_only_new_group());
 }
@@ -2676,6 +2704,8 @@ TEST_F(WebStateListTest, ActivateWebStateAt_Grouped) {
   EXPECT_EQ("| [ 0 a* ]", builder.GetWebStateListDescription(web_state_list_));
   EXPECT_EQ(1, observer_.web_state_activated_count());
   EXPECT_EQ(1, observer_.status_only_count());
+  EXPECT_EQ(web_state_list_.GetWebStateAt(0),
+            observer_.status_only_web_state());
   EXPECT_EQ(group, observer_.status_only_old_group());
   EXPECT_EQ(group, observer_.status_only_new_group());
 }
