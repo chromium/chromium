@@ -65,23 +65,8 @@ PineScreenshotIconRowView::PineScreenshotIconRowView(
   // If there is only one browser window, show the browser icon and its tabs
   // favicons inside the icon row view.
   if (one_browser_window) {
-    const PineContentsData::AppInfo& app_info = apps_infos[0];
-
-    PineItemView* item_view = AddChildView(
-        std::make_unique<PineItemView>(app_info, /*inside_screenshot=*/true));
-
-    // The callback may be called synchronously.
-    Shell::Get()->saved_desk_delegate()->GetIconForAppId(
-        app_info.app_id, pine::kScreenshotIconRowIconSize,
-        base::BindOnce(
-            [](base::WeakPtr<PineItemView> item_view_ptr,
-               const gfx::ImageSkia& icon) {
-              if (item_view_ptr) {
-                item_view_ptr->image_view()->SetImage(
-                    ui::ImageModel::FromImageSkia(icon));
-              }
-            },
-            item_view->GetWeakPtr()));
+    AddChildView(std::make_unique<PineItemView>(apps_infos[0],
+                                                /*inside_screenshot=*/true));
   } else {
     const bool exceed_max_elements =
         elements_size > pine::kScreenshotIconRowMaxElements;

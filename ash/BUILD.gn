@@ -2926,6 +2926,8 @@ component("ash") {
     "wm/window_properties.h",
     "wm/window_resizer.cc",
     "wm/window_resizer.h",
+    "wm/window_restore/pine_app_image_view.cc",
+    "wm/window_restore/pine_app_image_view.h",
     "wm/window_restore/pine_constants.h",
     "wm/window_restore/pine_contents_data.cc",
     "wm/window_restore/pine_contents_data.h",

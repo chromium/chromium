@@ -46,21 +46,8 @@ PineItemsContainerView::PineItemsContainerView(
       break;
     }
 
-    PineItemView* item_view = AddChildView(
+    AddChildView(
         std::make_unique<PineItemView>(app_info, /*inside_screenshot=*/false));
-
-    // The callback may be called synchronously.
-    Shell::Get()->saved_desk_delegate()->GetIconForAppId(
-        app_info.app_id, pine::kAppImageSize,
-        base::BindOnce(
-            [](base::WeakPtr<PineItemView> item_view_ptr,
-               const gfx::ImageSkia& icon) {
-              if (item_view_ptr) {
-                item_view_ptr->image_view()->SetImage(
-                    ui::ImageModel::FromImageSkia(icon));
-              }
-            },
-            item_view->GetWeakPtr()));
   }
 }
 

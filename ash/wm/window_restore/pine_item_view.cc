@@ -8,6 +8,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/typography.h"
+#include "ash/wm/window_restore/pine_app_image_view.h"
 #include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/barrier_callback.h"
@@ -28,8 +29,6 @@ namespace ash {
 namespace {
 
 constexpr gfx::Size kFaviconPreferredSize(16, 16);
-constexpr int kItemIconBackgroundRounding = 10;
-constexpr gfx::Size kItemIconPreferredSize(32, 32);
 constexpr int kTitleFaviconSpacing = 4;
 constexpr int kBetweenFaviconSpacing = 4;
 constexpr int kTabMaxElements = 5;
@@ -48,24 +47,14 @@ PineItemView::PineItemView(const PineContentsData::AppInfo& app_info,
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 
-  auto* browser_image_view = AddChildView(
-      views::Builder<views::ImageView>()
-          .CopyAddressTo(&image_view_)
-          .SetImageSize(inside_screenshot_
-                            ? pine::kScreenshotIconRowImageViewSize
-                            : kItemIconPreferredSize)
-          .SetPreferredSize(inside_screenshot_
-                                ? pine::kScreenshotIconRowImageViewSize
-                                : pine::kItemIconBackgroundPreferredSize)
-          .Build());
+  AddChildView(
+      std::make_unique<PineAppImageView>(app_info.app_id, inside_screenshot));
+
   if (inside_screenshot_) {
     views::Separator* separator =
         AddChildView(std::make_unique<views::Separator>());
     separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
     separator->SetPreferredLength(pine::kScreenshotIconRowIconSize);
-  } else {
-    browser_image_view->SetBackground(views::CreateThemedRoundedRectBackground(
-        pine::kIconBackgroundColor, kItemIconBackgroundRounding));
   }
 
   // Add nested `BoxLayoutView`s, so we can have the title of the window on
@@ -79,8 +68,6 @@ PineItemView::PineItemView(const PineContentsData::AppInfo& app_info,
             .SetBetweenChildSpacing(pine::kScreenshotFaviconSpacing)
             .Build());
   } else {
-    // TODO(http://b/328830102): Handle case where the app is not ready or
-    // installed.
     apps::AppRegistryCache* cache =
         apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
             Shell::Get()->session_controller()->GetActiveAccountId());
