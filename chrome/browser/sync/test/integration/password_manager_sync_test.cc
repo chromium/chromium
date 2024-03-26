@@ -1294,16 +1294,11 @@ class PasswordManagerSyncTestWithPolicy : public PasswordManagerSyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTestWithPolicy,
-                       PRE_SyncTypesListDisabled) {
+                       SyncTypesListDisabled) {
   ASSERT_TRUE(SetupClients());
   SetupSyncTransportWithPasswordAccountStorage();
-}
 
-IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTestWithPolicy,
-                       // TODO(crbug.com/1431264): Re-enable this test
-                       DISABLED_SyncTypesListDisabled) {
-  // Disable passwords via the kSyncTypesListDisabled policy. The PRE_ test is
-  // required because the policy is only applied on startup.
+  // Disable passwords via the kSyncTypesListDisabled policy.
   base::Value::List disabled_types;
   disabled_types.Append("passwords");
   policy::PolicyMap policies;
@@ -1312,8 +1307,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTestWithPolicy,
                policy::POLICY_SOURCE_CLOUD,
                base::Value(std::move(disabled_types)), nullptr);
   policy_provider()->UpdateChromePolicy(policies);
-
-  ASSERT_TRUE(SetupClients());
 
   SyncActiveWithoutPasswordsChecker(GetSyncService(0)).Wait();
 }
