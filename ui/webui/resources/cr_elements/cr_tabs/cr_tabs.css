@@ -27,15 +27,11 @@
   flex: var(--cr-tabs-flex, auto);
   height: 100%;
   justify-content: center;
-  opacity: .8;
+  opacity: 1;
   outline: none;
   padding: 0 var(--cr-tabs-tab-inline-padding, 0);
   position: relative;
   transition: opacity 100ms cubic-bezier(.4, 0, 1, 1);
-}
-
-:host-context([chrome-refresh-2023]) .tab {
-  opacity: 1;
 }
 
 :host-context(.focus-outline-visible) .tab:focus {
