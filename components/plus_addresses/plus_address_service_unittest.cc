@@ -771,7 +771,7 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
 };
 
 TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
-  const PlusProfile profile = test::GetPlusProfile();
+  const PlusProfile profile = test::CreatePlusProfile();
   // Simulate adding a `profile` to the database directly, as sync would. This
   // triggers `OnWebDataChangedBySync()`. Prior to the notification, `service()`
   // has no way of knowing about this data.

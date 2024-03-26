@@ -33,7 +33,7 @@ namespace {
 using plus_addresses::EntityDataFromPlusProfile;
 using plus_addresses::PlusAddressService;
 using plus_addresses::PlusProfile;
-using plus_addresses::test::GetPlusProfile;
+using plus_addresses::test::CreatePlusProfile;
 
 // Blocks until `service->GetPlusProfiles()` matches `matcher`.
 // Since `PlusAddressService` lives on a different sequence than the bridge,
@@ -107,7 +107,7 @@ class SingleClientPlusAddressSyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest, InitialSync) {
   // Start syncing with an existing `plus_profile` on the server.
-  const PlusProfile plus_profile = GetPlusProfile();
+  const PlusProfile plus_profile = CreatePlusProfile();
   InjectEntityToServer(EntityDataFromPlusProfile(plus_profile).specifics);
   ASSERT_TRUE(SetupSync());
   EXPECT_TRUE(PlusProfileChecker(GetPlusAddressService(),
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest, InitialSync) {
 IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest, IncrementalUpdate_Add) {
   ASSERT_TRUE(SetupSync());
   // Simulate creating a new `plus_profile` on the server after sync started.
-  const PlusProfile plus_profile = GetPlusProfile();
+  const PlusProfile plus_profile = CreatePlusProfile();
   InjectEntityToServer(EntityDataFromPlusProfile(plus_profile).specifics);
   EXPECT_TRUE(PlusProfileChecker(GetPlusAddressService(),
                                  testing::UnorderedElementsAre(plus_profile))
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest, IncrementalUpdate_Add) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest,
                        IncrementalUpdate_Update) {
-  PlusProfile plus_profile = GetPlusProfile();
+  PlusProfile plus_profile = CreatePlusProfile();
   InjectEntityToServer(EntityDataFromPlusProfile(plus_profile).specifics);
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(PlusProfileChecker(GetPlusAddressService(),
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest,
                        IncrementalUpdate_Remove) {
-  const PlusProfile plus_profile = GetPlusProfile();
+  const PlusProfile plus_profile = CreatePlusProfile();
   InjectEntityToServer(EntityDataFromPlusProfile(plus_profile).specifics);
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(PlusProfileChecker(GetPlusAddressService(),
@@ -158,7 +158,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest,
 // ChromeOS does not support signing out of the primary account.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressSyncTest, Signout_DataCleared) {
-  InjectEntityToServer(EntityDataFromPlusProfile(GetPlusProfile()).specifics);
+  InjectEntityToServer(
+      EntityDataFromPlusProfile(CreatePlusProfile()).specifics);
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(PlusProfileChecker(GetPlusAddressService(),
                                  testing::Not(testing::IsEmpty()))
