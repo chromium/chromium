@@ -60,7 +60,13 @@ class AddressEditorController {
 
   bool is_validatable() const { return is_validatable_; }
 
-  bool is_valid() const { return is_valid_; }
+  // Returns `std::nullopt` if the form was not validated (`ValidateAllFields()`
+  // was not triggered on the view and it didn't call `SetIsValid()` on its
+  // turn) yet, its validity state is unknown. Otherwise returns the state
+  // according to the validation performed in the view.
+  // Note that the view doesn't perform validation if the `is_validatable()` is
+  // `false`, in which case this always returns `std::nullopt`.
+  std::optional<bool> is_valid() const { return is_valid_; }
 
   void SetIsValid(bool is_valid);
 
@@ -107,7 +113,7 @@ class AddressEditorController {
   // Whether the editor should perform validation.
   const bool is_validatable_ = false;
 
-  bool is_valid_ = true;
+  std::optional<bool> is_valid_;
 
   // List of external callbacks subscribed to validity updates.
   OnIsValidChangeCallbackList on_is_valid_change_callbacks_;

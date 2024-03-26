@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -50,7 +51,9 @@ class EditAddressProfileViewTest : public ChromeViewsTestBase {
   EditAddressProfileViewTest() = default;
   ~EditAddressProfileViewTest() override = default;
 
-  void CreateViewAndShow();
+  void CreateViewAndShow() { CreateViewAndShow(address_profile_to_edit()); }
+
+  void CreateViewAndShow(const AutofillProfile& address_profile);
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -92,11 +95,12 @@ class EditAddressProfileViewTest : public ChromeViewsTestBase {
   testing::NiceMock<MockEditAddressProfileDialogController> mock_controller_;
 };
 
-void EditAddressProfileViewTest::CreateViewAndShow() {
+void EditAddressProfileViewTest::CreateViewAndShow(
+    const AutofillProfile& address_profile) {
   ON_CALL(*mock_controller(), GetWindowTitle())
       .WillByDefault(testing::Return(std::u16string()));
   ON_CALL(*mock_controller(), GetProfileToEdit())
-      .WillByDefault(testing::ReturnRef(address_profile_to_edit()));
+      .WillByDefault(testing::ReturnRef(address_profile));
 
   dialog_ = new EditAddressProfileView(mock_controller());
   dialog_->ShowForWebContents(test_web_contents_.get());
@@ -196,6 +200,25 @@ TEST_F(EditAddressProfileViewTest, SaveInvokesTheCallbackWithEditedEmail) {
       OnDialogClosed(AutofillClient::AddressPromptUserDecision::kEditAccepted,
                      AutofillProfileHasInfo(autofill::FieldType::EMAIL_ADDRESS,
                                             kNewEmail)));
+  dialog()->Accept();
+}
+
+TEST_F(EditAddressProfileViewTest, InvalidFormIsNotSent) {
+  ON_CALL(*mock_controller(), GetIsValidatable)
+      .WillByDefault(::testing::Return(true));
+  CreateViewAndShow(AutofillProfile(AddressCountryCode("US")));
+
+  // `kIgnored` is sent as the decision when the dialog is closed (on test end).
+  EXPECT_CALL(
+      *mock_controller(),
+      OnDialogClosed(AutofillClient::AddressPromptUserDecision::kIgnored,
+                     ::testing::_));
+  EXPECT_CALL(
+      *mock_controller(),
+      OnDialogClosed(AutofillClient::AddressPromptUserDecision::kEditAccepted,
+                     ::testing::_))
+      .Times(0);
+
   dialog()->Accept();
 }
 
